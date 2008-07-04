@@ -1,5 +1,5 @@
 import errors
-import ic9x
+import ic9x_ll
 
 def hexprint(data):
     col = 0
@@ -55,13 +55,13 @@ def parse_frames(buf):
         buf = buf[end:]
 
         try:
-            f = ic9x.IC92Frame()
+            f = ic9x_ll.IC92Frame()
             f.from_raw(frame)
             frames.append(f)
         except errors.InvalidDataError, e:
             print "Broken frame: %s" % e
 
-    print "Parsed %i frames" % len(frames)
+        #print "Parsed %i frames" % len(frames)
 
     return frames
 

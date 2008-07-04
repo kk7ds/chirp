@@ -2,6 +2,7 @@ import struct
 
 from repidr_common import IcomFrame
 import util
+import errors
 
 class IC92Frame(IcomFrame):
     def from_raw(self, data):
@@ -52,6 +53,10 @@ class IC92BankFrame(IC92Frame):
 
 class IC92MemoryFrame(IC92Frame):
     def _post_proc(self):
+        if len(self._data) < 36:
+            raise errors.InvalidDataError("Frame length %i is too short",
+                                          len(self._data))
+
         self.isDV = (len(self._data) == 62)
 
         self._name = self._data[28:36]
@@ -90,13 +95,13 @@ class IC92MemoryFrame(IC92Frame):
         self._rawdata += "\x00\x00" + ("\x20" * 16)
         self._rawdata += "CQCQCQ  "
                                     
-        print "Raw memory frame:\n%s\n" % hexprint(self._rawdata)
+        print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata)
 
     def set_memory(self, memory):
-        self._name = "TEST BAR"
-        self._number = 5
-        self._freq = 123.45
-        self._vfo = 2
+        self._name = memory.name.ljust(8)[0:8]
+        self._number = memory.number
+        self._freq = memory.freq
+        self._vfo = memory.vfo
 
     def __str__(self):
         return "%i: %.2f (%s) (DV=%s)" % (self._number,
@@ -143,6 +148,26 @@ def print_banks(pipe):
         bf.from_frame(frames[i])
         print str(bf)
 
+def get_memory(pipe, vfo, number):
+    seq = chr(vfo) + "\x80\x1a\x00\x01" + struct.pack(">H", number)
+    frames = send(pipe, seq)
+
+    if len(frames) == 0:
+        raise errors.InvalidDataError("No response from radio")
+
+    if len(frames[0]._data) < 6:
+        raise errors.InvalidDataError("Got a short, unknown block from radio")
+
+    if frames[0]._data[5] == '\xff':
+        raise errors.InvalidMemoryLocation("Radio says location is empty")
+
+    print "Memory result:\n%s" % util.hexprint(frames[0]._data)
+
+    mf = IC92MemoryFrame()
+    mf.from_frame(frames[0])
+
+    return mf
+
 def print_memory(pipe, vfo, number):
     if vfo not in [1, 2]:
         raise errors.InvalidValueError("VFO must be 1 or 2")
@@ -150,9 +175,6 @@ def print_memory(pipe, vfo, number):
     if number < 0 or number > 999:
         raise errors.InvalidValueError("Number must be between 0 and 999")
 
-    seq = chr(vfo) + "\x80\x1a\x00\x01" + struct.pack(">H", number)
-    frames = send(pipe, seq)
+    mf = get_memory(pipe, vfo, number)
 
-    mf = IC92MemoryFrame()
-    mf.from_frame(frames[0])
     print "Memory %i from VFO %i: %s" % (number, vfo, str(mf))
