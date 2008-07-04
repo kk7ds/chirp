@@ -3,3 +3,6 @@ class InvalidDataError(Exception):
 
 class InvalidValueError(Exception):
     pass
+
+class InvalidMemoryLocation(Exception):
+    pass
