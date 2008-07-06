@@ -4,7 +4,11 @@ import serial
 import sys
 from optparse import OptionParser
 
-from repidr import ic9x, repidr_common, errors
+from repidr import ic9x, id800, repidr_common, errors
+
+RADIOS = { "ic9x"  : ic9x.IC9xRadio,
+           "id800" : id800.ID800v2Radio,
+}
 
 parser = OptionParser()
 parser.add_option("-s", "--serial", dest="serial",
@@ -25,12 +29,21 @@ parser.add_option("", "--set-mem-freq", dest="set_mem_freq",
                   type="float",
                   default=None,
                   help="Set memory frequency")
+parser.add_option("-r", "--radio", dest="radio",
+                  default=None,
+                  help="Radio model (one of %s)" % ",".join(RADIOS.keys()))
 
 (options, args) = parser.parse_args()
 
-s = serial.Serial(port=options.serial, baudrate=38400, timeout=0.5)
+if not options.radio:
+    print "Must specify a radio model"
+    sys.exit(1)
+else:
+    rclass = RADIOS[options.radio]
 
-radio = ic9x.IC9xRadio(s)
+s = serial.Serial(port=options.serial, baudrate=rclass.BAUD_RATE, timeout=0.5)
+
+radio = rclass(s)
 
 if options.set_mem_name or options.set_mem_freq:
     try:

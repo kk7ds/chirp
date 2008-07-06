@@ -3,6 +3,7 @@
 import struct
 
 import repidr_common
+import util
 
 def pack_name(_name, enabled=True):
     name = _name.ljust(8)
@@ -83,9 +84,10 @@ def unpack_frequency(_mem):
     return ((struct.unpack(">i", mem)[0] * 5) / 1000.0)
 
 def parse_map_for_memory(map):
+    """Returns a list of memories, given a valid memory map"""
+
     memories = []
     
-
     for i in range(500):        
         addr = (i * 22) + 0x0020
 
@@ -97,9 +99,98 @@ def parse_map_for_memory(map):
         mem.name = unpack_name(_name)
         mem.freq = unpack_frequency(_freq)
 
-        print mem
-
         memories.append(mem)
+
+    return memories
+
+def send_to_id800(pipe, cmd, data, raw=False):
+
+    if raw:
+        hed = data
+    else:
+        hed = ""
+        for byte in data:
+            hed += "%02x" % ord(byte)
+
+    frame = "\xfe\xfe\xee\xef%s%s\xfd" % (chr(cmd), hed)
+
+    print "Sending: %s" % ["%02x" % ord(x) for x in frame]
+
+    pipe.write(frame)
+
+def get_model_data(pipe):
+    send_to_id800(pipe, 0xe0, "\x27\x88\x00\x00", raw=True)
+
+    model_data = ""
+
+    while not model_data.endswith("\xfd"):
+        model_data += pipe.read(1)
+
+    print "Got model data:\n%s" % util.hexprint(model_data)
+
+    return model_data
+
+def clone_from_radio(pipe, model_data):
+    send_to_id800(pipe, 0xe2, model_data, raw=True)
+
+    data = ""
+
+    while True:
+        _d = pipe.read(64)
+        if not _d:
+            break
+        data += _d
+
+    return data
+
+def process_radio_stream(streamdata):
+    mem = ""
+    
+    while True:
+        try:
+            start = streamdata.index("\xfe\xfe")
+        except ValueError:
+            print "End of stream"
+            break
+
+        streamdata = streamdata[start:]
+
+        start = 0
+        end = streamdata.index("\xfd")
+
+        frame = streamdata[start:end+1]
+        streamdata = streamdata[end:]
+
+        (_, _, fr, to, cmd) = struct.unpack("<BBBBB", frame[:5])
+
+        data = frame[5:-3]
+
+        if cmd == 0xE4:
+            saddr = int(data[0:4], 16)
+            bytes = int(data[4:6], 16)
+            eaddr = saddr + bytes
+            fdata = data[6:]
+        else:
+            continue
+
+        i = 0
+        while i < range(len(fdata)):
+            try:
+                val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
+                i += 2
+                memdata = struct.pack("B", val)
+                mem += memdata
+            except:
+                break
+
+    return mem
+
+def get_memory_map(pipe):
+    #get_model_data(pipe)
+
+    streamdata = clone_from_radio(pipe, "\x27\x88\x00\x00")
+
+    return process_radio_stream(streamdata)
 
 def test_basic():
     v = pack_name("CHAN2")
