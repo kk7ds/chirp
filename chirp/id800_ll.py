@@ -2,7 +2,7 @@
 
 import struct
 
-import repidr_common
+import chirp_common
 import errors
 import util
 
@@ -98,7 +98,7 @@ def parse_map_for_memory(map):
         if len(_freq) != 3:
             raise Exception("freq != 3 for %i" % i)
         
-        mem = repidr_common.Memory()
+        mem = chirp_common.Memory()
         mem.number = i
         mem.name = unpack_name(_name)
         mem.freq = unpack_frequency(_freq)

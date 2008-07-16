@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import repidr_common
+import chirp_common
 import errors
 import util
 
 import id800_ll
 
-class ID800v2Radio(repidr_common.IcomRadio):
+class ID800v2Radio(chirp_common.IcomRadio):
     BAUD_RATE = 9600
 
     _mmap = None

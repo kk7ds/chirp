@@ -1,10 +1,10 @@
-import repidr_common
+import chirp_common
 import errors
 import util
 
 import ic9x_ll
 
-class IC9xRadio(repidr_common.IcomRadio):
+class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
 
     def get_memory(self, number, vfo=1):
@@ -19,7 +19,7 @@ class IC9xRadio(repidr_common.IcomRadio):
 
         mframe = ic9x_ll.get_memory(self.pipe, vfo, number)
 
-        mem = repidr_common.Memory()
+        mem = chirp_common.Memory()
         mem.freq = mframe._freq
         mem.number = mframe._number
         mem.name = mframe._name

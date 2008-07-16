@@ -4,7 +4,7 @@ import serial
 import sys
 from optparse import OptionParser
 
-from repidr import ic9x, id800, repidr_common, errors
+from chirp import ic9x, id800, chirp_common, errors
 
 RADIOS = { "ic9x"  : ic9x.IC9xRadio,
            "id800" : id800.ID800v2Radio,
@@ -49,7 +49,7 @@ if options.set_mem_name or options.set_mem_freq:
     try:
         mem = radio.get_memory(int(args[0]), options.vfo)
     except errors.InvalidMemoryLocation:
-        mem = repidr_common.Memory()
+        mem = chirp_common.Memory()
         mem.vfo = options.vfo
         mem.number = int(args[0])
 

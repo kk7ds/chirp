@@ -1,6 +1,6 @@
 import struct
 
-from repidr_common import IcomFrame
+from chirp_common import IcomFrame
 import util
 import errors
 
