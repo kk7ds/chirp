@@ -6,6 +6,10 @@ from optparse import OptionParser
 
 from chirp import ic9x, id800, chirp_common, errors
 
+def fail_unsupported():
+    print "Operation not supported by selected radio"
+    sys.exit(1)
+
 RADIOS = { "ic9x"  : ic9x.IC9xRadio,
            "id800" : id800.ID800v2Radio,
 }
@@ -32,6 +36,18 @@ parser.add_option("", "--set-mem-freq", dest="set_mem_freq",
 parser.add_option("-r", "--radio", dest="radio",
                   default=None,
                   help="Radio model (one of %s)" % ",".join(RADIOS.keys()))
+
+parser.add_option("", "--mmap", dest="mmap",
+                  default=None,
+                  help="Radio memory map file location")
+parser.add_option("", "--download-mmap", dest="download_mmap",
+                  action="store_true",
+                  default=False,
+                  help="Download memory map from radio")
+parser.add_option("", "--upload-mmap", dest="upload_mmap",
+                  action="store_true",
+                  default=False,
+                  help="Upload memory map to radio")
 
 (options, args) = parser.parse_args()
 
@@ -67,3 +83,12 @@ if options.get_mem:
         
     print mem
 
+if options.download_mmap:
+    isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
+    radio.sync_in()
+    radio.save_mmap(options.mmap)
+
+if options.upload_mmap:
+    isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
+    radio.load_mmap(options.mmap)
+    radio.sync_out()
