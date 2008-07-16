@@ -103,7 +103,10 @@ if options.download_mmap:
 if options.upload_mmap:
     isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
     radio.load_mmap(options.mmap)
-    radio.sync_out()
+    if radio.sync_out():
+        print "Clone successful"
+    else:
+        print "Clone failed"
 
 if options.mmap and isinstance(radio, chirp_common.IcomMmapRadio):
     radio.save_mmap(options.mmap)

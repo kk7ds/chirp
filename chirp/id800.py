@@ -52,7 +52,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
         self._fetch_mmap()
 
     def sync_out(self):
-        id800_ll.clone_to_radio(self.pipe, self._model, self._mmap)
+        return id800_ll.clone_to_radio(self.pipe, self._model, self._mmap)
 
 if __name__ == "__main__":
     import serial

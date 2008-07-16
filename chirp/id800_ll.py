@@ -143,7 +143,7 @@ def send_to_id800(pipe, cmd, data, raw=False, checksum=False):
 
     frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
 
-    print "Sending:\n%s" % util.hexprint(frame)
+    #print "Sending:\n%s" % util.hexprint(frame)
     
     pipe.write(frame)
 
@@ -176,7 +176,7 @@ def get_model_data(pipe):
 
     hdr = "\xfe\xfe\xef\xee\xe1"
 
-    print "Radio returned:\n%s" % util.hexprint(model_data)
+    #print "Radio returned:\n%s" % util.hexprint(model_data)
 
     if not model_data.startswith(hdr):
         raise errors.InvalidDataError("Unable to read radio model data");
@@ -184,7 +184,7 @@ def get_model_data(pipe):
     model_data = model_data[len(hdr):]
     model_data = model_data[:-1]
 
-    print "Got model data:\n%s" % util.hexprint(model_data)
+    #print "Got model data:\n%s" % util.hexprint(model_data)
 
     return model_data
 
@@ -264,7 +264,8 @@ def clone_to_radio(pipe, model_data, mem):
     send_to_id800(pipe, 0xe5, "Icom Inc\x2eCB", raw=True)
 
     termresp = get_response(pipe)
-    # FIXME: Check and report status
+
+    return termresp[5] == "\x00"
 
 def process_payload_frame(mem, data, last_eaddr=0):
     saddr = int(data[0:4], 16)
