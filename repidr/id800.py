@@ -31,9 +31,13 @@ class ID800v2Radio(repidr_common.IcomRadio):
 if __name__ == "__main__":
     import serial
 
-    s = serial.Serial(port="/dev/ttyUSB0",
+    s = serial.Serial(port="/dev/ttyUSB1",
                       baudrate=9600,
                       timeout=1)
 
     r = ID800v2Radio(s)
-    print r.get_memories()
+    r.get_memories()
+
+    f = file("id800.mmap", "wb")
+    f.write(r._mmap)
+    f.close()
