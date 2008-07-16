@@ -43,6 +43,13 @@ class IcomRadio:
 
     
 class IcomMmapRadio(IcomRadio):
+    def __init__(self, pipe):
+        if isinstance(pipe, str):
+            self.pipe = None
+            self.load_mmap(pipe)
+        else:
+            IcomRadio.__init__(self, pipe)
+
     def load_mmap(self, filename):
         pass
 
