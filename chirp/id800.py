@@ -42,6 +42,12 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
 
         return self._memories
 
+    def set_memory(self, memory):
+        if not self._mmap:
+            self._fetch_mmap()
+
+        self._mmap = id800_ll.set_memory(self._mmap, memory)
+
     def sync_in(self):
         self._fetch_mmap()
 
