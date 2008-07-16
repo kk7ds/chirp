@@ -3,6 +3,7 @@
 import struct
 
 import repidr_common
+import errors
 import util
 
 def pack_name(_name, enabled=True):
@@ -131,6 +132,10 @@ def send_to_id800(pipe, cmd, data, raw=False, checksum=False):
     
     pipe.write(frame)
 
+    resp = get_response(pipe)
+    if resp != frame:
+        raise errors.RadioError("Radio did not echo frame")
+
     return frame
 
 def get_response(pipe, length=None):
@@ -153,6 +158,16 @@ def get_model_data(pipe):
 
     while not model_data.endswith("\xfd"):
         model_data += pipe.read(1)
+
+    hdr = "\xfe\xfe\xef\xee\xe1"
+
+    print "Radio returned:\n%s" % util.hexprint(model_data)
+
+    if not model_data.startswith(hdr):
+        raise errors.InvalidDataError("Unable to read radio model data");
+
+    model_data = model_data[len(hdr):]
+    model_data = model_data[:-1]
 
     print "Got model data:\n%s" % util.hexprint(model_data)
 
@@ -181,23 +196,16 @@ def send_mem_chunk(pipe, mem, start, stop, bs=32):
         chunk = struct.pack(">HB", i, size) + mem[i:i+size]
 
         frame = send_to_id800(pipe, 0xe4, chunk, checksum=True)
-        resp = get_response(pipe)
-
-        if frame != resp:
-            print "ERROR: Frame not returned"
-            return False
 
     return True
 
 def clone_to_radio(pipe, model_data, mem):
-    send_to_id800(pipe, 0xe0, model_data, raw=True)
-    r = get_response(pipe)
-    send_to_id800(pipe, 0xe0, model_data, raw=True)
-    r = get_response(pipe)
+    _model_data = get_model_data(pipe)
+
+    if not _model_data.startswith(model_data):
+        raise errors.RadioError("This module supports ID-800H v2 only")
 
     send_to_id800(pipe, 0xe3, model_data, raw=True)
-
-    print "Response to start clone:\n%s" % util.hexprint(get_response(pipe))
 
     ranges = [(0x0020, 0x2B18, 32),
               (0x2B18, 0x2B20,  8),
@@ -239,9 +247,8 @@ def clone_to_radio(pipe, model_data, mem):
             break
 
     send_to_id800(pipe, 0xe5, "Icom Inc\x2eCB", raw=True)
-    resp = get_response(pipe)
 
-    resp = get_response(pipe)
+    termresp = get_response(pipe)
     # FIXME: Check and report status
 
 def process_payload_frame(mem, data, last_eaddr=0):
@@ -296,8 +303,6 @@ def process_radio_stream(streamdata):
     return mem
 
 def get_memory_map(pipe):
-    #get_model_data(pipe)
-
     streamdata = clone_from_radio(pipe, "\x27\x88\x00\x00")
 
     return process_radio_stream(streamdata)
@@ -354,7 +359,7 @@ if __name__ == "__main__":
         pipe = serial.Serial(port=sys.argv[2],
                              baudrate=9600)
 
-        model = "\x27\x88\x00\x00"
+        model = "\x27\x88\x02\x00"
 
         outlog = file("outlog", "wb", 0)
 
