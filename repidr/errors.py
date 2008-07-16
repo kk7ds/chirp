@@ -6,3 +6,6 @@ class InvalidValueError(Exception):
 
 class InvalidMemoryLocation(Exception):
     pass
+
+class RadioError(Exception):
+    pass
