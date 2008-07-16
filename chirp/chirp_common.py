@@ -42,3 +42,15 @@ class IcomRadio:
         pass
 
     
+class IcomMmapRadio(IcomRadio):
+    def load_mmap(self, filename):
+        pass
+
+    def save_mmap(self, filename):
+        pass
+
+    def sync_in(self):
+        pass
+
+    def sync_out(self):
+        pass
