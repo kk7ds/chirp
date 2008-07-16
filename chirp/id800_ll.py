@@ -107,6 +107,21 @@ def parse_map_for_memory(map):
 
     return memories
 
+def write_in_place(mem, start, data):
+    return mem[:start] + data + mem[start+len(data):]
+
+def set_memory(map, memory):
+    _fa = (memory.number * 22) + 0x0020
+    _na = (memory.number * 22) + 0x0020 + 11
+
+    freq = pack_frequency(memory.freq)
+    name = pack_name(memory.name[:6])
+
+    map = write_in_place(map, _fa, freq)
+    map = write_in_place(map, _na, name)
+
+    return map
+
 def send_to_id800(pipe, cmd, data, raw=False, checksum=False):
 
     if raw:
