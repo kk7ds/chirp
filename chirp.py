@@ -10,6 +10,10 @@ def fail_unsupported():
     print "Operation not supported by selected radio"
     sys.exit(1)
 
+def fail_missing_mmap():
+    print "mmap-only operation requires specification of an mmap file"
+    sys.exit(1)
+
 RADIOS = { "ic9x"  : ic9x.IC9xRadio,
            "id800" : id800.ID800v2Radio,
 }
@@ -57,7 +61,15 @@ if not options.radio:
 else:
     rclass = RADIOS[options.radio]
 
-s = serial.Serial(port=options.serial, baudrate=rclass.BAUD_RATE, timeout=0.5)
+if options.serial == "mmap":
+    if options.mmap:
+        s = options.mmap
+    else:
+        fail_missing_mmap()
+else:
+    s = serial.Serial(port=options.serial,
+                      baudrate=rclass.BAUD_RATE,
+                      timeout=0.5)
 
 radio = rclass(s)
 
@@ -92,3 +104,7 @@ if options.upload_mmap:
     isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
     radio.load_mmap(options.mmap)
     radio.sync_out()
+
+if options.mmap and isinstance(radio, chirp_common.IcomMmapRadio):
+    radio.save_mmap(options.mmap)
+    
