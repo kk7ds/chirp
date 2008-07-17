@@ -17,8 +17,16 @@ class Bank:
     name = "BANK"
     vfo = 0
 
+def console_status(status):
+    import sys
+
+    sys.stderr.write("\r%s" % status)
+    
+
 class IcomRadio:
     BAUD_RATE = 9600
+
+    status_fn = lambda x,y: console_status(y)
 
     def __init__(self, pipe):
         self.pipe = pipe
@@ -61,3 +69,28 @@ class IcomMmapRadio(IcomRadio):
 
     def sync_out(self):
         pass
+
+class Status:
+    name = "Job"
+    msg = "Unknown"
+    max = 100
+    cur = 0
+
+    def __str__(self):
+        try:
+            pct = (self.cur / float(self.max)) * 100
+            nticks = int(pct) / 10
+            ticks = "=" * nticks
+        except ValueError:
+            pct = 0.0
+            ticks = "?" * 10
+
+        return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
+
+if __name__ == "__main__":
+    s = Status()
+    s.msg = "Cloning"
+    s.max = 1234
+    s.cur = 172
+
+    print s
