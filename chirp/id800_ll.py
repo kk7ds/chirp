@@ -123,28 +123,6 @@ def set_memory(map, memory):
 
     return map
 
-def get_model_data(pipe):
-    icf.send_clone_frame(pipe, 0xe0, "\x27\x88\x00\x00", raw=True)
-
-    model_data = ""
-
-    while not model_data.endswith("\xfd"):
-        model_data += pipe.read(1)
-
-    hdr = "\xfe\xfe\xef\xee\xe1"
-
-    #print "Radio returned:\n%s" % util.hexprint(model_data)
-
-    if not model_data.startswith(hdr):
-        raise errors.InvalidDataError("Unable to read radio model data");
-
-    model_data = model_data[len(hdr):]
-    model_data = model_data[:-1]
-
-    #print "Got model data:\n%s" % util.hexprint(model_data)
-
-    return model_data
-
 def sniff_for_address(chunk):
     data_hdr = "\xfe\xfe\xef\xee\xe4"
    
@@ -196,7 +174,7 @@ def send_mem_chunk(pipe, mem, start, stop, bs=32):
     return True
 
 def clone_to_radio(pipe, model_data, mem, status=None):
-    _model_data = get_model_data(pipe)
+    _model_data = icf.get_model_data(pipe)
 
     if not _model_data.startswith(model_data):
         raise errors.RadioError("This module supports ID-800H v2 only")

@@ -8,6 +8,24 @@ import util
 
 CMD_CLONE_OUT = 0xE2
 
+def get_model_data(pipe, model="\x00\x00\x00\x00"):
+    icf.send_clone_frame(pipe, 0xe0, "\x27\x88\x00\x00", raw=True)
+
+    model_data = ""
+
+    while not model_data.endswith("\xfd"):
+        model_data += pipe.read(1)
+
+    hdr = "\xfe\xfe\xef\xee\xe1"
+
+    if not model_data.startswith(hdr):
+        raise errors.InvalidDataError("Unable to read radio model data");
+
+    model_data = model_data[len(hdr):]
+    model_data = model_data[:-1]
+
+    return model_data
+
 def get_clone_resp(pipe, length=None):
     def exit_criteria(buf, length):
         if length is None:
