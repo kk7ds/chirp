@@ -188,16 +188,40 @@ def get_model_data(pipe):
 
     return model_data
 
-def clone_from_radio(pipe, model_data):
+def sniff_for_address(chunk):
+    data_hdr = "\xfe\xfe\xef\xee\xe4"
+   
+    if data_hdr in chunk:
+        i = chunk.index(data_hdr) + len(data_hdr)
+        if i + 4 >= len(chunk):
+            # not enough data left to grab addr bytes
+            return None
+
+        _addr = chunk[i:i + 4]
+        return int(_addr, 16)
+
+def clone_from_radio(pipe, model_data, status=None):
     send_to_id800(pipe, 0xe2, model_data, raw=True)
 
     data = ""
-
     while True:
         _d = pipe.read(64)
         if not _d:
             break
         data += _d
+
+        #try:
+        addr = sniff_for_address(_d)
+        #except:
+        #addr = None
+
+        if addr:
+            s = chirp_common.Status()
+            s.msg = "Cloning from radio"
+            s.max = 14496
+            s.cur = addr
+            if status:
+                status(s)
 
     return data
 
@@ -214,7 +238,7 @@ def send_mem_chunk(pipe, mem, start, stop, bs=32):
 
     return True
 
-def clone_to_radio(pipe, model_data, mem):
+def clone_to_radio(pipe, model_data, mem, status=None):
     _model_data = get_model_data(pipe)
 
     if not _model_data.startswith(model_data):
@@ -261,6 +285,14 @@ def clone_to_radio(pipe, model_data, mem):
         if not send_mem_chunk(pipe, mem, start, stop, bs):
             break
 
+        if status:
+            s = chirp_common.Status()
+            s.max = 0x38A8
+            s.cur = start
+            s.msg = "Cloning to radio"
+
+            status(s)
+
     send_to_id800(pipe, 0xe5, "Icom Inc\x2eCB", raw=True)
 
     termresp = get_response(pipe)
@@ -297,7 +329,6 @@ def process_radio_stream(streamdata):
         try:
             start = streamdata.index("\xfe\xfe")
         except ValueError:
-            print "End of stream"
             break
 
         streamdata = streamdata[start:]
@@ -318,8 +349,8 @@ def process_radio_stream(streamdata):
 
     return mem
 
-def get_memory_map(pipe):
-    streamdata = clone_from_radio(pipe, "\x27\x88\x00\x00")
+def get_memory_map(pipe, status=None):
+    streamdata = clone_from_radio(pipe, "\x27\x88\x00\x00", status)
 
     return process_radio_stream(streamdata)
 

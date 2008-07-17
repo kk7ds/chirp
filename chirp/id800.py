@@ -27,7 +27,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
         f.close()
 
     def _fetch_mmap(self):
-        self._mmap = id800_ll.get_memory_map(self.pipe)
+        self._mmap = id800_ll.get_memory_map(self.pipe, self.status_fn)
         self._memories = id800_ll.parse_map_for_memory(self._mmap)
 
     def get_memory(self, number, vfo=None):
@@ -52,7 +52,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
         self._fetch_mmap()
 
     def sync_out(self):
-        return id800_ll.clone_to_radio(self.pipe, self._model, self._mmap)
+        return id800_ll.clone_to_radio(self.pipe, self._model, self._mmap, self.status_fn)
 
 if __name__ == "__main__":
     import serial
