@@ -5,6 +5,7 @@ import struct
 import chirp_common
 import errors
 import util
+import icf
 
 def pack_name(_name, enabled=True):
     name = _name.ljust(8)
@@ -122,52 +123,8 @@ def set_memory(map, memory):
 
     return map
 
-def send_to_id800(pipe, cmd, data, raw=False, checksum=False):
-
-    if raw:
-        hed = data
-    else:
-        hed = ""
-        for byte in data:
-            hed += "%02X" % ord(byte)
-
-    if checksum:
-        cs = 0
-        for i in data:
-            cs += ord(i)
-
-        cs = ((cs ^ 0xFFFF) + 1) & 0xFF
-        cs = "%02X" % cs
-    else:
-        cs =""
-
-    frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
-
-    #print "Sending:\n%s" % util.hexprint(frame)
-    
-    pipe.write(frame)
-
-    resp = get_response(pipe)
-    if resp != frame:
-        raise errors.RadioError("Radio did not echo frame")
-
-    return frame
-
-def get_response(pipe, length=None):
-    def exit_criteria(buf, length):
-        if length is None:
-            return buf.endswith("\xfd")
-        else:
-            return len(buf) == length
-
-    resp = ""
-    while not exit_criteria(resp, length):
-        resp += pipe.read(1)
-
-    return resp
-
 def get_model_data(pipe):
-    send_to_id800(pipe, 0xe0, "\x27\x88\x00\x00", raw=True)
+    icf.send_clone_frame(pipe, 0xe0, "\x27\x88\x00\x00", raw=True)
 
     model_data = ""
 
@@ -201,7 +158,7 @@ def sniff_for_address(chunk):
         return int(_addr, 16)
 
 def clone_from_radio(pipe, model_data, status=None):
-    send_to_id800(pipe, 0xe2, model_data, raw=True)
+    icf.send_clone_frame(pipe, 0xe2, model_data, raw=True)
 
     data = ""
     while True:
@@ -234,7 +191,7 @@ def send_mem_chunk(pipe, mem, start, stop, bs=32):
 
         chunk = struct.pack(">HB", i, size) + mem[i:i+size]
 
-        frame = send_to_id800(pipe, 0xe4, chunk, checksum=True)
+        frame = icf.send_clone_frame(pipe, 0xe4, chunk, checksum=True)
 
     return True
 
@@ -244,7 +201,7 @@ def clone_to_radio(pipe, model_data, mem, status=None):
     if not _model_data.startswith(model_data):
         raise errors.RadioError("This module supports ID-800H v2 only")
 
-    send_to_id800(pipe, 0xe3, model_data, raw=True)
+    icf.send_clone_frame(pipe, 0xe3, model_data, raw=True)
 
     ranges = [(0x0020, 0x2B18, 32),
               (0x2B18, 0x2B20,  8),
@@ -293,66 +250,14 @@ def clone_to_radio(pipe, model_data, mem, status=None):
 
             status(s)
 
-    send_to_id800(pipe, 0xe5, "Icom Inc\x2eCB", raw=True)
+    icf.send_clone_frame(pipe, 0xe5, "Icom Inc\x2eCB", raw=True)
 
-    termresp = get_response(pipe)
+    termresp = icf.get_clone_resp(pipe)
 
     return termresp[5] == "\x00"
 
-def process_payload_frame(mem, data, last_eaddr=0):
-    saddr = int(data[0:4], 16)
-    bytes = int(data[4:6], 16)
-    eaddr = saddr + bytes
-    fdata = data[6:]
-
-    if saddr != last_eaddr:
-        count = saddr - eaddr
-        mem += ("\x00" * count)
-
-    i = 0
-    while i < range(len(fdata)):
-        try:
-            val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
-            i += 2
-            memdata = struct.pack("B", val)
-            mem += memdata
-        except:
-            break
-
-    return mem, eaddr
-
-def process_radio_stream(streamdata):
-    mem = ""
-    last_eaddr = 0
-
-    while True:
-        try:
-            start = streamdata.index("\xfe\xfe")
-        except ValueError:
-            break
-
-        streamdata = streamdata[start:]
-
-        start = 0
-        end = streamdata.index("\xfd")
-
-        frame = streamdata[start:end+1]
-        streamdata = streamdata[end:]
-
-        (_, _, fr, to, cmd) = struct.unpack("<BBBBB", frame[:5])
-
-        data = frame[5:-3]
-
-        if cmd == 0xE4:
-            mem, last_eaddr = process_payload_frame(mem, data, last_eaddr)
-
-
-    return mem
-
 def get_memory_map(pipe, status=None):
-    streamdata = clone_from_radio(pipe, "\x27\x88\x00\x00", status)
-
-    return process_radio_stream(streamdata)
+    return icf.clone_from_radio(pipe, "\x27\x88\x00\x00", status)
 
 def test_basic():
     v = pack_name("CHAN2")

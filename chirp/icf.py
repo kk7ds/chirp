@@ -1,0 +1,137 @@
+#!/usr/bin/python
+
+import struct
+
+import errors
+import chirp_common
+import util
+
+CMD_CLONE_OUT = 0xE2
+
+def get_clone_resp(pipe, length=None):
+    def exit_criteria(buf, length):
+        if length is None:
+            return buf.endswith("\xfd")
+        else:
+            return len(buf) == length
+
+    resp = ""
+    while not exit_criteria(resp, length):
+        resp += pipe.read(1)
+
+    return resp
+
+def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
+
+    if raw:
+        hed = data
+    else:
+        hed = ""
+        for byte in data:
+            hed += "%02X" % ord(byte)
+
+    if checksum:
+        cs = 0
+        for i in data:
+            cs += ord(i)
+
+        cs = ((cs ^ 0xFFFF) + 1) & 0xFF
+        cs = "%02X" % cs
+    else:
+        cs =""
+
+    frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
+
+    #print "Sending:\n%s" % util.hexprint(frame)
+    
+    pipe.write(frame)
+
+    resp = get_clone_resp(pipe)
+    if resp != frame:
+        print "Bad response:\n%sSent:\n%s" % (util.hexprint(resp),
+                                              util.hexprint(frame))
+        raise errors.RadioError("Radio did not echo frame")
+
+    return frame
+
+def process_payload_frame(mem, data, last_eaddr=0):
+    if len(data) < 8:
+        # data is too short to be a frame
+        return mem, last_eaddr, 0
+
+    saddr = int(data[0:4], 16)
+    bytes = int(data[4:6], 16)
+    eaddr = saddr + bytes
+    fdata = data[6:6+(bytes * 2)]
+
+    try:
+        checksum = data[8+(bytes * 2)]
+        eof = data[8+(bytes * 2)]
+    except IndexError:
+        # Not quite enough
+        return mem, last_eaddr, 0
+
+    if eof != "\xfd":
+        raise errors.InvalidDataError("Invalid frame trailer 0x%02X" % ord(eof))
+
+    if len(fdata) != (bytes * 2):
+        # data is too short to house entire frame, wait for more
+        return mem, last_eaddr, 0
+
+    if saddr != last_eaddr:
+        count = saddr - eaddr
+        mem += ("\x00" * count)
+
+    i = 0
+    while i < range(len(fdata)) and i+1 < len(fdata):
+        try:
+            val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
+            i += 2
+            memdata = struct.pack("B", val)
+            mem += memdata
+        except Exception, e:
+            print "Failed to parse byte: %s" % e
+            break
+
+    return mem, eaddr, (bytes * 2) + 8
+
+def process_data_frames(data, map):
+    data_hdr = "\xfe\xfe\xef\xee\xe4"
+
+    end = 0
+    while data.startswith(data_hdr):
+        map, end, size = process_payload_frame(map, data[5:], end)
+        if size == 0:
+            break
+        else:
+            data = data[size + 6:]
+            #print "Processed frame for %04x (%i bytes)" % (end, size)
+
+    return data, map
+
+def clone_from_radio(pipe, model, status=None):
+    send_clone_frame(pipe, CMD_CLONE_OUT, model, raw=True)
+
+    data = ""
+    map = ""
+    while True:
+        _d = pipe.read(64)
+        if not _d:
+            break
+
+        data += _d
+
+        if not data.startswith("\xfe\xfe"):
+            raise errors.InvalidDataError("Received broken frame from radio")
+
+        if "\xfd" in data:
+            data, map = process_data_frames(data, map)
+
+        if status:
+            s = chirp_common.Status()
+            s.msg = "Cloning from radio"
+            s.max = 14528
+            s.cur = len(map)
+            status(s)
+
+    return map
