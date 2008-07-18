@@ -52,6 +52,8 @@ class IcomRadio:
     
 class IcomMmapRadio(IcomRadio):
     def __init__(self, pipe):
+        self._mmap = None
+
         if isinstance(pipe, str):
             self.pipe = None
             self.load_mmap(pipe)
@@ -59,15 +61,24 @@ class IcomMmapRadio(IcomRadio):
             IcomRadio.__init__(self, pipe)
 
     def load_mmap(self, filename):
-        pass
+        f = file(filename, "rb")
+        self._mmap = f.read()
+        f.close()
+
+        self.process_mmap()
 
     def save_mmap(self, filename):
-        pass
+        f = file(filename, "wb")
+        f.write(self._mmap)
+        f.close()
 
     def sync_in(self):
         pass
 
     def sync_out(self):
+        pass
+
+    def process_mmap(self):
         pass
 
 class Status:

@@ -10,25 +10,16 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
     BAUD_RATE = 9600
 
     _model = "\x27\x88\x02\x00"
+    _memsize = 14528
 
-    _mmap = None
     _memories = []
 
-    def load_mmap(self, filename):
-        f = file(filename, "rb")
-        self._mmap = f.read()
-        f.close()
-
+    def process_mmap(self):
         self._memories = id800_ll.parse_map_for_memory(self._mmap)
-
-    def save_mmap(self, filename):
-        f = file(filename, "wb")
-        f.write(self._mmap)
-        f.close()
 
     def _fetch_mmap(self):
         self._mmap = id800_ll.get_memory_map(self.pipe, self.status_fn)
-        self._memories = id800_ll.parse_map_for_memory(self._mmap)
+        self.process_mmap()
 
     def get_memory(self, number, vfo=None):
         if not self._mmap:
