@@ -19,6 +19,18 @@ def get_memory(map, number):
 
     return mem
 
+def set_memory(map, memory):
+    _fa = (memory.number * 0x30)
+    _na = (memory.number * 0x30) + 0x28
+    
+    freq = struct.pack(">I", int(memory.freq * 1000000))
+    name = memory.name.ljust(8)
+
+    map = util.write_in_place(map, _fa, freq)
+    map = util.write_in_place(map, _na, name[:8])
+
+    return map
+
 def parse_map_for_memory(map):
     memories = []
 
@@ -26,14 +38,6 @@ def parse_map_for_memory(map):
         memories.append(get_memory(map, i))
 
     return memories
-
-def get_memory_map(radio):
-    md = icf.get_model_data(radio.pipe)
-
-    if md[0:4] != radio._model:
-        raise errors.RadioError("I can't talk to this model")
-
-    return icf.clone_from_radio(radio)
 
 if __name__ == "__main__":
     import serial

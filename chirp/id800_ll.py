@@ -108,9 +108,6 @@ def parse_map_for_memory(map):
 
     return memories
 
-def write_in_place(mem, start, data):
-    return mem[:start] + data + mem[start+len(data):]
-
 def set_memory(map, memory):
     _fa = (memory.number * 22) + 0x0020
     _na = (memory.number * 22) + 0x0020 + 11
@@ -118,18 +115,10 @@ def set_memory(map, memory):
     freq = pack_frequency(memory.freq)
     name = pack_name(memory.name[:6])
 
-    map = write_in_place(map, _fa, freq)
-    map = write_in_place(map, _na, name)
+    map = util.write_in_place(map, _fa, freq)
+    map = util.write_in_place(map, _na, name)
 
     return map
-
-def get_memory_map(radio):
-    md = icf.get_model_data(radio.pipe)
-
-    if md[0:4] != radio._model:
-        raise errors.RadioError("I can't talk to this model")
-
-    return icf.clone_from_radio(radio)
 
 def test_basic():
     v = pack_name("CHAN2")

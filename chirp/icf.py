@@ -132,6 +132,11 @@ def process_data_frames(data, map):
     return data, map
 
 def clone_from_radio(radio):
+    md = get_model_data(radio.pipe)
+
+    if md[0:4] != radio._model:
+        raise errors.RadioError("I can't talk to this model")
+
     send_clone_frame(radio.pipe, CMD_CLONE_OUT, radio._model, raw=True)
 
     data = ""

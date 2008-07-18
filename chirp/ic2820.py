@@ -23,24 +23,27 @@ class IC2820Radio(chirp_common.IcomMmapRadio):
     def process_mmap(self):
         self._memories = ic2820_ll.parse_map_for_memory(self._mmap)
 
-    def _fetch_mmap(self):
-        self._mmap = ic2820_ll.get_memory_map(self)
-        self.process_mmap()
-
     def get_memory(self, number, vfo=None):
         if not self._mmap:
-            self._fetch_mmap()
+            self.sync_in()
         
         return self._memories[number]
 
     def get_memories(self, vfo=None):
         if not self._mmap:
-            self._fetch_mmap()
+            self.sync_in()
 
         return self._memories
 
+    def set_memory(self, memory):
+        if not self._mmap:
+            self.sync_in()
+
+        self._mmap = ic2820_ll.set_memory(self._mmap, memory)
+
     def sync_in(self):
-        self._fetch_mmap()
+        self._mmap = icf.clone_from_radio(self)
+        self.process_mmap()
 
     def sync_out(self):
         return icf.clone_to_radio(self)

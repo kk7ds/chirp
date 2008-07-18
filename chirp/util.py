@@ -72,3 +72,6 @@ def print_frames(frames):
         print i
         c += 1
 
+def write_in_place(mem, start, data):
+    return mem[:start] + data + mem[start+len(data):]
+
