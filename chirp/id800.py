@@ -7,8 +7,6 @@ import util
 import id800_ll
 
 class ID800v2Radio(chirp_common.IcomMmapRadio):
-    BAUD_RATE = 9600
-
     _model = "\x27\x88\x02\x00"
     _memsize = 14528
 

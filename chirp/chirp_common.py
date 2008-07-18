@@ -51,8 +51,13 @@ class IcomRadio:
 
     
 class IcomMmapRadio(IcomRadio):
+    BAUDRATE = 9600
+
+    _model = "\x00\x00\x00\x00"
+    _memsize = 0
+    _mmap = None
+
     def __init__(self, pipe):
-        self._mmap = None
 
         if isinstance(pipe, str):
             self.pipe = None

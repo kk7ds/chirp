@@ -7,8 +7,6 @@ import util
 import ic2820_ll
 
 class IC2820Radio(chirp_common.IcomMmapRadio):
-    BAUD_RATE = 9600
-
     _model = "\x29\x70\x00\x01"
     _memsize = 44224
 
