@@ -34,3 +34,5 @@ class IC2820Radio(chirp_common.IcomMmapRadio):
     def sync_in(self):
         self._fetch_mmap()
 
+    def sync_out(self):
+        return ic2820_ll.clone_to_radio(self)
