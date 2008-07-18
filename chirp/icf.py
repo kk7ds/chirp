@@ -7,6 +7,9 @@ import chirp_common
 import util
 
 CMD_CLONE_OUT = 0xE2
+CMD_CLONE_IN  = 0xE3
+CMD_CLONE_DAT = 0xE4
+CMD_CLONE_END = 0xE5
 
 def get_model_data(pipe, model="\x00\x00\x00\x00"):
     send_clone_frame(pipe, 0xe0, model, raw=True)
@@ -154,3 +157,45 @@ def clone_from_radio(radio):
             radio.status_fn(s)
 
     return map
+
+def send_mem_chunk(radio, start, stop, bs=32):
+    for i in range(start, stop, bs):
+        if i + bs < stop:
+            size = bs
+        else:
+            size = stop - i
+
+        chunk = struct.pack(">HB", i, size) + radio._mmap[i:i+size]
+
+        frame = send_clone_frame(radio.pipe,
+                                 CMD_CLONE_DAT,
+                                 chunk,
+                                 checksum=True)
+
+        if radio.status_fn:
+            s = chirp_common.Status()
+            s.msg = "Cloning to radio"
+            s.max = radio._memsize
+            s.cur = i+bs
+            
+            radio.status_fn(s)
+
+    return True
+
+def clone_to_radio(radio):
+    md = get_model_data(radio.pipe)
+
+    if md[0:4] != radio._model:
+        raise errors.RadioError("I can't talk to this model")
+
+    send_clone_frame(radio.pipe, CMD_CLONE_IN, radio._model, raw=True)
+
+    for start, stop, bs in radio._ranges:
+        if not send_mem_chunk(radio, start, stop, bs):
+            break
+
+    send_clone_frame(radio.pipe, CMD_CLONE_END, radio._endframe, raw=True)
+
+    termresp = get_clone_resp(radio.pipe)
+
+    return termresp[5] == "\x00"
