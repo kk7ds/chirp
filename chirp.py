@@ -4,7 +4,7 @@ import serial
 import sys
 from optparse import OptionParser
 
-from chirp import ic9x, id800, chirp_common, errors
+from chirp import ic9x, id800, ic2820, chirp_common, errors
 
 def fail_unsupported():
     print "Operation not supported by selected radio"
@@ -16,6 +16,7 @@ def fail_missing_mmap():
 
 RADIOS = { "ic9x"  : ic9x.IC9xRadio,
            "id800" : id800.ID800v2Radio,
+           "ic2820": ic2820.IC2820Radio,
 }
 
 parser = OptionParser()
