@@ -128,13 +128,13 @@ def process_data_frames(data, map):
 
     return data, map
 
-def clone_from_radio(pipe, model, status=None):
-    send_clone_frame(pipe, CMD_CLONE_OUT, model, raw=True)
+def clone_from_radio(radio):
+    send_clone_frame(radio.pipe, CMD_CLONE_OUT, radio._model, raw=True)
 
     data = ""
     map = ""
     while True:
-        _d = pipe.read(64)
+        _d = radio.pipe.read(64)
         if not _d:
             break
 
@@ -146,11 +146,11 @@ def clone_from_radio(pipe, model, status=None):
         if "\xfd" in data:
             data, map = process_data_frames(data, map)
 
-        if status:
+        if radio.status_fn:
             s = chirp_common.Status()
             s.msg = "Cloning from radio"
-            s.max = 14528
+            s.max = radio._memsize
             s.cur = len(map)
-            status(s)
+            radio.status_fn(s)
 
     return map

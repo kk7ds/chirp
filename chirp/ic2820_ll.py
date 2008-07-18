@@ -5,6 +5,7 @@ import struct
 import icf
 import util
 import chirp_common
+import errors
 
 def get_memory(map, number):
     chunk = map[number*0x30:(number+1)*0x30]
@@ -26,10 +27,13 @@ def parse_map_for_memory(map):
 
     return memories
 
-def get_memory_map(pipe, status):
-    md = icf.get_model_data(pipe)
+def get_memory_map(radio):
+    md = icf.get_model_data(radio.pipe)
 
-    return icf.clone_from_radio(pipe, md[0:4], status)
+    if md[0:4] != radio._model:
+        raise errors.RadioError("I can't talk to this model")
+
+    return icf.clone_from_radio(radio)
 
 if __name__ == "__main__":
     import serial

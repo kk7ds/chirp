@@ -234,8 +234,13 @@ def clone_to_radio(pipe, model_data, mem, status=None):
 
     return termresp[5] == "\x00"
 
-def get_memory_map(pipe, status=None):
-    return icf.clone_from_radio(pipe, "\x27\x88\x00\x00", status)
+def get_memory_map(radio):
+    md = icf.get_model_data(radio.pipe)
+
+    if md[0:4] != radio._model:
+        raise errors.RadioError("I can't talk to this model")
+
+    return icf.clone_from_radio(radio)
 
 def test_basic():
     v = pack_name("CHAN2")
