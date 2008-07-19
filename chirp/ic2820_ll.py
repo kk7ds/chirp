@@ -14,10 +14,15 @@ def get_memory(map, number):
 
     mem = chirp_common.Memory()
     mem.number = number
-    mem.name = chunk[-8:]
+    mem.name = chunk[-8:].strip()
     mem.freq = _freq / 1000000.0
 
-    return mem
+    if mem.name[0] == "\x00":
+        return None
+    elif mem.name[0] == "\xFF":
+        return None
+    else:
+        return mem
 
 def set_memory(map, memory):
     _fa = (memory.number * 0x30)
@@ -35,7 +40,9 @@ def parse_map_for_memory(map):
     memories = []
 
     for i in range(500):
-        memories.append(get_memory(map, i))
+        m = get_memory(map, i)
+        if m:
+            memories.append(m)
 
     return memories
 
