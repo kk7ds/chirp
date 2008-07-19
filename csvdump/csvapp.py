@@ -234,6 +234,7 @@ class CsvDumpApp:
         
     def run(self):
         self.mainwin.show()
+        self.mainwin.connect("destroy", lambda x: gtk.main_quit())
 
         gtk.main()
 
