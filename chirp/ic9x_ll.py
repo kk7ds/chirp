@@ -59,7 +59,7 @@ class IC92MemoryFrame(IC92Frame):
 
         self.isDV = (len(self._data) == 62)
 
-        self._name = self._data[28:36]
+        self._name = self._data[28:36].rstrip()
         self._number, = struct.unpack(">H", self._data[3:5])
 
         h = int("%x" % ord(self._data[9]))

@@ -31,7 +31,15 @@ class IC9xRadio(chirp_common.IcomRadio):
         memories = []
 
         for i in range(999):
-            memories.append(self.get_memory(i, vfo))
+            try:
+                print "Getting %i" % i
+                m = self.get_memory(i, vfo)
+                memories.append(m)
+            except errors.InvalidMemoryLocation:
+                pass
+            except errors.InvalidDataError, e:
+                print "Error talking to radio: %s" % e
+                break
 
         return memories
         
