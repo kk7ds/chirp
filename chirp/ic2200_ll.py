@@ -9,6 +9,9 @@ def get_memory(map, number):
     _freq = (struct.unpack("<H", chunk[0:2])[0] * 5) / 1000.0
     _name = chunk[4:10]
 
+    if _name[0] == "\x00" or _name[0] == "\xFF":
+        return None
+
     m = chirp_common.Memory()
     m.freq = _freq
     m.name = _name.replace("\x0e", "").strip()
@@ -30,7 +33,7 @@ def set_memory(map, memory):
 def parse_map_for_memory(map):
     memories = []
 
-    for i in range(100):
+    for i in range(197):
         m = get_memory(map, i)
         if m:
             memories.append(m)
