@@ -90,7 +90,7 @@ if options.get_mem:
     try:
         mem = radio.get_memory(int(args[0]), options.vfo)
     except errors.InvalidMemoryLocation:
-        mem = repidr_common.Memory()
+        mem = chirp_common.Memory()
         mem.number = int(args[0])
         mem.vfo = options.vfo
         
