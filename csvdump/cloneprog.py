@@ -23,6 +23,8 @@ class CloneProg(gtk.Window):
     def status(self, s):
         self.infolabel.set_text(s.msg)
 
+        if s.cur > s.max:
+            s.cur = s.max
         self.progbar.set_fraction(s.cur / float(s.max))
 
 if __name__ == "__main__":
