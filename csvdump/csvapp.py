@@ -77,7 +77,7 @@ class CsvDumpApp:
         t = threading.Thread(target=self._upload_img)
         t.start()
     
-    def export_file(self, fname):
+    def _export_file_mmap(self, fname):
         count = 0
 
         f = file(fname, "w")
@@ -89,29 +89,107 @@ class CsvDumpApp:
 
         self.mainwin.set_status("Exported %i memories" % count)
 
-    def import_file(self, fname):
+    def _export_file_live(self, fname):
+        gobject.idle_add(self.progwin.show)
+
+        f = file(fname, "w")
+
+        for i in range(20):
+            s = chirp.chirp_common.Status()
+            s.msg = "Reading memory %i" % i
+            s.cur = i
+            s.max = 20
+            gobject.idle_add(self.progwin.status, s)
+
+            try:
+                m = self.radio.get_memory(i, vfo=2)
+                print >>f, "%i,%s,%.3f," % (m.number, m.name, m.freq)
+            except chirp.errors.InvalidMemoryLocation:
+                pass
+
+        f.close()
+
+        gobject.idle_add(self.progwin.hide)
+
+    def export_file(self, fname):
+        if self.rtype == "ic9x":
+            t = threading.Thread(target=self._export_file_live,
+                                 args=(fname,))
+            t.start()
+        else:
+            self._export_file_mmap(fname)
+
+    def _parse_mem_line(self, line):
+        try:
+            num, name, freq, _ = line.split(",")
+            m = chirp.chirp_common.Memory()
+            m.name = name
+            m.number = int(num)
+            m.freq = float(freq)
+        except Exception, e:
+            print "Failed to parse `%s': %s" % (line, e)
+            return None
+        
+        return m
+
+    def _import_file_live(self, fname):
+        gobject.idle_add(self.progwin.show)
+
+        f = file(fname, "r")
+        lines = f.readlines()
+        f.close()
+
+        memories = []
+        for line in lines:
+            m = self._parse_mem_line(line)
+            if m:
+                memories.append(m)
+
+        count = 0
+        for m in memories:
+            s = chirp.chirp_common.Status()
+            s.msg = "Sending memory %i" % m.number
+            s.cur = count
+            s.max = len(memories)
+            gobject.idle_add(self.progwin.status, s)
+
+            try:
+                self.radio.get_memory(m.number, 2)
+                m.vfo = 2
+                self.radio.set_memory(m)
+            except Exception, e:
+                print "Error setting memory %i: %s" % (m.number, e)
+                break
+
+            count += 1
+
+        gobject.idle_add(self.progwin.hide)
+
+        gobject.idle_add(self.mainwin.set_status, "Wrote %i memories" % count)
+
+    def _import_file_mmdap(self, fname):
         f = file(fname, "r")
         lines = f.readlines()
         f.close()
 
         for line in lines:
-            try:
-                num, name, freq, _ = line.split(",")
-                m = chirp.chirp_common.Memory()
-                m.name = name
-                m.number = int(num)
-                m.freq = float(freq)
-            except Exception, e:
-                print "Failed to parse `%s': %s" % (line, e)
-                continue
-            
-            print "Setting memory: %s" % m
-            self.radio.set_memory(m)
+            m = self._parse_mem_line(line)
+            if m:
+                print "Setting memory: %s" % m
+                self.radio.set_memory(m)
 
         print "Saving image to %s.img" % self.rtype
         self.radio.save_mmap("%s.img" % self.rtype)
 
         self.mainwin.set_status("Imported %s" % os.path.basename(fname))
+
+    def import_file(self, fname):
+        if self.rtype == "ic9x":
+            t = threading.Thread(target=self._import_file_live,
+                                 args=(fname,))
+            t.start()
+        else:
+            self._import_file_mmap(fname)
 
     def refresh_radio(self):
         rtype = RADIOS[self.rtype]
