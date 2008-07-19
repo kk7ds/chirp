@@ -4,7 +4,7 @@ import serial
 import sys
 from optparse import OptionParser
 
-from chirp import ic9x, id800, ic2820, chirp_common, errors
+from chirp import ic9x, id800, ic2820, ic2200, chirp_common, errors
 
 def fail_unsupported():
     print "Operation not supported by selected radio"
@@ -17,12 +17,17 @@ def fail_missing_mmap():
 RADIOS = { "ic9x"  : ic9x.IC9xRadio,
            "id800" : id800.ID800v2Radio,
            "ic2820": ic2820.IC2820Radio,
+           "ic2200": ic2200.IC2200Radio,
 }
 
 parser = OptionParser()
 parser.add_option("-s", "--serial", dest="serial",
                   default="/dev/ttyUSB0",
                   help="Serial port (default: /dev/ttyUSB0)")
+parser.add_option("-i", "--id", dest="id",
+                  default=False,
+                  action="store_true",
+                  help="Request radio ID string")
 parser.add_option("", "--vfo", dest="vfo",
                   default=1,
                   type="int",
@@ -55,6 +60,20 @@ parser.add_option("", "--upload-mmap", dest="upload_mmap",
                   help="Upload memory map to radio")
 
 (options, args) = parser.parse_args()
+
+if options.id:
+    from chirp import icf
+    from chirp import util
+
+    s = serial.Serial(port=options.serial,
+                      baudrate=9600,
+                      timeout=0.5)
+
+    md = icf.get_model_data(s)
+
+    print "Model:\n%s" % util.hexprint(md)
+
+    sys.exit(0)
 
 if not options.radio:
     print "Must specify a radio model"
