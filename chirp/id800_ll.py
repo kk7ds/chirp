@@ -26,7 +26,7 @@ def pack_name(_name, enabled=True):
         v1 = val_of(c1)
         v2 = val_of(c2)
 
-        nibbles.append((v1 & 0x3B) >> 2)
+        nibbles.append((v1 & 0x3F) >> 2)
         nibbles.append(((v1 & 0x03) << 2) | ((v2 & 0x30) >> 4))
         nibbles.append((v2 & 0x0F))
 
@@ -121,18 +121,19 @@ def set_memory(map, memory):
     return map
 
 def test_basic():
-    v = pack_name("CHAN2")
-    V = "\x28\xe8\x86\xe4\x80\x00\x00"
+    v = pack_name("DAN")
+    #V = "\x28\xe8\x86\xe4\x80\x00\x00"
+    V = "\x29\x21\xb8\x00\x00\x00\x00"
 
     if v == V:
         print "Pack name: OK"
     else:
         print "Pack name: FAIL"
-        print "%s not equal to %s" % (list(v), list(V))
+        print "%s\nnot equal to\n%s" % (util.hexprint(v), util.hexprint(V))
 
     name = unpack_name(v)
 
-    if name == "CHAN2":
+    if name == "DAN":
         print "Unpack name: OK"
     else:
         print "Unpack name: FAIL"
@@ -162,6 +163,8 @@ if __name__ == "__main__":
     import os
 
     test_basic()
+
+    sys.exit(0)
 
     if len(sys.argv) > 2:
         mm = file(sys.argv[1], "rb")
