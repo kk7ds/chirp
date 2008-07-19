@@ -113,7 +113,7 @@ def send(pipe, buf, verbose=False):
     realbuf = "\xfe\xfe" + buf + "\xfd"
 
     if verbose:
-        print "Sending:\n%s" % hexprint(realbuf)
+        print "Sending:\n%s" % util.hexprint(realbuf)
 
     pipe.write(realbuf)
     pipe.flush()
@@ -149,13 +149,15 @@ def print_banks(pipe):
         print str(bf)
 
 def get_memory(pipe, vfo, number):
-    seq = chr(vfo) + "\x80\x1a\x00\x01" + struct.pack(">H", number)
+    seq = chr(vfo) + "\x80\x1a\x00\x01" + struct.pack(">H",
+                                                      int("%i" % number, 16))
     frames = send(pipe, seq)
 
     if len(frames) == 0:
         raise errors.InvalidDataError("No response from radio")
 
     if len(frames[0]._data) < 6:
+        print "%s" % util.hexprint(frames[0]._data)
         raise errors.InvalidDataError("Got a short, unknown block from radio")
 
     if frames[0]._data[5] == '\xff':
