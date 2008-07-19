@@ -135,7 +135,7 @@ class CsvDumpWindow(gtk.Window):
         hbox.show()
         vbox.pack_start(hbox, 0,0,0)
 
-        hbox = gtk.HBox(False, 2)
+        hbox = gtk.HBox(True, 2)
         hbox.set_border_width(2)
 
         eb = StdButton("Export")
