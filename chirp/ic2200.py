@@ -75,7 +75,10 @@ class IC2200Radio(chirp_common.IcomMmapRadio):
         if not self._mmap:
             self.sync_in()
 
-        return self._memories[number]
+        try:
+            return self._memories[number]
+        except IndexError:
+            raise errors.InvalidMemoryLocation("Location is empty")
 
     def get_memories(self, vfo=None):
         if not self._mmap:
