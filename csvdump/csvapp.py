@@ -30,7 +30,7 @@ class CsvDumpApp:
 
         try:
             s = serial.Serial(port=self.rport,
-                              baudrate=9600,
+                              baudrate=RADIOS[self.rtype].BAUD_RATE,
                               timeout=0.5)
 
             radio = RADIOS[self.rtype](s)
@@ -57,7 +57,7 @@ class CsvDumpApp:
 
         try:
             s = serial.Serial(port=self.rport,
-                              baudrate=9600,
+                              baudrate=RADIOS[self.rtype].BAUD_RATE,
                               timeout=0.5)
 
             radio = RADIOS[self.rtype](s)
