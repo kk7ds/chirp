@@ -167,7 +167,7 @@ class CsvDumpApp:
 
         gobject.idle_add(self.mainwin.set_status, "Wrote %i memories" % count)
 
-    def _import_file_mmdap(self, fname):
+    def _import_file_mmap(self, fname):
         f = file(fname, "r")
         lines = f.readlines()
         f.close()
