@@ -11,13 +11,14 @@ import cloneprog
 gobject.threads_init()
 
 import chirp
-from chirp import ic9x, id800, ic2820
+from chirp import ic9x, id800, ic2820, ic2200
 
 import platform
 
 RADIOS = { "ic9x"  : ic9x.IC9xRadio,
            "id800" : id800.ID800v2Radio,
            "ic2820": ic2820.IC2820Radio,
+           "ic2200": ic2200.IC2200Radio,
 }
 
 class CsvDumpApp:

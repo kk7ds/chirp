@@ -2,7 +2,7 @@ import gtk
 
 import platform
 
-RADIOS = [ "ic2820", "id800", "ic9x" ]
+RADIOS = [ "ic2820", "id800", "ic9x", "ic2200" ]
 
 def make_choice(options, editable=True, default=None):
     if editable:
