@@ -126,7 +126,10 @@ class CsvDumpApp:
                 self.mainwin.set_image_info(False, False, "No image")
 
         else:
-            self.radio = rtype(self.rport)
+            s = serial.Serial(port=self.rport,
+                              baudrate=rtype.BAUD_RATE,
+                              timeout=0.5)
+            self.radio = rtype(s)
             self.mainwin.set_image_info(False, True, "Live")
 
         self.mainwin.set_status("")
