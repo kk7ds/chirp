@@ -249,7 +249,7 @@ class CsvDumpApp:
 
     def refresh_radio(self):
         rtype = RADIOS[self.rtype]
-        smsg = ""
+        smsg = "Ready"
 
         if self.rtype != "ic9x":
             mmap = "%s.img" % self.rtype
@@ -259,6 +259,7 @@ class CsvDumpApp:
             else:
                 self.radio = None
                 self.mainwin.set_image_info(False, False, "No image")
+                smsg = "Radio image must be downloaded"
         else:
             try:
                 s = serial.Serial(port=self.rport,
