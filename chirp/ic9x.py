@@ -24,6 +24,10 @@ class IC9xRadio(chirp_common.IcomRadio):
         mem.number = mframe._number
         mem.name = mframe._name
         mem.vfo = mframe._vfo
+        mem.duplex = mframe._duplex
+        mem.mode = mframe._mode
+        mem.tone = mframe._tone
+        mem.toneEnabled = mframe._toneEnabled
 
         return mem
 

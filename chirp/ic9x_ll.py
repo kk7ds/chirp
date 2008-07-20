@@ -1,8 +1,25 @@
 import struct
 
 from chirp_common import IcomFrame
+import chirp_common
 import util
 import errors
+
+def BCDencode(val):
+    digits = []
+    while val != 0:
+        digits.append(val % 10)
+        val /= 10
+
+    result = ""
+
+    if len(digits) % 2 != 0:
+        digits.append(0)
+
+    for i in range(0, len(digits), 2):
+        result = struct.pack("B", (digits[i+1] << 4) | digits[i]) + result
+    
+    return result
 
 class IC92Frame(IcomFrame):
     def from_raw(self, data):
@@ -68,6 +85,35 @@ class IC92MemoryFrame(IC92Frame):
 
         self._freq = ((h * 100) + t) + (d / 100.0)
 
+        tdup, = struct.unpack("B", self._data[24])
+        if (tdup & 0x01) == 0x01:
+            self._duplex = "-"
+        elif (tdup & 0x02) == 0x02:
+            self._duplex = "+"
+        else:
+            self._duplex = ""
+
+        self._toneEnabled = (tdup & 0x04) == 0x04
+
+        mode = struct.unpack("B", self._data[23])[0] & 0xF0
+        if mode == 0:
+            self._mode = "FM"
+        elif mode == 0x10:
+            self._mode = "NFM"
+        elif mode == 0x30:
+            self._mode = "AM"
+        elif mode == 0x40:
+            self._mode = "DV"
+        else:
+            raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
+
+        tone = int("%02x%02x" % (ord(self._data[15]), ord(self._data[16])))
+        tone = tone / 10.0
+        if tone in chirp_common.TONES:
+            self._tone = tone
+        else:
+            raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
+
     def make_raw(self):
         self._rawdata = struct.pack(">BBBBBH",
                                     self._vfo,
@@ -79,6 +125,7 @@ class IC92MemoryFrame(IC92Frame):
         self._rawdata += "\x00\x00"
 
 
+        # FIXME: Use BCDencode here
         d = int("%i" % (int((self._freq - int(self._freq)) * 100)), 16)
         t = int("%i" % (int(self._freq) % 100), 16)
         h = int("%i" % (int(self._freq) / 100), 16)
@@ -90,18 +137,51 @@ class IC92MemoryFrame(IC92Frame):
 
         self._rawdata += "\x00" * 2
         self._rawdata += "\x60\x00\x00\x08\x85\x08\x85\x00"
-        self._rawdata += "\x23\x22\x80\x06\x00\x00\x00\x00"
+        self._rawdata += "\x23\x22\x00\x06\x00\x00\x00\x00"
         self._rawdata += self._name
         self._rawdata += "\x00\x00" + ("\x20" * 16)
         self._rawdata += "CQCQCQ  "
-                                    
-        print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata)
+
+        dup = ord(self._rawdata[26]) & 0xF0
+        if self._duplex == "-":
+            dup |= 0x01
+        elif self._duplex == "+":
+            dup |= 0x02
+
+        if self._toneEnabled:
+            dup |= 0x04
+
+        self._rawdata = util.write_in_place(self._rawdata, 26, chr(dup))
+
+        mode = ord(self._rawdata[25]) & 0x0F
+        if self._mode == "FM":
+            mode |= 0
+        elif self._mode == "NFM":
+            mode |= 0x10
+        elif self._mode == "AM":
+            mode |= 0x30
+        elif self._mode == "DV":
+            mode |= 0x40
+        else:
+            raise errors.InvalidDataError("Unsupported mode `%s'" % self._mode)
+
+        self._rawdata = util.write_in_place(self._rawdata, 25, chr(mode))
+
+        tone = BCDencode(int(self._tone * 10))
+        self._rawdata = util.write_in_place(self._rawdata, 17, tone)
+
+        print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata[2:])
 
     def set_memory(self, memory):
+        # This is really dumb... FIXME
         self._name = memory.name.ljust(8)[0:8]
         self._number = memory.number
         self._freq = memory.freq
         self._vfo = memory.vfo
+        self._duplex = memory.duplex
+        self._mode = memory.mode
+        self._tone = memory.tone
+        self._toneEnabled = memory.toneEnabled
 
     def __str__(self):
         return "%i: %.2f (%s) (DV=%s)" % (self._number,
@@ -180,3 +260,6 @@ def print_memory(pipe, vfo, number):
     mf = get_memory(pipe, vfo, number)
 
     print "Memory %i from VFO %i: %s" % (number, vfo, str(mf))
+
+if __name__ == "__main__":
+    print BCDencode(1072)
