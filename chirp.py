@@ -121,7 +121,7 @@ if options.set_mem_tone:
 else:
     _tone = None
 
-if options.set_mem_dup:
+if options.set_mem_dup is not None:
     if options.set_mem_dup != "+" and \
             options.set_mem_dup != "-" and \
             options.set_mem_dup != "":
@@ -145,7 +145,7 @@ else:
 
 if options.set_mem_name or options.set_mem_freq or \
         options.set_mem_toneon or options.set_mem_toneoff or \
-        options.set_mem_tone or options.set_mem_dup or \
+        options.set_mem_tone or options.set_mem_dup is not None or \
         options.set_mem_mode:
     try:
         mem = radio.get_memory(int(args[0]), options.vfo)
@@ -157,7 +157,8 @@ if options.set_mem_name or options.set_mem_freq or \
     mem.name   = options.set_mem_name or mem.name
     mem.freq   = options.set_mem_freq or mem.freq
     mem.tone   = _tone or mem.tone
-    mem.duplex = _dup or mem.duplex
+    if _dup is not None:
+        mem.duplex = _dup
     mem.mode   = _mode or mem.mode
 
     if options.set_mem_toneon:
