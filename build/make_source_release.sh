@@ -1,9 +1,6 @@
 #!/bin/bash
 
-LOCAL_VERSION=
-eval $(cat mainapp.py | grep ^DRATS_VERSION | sed 's/ //g')
-#VERSION=${DRATS_VERSION}${LOCAL_VERSION}
-VERSION=0.1.1
+VERSION=$(cat build/version)
 INCLUDE="COPYING"
 TMP=$(mktemp -d)
 EXCLUDE=""
