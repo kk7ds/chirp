@@ -48,8 +48,26 @@ def set_memory(map, memory):
     freq = struct.pack(">I", int(memory.freq * 1000000))
     name = memory.name.ljust(8)
 
+    tdup = 0
+    if memory.toneEnabled:
+        tdup |= 0x04
+    if memory.duplex == "+":
+        tdup |= 0x40
+    elif memory.duplex == "-":
+        tdup |= 0x20
+
+    tdup = chr(tdup)
+        
+    _tone = chirp_common.TONES.index(memory.tone)
+    tone, = struct.unpack(">H", map[_fa+34:_fa+36])
+    tone &= 0xF00F
+    tone |= ((_tone << 4) & 0x0FF0)
+    tone = chr((tone & 0xFF00) >> 8) + chr(tone & 0xFF)
+
     map = util.write_in_place(map, _fa, freq)
     map = util.write_in_place(map, _na, name[:8])
+    map = util.write_in_place(map, _fa+33, tdup)
+    map = util.write_in_place(map, _fa+34, tone)
 
     return map
 

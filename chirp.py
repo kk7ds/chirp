@@ -43,6 +43,19 @@ parser.add_option("", "--set-mem-freq", dest="set_mem_freq",
                   type="float",
                   default=None,
                   help="Set memory frequency")
+parser.add_option("", "--set-mem-toneon", dest="set_mem_toneon",
+                  default=False,
+                  action="store_true",
+                  help="Set tone enabled flag")
+parser.add_option("", "--set-mem-toneoff", dest="set_mem_toneoff",
+                  default=False,
+                  action="store_true",
+                  help="Set tone disabled flag")
+parser.add_option("", "--set-mem-tone", dest="set_mem_tone",
+                  type="float",
+                  help="Set memory tone")
+parser.add_option("", "--set-mem-dup", dest="set_mem_dup",
+                  help="Set memory duplex (+,-, or blank)")
 parser.add_option("-r", "--radio", dest="radio",
                   default=None,
                   help="Radio model (one of %s)" % ",".join(RADIOS.keys()))
@@ -93,7 +106,34 @@ else:
 
 radio = rclass(s)
 
-if options.set_mem_name or options.set_mem_freq:
+if options.set_mem_tone:
+    try:
+        chirp_common.TONES.index(options.set_mem_tone)
+    except:
+        print "Invalid tone `%s'" % options.set_mem_tone
+        print "Valid tones:\n%s" % chirp_common.TONES
+        sys.exit(1)
+
+    _tone = options.set_mem_tone
+else:
+    _tone = None
+
+if options.set_mem_dup:
+    if options.set_mem_dup != "+" and \
+            options.set_mem_dup != "-" and \
+            options.set_mem_dup != "":
+        print "Invalid duplex value `%s'" % options.set_mem_dup
+        print "Valid values are: '+', '-', ''"
+        sys.exit(1)
+    else:
+        _dup = options.set_mem_dup
+else:
+    _dup = None
+
+
+if options.set_mem_name or options.set_mem_freq or \
+        options.set_mem_toneon or options.set_mem_toneoff or \
+        options.set_mem_tone or options.set_mem_dup:
     try:
         mem = radio.get_memory(int(args[0]), options.vfo)
     except errors.InvalidMemoryLocation:
@@ -101,8 +141,16 @@ if options.set_mem_name or options.set_mem_freq:
         mem.vfo = options.vfo
         mem.number = int(args[0])
 
-    mem.name = options.set_mem_name or mem.name
-    mem.freq = options.set_mem_freq or mem.freq
+    mem.name   = options.set_mem_name or mem.name
+    mem.freq   = options.set_mem_freq or mem.freq
+    mem.tone   = _tone or mem.tone
+    mem.duplex = _dup or mem.duplex
+
+    if options.set_mem_toneon:
+        mem.toneEnabled = True
+    elif options.set_mem_toneoff:
+        mem.toneEnabled = False
+
     radio.set_memory(mem)
 
 if options.get_mem:
