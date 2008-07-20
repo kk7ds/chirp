@@ -25,6 +25,15 @@ def get_memory(map, number):
     _tone, = struct.unpack(">H", chunk[34:36])
     _tonei = (_tone >> 4) & 0xFF
 
+    _tdup, = struct.unpack("B", chunk[33])
+    mem.toneEnabled = ((_tdup & 0x04) != 0)
+    if ((_tdup & 0x40) != 0):
+        mem.duplex = "+"
+    elif ((_tdup & 0x20) != 0):
+        mem.duplex = "-"
+    else:
+        mem.duplex = ""
+
     try:
         mem.tone = chirp_common.TONES[_tonei]
     except:

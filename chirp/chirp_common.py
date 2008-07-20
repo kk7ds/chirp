@@ -17,13 +17,22 @@ class Memory:
     name = ""
     vfo = 0
     tone = 88.5
+    toneEnabled = False
+    duplex = ""
 
     def __str__(self):
-        return "Memory %i: %.2f (%s) %.1f [VFO=%i]" % (self.number,
-                                                       self.freq,
-                                                       self.name,
-                                                       self.tone,
-                                                       self.vfo)
+        if self.toneEnabled:
+            te = "*"
+        else:
+            te = " "
+
+        return "Memory %i: %.2f%s (%s) %.1f%s [VFO=%i]" % (self.number,
+                                                           self.freq,
+                                                           self.duplex,
+                                                           self.name,
+                                                           self.tone,
+                                                           te,
+                                                           self.vfo)
 
 class Bank:
     name = "BANK"
