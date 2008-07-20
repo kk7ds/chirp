@@ -58,7 +58,7 @@ parser.add_option("", "--set-mem-dup", dest="set_mem_dup",
                   help="Set memory duplex (+,-, or blank)")
 parser.add_option("", "--set-mem-mode", dest="set_mem_mode",
                   default=None,
-                  help="Set mode (FM, NFM, DV, AM)")
+                  help="Set mode (%s)" % ",".join(chirp_common.MODES))
 parser.add_option("-r", "--radio", dest="radio",
                   default=None,
                   help="Radio model (one of %s)" % ",".join(RADIOS.keys()))
@@ -135,7 +135,7 @@ else:
 
 if options.set_mem_mode:
     print "Set mode: %s" % options.set_mem_mode
-    if options.set_mem_mode not in ["FM", "NFM", "AM", "DV"]:
+    if options.set_mem_mode not in chirp_common.MODES:
         print "Invalid mode `%s'"
         sys.exit(1)
     else:
