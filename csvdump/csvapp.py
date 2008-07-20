@@ -238,7 +238,7 @@ class CsvDumpApp:
             try:
                 s = serial.Serial(port=self.rport,
                                   baudrate=rtype.BAUD_RATE,
-                                  timeout=0.5)
+                                  timeout=0.1)
                 self.radio = rtype(s)
             except Exception, e:
                 smsg = "Error: %s" % e
