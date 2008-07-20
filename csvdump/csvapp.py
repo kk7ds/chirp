@@ -24,6 +24,7 @@ import os
 
 import csvdump
 import cloneprog
+import inputdialog
 
 gobject.threads_init()
 
@@ -107,16 +108,16 @@ class CsvDumpApp:
 
         self.mainwin.set_status("Exported %i memories" % count)
 
-    def _export_file_live(self, fname):
+    def _export_file_live(self, fname, l, h):
         gobject.idle_add(self.progwin.show)
 
         f = file(fname, "w")
 
-        for i in range(20):
+        for i in range(l, h+1):
             s = chirp.chirp_common.Status()
             s.msg = "Reading memory %i" % i
             s.cur = i
-            s.max = 20
+            s.max = h+1
             gobject.idle_add(self.progwin.status, s)
 
             try:
@@ -129,10 +130,34 @@ class CsvDumpApp:
 
         gobject.idle_add(self.progwin.hide)
 
+    def get_mem_range(self):
+        d = inputdialog.FieldDialog(title="Select Range")
+
+        la = gtk.Adjustment(0, 0, 999, 1, 10, 10)
+        d.add_field("Start", gtk.SpinButton(la, 0))
+
+        ua = gtk.Adjustment(100, 0, 999, 1, 10, 10)
+        d.add_field("End", gtk.SpinButton(ua, 0))
+
+        r = d.run()
+        low = int(la.get_value())
+        high = int(ua.get_value())
+        d.destroy()
+
+        if r == gtk.RESPONSE_OK:
+            return low, high
+        else:
+            return None, None
+            
+
     def export_file(self, fname):
         if self.rtype == "ic9x":
+            l, h = self.get_mem_range()
+            if l is None or h is None:
+                return
+
             t = threading.Thread(target=self._export_file_live,
-                                 args=(fname,))
+                                 args=(fname,l,h))
             t.start()
         else:
             self._export_file_mmap(fname)
