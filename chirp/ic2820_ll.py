@@ -39,6 +39,18 @@ def get_memory(map, number):
     except:
         raise errors.InvalidDataError("Radio has unknown tone 0x%02X" % _tonei)
 
+    mode, = struct.unpack(">H", chunk[36:38])
+    if mode == 0x0040:
+        mem.mode = "NFM"
+    elif mode == 0x0000:
+        mem.mode = "FM"
+    elif mode == 0x0100:
+        mem.mode = "DV"
+    elif mode == 0x0080:
+        mem.mode = "AM"
+    else:
+        raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % mode)
+
     return mem
 
 def set_memory(map, memory):
@@ -64,10 +76,25 @@ def set_memory(map, memory):
     tone |= ((_tone << 4) & 0x0FF0)
     tone = chr((tone & 0xFF00) >> 8) + chr(tone & 0xFF)
 
+    mode = 0
+    if memory.mode == "NFM":
+        mode = 0x0040
+    elif memory.mode == "FM":
+        mode = 0x0000
+    elif memory.mode == "DV":
+        mode = 0x0100
+    elif memory.mode == "AM":
+        mode = 0x0080
+    else:
+        raise errors.InvalidDataError("Unsupported mode `%s'" % mem.mode)
+
+    mode = struct.pack(">H", mode)
+
     map = util.write_in_place(map, _fa, freq)
     map = util.write_in_place(map, _na, name[:8])
     map = util.write_in_place(map, _fa+33, tdup)
     map = util.write_in_place(map, _fa+34, tone)
+    map = util.write_in_place(map, _fa+36, mode)
 
     return map
 

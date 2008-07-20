@@ -19,6 +19,7 @@ class Memory:
     tone = 88.5
     toneEnabled = False
     duplex = ""
+    mode = "FM"
 
     def __str__(self):
         if self.toneEnabled:
@@ -26,13 +27,14 @@ class Memory:
         else:
             te = " "
 
-        return "Memory %i: %.2f%s (%s) %.1f%s [VFO=%i]" % (self.number,
-                                                           self.freq,
-                                                           self.duplex,
-                                                           self.name,
-                                                           self.tone,
-                                                           te,
-                                                           self.vfo)
+        return "Memory %i: %.2f%s %s (%s) %.1f%s [VFO=%i]" % (self.number,
+                                                              self.freq,
+                                                              self.duplex,
+                                                              self.mode,
+                                                              self.name,
+                                                              self.tone,
+                                                              te,
+                                                              self.vfo)
 
 class Bank:
     name = "BANK"

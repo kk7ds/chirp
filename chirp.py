@@ -56,6 +56,9 @@ parser.add_option("", "--set-mem-tone", dest="set_mem_tone",
                   help="Set memory tone")
 parser.add_option("", "--set-mem-dup", dest="set_mem_dup",
                   help="Set memory duplex (+,-, or blank)")
+parser.add_option("", "--set-mem-mode", dest="set_mem_mode",
+                  default=None,
+                  help="Set mode (FM, NFM, DV, AM)")
 parser.add_option("-r", "--radio", dest="radio",
                   default=None,
                   help="Radio model (one of %s)" % ",".join(RADIOS.keys()))
@@ -130,10 +133,20 @@ if options.set_mem_dup:
 else:
     _dup = None
 
+if options.set_mem_mode:
+    print "Set mode: %s" % options.set_mem_mode
+    if options.set_mem_mode not in ["FM", "NFM", "AM", "DV"]:
+        print "Invalid mode `%s'"
+        sys.exit(1)
+    else:
+        _mode = options.set_mem_mode
+else:
+    _mode = None
 
 if options.set_mem_name or options.set_mem_freq or \
         options.set_mem_toneon or options.set_mem_toneoff or \
-        options.set_mem_tone or options.set_mem_dup:
+        options.set_mem_tone or options.set_mem_dup or \
+        options.set_mem_mode:
     try:
         mem = radio.get_memory(int(args[0]), options.vfo)
     except errors.InvalidMemoryLocation:
@@ -145,6 +158,7 @@ if options.set_mem_name or options.set_mem_freq or \
     mem.freq   = options.set_mem_freq or mem.freq
     mem.tone   = _tone or mem.tone
     mem.duplex = _dup or mem.duplex
+    mem.mode   = _mode or mem.mode
 
     if options.set_mem_toneon:
         mem.toneEnabled = True
