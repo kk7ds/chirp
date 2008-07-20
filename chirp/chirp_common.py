@@ -1,3 +1,5 @@
+import errors
+
 TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,
           107.2, 110.9, 114.8, 118.8, 123.0, 127.3,
@@ -7,6 +9,8 @@ TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           196.6, 199.5, 203.5, 206.5, 210.7, 218.1,
           225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
           ]          
+
+MODES = ["FM", "NFM", "AM", "NAM", "DV"]
 
 class IcomFrame:
     pass
@@ -20,6 +24,8 @@ class Memory:
     toneEnabled = False
     duplex = ""
     mode = "FM"
+
+    CSV_FORMAT = "Location,Name,Frequency,ToneFreq,ToneEnabled,Duplex,Mode,"
 
     def __str__(self):
         if self.toneEnabled:
@@ -35,6 +41,65 @@ class Memory:
                                                               self.tone,
                                                               te,
                                                               self.vfo)
+
+    def to_csv(self):
+        if self.toneEnabled:
+            te = "X"
+        else:
+            te = ""
+        s = "%i,%s,%.3f,%.1f,%s,%s,%s," % (self.number,
+                                           self.name,
+                                           self.freq,
+                                           self.tone,
+                                           te,
+                                           self.duplex,
+                                           self.mode)
+
+        return s
+
+    def from_csv(self, line):
+        vals = line.split(",")
+        if len(vals) != 7 and len(vals) != 8:
+            raise errors.InvalidDataError("CSV format error")
+
+        try:
+            self.number = int(vals[0])
+        except:
+            print "Loc: %s" % vals[0]
+            raise errors.InvalidDataError("Location is not a valid integer")
+
+        self.name = vals[1]
+
+        try:
+            self.freq = float(vals[2])
+        except:
+            raise errors.InvalidDataError("Frequency is not a valid number")
+
+        try:
+            self.tone = float(vals[3])
+        except:
+            raise errors.InvalidDataError("Tone is not a valid number")
+        if self.tone not in TONES:
+            raise errors.InvalidDataError("Tone is not valid")
+
+        if vals[4] == "X":
+            self.toneEnabled = True
+        elif vals[4].strip() == "":
+            self.toneEnabled = False
+        else:
+            raise errors.InvalidDataError("ToneEnabled is not a valid boolean")
+
+        if vals[5].strip() in ["+", "-", ""]:
+            self.duplex = vals[5].strip()
+        else:
+            raise errors.InvalidDataError("Duplex is not +,-, or empty")
+
+        if vals[6] in MODES:
+            self.mode = vals[6]
+        else:
+            raise errors.InvalidDataError("Mode is not valid")           
+
+        return True
 
 class Bank:
     name = "BANK"

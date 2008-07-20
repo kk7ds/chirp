@@ -82,9 +82,9 @@ class CsvDumpApp:
         count = 0
 
         f = file(fname, "w")
-        print >>f, "Location,Name,Frequency,"
+        print >>f, chirp.chirp_common.Memory.CSV_FORMAT
         for m in self.radio.get_memories():
-            print >>f, "%i,%s,%.3f," % (m.number, m.name, m.freq)
+            print >>f, m.to_csv()
             count += 1
         f.close()
 
@@ -104,7 +104,7 @@ class CsvDumpApp:
 
             try:
                 m = self.radio.get_memory(i, vfo=2)
-                print >>f, "%i,%s,%.3f," % (m.number, m.name, m.freq)
+                print >>f, m.to_csv()
             except chirp.errors.InvalidMemoryLocation:
                 pass
 
@@ -142,9 +142,13 @@ class CsvDumpApp:
 
         memories = []
         for line in lines:
-            m = self._parse_mem_line(line)
-            if m:
-                memories.append(m)
+            m = chirp.chirp_common.Memory()
+            try:
+                m.from_csv(line)
+            except exception, e:
+                break # FIXME: Report error here
+
+            memories.append(m)
 
         count = 0
         for m in memories:
@@ -172,12 +176,21 @@ class CsvDumpApp:
         f = file(fname, "r")
         lines = f.readlines()
         f.close()
+        lineno = 1
 
         for line in lines:
-            m = self._parse_mem_line(line)
-            if m:
-                print "Setting memory: %s" % m
-                self.radio.set_memory(m)
+            m = chirp.chirp_common.Memory()
+            try:
+                m.from_csv(line)
+            except Exception, e:
+                if lineno == 1:
+                    continue
+                self.mainwin.set_status("Error on line %i: %s" % (lineno, e))
+                return
+
+            print "Setting memory: %s" % m
+            self.radio.set_memory(m)
+            lineno += 1
 
         print "Saving image to %s.img" % self.rtype
         self.radio.save_mmap("%s.img" % self.rtype)
