@@ -127,6 +127,11 @@ class CsvDumpWindow(gtk.Window):
         if fn:
             self.w_filename.set_text(fn)
 
+    def file_changed(self, entry):
+        condition = (len(entry.get_text()) > 0)
+        self.w_export.set_sensitive(condition)
+        self.w_import.set_sensitive(condition)
+
     def make_file_ctl(self):
         self.w_fileframe = gtk.Frame("File")
 
@@ -141,6 +146,7 @@ class CsvDumpWindow(gtk.Window):
         hbox.pack_start(l, 0,0,0)
 
         self.w_filename = gtk.Entry()
+        self.w_filename.connect("changed", self.file_changed)
         self.w_filename.show()
         hbox.pack_start(self.w_filename, 1,1,1)
         
@@ -155,17 +161,19 @@ class CsvDumpWindow(gtk.Window):
         hbox = gtk.HBox(True, 2)
         hbox.set_border_width(2)
 
-        eb = StdButton("Export")
-        eb.connect("clicked",
-                   lambda x: self.fn_eport(self.w_filename.get_text()))
-        eb.show()
-        hbox.pack_start(eb, 0,0,0)
+        self.w_export = StdButton("Export")
+        self.w_export.set_sensitive(False)
+        self.w_export.connect("clicked",
+                              lambda x: self.fn_eport(self.w_filename.get_text()))
+        self.w_export.show()
+        hbox.pack_start(self.w_export, 0,0,0)
 
-        ib = StdButton("Import")
-        ib.connect("clicked",
-                   lambda x: self.fn_iport(self.w_filename.get_text()))
-        ib.show()
-        hbox.pack_start(ib, 0,0,0)
+        self.w_import = StdButton("Import")
+        self.w_import.set_sensitive(False)
+        self.w_import.connect("clicked",
+                              lambda x: self.fn_iport(self.w_filename.get_text()))
+        self.w_import.show()
+        hbox.pack_start(self.w_import, 0,0,0)
 
         hbox.show()
         vbox.pack_start(hbox, 0,0,0)
