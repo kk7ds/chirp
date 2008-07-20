@@ -5,7 +5,7 @@ OUTPUT=$(echo "c:\\cygwin\\${1}/" | sed 's/\//\\/'g)
 LOCAL_VERSION=
 #eval $(cat mainapp.py | grep ^DRATS_VERSION | sed 's/ //g')
 #VERSION=${DRATS_VERSION}${LOCAL_VERSION}
-VERSION=0.1.1
+VERSION=0.1.2b
 ZIP=${OUTPUT}chirp-$VERSION-win32.zip
 IST=${OUTPUT}chirp-$VERSION-installer.exe
 LOG=d-rats_build.log

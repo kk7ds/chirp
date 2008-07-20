@@ -21,8 +21,16 @@ def get_memory(map, number):
         return None
     elif mem.name[0] == "\xFF":
         return None
-    else:
-        return mem
+
+    _tone, = struct.unpack(">H", chunk[34:36])
+    _tonei = (_tone >> 4) & 0xFF
+
+    try:
+        mem.tone = chirp_common.TONES[_tonei]
+    except:
+        raise errors.InvalidDataError("Radio has unknown tone 0x%02X" % _tonei)
+
+    return mem
 
 def set_memory(map, memory):
     _fa = (memory.number * 0x30)
