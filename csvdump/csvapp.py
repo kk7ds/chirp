@@ -99,7 +99,12 @@ class CsvDumpApp:
     def _export_file_mmap(self, fname):
         count = 0
 
-        f = file(fname, "w")
+        try:
+            f = file(fname, "w")
+        except Exception, e:
+            self.mainwin.set_status("%s: %s" % (fname, e))
+            return
+
         print >>f, chirp.chirp_common.Memory.CSV_FORMAT
         for m in self.radio.get_memories():
             print >>f, m.to_csv()
@@ -111,7 +116,12 @@ class CsvDumpApp:
     def _export_file_live(self, fname, l, h):
         gobject.idle_add(self.progwin.show)
 
-        f = file(fname, "w")
+        try:
+            f = file(fname, "w")
+        except Exception, e:
+            gobject.idle_add(self.progwin.hide)
+            gobject.idle_add(self.mainwin.set_status, "%s: %s" % (fname, e))
+            return
 
         for i in range(l, h+1):
             s = chirp.chirp_common.Status()
@@ -131,7 +141,7 @@ class CsvDumpApp:
         gobject.idle_add(self.progwin.hide)
 
     def get_mem_range(self):
-        d = inputdialog.FieldDialog(title="Select Range")
+        d = inputdialog.FieldDialog(title="Select Memory Range")
 
         la = gtk.Adjustment(0, 0, 999, 1, 10, 10)
         d.add_field("Start", gtk.SpinButton(la, 0))
@@ -178,7 +188,14 @@ class CsvDumpApp:
     def _import_file_live(self, fname):
         gobject.idle_add(self.progwin.show)
 
-        f = file(fname, "r")
+        try:
+            f = file(fname, "r")
+        except Exception, e:
+            gobject.idle_add(self.progwin.hide)
+            gobject.idle_add(self.mainwin.set_status,
+                             "%s: %s" % (fname, e))
+            return
+
         lines = f.readlines()
         f.close()
 
@@ -215,7 +232,13 @@ class CsvDumpApp:
         gobject.idle_add(self.mainwin.set_status, "Wrote %i memories" % count)
 
     def _import_file_mmap(self, fname):
-        f = file(fname, "r")
+        try:
+            f = file(fname, "r")
+        except Exception, e:
+            self.progwin.hide()
+            self.mainwin.set_status("%s: %s" % (fname, e))
+            return
+
         lines = f.readlines()
         f.close()
         lineno = 1
