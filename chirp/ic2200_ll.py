@@ -2,6 +2,7 @@ import struct
 
 import chirp_common
 import util
+import errors
 
 def get_memory(map, number):
     chunk = map[number * 24:(number+1) * 24]
@@ -17,6 +18,28 @@ def get_memory(map, number):
     m.freq = _freq
     m.name = _name.replace("\x0e", "").strip()
     m.number = number
+
+    mode, = struct.unpack("B", chunk[-1])
+    if mode == 0:
+        m.mode = "FM"
+    elif mode == 0x80:
+        m.mode = "DV"
+    else:
+        raise errors.InvalidDataError("Radio has unknown mode 0x%02x" % mode)
+
+    dup, = struct.unpack("B", chunk[-3])
+    if (dup & 0x10) != 0:
+        m.duplex = "-"
+    elif (dup & 0x20) != 0:
+        m.duplex = "+"
+    else:
+        m.duplex = ""
+
+    tone, = struct.unpack("B", chunk[10])
+    m.tone = chirp_common.TONES[tone]
+
+    tenb, = struct.unpack("B", chunk[-4])
+    m.toneEnabled = ((tenb & 0x01) != 0)
 
     return m
 
@@ -42,6 +65,31 @@ def set_memory(map, memory):
         map = util.write_in_place(map, _fa+22, "\x00")
     else:
         map = util.write_in_place(map, _fa+22, "\x10")
+
+    if memory.mode == "FM":
+        mode = "\x00"
+    elif memory.mode == "DV":
+        mode = "\x80"
+    else:
+        raise errors.InvalidDataError("Unsupported mode `%s'" % memory.mode)
+
+    map = util.write_in_place(map, _fa+23, mode)
+
+    dup = ord(map[_fa+21])
+    dup &= 0xCF # Clear both bits
+    if memory.duplex == "-":
+        dup |= 0x10
+    elif memory.duplex == "+":
+        dup |= 0x20
+
+    map = util.write_in_place(map, _fa+21, chr(dup))
+
+    tenb = ord(map[_fa+20])
+    tenb &= 0xFE
+    if memory.toneEnabled:
+        tenb |= 0x01
+
+    map = util.write_in_place(map, _fa+20, chr(tenb))
 
     return map
 
