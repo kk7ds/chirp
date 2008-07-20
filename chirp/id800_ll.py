@@ -85,26 +85,60 @@ def unpack_frequency(_mem):
 
     return ((struct.unpack(">i", mem)[0] * 5) / 1000.0)
 
+def get_memory(map, i):
+    addr = (i * 22) + 0x0020
+    chunk = map[addr:addr+23]
+
+    _freq = chunk[0:3]
+    _name = chunk[11:11+8]
+
+    if len(_freq) != 3:
+        raise Exception("freq != 3 for %i" % i)
+        
+    mem = chirp_common.Memory()
+    mem.number = i
+    mem.name = unpack_name(_name)
+    mem.freq = unpack_frequency(_freq)
+
+    dup = struct.unpack("B", chunk[6])[0] & 0xF0
+    if (dup & 0xC0) == 0xC0:
+        mem.duplex = "+"
+    elif (dup & 0x80) == 0x80:
+        mem.duplex = "-"
+    else:
+        mem.duplex = ""
+
+    mode = struct.unpack("B", chunk[-2])[0] & 0xF0
+    if mode == 0x00:
+        mem.mode = "FM"
+    elif mode == 0x10:
+        mem.mode = "NFM"
+    elif mode == 0x20:
+        mem.mode = "AM"
+    elif mode == 0x30:
+        mem.mode = "NAM"
+    elif mode == 0x40:
+        mem.mode = "DV"
+    else:
+        raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
+
+    tone, = struct.unpack("B", chunk[5])
+    mem.tone = chirp_common.TONES[tone]
+
+    tenb, = struct.unpack("B", chunk[10])
+    mem.toneEnabled = ((tenb & 0x01) != 0)
+
+    return mem
+
 def parse_map_for_memory(map):
     """Returns a list of memories, given a valid memory map"""
 
     memories = []
     
     for i in range(500):        
-        addr = (i * 22) + 0x0020
-
-        _freq = map[addr:addr+3]
-        _name = map[addr+11:addr+11+8]
-
-        if len(_freq) != 3:
-            raise Exception("freq != 3 for %i" % i)
-        
-        mem = chirp_common.Memory()
-        mem.number = i
-        mem.name = unpack_name(_name)
-        mem.freq = unpack_frequency(_freq)
-
-        memories.append(mem)
+        mem = get_memory(map, i)
+        if mem:
+            memories.append(mem)
 
     return memories
 
@@ -117,6 +151,44 @@ def set_memory(map, memory):
 
     map = util.write_in_place(map, _fa, freq)
     map = util.write_in_place(map, _na, name)
+
+    _dup, = struct.unpack("B", map[_fa+6])
+    _dup &= 0x3F
+    if memory.duplex == "-":
+        _dup |= 0x80
+    elif memory.duplex == "+":
+        _dup |= 0xC0
+
+    map = util.write_in_place(map, _fa+6, chr(_dup))
+
+    _mode = memory.mode
+    mode = 0
+    if _mode[0] == "N":
+        _mode = _mode[1:]
+        mode = 0x10
+
+    if _mode == "FM":
+        mode |= 0x00
+    elif _mode == "AM":
+        mode |= 0x20
+    elif _mode == "DV":
+        mode = 0x40
+    else:
+        raise errors.InvalidDataError("Unsupported mode `%s'" % _mode)
+
+    map = util.write_in_place(map, _fa+21, chr(mode))
+
+    _tone = chirp_common.TONES.index(memory.tone)
+    tone = struct.pack("B", _tone)
+
+    map = util.write_in_place(map, _fa+5, tone)
+
+    tenb, = struct.unpack("B", map[_fa+10])
+    tenb &= 0xFE
+    if memory.toneEnabled:
+        tenb |= 0x01
+
+    map = util.write_in_place(map, _fa+10, chr(tenb))
 
     return map
 
