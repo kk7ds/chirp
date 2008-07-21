@@ -60,6 +60,9 @@ class CsvDumpApp:
             radio.save_mmap(fn)
         
             self.refresh_radio()
+        except serial.SerialException, e:
+            gobject.idle_add(self.mainwin.set_status,
+                             "Error: Unable to open serial port")
         except Exception, e:
             gobject.idle_add(self.mainwin.set_status,
                              "Error: %s" % e)
@@ -289,10 +292,10 @@ class CsvDumpApp:
                                   baudrate=rtype.BAUD_RATE,
                                   timeout=0.1)
                 self.radio = rtype(s)
+                self.mainwin.set_image_info(False, True, "Live")
             except Exception, e:
-                smsg = "Error: %s" % e
-
-            self.mainwin.set_image_info(False, True, "Live")
+                smsg = "Error: Unable to open serial port"
+                self.mainwin.set_image_info(False, False, "")
 
         self.mainwin.set_status(smsg)
 
