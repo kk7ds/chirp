@@ -132,13 +132,14 @@ class IC92MemoryFrame(IC92Frame):
             raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
 
     def make_raw(self):
+        number = int("%i" % self._number, 16)
         self._rawdata = struct.pack(">BBBBBH",
                                     self._vfo,
                                     0x80,
                                     0x1A,
                                     0x00,
                                     0x01,
-                                    self._number)
+                                    number)
         self._rawdata += "\x00\x00"
 
 

@@ -38,7 +38,7 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         mem = chirp_common.Memory()
         mem.freq = mframe._freq
-        mem.number = mframe._number
+        mem.number = int("%02x" % mframe._number)
         mem.name = mframe._name
         mem.vfo = mframe._vfo
         mem.duplex = mframe._duplex
