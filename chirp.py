@@ -30,7 +30,8 @@ def fail_missing_mmap():
     print "mmap-only operation requires specification of an mmap file"
     sys.exit(1)
 
-RADIOS = { "ic9x"  : ic9x.IC9xRadio,
+RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
+           "ic9x:B": ic9x.IC9xRadioB,
            "id800" : id800.ID800v2Radio,
            "ic2820": ic2820.IC2820Radio,
            "ic2200": ic2200.IC2200Radio,
@@ -44,10 +45,6 @@ parser.add_option("-i", "--id", dest="id",
                   default=False,
                   action="store_true",
                   help="Request radio ID string")
-parser.add_option("", "--vfo", dest="vfo",
-                  default=1,
-                  type="int",
-                  help="VFO index (default: 1)")
 parser.add_option("", "--get-mem", dest="get_mem",
                   default=False,
                   action="store_true",
@@ -164,10 +161,9 @@ if options.set_mem_name or options.set_mem_freq or \
         options.set_mem_tone or options.set_mem_dup is not None or \
         options.set_mem_mode:
     try:
-        mem = radio.get_memory(int(args[0]), options.vfo)
+        mem = radio.get_memory(int(args[0]))
     except errors.InvalidMemoryLocation:
         mem = chirp_common.Memory()
-        mem.vfo = options.vfo
         mem.number = int(args[0])
 
     mem.name   = options.set_mem_name or mem.name
@@ -186,11 +182,10 @@ if options.set_mem_name or options.set_mem_freq or \
 
 if options.get_mem:
     try:
-        mem = radio.get_memory(int(args[0]), options.vfo)
+        mem = radio.get_memory(int(args[0]))
     except errors.InvalidMemoryLocation:
         mem = chirp_common.Memory()
         mem.number = int(args[0])
-        mem.vfo = options.vfo
         
     print mem
 
