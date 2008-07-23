@@ -66,6 +66,7 @@ class IC9xRadio(chirp_common.IcomRadio):
         
     def set_memory(self, memory):
         mframe = ic9x_ll.IC92MemoryFrame()
+        ic9x_ll.send_magic(self.pipe)
         mframe.set_memory(memory)
         mframe.make_raw() # FIXME
         
