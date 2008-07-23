@@ -220,8 +220,12 @@ class CsvDumpApp:
             s.max = len(memories)
             gobject.idle_add(self.progwin.status, s)
 
+#            try:
+#                self.radio.get_memory(m.number, 2)
+#            except errors.InvalidMemoryLocation:
+#                m 
+
             try:
-                self.radio.get_memory(m.number, 2)
                 m.vfo = 2
                 self.radio.set_memory(m)
             except Exception, e:
