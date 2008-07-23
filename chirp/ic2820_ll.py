@@ -64,8 +64,10 @@ def get_memory(map, number):
         mem.mode = "DV"
     elif mode == 0x0080:
         mem.mode = "AM"
+    elif mode == 0x00C0:
+        mem.mode = "NAM"
     else:
-        raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % mode)
+        raise errors.InvalidDataError("Radio has unknown mode 0x%04x (%i)" % (mode, number))
 
     return mem
 
