@@ -24,23 +24,19 @@ import ic9x_ll
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
 
-    def get_memory(self, number, vfo=1):
-        if vfo not in [1, 2]:
-            raise errors.InvalidValueError("VFO must be 1 or 2")
-
+    def get_memory(self, number):
         if number < 0 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
         ic9x_ll.send_magic(self.pipe)
 
 
-        mframe = ic9x_ll.get_memory(self.pipe, vfo, number)
+        mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
 
         mem = chirp_common.Memory()
         mem.freq = mframe._freq
         mem.number = int("%02x" % mframe._number)
         mem.name = mframe._name
-        mem.vfo = mframe._vfo
         mem.duplex = mframe._duplex
         mem.mode = mframe._mode
         mem.tone = mframe._tone
@@ -48,13 +44,13 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         return mem
 
-    def get_memories(self, vfo=1):
+    def get_memories(self):
         memories = []
 
         for i in range(999):
             try:
                 print "Getting %i" % i
-                m = self.get_memory(i, vfo)
+                m = self.get_memory(i)
                 memories.append(m)
             except errors.InvalidMemoryLocation:
                 pass
@@ -67,7 +63,7 @@ class IC9xRadio(chirp_common.IcomRadio):
     def set_memory(self, memory):
         mframe = ic9x_ll.IC92MemoryFrame()
         ic9x_ll.send_magic(self.pipe)
-        mframe.set_memory(memory)
+        mframe.set_memory(memory, self.vfo)
         mframe.make_raw() # FIXME
         
         result = ic9x_ll.send(self.pipe, mframe._rawdata)
@@ -77,3 +73,9 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         if result[0]._data != "\xfb":
             raise errors.InvalidDataError("Radio reported error")
+
+class IC9xRadioA(IC9xRadio):
+    vfo = 1
+
+class IC9xRadioB(IC9xRadio):
+    vfo = 2

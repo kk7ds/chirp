@@ -190,12 +190,12 @@ class IC92MemoryFrame(IC92Frame):
 
         print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata[2:])
 
-    def set_memory(self, memory):
+    def set_memory(self, memory, vfo):
         # This is really dumb... FIXME
         self._name = memory.name.ljust(8)[0:8]
         self._number = memory.number
         self._freq = memory.freq
-        self._vfo = memory.vfo
+        self._vfo = vfo
         self._duplex = memory.duplex
         self._mode = memory.mode
         self._tone = memory.tone
