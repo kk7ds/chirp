@@ -188,6 +188,9 @@ class IC92MemoryFrame(IC92Frame):
         tone = BCDencode(int(self._tone * 10))
         self._rawdata = util.write_in_place(self._rawdata, 17, tone)
 
+        if self._vfo == 1:
+            self._rawdata = self._rawdata[:38]
+
         print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata[2:])
 
     def set_memory(self, memory, vfo):
@@ -261,7 +264,8 @@ def get_memory(pipe, vfo, number):
     if frames[0]._data[5] == '\xff':
         raise errors.InvalidMemoryLocation("Radio says location is empty")
 
-    print "Memory result:\n%s" % util.hexprint(frames[0]._data)
+    print "Memory result (%i):\n%s" % (len(frames[0]._data),
+                                       util.hexprint(frames[0]._data))
 
     mf = IC92MemoryFrame()
     mf.from_frame(frames[0])
