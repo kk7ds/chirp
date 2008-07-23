@@ -272,8 +272,8 @@ def print_memory(pipe, vfo, number):
     if vfo not in [1, 2]:
         raise errors.InvalidValueError("VFO must be 1 or 2")
 
-    if number < 0 or number > 999:
-        raise errors.InvalidValueError("Number must be between 0 and 999")
+    if number < 0 or number > 399:
+        raise errors.InvalidValueError("Number must be between 0 and 399")
 
     mf = get_memory(pipe, vfo, number)
 
