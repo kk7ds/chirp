@@ -33,7 +33,8 @@ from chirp import ic9x, id800, ic2820, ic2200
 
 import platform
 
-RADIOS = { "ic9x"  : ic9x.IC9xRadio,
+RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
+           "ic9x:B": ic9x.IC9xRadioB,
            "id800" : id800.ID800v2Radio,
            "ic2820": ic2820.IC2820Radio,
            "ic2200": ic2200.IC2200Radio,
@@ -134,7 +135,7 @@ class CsvDumpApp:
             gobject.idle_add(self.progwin.status, s)
 
             try:
-                m = self.radio.get_memory(i, vfo=2)
+                m = self.radio.get_memory(i)
                 print >>f, m.to_csv()
             except chirp.errors.InvalidMemoryLocation:
                 pass
@@ -164,7 +165,7 @@ class CsvDumpApp:
             
 
     def export_file(self, fname):
-        if self.rtype == "ic9x":
+        if self.rtype.startswith("ic9x"):
             l, h = self.get_mem_range()
             if l is None or h is None:
                 return
@@ -226,7 +227,6 @@ class CsvDumpApp:
 #                m 
 
             try:
-                m.vfo = 2
                 self.radio.set_memory(m)
             except Exception, e:
                 print "Error setting memory %i: %s" % (m.number, e)
@@ -270,7 +270,7 @@ class CsvDumpApp:
         self.mainwin.set_status("Imported %s" % os.path.basename(fname))
 
     def import_file(self, fname):
-        if self.rtype == "ic9x":
+        if self.rtype.startswith("ic9x"):
             t = threading.Thread(target=self._import_file_live,
                                  args=(fname,))
             t.start()
@@ -281,7 +281,7 @@ class CsvDumpApp:
         rtype = RADIOS[self.rtype]
         smsg = "Ready"
 
-        if self.rtype != "ic9x":
+        if not self.rtype.startswith("ic9x"):
             mmap = "%s.img" % self.rtype
             if os.path.isfile(mmap):
                 self.radio = rtype(mmap)

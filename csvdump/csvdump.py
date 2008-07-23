@@ -19,7 +19,7 @@ import gtk
 
 import platform
 
-RADIOS = [ "ic2820", "id800", "ic9x", "ic2200" ]
+RADIOS = [ "ic2820", "id800", "ic9x:A", "ic9x:B", "ic2200" ]
 
 def make_choice(options, editable=True, default=None):
     if editable:
@@ -58,7 +58,7 @@ class CsvDumpWindow(gtk.Window):
     def select_radio(self, box):
         radio = self.w_radio.get_active_text()
         port = self.w_port.get_active_text()
-        self.w_imgframe.set_sensitive(radio != "ic9x")
+        self.w_imgframe.set_sensitive(not radio.startswith("ic9x"))
         self.fn_radiosel(radio, port)
 
     def make_radio_sel(self):
