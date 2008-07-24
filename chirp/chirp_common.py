@@ -50,7 +50,7 @@ class Memory:
         else:
             te = " "
 
-        return "Memory %i: %.2f%s %s (%s) %.1f%s [VFO=%i]" % (self.number,
+        return "Memory %i: %.5f%s %s (%s) %.1f%s [VFO=%i]" % (self.number,
                                                               self.freq,
                                                               self.duplex,
                                                               self.mode,
@@ -64,7 +64,7 @@ class Memory:
             te = "X"
         else:
             te = ""
-        s = "%i,%s,%.3f,%.1f,%s,%s,%s," % (self.number,
+        s = "%i,%s,%.5f,%.1f,%s,%s,%s," % (self.number,
                                            self.name,
                                            self.freq,
                                            self.tone,
