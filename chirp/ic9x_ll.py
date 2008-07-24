@@ -98,9 +98,11 @@ class IC92MemoryFrame(IC92Frame):
 
         h = int("%x" % ord(self._data[9]))
         t = int("%x" % ord(self._data[8]))
-        d = int("%x" % ord(self._data[7]))
+        d = int("%02x%02x%02x" % (ord(self._data[7]),
+                                  ord(self._data[6]),
+                                  ord(self._data[5])))        
 
-        self._freq = ((h * 100) + t) + (d / 100.0)
+        self._freq = ((h * 100) + t) + (d / 1000000.0)
 
         tdup, = struct.unpack("B", self._data[24])
         if (tdup & 0x01) == 0x01:
