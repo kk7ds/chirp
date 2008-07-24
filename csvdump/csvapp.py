@@ -127,6 +127,7 @@ class CsvDumpApp:
             gobject.idle_add(self.mainwin.set_status, "%s: %s" % (fname, e))
             return
 
+        print >>f, chirp.chirp_common.Memory.CSV_FORMAT
         for i in range(l, h+1):
             s = chirp.chirp_common.Status()
             s.msg = "Reading memory %i" % i
