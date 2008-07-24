@@ -165,6 +165,9 @@ class CsvDumpApp:
             
 
     def export_file(self, fname):
+        if not fname.lower().endswith(".csv"):
+            fname += ".csv"
+
         if self.rtype.startswith("ic9x"):
             l, h = self.get_mem_range()
             if l is None or h is None:
