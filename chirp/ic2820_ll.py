@@ -33,10 +33,12 @@ def get_memory(map, number):
     mem.name = chunk[-8:].strip()
     mem.freq = _freq / 1000000.0
 
-    if mem.name[0] == "\x00":
-        return None
-    elif mem.name[0] == "\xFF":
-        return None
+    # Really need to figure out how to determine which locations are used
+    if len(mem.name) > 0:
+        if mem.name[0] == "\x00":
+            return None
+        elif mem.name[0] == "\xFF":
+            return None
 
     _tone, = struct.unpack(">H", chunk[34:36])
     _tonei = (_tone >> 4) & 0xFF
@@ -53,9 +55,11 @@ def get_memory(map, number):
     try:
         mem.tone = chirp_common.TONES[_tonei]
     except:
-        raise errors.InvalidDataError("Radio has unknown tone 0x%02X" % _tonei)
+        #raise errors.InvalidDataError("Radio has unknown tone 0x%02X" % _tonei)
+        print "Unknown tone value %02x for location %i" % (_tonei, number)
+        mem.tone = chirp_common.TONES[0]
 
-    mode, = struct.unpack(">H", chunk[36:38])
+    mode = struct.unpack(">H", chunk[36:38])[0] & 0x01C0
     if mode == 0x0040:
         mem.mode = "NFM"
     elif mode == 0x0000:
@@ -67,7 +71,8 @@ def get_memory(map, number):
     elif mode == 0x00C0:
         mem.mode = "NAM"
     else:
-        raise errors.InvalidDataError("Radio has unknown mode 0x%04x (%i)" % (mode, number))
+        print "Unknown mode %02x for location %i" % (mode, number)
+        #raise errors.InvalidDataError("Radio has unknown mode 0x%04x (%i)" % (mode, number))
 
     return mem
 
@@ -120,9 +125,13 @@ def parse_map_for_memory(map):
     memories = []
 
     for i in range(500):
-        m = get_memory(map, i)
-        if m:
-            memories.append(m)
+        # FIXME: Remove this after debugging
+        try:
+            m = get_memory(map, i)
+            if m:
+                memories.append(m)
+        except Exception,e:
+            print "Failed to parse location %i: %s" % (i, e)
 
     return memories
 
