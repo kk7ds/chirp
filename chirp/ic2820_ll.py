@@ -41,7 +41,7 @@ def get_memory(map, number):
             return None
 
     _tone, = struct.unpack(">H", chunk[34:36])
-    _tonei = (_tone >> 4) & 0xFF
+    _tonei = (_tone >> 4) & 0x3F
 
     _tdup, = struct.unpack("B", chunk[33])
     mem.toneEnabled = ((_tdup & 0x04) != 0)
