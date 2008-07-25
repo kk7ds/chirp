@@ -78,7 +78,11 @@ class CsvDumpWindow(gtk.Window):
         hbox.pack_start(l, 0,0,0)
 
         ports = platform.get_platform().list_serial_ports()
-        self.w_port = make_choice(ports, True, ports[0])
+        if len(ports) > 0:
+            default = ports[0]
+        else:
+            default = None
+        self.w_port = make_choice(ports, True, default)
         self.w_port.connect("changed", self.select_radio)
         self.tips.set_tip(self.w_port, "Select serial port")
         self.w_port.show()
