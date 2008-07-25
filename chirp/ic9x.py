@@ -76,6 +76,8 @@ class IC9xRadio(chirp_common.IcomRadio):
 
 class IC9xRadioA(IC9xRadio):
     vfo = 1
+    mem_upper_limit = 849
 
 class IC9xRadioB(IC9xRadio):
     vfo = 2
+    mem_upper_limit = 349

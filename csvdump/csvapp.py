@@ -148,10 +148,12 @@ class CsvDumpApp:
     def get_mem_range(self):
         d = inputdialog.FieldDialog(title="Select Memory Range")
 
-        la = gtk.Adjustment(0, 0, 399, 1, 10, 10)
+        limit = RADIOS[self.rtype].mem_upper_limit
+
+        la = gtk.Adjustment(0, 0, limit, 1, 10, 10)
         d.add_field("Start", gtk.SpinButton(la, 0))
 
-        ua = gtk.Adjustment(100, 0, 399, 1, 10, 10)
+        ua = gtk.Adjustment(100, 0, limit, 1, 10, 10)
         d.add_field("End", gtk.SpinButton(ua, 0))
 
         r = d.run()
