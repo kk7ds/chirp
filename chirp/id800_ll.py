@@ -96,10 +96,15 @@ def unpack_name(mem):
 def pack_frequency(freq):
     return struct.pack(">i", int((freq * 1000) / 5))[1:]
 
-def unpack_frequency(_mem):
+def unpack_frequency(_mem, _ts):
     mem = '\x00' + _mem
 
-    return ((struct.unpack(">i", mem)[0] * 5) / 1000.0)
+    if _ts == 0xA0 or _ts == 0x20:
+        mult = 6.25
+    else:
+        mult = 5.0
+
+    return ((struct.unpack(">i", mem)[0] * mult) / 1000.0)
 
 def get_memory(map, i):
     addr = (i * 22) + 0x0020
@@ -107,6 +112,7 @@ def get_memory(map, i):
 
     _freq = chunk[0:3]
     _name = chunk[11:11+8]
+    _ts = ord(chunk[8]) & 0xF0
 
     if len(_freq) != 3:
         raise Exception("freq != 3 for %i" % i)
@@ -114,7 +120,7 @@ def get_memory(map, i):
     mem = chirp_common.Memory()
     mem.number = i
     mem.name = unpack_name(_name)
-    mem.freq = unpack_frequency(_freq)
+    mem.freq = unpack_frequency(_freq, _ts)
 
     dup = struct.unpack("B", chunk[6])[0] & 0xF0
     if (dup & 0xC0) == 0xC0:
