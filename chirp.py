@@ -39,8 +39,8 @@ RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
 
 parser = OptionParser()
 parser.add_option("-s", "--serial", dest="serial",
-                  default="/dev/ttyUSB0",
-                  help="Serial port (default: /dev/ttyUSB0)")
+                  default="mmap",
+                  help="Serial port (default: mmap)")
 parser.add_option("-i", "--id", dest="id",
                   default=False,
                   action="store_true",
@@ -114,7 +114,7 @@ if options.serial == "mmap":
     if options.mmap:
         s = options.mmap
     else:
-        fail_missing_mmap()
+        s = options.radio + ".img"
 else:
     s = serial.Serial(port=options.serial,
                       baudrate=rclass.BAUD_RATE,
