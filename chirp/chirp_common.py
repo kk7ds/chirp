@@ -41,6 +41,7 @@ class Memory:
     toneEnabled = False
     duplex = ""
     mode = "FM"
+    tuningStep = 5.0
 
     CSV_FORMAT = "Location,Name,Frequency,ToneFreq,ToneEnabled,Duplex,Mode,"
 
