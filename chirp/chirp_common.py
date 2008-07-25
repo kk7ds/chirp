@@ -51,14 +51,14 @@ class Memory:
         else:
             te = " "
 
-        return "Memory %i: %.5f%s %s (%s) %.1f%s [VFO=%i]" % (self.number,
+        return "Memory %i: %.5f%s %s (%s) %.1f%s [TS=%.2f]" % (self.number,
                                                               self.freq,
                                                               self.duplex,
                                                               self.mode,
                                                               self.name,
                                                               self.tone,
                                                               te,
-                                                              self.vfo)
+                                                              self.tuningStep)
 
     def to_csv(self):
         if self.toneEnabled:
