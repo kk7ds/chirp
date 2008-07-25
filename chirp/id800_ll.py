@@ -99,12 +99,26 @@ def pack_frequency(freq):
 def unpack_frequency(_mem, _ts):
     mem = '\x00' + _mem
 
-    if _ts == 0xA0 or _ts == 0x20:
+    if _ts == 0xA or _ts == 0x2:
         mult = 6.25
     else:
         mult = 5.0
 
     return ((struct.unpack(">i", mem)[0] * mult) / 1000.0)
+
+ID800_TS = {
+    0x0: 5.0,
+    0xA: 6.25,
+    0x1: 10.0,
+    0x2: 12.5,
+    0x3: 15,
+    0x4: 20,
+    0x5: 25,
+    0x6: 30,
+    0x7: 50,
+    0x8: 100,
+    0x9: 200,
+}
 
 def get_memory(map, i):
     addr = (i * 22) + 0x0020
@@ -112,7 +126,7 @@ def get_memory(map, i):
 
     _freq = chunk[0:3]
     _name = chunk[11:11+8]
-    _ts = ord(chunk[8]) & 0xF0
+    _ts = (ord(chunk[8]) >> 4) & 0xF
 
     if len(_freq) != 3:
         raise Exception("freq != 3 for %i" % i)
@@ -121,6 +135,7 @@ def get_memory(map, i):
     mem.number = i
     mem.name = unpack_name(_name)
     mem.freq = unpack_frequency(_freq, _ts)
+    mem.tuningStep = ID800_TS.get(_ts, 5.0)
 
     dup = struct.unpack("B", chunk[6])[0] & 0xF0
     if (dup & 0xC0) == 0xC0:
