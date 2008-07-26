@@ -29,7 +29,7 @@ import inputdialog
 gobject.threads_init()
 
 import chirp
-from chirp import ic9x, id800, ic2820, ic2200
+from chirp import ic9x, id800, ic2820, ic2200, errors
 
 import platform
 
@@ -214,7 +214,9 @@ class CsvDumpApp:
             m = chirp.chirp_common.Memory()
             try:
                 m.from_csv(line)
-            except exception, e:
+            except errors.InvalidMemoryLocation:
+                continue
+            except Exception, e:
                 break # FIXME: Report error here
 
             memories.append(m)
