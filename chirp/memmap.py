@@ -25,7 +25,10 @@ class MemoryMap:
         return s
 
     def get(self, start, length=1):
-        return "".join(self._data[start:start+length])
+        if start == -1:
+            return "".join(self._data[start:])
+        else:
+            return "".join(self._data[start:start+length])
 
     def set(self, pos, value):
         if isinstance(value, int):
