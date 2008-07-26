@@ -68,6 +68,11 @@ class CsvDumpApp:
             gobject.idle_add(self.mainwin.set_status,
                              "Error: %s" % e)
 
+        try:
+            s.close()
+        except Exception:
+            pass
+
         gobject.idle_add(self.progwin.hide)
 
     def download_img(self):
@@ -93,6 +98,11 @@ class CsvDumpApp:
         except Exception, e:
             gobject.idle_add(self.mainwin.set_status,
                              "Error: %s" % e)
+
+        try:
+            s.close()
+        except Exception:
+            pass
 
         gobject.idle_add(self.progwin.hide)
 
@@ -289,6 +299,12 @@ class CsvDumpApp:
         rtype = RADIOS[self.rtype]
         smsg = "Ready"
 
+        if self.radio:
+            try:
+                self.radio.pipe.close()
+            except Exception, e:
+                pass
+
         if not self.rtype.startswith("ic9x"):
             mmap = "%s.img" % self.rtype
             if os.path.isfile(mmap):
@@ -327,6 +343,8 @@ class CsvDumpApp:
         self.progwin.set_transient_for(self.mainwin)
         self.progwin.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
         
+        self.radio = None
+
     def run(self):
         self.mainwin.show()
         self.mainwin.connect("destroy", lambda x: gtk.main_quit())
