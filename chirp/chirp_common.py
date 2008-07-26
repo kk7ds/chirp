@@ -27,7 +27,7 @@ TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
           ]          
 
-MODES = ["FM", "NFM", "AM", "NAM", "DV"]
+MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV"]
 
 class IcomFrame:
     pass
@@ -76,6 +76,9 @@ class Memory:
         return s
 
     def from_csv(self, line):
+        if line.startswith("Location"):
+            raise errors.InvalidMemoryLocation("Non-CSV line")
+
         vals = line.split(",")
         if len(vals) != 7 and len(vals) != 8:
             raise errors.InvalidDataError("CSV format error")
