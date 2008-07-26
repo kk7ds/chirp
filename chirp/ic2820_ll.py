@@ -17,109 +17,152 @@
 
 
 import struct
+import traceback
+import sys
 
 import icf
 import util
 import chirp_common
 import errors
+from memmap import MemoryMap
 
-def get_memory(map, number):
-    chunk = map[number*0x30:(number+1)*0x30]
+IC2820_MODES = {
+    0x0040 : "NFM",
+    0x0000 : "FM",
+    0x0100 : "DV",
+    0x0080 : "AM",
+    0x00C0 : "NAM",
+    }
 
-    _freq, = struct.unpack(">I", chunk[0:4])
+IC2820_MODES_REV = {}
+for val, mode in IC2820_MODES.items():
+    IC2820_MODES_REV[mode] = val
 
+# Value offsets
+# NB: The _END variants are python slice ends, which means they are one
+#     higher than the actual end value
+POS_FREQ_START =  0
+POS_FREQ_END   =  4
+POS_NAME_START = -8
+POS_TONE_START = 34
+POS_TONE_END   = 36
+POS_DUPX_TONE  = 33
+POS_MODE_START = 36
+POS_MODE_END   = 38
+
+MEM_LOC_SIZE   = 0x30
+
+def get_freq(map):
+    return struct.unpack(">I", map[POS_FREQ_START:POS_FREQ_END])[0] / 1000000.0
+
+def get_name(map):
+    return map[POS_NAME_START:].strip()
+
+def get_tone_idx(map):
+    val, = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])
+    return (val >> 4) & 0x3F
+
+def get_duplex(map):
+    val = struct.unpack("B", map[POS_DUPX_TONE])[0] & 0x60
+    if val & 0x40:
+        return "+"
+    elif val & 0x20:
+        return "-"
+    else:
+        return ""
+
+def get_tone_enabled(map):
+    val = struct.unpack("B", map[POS_DUPX_TONE])[0]
+    
+    return (val & 0x04) != 0
+
+def get_mode(map):
+    val = struct.unpack(">H", map[POS_MODE_START:POS_MODE_END])[0] & 0x01C0
+    try:
+        return IC2820_MODES[val]
+    except KeyError:
+        raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % val)
+
+def get_memory(_map, number):
+    offset = number * MEM_LOC_SIZE
+    map = MemoryMap(_map[offset : offset + MEM_LOC_SIZE])
     mem = chirp_common.Memory()
     mem.number = number
-    mem.name = chunk[-8:].strip()
-    mem.freq = _freq / 1000000.0
+
+    mem.freq = get_freq(map)
+    mem.name = get_name(map)
 
     # Really need to figure out how to determine which locations are used
-    if len(mem.name) > 0:
-        if mem.name[0] == "\x00":
-            return None
-        elif mem.name[0] == "\xFF":
-            return None
+    if len(mem.name) == 0:
+        return None
+    if mem.name[0] == "\x00":
+        return None
+    elif mem.name[0] == "\xFF":
+        return None
 
-    _tone, = struct.unpack(">H", chunk[34:36])
-    _tonei = (_tone >> 4) & 0x3F
+    print "Name: %s\n%s" % (mem.name, util.hexprint(mem.name))
 
-    _tdup, = struct.unpack("B", chunk[33])
-    mem.toneEnabled = ((_tdup & 0x04) != 0)
-    if ((_tdup & 0x40) != 0):
-        mem.duplex = "+"
-    elif ((_tdup & 0x20) != 0):
-        mem.duplex = "-"
-    else:
-        mem.duplex = ""
-
-    try:
-        mem.tone = chirp_common.TONES[_tonei]
-    except:
-        #raise errors.InvalidDataError("Radio has unknown tone 0x%02X" % _tonei)
-        print "Unknown tone value %02x for location %i" % (_tonei, number)
-        mem.tone = chirp_common.TONES[0]
-
-    mode = struct.unpack(">H", chunk[36:38])[0] & 0x01C0
-    if mode == 0x0040:
-        mem.mode = "NFM"
-    elif mode == 0x0000:
-        mem.mode = "FM"
-    elif mode == 0x0100:
-        mem.mode = "DV"
-    elif mode == 0x0080:
-        mem.mode = "AM"
-    elif mode == 0x00C0:
-        mem.mode = "NAM"
-    else:
-        print "Unknown mode %02x for location %i" % (mode, number)
-        #raise errors.InvalidDataError("Radio has unknown mode 0x%04x (%i)" % (mode, number))
+    mem.tone = chirp_common.TONES[get_tone_idx(map)]
+    mem.toneEnabled = get_tone_enabled(map)
+    mem.duplex = get_duplex(map)
+    mem.mode = get_mode(map)
 
     return mem
 
-def set_memory(map, memory):
-    _fa = (memory.number * 0x30)
-    _na = (memory.number * 0x30) + 0x28
-    
-    freq = struct.pack(">I", int(memory.freq * 1000000))
-    name = memory.name.ljust(8)
+def set_freq(map, freq):
+    map[POS_FREQ_START] = struct.pack(">I", int(freq * 1000000))
 
-    tdup = 0
-    if memory.toneEnabled:
-        tdup |= 0x04
-    if memory.duplex == "+":
-        tdup |= 0x40
-    elif memory.duplex == "-":
-        tdup |= 0x20
+def set_name(map, name):
+    map[POS_NAME_START] = name.ljust(8)[:8]
 
-    tdup = chr(tdup)
-        
-    _tone = chirp_common.TONES.index(memory.tone)
-    tone, = struct.unpack(">H", map[_fa+34:_fa+36])
-    tone &= 0xF00F
-    tone |= ((_tone << 4) & 0x0FF0)
-    tone = chr((tone & 0xFF00) >> 8) + chr(tone & 0xFF)
+def set_duplex(map, duplex):
+    val = ord(map[POS_DUPX_TONE]) & 0x9F # ~01100000
+    if duplex == "+":
+        val |= 0x40
+    elif duplex == "-":
+        val |= 0x20
+    map[POS_DUPX_TONE] = val
 
-    mode = 0
-    if memory.mode == "NFM":
-        mode = 0x0040
-    elif memory.mode == "FM":
-        mode = 0x0000
-    elif memory.mode == "DV":
-        mode = 0x0100
-    elif memory.mode == "AM":
-        mode = 0x0080
-    else:
-        raise errors.InvalidDataError("Unsupported mode `%s'" % mem.mode)
+def set_tone_enabled(map, enabled):
+    val = ord(map[POS_DUPX_TONE]) & 0xFB # ~11111011
+    if enabled:
+        val |= 0x04
+    map[POS_DUPX_TONE] = val
 
-    mode = struct.pack(">H", mode)
+def set_tone(map, index):
+    mask = 0xF00F # ~00001111 11110000
+    tone = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
 
-    map = util.write_in_place(map, _fa, freq)
-    map = util.write_in_place(map, _na, name[:8])
-    map = util.write_in_place(map, _fa+33, tdup)
-    map = util.write_in_place(map, _fa+34, tone)
-    map = util.write_in_place(map, _fa+36, mode)
+    tone |= (index << 4) & 0x0FF0
 
-    return map
+    map[POS_TONE_START] = struct.pack(">H", tone)
+
+def set_mode(map, mode):
+    mask = 0xFE3F # ~ 00000001 11000000
+    val = struct.unpack(">H", map[POS_MODE_START:POS_MODE_END])[0] & mask
+
+    try:
+        val |= IC2820_MODES_REV[mode]
+    except KeyError:
+        print "Valid modes: %s" % IC2820_MODES_REV
+        raise errors.InvalidDataError("Unsupported mode `%s'" % mode)
+
+    map[POS_MODE_START] = struct.pack(">H", val)
+
+def set_memory(_map, mem):
+    offset = mem.number * MEM_LOC_SIZE
+    map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
+
+    set_freq(map, mem.freq)
+    set_name(map, mem.name)
+    set_duplex(map, mem.duplex)
+    set_tone_enabled(map, mem.toneEnabled)
+    set_tone(map, chirp_common.TONES.index(mem.tone))
+    set_mode(map, mem.mode)
+
+    _map[offset] = map.get_packed()
+
+    return _map
 
 def parse_map_for_memory(map):
     memories = []
@@ -131,6 +174,7 @@ def parse_map_for_memory(map):
             if m:
                 memories.append(m)
         except Exception,e:
+            traceback.print_exc(file=sys.stdout)
             print "Failed to parse location %i: %s" % (i, e)
 
     return memories
