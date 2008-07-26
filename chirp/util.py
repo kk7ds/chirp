@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import errors
-import ic9x_ll
 
 def hexprint(data):
     col = 0
@@ -58,6 +57,7 @@ def hexprint(data):
     return out
 
 def parse_frames(buf):
+    import ic9x_ll
     frames = []
 
     while "\xfe\xfe" in buf:
