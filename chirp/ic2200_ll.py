@@ -20,95 +20,142 @@ import struct
 import chirp_common
 import util
 import errors
+from memmap import MemoryMap
 
-def get_memory(map, number):
-    chunk = map[number * 24:(number+1) * 24]
+POS_FREQ_START =  0
+POS_FREQ_END   =  2
+POS_NAME_START =  4
+POS_NAME_END   = 10
+POS_MODE       = 23
+POS_DUPX       = 20
+POS_TONE       = 10
+POS_TENB       = 19
+POS_USED_START = 0x1370
 
-    _freq = (struct.unpack("<H", chunk[0:2])[0] * 5) / 1000.0
-    _name = chunk[4:10]
+MEM_LOC_SIZE = 24
 
-    if map[0x1370 + number] == "\x7A":
-        # Location is not used
+def is_used(map, number):
+    return map[POS_USED_START + number] != "\x7A"
+
+def set_used(map, number, isUsed=True):
+    if isUsed:
+        map[POS_USED_START + number] = 0
+    else:
+        map[POS_USED_START + number] = 0x4A
+
+def get_freq(map):
+    val = struct.unpack("<H", map[POS_FREQ_START:POS_FREQ_END])[0]
+
+    return (val * 5) / 1000.0
+
+def get_name(map):
+    return map[POS_NAME_START:POS_NAME_END].replace("\x0E", "").strip()
+
+def get_mode(map):
+    val = struct.unpack("B", map[POS_MODE])[0] & 0x80
+    if val == 0x80:
+        return "DV"
+    elif val == 0x00:
+        return "FM"
+    else:
+        raise errors.InvalidDataError("Radio has unknown mode %02x" % val)
+
+def get_duplex(map):
+    val = struct.unpack("B", map[POS_DUPX])[0] & 0x30
+    if val & 0x10:
+        return "-"
+    elif val & 0x20:
+        return "+"
+    else:
+        return ""
+
+def get_tone_idx(map):
+    return struct.unpack("B", map[POS_TONE])[0]
+
+def get_tone_enabled(map):
+    val = struct.unpack("B", map[POS_TENB])[0]
+
+    return (val & 0x01) != 0
+
+def get_memory(_map, number):
+    offset = number * MEM_LOC_SIZE
+    map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
+
+    if not is_used(_map, number):
         return None
 
     m = chirp_common.Memory()
-    m.freq = _freq
-    m.name = _name.replace("\x0e", "").strip()
+    m.freq = get_freq(map)
+    m.name = get_name(map)
     m.number = number
-
-    mode, = struct.unpack("B", chunk[-1])
-    if mode == 0:
-        m.mode = "FM"
-    elif mode == 0x80:
-        m.mode = "DV"
-    else:
-        raise errors.InvalidDataError("Radio has unknown mode 0x%02x" % mode)
-
-    dup, = struct.unpack("B", chunk[-3])
-    if (dup & 0x10) != 0:
-        m.duplex = "-"
-    elif (dup & 0x20) != 0:
-        m.duplex = "+"
-    else:
-        m.duplex = ""
-
-    tone, = struct.unpack("B", chunk[10])
-    m.tone = chirp_common.TONES[tone]
-
-    tenb, = struct.unpack("B", chunk[-4])
-    m.toneEnabled = ((tenb & 0x01) != 0)
+    m.mode = get_mode(map)
+    m.duplex = get_duplex(map)
+    m.tone = chirp_common.TONES[get_tone_idx(map)]
+    m.toneEnabled = get_tone_enabled(map)
 
     return m
 
-def set_memory(map, memory):
-    _fa = (memory.number * 24)
-    _na = (memory.number * 24) + 4
+def set_freq(map, freq):
+    map[POS_FREQ_START] = struct.pack("<H", int(freq * 1000) / 5)
 
-    if map[_fa + 2] == "\xFF":
-        # Assume this is empty now, so initialize bits
-        map = util.write_in_place(map, _fa + 2, "\x78\x00")
-        map = util.write_in_place(map, _fa + 10, "\x08\x08" + ("\x00" * 12))
-
-    freq = struct.pack("<H", int(memory.freq * 1000) / 5)
-    name = memory.name.ljust(6)[:6]
-
-    map = util.write_in_place(map, _fa, freq)
-    map = util.write_in_place(map, _na, name)
-
-    # Mark as used
-    map = util.write_in_place(map, 0x1370 + memory.number, "\x4A")
+def set_name(map, name):
+    map[POS_NAME_START] = name.ljust(6)[:6]
 
     if name == (" " * 6):
-        map = util.write_in_place(map, _fa+22, "\x00")
+        map[22] = 0
     else:
-        map = util.write_in_place(map, _fa+22, "\x10")
+        map[22] = 0x10
 
-    if memory.mode == "FM":
-        mode = "\x00"
-    elif memory.mode == "DV":
-        mode = "\x80"
+def set_mode(map, mode):
+    if mode == "FM":
+        map[POS_MODE] = 0
+    elif mode == "DV":
+        map[POS_MODE] = 0x80
     else:
-        raise errors.InvalidDataError("Unsupported mode `%s'" % memory.mode)
+        raise errors.InvalidDataError("Unsupported mode `%s'" % mode)
 
-    map = util.write_in_place(map, _fa+23, mode)
+def set_duplex(map, duplex):
+    mask = 0xCF # ~ 00110000
+    val = struct.unpack("B", map[POS_DUPX])[0] & mask
 
-    dup = ord(map[_fa+21])
-    dup &= 0xCF # Clear both bits
-    if memory.duplex == "-":
-        dup |= 0x10
-    elif memory.duplex == "+":
-        dup |= 0x20
+    if duplex == "-":
+        val |= 0x10
+    elif duplex == "+":
+        val |= 0x20
 
-    map = util.write_in_place(map, _fa+21, chr(dup))
+    map[POS_DUPX] = val
 
-    tenb = ord(map[_fa+20])
-    tenb &= 0xFE
-    if memory.toneEnabled:
-        tenb |= 0x01
+def set_tone_enabled(map, enabled):
+    mask = 0xFE # ~00000001
+    val = struct.unpack("B", map[POS_TENB])[0] & mask
 
-    map = util.write_in_place(map, _fa+20, chr(tenb))
+    if enabled:
+        val |= 0x01
 
-    return map
+    map[POS_TENB] = val
+
+def set_tone(map, index):
+    map[POS_TONE] = struct.pack("B", index)    
+
+def set_memory(_map, memory):
+    offset = memory.number * MEM_LOC_SIZE
+    map = MemoryMap(_map[offset:offset+MEM_LOC_SIZE])
+
+    if not is_used(_map, memory.number):
+        # Assume this is empty now, so initialize bits
+        map[2] = "\x78\x00"
+        map[10] = "\x08x08" + ("\x00" * 10)
+
+    set_used(_map, memory.number, True)
+    set_freq(map, memory.freq)
+    set_name(map, memory.name)
+    set_duplex(map, memory.duplex)
+    set_mode(map, memory.mode)
+    set_tone_enabled(map, memory.toneEnabled)
+    set_tone(map, chirp_common.TONES.index(memory.tone))
+
+    _map[offset] = map.get_packed()
+    return _map
 
 def parse_map_for_memory(map):
     memories = []
