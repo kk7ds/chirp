@@ -123,6 +123,8 @@ class IC92MemoryFrame(IC92Frame):
             self._mode = "AM"
         elif mode == 0x40:
             self._mode = "DV"
+        elif mode == 0x20:
+            self._mode = "WFM"
         else:
             raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
 
@@ -182,6 +184,8 @@ class IC92MemoryFrame(IC92Frame):
             mode |= 0x30
         elif self._mode == "DV":
             mode |= 0x40
+        elif self._mode == "WFM":
+            mode |= 0x20
         else:
             raise errors.InvalidDataError("Unsupported mode `%s'" % self._mode)
 
