@@ -22,9 +22,150 @@ import chirp_common
 import errors
 import util
 import icf
+from memmap import MemoryMap
 
-def pack_name(_name, enabled=True):
-    name = _name.ljust(8)
+POS_FREQ_START =  0
+POS_FREQ_END   =  3
+POS_TSTEP      =  8
+POS_NAME_START = 11
+POS_NAME_END   = 19
+POS_DUPX       =  6
+POS_MODE       = 21
+POS_TENB       = 10
+POS_TONE       =  5
+
+MEM_LOC_SIZE  = 22
+MEM_LOC_START = 0x20
+
+ID800_TS = {
+    0x0: 5.0,
+    0xA: 6.25,
+    0x1: 10.0,
+    0x2: 12.5,
+    0x3: 15,
+    0x4: 20,
+    0x5: 25,
+    0x6: 30,
+    0x7: 50,
+    0x8: 100,
+    0x9: 200,
+}
+
+ID800_MODES = {
+    0x00 : "FM",
+    0x10 : "NFM",
+    0x20 : "AM",
+    0x30 : "NAM",
+    0x40 : "DV",
+}
+
+ID800_MODES_REV = {}
+for val, mode in ID800_MODES.items():
+    ID800_MODES_REV[mode] = val
+
+def get_name(map):
+    nibbles = []
+
+    for i in map[POS_NAME_START:POS_NAME_END]:
+        nibbles.append((ord(i) & 0xF0) >> 4)
+        nibbles.append(ord(i) & 0x0F)
+
+    ln = None
+    i = 1
+    name = ""
+
+    while i < len(nibbles) - 1:
+        this = nibbles[i]
+
+        if ln is None:
+            i += 1
+            ln = nibbles[i]
+            this = (this << 2)  | ((ln >> 2) & 0x3)
+        else:
+            this = ((ln & 0x3) << 4) | this
+            ln = None
+
+        if this == 0:
+            name += " "
+        elif (this & 0x20) == 0:
+            name += chr(ord("1") + (this & 0x0F) - 1)
+        else:
+            name += chr(ord("A") + (this & 0x1F) - 1)
+
+        i += 1
+
+    return name.rstrip()
+
+def get_freq_ts(map):
+    fval = '\x00' + map[POS_FREQ_START:POS_FREQ_END]
+    tsval = (ord(map[POS_TSTEP]) >> 4) & 0x0F
+
+    if tsval == 0xA or tsval == 0x2:
+        mult = 6.25
+    else:
+        mult = 5.0
+
+    freq = ((struct.unpack(">i", fval)[0] * mult) / 1000.0)
+    
+
+    return freq, ID800_TS.get(tsval, 5.0)
+
+def get_duplex(map):
+    val = struct.unpack("B", map[POS_DUPX])[0] & 0xC0
+    if val == 0xC0:
+        return "+"
+    elif val == 0x80:
+        return "-"
+    else:
+        return ""
+
+def get_mode(map):
+    val = struct.unpack("B", map[POS_MODE])[0] & 0x70
+    try:
+        return ID800_MODES[val]
+    except KeyError:
+        raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
+
+def get_tone_idx(map):
+    return struct.unpack("B", map[POS_TONE])[0]
+
+def get_tone_enabled(map):
+    val = struct.unpack("B", map[POS_TENB])[0] & 0x01
+    return val != 0
+
+def get_memory(_map, number):
+    offset = (number * MEM_LOC_SIZE) + MEM_LOC_START
+    map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
+
+    mem = chirp_common.Memory()
+
+    mem.freq, mem.tuningStep = get_freq_ts(map)
+    mem.name = get_name(map)
+    mem.number = number
+    mem.duplex = get_duplex(map)
+    mem.mode = get_mode(map)
+    mem.tone = chirp_common.TONES[get_tone_idx(map)]
+    mem.toneEnabled = get_tone_enabled(map)
+
+    return mem
+
+def parse_map_for_memory(map):
+    """Returns a list of memories, given a valid memory map"""
+
+    memories = []
+    
+    for i in range(500):        
+        mem = get_memory(map, i)
+        if mem:
+            memories.append(mem)
+
+    return memories
+
+def set_freq(map, freq):
+    map[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / 5))[1:]
+
+def set_name(map, _name, enabled=True):
+    name = _name.ljust(8)[:8]
     nibbles = []
 
     def val_of(char):
@@ -58,176 +199,56 @@ def pack_name(_name, enabled=True):
     for i in range(0, len(nibbles), 2):
         val += struct.pack("B", ((nibbles[i] << 4)| nibbles[i+1]))
 
-    return val
+    map[POS_NAME_START] = val
 
-def unpack_name(mem):
-    nibbles = []
+def set_duplex(map, duplex):
+    mask = 0x3F # ~11000000
+    val = struct.unpack("B", map[POS_DUPX])[0] & mask
 
-    for i in mem:
-        nibbles.append((ord(i) & 0xF0) >> 4)
-        nibbles.append(ord(i) & 0x0F)
+    if duplex == "-":
+        val |= 0x80
+    elif duplex == "+":
+        val |= 0xC0
 
-    ln = None
-    i = 1
-    name = ""
+    map[POS_DUPX] = val
 
-    while i < len(nibbles) - 1:
-        this = nibbles[i]
+def set_mode(map, mode):
+    mask = 0x8F # ~01110000
+    val = struct.unpack("B", map[POS_MODE])[0] & mask
 
-        if ln is None:
-            i += 1
-            ln = nibbles[i]
-            this = (this << 2)  | ((ln >> 2) & 0x3)
-        else:
-            this = ((ln & 0x3) << 4) | this
-            ln = None
+    try:
+        val |= ID800_MODES_REV[mode]
+    except Exception, e:
+        raise errors.InvalidDataError("Unsupported mode `%s'" % mode)
 
-        if this == 0:
-            name += " "
-        elif (this & 0x20) == 0:
-            name += chr(ord("1") + (this & 0x0F) - 1)
-        else:
-            name += chr(ord("A") + (this & 0x1F) - 1)
+    map[POS_MODE] = val
 
-        i += 1
+def set_tone(map, index):
+    map[POS_TONE] = struct.pack("B", index)
 
-    return name.rstrip()
+def set_tone_enabled(map, enabled):
+    mask = 0xFE # ~00000001
+    val = struct.unpack("B", map[POS_TENB])[0] & mask
 
-def pack_frequency(freq):
-    return struct.pack(">i", int((freq * 1000) / 5))[1:]
+    if enabled:
+        val |= 1
 
-def unpack_frequency(_mem, _ts):
-    mem = '\x00' + _mem
+    map[POS_TENB] = val
 
-    if _ts == 0xA or _ts == 0x2:
-        mult = 6.25
-    else:
-        mult = 5.0
+def set_memory(_map, mem):
+    offset = (mem.number * MEM_LOC_SIZE) + MEM_LOC_START
+    map = MemoryMap(_map[offset:offset+MEM_LOC_SIZE])
 
-    return ((struct.unpack(">i", mem)[0] * mult) / 1000.0)
+    set_freq(map, mem.freq)
+    set_name(map, mem.name)
+    set_duplex(map, mem.duplex)
+    set_mode(map, mem.mode)
+    set_tone(map, chirp_common.TONES.index(mem.tone))
+    set_tone_enabled(map, mem.toneEnabled)
 
-ID800_TS = {
-    0x0: 5.0,
-    0xA: 6.25,
-    0x1: 10.0,
-    0x2: 12.5,
-    0x3: 15,
-    0x4: 20,
-    0x5: 25,
-    0x6: 30,
-    0x7: 50,
-    0x8: 100,
-    0x9: 200,
-}
+    _map[offset] = map.get_packed()
 
-def get_memory(map, i):
-    addr = (i * 22) + 0x0020
-    chunk = map[addr:addr+23]
-
-    _freq = chunk[0:3]
-    _name = chunk[11:11+8]
-    _ts = (ord(chunk[8]) >> 4) & 0xF
-
-    if len(_freq) != 3:
-        raise Exception("freq != 3 for %i" % i)
-        
-    mem = chirp_common.Memory()
-    mem.number = i
-    mem.name = unpack_name(_name)
-    mem.freq = unpack_frequency(_freq, _ts)
-    mem.tuningStep = ID800_TS.get(_ts, 5.0)
-
-    dup = struct.unpack("B", chunk[6])[0] & 0xF0
-    if (dup & 0xC0) == 0xC0:
-        mem.duplex = "+"
-    elif (dup & 0x80) == 0x80:
-        mem.duplex = "-"
-    else:
-        mem.duplex = ""
-
-    mode = struct.unpack("B", chunk[-2])[0] & 0xF0
-    if mode == 0x00:
-        mem.mode = "FM"
-    elif mode == 0x10:
-        mem.mode = "NFM"
-    elif mode == 0x20:
-        mem.mode = "AM"
-    elif mode == 0x30:
-        mem.mode = "NAM"
-    elif mode == 0x40:
-        mem.mode = "DV"
-    else:
-        raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
-
-    tone, = struct.unpack("B", chunk[5])
-    mem.tone = chirp_common.TONES[tone]
-
-    tenb, = struct.unpack("B", chunk[10])
-    mem.toneEnabled = ((tenb & 0x01) != 0)
-
-    return mem
-
-def parse_map_for_memory(map):
-    """Returns a list of memories, given a valid memory map"""
-
-    memories = []
-    
-    for i in range(500):        
-        mem = get_memory(map, i)
-        if mem:
-            memories.append(mem)
-
-    return memories
-
-def set_memory(map, memory):
-    _fa = (memory.number * 22) + 0x0020
-    _na = (memory.number * 22) + 0x0020 + 11
-
-    freq = pack_frequency(memory.freq)
-    name = pack_name(memory.name[:6])
-
-    map = util.write_in_place(map, _fa, freq)
-    map = util.write_in_place(map, _na, name)
-
-    _dup, = struct.unpack("B", map[_fa+6])
-    _dup &= 0x3F
-    if memory.duplex == "-":
-        _dup |= 0x80
-    elif memory.duplex == "+":
-        _dup |= 0xC0
-
-    map = util.write_in_place(map, _fa+6, chr(_dup))
-
-    _mode = memory.mode
-    mode = 0
-    if _mode[0] == "N":
-        _mode = _mode[1:]
-        mode = 0x10
-
-    if _mode == "FM":
-        mode |= 0x00
-    elif _mode == "AM":
-        mode |= 0x20
-    elif _mode == "DV":
-        mode = 0x40
-    else:
-        raise errors.InvalidDataError("Unsupported mode `%s'" % _mode)
-
-    map = util.write_in_place(map, _fa+21, chr(mode))
-
-    _tone = chirp_common.TONES.index(memory.tone)
-    tone = struct.pack("B", _tone)
-
-    map = util.write_in_place(map, _fa+5, tone)
-
-    tenb, = struct.unpack("B", map[_fa+10])
-    tenb &= 0xFE
-    if memory.toneEnabled:
-        tenb |= 0x01
-
-    map = util.write_in_place(map, _fa+10, chr(tenb))
-
-    return map
+    return _map
 
 def test_basic():
     v = pack_name("DAN")
