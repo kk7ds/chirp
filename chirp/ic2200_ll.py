@@ -90,8 +90,8 @@ def get_memory(_map, number):
     m.number = number
     m.mode = get_mode(map)
     m.duplex = get_duplex(map)
-    m.tone = chirp_common.TONES[get_tone_idx(map)]
-    m.toneEnabled = get_tone_enabled(map)
+    m.tenc = chirp_common.TONES[get_tone_idx(map)]
+    m.tencEnabled = get_tone_enabled(map)
 
     return m
 
@@ -151,8 +151,8 @@ def set_memory(_map, memory):
     set_name(map, memory.name)
     set_duplex(map, memory.duplex)
     set_mode(map, memory.mode)
-    set_tone_enabled(map, memory.toneEnabled)
-    set_tone(map, chirp_common.TONES.index(memory.tone))
+    set_tone_enabled(map, memory.tencEnabled)
+    set_tone(map, chirp_common.TONES.index(memory.tenc))
 
     _map[offset] = map.get_packed()
     return _map

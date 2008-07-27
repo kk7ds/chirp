@@ -207,8 +207,8 @@ class IC92MemoryFrame(IC92Frame):
         self._vfo = vfo
         self._duplex = memory.duplex
         self._mode = memory.mode
-        self._tone = memory.tone
-        self._toneEnabled = memory.toneEnabled
+        self._tone = memory.tenc
+        self._toneEnabled = memory.tencEnabled
 
     def __str__(self):
         return "%i: %.2f (%s) (DV=%s)" % (self._number,
