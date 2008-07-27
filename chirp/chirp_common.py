@@ -28,6 +28,19 @@ TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
           ]          
 
+DTCS_CODES = [
+     23,  25,  26,  31,  32,  36,  43,  47,  51,  53,  54,
+     65,  71,  72,  73,  74, 114, 115, 116, 122, 125, 131,
+    132, 133, 134, 145, 152, 155, 156, 162, 165, 172, 174,
+    205, 212, 223, 225, 226, 243, 244, 245, 246, 251, 252,
+    255, 261, 263, 265, 266, 271, 274, 306, 311, 315, 325,
+    331, 332, 343, 346, 351, 356, 364, 365, 371, 411, 412,
+    413, 423, 431, 432, 445, 446, 452, 454, 455, 462, 464,
+    465, 466, 503, 506, 516, 523, 526, 532, 546, 565, 606,
+    612, 624, 627, 631, 632, 654, 662, 664, 703, 712, 723,
+    731, 732, 734, 743, 754,
+     ]
+
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV"]
 
 class IcomFrame:
@@ -38,8 +51,13 @@ class Memory:
     number = 0
     name = ""
     vfo = 0
-    tone = 88.5
-    toneEnabled = False
+    rtone = 88.5
+    ctone = 88.5
+    dtcs = 23
+    tencEnabled = False
+    tsqlEnabled = False
+    dtcsEnabled = False
+
     # FIXME: Decorator for valid value?
     duplex = ""
     mode = "FM"
@@ -48,19 +66,34 @@ class Memory:
     CSV_FORMAT = "Location,Name,Frequency,ToneFreq,ToneEnabled,Duplex,Mode,"
 
     def __str__(self):
-        if self.toneEnabled:
-            te = "*"
+        if self.tencEnabled:
+            tenc = "*"
         else:
-            te = " "
+            tenc = " "
 
-        return "Memory %i: %.5f%s %s (%s) %.1f%s [TS=%.2f]" % (self.number,
-                                                              self.freq,
-                                                              self.duplex,
-                                                              self.mode,
-                                                              self.name,
-                                                              self.tone,
-                                                              te,
-                                                              self.tuningStep)
+        if self.tsqlEnabled:
+            tsql = "*"
+        else:
+            tsql = " "
+
+        if self.dtcsEnabled:
+            dtcs = "*"
+        else:
+            dtcs = " "
+
+        return "Memory %i: %.5f%s %s (%s) r%.1f%s c%.1f%s d%03i%s [TS=%.2f]" % \
+            (self.number,
+             self.freq,
+             self.duplex,
+             self.mode,
+             self.name,
+             self.rtone,
+             tenc,
+             self.ctone,
+             tsql,
+             self.dtcs,
+             dtcs,
+             self.tuningStep)
 
     def to_csv(self):
         if self.toneEnabled:

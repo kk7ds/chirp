@@ -19,6 +19,7 @@
 import serial
 import sys
 from optparse import OptionParser
+import optparse
 
 from chirp import ic9x, id800, ic2820, ic2200, chirp_common, errors
 
@@ -36,6 +37,23 @@ RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
            "ic2820": ic2820.IC2820Radio,
            "ic2200": ic2200.IC2200Radio,
 }
+
+def store_tone(option, opt, value, parser):
+    if value in chirp_common.TONES:
+        setattr(parser.values, option.dest, value)
+    else:
+        raise optparse.OptionValueError("Invalid tone value: %.1f" % value)
+
+def store_dtcs(option, opt, value, parser):
+    try:
+        value = int(value, 10)
+    except ValueError:
+        raise optparse.OptionValueError("Invalid DTCS value: %s" % value)
+
+    if value in chirp_common.DTCS_CODES:
+        setattr(parser.values, option.dest, value)
+    else:
+        raise optparse.OptionValueError("Invalid DTCS value: %03i" % value)
 
 parser = OptionParser()
 parser.add_option("-s", "--serial", dest="serial",
@@ -56,17 +74,45 @@ parser.add_option("", "--set-mem-freq", dest="set_mem_freq",
                   type="float",
                   default=None,
                   help="Set memory frequency")
-parser.add_option("", "--set-mem-toneon", dest="set_mem_toneon",
+
+parser.add_option("", "--set-mem-tencon", dest="set_mem_tencon",
                   default=False,
                   action="store_true",
-                  help="Set tone enabled flag")
-parser.add_option("", "--set-mem-toneoff", dest="set_mem_toneoff",
+                  help="Set tone encode enabled flag")
+parser.add_option("", "--set-mem-tencoff", dest="set_mem_tencoff",
                   default=False,
                   action="store_true",
-                  help="Set tone disabled flag")
-parser.add_option("", "--set-mem-tone", dest="set_mem_tone",
+                  help="Set tone decode disabled flag")
+parser.add_option("", "--set-mem-tsqlon", dest="set_mem_tsqlon",
+                  default=False,
+                  action="store_true",
+                  help="Set tone squelch enabled flag")
+parser.add_option("", "--set-mem-tsqloff", dest="set_mem_tsqloff",
+                  default=False,
+                  action="store_true",
+                  help="Set tone squelch disabled flag")
+parser.add_option("", "--set-mem-dtcson", dest="set_mem_dtcson",
+                  default=False,
+                  action="store_true",
+                  help="Set DTCS enabled flag")
+parser.add_option("", "--set-mem-dtcsoff", dest="set_mem_dtcsoff",
+                  default=False,
+                  action="store_true",
+                  help="Set DTCS disabled flag")
+
+parser.add_option("", "--set-mem-tenc", dest="set_mem_tenc",
                   type="float",
-                  help="Set memory tone")
+                  action="callback", callback=store_tone, nargs=1,
+                  help="Set memory encode tone")
+parser.add_option("", "--set-mem-tsql", dest="set_mem_tsql",
+                  type="float",
+                  action="callback", callback=store_tone, nargs=1,
+                  help="Set memory squelch tone")
+parser.add_option("", "--set-mem-dtcs", dest="set_mem_dtcs",
+                  type="string",
+                  action="callback", callback=store_dtcs, nargs=1,
+                  help="Set memory DTCS code")
+
 parser.add_option("", "--set-mem-dup", dest="set_mem_dup",
                   help="Set memory duplex (+,-, or blank)")
 parser.add_option("", "--set-mem-mode", dest="set_mem_mode",
@@ -122,18 +168,6 @@ else:
 
 radio = rclass(s)
 
-if options.set_mem_tone:
-    try:
-        chirp_common.TONES.index(options.set_mem_tone)
-    except:
-        print "Invalid tone `%s'" % options.set_mem_tone
-        print "Valid tones:\n%s" % chirp_common.TONES
-        sys.exit(1)
-
-    _tone = options.set_mem_tone
-else:
-    _tone = None
-
 if options.set_mem_dup is not None:
     if options.set_mem_dup != "+" and \
             options.set_mem_dup != "-" and \
@@ -157,8 +191,11 @@ else:
     _mode = None
 
 if options.set_mem_name or options.set_mem_freq or \
-        options.set_mem_toneon or options.set_mem_toneoff or \
-        options.set_mem_tone or options.set_mem_dup is not None or \
+        options.set_mem_tencon or options.set_mem_tencoff or \
+        options.set_mem_tsqlon or options.set_mem_tsqloff or \
+        options.set_mem_dtcson or options.set_mem_dtcsoff or \
+        options.set_mem_tenc or options.set_mem_tsql or options.set_mem_dtcs or\
+        options.set_mem_dup is not None or \
         options.set_mem_mode:
     try:
         mem = radio.get_memory(int(args[0]))
@@ -168,15 +205,27 @@ if options.set_mem_name or options.set_mem_freq or \
 
     mem.name   = options.set_mem_name or mem.name
     mem.freq   = options.set_mem_freq or mem.freq
-    mem.tone   = _tone or mem.tone
+    mem.rtone  = options.set_mem_tenc or mem.rtone
+    mem.ctone  = options.set_mem_tsql or mem.ctone
+    mem.dtcs   = options.set_mem_dtcs or mem.dtcs
     if _dup is not None:
         mem.duplex = _dup
     mem.mode   = _mode or mem.mode
 
-    if options.set_mem_toneon:
-        mem.toneEnabled = True
-    elif options.set_mem_toneoff:
-        mem.toneEnabled = False
+    if options.set_mem_tencon:
+        mem.tencEnabled = True
+    elif options.set_mem_tencoff:
+        mem.tencEnabled = False
+
+    if options.set_mem_tsqlon:
+        mem.tsqlEnabled = True
+    elif options.set_mem_tsqloff:
+        mem.tsqlEnabled = False
+
+    if options.set_mem_dtcson:
+        mem.dtcsEnabled = True
+    elif options.set_mem_dtcsoff:
+        mem.dtcsEnabled = False
 
     radio.set_memory(mem)
 
