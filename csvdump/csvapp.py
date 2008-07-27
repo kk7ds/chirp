@@ -266,12 +266,14 @@ class CsvDumpApp:
 
         lines = f.readlines()
         f.close()
-        lineno = 1
+        lineno = 0
 
         for line in lines:
+            lineno += 1
             m = chirp.chirp_common.Memory()
             try:
-                m.from_csv(line)
+                m.from_csv(line.strip())
+                print "Imported: %s" % m
             except Exception, e:
                 if lineno == 1:
                     continue
@@ -280,7 +282,6 @@ class CsvDumpApp:
 
             print "Setting memory: %s" % m
             self.radio.set_memory(m)
-            lineno += 1
 
         print "Saving image to %s.img" % self.rtype
         self.radio.save_mmap("%s.img" % self.rtype)
