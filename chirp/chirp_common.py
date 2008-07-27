@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import errors
+import memmap
 
 TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,
@@ -39,6 +40,7 @@ class Memory:
     vfo = 0
     tone = 88.5
     toneEnabled = False
+    # FIXME: Decorator for valid value?
     duplex = ""
     mode = "FM"
     tuningStep = 5.0
@@ -176,14 +178,14 @@ class IcomMmapRadio(IcomRadio):
 
     def load_mmap(self, filename):
         f = file(filename, "rb")
-        self._mmap = f.read()
+        self._mmap = memmap.MemoryMap(f.read())
         f.close()
 
         self.process_mmap()
 
     def save_mmap(self, filename):
         f = file(filename, "wb")
-        f.write(self._mmap)
+        f.write(self._mmap.get_packed())
         f.close()
 
     def sync_in(self):

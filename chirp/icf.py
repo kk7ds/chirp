@@ -21,6 +21,7 @@ import struct
 import errors
 import chirp_common
 import util
+import memmap
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN  = 0xE3
@@ -231,7 +232,7 @@ def clone_from_radio(radio):
             s.cur = len(map)
             radio.status_fn(s)
 
-    return map
+    return memmap.MemoryMap(map)
 
 def send_mem_chunk(radio, start, stop, bs=32):
     for i in range(start, stop, bs):
