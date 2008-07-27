@@ -32,7 +32,9 @@ POS_NAME_END   = 19
 POS_DUPX       =  6
 POS_MODE       = 21
 POS_TENB       = 10
-POS_TONE       =  5
+POS_RTONE      =  5
+POS_CTONE      =  6
+POS_DTCS       =  7
 
 MEM_LOC_SIZE  = 22
 MEM_LOC_START = 0x20
@@ -126,12 +128,33 @@ def get_mode(map):
     except KeyError:
         raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
 
-def get_tone_idx(map):
-    return struct.unpack("B", map[POS_TONE])[0]
+def get_rtone(map):
+    idx = struct.unpack("B", map[POS_RTONE])[0]
+    
+    return chirp_common.TONES[idx]
+
+def get_ctone(map):
+    idx = struct.unpack("B", map[POS_CTONE])[0] & 0x3F
+
+    return chirp_common.TONES[idx]
+
+def get_dtcs(map):
+    idx = struct.unpack("B", map[POS_DTCS])[0]
+
+    return chirp_common.DTCS_CODES[idx]
 
 def get_tone_enabled(map):
-    val = struct.unpack("B", map[POS_TENB])[0] & 0x01
-    return val != 0
+    val = struct.unpack("B", map[POS_TENB])[0] & 0x03
+
+    dtcs = tenc = tsql = False
+
+    if val == 3:
+        dtcs = True
+    else:
+        tenc = (val & 0x01) != 0
+        tsql = (val & 0x02) != 0
+
+    return tenc, tsql, dtcs
 
 def get_memory(_map, number):
     offset = (number * MEM_LOC_SIZE) + MEM_LOC_START
@@ -144,8 +167,10 @@ def get_memory(_map, number):
     mem.number = number
     mem.duplex = get_duplex(map)
     mem.mode = get_mode(map)
-    mem.tone = chirp_common.TONES[get_tone_idx(map)]
-    mem.toneEnabled = get_tone_enabled(map)
+    mem.rtone = get_rtone(map)
+    mem.ctone = get_ctone(map)
+    mem.dtcs = get_dtcs(map)
+    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(map)
 
     return mem
 
@@ -223,15 +248,26 @@ def set_mode(map, mode):
 
     map[POS_MODE] = val
 
-def set_tone(map, index):
-    map[POS_TONE] = struct.pack("B", index)
+def set_rtone(map, tone):
+    map[POS_RTONE] = struct.pack("B", chirp_common.TONES.index(tone))
 
-def set_tone_enabled(map, enabled):
-    mask = 0xFE # ~00000001
+def set_ctone(map, tone):
+    map[POS_CTONE] = struct.pack("B", chirp_common.TONES.index(tone))
+
+def set_dtcs(map, code):
+    map[POS_DTCS] = struct.pack("B", chirp_common.DTCS_CODES.index(code))
+
+def set_tone_enabled(map, enc, sql, dtcs):
+    mask = 0xFC # ~00000011
     val = struct.unpack("B", map[POS_TENB])[0] & mask
 
-    if enabled:
-        val |= 1
+    if dtcs:
+        val |= 0x3
+    else:
+        if enc:
+            val |= 0x1
+        if sql:
+            val |= 0x2
 
     map[POS_TENB] = val
 
@@ -243,8 +279,13 @@ def set_memory(_map, mem):
     set_name(map, mem.name)
     set_duplex(map, mem.duplex)
     set_mode(map, mem.mode)
-    set_tone(map, chirp_common.TONES.index(mem.tone))
-    set_tone_enabled(map, mem.toneEnabled)
+    set_rtone(map, mem.rtone)
+    set_ctone(map, mem.ctone)
+    set_dtcs(map, mem.dtcs)
+    set_tone_enabled(map,
+                     mem.tencEnabled,
+                     mem.tsqlEnabled,
+                     mem.dtcsEnabled)
 
     _map[offset] = map.get_packed()
 
