@@ -55,6 +55,12 @@ def store_dtcs(option, opt, value, parser):
     else:
         raise optparse.OptionValueError("Invalid DTCS value: %03i" % value)
 
+def store_dtcspol(option, opt, value, parser):
+    if value not in ["NN", "RN", "NR", "RR"]:
+        raise optparse.OptionValueError("Invaid DTCS polarity: %s" % value)
+
+    setattr(parser.values, option.dest, value)
+
 parser = OptionParser()
 parser.add_option("-s", "--serial", dest="serial",
                   default="mmap",
@@ -112,6 +118,11 @@ parser.add_option("", "--set-mem-dtcs", dest="set_mem_dtcs",
                   type="string",
                   action="callback", callback=store_dtcs, nargs=1,
                   help="Set memory DTCS code")
+
+parser.add_option("", "--set-mem-dtcspol", dest="set_mem_dtcspol",
+                  type="string",
+                  action="callback", callback=store_dtcspol, nargs=1,
+                  help="Set memory DTCS polarity (NN, NR, RN, RR)")
 
 parser.add_option("", "--set-mem-dup", dest="set_mem_dup",
                   help="Set memory duplex (+,-, or blank)")
@@ -196,7 +207,7 @@ if options.set_mem_name or options.set_mem_freq or \
         options.set_mem_dtcson or options.set_mem_dtcsoff or \
         options.set_mem_tenc or options.set_mem_tsql or options.set_mem_dtcs or\
         options.set_mem_dup is not None or \
-        options.set_mem_mode:
+        options.set_mem_mode or options.set_mem_dtcspol:
     try:
         mem = radio.get_memory(int(args[0]))
     except errors.InvalidMemoryLocation:
@@ -208,6 +219,7 @@ if options.set_mem_name or options.set_mem_freq or \
     mem.rtone  = options.set_mem_tenc or mem.rtone
     mem.ctone  = options.set_mem_tsql or mem.ctone
     mem.dtcs   = options.set_mem_dtcs or mem.dtcs
+    mem.dtcsPolarity = options.set_mem_dtcspol or mem.dtcsPolarity
     if _dup is not None:
         mem.duplex = _dup
     mem.mode   = _mode or mem.mode

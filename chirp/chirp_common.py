@@ -57,6 +57,7 @@ class Memory:
     tencEnabled = False
     tsqlEnabled = False
     dtcsEnabled = False
+    dtcsPolarity = "NN"
 
     # FIXME: Decorator for valid value?
     duplex = ""
@@ -81,7 +82,7 @@ class Memory:
         else:
             dtcs = " "
 
-        return "Memory %i: %.5f%s %s (%s) r%.1f%s c%.1f%s d%03i%s [TS=%.2f]" % \
+        return "Memory %i: %.5f%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f]" % \
             (self.number,
              self.freq,
              self.duplex,
@@ -93,6 +94,7 @@ class Memory:
              tsql,
              self.dtcs,
              dtcs,
+             self.dtcsPolarity,
              self.tuningStep)
 
     def to_csv(self):
