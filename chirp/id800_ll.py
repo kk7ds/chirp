@@ -35,6 +35,7 @@ POS_TENB       = 10
 POS_RTONE      =  5
 POS_CTONE      =  6
 POS_DTCS       =  7
+POS_DTCS_POL   = 11
 
 MEM_LOC_SIZE  = 22
 MEM_LOC_START = 0x20
@@ -156,6 +157,16 @@ def get_tone_enabled(map):
 
     return tenc, tsql, dtcs
 
+def get_dtcs_polarity(map):
+    val = struct.unpack("B", map[POS_DTCS_POL])[0] & 0xC0
+
+    pol_values = { 0x00 : "NN",
+                   0x40 : "NR",
+                   0x80 : "RN",
+                   0xC0 : "RR" }
+
+    return pol_values[val]        
+
 def get_memory(_map, number):
     offset = (number * MEM_LOC_SIZE) + MEM_LOC_START
     map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
@@ -171,6 +182,7 @@ def get_memory(_map, number):
     mem.ctone = get_ctone(map)
     mem.dtcs = get_dtcs(map)
     mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(map)
+    mem.dtcsPolarity = get_dtcs_polarity(map)
 
     return mem
 
@@ -257,6 +269,14 @@ def set_ctone(map, tone):
 def set_dtcs(map, code):
     map[POS_DTCS] = struct.pack("B", chirp_common.DTCS_CODES.index(code))
 
+def set_dtcs_polarity(map, polarity):
+    pol_values = { "NN" : 0x00,
+                   "NR" : 0x40,
+                   "RN" : 0x80,
+                   "RR" : 0xC0 }
+
+    map[POS_DTCS_POL] = struct.pack("B", pol_values[polarity])        
+
 def set_tone_enabled(map, enc, sql, dtcs):
     mask = 0xFC # ~00000011
     val = struct.unpack("B", map[POS_TENB])[0] & mask
@@ -286,6 +306,7 @@ def set_memory(_map, mem):
                      mem.tencEnabled,
                      mem.tsqlEnabled,
                      mem.dtcsEnabled)
+    set_dtcs_polarity(map, mem.dtcsPolarity)
 
     _map[offset] = map.get_packed()
 
