@@ -126,6 +126,10 @@ parser.add_option("", "--set-mem-dtcspol", dest="set_mem_dtcspol",
 
 parser.add_option("", "--set-mem-dup", dest="set_mem_dup",
                   help="Set memory duplex (+,-, or blank)")
+parser.add_option("", "--set-mem-offset", dest="set_mem_offset",
+                  type="float",
+                  help="Set memory duplex offset (in MHz)")
+
 parser.add_option("", "--set-mem-mode", dest="set_mem_mode",
                   default=None,
                   help="Set mode (%s)" % ",".join(chirp_common.MODES))
@@ -207,7 +211,8 @@ if options.set_mem_name or options.set_mem_freq or \
         options.set_mem_dtcson or options.set_mem_dtcsoff or \
         options.set_mem_tenc or options.set_mem_tsql or options.set_mem_dtcs or\
         options.set_mem_dup is not None or \
-        options.set_mem_mode or options.set_mem_dtcspol:
+        options.set_mem_mode or options.set_mem_dtcspol or\
+        options.set_mem_offset:
     try:
         mem = radio.get_memory(int(args[0]))
     except errors.InvalidMemoryLocation:
@@ -222,6 +227,7 @@ if options.set_mem_name or options.set_mem_freq or \
     mem.dtcsPolarity = options.set_mem_dtcspol or mem.dtcsPolarity
     if _dup is not None:
         mem.duplex = _dup
+    mem.offset = options.set_mem_offset or mem.offset
     mem.mode   = _mode or mem.mode
 
     if options.set_mem_tencon:

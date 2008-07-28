@@ -61,6 +61,7 @@ class Memory:
 
     # FIXME: Decorator for valid value?
     duplex = ""
+    offset = 0.600
     mode = "FM"
     tuningStep = 5.0
 
@@ -82,10 +83,16 @@ class Memory:
         else:
             dtcs = " "
 
-        return "Memory %i: %.5f%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f]" % \
+        if self.duplex == "":
+            dup = "/"
+        else:
+            dup = self.duplex
+
+        return "Memory %i: %.5f%s%0.3f %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f]" % \
             (self.number,
              self.freq,
-             self.duplex,
+             dup,
+             self.offset,
              self.mode,
              self.name,
              self.rtone,
