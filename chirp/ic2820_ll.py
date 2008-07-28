@@ -47,8 +47,12 @@ POS_NAME_START = -8
 POS_TONE_START = 34
 POS_TONE_END   = 36
 POS_DUPX_TONE  = 33
+POS_DOFF_START =  4
+POS_DOFF_END   =  8
 POS_MODE_START = 36
 POS_MODE_END   = 38
+POS_DTCS_POL   = 39
+POS_DTCS       = 36
 
 MEM_LOC_SIZE   = 0x30
 
@@ -58,9 +62,35 @@ def get_freq(map):
 def get_name(map):
     return map[POS_NAME_START:].strip()
 
-def get_tone_idx(map):
-    val, = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])
-    return (val >> 4) & 0x3F
+def get_rtone(map):
+    mask = 0x03F0
+    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    idx = (val >> 4)
+
+    return chirp_common.TONES[idx]
+
+def get_ctone(map):
+    mask = 0xFC00
+    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    idx = (val >> 10)
+
+    return chirp_common.TONES[idx]    
+
+def get_dtcs(map):
+    mask = 0xFE
+    val = struct.unpack("B", map[POS_DTCS])[0] & mask
+    idx = (val >> 1)
+    
+    return chirp_common.DTCS_CODES[idx]
+
+def get_dtcs_polarity(map):
+    val = struct.unpack("B", map[POS_DTCS_POL])[0] & 0x30
+    polarity_values = { 0x00 : "NN",
+                        0x10 : "NR",
+                        0x20 : "RN",
+                        0x30 : "RR" }
+
+    return polarity_values[val]
 
 def get_duplex(map):
     val = struct.unpack("B", map[POS_DUPX_TONE])[0] & 0x60
@@ -71,10 +101,22 @@ def get_duplex(map):
     else:
         return ""
 
+def get_dup_off(map):
+    return struct.unpack(">I", map[POS_DOFF_START:POS_DOFF_END])[0] / 1000000.0
+
 def get_tone_enabled(map):
-    val = struct.unpack("B", map[POS_DUPX_TONE])[0]
+    val = struct.unpack("B", map[POS_DUPX_TONE])[0] & 0x3C
     
-    return (val & 0x04) != 0
+    enc = sql = dtcs = False
+
+    if val == 0x04:
+        enc = True
+    elif val == 0x2C:
+        sql = True
+    elif val == 0x38:
+        dtcs = True
+
+    return enc, sql, dtcs
 
 def get_mode(map):
     val = struct.unpack(">H", map[POS_MODE_START:POS_MODE_END])[0] & 0x01C0
@@ -100,11 +142,13 @@ def get_memory(_map, number):
     elif mem.name[0] == "\xFF":
         return None
 
-    print "Name: %s\n%s" % (mem.name, util.hexprint(mem.name))
-
-    mem.tenc = chirp_common.TONES[get_tone_idx(map)]
-    mem.tencEnabled = get_tone_enabled(map)
+    mem.rtone = get_rtone(map)
+    mem.ctone = get_ctone(map)
+    mem.dtcs = get_dtcs(map)
+    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(map)
+    mem.dtcsPolarity = get_dtcs_polarity(map)
     mem.duplex = get_duplex(map)
+    mem.offset = get_dup_off(map)
     mem.mode = get_mode(map)
 
     return mem
@@ -123,19 +167,57 @@ def set_duplex(map, duplex):
         val |= 0x20
     map[POS_DUPX_TONE] = val
 
-def set_tone_enabled(map, enabled):
-    val = ord(map[POS_DUPX_TONE]) & 0xFB # ~11111011
-    if enabled:
+def set_dup_offset(map, offset):
+    map[POS_DOFF_START] = struct.pack(">I", int(offset * 1000000))
+
+def set_tone_enabled(map, enc, sql, dtcs):
+    mask = 0xC3
+    val = ord(map[POS_DUPX_TONE]) & mask
+
+    if enc:
         val |= 0x04
+    elif sql:
+        val |= 0x2C
+    elif dtcs:
+        val |= 0x38
+
     map[POS_DUPX_TONE] = val
 
-def set_tone(map, index):
-    mask = 0xF00F # ~00001111 11110000
-    tone = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+def set_rtone(map, tone):
+    mask = 0xFC0F # ~00001111 11110000
+    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    index = chirp_common.TONES.index(tone)
+    val |= (index << 4) & 0x03F0
 
-    tone |= (index << 4) & 0x0FF0
+    map[POS_TONE_START] = struct.pack(">H", val)
 
-    map[POS_TONE_START] = struct.pack(">H", tone)
+def set_ctone(map, tone):
+    mask = 0x03FF # ~11111100 00000000
+    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    index = chirp_common.TONES.index(tone)
+    val |= (index << 10) & 0xFC00
+
+    map[POS_TONE_START] = struct.pack(">H", val)    
+
+def set_dtcs(map, code):
+    mask = 0x01 # ~11111110
+    val = struct.unpack("B", map[POS_DTCS])[0] & mask
+    val |= (chirp_common.DTCS_CODES.index(code) << 1)
+    
+    map[POS_DTCS] = struct.pack("B", val)
+
+def set_dtcs_polarity(map, polarity):
+    mask = 0xCF # ~00110000
+    val = struct.unpack("B", map[POS_DTCS_POL])[0] & mask
+
+    polarity_values = { "NN" : 0x00,
+                        "NR" : 0x10,
+                        "RN" : 0x20,
+                        "RR" : 0x30 }
+
+    val |= polarity_values[polarity]
+
+    map[POS_DTCS_POL] = val
 
 def set_mode(map, mode):
     mask = 0xFE3F # ~ 00000001 11000000
@@ -156,8 +238,12 @@ def set_memory(_map, mem):
     set_freq(map, mem.freq)
     set_name(map, mem.name)
     set_duplex(map, mem.duplex)
-    set_tone_enabled(map, mem.tencEnabled)
-    set_tone(map, chirp_common.TONES.index(mem.tenc))
+    set_dup_offset(map, mem.offset)
+    set_rtone(map, mem.rtone)
+    set_ctone(map, mem.ctone)
+    set_dtcs(map, mem.dtcs)
+    set_dtcs_polarity(map, mem.dtcsPolarity)
+    set_tone_enabled(map, mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled)
     set_mode(map, mem.mode)
 
     _map[offset] = map.get_packed()
