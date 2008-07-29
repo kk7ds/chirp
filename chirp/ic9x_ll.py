@@ -21,8 +21,9 @@ from chirp_common import IcomFrame
 import chirp_common
 import util
 import errors
+from memmap import MemoryMap
 
-def BCDencode(val):
+def BCDencode(val, bigendian=True, width=None):
     digits = []
     while val != 0:
         digits.append(val % 10)
@@ -33,8 +34,15 @@ def BCDencode(val):
     if len(digits) % 2 != 0:
         digits.append(0)
 
+    while width and width > len(digits):
+        digits.append(0)
+
     for i in range(0, len(digits), 2):
-        result = struct.pack("B", (digits[i+1] << 4) | digits[i]) + result
+        newval = struct.pack("B", (digits[i+1] << 4) | digits[i])
+        if bigendian:
+            result =  newval + result
+        else:
+            result = result + newval
     
     return result
 
@@ -93,18 +101,20 @@ class IC92MemoryFrame(IC92Frame):
 
         self.isDV = (len(self._data) == 62)
 
-        self._name = self._data[28:36].rstrip()
-        self._number, = struct.unpack(">H", self._data[3:5])
+        map = MemoryMap(self._data[2:])
 
-        h = int("%x" % ord(self._data[9]))
-        t = int("%x" % ord(self._data[8]))
-        d = int("%02x%02x%02x" % (ord(self._data[7]),
-                                  ord(self._data[6]),
-                                  ord(self._data[5])))        
+        self._name = map[26:34].rstrip()
+        self._number = struct.unpack(">H", map[1:3])
+
+        h = int("%x" % ord(map[7]))
+        t = int("%x" % ord(map[6]))
+        d = int("%02x%02x%02x" % (ord(map[5]),
+                                  ord(map[4]),
+                                  ord(map[3])))        
 
         self._freq = ((h * 100) + t) + (d / 1000000.0)
 
-        tdup, = struct.unpack("B", self._data[24])
+        tdup, = struct.unpack("B", map[22])
         if (tdup & 0x01) == 0x01:
             self._duplex = "-"
         elif (tdup & 0x02) == 0x02:
@@ -112,9 +122,18 @@ class IC92MemoryFrame(IC92Frame):
         else:
             self._duplex = ""
 
-        self._toneEnabled = (tdup & 0x04) == 0x04
+        self._tencEnabled = (tdup & 0x14) == 0x04
+        self._tsqlEnabled = (tdup & 0x11) == 0x01
+        self._dtcsEnabled = (tdup & 0x15) == 0x15
 
-        mode = struct.unpack("B", self._data[23])[0] & 0xF0
+        polarity_values = {0x00 : "NN",
+                           0x04 : "NR",
+                           0x08 : "RN",
+                           0x0C : "RR" }
+
+        self._dtcsPolarity = polarity_values[ord(map[23]) & 0x0C]
+
+        mode = struct.unpack("B", map[21])[0] & 0xF0
         if mode == 0:
             self._mode = "FM"
         elif mode == 0x10:
@@ -128,54 +147,60 @@ class IC92MemoryFrame(IC92Frame):
         else:
             raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
 
-        tone = int("%02x%02x" % (ord(self._data[15]), ord(self._data[16])))
-        tone = tone / 10.0
+        tone = int("%02x%02x" % (ord(map[13]), ord(map[14])))
+        tone /= 10.0
         if tone in chirp_common.TONES:
-            self._tone = tone
+            self._rtone = tone
         else:
             raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
 
+        tone = int("%02x%02x" % (ord(map[15]), ord(map[16])))
+        tone /= 10.0
+        if tone in chirp_common.TONES:
+            self._ctone = tone
+        else:
+            raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
+
+        dtcs = int("%02x%02x" % (ord(map[17]), ord(map[18])))
+        if dtcs in chirp_common.DTCS_CODES:
+            self._dtcs = dtcs
+        else:
+            raise errors.InvalidDataError("Radio has invalid DTCS %03i" % dtcs)
+
+        self._offset = float("%x.%02x%02x%02x" % (ord(map[11]), ord(map[10]),
+                                                  ord(map[9]),  ord(map[8])))
+
     def make_raw(self):
-        number = int("%i" % self._number, 16)
-        self._rawdata = struct.pack(">BBBBBH",
-                                    self._vfo,
-                                    0x80,
-                                    0x1A,
-                                    0x00,
-                                    0x01,
-                                    number)
-        self._rawdata += "\x00\x00"
+        map = MemoryMap("\x00" * 60)
 
+        # Setup an empty memory map
+        map[0] = 0x01
+        map[10] = "\x60\x00\x00\x08\x85\x08\x85\x00" + \
+            "\x23\x22\x00\x06\x00\x00\x00\x00"
+        map[36] = (" " * 16)
+        map[52] = "CQCQCQ  "
 
-        # FIXME: Use BCDencode here
-        d = int("%i" % (int((self._freq - int(self._freq)) * 100)), 16)
-        t = int("%i" % (int(self._freq) % 100), 16)
-        h = int("%i" % (int(self._freq) / 100), 16)
+        map[1] = struct.pack(">H", int("%i" % self._number, 16))
+        map[3] = BCDencode(int(self._freq * 1000000), bigendian=False)
 
-        self._rawdata += struct.pack(">BBB",
-                                     d,
-                                     t,
-                                     h)
+        map[26] = self._name.ljust(8)[:8]
 
-        self._rawdata += "\x00" * 2
-        self._rawdata += "\x60\x00\x00\x08\x85\x08\x85\x00"
-        self._rawdata += "\x23\x22\x00\x06\x00\x00\x00\x00"
-        self._rawdata += self._name
-        self._rawdata += "\x00\x00" + ("\x20" * 16)
-        self._rawdata += "CQCQCQ  "
-
-        dup = ord(self._rawdata[26]) & 0xF0
+        dup = ord(map[22]) & 0xF8
         if self._duplex == "-":
             dup |= 0x01
         elif self._duplex == "+":
             dup |= 0x02
 
-        if self._toneEnabled:
+        if self._tencEnabled:
             dup |= 0x04
+        if self._tsqlEnabled:
+            dup |= 0x01
+        if self._dtcsEnabled:
+            dup |= 0x15
 
-        self._rawdata = util.write_in_place(self._rawdata, 26, chr(dup))
+        map[22] = dup
 
-        mode = ord(self._rawdata[25]) & 0x0F
+        mode = ord(map[21]) & 0x0F
         if self._mode == "FM":
             mode |= 0
         elif self._mode == "NFM":
@@ -189,13 +214,29 @@ class IC92MemoryFrame(IC92Frame):
         else:
             raise errors.InvalidDataError("Unsupported mode `%s'" % self._mode)
 
-        self._rawdata = util.write_in_place(self._rawdata, 25, chr(mode))
+        map[21] = mode
 
-        tone = BCDencode(int(self._tone * 10))
-        self._rawdata = util.write_in_place(self._rawdata, 17, tone)
+        map[13] = BCDencode(int(self._rtone * 10))
+        map[15] = BCDencode(int(self._ctone * 10))
+        map[17] = BCDencode(int(self._dtcs), width=4)
+        
+        map[8] = BCDencode(int(self._offset * 1000000),
+                           bigendian=False,
+                           width=6)
 
+        val = ord(map[23]) & 0xF3
+        polarity_values = { "NN" : 0x00,
+                            "NR" : 0x04,
+                            "RN" : 0x08,
+                            "RR" : 0x0C }
+        val |= polarity_values[self._dtcsPolarity]
+        map[23] = val
+
+        self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
         if self._vfo == 1:
-            self._rawdata = self._rawdata[:38]
+            self._rawdata += map.get_packed()[:38]
+        else:
+            self._rawdata += map.get_packed()
 
         print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata[2:])
 
@@ -206,9 +247,15 @@ class IC92MemoryFrame(IC92Frame):
         self._freq = memory.freq
         self._vfo = vfo
         self._duplex = memory.duplex
+        self._offset = memory.offset
         self._mode = memory.mode
-        self._tone = memory.tenc
-        self._toneEnabled = memory.tencEnabled
+        self._rtone = memory.rtone
+        self._ctone = memory.ctone
+        self._dtcs = memory.dtcs
+        self._dtcsPolarity = memory.dtcsPolarity
+        self._tencEnabled = memory.tencEnabled
+        self._tsqlEnabled = memory.tsqlEnabled
+        self._dtcsEnabled = memory.dtcsEnabled
 
     def __str__(self):
         return "%i: %.2f (%s) (DV=%s)" % (self._number,
@@ -290,4 +337,9 @@ def print_memory(pipe, vfo, number):
     print "Memory %i from VFO %i: %s" % (number, vfo, str(mf))
 
 if __name__ == "__main__":
-    print BCDencode(1072)
+    print util.hexprint(BCDencode(1072))
+    print util.hexprint(BCDencode(146900000, False))
+    print util.hexprint(BCDencode(25, width=4))
+    print util.hexprint(BCDencode(5000000, False, 6))
+    print util.hexprint(BCDencode(600000, False, 6))
+    

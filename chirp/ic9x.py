@@ -38,9 +38,15 @@ class IC9xRadio(chirp_common.IcomRadio):
         mem.number = int("%02x" % mframe._number)
         mem.name = mframe._name
         mem.duplex = mframe._duplex
+        mem.offset = mframe._offset
         mem.mode = mframe._mode
-        mem.tenc = mframe._tone
-        mem.tencEnabled = mframe._toneEnabled
+        mem.rtone = mframe._rtone
+        mem.ctone = mframe._ctone
+        mem.dtcs = mframe._dtcs
+        mem.dtcsPolarity = mframe._dtcsPolarity
+        mem.tencEnabled = mframe._tencEnabled
+        mem.tsqlEnabled = mframe._tsqlEnabled
+        mem.dtcsEnabled = mframe._dtcsEnabled
 
         return mem
 
