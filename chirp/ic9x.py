@@ -18,6 +18,7 @@
 import chirp_common
 import errors
 import util
+import memmap
 
 import ic9x_ll
 
@@ -49,6 +50,12 @@ class IC9xRadio(chirp_common.IcomRadio):
         mem.dtcsEnabled = mframe._dtcsEnabled
 
         return mem
+
+    def get_raw_memory(self, number):
+        ic9x_ll.send_magic(self.pipe)
+        mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
+
+        return memmap.MemoryMap(mframe._data[2:])
 
     def get_memories(self):
         memories = []

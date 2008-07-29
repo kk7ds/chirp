@@ -65,10 +65,16 @@ parser = OptionParser()
 parser.add_option("-s", "--serial", dest="serial",
                   default="mmap",
                   help="Serial port (default: mmap)")
+
 parser.add_option("-i", "--id", dest="id",
                   default=False,
                   action="store_true",
                   help="Request radio ID string")
+parser.add_option("", "--raw", dest="raw",
+                  default=False,
+                  action="store_true",
+                  help="Dump raw memory location")
+
 parser.add_option("", "--get-mem", dest="get_mem",
                   default=False,
                   action="store_true",
@@ -182,6 +188,11 @@ else:
                       timeout=0.5)
 
 radio = rclass(s)
+
+if options.raw:
+    print "Memory location %i:\n%s" % (int(args[0]),
+                                       radio.get_raw_memory(int(args[0])))
+    sys.exit(0)
 
 if options.set_mem_dup is not None:
     if options.set_mem_dup != "+" and \

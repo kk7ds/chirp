@@ -114,3 +114,6 @@ class IC2200Radio(chirp_common.IcomMmapRadio):
     
     def sync_out(self):
         return icf.clone_to_radio(self)
+
+    def get_raw_memory(self, number):
+        return ic2200_ll.get_raw_memory(self._mmap, number)

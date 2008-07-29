@@ -125,9 +125,12 @@ def get_mode(map):
     except KeyError:
         raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % val)
 
-def get_memory(_map, number):
+def get_raw_memory(map, number):
     offset = number * MEM_LOC_SIZE
-    map = MemoryMap(_map[offset : offset + MEM_LOC_SIZE])
+    return MemoryMap(map[offset : offset + MEM_LOC_SIZE])
+
+def get_memory(_map, number):
+    map = get_raw_memory(_map, number)
     mem = chirp_common.Memory()
     mem.number = number
 
@@ -232,8 +235,7 @@ def set_mode(map, mode):
     map[POS_MODE_START] = struct.pack(">H", val)
 
 def set_memory(_map, mem):
-    offset = mem.number * MEM_LOC_SIZE
-    map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
+    map = get_raw_memory(_map, mem.number)
 
     set_freq(map, mem.freq)
     set_name(map, mem.name)

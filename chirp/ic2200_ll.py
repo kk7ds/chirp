@@ -116,9 +116,12 @@ def get_dtcs_polarity(map):
 
     return pol_values[val]
 
-def get_memory(_map, number):
+def get_raw_memory(map, number):
     offset = number * MEM_LOC_SIZE
-    map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
+    return MemoryMap(map[offset:offset + MEM_LOC_SIZE])
+
+def get_memory(_map, number):
+    map = get_raw_memory(_map, number)
 
     if not is_used(_map, number):
         return None
@@ -208,8 +211,7 @@ def set_dtcs_polarity(map, polarity):
     map[POS_DTCS_POL] = val
 
 def set_memory(_map, memory):
-    offset = memory.number * MEM_LOC_SIZE
-    map = MemoryMap(_map[offset:offset+MEM_LOC_SIZE])
+    map = get_raw_memory(_map, memory.number)
 
     if not is_used(_map, memory.number):
         # Assume this is empty now, so initialize bits

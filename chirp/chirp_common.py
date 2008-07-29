@@ -202,6 +202,8 @@ class IcomRadio:
     def set_banks(self, vfo=None):
         pass
 
+    def get_raw_memory(self, number):
+        pass
     
 class IcomMmapRadio(IcomRadio):
     BAUDRATE = 9600

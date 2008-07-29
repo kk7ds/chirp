@@ -174,9 +174,12 @@ def get_dup_offset(map):
 
     return float(val * 5.0) / 1000.0
 
-def get_memory(_map, number):
+def get_raw_memory(map, number):
     offset = (number * MEM_LOC_SIZE) + MEM_LOC_START
-    map = MemoryMap(_map[offset:offset + MEM_LOC_SIZE])
+    return MemoryMap(map[offset:offset + MEM_LOC_SIZE])
+
+def get_memory(_map, number):
+    map = get_raw_memory(_map, number)
 
     mem = chirp_common.Memory()
 
@@ -308,8 +311,7 @@ def set_tone_enabled(map, enc, sql, dtcs):
     map[POS_TENB] = val
 
 def set_memory(_map, mem):
-    offset = (mem.number * MEM_LOC_SIZE) + MEM_LOC_START
-    map = MemoryMap(_map[offset:offset+MEM_LOC_SIZE])
+    map = get_raw_memory(_map, mem.number)
 
     set_freq(map, mem.freq)
     set_name(map, mem.name)
