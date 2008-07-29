@@ -65,7 +65,9 @@ class Memory:
     mode = "FM"
     tuningStep = 5.0
 
-    CSV_FORMAT = "Location,Name,Frequency,ToneFreq,ToneEnabled,Duplex,Mode,"
+    CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset," + \
+        "rToneFreq,rToneOn,cToneFreq,cToneOn,DtcsCode,DtcsOn,DtcsPolarity," + \
+        "Mode," 
 
     def __str__(self):
         if self.tencEnabled:
@@ -105,17 +107,24 @@ class Memory:
              self.tuningStep)
 
     def to_csv(self):
-        if self.toneEnabled:
-            te = "X"
-        else:
-            te = ""
-        s = "%i,%s,%.5f,%.1f,%s,%s,%s," % (self.number,
-                                           self.name,
-                                           self.freq,
-                                           self.tone,
-                                           te,
-                                           self.duplex,
-                                           self.mode)
+        rte = self.tencEnabled and "X" or ""
+        cte = self.tsqlEnabled and "X" or ""
+        dte = self.dtcsEnabled and "X" or ""
+
+        s = "%i,%s,%.5f,%s,%.5f,%.1f,%s,%.1f,%s,%03i,%s,%s,%s," % ( \
+            self.number,
+            self.name,
+            self.freq,
+            self.duplex,
+            self.offset,
+            self.rtone,
+            rte,
+            self.ctone,
+            cte,
+            self.dtcs,
+            dte,
+            self.dtcsPolarity,
+            self.mode)
 
         return s
 
