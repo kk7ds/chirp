@@ -23,6 +23,27 @@ import util
 import errors
 from memmap import MemoryMap
 
+tuning_steps = {
+    0 : 5.0,
+    1 : 6.25,
+    2 : 8.33,
+    3 : 9.0,
+    4 : 10.0,
+    5 : 12.5,
+    6 : 15,
+    7 : 20,
+    8 : 25,
+    9 : 30,
+    10: 50,
+    11: 100,
+    12: 125,
+    13: 200
+    }
+
+tuning_steps_rev = {}
+for idx, val in tuning_steps.items():
+    tuning_steps_rev[val] = idx
+
 def BCDencode(val, bigendian=True, width=None):
     digits = []
     while val != 0:
@@ -170,6 +191,9 @@ class IC92MemoryFrame(IC92Frame):
         self._offset = float("%x.%02x%02x%02x" % (ord(map[11]), ord(map[10]),
                                                   ord(map[9]),  ord(map[8])))
 
+        index = ord(map[21]) & 0x0F
+        self._ts = tuning_steps[index]               
+
     def make_raw(self):
         map = MemoryMap("\x00" * 60)
 
@@ -232,6 +256,11 @@ class IC92MemoryFrame(IC92Frame):
         val |= polarity_values[self._dtcsPolarity]
         map[23] = val
 
+        val = ord(map[21]) & 0xF0
+        idx = tuning_steps_rev[self._ts]
+        val |= idx
+        map[21] = val
+
         self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
         if self._vfo == 1:
             self._rawdata += map.get_packed()[:38]
@@ -256,6 +285,7 @@ class IC92MemoryFrame(IC92Frame):
         self._tencEnabled = memory.tencEnabled
         self._tsqlEnabled = memory.tsqlEnabled
         self._dtcsEnabled = memory.dtcsEnabled
+        self._ts = memory.tuningStep
 
     def __str__(self):
         return "%i: %.2f (%s) (DV=%s)" % (self._number,

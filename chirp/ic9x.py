@@ -48,6 +48,7 @@ class IC9xRadio(chirp_common.IcomRadio):
         mem.tencEnabled = mframe._tencEnabled
         mem.tsqlEnabled = mframe._tsqlEnabled
         mem.dtcsEnabled = mframe._dtcsEnabled
+        mem.tuningStep = mframe._ts
 
         return mem
 
