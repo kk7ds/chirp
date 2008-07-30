@@ -227,6 +227,7 @@ class CsvDumpApp:
             except errors.InvalidMemoryLocation:
                 continue
             except Exception, e:
+                print "Parse error: %s" % e
                 break # FIXME: Report error here
 
             memories.append(m)
