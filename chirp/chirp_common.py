@@ -133,7 +133,7 @@ class Memory:
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
         vals = line.split(",")
-        if len(vals) != 7 and len(vals) != 8:
+        if len(vals) != 13 and len(vals) != 14:
             raise errors.InvalidDataError("CSV format error")
 
         try:
@@ -149,27 +149,65 @@ class Memory:
         except:
             raise errors.InvalidDataError("Frequency is not a valid number")
 
-        try:
-            self.tone = float(vals[3])
-        except:
-            raise errors.InvalidDataError("Tone is not a valid number")
-        if self.tone not in TONES:
-            raise errors.InvalidDataError("Tone is not valid")
-
-        if vals[4] == "X":
-            self.toneEnabled = True
-        elif vals[4].strip() == "":
-            self.toneEnabled = False
-        else:
-            raise errors.InvalidDataError("ToneEnabled is not a valid boolean")
-
-        if vals[5].strip() in ["+", "-", ""]:
-            self.duplex = vals[5].strip()
+        if vals[3].strip() in ["+", "-", ""]:
+            self.duplex = vals[3].strip()
         else:
             raise errors.InvalidDataError("Duplex is not +,-, or empty")
 
-        if vals[6] in MODES:
-            self.mode = vals[6]
+        try:
+            self.offset = float(vals[4])
+        except:
+            raise error.InvalidDataError("Offset is not a valid number")
+        
+        try:
+            self.rtone = float(vals[5])
+        except:
+            raise errors.InvalidDataError("rTone is not a valid number")
+        if self.rtone not in TONES:
+            raise errors.InvalidDataError("rTone is not valid")
+
+        if vals[6] == "X":
+            self.toneEnabled = True
+        elif vals[6].strip() == "":
+            self.tencEnabled = False
+        else:
+            raise errors.InvalidDataError("TencEnabled is not a valid boolean")
+
+        try:
+            self.ctone = float(vals[7])
+        except:
+            raise errors.InvalidDataError("cTone is not a valid number")
+        if self.ctone not in TONES:
+            raise errors.InvalidDataError("cTone is not valid")
+
+        if vals[8] == "X":
+            self.tsqlEnabled = True
+        elif vals[8].strip() == "":
+            self.tsqlEnabled = False
+        else:
+            raise errors.InvalidDataError("TsqlEnabled is not a valid boolean")
+
+        try:
+            self.dtcs = int(vals[9], 10)
+        except:
+            raise errors.InvalidDataError("DTCS code is not a valid number")
+        if self.dtcs not in DTCS_CODES:
+            raise errors.InvalidDataError("DTCS code is not valid")
+
+        if vals[10] == "X":
+            self.dtcsEnabled = True
+        elif vals[10].strip() == "":
+            self.dtcsEnabled = False
+        else:
+            raise errors.InvalidDataError("DtcsEnabled is not a valid boolean")
+
+        if vals[11] in ["NN", "NR", "RN", "RR"]:
+            self.dtcsPolarity = vals[11]
+        else:
+            raise errors.InvalidDataError("DtcsPolarity is not valid")
+
+        if vals[12] in MODES:
+            self.mode = vals[12]
         else:
             raise errors.InvalidDataError("Mode is not valid")           
 
