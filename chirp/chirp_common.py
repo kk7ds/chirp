@@ -167,7 +167,7 @@ class Memory:
             raise errors.InvalidDataError("rTone is not valid")
 
         if vals[6] == "X":
-            self.toneEnabled = True
+            self.tencEnabled = True
         elif vals[6].strip() == "":
             self.tencEnabled = False
         else:
