@@ -43,6 +43,24 @@ DTCS_CODES = [
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV"]
 
+STD_2M_OFFSETS = [
+    (145.1, 145.5, -0.600),
+    (146.0, 146.4, 0.600),
+    (146.6, 147.0, -0.600),
+    (147.0, 147.4, 0.600),
+    (147.6, 148.0, -0.600),
+    ]
+
+STD_70CM_OFFSETS = [
+    (440.0, 445.0, 5),
+    (445.0, 450.0, -5),
+    ]
+
+STD_OFFSETS = {
+    1 : STD_2M_OFFSETS,
+    4 : STD_70CM_OFFSETS,
+    }
+
 class IcomFrame:
     pass
 
