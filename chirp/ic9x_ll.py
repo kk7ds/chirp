@@ -143,8 +143,8 @@ class IC92MemoryFrame(IC92Frame):
         else:
             self._duplex = ""
 
-        self._tencEnabled = (tdup & 0x14) == 0x04
-        self._tsqlEnabled = (tdup & 0x11) == 0x01
+        self._tencEnabled = (tdup & 0x14) == 0x14
+        self._tsqlEnabled = (tdup & 0x11) == 0x11
         self._dtcsEnabled = (tdup & 0x15) == 0x15
 
         polarity_values = {0x00 : "NN",

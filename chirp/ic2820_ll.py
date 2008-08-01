@@ -109,12 +109,12 @@ def get_tone_enabled(map):
     
     enc = sql = dtcs = False
 
-    if val == 0x04:
-        enc = True
-    elif val == 0x2C:
+    if (val & 0x0C) == 0x0C:
         sql = True
-    elif val == 0x38:
+    elif (val & 0x38) == 0x38:
         dtcs = True
+    elif (val & 0x04) == 0x04:
+        enc = True
 
     return enc, sql, dtcs
 
