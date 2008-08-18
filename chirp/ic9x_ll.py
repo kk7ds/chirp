@@ -143,9 +143,9 @@ class IC92MemoryFrame(IC92Frame):
         else:
             self._duplex = ""
 
-        self._tencEnabled = (tdup & 0x14) == 0x14
-        self._tsqlEnabled = (tdup & 0x11) == 0x11
-        self._dtcsEnabled = (tdup & 0x15) == 0x15
+        self._tencEnabled = (tdup & 0x05) == 0x04
+        self._tsqlEnabled = (tdup & 0x05) == 0x01
+        self._dtcsEnabled = (tdup & 0x05) == 0x05
 
         polarity_values = {0x00 : "NN",
                            0x04 : "NR",
@@ -346,9 +346,6 @@ def get_memory(pipe, vfo, number):
 
     if frames[0]._data[5] == '\xff':
         raise errors.InvalidMemoryLocation("Radio says location is empty")
-
-    print "Memory result (%i):\n%s" % (len(frames[0]._data),
-                                       util.hexprint(frames[0]._data))
 
     mf = IC92MemoryFrame()
     mf.from_frame(frames[0])
