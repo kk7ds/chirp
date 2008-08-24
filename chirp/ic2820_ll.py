@@ -129,6 +129,10 @@ def get_raw_memory(map, number):
     offset = number * MEM_LOC_SIZE
     return MemoryMap(map[offset : offset + MEM_LOC_SIZE])
 
+def set_raw_memory(dst, src, number):
+    offset = number * MEM_LOC_SIZE
+    dst[offset] = src.get_packed()
+
 def get_memory(_map, number):
     map = get_raw_memory(_map, number)
     mem = chirp_common.Memory()
@@ -248,7 +252,7 @@ def set_memory(_map, mem):
     set_tone_enabled(map, mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled)
     set_mode(map, mem.mode)
 
-    _map[offset] = map.get_packed()
+    set_raw_memory(_map, map, mem.number)
 
     return _map
 
