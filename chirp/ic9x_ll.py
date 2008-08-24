@@ -263,11 +263,13 @@ class IC92MemoryFrame(IC92Frame):
 
         self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
         if self._vfo == 1:
-            self._rawdata += map.get_packed()[:38]
+            self._rawdata += map.get_packed()[:34]
         else:
             self._rawdata += map.get_packed()
 
-        print "Raw memory frame:\n%s\n" % util.hexprint(self._rawdata[2:])
+        print "Raw memory frame (%i):\n%s\n" % (\
+            len(self._rawdata) - 4,
+            util.hexprint(self._rawdata[4:]))
 
     def set_memory(self, memory, vfo):
         # This is really dumb... FIXME

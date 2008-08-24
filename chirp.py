@@ -190,8 +190,10 @@ else:
 radio = rclass(s)
 
 if options.raw:
-    print "Memory location %i:\n%s" % (int(args[0]),
-                                       radio.get_raw_memory(int(args[0])))
+    data = radio.get_raw_memory(int(args[0]))
+    print "Memory location %i (%i):\n%s" % (int(args[0]),
+                                            len(data),
+                                            data)
     sys.exit(0)
 
 if options.set_mem_dup is not None:
