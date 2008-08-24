@@ -143,9 +143,21 @@ class IC92MemoryFrame(IC92Frame):
         else:
             self._duplex = ""
 
-        self._tencEnabled = (tdup & 0x05) == 0x04
-        self._tsqlEnabled = (tdup & 0x05) == 0x01
-        self._dtcsEnabled = (tdup & 0x05) == 0x05
+        self._tencEnabled = self._tsqlEnabled = self._dtcsEnabled = False
+            
+        tval = tdup & 0x1E
+        if tval == 0x00:
+            pass # No tone
+        elif tval == 0x04:
+            self._tencEnabled = True
+        elif tval == 0x0C:
+            self._tsqlEnabled = True
+        elif tval == 0x14:
+            self._dtcsEnabled = True
+        elif tval == 0x18:
+            pass # TSQL-R
+        elif tval == 0x1C:
+            pass # DTCS-R
 
         polarity_values = {0x00 : "NN",
                            0x04 : "NR",
@@ -209,7 +221,7 @@ class IC92MemoryFrame(IC92Frame):
 
         map[26] = self._name.ljust(8)[:8]
 
-        dup = ord(map[22]) & 0xF8
+        dup = ord(map[22]) & 0xE0
         if self._duplex == "-":
             dup |= 0x01
         elif self._duplex == "+":
@@ -218,9 +230,9 @@ class IC92MemoryFrame(IC92Frame):
         if self._tencEnabled:
             dup |= 0x04
         if self._tsqlEnabled:
-            dup |= 0x01
+            dup |= 0x0C
         if self._dtcsEnabled:
-            dup |= 0x15
+            dup |= 0x14
 
         map[22] = dup
 
