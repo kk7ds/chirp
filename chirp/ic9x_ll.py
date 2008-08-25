@@ -145,7 +145,7 @@ class IC92MemoryFrame(IC92Frame):
 
         self._tencEnabled = self._tsqlEnabled = self._dtcsEnabled = False
             
-        tval = tdup & 0x1D
+        tval = tdup & 0x1C
         if tval == 0x00:
             pass # No tone
         elif tval == 0x04:
@@ -205,6 +205,11 @@ class IC92MemoryFrame(IC92Frame):
 
         index = ord(map[21]) & 0x0F
         self._ts = tuning_steps[index]               
+
+        if self.isDV:
+            self._urcall = map[26:33].strip()
+            self._rpt1call = map[36:43].strip()
+            self._rpt2call = map[44:51].strip()
 
     def make_raw(self):
         map = MemoryMap("\x00" * 60)

@@ -34,7 +34,14 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
 
-        mem = chirp_common.Memory()
+        if mframe.isDV:
+            mem = chirp_common.DVMemory()
+            mem.UrCall = mframe._urcall
+            mem.Rpt1Call = mframe._rpt1call
+            mem.Rpt2Call = mframe._rpt2call
+        else:
+            mem = chirp_common.Memory()
+
         mem.freq = mframe._freq
         mem.number = int("%02x" % mframe._number)
         mem.name = mframe._name
