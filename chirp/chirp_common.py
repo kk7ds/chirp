@@ -231,6 +231,18 @@ class Memory:
 
         return True
 
+class DVMemory(Memory):
+    UrCall = "CQCQCQ"
+    Rpt1Call = ""
+    Rpt2Call = ""
+
+    def __str__(self):
+        s = Memory.__str__(self)
+
+        s += " <%s,%s,%s>" % (self.UrCall, self.Rpt1Call, self.Rpt2Call)
+
+        return s
+
 class Bank:
     name = "BANK"
     vfo = 0
