@@ -1,0 +1,2 @@
+class Editor:
+    root = None

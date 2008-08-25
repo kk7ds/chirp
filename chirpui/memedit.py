@@ -1,0 +1,276 @@
+import gtk
+from gobject import TYPE_INT, \
+    TYPE_DOUBLE as TYPE_FLOAT, \
+    TYPE_STRING, \
+    TYPE_BOOLEAN
+
+import common
+try:
+    from chirp import chirp_common, ic2820
+except ImportError:
+    import sys
+    sys.path.insert(0, "..")
+    from chirp import chirp_common, ic2820
+
+def handle_toggle(rend, path, store, col):
+    store[path][col] = not store[path][col]    
+
+def handle_ed(rend, path, new, store, col):
+    iter = store.get_iter(path)
+    store.set(iter, col, new)
+
+class MemoryEditor(common.Editor):
+    
+    def ed_name(self, rend, path, new, col):
+        return new[:self.name_length]
+
+    def ed_freq(self, rend, path, new, col):
+        def set_offset(path, offset):
+            if offset > 0:
+                dup = "+"
+            elif offset == 0:
+                dup = ""
+            else:
+                dup = "-"
+                offset *= -1
+
+            iter = self.store.get_iter(path)
+            
+            if offset:
+                self.store.set(iter, self.col("Offset"), offset)
+
+            self.store.set(iter, self.col("Duplex"), dup)
+
+        try:
+            new = float(new)
+        except Exception, e:
+            print e
+            new = None
+
+        if new:
+            set_offset(path, 0)
+            band = int(new / 100)
+            if chirp_common.STD_OFFSETS.has_key(band):
+                offsets = chirp_common.STD_OFFSETS[band]
+                for lo, hi, offset in offsets:
+                    if new < hi and new > lo:
+                        set_offset(path, offset)
+                        break
+
+        return new
+
+    def edited(self, rend, path, new, cap):
+        colnum = self.col(cap)
+        funcs = {
+            "Name" : self.ed_name,
+            "Frequency" : self.ed_freq,
+            }
+
+        if funcs.has_key(cap):
+            new = funcs[cap](rend, path, new, colnum)
+
+        if not new:
+            print "Bad value for %s: %s" % (cap, new)
+            return
+
+        if self.store.get_column_type(colnum) == TYPE_INT:
+            new = int(new)
+        elif self.store.get_column_type(colnum) == TYPE_FLOAT:
+            new = float(new)
+        elif self.store.get_column_type(colnum) == TYPE_BOOLEAN:
+            new = bool(new)
+
+        handle_ed(rend, path, new, self.store, self.col(cap))
+
+    def _render(self, colnum, val):
+        if colnum == self.col("Frequency"):
+            val = "%.5f" % val
+        elif colnum == self.col("DTCS Code"):
+            val = "%03i" % int(val)
+        elif colnum == self.col("Offset"):
+            val = "%.3f" % val
+        elif colnum in [self.col("Tone"), self.col("ToneSql")]:
+            val = "%.1f" % val
+
+        return val
+
+    def render(self, col, rend, model, iter, colnum):
+        val = self._render(colnum, model.get_value(iter, colnum))
+        rend.set_property("text", "%s" % val)
+
+    def make_editor(self):
+        self.cols = [
+            ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
+            ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
+            ("Frequency" , TYPE_FLOAT,  gtk.CellRendererText,  ),
+            ("Tone Mode" , TYPE_STRING, gtk.CellRendererCombo, ),
+            ("Tone"      , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+            ("ToneSql"   , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+            ("DTCS Code" , TYPE_INT,    gtk.CellRendererCombo, ),
+            ("DTCS Pol"  , TYPE_STRING, gtk.CellRendererCombo, ),
+            ("Duplex"    , TYPE_STRING, gtk.CellRendererCombo, ),
+            ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
+            ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
+            ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+            ]
+
+        types = tuple([x[1] for x in self.cols])
+        self.store = gtk.ListStore(*types)
+
+        self.view = gtk.TreeView(self.store)
+
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw.add(self.view)
+
+        i = 0
+        for c, t, r in self.cols:
+            rend = r()
+            if t == TYPE_BOOLEAN:
+                rend.set_property("activatable", True)
+                rend.connect("toggled", handle_toggle, self.store, i)
+                col = gtk.TreeViewColumn(c, rend, active=i)
+            elif r == gtk.CellRendererCombo:
+                choices = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+                for choice in self.choices[c]:
+                    choices.append([choice, self._render(i, choice)])
+                rend.set_property("model", choices)
+                rend.set_property("text-column", 1)
+                rend.set_property("editable", True)
+                rend.set_property("has-entry", False)
+                rend.connect("edited", self.edited, c)
+                col = gtk.TreeViewColumn(c, rend, text=i)
+                col.set_cell_data_func(rend, self.render, i)
+            else:
+                rend.set_property("editable", True)
+                rend.connect("edited", self.edited, c)
+                col = gtk.TreeViewColumn(c, rend, text=i)
+                col.set_cell_data_func(rend, self.render, i)
+                
+            col.set_sort_column_id(i)
+            col.set_resizable(True)
+            col.set_min_width(1)
+            self.view.append_column(col)
+
+            i += 1
+
+        self.view.show()
+
+        return sw
+
+    def col(self, caption):
+        i = 0
+        for column in self.cols:
+            if column[0] == caption:
+                return i
+
+            i += 1
+
+        print "Not found: %s" % caption
+
+        return None
+
+    def prefill(self):
+        for i in range(0, self.count):
+            iter = self.store.append()
+
+            defs = []
+
+            for cap in [x[0] for x in self.cols]:
+                if cap == "Loc":
+                    val = i
+                else:
+                    val = self.defaults[cap]
+
+                defs.append(self.col(cap))
+                defs.append(val)
+
+            self.store.set(iter, *tuple(defs))
+
+    def _set_memory(self, iter, memory):
+        if memory.dtcsEnabled:
+            tmode = "DTCS"
+        elif memory.tsqlEnabled:
+            tmode = "TSQL"
+        elif memory.tencEnabled:
+            tmode = "TONE"
+        else:
+            tmode = ""
+
+        self.store.set(iter,
+                       self.col("Name"), memory.name,
+                       self.col("Frequency"), memory.freq,
+                       self.col("Tone Mode"), tmode,
+                       self.col("Tone"), memory.rtone,
+                       self.col("ToneSql"), memory.ctone,
+                       self.col("DTCS Code"), memory.dtcs,
+                       self.col("DTCS Pol"), memory.dtcsPolarity,
+                       self.col("Duplex"), memory.duplex,
+                       self.col("Offset"), memory.offset,
+                       self.col("Mode"), memory.mode,
+                       self.col("Tune Step"), memory.tuningStep)
+
+    def set_memory(self, memory):
+        iter = self.store.get_iter_first()
+
+        while iter is not None:
+            loc, = self.store.get(iter, self.col("Loc"))
+            if loc == memory.number:
+                return self._set_memory(iter, memory)
+
+            iter = self.store.iter_next(iter)
+
+        iter = self.store.append()
+        self._set_memory(iter, memory)
+
+    def __init__(self):
+        self.allowed_bands = [144, 440]
+        self.count = 100
+        self.name_length = 8
+        self.defaults = {
+            "Name"      : "",
+            "Frequency" : 146.010,
+            "Tone"      : 88.5,
+            "Tone On"   : False,
+            "ToneSql"   : 88.5,
+            "ToneSql On": False,
+            "DTCS Code" : 23,
+            "DTCS On"   : False,
+            "DTCS Pol"  : "NN",
+            "Duplex"    : "",
+            "Offset"    : 0.0,
+            "Mode"      : "FM",
+            "Tune Step" : 10.0,
+            "Tone Mode" : "",
+            }
+
+        self.choices = {
+            "Tone" : chirp_common.TONES,
+            "ToneSql" : chirp_common.TONES,
+            "DTCS Code" : chirp_common.DTCS_CODES,
+            "DTCS Pol" : ["NN", "NR", "RN", "RR"],
+            "Mode" : chirp_common.MODES,
+            "Duplex" : ["", "-", "+"],
+            "Tune Step" : [5, 10],
+            "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
+            }
+
+        self.root = self.make_editor()
+        self.prefill()
+
+if __name__ == "__main__":
+    e = MemoryEditor()
+    w = gtk.Window()
+    w.add(e.root)
+    e.root.show()
+    w.show()
+
+    import serial
+    r = ic2820.IC2820Radio("../ic2820.img")
+
+    for i in range(20):
+        m = r.get_memory(i)
+        if m:
+            e.set_memory(m)
+
+    gtk.main()
