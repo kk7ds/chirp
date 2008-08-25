@@ -145,7 +145,7 @@ class IC92MemoryFrame(IC92Frame):
 
         self._tencEnabled = self._tsqlEnabled = self._dtcsEnabled = False
             
-        tval = tdup & 0x1E
+        tval = tdup & 0x1D
         if tval == 0x00:
             pass # No tone
         elif tval == 0x04:
