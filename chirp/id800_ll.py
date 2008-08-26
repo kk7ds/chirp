@@ -177,8 +177,11 @@ def get_dup_offset(map):
 
     return float(val * 5.0) / 1000.0
 
+def get_mem_offset(number):
+    return (number * MEM_LOC_SIZE) + MEM_LOC_START
+
 def get_raw_memory(map, number):
-    offset = (number * MEM_LOC_SIZE) + MEM_LOC_START
+    offset = get_mem_offset(number)
     return MemoryMap(map[offset:offset + MEM_LOC_SIZE])
 
 def get_call_indices(map):
@@ -367,7 +370,7 @@ def set_memory(_map, mem):
                      mem.dtcsEnabled)
     set_dtcs_polarity(map, mem.dtcsPolarity)
 
-    _map[offset] = map.get_packed()
+    _map[get_mem_offset(mem.number)] = map.get_packed()
 
     return _map
 
