@@ -6,11 +6,11 @@ from gobject import TYPE_INT, \
 
 import common
 try:
-    from chirp import chirp_common, ic2820
+    from chirp import chirp_common, id800
 except ImportError:
     import sys
     sys.path.insert(0, "..")
-    from chirp import chirp_common, ic2820
+    from chirp import chirp_common, id800
 
 def handle_toggle(rend, path, store, col):
     store[path][col] = not store[path][col]    
@@ -164,9 +164,12 @@ class MemoryEditor(common.Editor):
                 rend.connect("toggled", handle_toggle, self.store, i)
                 col = gtk.TreeViewColumn(c, rend, active=i)
             elif r == gtk.CellRendererCombo:
-                choices = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-                for choice in self.choices[c]:
-                    choices.append([choice, self._render(i, choice)])
+                if isinstance(self.choices[c], gtk.ListStore):
+                    choices = self.choices[c]
+                else:
+                    choices = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+                    for choice in self.choices[c]:
+                        choices.append([choice, self._render(i, choice)])
                 rend.set_property("model", choices)
                 rend.set_property("text-column", 1)
                 rend.set_property("editable", True)
@@ -311,21 +314,43 @@ class MemoryEditor(common.Editor):
         self.root = self.make_editor()
         self.prefill()
 
-class ID800MemoryEditor(MemoryEditor):
+class LimitedDstarMemoryEditor(MemoryEditor):
     def __init__(self):
         self.cols += [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
 
-        self.choices["URCALL"] = ["A", "B"]
-        self.choices["RPT1CALL"] = ["", "A", "B"]
-        self.choices["RPT2CALL"] = ["", "A", "B"]
+        self.choices["URCALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+        self.choices["RPT1CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+        self.choices["RPT2CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+
+        iter = self.choices["URCALL"].append(("CQCQCQ", "CQCQCQ"))
+        self.choices["RPT1CALL"].append(("", ""))
+        self.choices["RPT2CALL"].append(("", ""))
 
         self.defaults["URCALL"] = "CQCQCQ"
         self.defaults["RPT1CALL"] = ""
         self.defaults["RPT2CALL"] = ""
 
         MemoryEditor.__init__(self)
+    
+    def set_urcall_list(self, urcalls):
+        store = self.choices["URCALL"]
+
+        store.clear()
+        for call in urcalls:
+            store.append((call, call))
+
+    def set_repeater_list(self, repeaters):
+        for listname in ["RPT1CALL", "RPT2CALL"]:
+            store = self.choices[listname]
+
+            store.clear()
+            for call in repeaters:
+                store.append((call, call))
+
+class ID800MemoryEditor(LimitedDstarMemoryEditor):
+    pass
 
 if __name__ == "__main__":
     e = ID800MemoryEditor()
@@ -335,12 +360,15 @@ if __name__ == "__main__":
     w.show()
 
     import serial
-    r = ic2820.IC2820Radio("../ic2820.img")
+    r = id800.ID800v2Radio("../id800.img")
 
     for i in range(20):
         m = r.get_memory(i)
         if m:
             e.set_memory(m)
+
+    e.set_urcall_list(r.get_urcall_list())
+    e.set_repeater_list(r.get_repeater_call_list())
 
     try:
         gtk.main()
@@ -351,4 +379,4 @@ if __name__ == "__main__":
         print i
         r.set_memory(i)
 
-    r.save_mmap("../ic2820.img")
+    r.save_mmap("../id800.img")
