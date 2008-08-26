@@ -20,6 +20,48 @@ def handle_ed(rend, path, new, store, col):
     store.set(iter, col, new)
 
 class MemoryEditor(common.Editor):
+    cols = [
+        ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
+        ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
+        ("Frequency" , TYPE_FLOAT,  gtk.CellRendererText,  ),
+        ("Tone Mode" , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Tone"      , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+        ("ToneSql"   , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+        ("DTCS Code" , TYPE_INT,    gtk.CellRendererCombo, ),
+        ("DTCS Pol"  , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Duplex"    , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
+        ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+        ]
+
+    defaults = {
+        "Name"      : "",
+        "Frequency" : 146.010,
+        "Tone"      : 88.5,
+        "Tone On"   : False,
+        "ToneSql"   : 88.5,
+        "ToneSql On": False,
+        "DTCS Code" : 23,
+        "DTCS On"   : False,
+        "DTCS Pol"  : "NN",
+        "Duplex"    : "",
+        "Offset"    : 0.0,
+        "Mode"      : "FM",
+        "Tune Step" : 10.0,
+        "Tone Mode" : "",
+        }
+
+    choices = {
+        "Tone" : chirp_common.TONES,
+        "ToneSql" : chirp_common.TONES,
+        "DTCS Code" : chirp_common.DTCS_CODES,
+        "DTCS Pol" : ["NN", "NR", "RN", "RR"],
+        "Mode" : chirp_common.MODES,
+        "Duplex" : ["", "-", "+"],
+        "Tune Step" : [5, 10],
+        "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
+        }
     
     def ed_name(self, rend, path, new, col):
         return new[:self.name_length]
@@ -69,7 +111,7 @@ class MemoryEditor(common.Editor):
         if funcs.has_key(cap):
             new = funcs[cap](rend, path, new, colnum)
 
-        if not new:
+        if new is None:
             print "Bad value for %s: %s" % (cap, new)
             return
 
@@ -81,6 +123,12 @@ class MemoryEditor(common.Editor):
             new = bool(new)
 
         handle_ed(rend, path, new, self.store, self.col(cap))
+
+        iter = self.store.get_iter(path)
+        loc, = self.store.get(iter, self.col("Loc"))
+        if loc not in self.changed_memories:
+            self.changed_memories.append(loc)
+        print "Changed memories: %s" % self.changed_memories
 
     def _render(self, colnum, val):
         if colnum == self.col("Frequency"):
@@ -99,21 +147,6 @@ class MemoryEditor(common.Editor):
         rend.set_property("text", "%s" % val)
 
     def make_editor(self):
-        self.cols = [
-            ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
-            ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
-            ("Frequency" , TYPE_FLOAT,  gtk.CellRendererText,  ),
-            ("Tone Mode" , TYPE_STRING, gtk.CellRendererCombo, ),
-            ("Tone"      , TYPE_FLOAT,  gtk.CellRendererCombo, ),
-            ("ToneSql"   , TYPE_FLOAT,  gtk.CellRendererCombo, ),
-            ("DTCS Code" , TYPE_INT,    gtk.CellRendererCombo, ),
-            ("DTCS Pol"  , TYPE_STRING, gtk.CellRendererCombo, ),
-            ("Duplex"    , TYPE_STRING, gtk.CellRendererCombo, ),
-            ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
-            ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
-            ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
-            ]
-
         types = tuple([x[1] for x in self.cols])
         self.store = gtk.ListStore(*types)
 
@@ -223,43 +256,79 @@ class MemoryEditor(common.Editor):
         iter = self.store.append()
         self._set_memory(iter, memory)
 
+    def _get_memory(self, iter):
+        vals = self.store.get(iter, *range(0, len(self.cols)))
+        if vals[self.col("Mode")] == "DV":
+            mem = chirp_common.DVMemory()
+            mem.UrCall = vals[self.col("URCALL")]
+            mem.Rpt1Call = vals[self.col("RPT1CALL")]
+            mem.Rpt2Call = vals[self.col("RPT2CALL")]
+        else:
+            mem = chirp_common.Memory()
+
+        mem.freq = vals[self.col("Frequency")]
+        mem.number = vals[self.col("Loc")]
+        mem.name = vals[self.col("Name")]
+        mem.vfo = 0
+        mem.rtone = vals[self.col("Tone")]
+        mem.ctone = vals[self.col("ToneSql")]
+        mem.dtcs = vals[self.col("DTCS Code")]
+        mem.tencEnabled = mem.tsqlEnabled = mem.dtcsEnabled = False
+        tmode = vals[self.col("Tone Mode")]
+        if tmode == "TONE":
+            mem.tencEnabled = True
+        elif tmode == "TSQL":
+            mem.tsqlEnabled = True
+        elif tmode == "DTCS":
+            mem.dtcsEnabled = True
+        mem.dtcsPolarity = vals[self.col("DTCS Pol")]
+        mem.duplex = vals[self.col("Duplex")]
+        mem.offset = vals[self.col("Offset")]
+        mem.mode = vals[self.col("Mode")]
+        mem.tuningStep = vals[self.col("Tune Step")]
+
+        return mem
+
+    def get_changed_memories(self):
+        mems = []
+        iter = self.store.get_iter_first()
+
+        while iter is not None:
+            loc, = self.store.get(iter, self.col("Loc"))
+            if loc in self.changed_memories:
+                mems.append(self._get_memory(iter))
+
+            iter = self.store.iter_next(iter)
+
+        return mems
+
     def __init__(self):
+        self.changed_memories = []
+
         self.allowed_bands = [144, 440]
         self.count = 100
         self.name_length = 8
-        self.defaults = {
-            "Name"      : "",
-            "Frequency" : 146.010,
-            "Tone"      : 88.5,
-            "Tone On"   : False,
-            "ToneSql"   : 88.5,
-            "ToneSql On": False,
-            "DTCS Code" : 23,
-            "DTCS On"   : False,
-            "DTCS Pol"  : "NN",
-            "Duplex"    : "",
-            "Offset"    : 0.0,
-            "Mode"      : "FM",
-            "Tune Step" : 10.0,
-            "Tone Mode" : "",
-            }
-
-        self.choices = {
-            "Tone" : chirp_common.TONES,
-            "ToneSql" : chirp_common.TONES,
-            "DTCS Code" : chirp_common.DTCS_CODES,
-            "DTCS Pol" : ["NN", "NR", "RN", "RR"],
-            "Mode" : chirp_common.MODES,
-            "Duplex" : ["", "-", "+"],
-            "Tune Step" : [5, 10],
-            "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
-            }
-
         self.root = self.make_editor()
         self.prefill()
 
+class ID800MemoryEditor(MemoryEditor):
+    def __init__(self):
+        self.cols += [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
+                      ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
+                      ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
+
+        self.choices["URCALL"] = ["A", "B"]
+        self.choices["RPT1CALL"] = ["", "A", "B"]
+        self.choices["RPT2CALL"] = ["", "A", "B"]
+
+        self.defaults["URCALL"] = "CQCQCQ"
+        self.defaults["RPT1CALL"] = ""
+        self.defaults["RPT2CALL"] = ""
+
+        MemoryEditor.__init__(self)
+
 if __name__ == "__main__":
-    e = MemoryEditor()
+    e = ID800MemoryEditor()
     w = gtk.Window()
     w.add(e.root)
     e.root.show()
@@ -273,4 +342,13 @@ if __name__ == "__main__":
         if m:
             e.set_memory(m)
 
-    gtk.main()
+    try:
+        gtk.main()
+    except KeyboardInterrupt:
+        pass
+
+    for i in e.get_changed_memories():
+        print i
+        r.set_memory(i)
+
+    r.save_mmap("../ic2820.img")
