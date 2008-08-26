@@ -107,10 +107,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
         for i in range(*self.URCALL_LIMIT):
             call = id800_ll.get_urcall(self._mmap, i)
             if call:
-                print "%i: %s" % (i, call)
                 calls.append(call)
-            else:
-                print "no call for %i" % i
 
         return calls
 
@@ -120,10 +117,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
         for i in range(*self.RPTCALL_LIMIT):
             call = id800_ll.get_rptcall(self._mmap, i)
             if call:
-                print "%i: %s" % (i, call)
                 calls.append(call)
-            else:
-                print "No call for %i" % i
 
         return calls
 
