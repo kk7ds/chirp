@@ -116,8 +116,11 @@ def get_dtcs_polarity(map):
 
     return pol_values[val]
 
+def get_mem_offset(number):
+    return number * MEM_LOC_SIZE
+
 def get_raw_memory(map, number):
-    offset = number * MEM_LOC_SIZE
+    offset = get_mem_offset(number)
     return MemoryMap(map[offset:offset + MEM_LOC_SIZE])
 
 def get_memory(_map, number):
@@ -233,7 +236,7 @@ def set_memory(_map, memory):
                      memory.dtcsEnabled)
     set_dtcs_polarity(map, memory.dtcsPolarity)
 
-    _map[offset] = map.get_packed()
+    _map[get_mem_offset(memory.number)] = map.get_packed()
     return _map
 
 def parse_map_for_memory(map):
