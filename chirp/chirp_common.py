@@ -318,6 +318,17 @@ class IcomMmapRadio(IcomRadio):
     def process_mmap(self):
         pass
 
+class IcomLimitedDstarRadio:
+    MYCALL_LIMIT = (1, 1)
+    URCALL_LIMIT = (1, 1)
+    RPTCALL_LIMIT = (1, 1)
+    
+    def get_urcall_list(self):
+        pass
+
+    def get_repeater_call_list(self):
+        pass
+
 class Status:
     name = "Job"
     msg = "Unknown"

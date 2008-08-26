@@ -23,7 +23,8 @@ import icf
 
 import id800_ll
 
-class ID800v2Radio(chirp_common.IcomMmapRadio):
+class ID800v2Radio(chirp_common.IcomMmapRadio,
+                   chirp_common.IcomLimitedDstarRadio):
     _model = "\x27\x88\x02\x00"
     _memsize = 14528
     _endframe = "Icom Inc\x2eCB"
@@ -65,6 +66,10 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
 
                (0x38A8, 0x38C0, 16),]
 
+    MYCALL_LIMIT  = (1, 7)
+    URCALL_LIMIT  = (1, 99)
+    RPTCALL_LIMIT = (1, 59)
+
     def process_mmap(self):
         self._memories = id800_ll.parse_map_for_memory(self._mmap)
 
@@ -95,6 +100,32 @@ class ID800v2Radio(chirp_common.IcomMmapRadio):
 
     def get_raw_memory(self, number):
         return id800_ll.get_raw_memory(self._mmap, number)
+
+    def get_urcall_list(self):
+        calls = []
+
+        for i in range(*self.URCALL_LIMIT):
+            call = id800_ll.get_urcall(self._mmap, i)
+            if call:
+                print "%i: %s" % (i, call)
+                calls.append(call)
+            else:
+                print "no call for %i" % i
+
+        return calls
+
+    def get_repeater_call_list(self):
+        calls = []
+
+        for i in range(*self.RPTCALL_LIMIT):
+            call = id800_ll.get_rptcall(self._mmap, i)
+            if call:
+                print "%i: %s" % (i, call)
+                calls.append(call)
+            else:
+                print "No call for %i" % i
+
+        return calls
 
 if __name__ == "__main__":
     import serial
