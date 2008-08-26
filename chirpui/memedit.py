@@ -151,6 +151,7 @@ class MemoryEditor(common.Editor):
         self.store = gtk.ListStore(*types)
 
         self.view = gtk.TreeView(self.store)
+        self.view.set_rules_hint(True)
 
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
