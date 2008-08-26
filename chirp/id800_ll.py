@@ -38,6 +38,9 @@ POS_DTCS       =  7
 POS_DTCS_POL   = 11
 POS_DOFF_START =  3
 POS_DOFF_END   =  5
+POS_MYCALL     = 0x3220
+POS_URCALL     = 0x3250
+POS_RPTCALL    = 0x3570
 
 MEM_LOC_SIZE  = 22
 MEM_LOC_START = 0x20
@@ -178,10 +181,20 @@ def get_raw_memory(map, number):
     offset = (number * MEM_LOC_SIZE) + MEM_LOC_START
     return MemoryMap(map[offset:offset + MEM_LOC_SIZE])
 
+def get_call_indices(map):
+    return ord(map[18]), ord(map[19]), ord(map[20])
+
 def get_memory(_map, number):
     map = get_raw_memory(_map, number)
 
-    mem = chirp_common.Memory()
+    if get_mode(map) == "DV":
+        mem = chirp_common.DVMemory()
+        i_ucall, i_r1call, i_r2call = get_call_indices(map)
+        mem.UrCall = get_urcall(_map, i_ucall)
+        mem.Rpt1Call = get_rptcall(_map, i_r1call)
+        mem.Rpt2Call = get_rptcall(_map, i_r2call)
+    else:
+        mem = chirp_common.Memory()
 
     mem.freq, mem.tuningStep = get_freq_ts(map)
     mem.name = get_name(map)
@@ -196,6 +209,33 @@ def get_memory(_map, number):
     mem.dtcsPolarity = get_dtcs_polarity(map)
 
     return mem
+
+def call_location(base, index):
+    return base + (8 * (index - 1))
+
+def get_mycall(map, index):
+    if index > 7:
+        raise errors.InvalidDataError("MYCALL index must be <= 7")
+
+    start = call_location(POS_MYCALL, index)
+
+    return map[start:start+8].strip()
+
+def get_urcall(map, index):
+    if index > 99:
+        raise errors.InvalidDataError("URCALL index must be <= 99")
+
+    start = call_location(POS_URCALL, index)
+
+    return map[start:start+8].strip()
+
+def get_rptcall(map, index):
+    if index > 59:
+        raise errors.InvalidDataError("RPTCALL index must be <= 59")
+
+    start = call_location(POS_RPTCALL, index)
+
+    return map[start:start+8].strip()
 
 def parse_map_for_memory(map):
     """Returns a list of memories, given a valid memory map"""
@@ -330,6 +370,36 @@ def set_memory(_map, mem):
     _map[offset] = map.get_packed()
 
     return _map
+
+def set_mycall(map, index, call):
+    if index > 7:
+        raise errors.InvalidDataError("MYCALL index must be <= 7")
+
+    start = call_location(POS_MYCALL, index)
+    
+    map[start] = call.ljust(8)
+
+    return map
+
+def set_urcall(map, index, call):
+    if index > 99:
+        raise errors.InvalidDataError("URCALL index must be <= 99")
+
+    start = call_location(POS_URCALL, index)
+
+    map[start] = call.ljust(8)
+
+    return map
+
+def set_rptcall(map, index, call):
+    if index > 59:
+        raise errors.InvalidDataError("RPTCALL index must be <= 59")
+
+    start = call_location(POS_RPTCALL, index)
+
+    map[start] = call.ljust(8)
+
+    return map
 
 def test_basic():
     v = pack_name("DAN")
