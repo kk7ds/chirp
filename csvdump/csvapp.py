@@ -220,6 +220,7 @@ class CsvDumpApp:
         f.close()
 
         memories = []
+        lineno = 0
         for line in lines:
             m = chirp.chirp_common.Memory()
             try:
@@ -227,9 +228,10 @@ class CsvDumpApp:
             except errors.InvalidMemoryLocation:
                 continue
             except Exception, e:
-                print "Parse error: %s" % e
+                print "Parse error on line %i: %s" % (lineno, e)
                 break # FIXME: Report error here
 
+            lineno += 1
             memories.append(m)
 
         count = 0
