@@ -17,6 +17,8 @@
 import gtk
 import gobject
 
+import platform
+
 class ListWidget(gtk.HBox):
     def _toggle(self, render, path, column):
         self._store[path][column] = not self._store[path][column]
@@ -397,6 +399,31 @@ def make_choice(options, editable=True, default=None):
             pass
 
     return sel
+
+class FilenameBox(gtk.HBox):
+    def do_browse(self, widget):
+        fn = platform.get_platform().gui_save_file()
+        if fn:
+            self.filename.set_text(fn)
+
+    def __init__(self):
+        gtk.HBox.__init__(self, False, 0)
+
+        self.filename = gtk.Entry()
+        self.filename.show()
+        self.pack_start(self.filename, 1,1,1)
+
+        browse = gtk.Button("...")
+        browse.show()
+        self.pack_start(browse, 0,0,0)
+
+        browse.connect("clicked", self.do_browse)
+
+    def set_filename(self, fn):
+        self.filename.set_text(fn)
+
+    def get_filename(self):
+        return self.filename.get_text()    
 
 if __name__=="__main__":
     w = gtk.Window(gtk.WINDOW_TOPLEVEL)
