@@ -24,7 +24,7 @@ import icf
 import id800_ll
 
 class ID800v2Radio(chirp_common.IcomMmapRadio,
-                   chirp_common.IcomLimitedDstarRadio):
+                   chirp_common.IcomDstarRadio):
     _model = "\x27\x88\x02\x00"
     _memsize = 14528
     _endframe = "Icom Inc\x2eCB"

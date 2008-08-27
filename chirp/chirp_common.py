@@ -318,7 +318,7 @@ class IcomMmapRadio(IcomRadio):
     def process_mmap(self):
         pass
 
-class IcomLimitedDstarRadio:
+class IcomDstarRadio:
     MYCALL_LIMIT = (1, 1)
     URCALL_LIMIT = (1, 1)
     RPTCALL_LIMIT = (1, 1)
