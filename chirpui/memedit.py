@@ -128,7 +128,6 @@ class MemoryEditor(common.Editor):
         loc, = self.store.get(iter, self.col("Loc"))
         if loc not in self.changed_memories:
             self.changed_memories.append(loc)
-        print "Changed memories: %s" % self.changed_memories
 
     def _render(self, colnum, val):
         if colnum == self.col("Frequency"):
@@ -230,7 +229,7 @@ class MemoryEditor(common.Editor):
         elif memory.tsqlEnabled:
             tmode = "TSQL"
         elif memory.tencEnabled:
-            tmode = "TONE"
+            tmode = "Tone"
         else:
             tmode = ""
 
@@ -279,7 +278,7 @@ class MemoryEditor(common.Editor):
         mem.dtcs = vals[self.col("DTCS Code")]
         mem.tencEnabled = mem.tsqlEnabled = mem.dtcsEnabled = False
         tmode = vals[self.col("Tone Mode")]
-        if tmode == "TONE":
+        if tmode == "Tone":
             mem.tencEnabled = True
         elif tmode == "TSQL":
             mem.tsqlEnabled = True
