@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+if __name__ == "__main__":
+    import sys
+    sys.path.insert(0, "..")
+
 import gtk
 from gobject import TYPE_INT, \
     TYPE_DOUBLE as TYPE_FLOAT, \
@@ -22,12 +26,7 @@ from gobject import TYPE_INT, \
     TYPE_BOOLEAN
 
 import common
-try:
-    from chirp import chirp_common, id800
-except ImportError:
-    import sys
-    sys.path.insert(0, "..")
-    from chirp import chirp_common, id800, ic9x
+from chirp import chirp_common
 
 def handle_toggle(rend, path, store, col):
     store[path][col] = not store[path][col]    
@@ -378,6 +377,7 @@ class ID800MemoryEditor(DstarMemoryEditor):
     pass
 
 if __name__ == "__main__":
+    from chirp import id800, ic9x, ic2820, ic2200, generic
     import serial
     r = id800.ID800v2Radio("../id800.img")
     #s = serial.Serial(port="/dev/ttyUSB1", baudrate=38400, timeout=0.2)
