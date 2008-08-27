@@ -10,7 +10,7 @@ try:
 except ImportError:
     import sys
     sys.path.insert(0, "..")
-    from chirp import chirp_common, id800
+    from chirp import chirp_common, id800, ic9x
 
 def handle_toggle(rend, path, store, col):
     store[path][col] = not store[path][col]    
@@ -18,6 +18,12 @@ def handle_toggle(rend, path, store, col):
 def handle_ed(rend, path, new, store, col):
     iter = store.get_iter(path)
     store.set(iter, col, new)
+
+class ValueErrorDialog(gtk.MessageDialog):
+    def __init__(self, exception, **args):
+        gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
+        self.set_property("text", "Invalid value for this field")
+        self.format_secondary_text(str(exception))
 
 class MemoryEditor(common.Editor):
     cols = [
@@ -125,9 +131,14 @@ class MemoryEditor(common.Editor):
         handle_ed(rend, path, new, self.store, self.col(cap))
 
         iter = self.store.get_iter(path)
-        loc, = self.store.get(iter, self.col("Loc"))
-        if loc not in self.changed_memories:
-            self.changed_memories.append(loc)
+        mem = self._get_memory(iter)
+
+        try:
+            self.radio.set_memory(mem)
+        except Exception, e:
+            d = InvalidValueError(e)
+            d.run()
+            d.destroy()
 
     def _render(self, colnum, val):
         if colnum == self.col("Frequency"):
@@ -207,21 +218,10 @@ class MemoryEditor(common.Editor):
         return None
 
     def prefill(self):
-        for i in range(0, self.count):
-            iter = self.store.append()
+        mems = self.radio.get_memories()
 
-            defs = []
-
-            for cap in [x[0] for x in self.cols]:
-                if cap == "Loc":
-                    val = i
-                else:
-                    val = self.defaults[cap]
-
-                defs.append(self.col(cap))
-                defs.append(val)
-
-            self.store.set(iter, *tuple(defs))
+        for mem in mems:
+            self.set_memory(mem)
 
     def _set_memory(self, iter, memory):
         if memory.dtcsEnabled:
@@ -234,6 +234,7 @@ class MemoryEditor(common.Editor):
             tmode = ""
 
         self.store.set(iter,
+                       self.col("Loc"), memory.number,
                        self.col("Name"), memory.name,
                        self.col("Frequency"), memory.freq,
                        self.col("Tone Mode"), tmode,
@@ -292,22 +293,8 @@ class MemoryEditor(common.Editor):
 
         return mem
 
-    def get_changed_memories(self):
-        mems = []
-        iter = self.store.get_iter_first()
-
-        while iter is not None:
-            loc, = self.store.get(iter, self.col("Loc"))
-            if loc in self.changed_memories:
-                mems.append(self._get_memory(iter))
-
-            iter = self.store.iter_next(iter)
-
-        return mems
-
-    def __init__(self):
-        self.changed_memories = []
-
+    def __init__(self, radio):
+        self.radio = radio
         self.allowed_bands = [144, 440]
         self.count = 100
         self.name_length = 8
@@ -315,7 +302,7 @@ class MemoryEditor(common.Editor):
         self.prefill()
 
 class LimitedDstarMemoryEditor(MemoryEditor):
-    def __init__(self):
+    def __init__(self, *args):
         self.cols += [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
@@ -332,7 +319,7 @@ class LimitedDstarMemoryEditor(MemoryEditor):
         self.defaults["RPT1CALL"] = ""
         self.defaults["RPT2CALL"] = ""
 
-        MemoryEditor.__init__(self)
+        MemoryEditor.__init__(self, *args)
     
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]
@@ -349,34 +336,31 @@ class LimitedDstarMemoryEditor(MemoryEditor):
             for call in repeaters:
                 store.append((call, call))
 
+    def _set_memory(self, iter, memory):
+        MemoryEditor._set_memory(self, iter, memory)
+        self.store.set(iter,
+                       self.col("URCALL"), memory.UrCall,
+                       self.col("RPT1CALL"), memory.Rpt1Call,
+                       self.col("RPT2CALL"), memory.Rpt2Call)
+
 class ID800MemoryEditor(LimitedDstarMemoryEditor):
     pass
 
 if __name__ == "__main__":
-    e = ID800MemoryEditor()
+    import serial
+    #r = id800.ID800v2Radio("../id800.img")
+    s = serial.Serial(port="/dev/ttyUSB1", baudrate=38400, timeout=0.2)
+    r = ic9x.IC9xRadioB(s)
+
+    e = ID800MemoryEditor(r)
     w = gtk.Window()
     w.add(e.root)
     e.root.show()
     w.show()
 
-    import serial
-    r = id800.ID800v2Radio("../id800.img")
-
-    for i in range(20):
-        m = r.get_memory(i)
-        if m:
-            e.set_memory(m)
-
-    e.set_urcall_list(r.get_urcall_list())
-    e.set_repeater_list(r.get_repeater_call_list())
-
     try:
         gtk.main()
     except KeyboardInterrupt:
         pass
-
-    for i in e.get_changed_memories():
-        print i
-        r.set_memory(i)
 
     r.save_mmap("../id800.img")
