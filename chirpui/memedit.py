@@ -136,7 +136,7 @@ class MemoryEditor(common.Editor):
         try:
             self.radio.set_memory(mem)
         except Exception, e:
-            d = InvalidValueError(e)
+            d = ValueErrorDialog(e)
             d.run()
             d.destroy()
 
@@ -301,8 +301,8 @@ class MemoryEditor(common.Editor):
         self.root = self.make_editor()
         self.prefill()
 
-class LimitedDstarMemoryEditor(MemoryEditor):
-    def __init__(self, *args):
+class DstarMemoryEditor(MemoryEditor):
+    def __init__(self, radio):
         self.cols += [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
@@ -315,11 +315,18 @@ class LimitedDstarMemoryEditor(MemoryEditor):
         self.choices["RPT1CALL"].append(("", ""))
         self.choices["RPT2CALL"].append(("", ""))
 
+        for call in radio.get_urcall_list():
+            self.choices["URCALL"].append((call, call))
+        
+        for call in radio.get_repeater_call_list():
+            self.choices["RPT1CALL"].append((call, call))
+            self.choices["RPT2CALL"].append((call, call))
+
         self.defaults["URCALL"] = "CQCQCQ"
         self.defaults["RPT1CALL"] = ""
         self.defaults["RPT2CALL"] = ""
 
-        MemoryEditor.__init__(self, *args)
+        MemoryEditor.__init__(self, radio)
     
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]
@@ -338,19 +345,26 @@ class LimitedDstarMemoryEditor(MemoryEditor):
 
     def _set_memory(self, iter, memory):
         MemoryEditor._set_memory(self, iter, memory)
-        self.store.set(iter,
-                       self.col("URCALL"), memory.UrCall,
-                       self.col("RPT1CALL"), memory.Rpt1Call,
-                       self.col("RPT2CALL"), memory.Rpt2Call)
 
-class ID800MemoryEditor(LimitedDstarMemoryEditor):
+        if isinstance(memory, chirp_common.DVMemory):
+            self.store.set(iter,
+                           self.col("URCALL"), memory.UrCall,
+                           self.col("RPT1CALL"), memory.Rpt1Call,
+                           self.col("RPT2CALL"), memory.Rpt2Call)
+        else:
+            self.store.set(iter,
+                           self.col("URCALL"), "",
+                           self.col("RPT1CALL"), "",
+                           self.col("RPT2CALL"), "")
+
+class ID800MemoryEditor(DstarMemoryEditor):
     pass
 
 if __name__ == "__main__":
     import serial
-    #r = id800.ID800v2Radio("../id800.img")
-    s = serial.Serial(port="/dev/ttyUSB1", baudrate=38400, timeout=0.2)
-    r = ic9x.IC9xRadioB(s)
+    r = id800.ID800v2Radio("../id800.img")
+    #s = serial.Serial(port="/dev/ttyUSB1", baudrate=38400, timeout=0.2)
+    #r = ic9x.IC9xRadioB(s)
 
     e = ID800MemoryEditor(r)
     w = gtk.Window()
