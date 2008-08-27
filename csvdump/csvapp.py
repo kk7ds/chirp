@@ -31,7 +31,7 @@ gobject.threads_init()
 import chirp
 from chirp import ic9x, id800, ic2820, ic2200, errors
 
-import platform
+from chirp import platform
 
 RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
            "ic9x:B": ic9x.IC9xRadioB,

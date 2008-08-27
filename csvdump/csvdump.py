@@ -17,7 +17,7 @@
 
 import gtk
 
-import platform
+from chirp import platform
 
 RADIOS = [ "ic2820", "id800", "ic9x:A", "ic9x:B", "ic2200" ]
 
