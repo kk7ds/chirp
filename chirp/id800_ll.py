@@ -323,7 +323,8 @@ def set_rtone(map, tone):
     map[POS_RTONE] = struct.pack("B", chirp_common.TONES.index(tone))
 
 def set_ctone(map, tone):
-    map[POS_CTONE] = struct.pack("B", chirp_common.TONES.index(tone))
+    val = struct.unpack("B", map[POS_CTONE])[0] & 0xC0
+    map[POS_CTONE] = struct.pack("B", chirp_common.TONES.index(tone) | val)
 
 def set_dtcs(map, code):
     map[POS_DTCS] = struct.pack("B", chirp_common.DTCS_CODES.index(code))
