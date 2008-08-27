@@ -41,6 +41,7 @@ POS_DOFF_END   =  5
 POS_MYCALL     = 0x3220
 POS_URCALL     = 0x3250
 POS_RPTCALL    = 0x3570
+POS_FLAGS      = 0x2bf4
 
 MEM_LOC_SIZE  = 22
 MEM_LOC_START = 0x20
@@ -372,6 +373,9 @@ def set_memory(_map, mem):
     set_dtcs_polarity(map, mem.dtcsPolarity)
 
     _map[get_mem_offset(mem.number)] = map.get_packed()
+
+    foff = POS_FLAGS + mem.number
+    _map[foff] = ord(_map[foff]) & 0x0F
 
     return _map
 
