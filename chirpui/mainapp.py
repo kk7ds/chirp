@@ -26,6 +26,7 @@ if __name__ == "__main__":
 
 from chirp import platform, chirp_common
 import editorset
+import clone
 
 class ChirpMain(gtk.Window):
     def do_open(self):
@@ -46,6 +47,20 @@ class ChirpMain(gtk.Window):
         w = self.tabs.get_nth_page(self.tabs.get_current_page())
         w.save()
 
+    def do_clonein(self):
+        d = clone.CloneDialog()
+        d.run()
+        port, rtype, fn = d.get_values()
+        d.destroy()
+
+    def do_cloneout(self):
+        w = self.tabs.get_nth_page(self.tabs.get_current_page())
+
+        d = clone.CloneDialog(False, w.filename)
+        d.run()
+        port, rtype, fn = d.get_values()
+        d.destroy()
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -55,6 +70,10 @@ class ChirpMain(gtk.Window):
             self.do_open()
         elif action == "save":
             self.do_save()
+        elif action == "clonein":
+            self.do_clonein()
+        elif action == "cloneout":
+            self.do_cloneout()
 
     def make_menubar(self):
         menu_xml = """
@@ -64,9 +83,11 @@ class ChirpMain(gtk.Window):
       <menuitem action="open"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
+      <menuitem action="quit"/>
+    </menu>
+    <menu action="radio">
       <menuitem action="clonein"/>
       <menuitem action="cloneout"/>
-      <menuitem action="quit"/>
     </menu>
   </menubar>
 </ui>
@@ -75,9 +96,10 @@ class ChirpMain(gtk.Window):
                    ('open', None, "_Open", None, None, self.mh),
                    ('save', None, "_Save", None, None, self.mh),
                    ('saveas', None, "Save _As", None, None, self.mh),
+                   ('quit', None, "_Quit", None, None, self.mh),
+                   ('radio', None, "_Radio", None, None, self.mh),
                    ('clonein', None, "Clone _In", None, None, self.mh),
                    ('cloneout', None, "Clone _Out", None, None, self.mh),
-                   ('quit', None, "_Quit", None, None, self.mh),
                    ]
 
         uim = gtk.UIManager()
