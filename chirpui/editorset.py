@@ -18,7 +18,7 @@
 import os
 import gtk
 
-from chirp import ic9x, ic2820, ic2200, id800
+from chirp import ic9x, ic2820, ic2200, id800, chirp_common
 import memedit
 
 def radio_class_from_file(filename):
@@ -31,12 +31,18 @@ def radio_class_from_file(filename):
     raise Exception("Unknown file format")
 
 class EditorSet(gtk.VBox):
-    def __init__(self, filename):
+    def __init__(self, source):
         gtk.VBox.__init__(self, True, 0)
-        self.filename = filename
 
-        rclass = radio_class_from_file(filename)
-        self.radio = rclass(filename)
+        if isinstance(source, str):
+            self.filename = filename
+            rclass = radio_class_from_file(filename)
+            self.radio = rclass(filename)
+        elif isinstance(source, chirp_common.IcomRadio):
+            self.radio = source
+            self.filename = "IC9x (live)"
+        else:
+            raise Exception("Unknown source type")
 
         self.memedit = memedit.MemoryEditor(self.radio)
 
