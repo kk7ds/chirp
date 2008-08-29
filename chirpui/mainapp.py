@@ -76,7 +76,7 @@ class ChirpMain(gtk.Window):
             print e
             return # FIXME
 
-        tab = self.tabs.append_page(e, gtk.Label(e.get_tab_title()))
+        tab = self.tabs.append_page(e, e.get_tab_label())
         e.show()
 
     def do_save(self):

@@ -42,6 +42,20 @@ class EditorSet(gtk.VBox):
 
         self.pack_start(self.memedit.root)
         self.memedit.root.show()
+        self.memedit.connect("changed", self.editor_changed)
+
+        self.label = gtk.Label("")
+        self.modified = False
+        self.update_tab()
+
+    def update_tab(self):
+        fn = os.path.basename(self.filename)
+        if self.modified:
+            text = "%s*" % fn
+        else:
+            text = fn
+
+        self.label.set_text(text)
 
     def save(self, fname=None):
         if not fname:
@@ -51,6 +65,13 @@ class EditorSet(gtk.VBox):
 
         self.radio.save_mmap(fname)
 
-    def get_tab_title(self):
-        return os.path.basename(self.filename)
+        self.modified = False
+        self.update_tab()
+
+    def editor_changed(self, *args):
+        self.modified = True
+        self.update_tab()
+
+    def get_tab_label(self):
+        return self.label
 
