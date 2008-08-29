@@ -156,6 +156,8 @@ class MemoryEditor(common.Editor):
             d.run()
             d.destroy()
 
+        self.emit('changed')
+
     def _render(self, colnum, val):
         if colnum == self.col("Frequency"):
             val = "%.5f" % val
@@ -310,6 +312,7 @@ class MemoryEditor(common.Editor):
         return mem
 
     def __init__(self, radio):
+        common.Editor.__init__(self)
         self.radio = radio
         self.allowed_bands = [144, 440]
         self.count = 100
