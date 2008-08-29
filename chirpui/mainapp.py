@@ -61,9 +61,11 @@ class ChirpMain(gtk.Window):
         else:
             s = True
 
-        for i in ["save", "saveas", "close", "cloneout"]:
+        for i in ["save", "saveas", "cloneout"]:
             set_action_sensitive(i, s)
         
+        set_action_sensitive("close", bool(w))
+
     def do_open(self, fname=None):
         if not fname:
             fname = platform.get_platform().gui_open_file()
@@ -76,6 +78,16 @@ class ChirpMain(gtk.Window):
             print e
             return # FIXME
 
+        tab = self.tabs.append_page(e, e.get_tab_label())
+        e.show()
+
+    def do_open9x(self, rclass):
+        s = serial.Serial(port="/dev/ttyUSB1",
+                          baudrate=38400,
+                          timeout=0.25)
+        r = rclass(s)
+        
+        e = editorset.EditorSet(r)
         tab = self.tabs.append_page(e, e.get_tab_label())
         e.show()
 
@@ -145,6 +157,14 @@ class ChirpMain(gtk.Window):
             self.do_cloneout()
         elif action == "close":
             self.do_close()
+        elif action == "open9xA":
+            self.do_open9x(ic9x.IC9xRadioA)
+        elif action == "open9xB":
+            self.do_open9x(ic9x.IC9xRadioB)
+        else:
+            return
+
+        self.ev_tab_switched()
 
     def make_menubar(self):
         menu_xml = """
@@ -152,6 +172,10 @@ class ChirpMain(gtk.Window):
   <menubar name="MenuBar">
     <menu action="file">
       <menuitem action="open"/>
+      <menu action="open9x">
+        <menuitem action="open9xA"/>
+        <menuitem action="open9xB"/>
+      </menu>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <menuitem action="close"/>
@@ -166,6 +190,9 @@ class ChirpMain(gtk.Window):
 """
         actions = [('file', None, "_File", None, None, self.mh),
                    ('open', None, "_Open", None, None, self.mh),
+                   ('open9x', None, "_Open (IC9x)", None, None, self.mh),
+                   ('open9xA', None, "Band A", None, None, self.mh),
+                   ('open9xB', None, "Band B", None, None, self.mh),
                    ('save', None, "_Save", None, None, self.mh),
                    ('saveas', None, "Save _As", None, None, self.mh),
                    ('close', None, "_Close", None, None, self.mh),
