@@ -19,6 +19,11 @@ import gtk
 
 class CloneProg(gtk.Window):
     def __init__(self, **args):
+        if args.has_key("parent"):
+            print args["parent"]
+            self.set_transient_for(args["parent"])
+            del args["parent"]
+
         gtk.Window.__init__(self, **args)
 
         vbox = gtk.VBox(False, 2)

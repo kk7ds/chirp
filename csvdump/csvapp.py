@@ -209,7 +209,7 @@ class CsvDumpApp:
         gobject.idle_add(self.progwin.show)
 
         try:
-            f = file(fname, "r")
+            f = file(fname, "rU")
         except Exception, e:
             gobject.idle_add(self.progwin.hide)
             gobject.idle_add(self.mainwin.set_status,
@@ -261,7 +261,7 @@ class CsvDumpApp:
 
     def _import_file_mmap(self, fname):
         try:
-            f = file(fname, "r")
+            f = file(fname, "rU")
         except Exception, e:
             self.progwin.hide()
             self.mainwin.set_status("%s: %s" % (fname, e))
