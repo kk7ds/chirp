@@ -174,6 +174,9 @@ class MemoryEditor(common.Editor):
             val = "%.3f" % val
         elif colnum in [self.col("Tone"), self.col("ToneSql")]:
             val = "%.1f" % val
+        elif colnum in [self.col("Tone Mode"), self.col("Duplex")]:
+            if not val:
+                val = "(None)"
 
         return val
 
