@@ -44,6 +44,9 @@ for k,v in RADIOS.items():
     RTYPES[v] = k
 
 class ChirpMain(gtk.Window):
+    def get_current_editorset(self):
+        return self.tabs.get_nth_page(self.tabs.get_current_page())
+
     def do_open(self, fname=None):
         if not fname:
             fname = platform.get_platform().gui_open_file()
@@ -60,7 +63,7 @@ class ChirpMain(gtk.Window):
         e.show()
 
     def do_save(self):
-        w = self.tabs.get_nth_page(self.tabs.get_current_page())
+        w = self.get_current_editorset()
         w.save()
 
     def cb_clonein(self, radio, fn):
@@ -87,7 +90,7 @@ class ChirpMain(gtk.Window):
         ct.start()
 
     def do_cloneout(self):
-        w = self.tabs.get_nth_page(self.tabs.get_current_page())
+        w = self.get_current_editorset()
         radio = w.radio
 
         d = clone.CloneSettingsDialog(False,
@@ -107,6 +110,9 @@ class ChirpMain(gtk.Window):
         ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
         ct.start()
 
+    def do_close(self):
+        self.tabs.remove_page(self.tabs.get_current_page())
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -120,6 +126,8 @@ class ChirpMain(gtk.Window):
             self.do_clonein()
         elif action == "cloneout":
             self.do_cloneout()
+        elif action == "close":
+            self.do_close()
 
     def make_menubar(self):
         menu_xml = """
@@ -129,6 +137,7 @@ class ChirpMain(gtk.Window):
       <menuitem action="open"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
+      <menuitem action="close"/>
       <menuitem action="quit"/>
     </menu>
     <menu action="radio">
@@ -142,6 +151,7 @@ class ChirpMain(gtk.Window):
                    ('open', None, "_Open", None, None, self.mh),
                    ('save', None, "_Save", None, None, self.mh),
                    ('saveas', None, "Save _As", None, None, self.mh),
+                   ('close', None, "_Close", None, None, self.mh),
                    ('quit', None, "_Quit", None, None, self.mh),
                    ('radio', None, "_Radio", None, None, self.mh),
                    ('clonein', None, "Clone _In", None, None, self.mh),
