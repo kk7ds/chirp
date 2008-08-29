@@ -35,9 +35,9 @@ class EditorSet(gtk.VBox):
         gtk.VBox.__init__(self, True, 0)
 
         if isinstance(source, str):
-            self.filename = filename
-            rclass = radio_class_from_file(filename)
-            self.radio = rclass(filename)
+            self.filename = source
+            rclass = radio_class_from_file(self.filename)
+            self.radio = rclass(self.filename)
         elif isinstance(source, chirp_common.IcomRadio):
             self.radio = source
             self.filename = "IC9x (live)"
