@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+
 import chirp_common
 import errors
 import util
@@ -25,12 +27,15 @@ import ic9x_ll
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
 
+    __last = 0
+
     def get_memory(self, number):
         if number < 0 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
-        ic9x_ll.send_magic(self.pipe)
-
+        if (time.time() - self.__last) > 0.5:
+            ic9x_ll.send_magic(self.pipe)
+        self.__last = time.time()
 
         mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
 
@@ -65,14 +70,18 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         return memmap.MemoryMap(mframe._data[2:])
 
-    def get_memories(self):
+    def get_memories(self, lo=0, hi=None):
+        if hi is None:
+            hi = self.mem_upper_limit            
+
         memories = []
 
-        for i in range(999):
+        for i in range(lo, hi+1):
             try:
                 print "Getting %i" % i
                 m = self.get_memory(i)
                 memories.append(m)
+                print "Done: %s" % m
             except errors.InvalidMemoryLocation:
                 pass
             except errors.InvalidDataError, e:
