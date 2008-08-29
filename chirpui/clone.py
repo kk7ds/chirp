@@ -46,6 +46,8 @@ class CloneSettingsDialog(gtk.Dialog):
 
         rtypes = ["ic2820", "ic2200", "id800"]
         if rtype:
+            if not rtype in rtypes:
+                rtypes.insert(0, rtype)
             self.rtype = miscwidgets.make_choice(rtypes, False, rtype)
             self.rtype.set_sensitive(False)
         else:
