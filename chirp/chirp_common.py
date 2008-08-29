@@ -269,7 +269,7 @@ class IcomRadio:
     def get_memory(self, number, vfo=None):
         pass
 
-    def get_memories(self, vfo=None):
+    def get_memories(self, lo=None, hi=None):
         pass
 
     def set_memory(self, memory):

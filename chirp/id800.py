@@ -79,11 +79,11 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
         
         return id800_ll.get_memory(self._mmap, number)
 
-    def get_memories(self, vfo=None):
+    def get_memories(self, lo=0, hi=499):
         if not self._mmap:
             self.sync_in()
 
-        return self._memories
+        return [m for m in self._memories if m.number >= lo and m.number <= hi]
 
     def set_memory(self, memory):
         if not self._mmap:
