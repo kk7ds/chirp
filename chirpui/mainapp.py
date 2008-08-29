@@ -82,12 +82,22 @@ class ChirpMain(gtk.Window):
         e.show()
 
     def do_open9x(self, rclass):
-        s = serial.Serial(port="/dev/ttyUSB1",
-                          baudrate=38400,
-                          timeout=0.25)
-        r = rclass(s)
+        d = clone.CloneSettingsDialog(cloneIn=False,
+                                      filename="(live)",
+                                      rtype="ic9x")
+        r = d.run()
+        port, _, _ = d.get_values()
+        d.destroy()
+
+        if r != gtk.RESPONSE_OK:
+            return
         
-        e = editorset.EditorSet(r)
+        s = serial.Serial(port=port,
+                          baudrate=38400,
+                          timeout=0.1)
+        radio = rclass(s)
+        
+        e = editorset.EditorSet(radio)
         tab = self.tabs.append_page(e, e.get_tab_label())
         e.show()
 
