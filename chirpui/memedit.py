@@ -33,7 +33,12 @@ def handle_toggle(rend, path, store, col):
 
 def handle_ed(rend, path, new, store, col):
     iter = store.get_iter(path)
-    store.set(iter, col, new)
+    old, = store.get(iter, col)
+    if old != new:
+        store.set(iter, col, new)
+        return True
+    else:
+        return False
 
 class ValueErrorDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
@@ -144,7 +149,9 @@ class MemoryEditor(common.Editor):
         elif self.store.get_column_type(colnum) == TYPE_BOOLEAN:
             new = bool(new)
 
-        handle_ed(rend, path, new, self.store, self.col(cap))
+        if not handle_ed(rend, path, new, self.store, self.col(cap)):
+            # No change was made
+            return
 
         iter = self.store.get_iter(path)
         mem = self._get_memory(iter)
