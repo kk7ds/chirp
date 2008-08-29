@@ -45,8 +45,25 @@ for k,v in RADIOS.items():
 
 class ChirpMain(gtk.Window):
     def get_current_editorset(self):
-        return self.tabs.get_nth_page(self.tabs.get_current_page())
+        try:
+            return self.tabs.get_nth_page(self.tabs.get_current_page())
+        except Exception, e:
+            return None
 
+    def ev_tab_switched(self):
+        def set_action_sensitive(action, sensitive):
+            self.menu_ag.get_action(action).set_sensitive(sensitive)
+
+        w = self.get_current_editorset()
+
+        if not w or isinstance(w.radio, ic9x.IC9xRadio):
+            s = False
+        else:
+            s = True
+
+        for i in ["save", "saveas", "close", "cloneout"]:
+            set_action_sensitive(i, s)
+        
     def do_open(self, fname=None):
         if not fname:
             fname = platform.get_platform().gui_open_file()
@@ -182,7 +199,10 @@ class ChirpMain(gtk.Window):
         vbox.pack_start(mbar, 0,0,0)
 
         tabs = self.make_tabs()
+        tabs.connect("switch-page", lambda n,_,p: self.ev_tab_switched())
         tabs.show()
+        self.ev_tab_switched()
+
         vbox.pack_start(tabs, 1,1,1)
 
         vbox.show()
