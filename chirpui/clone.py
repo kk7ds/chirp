@@ -106,6 +106,9 @@ class CloneThread(threading.Thread):
 
         self.__progw.hide()
 
+        # NB: Compulsory close of the radio's serial connection
+        self.__radio.pipe.close()
+
         print "Clone thread ended"
 
         if self.__cback and success:
