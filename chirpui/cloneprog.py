@@ -20,11 +20,16 @@ import gtk
 class CloneProg(gtk.Window):
     def __init__(self, **args):
         if args.has_key("parent"):
-            print args["parent"]
-            self.set_transient_for(args["parent"])
+            parent = args["parent"]
             del args["parent"]
+        else:
+            parent = None
 
         gtk.Window.__init__(self, **args)
+
+        self.set_transient_for(parent)
+        self.set_modal(True)
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
 
         vbox = gtk.VBox(False, 2)
         vbox.show()

@@ -83,7 +83,7 @@ class CloneThread(threading.Thread):
         self.__fname = fname
         self.__cback = cb
 
-        self.__progw = cloneprog.CloneProg()
+        self.__progw = cloneprog.CloneProg(parent=parent)
 
     def run(self):
         print "Clone thread started"
