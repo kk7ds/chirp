@@ -105,6 +105,14 @@ class ChirpMain(gtk.Window):
         w = self.get_current_editorset()
         w.save()
 
+    def do_saveas(self):
+        fname = platform.get_platform().gui_save_file()
+        if not fname:
+            return
+
+        w = self.get_current_editorset()
+        w.save(fname)
+
     def cb_clonein(self, radio, fn):
         radio.pipe.close()
         self.do_open(fn)
@@ -161,6 +169,8 @@ class ChirpMain(gtk.Window):
             self.do_open()
         elif action == "save":
             self.do_save()
+        elif action == "saveas":
+            self.do_saveas()
         elif action == "clonein":
             self.do_clonein()
         elif action == "cloneout":
