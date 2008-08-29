@@ -19,11 +19,14 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
+import threading
+
 import gtk
 from gobject import TYPE_INT, \
     TYPE_DOUBLE as TYPE_FLOAT, \
     TYPE_STRING, \
     TYPE_BOOLEAN
+import gobject
 
 import common
 from chirp import chirp_common
@@ -269,7 +272,7 @@ class MemoryEditor(common.Editor):
 
         return None
 
-    def prefill(self):
+    def _prefill(self):
         self.store.clear()
 
         lo = int(self.lo_limit_adj.get_value())
@@ -277,12 +280,26 @@ class MemoryEditor(common.Editor):
 
         import time
         t = time.time()
-        mems = self.radio.get_memories(lo, hi)
-        print "Loaded %i memories in %s sec" % (len(mems),
+
+        for i in range(lo, hi+1):
+            mem = self.radio.get_memory(i)
+            if mem:
+                gobject.idle_add(self.set_memory, mem)
+
+        #mems = self.radio.get_memories(lo, hi)
+        print "Loaded %i memories in %s sec" % (hi - lo,
                                                 time.time() - t)
 
-        for mem in mems:
-            self.set_memory(mem)
+        self.fill_thread = None
+
+        print "Fill thread ending"
+
+    def prefill(self):
+        if self.fill_thread:
+            return
+
+        self.fill_thread = threading.Thread(target=self._prefill)
+        self.fill_thread.start()
 
     def _set_memory(self, iter, memory):
         if memory.dtcsEnabled:
@@ -366,7 +383,7 @@ class MemoryEditor(common.Editor):
         lab.show()
         hbox.pack_start(lab, 0,0,0)
 
-        self.hi_limit_adj = gtk.Adjustment(0, 10, 999, 1, 10)
+        self.hi_limit_adj = gtk.Adjustment(25, 1, 999, 1, 10)
         hi = gtk.SpinButton(self.hi_limit_adj)
         hi.show()
         hbox.pack_start(hi, 0,0,0)
@@ -386,6 +403,8 @@ class MemoryEditor(common.Editor):
         self.allowed_bands = [144, 440]
         self.count = 100
         self.name_length = 8
+
+        self.fill_thread = None
 
         vbox = gtk.VBox(False, 2)
         vbox.pack_start(self.make_controls(), 0,0,0)
