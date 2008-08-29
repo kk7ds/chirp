@@ -64,10 +64,11 @@ class ChirpMain(gtk.Window):
         w.save()
 
     def cb_clonein(self, radio, fn):
+        radio.pipe.close()
         self.do_open(fn)
 
     def cb_cloneout(self, radio, fn):
-        return
+        radio.pipe.close()
 
     def do_clonein(self):
         d = clone.CloneSettingsDialog()
