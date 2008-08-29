@@ -261,6 +261,9 @@ class IcomRadio:
     def __init__(self, pipe):
         self.pipe = pipe
 
+    def set_pipe(self, pipe):
+        self.pipe = pipe
+
     def get_memory(self, number, vfo=None):
         pass
 
