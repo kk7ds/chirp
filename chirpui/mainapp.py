@@ -159,7 +159,8 @@ class ChirpMain(gtk.Window):
 
     def do_close(self):
         w = self.get_current_editorset()
-        w.radio.pipe.close()
+        if w.radio.pipe:
+            w.radio.pipe.close()
         self.tabs.remove_page(self.tabs.get_current_page())
 
     def mh(self, _action):
