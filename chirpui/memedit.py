@@ -278,16 +278,7 @@ class MemoryEditor(common.Editor):
         iter = self.store.append()
         self._set_memory(iter, memory)
 
-    def _get_memory(self, iter):
-        vals = self.store.get(iter, *range(0, len(self.cols)))
-        if vals[self.col("Mode")] == "DV":
-            mem = chirp_common.DVMemory()
-            mem.UrCall = vals[self.col("URCALL")]
-            mem.Rpt1Call = vals[self.col("RPT1CALL")]
-            mem.Rpt2Call = vals[self.col("RPT2CALL")]
-        else:
-            mem = chirp_common.Memory()
-
+    def _set_mem_vals(self, mem, vals):
         mem.freq = vals[self.col("Frequency")]
         mem.number = vals[self.col("Loc")]
         mem.name = vals[self.col("Name")]
@@ -309,6 +300,11 @@ class MemoryEditor(common.Editor):
         mem.mode = vals[self.col("Mode")]
         mem.tuningStep = vals[self.col("Tune Step")]
 
+    def _get_memory(self, iter):
+        vals = self.store.get(iter, *range(0, len(self.cols)))
+        mem = chirp_common.Memory()
+        self._set_mem_vals(mem, vals)
+
         return mem
 
     def __init__(self, radio):
@@ -321,6 +317,20 @@ class MemoryEditor(common.Editor):
         self.prefill()
 
 class DstarMemoryEditor(MemoryEditor):
+    def _get_memory(self, iter):
+        if vals[self.col("Mode")] != "DV":
+            return MemoryEditor._get_memory(self, iter)
+
+        mem = chirp_common.DVMemory()
+
+        MemoryEditor._set_mem_vals(mem, val)
+
+        mem.UrCall = vals[self.col("URCALL")]
+        mem.Rpt1Call = vals[self.col("RPT1CALL")]
+        mem.Rpt2Call = vals[self.col("RPT2CALL")]
+
+        return mem
+
     def __init__(self, radio):
         self.cols += [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
                       ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
