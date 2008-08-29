@@ -146,13 +146,15 @@ class Memory:
 
         return s
 
-    def from_csv(self, line):
+    def from_csv(self, _line):
+        line = _line.strip()
+
         if line.startswith("Location"):
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
         vals = line.split(",")
-        if len(vals) != 13 and len(vals) != 14:
-            raise errors.InvalidDataError("CSV format error")
+        if len(vals) < 13:
+            raise errors.InvalidDataError("CSV format error (13 columns expected)")
 
         try:
             self.number = int(vals[0])
