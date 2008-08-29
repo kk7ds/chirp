@@ -19,20 +19,36 @@ import os
 
 import gtk
 import gobject
+gobject.threads_init()
+
+import serial
 
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, chirp_common
+from chirp import platform, chirp_common, id800, ic2820, ic2200, ic9x
 import editorset
 import clone
 
+RADIOS = {
+    "ic2820" : ic2820.IC2820Radio,
+    "ic2200" : ic2200.IC2200Radio,
+    "ic9x:A" : ic9x.IC9xRadioA,
+    "ic9x:B" : ic9x.IC9xRadioB,
+    "id800"  : id800.ID800v2Radio,
+}
+
+RTYPES = {}
+for k,v in RADIOS.items():
+    RTYPES[v] = k
+
 class ChirpMain(gtk.Window):
-    def do_open(self):
-        fname = platform.get_platform().gui_open_file()
+    def do_open(self, fname=None):
         if not fname:
-            return
+            fname = platform.get_platform().gui_open_file()
+            if not fname:
+                return
 
         try:
             e = editorset.EditorSet(fname)
@@ -47,19 +63,48 @@ class ChirpMain(gtk.Window):
         w = self.tabs.get_nth_page(self.tabs.get_current_page())
         w.save()
 
+    def cb_clonein(self, radio, fn):
+        self.do_open(fn)
+
+    def cb_cloneout(self, radio, fn):
+        return
+
     def do_clonein(self):
-        d = clone.CloneDialog()
-        d.run()
+        d = clone.CloneSettingsDialog()
+        r = d.run()
         port, rtype, fn = d.get_values()
         d.destroy()
+
+        if r != gtk.RESPONSE_OK:
+            return
+
+        rc = RADIOS[rtype]
+        s = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        radio = rc(s)
+
+        ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
+        ct.start()
 
     def do_cloneout(self):
         w = self.tabs.get_nth_page(self.tabs.get_current_page())
+        radio = w.radio
 
-        d = clone.CloneDialog(False, w.filename)
-        d.run()
+        d = clone.CloneSettingsDialog(False,
+                                      w.filename,
+                                      RTYPES[radio.__class__])
+        r = d.run()
         port, rtype, fn = d.get_values()
         d.destroy()
+
+        if r != gtk.RESPONSE_OK:
+            return
+
+        rc = RADIOS[rtype]
+        s = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        radio.set_pipe(s)
+
+        ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
+        ct.start()
 
     def mh(self, _action):
         action = _action.get_name()
