@@ -253,6 +253,7 @@ class MemoryEditor(common.Editor):
             i += 1
 
         self.view.show()
+        sw.show()
 
         return sw
 
@@ -269,7 +270,16 @@ class MemoryEditor(common.Editor):
         return None
 
     def prefill(self):
-        mems = self.radio.get_memories()
+        self.store.clear()
+
+        lo = int(self.lo_limit_adj.get_value())
+        hi = int(self.hi_limit_adj.get_value())
+
+        import time
+        t = time.time()
+        mems = self.radio.get_memories(lo, hi)
+        print "Loaded %i memories in %s sec" % (len(mems),
+                                                time.time() - t)
 
         for mem in mems:
             self.set_memory(mem)
@@ -340,13 +350,50 @@ class MemoryEditor(common.Editor):
 
         return mem
 
+    def make_controls(self):
+        hbox = gtk.HBox(False, 2)
+
+        lab = gtk.Label("Memory range:")
+        lab.show()
+        hbox.pack_start(lab, 0,0,0)
+
+        self.lo_limit_adj = gtk.Adjustment(0, 0, 999, 1, 10)
+        lo = gtk.SpinButton(self.lo_limit_adj)
+        lo.show()
+        hbox.pack_start(lo, 0,0,0)
+
+        lab = gtk.Label(" - ")
+        lab.show()
+        hbox.pack_start(lab, 0,0,0)
+
+        self.hi_limit_adj = gtk.Adjustment(0, 10, 999, 1, 10)
+        hi = gtk.SpinButton(self.hi_limit_adj)
+        hi.show()
+        hbox.pack_start(hi, 0,0,0)
+
+        refresh = gtk.Button("Go")
+        refresh.show()
+        refresh.connect("clicked", lambda x: self.prefill())
+        hbox.pack_start(refresh, 0,0,0)
+
+        hbox.show()
+
+        return hbox
+
     def __init__(self, radio):
         common.Editor.__init__(self)
         self.radio = radio
         self.allowed_bands = [144, 440]
         self.count = 100
         self.name_length = 8
-        self.root = self.make_editor()
+
+        vbox = gtk.VBox(False, 2)
+        vbox.pack_start(self.make_controls(), 0,0,0)
+        vbox.pack_start(self.make_editor(), 1,1,1)
+        vbox.show()
+        
+        self.root = vbox
+
         self.prefill()
 
 class DstarMemoryEditor(MemoryEditor):
