@@ -15,12 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+import threading
 
-from csvdump import miscwidgets # FIXME
+import gtk
+import gobject
+
+from csvdump import miscwidgets, cloneprog # FIXME
 from chirp import platform
 
-class CloneDialog(gtk.Dialog):
+class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):
         hbox = gtk.HBox(True, 2)
         l = gtk.Label(title)
@@ -32,7 +35,7 @@ class CloneDialog(gtk.Dialog):
 
         self.vbox.pack_start(hbox, 0,0,0)
     
-    def __init__(self, cloneIn=True, filename=None):
+    def __init__(self, cloneIn=True, filename=None, rtype=None):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, buttons=buttons, title="Clone")
@@ -42,7 +45,11 @@ class CloneDialog(gtk.Dialog):
         self.port.show()
 
         rtypes = ["ic2820", "ic2200", "id800"]
-        self.rtype = miscwidgets.make_choice(rtypes, False, rtypes[0])
+        if rtype:
+            self.rtype = miscwidgets.make_choice(rtypes, False, rtype)
+            self.rtype.set_sensitive(False)
+        else:
+            self.rtype = miscwidgets.make_choice(rtypes, False, rtypes[0])
         self.rtype.show()
 
         self.filename = miscwidgets.FilenameBox()
@@ -60,3 +67,42 @@ class CloneDialog(gtk.Dialog):
         return self.port.get_active_text(), \
             self.rtype.get_active_text(),   \
             self.filename.get_filename()
+
+class CloneThread(threading.Thread):
+    def __status(self, s):
+        gobject.idle_add(self.__progw.status, s)
+
+    def __init__(self, radio, fname=None, cb=None, parent=None):
+        threading.Thread.__init__(self)
+
+        self.__radio = radio
+        self.__fname = fname
+        self.__cback = cb
+
+        self.__progw = cloneprog.CloneProg()
+
+    def run(self):
+        print "Clone thread started"
+
+        self.__progw.show()
+
+        self.__radio.status_fn = self.__status
+        
+        try:
+            if self.__fname:
+                self.__radio.sync_in()
+                self.__radio.save_mmap(self.__fname)
+            else:
+                self.__radio.sync_out()
+
+            success = True
+        except Exception, e:
+            print "Clone failed: %s" % e
+            success = False
+
+        self.__progw.hide()
+
+        print "Clone thread ended"
+
+        if self.__cback and success:
+            gobject.idle_add(self.__cback, self.__radio, self.__fname)
