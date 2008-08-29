@@ -17,7 +17,7 @@
 import gtk
 import gobject
 
-import platform
+from chirp import platform
 
 class ListWidget(gtk.HBox):
     def _toggle(self, render, path, column):
