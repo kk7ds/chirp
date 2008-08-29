@@ -78,8 +78,9 @@ class ChirpMain(gtk.Window):
             print e
             return # FIXME
 
-        tab = self.tabs.append_page(e, e.get_tab_label())
         e.show()
+        tab = self.tabs.append_page(e, e.get_tab_label())
+        self.tabs.set_current_page(tab)
 
     def do_open9x(self, rclass):
         d = clone.CloneSettingsDialog(cloneIn=False,
@@ -98,8 +99,9 @@ class ChirpMain(gtk.Window):
         radio = rclass(s)
         
         e = editorset.EditorSet(radio)
-        tab = self.tabs.append_page(e, e.get_tab_label())
         e.show()
+        tab = self.tabs.append_page(e, e.get_tab_label())
+        self.tabs.set_current_page(tab)
 
     def do_save(self):
         w = self.get_current_editorset()
