@@ -178,9 +178,32 @@ class MemoryEditor(common.Editor):
         return val
 
     def render(self, col, rend, model, iter, colnum):
-        val = self._render(colnum, model.get_value(iter, colnum))
+        vals = model.get(iter, *tuple(range(0, len(self.cols))))
+        val = vals[colnum]
+
+        def _enabled(s):
+            rend.set_property("sensitive", s)
+
+        def d_unless_tmode(tmode):
+            _enabled(vals[self.col("Tone Mode")] == tmode)
+
+        def d_unless_dup():
+            _enabled(vals[self.col("Duplex")])
+
+        val = self._render(colnum, val)
         rend.set_property("text", "%s" % val)
 
+        if colnum == self.col("DTCS Code"):
+            d_unless_tmode("DTCS")
+        elif colnum == self.col("DTCS Pol"):
+            d_unless_tmode("DTCS")
+        elif colnum == self.col("Tone"):
+            d_unless_tmode("Tone")
+        elif colnum == self.col("ToneSql"):
+            d_unless_tmode("TSQL")
+        elif colnum == self.col("Offset"):
+            d_unless_dup()
+            
     def make_editor(self):
         types = tuple([x[1] for x in self.cols])
         self.store = gtk.ListStore(*types)
