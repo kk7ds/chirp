@@ -20,8 +20,10 @@ import threading
 import gtk
 import gobject
 
-from csvdump import miscwidgets, cloneprog # FIXME
 from chirp import platform
+
+import miscwidgets
+import cloneprog
 
 class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):

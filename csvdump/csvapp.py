@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import gobject
 import gtk
 import threading
@@ -23,8 +22,7 @@ import serial
 import os
 
 import csvdump
-import cloneprog
-import inputdialog
+from chirpui import inputdialog, cloneprog
 
 gobject.threads_init()
 
