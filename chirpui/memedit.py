@@ -29,7 +29,7 @@ from gobject import TYPE_INT, \
 import gobject
 
 import common
-from chirp import chirp_common
+from chirp import chirp_common, errors
 
 def handle_toggle(rend, path, store, col):
     store[path][col] = not store[path][col]    
@@ -282,7 +282,11 @@ class MemoryEditor(common.Editor):
         t = time.time()
 
         for i in range(lo, hi+1):
-            mem = self.radio.get_memory(i)
+            try:
+                mem = self.radio.get_memory(i)
+            except errors.InvalidMemoryLocation:
+                mem = None
+
             if mem:
                 gobject.idle_add(self.set_memory, mem)
 
