@@ -72,6 +72,9 @@ ID800_MODES_REV = {}
 for val, mode in ID800_MODES.items():
     ID800_MODES_REV[mode] = val
 
+def is_used(map, number):
+    return not (ord(map[POS_FLAGS + number]) & 0x70)
+
 def get_name(map):
     nibbles = []
 
@@ -189,6 +192,9 @@ def get_call_indices(map):
     return ord(map[18]), ord(map[19]), ord(map[20])
 
 def get_memory(_map, number):
+    if not is_used(_map, number):
+        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
+
     map = get_raw_memory(_map, number)
 
     if get_mode(map) == "DV":
@@ -247,7 +253,11 @@ def parse_map_for_memory(map):
     memories = []
     
     for i in range(500):        
-        mem = get_memory(map, i)
+        try:
+            mem = get_memory(map, i)
+        except errors.InvalidMemoryLocation:
+            mem = None
+
         if mem:
             memories.append(mem)
 
