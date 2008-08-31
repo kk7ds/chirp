@@ -114,6 +114,19 @@ class IC92BankFrame(IC92Frame):
     def __str__(self):
         return "Bank %s: %s" % (self._data[2], self._data[3:])
 
+class IC92MemClearFrame(IC92Frame):
+    def __init__(self, vfo, number):
+        IC92Frame.__init__(self)
+        self._number = number
+        self._vfo = vfo
+
+    def make_raw(self):
+        self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
+        self._rawdata += struct.pack(">BHB",
+                                     0x01,
+                                     int("%i" % self._number, 16),
+                                     0xFF);
+
 class IC92MemoryFrame(IC92Frame):
     def _post_proc(self):
         if len(self._data) < 36:

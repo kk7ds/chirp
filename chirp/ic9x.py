@@ -64,6 +64,20 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         return mem
 
+    def erase_memory(self, number):
+        eframe = ic9x_ll.IC92MemClearFrame(self.vfo, number)
+
+        ic9x_ll.send_magic(self.pipe)
+        eframe.make_raw()
+
+        result = ic9x_ll.send(self.pipe, eframe._rawdata)
+
+        if len(result) == 0:
+            raise errors.InvalidDataError("No response from radio")
+
+        if result[0]._data != "\xfb":
+            raise errors.InvalidDataError("Radio reported error")
+
     def get_raw_memory(self, number):
         ic9x_ll.send_magic(self.pipe)
         mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
