@@ -49,6 +49,12 @@ class ValueErrorDialog(gtk.MessageDialog):
         self.set_property("text", "Invalid value for this field")
         self.format_secondary_text(str(exception))
 
+def iter_prev(store, iter):
+    row = store.get_path(iter)[0]
+    if row == 0:
+        return None
+    return store.get_iter((row - 1,))
+
 class MemoryEditor(common.Editor):
     cols = [
         ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
@@ -212,16 +218,22 @@ class MemoryEditor(common.Editor):
         store, iter = self.view.get_selection().get_selected()
         curpos, = store.get(iter, self.col("Loc"))
 
-        if action == "insert_next":
+        if action in ["insert_next", "insert_prev"]:
             line = []
             for k,v in self.defaults.items():
                 line.append(self.col(k))
                 line.append(v)
 
-                
-            newiter = store.insert_after(iter)
+            
+            if action == "insert_next":
+                newiter = store.insert_after(iter)
+                newpos = curpos + 1
+            else:
+                newiter = store.insert_before(iter)
+                newpos = curpos - 1
+
             store.set(newiter,
-                      0, curpos + 1,
+                      0, newpos,
                       *tuple(line))
 
             mem = self._get_memory(newiter)
@@ -231,10 +243,11 @@ class MemoryEditor(common.Editor):
             store.remove(iter)
             self.radio.erase_memory(curpos)
 
-    def make_context_menu(self, next_loc, can_insert):
+    def make_context_menu(self, loc, can_prev, can_next):
         menu_xml = """
 <ui>
   <popup name="Menu">
+    <menuitem action="insert_prev"/>
     <menuitem action="insert_next"/>
     <menuitem action="delete"/>
   </popup>
@@ -242,14 +255,19 @@ class MemoryEditor(common.Editor):
 """
 
         actions = [
-            ("insert_next", None, "Insert %i below" % next_loc, None, None, self.mh),
+            ("insert_prev",None,"Insert row above",None,None, self.mh),
+            ("insert_next",None,"Insert row below",None,None, self.mh),
             ("delete", None, "Delete", None, None, self.mh),
             ]
 
         ag = gtk.ActionGroup("Menu")
         ag.add_actions(actions)
 
-        if not can_insert:
+        if not can_prev:
+            action = ag.get_action("insert_prev")
+            action.set_sensitive(False)
+
+        if not can_next:
             action = ag.get_action("insert_next")
             action.set_sensitive(False)
 
@@ -267,15 +285,24 @@ class MemoryEditor(common.Editor):
 
         curpos, = store.get(iter, self.col("Loc"))
         next_loc = curpos + 1
-        can_insert = True
+        can_prev = True
+        can_next = True
 
         next = store.iter_next(iter)
         if next:
             nextpos, = store.get(next, self.col("Loc"))
             if nextpos == (curpos + 1):
-                can_insert = False
+                can_next = False
 
-        menu = self.make_context_menu(next_loc, can_insert)
+        prev = iter_prev(store, iter)
+        if prev:
+            prevpos, = store.get(prev, self.col("Loc"))
+            if prevpos == (curpos - 1) or curpos == 0:
+                can_prev = False
+        else:
+            can_prev = False
+
+        menu = self.make_context_menu(curpos, can_prev, can_next)
         menu.popup(None, None, None, event.button, event.time)
             
     def make_editor(self):
