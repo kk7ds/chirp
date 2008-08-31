@@ -199,6 +199,9 @@ class MemoryEditor(common.Editor):
         def d_unless_dup():
             _enabled(vals[self.col("Duplex")])
 
+        def d_if_mode(mode):
+            _enabled(vals[self.col("Mode")] != mode)
+
         val = self._render(colnum, val)
         rend.set_property("text", "%s" % val)
 
@@ -208,8 +211,10 @@ class MemoryEditor(common.Editor):
             d_unless_tmode("DTCS")
         elif colnum == self.col("Tone"):
             d_unless_tmode("Tone")
+            d_if_mode("DV")
         elif colnum == self.col("ToneSql"):
             d_unless_tmode("TSQL")
+            d_if_mode("DV")
         elif colnum == self.col("Offset"):
             d_unless_dup()
 
