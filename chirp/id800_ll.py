@@ -75,6 +75,14 @@ for val, mode in ID800_MODES.items():
 def is_used(map, number):
     return not (ord(map[POS_FLAGS + number]) & 0x70)
 
+def set_used(map, number, used):
+    val = ord(map[POS_FLAGS + number]) & 0x0F
+
+    if not used:
+        val |= 0x70
+
+    map[POS_FLAGS + number] = val
+
 def get_name(map):
     nibbles = []
 
@@ -384,10 +392,14 @@ def set_memory(_map, mem):
 
     _map[get_mem_offset(mem.number)] = map.get_packed()
 
-    foff = POS_FLAGS + mem.number
-    _map[foff] = ord(_map[foff]) & 0x0F
+    set_used(_map, mem.number, True)
 
     return _map
+
+def erase_memory(map, number):
+    set_used(map, number, False)
+
+    return map
 
 def set_mycall(map, index, call):
     if index > 7:
