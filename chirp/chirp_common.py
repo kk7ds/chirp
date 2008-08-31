@@ -269,6 +269,9 @@ class IcomRadio:
     def get_memory(self, number, vfo=None):
         pass
 
+    def erase_memory(self, number):
+        pass
+
     def get_memories(self, lo=None, hi=None):
         pass
 
