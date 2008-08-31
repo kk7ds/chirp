@@ -218,7 +218,8 @@ class MemoryEditor(common.Editor):
                 line.append(self.col(k))
                 line.append(v)
 
-            newiter = store.append()
+                
+            newiter = store.insert_after(iter)
             store.set(newiter,
                       0, curpos + 1,
                       *tuple(line))
