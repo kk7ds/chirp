@@ -53,8 +53,28 @@ POS_MODE_START = 36
 POS_MODE_END   = 38
 POS_DTCS_POL   = 39
 POS_DTCS       = 36
+POS_USED_START = 0x61E0
 
 MEM_LOC_SIZE   = 0x30
+
+def is_used(map, number):
+    byte = int(number / 8) + POS_USED_START
+    mask = 1 << (number % 8)
+    
+    return (ord(map[byte]) & mask) == 0
+
+def set_used(map, number, used):
+    byte = int(number / 8) + POS_USED_START
+    mask = 1 << (number % 8)
+
+    val = ord(map[byte]) & (~mask & 0xFF)
+
+    if not used:
+        val |= mask
+
+    map[byte] = val
+
+    return map
 
 def get_freq(map):
     return struct.unpack(">I", map[POS_FREQ_START:POS_FREQ_END])[0] / 1000000.0
@@ -134,20 +154,15 @@ def set_raw_memory(dst, src, number):
     dst[offset] = src.get_packed()
 
 def get_memory(_map, number):
+    if not is_used(_map, number):
+        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
+
     map = get_raw_memory(_map, number)
     mem = chirp_common.Memory()
     mem.number = number
 
     mem.freq = get_freq(map)
     mem.name = get_name(map)
-
-    # Really need to figure out how to determine which locations are used
-    if len(mem.name) == 0:
-        return None
-    if mem.name[0] == "\x00":
-        return None
-    elif mem.name[0] == "\xFF":
-        return None
 
     mem.rtone = get_rtone(map)
     mem.ctone = get_ctone(map)
@@ -159,6 +174,9 @@ def get_memory(_map, number):
     mem.mode = get_mode(map)
 
     return mem
+
+def erase_memory(map, number):
+    set_used(map, number, False)
 
 def set_freq(map, freq):
     map[POS_FREQ_START] = struct.pack(">I", int(freq * 1000000))
@@ -254,6 +272,8 @@ def set_memory(_map, mem):
 
     set_raw_memory(_map, map, mem.number)
 
+    set_used(_map, mem.number, True)
+
     return _map
 
 def parse_map_for_memory(map):
@@ -265,6 +285,8 @@ def parse_map_for_memory(map):
             m = get_memory(map, i)
             if m:
                 memories.append(m)
+        except errors.InvalidMemoryLocation:
+            pass
         except Exception,e:
             traceback.print_exc(file=sys.stdout)
             print "Failed to parse location %i: %s" % (i, e)
