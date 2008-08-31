@@ -28,5 +28,10 @@ if hasattr(sys, "frozen"):
     print "Log initialized"
 
 a = mainapp.ChirpMain()
+
+for i in sys.argv[1:]:
+    print "Opening %s" % i
+    a.do_open(i)
+
 a.show()
 gtk.main()
