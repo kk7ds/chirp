@@ -39,13 +39,15 @@ POS_USED_START = 0x1370
 MEM_LOC_SIZE = 24
 
 def is_used(map, number):
-    return map[POS_USED_START + number] != "\x7A"
+    return (ord(map[POS_USED_START + number]) & 0x20) == 0
 
 def set_used(map, number, isUsed=True):
-    if isUsed:
-        map[POS_USED_START + number] = 0
-    else:
-        map[POS_USED_START + number] = 0x4A
+    val = ord(map[POS_USED_START + number]) & 0x0F
+
+    if not isUsed:
+        val |= 0x20
+
+    map[POS_USED_START + number] = val
 
 def get_freq(map):
     val = struct.unpack("<H", map[POS_FREQ_START:POS_FREQ_END])[0]
@@ -127,7 +129,7 @@ def get_memory(_map, number):
     map = get_raw_memory(_map, number)
 
     if not is_used(_map, number):
-        return None
+        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
 
     m = chirp_common.Memory()
     m.freq = get_freq(map)
@@ -239,11 +241,17 @@ def set_memory(_map, memory):
     _map[get_mem_offset(memory.number)] = map.get_packed()
     return _map
 
+def erase_memory(map, number):
+    set_used(map, number, False)
+
 def parse_map_for_memory(map):
     memories = []
 
     for i in range(197):
-        m = get_memory(map, i)
+        try:
+            m = get_memory(map, i)
+        except errors.InvalidMemoryLocation:
+            m = None
         if m:
             memories.append(m)
 

@@ -93,6 +93,9 @@ class IC2200Radio(chirp_common.IcomMmapRadio):
 
         return ic2200_ll.get_memory(self._mmap, number)
 
+    def erase_memory(self, number):
+        ic2200_ll.erase_memory(self._mmap, number)
+
     def get_memories(self, lo=0, hi=199):
         if not self._mmap:
             self.sync_in()
