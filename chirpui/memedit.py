@@ -69,11 +69,8 @@ class MemoryEditor(common.Editor):
         "Name"      : "",
         "Frequency" : 146.010,
         "Tone"      : 88.5,
-        "Tone On"   : False,
         "ToneSql"   : 88.5,
-        "ToneSql On": False,
         "DTCS Code" : 23,
-        "DTCS On"   : False,
         "DTCS Pol"  : "NN",
         "Duplex"    : "",
         "Offset"    : 0.0,
@@ -209,6 +206,76 @@ class MemoryEditor(common.Editor):
             d_unless_tmode("TSQL")
         elif colnum == self.col("Offset"):
             d_unless_dup()
+
+    def mh(self, _action):
+        action = _action.get_name()
+        store, iter = self.view.get_selection().get_selected()
+        curpos, = store.get(iter, self.col("Loc"))
+
+        if action == "insert_next":
+            line = []
+            for k,v in self.defaults.items():
+                line.append(self.col(k))
+                line.append(v)
+
+            newiter = store.append()
+            store.set(newiter,
+                      0, curpos + 1,
+                      *tuple(line))
+
+            mem = self._get_memory(newiter)
+            self.radio.set_memory(mem)
+
+        elif action == "delete":
+            store.remove(iter)
+            self.radio.erase_memory(curpos)
+
+    def make_context_menu(self, next_loc, can_insert):
+        menu_xml = """
+<ui>
+  <popup name="Menu">
+    <menuitem action="insert_next"/>
+    <menuitem action="delete"/>
+  </popup>
+</ui>
+"""
+
+        actions = [
+            ("insert_next", None, "Insert %i below" % next_loc, None, None, self.mh),
+            ("delete", None, "Delete", None, None, self.mh),
+            ]
+
+        ag = gtk.ActionGroup("Menu")
+        ag.add_actions(actions)
+
+        if not can_insert:
+            action = ag.get_action("insert_next")
+            action.set_sensitive(False)
+
+        uim = gtk.UIManager()
+        uim.insert_action_group(ag, 0)
+        uim.add_ui_from_string(menu_xml)
+
+        return uim.get_widget("/Menu")
+
+    def click_cb(self, view, event):
+        if event.button != 3:
+            return
+
+        store, iter = self.view.get_selection().get_selected()
+
+        curpos, = store.get(iter, self.col("Loc"))
+        next_loc = curpos + 1
+        can_insert = True
+
+        next = store.iter_next(iter)
+        if next:
+            nextpos, = store.get(next, self.col("Loc"))
+            if nextpos == (curpos + 1):
+                can_insert = False
+
+        menu = self.make_context_menu(next_loc, can_insert)
+        menu.popup(None, None, None, event.button, event.time)
             
     def make_editor(self):
         types = tuple([x[1] for x in self.cols])
@@ -257,6 +324,8 @@ class MemoryEditor(common.Editor):
 
         self.view.show()
         sw.show()
+
+        self.view.connect("button_press_event", self.click_cb)
 
         return sw
 
