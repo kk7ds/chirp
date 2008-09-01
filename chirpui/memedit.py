@@ -134,9 +134,20 @@ class MemoryEditor(common.Editor):
 
         return new
 
+    def ed_loc(self, rend, path, new, col):
+        iter = self.store.get_iter(path)
+        curloc, = self.store.get(iter, self.col("Loc"))
+
+        self.radio.erase_memory(curloc)
+
+        self.need_refresh = True
+
+        return new
+
     def edited(self, rend, path, new, cap):
         colnum = self.col(cap)
         funcs = {
+            "Loc" : self.ed_loc,
             "Name" : self.ed_name,
             "Frequency" : self.ed_freq,
             }
@@ -168,6 +179,10 @@ class MemoryEditor(common.Editor):
             d = ValueErrorDialog(e)
             d.run()
             d.destroy()
+
+        if self.need_refresh:
+            self.prefill()
+            self.need_refresh = False
 
         self.emit('changed')
 
@@ -445,6 +460,17 @@ class MemoryEditor(common.Editor):
         iter = self.store.append()
         self._set_memory(iter, memory)
 
+    def clear_memory(self, number):
+        iter = self.store.get_iter_first()
+        while iter:
+            loc, = self.store.get(iter, self.col("Loc"))
+            if loc == number:
+                print "Deleting %i" % number
+                self.store.remove(iter)
+                self.radio.erase_memory(number)
+                break
+            iter = self.store.iter_next(iter)
+
     def _set_mem_vals(self, mem, vals):
         mem.freq = vals[self.col("Frequency")]
         mem.number = vals[self.col("Loc")]
@@ -512,6 +538,8 @@ class MemoryEditor(common.Editor):
         self.name_length = 8
 
         self.fill_thread = None
+
+        self.need_refresh = False
 
         vbox = gtk.VBox(False, 2)
         vbox.pack_start(self.make_controls(), 0,0,0)
