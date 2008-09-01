@@ -30,6 +30,7 @@ class CloneProg(gtk.Window):
         self.set_transient_for(parent)
         self.set_modal(True)
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
+        self.set_position(gtk.WIN_POS_CENTER_ON_PARENT)	
 
         vbox = gtk.VBox(False, 2)
         vbox.show()
