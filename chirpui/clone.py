@@ -88,7 +88,7 @@ class CloneThread(threading.Thread):
     def run(self):
         print "Clone thread started"
 
-        self.__progw.show()
+        gobject.idle_add(self.__progw.show)
 
         self.__radio.status_fn = self.__status
         
@@ -104,7 +104,7 @@ class CloneThread(threading.Thread):
             print "Clone failed: %s" % e
             success = False
 
-        self.__progw.hide()
+        gobject.idle_add(self.__progw.hide)
 
         # NB: Compulsory close of the radio's serial connection
         self.__radio.pipe.close()
