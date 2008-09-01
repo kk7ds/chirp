@@ -200,7 +200,8 @@ class MemoryEditor(common.Editor):
             _enabled(vals[self.col("Duplex")])
 
         def d_if_mode(mode):
-            _enabled(vals[self.col("Mode")] != mode)
+            if vals[self.col("Mode")] == mode:
+                _enabled(False)
 
         val = self._render(colnum, val)
         rend.set_property("text", "%s" % val)
