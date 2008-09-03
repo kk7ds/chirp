@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, errors, util, icf, id800_ll
+from chirp import chirp_common, icf, id800_ll
 
 class ID800v2Radio(chirp_common.IcomMmapRadio,
                    chirp_common.IcomDstarRadio):
@@ -117,17 +117,3 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
                 calls.append(call)
 
         return calls
-
-if __name__ == "__main__":
-    import serial
-
-    s = serial.Serial(port="/dev/ttyUSB1",
-                      baudrate=9600,
-                      timeout=1)
-
-    r = ID800v2Radio(s)
-    r.get_memories()
-
-    f = file("id800.mmap", "wb")
-    f.write(r._mmap)
-    f.close()

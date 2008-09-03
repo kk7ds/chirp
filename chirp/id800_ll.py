@@ -18,7 +18,7 @@
 
 import struct
 
-from chirp import chirp_common, errors, util, icf
+from chirp import chirp_common, errors
 from chirp.memmap import MemoryMap
 
 POS_FREQ_START =  0
@@ -141,7 +141,7 @@ def get_mode(mmap):
     try:
         return ID800_MODES[val]
     except KeyError:
-        raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
+        raise errors.InvalidDataError("Radio has invalid mode %02x" % val)
 
 def get_rtone(mmap):
     idx = struct.unpack("B", mmap[POS_RTONE])[0]
@@ -330,7 +330,7 @@ def set_mode(mmap, mode):
 
     try:
         val |= ID800_MODES_REV[mode]
-    except Exception, e:
+    except Exception:
         raise errors.InvalidDataError("Unsupported mode `%s'" % mode)
 
     mmap[POS_MODE] = val
@@ -427,64 +427,3 @@ def set_rptcall(mmap, index, call):
     mmap[start] = call.ljust(8)
 
     return mmap
-
-def test_basic():
-    v = pack_name("DAN")
-    #V = "\x28\xe8\x86\xe4\x80\x00\x00"
-    V = "\x29\x21\xb8\x00\x00\x00\x00"
-
-    if v == V:
-        print "Pack name: OK"
-    else:
-        print "Pack name: FAIL"
-        print "%s\nnot equal to\n%s" % (util.hexprint(v), util.hexprint(V))
-
-    name = unpack_name(v)
-
-    if name == "DAN":
-        print "Unpack name: OK"
-    else:
-        print "Unpack name: FAIL"
-
-    v = pack_frequency(146.520)
-    V = "\x00\x72\x78"
-
-    if v != V:
-        print "Pack frequency: FAIL"
-        print "%s != %s" % (list(v), list(V))
-    else:
-        print "Pack frequency: OK"
-
-    freq = unpack_frequency(v)
-
-    if freq != 146.520:
-        print "Unpack frequency: FAIL"
-        print "%s != %s" % (freq, 146.520)
-    else:
-        print "Unpack frequency: OK"
-
-
-if __name__ == "__main__":
-
-    import sys
-    import serial
-    import os
-
-    test_basic()
-
-    sys.exit(0)
-
-    if len(sys.argv) > 2:
-        mm = file(sys.argv[1], "rb")
-        testmap = mm.read()
-
-        #parse_map_for_memory(map)
-
-        pipe = serial.Serial(port=sys.argv[2],
-                             baudrate=9600)
-
-        model = "\x27\x88\x02\x00"
-
-        outlog = file("outlog", "wb", 0)
-
-        clone_to_radio(pipe, model, testmap)
