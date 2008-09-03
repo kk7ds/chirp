@@ -173,7 +173,7 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
 
     return frame
 
-def process_data_frame(frame, map):
+def process_data_frame(frame, mmap):
 
     data = frame.payload
 
@@ -193,12 +193,12 @@ def process_data_frame(frame, map):
         try:
             val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
             i += 2
-            map += struct.pack("B", val)
+            mmap += struct.pack("B", val)
         except Exception, e:
             print "Failed to parse byte: %s" % e
             break
 
-    return map
+    return mmap
 
 def clone_from_radio(radio):
     md = get_model_data(radio.pipe)
@@ -211,7 +211,7 @@ def clone_from_radio(radio):
     stream = RadioStream(radio.pipe)
 
     data = ""
-    map = ""
+    mmap = ""
     while True:
         frames = stream.get_frames()
         if not frames:
@@ -220,16 +220,16 @@ def clone_from_radio(radio):
         data_frames = []
         for f in frames:
             if f.cmd == CMD_CLONE_DAT:
-                map = process_data_frame(f, map)
+                mmap = process_data_frame(f, mmap)
 
         if radio.status_fn:
             s = chirp_common.Status()
             s.msg = "Cloning from radio"
             s.max = radio._memsize
-            s.cur = len(map)
+            s.cur = len(mmap)
             radio.status_fn(s)
 
-    return memmap.MemoryMap(map)
+    return memmap.MemoryMap(mmap)
 
 def send_mem_chunk(radio, start, stop, bs=32):
     for i in range(start, stop, bs):

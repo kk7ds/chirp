@@ -133,20 +133,20 @@ class IC92MemoryFrame(IC92Frame):
 
         self.isDV = (len(self._data) == 62)
 
-        map = MemoryMap(self._data[2:])
+        mmap = MemoryMap(self._data[2:])
 
-        self._name = map[26:34].rstrip()
-        self._number = struct.unpack(">H", map[1:3])
+        self._name = mmap[26:34].rstrip()
+        self._number = struct.unpack(">H", mmap[1:3])
 
-        h = int("%x" % ord(map[7]))
-        t = int("%x" % ord(map[6]))
-        d = int("%02x%02x%02x" % (ord(map[5]),
-                                  ord(map[4]),
-                                  ord(map[3])))        
+        h = int("%x" % ord(mmap[7]))
+        t = int("%x" % ord(mmap[6]))
+        d = int("%02x%02x%02x" % (ord(mmap[5]),
+                                  ord(mmap[4]),
+                                  ord(mmap[3])))        
 
         self._freq = ((h * 100) + t) + (d / 1000000.0)
 
-        tdup, = struct.unpack("B", map[22])
+        tdup, = struct.unpack("B", mmap[22])
         if (tdup & 0x01) == 0x01:
             self._duplex = "-"
         elif (tdup & 0x02) == 0x02:
@@ -175,9 +175,9 @@ class IC92MemoryFrame(IC92Frame):
                            0x08 : "RN",
                            0x0C : "RR" }
 
-        self._dtcsPolarity = polarity_values[ord(map[23]) & 0x0C]
+        self._dtcsPolarity = polarity_values[ord(mmap[23]) & 0x0C]
 
-        mode = struct.unpack("B", map[21])[0] & 0xF0
+        mode = struct.unpack("B", mmap[21])[0] & 0xF0
         if mode == 0:
             self._mode = "FM"
         elif mode == 0x10:
@@ -191,53 +191,53 @@ class IC92MemoryFrame(IC92Frame):
         else:
             raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
 
-        tone = int("%02x%02x" % (ord(map[13]), ord(map[14])))
+        tone = int("%02x%02x" % (ord(mmap[13]), ord(mmap[14])))
         tone /= 10.0
         if tone in chirp_common.TONES:
             self._rtone = tone
         else:
             raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
 
-        tone = int("%02x%02x" % (ord(map[15]), ord(map[16])))
+        tone = int("%02x%02x" % (ord(mmap[15]), ord(mmap[16])))
         tone /= 10.0
         if tone in chirp_common.TONES:
             self._ctone = tone
         else:
             raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
 
-        dtcs = int("%02x%02x" % (ord(map[17]), ord(map[18])))
+        dtcs = int("%02x%02x" % (ord(mmap[17]), ord(mmap[18])))
         if dtcs in chirp_common.DTCS_CODES:
             self._dtcs = dtcs
         else:
             raise errors.InvalidDataError("Radio has invalid DTCS %03i" % dtcs)
 
-        self._offset = float("%x.%02x%02x%02x" % (ord(map[11]), ord(map[10]),
-                                                  ord(map[9]),  ord(map[8])))
+        self._offset = float("%x.%02x%02x%02x" % (ord(mmap[11]), ord(mmap[10]),
+                                                  ord(mmap[9]),  ord(mmap[8])))
 
-        index = ord(map[21]) & 0x0F
+        index = ord(mmap[21]) & 0x0F
         self._ts = tuning_steps[index]               
 
         if self.isDV:
-            self._urcall = map[26:33].strip()
-            self._rpt1call = map[36:43].strip()
-            self._rpt2call = map[44:51].strip()
+            self._urcall = mmap[26:33].strip()
+            self._rpt1call = mmap[36:43].strip()
+            self._rpt2call = mmap[44:51].strip()
 
     def make_raw(self):
-        map = MemoryMap("\x00" * 60)
+        mmap = MemoryMap("\x00" * 60)
 
         # Setup an empty memory map
-        map[0] = 0x01
-        map[10] = "\x60\x00\x00\x08\x85\x08\x85\x00" + \
+        mmap[0] = 0x01
+        mmap[10] = "\x60\x00\x00\x08\x85\x08\x85\x00" + \
             "\x23\x22\x00\x06\x00\x00\x00\x00"
-        map[36] = (" " * 16)
-        map[52] = "CQCQCQ  "
+        mmap[36] = (" " * 16)
+        mmap[52] = "CQCQCQ  "
 
-        map[1] = struct.pack(">H", int("%i" % self._number, 16))
-        map[3] = BCDencode(int(self._freq * 1000000), bigendian=False)
+        mmap[1] = struct.pack(">H", int("%i" % self._number, 16))
+        mmap[3] = BCDencode(int(self._freq * 1000000), bigendian=False)
 
-        map[26] = self._name.ljust(8)[:8]
+        mmap[26] = self._name.ljust(8)[:8]
 
-        dup = ord(map[22]) & 0xE0
+        dup = ord(mmap[22]) & 0xE0
         if self._duplex == "-":
             dup |= 0x01
         elif self._duplex == "+":
@@ -250,9 +250,9 @@ class IC92MemoryFrame(IC92Frame):
         if self._dtcsEnabled:
             dup |= 0x14
 
-        map[22] = dup
+        mmap[22] = dup
 
-        mode = ord(map[21]) & 0x0F
+        mode = ord(mmap[21]) & 0x0F
         if self._mode == "FM":
             mode |= 0
         elif self._mode == "NFM":
@@ -266,34 +266,34 @@ class IC92MemoryFrame(IC92Frame):
         else:
             raise errors.InvalidDataError("Unsupported mode `%s'" % self._mode)
 
-        map[21] = mode
+        mmap[21] = mode
 
-        map[13] = BCDencode(int(self._rtone * 10))
-        map[15] = BCDencode(int(self._ctone * 10))
-        map[17] = BCDencode(int(self._dtcs), width=4)
+        mmap[13] = BCDencode(int(self._rtone * 10))
+        mmap[15] = BCDencode(int(self._ctone * 10))
+        mmap[17] = BCDencode(int(self._dtcs), width=4)
         
-        map[8] = BCDencode(int(self._offset * 1000000),
+        mmap[8] = BCDencode(int(self._offset * 1000000),
                            bigendian=False,
                            width=6)
 
-        val = ord(map[23]) & 0xF3
+        val = ord(mmap[23]) & 0xF3
         polarity_values = { "NN" : 0x00,
                             "NR" : 0x04,
                             "RN" : 0x08,
                             "RR" : 0x0C }
         val |= polarity_values[self._dtcsPolarity]
-        map[23] = val
+        mmap[23] = val
 
-        val = ord(map[21]) & 0xF0
+        val = ord(mmap[21]) & 0xF0
         idx = tuning_steps_rev[self._ts]
         val |= idx
-        map[21] = val
+        mmap[21] = val
 
         self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
         if self._vfo == 1:
-            self._rawdata += map.get_packed()[:34]
+            self._rawdata += mmap.get_packed()[:34]
         else:
-            self._rawdata += map.get_packed()
+            self._rawdata += mmap.get_packed()
 
         print "Raw memory frame (%i):\n%s\n" % (\
             len(self._rawdata) - 4,

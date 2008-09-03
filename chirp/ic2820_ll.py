@@ -32,8 +32,8 @@ IC2820_MODES = {
     }
 
 IC2820_MODES_REV = {}
-for val, mode in IC2820_MODES.items():
-    IC2820_MODES_REV[mode] = val
+for __val, __mode in IC2820_MODES.items():
+    IC2820_MODES_REV[__mode] = __val
 
 # Value offsets
 # NB: The _END variants are python slice ends, which means they are one
@@ -54,54 +54,54 @@ POS_USED_START = 0x61E0
 
 MEM_LOC_SIZE   = 0x30
 
-def is_used(map, number):
+def is_used(mmap, number):
     byte = int(number / 8) + POS_USED_START
     mask = 1 << (number % 8)
     
-    return (ord(map[byte]) & mask) == 0
+    return (ord(mmap[byte]) & mask) == 0
 
-def set_used(map, number, used):
+def set_used(mmap, number, used):
     byte = int(number / 8) + POS_USED_START
     mask = 1 << (number % 8)
 
-    val = ord(map[byte]) & (~mask & 0xFF)
+    val = ord(mmap[byte]) & (~mask & 0xFF)
 
     if not used:
         val |= mask
 
-    map[byte] = val
+    mmap[byte] = val
 
-    return map
+    return mmap
 
-def get_freq(map):
-    return struct.unpack(">I", map[POS_FREQ_START:POS_FREQ_END])[0] / 1000000.0
+def get_freq(mmap):
+    return struct.unpack(">I", mmap[POS_FREQ_START:POS_FREQ_END])[0] / 1000000.0
 
-def get_name(map):
-    return map[POS_NAME_START:].strip()
+def get_name(mmap):
+    return mmap[POS_NAME_START:].strip()
 
-def get_rtone(map):
+def get_rtone(mmap):
     mask = 0x03F0
-    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    val = struct.unpack(">H", mmap[POS_TONE_START:POS_TONE_END])[0] & mask
     idx = (val >> 4)
 
     return chirp_common.TONES[idx]
 
-def get_ctone(map):
+def get_ctone(mmap):
     mask = 0xFC00
-    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    val = struct.unpack(">H", mmap[POS_TONE_START:POS_TONE_END])[0] & mask
     idx = (val >> 10)
 
     return chirp_common.TONES[idx]    
 
-def get_dtcs(map):
+def get_dtcs(mmap):
     mask = 0xFE
-    val = struct.unpack("B", map[POS_DTCS])[0] & mask
+    val = struct.unpack("B", mmap[POS_DTCS])[0] & mask
     idx = (val >> 1)
     
     return chirp_common.DTCS_CODES[idx]
 
-def get_dtcs_polarity(map):
-    val = struct.unpack("B", map[POS_DTCS_POL])[0] & 0x30
+def get_dtcs_polarity(mmap):
+    val = struct.unpack("B", mmap[POS_DTCS_POL])[0] & 0x30
     polarity_values = { 0x00 : "NN",
                         0x10 : "NR",
                         0x20 : "RN",
@@ -109,8 +109,8 @@ def get_dtcs_polarity(map):
 
     return polarity_values[val]
 
-def get_duplex(map):
-    val = struct.unpack("B", map[POS_DUPX_TONE])[0] & 0x60
+def get_duplex(mmap):
+    val = struct.unpack("B", mmap[POS_DUPX_TONE])[0] & 0x60
     if val & 0x40:
         return "+"
     elif val & 0x20:
@@ -118,11 +118,11 @@ def get_duplex(map):
     else:
         return ""
 
-def get_dup_off(map):
-    return struct.unpack(">I", map[POS_DOFF_START:POS_DOFF_END])[0] / 1000000.0
+def get_dup_off(mmap):
+    return struct.unpack(">I", mmap[POS_DOFF_START:POS_DOFF_END])[0] / 1000000.0
 
-def get_tone_enabled(map):
-    val = struct.unpack("B", map[POS_DUPX_TONE])[0] & 0x3C
+def get_tone_enabled(mmap):
+    val = struct.unpack("B", mmap[POS_DUPX_TONE])[0] & 0x3C
     
     enc = sql = dtcs = False
 
@@ -135,16 +135,16 @@ def get_tone_enabled(map):
 
     return enc, sql, dtcs
 
-def get_mode(map):
-    val = struct.unpack(">H", map[POS_MODE_START:POS_MODE_END])[0] & 0x01C0
+def get_mode(mmap):
+    val = struct.unpack(">H", mmap[POS_MODE_START:POS_MODE_END])[0] & 0x01C0
     try:
         return IC2820_MODES[val]
     except KeyError:
         raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % val)
 
-def get_raw_memory(map, number):
+def get_raw_memory(mmap, number):
     offset = number * MEM_LOC_SIZE
-    return MemoryMap(map[offset : offset + MEM_LOC_SIZE])
+    return MemoryMap(mmap[offset : offset + MEM_LOC_SIZE])
 
 def set_raw_memory(dst, src, number):
     offset = number * MEM_LOC_SIZE
@@ -154,47 +154,47 @@ def get_memory(_map, number):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
 
-    map = get_raw_memory(_map, number)
+    mmap = get_raw_memory(_map, number)
     mem = chirp_common.Memory()
     mem.number = number
 
-    mem.freq = get_freq(map)
-    mem.name = get_name(map)
+    mem.freq = get_freq(mmap)
+    mem.name = get_name(mmap)
 
-    mem.rtone = get_rtone(map)
-    mem.ctone = get_ctone(map)
-    mem.dtcs = get_dtcs(map)
-    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(map)
-    mem.dtcsPolarity = get_dtcs_polarity(map)
-    mem.duplex = get_duplex(map)
-    mem.offset = get_dup_off(map)
-    mem.mode = get_mode(map)
+    mem.rtone = get_rtone(mmap)
+    mem.ctone = get_ctone(mmap)
+    mem.dtcs = get_dtcs(mmap)
+    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(mmap)
+    mem.dtcsPolarity = get_dtcs_polarity(mmap)
+    mem.duplex = get_duplex(mmap)
+    mem.offset = get_dup_off(mmap)
+    mem.mode = get_mode(mmap)
 
     return mem
 
-def erase_memory(map, number):
-    set_used(map, number, False)
+def erase_memory(mmap, number):
+    set_used(mmap, number, False)
 
-def set_freq(map, freq):
-    map[POS_FREQ_START] = struct.pack(">I", int(freq * 1000000))
+def set_freq(mmap, freq):
+    mmap[POS_FREQ_START] = struct.pack(">I", int(freq * 1000000))
 
-def set_name(map, name):
-    map[POS_NAME_START] = name.ljust(8)[:8]
+def set_name(mmap, name):
+    mmap[POS_NAME_START] = name.ljust(8)[:8]
 
-def set_duplex(map, duplex):
-    val = ord(map[POS_DUPX_TONE]) & 0x9F # ~01100000
+def set_duplex(mmap, duplex):
+    val = ord(mmap[POS_DUPX_TONE]) & 0x9F # ~01100000
     if duplex == "+":
         val |= 0x40
     elif duplex == "-":
         val |= 0x20
-    map[POS_DUPX_TONE] = val
+    mmap[POS_DUPX_TONE] = val
 
-def set_dup_offset(map, offset):
-    map[POS_DOFF_START] = struct.pack(">I", int(offset * 1000000))
+def set_dup_offset(mmap, offset):
+    mmap[POS_DOFF_START] = struct.pack(">I", int(offset * 1000000))
 
-def set_tone_enabled(map, enc, sql, dtcs):
+def set_tone_enabled(mmap, enc, sql, dtcs):
     mask = 0xC3
-    val = ord(map[POS_DUPX_TONE]) & mask
+    val = ord(mmap[POS_DUPX_TONE]) & mask
 
     if enc:
         val |= 0x04
@@ -203,34 +203,34 @@ def set_tone_enabled(map, enc, sql, dtcs):
     elif dtcs:
         val |= 0x38
 
-    map[POS_DUPX_TONE] = val
+    mmap[POS_DUPX_TONE] = val
 
-def set_rtone(map, tone):
+def set_rtone(mmap, tone):
     mask = 0xFC0F # ~00001111 11110000
-    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    val = struct.unpack(">H", mmap[POS_TONE_START:POS_TONE_END])[0] & mask
     index = chirp_common.TONES.index(tone)
     val |= (index << 4) & 0x03F0
 
-    map[POS_TONE_START] = struct.pack(">H", val)
+    mmap[POS_TONE_START] = struct.pack(">H", val)
 
-def set_ctone(map, tone):
+def set_ctone(mmap, tone):
     mask = 0x03FF # ~11111100 00000000
-    val = struct.unpack(">H", map[POS_TONE_START:POS_TONE_END])[0] & mask
+    val = struct.unpack(">H", mmap[POS_TONE_START:POS_TONE_END])[0] & mask
     index = chirp_common.TONES.index(tone)
     val |= (index << 10) & 0xFC00
 
-    map[POS_TONE_START] = struct.pack(">H", val)    
+    mmap[POS_TONE_START] = struct.pack(">H", val)    
 
-def set_dtcs(map, code):
+def set_dtcs(mmap, code):
     mask = 0x01 # ~11111110
-    val = struct.unpack("B", map[POS_DTCS])[0] & mask
+    val = struct.unpack("B", mmap[POS_DTCS])[0] & mask
     val |= (chirp_common.DTCS_CODES.index(code) << 1)
     
-    map[POS_DTCS] = struct.pack("B", val)
+    mmap[POS_DTCS] = struct.pack("B", val)
 
-def set_dtcs_polarity(map, polarity):
+def set_dtcs_polarity(mmap, polarity):
     mask = 0xCF # ~00110000
-    val = struct.unpack("B", map[POS_DTCS_POL])[0] & mask
+    val = struct.unpack("B", mmap[POS_DTCS_POL])[0] & mask
 
     polarity_values = { "NN" : 0x00,
                         "NR" : 0x10,
@@ -239,11 +239,11 @@ def set_dtcs_polarity(map, polarity):
 
     val |= polarity_values[polarity]
 
-    map[POS_DTCS_POL] = val
+    mmap[POS_DTCS_POL] = val
 
-def set_mode(map, mode):
+def set_mode(mmap, mode):
     mask = 0xFE3F # ~ 00000001 11000000
-    val = struct.unpack(">H", map[POS_MODE_START:POS_MODE_END])[0] & mask
+    val = struct.unpack(">H", mmap[POS_MODE_START:POS_MODE_END])[0] & mask
 
     try:
         val |= IC2820_MODES_REV[mode]
@@ -251,35 +251,35 @@ def set_mode(map, mode):
         print "Valid modes: %s" % IC2820_MODES_REV
         raise errors.InvalidDataError("Unsupported mode `%s'" % mode)
 
-    map[POS_MODE_START] = struct.pack(">H", val)
+    mmap[POS_MODE_START] = struct.pack(">H", val)
 
 def set_memory(_map, mem):
-    map = get_raw_memory(_map, mem.number)
+    mmap = get_raw_memory(_map, mem.number)
 
-    set_freq(map, mem.freq)
-    set_name(map, mem.name)
-    set_duplex(map, mem.duplex)
-    set_dup_offset(map, mem.offset)
-    set_rtone(map, mem.rtone)
-    set_ctone(map, mem.ctone)
-    set_dtcs(map, mem.dtcs)
-    set_dtcs_polarity(map, mem.dtcsPolarity)
-    set_tone_enabled(map, mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled)
-    set_mode(map, mem.mode)
+    set_freq(mmap, mem.freq)
+    set_name(mmap, mem.name)
+    set_duplex(mmap, mem.duplex)
+    set_dup_offset(mmap, mem.offset)
+    set_rtone(mmap, mem.rtone)
+    set_ctone(mmap, mem.ctone)
+    set_dtcs(mmap, mem.dtcs)
+    set_dtcs_polarity(mmap, mem.dtcsPolarity)
+    set_tone_enabled(mmap, mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled)
+    set_mode(mmap, mem.mode)
 
-    set_raw_memory(_map, map, mem.number)
+    set_raw_memory(_map, mmap, mem.number)
 
     set_used(_map, mem.number, True)
 
     return _map
 
-def parse_map_for_memory(map):
+def parse_map_for_memory(mmap):
     memories = []
 
     for i in range(500):
         # FIXME: Remove this after debugging
         try:
-            m = get_memory(map, i)
+            m = get_memory(mmap, i)
             if m:
                 memories.append(m)
         except errors.InvalidMemoryLocation:
@@ -301,13 +301,13 @@ if __name__ == "__main__":
     
     print "Model:\n%s" % util.hexprint(md)
     #
-    map = icf.clone_from_radio(s, md[0:4], chirp_common.console_status)
-    #f = file("2820.map", "wb")
-    #f.write(map)
+    testmap = icf.clone_from_radio(s, md[0:4], chirp_common.console_status)
+    #f = file("2820.mmap", "wb")
+    #f.write(mmap)
     #f.close()
 
-    #f = file("2820.map", "rb")
-    #map = f.read()
+    #f = file("2820.mmap", "rb")
+    #mmap = f.read()
     #f.close()
 
-    #print get_memory(map, 3)
+    #print get_memory(mmap, 3)
