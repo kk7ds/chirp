@@ -177,7 +177,7 @@ class Memory:
         try:
             self.offset = float(vals[4])
         except:
-            raise error.InvalidDataError("Offset is not a valid number")
+            raise errors.InvalidDataError("Offset is not a valid number")
         
         try:
             self.rtone = float(vals[5])
