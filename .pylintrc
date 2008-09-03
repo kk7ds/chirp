@@ -55,7 +55,7 @@ disable-checker=SIMILARITIES
 #enable-msg=
 
 # Disable the message(s) with the given id(s).
-disable-msg=W0142
+disable-msg=W0142,C0111
 
 
 [REPORTS]
