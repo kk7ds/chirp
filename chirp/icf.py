@@ -18,10 +18,7 @@
 
 import struct
 
-import errors
-import chirp_common
-import util
-import memmap
+from chirp import chirp_common, errors, util, memmap
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN  = 0xE3

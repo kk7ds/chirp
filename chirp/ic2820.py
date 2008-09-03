@@ -15,13 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import chirp_common
-import errors
-import util
-import icf
-
-import ic2820_ll
+from chirp import chirp_common, errors, util, icf, ic2820_ll
 
 class IC2820Radio(chirp_common.IcomMmapRadio):
     _model = "\x29\x70\x00\x01"

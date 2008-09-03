@@ -17,10 +17,8 @@
 
 import struct
 
-import chirp_common
-import util
-import errors
-from memmap import MemoryMap
+from chirp import chirp_common, util, errors
+from chirp.memmap import MemoryMap
 
 POS_FREQ_START =  0
 POS_FREQ_END   =  2

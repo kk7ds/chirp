@@ -17,12 +17,7 @@
 
 import time
 
-import chirp_common
-import errors
-import util
-import memmap
-
-import ic9x_ll
+from chirp import chirp_common, errors, util, memmap, ic9x_ll
 
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400

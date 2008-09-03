@@ -15,8 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import errors
-import memmap
+from chirp import errors, memmap
 
 TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,

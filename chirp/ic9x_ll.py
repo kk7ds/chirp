@@ -17,11 +17,9 @@
 
 import struct
 
-from chirp_common import IcomFrame
-import chirp_common
-import util
-import errors
-from memmap import MemoryMap
+from chirp.chirp_common import IcomFrame
+from chirp import chirp_common, util, errors
+from chirp.memmap import MemoryMap
 
 tuning_steps = {
     0 : 5.0,

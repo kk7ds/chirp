@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import errors
+from chirp import errors
 
 def hexprint(data):
     col = 0
@@ -57,7 +57,7 @@ def hexprint(data):
     return out
 
 def parse_frames(buf):
-    import ic9x_ll
+    from chirp import ic9x_ll
     frames = []
 
     while "\xfe\xfe" in buf:

@@ -20,11 +20,8 @@ import struct
 import traceback
 import sys
 
-import icf
-import util
-import chirp_common
-import errors
-from memmap import MemoryMap
+from chirp import chirp_common, errors, util, icf
+from chirp.memmap import MemoryMap
 
 IC2820_MODES = {
     0x0040 : "NFM",

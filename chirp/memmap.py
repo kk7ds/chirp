@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import util
+from chirp import util
 
 class MemoryMap:
     """

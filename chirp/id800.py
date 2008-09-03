@@ -15,13 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import chirp_common
-import errors
-import util
-import icf
-
-import id800_ll
+from chirp import chirp_common, errors, util, icf, id800_ll
 
 class ID800v2Radio(chirp_common.IcomMmapRadio,
                    chirp_common.IcomDstarRadio):
