@@ -17,12 +17,13 @@
 
 import time
 
-from chirp import chirp_common, errors, util, memmap, ic9x_ll
+from chirp import chirp_common, errors, memmap, ic9x_ll
 
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
-
+    vfo = 0
     __last = 0
+    mem_upper_limit = 300
 
     def get_memory(self, number):
         if number < 0 or number > 999:
@@ -34,50 +35,26 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
 
-        if mframe.isDV:
-            mem = chirp_common.DVMemory()
-            mem.UrCall = mframe._urcall
-            mem.Rpt1Call = mframe._rpt1call
-            mem.Rpt2Call = mframe._rpt2call
-        else:
-            mem = chirp_common.Memory()
-
-        mem.freq = mframe._freq
-        mem.number = int("%02x" % mframe._number)
-        mem.name = mframe._name
-        mem.duplex = mframe._duplex
-        mem.offset = mframe._offset
-        mem.mode = mframe._mode
-        mem.rtone = mframe._rtone
-        mem.ctone = mframe._ctone
-        mem.dtcs = mframe._dtcs
-        mem.dtcsPolarity = mframe._dtcsPolarity
-        mem.tencEnabled = mframe._tencEnabled
-        mem.tsqlEnabled = mframe._tsqlEnabled
-        mem.dtcsEnabled = mframe._dtcsEnabled
-        mem.tuningStep = mframe._ts
-
-        return mem
+        return mframe.get_memory()
 
     def erase_memory(self, number):
         eframe = ic9x_ll.IC92MemClearFrame(self.vfo, number)
 
         ic9x_ll.send_magic(self.pipe)
-        eframe.make_raw()
 
-        result = ic9x_ll.send(self.pipe, eframe._rawdata)
+        result = eframe.send(self.pipe)
 
         if len(result) == 0:
             raise errors.InvalidDataError("No response from radio")
 
-        if result[0]._data != "\xfb":
+        if result[0].get_data() != "\xfb":
             raise errors.InvalidDataError("Radio reported error")
 
     def get_raw_memory(self, number):
         ic9x_ll.send_magic(self.pipe)
         mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
 
-        return memmap.MemoryMap(mframe._data[2:])
+        return memmap.MemoryMap(mframe.get_data()[2:])
 
     def get_memories(self, lo=0, hi=None):
         if hi is None:
@@ -88,9 +65,10 @@ class IC9xRadio(chirp_common.IcomRadio):
         for i in range(lo, hi+1):
             try:
                 print "Getting %i" % i
-                m = self.get_memory(i)
-                memories.append(m)
-                print "Done: %s" % m
+                mem = self.get_memory(i)
+                if mem:
+                    memories.append(mem)
+                print "Done: %s" % mem
             except errors.InvalidMemoryLocation:
                 pass
             except errors.InvalidDataError, e:
@@ -103,14 +81,13 @@ class IC9xRadio(chirp_common.IcomRadio):
         mframe = ic9x_ll.IC92MemoryFrame()
         ic9x_ll.send_magic(self.pipe)
         mframe.set_memory(memory, self.vfo)
-        mframe.make_raw() # FIXME
         
-        result = ic9x_ll.send(self.pipe, mframe._rawdata)
+        result = mframe.send(self.pipe)
 
         if len(result) == 0:
             raise errors.InvalidDataError("No response from radio")
 
-        if result[0]._data != "\xfb":
+        if result[0].get_data() != "\xfb":
             raise errors.InvalidDataError("Radio reported error")
 
 class IC9xRadioA(IC9xRadio):

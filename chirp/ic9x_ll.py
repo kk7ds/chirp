@@ -21,7 +21,7 @@ from chirp.chirp_common import IcomFrame
 from chirp import chirp_common, util, errors
 from chirp.memmap import MemoryMap
 
-tuning_steps = {
+TUNING_STEPS = {
     0 : 5.0,
     1 : 6.25,
     2 : 8.33,
@@ -38,11 +38,11 @@ tuning_steps = {
     13: 200
     }
 
-tuning_steps_rev = {}
-for idx, val in tuning_steps.items():
-    tuning_steps_rev[val] = idx
+TUNING_STEPS_REV = {}
+for __idx, __val in TUNING_STEPS.items():
+    TUNING_STEPS_REV[__val] = __idx
 
-def BCDencode(val, bigendian=True, width=None):
+def bcd_encode(val, bigendian=True, width=None):
     digits = []
     while val != 0:
         digits.append(val % 10)
@@ -68,10 +68,10 @@ def BCDencode(val, bigendian=True, width=None):
 class IC92Frame(IcomFrame):
     def from_raw(self, data):
         if not data.startswith("\xfe\xfe"):
-            raise InvalidDataError("No header");
+            raise errors.InvalidDataError("No header")
 
         if not data.endswith("\xfd"):
-            raise InvalidDataError("No trailer");
+            raise errors.InvalidDataError("No trailer")
 
         self._vfo = ord(data[3])
         self._magic = ord(data[2])
@@ -98,15 +98,22 @@ class IC92Frame(IcomFrame):
         self._data = None
         self._rawdata = None
 
+    def get_data(self):
+        return self._data
+
     def _make_raw(self):
         raise Exception("Not implemented")
 
     def __str__(self):
-        s = "Frame VFO=%i (len = %i)\n" % (self._vfo, len(self._data))
-        s += hexprint(self._data)
-        s += "\n"
+        string = "Frame VFO=%i (len = %i)\n" % (self._vfo, len(self._data))
+        string += util.hexprint(self._data)
+        string += "\n"
 
-        return s
+        return string
+
+    def send(self, pipe):
+        self._make_raw()
+        return send(pipe, self._rawdata)
 
 class IC92BankFrame(IC92Frame):
     def __str__(self):
@@ -118,33 +125,55 @@ class IC92MemClearFrame(IC92Frame):
         self._number = number
         self._vfo = vfo
 
-    def make_raw(self):
+    def _make_raw(self):
         self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
         self._rawdata += struct.pack(">BHB",
                                      0x01,
                                      int("%i" % self._number, 16),
-                                     0xFF);
+                                     0xFF)
 
 class IC92MemoryFrame(IC92Frame):
+    def __init__(self):
+        IC92Frame.__init__(self)
+
+        self.is_dv = False
+        self._dtcs_polarity = "NN"
+        self._ts = 5.0
+        self._rtone = 88.5
+        self._ctone = 88.5
+        self._dtcs = 23
+        self._duplex = ""
+        self._urcall = "CQCQCQ"
+        self._tsql_en = False
+        self._tenc_en = False
+        self._dtcs_en = False
+        self._mode = "FM"
+        self._freq = "146.010"
+        self._name = ""
+        self._offset = 0
+        self._rpt1call = ""
+        self._rpt2call = ""
+        self._number = -1
+
     def _post_proc(self):
         if len(self._data) < 36:
             raise errors.InvalidDataError("Frame length %i is too short",
                                           len(self._data))
 
-        self.isDV = (len(self._data) == 62)
+        self.is_dv = (len(self._data) == 62)
 
         mmap = MemoryMap(self._data[2:])
 
         self._name = mmap[26:34].rstrip()
         self._number = struct.unpack(">H", mmap[1:3])
 
-        h = int("%x" % ord(mmap[7]))
-        t = int("%x" % ord(mmap[6]))
-        d = int("%02x%02x%02x" % (ord(mmap[5]),
-                                  ord(mmap[4]),
-                                  ord(mmap[3])))        
+        hun = int("%x" % ord(mmap[7]))
+        ten = int("%x" % ord(mmap[6]))
+        dec = int("%02x%02x%02x" % (ord(mmap[5]),
+                                    ord(mmap[4]),
+                                    ord(mmap[3])))        
 
-        self._freq = ((h * 100) + t) + (d / 1000000.0)
+        self._freq = ((hun * 100) + ten) + (dec / 1000000.0)
 
         tdup, = struct.unpack("B", mmap[22])
         if (tdup & 0x01) == 0x01:
@@ -154,17 +183,17 @@ class IC92MemoryFrame(IC92Frame):
         else:
             self._duplex = ""
 
-        self._tencEnabled = self._tsqlEnabled = self._dtcsEnabled = False
+        self._tenc_en = self._tsql_en = self._dtcs_en = False
             
         tval = tdup & 0x1C
         if tval == 0x00:
             pass # No tone
         elif tval == 0x04:
-            self._tencEnabled = True
+            self._tenc_en = True
         elif tval == 0x0C:
-            self._tsqlEnabled = True
+            self._tsql_en = True
         elif tval == 0x14:
-            self._dtcsEnabled = True
+            self._dtcs_en = True
         elif tval == 0x18:
             pass # TSQL-R
         elif tval == 0x1C:
@@ -175,7 +204,7 @@ class IC92MemoryFrame(IC92Frame):
                            0x08 : "RN",
                            0x0C : "RR" }
 
-        self._dtcsPolarity = polarity_values[ord(mmap[23]) & 0x0C]
+        self._dtcs_polarity = polarity_values[ord(mmap[23]) & 0x0C]
 
         mode = struct.unpack("B", mmap[21])[0] & 0xF0
         if mode == 0:
@@ -215,14 +244,14 @@ class IC92MemoryFrame(IC92Frame):
                                                   ord(mmap[9]),  ord(mmap[8])))
 
         index = ord(mmap[21]) & 0x0F
-        self._ts = tuning_steps[index]               
+        self._ts = TUNING_STEPS[index]               
 
-        if self.isDV:
+        if self.is_dv:
             self._urcall = mmap[26:33].strip()
             self._rpt1call = mmap[36:43].strip()
             self._rpt2call = mmap[44:51].strip()
 
-    def make_raw(self):
+    def _make_raw(self):
         mmap = MemoryMap("\x00" * 60)
 
         # Setup an empty memory map
@@ -233,7 +262,7 @@ class IC92MemoryFrame(IC92Frame):
         mmap[52] = "CQCQCQ  "
 
         mmap[1] = struct.pack(">H", int("%i" % self._number, 16))
-        mmap[3] = BCDencode(int(self._freq * 1000000), bigendian=False)
+        mmap[3] = bcd_encode(int(self._freq * 1000000), bigendian=False)
 
         mmap[26] = self._name.ljust(8)[:8]
 
@@ -243,11 +272,11 @@ class IC92MemoryFrame(IC92Frame):
         elif self._duplex == "+":
             dup |= 0x02
 
-        if self._tencEnabled:
+        if self._tenc_en:
             dup |= 0x04
-        if self._tsqlEnabled:
+        if self._tsql_en:
             dup |= 0x0C
-        if self._dtcsEnabled:
+        if self._dtcs_en:
             dup |= 0x14
 
         mmap[22] = dup
@@ -268,11 +297,11 @@ class IC92MemoryFrame(IC92Frame):
 
         mmap[21] = mode
 
-        mmap[13] = BCDencode(int(self._rtone * 10))
-        mmap[15] = BCDencode(int(self._ctone * 10))
-        mmap[17] = BCDencode(int(self._dtcs), width=4)
+        mmap[13] = bcd_encode(int(self._rtone * 10))
+        mmap[15] = bcd_encode(int(self._ctone * 10))
+        mmap[17] = bcd_encode(int(self._dtcs), width=4)
         
-        mmap[8] = BCDencode(int(self._offset * 1000000),
+        mmap[8] = bcd_encode(int(self._offset * 1000000),
                            bigendian=False,
                            width=6)
 
@@ -281,11 +310,11 @@ class IC92MemoryFrame(IC92Frame):
                             "NR" : 0x04,
                             "RN" : 0x08,
                             "RR" : 0x0C }
-        val |= polarity_values[self._dtcsPolarity]
+        val |= polarity_values[self._dtcs_polarity]
         mmap[23] = val
 
         val = ord(mmap[21]) & 0xF0
-        idx = tuning_steps_rev[self._ts]
+        idx = TUNING_STEPS_REV[self._ts]
         val |= idx
         mmap[21] = val
 
@@ -311,20 +340,45 @@ class IC92MemoryFrame(IC92Frame):
         self._rtone = memory.rtone
         self._ctone = memory.ctone
         self._dtcs = memory.dtcs
-        self._dtcsPolarity = memory.dtcsPolarity
-        self._tencEnabled = memory.tencEnabled
-        self._tsqlEnabled = memory.tsqlEnabled
-        self._dtcsEnabled = memory.dtcsEnabled
+        self._dtcs_polarity = memory.dtcsPolarity
+        self._tenc_en = memory.tencEnabled
+        self._tsql_en = memory.tsqlEnabled
+        self._dtcs_en = memory.dtcsEnabled
         self._ts = memory.tuningStep
+
+    def get_memory(self):
+        if self.is_dv:
+            mem = chirp_common.DVMemory()
+            mem.UrCall = self._urcall
+            mem.Rpt1Call = self._rpt1call
+            mem.Rpt2Call = self._rpt2call
+        else:
+            mem = chirp_common.Memory()
+
+        mem.freq = self._freq
+        mem.number = int("%02x" % self._number)
+        mem.name = self._name
+        mem.duplex = self._duplex
+        mem.offset = self._offset
+        mem.mode = self._mode
+        mem.rtone = self._rtone
+        mem.ctone = self._ctone
+        mem.dtcs = self._dtcs
+        mem.dtcsPolarity = self._dtcs_polarity
+        mem.tencEnabled = self._tenc_en
+        mem.tsqlEnabled = self._tsql_en
+        mem.dtcsEnabled = self._dtcs_en
+        mem.tuningStep = self._ts
+        
+        return mem
 
     def __str__(self):
         return "%i: %.2f (%s) (DV=%s)" % (self._number,
                                           self._freq,
                                           self._name,
-                                          self.isDV)
+                                          self.is_dv)
 
 def parse_frames(buf):
-    from chirp import ic9x_ll
     frames = []
 
     while "\xfe\xfe" in buf:
@@ -339,7 +393,7 @@ def parse_frames(buf):
         buf = buf[end:]
 
         try:
-            frame = ic9x_ll.IC92Frame()
+            frame = IC92Frame()
             frame.from_raw(framedata)
             frames.append(frame)
         except errors.InvalidDataError, e:
@@ -404,11 +458,11 @@ def get_memory(pipe, vfo, number):
     if len(frames) == 0:
         raise errors.InvalidDataError("No response from radio")
 
-    if len(frames[0]._data) < 6:
-        print "%s" % util.hexprint(frames[0]._data)
+    if len(frames[0].get_data()) < 6:
+        print "%s" % util.hexprint(frames[0].get_data())
         raise errors.InvalidDataError("Got a short, unknown block from radio")
 
-    if frames[0]._data[5] == '\xff':
+    if frames[0].get_data()[5] == '\xff':
         raise errors.InvalidMemoryLocation("Radio says location is empty")
 
     mf = IC92MemoryFrame()
@@ -428,9 +482,9 @@ def print_memory(pipe, vfo, number):
     print "Memory %i from VFO %i: %s" % (number, vfo, str(mf))
 
 if __name__ == "__main__":
-    print util.hexprint(BCDencode(1072))
-    print util.hexprint(BCDencode(146900000, False))
-    print util.hexprint(BCDencode(25, width=4))
-    print util.hexprint(BCDencode(5000000, False, 6))
-    print util.hexprint(BCDencode(600000, False, 6))
+    print util.hexprint(bcd_encode(1072))
+    print util.hexprint(bcd_encode(146900000, False))
+    print util.hexprint(bcd_encode(25, width=4))
+    print util.hexprint(bcd_encode(5000000, False, 6))
+    print util.hexprint(bcd_encode(600000, False, 6))
     
