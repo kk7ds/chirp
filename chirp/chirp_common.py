@@ -265,7 +265,7 @@ class IcomRadio:
     def set_pipe(self, pipe):
         self.pipe = pipe
 
-    def get_memory(self, number, vfo=None):
+    def get_memory(self, number):
         pass
 
     def erase_memory(self, number):
@@ -280,10 +280,10 @@ class IcomRadio:
     def set_memories(self, memories):
         pass
 
-    def get_banks(self, vfo=None):
+    def get_banks(self):
         pass
 
-    def set_banks(self, vfo=None):
+    def set_banks(self):
         pass
 
     def get_raw_memory(self, number):

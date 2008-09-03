@@ -33,7 +33,7 @@ class IC2820Radio(chirp_common.IcomMmapRadio):
     def process_mmap(self):
         self._memories = ic2820_ll.parse_map_for_memory(self._mmap)
 
-    def get_memory(self, number, vfo=None):
+    def get_memory(self, number):
         if not self._mmap:
             self.sync_in()
         
