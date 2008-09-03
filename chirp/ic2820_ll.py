@@ -17,10 +17,8 @@
 
 
 import struct
-import traceback
-import sys
 
-from chirp import chirp_common, errors, util, icf
+from chirp import chirp_common, errors
 from chirp.memmap import MemoryMap
 
 IC2820_MODES = {
@@ -277,37 +275,13 @@ def parse_map_for_memory(mmap):
     memories = []
 
     for i in range(500):
-        # FIXME: Remove this after debugging
         try:
-            m = get_memory(mmap, i)
-            if m:
-                memories.append(m)
+            mem = get_memory(mmap, i)
         except errors.InvalidMemoryLocation:
-            pass
-        except Exception,e:
-            traceback.print_exc(file=sys.stdout)
-            print "Failed to parse location %i: %s" % (i, e)
+            mem = None
+
+        if mem:
+            memories.append(mem)
 
     return memories
 
-if __name__ == "__main__":
-    import serial
-    
-    s = serial.Serial(port="/dev/ttyUSB1",
-                      baudrate=9600,
-                      timeout=0.5)
-    
-    md = icf.get_model_data(s)
-    
-    print "Model:\n%s" % util.hexprint(md)
-    #
-    testmap = icf.clone_from_radio(s, md[0:4], chirp_common.console_status)
-    #f = file("2820.mmap", "wb")
-    #f.write(mmap)
-    #f.close()
-
-    #f = file("2820.mmap", "rb")
-    #mmap = f.read()
-    #f.close()
-
-    #print get_memory(mmap, 3)
