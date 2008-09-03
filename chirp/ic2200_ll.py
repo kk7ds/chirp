@@ -17,7 +17,7 @@
 
 import struct
 
-from chirp import chirp_common, util, errors
+from chirp import chirp_common, errors
 from chirp.memmap import MemoryMap
 
 POS_FREQ_START =  0
@@ -39,10 +39,10 @@ MEM_LOC_SIZE = 24
 def is_used(mmap, number):
     return (ord(mmap[POS_USED_START + number]) & 0x20) == 0
 
-def set_used(mmap, number, isUsed=True):
+def set_used(mmap, number, used=True):
     val = ord(mmap[POS_USED_START + number]) & 0x0F
 
-    if not isUsed:
+    if not used:
         val |= 0x20
 
     mmap[POS_USED_START + number] = val
@@ -129,20 +129,20 @@ def get_memory(_map, number):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
 
-    m = chirp_common.Memory()
-    m.freq = get_freq(mmap)
-    m.name = get_name(mmap)
-    m.number = number
-    m.mode = get_mode(mmap)
-    m.duplex = get_duplex(mmap)
-    m.offset = get_dup_offset(mmap)
-    m.rtone = get_rtone(mmap)
-    m.ctone = get_ctone(mmap)
-    m.dtcs = get_dtcs(mmap)
-    m.tencEnabled, m.tsqlEnabled, m.dtcsEnabled = get_tone_enabled(mmap)
-    m.dtcsPolarity = get_dtcs_polarity(mmap)
+    mem = chirp_common.Memory()
+    mem.freq = get_freq(mmap)
+    mem.name = get_name(mmap)
+    mem.number = number
+    mem.mode = get_mode(mmap)
+    mem.duplex = get_duplex(mmap)
+    mem.offset = get_dup_offset(mmap)
+    mem.rtone = get_rtone(mmap)
+    mem.ctone = get_ctone(mmap)
+    mem.dtcs = get_dtcs(mmap)
+    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(mmap)
+    mem.dtcsPolarity = get_dtcs_polarity(mmap)
     
-    return m
+    return mem
 
 def set_freq(mmap, freq):
     mmap[POS_FREQ_START] = struct.pack("<H", int(freq * 1000) / 5)
@@ -165,7 +165,7 @@ def set_mode(mmap, mode):
 
 def set_duplex(mmap, duplex):
     mask = 0xCF # ~ 00110000
-    val = struct.unpack("B", map[POS_DUPX])[0] & mask
+    val = struct.unpack("B", mmap[POS_DUPX])[0] & mask
 
     if duplex == "-":
         val |= 0x10
@@ -236,7 +236,7 @@ def set_memory(_map, memory):
                      memory.dtcsEnabled)
     set_dtcs_polarity(mmap, memory.dtcsPolarity)
 
-    _map[get_mem_offset(memory.number)] = map.get_packed()
+    _map[get_mem_offset(memory.number)] = mmap.get_packed()
     return _map
 
 def erase_memory(mmap, number):
@@ -247,10 +247,10 @@ def parse_map_for_memory(mmap):
 
     for i in range(197):
         try:
-            m = get_memory(mmap, i)
+            mem = get_memory(mmap, i)
         except errors.InvalidMemoryLocation:
-            m = None
-        if m:
-            memories.append(m)
+            mem = None
+        if mem:
+            memories.append(mem)
 
     return memories

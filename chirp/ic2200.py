@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from chirp import chirp_common, errors, util, icf, ic2200_ll
+from chirp import chirp_common, icf, ic2200_ll
 
 class IC2200Radio(chirp_common.IcomMmapRadio):
     _model = "\x26\x98\x00\x01"
