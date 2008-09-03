@@ -18,8 +18,6 @@
 from chirp import errors
 
 def hexprint(data):
-    col = 0
-
     line_sz = 8
 
     lines = len(data) / line_sz
@@ -39,12 +37,12 @@ def hexprint(data):
         else:
             limit = line_sz
             
-        for j in range(0,limit):
+        for j in range(0, limit):
             out += "%02x " % ord(data[(i * line_sz) + j])
 
         out += "  "
 
-        for j in range(0,limit):
+        for j in range(0, limit):
             char = data[(i * line_sz) + j]
 
             if ord(char) > 0x20 and ord(char) < 0x7E:
@@ -55,39 +53,6 @@ def hexprint(data):
         out += "\n"
 
     return out
-
-def parse_frames(buf):
-    from chirp import ic9x_ll
-    frames = []
-
-    while "\xfe\xfe" in buf:
-        try:
-            start = buf.index("\xfe\xfe")
-            end = buf[start:].index("\xfd") + start + 1
-        except Exception, e:
-            print "No trailing bit"
-            break
-
-        frame = buf[start:end]
-        buf = buf[end:]
-
-        try:
-            f = ic9x_ll.IC92Frame()
-            f.from_raw(frame)
-            frames.append(f)
-        except errors.InvalidDataError, e:
-            print "Broken frame: %s" % e
-
-        #print "Parsed %i frames" % len(frames)
-
-    return frames
-
-def print_frames(frames):
-    c = 0
-    for i in frames:
-        print "Frame %i:" % c
-        print i
-        c += 1
 
 def write_in_place(mem, start, data):
     return mem[:start] + data + mem[start+len(data):]

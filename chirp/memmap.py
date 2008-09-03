@@ -10,19 +10,19 @@ class MemoryMap:
     def __init__(self, data):
         self._data = list(data)
 
-    def printable(self, start=None, end=None, printToStdio=True):
+    def printable(self, start=None, end=None, printit=True):
         if not start:
             start = 0
 
         if not end:
             end = len(self._data)
 
-        s = util.hexprint(self._data[start:end])
+        string = util.hexprint(self._data[start:end])
 
-        if printToStdio:
-            print s
+        if printit:
+            print string
 
-        return s
+        return string
 
     def get(self, start, length=1):
         if start == -1:
@@ -62,24 +62,3 @@ class MemoryMap:
 
     def __str__(self):
         return self.printable(printToStdio=False)
-
-if __name__ == "__main__":
-    m = MemoryMap("\x00" * 32)
-
-    m.printable()
-
-    m[8] = "\x21\x22\x23"
-
-    m.printable()
-
-    print util.hexprint(m[8:11])
-
-    print util.hexprint(m.get_packed())
-
-    m[-4] = "abcd"
-
-    m.printable()
-
-    print m[-4:]
-
-    print util.hexprint(m[-2:])

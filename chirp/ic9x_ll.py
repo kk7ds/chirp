@@ -323,6 +323,40 @@ class IC92MemoryFrame(IC92Frame):
                                           self._name,
                                           self.isDV)
 
+def parse_frames(buf):
+    from chirp import ic9x_ll
+    frames = []
+
+    while "\xfe\xfe" in buf:
+        try:
+            start = buf.index("\xfe\xfe")
+            end = buf[start:].index("\xfd") + start + 1
+        except Exception, e:
+            print "No trailing bit"
+            break
+
+        framedata = buf[start:end]
+        buf = buf[end:]
+
+        try:
+            frame = ic9x_ll.IC92Frame()
+            frame.from_raw(framedata)
+            frames.append(frame)
+        except errors.InvalidDataError, e:
+            print "Broken frame: %s" % e
+
+        #print "Parsed %i frames" % len(frames)
+
+    return frames
+
+def print_frames(frames):
+    count = 0
+    for i in frames:
+        print "Frame %i:" % count
+        print i
+        count += 1
+
+
 def send(pipe, buf, verbose=False):
     realbuf = "\xfe\xfe" + buf + "\xfd"
 
@@ -340,7 +374,7 @@ def send(pipe, buf, verbose=False):
 
         data += buf
 
-    return util.parse_frames(data)
+    return parse_frames(data)
 
 def send_magic(pipe, verbose=False):
     magic = ("\xfe" * 400) + "\x01\x80\x19"

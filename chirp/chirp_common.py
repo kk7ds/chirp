@@ -295,6 +295,8 @@ class IcomMmapRadio(IcomRadio):
     _model = "\x00\x00\x00\x00"
     _memsize = 0
     _mmap = None
+    _endframe = ""
+    _ranges = []
 
     def __init__(self, pipe):
 
@@ -324,6 +326,21 @@ class IcomMmapRadio(IcomRadio):
 
     def process_mmap(self):
         pass
+
+    def get_model(self):
+        return self._model
+
+    def get_endframe(self):
+        return self._endframe
+
+    def get_memsize(self):
+        return self._memsize
+
+    def get_mmap(self):
+        return self._mmap
+
+    def get_ranges(self):
+        return self._ranges
 
 class IcomDstarRadio:
     MYCALL_LIMIT = (1, 1)
