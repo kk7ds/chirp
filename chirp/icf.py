@@ -45,23 +45,26 @@ class IcfFrame:
 
         return "%s -> %s [%s]:\n%s" % (addrs[self.src], addrs[self.dst],
                                        cmds[self.cmd],
-                                       utils.hexprint(self.payload))
+                                       util.hexprint(self.payload))
+
+    def __init__(self):
+        pass
 
 def parse_frame_generic(data):
-    f = IcfFrame()
+    frame = IcfFrame()
 
-    f.src = ord(data[2])
-    f.dst = ord(data[3])
-    f.cmd = ord(data[4])
+    frame.src = ord(data[2])
+    frame.dst = ord(data[3])
+    frame.cmd = ord(data[4])
 
     try:
         end = data.index("\xFD")
-    except Exception, e:
+    except Exception:
         return None, data
 
-    f.payload = data[5:end]
+    frame.payload = data[5:end]
 
-    return f, data[end+1:]
+    return frame, data[end+1:]
 
 class RadioStream:
     def __init__(self, pipe):
@@ -94,7 +97,7 @@ class RadioStream:
 
                 self.data = rest
             except errors.InvalidDataError, e:
-                print "Failed to parse frame: %s" % e
+                print "Failed to parse frame (cmd=%i): %s" % (cmd, e)
                 return []
 
         return frames
@@ -156,20 +159,13 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
         cs = ((cs ^ 0xFFFF) + 1) & 0xFF
         cs = "%02X" % cs
     else:
-        cs =""
+        cs = ""
 
     frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
 
     #print "Sending:\n%s" % util.hexprint(frame)
     
     pipe.write(frame)
-    return frame
-
-    resp = get_clone_resp(pipe)
-    if resp != frame:
-        print "Bad response:\n%sSent:\n%s" % (util.hexprint(resp),
-                                              util.hexprint(frame))
-        raise errors.RadioError("Radio did not echo frame")
 
     return frame
 
@@ -177,16 +173,15 @@ def process_data_frame(frame, mmap):
 
     data = frame.payload
 
-    saddr = int(data[0:4], 16)
     bytes = int(data[4:6], 16)
-    eaddr = saddr + bytes
     fdata = data[6:6+(bytes * 2)]
-
-    try:
-        checksum = data[6+(bytes * 2)]
-    except IndexError:
-        print "%i Frame data:\n%s" % (bytes, util.hexprint(data))
-        raise errors.InvalidDataError("Short frame")
+    #saddr = int(data[0:4], 16)
+    #eaddr = saddr + bytes
+    #try:
+    #    checksum = data[6+(bytes * 2)]
+    #except IndexError:
+    #    print "%i Frame data:\n%s" % (bytes, util.hexprint(data))
+    #    raise errors.InvalidDataError("Short frame")
 
     i = 0
     while i < range(len(fdata)) and i+1 < len(fdata):
@@ -194,7 +189,7 @@ def process_data_frame(frame, mmap):
             val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
             i += 2
             mmap += struct.pack("B", val)
-        except Exception, e:
+        except ValueError, e:
             print "Failed to parse byte: %s" % e
             break
 
@@ -203,76 +198,78 @@ def process_data_frame(frame, mmap):
 def clone_from_radio(radio):
     md = get_model_data(radio.pipe)
 
-    if md[0:4] != radio._model:
+    if md[0:4] != radio.get_model():
+        print "This model: %s" % util.hexprint(md[0:4])
+        print "Supp model: %s" % util.hexprint(radio.get_model())
         raise errors.RadioError("I can't talk to this model")
 
-    send_clone_frame(radio.pipe, CMD_CLONE_OUT, radio._model, raw=True)
+    send_clone_frame(radio.pipe, CMD_CLONE_OUT, radio.get_model(), raw=True)
 
     stream = RadioStream(radio.pipe)
 
-    data = ""
     mmap = ""
     while True:
         frames = stream.get_frames()
         if not frames:
             break
 
-        data_frames = []
-        for f in frames:
-            if f.cmd == CMD_CLONE_DAT:
-                mmap = process_data_frame(f, mmap)
+        for frame in frames:
+            if frame.cmd == CMD_CLONE_DAT:
+                mmap = process_data_frame(frame, mmap)
 
         if radio.status_fn:
-            s = chirp_common.Status()
-            s.msg = "Cloning from radio"
-            s.max = radio._memsize
-            s.cur = len(mmap)
-            radio.status_fn(s)
+            status = chirp_common.Status()
+            status.msg = "Cloning from radio"
+            status.max = radio.get_memsize()
+            status.cur = len(mmap)
+            radio.status_fn(status)
 
     return memmap.MemoryMap(mmap)
 
 def send_mem_chunk(radio, start, stop, bs=32):
+    mmap = radio.get_mmap()
+
     for i in range(start, stop, bs):
         if i + bs < stop:
             size = bs
         else:
             size = stop - i
 
-        chunk = struct.pack(">HB", i, size) + radio._mmap[i:i+size]
+        chunk = struct.pack(">HB", i, size) + mmap[i:i+size]
 
-        frame = send_clone_frame(radio.pipe,
-                                 CMD_CLONE_DAT,
-                                 chunk,
-                                 checksum=True)
+        send_clone_frame(radio.pipe,
+                         CMD_CLONE_DAT,
+                         chunk,
+                         checksum=True)
 
         if radio.status_fn:
-            s = chirp_common.Status()
-            s.msg = "Cloning to radio"
-            s.max = radio._memsize
-            s.cur = i+bs
+            status = chirp_common.Status()
+            status.msg = "Cloning to radio"
+            status.max = radio.get_memsize()
+            status.cur = i+bs
             
-            radio.status_fn(s)
+            radio.status_fn(status)
 
     return True
 
 def clone_to_radio(radio):
     md = get_model_data(radio.pipe)
 
-    if md[0:4] != radio._model:
+    if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
 
     stream = RadioStream(radio.pipe)
 
-    send_clone_frame(radio.pipe, CMD_CLONE_IN, radio._model, raw=True)
+    send_clone_frame(radio.pipe, CMD_CLONE_IN, radio.get_model(), raw=True)
 
     frames = []
 
-    for start, stop, bs in radio._ranges:
+    for start, stop, bs in radio.get_ranges():
         if not send_mem_chunk(radio, start, stop, bs):
             break
         frames += stream.get_frames()
 
-    send_clone_frame(radio.pipe, CMD_CLONE_END, radio._endframe, raw=True)
+    send_clone_frame(radio.pipe, CMD_CLONE_END, radio.get_endframe(), raw=True)
     frames += stream.get_frames(True)
 
     try:
