@@ -104,6 +104,9 @@ class Memory:
         "Mode," 
 
     def __setattr__(self, name, val):
+        if not hasattr(self, name):
+            raise ValueError("No such attribute `%s'" % name)
+
         if self._valid_map.has_key(name) and val not in self._valid_map[name]:
             raise ValueError("`%s' is not in valid list: %s" % (\
                     val,
