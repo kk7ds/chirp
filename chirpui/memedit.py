@@ -184,6 +184,7 @@ class MemoryEditor(common.Editor):
             self.prefill()
             self.need_refresh = False
 
+        # pylint: disable-msg=E1101
         self.emit('changed')
 
     def _render(self, colnum, val):
@@ -552,12 +553,13 @@ class MemoryEditor(common.Editor):
 
 class DstarMemoryEditor(MemoryEditor):
     def _get_memory(self, iter):
+        vals = self.store.get(iter, *range(0, len(self.cols)))
         if vals[self.col("Mode")] != "DV":
             return MemoryEditor._get_memory(self, iter)
 
         mem = chirp_common.DVMemory()
 
-        MemoryEditor._set_mem_vals(mem, val)
+        MemoryEditor._set_mem_vals(mem, vals)
 
         mem.UrCall = vals[self.col("URCALL")]
         mem.Rpt1Call = vals[self.col("RPT1CALL")]

@@ -48,6 +48,8 @@ class EditorSet(gtk.VBox):
 
         self.pack_start(self.memedit.root)
         self.memedit.root.show()
+
+        # pylint: disable-msg=E1101
         self.memedit.connect("changed", self.editor_changed)
 
         self.label = gtk.Label("")

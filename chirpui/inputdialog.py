@@ -30,10 +30,12 @@ class TextInputDialog(gtk.Dialog):
 
         self.label = gtk.Label()
         self.label.set_size_request(300,100)
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(self.label, 1, 1, 0)
        
         self.text = gtk.Entry()
         self.text.connect("activate", self.respond_ok, None)
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(self.text, 1, 1, 0)
 
         self.label.show()
@@ -49,6 +51,7 @@ class ChoiceDialog(gtk.Dialog):
 
         self.label = gtk.Label()
         self.label.set_size_request(300,100)
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(self.label, 1, 1, 0)
         self.label.show()
 
@@ -58,6 +61,7 @@ class ChoiceDialog(gtk.Dialog):
             default = None
 
         self.choice = make_choice(sorted(choices), self.editable, default)
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(self.choice, 1, 1, 0)
         self.choice.show()
 
@@ -104,6 +108,7 @@ class FieldDialog(gtk.Dialog):
         box.pack_start(widget, 0,0,0)
         box.show()
 
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(box, 0,0,0)
     
         self.__fields[label] = widget

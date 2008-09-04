@@ -377,6 +377,7 @@ class YesNoDialog(gtk.Dialog):
         self._label = gtk.Label("")
         self._label.show()
 
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(self._label, 1,1,1)
 
     def set_text(self, text):

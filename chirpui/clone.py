@@ -35,6 +35,7 @@ class CloneSettingsDialog(gtk.Dialog):
 
         hbox.show()
 
+        # pylint: disable-msg=E1101
         self.vbox.pack_start(hbox, 0,0,0)
     
     def __init__(self, cloneIn=True, filename=None, rtype=None):
