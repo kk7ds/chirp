@@ -60,6 +60,15 @@ STD_OFFSETS = {
     4 : STD_70CM_OFFSETS,
     }
 
+TONE_MODES = [
+    "",
+    "Tone",
+    "TSQL",
+    "DTCS",
+    "DTCS-R",
+    "TSQL-R",
+]
+
 class IcomFrame:
     pass
 
@@ -71,33 +80,49 @@ class Memory:
     rtone = 88.5
     ctone = 88.5
     dtcs = 23
-    tencEnabled = False
-    tsqlEnabled = False
-    dtcsEnabled = False
-    dtcsPolarity = "NN"
+    tmode = ""
+    dtcs_polarity = "NN"
 
     # FIXME: Decorator for valid value?
     duplex = ""
     offset = 0.600
     mode = "FM"
-    tuningStep = 5.0
+    tuning_step = 5.0
+
+    _valid_map = {
+        "rtone"         : TONES,
+        "ctone"         : TONES,
+        "dtcs"          : DTCS_CODES,
+        "tmode"         : TONE_MODES,
+        "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
+        "mode"          : MODES,
+        "duplex"        : ["", "+", "-"],
+        }
 
     CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset," + \
         "rToneFreq,rToneOn,cToneFreq,cToneOn,DtcsCode,DtcsOn,DtcsPolarity," + \
         "Mode," 
 
+    def __setattr__(self, name, val):
+        if self._valid_map.has_key(name) and val not in self._valid_map[name]:
+            raise ValueError("`%s' is not in valid list: %s" % (\
+                    val,
+                    self._valid_map[name]))
+
+        self.__dict__[name] = val
+
     def __str__(self):
-        if self.tencEnabled:
+        if self.tmode == "Tone":
             tenc = "*"
         else:
             tenc = " "
 
-        if self.tsqlEnabled:
+        if self.tmode == "TSQL":
             tsql = "*"
         else:
             tsql = " "
 
-        if self.dtcsEnabled:
+        if self.tmode == "DTCS":
             dtcs = "*"
         else:
             dtcs = " "
@@ -120,30 +145,24 @@ class Memory:
              tsql,
              self.dtcs,
              dtcs,
-             self.dtcsPolarity,
-             self.tuningStep)
+             self.dtcs_polarity,
+             self.tuning_step)
 
     def to_csv(self):
-        rte = self.tencEnabled and "X" or ""
-        cte = self.tsqlEnabled and "X" or ""
-        dte = self.dtcsEnabled and "X" or ""
-
-        s = "%i,%s,%.5f,%s,%.5f,%.1f,%s,%.1f,%s,%03i,%s,%s,%s," % ( \
+        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s," % ( \
             self.number,
             self.name,
             self.freq,
             self.duplex,
             self.offset,
+            self.tmode,
             self.rtone,
-            rte,
             self.ctone,
-            cte,
             self.dtcs,
-            dte,
-            self.dtcsPolarity,
+            self.dtcs_polarity,
             self.mode)
 
-        return s
+        return string
 
     def from_csv(self, _line):
         line = _line.strip()
@@ -152,7 +171,7 @@ class Memory:
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
         vals = line.split(",")
-        if len(vals) < 13:
+        if len(vals) < 10:
             raise errors.InvalidDataError("CSV format error (13 columns expected)")
 
         try:
@@ -178,19 +197,16 @@ class Memory:
         except:
             raise errors.InvalidDataError("Offset is not a valid number")
         
+        self.tmode = vals[5]
+        if self.tmode not in TONE_MODES:
+            raise errors.InvalidDataError("Invalid tone mode `%s'" % self.tmode)
+
         try:
-            self.rtone = float(vals[5])
+            self.rtone = float(vals[6])
         except:
             raise errors.InvalidDataError("rTone is not a valid number")
         if self.rtone not in TONES:
             raise errors.InvalidDataError("rTone is not valid")
-
-        if vals[6] == "X":
-            self.tencEnabled = True
-        elif vals[6].strip() == "":
-            self.tencEnabled = False
-        else:
-            raise errors.InvalidDataError("TencEnabled is not a valid boolean")
 
         try:
             self.ctone = float(vals[7])
@@ -199,50 +215,38 @@ class Memory:
         if self.ctone not in TONES:
             raise errors.InvalidDataError("cTone is not valid")
 
-        if vals[8] == "X":
-            self.tsqlEnabled = True
-        elif vals[8].strip() == "":
-            self.tsqlEnabled = False
-        else:
-            raise errors.InvalidDataError("TsqlEnabled is not a valid boolean")
-
         try:
-            self.dtcs = int(vals[9], 10)
+            self.dtcs = int(vals[8], 10)
         except:
             raise errors.InvalidDataError("DTCS code is not a valid number")
         if self.dtcs not in DTCS_CODES:
             raise errors.InvalidDataError("DTCS code is not valid")
 
-        if vals[10] == "X":
-            self.dtcsEnabled = True
-        elif vals[10].strip() == "":
-            self.dtcsEnabled = False
-        else:
-            raise errors.InvalidDataError("DtcsEnabled is not a valid boolean")
-
-        if vals[11] in ["NN", "NR", "RN", "RR"]:
-            self.dtcsPolarity = vals[11]
+        if vals[9] in ["NN", "NR", "RN", "RR"]:
+            self.dtcs_polarity = vals[11]
         else:
             raise errors.InvalidDataError("DtcsPolarity is not valid")
 
-        if vals[12] in MODES:
-            self.mode = vals[12]
+        if vals[10] in MODES:
+            self.mode = vals[10]
         else:
             raise errors.InvalidDataError("Mode is not valid")           
 
         return True
 
 class DVMemory(Memory):
-    UrCall = "CQCQCQ"
-    Rpt1Call = ""
-    Rpt2Call = ""
+    dv_urcall = "CQCQCQ"
+    dv_rpt1call = ""
+    dv_rpt2call = ""
 
     def __str__(self):
-        s = Memory.__str__(self)
+        string = Memory.__str__(self)
 
-        s += " <%s,%s,%s>" % (self.UrCall, self.Rpt1Call, self.Rpt2Call)
+        string += " <%s,%s,%s>" % (self.dv_urcall,
+                                   self.dv_rpt1call,
+                                   self.dv_rpt2call)
 
-        return s
+        return string
 
 class Bank:
     name = "BANK"
@@ -257,7 +261,7 @@ def console_status(status):
 class IcomRadio:
     BAUD_RATE = 9600
 
-    status_fn = lambda x,y: console_status(y)
+    status_fn = lambda x, y: console_status(y)
 
     def __init__(self, pipe):
         self.pipe = pipe
@@ -307,16 +311,16 @@ class IcomMmapRadio(IcomRadio):
             IcomRadio.__init__(self, pipe)
 
     def load_mmap(self, filename):
-        f = file(filename, "rb")
-        self._mmap = memmap.MemoryMap(f.read())
-        f.close()
+        mapfile = file(filename, "rb")
+        self._mmap = memmap.MemoryMap(mapfile.read())
+        mapfile.close()
 
         self.process_mmap()
 
     def save_mmap(self, filename):
-        f = file(filename, "wb")
-        f.write(self._mmap.get_packed())
-        f.close()
+        mapfile = file(filename, "wb")
+        mapfile.write(self._mmap.get_packed())
+        mapfile.close()
 
     def sync_in(self):
         pass
@@ -369,11 +373,3 @@ class Status:
             ticks = "?" * 10
 
         return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
-
-if __name__ == "__main__":
-    s = Status()
-    s.msg = "Cloning"
-    s.max = 1234
-    s.cur = 172
-
-    print s

@@ -169,7 +169,14 @@ def get_tone_enabled(mmap):
         tenc = (val & 0x01) != 0
         tsql = (val & 0x02) != 0
 
-    return tenc, tsql, dtcs
+    if tenc:
+        return "Tone"
+    elif tsql:
+        return "TSQL"
+    elif dtcs:
+        return "DTCS"
+    else:
+        return ""
 
 def get_dtcs_polarity(mmap):
     val = struct.unpack("B", mmap[POS_DTCS_POL])[0] & 0xC0
@@ -205,13 +212,13 @@ def get_memory(_map, number):
     if get_mode(mmap) == "DV":
         mem = chirp_common.DVMemory()
         i_ucall, i_r1call, i_r2call = get_call_indices(mmap)
-        mem.UrCall = get_urcall(_map, i_ucall)
-        mem.Rpt1Call = get_rptcall(_map, i_r1call)
-        mem.Rpt2Call = get_rptcall(_map, i_r2call)
+        mem.dv_urcall = get_urcall(_map, i_ucall)
+        mem.dv_rpt1call = get_rptcall(_map, i_r1call)
+        mem.dv_rpt2call = get_rptcall(_map, i_r2call)
     else:
         mem = chirp_common.Memory()
 
-    mem.freq, mem.tuningStep = get_freq_ts(mmap)
+    mem.freq, mem.tuning_step = get_freq_ts(mmap)
     mem.name = get_name(mmap)
     mem.number = number
     mem.duplex = get_duplex(mmap)
@@ -220,8 +227,8 @@ def get_memory(_map, number):
     mem.rtone = get_rtone(mmap)
     mem.ctone = get_ctone(mmap)
     mem.dtcs = get_dtcs(mmap)
-    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(mmap)
-    mem.dtcsPolarity = get_dtcs_polarity(mmap)
+    mem.tmode = get_tone_enabled(mmap)
+    mem.dtcs_polarity = get_dtcs_polarity(mmap)
 
     return mem
 
@@ -356,16 +363,16 @@ def set_dtcs_polarity(mmap, polarity):
 
     mmap[POS_DTCS_POL] = val
 
-def set_tone_enabled(mmap, enc, sql, dtcs):
+def set_tone_enabled(mmap, mode):
     mask = 0xFC # ~00000011
     val = struct.unpack("B", mmap[POS_TENB])[0] & mask
 
-    if dtcs:
+    if mode == "DTCS":
         val |= 0x3
     else:
-        if enc:
+        if mode == "Tone":
             val |= 0x1
-        if sql:
+        if mode == "TSQL":
             val |= 0x2
 
     mmap[POS_TENB] = val
@@ -381,11 +388,8 @@ def set_memory(_map, mem):
     set_rtone(mmap, mem.rtone)
     set_ctone(mmap, mem.ctone)
     set_dtcs(mmap, mem.dtcs)
-    set_tone_enabled(mmap,
-                     mem.tencEnabled,
-                     mem.tsqlEnabled,
-                     mem.dtcsEnabled)
-    set_dtcs_polarity(mmap, mem.dtcsPolarity)
+    set_tone_enabled(mmap, mem.tmode)
+    set_dtcs_polarity(mmap, mem.dtcs_polarity)
 
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
 

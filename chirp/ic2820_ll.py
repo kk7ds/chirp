@@ -122,16 +122,14 @@ def get_dup_off(mmap):
 def get_tone_enabled(mmap):
     val = struct.unpack("B", mmap[POS_DUPX_TONE])[0] & 0x3C
     
-    enc = sql = dtcs = False
-
     if (val & 0x0C) == 0x0C:
-        sql = True
+        return "TSQL"
     elif (val & 0x38) == 0x38:
-        dtcs = True
+        return "DTCS"
     elif (val & 0x04) == 0x04:
-        enc = True
-
-    return enc, sql, dtcs
+        return "Tone"
+    else:
+        return ""
 
 def get_mode(mmap):
     val = struct.unpack(">H", mmap[POS_MODE_START:POS_MODE_END])[0] & 0x01C0
@@ -162,8 +160,8 @@ def get_memory(_map, number):
     mem.rtone = get_rtone(mmap)
     mem.ctone = get_ctone(mmap)
     mem.dtcs = get_dtcs(mmap)
-    mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled = get_tone_enabled(mmap)
-    mem.dtcsPolarity = get_dtcs_polarity(mmap)
+    mem.tmode = get_tone_enabled(mmap)
+    mem.dtcs_polarity = get_dtcs_polarity(mmap)
     mem.duplex = get_duplex(mmap)
     mem.offset = get_dup_off(mmap)
     mem.mode = get_mode(mmap)
@@ -190,15 +188,15 @@ def set_duplex(mmap, duplex):
 def set_dup_offset(mmap, offset):
     mmap[POS_DOFF_START] = struct.pack(">I", int(offset * 1000000))
 
-def set_tone_enabled(mmap, enc, sql, dtcs):
+def set_tone_enabled(mmap, mode):
     mask = 0xC3
     val = ord(mmap[POS_DUPX_TONE]) & mask
 
-    if enc:
+    if mode == "Tone":
         val |= 0x04
-    elif sql:
+    elif mode == "TSQL":
         val |= 0x2C
-    elif dtcs:
+    elif mode == "DTCS":
         val |= 0x38
 
     mmap[POS_DUPX_TONE] = val
@@ -261,8 +259,8 @@ def set_memory(_map, mem):
     set_rtone(mmap, mem.rtone)
     set_ctone(mmap, mem.ctone)
     set_dtcs(mmap, mem.dtcs)
-    set_dtcs_polarity(mmap, mem.dtcsPolarity)
-    set_tone_enabled(mmap, mem.tencEnabled, mem.tsqlEnabled, mem.dtcsEnabled)
+    set_dtcs_polarity(mmap, mem.dtcs_polarity)
+    set_tone_enabled(mmap, mem.tmode)
     set_mode(mmap, mem.mode)
 
     set_raw_memory(_map, mmap, mem.number)

@@ -146,9 +146,7 @@ class IC92MemoryFrame(IC92Frame):
         self._dtcs = 23
         self._duplex = ""
         self._urcall = "CQCQCQ"
-        self._tsql_en = False
-        self._tenc_en = False
-        self._dtcs_en = False
+        self._tmode = ""
         self._mode = "FM"
         self._freq = "146.010"
         self._name = ""
@@ -185,21 +183,19 @@ class IC92MemoryFrame(IC92Frame):
         else:
             self._duplex = ""
 
-        self._tenc_en = self._tsql_en = self._dtcs_en = False
-            
         tval = tdup & 0x1C
         if tval == 0x00:
-            pass # No tone
+            self._tmode = ""
         elif tval == 0x04:
-            self._tenc_en = True
+            self._tmode = "Tone"
         elif tval == 0x0C:
-            self._tsql_en = True
+            self._tmode = "TSQL"
         elif tval == 0x14:
-            self._dtcs_en = True
+            self._tmode = "DTCS"
         elif tval == 0x18:
-            pass # TSQL-R
+            self._tmode = "" # TSQL-R
         elif tval == 0x1C:
-            pass # DTCS-R
+            self._tmode = "" # DTCS-R
 
         polarity_values = {0x00 : "NN",
                            0x04 : "NR",
@@ -274,11 +270,11 @@ class IC92MemoryFrame(IC92Frame):
         elif self._duplex == "+":
             dup |= 0x02
 
-        if self._tenc_en:
+        if self._tmode == "Tone":
             dup |= 0x04
-        if self._tsql_en:
+        elif self._tmode == "TSQL":
             dup |= 0x0C
-        if self._dtcs_en:
+        elif self._tmode == "DTCS":
             dup |= 0x14
 
         mmap[22] = dup
@@ -342,18 +338,16 @@ class IC92MemoryFrame(IC92Frame):
         self._rtone = memory.rtone
         self._ctone = memory.ctone
         self._dtcs = memory.dtcs
-        self._dtcs_polarity = memory.dtcsPolarity
-        self._tenc_en = memory.tencEnabled
-        self._tsql_en = memory.tsqlEnabled
-        self._dtcs_en = memory.dtcsEnabled
-        self._ts = memory.tuningStep
+        self._dtcs_polarity = memory.dtcs_polarity
+        self._tmode = memory.tmode
+        self._ts = memory.tuning_step
 
     def get_memory(self):
         if self.is_dv:
             mem = chirp_common.DVMemory()
-            mem.UrCall = self._urcall
-            mem.Rpt1Call = self._rpt1call
-            mem.Rpt2Call = self._rpt2call
+            mem.dv_urcall = self._urcall
+            mem.dv_rpt1call = self._rpt1call
+            mem.dv_rpt2call = self._rpt2call
         else:
             mem = chirp_common.Memory()
 
@@ -366,11 +360,10 @@ class IC92MemoryFrame(IC92Frame):
         mem.rtone = self._rtone
         mem.ctone = self._ctone
         mem.dtcs = self._dtcs
-        mem.dtcsPolarity = self._dtcs_polarity
-        mem.tencEnabled = self._tenc_en
-        mem.tsqlEnabled = self._tsql_en
-        mem.dtcsEnabled = self._dtcs_en
-        mem.tuningStep = self._ts
+        mem.dtcs_polarity = self._dtcs_polarity
+
+        mem.tmode = self._tmode
+        mem.tuning_step = self._ts
         
         return mem
 

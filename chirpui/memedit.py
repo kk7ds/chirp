@@ -165,15 +165,18 @@ class MemoryEditor(common.Editor):
             new = float(new)
         elif self.store.get_column_type(colnum) == TYPE_BOOLEAN:
             new = bool(new)
+        elif self.store.get_column_type(colnum) == TYPE_STRING:
+            if new == "(None)":
+                new = ""
 
         if not handle_ed(rend, path, new, self.store, self.col(cap)):
             # No change was made
             return
 
         iter = self.store.get_iter(path)
-        mem = self._get_memory(iter)
 
         try:
+            mem = self._get_memory(iter)
             self.radio.set_memory(mem)
         except Exception, e:
             d = ValueErrorDialog(e)
@@ -425,28 +428,19 @@ class MemoryEditor(common.Editor):
         self.fill_thread.start()
 
     def _set_memory(self, iter, memory):
-        if memory.dtcsEnabled:
-            tmode = "DTCS"
-        elif memory.tsqlEnabled:
-            tmode = "TSQL"
-        elif memory.tencEnabled:
-            tmode = "Tone"
-        else:
-            tmode = ""
-
         self.store.set(iter,
                        self.col("Loc"), memory.number,
                        self.col("Name"), memory.name,
                        self.col("Frequency"), memory.freq,
-                       self.col("Tone Mode"), tmode,
+                       self.col("Tone Mode"), memory.tmode,
                        self.col("Tone"), memory.rtone,
                        self.col("ToneSql"), memory.ctone,
                        self.col("DTCS Code"), memory.dtcs,
-                       self.col("DTCS Pol"), memory.dtcsPolarity,
+                       self.col("DTCS Pol"), memory.dtcs_polarity,
                        self.col("Duplex"), memory.duplex,
                        self.col("Offset"), memory.offset,
                        self.col("Mode"), memory.mode,
-                       self.col("Tune Step"), memory.tuningStep)
+                       self.col("Tune Step"), memory.tuning_step)
 
     def set_memory(self, memory):
         iter = self.store.get_iter_first()
@@ -480,19 +474,12 @@ class MemoryEditor(common.Editor):
         mem.rtone = vals[self.col("Tone")]
         mem.ctone = vals[self.col("ToneSql")]
         mem.dtcs = vals[self.col("DTCS Code")]
-        mem.tencEnabled = mem.tsqlEnabled = mem.dtcsEnabled = False
-        tmode = vals[self.col("Tone Mode")]
-        if tmode == "Tone":
-            mem.tencEnabled = True
-        elif tmode == "TSQL":
-            mem.tsqlEnabled = True
-        elif tmode == "DTCS":
-            mem.dtcsEnabled = True
-        mem.dtcsPolarity = vals[self.col("DTCS Pol")]
+        mem.tmode = vals[self.col("Tone Mode")]
+        mem.dtcs_polarity = vals[self.col("DTCS Pol")]
         mem.duplex = vals[self.col("Duplex")]
         mem.offset = vals[self.col("Offset")]
         mem.mode = vals[self.col("Mode")]
-        mem.tuningStep = vals[self.col("Tune Step")]
+        mem.tuning_step = vals[self.col("Tune Step")]
 
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
