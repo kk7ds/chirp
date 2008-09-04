@@ -72,13 +72,14 @@ class ChirpMain(gtk.Window):
                 return
 
         try:
-            e = editorset.EditorSet(fname)
+            eset = editorset.EditorSet(fname)
         except Exception, e:
             print e
             return # FIXME
 
-        e.show()
-        tab = self.tabs.append_page(e, e.get_tab_label())
+        eset.connect("want-close", self.do_close)
+        eset.show()
+        tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
     def do_open9x(self, rclass):
@@ -98,7 +99,12 @@ class ChirpMain(gtk.Window):
         radio = rclass(ser)
         
         eset = editorset.EditorSet(radio)
+        eset.connect("want-close", self.do_close)
         eset.show()
+
+        action = self.menu_ag.get_action("open9x")
+        action.set_sensitive(False)
+
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
@@ -158,11 +164,21 @@ class ChirpMain(gtk.Window):
         ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
         ct.start()
 
-    def do_close(self):
-        eset = self.get_current_editorset()
+    def do_close(self, tab_child=None):
+        if tab_child:
+            eset = tab_child
+        else:
+            eset = self.get_current_editorset()
+
         if eset.radio.pipe:
             eset.radio.pipe.close()
-        page = self.tabs.get_current_page()
+
+        if isinstance(eset.radio, ic9x.IC9xRadio):
+            action = self.menu_ag.get_action("open9x")
+            if action:
+                action.set_sensitive(True)
+
+        page = self.tabs.page_num(eset)
         if page is not None:
             self.tabs.remove_page(page)
 
