@@ -82,6 +82,7 @@ class IC92Frame(IcomFrame):
         self._post_proc()
 
     def from_frame(self, frame):
+        # pylint: disable-msg=W0212
         self._vfo = frame._vfo
         self._magic = frame._magic
         self._data = frame._data
@@ -102,6 +103,7 @@ class IC92Frame(IcomFrame):
         return self._data
 
     def _make_raw(self):
+        # pylint: disable-msg=R0201
         raise Exception("Not implemented")
 
     def __str__(self):
