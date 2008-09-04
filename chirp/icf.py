@@ -59,7 +59,7 @@ def parse_frame_generic(data):
 
     try:
         end = data.index("\xFD")
-    except Exception:
+    except ValueError:
         return None, data
 
     frame.payload = data[5:end]
