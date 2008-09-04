@@ -37,6 +37,8 @@ import glob
 from subprocess import Popen
 
 class Platform:
+    # pylint: disable-msg=R0201
+
     def __init__(self, basepath):
         self._base = basepath
 
@@ -139,6 +141,14 @@ class Platform:
     def os_version_string(self):
         return "Unknown Operating System"
 
+def _unix_editor():
+    macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
+
+    if os.path.exists(macos_textedit):
+        return macos_textedit
+    else:
+        return "gedit"
+
 class UnixPlatform(Platform):
     def __init__(self, basepath):
         if not basepath:
@@ -156,20 +166,12 @@ class UnixPlatform(Platform):
     def filter_filename(self, filename):
         return filename.replace("/", "")
 
-    def _editor(self):
-        macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
-
-        if os.path.exists(macos_textedit):
-            return macos_textedit
-        else:
-            return "gedit"
-
     def open_text_file(self, path):
         pid1 = os.fork()
         if pid1 == 0:
             pid2 = os.fork()
             if pid2 == 0:
-                editor = self._editor()
+                editor = _unix_editor()
                 print "calling `%s %s'" % (editor, path)
                 os.execlp(editor, editor, path)
             else:
@@ -185,12 +187,13 @@ class UnixPlatform(Platform):
         return sorted(glob.glob("/dev/ttyS*") + glob.glob("/dev/ttyUSB*"))
 
     def os_version_string(self):
+        # pylint: disable-msg=W0703
         try:
             issue = file("/etc/issue.net", "r")
             ver = issue.read().strip()
             issue.close()
             ver = "%s - %s" % (os.uname()[0], ver)
-        except Exception, e:
+        except Exception:
             ver = " ".join(os.uname())
 
         return ver
@@ -227,6 +230,7 @@ class Win32Platform(Platform):
         return ["COM%i" % x for x in range(1, 8)]
 
     def gui_open_file(self, start_dir=None):
+        # pylint: disable-msg=W0703,W0613
         import win32gui
 
         try:
@@ -238,6 +242,7 @@ class Win32Platform(Platform):
         return str(fname)
 
     def gui_save_file(self, start_dir=None, default_name=None):
+        # pylint: disable-msg=W0703,W0613
         import win32gui
 
         try:
@@ -249,6 +254,7 @@ class Win32Platform(Platform):
         return str(fname)
 
     def gui_select_dir(self, start_dir=None):
+        # pylint: disable-msg=W0703,W0613
         from win32com.shell import shell
 
         try:
@@ -279,6 +285,8 @@ def _get_platform(basepath):
 
 PLATFORM = None
 def get_platform(basepath=None):
+    #pylint: disable-msg=W0602
+
     global PLATFORM
 
     if not PLATFORM:
