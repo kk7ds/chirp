@@ -17,6 +17,7 @@
 
 import os
 import gtk
+import gobject
 
 from chirp import ic2820, ic2200, id800, chirp_common
 from chirpui import memedit
@@ -32,6 +33,10 @@ def radio_class_from_file(filename):
     raise Exception("Unknown file format")
 
 class EditorSet(gtk.VBox):
+    __gsignals__ = {
+        "want-close" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        }
+
     def __init__(self, source):
         gtk.VBox.__init__(self, True, 0)
 
@@ -53,9 +58,24 @@ class EditorSet(gtk.VBox):
         # pylint: disable-msg=E1101
         self.memedit.connect("changed", self.editor_changed)
 
-        self.label = gtk.Label("")
+        self.make_label()
         self.modified = False
         self.update_tab()
+
+    def make_label(self):
+        self.label = gtk.HBox(False, 0)
+
+        self.text_label = gtk.Label("")
+        self.text_label.show()
+        self.label.pack_start(self.text_label, 1, 1, 1)
+
+        button = gtk.Button("X")
+        button.set_relief(gtk.RELIEF_NONE)
+        button.connect("clicked", lambda x: self.emit("want-close"))
+        button.show()
+        self.label.pack_start(button, 0, 0, 0)
+
+        self.label.show()
 
     def update_tab(self):
         fn = os.path.basename(self.filename)
@@ -64,7 +84,7 @@ class EditorSet(gtk.VBox):
         else:
             text = fn
 
-        self.label.set_text(text)
+        self.text_label.set_text(text)
 
     def save(self, fname=None):
         if not fname:
