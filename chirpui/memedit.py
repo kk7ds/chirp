@@ -145,6 +145,9 @@ class MemoryEditor(common.Editor):
         return new
 
     def edited(self, rend, path, new, cap):
+        if self.fill_thread:
+            return
+
         colnum = self.col(cap)
         funcs = {
             "Loc" : self.ed_loc,
