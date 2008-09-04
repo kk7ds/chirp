@@ -28,13 +28,13 @@ from gobject import TYPE_INT, \
     TYPE_BOOLEAN
 import gobject
 
-import common
+from chirpui import common
 from chirp import chirp_common, errors
 
-def handle_toggle(rend, path, store, col):
+def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    
 
-def handle_ed(rend, path, new, store, col):
+def handle_ed(_, path, new, store, col):
     iter = store.get_iter(path)
     old, = store.get(iter, col)
     if old != new:
@@ -96,10 +96,10 @@ class MemoryEditor(common.Editor):
         "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
         }
     
-    def ed_name(self, rend, path, new, col):
+    def ed_name(self, _, __, new, ___):
         return new[:self.name_length]
 
-    def ed_freq(self, rend, path, new, col):
+    def ed_freq(self, _, path, new, __):
         def set_offset(path, offset):
             if offset > 0:
                 dup = "+"
@@ -118,7 +118,7 @@ class MemoryEditor(common.Editor):
 
         try:
             new = float(new)
-        except Exception, e:
+        except ValueError, e:
             print e
             new = None
 
@@ -134,7 +134,7 @@ class MemoryEditor(common.Editor):
 
         return new
 
-    def ed_loc(self, rend, path, new, col):
+    def ed_loc(self, _, path, new, __):
         iter = self.store.get_iter(path)
         curloc, = self.store.get(iter, self.col("Loc"))
 
@@ -179,9 +179,9 @@ class MemoryEditor(common.Editor):
             mem = self._get_memory(iter)
             self.radio.set_memory(mem)
         except Exception, e:
-            d = ValueErrorDialog(e)
-            d.run()
-            d.destroy()
+            dlg = ValueErrorDialog(e)
+            dlg.run()
+            dlg.destroy()
 
         if self.need_refresh:
             self.prefill()
@@ -205,12 +205,12 @@ class MemoryEditor(common.Editor):
 
         return val
 
-    def render(self, col, rend, model, iter, colnum):
+    def render(self, _, rend, model, iter, colnum):
         vals = model.get(iter, *tuple(range(0, len(self.cols))))
         val = vals[colnum]
 
-        def _enabled(s):
-            rend.set_property("sensitive", s)
+        def _enabled(sensitive):
+            rend.set_property("sensitive", sensitive)
 
         def d_unless_tmode(tmode):
             _enabled(vals[self.col("Tone Mode")] == tmode)
@@ -245,10 +245,9 @@ class MemoryEditor(common.Editor):
 
         if action in ["insert_next", "insert_prev"]:
             line = []
-            for k,v in self.defaults.items():
-                line.append(self.col(k))
-                line.append(v)
-
+            for key, val in self.defaults.items():
+                line.append(self.col(key))
+                line.append(val)
             
             if action == "insert_next":
                 newiter = store.insert_after(iter)
@@ -268,7 +267,7 @@ class MemoryEditor(common.Editor):
             store.remove(iter)
             self.radio.erase_memory(curpos)
 
-    def make_context_menu(self, loc, can_prev, can_next):
+    def make_context_menu(self, can_prev, can_next):
         menu_xml = """
 <ui>
   <popup name="Menu">
@@ -309,7 +308,6 @@ class MemoryEditor(common.Editor):
         store, iter = self.view.get_selection().get_selected()
 
         curpos, = store.get(iter, self.col("Loc"))
-        next_loc = curpos + 1
         can_prev = True
         can_next = True
 
@@ -327,7 +325,7 @@ class MemoryEditor(common.Editor):
         else:
             can_prev = False
 
-        menu = self.make_context_menu(curpos, can_prev, can_next)
+        menu = self.make_context_menu(can_prev, can_next)
         menu.popup(None, None, None, event.button, event.time)
             
     def make_editor(self):
@@ -342,30 +340,30 @@ class MemoryEditor(common.Editor):
         sw.add(self.view)
 
         i = 0
-        for c, t, r in self.cols:
-            rend = r()
-            if t == TYPE_BOOLEAN:
+        for _cap, _type, _rend in self.cols:
+            rend = _rend()
+            if _type == TYPE_BOOLEAN:
                 rend.set_property("activatable", True)
                 rend.connect("toggled", handle_toggle, self.store, i)
-                col = gtk.TreeViewColumn(c, rend, active=i)
-            elif r == gtk.CellRendererCombo:
-                if isinstance(self.choices[c], gtk.ListStore):
-                    choices = self.choices[c]
+                col = gtk.TreeViewColumn(_cap, rend, active=i)
+            elif _rend == gtk.CellRendererCombo:
+                if isinstance(self.choices[_cap], gtk.ListStore):
+                    choices = self.choices[_cap]
                 else:
                     choices = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-                    for choice in self.choices[c]:
+                    for choice in self.choices[_cap]:
                         choices.append([choice, self._render(i, choice)])
                 rend.set_property("model", choices)
                 rend.set_property("text-column", 1)
                 rend.set_property("editable", True)
                 rend.set_property("has-entry", False)
-                rend.connect("edited", self.edited, c)
-                col = gtk.TreeViewColumn(c, rend, text=i)
+                rend.connect("edited", self.edited, _cap)
+                col = gtk.TreeViewColumn(_cap, rend, text=i)
                 col.set_cell_data_func(rend, self.render, i)
             else:
                 rend.set_property("editable", True)
-                rend.connect("edited", self.edited, c)
-                col = gtk.TreeViewColumn(c, rend, text=i)
+                rend.connect("edited", self.edited, _cap)
+                col = gtk.TreeViewColumn(_cap, rend, text=i)
                 col.set_cell_data_func(rend, self.render, i)
                 
             col.set_sort_column_id(i)
@@ -401,7 +399,7 @@ class MemoryEditor(common.Editor):
         hi = int(self.hi_limit_adj.get_value())
 
         import time
-        t = time.time()
+        start = time.time()
 
         for i in range(lo, hi+1):
             try:
@@ -414,7 +412,7 @@ class MemoryEditor(common.Editor):
 
         #mems = self.radio.get_memories(lo, hi)
         print "Loaded %i memories in %s sec" % (hi - lo,
-                                                time.time() - t)
+                                                time.time() - start)
 
         self.fill_thread = None
 
@@ -493,26 +491,26 @@ class MemoryEditor(common.Editor):
 
         lab = gtk.Label("Memory range:")
         lab.show()
-        hbox.pack_start(lab, 0,0,0)
+        hbox.pack_start(lab, 0, 0, 0)
 
         self.lo_limit_adj = gtk.Adjustment(0, 0, 999, 1, 10)
         lo = gtk.SpinButton(self.lo_limit_adj)
         lo.show()
-        hbox.pack_start(lo, 0,0,0)
+        hbox.pack_start(lo, 0, 0, 0)
 
         lab = gtk.Label(" - ")
         lab.show()
-        hbox.pack_start(lab, 0,0,0)
+        hbox.pack_start(lab, 0, 0, 0)
 
         self.hi_limit_adj = gtk.Adjustment(25, 1, 999, 1, 10)
         hi = gtk.SpinButton(self.hi_limit_adj)
         hi.show()
-        hbox.pack_start(hi, 0,0,0)
+        hbox.pack_start(hi, 0, 0, 0)
 
         refresh = gtk.Button("Go")
         refresh.show()
         refresh.connect("clicked", lambda x: self.prefill())
-        hbox.pack_start(refresh, 0,0,0)
+        hbox.pack_start(refresh, 0, 0, 0)
 
         hbox.show()
 
@@ -529,9 +527,12 @@ class MemoryEditor(common.Editor):
 
         self.need_refresh = False
 
+        self.lo_limit_adj = self.hi_limit_adj = None
+        self.store = self.view = None
+
         vbox = gtk.VBox(False, 2)
-        vbox.pack_start(self.make_controls(), 0,0,0)
-        vbox.pack_start(self.make_editor(), 1,1,1)
+        vbox.pack_start(self.make_controls(), 0, 0, 0)
+        vbox.pack_start(self.make_editor(), 1, 1, 1)
         vbox.show()
         
         self.root = vbox
@@ -563,7 +564,7 @@ class DstarMemoryEditor(MemoryEditor):
         self.choices["RPT1CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices["RPT2CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
 
-        iter = self.choices["URCALL"].append(("CQCQCQ", "CQCQCQ"))
+        self.choices["URCALL"].append(("CQCQCQ", "CQCQCQ"))
         self.choices["RPT1CALL"].append(("", ""))
         self.choices["RPT2CALL"].append(("", ""))
 
@@ -611,23 +612,3 @@ class DstarMemoryEditor(MemoryEditor):
 
 class ID800MemoryEditor(DstarMemoryEditor):
     pass
-
-if __name__ == "__main__":
-    from chirp import id800, ic9x, ic2820, ic2200, generic
-    import serial
-    r = id800.ID800v2Radio("../id800.img")
-    #s = serial.Serial(port="/dev/ttyUSB1", baudrate=38400, timeout=0.2)
-    #r = ic9x.IC9xRadioB(s)
-
-    e = ID800MemoryEditor(r)
-    w = gtk.Window()
-    w.add(e.root)
-    e.root.show()
-    w.show()
-
-    try:
-        gtk.main()
-    except KeyboardInterrupt:
-        pass
-
-    r.save_mmap("../id800.img")

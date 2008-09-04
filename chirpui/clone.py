@@ -21,24 +21,22 @@ import gtk
 import gobject
 
 from chirp import platform
-
-import miscwidgets
-import cloneprog
+from chirpui import miscwidgets, cloneprog
 
 class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):
         hbox = gtk.HBox(True, 2)
-        l = gtk.Label(title)
-        l.show()
-        hbox.pack_start(l, 0,0,0)
-        hbox.pack_start(control, 1,1,0)
+        lab = gtk.Label(title)
+        lab.show()
+        hbox.pack_start(lab, 0, 0, 0)
+        hbox.pack_start(control, 1, 1, 0)
 
         hbox.show()
 
         # pylint: disable-msg=E1101
-        self.vbox.pack_start(hbox, 0,0,0)
+        self.vbox.pack_start(hbox, 0, 0, 0)
     
-    def __init__(self, cloneIn=True, filename=None, rtype=None):
+    def __init__(self, clone_in=True, filename=None, rtype=None):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, buttons=buttons, title="Clone")
@@ -58,7 +56,7 @@ class CloneSettingsDialog(gtk.Dialog):
         self.rtype.show()
 
         self.filename = miscwidgets.FilenameBox()
-        if not cloneIn:
+        if not clone_in:
             self.filename.set_sensitive(False)
         if filename:
             self.filename.set_filename(filename)
@@ -74,8 +72,8 @@ class CloneSettingsDialog(gtk.Dialog):
             self.filename.get_filename()
 
 class CloneThread(threading.Thread):
-    def __status(self, s):
-        gobject.idle_add(self.__progw.status, s)
+    def __status(self, status):
+        gobject.idle_add(self.__progw.status, status)
 
     def __init__(self, radio, fname=None, cb=None, parent=None):
         threading.Thread.__init__(self)

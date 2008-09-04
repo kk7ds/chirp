@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 import gtk
 import gobject
 gobject.threads_init()
@@ -27,9 +25,9 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, chirp_common, id800, ic2820, ic2200, ic9x
-import editorset
-import clone
+from chirp import platform, id800, ic2820, ic2200, ic9x
+from chirpui import editorset
+from chirpui import clone
 
 RADIOS = {
     "ic2820" : ic2820.IC2820Radio,
@@ -40,31 +38,32 @@ RADIOS = {
 }
 
 RTYPES = {}
-for k,v in RADIOS.items():
-    RTYPES[v] = k
+for __key, __val in RADIOS.items():
+    RTYPES[__val] = __key
 
 class ChirpMain(gtk.Window):
     def get_current_editorset(self):
-        try:
-            return self.tabs.get_nth_page(self.tabs.get_current_page())
-        except Exception, e:
+        page = self.tabs.get_current_page()
+        if page is not None:
+            return self.tabs.get_nth_page(page)
+        else:
             return None
 
     def ev_tab_switched(self):
         def set_action_sensitive(action, sensitive):
             self.menu_ag.get_action(action).set_sensitive(sensitive)
 
-        w = self.get_current_editorset()
+        eset = self.get_current_editorset()
 
-        if not w or isinstance(w.radio, ic9x.IC9xRadio):
-            s = False
+        if not eset or isinstance(eset.radio, ic9x.IC9xRadio):
+            sensitive = False
         else:
-            s = True
+            sensitive = True
 
         for i in ["save", "saveas", "cloneout"]:
-            set_action_sensitive(i, s)
+            set_action_sensitive(i, sensitive)
         
-        set_action_sensitive("close", bool(w))
+        set_action_sensitive("close", bool(eset))
 
     def do_open(self, fname=None):
         if not fname:
@@ -83,37 +82,37 @@ class ChirpMain(gtk.Window):
         self.tabs.set_current_page(tab)
 
     def do_open9x(self, rclass):
-        d = clone.CloneSettingsDialog(cloneIn=False,
-                                      filename="(live)",
-                                      rtype="ic9x")
-        r = d.run()
-        port, _, _ = d.get_values()
-        d.destroy()
+        dlg = clone.CloneSettingsDialog(clone_in=False,
+                                        filename="(live)",
+                                        rtype="ic9x")
+        res = dlg.run()
+        port, _, _ = dlg.get_values()
+        dlg.destroy()
 
-        if r != gtk.RESPONSE_OK:
+        if res != gtk.RESPONSE_OK:
             return
         
-        s = serial.Serial(port=port,
-                          baudrate=38400,
-                          timeout=0.1)
-        radio = rclass(s)
+        ser = serial.Serial(port=port,
+                            baudrate=38400,
+                            timeout=0.1)
+        radio = rclass(ser)
         
-        e = editorset.EditorSet(radio)
-        e.show()
-        tab = self.tabs.append_page(e, e.get_tab_label())
+        eset = editorset.EditorSet(radio)
+        eset.show()
+        tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
     def do_save(self):
-        w = self.get_current_editorset()
-        w.save()
+        eset = self.get_current_editorset()
+        eset.save()
 
     def do_saveas(self):
         fname = platform.get_platform().gui_save_file()
         if not fname:
             return
 
-        w = self.get_current_editorset()
-        w.save(fname)
+        eset = self.get_current_editorset()
+        eset.save(fname)
 
     def cb_clonein(self, radio, fn):
         radio.pipe.close()
@@ -123,47 +122,49 @@ class ChirpMain(gtk.Window):
         radio.pipe.close()
 
     def do_clonein(self):
-        d = clone.CloneSettingsDialog()
-        r = d.run()
-        port, rtype, fn = d.get_values()
-        d.destroy()
+        dlg = clone.CloneSettingsDialog()
+        res = dlg.run()
+        port, rtype, fn = dlg.get_values()
+        dlg.destroy()
 
-        if r != gtk.RESPONSE_OK:
+        if res != gtk.RESPONSE_OK:
             return
 
         rc = RADIOS[rtype]
-        s = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
-        radio = rc(s)
+        ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        radio = rc(ser)
 
         ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
         ct.start()
 
     def do_cloneout(self):
-        w = self.get_current_editorset()
-        radio = w.radio
+        eset = self.get_current_editorset()
+        radio = eset.radio
 
-        d = clone.CloneSettingsDialog(False,
-                                      w.filename,
-                                      RTYPES[radio.__class__])
-        r = d.run()
-        port, rtype, fn = d.get_values()
-        d.destroy()
+        dlg = clone.CloneSettingsDialog(False,
+                                        eset.filename,
+                                        RTYPES[radio.__class__])
+        res = dlg.run()
+        port, rtype, _ = dlg.get_values()
+        dlg.destroy()
 
-        if r != gtk.RESPONSE_OK:
+        if res != gtk.RESPONSE_OK:
             return
 
         rc = RADIOS[rtype]
-        s = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
-        radio.set_pipe(s)
+        ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        radio.set_pipe(ser)
 
         ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
         ct.start()
 
     def do_close(self):
-        w = self.get_current_editorset()
-        if w.radio.pipe:
-            w.radio.pipe.close()
-        self.tabs.remove_page(self.tabs.get_current_page())
+        eset = self.get_current_editorset()
+        if eset.radio.pipe:
+            eset.radio.pipe.close()
+        page = self.tabs.get_current_page()
+        if page is not None:
+            self.tabs.remove_page(page)
 
     def mh(self, _action):
         action = _action.get_name()
@@ -246,16 +247,18 @@ class ChirpMain(gtk.Window):
 
         vbox = gtk.VBox(False, 2)
 
+        self.menu_ag = None
         mbar = self.make_menubar()
         mbar.show()
-        vbox.pack_start(mbar, 0,0,0)
+        vbox.pack_start(mbar, 0, 0, 0)
 
+        self.tabs = None
         tabs = self.make_tabs()
-        tabs.connect("switch-page", lambda n,_,p: self.ev_tab_switched())
+        tabs.connect("switch-page", lambda n, _, p: self.ev_tab_switched())
         tabs.show()
         self.ev_tab_switched()
 
-        vbox.pack_start(tabs, 1,1,1)
+        vbox.pack_start(tabs, 1, 1, 1)
 
         vbox.show()
 
@@ -264,11 +267,5 @@ class ChirpMain(gtk.Window):
         self.set_default_size(640, 480)
         self.set_title("CHIRP")
 
-        self.connect("delete_event", lambda w,e: gtk.main_quit())
+        self.connect("delete_event", lambda w, e: gtk.main_quit())
         self.connect("destroy", lambda w: gtk.main_quit())
-
-if __name__ == "__main__":
-    w = ChirpMain()
-    w.show()
-
-    gtk.main()

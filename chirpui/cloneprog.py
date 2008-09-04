@@ -41,22 +41,16 @@ class CloneProg(gtk.Window):
 
         self.infolabel = gtk.Label("Cloning")
         self.infolabel.show()
-        vbox.pack_start(self.infolabel, 1,1,1)
+        vbox.pack_start(self.infolabel, 1, 1, 1)
 
         self.progbar = gtk.ProgressBar()
         self.progbar.set_fraction(0.0)
         self.progbar.show()
-        vbox.pack_start(self.progbar, 0,0,0)
+        vbox.pack_start(self.progbar, 0, 0, 0)
 
-    def status(self, s):
-        self.infolabel.set_text(s.msg)
+    def status(self, _status):
+        self.infolabel.set_text(_status.msg)
 
-        if s.cur > s.max:
-            s.cur = s.max
-        self.progbar.set_fraction(s.cur / float(s.max))
-
-if __name__ == "__main__":
-    w = CloneProg()
-    w.show()
-
-    gtk.main()
+        if _status.cur > _status.max:
+            _status.cur = _status.max
+        self.progbar.set_fraction(_status.cur / float(_status.max))

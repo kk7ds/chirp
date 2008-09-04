@@ -20,6 +20,9 @@ import gobject
 from chirp import platform
 
 class ListWidget(gtk.HBox):
+    store_type = gtk.ListStore
+
+    # pylint: disable-msg=W0613
     def _toggle(self, render, path, column):
         self._store[path][column] = not self._store[path][column]
         iter = self._store.get_iter(path)
@@ -27,41 +30,40 @@ class ListWidget(gtk.HBox):
         for cb in self.toggle_cb:
             cb(*vals)
 
-    def make_store(self, col_types):
-        return gtk.ListStore(*col_types)
-
     def make_view(self, columns):
         self._view = gtk.TreeView(self._store)
 
-        for t,c in columns:
-            index = columns.index((t,c))
-            if t == gobject.TYPE_STRING or \
-                    t == gobject.TYPE_INT or \
-                    t == gobject.TYPE_FLOAT:
-                r = gtk.CellRendererText()
-                c = gtk.TreeViewColumn(c, r, text=index)
-            elif t == gobject.TYPE_BOOLEAN:
-                r = gtk.CellRendererToggle()
-                r.connect("toggled", self._toggle, index)
-                c = gtk.TreeViewColumn(c, r, active=index)
+        for _type, _col in columns:
+            index = columns.index((_type, _col))
+            if _type == gobject.TYPE_STRING or \
+                    _type == gobject.TYPE_INT or \
+                    _type == gobject.TYPE_FLOAT:
+                rend = gtk.CellRendererText()
+                column = gtk.TreeViewColumn(_col, rend, text=index)
+            elif _type == gobject.TYPE_BOOLEAN:
+                rend = gtk.CellRendererToggle()
+                rend.connect("toggled", self._toggle, index)
+                column = gtk.TreeViewColumn(_col, rend, active=index)
             else:
                 raise Exception("Unknown column type (%i)" % index)
 
-            c.set_sort_column_id(index)
-            self._view.append_column(c)
+            column.set_sort_column_id(index)
+            self._view.append_column(column)
 
     def __init__(self, columns, parent=True):
         gtk.HBox.__init__(self)
 
-        col_types = tuple([x for x,y in columns])
+        # pylint: disable-msg=W0612
+        col_types = tuple([x for x, y in columns])
         self._ncols = len(col_types)
-
-        self._store = self.make_store(col_types)
+        
+        self._store = self.store_type(*col_types)
+        self._view = None
         self.make_view(columns)
 
         self._view.show()
         if parent:
-            self.pack_start(self._view, 1,1,1)
+            self.pack_start(self._view, 1, 1, 1)
 
         self.toggle_cb = []
 
@@ -74,9 +76,9 @@ class ListWidget(gtk.HBox):
 
         args = []
         i = 0
-        for v in vals:
+        for val in vals:
             args.append(i)
-            args.append(v)
+            args.append(val)
             i += 1
 
         args = tuple(args)
@@ -95,32 +97,35 @@ class ListWidget(gtk.HBox):
 
     def remove_selected(self):
         try:
-            (list, iter) = self._view.get_selection().get_selected()
-            list.remove(iter)
+            (lst, iter) = self._view.get_selection().get_selected()
+            lst.remove(iter)
         except Exception, e:
             print "Unable to remove selected: %s" % e
 
     def get_selected(self):
-        (list, iter) = self._view.get_selection().get_selected()
-        return list.get(iter, *tuple(range(self._ncols)))
+        (lst, iter) = self._view.get_selection().get_selected()
+        return lst.get(iter, *tuple(range(self._ncols)))
 
-    def _get_value(self, model, path, iter, list):
-        list.append(model.get(iter, *tuple(range(0, self._ncols))))
+    def _get_value(self, model, path, iter, lst):
+        lst.append(model.get(iter, *tuple(range(0, self._ncols))))
 
     def get_values(self):
-        list = []
+        lst = []
 
-        self._store.foreach(self._get_value, list)
+        self._store.foreach(self._get_value, lst)
 
         return list
 
-    def set_values(self, list):
+    def set_values(self, lst):
         self._store.clear()
 
-        for i in list:
+        for i in lst:
             self.add_item(*i)
 
 class TreeWidget(ListWidget):
+    store_type = gtk.TreeStore
+
+    # pylint: disable-msg=W0613
     def _toggle(self, render, path, column):
         self._store[path][column] = not self._store[path][column]
         iter = self._store.get_iter(path)
@@ -140,15 +145,12 @@ class TreeWidget(ListWidget):
 
         self._key = key
 
-    def make_store(self, col_types):
-        return gtk.TreeStore(*col_types)
-
     def _add_item(self, piter, *vals):
         args = []
         i = 0
-        for v in vals:
+        for val in vals:
             args.append(i)
-            args.append(v)
+            args.append(val)
             i += 1
 
         args = tuple(args)
@@ -161,8 +163,8 @@ class TreeWidget(ListWidget):
             iter = self._store.get_iter_first()
 
         while iter is not None:
-            id = self._store.get(iter, self._key)[0]
-            if id == key:
+            _id = self._store.get(iter, self._key)[0]
+            if _id == key:
                 return iter
 
             iter = self._store.iter_next(iter)
@@ -184,10 +186,10 @@ class TreeWidget(ListWidget):
 
     def _set_values(self, parent, vals):
         if isinstance(vals, dict):
-            for k,v in vals.items():
+            for key, val in vals.items():
                 iter = self._store.append(parent)
-                self._store.set(iter, self._key, k)
-                self._set_values(iter, v)
+                self._store.set(iter, self._key, key)
+                self._set_values(iter, val)
         elif isinstance(vals, list):
             for i in vals:
                 self._set_values(parent, i)
@@ -225,9 +227,9 @@ class TreeWidget(ListWidget):
             args = []
             i = 0
 
-            for v in vals:
+            for val in vals:
                 args.append(i)
-                args.append(v)
+                args.append(val)
                 i += 1
 
             self._store.set(iter, *(tuple(args)))
@@ -249,11 +251,11 @@ class ProgressDialog(gtk.Window):
         self.label.set_size_request(100, 50)
         self.label.show()
 
-        self.bar = gtk.ProgressBar()
-        self.bar.show()
+        self.pbar = gtk.ProgressBar()
+        self.pbar.show()
         
-        vbox.pack_start(self.label, 0,0,0)
-        vbox.pack_start(self.bar, 0,0,0)
+        vbox.pack_start(self.label, 0, 0, 0)
+        vbox.pack_start(self.pbar, 0, 0, 0)
 
         vbox.show()
 
@@ -267,7 +269,7 @@ class ProgressDialog(gtk.Window):
             gtk.main_iteration_do(False)
 
     def set_fraction(self, frac):
-        self.bar.set_fraction(frac)
+        self.pbar.set_fraction(frac)
         self.queue_draw()
 
         while gtk.events_pending():
@@ -279,24 +281,24 @@ class LatLonEntry(gtk.Entry):
 
         self.connect("changed", self.format)
 
-    def format(self, editable):
-        s = self.get_text()
+    def format(self, _):
+        string = self.get_text()
 
-        d = u"\u00b0"
+        deg = u"\u00b0"
 
-        while " " in s:
-            if "." in s:
+        while " " in string:
+            if "." in string:
                 break
-            elif d not in s:
-                s = s.replace(" ", d)
-            elif "'" not in s:
-                s = s.replace(" ", "'")
-            elif '"' not in s:
-                s = s.replace(" ", '"')
+            elif deg not in string:
+                string = string.replace(" ", deg)
+            elif "'" not in string:
+                string = string.replace(" ", "'")
+            elif '"' not in string:
+                string = string.replace(" ", '"')
             else:
-                s = s.replace(" ", "")
+                string = string.replace(" ", "")
 
-        self.set_text(s)
+        self.set_text(string)
 
     def parse_dd(self, string):
         return float(string)
@@ -305,12 +307,12 @@ class LatLonEntry(gtk.Entry):
         string = string.strip()
         string = string.replace('  ', ' ')
         
-        (d, m) = string.split(' ', 2)
+        (_degrees, _minutes) = string.split(' ', 2)
 
-        deg = int(d)
-        min = float(m)
+        degrees = int(_degrees)
+        minutes = float(_minutes)
 
-        return deg + (min / 60.0)
+        return degrees + (minutes / 60.0)
 
     def parse_dms(self, string):
         string = string.replace(u"\u00b0", " ")
@@ -324,42 +326,41 @@ class LatLonEntry(gtk.Entry):
         if len(items) > 3:
             raise Exception("Invalid format")
         elif len(items) == 3:
-            d = items[0]
-            m = items[1]
-            s = items[2]
+            deg = items[0]
+            mns = items[1]
+            sec = items[2]
         elif len(items) == 2:
-            d = items[0]
-            m = items[1]
-            s = 0
+            deg = items[0]
+            mns = items[1]
+            sec = 0
         elif len(items) == 1:
-            d = items[0]
-            m = 0
-            s = 0
+            deg = items[0]
+            mns = 0
+            sec = 0
         else:
-            d = 0
-            m = 0
-            s = 0
+            deg = 0
+            mns = 0
+            sec = 0
 
-        deg = int(d)
-        min = int(m)
-        sec = float(s)
+        degrees = int(deg)
+        minutes = int(mns)
+        seconds = float(sec)
         
-        return deg + (min / 60.0) + (sec / 3600.0)
+        return degrees + (minutes / 60.0) + (seconds / 3600.0)
 
     def value(self):
-        s = self.get_text()
+        string = self.get_text()
 
         try:
-            return self.parse_dd(s)
+            return self.parse_dd(string)
         except:
             try:
-                return self.parse_dm(s)
+                return self.parse_dm(string)
             except:
                 try:
-                    return self.parse_dms(s)
+                    return self.parse_dms(string)
                 except Exception, e:
                     print "DMS: %s" % e
-                    pass
 
         raise Exception("Invalid format")
 
@@ -378,7 +379,7 @@ class YesNoDialog(gtk.Dialog):
         self._label.show()
 
         # pylint: disable-msg=E1101
-        self.vbox.pack_start(self._label, 1,1,1)
+        self.vbox.pack_start(self._label, 1, 1, 1)
 
     def set_text(self, text):
         self._label.set_text(text)
@@ -389,8 +390,8 @@ def make_choice(options, editable=True, default=None):
     else:
         sel = gtk.combo_box_new_text()
 
-    for o in options:
-        sel.append_text(o)
+    for opt in options:
+        sel.append_text(opt)
 
     if default:
         try:
@@ -402,7 +403,7 @@ def make_choice(options, editable=True, default=None):
     return sel
 
 class FilenameBox(gtk.HBox):
-    def do_browse(self, widget):
+    def do_browse(self, _):
         fn = platform.get_platform().gui_save_file()
         if fn:
             self.filename.set_text(fn)
@@ -412,11 +413,11 @@ class FilenameBox(gtk.HBox):
 
         self.filename = gtk.Entry()
         self.filename.show()
-        self.pack_start(self.filename, 1,1,1)
+        self.pack_start(self.filename, 1, 1, 1)
 
         browse = gtk.Button("...")
         browse.show()
-        self.pack_start(browse, 0,0,0)
+        self.pack_start(browse, 0, 0, 0)
 
         browse.connect("clicked", self.do_browse)
 
@@ -426,39 +427,39 @@ class FilenameBox(gtk.HBox):
     def get_filename(self):
         return self.filename.get_text()    
 
-if __name__=="__main__":
-    w = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    l = ListWidget([(gobject.TYPE_STRING, "Foo"),
+def test():
+    win = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    lst = ListWidget([(gobject.TYPE_STRING, "Foo"),
                     (gobject.TYPE_BOOLEAN, "Bar")])
 
-    l.add_item("Test1", True)
-    l.set_values([("Test2", True), ("Test3", False)])
+    lst.add_item("Test1", True)
+    lst.set_values([("Test2", True), ("Test3", False)])
     
-    l.show()
-    w.add(l)
-    w.show()
+    lst.show()
+    win.add(lst)
+    win.show()
 
-    w1 = ProgressDialog("foo")
-    w1.show()
+    win1 = ProgressDialog("foo")
+    win1.show()
 
-    w2 = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    win2 = gtk.Window(gtk.WINDOW_TOPLEVEL)
     lle = LatLonEntry()
     lle.show()
-    w2.add(lle)
-    w2.show()
+    win2.add(lle)
+    win2.show()
 
-    w3 = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    l = TreeWidget([(gobject.TYPE_STRING, "Id"),
-                    (gobject.TYPE_STRING, "Value")],
-                   1)
+    win3 = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    lst = TreeWidget([(gobject.TYPE_STRING, "Id"),
+                      (gobject.TYPE_STRING, "Value")],
+                     1)
     #l.add_item(None, "Foo", "Bar")
     #l.add_item("Foo", "Bar", "Baz")
-    l.set_values({"Fruit" : [("Apple", "Red"), ("Orange", "Orange")],
-                  "Pizza" : [("Cheese", "Simple"), ("Pepperoni", "Yummy")]})
-    l.add_item("Fruit", "Bananna", "Yellow")
-    l.show()
-    w3.add(l)
-    w3.show()
+    lst.set_values({"Fruit" : [("Apple", "Red"), ("Orange", "Orange")],
+                    "Pizza" : [("Cheese", "Simple"), ("Pepperoni", "Yummy")]})
+    lst.add_item("Fruit", "Bananna", "Yellow")
+    lst.show()
+    win3.add(lst)
+    win3.show()
 
     def print_val(entry):
         if entry.validate():
@@ -471,7 +472,10 @@ if __name__=="__main__":
 
     try:
         gtk.main()
-    except KeyboardInterrupt, e:
+    except KeyboardInterrupt:
         pass
 
-    print l.get_values()
+    print lst.get_values()
+
+if __name__ == "__main__":
+    test()

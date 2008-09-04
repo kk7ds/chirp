@@ -18,13 +18,14 @@
 import os
 import gtk
 
-from chirp import ic9x, ic2820, ic2200, id800, chirp_common
-import memedit
+from chirp import ic2820, ic2200, id800, chirp_common
+from chirpui import memedit
 
 def radio_class_from_file(filename):
     size = os.stat(filename).st_size
 
     for cls in [ic2820.IC2820Radio, ic2200.IC2200Radio, id800.ID800v2Radio]:
+        # pylint: disable-msg=W0212
         if cls._memsize == size:
             return cls
 
