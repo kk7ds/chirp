@@ -26,8 +26,7 @@ if __name__ == "__main__":
     sys.path.insert(0, "..")
 
 from chirp import platform, id800, ic2820, ic2200, ic9x
-from chirpui import editorset
-from chirpui import clone
+from chirpui import editorset, clone, inputdialog
 
 RADIOS = {
     "ic2820" : ic2820.IC2820Radio,
@@ -120,9 +119,14 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.save(fname)
 
-    def cb_clonein(self, radio, fn):
+    def cb_clonein(self, radio, fn, emsg=None):
         radio.pipe.close()
-        self.do_open(fn)
+        if not emsg:
+            self.do_open(fn)
+        else:
+            d = inputdialog.ExceptionDialog(emsg)
+            d.run()
+            d.destroy()
 
     def cb_cloneout(self, radio, fn):
         radio.pipe.close()
@@ -137,7 +141,14 @@ class ChirpMain(gtk.Window):
             return
 
         rc = RADIOS[rtype]
-        ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        try:
+            ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        except serial.SerialException, e:
+            d = inputdialog.ExceptionDialog(e)
+            d.run()
+            d.destroy()
+            return
+
         radio = rc(ser)
 
         ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
@@ -230,19 +241,20 @@ class ChirpMain(gtk.Window):
   </menubar>
 </ui>
 """
-        actions = [('file', None, "_File", None, None, self.mh),
-                   ('open', None, "_Open", None, None, self.mh),
-                   ('open9x', None, "_Open (IC9x)", None, None, self.mh),
-                   ('open9xA', None, "Band A", None, None, self.mh),
-                   ('open9xB', None, "Band B", None, None, self.mh),
-                   ('save', None, "_Save", None, None, self.mh),
-                   ('saveas', None, "Save _As", None, None, self.mh),
-                   ('close', None, "_Close", None, None, self.mh),
-                   ('quit', None, "_Quit", None, None, self.mh),
-                   ('radio', None, "_Radio", None, None, self.mh),
-                   ('clonein', None, "Clone _In", None, None, self.mh),
-                   ('cloneout', None, "Clone _Out", None, None, self.mh),
-                   ]
+        actions = [\
+            ('file', None, "_File", None, None, self.mh),
+            ('open', None, "_Open", None, None, self.mh),
+            ('open9x', None, "_Open (IC9x)", None, None, self.mh),
+            ('open9xA', None, "Band A", None, None, self.mh),
+            ('open9xB', None, "Band B", None, None, self.mh),
+            ('save', None, "_Save", None, None, self.mh),
+            ('saveas', None, "Save _As", None, None, self.mh),
+            ('close', None, "_Close", None, None, self.mh),
+            ('quit', None, "_Quit", None, None, self.mh),
+            ('radio', None, "_Radio", None, None, self.mh),
+            ('clonein', None, "Download From Radio", None, None, self.mh),
+            ('cloneout', None, "Upload To Radio", None, None, self.mh),
+            ]
 
         uim = gtk.UIManager()
         self.menu_ag = gtk.ActionGroup("MenuBar")
