@@ -403,10 +403,17 @@ def make_choice(options, editable=True, default=None):
     return sel
 
 class FilenameBox(gtk.HBox):
+    __gsignals__ = {
+        "filename-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        }
+
     def do_browse(self, _):
         fn = platform.get_platform().gui_save_file()
         if fn:
             self.filename.set_text(fn)
+
+    def do_changed(self, _):
+        self.emit("filename_changed")
 
     def __init__(self):
         gtk.HBox.__init__(self, False, 0)
@@ -419,6 +426,7 @@ class FilenameBox(gtk.HBox):
         browse.show()
         self.pack_start(browse, 0, 0, 0)
 
+        self.filename.connect("changed", self.do_changed)
         browse.connect("clicked", self.do_browse)
 
     def set_filename(self, fn):
