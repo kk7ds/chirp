@@ -36,6 +36,10 @@ class CloneSettingsDialog(gtk.Dialog):
         # pylint: disable-msg=E1101
         self.vbox.pack_start(hbox, 0, 0, 0)
     
+    def fn_changed(self, fn):
+        self.set_response_sensitive(gtk.RESPONSE_OK,
+                                    len(fn.get_filename()) > 0)
+
     def __init__(self, clone_in=True, filename=None, rtype=None):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
@@ -61,10 +65,13 @@ class CloneSettingsDialog(gtk.Dialog):
         if filename:
             self.filename.set_filename(filename)
         self.filename.show()
+        self.filename.connect("filename-changed", self.fn_changed)
 
         self.make_field("Serial port", self.port)
         self.make_field("Radio type", self.rtype)
         self.make_field("Filename", self.filename)
+
+        self.set_response_sensitive(gtk.RESPONSE_OK, False)
 
     def get_values(self):
         return self.port.get_active_text(), \
@@ -98,10 +105,10 @@ class CloneThread(threading.Thread):
             else:
                 self.__radio.sync_out()
 
-            success = True
+            emsg = None
         except Exception, e:
             print "Clone failed: %s" % e
-            success = False
+            emsg = e
 
         gobject.idle_add(self.__progw.hide)
 
@@ -110,5 +117,5 @@ class CloneThread(threading.Thread):
 
         print "Clone thread ended"
 
-        if self.__cback and success:
-            gobject.idle_add(self.__cback, self.__radio, self.__fname)
+        if self.__cback:
+            gobject.idle_add(self.__cback, self.__radio, self.__fname, emsg)
