@@ -71,7 +71,8 @@ class CloneSettingsDialog(gtk.Dialog):
         self.make_field("Radio type", self.rtype)
         self.make_field("Filename", self.filename)
 
-        self.set_response_sensitive(gtk.RESPONSE_OK, False)
+        if clone_in:
+            self.set_response_sensitive(gtk.RESPONSE_OK, False)
 
     def get_values(self):
         return self.port.get_active_text(), \
