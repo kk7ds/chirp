@@ -96,4 +96,4 @@ class IC9xRadioA(IC9xRadio):
 
 class IC9xRadioB(IC9xRadio):
     vfo = 2
-    mem_upper_limit = 349
+    mem_upper_limit = 399
