@@ -99,8 +99,8 @@ class Memory:
         "duplex"        : ["", "+", "-"],
         }
 
-    CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset," + \
-        "rToneFreq,rToneOn,cToneFreq,cToneOn,DtcsCode,DtcsOn,DtcsPolarity," + \
+    CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \
+        "rToneFreq,cToneFreq,DtcsCode,DtcsPolarity," + \
         "Mode," 
 
     def __setattr__(self, name, val):
