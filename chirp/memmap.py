@@ -61,4 +61,4 @@ class MemoryMap:
         self.set(pos, value)
 
     def __str__(self):
-        return self.printable(printToStdio=False)
+        return self.printable(printit=False)
