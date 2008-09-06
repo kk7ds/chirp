@@ -226,7 +226,7 @@ class Memory:
             raise errors.InvalidDataError("DTCS code is not valid")
 
         if vals[9] in ["NN", "NR", "RN", "RR"]:
-            self.dtcs_polarity = vals[11]
+            self.dtcs_polarity = vals[9]
         else:
             raise errors.InvalidDataError("DtcsPolarity is not valid")
 
