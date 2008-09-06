@@ -128,7 +128,7 @@ class ChirpMain(gtk.Window):
             d.run()
             d.destroy()
 
-    def cb_cloneout(self, radio, fn):
+    def cb_cloneout(self, radio, fn, emsg= None):
         radio.pipe.close()
 
     def do_clonein(self):
