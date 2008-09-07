@@ -435,6 +435,28 @@ class FilenameBox(gtk.HBox):
     def get_filename(self):
         return self.filename.get_text()    
 
+def make_pixbuf_choice(options, default=None):
+    store = gtk.ListStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING)
+    box = gtk.ComboBox(store)
+
+    cell = gtk.CellRendererPixbuf()
+    box.pack_start(cell, True)
+    box.add_attribute(cell, "pixbuf", 0)
+
+    cell = gtk.CellRendererText()
+    box.pack_start(cell, True)
+    box.add_attribute(cell, "text", 1)
+
+    _default = None
+    for pic, value in options:
+        iter = store.append()
+        store.set(iter, 0, pic, 1, value)
+        if default == value:
+            _default = options.index((pic, value))
+
+    if _default:
+        box.set_active(_default)
+
 def test():
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
     lst = ListWidget([(gobject.TYPE_STRING, "Foo"),
