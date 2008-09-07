@@ -189,7 +189,11 @@ def set_dup_offset(mmap, offset):
     mmap[POS_DOFF_START] = struct.pack(">I", int(offset * 1000000))
 
 def set_tone_enabled(mmap, mode):
-    mask = 0xC3
+    # mask = 0xC3
+    # The bottom two bits seem to indicate MSK/packet mode, and seem to
+    # want to get set sometimes.  Explicitly ignore those so they are zeroed
+    # for now.  Worst case is we unset MSK mode if set, somehow.
+    mask = 0xC0
     val = ord(mmap[POS_DUPX_TONE]) & mask
 
     if mode == "Tone":
