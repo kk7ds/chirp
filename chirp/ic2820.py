@@ -89,21 +89,23 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
 
         return calls
 
-    def set_urcall_list(self, list):
+    def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
             try:
-                call = list[i]
+                call = calls[i-1]
             except IndexError:
+                print "No call for %i" % i
                 call = " " * 8
 
             ic2820_ll.set_urcall(self._mmap, i, call)
 
 
-    def set_repeater_call_list(self, list):
+    def set_repeater_call_list(self, calls):
         for i in range(*self.RPTCALL_LIMIT):
             try:
-                call = list[i]
+                call = calls[i-1]
             except IndexError:
+                
                 call = " " * 8
 
             ic2820_ll.set_rptcall(self._mmap, i, call)

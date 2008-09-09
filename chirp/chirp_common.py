@@ -400,10 +400,10 @@ class IcomDstarRadio:
     def get_repeater_call_list(self):
         pass
 
-    def set_urcall_list(self, list):
+    def set_urcall_list(self, calls):
         pass
 
-    def set_repeater_call_list(self, list):
+    def set_repeater_call_list(self, calls):
         pass
 
 class Status:
