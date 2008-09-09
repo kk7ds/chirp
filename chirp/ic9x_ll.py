@@ -245,9 +245,9 @@ class IC92MemoryFrame(IC92Frame):
         self._ts = TUNING_STEPS[index]               
 
         if self.is_dv:
-            self._urcall = mmap[26:33].strip()
-            self._rpt1call = mmap[36:43].strip()
-            self._rpt2call = mmap[44:51].strip()
+            self._rpt2call = mmap[36:43].strip()
+            self._rpt1call = mmap[44:51].strip()
+            self._urcall = mmap[52:60].strip()
 
     def _make_raw(self):
         mmap = MemoryMap("\x00" * 60)
@@ -316,6 +316,11 @@ class IC92MemoryFrame(IC92Frame):
         val |= idx
         mmap[21] = val
 
+        if self._vfo == 2:
+            mmap[36] = self._rpt2call.ljust(8)
+            mmap[44] = self._rpt1call.ljust(8)
+            mmap[52] = self._urcall.ljust(8)
+
         self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
         if self._vfo == 1:
             self._rawdata += mmap.get_packed()[:34]
@@ -341,6 +346,13 @@ class IC92MemoryFrame(IC92Frame):
         self._dtcs_polarity = memory.dtcs_polarity
         self._tmode = memory.tmode
         self._ts = memory.tuning_step
+
+        if isinstance(memory, chirp_common.DVMemory) and vfo == 2:
+            self._urcall = memory.dv_urcall
+            self._rpt1call = memory.dv_rpt1call
+            self._rpt2call = memory.dv_rpt2call
+        else:
+            self._urcall = self._rpt1call = self._rpt2call = ""
 
     def get_memory(self):
         if self.is_dv:
