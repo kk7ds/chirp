@@ -49,6 +49,8 @@ POS_MODE_END   = 38
 POS_DTCS_POL   = 39
 POS_DTCS       = 36
 POS_USED_START = 0x61E0
+POS_URCALL     = 0x69B8
+POS_RPTCALL    = 0x6B98
 
 MEM_LOC_SIZE   = 0x30
 
@@ -151,7 +153,15 @@ def get_memory(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
 
     mmap = get_raw_memory(_map, number)
-    mem = chirp_common.Memory()
+    
+    if get_mode(mmap) == "DV":
+        mem = chirp_common.DVMemory()
+        mem.dv_urcall = mmap[8:16].strip()
+        mem.dv_rpt1call = mmap[16:24].strip()
+        mem.dv_rpt2call = mmap[24:32].strip()
+    else:
+        mem = chirp_common.Memory()
+
     mem.number = number
 
     mem.freq = get_freq(mmap)
@@ -256,6 +266,11 @@ def set_mode(mmap, mode):
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
+    if isinstance(mem, chirp_common.DVMemory):
+        mmap[8] = mem.dv_urcall.ljust(8)
+        mmap[16] = mem.dv_rpt1call.ljust(8)
+        mmap[24] = mem.dv_rpt2call.ljust(8)
+
     set_freq(mmap, mem.freq)
     set_name(mmap, mem.name)
     set_duplex(mmap, mem.duplex)
@@ -287,3 +302,33 @@ def parse_map_for_memory(mmap):
 
     return memories
 
+def call_location(base, index):
+    return base + (8 * (index - 1))
+
+def get_urcall(mmap, number):
+    if number > 60:
+        raise errors.InvalidDataError("URCALL index must be <= 60")
+
+    start = call_location(POS_URCALL, number)
+    return mmap[start:start+8].strip()
+
+def get_rptcall(mmap, number):
+    if number > 60:
+        raise errors.InvalidDataError("RPTCALL index must be <= 60")
+
+    start = call_location(POS_RPTCALL, number)
+    return mmap[start:start+8].strip()
+
+def set_urcall(mmap, number, call):
+    if number > 60:
+        raise errors.InvalidDataError("URCALL index must be <= 60")
+
+    start = call_location(POS_URCALL, number)
+    mmap[start] = call.ljust(8)
+
+def set_rptcall(mmap, number, call):
+    if number > 60:
+        raise errors.InvalidDataError("RPTCALL index must be <= 60")
+
+    start = call_location(POS_RPTCALL, number)
+    mmap[start] = call.ljust(8)
