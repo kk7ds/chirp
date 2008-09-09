@@ -101,7 +101,7 @@ class Memory:
 
     CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \
         "rToneFreq,cToneFreq,DtcsCode,DtcsPolarity," + \
-        "Mode," 
+        "Mode,URCALL,RPT1CALL,RPT2CALL" 
 
     def __setattr__(self, name, val):
         if not hasattr(self, name):
@@ -152,7 +152,7 @@ class Memory:
              self.tuning_step)
 
     def to_csv(self):
-        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s," % ( \
+        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,,,," % ( \
             self.number,
             self.name,
             self.freq,
@@ -167,9 +167,12 @@ class Memory:
 
         return string
 
-    def from_csv(self, _line):
-        line = _line.strip()
+    class Callable:
+        def __init__(self, target):
+            self.__call__ = target
 
+    def _from_csv(_line):
+        line = _line.strip()
         if line.startswith("Location"):
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
@@ -177,6 +180,17 @@ class Memory:
         if len(vals) < 10:
             raise errors.InvalidDataError("CSV format error (13 columns expected)")
 
+        if vals[10] == "DV":
+            mem = DVMemory()
+        else:
+            mem = Memory()
+
+        mem.really_from_csv(vals)
+        return mem
+
+    from_csv = Callable(_from_csv)
+
+    def really_from_csv(self, vals):
         try:
             self.number = int(vals[0])
         except:
@@ -250,6 +264,32 @@ class DVMemory(Memory):
                                    self.dv_rpt2call)
 
         return string
+
+    def to_csv(self):
+        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%s,%s,%s," % ( \
+            self.number,
+            self.name,
+            self.freq,
+            self.duplex,
+            self.offset,
+            self.tmode,
+            self.rtone,
+            self.ctone,
+            self.dtcs,
+            self.dtcs_polarity,
+            self.mode,
+            self.dv_urcall,
+            self.dv_rpt1call,
+            self.dv_rpt2call)
+
+        return string
+
+    def really_from_csv(self, vals):
+        Memory.really_from_csv(self, vals)
+
+        self.dv_urcall = vals[11].strip()[:8]
+        self.dv_rpt1call = vals[12].strip()[:8]
+        self.dv_rpt2call = vals[13].strip()[:8]
 
 class Bank:
     name = "BANK"

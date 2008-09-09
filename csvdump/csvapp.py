@@ -220,9 +220,8 @@ class CsvDumpApp:
         memories = []
         lineno = 0
         for line in lines:
-            m = chirp.chirp_common.Memory()
             try:
-                m.from_csv(line)
+                m = chirp.chirp_common.Memory.from_csv(line)
             except errors.InvalidMemoryLocation:
                 continue
             except Exception, e:
@@ -271,13 +270,14 @@ class CsvDumpApp:
 
         for line in lines:
             lineno += 1
-            m = chirp.chirp_common.Memory()
             try:
-                m.from_csv(line.strip())
+                m = chirp.chirp_common.Memory.from_csv(line.strip())
                 print "Imported: %s" % m
             except Exception, e:
                 if lineno == 1:
                     continue
+                import traceback
+                traceback.print_exc()
                 self.mainwin.set_status("Error on line %i: %s" % (lineno, e))
                 return
 
