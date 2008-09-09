@@ -54,16 +54,17 @@ class EditorSet(gtk.VBox):
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
         self.memedit = memedit.MemoryEditor(self.radio)
-        self.dstared = dstaredit.DStarEditor(self.radio)
-
         lab = gtk.Label("Memories")
         self.tabs.append_page(self.memedit.root, lab)
         self.memedit.root.show()
 
         if isinstance(self.radio, chirp_common.IcomDstarRadio):
+            self.dstared = dstaredit.DStarEditor(self.radio)
             lab = gtk.Label("D-STAR")
             self.tabs.append_page(self.dstared.root, lab)
             self.dstared.root.show()
+        else:
+            self.dstared = None
 
         self.pack_start(self.tabs)
         self.tabs.show()
