@@ -128,7 +128,7 @@ class ListWidget(gtk.HBox):
 
         self._store.foreach(self._get_value, lst)
 
-        return list
+        return lst
 
     def set_values(self, lst):
         self._store.clear()
