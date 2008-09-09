@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#/usr/bin/python
 #
 # Copyright 2008 Dan Smith <dsmith@danplanet.com>
 #
@@ -550,11 +550,11 @@ class DstarMemoryEditor(MemoryEditor):
 
         mem = chirp_common.DVMemory()
 
-        MemoryEditor._set_mem_vals(mem, vals)
+        MemoryEditor._set_mem_vals(self, mem, vals)
 
-        mem.UrCall = vals[self.col("URCALL")]
-        mem.Rpt1Call = vals[self.col("RPT1CALL")]
-        mem.Rpt2Call = vals[self.col("RPT2CALL")]
+        mem.dv_urcall = vals[self.col("URCALL")]
+        mem.dv_rpt1call = vals[self.col("RPT1CALL")]
+        mem.dv_rpt2call = vals[self.col("RPT2CALL")]
 
         return mem
 
@@ -584,6 +584,11 @@ class DstarMemoryEditor(MemoryEditor):
 
         MemoryEditor.__init__(self, radio)
     
+        for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
+            column = self.view.get_column(self.col(i))
+            rend = column.get_cell_renderers()[0]
+            rend.set_property("has-entry", True)
+
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]
 
@@ -604,9 +609,9 @@ class DstarMemoryEditor(MemoryEditor):
 
         if isinstance(memory, chirp_common.DVMemory):
             self.store.set(iter,
-                           self.col("URCALL"), memory.UrCall,
-                           self.col("RPT1CALL"), memory.Rpt1Call,
-                           self.col("RPT2CALL"), memory.Rpt2Call)
+                           self.col("URCALL"), memory.dv_urcall,
+                           self.col("RPT1CALL"), memory.dv_rpt1call,
+                           self.col("RPT2CALL"), memory.dv_rpt2call)
         else:
             self.store.set(iter,
                            self.col("URCALL"), "",
