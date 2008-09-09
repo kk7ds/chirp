@@ -122,11 +122,11 @@ def get_dup_off(mmap):
     return struct.unpack(">I", mmap[POS_DOFF_START:POS_DOFF_END])[0] / 1000000.0
 
 def get_tone_enabled(mmap):
-    val = struct.unpack("B", mmap[POS_DUPX_TONE])[0] & 0x3C
+    val = struct.unpack("B", mmap[POS_DUPX_TONE])[0] & 0x1C
     
     if (val & 0x0C) == 0x0C:
         return "TSQL"
-    elif (val & 0x38) == 0x38:
+    elif (val & 0x18) == 0x18:
         return "DTCS"
     elif (val & 0x04) == 0x04:
         return "Tone"
@@ -203,7 +203,7 @@ def set_tone_enabled(mmap, mode):
     # The bottom two bits seem to indicate MSK/packet mode, and seem to
     # want to get set sometimes.  Explicitly ignore those so they are zeroed
     # for now.  Worst case is we unset MSK mode if set, somehow.
-    mask = 0xC0
+    mask = 0xE0
     val = ord(mmap[POS_DUPX_TONE]) & mask
 
     if mode == "Tone":
@@ -211,7 +211,7 @@ def set_tone_enabled(mmap, mode):
     elif mode == "TSQL":
         val |= 0x2C
     elif mode == "DTCS":
-        val |= 0x38
+        val |= 0x18
 
     mmap[POS_DUPX_TONE] = val
 
