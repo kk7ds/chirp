@@ -120,6 +120,24 @@ class ListWidget(gtk.HBox):
 
         return lst.get(iter, *tuple(range(self._ncols)))
 
+    def move_selected(self, delta):
+        (lst, iter) = self._view.get_selection().get_selected()
+
+        pos = int(lst.get_path(iter)[0])
+
+        try:
+            target = None
+
+            if delta > 0 and pos > 0:
+                target = lst.get_iter(pos-1)
+            elif delta < 0:
+                target = lst.get_iter(pos+1)
+        except Exception, e:
+            return False
+
+        if target:
+            return lst.swap(iter, target)
+
     def _get_value(self, model, path, iter, lst):
         lst.append(model.get(iter, *tuple(range(0, self._ncols))))
 
