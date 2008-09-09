@@ -400,6 +400,12 @@ class IcomDstarRadio:
     def get_repeater_call_list(self):
         pass
 
+    def set_urcall_list(self, list):
+        pass
+
+    def set_repeater_call_list(self, list):
+        pass
+
 class Status:
     name = "Job"
     msg = "Unknown"
