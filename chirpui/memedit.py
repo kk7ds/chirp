@@ -29,7 +29,7 @@ from gobject import TYPE_INT, \
 import gobject
 
 from chirpui import common
-from chirp import chirp_common, errors
+from chirp import chirp_common, errors, id800
 
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    
@@ -575,9 +575,12 @@ class DstarMemoryEditor(MemoryEditor):
         return mem
 
     def __init__(self, radio):
-        self.cols += [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
-                      ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
-                      ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
+        # I think self.cols is "static" or "unbound" or something else
+        # like that and += modifies the type, not self (how bizarre)
+        self.cols = self.cols + \
+            [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
+             ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
+             ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
 
         self.choices["URCALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices["RPT1CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
@@ -600,10 +603,11 @@ class DstarMemoryEditor(MemoryEditor):
 
         MemoryEditor.__init__(self, radio)
     
-        for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
-            column = self.view.get_column(self.col(i))
-            rend = column.get_cell_renderers()[0]
-            rend.set_property("has-entry", True)
+        if not isinstance(self.radio, id800.ID800v2Radio):
+            for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
+                column = self.view.get_column(self.col(i))
+                rend = column.get_cell_renderers()[0]
+                rend.set_property("has-entry", True)
 
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]
