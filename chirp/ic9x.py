@@ -117,7 +117,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
 
         for i in range(ulimit - 1):
             cframe = cstype(i)
-            result = cframe.send(self.pipe, True)
+            result = cframe.send(self.pipe)
 
             callf = ic9x_ll.IC92CallsignFrame()
             callf.from_frame(result[0])
@@ -131,15 +131,17 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
         sent_magic = False
 
         for i in range(ulimit - 1):
+            blank = " " * 8
+
             try:
                 acall = cache[i]
             except IndexError:
-                acall = None
+                acall = blank
 
             try:
                 bcall = calls[i]
             except IndexError:
-                bcall = " " * 8
+                bcall = blank
             
             if acall == bcall:
                 continue # No change to this one
@@ -149,7 +151,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
                 sent_magic = True
 
             cframe = cstype(i+1, bcall)
-            result = cframe.send(self.pipe, True)
+            result = cframe.send(self.pipe)
 
             if result[0].get_data() != "\xfb":
                 raise errors.InvalidDataError("Radio reported error")
@@ -198,7 +200,9 @@ if __name__ == "__main__":
         import util
         r = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
                                      baudrate=38400, timeout=0.1))
-        #print r.get_mycall_list()
-        r.set_mycall_list(["K7TAY", "FOOBAR"])
+        print r.get_urcall_list()
+        #r.set_urcall_list(["K7TAY", "FOOBAR"])
+        print "-- FOO --"
+        r.set_urcall_list(["K7TAY", "FOOBAR", "BAZ"])
 
     test()
