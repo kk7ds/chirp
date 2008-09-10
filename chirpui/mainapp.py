@@ -225,10 +225,6 @@ class ChirpMain(gtk.Window):
   <menubar name="MenuBar">
     <menu action="file">
       <menuitem action="open"/>
-      <menu action="open9x">
-        <menuitem action="open9xA"/>
-        <menuitem action="open9xB"/>
-      </menu>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <menuitem action="close"/>
@@ -237,6 +233,10 @@ class ChirpMain(gtk.Window):
     <menu action="radio">
       <menuitem action="clonein"/>
       <menuitem action="cloneout"/>
+      <menu action="open9x">
+        <menuitem action="open9xA"/>
+        <menuitem action="open9xB"/>
+      </menu>
     </menu>
   </menubar>
 </ui>
@@ -244,7 +244,7 @@ class ChirpMain(gtk.Window):
         actions = [\
             ('file', None, "_File", None, None, self.mh),
             ('open', None, "_Open", None, None, self.mh),
-            ('open9x', None, "_Open (IC9x)", None, None, self.mh),
+            ('open9x', None, "_Connect to an IC9x", None, None, self.mh),
             ('open9xA', None, "Band A", None, None, self.mh),
             ('open9xB', None, "Band B", None, None, self.mh),
             ('save', None, "_Save", None, None, self.mh),
