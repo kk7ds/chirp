@@ -543,6 +543,22 @@ class MemoryEditor(common.Editor):
         self.prefill()
 
 class DstarMemoryEditor(MemoryEditor):
+    def render(self, _, rend, model, iter, colnum):
+        MemoryEditor.render(self, _, rend, model, iter, colnum)
+
+        vals = model.get(iter, *tuple(range(0, len(self.cols))))
+        val = vals[colnum]
+
+        def _enabled(sensitive):
+            rend.set_property("sensitive", sensitive)
+
+        def d_unless_mode(mode):
+            _enabled(vals[self.col("Mode")] == mode)
+
+        dv_columns = [self.col(x) for x in ["URCALL", "RPT1CALL", "RPT2CALL"]]
+        if colnum in dv_columns:
+            d_unless_mode("DV")
+
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
         if vals[self.col("Mode")] != "DV":
