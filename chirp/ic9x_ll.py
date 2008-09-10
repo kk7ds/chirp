@@ -113,9 +113,9 @@ class IC92Frame(IcomFrame):
 
         return string
 
-    def send(self, pipe):
+    def send(self, pipe, verbose=False):
         self._make_raw()
-        return send(pipe, self._rawdata)
+        return send(pipe, self._rawdata, verbose)
 
 class IC92BankFrame(IC92Frame):
     def __str__(self):
@@ -133,6 +133,39 @@ class IC92MemClearFrame(IC92Frame):
                                      0x01,
                                      int("%i" % self._number, 16),
                                      0xFF)
+
+class IC92CallsignFrame(IC92Frame):
+    command = 0 # Invalid
+
+    def __init__(self, number=0, callsign=""):
+        IC92Frame.__init__(self)
+        self._number = number
+        if callsign:
+            callsign = callsign.ljust(8)
+        self.callsign = callsign
+
+    def _make_raw(self):
+        self._rawdata = struct.pack("BBBB", 2, 0x80, 0x1D, self.command)
+        self._rawdata += struct.pack("B", self._number)
+        self._rawdata += self.callsign
+
+    def get_callsign(self):
+        return self._data[3:11].rstrip()
+
+class IC92YourCallsignFrame(IC92CallsignFrame):
+    command = 6 # Your
+
+class IC92RepeaterCallsignFrame(IC92CallsignFrame):
+    command = 7 # Repeater
+
+class IC92MyCallsignFrame(IC92CallsignFrame):
+    command = 8 # My
+
+    def __init__(self, number=0, callsign=""):
+        if callsign:
+            callsign = callsign.ljust(12)
+
+        IC92CallsignFrame.__init__(self, number, callsign)
 
 class IC92MemoryFrame(IC92Frame):
     def __init__(self):
