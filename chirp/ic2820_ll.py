@@ -310,14 +310,14 @@ def get_urcall(mmap, number):
         raise errors.InvalidDataError("URCALL index must be <= 60")
 
     start = call_location(POS_URCALL, number)
-    return mmap[start:start+8].strip()
+    return mmap[start:start+8].rstrip()
 
 def get_rptcall(mmap, number):
     if number > 60:
         raise errors.InvalidDataError("RPTCALL index must be <= 60")
 
     start = call_location(POS_RPTCALL, number)
-    return mmap[start:start+8].strip()
+    return mmap[start:start+8].rstrip()
 
 def set_urcall(mmap, number, call):
     if number > 60:
