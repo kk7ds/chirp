@@ -94,6 +94,111 @@ class IC9xRadioA(IC9xRadio):
     vfo = 1
     mem_upper_limit = 849
 
-class IC9xRadioB(IC9xRadio):
+class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
     vfo = 2
     mem_upper_limit = 399
+
+    MYCALL_LIMIT = (1, 7)
+    URCALL_LIMIT = (1, 61)
+    RPTCALL_LIMIT = (1, 61)
+
+    def __init__(self, *args, **kwargs):
+        IC9xRadio.__init__(self, *args, **kwargs)
+
+        self.__rcalls = []
+        self.__mcalls = []
+        self.__ucalls = []
+
+    def __get_call_list(self, cache, cstype, ulimit):
+        if cache:
+            return cache
+
+        ic9x_ll.send_magic(self.pipe)
+
+        for i in range(ulimit - 1):
+            cframe = cstype(i)
+            result = cframe.send(self.pipe, True)
+
+            callf = ic9x_ll.IC92CallsignFrame()
+            callf.from_frame(result[0])
+
+            if callf.get_callsign():
+                cache.append(callf.get_callsign())
+
+        return cache
+
+    def __set_call_list(self, cache, cstype, ulimit, calls):
+        sent_magic = False
+
+        for i in range(ulimit - 1):
+            try:
+                acall = cache[i]
+            except IndexError:
+                acall = None
+
+            try:
+                bcall = calls[i]
+            except IndexError:
+                bcall = " " * 8
+            
+            if acall == bcall:
+                continue # No change to this one
+
+            if not sent_magic:
+                ic9x_ll.send_magic(self.pipe)
+                sent_magic = True
+
+            cframe = cstype(i+1, bcall)
+            result = cframe.send(self.pipe, True)
+
+            if result[0].get_data() != "\xfb":
+                raise errors.InvalidDataError("Radio reported error")
+
+        return calls
+
+    def get_mycall_list(self):
+        self.__mcalls = self.__get_call_list(self.__mcalls,
+                                             ic9x_ll.IC92MyCallsignFrame,
+                                             self.MYCALL_LIMIT[1])
+        return self.__mcalls
+        
+    def get_urcall_list(self):
+        self.__ucalls = self.__get_call_list(self.__ucalls,
+                                             ic9x_ll.IC92YourCallsignFrame,
+                                             self.URCALL_LIMIT[1])
+        return self.__ucalls
+
+    def get_repeater_call_list(self):
+        self.__rcalls = self.__get_call_list(self.__rcalls,
+                                             ic9x_ll.IC92RepeaterCallsignFrame,
+                                             self.RPTCALL_LIMIT[1])
+        return self.__rcalls
+
+    def set_mycall_list(self, calls):
+        self.__mcalls = self.__set_call_list(self.__mcalls,
+                                             ic9x_ll.IC92MyCallsignFrame,
+                                             self.MYCALL_LIMIT[1],
+                                             calls)
+
+    def set_urcall_list(self, calls):
+        self.__ucalls = self.__set_call_list(self.__ucalls,
+                                             ic9x_ll.IC92YourCallsignFrame,
+                                             self.URCALL_LIMIT[1],
+                                             calls)
+
+    def set_repeater_call_list(self, calls):
+        self.__rcalls = self.__set_call_list(self.__rcalls,
+                                             ic9x_ll.IC92RepeaterCallsignFrame,
+                                             self.RPTCALL_LIMIT[1],
+                                             calls)
+
+if __name__ == "__main__":
+    def test():
+        import serial
+        import util
+        r = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
+                                     baudrate=38400, timeout=0.1))
+        #print r.get_mycall_list()
+        r.set_mycall_list(["K7TAY", "FOOBAR"])
+
+    test()
