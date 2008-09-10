@@ -377,6 +377,40 @@ def set_tone_enabled(mmap, mode):
 
     mmap[POS_TENB] = val
 
+def set_call_indices(_map, mmap, urcall, r1call, r2call):
+    ulist = ["CQCQCQ"]
+    for i in range(1, 100):
+        call = get_urcall(_map, i).rstrip()
+        if call:
+            ulist.append(call)
+
+    rlist = [""]
+    for i in range(1, 60):
+        call = get_rptcall(_map, i).rstrip()
+        if call:
+            rlist.append(call)
+
+    try:
+        uindex = ulist.index(urcall)
+    except ValueError:
+        raise errors.InvalidDataError("Call `%s' not in URCALL list" % urcall)
+
+    try:
+        r1index = rlist.index(r1call)
+    except ValueError:
+        raise errors.InvalidDataError("Call `%s' not in Repeater list" % r1call)
+
+    try:
+        r2index = rlist.index(r2call)
+    except ValueError:
+        raise errors.InvalidDataError("Call `%s' not in Repeater list" % r2call)
+
+    print "Setting calls: %i %i %i" % (uindex, r1index, r2index)
+
+    mmap[18] = uindex
+    mmap[19] = r1index
+    mmap[20] = r2index
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -390,6 +424,10 @@ def set_memory(_map, mem):
     set_dtcs(mmap, mem.dtcs)
     set_tone_enabled(mmap, mem.tmode)
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
+
+    if isinstance(mem, chirp_common.DVMemory):
+        set_call_indices(_map, mmap,
+                         mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call)
 
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
 
