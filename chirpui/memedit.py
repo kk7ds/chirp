@@ -582,6 +582,9 @@ class DstarMemoryEditor(MemoryEditor):
              ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
              ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
 
+        self.choices = dict(self.choices)
+        self.defaults = dict(self.defaults)
+
         self.choices["URCALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices["RPT1CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices["RPT2CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
