@@ -11,7 +11,7 @@ DST="${TMP}/${RELDIR}"
 
 mkdir -p $DST
 
-cp -rav --parents chirp/*.py csvdump/*.py $DST
+cp -rav --parents chirp/*.py csvdump/*.py chirpui/* $DST
 cp -av *.py ${DST}
 
 cp -rav $INCLUDE ${DST}
