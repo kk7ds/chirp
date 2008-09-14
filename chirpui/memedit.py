@@ -92,7 +92,7 @@ class MemoryEditor(common.Editor):
         "DTCS Pol" : ["NN", "NR", "RN", "RR"],
         "Mode" : chirp_common.MODES,
         "Duplex" : ["", "-", "+"],
-        "Tune Step" : [5, 10],
+        "Tune Step" : chirp_common.TUNING_STEPS,
         "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
         }
     
@@ -181,7 +181,7 @@ class MemoryEditor(common.Editor):
         def cb(result):
             if isinstance(result, Exception):
                 # FIXME: This can't be in the thread
-                dlg = ValueErrorDialog(e)
+                dlg = ValueErrorDialog(result)
                 dlg.run()
                 dlg.destroy()
             elif self.need_refresh:
