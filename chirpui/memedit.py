@@ -138,7 +138,7 @@ class MemoryEditor(common.Editor):
         iter = self.store.get_iter(path)
         curloc, = self.store.get(iter, self.col("Loc"))
 
-        self.radio.erase_memory(curloc)
+        self.rthread.submit(None, "erase_memory", curloc)
 
         self.need_refresh = True
 
@@ -178,20 +178,21 @@ class MemoryEditor(common.Editor):
 
         iter = self.store.get_iter(path)
 
-        try:
-            mem = self._get_memory(iter)
-            self.radio.set_memory(mem)
-        except Exception, e:
-            dlg = ValueErrorDialog(e)
-            dlg.run()
-            dlg.destroy()
+        def cb(result):
+            if isinstance(result, Exception):
+                # FIXME: This can't be in the thread
+                dlg = ValueErrorDialog(e)
+                dlg.run()
+                dlg.destroy()
+            elif self.need_refresh:
+                self.prefill()
+                self.need_refresh = False
 
-        if self.need_refresh:
-            self.prefill()
-            self.need_refresh = False
+            # pylint: disable-msg=E1101
+            self.emit('changed')
 
-        # pylint: disable-msg=E1101
-        self.emit('changed')
+        mem = self._get_memory(iter)
+        self.rthread.submit(cb, "set_memory", mem)
 
     def _render(self, colnum, val):
         if colnum == self.col("Frequency"):
@@ -264,11 +265,11 @@ class MemoryEditor(common.Editor):
                       *tuple(line))
 
             mem = self._get_memory(newiter)
-            self.radio.set_memory(mem)
+            self.rthread.submit(None, "set_memory", mem)
 
         elif action == "delete":
             store.remove(iter)
-            self.radio.erase_memory(curpos)
+            self.rthread.submit(None, "erase_memory", curpos)
 
     def make_context_menu(self, can_prev, can_next):
         menu_xml = """
@@ -395,38 +396,18 @@ class MemoryEditor(common.Editor):
 
         return None
 
-    def _prefill(self):
+    def prefill(self):
         self.store.clear()
 
         lo = int(self.lo_limit_adj.get_value())
         hi = int(self.hi_limit_adj.get_value())
 
-        import time
-        start = time.time()
-
-        for i in range(lo, hi+1):
-            try:
-                mem = self.radio.get_memory(i)
-            except errors.InvalidMemoryLocation:
-                mem = None
-
-            if mem:
+        def handler(mem):
+            if not isinstance(mem, Exception):
                 gobject.idle_add(self.set_memory, mem)
 
-        #mems = self.radio.get_memories(lo, hi)
-        print "Loaded %i memories in %s sec" % (hi - lo,
-                                                time.time() - start)
-
-        self.fill_thread = None
-
-        print "Fill thread ending"
-
-    def prefill(self):
-        if self.fill_thread:
-            return
-
-        self.fill_thread = threading.Thread(target=self._prefill)
-        self.fill_thread.start()
+        for i in range(lo, hi+1):
+            self.rthread.submit(handler, "get_memory", i)
 
     def _set_memory(self, iter, memory):
         self.store.set(iter,
@@ -462,8 +443,9 @@ class MemoryEditor(common.Editor):
             loc, = self.store.get(iter, self.col("Loc"))
             if loc == number:
                 print "Deleting %i" % number
+                # FIXME: Make the actual remove happen on callback
                 self.store.remove(iter)
-                self.radio.erase_memory(number)
+                self.rthread.submit(None, "erase_memory", number)
                 break
             iter = self.store.iter_next(iter)
 
@@ -519,9 +501,9 @@ class MemoryEditor(common.Editor):
 
         return hbox
 
-    def __init__(self, radio):
+    def __init__(self, rthread):
         common.Editor.__init__(self)
-        self.radio = radio
+        self.rthread = rthread
         self.allowed_bands = [144, 440]
         self.count = 100
         self.name_length = 8
@@ -574,7 +556,7 @@ class DstarMemoryEditor(MemoryEditor):
 
         return mem
 
-    def __init__(self, radio):
+    def __init__(self, rthread):
         # I think self.cols is "static" or "unbound" or something else
         # like that and += modifies the type, not self (how bizarre)
         self.cols = self.cols + \
@@ -593,20 +575,26 @@ class DstarMemoryEditor(MemoryEditor):
         self.choices["RPT1CALL"].append(("", ""))
         self.choices["RPT2CALL"].append(("", ""))
 
-        for call in radio.get_urcall_list():
-            self.choices["URCALL"].append((call, call))
-        
-        for call in radio.get_repeater_call_list():
-            self.choices["RPT1CALL"].append((call, call))
-            self.choices["RPT2CALL"].append((call, call))
-
         self.defaults["URCALL"] = "CQCQCQ"
         self.defaults["RPT1CALL"] = ""
         self.defaults["RPT2CALL"] = ""
 
-        MemoryEditor.__init__(self, radio)
+        MemoryEditor.__init__(self, rthread)
     
-        if not isinstance(self.radio, id800.ID800v2Radio):
+        def ucall_cb(calls):
+            for call in calls:
+                self.choices["URCALL"].append((call, call))
+        
+        rthread.submit(ucall_cb, "get_urcall_list")
+
+        def rcall_cb(calls):
+            for call in calls:
+                self.choices["RPT1CALL"].append((call, call))
+                self.choices["RPT2CALL"].append((call, call))
+
+        rthread.submit(rcall_cb, "get_repeater_call_list")
+
+        if not isinstance(self.rthread.radio, id800.ID800v2Radio):
             for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
                 column = self.view.get_column(self.col(i))
                 rend = column.get_cell_renderers()[0]

@@ -131,7 +131,9 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        self.editor_ucall.set_callsigns(self.radio.get_urcall_list())
+        self.rthread.submit(self.editor_ucall.set_callsigns,
+                            "get_urcall_list")
+
         self.editor_ucall.connect("changed", self.__cs_changed)
 
         frame = gtk.Frame("Repeater callsign")
@@ -142,15 +144,17 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        self.editor_rcall.set_callsigns(self.radio.get_repeater_call_list())
+        self.rthread.submit(self.editor_rcall.set_callsigns,
+                            "get_repeater_call_list")
+
         self.editor_rcall.connect("changed", self.__cs_changed)
 
         box.show()
         return box
 
-    def __init__(self, radio):
+    def __init__(self, rthread):
         common.Editor.__init__(self)
-        self.radio = radio
+        self.rthread = rthread
 
         self.editor_ucall = self.editor_rcall = None
 

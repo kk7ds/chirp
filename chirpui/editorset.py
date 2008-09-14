@@ -20,7 +20,7 @@ import gtk
 import gobject
 
 from chirp import ic2820, ic2200, id800, chirp_common
-from chirpui import memedit, dstaredit
+from chirpui import memedit, dstaredit, common
 
 def radio_class_from_file(filename):
     size = os.stat(filename).st_size
@@ -50,14 +50,19 @@ class EditorSet(gtk.VBox):
         else:
             raise Exception("Unknown source type")
 
+        self.rthread = common.RadioThread(self.radio)
+        self.rthread.start()
+
         self.tabs = gtk.Notebook()
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
         if isinstance(self.radio, chirp_common.IcomDstarRadio):
-            self.memedit = memedit.DstarMemoryEditor(self.radio)
-            self.dstared = dstaredit.DStarEditor(self.radio)
+            self.memedit = memedit.DstarMemoryEditor(self.rthread)
+            self.dstared = dstaredit.DStarEditor(self.rthread)
         else:
-            self.memedit = memedit.MemoryEditor(self.radio)
+            print "Starting memedit"
+            self.memedit = memedit.MemoryEditor(self.rthread)
+            print "Started"
             self.dstared = None
 
         lab = gtk.Label("Memories")
@@ -110,7 +115,9 @@ class EditorSet(gtk.VBox):
         else:
             self.filename = fname
 
+        self.rthread.lock()
         self.radio.save_mmap(fname)
+        self.rthread.unlock()
 
         self.modified = False
         self.update_tab()
