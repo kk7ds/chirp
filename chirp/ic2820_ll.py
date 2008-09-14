@@ -48,6 +48,7 @@ POS_MODE_START = 36
 POS_MODE_END   = 38
 POS_DTCS_POL   = 39
 POS_DTCS       = 36
+POS_TUNE_STEP  = 35
 POS_USED_START = 0x61E0
 POS_URCALL     = 0x69B8
 POS_RPTCALL    = 0x6B98
@@ -75,6 +76,13 @@ def set_used(mmap, number, used):
 
 def get_freq(mmap):
     return struct.unpack(">I", mmap[POS_FREQ_START:POS_FREQ_END])[0] / 1000000.0
+
+def get_tune_step(mmap):
+    tsidx = ord(mmap[POS_TUNE_STEP]) & 0x0F
+    try:
+        return chirp_common.TUNING_STEPS[tsidx]
+    except IndexError:
+        raise errors.InvalidDataError("Radio has unknown TS index %i" % tsidx)
 
 def get_name(mmap):
     return mmap[POS_NAME_START:].strip()
@@ -175,6 +183,7 @@ def get_memory(_map, number):
     mem.duplex = get_duplex(mmap)
     mem.offset = get_dup_off(mmap)
     mem.mode = get_mode(mmap)
+    mem.tuning_step = get_tune_step(mmap)
 
     return mem
 
@@ -183,6 +192,12 @@ def erase_memory(mmap, number):
 
 def set_freq(mmap, freq):
     mmap[POS_FREQ_START] = struct.pack(">I", int(freq * 1000000))
+
+def set_tune_step(mmap, ts):
+    val = ord(mmap[POS_TUNE_STEP]) & 0xF0
+    tsidx = chirp_common.TUNING_STEPS.index(ts)
+    val |= (tsidx & 0x0F)
+    mmap[POS_TUNE_STEP] = val
 
 def set_name(mmap, name):
     mmap[POS_NAME_START] = name.ljust(8)[:8]
@@ -281,6 +296,7 @@ def set_memory(_map, mem):
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
     set_tone_enabled(mmap, mem.tmode)
     set_mode(mmap, mem.mode)
+    set_tune_step(mmap, mem.tuning_step)
 
     set_raw_memory(_map, mmap, mem.number)
 
