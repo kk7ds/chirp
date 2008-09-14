@@ -83,15 +83,14 @@ class CloneSettingsDialog(gtk.Dialog):
             self.filename.set_sensitive(False)
         if filename:
             self.filename.set_filename(filename)
+        else:
+            self.filename.set_filename("MyRadio.img")
         self.filename.show()
         self.filename.connect("filename-changed", self.fn_changed)
 
         self.make_field("Serial port", self.port)
         self.make_field("Radio type", self.rtype)
         self.make_field("Filename", self.filename)
-
-        if clone_in:
-            self.set_response_sensitive(gtk.RESPONSE_OK, False)
 
     def get_values(self):
         return self.port.get_active_text(), \
