@@ -48,11 +48,14 @@ class ChirpMain(gtk.Window):
         else:
             return None
 
-    def ev_tab_switched(self):
+    def ev_tab_switched(self, pagenum=None):
         def set_action_sensitive(action, sensitive):
             self.menu_ag.get_action(action).set_sensitive(sensitive)
 
-        eset = self.get_current_editorset()
+        if pagenum is not None:
+            eset = self.tabs.get_nth_page(pagenum)
+        else:
+            eset = self.get_current_editorset()
 
         if not eset or isinstance(eset.radio, ic9x.IC9xRadio):
             sensitive = False
@@ -181,6 +184,12 @@ class ChirpMain(gtk.Window):
         else:
             eset = self.get_current_editorset()
 
+        if not eset:
+            return False
+
+        eset.rthread.stop()
+        eset.rthread.join()
+    
         if eset.radio.pipe:
             eset.radio.pipe.close()
 
@@ -192,6 +201,8 @@ class ChirpMain(gtk.Window):
         page = self.tabs.page_num(eset)
         if page is not None:
             self.tabs.remove_page(page)
+
+        return True
 
     def mh(self, _action):
         action = _action.get_name()
@@ -270,6 +281,21 @@ class ChirpMain(gtk.Window):
 
         return self.tabs        
 
+    def close_out(self):
+        num = self.tabs.get_n_pages()
+        while num > 0:
+            num -= 1
+            print "Closing %i" % num
+            self.do_close(self.tabs.get_nth_page(num))
+
+        gtk.main_quit()
+
+    def ev_delete(self, window, event):
+        self.close_out()
+
+    def ev_destroy(self, window):
+        self.close_out()
+
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
@@ -282,7 +308,7 @@ class ChirpMain(gtk.Window):
 
         self.tabs = None
         tabs = self.make_tabs()
-        tabs.connect("switch-page", lambda n, _, p: self.ev_tab_switched())
+        tabs.connect("switch-page", lambda n, _, p: self.ev_tab_switched(p))
         tabs.show()
         self.ev_tab_switched()
 
@@ -295,5 +321,5 @@ class ChirpMain(gtk.Window):
         self.set_default_size(640, 480)
         self.set_title("CHIRP")
 
-        self.connect("delete_event", lambda w, e: gtk.main_quit())
-        self.connect("destroy", lambda w: gtk.main_quit())
+        self.connect("delete_event", self.ev_delete)
+        self.connect("destroy", self.ev_destroy)
