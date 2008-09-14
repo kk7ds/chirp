@@ -72,7 +72,12 @@ class RadioThread(threading.Thread):
             print "Got a job"
 
             self.lock()
-            cb, func, args, kwargs = self.__queue.pop(0)
+            try:
+                cb, func, args, kwargs = self.__queue.pop(0)
+            except IndexError:
+                self.unlock()
+                break
+
             self.unlock()
 
             self.__do_job(cb, func, args, kwargs)
