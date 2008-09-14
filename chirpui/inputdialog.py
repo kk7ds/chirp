@@ -116,6 +116,20 @@ class FieldDialog(gtk.Dialog):
     def get_field(self, label):
         return self.__fields.get(label, None)
 
+class OverwriteDialog(gtk.MessageDialog):
+    def __init__(self, filename):
+        gtk.Dialog.__init__(self,
+                            buttons=("Overwrite", gtk.RESPONSE_OK,
+                                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+
+        self.set_property("text", "File Exists")
+
+        text = \
+            "The file %s already exists.  " % filename + \
+            "Do you want to overwrite it?"
+
+        self.format_secondary_text(text)
+
 if __name__ == "__main__":
     # pylint: disable-msg=C0103
     d = FieldDialog(buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
