@@ -16,12 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import threading
+import os
 
 import gtk
 import gobject
 
 from chirp import platform
-from chirpui import miscwidgets, cloneprog
+from chirpui import miscwidgets, cloneprog, inputdialog
 
 class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):
@@ -39,6 +40,24 @@ class CloneSettingsDialog(gtk.Dialog):
     def fn_changed(self, fn):
         self.set_response_sensitive(gtk.RESPONSE_OK,
                                     len(fn.get_filename()) > 0)
+
+    def run(self):
+        while True:
+            result = gtk.Dialog.run(self)
+            if result == gtk.RESPONSE_CANCEL:
+                break
+
+            fn = self.filename.get_filename()
+            if os.path.exists(fn):
+                dlg = inputdialog.OverwriteDialog(fn)
+                owrite = dlg.run()
+                dlg.destroy()
+                if owrite == gtk.RESPONSE_OK:
+                    break
+            else:
+                break
+
+        return result
 
     def __init__(self, clone_in=True, filename=None, rtype=None):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,

@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
 import gtk
 import gobject
 gobject.threads_init()
@@ -115,9 +117,18 @@ class ChirpMain(gtk.Window):
         eset.save()
 
     def do_saveas(self):
-        fname = platform.get_platform().gui_save_file()
-        if not fname:
-            return
+
+        while True:
+            fname = platform.get_platform().gui_save_file()
+            if not fname:
+                return
+
+            if os.path.exists(fname):
+                dlg = inputdialog.OverwriteDialog(fname)
+                owrite = dlg.run()
+                dlg.destroy()
+                if owrite == gtk.RESPONSE_OK:
+                    break
 
         eset = self.get_current_editorset()
         eset.save(fname)
