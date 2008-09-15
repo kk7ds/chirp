@@ -63,7 +63,7 @@ class RadioThread(threading.Thread):
             result = e
 
         if cb:
-            cb(result)
+            gobject.idle_add(cb, result)
 
     def run(self):
         while self.__enabled:
