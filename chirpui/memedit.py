@@ -184,6 +184,7 @@ class MemoryEditor(common.Editor):
                 dlg = ValueErrorDialog(result)
                 dlg.run()
                 dlg.destroy()
+                self.prefill()
             elif self.need_refresh:
                 self.prefill()
                 self.need_refresh = False
