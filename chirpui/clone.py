@@ -48,7 +48,7 @@ class CloneSettingsDialog(gtk.Dialog):
                 break
 
             fn = self.filename.get_filename()
-            if os.path.exists(fn):
+            if self.clone_in and os.path.exists(fn):
                 dlg = inputdialog.OverwriteDialog(fn)
                 owrite = dlg.run()
                 dlg.destroy()
@@ -63,6 +63,8 @@ class CloneSettingsDialog(gtk.Dialog):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, buttons=buttons, title="Clone")
+
+        self.clone_in = clone_in
 
         ports = platform.get_platform().list_serial_ports()
         self.port = miscwidgets.make_choice(ports, True, ports[0])
