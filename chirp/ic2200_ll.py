@@ -32,9 +32,13 @@ POS_CTONE      = 11
 POS_DTCS       = 12
 POS_DTCS_POL   = 21
 POS_TENB       = 19
+POS_TUNE_STEP  = 13
 POS_USED_START = 0x1370
 
 MEM_LOC_SIZE = 24
+
+TUNING_STEPS = list(chirp_common.TUNING_STEPS)
+TUNING_STEPS.remove(6.25)
 
 def is_used(mmap, number):
     return (ord(mmap[POS_USED_START + number]) & 0x20) == 0
@@ -54,6 +58,13 @@ def get_freq(mmap):
 
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].replace("\x0E", "").strip()
+
+def get_tune_step(mmap):
+    tsidx = ord(mmap[POS_TUNE_STEP]) &0x0F
+    try:
+        return TUNING_STEPS[tsidx]
+    except IndexError:
+        raise errors.InvalidDataError("Radio has unknown TS index %i" % tsidx)
 
 def get_mode(mmap):
     val = struct.unpack("B", mmap[POS_MODE])[0] & 0x80
@@ -141,11 +152,22 @@ def get_memory(_map, number):
     mem.dtcs = get_dtcs(mmap)
     mem.tmode = get_tone_enabled(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
+    print "Getting TS for %i" % number
+    mem.tuning_step = get_tune_step(mmap)
     
     return mem
 
 def set_freq(mmap, freq):
     mmap[POS_FREQ_START] = struct.pack("<H", int(freq * 1000) / 5)
+
+def set_tune_step(mmap, ts):
+    val = ord(mmap[POS_TUNE_STEP]) & 0xF0
+    try:
+        tsidx = TUNING_STEPS.index(ts)
+    except ValueError:
+        raise errors.InvalidDataError("IC2200H does not support tuning step of %.2f" % ts)
+    val |= (tsidx & 0x0F)
+    mmap[POS_TUNE_STEP] = val
 
 def set_name(mmap, name):
     mmap[POS_NAME_START] = name.ljust(6)[:6]
@@ -232,6 +254,7 @@ def set_memory(_map, memory):
     set_dtcs(mmap, memory.dtcs)
     set_tone_enabled(mmap, memory.tmode)
     set_dtcs_polarity(mmap, memory.dtcs_polarity)
+    set_tune_step(mmap, memory.tuning_step)
 
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     return _map
