@@ -28,7 +28,7 @@ if __name__ == "__main__":
     sys.path.insert(0, "..")
 
 from chirp import platform, id800, ic2820, ic2200, ic9x
-from chirpui import editorset, clone, inputdialog
+from chirpui import editorset, clone, inputdialog, miscwidgets
 
 RADIOS = {
     "ic2820" : ic2820.IC2820Radio,
@@ -41,6 +41,9 @@ RADIOS = {
 RTYPES = {}
 for __key, __val in RADIOS.items():
     RTYPES[__val] = __key
+
+class ModifiedError(Exception):
+    pass
 
 class ChirpMain(gtk.Window):
     def get_current_editorset(self):
@@ -112,8 +115,9 @@ class ChirpMain(gtk.Window):
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
-    def do_save(self):
-        eset = self.get_current_editorset()
+    def do_save(self, eset):
+        if not eset:
+            eset = self.get_current_editorset()
         eset.save()
 
     def do_saveas(self):
@@ -204,6 +208,20 @@ class ChirpMain(gtk.Window):
 
         if not eset:
             return False
+
+        if eset.is_modified():
+            dlg = miscwidgets.YesNoDialog(title="Discard Changes?",
+                                          parent=self,
+                                          buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
+                                                   gtk.STOCK_NO, gtk.RESPONSE_NO,
+                                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            dlg.set_text("File is modified, save changes before closing?")
+            res = dlg.run()
+            dlg.destroy()
+            if res == gtk.RESPONSE_YES:
+                self.do_save(eset)
+            elif res == gtk.RESPONSE_CANCEL:
+                raise ModifiedError()
 
         eset.rthread.stop()
         eset.rthread.join()
@@ -304,15 +322,22 @@ class ChirpMain(gtk.Window):
         while num > 0:
             num -= 1
             print "Closing %i" % num
-            self.do_close(self.tabs.get_nth_page(num))
+            try:
+                self.do_close(self.tabs.get_nth_page(num))
+            except ModifiedError:
+                return False
 
         gtk.main_quit()
 
+        return True
+
     def ev_delete(self, window, event):
-        self.close_out()
+        if not self.close_out():
+            return True # Don't exit
 
     def ev_destroy(self, window):
-        self.close_out()
+        if not self.close_out():
+            return True # Don't exit
 
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)

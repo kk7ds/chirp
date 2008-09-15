@@ -129,3 +129,6 @@ class EditorSet(gtk.VBox):
     def get_tab_label(self):
         return self.label
 
+    def is_modified(self):
+        return self.modified
+
