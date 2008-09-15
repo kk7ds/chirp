@@ -183,7 +183,14 @@ class ChirpMain(gtk.Window):
             return
 
         rc = RADIOS[rtype]
-        ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        try:
+            ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+        except serial.SerialException, e:
+            d = inputdialog.ExceptionDialog(e)
+            d.run()
+            d.destroy()
+            return
+
         radio.set_pipe(ser)
 
         ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
