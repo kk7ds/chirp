@@ -278,9 +278,9 @@ class IC92MemoryFrame(IC92Frame):
         self._ts = TUNING_STEPS[index]               
 
         if self.is_dv:
-            self._rpt2call = mmap[36:44].strip()
-            self._rpt1call = mmap[45:51].strip()
-            self._urcall = mmap[52:60].strip()
+            self._rpt2call = mmap[36:44].rstrip()
+            self._rpt1call = mmap[44:52].rstrip()
+            self._urcall = mmap[52:60].rstrip()
 
     def _make_raw(self):
         mmap = MemoryMap("\x00" * 60)
