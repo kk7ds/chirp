@@ -81,6 +81,12 @@ class ExceptionDialog(gtk.MessageDialog):
         self.set_property("text", "An error has occurred")
         self.format_secondary_text(str(exception))
 
+        import traceback
+        import sys
+        print "--- Exception Dialog: %s ---" % exception
+        traceback.print_stack(file=sys.stdout)
+        print "----------------------------"
+
 class FieldDialog(gtk.Dialog):
     def __init__(self, **kwargs):
         if "buttons" not in kwargs.keys():
