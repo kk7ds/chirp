@@ -120,7 +120,10 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
             result = cframe.send(self.pipe)
 
             callf = ic9x_ll.IC92CallsignFrame()
-            callf.from_frame(result[0])
+            try:
+                callf.from_frame(result[0])
+            except IndexError:
+                raise errors.RadioError("No response from radio")
 
             if callf.get_callsign():
                 cache.append(callf.get_callsign())
@@ -154,7 +157,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
             result = cframe.send(self.pipe)
 
             if result[0].get_data() != "\xfb":
-                raise errors.InvalidDataError("Radio reported error")
+                raise errors.RadioError("Radio reported error")
 
         return calls
 
