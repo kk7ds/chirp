@@ -79,6 +79,10 @@ def get_freq(mmap):
 
 def get_tune_step(mmap):
     tsidx = ord(mmap[POS_TUNE_STEP]) & 0x0F
+    if tsidx > 8:
+        # This seems to sometimes contain garbage
+        print "Taking default TS of 5kHz"
+        tsidx = chirp_common.TUNING_STEPS.index(5.0)
     try:
         return chirp_common.TUNING_STEPS[tsidx]
     except IndexError:
