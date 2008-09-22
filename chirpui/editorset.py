@@ -19,7 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, chirp_common
+from chirp import ic2820, ic2200, id800, ic9x, chirp_common
 from chirpui import memedit, dstaredit, common
 
 def radio_class_from_file(filename):
@@ -128,8 +128,9 @@ class EditorSet(gtk.VBox):
         self.update_tab()
 
     def editor_changed(self, *args):
-        self.modified = True
-        self.update_tab()
+        if not isinstance(self.radio, ic9x.IC9xRadio):
+            self.modified = True
+            self.update_tab()
 
     def get_tab_label(self):
         return self.label
