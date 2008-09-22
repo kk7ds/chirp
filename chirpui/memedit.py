@@ -138,7 +138,9 @@ class MemoryEditor(common.Editor):
         iter = self.store.get_iter(path)
         curloc, = self.store.get(iter, self.col("Loc"))
 
-        self.rthread.submit(None, "erase_memory", curloc)
+        job = common.RadioJob(None, "erase_memory", curloc)
+        job.set_desc("Erasing memory %i" % curloc)
+        self.rthread.submit()
 
         self.need_refresh = True
 
@@ -193,7 +195,9 @@ class MemoryEditor(common.Editor):
             self.emit('changed')
 
         mem = self._get_memory(iter)
-        self.rthread.submit(cb, "set_memory", mem)
+        job = common.RadioJob(cb, "set_memory", mem)
+        job.set_desc("Writing memory %i" % mem.number)
+        self.rthread.submit(job)
 
     def _render(self, colnum, val):
         if colnum == self.col("Frequency"):
@@ -266,11 +270,15 @@ class MemoryEditor(common.Editor):
                       *tuple(line))
 
             mem = self._get_memory(newiter)
-            self.rthread.submit(None, "set_memory", mem)
+            job = common.RadioJob(None, "set_memory", mem)
+            job.set_desc("Writing memory %i" % mem.number)
+            self.rthread.submit(job)
 
         elif action == "delete":
             store.remove(iter)
-            self.rthread.submit(None, "erase_memory", curpos)
+            job = common.RadioJob(None, "erase_memory", curpos)
+            job.set_desc("Erasing memory %i" % curpos)
+            self.rthread.submit(job)
 
     def make_context_menu(self, can_prev, can_next):
         menu_xml = """
@@ -408,7 +416,9 @@ class MemoryEditor(common.Editor):
                 gobject.idle_add(self.set_memory, mem)
 
         for i in range(lo, hi+1):
-            self.rthread.submit(handler, "get_memory", i)
+            job = common.RadioJob(handler, "get_memory", i)
+            job.set_desc("Getting memory %i" % i)
+            self.rthread.submit(job)
 
     def _set_memory(self, iter, memory):
         self.store.set(iter,
@@ -446,7 +456,9 @@ class MemoryEditor(common.Editor):
                 print "Deleting %i" % number
                 # FIXME: Make the actual remove happen on callback
                 self.store.remove(iter)
-                self.rthread.submit(None, "erase_memory", number)
+                job = common.RadioJob(None, "erase_memory", number)
+                job.set_desc("Erasing memory %i" % number)
+                self.rthread.submit()
                 break
             iter = self.store.iter_next(iter)
 
@@ -586,14 +598,18 @@ class DstarMemoryEditor(MemoryEditor):
             for call in calls:
                 self.choices["URCALL"].append((call, call))
         
-        rthread.submit(ucall_cb, "get_urcall_list")
+        job = common.RadioJob(ucall_cb, "get_urcall_list")
+        job.set_desc("Downloading URCALL list")
+        rthread.submit(job)
 
         def rcall_cb(calls):
             for call in calls:
                 self.choices["RPT1CALL"].append((call, call))
                 self.choices["RPT2CALL"].append((call, call))
 
-        rthread.submit(rcall_cb, "get_repeater_call_list")
+        job = common.RadioJob(rcall_cb, "get_repeater_call_list")
+        job.set_desc("Downloading RPTCALL list")
+        rthread.submit(job)
 
         if not isinstance(self.rthread.radio, id800.ID800v2Radio):
             for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:

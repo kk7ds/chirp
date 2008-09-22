@@ -35,6 +35,9 @@ def radio_class_from_file(filename):
 class EditorSet(gtk.VBox):
     __gsignals__ = {
         "want-close" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "status" : (gobject.SIGNAL_RUN_LAST,
+                    gobject.TYPE_NONE,
+                    (gobject.TYPE_STRING,))
         }
 
     def __init__(self, source):
@@ -52,6 +55,8 @@ class EditorSet(gtk.VBox):
 
         self.rthread = common.RadioThread(self.radio)
         self.rthread.start()
+
+        self.rthread.connect("status", lambda e, m: self.emit("status", m))
 
         self.tabs = gtk.Notebook()
         self.tabs.set_tab_pos(gtk.POS_LEFT)

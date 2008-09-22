@@ -72,6 +72,11 @@ class ChirpMain(gtk.Window):
         
         set_action_sensitive("close", bool(eset))
 
+    def ev_status(self, editorset, msg):
+        print "Status: %s" % msg
+        self.sb_radio.pop(0)
+        self.sb_radio.push(0, msg)
+
     def do_open(self, fname=None):
         if not fname:
             fname = platform.get_platform().gui_open_file()
@@ -85,6 +90,7 @@ class ChirpMain(gtk.Window):
             return # FIXME
 
         eset.connect("want-close", self.do_close)
+        eset.connect("status", self.ev_status)
         eset.show()
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
@@ -107,6 +113,7 @@ class ChirpMain(gtk.Window):
         
         eset = editorset.EditorSet(radio)
         eset.connect("want-close", self.do_close)
+        eset.connect("status", self.ev_status)
         eset.show()
 
         action = self.menu_ag.get_action("open9x")
@@ -331,6 +338,22 @@ class ChirpMain(gtk.Window):
 
         return True
 
+    def make_status_bar(self):
+        box = gtk.HBox(False, 2)
+
+        self.sb_general = gtk.Statusbar()
+        self.sb_general.set_has_resize_grip(False)
+        self.sb_general.show()
+        box.pack_start(self.sb_general, 1,1,1)
+        
+        self.sb_radio = gtk.Statusbar()
+        self.sb_radio.set_has_resize_grip(True)
+        self.sb_radio.show()
+        box.pack_start(self.sb_radio, 1,1,1)
+
+        box.show()
+        return box
+
     def ev_delete(self, window, event):
         if not self.close_out():
             return True # Don't exit
@@ -354,10 +377,12 @@ class ChirpMain(gtk.Window):
         tabs.connect("switch-page", lambda n, _, p: self.ev_tab_switched(p))
         tabs.show()
         self.ev_tab_switched()
-
         vbox.pack_start(tabs, 1, 1, 1)
 
+        vbox.pack_start(self.make_status_bar(), 0, 0, 0)
+
         vbox.show()
+
 
         self.add(vbox)
 

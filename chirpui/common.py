@@ -14,9 +14,44 @@ class Editor(gobject.GObject):
 
 gobject.type_register(Editor)
 
-class RadioThread(threading.Thread):
+class RadioJob:
+    def __init__(self, cb, func, *args, **kwargs):
+        self.cb = cb
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.desc = "Working"
+
+    def set_desc(self, desc):
+        self.desc = desc
+
+    def execute(self, radio):
+        try:
+            func = getattr(radio, self.func)
+        except AttributeError, e:
+            print "No such radio function `%s'" % self.func
+            return
+
+        try:
+            print "Running %s" % self.func
+            result = func(*self.args, **self.kwargs)
+        except Exception, e:
+            print "Exception running RadioJob: %s" % e
+            result = e
+
+        if self.cb:
+            gobject.idle_add(self.cb, result)
+
+class RadioThread(threading.Thread, gobject.GObject):
+    __gsignals__ = {
+        "status" : (gobject.SIGNAL_RUN_LAST,
+                    gobject.TYPE_NONE,
+                    (gobject.TYPE_STRING,)),
+        }
+
     def __init__(self, radio):
         threading.Thread.__init__(self)
+        gobject.GObject.__init__(self)
         self.__queue = []
         self.__counter = threading.Semaphore(0)
         self.__enabled = True
@@ -29,9 +64,9 @@ class RadioThread(threading.Thread):
     def unlock(self):
         self.__lock.release()
 
-    def submit(self, cb, func, *args, **kwargs):
+    def submit(self, job):
         self.lock()
-        self.__queue.append((cb, func, args, kwargs))
+        self.__queue.append(job)
         self.unlock()
         self.__counter.release()
 
@@ -45,18 +80,16 @@ class RadioThread(threading.Thread):
         self.__counter.release()
         self.__enabled = False
     
-    def __do_job(self, cb, fname, args, kwargs):
-        print "Running %s" % fname
-
+    def __do_job(self, job):
         try:
-            func = getattr(self.radio, fname)
+            func = getattr(self.radio, job.func)
         except AttributeError, e:
-            print "No such radio function `%s'" % fname
+            print "No such radio function `%s'" % job.func
             print e
             return
 
         try:
-            result = func(*args, **kwargs)
+            result = func(*job.args, **job.kwargs)
             print "Finished, returning %s to %s" % (result, cb)
         except Exception, e:
             print "Exception in RadioThread: %s" % e
@@ -68,18 +101,20 @@ class RadioThread(threading.Thread):
     def run(self):
         while self.__enabled:
             print "Waiting for a job"
+            self.emit("status", "Idle")
             self.__counter.acquire()
             print "Got a job"
 
             self.lock()
             try:
-                cb, func, args, kwargs = self.__queue.pop(0)
+                job = self.__queue.pop(0)
             except IndexError:
                 self.unlock()
                 break
 
             self.unlock()
-
-            self.__do_job(cb, func, args, kwargs)
+            
+            self.emit("status", job.desc)
+            job.execute(self.radio)
     
         print "RadioThread exiting"

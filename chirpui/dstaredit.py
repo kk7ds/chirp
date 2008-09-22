@@ -131,8 +131,10 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        self.rthread.submit(self.editor_ucall.set_callsigns,
-                            "get_urcall_list")
+        job = common.RadioJob(self.editor_ucall.set_callsigns,
+                              "get_urcall_list")
+        job.set_desc("Downloading URCALL list")
+        self.rthread.submit(job)
 
         self.editor_ucall.connect("changed", self.__cs_changed)
 
@@ -144,8 +146,10 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        self.rthread.submit(self.editor_rcall.set_callsigns,
-                            "get_repeater_call_list")
+        job = common.RadioJob(self.editor_rcall.set_callsigns,
+                              "get_repeater_call_list")
+        job.set_desc("Downloading RPTCALL list")
+        self.rthread.submit(job)
 
         self.editor_rcall.connect("changed", self.__cs_changed)
 
