@@ -122,7 +122,7 @@ class ChirpMain(gtk.Window):
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
-    def do_save(self, eset):
+    def do_save(self, eset=None):
         if not eset:
             eset = self.get_current_editorset()
         eset.save()
