@@ -78,6 +78,7 @@ class EditorSet(gtk.VBox):
             lab = gtk.Label("D-STAR")
             self.tabs.append_page(self.dstared.root, lab)
             self.dstared.root.show()
+            self.dstared.connect("changed", self.dstar_changed)
 
         self.pack_start(self.tabs)
         self.tabs.show()
@@ -126,6 +127,12 @@ class EditorSet(gtk.VBox):
 
         self.modified = False
         self.update_tab()
+
+    def dstar_changed(self, *args):
+        print "D-STAR editor changed"
+        self.memedit.set_urcall_list(self.dstared.editor_ucall.get_callsigns())
+        self.memedit.set_repeater_list(self.dstared.editor_rcall.get_callsigns())
+        self.memedit.prefill()
 
     def editor_changed(self, *args):
         if not isinstance(self.radio, ic9x.IC9xRadio):
