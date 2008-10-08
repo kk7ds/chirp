@@ -110,13 +110,23 @@ class CallsignEditor(gtk.HBox):
 
 class DStarEditor(common.Editor):
     def __cs_changed(self, cse):
+        job = None
+
         print "Callsigns: %s" % cse.get_callsigns()
         if cse == self.editor_ucall:
-            self.radio.set_urcall_list(cse.get_callsigns())
+            job = common.RadioJob(None,
+                                  "set_urcall_list",
+                                  cse.get_callsigns())
             print "Set urcall"
         elif cse == self.editor_rcall:
-            self.radio.set_repeater_call_list(cse.get_callsigns())
+            job = common.RadioJob(None,
+                                  "set_repeater_call_list",
+                                  cse.get_callsigns())
             print "Set rcall"
+
+        if job:
+            print "Submitting job to update call lists"
+            self.rthread.submit(job)
 
         self.emit("changed")
 
