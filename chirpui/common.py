@@ -98,10 +98,13 @@ class RadioThread(threading.Thread, gobject.GObject):
         if cb:
             gobject.idle_add(cb, result)
 
+    def status(self, msg):
+        gobject.idle_add(self.emit, "status", msg)
+            
     def run(self):
         while self.__enabled:
             print "Waiting for a job"
-            self.emit("status", "Idle")
+            self.status("Idle")
             self.__counter.acquire()
             print "Got a job"
 
@@ -114,7 +117,10 @@ class RadioThread(threading.Thread, gobject.GObject):
 
             self.unlock()
             
-            self.emit("status", job.desc)
+            self.status(job.desc)
+    
+            print "Starting Job"
             job.execute(self.radio)
+            print "Ending Job"
     
         print "RadioThread exiting"
