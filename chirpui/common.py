@@ -124,3 +124,11 @@ class RadioThread(threading.Thread, gobject.GObject):
             print "Ending Job"
     
         print "RadioThread exiting"
+
+def log_exception():
+	import traceback
+	import sys
+
+	print "-- Exception: --"
+	traceback.print_exc(limit=30, file=sys.stdout)
+	print "------"

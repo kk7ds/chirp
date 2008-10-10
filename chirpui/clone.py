@@ -22,7 +22,7 @@ import gtk
 import gobject
 
 from chirp import platform
-from chirpui import miscwidgets, cloneprog, inputdialog
+from chirpui import miscwidgets, cloneprog, inputdialog, common
 
 class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):
@@ -128,6 +128,7 @@ class CloneThread(threading.Thread):
 
             emsg = None
         except Exception, e:
+            common.log_exception()
             print "Clone failed: %s" % e
             emsg = e
 

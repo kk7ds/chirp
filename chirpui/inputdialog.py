@@ -84,7 +84,7 @@ class ExceptionDialog(gtk.MessageDialog):
         import traceback
         import sys
         print "--- Exception Dialog: %s ---" % exception
-        traceback.print_stack(file=sys.stdout)
+        traceback.print_exc(limit=100, file=sys.stdout)
         print "----------------------------"
 
 class FieldDialog(gtk.Dialog):
