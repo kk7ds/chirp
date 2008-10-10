@@ -146,17 +146,29 @@ def get_mode(mmap):
 def get_rtone(mmap):
     idx = struct.unpack("B", mmap[POS_RTONE])[0]
     
-    return chirp_common.TONES[idx]
+    try:
+        return chirp_common.TONES[idx]
+    except IndexError:
+        print "Unknown rtone of %i, assuming default" % idx
+        return chirp_common.TONES[8]
 
 def get_ctone(mmap):
     idx = struct.unpack("B", mmap[POS_CTONE])[0] & 0x3F
 
-    return chirp_common.TONES[idx]
+    try:
+        return chirp_common.TONES[idx]
+    except IndexError:
+        print "Unknown ctone of %i, assuming default" % idx
+        return chirp_common.TONES[8]
 
 def get_dtcs(mmap):
     idx = struct.unpack("B", mmap[POS_DTCS])[0]
 
-    return chirp_common.DTCS_CODES[idx]
+    try:
+        return chirp_common.DTCS_CODES[idx]
+    except IndexError:
+        print "Unknown DTCS index %i, assuming default" % idx
+        return chirp_common.DTCS_CODES[0]
 
 def get_tone_enabled(mmap):
     val = struct.unpack("B", mmap[POS_TENB])[0] & 0x03
