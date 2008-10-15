@@ -20,7 +20,7 @@ import gtk
 import gobject
 
 from chirp import ic2820, ic2200, id800, ic9x, xml, chirp_common
-from chirpui import memedit, dstaredit, common
+from chirpui import memedit, dstaredit, common, importdialog
 
 def radio_class_from_file(filename):
     if filename.endswith(".chirp"):
@@ -150,3 +150,28 @@ class EditorSet(gtk.VBox):
     def is_modified(self):
         return self.modified
 
+    def _do_import_locked(self, src_radio, dst_radio):
+        id = importdialog.ImportDialog(src_radio, dst_radio)
+        r = id.run()
+        id.hide()
+        if r != gtk.RESPONSE_OK:
+            return
+
+        count = id.do_import()
+        print "Imported %i" % count
+        if count > 0:
+            self.editor_changed()
+            gobject.idle_add(self.memedit.prefill)
+
+    def do_import(self, filen):
+        try:
+            rc = radio_class_from_file(filen)
+            src_radio = rc(filen)
+        except Exception, e:
+            common.show_error(e)
+            return
+
+        self.rthread.lock()
+        self._do_import_locked(src_radio, self.rthread.radio)
+        self.rthread.unlock()        
+        

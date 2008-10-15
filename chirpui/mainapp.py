@@ -28,7 +28,7 @@ if __name__ == "__main__":
     sys.path.insert(0, "..")
 
 from chirp import platform, id800, ic2820, ic2200, ic9x, xml
-from chirpui import editorset, clone, inputdialog, miscwidgets
+from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
 RADIOS = {
     "ic2820" : ic2820.IC2820Radio,
@@ -248,6 +248,14 @@ class ChirpMain(gtk.Window):
 
         return True
 
+    def do_import(self):
+        filen = platform.get_platform().gui_open_file()
+        if not filen:
+            return
+
+        eset = self.get_current_editorset()
+        eset.do_import(filen)
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -269,6 +277,8 @@ class ChirpMain(gtk.Window):
             self.do_open9x(ic9x.IC9xRadioA)
         elif action == "open9xB":
             self.do_open9x(ic9x.IC9xRadioB)
+        elif action == "import":
+            self.do_import()
         else:
             return
 
@@ -292,6 +302,9 @@ class ChirpMain(gtk.Window):
         <menuitem action="open9xA"/>
         <menuitem action="open9xB"/>
       </menu>
+    <separator/>
+    <menuitem action="import"/>
+    <menuitem action="export"/>
     </menu>
   </menubar>
 </ui>
@@ -309,6 +322,8 @@ class ChirpMain(gtk.Window):
             ('radio', None, "_Radio", None, None, self.mh),
             ('clonein', None, "Download From Radio", None, None, self.mh),
             ('cloneout', None, "Upload To Radio", None, None, self.mh),
+            ('import', None, 'Import from file', None, None, self.mh),
+            ('export', None, 'Export to file', None, None, self.mh),
             ]
 
         uim = gtk.UIManager()
