@@ -132,3 +132,9 @@ def log_exception():
 	print "-- Exception: --"
 	traceback.print_exc(limit=30, file=sys.stdout)
 	print "------"
+
+def show_error(msg, title="Error"):
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK)
+    d.set_property("text", msg)
+    d.run()
+    d.destroy()
