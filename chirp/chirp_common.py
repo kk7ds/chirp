@@ -339,8 +339,15 @@ class IcomRadio:
 
     def get_raw_memory(self, number):
         pass
-    
-class IcomMmapRadio(IcomRadio):
+
+class IcomFileBackedRadio(IcomRadio):
+    def save(self, filename=None):
+        pass
+
+    def load(self, filename=None):
+        pass
+
+class IcomMmapRadio(IcomFileBackedRadio):
     BAUDRATE = 9600
 
     _model = "\x00\x00\x00\x00"
@@ -368,6 +375,12 @@ class IcomMmapRadio(IcomRadio):
         mapfile = file(filename, "wb")
         mapfile.write(self._mmap.get_packed())
         mapfile.close()
+
+    def save(self, filename):
+        self.save_mmap(filename)
+
+    def load(self, filename):
+        self.load_mmap(filename)
 
     def sync_in(self):
         pass
