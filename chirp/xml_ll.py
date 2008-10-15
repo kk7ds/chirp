@@ -29,14 +29,17 @@ def get_memory(doc, number):
     mem.dtcs = int(_get("/squelch[@id='dtcs']/code/text()"), 10)
     mem.dtcs_polarity = _get("/squelch[@id='dtcs']/polarity/text()")
     
-    sql = _get("/squelchSetting/text()")
-    if sql == "rtone":
-        mem.tmode = "Tone"
-    elif sql == "ctone":
-        mem.tmode = "TSQL"
-    elif sql == "dtcs":
-        mem.tmode = "DTCS"
-    else:
+    try:
+        sql = _get("/squelchSetting/text()")
+        if sql == "rtone":
+            mem.tmode = "Tone"
+        elif sql == "ctone":
+            mem.tmode = "TSQL"
+        elif sql == "dtcs":
+            mem.tmode = "DTCS"
+        else:
+            mem.tmode = ""
+    except IndexError:
         mem.tmode = ""
 
     dmap = {"positive" : "+", "negative" : "-", "none" : ""}
