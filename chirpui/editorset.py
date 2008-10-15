@@ -19,10 +19,13 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, ic9x, chirp_common
+from chirp import ic2820, ic2200, id800, ic9x, xml, chirp_common
 from chirpui import memedit, dstaredit, common
 
 def radio_class_from_file(filename):
+    if filename.endswith(".chirp"):
+        return xml.XMLRadio
+
     size = os.stat(filename).st_size
 
     for cls in [ic2820.IC2820Radio, ic2200.IC2200Radio, id800.ID800v2Radio]:
@@ -122,7 +125,7 @@ class EditorSet(gtk.VBox):
             self.filename = fname
 
         self.rthread.lock()
-        self.radio.save_mmap(fname)
+        self.radio.save(fname)
         self.rthread.unlock()
 
         self.modified = False
