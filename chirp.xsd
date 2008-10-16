@@ -36,7 +36,7 @@
 
   <xsd:simpleType name="shortNameType">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[A-Z0-9/]{1,6}"/>
+      <xsd:pattern value="[A-Z0-9/]{0,6}"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -59,7 +59,7 @@
 
   <xsd:simpleType name="longNameType">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[A-Za-z0-9/]{1,8}"/>
+      <xsd:pattern value="[A-Za-z0-9/]{0,8}"/>
     </xsd:restriction>
   </xsd:simpleType>
 
