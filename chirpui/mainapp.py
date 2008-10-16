@@ -74,9 +74,18 @@ class ChirpMain(gtk.Window):
         set_action_sensitive("close", bool(eset))
 
     def ev_status(self, editorset, msg):
-        print "Status: %s" % msg
         self.sb_radio.pop(0)
         self.sb_radio.push(0, msg)
+
+    def do_new(self):
+        eset = editorset.EditorSet("Untitled.chirp")
+        eset.connect("want-close", self.do_close)
+        eset.connect("status", self.ev_status)
+        eset.prime()
+        eset.show()
+
+        tab = self.tabs.append_page(eset, eset.get_tab_label())
+        self.tabs.set_current_page(tab)
 
     def do_open(self, fname=None):
         if not fname:
@@ -269,6 +278,8 @@ class ChirpMain(gtk.Window):
 
         if action == "quit":
             gtk.main_quit()
+        elif action == "new":
+            self.do_new()
         elif action == "open":
             self.do_open()
         elif action == "save":
@@ -299,6 +310,7 @@ class ChirpMain(gtk.Window):
 <ui>
   <menubar name="MenuBar">
     <menu action="file">
+      <menuitem action="new"/>
       <menuitem action="open"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
@@ -321,6 +333,7 @@ class ChirpMain(gtk.Window):
 """
         actions = [\
             ('file', None, "_File", None, None, self.mh),
+            ('new', None, "_New", None, None, self.mh),
             ('open', None, "_Open", None, None, self.mh),
             ('open9x', None, "_Connect to an IC9x", None, None, self.mh),
             ('open9xA', None, "Band A", None, None, self.mh),
