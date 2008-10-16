@@ -150,14 +150,13 @@ class EditorSet(gtk.VBox):
     def is_modified(self):
         return self.modified
 
-    def _do_import_locked(self, src_radio, dst_radio):
-        id = importdialog.ImportDialog(src_radio, dst_radio)
-        r = id.run()
-        id.hide()
+    def _do_import_locked(self, dialog):
+        r = dialog.run()
+        dialog.hide()
         if r != gtk.RESPONSE_OK:
             return
 
-        count = id.do_import()
+        count = dialog.do_import()
         print "Imported %i" % count
         if count > 0:
             self.editor_changed()
@@ -171,7 +170,23 @@ class EditorSet(gtk.VBox):
             common.show_error(e)
             return
 
+        id = importdialog.ImportDialog(src_radio, self.rthread.radio)
+
         self.rthread.lock()
-        self._do_import_locked(src_radio, self.rthread.radio)
+        self._do_import_locked(id)
         self.rthread.unlock()        
         
+    def do_export(self, filen):
+        try:
+            dst_radio = xml.XMLRadio(filen)
+        except Exception, e:
+            common.show_error(e)
+            return
+
+        ed = importdialog.ExportDialog(self.rthread.radio, dst_radio)
+
+        self.rthread.lock()
+        self._do_import_locked(ed)
+        dst_radio.save(filename=filen)
+        self.rthread.unlock()
+            

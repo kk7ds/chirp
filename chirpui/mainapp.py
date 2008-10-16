@@ -256,6 +256,14 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.do_import(filen)
 
+    def do_export(self):
+        filen = platform.get_platform().gui_save_file(default_name="radio.chirp")
+        if not filen:
+            return
+
+        eset = self.get_current_editorset()
+        eset.do_export(filen)
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -279,6 +287,8 @@ class ChirpMain(gtk.Window):
             self.do_open9x(ic9x.IC9xRadioB)
         elif action == "import":
             self.do_import()
+        elif action == "export":
+            self.do_export()
         else:
             return
 
