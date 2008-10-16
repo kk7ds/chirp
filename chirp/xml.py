@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import libxml2
 
 from chirp import chirp_common, errors, xml_ll
@@ -12,17 +13,19 @@ def validate_doc(doc):
     validCtx = schema.schemaNewValidCtxt()
     err = validCtx.schemaValidateDoc(doc)
     if err:
+        print "---DOC---\n%s\n------" % doc.serialize(format=1)
         raise errors.RadioError("Schema error")
 
 class XMLRadio(chirp_common.IcomFileBackedRadio):
     def __init__(self, pipe):
         chirp_common.IcomFileBackedRadio.__init__(self, None)
         self._filename = pipe
-        if self._filename:
+        if self._filename and os.path.exists(self._filename):
             self.doc = libxml2.parseFile(self._filename)
             validate_doc(self.doc)
         else:
-            doc = libxml2.xmlDoc()
+            self.doc = libxml2.newDoc("1.0")
+            self.doc.newChild(None, "radio", None)
 
     def load(self, filename=None):
         if not self._filename and not filename:
