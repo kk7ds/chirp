@@ -1,3 +1,4 @@
+import gtk
 import gobject
 
 import threading
