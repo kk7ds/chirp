@@ -69,7 +69,7 @@ class ImportDialog(gtk.Dialog):
         i = 0
 
         for old, new in self.get_import_list():
-            print "Importing %i -> %i" % (old, new)
+            print "%sing %i -> %i" % (self.ACTION, old, new)
             mem = self.src_radio.get_memory(old)
             mem.number = new
             self.dst_radio.set_memory(mem)
@@ -124,8 +124,14 @@ class ImportDialog(gtk.Dialog):
                                      mem.freq))
 
     TITLE = "Import From File"
+    ACTION = "Import"
 
     def __init__(self, src_radio, dst_radio):
+        gtk.Dialog.__init__(self,
+                            buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
+                            title=self.TITLE)
+
         self.col_import = 0
         self.col_nloc = 1
         self.col_oloc = 2
@@ -133,7 +139,7 @@ class ImportDialog(gtk.Dialog):
         self.col_freq = 4
 
         self.caps = {
-            self.col_import : "Import",
+            self.col_import : self.ACTION,
             self.col_nloc   : "New location",
             self.col_oloc   : "Location",
             self.col_name   : "Name",
@@ -148,16 +154,15 @@ class ImportDialog(gtk.Dialog):
             self.col_freq   : gobject.TYPE_DOUBLE,
             }
 
-        gtk.Dialog.__init__(self,
-                            buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
-                            title=self.TITLE)
-
         self.build_ui()
-        self.set_default_size(400,300)
+        self.set_default_size(400, 300)
         self.populate_list(src_radio)
         self.src_radio = src_radio
         self.dst_radio = dst_radio
+
+class ExportDialog(ImportDialog):
+    TITLE = "Export To File"
+    ACTION = "Export"
 
 if __name__ == "__main__":
     from chirpui import editorset
