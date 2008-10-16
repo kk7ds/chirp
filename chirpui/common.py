@@ -3,6 +3,8 @@ import gobject
 
 import threading
 
+from chirp import errors
+
 class Editor(gobject.GObject):
     __gsignals__ = {
         'changed' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
@@ -34,10 +36,15 @@ class RadioJob:
             return
 
         try:
-            print "Running %s" % self.func
+            print "Running %s (%s %s)" % (self.func,
+                                          str(self.args),
+                                          str(self.kwargs))
             result = func(*self.args, **self.kwargs)
+        except errors.InvalidMemoryLocation, e:
+            result = e
         except Exception, e:
             print "Exception running RadioJob: %s" % e
+            log_exception()
             result = e
 
         if self.cb:
@@ -94,6 +101,7 @@ class RadioThread(threading.Thread, gobject.GObject):
             print "Finished, returning %s to %s" % (result, cb)
         except Exception, e:
             print "Exception in RadioThread: %s" % e
+            log_exception()
             result = e
 
         if cb:
@@ -107,7 +115,6 @@ class RadioThread(threading.Thread, gobject.GObject):
             print "Waiting for a job"
             self.status("Idle")
             self.__counter.acquire()
-            print "Got a job"
 
             self.lock()
             try:
@@ -119,10 +126,7 @@ class RadioThread(threading.Thread, gobject.GObject):
             self.unlock()
             
             self.status(job.desc)
-    
-            print "Starting Job"
             job.execute(self.radio)
-            print "Ending Job"
     
         print "RadioThread exiting"
 
