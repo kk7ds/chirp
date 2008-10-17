@@ -18,7 +18,8 @@
 
 from chirp import chirp_common, icf, ic2200_ll
 
-class IC2200Radio(chirp_common.IcomMmapRadio):
+class IC2200Radio(chirp_common.IcomMmapRadio,
+                  chirp_common.IcomDstarRadio):
     _model = "\x26\x98\x00\x01"
     _memsize = 6848
     _endframe = "Icom Inc\x2eD8"
@@ -79,6 +80,10 @@ class IC2200Radio(chirp_common.IcomMmapRadio):
 
                (0x38A8, 0x38C0, 16)]
 
+    MYCALL_LIMIT  = (0, 6)
+    URCALL_LIMIT  = (0, 6)
+    RPTCALL_LIMIT = (0, 6)
+
     def process_mmap(self):
         self._memories = ic2200_ll.parse_map_for_memory(self._mmap)
 
@@ -112,3 +117,41 @@ class IC2200Radio(chirp_common.IcomMmapRadio):
 
     def get_raw_memory(self, number):
         return ic2200_ll.get_raw_memory(self._mmap, number)
+
+    def get_urcall_list(self):
+        calls = []
+
+        for i in range(*self.URCALL_LIMIT):
+            call = ic2200_ll.get_urcall(self._mmap, i)
+            if call:
+                calls.append(call)
+
+        return calls
+
+    def get_repeater_call_list(self):
+        calls = []
+
+        for i in range(*self.RPTCALL_LIMIT):
+            call = ic2200_ll.get_rptcall(self._mmap, i)
+            if call:
+                calls.append(call)
+
+        return calls
+
+    def set_urcall_list(self, calls):
+        for i in range(*self.URCALL_LIMIT):
+            try:
+                call = calls[i-1]
+            except IndexError:
+                call = " " * 8
+
+            ic2200_ll.set_urcall(self._mmap, i, call)
+
+    def set_repeater_call_list(self, calls):
+        for i in range(*self.RPTCALL_LIMIT):
+            try:
+                call = calls[i-1]
+            except IndexError:
+                call = " " * 8
+
+            ic2200_ll.set_rptcall(self._mmap, i, call)
