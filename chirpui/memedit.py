@@ -253,6 +253,9 @@ class MemoryEditor(common.Editor):
         else:
             iter = store.insert_after(_iter)
 
+        newpos, = store.get(_iter, self.col("Loc"))
+        newpos += delta
+
         print "Insert easy: %i" % delta
 
         line = []
