@@ -143,3 +143,11 @@ def show_error(msg, title="Error"):
     d.set_property("text", msg)
     d.run()
     d.destroy()
+
+def ask_yesno_question(msg):
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO)
+    d.set_property("text", msg)
+    r = d.run()
+    d.destroy()
+
+    return r == gtk.RESPONSE_YES
