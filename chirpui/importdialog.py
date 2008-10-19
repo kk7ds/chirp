@@ -23,8 +23,29 @@ from chirpui import common
 
 class ImportDialog(gtk.Dialog):
 
+    def _check_for_dupe(self, location):
+        iter = self.__store.get_iter_first()
+        while iter:
+            imp, loc = self.__store.get(iter, self.col_import, self.col_nloc)
+            if imp and loc == location:
+                return True
+            iter = self.__store.iter_next(iter)
+
+        return False
+
     def _toggle(self, rend, path, col):
-        self.__store[path][col] = not self.__store[path][col]
+        iter = self.__store.get_iter(path)
+        imp, nloc = self.__store.get(iter, self.col_import, self.col_nloc)
+        if not imp and self._check_for_dupe(nloc):
+            d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+            d.set_property("text",
+                           "Location %i is already being imported.  " % nloc + \
+                               "Choose another value for 'New Location' " + \
+                               "before selecting 'Import'")
+            d.run()
+            d.destroy()
+        else:
+            self.__store[path][col] = not imp
 
     def _edited(self, rend, path, new, col):
         iter = self.__store.get_iter(path)
@@ -36,13 +57,25 @@ class ImportDialog(gtk.Dialog):
             common.show_error("Invalid value.  Must be an integer.")
             return
 
+        if val == nloc:
+            return
+
+        if self._check_for_dupe(val):
+            d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+            d.set_property("text",
+                           "Location %i is already being imported" % val)
+            d.run()
+            d.destroy()
+            return
+
         try:
             self.dst_radio.get_memory(val)
 
             if self.confirm_dupes:
                 d = gtk.MessageDialog(parent=self,
                                       buttons=gtk.BUTTONS_YES_NO)
-                d.set_property("text", "Overwrite location %i?" % val)
+                d.set_property("text",
+                               "Overwrite existing memory location %i?" % val)
                 resp = d.run()
                 d.destroy()
                 if resp == gtk.RESPONSE_NO:
