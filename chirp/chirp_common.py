@@ -417,10 +417,16 @@ class IcomDstarRadio:
     def get_repeater_call_list(self):
         pass
 
+    def get_mycall_list(self):
+        pass
+
     def set_urcall_list(self, calls):
         pass
 
     def set_repeater_call_list(self, calls):
+        pass
+
+    def set_mycall_list(self, calls):
         pass
 
 class Status:
