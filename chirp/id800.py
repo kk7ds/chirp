@@ -117,6 +117,16 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
                 calls.append(call)
 
         return calls
+
+    def get_mycall_list(self):
+        calls = []
+
+        for i in range(*self.MYCALL_LIMIT):
+            call = id800_ll.get_mycall(self._mmap, i)
+            if call:
+                calls.append(call)
+
+        return calls
     
     def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
@@ -137,3 +147,11 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
 
             id800_ll.set_rptcall(self._mmap, i, call)
         
+    def set_mycall_list(self, calls):
+        for i in range(*self.MYCALL_LIMIT):
+            try:
+                call = calls[i-1]
+            except IndexError:
+                call = " " * 8
+
+            id800_ll.set_mycall(self._mmap, i, call)
