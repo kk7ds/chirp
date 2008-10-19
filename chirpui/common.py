@@ -138,15 +138,23 @@ def log_exception():
 	traceback.print_exc(limit=30, file=sys.stdout)
 	print "------"
 
-def show_error(msg, title="Error"):
-    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK)
+def show_error(msg, parent=None):
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent)
     d.set_property("text", msg)
+
+    if not parent:
+        d.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+
     d.run()
     d.destroy()
 
-def ask_yesno_question(msg):
-    d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO)
+def ask_yesno_question(msg, parent=None):
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO, parent=parent)
     d.set_property("text", msg)
+
+    if not parent:
+        d.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+
     r = d.run()
     d.destroy()
 
