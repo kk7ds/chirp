@@ -28,7 +28,7 @@ from gobject import TYPE_INT, \
     TYPE_BOOLEAN
 import gobject
 
-from chirpui import common
+from chirpui import common, shiftdialog
 from chirp import chirp_common, errors, id800, ic2200
 
 def handle_toggle(_, path, store, col):
@@ -247,46 +247,103 @@ class MemoryEditor(common.Editor):
         elif colnum == self.col("Offset"):
             d_unless_dup()
 
+    def insert_easy(self, store, _iter, delta):
+        if delta < 0:
+            iter = store.insert_before(_iter)
+        else:
+            iter = store.insert_after(_iter)
+
+        print "Insert easy: %i" % delta
+
+        line = []
+        for key, val in self.defaults.items():
+            line.append(self.col(key))
+            line.append(val)
+        
+        store.set(iter,
+                  0, newpos,
+                  *tuple(line))
+
+        mem = self._get_memory(iter)
+        job = common.RadioJob(None, "set_memory", mem)
+        job.set_desc("Writing memory %i" % mem.number)
+        self.rthread.submit(job)
+
+    def insert_hard(self, store, _iter, delta):
+        txt = """This operation requires moving all subsequent channels
+by one spot until an empty location is reached.  This can take a LONG
+time.  Are you sure you want to do this?"""
+        if not common.ask_yesno_question(txt):
+            return
+
+        if delta <= 0:
+            iter = _iter
+        else:
+            iter = store.iter_next(_iter)
+
+        pos, = store.get(iter, self.col("Loc"))
+
+        sd = shiftdialog.ShiftDialog(self.rthread)
+
+        if delta == 0:
+            sd.delete(pos)
+            sd.destroy()
+            self.prefill()
+        else:
+            sd.insert(pos)
+            sd.destroy()
+            mem = chirp_common.Memory()
+            mem.number = pos
+            mem.freq = self.defaults["Frequency"]
+            job = common.RadioJob(lambda x: self.prefill(), "set_memory", mem)
+            job.set_desc("Adding memory %i" % mem.number)
+            self.rthread.submit(job)
+
+
     def mh(self, _action):
         action = _action.get_name()
         store, iter = self.view.get_selection().get_selected()
-        curpos, = store.get(iter, self.col("Loc"))
+        cur_pos, = store.get(iter, self.col("Loc"))
 
-        if action in ["insert_next", "insert_prev"]:
-            line = []
-            for key, val in self.defaults.items():
-                line.append(self.col(key))
-                line.append(val)
-            
-            if action == "insert_next":
-                newiter = store.insert_after(iter)
-                newpos = curpos + 1
+        next = store.iter_next(iter)
+        prev = iter_prev(store, iter)
+
+        if prev:
+            prev_pos, = store.get(prev, self.col("Loc"))
+        else:
+            prev_pos = -1
+
+        if next:
+            next_pos, = store.get(next, self.col("Loc"))
+        else:
+            next_pos = -1
+
+        if action == "insert_next":
+            if next_pos != (cur_pos+1):
+                self.insert_easy(store, iter, 1)
             else:
-                newiter = store.insert_before(iter)
-                newpos = curpos - 1
-
-            store.set(newiter,
-                      0, newpos,
-                      *tuple(line))
-
-            mem = self._get_memory(newiter)
-            job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc("Writing memory %i" % mem.number)
-            self.rthread.submit(job)
-
+                self.insert_hard(store, iter, 1)
+        elif action == "insert_prev":
+            if prev_pos != (cur_pos-1):
+                self.insert_easy(store, iter, -1)
+            else:
+                self.insert_hard(store, iter, -1)
         elif action == "delete":
             store.remove(iter)
-            job = common.RadioJob(None, "erase_memory", curpos)
-            job.set_desc("Erasing memory %i" % curpos)
+            job = common.RadioJob(None, "erase_memory", cur_pos)
+            job.set_desc("Erasing memory %i" % cur_pos)
             self.rthread.submit(job)
+        elif action == "delete_s":
+            self.insert_hard(store, iter, 0)
 
-    def make_context_menu(self, can_prev, can_next):
+    def make_context_menu(self):
         menu_xml = """
 <ui>
   <popup name="Menu">
     <menuitem action="insert_prev"/>
     <menuitem action="insert_next"/>
     <menuitem action="delete"/>
+    <menuitem action="delete_s"/>
   </popup>
 </ui>
 """
@@ -295,18 +352,11 @@ class MemoryEditor(common.Editor):
             ("insert_prev",None,"Insert row above",None,None, self.mh),
             ("insert_next",None,"Insert row below",None,None, self.mh),
             ("delete", None, "Delete", None, None, self.mh),
+            ("delete_s", None, "Delete (and shift up)", None, None, self.mh),
             ]
 
         ag = gtk.ActionGroup("Menu")
         ag.add_actions(actions)
-
-        if not can_prev:
-            action = ag.get_action("insert_prev")
-            action.set_sensitive(False)
-
-        if not can_next:
-            action = ag.get_action("insert_next")
-            action.set_sensitive(False)
 
         uim = gtk.UIManager()
         uim.insert_action_group(ag, 0)
@@ -318,27 +368,7 @@ class MemoryEditor(common.Editor):
         if event.button != 3:
             return
 
-        store, iter = self.view.get_selection().get_selected()
-
-        curpos, = store.get(iter, self.col("Loc"))
-        can_prev = True
-        can_next = True
-
-        next = store.iter_next(iter)
-        if next:
-            nextpos, = store.get(next, self.col("Loc"))
-            if nextpos == (curpos + 1):
-                can_next = False
-
-        prev = iter_prev(store, iter)
-        if prev:
-            prevpos, = store.get(prev, self.col("Loc"))
-            if prevpos == (curpos - 1) or curpos == 0:
-                can_prev = False
-        else:
-            can_prev = False
-
-        menu = self.make_context_menu(can_prev, can_next)
+        menu = self.make_context_menu()
         menu.popup(None, None, None, event.button, event.time)
             
     def make_editor(self):
