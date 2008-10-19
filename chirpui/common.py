@@ -122,11 +122,11 @@ class RadioThread(threading.Thread, gobject.GObject):
             except IndexError:
                 self.unlock()
                 break
-
-            self.unlock()
             
             self.status(job.desc)
             job.execute(self.radio)
+
+            self.unlock()
     
         print "RadioThread exiting"
 
