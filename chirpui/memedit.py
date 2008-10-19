@@ -140,7 +140,7 @@ class MemoryEditor(common.Editor):
 
         job = common.RadioJob(None, "erase_memory", curloc)
         job.set_desc("Erasing memory %i" % curloc)
-        self.rthread.submit()
+        self.rthread.submit(job)
 
         self.need_refresh = True
 
