@@ -39,13 +39,14 @@ class ImportDialog(gtk.Dialog):
         try:
             self.dst_radio.get_memory(val)
 
-            d = gtk.MessageDialog(parent=self,
-                                  buttons=gtk.BUTTONS_YES_NO)
-            d.set_property("text", "Overwrite location %i?" % val)
-            resp = d.run()
-            d.destroy()
-            if resp == gtk.RESPONSE_NO:
-                return
+            if self.confirm_dupes:
+                d = gtk.MessageDialog(parent=self,
+                                      buttons=gtk.BUTTONS_YES_NO)
+                d.set_property("text", "Overwrite location %i?" % val)
+                resp = d.run()
+                d.destroy()
+                if resp == gtk.RESPONSE_NO:
+                    return
         except errors.InvalidMemoryLocation:
             print "No location %i to overwrite" % val
 
@@ -111,9 +112,78 @@ class ImportDialog(gtk.Dialog):
         sw.show()
 
         return sw
+
+    def __select_all(self, button, state):
+        iter = self.__store.get_iter_first()
+        while iter:
+            if state is None:
+                _state, = self.__store.get(iter, self.col_import)
+                _state = not _state
+            else:
+                _state = state
+            self.__store.set(iter, self.col_import, _state)
+            iter = self.__store.iter_next(iter)
+
+    def make_select(self):
+        hbox = gtk.HBox(True, 2)
+
+        all = gtk.Button("All");
+        all.connect("clicked", self.__select_all, True)
+        all.set_size_request(50, 25)
+        all.show()
+        hbox.pack_start(all, 0, 0, 0)
+
+        none = gtk.Button("None");
+        none.connect("clicked", self.__select_all, False)
+        none.set_size_request(50, 25)
+        none.show()
+        hbox.pack_start(none, 0, 0, 0)
+
+        inv = gtk.Button("Inverse")
+        inv.connect("clicked", self.__select_all, None)
+        inv.set_size_request(50, 25)
+        inv.show()
+        hbox.pack_start(inv, 0, 0, 0)
+
+        frame = gtk.Frame("Select")
+        frame.show()
+        frame.add(hbox)
+        hbox.show()
+
+        return frame
+
+    def make_options(self):
+        def __set_confirm(toggle):
+            self.confirm_dupes = toggle.get_active()
+
+        hbox = gtk.HBox(True, 2)
+
+        confirm = gtk.CheckButton("Confirm overwrites")
+        confirm.set_active(self.confirm_dupes)
+        confirm.connect("toggled", __set_confirm)
+        confirm.show()
+
+        hbox.pack_start(confirm, 0, 0, 0)
+
+        frame = gtk.Frame("Options")
+        frame.add(hbox)
+        frame.show()
+        hbox.show()
+
+        return frame
+
+    def make_controls(self):
+        hbox = gtk.HBox(True, 2)
         
+        hbox.pack_start(self.make_select(), 0, 0, 0)
+        hbox.pack_start(self.make_options(), 0, 0, 0)
+        hbox.show()
+
+        return hbox
+
     def build_ui(self):
         self.vbox.pack_start(self.make_view(), 1, 1, 1)
+        self.vbox.pack_start(self.make_controls(), 0, 0, 0)
 
     def populate_list(self, radio):
         for mem in radio.get_memories():
@@ -153,6 +223,8 @@ class ImportDialog(gtk.Dialog):
             self.col_name   : gobject.TYPE_STRING,
             self.col_freq   : gobject.TYPE_DOUBLE,
             }
+
+        self.confirm_dupes = True
 
         self.build_ui()
         self.set_default_size(400, 300)
