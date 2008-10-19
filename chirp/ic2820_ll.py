@@ -52,6 +52,7 @@ POS_TUNE_STEP  = 35
 POS_USED_START = 0x61E0
 POS_URCALL     = 0x69B8
 POS_RPTCALL    = 0x6B98
+POS_MYCALL     = 0x6970
 
 MEM_LOC_SIZE   = 0x30
 
@@ -339,6 +340,13 @@ def get_rptcall(mmap, number):
     start = call_location(POS_RPTCALL, number)
     return mmap[start:start+8].rstrip()
 
+def get_mycall(mmap, number):
+    if number > 6:
+        raise errors.InvalidDataError("MYCALL index must be <= 6")
+
+    start = POS_MYCALL + (12 * (number -1 ))
+    return mmap[start:start+8].rstrip()
+
 def set_urcall(mmap, number, call):
     if number > 60:
         raise errors.InvalidDataError("URCALL index must be <= 60")
@@ -351,4 +359,11 @@ def set_rptcall(mmap, number, call):
         raise errors.InvalidDataError("RPTCALL index must be <= 60")
 
     start = call_location(POS_RPTCALL, number)
+    mmap[start] = call.ljust(8)
+
+def set_mycall(mmap, number, call):
+    if number > 6:
+        raise errors.InvalidDataError("MYCALL index must be <= 6")
+
+    start = POS_MYCALL + (12 * (number - 1))
     mmap[start] = call.ljust(8)
