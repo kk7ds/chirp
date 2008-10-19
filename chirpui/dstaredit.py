@@ -123,6 +123,10 @@ class DStarEditor(common.Editor):
                                   "set_repeater_call_list",
                                   cse.get_callsigns())
             print "Set rcall"
+        elif cse == self.editor_mcall:
+            job = common.RadioJob(None,
+                                  "set_mycall_list",
+                                  cse.get_callsigns())
 
         if job:
             print "Submitting job to update call lists"
@@ -162,6 +166,21 @@ class DStarEditor(common.Editor):
         self.rthread.submit(job)
 
         self.editor_rcall.connect("changed", self.__cs_changed)
+
+        frame = gtk.Frame("My callsign")
+        self.editor_mcall = CallsignEditor()
+        self.editor_mcall.set_size_request(-1, 200)
+        self.editor_mcall.show()
+        frame.add(self.editor_mcall)
+        frame.show()
+        box.pack_start(frame, 1, 1, 0)
+
+        job = common.RadioJob(self.editor_mcall.set_callsigns,
+                              "get_mycall_list")
+        job.set_desc("Downloading MYCALL list")
+        self.rthread.submit(job)
+
+        self.editor_mcall.connect("changed", self.__cs_changed)
 
         box.show()
         return box
