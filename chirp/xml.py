@@ -10,7 +10,14 @@ def validate_doc(doc):
     schema = ctx.schemaParse()
     del ctx
 
+    def err(msg, arg=None):
+        print "ERROR: %s" % msg
+
+    def wrn(msg, arg=None):
+        print "WARNING: %s" % msg
+
     validCtx = schema.schemaNewValidCtxt()
+    validCtx.setValidityErrorHandler(err, wrn)
     err = validCtx.schemaValidateDoc(doc)
     if err:
         print "---DOC---\n%s\n------" % doc.serialize(format=1)
