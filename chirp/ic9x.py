@@ -25,9 +25,17 @@ class IC9xRadio(chirp_common.IcomRadio):
     __last = 0
     mem_upper_limit = 300
 
+    def __init__(self, *args, **kwargs):
+        chirp_common.IcomRadio.__init__(self, *args, **kwargs)
+
+        self.__memcache = {}
+    
     def get_memory(self, number):
         if number < 0 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
+
+        if self.__memcache.has_key(number):
+            return self.__memcache[number]
 
         if (time.time() - self.__last) > 0.5:
             ic9x_ll.send_magic(self.pipe)
@@ -35,7 +43,11 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
 
-        return mframe.get_memory()
+        m = mframe.get_memory()
+
+        self.__memcache[m.number] = m
+
+        return m
 
     def erase_memory(self, number):
         eframe = ic9x_ll.IC92MemClearFrame(self.vfo, number)
@@ -49,6 +61,8 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         if result[0].get_data() != "\xfb":
             raise errors.InvalidDataError("Radio reported error")
+
+        del self.__memcache[number]
 
     def get_raw_memory(self, number):
         ic9x_ll.send_magic(self.pipe)
@@ -89,6 +103,8 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         if result[0].get_data() != "\xfb":
             raise errors.InvalidDataError("Radio reported error")
+
+        self.__memcache[memory.number] = memory
 
 class IC9xRadioA(IC9xRadio):
     vfo = 1
