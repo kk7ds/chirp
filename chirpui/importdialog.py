@@ -17,6 +17,7 @@
 
 import gtk
 import gobject
+import pango
 
 from chirp import errors
 from chirpui import common
@@ -47,6 +48,17 @@ class ImportDialog(gtk.Dialog):
         else:
             self.__store[path][col] = not imp
 
+    def _render(self, _, rend, model, iter, colnum):
+        newloc, imp = model.get(iter, self.col_nloc, self.col_import)
+
+        if newloc in self.used_list and imp:
+            rend.set_property("foreground", "red")
+            rend.set_property("text", "%i" % newloc)
+            rend.set_property("weight", pango.WEIGHT_BOLD)
+        else:
+            rend.set_property("foreground", "black")
+            rend.set_property("weight", pango.WEIGHT_NORMAL)
+
     def _edited(self, rend, path, new, col):
         iter = self.__store.get_iter(path)
         nloc, = self.__store.get(iter, self.col_nloc)
@@ -68,20 +80,7 @@ class ImportDialog(gtk.Dialog):
             d.destroy()
             return
 
-        try:
-            self.dst_radio.get_memory(val)
-
-            if self.confirm_dupes:
-                d = gtk.MessageDialog(parent=self,
-                                      buttons=gtk.BUTTONS_YES_NO)
-                d.set_property("text",
-                               "Overwrite existing memory location %i?" % val)
-                resp = d.run()
-                d.destroy()
-                if resp == gtk.RESPONSE_NO:
-                    return
-        except errors.InvalidMemoryLocation:
-            print "No location %i to overwrite" % val
+        self.record_use_of(val)
 
         self.__store.set(iter, col, val)
 
@@ -136,6 +135,9 @@ class ImportDialog(gtk.Dialog):
                     rend.connect("edited", self._edited, k)
                 column = gtk.TreeViewColumn(self.caps[k], rend, text=k)
 
+            if k == self.col_nloc:
+                column.set_cell_data_func(rend, self._render, k)
+
             column.set_sort_column_id(k)
             self.__view.append_column(column)
         
@@ -186,13 +188,9 @@ class ImportDialog(gtk.Dialog):
         return frame
 
     def make_options(self):
-        def __set_confirm(toggle):
-            self.confirm_dupes = toggle.get_active()
-
         hbox = gtk.HBox(True, 2)
 
         confirm = gtk.CheckButton("Confirm overwrites")
-        confirm.set_active(self.confirm_dupes)
         confirm.connect("toggled", __set_confirm)
         confirm.show()
 
@@ -209,7 +207,7 @@ class ImportDialog(gtk.Dialog):
         hbox = gtk.HBox(True, 2)
         
         hbox.pack_start(self.make_select(), 0, 0, 0)
-        hbox.pack_start(self.make_options(), 0, 0, 0)
+        #hbox.pack_start(self.make_options(), 0, 0, 0)
         hbox.show()
 
         return hbox
@@ -218,6 +216,16 @@ class ImportDialog(gtk.Dialog):
         self.vbox.pack_start(self.make_view(), 1, 1, 1)
         self.vbox.pack_start(self.make_controls(), 0, 0, 0)
 
+    def record_use_of(self, number):
+        try:
+            self.dst_radio.get_memory(number)
+            if number not in self.used_list:
+                self.used_list.append(number)
+        except errors.InvalidMemoryLocation:
+            if number not in self.not_used_list:
+                self.not_used_list.append(number)
+        
+
     def populate_list(self, radio):
         for mem in radio.get_memories():
             self.__store.append(row=(True,
@@ -225,6 +233,8 @@ class ImportDialog(gtk.Dialog):
                                      mem.number,
                                      mem.name,
                                      mem.freq))
+            self.record_use_of(mem.number)
+
 
     TITLE = "Import From File"
     ACTION = "Import"
@@ -257,13 +267,15 @@ class ImportDialog(gtk.Dialog):
             self.col_freq   : gobject.TYPE_DOUBLE,
             }
 
-        self.confirm_dupes = True
+        self.src_radio = src_radio
+        self.dst_radio = dst_radio
+
+        self.used_list = []
+        self.not_used_list = []
 
         self.build_ui()
         self.set_default_size(400, 300)
         self.populate_list(src_radio)
-        self.src_radio = src_radio
-        self.dst_radio = dst_radio
 
 class ExportDialog(ImportDialog):
     TITLE = "Export To File"
