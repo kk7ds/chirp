@@ -1,5 +1,6 @@
 #!/bin/bash
 
+VERSION=$(cat build/version)
 HOST=$1
 shift
 
