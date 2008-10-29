@@ -40,27 +40,24 @@ make_zip() {
 
 make_installer() {
 	echo Making Installer...
-	cat > d-rats.nsi <<EOF
-Name "D-RATS Installer"
+	cat > chirp.nsi <<EOF
+Name "CHIRP Installer"
 OutFile "${IST}"
-InstallDir \$PROGRAMFILES\D-RATS
-DirText "This will install D-RATS v$VERSION"
-Icon d-rats2.ico
+InstallDir \$PROGRAMFILES\CHIRP
+DirText "This will install CHIRP v$VERSION"
+#Icon d-rats2.ico
 SetCompressor 'lzma'
 Section ""
   InitPluginsDir
   SetOutPath "\$INSTDIR"
   File /r 'dist\*.*'
-  CreateDirectory "\$SMPROGRAMS\D-RATS"
-  CreateShortCut "\$SMPROGRAMS\D-RATS\D-RATS Communications Tool.lnk" "\$INSTDIR\d-rats.exe"
-  CreateShortCut "\$SMPROGRAMS\D-RATS\D-RATS Repeater.lnk" "\$INSTDIR\repeater.exe"
-  CreateShortCut "\$SMPROGRAMS\D-RATS\D-RATS Map Downloader.lnk" "\$INSTDIR\mapdownloader.exe"
-  CreateDirectory "\$APPDATA\D-RATS\Form_Templates"
-  CopyFiles \$INSTDIR\forms\*.* "\$APPDATA\D-RATS\Form_Templates"
+  CreateDirectory "\$SMPROGRAMS\CHIRP"
+  CreateShortCut "\$SMPROGRAMS\CHIRP\CHIRP.lnk" "\$INSTDIR\chirpw.exe"
+  CreateShortCut "\$SMPROGRAMS\CHIRP\CSV Dump.lnk" "\$INSTDIR\csvdump.exe"
 SectionEnd
 EOF
-	unix2dos d-rats.nsi
-	/cygdrive/c/Program\ Files/NSIS/makensis d-rats.nsi
+	unix2dos chirp.nsi
+	/cygdrive/c/Program\ Files/NSIS/makensis chirp.nsi
 }
 
 rm -f $LOG
@@ -75,6 +72,6 @@ elif [ "$1" = "-i" ]; then
 	make_installer
 elif [ -z "$1" ]; then
 	make_zip
-	#make_installer
+	make_installer
 fi
 	
