@@ -27,7 +27,7 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, id800, ic2820, ic2200, ic9x, xml
+from chirp import platform, id800, ic2820, ic2200, ic9x, xml, CHIRP_VERSION
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
 RADIOS = {
@@ -275,6 +275,23 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.do_export(filen)
 
+    def do_about(self):
+        d = gtk.AboutDialog()
+        d.set_transient_for(self)
+        verinfo = "GTK %s\nPyGTK %s\n" % ( \
+            ".".join([str(x) for x in gtk.gtk_version]),
+            ".".join([str(x) for x in gtk.pygtk_version]))
+
+        d.set_name("CHIRP")
+        d.set_version(CHIRP_VERSION)
+        d.set_copyright("Copyright 2008 Dan Smith (KK7DS)")
+        d.set_website("http://chirp.danplanet.com")
+        d.set_authors(("Dan Smith <dsmith@danplanet.com>",))
+        d.set_comments(verinfo)
+        
+        d.run()
+        d.destroy()
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -302,6 +319,8 @@ class ChirpMain(gtk.Window):
             self.do_import()
         elif action == "export":
             self.do_export()
+        elif action == "about":
+            self.do_about()
         else:
             return
 
@@ -330,6 +349,9 @@ class ChirpMain(gtk.Window):
     <menuitem action="import"/>
     <menuitem action="export"/>
     </menu>
+    <menu action="help">
+      <menuitem action="about"/>
+    </menu>
   </menubar>
 </ui>
 """
@@ -349,6 +371,8 @@ class ChirpMain(gtk.Window):
             ('cloneout', None, "Upload To Radio", None, None, self.mh),
             ('import', None, 'Import from file', None, None, self.mh),
             ('export', None, 'Export to file', None, None, self.mh),
+            ('help', None, 'Help', None, None, self.mh),
+            ('about', None, 'About', None, None, self.mh),
             ]
 
         uim = gtk.UIManager()
