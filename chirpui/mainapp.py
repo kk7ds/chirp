@@ -150,6 +150,8 @@ class ChirpMain(gtk.Window):
                 dlg.destroy()
                 if owrite == gtk.RESPONSE_OK:
                     break
+            else:
+                break
 
         eset = self.get_current_editorset()
         eset.save(fname)
