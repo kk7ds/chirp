@@ -181,7 +181,10 @@ class EditorSet(gtk.VBox):
         
     def do_export(self, filen):
         try:
-            dst_radio = xml.XMLRadio(filen)
+            if filen.endswith(".csv"):
+                dst_radio = csv.CSVRadio(filen)
+            else:
+                dst_radio = xml.XMLRadio(filen)
         except Exception, e:
             common.show_error(e)
             return
