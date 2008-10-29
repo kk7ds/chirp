@@ -35,6 +35,8 @@ grab_builds() {
     scp -r "$HOST:$out/*" .
 }
 
+sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
+
 tmp1=$(temp_dir)
 tmp2=$(temp_dir)
 copy_source $tmp1

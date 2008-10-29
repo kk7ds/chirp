@@ -5,6 +5,8 @@ INCLUDE="COPYING"
 TMP=$(mktemp -d)
 EXCLUDE=""
 
+sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
+
 RELDIR=chirp-${VERSION}
 
 DST="${TMP}/${RELDIR}"
