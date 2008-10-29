@@ -19,12 +19,15 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, ic9x, xml, chirp_common
+from chirp import ic2820, ic2200, id800, ic9x, xml, csv, chirp_common
 from chirpui import memedit, dstaredit, common, importdialog
 
 def radio_class_from_file(filename):
     if filename.endswith(".chirp"):
         return xml.XMLRadio
+
+    if filename.endswith(".csv"):
+        return csv.CSVRadio
 
     size = os.stat(filename).st_size
 
