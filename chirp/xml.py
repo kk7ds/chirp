@@ -18,11 +18,20 @@
 import os
 import libxml2
 
-from chirp import chirp_common, errors, xml_ll
+from chirp import chirp_common, errors, xml_ll, platform
 
 def validate_doc(doc):
-    ctx = libxml2.schemaNewParserCtxt("chirp.xsd")
-    schema = ctx.schemaParse()
+    basepath = platform.get_platform().executable_path()
+    path = os.path.abspath(os.path.join(basepath, "chirp.xsd"))
+
+    try:
+        ctx = libxml2.schemaNewParserCtxt(path)
+        schema = ctx.schemaParse()
+    except libxml2.parserError, e:
+        print "Unable to load schema: %s" % e
+        print "Path: %s" % path
+        raise errors.RadioError("Unable to load schema")
+
     del ctx
 
     def err(msg, arg=None):
