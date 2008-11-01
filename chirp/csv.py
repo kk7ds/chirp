@@ -74,7 +74,7 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
         f.close()
 
     def get_memories(self, lo=0, hi=999):
-        return [x for x in self.memories if x.number >= low and x.number <= hi]
+        return [x for x in self.memories if x.number >= lo and x.number <= hi]
 
     def get_memory(self, number):
         for mem in self.memories:
