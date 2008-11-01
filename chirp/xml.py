@@ -47,7 +47,8 @@ def validate_doc(doc):
         print "---DOC---\n%s\n------" % doc.serialize(format=1)
         raise errors.RadioError("Schema error")
 
-class XMLRadio(chirp_common.IcomFileBackedRadio):
+class XMLRadio(chirp_common.IcomFileBackedRadio,
+               chirp_common.IcomDstarRadio):
     def __init__(self, pipe):
         chirp_common.IcomFileBackedRadio.__init__(self, None)
         self._filename = pipe

@@ -37,7 +37,14 @@ def get_memory(doc, number):
         path = base + ext
         return ctx.xpathEval(path)[0].getContent()
 
-    mem = chirp_common.Memory()
+    if _get("/mode/text()") == "DV":
+        mem = chirp_common.DVMemory()
+        mem.dv_urcall = _get("/dv/urcall/text()")
+        mem.dv_rpt1call = _get("/dv/rpt1call/text()")
+        mem.dv_rpt2call = _get("/dv/rpt2call/text()")
+    else:
+        mem = chirp_common.Memory()
+
     mem.number = int(memnode.prop("location"))
     mem.name = _get("/longName/text()")
     mem.freq = float(_get("/frequency/text()"))
@@ -138,6 +145,18 @@ def set_memory(doc, mem):
     step.newProp("units", "MHz")
     step.addContent("%.5f" % mem.tuning_step)
     
+    if isinstance(mem, chirp_common.DVMemory):
+        dv = memnode.newChild(None, "dv", None)
+
+        ur = dv.newChild(None, "urcall", None)
+        ur.addContent(mem.dv_urcall)
+
+        r1 = dv.newChild(None, "rpt1call", None)
+        r1.addContent(mem.dv_rpt1call)
+
+        r2 = dv.newChild(None, "rpt2call", None)
+        r2.addContent(mem.dv_rpt2call)
+
 def del_memory(doc, number):
     path = "//radio/memory[@location=%i]" % number
     ctx = doc.xpathNewContext()
