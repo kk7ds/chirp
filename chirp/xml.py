@@ -96,11 +96,9 @@ class XMLRadio(chirp_common.IcomFileBackedRadio):
 
     def set_memory(self, mem):
         xml_ll.set_memory(self.doc, mem)
-        validate_doc(self.doc)
 
     def erase_memory(self, number):
         xml_ll.del_memory(self.doc, number)
-        validate_doc(self.doc)
 
 if __name__ == "__main__":
     r = XMLRadio("testmem.chirp")
