@@ -56,6 +56,8 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
                 self._parse_csv_line(line)
             except errors.InvalidMemoryLocation:
                 print "Invalid memory location on line %i" % i
+            except errors.InvalidDataError:
+                print "Bad CSV line %i" % i
 
         f.close()
     
