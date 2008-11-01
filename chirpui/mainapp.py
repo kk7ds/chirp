@@ -265,7 +265,11 @@ class ChirpMain(gtk.Window):
             return
 
         eset = self.get_current_editorset()
-        eset.do_import(filen)
+        try:
+            eset.do_import(filen)
+        except Exception, e:
+            common.log_exception()
+            common.show_error("There was an error during import: %s" % e, self)
 
     def do_export(self):
         filen = platform.get_platform().gui_save_file(default_name="radio.chirp")
@@ -273,7 +277,11 @@ class ChirpMain(gtk.Window):
             return
 
         eset = self.get_current_editorset()
-        eset.do_export(filen)
+        try:
+            eset.do_export(filen)
+        except Exception, e:
+            common.log_exception()
+            common.show_error("There was an error during export: %s" % e, self)
 
     def do_about(self):
         d = gtk.AboutDialog()
