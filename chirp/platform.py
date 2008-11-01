@@ -141,6 +141,16 @@ class Platform:
     def os_version_string(self):
         return "Unknown Operating System"
 
+    def executable_path(self):
+        def we_are_frozen():
+            return hasattr(sys, "frozen")
+
+        if we_are_frozen():
+            return os.path.dirname(unicode(sys.executable,
+                                           sys.getfilesystemencoding()))
+
+        return "."
+
 def _unix_editor():
     macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
 
