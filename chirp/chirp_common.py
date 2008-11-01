@@ -412,13 +412,13 @@ class IcomDstarRadio:
     RPTCALL_LIMIT = (1, 1)
     
     def get_urcall_list(self):
-        pass
+        return []
 
     def get_repeater_call_list(self):
-        pass
+        return []
 
     def get_mycall_list(self):
-        pass
+        return []
 
     def set_urcall_list(self, calls):
         pass
