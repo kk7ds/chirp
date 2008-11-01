@@ -27,9 +27,10 @@ copy_lib() {
 }
 
 copy_data() {
-	list="COPYING"
+	mkdir dist
+	list="COPYING chirp.xsd"
 	for i in $list; do
-		cp -v $i $dist >> $LOG
+		cp -v $i dist >> $LOG
 	done
 }
 
