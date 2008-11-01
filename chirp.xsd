@@ -30,6 +30,7 @@
       <xsd:element name="offset" type="frequencyType"/>
       <xsd:element name="mode" type="modeType"/>
       <xsd:element name="tuningStep" type="frequencyType"/>
+      <xsd:element name="dv" type="dvType" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="location" type="xsd:nonNegativeInteger"/>
   </xsd:complexType>
@@ -96,6 +97,20 @@
       <xsd:enumeration value="AM"/>
       <xsd:enumeration value="NAM"/>
       <xsd:enumeration value="DV"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="dvType">
+    <xsd:sequence>
+      <xsd:element name="urcall" type="callsignType"/>
+      <xsd:element name="rpt1call" type="callsignType"/>
+      <xsd:element name="rpt2call" type="callsignType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="callsignType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z0-9/ ]*"/>
     </xsd:restriction>
   </xsd:simpleType>
 
