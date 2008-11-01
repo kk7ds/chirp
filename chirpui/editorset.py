@@ -176,7 +176,11 @@ class EditorSet(gtk.VBox):
         id = importdialog.ImportDialog(src_radio, self.rthread.radio)
 
         self.rthread.lock()
-        self._do_import_locked(id)
+        try:
+            self._do_import_locked(id)
+        except Exception, e:
+            common.log_exception()
+            common.show_error("There was an error during import: %s" % e, self)
         self.rthread.unlock()        
         
     def do_export(self, filen):
@@ -193,7 +197,11 @@ class EditorSet(gtk.VBox):
 
         self.rthread.lock()
         self._do_import_locked(ed)
-        dst_radio.save(filename=filen)
+        try:
+            dst_radio.save(filename=filen)
+        except Exception, e:
+            common.log_exception()
+            common.show_error("There was an error during export: %s" % e, self)
         self.rthread.unlock()
             
     def prime(self):
