@@ -70,6 +70,8 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
 
         f = file(self._filename, "w")
 
+        f.write(chirp_common.Memory.CSV_FORMAT + "\n")
+
         for mem in self.memories:
             f.write(mem.to_csv() + "\n")
 
