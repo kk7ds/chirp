@@ -35,7 +35,11 @@ def get_memory(doc, number):
 
     def _get(ext):
         path = base + ext
-        return ctx.xpathEval(path)[0].getContent()
+        result = ctx.xpathEval(path)
+        if result:
+            return result[0].getContent()
+        else:
+            return ""
 
     if _get("/mode/text()") == "DV":
         mem = chirp_common.DVMemory()
