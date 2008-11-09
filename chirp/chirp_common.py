@@ -105,7 +105,7 @@ class Memory:
 
     CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \
         "rToneFreq,cToneFreq,DtcsCode,DtcsPolarity," + \
-        "Mode,URCALL,RPT1CALL,RPT2CALL" 
+        "Mode,TStep,URCALL,RPT1CALL,RPT2CALL" 
 
     def __setattr__(self, name, val):
         if not hasattr(self, name):
@@ -156,7 +156,7 @@ class Memory:
              self.tuning_step)
 
     def to_csv(self):
-        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,,,," % ( \
+        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,,," % ( \
             self.number,
             self.name,
             self.freq,
@@ -167,7 +167,8 @@ class Memory:
             self.ctone,
             self.dtcs,
             self.dtcs_polarity,
-            self.mode)
+            self.mode,
+            self.tuning_step)
 
         return string
 
@@ -181,8 +182,8 @@ class Memory:
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
         vals = line.split(",")
-        if len(vals) < 10:
-            raise errors.InvalidDataError("CSV format error (13 columns expected)")
+        if len(vals) < 11:
+            raise errors.InvalidDataError("CSV format error (14 columns expected)")
 
         if vals[10] == "DV":
             mem = DVMemory()
@@ -253,6 +254,11 @@ class Memory:
         else:
             raise errors.InvalidDataError("Mode is not valid")           
 
+        try:
+            self.tuning_step = float(vals[11])
+        except:
+            raise InvalidDataError("Tuning step is invalid")
+
         return True
 
 class DVMemory(Memory):
@@ -270,7 +276,7 @@ class DVMemory(Memory):
         return string
 
     def to_csv(self):
-        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%s,%s,%s," % ( \
+        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%s," % ( \
             self.number,
             self.name,
             self.freq,
@@ -282,6 +288,7 @@ class DVMemory(Memory):
             self.dtcs,
             self.dtcs_polarity,
             self.mode,
+            self.tuning_step,
             self.dv_urcall,
             self.dv_rpt1call,
             self.dv_rpt2call)
@@ -291,9 +298,9 @@ class DVMemory(Memory):
     def really_from_csv(self, vals):
         Memory.really_from_csv(self, vals)
 
-        self.dv_urcall = vals[11].strip()[:8]
-        self.dv_rpt1call = vals[12].strip()[:8]
-        self.dv_rpt2call = vals[13].strip()[:8]
+        self.dv_urcall = vals[12].strip()[:8]
+        self.dv_rpt1call = vals[13].strip()[:8]
+        self.dv_rpt2call = vals[14].strip()[:8]
 
 class Bank:
     name = "BANK"
