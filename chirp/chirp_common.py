@@ -298,9 +298,9 @@ class DVMemory(Memory):
     def really_from_csv(self, vals):
         Memory.really_from_csv(self, vals)
 
-        self.dv_urcall = vals[12].strip()[:8]
-        self.dv_rpt1call = vals[13].strip()[:8]
-        self.dv_rpt2call = vals[14].strip()[:8]
+        self.dv_urcall = vals[12].rstrip()[:8]
+        self.dv_rpt1call = vals[13].rstrip()[:8]
+        self.dv_rpt2call = vals[14].rstrip()[:8]
 
 class Bank:
     name = "BANK"
