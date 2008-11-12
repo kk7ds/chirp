@@ -54,7 +54,7 @@ Section ""
   File /r 'dist\*.*'
   CreateDirectory "\$SMPROGRAMS\CHIRP"
   CreateShortCut "\$SMPROGRAMS\CHIRP\CHIRP.lnk" "\$INSTDIR\chirpw.exe"
-  CreateShortCut "\$SMPROGRAMS\CHIRP\CSV Dump.lnk" "\$INSTDIR\csvdump.exe"
+  Delete "\$SMPROGRAMS\CHIRP\CSV Dump.lnk"
 SectionEnd
 EOF
 	unix2dos chirp.nsi

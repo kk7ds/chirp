@@ -46,8 +46,6 @@ opts = {
     }
 
 setup(
-    windows=[{'script' : "csvdump.py",
-              'icon_resources' : [(0x0004, 'csvdump.ico')]},
-             {'script' : "chirpw.py"}],
+    windows=[{'script' : "chirpw.py"}],
     console=[{'script' : "chirp.py"}],
     options=opts)
