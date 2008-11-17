@@ -44,7 +44,7 @@ def get_freq(mmap):
     return ((val * 5) / 1000.0) + 400 # FIXME: For V82
 
 def set_freq(mmap, freq):
-    mmap[POS_FREQ_START] = struct.pack("<H", int(freq * 1000) / 5)
+    mmap[POS_FREQ_START] = struct.pack("<H", int((freq - 400) * 1000) / 5)
 
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
@@ -102,7 +102,7 @@ def get_dup_offset(mmap):
 
     return float((val / 5) * 2.5) / 100.0
 
-def set_dup_offset(mmap):
+def set_dup_offset(mmap, offset):
     val = struct.pack("<H", int((offset * 100) / 2.5) * 5)
 
     mmap[POS_OFFSET] = val
@@ -196,8 +196,8 @@ def set_mode(mmap, mode):
 def is_used(mmap, number):
     return (ord(mmap[POS_USED_START + number]) & 0x20) == 0
 
-def set_userd(mmap, number, used=True):
-    val = struct.unpack("B", mmap[POS_USED_START]) & 0xDF
+def set_used(mmap, number, used=True):
+    val = struct.unpack("B", mmap[POS_USED_START])[0] & 0xDF
 
     if not used:
         val |= 0x20
