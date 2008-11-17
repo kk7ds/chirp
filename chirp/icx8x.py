@@ -20,9 +20,22 @@ from chirp import chirp_common, icf, icx8x_ll
 class ICx8xRadio(chirp_common.IcomMmapRadio):
     _model = "\x28\x26\x00\x01"
     _memsize = 6464
-    _endframe = ""
+    _endframe = "Icom Inc\x2eCD"
 
     _memories = []
+
+    _ranges = [(0x0000, 0x1340, 32),
+               (0x1340, 0x1360, 16),
+               (0x1360, 0x136B,  8),
+
+               (0x1370, 0x1440, 32),
+
+               (0x1460, 0x15D0, 32),
+
+               (0x15E0, 0x1930, 32),
+
+               (0x1938, 0x1940,  8),
+               ]
 
     def sync_in(self):
         self._mmap = icf.clone_from_radio(self)
