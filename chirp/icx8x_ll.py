@@ -31,6 +31,7 @@ POS_DTCS       = 11
 POS_TUNE_STEP  = 17
 POS_TMODE      = 21
 POS_MODE       = 21
+POS_MULT_FLAG  = 21
 POS_DTCS_POL   = 22
 POS_DUPLEX     = 22
 
@@ -39,9 +40,14 @@ POS_USED_START = 0x1370
 MEM_LOC_SIZE   = 24
 
 def get_freq(mmap):
+    if (ord(mmap[POS_MULT_FLAG]) & 0x80) == 0x80:
+        mult = 6.25
+    else:
+        mult = 5
+
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
 
-    return ((val * 5) / 1000.0) + 400 # FIXME: For V82
+    return ((val * mult) / 1000.0) + 400 # FIXME: For V82
 
 def set_freq(mmap, freq):
     mmap[POS_FREQ_START] = struct.pack("<H", int((freq - 400) * 1000) / 5)
