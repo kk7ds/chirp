@@ -70,7 +70,7 @@ for __val, __mode in ID800_MODES.items():
     ID800_MODES_REV[__mode] = __val
 
 def is_used(mmap, number):
-    return not (ord(mmap[POS_FLAGS + number]) & 0x70)
+    return not ((ord(mmap[POS_FLAGS + number]) & 0x70) == 0x70)
 
 def set_used(mmap, number, used):
     val = ord(mmap[POS_FLAGS + number]) & 0x0F
