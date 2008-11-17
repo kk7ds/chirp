@@ -35,6 +35,7 @@ POS_DTCS       =  7
 POS_DTCS_POL   = 11
 POS_DOFF_START =  3
 POS_DOFF_END   =  5
+POS_TUNE_FLAG  = 10
 POS_MYCALL     = 0x3220
 POS_URCALL     = 0x3250
 POS_RPTCALL    = 0x3570
@@ -117,7 +118,7 @@ def get_freq_ts(mmap):
     fval = '\x00' + mmap[POS_FREQ_START:POS_FREQ_END]
     tsval = (ord(mmap[POS_TSTEP]) >> 4) & 0x0F
 
-    if tsval == 0xA or tsval == 0x2:
+    if (ord(mmap[POS_TUNE_FLAG]) & 0x80) == 0x80:
         mult = 6.25
     else:
         mult = 5.0
