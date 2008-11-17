@@ -19,7 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, ic9x, xml, csv, chirp_common
+from chirp import ic2820, ic2200, id800, ic9x, icx8x, xml, csv, chirp_common
 from chirpui import memedit, dstaredit, common, importdialog
 
 def radio_class_from_file(filename):
@@ -31,7 +31,14 @@ def radio_class_from_file(filename):
 
     size = os.stat(filename).st_size
 
-    for cls in [ic2820.IC2820Radio, ic2200.IC2200Radio, id800.ID800v2Radio]:
+    classes = [
+        ic2820.IC2820Radio,
+        ic2200.IC2200Radio,
+        id800.ID800v2Radio,
+        icx8x.ICx8xRadio,
+        ]
+
+    for cls in classes:
         # pylint: disable-msg=W0212
         if cls._memsize == size:
             return cls

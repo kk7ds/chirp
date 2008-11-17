@@ -21,7 +21,7 @@ import sys
 from optparse import OptionParser
 import optparse
 
-from chirp import ic9x, id800, ic2820, ic2200, chirp_common, errors
+from chirp import ic9x, id800, ic2820, ic2200, icx8x, chirp_common, errors
 
 def fail_unsupported():
     print "Operation not supported by selected radio"
@@ -36,6 +36,7 @@ RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
            "id800" : id800.ID800v2Radio,
            "ic2820": ic2820.IC2820Radio,
            "ic2200": ic2200.IC2200Radio,
+           "icx8x" : icx8x.ICx8xRadio,
 }
 
 def store_tone(option, opt, value, parser):

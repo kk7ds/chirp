@@ -29,7 +29,7 @@ from gobject import TYPE_INT, \
 import gobject
 
 from chirpui import common, shiftdialog
-from chirp import chirp_common, errors, id800, ic2200
+from chirp import chirp_common, errors, id800, ic2200, icx8x
 
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    
@@ -645,7 +645,8 @@ class DstarMemoryEditor(MemoryEditor):
         rthread.submit(job)
 
         if not (isinstance(self.rthread.radio, id800.ID800v2Radio) or
-                isinstance(self.rthread.radio, ic2200.IC2200Radio)):
+                isinstance(self.rthread.radio, ic2200.IC2200Radio) or
+                isinstance(self.rthread.radio, icx8x.ICx8xRadio)):
             for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
                 column = self.view.get_column(self.col(i))
                 rend = column.get_cell_renderers()[0]

@@ -70,7 +70,7 @@ class CloneSettingsDialog(gtk.Dialog):
         self.port = miscwidgets.make_choice(ports, True, ports[0])
         self.port.show()
 
-        rtypes = ["ic2820", "ic2200", "id800"]
+        rtypes = ["ic2820", "ic2200", "id800", "icx8x"]
         if rtype:
             if not rtype in rtypes:
                 rtypes.insert(0, rtype)

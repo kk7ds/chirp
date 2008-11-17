@@ -27,7 +27,8 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, id800, ic2820, ic2200, ic9x, xml, CHIRP_VERSION
+from chirp import platform, id800, ic2820, ic2200, ic9x, icx8x, xml
+from chirp import CHIRP_VERSION
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
 RADIOS = {
@@ -36,6 +37,7 @@ RADIOS = {
     "ic9x:A" : ic9x.IC9xRadioA,
     "ic9x:B" : ic9x.IC9xRadioB,
     "id800"  : id800.ID800v2Radio,
+    "icx8x"  : icx8x.ICx8xRadio,
     "Virtual": xml.XMLRadio,
 }
 
