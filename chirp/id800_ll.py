@@ -289,7 +289,18 @@ def parse_map_for_memory(mmap):
     return memories
 
 def set_freq(mmap, freq):
-    mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / 5))[1:]
+    tflag = ord(mmap[POS_TUNE_FLAG]) & 0x7F
+
+    if chirp_common.is_fractional_step(freq):
+        mult = 6.25
+        tflag |= 0x80
+    else:
+        mult = 5
+
+    print "Setting fractional %.5f" % freq
+
+    mmap[POS_TUNE_FLAG] = tflag
+    mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
 
 def set_name(mmap, _name, enabled=True):
     name = _name.ljust(8)[:8]

@@ -452,3 +452,7 @@ class Status:
             ticks = "?" * 10
 
         return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
+
+def is_fractional_step(freq):
+    step = int((freq - int(freq)) * 1000)
+    return step == 12 or step == 6

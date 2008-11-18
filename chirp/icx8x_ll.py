@@ -50,7 +50,19 @@ def get_freq(mmap):
     return ((val * mult) / 1000.0) + 400 # FIXME: For V82
 
 def set_freq(mmap, freq):
-    mmap[POS_FREQ_START] = struct.pack("<H", int((freq - 400) * 1000) / 5)
+    tflag = ord(mmap[POS_MULT_FLAG]) & 0x7F
+
+    if chirp_common.is_fractional_step(freq):
+        mult = 6.25
+        tflag |= 0x80
+    else:
+        mult = 5
+
+    # Silly precision
+    value = int(round(((freq - 400) * 1000) / mult))
+
+    mmap[POS_MULT_FLAG] = tflag
+    mmap[POS_FREQ_START] = struct.pack("<H", value)
 
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
