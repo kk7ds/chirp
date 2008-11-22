@@ -262,7 +262,9 @@ class ChirpMain(gtk.Window):
         return True
 
     def do_import(self):
-        filen = platform.get_platform().gui_open_file()
+        types = [("CHIRP Files (*.chirp)", "*.chirp"),
+                 ("CSV Files (*.csv)", "*.csv")]
+        filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
             return
 
@@ -270,7 +272,10 @@ class ChirpMain(gtk.Window):
         eset.do_import(filen)
 
     def do_export(self):
-        filen = platform.get_platform().gui_save_file(default_name="radio.chirp")
+        types = [("CHIRP Files (*.chirp)", "*.chirp"),
+                 ("CSV Files (*.csv)", "*.csv")]
+        filen = platform.get_platform().gui_save_file(default_name="radio.chirp",
+                                                      types=types)
         if not filen:
             return
 

@@ -75,7 +75,7 @@ class Platform:
     def default_dir(self):
         return "."
 
-    def gui_open_file(self, start_dir=None):
+    def gui_open_file(self, start_dir=None, types=[]):
         import gtk
 
         dlg = gtk.FileChooserDialog("Select a file to open",
@@ -86,6 +86,12 @@ class Platform:
         if start_dir and os.path.isdir(start_dir):
             dlg.set_current_folder(start_dir)
 
+        for desc, spec in types:
+            ff = gtk.FileFilter()
+            ff.set_name(desc)
+            ff.add_pattern(spec)
+            dlg.add_filter(ff)
+
         res = dlg.run()
         fname = dlg.get_filename()
         dlg.destroy()
@@ -95,7 +101,7 @@ class Platform:
         else:
             return None
 
-    def gui_save_file(self, start_dir=None, default_name=None):
+    def gui_save_file(self, start_dir=None, default_name=None, types=[]):
         import gtk
 
         dlg = gtk.FileChooserDialog("Save file as",
@@ -108,6 +114,12 @@ class Platform:
 
         if default_name:
             dlg.set_current_name(default_name)
+
+        for desc, spec in types:
+            ff = gtk.FileFilter()
+            ff.set_name(desc)
+            ff.add_pattern(spec)
+            dlg.add_filter(ff)
 
         res = dlg.run()
         fname = dlg.get_filename()
@@ -239,24 +251,37 @@ class Win32Platform(Platform):
     def list_serial_ports(self):
         return ["COM%i" % x for x in range(1, 8)]
 
-    def gui_open_file(self, start_dir=None):
+    def gui_open_file(self, start_dir=None, types=[]):
         # pylint: disable-msg=W0703,W0613
         import win32gui
 
+        typestrs = ""
+        for desc, spec in types:
+            typestrs += "%s\0%s\0" % (desc, spec)
+        if not typestrs:
+            typestrs = None
+
         try:
-            fname, _, _ = win32gui.GetOpenFileNameW()
+            fname, _, _ = win32gui.GetOpenFileNameW(Filter=typestrs)
         except Exception, e:
             print "Failed to get filename: %s" % e
             return None
 
         return str(fname)
 
-    def gui_save_file(self, start_dir=None, default_name=None):
+    def gui_save_file(self, start_dir=None, default_name=None, types=[]):
         # pylint: disable-msg=W0703,W0613
         import win32gui
 
+        typestrs = ""
+        for desc, spec in types:
+            typestrs += "%s\0%s\0" % (desc, spec)
+        if not typestrs:
+            typestrs = None
+
         try:
-            fname, _, _ = win32gui.GetSaveFileNameW(File=default_name)
+            fname, _, _ = win32gui.GetSaveFileNameW(File=default_name,
+                                                    Filter=typestrs)
         except Exception, e:
             print "Failed to get filename: %s" % e
             return None
