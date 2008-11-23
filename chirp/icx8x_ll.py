@@ -39,7 +39,7 @@ POS_FLAGS_START= 0x1370
 
 MEM_LOC_SIZE   = 24
 
-def get_freq(mmap):
+def get_freq(mmap, base):
     if (ord(mmap[POS_MULT_FLAG]) & 0x80) == 0x80:
         mult = 6.25
     else:
@@ -47,9 +47,9 @@ def get_freq(mmap):
 
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
 
-    return ((val * mult) / 1000.0) + 400 # FIXME: For V82
+    return ((val * mult) / 1000.0) + base
 
-def set_freq(mmap, freq):
+def set_freq(mmap, freq, base):
     tflag = ord(mmap[POS_MULT_FLAG]) & 0x7F
 
     if chirp_common.is_fractional_step(freq):
@@ -59,7 +59,7 @@ def set_freq(mmap, freq):
         mult = 5
 
     # Silly precision
-    value = int(round(((freq - 400) * 1000) / mult))
+    value = int(round(((freq - base) * 1000) / mult))
 
     mmap[POS_MULT_FLAG] = tflag
     mmap[POS_FREQ_START] = struct.pack("<H", value)
@@ -250,7 +250,7 @@ def get_raw_memory(mmap, number):
     offset = get_mem_offset(number)
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
 
-def get_memory(_map, number):
+def get_memory(_map, number, base):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Empty")
 
@@ -258,7 +258,7 @@ def get_memory(_map, number):
 
     mem = chirp_common.Memory()
     mem.number = number
-    mem.freq = get_freq(mmap)
+    mem.freq = get_freq(mmap, base)
     mem.name = get_name(mmap)
     mem.rtone = get_rtone(mmap)
     mem.ctone = get_ctone(mmap)
@@ -273,10 +273,10 @@ def get_memory(_map, number):
 
     return mem
 
-def set_memory(_map, memory):
+def set_memory(_map, memory, base):
     mmap = get_raw_memory(_map, memory.number)
 
-    set_freq(mmap, memory.freq)
+    set_freq(mmap, memory.freq, base)
     set_name(mmap, memory.name)
     set_rtone(mmap, memory.rtone)
     set_ctone(mmap, memory.ctone)

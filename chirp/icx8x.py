@@ -15,7 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, icx8x_ll
+from chirp import chirp_common, icf, icx8x_ll, errors
+
+def isUHF(pipe):
+    md = icf.get_model_data(pipe)
+    val = ord(md[20])
+    uhf = val & 0x10
+
+    print "Radio is a %s82" % (uhf and "U" or "V")
+
+    return uhf
 
 class ICx8xRadio(chirp_common.IcomMmapRadio):
     _model = "\x28\x26\x00\x01"
@@ -37,23 +46,60 @@ class ICx8xRadio(chirp_common.IcomMmapRadio):
                (0x1938, 0x1940,  8),
                ]
 
+    def _get_type(self):
+        flag = (isUHF(self.pipe) != 0)
+
+        if self.isUHF is not None and (self.isUHF != flag):
+            raise errors.RadioError("VHF/UHF model mismatch")
+
+        self.isUHF = flag
+
+        return flag
+
+    def __init__(self, pipe):
+        chirp_common.IcomMmapRadio.__init__(self, pipe)
+
+        # Until I find a better way, I'll stash a boolean to indicate
+        # UHF-ness in an unused region of memory.  If we're opening a
+        # file, look for the flag.  If we're syncing from serial, set
+        # that flag.
+        if isinstance(pipe, str):
+            self.isUHF = (ord(self._mmap[0x1930]) != 0)
+            print "Found %s image" % (self.isUHF and "UHF" or "VHF")
+        else:
+            self.isUHF = None
+
     def sync_in(self):
+        self._get_type()
         self._mmap = icf.clone_from_radio(self)
-        
+        self._mmap[0x1930] = self.isUHF and 1 or 0
+
     def sync_out(self):
+        self._get_type()
+        from chirp import util
         return icf.clone_to_radio(self)
 
     def get_memory(self, number):
         if not self._mmap:
             self.sync_in()
 
-        return icx8x_ll.get_memory(self._mmap, number)
+        if self.isUHF:
+            base = 400
+        else:
+            base = 0
+
+        return icx8x_ll.get_memory(self._mmap, number, base)
 
     def set_memory(self, memory):
         if not self._mmap:
             self.sync_in()
 
-        self._mmap = icx8x_ll.set_memory(self._mmap, memory)
+        if self.isUHF:
+            base = 400
+        else:
+            base = 0
+
+        self._mmap = icx8x_ll.set_memory(self._mmap, memory, base)
 
     def get_raw_memory(self, number):
         return icx8x_ll.get_raw_memory(self._mmap, number)
