@@ -16,14 +16,171 @@
 
 import gtk
 import gobject
+import pango
 
-from chirp import platform
+import os
+
+import platform
+
+class KeyedListWidget(gtk.HBox):
+    __gsignals__ = {
+        "item-selected" : (gobject.SIGNAL_RUN_LAST,
+                           gobject.TYPE_NONE,
+                           (gobject.TYPE_STRING,)),
+        "item-toggled" : (gobject.SIGNAL_RUN_LAST,
+                          gobject.TYPE_BOOLEAN,
+                          (gobject.TYPE_STRING, gobject.TYPE_BOOLEAN)),
+        "item-set" : (gobject.SIGNAL_RUN_LAST,
+                      gobject.TYPE_NONE,
+                      (gobject.TYPE_STRING,)),
+        }
+
+    def _toggle(self, rend, path, colnum):
+        if self.__toggle_connected:
+            self.__store[path][colnum] = not self.__store[path][colnum]
+            iter = self.__store.get_iter(path)
+            id, = self.__store.get(iter, 0)
+            self.emit("item-toggled", id, self.__store[path][colnum])
+
+    def _mouse(self, view, event):
+        x, y = event.get_coords()
+        path = self.__view.get_path_at_pos(int(x), int(y))
+        if path:
+            self.__view.set_cursor_on_cell(path[0])
+
+        sel = self.get_selected()
+        if sel:
+            self.emit("item-selected", sel)
+
+    def _make_view(self):
+        colnum = -1
+    
+        for typ, cap in self.columns:
+            colnum += 1
+            if colnum == 0:
+                continue # Key column
+    
+            if typ in [gobject.TYPE_STRING, gobject.TYPE_INT, gobject.TYPE_FLOAT]:
+                rend = gtk.CellRendererText()
+                rend.set_property("ellipsize", pango.ELLIPSIZE_END)
+                column = gtk.TreeViewColumn(cap, rend, text=colnum)
+            elif typ in [gobject.TYPE_BOOLEAN]:
+                rend = gtk.CellRendererToggle()
+                rend.connect("toggled", self._toggle, colnum)
+                column = gtk.TreeViewColumn(cap, rend, active=colnum)
+            else:
+                raise Exception("Unsupported type %s" % typ)
+            
+            column.set_sort_column_id(colnum)
+            self.__view.append_column(column)
+    
+        self.__view.connect("button_press_event", self._mouse)
+
+    def set_item(self, key, *values):
+        iter = self.__store.get_iter_first()
+        while iter:
+            id, = self.__store.get(iter, 0)
+            if id == key:
+                self.__store.insert_after(iter, row=(id,)+values)
+                self.__store.remove(iter)
+                return
+            iter = self.__store.iter_next(iter)
+    
+        self.__store.append(row=(key,) + values)
+
+        self.emit("item-set", key)
+    
+    def get_item(self, key):
+        iter = self.__store.get_iter_first()
+        while iter:
+            vals = self.__store.get(iter, *tuple(range(len(self.columns))))
+            if vals[0] == key:
+                return vals
+            iter = self.__store.iter_next(iter)
+    
+        return None
+    
+    def del_item(self, key):
+        iter = self.__store.get_iter_first()
+        while iter:
+            id, = self.__store.get(iter, 0)
+            if id == key:
+                self.__store.remove(iter)
+                return True
+
+            iter = self.__store.iter_next(iter)
+    
+        return False
+    
+    def has_item(self, key):
+        return self.get_item(key) is not None
+    
+    def get_selected(self):
+        try:
+            (store, iter) = self.__view.get_selection().get_selected()
+            return store.get(iter, 0)[0]
+        except Exception, e:
+            print "Unable to find selected: %s" % e
+            return None
+
+    def select_item(self, key):
+        if key is None:
+            sel = self.__view.get_selection()
+            sel.unselect_all()
+            return True
+
+        iter = self.__store.get_iter_first()
+        while iter:
+            if self.__store.get(iter, 0)[0] == key:
+                selection = self.__view.get_selection()
+                path = self.__store.get_path(iter)
+                selection.select_path(path)
+                return True
+            iter = self.__store.iter_next(iter)
+
+        return False
+        
+    def get_keys(self):
+        keys = []
+        iter = self.__store.get_iter_first()
+        while iter:
+            key, = self.__store.get(iter, 0)
+            keys.append(key)
+            iter = self.__store.iter_next(iter)
+
+        return keys
+
+    def __init__(self, columns):
+        gtk.HBox.__init__(self, True, 0)
+    
+        self.columns = columns
+    
+        types = tuple([x for x,y in columns])
+    
+        self.__store = gtk.ListStore(*types)
+        self.__view = gtk.TreeView(self.__store)
+    
+        self.pack_start(self.__view, 1, 1, 1)
+    
+        self.__toggle_connected = False
+
+        self._make_view()
+        self.__view.show()
+
+    def connect(self, signame, *args):
+        if signame == "item-toggled":
+            self.__toggle_connected = True
+        
+        gtk.HBox.connect(self, signame, *args)
 
 class ListWidget(gtk.HBox):
     __gsignals__ = {
         "click-on-list" : (gobject.SIGNAL_RUN_LAST,
                            gobject.TYPE_NONE,
                            (gtk.TreeView, gtk.gdk.Event)),
+        "item-toggled" : (gobject.SIGNAL_RUN_LAST,
+                          gobject.TYPE_NONE,
+                          (gobject.TYPE_PYOBJECT,)),
         }
 
     store_type = gtk.ListStore
@@ -38,17 +195,23 @@ class ListWidget(gtk.HBox):
         vals = tuple(self._store.get(iter, *tuple(range(self._ncols))))
         for cb in self.toggle_cb:
             cb(*vals)
+        self.emit("item-toggled", vals)
 
     def make_view(self, columns):
         self._view = gtk.TreeView(self._store)
 
         for _type, _col in columns:
+            if _col.startswith("__"):
+                continue
+
             index = columns.index((_type, _col))
             if _type == gobject.TYPE_STRING or \
                     _type == gobject.TYPE_INT or \
                     _type == gobject.TYPE_FLOAT:
                 rend = gtk.CellRendererText()
                 column = gtk.TreeViewColumn(_col, rend, text=index)
+                column.set_resizable(True)
+                rend.set_property("ellipsize", pango.ELLIPSIZE_END)
             elif _type == gobject.TYPE_BOOLEAN:
                 rend = gtk.CellRendererToggle()
                 rend.connect("toggled", self._toggle, index)
@@ -271,6 +434,8 @@ class TreeWidget(ListWidget):
 class ProgressDialog(gtk.Window):
     def __init__(self, title, parent=None):
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
+        self.set_modal(True)
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
         self.set_title(title)
         if parent:
             self.set_transient_for(parent)
@@ -313,8 +478,10 @@ class LatLonEntry(gtk.Entry):
 
         self.connect("changed", self.format)
 
-    def format(self, _):
-        string = self.get_text()
+    def format(self, entry):
+        string = entry.get_text()
+        if string is None:
+            return
 
         deg = u"\u00b0"
 
@@ -330,7 +497,7 @@ class LatLonEntry(gtk.Entry):
             else:
                 string = string.replace(" ", "")
 
-        self.set_text(string)
+        entry.set_text(string)
 
     def parse_dd(self, string):
         return float(string)
@@ -439,15 +606,23 @@ class FilenameBox(gtk.HBox):
         "filename-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
 
-    def do_browse(self, _):
-        fn = platform.get_platform().gui_save_file(types=self.types)
+    def do_browse(self, _, dir):
+        if self.filename.get_text():
+            start = os.path.dirname(self.filename.get_text())
+        else:
+            start = None
+
+        if dir:
+            fn = platform.get_platform().gui_select_dir(start)
+        else:
+            fn = platform.get_platform().gui_save_file(start, types=self.types)
         if fn:
             self.filename.set_text(fn)
 
     def do_changed(self, _):
         self.emit("filename_changed")
 
-    def __init__(self, types=[]):
+    def __init__(self, find_dir=False, types=[]):
         gtk.HBox.__init__(self, False, 0)
 
         self.types = types
@@ -461,7 +636,7 @@ class FilenameBox(gtk.HBox):
         self.pack_start(browse, 0, 0, 0)
 
         self.filename.connect("changed", self.do_changed)
-        browse.connect("clicked", self.do_browse)
+        browse.connect("clicked", self.do_browse, find_dir)
 
     def set_filename(self, fn):
         self.filename.set_text(fn)
