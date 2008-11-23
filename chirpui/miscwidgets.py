@@ -440,15 +440,17 @@ class FilenameBox(gtk.HBox):
         }
 
     def do_browse(self, _):
-        fn = platform.get_platform().gui_save_file()
+        fn = platform.get_platform().gui_save_file(types=self.types)
         if fn:
             self.filename.set_text(fn)
 
     def do_changed(self, _):
         self.emit("filename_changed")
 
-    def __init__(self):
+    def __init__(self, types=[]):
         gtk.HBox.__init__(self, False, 0)
+
+        self.types = types
 
         self.filename = gtk.Entry()
         self.filename.show()
