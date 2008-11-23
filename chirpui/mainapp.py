@@ -91,7 +91,11 @@ class ChirpMain(gtk.Window):
 
     def do_open(self, fname=None):
         if not fname:
-            fname = platform.get_platform().gui_open_file()
+            types = [("CHIRP Radio Images (*.img)", "*.img"),
+                     ("CHIRP Files (*.chirp)", "*.chirp"),
+                     ("CSV Files (*.csv)", "*.csv"),
+                     ]
+            fname = platform.get_platform().gui_open_file(types=types)
             if not fname:
                 return
 
