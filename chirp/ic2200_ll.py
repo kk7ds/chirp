@@ -25,7 +25,8 @@ POS_FREQ_END   =  2
 POS_NAME_START =  4
 POS_NAME_END   = 10
 POS_MODE       = 23
-POS_DUPX       = 20
+POS_FLAG       = 20
+POS_DUPX       = 21
 POS_DOFF       =  2
 POS_RTONE      = 10
 POS_CTONE      = 11
@@ -74,12 +75,21 @@ def get_tune_step(mmap):
 
 def get_mode(mmap):
     val = struct.unpack("B", mmap[POS_MODE])[0] & 0x80
+    flg = struct.unpack("B", mmap[POS_FLAG])[0] & 0x30
+
     if val == 0x80:
         return "DV"
     elif val == 0x00:
-        return "FM"
+        mode = "FM"
+        if flg & 0x20:
+            mode = "AM"
+        
+        if flg & 0x10:
+            mode = "N" + mode
     else:
         raise errors.InvalidDataError("Radio has unknown mode %02x" % val)
+
+    return mode
 
 def get_duplex(mmap):
     val = struct.unpack("B", mmap[POS_DUPX])[0] & 0x30
@@ -210,12 +220,25 @@ def set_name(mmap, name):
         mmap[22] = 0x10
 
 def set_mode(mmap, mode):
+    val = ord(mmap[POS_FLAG]) & 0xCF
+
     if mode == "FM":
         mmap[POS_MODE] = 0
+    elif mode == "NFM":
+        mmap[POS_MODE] = 0
+        val |= 0x10
     elif mode == "DV":
         mmap[POS_MODE] = 0x80
+    elif mode == "AM":
+        mmap[POS_MODE] = 0
+        val |= 0x20
+    elif mode == "NAM":
+        mmap[POS_MODE] = 0
+        val |= 0x30
     else:
         raise errors.InvalidDataError("Unsupported mode `%s'" % mode)
+
+    mmap[POS_FLAG] = val
 
 def set_duplex(mmap, duplex):
     mask = 0xCF # ~ 00110000
