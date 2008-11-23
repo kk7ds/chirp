@@ -187,6 +187,7 @@ class IC92MemoryFrame(IC92Frame):
         self._rpt1call = ""
         self._rpt2call = ""
         self._number = -1
+        self._skip = ""
 
     def _post_proc(self):
         if len(self._data) < 36:
@@ -277,6 +278,12 @@ class IC92MemoryFrame(IC92Frame):
         index = ord(mmap[21]) & 0x0F
         self._ts = TUNING_STEPS[index]               
 
+        skip = ord(mmap[23]) & 0x03
+        if skip == 0x02:
+            self._skip = "P"
+        elif skip == 0x01:
+            self._skip = "S"
+
         if self.is_dv:
             self._rpt2call = mmap[36:44].rstrip()
             self._rpt1call = mmap[44:52].rstrip()
@@ -349,6 +356,13 @@ class IC92MemoryFrame(IC92Frame):
         val |= idx
         mmap[21] = val
 
+        val = ord(mmap[23]) & 0xFC
+        if self._skip == "S":
+            val |= 0x01
+        elif self._skip == "P":
+            val |= 0x02
+        mmap[23] = val
+
         if self._vfo == 2:
             mmap[36] = self._rpt2call.ljust(8)
             mmap[44] = self._rpt1call.ljust(8)
@@ -379,6 +393,7 @@ class IC92MemoryFrame(IC92Frame):
         self._dtcs_polarity = memory.dtcs_polarity
         self._tmode = memory.tmode
         self._ts = memory.tuning_step
+        self._skip = memory.skip
 
         if isinstance(memory, chirp_common.DVMemory) and vfo == 2:
             self._urcall = memory.dv_urcall
@@ -409,6 +424,7 @@ class IC92MemoryFrame(IC92Frame):
 
         mem.tmode = self._tmode
         mem.tuning_step = self._ts
+        mem.skip = self._skip
         
         return mem
 

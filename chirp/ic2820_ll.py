@@ -53,6 +53,8 @@ POS_USED_START = 0x61E0
 POS_URCALL     = 0x69B8
 POS_RPTCALL    = 0x6B98
 POS_MYCALL     = 0x6970
+POS_SKIP_START = 0x6222
+POS_PSKIP_START= 0x6263
 
 MEM_LOC_SIZE   = 0x30
 
@@ -161,6 +163,17 @@ def set_raw_memory(dst, src, number):
     offset = number * MEM_LOC_SIZE
     dst[offset] = src.get_packed()
 
+def get_skip(mmap, number):
+    byte = number / 8
+    bit = 1 << (number % 8)
+
+    if ord(mmap[POS_SKIP_START + byte]) & bit:
+        return "S"
+    elif ord(mmap[POS_PSKIP_START + byte]) & bit:
+        return "P"
+    else:
+        return ""
+
 def get_memory(_map, number):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
@@ -189,6 +202,7 @@ def get_memory(_map, number):
     mem.offset = get_dup_off(mmap)
     mem.mode = get_mode(mmap)
     mem.tuning_step = get_tune_step(mmap)
+    mem.skip = get_skip(_map, number)
 
     return mem
 
@@ -283,6 +297,29 @@ def set_mode(mmap, mode):
 
     mmap[POS_MODE_START] = struct.pack(">H", val)
 
+def set_skip(mmap, number, skip):
+    if skip not in ["", "P", "S"]:
+        raise errors.InvalidDataError("Skip mode not supported by this model")
+
+    byte = number / 8
+    bit = 1 << (number % 8)
+
+    if skip:
+        orval = bit
+    else:
+        orval = 0
+
+    pval = ord(mmap[POS_PSKIP_START + byte]) & ~bit
+    if skip == "P":
+        pval |= bit
+
+    sval = ord(mmap[POS_SKIP_START + byte]) & ~bit
+    if skip == "S":
+        sval |= bit
+    
+    mmap[POS_PSKIP_START + byte] = pval
+    mmap[POS_SKIP_START + byte] = sval
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -306,6 +343,7 @@ def set_memory(_map, mem):
     set_raw_memory(_map, mmap, mem.number)
 
     set_used(_map, mem.number, True)
+    set_skip(_map, mem.number, mem.skip)
 
     return _map
 

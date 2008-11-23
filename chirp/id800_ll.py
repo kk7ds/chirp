@@ -74,7 +74,7 @@ def is_used(mmap, number):
     return not ((ord(mmap[POS_FLAGS + number]) & 0x70) == 0x70)
 
 def set_used(mmap, number, used):
-    val = ord(mmap[POS_FLAGS + number]) & 0x0F
+    val = ord(mmap[POS_FLAGS + number]) & 0x3F
 
     if not used:
         val |= 0x70
@@ -216,6 +216,16 @@ def get_raw_memory(mmap, number):
 def get_call_indices(mmap):
     return ord(mmap[18]), ord(mmap[19]), ord(mmap[20])
 
+def get_skip(mmap, number):
+    val = ord(mmap[POS_FLAGS + number]) & 0x30
+
+    if val == 0x20:
+        return "P"
+    elif val == 0x10:
+        return "S"
+    else:
+        return ""
+
 def get_memory(_map, number):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
@@ -242,6 +252,7 @@ def get_memory(_map, number):
     mem.dtcs = get_dtcs(mmap)
     mem.tmode = get_tone_enabled(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
+    mem.skip = get_skip(_map, number)
 
     return mem
 
@@ -435,6 +446,20 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
     mmap[19] = r1index
     mmap[20] = r2index
 
+def set_skip(mmap, number, skip):
+    val = ord(mmap[POS_FLAGS + number]) & 0xCF
+
+    if skip == "P":
+        val |= 0x20
+    elif skip == "S":
+        val |= 0x10
+    elif skip == "":
+        pass
+    else:
+        raise errors.InvalidDataError("Skip mode not supported by this model")
+
+    mmap[POS_FLAGS + number] = val    
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -448,6 +473,7 @@ def set_memory(_map, mem):
     set_dtcs(mmap, mem.dtcs)
     set_tone_enabled(mmap, mem.tmode)
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
+    set_skip(_map, mem.number, mem.skip)
 
     if isinstance(mem, chirp_common.DVMemory):
         set_call_indices(_map, mmap,

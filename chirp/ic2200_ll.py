@@ -33,7 +33,7 @@ POS_DTCS       = 12
 POS_DTCS_POL   = 21
 POS_TENB       = 19
 POS_TUNE_STEP  = 13
-POS_USED_START = 0x1370
+POS_FLAGS_START= 0x1370
 POS_MYURCALL   = 17
 POS_RPTCALL    = 18
 
@@ -47,15 +47,15 @@ TUNING_STEPS = list(chirp_common.TUNING_STEPS)
 TUNING_STEPS.remove(6.25)
 
 def is_used(mmap, number):
-    return (ord(mmap[POS_USED_START + number]) & 0x20) == 0
+    return (ord(mmap[POS_FLAGS_START + number]) & 0x20) == 0
 
 def set_used(mmap, number, used=True):
-    val = ord(mmap[POS_USED_START + number]) & 0x0F
+    val = ord(mmap[POS_FLAGS_START + number]) & 0xDF
 
     if not used:
         val |= 0x20
 
-    mmap[POS_USED_START + number] = val
+    mmap[POS_FLAGS_START + number] = val
 
 def get_freq(mmap):
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
@@ -145,6 +145,14 @@ def get_call_indices(mmap):
         (ord(mmap[18]) & 0xF0) >> 4, \
         ord(mmap[18]) & 0x0F
                
+def get_skip(mmap, number):
+    val = ord(mmap[POS_FLAGS_START + number]) & 0x10
+
+    if val != 0:
+        return "S"
+    else:
+        return ""
+
 def get_memory(_map, number):
     mmap = get_raw_memory(_map, number)
 
@@ -177,6 +185,7 @@ def get_memory(_map, number):
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
     print "Getting TS for %i" % number
     mem.tuning_step = get_tune_step(mmap)
+    mem.skip = get_skip(_map, number)
     
     return mem
 
@@ -287,6 +296,17 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
     mmap[17] = (ord(mmap[17]) & 0xF0) | uindex
     mmap[18] = (r1index << 4) | r2index
 
+def set_skip(mmap, number, skip):
+    if skip == "P":
+        raise errors.InvalidDataError("PSKIP not supported by this model")
+
+    val = ord(mmap[POS_FLAGS_START + number]) & 0xEF
+
+    if skip == "S":
+        val |= 0x10
+
+    mmap[POS_FLAGS_START + number] = val
+
 def set_memory(_map, memory):
     mmap = get_raw_memory(_map, memory.number)
 
@@ -307,6 +327,7 @@ def set_memory(_map, memory):
     set_tone_enabled(mmap, memory.tmode)
     set_dtcs_polarity(mmap, memory.dtcs_polarity)
     set_tune_step(mmap, memory.tuning_step)
+    set_skip(_map, memory.number, memory.skip)
 
     if isinstance(memory, chirp_common.DVMemory):
         set_call_indices(_map,

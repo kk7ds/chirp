@@ -35,7 +35,7 @@ POS_MULT_FLAG  = 21
 POS_DTCS_POL   = 22
 POS_DUPLEX     = 22
 
-POS_USED_START = 0x1370
+POS_FLAGS_START= 0x1370
 
 MEM_LOC_SIZE   = 24
 
@@ -212,15 +212,34 @@ def set_mode(mmap, mode):
     mmap[POS_MODE] = val
 
 def is_used(mmap, number):
-    return (ord(mmap[POS_USED_START + number]) & 0x20) == 0
+    return (ord(mmap[POS_FLAGS_START + number]) & 0x20) == 0
 
 def set_used(mmap, number, used=True):
-    val = struct.unpack("B", mmap[POS_USED_START])[0] & 0xDF
+    val = struct.unpack("B", mmap[POS_FLAGS_START + number])[0] & 0xDF
 
     if not used:
         val |= 0x20
 
-    mmap[POS_USED_START + number] = val
+    mmap[POS_FLAGS_START + number] = val
+
+def get_skip(mmap, number):
+    val = struct.unpack("B", mmap[POS_FLAGS_START + number])[0] & 0x10
+
+    if val != 0:
+        return "S"
+    else:
+        return ""
+
+def set_skip(mmap, number, skip):
+    if skip == "P":
+        raise errors.InvalidDataError("PSKIP not supported by this model")
+
+    val = struct.unpack("B", mmap[POS_FLAGS_START + number])[0] & 0xEF
+
+    if skip == "S":
+        val |= 0x10
+
+    mmap[POS_FLAGS_START + number] = val
 
 # --
 
@@ -250,6 +269,7 @@ def get_memory(_map, number):
     mem.tmode = get_tone_enabled(mmap)
     mem.tuning_step = get_tune_step(mmap)
     mem.mode = get_mode(mmap)
+    mem.skip = get_skip(_map, number)
 
     return mem
 
@@ -267,6 +287,7 @@ def set_memory(_map, memory):
     set_tone_enabled(mmap, memory.tmode)
     set_tune_step(mmap, memory.tuning_step)
     set_mode(mmap, memory.mode)
+    set_skip(_map, memory.number, memory.skip)
 
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     set_used(_map, memory.number)

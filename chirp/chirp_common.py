@@ -73,6 +73,8 @@ TUNING_STEPS = [
     5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0
 ]
 
+SKIP_VALUES = [ "", "S", "P" ]
+
 class IcomFrame:
     pass
 
@@ -86,6 +88,7 @@ class Memory:
     dtcs = 23
     tmode = ""
     dtcs_polarity = "NN"
+    skip = ""
 
     # FIXME: Decorator for valid value?
     duplex = ""
@@ -101,6 +104,7 @@ class Memory:
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
         "mode"          : MODES,
         "duplex"        : ["", "+", "-"],
+        "skip"          : SKIP_VALUES,
         }
 
     CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \

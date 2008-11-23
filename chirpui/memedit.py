@@ -69,6 +69,7 @@ class MemoryEditor(common.Editor):
         ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
         ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
         ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
+        ("Skip"      , TYPE_STRING, gtk.CellRendererCombo, ),
         ]
 
     defaults = {
@@ -83,6 +84,7 @@ class MemoryEditor(common.Editor):
         "Mode"      : "FM",
         "Tune Step" : 10.0,
         "Tone Mode" : "",
+        "Skip"      : "",
         }
 
     choices = {
@@ -94,6 +96,7 @@ class MemoryEditor(common.Editor):
         "Duplex" : ["", "-", "+"],
         "Tune Step" : chirp_common.TUNING_STEPS,
         "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
+        "Skip" : chirp_common.SKIP_VALUES,
         }
     
     def ed_name(self, _, __, new, ___):
@@ -466,7 +469,8 @@ time.  Are you sure you want to do this?"""
                        self.col("Duplex"), memory.duplex,
                        self.col("Offset"), memory.offset,
                        self.col("Mode"), memory.mode,
-                       self.col("Tune Step"), memory.tuning_step)
+                       self.col("Tune Step"), memory.tuning_step,
+                       self.col("Skip"), memory.skip)
 
     def set_memory(self, memory):
         iter = self.store.get_iter_first()
@@ -509,6 +513,7 @@ time.  Are you sure you want to do this?"""
         mem.offset = vals[self.col("Offset")]
         mem.mode = vals[self.col("Mode")]
         mem.tuning_step = vals[self.col("Tune Step")]
+        mem.skip = vals[self.col("Skip")]
 
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
