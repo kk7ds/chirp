@@ -278,3 +278,59 @@ def clone_to_radio(radio):
         raise errors.RadioError("Did not get clone result from radio")
 
     return result.payload[0] == '\x00'
+
+def convert_model(mod_str):
+    data = ""
+    for i in range(0, len(mod_str), 2):
+        hex = mod_str[i:i+2]
+        val = int(hex, 16)
+        data += chr(val)
+
+    return data
+
+def convert_data_line(line):
+    if line.startswith("#"):
+        return ""
+
+    pos = int(line[0:4], 16)
+    len = int(line[4:6], 16)
+    dat = line[6:]
+
+    _mmap = ""
+    i = 0
+    while i < (len * 2):
+        try:
+            val = int("%s%s" % (dat[i], dat[i+1]), 16)
+            i += 2
+            _mmap += struct.pack("B", val)
+        except ValueError, e:
+            print "Failed to parse byte: %s" % e
+            break
+
+    return _mmap
+
+def read_file(filename):
+    f = file(filename)
+
+    mod_str = f.readline()
+    cmt_str = f.readline()
+    dat = f.readlines()
+    
+    model = convert_model(mod_str.strip())
+
+    _mmap = ""
+    for line in dat:
+        _mmap += convert_data_line(line)
+
+    return model, memmap.MemoryMap(_mmap)
+
+if __name__ == "__main__":
+    import sys
+
+    model, mmap = read_file(sys.argv[1])
+
+    print util.hexprint(model)
+
+    f = file("out.img", "w")
+    f.write(mmap.get_packed())
+    f.close()

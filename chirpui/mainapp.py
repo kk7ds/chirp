@@ -28,7 +28,7 @@ if __name__ == "__main__":
     sys.path.insert(0, "..")
 
 from chirp import platform, id800, ic2820, ic2200, ic9x, icx8x, xml
-from chirp import CHIRP_VERSION
+from chirp import CHIRP_VERSION, convert_icf
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
 RADIOS = {
@@ -299,6 +299,25 @@ class ChirpMain(gtk.Window):
         d.run()
         d.destroy()
 
+    def do_converticf(self):
+        icftypes = [("ICF Files (*.icf)", "*.icf")]
+        icffile = platform.get_platform().gui_open_file(types=icftypes)
+        if not icffile:
+            return
+
+        imgtypes = [("CHIRP Radio Images (*.img)", "*.img")]
+        imgfile = platform.get_platform().gui_save_file(types=imgtypes)
+        if not imgfile:
+            return
+
+        try:
+            convert_icf.icf_to_image(icffile, imgfile)
+        except Exception, e:
+            log_exception()
+            common.show_error("Unable to convert ICF file: %s" % e)
+
+        self.do_open(imgfile)
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -318,6 +337,8 @@ class ChirpMain(gtk.Window):
             self.do_cloneout()
         elif action == "close":
             self.do_close()
+        elif action == "converticf":
+            self.do_converticf()
         elif action == "open9xA":
             self.do_open9x(ic9x.IC9xRadioA)
         elif action == "open9xB":
@@ -343,6 +364,7 @@ class ChirpMain(gtk.Window):
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <menuitem action="close"/>
+      <menuitem action="converticf"/>
       <menuitem action="quit"/>
     </menu>
     <menu action="radio">
@@ -371,6 +393,7 @@ class ChirpMain(gtk.Window):
             ('open9xB', None, "Band B", None, None, self.mh),
             ('save', None, "_Save", None, None, self.mh),
             ('saveas', None, "Save _As", None, None, self.mh),
+            ('converticf', None, "Convert .icf file", None, None, self.mh),
             ('close', None, "_Close", None, None, self.mh),
             ('quit', None, "_Quit", None, None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),
