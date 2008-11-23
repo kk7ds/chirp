@@ -177,8 +177,11 @@ class MemoryEditor(common.Editor):
             if new == "(None)":
                 new = ""
 
-        if not handle_ed(rend, path, new, self.store, self.col(cap)):
+        if not handle_ed(rend, path, new, self.store, self.col(cap)) and \
+                cap != "Frequency":
             # No change was made
+            # For frequency, we make an exception, since the handler might
+            # have altered the duplex.  That needs to be fixed.
             return
 
         iter = self.store.get_iter(path)
