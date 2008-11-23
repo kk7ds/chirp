@@ -80,7 +80,8 @@ class CloneSettingsDialog(gtk.Dialog):
             self.rtype = miscwidgets.make_choice(rtypes, False, rtypes[0])
         self.rtype.show()
 
-        self.filename = miscwidgets.FilenameBox()
+        types = [("CHIRP Radio Images (*.img)", "*.img")]
+        self.filename = miscwidgets.FilenameBox(types=types)
         if not clone_in:
             self.filename.set_sensitive(False)
         if filename:
