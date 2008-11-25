@@ -267,6 +267,7 @@ class ChirpMain(gtk.Window):
 
     def do_import(self):
         types = [("CHIRP Files (*.chirp)", "*.chirp"),
+                 ("CHIRP Radio Images (*.img)", "*.img"),
                  ("CSV Files (*.csv)", "*.csv")]
         filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
@@ -277,6 +278,7 @@ class ChirpMain(gtk.Window):
 
     def do_export(self):
         types = [("CHIRP Files (*.chirp)", "*.chirp"),
+                 ("CHIRP Radio Images (*.img)", "*.img"),
                  ("CSV Files (*.csv)", "*.csv")]
         filen = platform.get_platform().gui_save_file(default_name="radio.chirp",
                                                       types=types)
