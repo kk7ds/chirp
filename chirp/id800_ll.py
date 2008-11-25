@@ -283,6 +283,8 @@ def get_mycall(mmap, index):
 def get_urcall(mmap, index):
     if index > 99:
         raise errors.InvalidDataError("URCALL index must be <= 99")
+    elif index == 0:
+        return "CQCQCQ"
 
     start = call_location(POS_URCALL, index)
 
@@ -291,6 +293,8 @@ def get_urcall(mmap, index):
 def get_rptcall(mmap, index):
     if index > 59:
         raise errors.InvalidDataError("RPTCALL index must be <= 59")
+    elif index == 0:
+        return ""
 
     start = call_location(POS_RPTCALL, index)
 

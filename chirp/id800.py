@@ -64,6 +64,8 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
     URCALL_LIMIT  = (1, 99)
     RPTCALL_LIMIT = (1, 59)
 
+    feature_has_implicit_calls = True
+
     def process_mmap(self):
         self._memories = id800_ll.parse_map_for_memory(self._mmap)
 
@@ -110,7 +112,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
         raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_urcall_list(self):
-        calls = []
+        calls = ["CQCQCQ"]
 
         for i in range(*self.URCALL_LIMIT):
             call = id800_ll.get_urcall(self._mmap, i)
@@ -120,7 +122,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
         return calls
 
     def get_repeater_call_list(self):
-        calls = []
+        calls = ["*NOTUSE*"]
 
         for i in range(*self.RPTCALL_LIMIT):
             call = id800_ll.get_rptcall(self._mmap, i)
@@ -142,7 +144,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
     def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
             try:
-                call = calls[i-1]
+                call = calls[i] # Skip the implicit CQCQCQ
             except IndexError:
                 call = " " * 8
 
@@ -152,7 +154,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
     def set_repeater_call_list(self, calls):
         for i in range(*self.RPTCALL_LIMIT):
             try:
-                call = calls[i-1]
+                call = calls[i] # Skip the implicit blank
             except IndexError:
                 call = " " * 8
 
