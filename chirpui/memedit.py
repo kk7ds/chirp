@@ -70,6 +70,8 @@ class MemoryEditor(common.Editor):
         ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
         ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
         ("Skip"      , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Bank"      , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Bank Index", TYPE_INT,    gtk.CellRendererText,  ),
         ]
 
     defaults = {
@@ -85,6 +87,8 @@ class MemoryEditor(common.Editor):
         "Tune Step" : 10.0,
         "Tone Mode" : "",
         "Skip"      : "",
+        "Bank"      : None,
+        "Bank Index": 0,
         }
 
     choices = {
@@ -473,7 +477,9 @@ time.  Are you sure you want to do this?"""
                        self.col("Offset"), memory.offset,
                        self.col("Mode"), memory.mode,
                        self.col("Tune Step"), memory.tuning_step,
-                       self.col("Skip"), memory.skip)
+                       self.col("Skip"), memory.skip,
+                       self.col("Bank"), memory.bank or "",
+                       self.col("Bank Index"), memory.bank_index)
 
     def set_memory(self, memory):
         iter = self.store.get_iter_first()
@@ -517,6 +523,8 @@ time.  Are you sure you want to do this?"""
         mem.mode = vals[self.col("Mode")]
         mem.tuning_step = vals[self.col("Tune Step")]
         mem.skip = vals[self.col("Skip")]
+        mem.bank = vals[self.col("Bank")] or None
+        mem.bank_index = vals[self.col("Bank Index")]
 
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
@@ -569,12 +577,27 @@ time.  Are you sure you want to do this?"""
         self.lo_limit_adj = self.hi_limit_adj = None
         self.store = self.view = None
 
+        self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+        self.choices["Bank"].append(("", "(None)"))
+
+        def bank_cb(banks):
+            for bank in banks:
+                self.choices["Bank"].append((bank, bank))
+
+        job = common.RadioJob(bank_cb, "get_banks")
+        job.set_desc("Getting bank list")
+        rthread.submit(job)
+
         vbox = gtk.VBox(False, 2)
         vbox.pack_start(self.make_controls(), 0, 0, 0)
         vbox.pack_start(self.make_editor(), 1, 1, 1)
         vbox.show()
         
         self.root = vbox
+
+        if not rthread.radio.feature_bankindex:
+            bi = self.view.get_column(self.col("Bank Index"))
+            bi.set_visible(False)
 
         self.prefill()
 
