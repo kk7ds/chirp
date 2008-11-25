@@ -70,6 +70,10 @@ ID800_MODES_REV = {}
 for __val, __mode in ID800_MODES.items():
     ID800_MODES_REV[__mode] = __val
 
+def bank_name(index):
+    char = chr(ord("A") + index)
+    return "BANK-%s" % char
+
 def is_used(mmap, number):
     return not ((ord(mmap[POS_FLAGS + number]) & 0x70) == 0x70)
 
@@ -226,6 +230,14 @@ def get_skip(mmap, number):
     else:
         return ""
 
+def get_bank(mmap, number):
+    val = ord(mmap[POS_FLAGS + number]) & 0x0F
+
+    if val == 0x0A:
+        return None
+    else:
+        return bank_name(val)
+
 def get_memory(_map, number):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
@@ -253,6 +265,7 @@ def get_memory(_map, number):
     mem.tmode = get_tone_enabled(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
     mem.skip = get_skip(_map, number)
+    mem.bank = get_bank(_map, number)
 
     return mem
 
@@ -460,6 +473,20 @@ def set_skip(mmap, number, skip):
 
     mmap[POS_FLAGS + number] = val    
 
+def set_bank(mmap, number, bank):
+    try:
+        if bank is None:
+            index = 0x0A
+        else:
+            foo, id = bank.split("-", 1)
+            index = ord(id) - ord("A")
+    except Exception:
+        raise errors.InvalidDataError("Unknown bank `%s'" % bank)
+
+    val = ord(mmap[POS_FLAGS + number]) & 0xF0
+    val |= index
+    mmap[POS_FLAGS + number] = val    
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -474,6 +501,7 @@ def set_memory(_map, mem):
     set_tone_enabled(mmap, mem.tmode)
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
     set_skip(_map, mem.number, mem.skip)
+    set_bank(_map, mem.number, mem.bank)
 
     if isinstance(mem, chirp_common.DVMemory):
         set_call_indices(_map, mmap,

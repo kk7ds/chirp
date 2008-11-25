@@ -55,6 +55,8 @@ POS_RPTCALL    = 0x6B98
 POS_MYCALL     = 0x6970
 POS_SKIP_START = 0x6222
 POS_PSKIP_START= 0x6263
+POS_BNAME_START= 0x66C0
+POS_BANK_START = 0x62A8
 
 MEM_LOC_SIZE   = 0x30
 
@@ -174,6 +176,22 @@ def get_skip(mmap, number):
     else:
         return ""
 
+def get_bank_names(mmap):
+    names = []
+    for i in range(0, 26):
+        pos = POS_BNAME_START + (i * 8)
+        label = mmap[pos:pos+8].rstrip()
+        name = "%s - %s" % (chr(i + ord("A")), label)
+        names.append(name)
+    
+    return names
+
+def get_bank_info(mmap, number):
+    bank = ord(mmap[POS_BANK_START + (number * 2)])
+    bidx = ord(mmap[POS_BANK_START + (number * 2) + 1])
+
+    return bank, bidx
+
 def get_memory(_map, number):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Location %i is empty" % number)
@@ -203,6 +221,16 @@ def get_memory(_map, number):
     mem.mode = get_mode(mmap)
     mem.tuning_step = get_tune_step(mmap)
     mem.skip = get_skip(_map, number)
+
+    # FIXME: Potential for optimization here
+    banks = get_bank_names(_map)
+    b, i = get_bank_info(_map, number)
+    if b == 0xFF:
+        mem.bank = None
+        mem.bank_index = -1
+    else:
+        mem.bank = banks[b]
+        mem.bank_index = i
 
     return mem
 
@@ -320,6 +348,22 @@ def set_skip(mmap, number, skip):
     mmap[POS_PSKIP_START + byte] = pval
     mmap[POS_SKIP_START + byte] = sval
 
+def parse_bank_name(bname):
+    chr = bname[0]
+    idx = ord(bname[0]) - ord("A")
+
+    if idx < 0 or idx > 25:
+        raise errors.InvalidDataError("Invalid bank number %i" % idx)
+
+    return idx
+
+def set_bank_info(mmap, number, bank, index):
+    if bank >= 25:
+        raise errors.InvalidDataError("Invalid bank number %i" % bank)
+
+    mmap[POS_BANK_START + (number * 2)] = bank
+    mmap[POS_BANK_START + (number * 2) + 1] = index
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -344,6 +388,8 @@ def set_memory(_map, mem):
 
     set_used(_map, mem.number, True)
     set_skip(_map, mem.number, mem.skip)
+
+    set_bank_info(_map, mem.number, parse_bank_name(mem.bank), mem.bank_index)
 
     return _map
 

@@ -103,3 +103,15 @@ class ICx8xRadio(chirp_common.IcomMmapRadio):
 
     def get_raw_memory(self, number):
         return icx8x_ll.get_raw_memory(self._mmap, number)
+
+    def get_banks(self):
+        banks = []
+
+        for i in range(0, 10):
+            banks.append(chirp_common.ImmutableBank(icx8x_ll.bank_name(i)))
+
+        return banks
+
+    def set_banks(self, banks):
+        raise errors.InvalidDataError("Bank naming not supported on this model")
+

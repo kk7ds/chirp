@@ -39,6 +39,10 @@ POS_FLAGS_START= 0x1370
 
 MEM_LOC_SIZE   = 24
 
+def bank_name(index):
+    char = chr(ord("A") + index)
+    return "BANK-%s" % char
+
 def get_freq(mmap, base):
     if (ord(mmap[POS_MULT_FLAG]) & 0x80) == 0x80:
         mult = 6.25
@@ -250,6 +254,28 @@ def get_raw_memory(mmap, number):
     offset = get_mem_offset(number)
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
 
+def get_bank(mmap, number):
+    val = ord(mmap[POS_FLAGS_START + number]) & 0x0F
+
+    if val == 0x0A:
+        return None
+    else:
+        return bank_name(val)
+
+def set_bank(mmap, number, bank):
+    try:
+        if bank is None:
+            index = 0x0A
+        else:
+            foo, id = bank.split("-", 1)
+            index = ord(id) - ord("A")
+    except Exception:
+        raise errors.InvalidDataError("Unknown bank `%s'" % bank)
+
+    val = ord(mmap[POS_FLAGS_START + number]) & 0xF0
+    val |= index
+    mmap[POS_FLAGS_START + number] = val    
+
 def get_memory(_map, number, base):
     if not is_used(_map, number):
         raise errors.InvalidMemoryLocation("Empty")
@@ -270,6 +296,7 @@ def get_memory(_map, number, base):
     mem.tuning_step = get_tune_step(mmap)
     mem.mode = get_mode(mmap)
     mem.skip = get_skip(_map, number)
+    mem.bank = get_bank(_map, number)
 
     return mem
 
@@ -288,6 +315,7 @@ def set_memory(_map, memory, base):
     set_tune_step(mmap, memory.tuning_step)
     set_mode(mmap, memory.mode)
     set_skip(_map, memory.number, memory.skip)
+    set_bank(_map, memory.number, memory.bank)
 
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     set_used(_map, memory.number)

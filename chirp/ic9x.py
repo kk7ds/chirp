@@ -25,10 +25,13 @@ class IC9xRadio(chirp_common.IcomRadio):
     __last = 0
     mem_upper_limit = 300
 
+    feature_bankindex = True
+
     def __init__(self, *args, **kwargs):
         chirp_common.IcomRadio.__init__(self, *args, **kwargs)
 
         self.__memcache = {}
+        self.__bankcache = {}
     
     def get_memory(self, number):
         if number < 0 or number > 999:
@@ -45,6 +48,13 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         m = mframe.get_memory()
 
+        # Fix up bank - UGLY
+        self.get_banks()
+        if m.bank == "\0":
+            m.bank = None
+        else:
+            m.bank = str(self.__bankcache[m.bank])
+        
         self.__memcache[m.number] = m
 
         return m
@@ -105,6 +115,31 @@ class IC9xRadio(chirp_common.IcomRadio):
             raise errors.InvalidDataError("Radio reported error")
 
         self.__memcache[memory.number] = memory
+
+    def get_banks(self):
+        if len(self.__bankcache.keys()) == 26:
+            return [self.__bankcache[k] for k in sorted(self.__bankcache.keys())]
+
+        ic9x_ll.send_magic(self.pipe)
+        bank_frames = ic9x_ll.send(self.pipe, "\x01\x80\x1a\x09")
+
+        if self.vfo == 1:
+            base = 180
+        elif self.vfo == 2:
+            base = 237
+
+        banks = []
+
+        for i in range(base, base+26):
+            bf = ic9x_ll.IC92BankFrame()
+            bf.from_frame(bank_frames[i])
+
+            name = "%s - %s" % (bf.get_identifier(), bf.get_name())
+            bank = chirp_common.Bank(name)
+            banks.append(bank)
+            self.__bankcache[bf.get_identifier()] = bank
+
+        return banks
 
 class IC9xRadioA(IC9xRadio):
     vfo = 1

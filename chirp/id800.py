@@ -98,6 +98,17 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
     def get_raw_memory(self, number):
         return id800_ll.get_raw_memory(self._mmap, number)
 
+    def get_banks(self):
+        banks = []
+
+        for i in range(0, 10):
+            banks.append(chirp_common.ImmutableBank(id800_ll.bank_name(i)))
+
+        return banks
+
+    def set_banks(self, banks):
+        raise errors.InvalidDataError("Bank naming not supported on this model")
+
     def get_urcall_list(self):
         calls = []
 

@@ -121,6 +121,12 @@ class IC92BankFrame(IC92Frame):
     def __str__(self):
         return "Bank %s: %s" % (self._data[2], self._data[3:])
 
+    def get_name(self):
+        return self._data[3:]
+
+    def get_identifier(self):
+        return self._data[2]
+
 class IC92MemClearFrame(IC92Frame):
     def __init__(self, vfo, number):
         IC92Frame.__init__(self)
@@ -188,6 +194,8 @@ class IC92MemoryFrame(IC92Frame):
         self._rpt2call = ""
         self._number = -1
         self._skip = ""
+        self._bank = "\0"
+        self._bank_index = 0
 
     def _post_proc(self):
         if len(self._data) < 36:
@@ -284,6 +292,9 @@ class IC92MemoryFrame(IC92Frame):
         elif skip == 0x01:
             self._skip = "S"
 
+        self._bank = mmap[24]
+        self._bank_index = int("%02x" % ord(mmap[25]))
+
         if self.is_dv:
             self._rpt2call = mmap[36:44].rstrip()
             self._rpt1call = mmap[44:52].rstrip()
@@ -363,6 +374,9 @@ class IC92MemoryFrame(IC92Frame):
             val |= 0x02
         mmap[23] = val
 
+        mmap[24] = self._bank
+        mmap[25] = bcd_encode(self._bank_index)
+
         if self._vfo == 2:
             mmap[36] = self._rpt2call.ljust(8)
             mmap[44] = self._rpt1call.ljust(8)
@@ -394,6 +408,11 @@ class IC92MemoryFrame(IC92Frame):
         self._tmode = memory.tmode
         self._ts = memory.tuning_step
         self._skip = memory.skip
+        self._bank = memory.bank and memory.bank[0] or "\0"
+        if memory.bank_index == -1:
+            self._bank_index = 0
+        else:
+            self._bank_index = memory.bank_index
 
         if isinstance(memory, chirp_common.DVMemory) and vfo == 2:
             self._urcall = memory.dv_urcall
@@ -425,6 +444,8 @@ class IC92MemoryFrame(IC92Frame):
         mem.tmode = self._tmode
         mem.tuning_step = self._ts
         mem.skip = self._skip
+        mem.bank = self._bank
+        mem.bank_index = self._bank_index
         
         return mem
 

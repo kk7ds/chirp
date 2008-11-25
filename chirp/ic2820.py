@@ -35,6 +35,8 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)
 
+    feature_bankindex = True
+
     def process_mmap(self):
         self._memories = ic2820_ll.parse_map_for_memory(self._mmap)
 
@@ -69,6 +71,9 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     def get_raw_memory(self, number):
         return ic2820_ll.get_raw_memory(self._mmap, number)
     
+    def get_banks(self):
+        return ic2820_ll.get_bank_names(self._mmap)
+
     def get_urcall_list(self):
         calls = []
 
