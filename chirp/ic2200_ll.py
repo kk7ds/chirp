@@ -313,17 +313,26 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
         rlist.append(get_rptcall(_map, i))
 
     try:
-        uindex = ulist.index(urcall)
+        if not urcall:
+            uindex = 0
+        else:
+            uindex = ulist.index(urcall)
     except ValueError:
         raise errors.InvalidDataError("Call `%s' not in URCALL list" % urcall)
 
     try:
-        r1index = rlist.index(r1call)
+        if not r1call:
+            r1index = 0
+        else:
+            r1index = rlist.index(r1call)
     except ValueError:
         raise errors.InvalidDataError("Call `%s' not in RCALL list" % r1call)
 
     try:
-        r2index = rlist.index(r2call)
+        if not r2call:
+            r2index = 0
+        else:
+            r2index = rlist.index(r2call)
     except ValueError:
         raise errors.InvalidDataError("Call `%s' not in RCALL list" % r2call)
 
