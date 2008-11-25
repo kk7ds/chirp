@@ -90,11 +90,13 @@ class Memory:
     dtcs_polarity = "NN"
     skip = ""
 
-    # FIXME: Decorator for valid value?
     duplex = ""
     offset = 0.600
     mode = "FM"
     tuning_step = 5.0
+
+    bank = None
+    bank_index = -1
 
     _valid_map = {
         "rtone"         : TONES,
@@ -143,7 +145,12 @@ class Memory:
         else:
             dup = self.duplex
 
-        return "Memory %i: %.5f%s%0.3f %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f]" % \
+        if self.bank_index == -1:
+            bindex = ""
+        else:
+            bindex = ":%i" % self.bank_index
+
+        return "Memory %i: %.5f%s%0.3f %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f] %s" % \
             (self.number,
              self.freq,
              dup,
@@ -157,7 +164,8 @@ class Memory:
              self.dtcs,
              dtcs,
              self.dtcs_polarity,
-             self.tuning_step)
+             self.tuning_step,
+             self.bank and "(%s%s)" % (self.bank, bindex) or "")
 
     def to_csv(self):
         string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,,," % ( \
@@ -307,8 +315,18 @@ class DVMemory(Memory):
         self.dv_rpt2call = vals[14].rstrip()[:8]
 
 class Bank:
-    name = "BANK"
-    vfo = 0
+    def __init__(self, name):
+        self.__dict__["name"] = name
+
+    def __str__(self):
+        return self.name
+
+class ImmutableBank(Bank):
+    def __setattr__(self, name, val):
+        if not hasattr(self, name):
+            raise ValueError("No such attribute `%s'" % name)
+        else:
+            raise ValueError("Property is immutable")    
 
 def console_status(status):
     import sys
@@ -320,6 +338,8 @@ class IcomRadio:
     BAUD_RATE = 9600
 
     status_fn = lambda x, y: console_status(y)
+
+    feature_bankindex = False
 
     def __init__(self, pipe):
         self.pipe = pipe
