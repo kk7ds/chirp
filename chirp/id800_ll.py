@@ -294,7 +294,7 @@ def get_rptcall(mmap, index):
     if index > 59:
         raise errors.InvalidDataError("RPTCALL index must be <= 59")
     elif index == 0:
-        return ""
+        return "*NOTUSE*"
 
     start = call_location(POS_RPTCALL, index)
 
@@ -436,7 +436,7 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
         if call:
             ulist.append(call)
 
-    rlist = [""]
+    rlist = ["*NOTUSE*"]
     for i in range(1, 60):
         call = get_rptcall(_map, i).rstrip()
         if call:
