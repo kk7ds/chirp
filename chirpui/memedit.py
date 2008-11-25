@@ -87,7 +87,7 @@ class MemoryEditor(common.Editor):
         "Tune Step" : 10.0,
         "Tone Mode" : "",
         "Skip"      : "",
-        "Bank"      : None,
+        "Bank"      : "",
         "Bank Index": 0,
         }
 
@@ -648,36 +648,33 @@ class DstarMemoryEditor(MemoryEditor):
         self.choices["RPT1CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices["RPT2CALL"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
 
-        self.choices["URCALL"].append(("CQCQCQ", "CQCQCQ"))
-        self.choices["RPT1CALL"].append(("", ""))
-        self.choices["RPT2CALL"].append(("", ""))
-
-        self.defaults["URCALL"] = "CQCQCQ"
+        self.defaults["URCALL"] = ""
         self.defaults["RPT1CALL"] = ""
         self.defaults["RPT2CALL"] = ""
 
         MemoryEditor.__init__(self, rthread)
     
         def ucall_cb(calls):
+            self.defaults["URCALL"] = calls[0]
             for call in calls:
                 self.choices["URCALL"].append((call, call))
         
-        job = common.RadioJob(ucall_cb, "get_urcall_list")
-        job.set_desc("Downloading URCALL list")
-        rthread.submit(job)
+        ujob = common.RadioJob(ucall_cb, "get_urcall_list")
+        ujob.set_desc("Downloading URCALL list")
+        rthread.submit(ujob)
 
         def rcall_cb(calls):
+            self.defaults["RPT1CALL"] = calls[0]
+            self.defaults["RPT2CALL"] = calls[0]
             for call in calls:
                 self.choices["RPT1CALL"].append((call, call))
                 self.choices["RPT2CALL"].append((call, call))
 
-        job = common.RadioJob(rcall_cb, "get_repeater_call_list")
-        job.set_desc("Downloading RPTCALL list")
-        rthread.submit(job)
+        rjob = common.RadioJob(rcall_cb, "get_repeater_call_list")
+        rjob.set_desc("Downloading RPTCALL list")
+        rthread.submit(rjob)
 
-        if not (isinstance(self.rthread.radio, id800.ID800v2Radio) or
-                isinstance(self.rthread.radio, ic2200.IC2200Radio) or
-                isinstance(self.rthread.radio, icx8x.ICx8xRadio)):
+        if not rthread.radio.feature_req_call_lists:
             for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
                 column = self.view.get_column(self.col(i))
                 rend = column.get_cell_renderers()[0]

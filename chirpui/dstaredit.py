@@ -36,10 +36,21 @@ class CallsignEditor(gtk.HBox):
             self.emit("changed")
 
     def __del_cb(self, button):
+        if self.first_fixed:
+            if self.listw.get_selected() == self.listw.get_values()[0]:
+                return
+
         self.listw.remove_selected()
         self.emit("changed")
 
     def __mov_cb(self, button, delta):
+        if self.first_fixed:
+            idx = self.listw.get_values().index(self.listw.get_selected())
+            if idx == 0:
+                return
+            elif idx == 1 and delta == 1:
+                return
+
         self.listw.move_selected(delta)
         self.emit("changed")
 
@@ -92,8 +103,10 @@ class CallsignEditor(gtk.HBox):
         
         return sw
 
-    def __init__(self):
+    def __init__(self, first_fixed=False):
         gtk.HBox.__init__(self, False, 2)
+
+        self.first_fixed = first_fixed
 
         self.listw = None
 
@@ -137,8 +150,10 @@ class DStarEditor(common.Editor):
     def make_callsigns(self):
         box = gtk.HBox(True, 2)
 
+        fixed = self.rthread.radio.feature_has_implicit_calls
+
         frame = gtk.Frame("Your callsign")
-        self.editor_ucall = CallsignEditor()
+        self.editor_ucall = CallsignEditor(first_fixed=fixed)
         self.editor_ucall.set_size_request(-1, 200)
         self.editor_ucall.show()
         frame.add(self.editor_ucall)
@@ -153,7 +168,7 @@ class DStarEditor(common.Editor):
         self.editor_ucall.connect("changed", self.__cs_changed)
 
         frame = gtk.Frame("Repeater callsign")
-        self.editor_rcall = CallsignEditor()
+        self.editor_rcall = CallsignEditor(first_fixed=fixed)
         self.editor_rcall.set_size_request(-1, 200)
         self.editor_rcall.show()
         frame.add(self.editor_rcall)
