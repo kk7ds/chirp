@@ -36,6 +36,7 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     RPTCALL_LIMIT = (1, 61)
 
     feature_bankindex = True
+    feature_req_call_lists = False
 
     def process_mmap(self):
         self._memories = ic2820_ll.parse_map_for_memory(self._mmap)

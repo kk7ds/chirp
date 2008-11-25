@@ -442,6 +442,9 @@ class IcomDstarRadio:
     URCALL_LIMIT = (1, 1)
     RPTCALL_LIMIT = (1, 1)
     
+    feature_req_call_lists = True
+    feature_has_implicit_calls = False
+
     def get_urcall_list(self):
         return []
 
