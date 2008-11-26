@@ -78,6 +78,12 @@ def get_memory(doc, number):
     mem.mode = _get("/mode/text()")
     mem.tuning_step = float(_get("/tuningStep/text()"))
 
+    skip = _get("/skip/text()")
+    if skip == "none":
+        mem.skip = ""
+    else:
+        mem.skip = skip
+
     return mem
 
 def set_memory(doc, mem):
@@ -149,6 +155,10 @@ def set_memory(doc, mem):
     step.newProp("units", "MHz")
     step.addContent("%.5f" % mem.tuning_step)
     
+    skip = memnode.newChild(None, "skip", None)
+    if mem.skip:
+        skip.addContent(mem.skip)
+
     if isinstance(mem, chirp_common.DVMemory):
         dv = memnode.newChild(None, "dv", None)
 
@@ -156,10 +166,12 @@ def set_memory(doc, mem):
         ur.addContent(mem.dv_urcall)
 
         r1 = dv.newChild(None, "rpt1call", None)
-        r1.addContent(mem.dv_rpt1call)
+        if mem.dv_rpt1call and mem.dv_rpt1call != "*NOTUSE*":
+            r1.addContent(mem.dv_rpt1call)
 
         r2 = dv.newChild(None, "rpt2call", None)
-        r2.addContent(mem.dv_rpt2call)
+        if mem.dv_rpt2call and mem.dv_rpt2call != "*NOTUSE*":
+            r2.addContent(mem.dv_rpt2call)
 
 def del_memory(doc, number):
     path = "//radio/memory[@location=%i]" % number
