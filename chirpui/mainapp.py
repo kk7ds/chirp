@@ -66,14 +66,15 @@ class ChirpMain(gtk.Window):
             eset = self.get_current_editorset()
 
         if not eset or isinstance(eset.radio, ic9x.IC9xRadio):
-            sensitive = False
+            mmap_sens = False
         else:
-            sensitive = True
+            mmap_sens = True
 
         for i in ["save", "saveas", "cloneout"]:
-            set_action_sensitive(i, sensitive)
+            set_action_sensitive(i, mmap_sens)
         
-        set_action_sensitive("close", bool(eset))
+        for i in ["export", "import", "close"]:
+            set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
         self.sb_radio.pop(0)
@@ -277,12 +278,15 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.do_import(filen)
 
-    def do_export(self):
-        types = [("CHIRP Files (*.chirp)", "*.chirp"),
-                 ("CHIRP Radio Images (*.img)", "*.img"),
-                 ("CSV Files (*.csv)", "*.csv")]
-        filen = platform.get_platform().gui_save_file(default_name="radio.chirp",
-                                                      types=types)
+    def do_export(self, type="chirp"):
+        
+        types = { "chirp": ("CHIRP Files (*.chirp)", "*.chirp"),
+                  "csv" : ("CSV Files (*.csv)", "*.csv"),
+                  }
+
+        defname = "radio.%s" % type
+        filen = platform.get_platform().gui_save_file(default_name=defname,
+                                                      types=[types[type]])
         if not filen:
             return
 
@@ -352,8 +356,10 @@ class ChirpMain(gtk.Window):
             self.do_open9x(ic9x.IC9xRadioB)
         elif action == "import":
             self.do_import()
-        elif action == "export":
-            self.do_export()
+        elif action == "export_csv":
+            self.do_export("csv")
+        elif action == "export_chirp":
+            self.do_export("chirp")
         elif action == "about":
             self.do_about()
         else:
@@ -381,9 +387,12 @@ class ChirpMain(gtk.Window):
         <menuitem action="open9xA"/>
         <menuitem action="open9xB"/>
       </menu>
-    <separator/>
-    <menuitem action="import"/>
-    <menuitem action="export"/>
+      <separator/>
+      <menuitem action="import"/>
+      <menu action="export">
+        <menuitem action="export_chirp"/>
+        <menuitem action="export_csv"/>
+      </menu>
     </menu>
     <menu action="help">
       <menuitem action="about"/>
@@ -407,7 +416,9 @@ class ChirpMain(gtk.Window):
             ('clonein', None, "Download From Radio", None, None, self.mh),
             ('cloneout', None, "Upload To Radio", None, None, self.mh),
             ('import', None, 'Import from file', None, None, self.mh),
-            ('export', None, 'Export to file', None, None, self.mh),
+            ('export', None, 'Export to...', None, None, self.mh),
+            ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
+            ('export_csv', None, 'CSV File', None, None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', None, 'About', None, None, self.mh),
             ]
