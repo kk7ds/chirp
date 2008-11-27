@@ -22,7 +22,7 @@ from chirp import chirp_common
 def get_memory(doc, number):
     ctx = doc.xpathNewContext()
 
-    base = "//radio/memory[@location=%i]" % number
+    base = "//radio/memories/memory[@location=%i]" % number
 
     fields = ctx.xpathEval(base)
     if len(fields) > 1:
@@ -84,12 +84,19 @@ def get_memory(doc, number):
     else:
         mem.skip = skip
 
+    bank_id = _get("/bank/@bankId")
+    if bank_id:
+        mem.bank = int(bank_id)
+        bank_index = _get("/bank/@bankIndex")
+        if bank_index:
+            mem.bank_index = int(bank_index)
+
     return mem
 
 def set_memory(doc, mem):
     ctx = doc.xpathNewContext()
 
-    base = "//radio/memory[@location=%i]" % mem.number
+    base = "//radio/memories/memory[@location=%i]" % mem.number
 
     fields = ctx.xpathEval(base)
     if len(fields) > 1:
@@ -98,7 +105,7 @@ def set_memory(doc, mem):
     elif len(fields) == 1:
         fields[0].unlinkNode()
 
-    radio = ctx.xpathEval("//radio")[0]
+    radio = ctx.xpathEval("//radio/memories")[0]
     memnode = radio.newChild(None, "memory", None)
     memnode.newProp("location", "%i" % mem.number)
 
@@ -155,9 +162,15 @@ def set_memory(doc, mem):
     step.newProp("units", "MHz")
     step.addContent("%.5f" % mem.tuning_step)
     
-    skip = memnode.newChild(None, "skip", None)
     if mem.skip:
+        skip = memnode.newChild(None, "skip", None)
         skip.addContent(mem.skip)
+
+    if mem.bank is not None:
+        bank = memnode.newChild(None, "bank", None)
+        bank.newProp("bankId", str(mem.bank))
+        if mem.bank_index >= 0:
+            bank.newProp("bankIndex", str(mem.bank_index))
 
     if isinstance(mem, chirp_common.DVMemory):
         dv = memnode.newChild(None, "dv", None)
@@ -174,10 +187,50 @@ def set_memory(doc, mem):
             r2.addContent(mem.dv_rpt2call)
 
 def del_memory(doc, number):
-    path = "//radio/memory[@location=%i]" % number
+    path = "//radio/memories/memory[@location=%i]" % number
     ctx = doc.xpathNewContext()
     fields = ctx.xpathEval(path)
 
     for field in fields:
         field.unlinkNode()
     
+def _get_bank(node):
+    bank = chirp_common.Bank(node.prop("label"))
+    id = int(node.prop("id"))
+
+    return id, bank
+
+def get_banks(doc):
+    path = "//radio/banks/bank"
+    ctx = doc.xpathNewContext()
+    fields = ctx.xpathEval(path)
+
+    banks = []
+    for field in fields:
+        banks.append(_get_bank(field))
+
+    def cmp(x, y):
+        return x[0] - y[0]
+
+    banks.sort(cmp=cmp)
+
+    return [x[1] for x in banks]
+
+def set_banks(doc, banklist):
+    path = "//radio/banks/bank"
+    ctx = doc.xpathNewContext()
+    fields = ctx.xpathEval(path)
+
+    for field in fields:
+        field.unlinkNode()
+
+    path = "//radio/banks"
+    ctx = doc.xpathNewContext()
+    banks = ctx.xpathEval(path)[0]
+
+    i = 0
+    for bank in banklist:
+        banknode = banks.newChild(None, "bank", None)
+        banknode.newProp("id", "%i" % i)
+        banknode.newProp("label", "%s" % bank)
+        i += 1

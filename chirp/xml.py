@@ -47,6 +47,14 @@ def validate_doc(doc):
         print "---DOC---\n%s\n------" % doc.serialize(format=1)
         raise errors.RadioError("Schema error")
 
+def default_banks():
+    banks = []
+
+    for i in range(0, 26):
+        banks.append("Bank-%s" % (chr(ord("A") + i)))
+
+    return banks
+
 class XMLRadio(chirp_common.IcomFileBackedRadio,
                chirp_common.IcomDstarRadio):
     def __init__(self, pipe):
@@ -57,7 +65,11 @@ class XMLRadio(chirp_common.IcomFileBackedRadio,
             validate_doc(self.doc)
         else:
             self.doc = libxml2.newDoc("1.0")
-            self.doc.newChild(None, "radio", None)
+            radio = self.doc.newChild(None, "radio", None)
+            radio.newChild(None, "memories", None)
+            radio.newChild(None, "banks", None)
+            radio.newProp("version", "0.1.1")
+            self.set_banks(default_banks())
 
     def load(self, filename=None):
         if not self._filename and not filename:
@@ -100,6 +112,12 @@ class XMLRadio(chirp_common.IcomFileBackedRadio,
 
     def erase_memory(self, number):
         xml_ll.del_memory(self.doc, number)
+
+    def get_banks(self):
+        return xml_ll.get_banks(self.doc)
+
+    def set_banks(self, banks):
+        return xml_ll.set_banks(self.doc, banks)
 
 if __name__ == "__main__":
     r = XMLRadio("testmem.chirp")
