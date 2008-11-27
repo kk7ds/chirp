@@ -81,49 +81,39 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.__counter = threading.Semaphore(0)
         self.__enabled = True
         self.__lock = threading.Lock()
+        self.__runlock = threading.Lock()
         self.radio = radio
 
-    def lock(self):
+    def _qlock(self):
         self.__lock.acquire()
 
-    def unlock(self):
+    def _qunlock(self):
         self.__lock.release()
 
+    # This is the external lock, which stops any threads from running
+    # so that the radio can be operated synchronously
+    def lock(self):
+        self.__runlock.acquire()
+
+    def unlock(self):
+        self.__runlock.release()
+
     def submit(self, job):
-        self.lock()
+        self._qlock()
         self.__queue.append(job)
-        self.unlock()
+        self._qunlock()
         self.__counter.release()
 
     def flush(self):
-        self.lock()
+        self._qlock()
         self.__queue = []
-        self.unlock()
+        self._qunlock()
 
     def stop(self):
         self.flush()
         self.__counter.release()
         self.__enabled = False
     
-    def __do_job(self, job):
-        try:
-            func = getattr(self.radio, job.func)
-        except AttributeError, e:
-            print "No such radio function `%s'" % job.func
-            print e
-            return
-
-        try:
-            result = func(*job.args, **job.kwargs)
-            print "Finished, returning %s to %s" % (result, cb)
-        except Exception, e:
-            print "Exception in RadioThread: %s" % e
-            log_exception()
-            result = e
-
-        if cb:
-            gobject.idle_add(cb, result)
-
     def status(self, msg):
         gobject.idle_add(self.emit, "status", msg)
             
@@ -133,18 +123,19 @@ class RadioThread(threading.Thread, gobject.GObject):
             self.status("Idle")
             self.__counter.acquire()
 
-            self.lock()
+            self._qlock()
             try:
                 job = self.__queue.pop(0)
             except IndexError:
-                self.unlock()
+                self._qunlock()
                 break
+            self._qunlock()
             
+            self.lock()
             self.status(job.desc)
             job.execute(self.radio)
-
             self.unlock()
-    
+   
         print "RadioThread exiting"
 
 def log_exception():
