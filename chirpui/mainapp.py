@@ -102,8 +102,9 @@ class ChirpMain(gtk.Window):
         try:
             eset = editorset.EditorSet(fname)
         except Exception, e:
-            print e
-            return # FIXME
+            common.log_exception()
+            common.show_error("There was an error opening %s: %s" % (fname, e))
+            return
 
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)

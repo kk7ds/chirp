@@ -47,7 +47,15 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
         self.memories = []
         f = file(self._filename, "rU")
         
+        header = f.readline().strip()
+
+        if header != chirp_common.Memory.CSV_FORMAT:
+            print "Got:      %s" % header
+            print "Expected: %s" % chirp_common.Memory.CSV_FORMAT
+            raise errors.InvalidDataError("CSV format mismatch")
+
         lines = f.readlines()
+        f.close()
 
         i = 0
         for line in lines:
@@ -56,11 +64,9 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
                 self._parse_csv_line(line)
             except errors.InvalidMemoryLocation:
                 print "Invalid memory location on line %i" % i
-            except errors.InvalidDataError:
-                print "Bad CSV line %i" % i
+            except errors.InvalidDataError, e:
+                raise errors.InvalidDataError("%s on line %i" % (e, i))
 
-        f.close()
-    
     def save(self, filename=None):
         if filename is None and self._filename is None:
             raise errors.RadioError("Need a location to save to")
