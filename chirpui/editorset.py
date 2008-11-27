@@ -67,6 +67,7 @@ class EditorSet(gtk.VBox):
             raise Exception("Unknown source type")
 
         self.rthread = common.RadioThread(self.radio)
+        self.rthread.setDaemon(True)
         self.rthread.start()
 
         self.rthread.connect("status", lambda e, m: self.emit("status", m))
