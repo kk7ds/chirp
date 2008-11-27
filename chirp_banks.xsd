@@ -1,0 +1,8 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:complexType name="bankType">
+    <xsd:attribute name="id" type="xsd:nonNegativeInteger" use="required"/>
+    <xsd:attribute name="label" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+</xsd:schema>
