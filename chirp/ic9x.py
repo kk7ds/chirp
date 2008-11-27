@@ -51,9 +51,7 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         # Fix up bank - UGLY
         self.get_banks()
-        if m.bank == "\0":
-            m.bank = None
-        else:
+        if m.bank:
             m.bank = str(self.__bankcache[m.bank])
         
         self.__memcache[m.number] = m

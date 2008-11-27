@@ -292,7 +292,7 @@ class IC92MemoryFrame(IC92Frame):
         elif skip == 0x01:
             self._skip = "S"
 
-        if mmap[24] == 0:
+        if ord(mmap[24]) == 0:
             self._bank = None
         else:
             self._bank = ord(mmap[24]) - ord("A")
