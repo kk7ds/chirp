@@ -190,7 +190,10 @@ def get_bank_info(mmap, number):
     bank = ord(mmap[POS_BANK_START + (number * 2)])
     bidx = ord(mmap[POS_BANK_START + (number * 2) + 1])
 
-    return bank, bidx
+    if bank == 0xFF:
+        return None, -1
+    else:
+        return bank, bidx
 
 def get_memory(_map, number):
     if not is_used(_map, number):
@@ -222,15 +225,7 @@ def get_memory(_map, number):
     mem.tuning_step = get_tune_step(mmap)
     mem.skip = get_skip(_map, number)
 
-    # FIXME: Potential for optimization here
-    banks = get_bank_names(_map)
-    b, i = get_bank_info(_map, number)
-    if b == 0xFF:
-        mem.bank = None
-        mem.bank_index = -1
-    else:
-        mem.bank = banks[b]
-        mem.bank_index = i
+    mem.bank, mem.bank_index = get_bank_info(_map, number)
 
     return mem
 
@@ -358,7 +353,7 @@ def parse_bank_name(bname):
     return idx
 
 def set_bank_info(mmap, number, bank, index):
-    if bank >= 25:
+    if bank > 25:
         raise errors.InvalidDataError("Invalid bank number %i" % bank)
 
     mmap[POS_BANK_START + (number * 2)] = bank
@@ -389,7 +384,7 @@ def set_memory(_map, mem):
     set_used(_map, mem.number, True)
     set_skip(_map, mem.number, mem.skip)
 
-    set_bank_info(_map, mem.number, parse_bank_name(mem.bank), mem.bank_index)
+    set_bank_info(_map, mem.number, mem.bank, mem.bank_index)
 
     return _map
 

@@ -173,7 +173,7 @@ def get_bank(mmap, number):
     if val == 0x0A:
         return None
     else:
-        return bank_name(val)
+        return val
 
 def get_memory(_map, number):
     mmap = get_raw_memory(_map, number)
@@ -353,14 +353,13 @@ def set_skip(mmap, number, skip):
     mmap[POS_FLAGS_START + number] = val
 
 def set_bank(mmap, number, bank):
-    try:
-        if bank is None:
-            index = 0x0A
-        else:
-            foo, id = bank.split("-", 1)
-            index = ord(id) - ord("A")
-    except Exception:
-        raise errors.InvalidDataError("Unknown bank `%s'" % bank)
+    if bank > 9:
+        raise errors.InvalidDataError("Invalid bank number %i" % bank)
+
+    if bank is None:
+        index = 0x0A
+    else:
+        index = bank
 
     val = ord(mmap[POS_FLAGS_START + number]) & 0xF0
     val |= index

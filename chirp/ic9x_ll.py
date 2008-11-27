@@ -194,7 +194,7 @@ class IC92MemoryFrame(IC92Frame):
         self._rpt2call = ""
         self._number = -1
         self._skip = ""
-        self._bank = "\0"
+        self._bank = None
         self._bank_index = 0
 
     def _post_proc(self):
@@ -292,7 +292,11 @@ class IC92MemoryFrame(IC92Frame):
         elif skip == 0x01:
             self._skip = "S"
 
-        self._bank = mmap[24]
+        if mmap[24] == 0:
+            self._bank = None
+        else:
+            self._bank = ord(mmap[24]) - ord("A")
+
         self._bank_index = int("%02x" % ord(mmap[25]))
 
         if self.is_dv:
@@ -374,7 +378,10 @@ class IC92MemoryFrame(IC92Frame):
             val |= 0x02
         mmap[23] = val
 
-        mmap[24] = self._bank
+        if self._bank:
+            mmap[24] = chr(self._bank + ord("A"))
+        else:
+            mmap[24] = "\0"
         mmap[25] = bcd_encode(self._bank_index)
 
         if self._vfo == 2:
@@ -408,7 +415,7 @@ class IC92MemoryFrame(IC92Frame):
         self._tmode = memory.tmode
         self._ts = memory.tuning_step
         self._skip = memory.skip
-        self._bank = memory.bank and memory.bank[0] or "\0"
+        self._bank = memory.bank or None
         if memory.bank_index == -1:
             self._bank_index = 0
         else:

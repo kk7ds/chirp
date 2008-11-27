@@ -464,6 +464,21 @@ time.  Are you sure you want to do this?"""
             self.rthread.submit(job)
 
     def _set_memory(self, iter, memory):
+        try:
+            if memory.bank is None:
+                bank = ""
+            else:
+                pathstr = "%i" % (memory.bank + 1)
+                bi = self.choices["Bank"].get_iter_from_string(pathstr)
+                print "Got iter %s for %i (%s)" % (iter, memory.bank, pathstr)
+                bank, = self.choices["Bank"].get(bi, 1)
+        except Exception, e:
+            common.log_exception()
+            print "Unable to get bank: %s" % e
+            bank = ""
+
+        print "Bank for %i is %s" % (memory.number, bank)
+
         self.store.set(iter,
                        self.col("Loc"), memory.number,
                        self.col("Name"), memory.name,
@@ -478,7 +493,7 @@ time.  Are you sure you want to do this?"""
                        self.col("Mode"), memory.mode,
                        self.col("Tune Step"), memory.tuning_step,
                        self.col("Skip"), memory.skip,
-                       self.col("Bank"), memory.bank or "",
+                       self.col("Bank"), bank,
                        self.col("Bank Index"), memory.bank_index)
 
     def set_memory(self, memory):
@@ -509,6 +524,21 @@ time.  Are you sure you want to do this?"""
             iter = self.store.iter_next(iter)
 
     def _set_mem_vals(self, mem, vals):
+        bank = vals[self.col("Bank")]
+        if not bank:
+            bidx = None
+        else:
+            banks = self.choices["Bank"]
+            bidx = 0
+            iter = banks.get_iter_first()
+            iter = banks.iter_next(iter)
+            while iter:
+                _bank, = banks.get(iter, 1)
+                if bank == _bank:
+                    break
+                iter = banks.iter_next(iter)
+                bidx += 1
+
         mem.freq = vals[self.col("Frequency")]
         mem.number = vals[self.col("Loc")]
         mem.name = vals[self.col("Name")]
@@ -523,7 +553,7 @@ time.  Are you sure you want to do this?"""
         mem.mode = vals[self.col("Mode")]
         mem.tuning_step = vals[self.col("Tune Step")]
         mem.skip = vals[self.col("Skip")]
-        mem.bank = vals[self.col("Bank")] or None
+        mem.bank = bidx
         mem.bank_index = vals[self.col("Bank Index")]
 
     def _get_memory(self, iter):

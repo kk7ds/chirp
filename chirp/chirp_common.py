@@ -107,6 +107,7 @@ class Memory:
         "mode"          : MODES,
         "duplex"        : ["", "+", "-"],
         "skip"          : SKIP_VALUES,
+        "bank"          : [x for x in range(0, 256)] + [None],
         }
 
     CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \
