@@ -104,3 +104,9 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
                 newlist.append(mem)
         self.memories = newlist
         
+    def get_banks(self):
+        banks = []
+        for i in range(0, 26):
+            banks.append("BANK%s" % (chr(ord("A") + i)))
+
+        return banks
