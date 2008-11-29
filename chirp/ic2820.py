@@ -75,6 +75,9 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     def get_banks(self):
         return ic2820_ll.get_bank_names(self._mmap)
 
+    def set_banks(self, banks):
+        return ic2820_ll.set_bank_names(self._mmap, banks)
+
     def get_urcall_list(self):
         calls = []
 

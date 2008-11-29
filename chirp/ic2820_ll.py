@@ -181,10 +181,19 @@ def get_bank_names(mmap):
     for i in range(0, 26):
         pos = POS_BNAME_START + (i * 8)
         label = mmap[pos:pos+8].rstrip()
-        name = "%s - %s" % (chr(i + ord("A")), label)
-        names.append(name)
+        names.append(label)
     
     return names
+
+def set_bank_names(mmap, banks):
+    if len(banks) != 26:
+        raise errors.InvalidDataError("Invalid number of " + \
+                                          "banks: %i " % len(banks) + \
+                                          "(Expected 26)")
+
+    for i in range(0, 26):
+        pos = POS_BNAME_START + (i * 8)
+        mmap[pos] = banks[i][:8].ljust(8)
 
 def get_bank_info(mmap, number):
     bank = ord(mmap[POS_BANK_START + (number * 2)])
@@ -353,10 +362,10 @@ def parse_bank_name(bname):
     return idx
 
 def set_bank_info(mmap, number, bank, index):
-    if bank > 25:
+    if bank is not None and bank > 25:
         raise errors.InvalidDataError("Invalid bank number %i" % bank)
 
-    mmap[POS_BANK_START + (number * 2)] = bank
+    mmap[POS_BANK_START + (number * 2)] = bank or 0xFF
     mmap[POS_BANK_START + (number * 2) + 1] = index
 
 def set_memory(_map, mem):
