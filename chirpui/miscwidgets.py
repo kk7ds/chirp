@@ -42,6 +42,12 @@ class KeyedListWidget(gtk.HBox):
             id, = self.__store.get(iter, 0)
             self.emit("item-toggled", id, self.__store[path][colnum])
 
+    def _edited(self, rend, path, new, colnum):
+        iter = self.__store.get_iter(path)
+        key = self.__store.get(iter, 0)
+        self.__store.set(iter, colnum, new)
+        self.emit("item-set", key)
+
     def _mouse(self, view, event):
         x, y = event.get_coords()
         path = self.__view.get_path_at_pos(int(x), int(y))
@@ -172,6 +178,12 @@ class KeyedListWidget(gtk.HBox):
             self.__toggle_connected = True
         
         gtk.HBox.connect(self, signame, *args)
+
+    def set_editable(self, column, is_editable):
+        col = self.__view.get_column(column)
+        rend = col.get_cell_renderers()[0]
+        rend.set_property("editable", True)
+        rend.connect("edited", self._edited, column + 1)
 
 class ListWidget(gtk.HBox):
     __gsignals__ = {
