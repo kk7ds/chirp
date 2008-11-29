@@ -715,6 +715,11 @@ class DstarMemoryEditor(MemoryEditor):
                 rend = column.get_cell_renderers()[0]
                 rend.set_property("has-entry", True)
 
+        for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
+            col = self.view.get_column(self.col(i))
+            rend = col.get_cell_renderers()[0]
+            rend.set_property("family", "Monospace")
+
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]
 
