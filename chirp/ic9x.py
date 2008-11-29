@@ -17,7 +17,7 @@
 
 import time
 
-from chirp import chirp_common, errors, memmap, ic9x_ll
+from chirp import chirp_common, errors, memmap, ic9x_ll, util
 
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
@@ -49,11 +49,6 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         m = mframe.get_memory()
 
-        # Fix up bank - UGLY
-        self.get_banks()
-        if m.bank:
-            m.bank = str(self.__bankcache[m.bank])
-        
         self.__memcache[m.number] = m
 
         return m
@@ -133,12 +128,33 @@ class IC9xRadio(chirp_common.IcomRadio):
             bf = ic9x_ll.IC92BankFrame()
             bf.from_frame(bank_frames[i])
 
-            name = "%s - %s" % (bf.get_identifier(), bf.get_name())
-            bank = chirp_common.Bank(name)
+            bank = chirp_common.Bank(bf.get_name())
             banks.append(bank)
-            self.__bankcache[bf.get_identifier()] = bank
+            self.__bankcache[i-base] = bank
 
         return banks
+
+    def set_banks(self, banks):
+        ic9x_ll.send_magic(self.pipe)
+
+        if len(banks) != len(self.__bankcache.keys()):
+            raise errors.InvalidDataError("Invalid bank list length")
+
+        cached_names = [str(self.__bankcache[x]) for x in sorted(self.__bankcache.keys())]
+
+        for i in range(0, 26):
+            if banks[i] != cached_names[i]:
+                print "Updating %s: %s -> %s" % (chr(i + ord("A")),
+                                                 cached_names[i],
+                                                 banks[i])
+                bf = ic9x_ll.IC92BankFrame()
+                bf.set_vfo(self.vfo)
+                bf.set_identifier(chr(i + ord("A")))
+                bf.set_name(banks[i])
+                result = bf.send(self.pipe)
+                if result[0].get_data() != "\xfb":
+                    print "Raw packet was:\n%s" % util.hexprint(bf._rawdata)
+                    raise errors.InvalidDataError("Radio reported error")
 
 class IC9xRadioA(IC9xRadio):
     vfo = 1

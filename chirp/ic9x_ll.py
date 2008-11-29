@@ -118,14 +118,39 @@ class IC92Frame(IcomFrame):
         return send(pipe, self._rawdata, verbose)
 
 class IC92BankFrame(IC92Frame):
+    def __init__(self):
+        self.ident = None
+        self.name = None
+        self.vfo = 0
+    
     def __str__(self):
         return "Bank %s: %s" % (self._data[2], self._data[3:])
 
     def get_name(self):
-        return self._data[3:]
+        if not self.name:
+            self.name = self._data[3:]
+
+        return self.name
 
     def get_identifier(self):
-        return self._data[2]
+        if not self.ident:
+            self.ident = self._data[2]
+
+        return self.ident
+
+    def set_name(self, name):
+        self.name = name[:8].ljust(8)
+
+    def set_identifier(self, ident):
+        self.ident = ident[0]
+
+    def set_vfo(self, vfo):
+        self.vfo = vfo
+
+    def _make_raw(self):
+        self._rawdata = struct.pack("BBBB", self.vfo, 0x80, 0x1A, 0x0B)
+        self._rawdata += self.ident
+        self._rawdata += self.name
 
 class IC92MemClearFrame(IC92Frame):
     def __init__(self, vfo, number):
@@ -378,10 +403,11 @@ class IC92MemoryFrame(IC92Frame):
             val |= 0x02
         mmap[23] = val
 
-        if self._bank:
+        if self._bank is not None:
             mmap[24] = chr(self._bank + ord("A"))
         else:
             mmap[24] = "\0"
+        print "Set bank to %s (%s)" % (mmap[24], self._bank)
         mmap[25] = bcd_encode(self._bank_index)
 
         if self._vfo == 2:
@@ -415,7 +441,7 @@ class IC92MemoryFrame(IC92Frame):
         self._tmode = memory.tmode
         self._ts = memory.tuning_step
         self._skip = memory.skip
-        self._bank = memory.bank or None
+        self._bank = memory.bank
         if memory.bank_index == -1:
             self._bank_index = 0
         else:
