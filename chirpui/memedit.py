@@ -383,7 +383,15 @@ time.  Are you sure you want to do this?"""
 
         menu = self.make_context_menu()
         menu.popup(None, None, None, event.button, event.time)
-            
+        
+    def get_column_visible(self, col):
+        column = self.view.get_column(col)
+        return column.get_visible()
+
+    def set_column_visible(self, col, visible):
+        column = self.view.get_column(col)
+        column.set_visible(visible)
+    
     def make_editor(self):
         types = tuple([x[1] for x in self.cols])
         self.store = gtk.ListStore(*types)

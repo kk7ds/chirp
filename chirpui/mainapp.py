@@ -329,6 +329,41 @@ class ChirpMain(gtk.Window):
 
         self.do_open(imgfile)
 
+    def do_columns(self):
+        eset = self.get_current_editorset()
+        d = gtk.Dialog(title="Select Columns",
+                       parent=self,
+                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+
+        vbox = gtk.VBox()
+        vbox.show()
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        sw.add_with_viewport(vbox)
+        sw.show()
+        d.vbox.pack_start(sw, 1, 1, 1)
+        d.set_size_request(-1, 300)
+        d.set_resizable(False)
+
+        fields = []
+        for colspec in eset.memedit.cols:
+            label = colspec[0]
+            visible = eset.memedit.get_column_visible(eset.memedit.col(label))
+            widget = gtk.CheckButton(label)
+            widget.set_active(visible)
+            fields.append(widget)
+            vbox.pack_start(widget, 1, 1, 1)
+            widget.show()
+
+        res = d.run()
+        if res == gtk.RESPONSE_OK:
+            for widget in fields:
+                colnum = eset.memedit.col(widget.get_label())
+                eset.memedit.set_column_visible(colnum, widget.get_active())
+                                                
+        d.destroy()
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -362,6 +397,8 @@ class ChirpMain(gtk.Window):
             self.do_export("chirp")
         elif action == "about":
             self.do_about()
+        elif action == "columns":
+            self.do_columns()
         else:
             return
 
@@ -379,6 +416,9 @@ class ChirpMain(gtk.Window):
       <menuitem action="close"/>
       <menuitem action="converticf"/>
       <menuitem action="quit"/>
+    </menu>
+    <menu action="view">
+      <menuitem action="columns"/>
     </menu>
     <menu action="radio">
       <menuitem action="clonein"/>
@@ -412,6 +452,8 @@ class ChirpMain(gtk.Window):
             ('converticf', None, "Convert .icf file", None, None, self.mh),
             ('close', None, "_Close", None, None, self.mh),
             ('quit', None, "_Quit", None, None, self.mh),
+            ('view', None, "_View", None, None, self.mh),
+            ('columns', None, 'Columns', None, None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),
             ('clonein', None, "Download From Radio", None, None, self.mh),
             ('cloneout', None, "Upload To Radio", None, None, self.mh),
