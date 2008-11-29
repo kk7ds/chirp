@@ -390,8 +390,8 @@ class IcomRadio:
     def get_banks(self):
         pass
 
-    def set_banks(self):
-        pass
+    def set_banks(self, banks):
+        raise errors.InvalidDataError("This model does not support bank naming")
 
     def get_raw_memory(self, number):
         pass
