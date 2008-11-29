@@ -73,7 +73,7 @@ class ChirpMain(gtk.Window):
         for i in ["save", "saveas", "cloneout"]:
             set_action_sensitive(i, mmap_sens)
         
-        for i in ["export", "import", "close"]:
+        for i in ["export", "import", "close", "columns"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
