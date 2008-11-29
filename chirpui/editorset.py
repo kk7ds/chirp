@@ -20,7 +20,7 @@ import gtk
 import gobject
 
 from chirp import ic2820, ic2200, id800, ic9x, icx8x, xml, csv, chirp_common
-from chirpui import memedit, dstaredit, common, importdialog
+from chirpui import memedit, dstaredit, bankedit, common, importdialog
 
 def radio_class_from_file(filename):
     if filename.endswith(".chirp"):
@@ -84,6 +84,11 @@ class EditorSet(gtk.VBox):
             print "Started"
             self.dstared = None
 
+        if self.radio.feature_bankindex:
+            self.banked = bankedit.BankEditor(self.rthread)
+        else:
+            self.banked = None
+
         lab = gtk.Label("Memories")
         self.tabs.append_page(self.memedit.root, lab)
         self.memedit.root.show()
@@ -93,6 +98,12 @@ class EditorSet(gtk.VBox):
             self.tabs.append_page(self.dstared.root, lab)
             self.dstared.root.show()
             self.dstared.connect("changed", self.dstar_changed)
+
+        if self.banked:
+            lab = gtk.Label("Banks")
+            self.tabs.append_page(self.banked.root, lab)
+            self.banked.root.show()
+            self.banked.connect("changed", self.banks_changed)
 
         self.pack_start(self.tabs)
         self.tabs.show()
@@ -146,6 +157,13 @@ class EditorSet(gtk.VBox):
         print "D-STAR editor changed"
         self.memedit.set_urcall_list(self.dstared.editor_ucall.get_callsigns())
         self.memedit.set_repeater_list(self.dstared.editor_rcall.get_callsigns())
+        self.memedit.prefill()
+        self.modified = True
+        self.update_tab()
+
+    def banks_changed(self, *args):
+        print "Banks changed"
+        self.memedit.set_bank_list(self.banked.get_bank_list())
         self.memedit.prefill()
         self.modified = True
         self.update_tab()

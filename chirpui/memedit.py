@@ -593,6 +593,16 @@ time.  Are you sure you want to do this?"""
 
         return hbox
 
+    def set_bank_list(self, banks):
+        self.choices["Bank"].clear()
+        self.choices["Bank"].append(("", "(None)"))
+
+        i = ord("A")
+        for bank in banks:
+            self.choices["Bank"].append((str(bank),
+                                         ("%s-%s" % (chr(i), str(bank)))))
+            i += 1
+        
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
@@ -608,13 +618,8 @@ time.  Are you sure you want to do this?"""
         self.store = self.view = None
 
         self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-        self.choices["Bank"].append(("", "(None)"))
 
-        def bank_cb(banks):
-            for bank in banks:
-                self.choices["Bank"].append((bank, bank))
-
-        job = common.RadioJob(bank_cb, "get_banks")
+        job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc("Getting bank list")
         rthread.submit(job)
 

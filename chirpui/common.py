@@ -115,7 +115,8 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.__enabled = False
     
     def status(self, msg):
-        gobject.idle_add(self.emit, "status", msg)
+        gobject.idle_add(self.emit, "status", "[%i] %s" % (len(self.__queue),
+                                                           msg))
             
     def run(self):
         while self.__enabled:
