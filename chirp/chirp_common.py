@@ -81,6 +81,7 @@ class IcomFrame:
 class Memory:
     freq = 0.0
     number = 0
+    extd_number = ""
     name = ""
     vfo = 0
     rtone = 88.5
@@ -110,6 +111,8 @@ class Memory:
         "bank"          : [x for x in range(0, 256)] + [None],
         }
 
+    immutable = []
+
     CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \
         "rToneFreq,cToneFreq,DtcsCode,DtcsPolarity," + \
         "Mode,TStep,Skip,Bank,Bank Index,URCALL,RPT1CALL,RPT2CALL" 
@@ -117,6 +120,9 @@ class Memory:
     def __setattr__(self, name, val):
         if not hasattr(self, name):
             raise ValueError("No such attribute `%s'" % name)
+
+        if name in self.immutable:
+            raise ValueError("Field %s is not mutable on this memory")
 
         if self._valid_map.has_key(name) and val not in self._valid_map[name]:
             raise ValueError("`%s' is not in valid list: %s" % (\
@@ -395,6 +401,9 @@ class IcomRadio:
 
     def get_raw_memory(self, number):
         pass
+
+    def get_special_locations(self):
+        return []
 
 class IcomFileBackedRadio(IcomRadio):
     def save(self, filename=None):
