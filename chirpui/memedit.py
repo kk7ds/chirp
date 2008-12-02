@@ -58,6 +58,7 @@ def iter_prev(store, iter):
 class MemoryEditor(common.Editor):
     cols = [
         ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
+        ("_extd"     , TYPE_STRING, gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
         ("Frequency" , TYPE_FLOAT,  gtk.CellRendererText,  ),
         ("Tone Mode" , TYPE_STRING, gtk.CellRendererCombo, ),
@@ -209,7 +210,7 @@ class MemoryEditor(common.Editor):
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
 
-    def _render(self, colnum, val):
+    def _render(self, colnum, val, iter=None):
         if colnum == self.col("Frequency"):
             val = "%.5f" % val
         elif colnum == self.col("DTCS Code"):
@@ -221,6 +222,9 @@ class MemoryEditor(common.Editor):
         elif colnum in [self.col("Tone Mode"), self.col("Duplex")]:
             if not val:
                 val = "(None)"
+        elif colnum == self.col("Loc") and iter is not None:
+            if val < 0:
+                val, = self.store.get(iter, self.col("_extd"))
 
         return val
 
@@ -241,7 +245,7 @@ class MemoryEditor(common.Editor):
             if vals[self.col("Mode")] == mode:
                 _enabled(False)
 
-        val = self._render(colnum, val)
+        val = self._render(colnum, val, iter)
         rend.set_property("text", "%s" % val)
 
         if colnum == self.col("DTCS Code"):
@@ -433,6 +437,7 @@ time.  Are you sure you want to do this?"""
             col.set_sort_column_id(i)
             col.set_resizable(True)
             col.set_min_width(1)
+            col.set_visible(not _cap.startswith("_"))
             self.view.append_column(col)
 
             i += 1
@@ -466,9 +471,10 @@ time.  Are you sure you want to do this?"""
             if not isinstance(mem, Exception):
                 gobject.idle_add(self.set_memory, mem)
 
-        for i in range(lo, hi+1):
+        for i in range(lo, hi+1) + self.rthread.radio.get_special_locations():
+            # FIXME: I don't like this
             job = common.RadioJob(handler, "get_memory", i)
-            job.set_desc("Getting memory %i" % i)
+            job.set_desc("Getting memory %s" % i)
             self.rthread.submit(job)
 
     def _set_memory(self, iter, memory):
@@ -478,17 +484,15 @@ time.  Are you sure you want to do this?"""
             else:
                 pathstr = "%i" % (memory.bank + 1)
                 bi = self.choices["Bank"].get_iter_from_string(pathstr)
-                print "Got iter %s for %i (%s)" % (iter, memory.bank, pathstr)
                 bank, = self.choices["Bank"].get(bi, 1)
         except Exception, e:
             common.log_exception()
             print "Unable to get bank: %s" % e
             bank = ""
 
-        print "Bank for %i is %s" % (memory.number, bank)
-
         self.store.set(iter,
                        self.col("Loc"), memory.number,
+                       self.col("_extd"), memory.extd_number,
                        self.col("Name"), memory.name,
                        self.col("Frequency"), memory.freq,
                        self.col("Tone Mode"), memory.tmode,
