@@ -38,6 +38,9 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     feature_bankindex = True
     feature_req_call_lists = False
 
+    def get_special_locations(self):
+        return sorted(ic2820_ll.IC2820_SPECIAL.keys())
+
     def process_mmap(self):
         self._memories = ic2820_ll.parse_map_for_memory(self._mmap)
 

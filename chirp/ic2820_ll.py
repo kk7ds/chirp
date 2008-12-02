@@ -57,8 +57,20 @@ POS_SKIP_START = 0x6222
 POS_PSKIP_START= 0x6263
 POS_BNAME_START= 0x66C0
 POS_BANK_START = 0x62A8
+POS_SPCL_START = 0x5DC0
 
 MEM_LOC_SIZE   = 0x30
+
+IC2820_SPECIAL = {
+    "C0" : 0x6180,
+    "C1" : 0x6180 + MEM_LOC_SIZE,
+}
+
+for i in range(0, 10):
+    idA = "%iA" % i
+    idB = "%iB" % i
+    IC2820_SPECIAL[idA] = POS_SPCL_START + i * (MEM_LOC_SIZE * 2)
+    IC2820_SPECIAL[idB] = POS_SPCL_START + i * (MEM_LOC_SIZE * 2) + MEM_LOC_SIZE
 
 def is_used(mmap, number):
     byte = int(number / 8) + POS_USED_START
@@ -158,11 +170,26 @@ def get_mode(mmap):
         raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % val)
 
 def get_raw_memory(mmap, number):
-    offset = number * MEM_LOC_SIZE
+    if isinstance(number, str):
+        try:
+            offset = IC2820_SPECIAL[number]
+            print "Offset for %s is %x" % (number, offset)
+        except KeyError:
+            raise errors.InvalidDataError("Unknown special channel %s" % ident)
+    else:
+        offset = number * MEM_LOC_SIZE
+
     return MemoryMap(mmap[offset : offset + MEM_LOC_SIZE])
 
 def set_raw_memory(dst, src, number):
-    offset = number * MEM_LOC_SIZE
+    if isinstance(number, str):
+        try:
+            offset = IC2820_SPECIAL[number]
+        except KeyError:
+            raise errors.InvalidDataError("Unknown special channel %s" % ident)
+    else:
+        offset = number * MEM_LOC_SIZE
+
     dst[offset] = src.get_packed()
 
 def get_skip(mmap, number):
@@ -204,12 +231,7 @@ def get_bank_info(mmap, number):
     else:
         return bank, bidx
 
-def get_memory(_map, number):
-    if not is_used(_map, number):
-        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
-
-    mmap = get_raw_memory(_map, number)
-    
+def _get_memory(mmap):
     if get_mode(mmap) == "DV":
         mem = chirp_common.DVMemory()
         mem.dv_urcall = mmap[8:16].strip()
@@ -217,8 +239,6 @@ def get_memory(_map, number):
         mem.dv_rpt2call = mmap[24:32].strip()
     else:
         mem = chirp_common.Memory()
-
-    mem.number = number
 
     mem.freq = get_freq(mmap)
     mem.name = get_name(mmap)
@@ -232,9 +252,25 @@ def get_memory(_map, number):
     mem.offset = get_dup_off(mmap)
     mem.mode = get_mode(mmap)
     mem.tuning_step = get_tune_step(mmap)
-    mem.skip = get_skip(_map, number)
 
-    mem.bank, mem.bank_index = get_bank_info(_map, number)
+    return mem
+
+def get_memory(_map, number):
+    if  isinstance(number, int) and not is_used(_map, number):
+        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
+
+    mmap = get_raw_memory(_map, number)
+
+    mem = _get_memory(mmap)
+    mem.number = number
+
+    if isinstance(number, int):
+        mem.skip = get_skip(_map, number)
+        mem.bank, mem.bank_index = get_bank_info(_map, number)
+    else:
+        mem.number = 0 - IC2820_SPECIAL[number]
+        mem.extd_number = number
+        mem.immutable = ["number", "skip", "bank", "bank_index"]
 
     return mem
 
@@ -368,9 +404,7 @@ def set_bank_info(mmap, number, bank, index):
     mmap[POS_BANK_START + (number * 2)] = bank or 0xFF
     mmap[POS_BANK_START + (number * 2) + 1] = index
 
-def set_memory(_map, mem):
-    mmap = get_raw_memory(_map, mem.number)
-
+def _set_memory(mmap, mem):
     if isinstance(mem, chirp_common.DVMemory):
         mmap[8] = mem.dv_urcall.ljust(8)
         mmap[16] = mem.dv_rpt1call.ljust(8)
@@ -388,12 +422,20 @@ def set_memory(_map, mem):
     set_mode(mmap, mem.mode)
     set_tune_step(mmap, mem.tuning_step)
 
+def set_memory(_map, mem):
+    mmap = get_raw_memory(_map, mem.number)
+
+    _set_memory(mmap, mem)
+
     set_raw_memory(_map, mmap, mem.number)
 
-    set_used(_map, mem.number, True)
-    set_skip(_map, mem.number, mem.skip)
-
-    set_bank_info(_map, mem.number, mem.bank, mem.bank_index)
+    if isinstance(mem.number, int):
+        set_used(_map, mem.number, True)
+        set_skip(_map, mem.number, mem.skip)
+        set_bank_info(_map, mem.number, mem.bank, mem.bank_index)
+    else:
+        #FIXME used flag
+        pass
 
     return _map
 
