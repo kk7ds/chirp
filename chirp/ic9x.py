@@ -19,6 +19,37 @@ import time
 
 from chirp import chirp_common, errors, memmap, ic9x_ll, util
 
+IC9xA_SPECIAL = {}
+IC9xA_SPECIAL_REV = {}
+IC9xB_SPECIAL = {}
+IC9xB_SPECIAL_REV = {}
+
+for i in range(0, 25):
+    idA = "%iA" % i
+    idB = "%iB" % i
+    Anum = 800 + i * 2
+    Bnum = 400 + i * 2
+
+    IC9xA_SPECIAL[idA] = Anum
+    IC9xA_SPECIAL[idB] = Bnum
+    IC9xA_SPECIAL_REV[Anum] = idA
+    IC9xA_SPECIAL_REV[Bnum] = idB
+
+    IC9xB_SPECIAL[idA] = Bnum
+    IC9xB_SPECIAL[idB] = Bnum + 1
+    IC9xB_SPECIAL_REV[Bnum] = idA
+    IC9xB_SPECIAL_REV[Bnum+1] = idB
+
+IC9x_SPECIAL = {
+    1 : IC9xA_SPECIAL,
+    2 : IC9xB_SPECIAL,
+}
+
+IC9x_SPECIAL_REV = {
+    1 : IC9xA_SPECIAL_REV,
+    2 : IC9xB_SPECIAL_REV,
+}
+
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
     vfo = 0
@@ -33,8 +64,17 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         self.__memcache = {}
         self.__bankcache = {}
+
+    def get_special_locations(self):
+        return sorted(IC9x_SPECIAL[self.vfo].keys())
     
     def get_memory(self, number):
+        if isinstance(number, str):
+            try:
+                number = IC9x_SPECIAL[self.vfo][number]
+            except KeyError:
+                raise InvalidMemoryLocation("Unknown channel %s" % number)
+
         if number < 0 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
@@ -49,7 +89,13 @@ class IC9xRadio(chirp_common.IcomRadio):
 
         m = mframe.get_memory()
 
+        if number > self.mem_upper_limit:
+            m.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
+            m.immutable = ["number", "skip", "bank", "bank_index",
+                            "extd_number"]
+
         self.__memcache[m.number] = m
+
 
         return m
 
