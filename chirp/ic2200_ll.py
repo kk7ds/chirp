@@ -47,14 +47,32 @@ MEM_LOC_SIZE = 24
 TUNING_STEPS = list(chirp_common.TUNING_STEPS)
 TUNING_STEPS.remove(6.25)
 
+IC2200_SPECIAL = { "C" : 206 }
+IC2200_SPECIAL_REV = { 206 : "C" }
+
+for i in range(0, 3):
+    idA = "%iA" % i
+    idB = "%iB" % i
+    num = 200 + i * 2
+    IC2200_SPECIAL[idA] = num
+    IC2200_SPECIAL[idB] = num + 1
+    IC2200_SPECIAL_REV[num] = idA
+    IC2200_SPECIAL_REV[num+1] = idB
+
 def bank_name(index):
     char = chr(ord("A") + index)
     return "BANK-%s" % char
 
 def is_used(mmap, number):
+    if number == IC2200_SPECIAL["C"]:
+        return True
+
     return (ord(mmap[POS_FLAGS_START + number]) & 0x20) == 0
 
 def set_used(mmap, number, used=True):
+    if number == IC2200_SPECIAL["C"]:
+        return
+
     val = ord(mmap[POS_FLAGS_START + number]) & 0xDF
 
     if not used:
@@ -205,10 +223,14 @@ def get_memory(_map, number):
     mem.dtcs = get_dtcs(mmap)
     mem.tmode = get_tone_enabled(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
-    print "Getting TS for %i" % number
     mem.tuning_step = get_tune_step(mmap)
-    mem.skip = get_skip(_map, number)
-    mem.bank = get_bank(_map, number)
+
+    if number < 200:
+        mem.skip = get_skip(_map, number)
+        mem.bank = get_bank(_map, number)
+    else:
+        mem.extd_number = IC2200_SPECIAL_REV[number]
+        mem.immutable = ["number", "skip", "bank", "bank_index", "extd_number"]
     
     return mem
 

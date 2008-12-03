@@ -87,9 +87,19 @@ class IC2200Radio(chirp_common.IcomMmapRadio,
     def process_mmap(self):
         self._memories = ic2200_ll.parse_map_for_memory(self._mmap)
 
+    def get_special_locations(self):
+        return sorted(ic2200_ll.IC2200_SPECIAL.keys())
+
     def get_memory(self, number):
         if not self._mmap:
             self.sync_in()
+
+        if isinstance(number, str):
+            try:
+                number = ic2200_ll.IC2200_SPECIAL[number]
+            except KeyError:
+                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
+                                                       number)
 
         return ic2200_ll.get_memory(self._mmap, number)
 
