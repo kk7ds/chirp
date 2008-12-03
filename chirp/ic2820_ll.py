@@ -77,11 +77,12 @@ for k, v in IC2820_SPECIAL.items():
     IC2820_SPECIAL_REV[v] = k
 
 def is_used(mmap, number):
+    if number >= 520:
+        number += 1 # Hmm
+
     byte = int(number / 8) + POS_USED_START
     mask = 1 << (number % 8)
     
-    print "Checking used %i" % number
-
     return (ord(mmap[byte]) & mask) == 0
 
 def set_used(mmap, number, used):
