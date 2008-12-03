@@ -175,7 +175,7 @@ def get_raw_memory(mmap, number):
             offset = IC2820_SPECIAL[number]
             print "Offset for %s is %x" % (number, offset)
         except KeyError:
-            raise errors.InvalidDataError("Unknown special channel %s" % ident)
+            raise errors.InvalidDataError("Unknown special channel %s" % number)
     else:
         offset = number * MEM_LOC_SIZE
 
@@ -186,7 +186,7 @@ def set_raw_memory(dst, src, number):
         try:
             offset = IC2820_SPECIAL[number]
         except KeyError:
-            raise errors.InvalidDataError("Unknown special channel %s" % ident)
+            raise errors.InvalidDataError("Unknown special channel %s" % number)
     else:
         offset = number * MEM_LOC_SIZE
 
@@ -423,13 +423,18 @@ def _set_memory(mmap, mem):
     set_tune_step(mmap, mem.tuning_step)
 
 def set_memory(_map, mem):
-    mmap = get_raw_memory(_map, mem.number)
+    if mem.number < 0:
+        number = mem.extd_number
+    else:
+        number = mem.number
+
+    mmap = get_raw_memory(_map, number)
 
     _set_memory(mmap, mem)
 
-    set_raw_memory(_map, mmap, mem.number)
+    set_raw_memory(_map, mmap, number)
 
-    if isinstance(mem.number, int):
+    if mem.number >= 0:
         set_used(_map, mem.number, True)
         set_skip(_map, mem.number, mem.skip)
         set_bank_info(_map, mem.number, mem.bank, mem.bank_index)
