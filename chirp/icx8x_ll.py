@@ -39,6 +39,18 @@ POS_FLAGS_START= 0x1370
 
 MEM_LOC_SIZE   = 24
 
+ICx8x_SPECIAL = { "C" : 206 }
+ICx8x_SPECIAL_REV = { 206 : "C" }
+
+for i in range(0, 3):
+    idA = "%iA" % i
+    idB = "%iB" % i
+    num = 200 + i * 2
+    ICx8x_SPECIAL[idA] = num
+    ICx8x_SPECIAL[idB] = num + 1
+    ICx8x_SPECIAL_REV[num] = idA
+    ICx8x_SPECIAL_REV[num+1] = idB
+
 def bank_name(index):
     char = chr(ord("A") + index)
     return "BANK-%s" % char
@@ -216,9 +228,15 @@ def set_mode(mmap, mode):
     mmap[POS_MODE] = val
 
 def is_used(mmap, number):
+    if number == ICx8x_SPECIAL["C"]:
+        return True
+
     return (ord(mmap[POS_FLAGS_START + number]) & 0x20) == 0
 
 def set_used(mmap, number, used=True):
+    if number == ICx8x_SPECIAL["C"]:
+        return
+
     val = struct.unpack("B", mmap[POS_FLAGS_START + number])[0] & 0xDF
 
     if not used:
@@ -294,8 +312,12 @@ def get_memory(_map, number, base):
     mem.tmode = get_tone_enabled(mmap)
     mem.tuning_step = get_tune_step(mmap)
     mem.mode = get_mode(mmap)
-    mem.skip = get_skip(_map, number)
-    mem.bank = get_bank(_map, number)
+    if number < 200:
+        mem.skip = get_skip(_map, number)
+        mem.bank = get_bank(_map, number)
+    else:
+        mem.extd_number = ICx8x_SPECIAL_REV[number]
+        mem.immutable = ["number", "skip", "bank", "bank_index", "extd_number"]
 
     return mem
 
@@ -313,8 +335,9 @@ def set_memory(_map, memory, base):
     set_tone_enabled(mmap, memory.tmode)
     set_tune_step(mmap, memory.tuning_step)
     set_mode(mmap, memory.mode)
-    set_skip(_map, memory.number, memory.skip)
-    set_bank(_map, memory.number, memory.bank)
+    if memory.number < 200:
+        set_skip(_map, memory.number, memory.skip)
+        set_bank(_map, memory.number, memory.bank)
 
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     set_used(_map, memory.number)

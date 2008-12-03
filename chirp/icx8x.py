@@ -79,6 +79,9 @@ class ICx8xRadio(chirp_common.IcomMmapRadio):
         from chirp import util
         return icf.clone_to_radio(self)
 
+    def get_special_locations(self):
+        return sorted(icx8x_ll.ICx8x_SPECIAL.keys())
+
     def get_memory(self, number):
         if not self._mmap:
             self.sync_in()
@@ -87,6 +90,13 @@ class ICx8xRadio(chirp_common.IcomMmapRadio):
             base = 400
         else:
             base = 0
+
+        if isinstance(number, str):
+            try:
+                number = icx8x_ll.ICx8x_SPECIAL[number]
+            except KeyError:
+                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
+                                                       number)
 
         return icx8x_ll.get_memory(self._mmap, number, base)
 

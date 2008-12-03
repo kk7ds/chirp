@@ -407,8 +407,9 @@ def set_memory(_map, memory):
     set_tone_enabled(mmap, memory.tmode)
     set_dtcs_polarity(mmap, memory.dtcs_polarity)
     set_tune_step(mmap, memory.tuning_step)
-    set_skip(_map, memory.number, memory.skip)
-    set_bank(_map, memory.number, memory.bank)
+    if memory.number < 200:
+        set_skip(_map, memory.number, memory.skip)
+        set_bank(_map, memory.number, memory.bank)
 
     if isinstance(memory, chirp_common.DVMemory):
         set_call_indices(_map,
