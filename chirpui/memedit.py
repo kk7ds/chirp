@@ -223,8 +223,9 @@ class MemoryEditor(common.Editor):
             if not val:
                 val = "(None)"
         elif colnum == self.col("Loc") and iter is not None:
-            if val < 0:
-                val, = self.store.get(iter, self.col("_extd"))
+            extd, = self.store.get(iter, self.col("_extd"))
+            if extd:
+                val = extd
 
         return val
 
