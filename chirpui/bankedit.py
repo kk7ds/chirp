@@ -60,6 +60,8 @@ class BankEditor(common.Editor):
 
         self.listw = miscwidgets.KeyedListWidget(types)
         self.listw.set_editable(1, True)
+        self.listw.set_sort_column(0, 1)
+        self.listw.set_sort_column(1, -1)
         self.listw.show()
 
         sw = gtk.ScrolledWindow()
