@@ -185,6 +185,12 @@ class KeyedListWidget(gtk.HBox):
         rend.set_property("editable", True)
         rend.connect("edited", self._edited, column + 1)
 
+    def set_sort_column(self, column, value=None):
+        if not value:
+            value = column
+        col = self.__view.get_column(column)
+        col.set_sort_column_id(value)
+
 class ListWidget(gtk.HBox):
     __gsignals__ = {
         "click-on-list" : (gobject.SIGNAL_RUN_LAST,
