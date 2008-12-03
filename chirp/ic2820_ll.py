@@ -62,20 +62,26 @@ POS_SPCL_START = 0x5DC0
 MEM_LOC_SIZE   = 0x30
 
 IC2820_SPECIAL = {
-    "C0" : 0x6180,
-    "C1" : 0x6180 + MEM_LOC_SIZE,
+    "C0" : 500 + 20,
+    "C1" : 500 + 21,
 }
 
 for i in range(0, 10):
     idA = "%iA" % i
     idB = "%iB" % i
-    IC2820_SPECIAL[idA] = POS_SPCL_START + i * (MEM_LOC_SIZE * 2)
-    IC2820_SPECIAL[idB] = POS_SPCL_START + i * (MEM_LOC_SIZE * 2) + MEM_LOC_SIZE
+    IC2820_SPECIAL[idA] = 500 + i * 2
+    IC2820_SPECIAL[idB] = 500 + i * 2 + 1
+
+IC2820_SPECIAL_REV = {}
+for k, v in IC2820_SPECIAL.items():
+    IC2820_SPECIAL_REV[v] = k
 
 def is_used(mmap, number):
     byte = int(number / 8) + POS_USED_START
     mask = 1 << (number % 8)
     
+    print "Checking used %i" % number
+
     return (ord(mmap[byte]) & mask) == 0
 
 def set_used(mmap, number, used):
@@ -170,26 +176,11 @@ def get_mode(mmap):
         raise errors.InvalidDataError("Radio has unknown mode 0x%04x" % val)
 
 def get_raw_memory(mmap, number):
-    if isinstance(number, str):
-        try:
-            offset = IC2820_SPECIAL[number]
-            print "Offset for %s is %x" % (number, offset)
-        except KeyError:
-            raise errors.InvalidDataError("Unknown special channel %s" % number)
-    else:
-        offset = number * MEM_LOC_SIZE
-
+    offset = number * MEM_LOC_SIZE
     return MemoryMap(mmap[offset : offset + MEM_LOC_SIZE])
 
 def set_raw_memory(dst, src, number):
-    if isinstance(number, str):
-        try:
-            offset = IC2820_SPECIAL[number]
-        except KeyError:
-            raise errors.InvalidDataError("Unknown special channel %s" % number)
-    else:
-        offset = number * MEM_LOC_SIZE
-
+    offset = number * MEM_LOC_SIZE
     dst[offset] = src.get_packed()
 
 def get_skip(mmap, number):
@@ -256,21 +247,20 @@ def _get_memory(mmap):
     return mem
 
 def get_memory(_map, number):
-    if  isinstance(number, int) and not is_used(_map, number):
-        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
+    if not is_used(_map, number):
+        raise errors.InvalidMemoryLocation("Location %s is empty" % number)
 
     mmap = get_raw_memory(_map, number)
 
     mem = _get_memory(mmap)
     mem.number = number
 
-    if isinstance(number, int):
+    if number < 500:
         mem.skip = get_skip(_map, number)
         mem.bank, mem.bank_index = get_bank_info(_map, number)
     else:
-        mem.number = 0 - IC2820_SPECIAL[number]
-        mem.extd_number = number
-        mem.immutable = ["number", "skip", "bank", "bank_index"]
+        mem.extd_number = IC2820_SPECIAL_REV[number]
+        mem.immutable = ["number", "skip", "bank", "bank_index", "extd_number"]
 
     return mem
 
@@ -434,13 +424,10 @@ def set_memory(_map, mem):
 
     set_raw_memory(_map, mmap, number)
 
-    if mem.number >= 0:
-        set_used(_map, mem.number, True)
+    set_used(_map, mem.number, True)
+    if mem.number < 500:
         set_skip(_map, mem.number, mem.skip)
         set_bank_info(_map, mem.number, mem.bank, mem.bank_index)
-    else:
-        #FIXME used flag
-        pass
 
     return _map
 

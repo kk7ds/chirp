@@ -47,6 +47,13 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     def get_memory(self, number):
         if not self._mmap:
             self.sync_in()
+
+        if isinstance(number, str):
+            try:
+                number = ic2820_ll.IC2820_SPECIAL[number]
+            except KeyError:
+                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
+                                                       number)
         
         return ic2820_ll.get_memory(self._mmap, number)
 
