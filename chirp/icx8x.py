@@ -26,7 +26,8 @@ def isUHF(pipe):
 
     return uhf
 
-class ICx8xRadio(chirp_common.IcomMmapRadio):
+class ICx8xRadio(chirp_common.IcomMmapRadio,
+                 chirp_common.IcomDstarRadio):
     _model = "\x28\x26\x00\x01"
     _memsize = 6464
     _endframe = "Icom Inc\x2eCD"
@@ -45,6 +46,10 @@ class ICx8xRadio(chirp_common.IcomMmapRadio):
 
                (0x1938, 0x1940,  8),
                ]
+
+    MYCALL_LIMIT = (0, 6)
+    URCALL_LIMIT = (0, 6)
+    RPTCALL_LIMIT = (0, 6)
 
     def _get_type(self):
         flag = (isUHF(self.pipe) != 0)
@@ -125,3 +130,59 @@ class ICx8xRadio(chirp_common.IcomMmapRadio):
     def set_banks(self, banks):
         raise errors.InvalidDataError("Bank naming not supported on this model")
 
+    def get_urcall_list(self):
+        calls = []
+
+        for i in range(*self.URCALL_LIMIT):
+            call = icx8x_ll.get_urcall(self._mmap, i)
+            if call:
+                calls.append(call)
+
+        return calls
+
+    def get_repeater_call_list(self):
+        calls = []
+
+        for i in range(*self.RPTCALL_LIMIT):
+            call = icx8x_ll.get_rptcall(self._mmap, i)
+            if call:
+                calls.append(call)
+
+        return calls
+
+    def get_mycall_list(self):
+        calls = []
+
+        for i in range(*self.MYCALL_LIMIT):
+            call = icx8x_ll.get_mycall(self._mmap, i)
+            if call:
+                calls.append(call)
+
+        return calls
+
+    def set_urcall_list(self, calls):
+        for i in range(*self.URCALL_LIMIT):
+            try:
+                call = calls[i]
+            except IndexError:
+                call = " " * 8
+
+            icx8x_ll.set_urcall(self._mmap, i, call)
+
+    def set_repeater_call_list(self, calls):
+        for i in range(*self.RPTCALL_LIMIT):
+            try:
+                call = calls[i]
+            except IndexError:
+                call = " " * 8
+
+            icx8x_ll.set_rptcall(self._mmap, i, call)
+
+    def set_mycall_list(self, calls):
+        for i in range(*self.MYCALL_LIMIT):
+            try:
+                call = calls[i]
+            except IndexError:
+                call = " " * 8
+
+            icx8x_ll.set_mycall(self._mmap, i, call)

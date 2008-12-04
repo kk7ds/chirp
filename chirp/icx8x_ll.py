@@ -34,8 +34,13 @@ POS_MODE       = 21
 POS_MULT_FLAG  = 21
 POS_DTCS_POL   = 22
 POS_DUPLEX     = 22
+POS_DIG        = 23
 
 POS_FLAGS_START= 0x1370
+POS_MYCALL     = 0x15E0
+POS_URCALL     = 0x1640
+POS_RPCALL     = 0x16A0
+POS_RP2CALL    = 0x1700
 
 MEM_LOC_SIZE   = 24
 
@@ -208,6 +213,11 @@ def set_tune_step(mmap, tstep):
     mmap[POS_TUNE_STEP] = val    
 
 def get_mode(mmap):
+    val = struct.unpack("B", mmap[POS_DIG])[0] & 0x08
+
+    if val == 0x08:
+        return "DV"
+
     val = struct.unpack("B", mmap[POS_MODE])[0] & 0x20
 
     if val == 0x20:
@@ -216,15 +226,20 @@ def get_mode(mmap):
         return "FM"
 
 def set_mode(mmap, mode):
+    dig = struct.unpack("B", mmap[POS_DIG])[0] & 0xF7
+
     val = struct.unpack("B", mmap[POS_MODE])[0] & 0xDF
 
     if mode == "FM":
         pass
     elif mode == "NFM":
         val |= 0x20
+    elif mode == "DV":
+        dig |= 0x08
     else:
         raise errors.InvalidDataError("%s mode not supported" % mode)
 
+    mmap[POS_DIG] = dig
     mmap[POS_MODE] = val
 
 def is_used(mmap, number):
@@ -263,6 +278,49 @@ def set_skip(mmap, number, skip):
 
     mmap[POS_FLAGS_START + number] = val
 
+def get_call_indices(mmap):
+    return ord(mmap[18]) & 0x0F, \
+        (ord(mmap[19]) & 0xF0) >> 4, \
+        ord(mmap[19]) & 0x0F
+
+def set_call_indices(_map, mmap, urcall, r1call, r2call):
+    ulist = []
+    for i in range(0, 6):
+        ulist.append(get_urcall(_map, i))
+
+    rlist = []
+    for i in range(0, 6):
+        rlist.append(get_rptcall(_map, i))
+
+    try:
+        if not urcall:
+            uindex = 0
+        else:
+            uindex = ulist.index(urcall)
+    except ValueError:
+        raise errors.InvalidDataError("Call `%s' not in URCALL list" % urcall)
+
+    try:
+        if not r1call:
+            r1index = 0
+        else:
+            r1index = rlist.index(r1call)
+    except ValueError:
+        raise errors.InvalidDataError("Call `%s' not in RCALL list" % r1call)
+
+    try:
+        if not r2call:
+            r2index = 0
+        else:
+            r2index = rlist.index(r2call)
+    except ValueError:
+        raise errors.InvalidDataError("Call `%s' not in RCALL list" % r2call)
+
+    print "Setting calls: %i %i %i" % (uindex, r1index, r2index)
+
+    mmap[18] = (ord(mmap[18]) & 0xF0) | uindex
+    mmap[19] = (r1index << 4) | r2index
+
 # --
 
 def get_mem_offset(number):
@@ -275,7 +333,7 @@ def get_raw_memory(mmap, number):
 def get_bank(mmap, number):
     val = ord(mmap[POS_FLAGS_START + number]) & 0x0F
 
-    if val == 0x0A:
+    if val >= 10:
         return None
     else:
         return val
@@ -299,7 +357,17 @@ def get_memory(_map, number, base):
 
     mmap = get_raw_memory(_map, number)
 
-    mem = chirp_common.Memory()
+    if get_mode(mmap) == "DV":
+        print "Doing DV"
+        mem = chirp_common.DVMemory()
+        i_ucall, i_r1call, i_r2call = get_call_indices(mmap)
+        mem.dv_urcall = get_urcall(_map, i_ucall)
+        mem.dv_rpt1call = get_rptcall(_map, i_r1call)
+        mem.dv_rpt2call = get_rptcall(_map, i_r2call)
+    else:
+        print "Non-DV"
+        mem = chirp_common.Memory()
+
     mem.number = number
     mem.freq = get_freq(mmap, base)
     mem.name = get_name(mmap)
@@ -339,6 +407,72 @@ def set_memory(_map, memory, base):
         set_skip(_map, memory.number, memory.skip)
         set_bank(_map, memory.number, memory.bank)
 
+    if isinstance(memory, chirp_common.DVMemory):
+        set_call_indices(_map,
+                         mmap,
+                         memory.dv_urcall,
+                         memory.dv_rpt1call,
+                         memory.dv_rpt2call)
+
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     set_used(_map, memory.number)
     return _map
+
+def call_location(base, index):
+    return base + (16 * index)
+
+def get_urcall(mmap, index):
+    if index > 5:
+        raise errors.InvalidDataError("URCALL index %i must be <= 5" % index)
+
+    start = call_location(POS_URCALL, index)
+
+    return mmap[start:start+8].rstrip()
+
+def get_rptcall(mmap, index):
+    if index > 5:
+        raise errors.InvalidDataError("RPTCALL index %i must be <= 5" % index)
+
+    start = call_location(POS_RPCALL, index)
+
+    return mmap[start:start+8].rstrip()
+
+def get_mycall(mmap, index):
+    if index > 5:
+        raise errors.InvalidDataError("MYCALL index %i must be <= 5" % index)
+
+    start = call_location(POS_MYCALL, index)
+
+    return mmap[start:start+8].rstrip()
+
+def set_urcall(mmap, index, call):
+    if index > 5:
+        raise errors.InvalidDataError("URCALL index %i must be <= 5" % index)
+
+    start = call_location(POS_URCALL, index)
+
+    mmap[start] = call.ljust(12)
+    
+    return mmap
+
+def set_rptcall(mmap, index, call):
+    if index > 5:
+        raise errors.InvalidDataError("RPTCALL index %i must be <= 5" % index)
+
+    start = call_location(POS_RPCALL, index)
+    mmap[start] = call.ljust(12)
+
+    start = call_location(POS_RP2CALL, index)
+    mmap[start] = call.ljust(12)
+    
+    return mmap
+
+def set_mycall(mmap, index, call):
+    if index > 5:
+        raise errors.InvalidDataError("MYCALL index %i must be <= 5" % index)
+
+    start = call_location(POS_MYCALL, index)
+
+    mmap[start] = call.ljust(12)
+    
+    return mmap
