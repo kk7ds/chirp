@@ -70,14 +70,37 @@ ID800_MODES_REV = {}
 for __val, __mode in ID800_MODES.items():
     ID800_MODES_REV[__mode] = __val
 
+ID800_SPECIAL = {
+    "C2" : 510,
+    "C1" : 511,
+    }
+ID800_SPECIAL_REV = {
+    510 : "C2",
+    511 : "C1",
+    }
+
+for i in range(0, 5):
+    idA = "%iA" % (i + 1)
+    idB = "%iB" % (i + 1)
+    num = 500 + i * 2
+    ID800_SPECIAL[idA] = num
+    ID800_SPECIAL[idB] = num + 1
+    ID800_SPECIAL_REV[num] = idA
+    ID800_SPECIAL_REV[num+1] = idB
+
 def bank_name(index):
     char = chr(ord("A") + index)
     return "BANK-%s" % char
 
 def is_used(mmap, number):
+    if number == 510 or number == 511:
+        return True
     return not ((ord(mmap[POS_FLAGS + number]) & 0x70) == 0x70)
 
 def set_used(mmap, number, used):
+    if number == 510 or number == 511:
+        return
+
     val = ord(mmap[POS_FLAGS + number]) & 0x3F
 
     if not used:
@@ -211,10 +234,16 @@ def get_dup_offset(mmap):
     return float(val * 5.0) / 1000.0
 
 def get_mem_offset(number):
-    return (number * MEM_LOC_SIZE) + MEM_LOC_START
+    if number < 510:
+        return (number * MEM_LOC_SIZE) + MEM_LOC_START
+    elif number == 511:
+        return 0x2df4
+    elif number == 510:
+        return 0x2df4 + MEM_LOC_SIZE
 
 def get_raw_memory(mmap, number):
     offset = get_mem_offset(number)
+    print "Offset for %i is %04x" % (number, offset)
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
 
 def get_call_indices(mmap):
@@ -264,8 +293,13 @@ def get_memory(_map, number):
     mem.dtcs = get_dtcs(mmap)
     mem.tmode = get_tone_enabled(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
-    mem.skip = get_skip(_map, number)
-    mem.bank = get_bank(_map, number)
+
+    if number < 500:
+        mem.skip = get_skip(_map, number)
+        mem.bank = get_bank(_map, number)
+    else:
+        mem.extd_number = ID800_SPECIAL_REV[number]
+        mem.immutable = ["number", "skip", "bank", "bank_index", "extd_number"]
 
     return mem
 

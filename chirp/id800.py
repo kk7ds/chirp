@@ -69,10 +69,20 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
     def process_mmap(self):
         self._memories = id800_ll.parse_map_for_memory(self._mmap)
 
+    def get_special_locations(self):
+        return sorted(id800_ll.ID800_SPECIAL.keys())
+
     def get_memory(self, number):
         if not self._mmap:
             self.sync_in()
         
+        if isinstance(number, str):
+            try:
+                number = id800_ll.ID800_SPECIAL[number]
+            except KeyError:
+                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
+                                                       number)
+
         return id800_ll.get_memory(self._mmap, number)
 
     def erase_memory(self, number):
