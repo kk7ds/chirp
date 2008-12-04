@@ -536,21 +536,50 @@ time.  Are you sure you want to do this?"""
                 break
             iter = self.store.iter_next(iter)
 
-    def _set_mem_vals(self, mem, vals):
-        bank = vals[self.col("Bank")]
-        if not bank:
-            bidx = None
-        else:
-            banks = self.choices["Bank"]
+    def _set_mem_vals(self, mem, vals, iter):
+        def get_bank_index(name):
             bidx = 0
+            banks = self.choices["Bank"]
             iter = banks.get_iter_first()
             iter = banks.iter_next(iter)
             while iter:
                 _bank, = banks.get(iter, 1)
-                if bank == _bank:
+                if name == _bank:
                     break
                 iter = banks.iter_next(iter)
                 bidx += 1
+
+            return bidx
+
+        def get_free_index(name):
+            indexes = []
+            iter = self.store.get_iter_first()
+            while iter:
+                bank, idx = self.store.get(iter,
+                                           self.col("Bank"),
+                                           self.col("Bank Index"))
+                if bank == name:
+                    indexes.append(idx)
+                iter = self.store.iter_next(iter)
+
+            for i in range(0, 256):
+                if i not in indexes:
+                    return i
+
+            return -1
+
+        bank = vals[self.col("Bank")]
+        if bank is None:
+            bidx = None
+            bank_index = vals[self.col("Bank Index")]
+        else:
+            bidx = get_bank_index(bank)
+            if vals[self.col("Bank Index")] == -1:
+                bank_index = get_free_index(bank)
+                print "Chose %i index for bank %s" % (bank_index, bank)
+                self.store.set(iter, self.col("Bank Index"), bank_index)
+            else:
+                bank_index = vals[self.col("Bank Index")]
 
         mem.freq = vals[self.col("Frequency")]
         mem.number = vals[self.col("Loc")]
@@ -569,12 +598,12 @@ time.  Are you sure you want to do this?"""
         mem.tuning_step = vals[self.col("Tune Step")]
         mem.skip = vals[self.col("Skip")]
         mem.bank = bidx
-        mem.bank_index = vals[self.col("Bank Index")]
+        mem.bank_index = bank_index
 
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
         mem = chirp_common.Memory()
-        self._set_mem_vals(mem, vals)
+        self._set_mem_vals(mem, vals, iter)
 
         return mem
 
@@ -675,7 +704,7 @@ class DstarMemoryEditor(MemoryEditor):
 
         mem = chirp_common.DVMemory()
 
-        MemoryEditor._set_mem_vals(self, mem, vals)
+        MemoryEditor._set_mem_vals(self, mem, vals, iter)
 
         mem.dv_urcall = vals[self.col("URCALL")]
         mem.dv_rpt1call = vals[self.col("RPT1CALL")]
