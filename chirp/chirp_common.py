@@ -189,7 +189,7 @@ class Memory:
             self.mode,
             self.tuning_step,
             self.skip,
-            self.bank or "",
+            self.bank is not None and self.bank or "",
             self.bank_index)
 
         return string
@@ -330,7 +330,7 @@ class DVMemory(Memory):
             self.mode,
             self.tuning_step,
             self.skip,
-            self.bank or "",
+            self.bank is not None and self.bank or "",
             self.bank_index,
             self.dv_urcall,
             self.dv_rpt1call,
