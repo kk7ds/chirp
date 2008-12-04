@@ -175,6 +175,11 @@ class Memory:
              self.bank and "(%s%s)" % (self.bank, bindex) or "")
 
     def to_csv(self):
+        if self.bank is None:
+            bank = ""
+        else:
+            bank = "%i" % self.bank
+
         string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%i,," % ( \
             self.number,
             self.name,
@@ -189,7 +194,7 @@ class Memory:
             self.mode,
             self.tuning_step,
             self.skip,
-            self.bank is not None and self.bank or "",
+            bank,
             self.bank_index)
 
         return string
@@ -316,6 +321,11 @@ class DVMemory(Memory):
         return string
 
     def to_csv(self):
+        if self.bank is None:
+            bank = ""
+        else:
+            bank = "%i" % self.bank
+
         string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%i,%s,%s,%s," % ( \
             self.number,
             self.name,
@@ -330,7 +340,7 @@ class DVMemory(Memory):
             self.mode,
             self.tuning_step,
             self.skip,
-            self.bank is not None and self.bank or "",
+            bank,
             self.bank_index,
             self.dv_urcall,
             self.dv_rpt1call,
