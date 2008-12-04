@@ -392,7 +392,10 @@ def set_bank_info(mmap, number, bank, index):
     if bank is not None and bank > 25:
         raise errors.InvalidDataError("Invalid bank number %i" % bank)
 
-    mmap[POS_BANK_START + (number * 2)] = bank or 0xFF
+    if bank is None:
+        bank = 0xFF
+    
+    mmap[POS_BANK_START + (number * 2)] = bank
     mmap[POS_BANK_START + (number * 2) + 1] = index
 
 def _set_memory(mmap, mem):
