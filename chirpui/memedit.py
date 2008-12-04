@@ -246,6 +246,9 @@ class MemoryEditor(common.Editor):
             if vals[self.col("Mode")] == mode:
                 _enabled(False)
 
+        def d_unless_positive_bidx():
+            _enabled(int(val) != -1)
+
         val = self._render(colnum, val, iter)
         rend.set_property("text", "%s" % val)
 
@@ -261,6 +264,8 @@ class MemoryEditor(common.Editor):
             d_if_mode("DV")
         elif colnum == self.col("Offset"):
             d_unless_dup()
+        elif colnum == self.col("Bank Index"):
+            d_unless_positive_bidx()
 
     def insert_easy(self, store, _iter, delta):
         if delta < 0:
