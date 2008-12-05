@@ -477,11 +477,16 @@ time.  Are you sure you want to do this?"""
             if not isinstance(mem, Exception):
                 gobject.idle_add(self.set_memory, mem)
 
-        for i in range(lo, hi+1) + self.rthread.radio.get_special_locations():
-            # FIXME: I don't like this
+        for i in range(lo, hi+1):
             job = common.RadioJob(handler, "get_memory", i)
             job.set_desc("Getting memory %s" % i)
             self.rthread.submit(job)
+
+        if self.show_special:
+            for i in self.rthread.radio.get_special_locations():
+                job = common.RadioJob(handler, "get_memory", i)
+                job.set_desc("Getting channel %s" % i)
+                self.rthread.submit(job)
 
     def _set_memory(self, iter, memory):
         try:
@@ -638,6 +643,17 @@ time.  Are you sure you want to do this?"""
         refresh.connect("clicked", lambda x: self.prefill())
         hbox.pack_start(refresh, 0, 0, 0)
 
+        sep = gtk.VSeparator()
+        sep.show()
+        sep.set_size_request(20, -1)
+        hbox.pack_start(sep, 0, 0, 0)
+
+        showspecial = gtk.CheckButton("Special Channels")
+        showspecial.connect("toggled",
+                            lambda x: self.set_show_special(x.get_active()))
+        showspecial.show()
+        hbox.pack_start(showspecial, 0, 0,0)
+
         hbox.show()
 
         return hbox
@@ -652,12 +668,17 @@ time.  Are you sure you want to do this?"""
                                          ("%s-%s" % (chr(i), str(bank)))))
             i += 1
         
+    def set_show_special(self, show):
+        self.show_special = show
+        self.prefill()
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
         self.allowed_bands = [144, 440]
         self.count = 100
         self.name_length = 8
+        self.show_special = False
 
         self.fill_thread = None
 
