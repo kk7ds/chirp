@@ -16,8 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup
-import py2exe
 import sys
+import os
+from chirp import CHIRP_VERSION
 
 try:
     # if this doesn't work, try import modulefinder
@@ -34,18 +35,25 @@ except ImportError:
     # no build path setup, no worries.
     pass
 
-
-opts = {
-    "py2exe" : {
-        "includes" : "pango,atk,gobject,cairo,pangocairo,win32gui,win32com,win32com.shell",
-        "compressed" : 1,
-        "optimize" : 2,
-        "bundle_files" : 3,
-#        "packages" : ""
+if os.name == "win32":
+    import py2exe
+    opts = {
+        "py2exe" : {
+            "includes" : "pango,atk,gobject,cairo,pangocairo,win32gui,win32com,win32com.shell",
+            "compressed" : 1,
+            "optimize" : 2,
+            "bundle_files" : 3,
+            }
         }
-    }
+else:
+    opts = {}
 
-setup(
-    windows=[{'script' : "chirpw.py"}],
+setup(name="chirp",
+    windows=[{'script' : "chirpw"}],
     console=[{'script' : "chirp.py"}],
+    packages=['chirp', 'chirpui'],
+    version=CHIRP_VERSION,
+    scripts=['chirpw'],
+    data_files=[('/usr/share/chirp', ['chirp.xsd', 'chirp_memory.xsd', 'chirp_banks.xsd']),
+                ('/usr/share/applications', ['chirp.desktop'])],
     options=opts)
