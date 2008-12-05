@@ -319,10 +319,10 @@ class IC92MemoryFrame(IC92Frame):
 
         if ord(mmap[24]) == 0:
             self._bank = None
+            self._bank_index = -1;
         else:
             self._bank = ord(mmap[24]) - ord("A")
-
-        self._bank_index = int("%02x" % ord(mmap[25]))
+            self._bank_index = int("%02x" % ord(mmap[25]))
 
         if self.is_dv:
             self._rpt2call = mmap[36:44].rstrip()
