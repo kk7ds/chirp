@@ -160,11 +160,6 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        job = common.RadioJob(self.editor_ucall.set_callsigns,
-                              "get_urcall_list")
-        job.set_desc("Downloading URCALL list")
-        self.rthread.submit(job)
-
         self.editor_ucall.connect("changed", self.__cs_changed)
 
         frame = gtk.Frame("Repeater callsign")
@@ -174,11 +169,6 @@ class DStarEditor(common.Editor):
         frame.add(self.editor_rcall)
         frame.show()
         box.pack_start(frame, 1, 1, 0)
-
-        job = common.RadioJob(self.editor_rcall.set_callsigns,
-                              "get_repeater_call_list")
-        job.set_desc("Downloading RPTCALL list")
-        self.rthread.submit(job)
 
         self.editor_rcall.connect("changed", self.__cs_changed)
 
@@ -190,19 +180,37 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        job = common.RadioJob(self.editor_mcall.set_callsigns,
-                              "get_mycall_list")
-        job.set_desc("Downloading MYCALL list")
-        self.rthread.submit(job)
-
         self.editor_mcall.connect("changed", self.__cs_changed)
 
         box.show()
         return box
 
+    def focus(self):
+        if  self.loaded:
+            return
+        self.loaded = True
+        print "Loading callsigns..."
+
+        job = common.RadioJob(self.editor_ucall.set_callsigns,
+                              "get_urcall_list")
+        job.set_desc("Downloading URCALL list")
+        self.rthread.submit(job)
+
+        job = common.RadioJob(self.editor_rcall.set_callsigns,
+                              "get_repeater_call_list")
+        job.set_desc("Downloading RPTCALL list")
+        self.rthread.submit(job)
+
+        job = common.RadioJob(self.editor_mcall.set_callsigns,
+                              "get_mycall_list")
+        job.set_desc("Downloading MYCALL list")
+        self.rthread.submit(job)
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
+
+        self.loaded = False
 
         self.editor_ucall = self.editor_rcall = None
 

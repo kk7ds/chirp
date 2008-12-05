@@ -748,9 +748,10 @@ class DstarMemoryEditor(MemoryEditor):
             for call in calls:
                 self.choices["URCALL"].append((call, call))
         
-        ujob = common.RadioJob(ucall_cb, "get_urcall_list")
-        ujob.set_desc("Downloading URCALL list")
-        rthread.submit(ujob)
+        if self.rthread.radio.feature_req_call_lists:
+            ujob = common.RadioJob(ucall_cb, "get_urcall_list")
+            ujob.set_desc("Downloading URCALL list")
+            rthread.submit(ujob)
 
         def rcall_cb(calls):
             self.defaults["RPT1CALL"] = calls[0]
@@ -759,9 +760,10 @@ class DstarMemoryEditor(MemoryEditor):
                 self.choices["RPT1CALL"].append((call, call))
                 self.choices["RPT2CALL"].append((call, call))
 
-        rjob = common.RadioJob(rcall_cb, "get_repeater_call_list")
-        rjob.set_desc("Downloading RPTCALL list")
-        rthread.submit(rjob)
+        if self.rthread.radio.feature_req_call_lists:
+            rjob = common.RadioJob(rcall_cb, "get_repeater_call_list")
+            rjob.set_desc("Downloading RPTCALL list")
+            rthread.submit(rjob)
 
         if not rthread.radio.feature_req_call_lists:
             for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:

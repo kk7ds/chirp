@@ -73,6 +73,7 @@ class EditorSet(gtk.VBox):
         self.rthread.connect("status", lambda e, m: self.emit("status", m))
 
         self.tabs = gtk.Notebook()
+        self.tabs.connect("switch-page", self.tab_selected)
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
         if isinstance(self.radio, chirp_common.IcomDstarRadio):
@@ -241,3 +242,8 @@ class EditorSet(gtk.VBox):
         job = common.RadioJob(cb, "set_memory", mem)
         job.set_desc("Priming memory")
         self.rthread.submit(job)
+
+    def tab_selected(self, notebook, foo, pagenum):
+        # Quick hack for D-STAR editor
+        if pagenum == 1:
+            self.dstared.focus()

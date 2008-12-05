@@ -32,6 +32,9 @@ class Editor(gobject.GObject):
     def __init__(self):
         gobject.GObject.__init__(self)
 
+    def focus(self):
+        pass
+
 gobject.type_register(Editor)
 
 class RadioJob:
