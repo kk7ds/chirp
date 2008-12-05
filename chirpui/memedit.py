@@ -574,7 +574,7 @@ time.  Are you sure you want to do this?"""
             return -1
 
         bank = vals[self.col("Bank")]
-        if bank is None:
+        if bank is "":
             bidx = None
             bank_index = vals[self.col("Bank Index")]
         else:
