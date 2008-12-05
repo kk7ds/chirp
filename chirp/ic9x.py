@@ -85,9 +85,15 @@ class IC9xRadio(chirp_common.IcomRadio):
             ic9x_ll.send_magic(self.pipe)
         self.__last = time.time()
 
-        mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
-
-        m = mframe.get_memory()
+        try:
+            mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
+            m = mframe.get_memory()
+        except errors.InvalidMemoryLocation:
+            if number > self.mem_upper_limit:
+                m = chirp_common.Memory()
+                m.number = number
+            else:
+                raise
 
         if number > self.mem_upper_limit:
             m.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
@@ -95,7 +101,6 @@ class IC9xRadio(chirp_common.IcomRadio):
                             "extd_number"]
 
         self.__memcache[m.number] = m
-
 
         return m
 

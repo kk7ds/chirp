@@ -193,12 +193,7 @@ def get_bank(mmap, number):
     else:
         return val
 
-def get_memory(_map, number):
-    mmap = get_raw_memory(_map, number)
-
-    if not is_used(_map, number):
-        raise errors.InvalidMemoryLocation("Location %i is empty" % number)
-
+def _get_memory(_map, mmap):
     if get_mode(mmap) == "DV":
         print "Doing DV"
         mem = chirp_common.DVMemory()
@@ -214,7 +209,6 @@ def get_memory(_map, number):
 
     mem.freq = get_freq(mmap)
     mem.name = get_name(mmap)
-    mem.number = number
     mem.mode = get_mode(mmap)
     mem.duplex = get_duplex(mmap)
     mem.offset = get_dup_offset(mmap)
@@ -224,6 +218,20 @@ def get_memory(_map, number):
     mem.tmode = get_tone_enabled(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
     mem.tuning_step = get_tune_step(mmap)
+
+    return mem
+
+def get_memory(_map, number):
+    if not is_used(_map, number):
+        if number < 200:
+            raise errors.InvalidMemoryLocation("Location %i is empty" % number)
+        else:
+            mem = chirp_common.Memory()
+    else:
+        mmap = get_raw_memory(_map, number)
+        mem = _get_memory(_map, mmap)
+
+    mem.number = number
 
     if number < 200:
         mem.skip = get_skip(_map, number)
@@ -387,7 +395,7 @@ def set_bank(mmap, number, bank):
     val |= index
     mmap[POS_FLAGS_START + number] = val    
 
-def set_memory(_map, memory):
+def set_memory (_map, memory):
     mmap = get_raw_memory(_map, memory.number)
 
     if not is_used(_map, memory.number):
