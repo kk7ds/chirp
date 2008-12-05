@@ -65,6 +65,20 @@ class IC9xRadio(chirp_common.IcomRadio):
         self.__memcache = {}
         self.__bankcache = {}
 
+    def get_available_bank_index(self, bank):
+        indexes = []
+        for mem in self.__memcache.values():
+            if mem.bank == bank and mem.bank_index >= 0:
+                indexes.append(mem.bank_index)
+
+        print "Index list for %i: %s" % (bank, indexes)
+
+        for i in range(0, 99):
+            if i not in indexes:
+                return i
+
+        raise errors.RadioError("Out of slots in this bank")
+
     def get_special_locations(self):
         return sorted(IC9x_SPECIAL[self.vfo].keys())
     

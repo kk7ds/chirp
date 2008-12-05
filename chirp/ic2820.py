@@ -15,15 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, ic2820_ll
+from chirp import chirp_common, icf, ic2820_ll, errors
 
 class IC2820Radio(chirp_common.IcomMmapRadio,
                   chirp_common.IcomDstarRadio):
     _model = "\x29\x70\x00\x01"
     _memsize = 44224
     _endframe = "Icom Inc\x2e68"
-
-    _memories = []
 
     _ranges = [(0x0000, 0x6960, 32),
                (0x6960, 0x6980, 16),
@@ -38,11 +36,33 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     feature_bankindex = True
     feature_req_call_lists = False
 
+    _memories = {}
+    
+    def get_available_bank_index(self, bank):
+        indexes = []
+        for mem in self._memories.values():
+            if mem.bank == bank and mem.bank_index >= 0:
+                indexes.append(mem.bank_index)
+
+        for i in range(0, 256):
+            if i not in indexes:
+                return i
+
+        raise errors.RadioError("Out of slots in this bank")
+
     def get_special_locations(self):
         return sorted(ic2820_ll.IC2820_SPECIAL.keys())
 
     def process_mmap(self):
-        self._memories = ic2820_ll.parse_map_for_memory(self._mmap)
+        self._memories = {}
+        count = 500 + len(ic2820_ll.IC2820_SPECIAL.keys())
+        for i in range(0, count):
+            try:
+                mem = ic2820_ll.get_memory(self._mmap, i)
+            except errors.InvalidMemoryLocation:
+                continue
+
+            self._memories[mem.number] = mem
 
     def get_memory(self, number):
         if not self._mmap:
@@ -55,10 +75,14 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
                 raise errors.InvalidMemoryLocation("Unknown channel %s" % \
                                                        number)
         
-        return ic2820_ll.get_memory(self._mmap, number)
+        try:
+            return self._memories[number]
+        except KeyError:
+            raise errors.InvalidMemoryLocation("Location %s is empty" % number)
 
     def erase_memory(self, number):
         ic2820_ll.erase_memory(self._mmap, number)
+        self.process_mmap()
 
     def get_memories(self, lo=0, hi=499):
         if not self._mmap:
@@ -71,6 +95,7 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
             self.sync_in()
 
         self._mmap = ic2820_ll.set_memory(self._mmap, memory)
+        self._memories[memory.number] = memory
 
     def sync_in(self):
         self._mmap = icf.clone_from_radio(self)

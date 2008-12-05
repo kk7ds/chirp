@@ -561,31 +561,15 @@ time.  Are you sure you want to do this?"""
 
             return bidx
 
-        def get_free_index(name):
-            indexes = []
-            iter = self.store.get_iter_first()
-            while iter:
-                bank, idx = self.store.get(iter,
-                                           self.col("Bank"),
-                                           self.col("Bank Index"))
-                if bank == name:
-                    indexes.append(idx)
-                iter = self.store.iter_next(iter)
-
-            for i in range(0, 256):
-                if i not in indexes:
-                    return i
-
-            return -1
-
         bank = vals[self.col("Bank")]
         if bank is "":
             bidx = None
             bank_index = vals[self.col("Bank Index")]
         else:
             bidx = get_bank_index(bank)
-            if vals[self.col("Bank Index")] == -1:
-                bank_index = get_free_index(bank)
+            if vals[self.col("Bank Index")] == -1 and \
+                    self.rthread.radio.feature_bankindex:
+                bank_index = self.rthread.radio.get_available_bank_index(bidx)
                 print "Chose %i index for bank %s" % (bank_index, bank)
                 self.store.set(iter, self.col("Bank Index"), bank_index)
             else:
