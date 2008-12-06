@@ -178,7 +178,7 @@ class Memory:
         if self.bank is None:
             bank = ""
         else:
-            bank = "%i" % self.bank
+            bank = "%s" % chr(ord("A") + self.bank)
 
         string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%i,," % ( \
             self.number,
@@ -295,7 +295,7 @@ class Memory:
             if not vals[13]:
                 self.bank = None
             else:
-                self.bank = int(vals[13])
+                self.bank = ord(vals[13]) - ord("A")
         except:
             raise errors.InvalidDataError("Bank value is not valid")
 
@@ -324,7 +324,7 @@ class DVMemory(Memory):
         if self.bank is None:
             bank = ""
         else:
-            bank = "%i" % self.bank
+            bank = "%s" % chr(ord("A") + self.bank)
 
         string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%i,%s,%s,%s," % ( \
             self.number,
