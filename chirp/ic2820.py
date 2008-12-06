@@ -88,7 +88,7 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
         if not self._mmap:
             self.sync_in()
 
-        return [m for m in self._memories if m.number >= lo and m.number <= hi]
+        return [m for m in self._memories.values() if m.number >= lo and m.number <= hi]
 
     def set_memory(self, memory):
         if not self._mmap:

@@ -397,6 +397,9 @@ def set_bank_info(mmap, number, bank, index):
 
     if bank is None:
         bank = 0xFF
+
+    if index < 0:
+        index = 0
     
     mmap[POS_BANK_START + (number * 2)] = bank
     mmap[POS_BANK_START + (number * 2) + 1] = index
