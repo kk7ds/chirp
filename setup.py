@@ -17,7 +17,6 @@
 
 from distutils.core import setup
 import sys
-import os
 from chirp import CHIRP_VERSION
 
 try:
@@ -35,7 +34,7 @@ except ImportError:
     # no build path setup, no worries.
     pass
 
-if os.name == "win32":
+if sys.platform == "win32":
     import py2exe
     opts = {
         "py2exe" : {
@@ -45,15 +44,18 @@ if os.name == "win32":
             "bundle_files" : 3,
             }
         }
-else:
-    opts = {}
 
-setup(name="chirp",
-    windows=[{'script' : "chirpw"}],
-    console=[{'script' : "chirp.py"}],
-    packages=['chirp', 'chirpui'],
-    version=CHIRP_VERSION,
-    scripts=['chirpw'],
-    data_files=[('/usr/share/chirp', ['chirp.xsd', 'chirp_memory.xsd', 'chirp_banks.xsd']),
-                ('/usr/share/applications', ['chirp.desktop'])],
-    options=opts)
+    setup(name="chirp",
+          windows=[{'script' : "chirpw"}],
+          console=[{'script' : "chirp.py"}],
+          packages=['chirp', 'chirpui'],
+          version=CHIRP_VERSION,
+          scripts=['chirpw'],
+          options=opts)
+else:
+    setup(name="chirp",
+          packages=['chirp', 'chirpui'],
+          version=CHIRP_VERSION,
+          scripts=['chirpw'],
+          data_files=[('/usr/share/chirp', ['chirp.xsd', 'chirp_memory.xsd', 'chirp_banks.xsd']),
+                      ('/usr/share/applications', ['chirp.desktop'])])

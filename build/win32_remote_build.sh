@@ -33,7 +33,7 @@ do_build() {
 grab_builds() {
     out=$1
 
-    scp -r "$HOST:$out/*" .
+    scp -r "$HOST:$out/*" dist
 }
 
 sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
