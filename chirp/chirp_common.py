@@ -295,7 +295,13 @@ class Memory:
             if not vals[13]:
                 self.bank = None
             else:
-                self.bank = ord(vals[13]) - ord("A")
+                ind = ord(vals[13][0])
+                if ind >= ord("A") and ind <= ord("Z"):
+                    self.bank = ind - ord("A")
+                elif ind >= ord("a") and ind <= ord("z"):
+                    self.bank = ind - ord("a")
+                else:
+                    raise Exception()
         except:
             raise errors.InvalidDataError("Bank value is not valid")
 
