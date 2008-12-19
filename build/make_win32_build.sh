@@ -50,6 +50,7 @@ DirText "This will install CHIRP v$VERSION"
 SetCompressor 'lzma'
 Section ""
   InitPluginsDir
+  RMDir /r "\$INSTDIR"
   SetOutPath "\$INSTDIR"
   File /r 'dist\*.*'
   CreateDirectory "\$SMPROGRAMS\CHIRP"
