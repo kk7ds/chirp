@@ -244,9 +244,12 @@ class ImportDialog(gtk.Dialog):
             if number not in self.used_list:
                 self.used_list.append(number)
         except errors.InvalidMemoryLocation:
+            print "Location %i empty or at limit of destination radio" % number
             if number not in self.not_used_list:
                 self.not_used_list.append(number)
-        
+        except errors.InvalidDataError, e:
+            print "Got error from radio, assuming %i beyond limits: %s" % \
+                (number, e)
 
     def populate_list(self, radio):
         for mem in radio.get_memories():
