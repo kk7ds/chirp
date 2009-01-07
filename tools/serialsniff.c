@@ -27,6 +27,9 @@
 #include <string.h>
 #include <signal.h>
 #include <getopt.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
 
 #define STREQ(a,b) (strcmp(a,b) == 0)
 
@@ -190,10 +193,57 @@ static bool open_serial(const char *serpath, struct path *path)
 	return path->fd >= 0;
 }
 
+static bool open_socket(const char *foo, struct path *path)
+{
+	int lfd;
+	struct sockaddr_in srv;
+	struct sockaddr_in cli;
+	unsigned int cli_len = sizeof(cli);
+	int optval = 1;
+
+	lfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (lfd < 0) {
+		perror("socket");
+		return false;
+	}
+
+        srv.sin_family = AF_INET;
+        srv.sin_port = htons(2000);
+        srv.sin_addr.s_addr = INADDR_ANY;
+
+        setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
+        if (bind(lfd, (struct sockaddr *)&srv, sizeof(srv)) < 0) {
+                perror("bind");
+                return false;
+        }
+
+        if (listen(lfd, 1) < 0) {
+                perror("listen");
+		return false;
+        }
+
+	printf("Waiting...\n");
+
+	path->fd = accept(lfd, (struct sockaddr *)&cli, &cli_len);
+	if (path->fd < 0) {
+		perror("accept");
+		return false;
+	}
+
+	printf("Accepted socket client\n");
+
+	strcpy(path->path, "SOCKET");
+
+	return true;
+}
+
 static bool open_path(const char *opt, struct path *path)
 {
 	if (STREQ(opt, "pty"))
 		return open_pty(path);
+	else if (STREQ(opt, "listen"))
+		return open_socket(opt, path);
 	else
 		return open_serial(opt, path);
 }
