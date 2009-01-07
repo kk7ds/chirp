@@ -27,7 +27,8 @@ POS_NAME_END   = 10
 POS_MODE       = 23
 POS_FLAG       = 20
 POS_DUPX       = 21
-POS_DOFF       =  2
+POS_DOFF_START =  2
+POS_DOFF_END   =  4
 POS_RTONE      = 10
 POS_CTONE      = 11
 POS_DTCS       = 12
@@ -123,7 +124,7 @@ def get_duplex(mmap):
         return ""
 
 def get_dup_offset(mmap):
-    val = struct.unpack("B", mmap[POS_DOFF])[0]
+    val = struct.unpack("<H", mmap[POS_DOFF_START:POS_DOFF_END])[0]
 
     return float(val * 5.0) / 1000.0
 
@@ -295,9 +296,9 @@ def set_duplex(mmap, duplex):
     mmap[POS_DUPX] = val
 
 def set_dup_offset(mmap, offset):
-    val = struct.pack("B", int((offset * 1000) / 5))
+    val = struct.pack("<H", int((offset * 1000) / 5))
 
-    mmap[POS_DOFF] = val
+    mmap[POS_DOFF_START] = val
 
 def set_tone_enabled(mmap, mode):
     mask = 0xFC # ~00000001
