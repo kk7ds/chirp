@@ -207,7 +207,7 @@ class EditorSet(gtk.VBox):
             self._do_import_locked(id)
         except Exception, e:
             common.log_exception()
-            common.show_error("There was an error during import: %s" % e, self)
+            common.show_error("There was an error during import: %s" % e)
         self.rthread.unlock()        
         
     def do_export(self, filen):
