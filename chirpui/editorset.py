@@ -53,8 +53,10 @@ class EditorSet(gtk.VBox):
                     (gobject.TYPE_STRING,))
         }
 
-    def __init__(self, source):
+    def __init__(self, source, parent_window=None):
         gtk.VBox.__init__(self, True, 0)
+
+        self.parent_window = parent_window
 
         if isinstance(source, str):
             self.filename = source
@@ -190,7 +192,7 @@ class EditorSet(gtk.VBox):
 
         dst_rthread._qlock_when_idle() # Suspend job submission when idle
 
-        dialog = dlgclass(src_radio, dst_rthread.radio)
+        dialog = dlgclass(src_radio, dst_rthread.radio, self.parent_window)
         r = dialog.run()
         dialog.hide()
         if r != gtk.RESPONSE_OK:

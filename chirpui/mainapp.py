@@ -81,7 +81,7 @@ class ChirpMain(gtk.Window):
         self.sb_radio.push(0, msg)
 
     def do_new(self):
-        eset = editorset.EditorSet("Untitled.chirp")
+        eset = editorset.EditorSet("Untitled.chirp", self)
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)
         eset.prime()
@@ -101,7 +101,7 @@ class ChirpMain(gtk.Window):
                 return
 
         try:
-            eset = editorset.EditorSet(fname)
+            eset = editorset.EditorSet(fname, self)
         except Exception, e:
             common.log_exception()
             common.show_error("There was an error opening %s: %s" % (fname, e))
@@ -129,7 +129,7 @@ class ChirpMain(gtk.Window):
                             timeout=0.1)
         radio = rclass(ser)
         
-        eset = editorset.EditorSet(radio)
+        eset = editorset.EditorSet(radio, self)
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)
         eset.show()
