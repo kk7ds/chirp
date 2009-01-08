@@ -180,17 +180,31 @@ class EditorSet(gtk.VBox):
     def is_modified(self):
         return self.modified
 
-    def _do_import_locked(self, dialog):
+    def _do_import_locked(self, dlgclass, src_radio, dst_rthread):
+
+        # An import/export action needs to be done in the absence of any
+        # other queued changes.  So, we make sure that nothing else is
+        # staged for the thread and lock it up.  Then we use the hidden
+        # interface to queue our own changes before opening it up to the
+        # rest of the world.
+
+        dst_rthread._qlock_when_idle() # Suspend job submission when idle
+
+        dialog = dlgclass(src_radio, dst_rthread.radio)
         r = dialog.run()
         dialog.hide()
         if r != gtk.RESPONSE_OK:
             return
 
-        count = dialog.do_import()
+        count = dialog.do_import(dst_rthread)
         print "Imported %i" % count
         if count > 0:
             self.editor_changed()
             gobject.idle_add(self.memedit.prefill)
+
+        dst_rthread._qunlock()
+
+        return count
 
     def do_import(self, filen):
         try:
@@ -200,15 +214,13 @@ class EditorSet(gtk.VBox):
             common.show_error(e)
             return
 
-        id = importdialog.ImportDialog(src_radio, self.rthread.radio)
-
-        self.rthread.lock()
         try:
-            self._do_import_locked(id)
+            self._do_import_locked(importdialog.ImportDialog,
+                                   src_radio,
+                                   self.rthread)
         except Exception, e:
             common.log_exception()
             common.show_error("There was an error during import: %s" % e)
-        self.rthread.unlock()        
         
     def do_export(self, filen):
         try:
@@ -220,16 +232,30 @@ class EditorSet(gtk.VBox):
             common.show_error(e)
             return
 
-        ed = importdialog.ExportDialog(self.rthread.radio, dst_radio)
+        dst_rthread = common.RadioThread(dst_radio)
+        dst_rthread.setDaemon(True)
+        dst_rthread.start()
 
-        self.rthread.lock()
-        self._do_import_locked(ed)
+        try:
+            count = self._do_import_locked(importdialog.ExportDialog,
+                                           self.rthread.radio,
+                                           dst_rthread)
+        except Exception, e:
+            common.log_exception()
+            common.show_error("There was an error during export: %s" % e)
+            return
+
+        if count <= 0:
+            return
+
+        # Wait for thread queue to complete
+        dst_rthread._qlock_when_idle()
+
         try:
             dst_radio.save(filename=filen)
         except Exception, e:
             common.log_exception()
             common.show_error("There was an error during export: %s" % e, self)
-        self.rthread.unlock()
             
     def prime(self):
         mem = chirp_common.Memory()

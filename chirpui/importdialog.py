@@ -98,36 +98,60 @@ class ImportDialog(gtk.Dialog):
 
         return import_list
 
-    def do_import(self):
+    def ensure_calls(self, dst_rthread, import_list):
+        rlist_changed = False
+        ulist_changed = False
+
+        if not isinstance(self.dst_radio, chirp_common.IcomDstarRadio):
+            return
+
+        ulist = self.dst_radio.get_urcall_list()
+        rlist = self.dst_radio.get_repeater_call_list()
+
+        for old, new in import_list:
+            mem = self.src_radio.get_memory(old)
+            if isinstance(mem, chirp_common.DVMemory):
+                if mem.dv_urcall not in ulist:
+                    print "Adding %s to ucall list" % mem.dv_urcall
+                    ulist.append(mem.dv_urcall)
+                    ulist_changed = True
+                if mem.dv_rpt1call not in rlist:
+                    print "Adding %s to rcall list" % mem.dv_rpt1call
+                    rlist.append(mem.dv_rpt1call)
+                    rlist_changed = True
+                if mem.dv_rpt2call not in rlist:
+                    print "Adding %s to rcall list" % mem.dv_rpt2call
+                    rlist.append(mem.dv_rpt2call)
+                    rlist_changed = True
+                
+        if ulist_changed:
+            job = common.RadioJob(None, "set_urcall_list", ulist)
+            job.set_desc("Updating URCALL list")
+            dst_rthread._qsubmit(job)
+
+        if rlist_changed:
+            job = common.RadioJob(None, "set_repeater_call_list", ulist)
+            job.set_desc("Updating RPTCALL list")
+            dst_rthread._qsubmit(job)
+            
+        return
+
+    def do_import(self, dst_rthread):
         i = 0
 
-        if isinstance(self.dst_radio, chirp_common.IcomDstarRadio):
-            isdv = True
-            ulist = self.dst_radio.get_urcall_list()
-            rlist = self.dst_radio.get_repeater_call_list()
-        else:
-            isdv = False
+        import_list = self.get_import_list()
 
-        for old, new in self.get_import_list():
+        self.ensure_calls(dst_rthread, import_list)
+
+        for old, new in import_list:
             print "%sing %i -> %i" % (self.ACTION, old, new)
             mem = self.src_radio.get_memory(old)
             mem.number = new
 
-            if isinstance(mem, chirp_common.DVMemory) and isdv:
-                if mem.dv_urcall not in ulist:
-                    print "Adding %s to ucall list" % mem.dv_urcall
-                    ulist.append(mem.dv_urcall)
-                    self.dst_radio.set_urcall_list(ulist)
-                if mem.dv_rpt1call not in rlist:
-                    print "Adding %s to rcall list" % mem.dv_rpt1call
-                    rlist.append(mem.dv_rpt1call)
-                    self.dst_radio.set_repeater_call_list(rlist)
-                if mem.dv_rpt2call not in rlist:
-                    print "Adding %s to rcall list" % mem.dv_rpt2call
-                    rlist.append(mem.dv_rpt2call)
-                    self.dst_radio.set_repeater_call_list(rlist)
+            job = common.RadioJob(None, "set_memory", mem)
+            job.set_desc("Setting memory %i" % mem.number)
+            dst_rthread._qsubmit(job)
 
-            self.dst_radio.set_memory(mem)
             i += 1
 
         return i
