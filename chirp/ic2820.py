@@ -37,6 +37,9 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     feature_req_call_lists = False
 
     _memories = {}
+
+    def get_memory_upper(self):
+        return 499
     
     def get_available_bank_index(self, bank):
         indexes = []

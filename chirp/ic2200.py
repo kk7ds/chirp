@@ -84,6 +84,9 @@ class IC2200Radio(chirp_common.IcomMmapRadio,
     URCALL_LIMIT  = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
+    def get_memory_upper(self):
+        return 199
+
     def process_mmap(self):
         self._memories = ic2200_ll.parse_map_for_memory(self._mmap)
 

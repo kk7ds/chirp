@@ -28,6 +28,9 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
             self.load()
+
+    def get_memory_upper(self):
+        return 999
             
     def _parse_csv_line(self, line):
         line = line.replace("\n", "")

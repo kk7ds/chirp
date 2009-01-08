@@ -51,6 +51,9 @@ class ICx8xRadio(chirp_common.IcomMmapRadio,
     URCALL_LIMIT = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
+    def get_memory_upper(self):
+        return 199
+
     def _get_type(self):
         flag = (isUHF(self.pipe) != 0)
 

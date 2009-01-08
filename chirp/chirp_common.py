@@ -421,6 +421,9 @@ class IcomRadio:
     def get_special_locations(self):
         return []
 
+    def get_memory_upper(self):
+        return 0
+
 class IcomFileBackedRadio(IcomRadio):
     def save(self, filename=None):
         pass

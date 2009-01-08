@@ -225,6 +225,9 @@ class IC9xRadioA(IC9xRadio):
     vfo = 1
     mem_upper_limit = 849
 
+    def get_memory_upper(self):
+        return self.mem_upper_limit
+
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
     vfo = 2
     mem_upper_limit = 399
@@ -232,6 +235,9 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)
+
+    def get_memory_upper(self):
+        return self.mem_upper_limit
 
     def __init__(self, *args, **kwargs):
         IC9xRadio.__init__(self, *args, **kwargs)

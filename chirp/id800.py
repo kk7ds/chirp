@@ -66,6 +66,9 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
 
     feature_has_implicit_calls = True
 
+    def get_memory_upper(self):
+        return 499
+
     def process_mmap(self):
         self._memories = id800_ll.parse_map_for_memory(self._mmap)
 

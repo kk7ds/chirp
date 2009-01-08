@@ -71,6 +71,9 @@ class XMLRadio(chirp_common.IcomFileBackedRadio,
             radio.newProp("version", "0.1.1")
             self.set_banks(default_banks())
 
+    def get_memory_upper(self):
+        return 999
+
     def load(self, filename=None):
         if not self._filename and not filename:
             raise errors.RadioError("Need a location to load from")
