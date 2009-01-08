@@ -19,6 +19,7 @@ import gtk
 import gobject
 
 import threading
+import time
 
 from chirp import errors
 
@@ -44,6 +45,9 @@ class RadioJob:
         self.args = args
         self.kwargs = kwargs
         self.desc = "Working"
+
+    def __str__(self):
+        return "RadioJob(%s,%s,%s)" % (self.func, self.args, self.kwargs)
 
     def set_desc(self, desc):
         self.desc = desc
@@ -93,6 +97,19 @@ class RadioThread(threading.Thread, gobject.GObject):
     def _qunlock(self):
         self.__lock.release()
 
+    def _qsubmit(self, job):
+        self.__queue.append(job)
+        self.__counter.release()
+
+    def _qlock_when_idle(self):
+        while True:
+            print "Attempting queue lock (%i)" % len(self.__queue)
+            self._qlock()
+            if not self.__queue:
+                return
+            self._qunlock()
+            time.sleep(0.1)
+
     # This is the external lock, which stops any threads from running
     # so that the radio can be operated synchronously
     def lock(self):
@@ -103,9 +120,8 @@ class RadioThread(threading.Thread, gobject.GObject):
 
     def submit(self, job):
         self._qlock()
-        self.__queue.append(job)
+        self._qsubmit(job)
         self._qunlock()
-        self.__counter.release()
 
     def flush(self):
         self._qlock()
