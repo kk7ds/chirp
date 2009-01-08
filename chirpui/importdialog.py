@@ -22,6 +22,36 @@ import pango
 from chirp import errors, chirp_common
 from chirpui import common
 
+class WaitWindow(gtk.Window):
+    def __init__(self, msg, parent=None):
+        gtk.Window.__init__(self)
+        self.set_title("Please Wait")
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
+        if parent:
+            self.set_transient_for(parent)
+            self.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        else:
+            self.set_position(gtk.WIN_POS_CENTER)
+
+        vbox = gtk.VBox(False, 2)
+
+        l = gtk.Label(msg)
+        l.show()
+        vbox.pack_start(l)
+
+        self.prog = gtk.ProgressBar()
+        self.prog.show()
+        vbox.pack_start(self.prog)
+
+        vbox.show()
+        self.add(vbox)
+
+    def grind(self):
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        self.prog.pulse()
+
 class ImportDialog(gtk.Dialog):
 
     def _check_for_dupe(self, location):
@@ -276,7 +306,13 @@ class ImportDialog(gtk.Dialog):
                 (number, e)
 
     def populate_list(self, radio):
-        for mem in radio.get_memories():
+        for i in range(0, radio.get_memory_upper()):
+            self.ww.grind()
+            try:
+                mem = radio.get_memory(i)
+            except errors.InvalidMemoryLocation, e:
+                continue
+
             self.__store.append(row=(True,
                                      mem.number,
                                      mem.number,
@@ -288,11 +324,12 @@ class ImportDialog(gtk.Dialog):
     TITLE = "Import From File"
     ACTION = "Import"
 
-    def __init__(self, src_radio, dst_radio):
+    def __init__(self, src_radio, dst_radio, parent=None):
         gtk.Dialog.__init__(self,
                             buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                                      gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
-                            title=self.TITLE)
+                            title=self.TITLE,
+                            parent=parent)
 
         self.col_import = 0
         self.col_nloc = 1
@@ -324,7 +361,14 @@ class ImportDialog(gtk.Dialog):
 
         self.build_ui()
         self.set_default_size(400, 300)
+
+        self.ww = WaitWindow("Communicating with the radio", parent=parent)
+        self.ww.show()
+        self.ww.grind()
+
         self.populate_list(src_radio)
+
+        self.ww.hide()
 
 class ExportDialog(ImportDialog):
     TITLE = "Export To File"
