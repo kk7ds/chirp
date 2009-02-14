@@ -20,7 +20,7 @@ import pango
 
 import os
 
-import platform
+from chirp import platform
 
 class KeyedListWidget(gtk.HBox):
     __gsignals__ = {
