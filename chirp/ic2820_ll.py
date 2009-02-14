@@ -351,6 +351,19 @@ def set_mode(mmap, mode):
     mask = 0xFE3F # ~ 00000001 11000000
     val = struct.unpack(">H", mmap[POS_MODE_START:POS_MODE_END])[0] & mask
 
+    # A quick way to examine the current mode without horking on hash
+    def safe_get_mode(mmap):
+        try:
+            return get_mode(mmap)
+        except errors.InvalidDataError:
+            return "foo"
+
+    # If we're going to DV mode, we need to initialize the DSQL bits
+    if mode == "DV" and safe_get_mode(mmap) != "DV":
+        # The only thing kept here other than the flag bits (that I know of)
+        # is the DTCS polarity which will be set later explicitly
+        mmap[38] = mmap[39] = 0
+
     try:
         val |= IC2820_MODES_REV[mode]
     except KeyError:
