@@ -206,7 +206,7 @@ class UnixPlatform(Platform):
         os.system("firefox '%s'" % path)
 
     def list_serial_ports(self):
-        return sorted(glob.glob("/dev/ttyS*") + glob.glob("/dev/ttyUSB*"))
+        return sorted(glob.glob("/dev/ttyS*") + glob.glob("/dev/ttyUSB*") + glob.glob("/dev/cu.usbser*"))
 
     def os_version_string(self):
         # pylint: disable-msg=W0703
