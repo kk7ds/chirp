@@ -41,29 +41,6 @@ TUNING_STEPS_REV = {}
 for __idx, __val in TUNING_STEPS.items():
     TUNING_STEPS_REV[__val] = __idx
 
-def bcd_encode(val, bigendian=True, width=None):
-    digits = []
-    while val != 0:
-        digits.append(val % 10)
-        val /= 10
-
-    result = ""
-
-    if len(digits) % 2 != 0:
-        digits.append(0)
-
-    while width and width > len(digits):
-        digits.append(0)
-
-    for i in range(0, len(digits), 2):
-        newval = struct.pack("B", (digits[i+1] << 4) | digits[i])
-        if bigendian:
-            result =  newval + result
-        else:
-            result = result + newval
-    
-    return result
-
 class IcomFrame:
     pass
 
@@ -342,7 +319,7 @@ class IC92MemoryFrame(IC92Frame):
         mmap[52] = "CQCQCQ  "
 
         mmap[1] = struct.pack(">H", int("%i" % self._number, 16))
-        mmap[3] = bcd_encode(int(self._freq * 1000000), bigendian=False)
+        mmap[3] = util.bcd_encode(int(self._freq * 1000000), bigendian=False)
 
         mmap[26] = self._name.ljust(8)[:8]
 
@@ -377,13 +354,13 @@ class IC92MemoryFrame(IC92Frame):
 
         mmap[21] = mode
 
-        mmap[13] = bcd_encode(int(self._rtone * 10))
-        mmap[15] = bcd_encode(int(self._ctone * 10))
-        mmap[17] = bcd_encode(int(self._dtcs), width=4)
+        mmap[13] = util.bcd_encode(int(self._rtone * 10))
+        mmap[15] = util.bcd_encode(int(self._ctone * 10))
+        mmap[17] = util.bcd_encode(int(self._dtcs), width=4)
         
-        mmap[8] = bcd_encode(int(self._offset * 1000000),
-                           bigendian=False,
-                           width=6)
+        mmap[8] = util.bcd_encode(int(self._offset * 1000000),
+                                  bigendian=False,
+                                  width=6)
 
         val = ord(mmap[23]) & 0xF3
         polarity_values = { "NN" : 0x00,
@@ -410,7 +387,7 @@ class IC92MemoryFrame(IC92Frame):
         else:
             mmap[24] = "\0"
         print "Set bank to %s (%s)" % (mmap[24], self._bank)
-        mmap[25] = bcd_encode(self._bank_index)
+        mmap[25] = util.bcd_encode(self._bank_index)
 
         if self._vfo == 2:
             mmap[36] = self._rpt2call.ljust(8)
@@ -594,9 +571,9 @@ def print_memory(pipe, vfo, number):
     print "Memory %i from VFO %i: %s" % (number, vfo, str(mf))
 
 if __name__ == "__main__":
-    print util.hexprint(bcd_encode(1072))
-    print util.hexprint(bcd_encode(146900000, False))
-    print util.hexprint(bcd_encode(25, width=4))
-    print util.hexprint(bcd_encode(5000000, False, 6))
-    print util.hexprint(bcd_encode(600000, False, 6))
+    print util.hexprint(util.bcd_encode(1072))
+    print util.hexprint(util.bcd_encode(146900000, False))
+    print util.hexprint(util.bcd_encode(25, width=4))
+    print util.hexprint(util.bcd_encode(5000000, False, 6))
+    print util.hexprint(util.bcd_encode(600000, False, 6))
     

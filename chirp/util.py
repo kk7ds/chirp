@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import struct
+
 def hexprint(data):
     line_sz = 8
 
@@ -54,4 +56,27 @@ def hexprint(data):
 
 def write_in_place(mem, start, data):
     return mem[:start] + data + mem[start+len(data):]
+
+def bcd_encode(val, bigendian=True, width=None):
+    digits = []
+    while val != 0:
+        digits.append(val % 10)
+        val /= 10
+
+    result = ""
+
+    if len(digits) % 2 != 0:
+        digits.append(0)
+
+    while width and width > len(digits):
+        digits.append(0)
+
+    for i in range(0, len(digits), 2):
+        newval = struct.pack("B", (digits[i+1] << 4) | digits[i])
+        if bigendian:
+            result =  newval + result
+        else:
+            result = result + newval
+    
+    return result
 
