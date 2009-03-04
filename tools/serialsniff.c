@@ -73,7 +73,6 @@
 #include <arpa/inet.h>
 
 #define STREQ(a,b) (strcmp(a,b) == 0)
-#define	MACOS
 
 char	*version = "1.02 (03 MAR 2009)";
 int	quiescent = 0;
@@ -377,7 +376,7 @@ int main(int argc, char **argv)
 			{0, 0, 0, 0}
 		};
 
-		c = getopt_long(argc, argv, "A:B:d:l:",
+		c = getopt_long(argc, argv, "A:B:d:l:q",
 				lopts, &optind);
 		if (c == -1)
 			break;
