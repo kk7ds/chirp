@@ -17,7 +17,6 @@
 
 import struct
 
-from chirp.chirp_common import IcomFrame
 from chirp import chirp_common, util, errors
 from chirp.memmap import MemoryMap
 
@@ -64,6 +63,9 @@ def bcd_encode(val, bigendian=True, width=None):
             result = result + newval
     
     return result
+
+class IcomFrame:
+    pass
 
 class IC92Frame(IcomFrame):
     def from_raw(self, data):

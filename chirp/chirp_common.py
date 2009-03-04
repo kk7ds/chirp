@@ -75,9 +75,6 @@ TUNING_STEPS = [
 
 SKIP_VALUES = [ "", "S", "P" ]
 
-class IcomFrame:
-    pass
-
 class Memory:
     freq = 0.0
     number = 0
