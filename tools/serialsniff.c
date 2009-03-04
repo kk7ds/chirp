@@ -16,6 +16,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ *
+ * Modifications made by:
+ *	Stuart Blake Tener, N3GWG
+ *	Email:		<teners@bh90210.net>
+ *	Mobile phone:	+1 (310) 358-0202
+ *
+ * 02 MAR 2009 - Version 1.01
+ *
+ *		Logic was changed to use "ptsname" instead of "ptsname_r"
+ *		in pursuance of provisioning greater compatibility with other
+ *		Unix variants and Open Standards Unix flavors which have not
+ *		otherwise implemented the "ptsname_r" system call.
+ *		Changes developed and tested under MacOS 10.5.6 (Leopard)
+ *
+ *		Added "--quiescent" switch, which when used on the command
+ *		line prevents the printing of "Timeout" and count notices
+ *		on the console.
+ *		Changes developed and tested under MacOS 10.5.6 (Leopard)
+ *
+ *		Added program title and version tagline, printed when the
+ *		software is first started.
+ *
+ * 03 MAR 2009 - Version 1.02
+ *
+ *		Added "--digits" switch, which when used on the command
+ *		line allows for setting the number of hex digits print per
+ *		line.
+ *
+ *		Added code to allow "-q" shorthand for "quiescent mode".
+ *
+ *		Changes were made to add "#ifdef" statements so that only code
+ *		appropriate to MacOS would be compiled if a "#define MACOS" is
+ *		defined early within the source code.
+ *
+ *		Cleaned up comments in the source for my new source code.
+ *
+ *		Changes developed and tested under MacOS 10.5.6 (Leopard)
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -32,6 +73,11 @@
 #include <arpa/inet.h>
 
 #define STREQ(a,b) (strcmp(a,b) == 0)
+#define	MACOS
+
+char	*version = "1.02 (03 MAR 2009)";
+int	quiescent = 0;
+int	total_hex = 20;
 
 struct path {
 	int fd;
@@ -42,11 +88,23 @@ struct path {
 
 void hexdump(char *buf, int len, FILE *dest)
 {
+	/*
+	 * In precedence to the modification of this procedure to support the
+	 * variable size hexadecimal output, the total bytes output was fixed
+	 * to be a length of 8.
+	 *
+	 * The amendment of this procedure to support the "total_hex" variable
+	 * allows for the user to pass a command line argument instantiating a
+	 * desired number of hexadecimal bytes (and their ASCII equivelent) to
+	 * be displayed.
+	 *
+	 */
+
 	int i;
 	int j;
 
-	for (i = 0; i < len; i += 8) {
-		for (j = i; j < i + 8; j++) {
+	for (i = 0; i < len; i += total_hex) {
+		for (j = i; j < i + total_hex; j++) {
 			if ((j % 4) == 0)
 				fprintf(dest, " ");
 
@@ -58,7 +116,7 @@ void hexdump(char *buf, int len, FILE *dest)
 
 		fprintf(dest, "   ");
 
-		for (j = i; j < i + 8; j++) {
+		for (j = i; j < i + total_hex; j++) {
 			if ((j % 4) == 0)
 				fprintf(dest, " ");
 
@@ -88,7 +146,8 @@ int saferead(int fd, char *buf, int len)
 		getitimer(ITIMER_REAL, &val);
 		if ((val.it_value.tv_sec == 0) &&
 		    (val.it_value.tv_usec == 0)) {
-			printf("Timeout\n");
+			if (!quiescent)
+				printf("Timeout\n"); 
 			break;
 		}
 
@@ -130,7 +189,8 @@ void proxy(struct path *pathA, struct path *pathB)
 			ret = write(pathB->fd, buf, count);
 			if (ret != count)
 				printf("Failed to write %i (%i)\n", count, ret);
-			printf("%s %i:\n", pathA->name, count);
+			if (!quiescent)
+				printf("%s %i:\n", pathA->name, count);
 			hexdump(buf, count, stdout);
 
 			if (pathA->rawlog_fd >= 0) {
@@ -151,7 +211,8 @@ void proxy(struct path *pathA, struct path *pathB)
 			ret = write(pathA->fd, buf, count);
 			if (ret != count)
 				printf("Failed to write %i (%i)\n", count, ret);
-			printf("%s %i:\n", pathB->name, count);
+			if (!quiescent)
+				printf("%s %i:\n", pathB->name, count);
 			hexdump(buf, count, stdout);
 
 			if (pathB->rawlog_fd >= 0) {
@@ -167,6 +228,10 @@ void proxy(struct path *pathA, struct path *pathB)
 
 static bool open_pty(struct path *path)
 {
+#ifdef MACOS
+	char	*ptsname_path;
+#endif
+
 	path->fd = posix_openpt(O_RDWR);
 	if (path->fd < 0) {
 		perror("posix_openpt");
@@ -176,7 +241,13 @@ static bool open_pty(struct path *path)
 	grantpt(path->fd);
 	unlockpt(path->fd);
 
+#ifdef MACOS
+	ptsname_path = ptsname(path->fd);
+	strncpy(path->path,ptsname_path,sizeof(path->path) - 1);
+#else
 	ptsname_r(path->fd, path->path, sizeof(path->path));
+#endif
+
 	fprintf(stderr, "%s\n", path->path);
 
 	return true;
@@ -269,6 +340,9 @@ static void usage()
 	       "     --logB=FILE   Log pathB (raw) to FILE\n"
 	       "     --nameA=NAME  Set pathA name to NAME\n"
 	       "     --nameB=NAME  Set pathB name to NAME\n"
+	       " --q,--quiescent   Run in quiescent mode\n"
+	       "  -d,--digits      Number of hex digits to print in one line\n"
+	       "\n"
 	       );
 }
 
@@ -287,6 +361,8 @@ int main(int argc, char **argv)
 	pathA.fd = pathA.rawlog_fd = -1;
 	pathB.fd = pathB.rawlog_fd = -1;
 
+	printf("\nserialsniff - Version %s\n\n",version);
+
 	while (1) {
 		int optind;
 		static struct option lopts[] = {
@@ -296,15 +372,18 @@ int main(int argc, char **argv)
 			{"logB",  1, 0, 2 },
 			{"nameA", 1, 0, 3 },
 			{"nameB", 1, 0, 4 },
+			{"quiescent", 0, 0, 'q' },
+			{"digits", 1, 0, 'd'},
 			{0, 0, 0, 0}
 		};
 
-		c = getopt_long(argc, argv, "A:B:l:",
+		c = getopt_long(argc, argv, "A:B:d:l:",
 				lopts, &optind);
 		if (c == -1)
 			break;
 
 		switch (c) {
+
 		case 'A':
 			if (!open_path(optarg, &pathA))
 				return 1;
@@ -331,6 +410,14 @@ int main(int argc, char **argv)
 
 		case 4:
 			strncpy(pathB.name, optarg, sizeof(pathB.name));
+			break;
+
+		case 'q':
+			quiescent = 1;
+			break;
+
+		case 'd':
+			total_hex=atoi(optarg);
 			break;
 
 		case '?':
