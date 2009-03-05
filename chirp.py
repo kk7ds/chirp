@@ -238,7 +238,7 @@ if options.set_mem_name or options.set_mem_freq or \
     mem.rtone  = options.set_mem_tenc or mem.rtone
     mem.ctone  = options.set_mem_tsql or mem.ctone
     mem.dtcs   = options.set_mem_dtcs or mem.dtcs
-    mem.dtcsPolarity = options.set_mem_dtcspol or mem.dtcsPolarity
+    mem.dtcs_polarity = options.set_mem_dtcspol or mem.dtcs_polarity
     if _dup is not None:
         mem.duplex = _dup
     mem.offset = options.set_mem_offset or mem.offset
