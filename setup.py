@@ -57,6 +57,10 @@ def macos_build():
         setup_requires=['py2app'],
         )
 
+    EXEC = 'bash ./build/macos/make_pango.sh /opt/local dist/chirp-%s.app' % CHIRP_VERSION
+    #print "exec string: %s" % EXEC
+    os.system(EXEC) 
+
 def default_build():
     from distutils.core import setup
     from glob import glob
