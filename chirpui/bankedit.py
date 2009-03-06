@@ -50,6 +50,8 @@ class BankEditor(common.Editor):
         job.set_desc("Setting bank list")
         self.rthread.submit(job)
 
+        return True
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread

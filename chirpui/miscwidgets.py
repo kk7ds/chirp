@@ -27,11 +27,11 @@ class KeyedListWidget(gtk.HBox):
         "item-selected" : (gobject.SIGNAL_RUN_LAST,
                            gobject.TYPE_NONE,
                            (gobject.TYPE_STRING,)),
-        "item-toggled" : (gobject.SIGNAL_RUN_LAST,
+        "item-toggled" : (gobject.SIGNAL_ACTION,
                           gobject.TYPE_BOOLEAN,
                           (gobject.TYPE_STRING, gobject.TYPE_BOOLEAN)),
-        "item-set" : (gobject.SIGNAL_RUN_LAST,
-                      gobject.TYPE_NONE,
+        "item-set" : (gobject.SIGNAL_ACTION,
+                      gobject.TYPE_BOOLEAN,
                       (gobject.TYPE_STRING,)),
         }
 
@@ -44,9 +44,10 @@ class KeyedListWidget(gtk.HBox):
 
     def _edited(self, rend, path, new, colnum):
         iter = self.__store.get_iter(path)
-        key = self.__store.get(iter, 0)
+        key, oldval = self.__store.get(iter, 0, colnum)
         self.__store.set(iter, colnum, new)
-        self.emit("item-set", key)
+        if not self.emit("item-set", key):
+            self.__store.set(iter, colnum, oldval)
 
     def _mouse(self, view, event):
         x, y = event.get_coords()
