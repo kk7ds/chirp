@@ -475,14 +475,12 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
     ulist = ["CQCQCQ"]
     for i in range(1, 100):
         call = get_urcall(_map, i).rstrip()
-        if call:
-            ulist.append(call)
+        ulist.append(call)
 
     rlist = ["*NOTUSE*"]
     for i in range(1, 60):
         call = get_rptcall(_map, i).rstrip()
-        if call:
-            rlist.append(call)
+        rlist.append(call)
 
     try:
         if not urcall:

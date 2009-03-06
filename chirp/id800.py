@@ -129,8 +129,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
 
         for i in range(*self.URCALL_LIMIT):
             call = id800_ll.get_urcall(self._mmap, i)
-            if call:
-                calls.append(call)
+            calls.append(call)
 
         return calls
 
@@ -139,8 +138,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
 
         for i in range(*self.RPTCALL_LIMIT):
             call = id800_ll.get_rptcall(self._mmap, i)
-            if call:
-                calls.append(call)
+            calls.append(call)
 
         return calls
 
@@ -149,8 +147,7 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
 
         for i in range(*self.MYCALL_LIMIT):
             call = id800_ll.get_mycall(self._mmap, i)
-            if call:
-                calls.append(call)
+            calls.append(call)
 
         return calls
     
