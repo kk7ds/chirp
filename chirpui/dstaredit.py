@@ -37,7 +37,7 @@ class CallsignEditor(gtk.HBox):
 
         return True
 
-    def make_list(self):
+    def make_list(self, width):
         cols = [ (gobject.TYPE_INT, ""),
                  (gobject.TYPE_INT, ""),
                  (gobject.TYPE_STRING, "Callsign"),
@@ -49,6 +49,10 @@ class CallsignEditor(gtk.HBox):
         self.listw.set_editable(1, True)
         self.listw.connect("item-set", self._cs_changed)
 
+        rend = self.listw.get_renderer(1)
+        rend.set_property("family", "Monospace")
+        rend.set_property("width-chars", width)
+
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add_with_viewport(self.listw)
@@ -56,14 +60,14 @@ class CallsignEditor(gtk.HBox):
         
         return sw
 
-    def __init__(self, first_fixed=False):
+    def __init__(self, first_fixed=False, width=8):
         gtk.HBox.__init__(self, False, 2)
 
         self.first_fixed = first_fixed
 
         self.listw = None
 
-        self.pack_start(self.make_list(), 1, 1, 1)
+        self.pack_start(self.make_list(width), 1, 1, 1)
 
     def set_callsigns(self, calls):
         if self.first_fixed:
