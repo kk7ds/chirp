@@ -28,73 +28,26 @@ class CallsignEditor(gtk.HBox):
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
 
-    def __add_cb(self, button, entry):
-        call = entry.get_text().upper()
-        if call:
-            self.listw.add_item(call)
-            entry.set_text("")
-            self.emit("changed")
+    def _cs_changed(self, listw, callid):
+        print "CS Changed: %s %s" % (callid, self.first_fixed)
+        if callid == 0 and self.first_fixed:
+            return False
 
-    def __del_cb(self, button):
-        if self.first_fixed:
-            if self.listw.get_selected() == self.listw.get_values()[0]:
-                return
-
-        self.listw.remove_selected()
         self.emit("changed")
 
-    def __mov_cb(self, button, delta):
-        if self.first_fixed:
-            idx = self.listw.get_values().index(self.listw.get_selected())
-            if idx == 0:
-                return
-            elif idx == 1 and delta == 1:
-                return
-
-        self.listw.move_selected(delta)
-        self.emit("changed")
-
-    def make_controls(self):
-        vbox = gtk.VBox(False, 2)
-
-        entry = gtk.Entry(8)
-        entry.set_size_request(WIDGETW, WIDGETH)
-        entry.show()
-        vbox.pack_start(entry, 0, 0, 0)
-
-        addbtn = gtk.Button(stock=gtk.STOCK_ADD)
-        addbtn.connect("clicked", self.__add_cb, entry)
-        addbtn.set_size_request(WIDGETW, WIDGETH)
-        addbtn.show()
-        vbox.pack_start(addbtn, 0, 0, 0)
-
-        delbtn = gtk.Button(stock=gtk.STOCK_REMOVE)
-        delbtn.connect("clicked", self.__del_cb)
-        delbtn.set_size_request(WIDGETW, WIDGETH)
-        delbtn.show()
-        vbox.pack_start(delbtn, 0, 0, 0)
-        
-        mupbtn = gtk.Button("Move up")
-        mupbtn.connect("clicked", self.__mov_cb, 1)
-        mupbtn.set_size_request(WIDGETW, WIDGETH)
-        mupbtn.show()
-        vbox.pack_start(mupbtn, 0, 0, 0)
-
-        mdnbtn = gtk.Button("Move down")
-        mdnbtn.connect("clicked", self.__mov_cb, -1)
-        mdnbtn.set_size_request(WIDGETW, WIDGETH)
-        mdnbtn.show()
-        vbox.pack_start(mdnbtn, 0, 0, 0)
-
-        vbox.show()
-
-        return vbox
+        return True
 
     def make_list(self):
-        cols = [ (gobject.TYPE_STRING, "Callsign") ]
+        cols = [ (gobject.TYPE_INT, ""),
+                 (gobject.TYPE_INT, ""),
+                 (gobject.TYPE_STRING, "Callsign"),
+                 ]
 
-        self.listw = miscwidgets.ListWidget(cols)
+        self.listw = miscwidgets.KeyedListWidget(cols)
         self.listw.show()
+
+        self.listw.set_editable(1, True)
+        self.listw.connect("item-set", self._cs_changed)
 
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -111,15 +64,30 @@ class CallsignEditor(gtk.HBox):
         self.listw = None
 
         self.pack_start(self.make_list(), 1, 1, 1)
-        self.pack_start(self.make_controls(), 0, 0, 0)
 
     def set_callsigns(self, calls):
-        values = [(x,) for x in calls]
-        self.listw.set_values(values)
+        if self.first_fixed:
+            st = 1
+        else:
+            st = 0
+
+        values = []
+        i = 1
+        for call in calls[st:]:
+            self.listw.set_item(i, i, call)
+            i += 1
 
     def get_callsigns(self):
-        values = self.listw.get_values()
-        return [x for x, in values]
+        calls = []
+        keys = self.listw.get_keys()
+        for key in keys:
+            id, idx, call = self.listw.get_item(key)
+            calls.append(call)
+
+        if self.first_fixed:
+            calls.insert(0, "")
+
+        return calls
 
 class DStarEditor(common.Editor):
     def __cs_changed(self, cse):
@@ -160,8 +128,6 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        self.editor_ucall.connect("changed", self.__cs_changed)
-
         frame = gtk.Frame("Repeater callsign")
         self.editor_rcall = CallsignEditor(first_fixed=fixed)
         self.editor_rcall.set_size_request(-1, 200)
@@ -170,8 +136,6 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        self.editor_rcall.connect("changed", self.__cs_changed)
-
         frame = gtk.Frame("My callsign")
         self.editor_mcall = CallsignEditor()
         self.editor_mcall.set_size_request(-1, 200)
@@ -179,8 +143,6 @@ class DStarEditor(common.Editor):
         frame.add(self.editor_mcall)
         frame.show()
         box.pack_start(frame, 1, 1, 0)
-
-        self.editor_mcall.connect("changed", self.__cs_changed)
 
         box.show()
         return box
@@ -191,18 +153,27 @@ class DStarEditor(common.Editor):
         self.loaded = True
         print "Loading callsigns..."
 
-        job = common.RadioJob(self.editor_ucall.set_callsigns,
-                              "get_urcall_list")
+        def set_ucall(calls):
+            self.editor_ucall.set_callsigns(calls)
+            self.editor_ucall.connect("changed", self.__cs_changed)
+
+        def set_rcall(calls):
+            self.editor_rcall.set_callsigns(calls)
+            self.editor_rcall.connect("changed", self.__cs_changed)
+
+        def set_mcall(calls):
+            self.editor_mcall.set_callsigns(calls)
+            self.editor_mcall.connect("changed", self.__cs_changed)
+
+        job = common.RadioJob(set_ucall, "get_urcall_list")
         job.set_desc("Downloading URCALL list")
         self.rthread.submit(job)
 
-        job = common.RadioJob(self.editor_rcall.set_callsigns,
-                              "get_repeater_call_list")
+        job = common.RadioJob(set_rcall, "get_repeater_call_list")
         job.set_desc("Downloading RPTCALL list")
         self.rthread.submit(job)
 
-        job = common.RadioJob(self.editor_mcall.set_callsigns,
-                              "get_mycall_list")
+        job = common.RadioJob(set_mcall, "get_mycall_list")
         job.set_desc("Downloading MYCALL list")
         self.rthread.submit(job)
 
