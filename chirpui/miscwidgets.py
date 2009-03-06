@@ -192,6 +192,9 @@ class KeyedListWidget(gtk.HBox):
         col = self.__view.get_column(column)
         col.set_sort_column_id(value)
 
+    def get_renderer(self, colnum):
+        return self.__view.get_column(colnum).get_cell_renderers()[0]
+
 class ListWidget(gtk.HBox):
     __gsignals__ = {
         "click-on-list" : (gobject.SIGNAL_RUN_LAST,
