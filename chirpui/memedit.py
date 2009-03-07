@@ -480,13 +480,13 @@ time.  Are you sure you want to do this?"""
         for i in range(lo, hi+1):
             job = common.RadioJob(handler, "get_memory", i)
             job.set_desc("Getting memory %s" % i)
-            self.rthread.submit(job)
+            self.rthread.submit(job, 2)
 
         if self.show_special:
             for i in self.rthread.radio.get_special_locations():
                 job = common.RadioJob(handler, "get_memory", i)
                 job.set_desc("Getting channel %s" % i)
-                self.rthread.submit(job)
+                self.rthread.submit(job, 2)
 
     def _set_memory(self, iter, memory):
         try:
@@ -689,6 +689,13 @@ time.  Are you sure you want to do this?"""
             bi.set_visible(False)
 
         self.prefill()
+
+        # Run low priority jobs to get the rest of the memories
+        hi = int(self.hi_limit_adj.get_value())
+        for i in range(hi, self.rthread.radio.get_memory_upper()+1):
+            job = common.RadioJob(None, "get_memory", i)
+            job.set_desc("Getting memory %i" % i)
+            self.rthread.submit(job, 10)
 
 class DstarMemoryEditor(MemoryEditor):
     def render(self, _, rend, model, iter, colnum):

@@ -84,7 +84,7 @@ class RadioThread(threading.Thread, gobject.GObject):
     def __init__(self, radio):
         threading.Thread.__init__(self)
         gobject.GObject.__init__(self)
-        self.__queue = []
+        self.__queue = {}
         self.__counter = threading.Semaphore(0)
         self.__enabled = True
         self.__lock = threading.Lock()
@@ -97,8 +97,11 @@ class RadioThread(threading.Thread, gobject.GObject):
     def _qunlock(self):
         self.__lock.release()
 
-    def _qsubmit(self, job):
-        self.__queue.append(job)
+    def _qsubmit(self, job, priority):
+        if not self.__queue.has_key(priority):
+            self.__queue[priority] = []
+
+        self.__queue[priority].append(job)
         self.__counter.release()
 
     def _qlock_when_idle(self):
@@ -118,14 +121,20 @@ class RadioThread(threading.Thread, gobject.GObject):
     def unlock(self):
         self.__runlock.release()
 
-    def submit(self, job):
+    def submit(self, job, priority=0):
         self._qlock()
-        self._qsubmit(job)
+        self._qsubmit(job, priority)
         self._qunlock()
 
-    def flush(self):
+    def flush(self, priority=None):
         self._qlock()
-        self.__queue = []
+
+        if priority is None:
+            for i in self.__queue.keys():
+                self.__queue[i] = []
+        else:
+            self.__queue[priority] = []
+
         self._qunlock()
 
     def stop(self):
@@ -134,9 +143,17 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.__enabled = False
     
     def status(self, msg):
-        gobject.idle_add(self.emit, "status", "[%i] %s" % (len(self.__queue),
-                                                           msg))
+        jobs = 0
+        for i in self.__queue:
+            jobs += len(self.__queue[i])
+        gobject.idle_add(self.emit, "status", "[%i] %s" % (jobs, msg))
             
+    def _queue_pop(self, priority):
+        try:
+            return self.__queue[priority].pop(0)
+        except IndexError:
+            return None
+
     def run(self):
         while self.__enabled:
             print "Waiting for a job"
@@ -144,11 +161,11 @@ class RadioThread(threading.Thread, gobject.GObject):
             self.__counter.acquire()
 
             self._qlock()
-            try:
-                job = self.__queue.pop(0)
-            except IndexError:
-                self._qunlock()
-                break
+            for i in sorted(self.__queue.keys()):
+                job = self._queue_pop(i)
+                if job:
+                    print "Running job at priority %i" % i
+                    break
             self._qunlock()
             
             self.lock()
