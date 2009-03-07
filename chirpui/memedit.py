@@ -448,6 +448,8 @@ time.  Are you sure you want to do this?"""
 
             i += 1
 
+        self.store.set_sort_column_id(0, gtk.SORT_ASCENDING)
+
         self.view.show()
         sw.show()
 
