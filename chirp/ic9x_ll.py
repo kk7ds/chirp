@@ -41,433 +41,10 @@ TUNING_STEPS_REV = {}
 for __idx, __val in TUNING_STEPS.items():
     TUNING_STEPS_REV[__val] = __idx
 
-class IcomFrame:
-    pass
+MEM_LEN = 36
+DV_MEM_LEN = 60
 
-class IC92Frame(IcomFrame):
-    def from_raw(self, data):
-        if not data.startswith("\xfe\xfe"):
-            raise errors.InvalidDataError("No header")
-
-        if not data.endswith("\xfd"):
-            raise errors.InvalidDataError("No trailer")
-
-        self._vfo = ord(data[3])
-        self._magic = ord(data[2])
-
-        self._data = data[4:-1]
-        self._rawdata = data
-
-        self._post_proc()
-
-    def from_frame(self, frame):
-        # pylint: disable-msg=W0212
-        self._vfo = frame._vfo
-        self._magic = frame._magic
-        self._data = frame._data
-        self._rawdata = frame._rawdata
-
-        self._post_proc()
-
-    def _post_proc(self):
-        pass
-
-    def __init__(self):
-        self._vfo = 1
-        self._magic = 80
-        self._data = None
-        self._rawdata = None
-
-    def get_data(self):
-        return self._data
-
-    def _make_raw(self):
-        # pylint: disable-msg=R0201
-        raise Exception("Not implemented")
-
-    def __str__(self):
-        string = "Frame VFO=%i (len = %i)\n" % (self._vfo, len(self._data))
-        string += util.hexprint(self._data)
-        string += "\n"
-
-        return string
-
-    def send(self, pipe, verbose=False):
-        self._make_raw()
-        return send(pipe, self._rawdata, verbose)
-
-class IC92BankFrame(IC92Frame):
-    def __init__(self):
-        self.ident = None
-        self.name = None
-        self.vfo = 0
-    
-    def __str__(self):
-        return "Bank %s: %s" % (self._data[2], self._data[3:])
-
-    def get_name(self):
-        if not self.name:
-            self.name = self._data[3:]
-
-        return self.name
-
-    def get_identifier(self):
-        if not self.ident:
-            self.ident = self._data[2]
-
-        return self.ident
-
-    def set_name(self, name):
-        self.name = name[:8].ljust(8)
-
-    def set_identifier(self, ident):
-        self.ident = ident[0]
-
-    def set_vfo(self, vfo):
-        self.vfo = vfo
-
-    def _make_raw(self):
-        self._rawdata = struct.pack("BBBB", self.vfo, 0x80, 0x1A, 0x0B)
-        self._rawdata += self.ident
-        self._rawdata += self.name
-
-class IC92MemClearFrame(IC92Frame):
-    def __init__(self, vfo, number):
-        IC92Frame.__init__(self)
-        self._number = number
-        self._vfo = vfo
-
-    def _make_raw(self):
-        self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
-        self._rawdata += struct.pack(">BHB",
-                                     0x01,
-                                     int("%i" % self._number, 16),
-                                     0xFF)
-
-class IC92CallsignFrame(IC92Frame):
-    command = 0 # Invalid
-
-    def __init__(self, number=0, callsign=""):
-        IC92Frame.__init__(self)
-        self._number = number
-        if callsign:
-            callsign = callsign.ljust(8)
-        self.callsign = callsign
-
-    def _make_raw(self):
-        self._rawdata = struct.pack("BBBB", 2, 0x80, 0x1D, self.command)
-        self._rawdata += struct.pack("B", self._number)
-        self._rawdata += self.callsign
-
-    def get_callsign(self):
-        return self._data[3:11].rstrip()
-
-class IC92YourCallsignFrame(IC92CallsignFrame):
-    command = 6 # Your
-
-class IC92RepeaterCallsignFrame(IC92CallsignFrame):
-    command = 7 # Repeater
-
-class IC92MyCallsignFrame(IC92CallsignFrame):
-    command = 8 # My
-
-    def __init__(self, number=0, callsign=""):
-        if callsign:
-            callsign = callsign.ljust(12)
-
-        IC92CallsignFrame.__init__(self, number, callsign)
-
-class IC92MemoryFrame(IC92Frame):
-    def __init__(self):
-        IC92Frame.__init__(self)
-
-        self.is_dv = False
-        self._dtcs_polarity = "NN"
-        self._ts = 5.0
-        self._rtone = 88.5
-        self._ctone = 88.5
-        self._dtcs = 23
-        self._duplex = ""
-        self._urcall = "CQCQCQ"
-        self._tmode = ""
-        self._mode = "FM"
-        self._freq = "146.010"
-        self._name = ""
-        self._offset = 0
-        self._rpt1call = ""
-        self._rpt2call = ""
-        self._number = -1
-        self._skip = ""
-        self._bank = None
-        self._bank_index = 0
-
-    def _post_proc(self):
-        if len(self._data) < 36:
-            raise errors.InvalidDataError("Frame length %i is too short",
-                                          len(self._data))
-
-        self.is_dv = (len(self._data) == 62)
-
-        mmap = MemoryMap(self._data[2:])
-
-        self._name = mmap[26:34].rstrip()
-        self._number = struct.unpack(">H", mmap[1:3])
-
-        hun = int("%x" % ord(mmap[7]))
-        ten = int("%x" % ord(mmap[6]))
-        dec = int("%02x%02x%02x" % (ord(mmap[5]),
-                                    ord(mmap[4]),
-                                    ord(mmap[3])))        
-
-        self._freq = ((hun * 100) + ten) + (dec / 1000000.0)
-
-        tdup, = struct.unpack("B", mmap[22])
-        if (tdup & 0x01) == 0x01:
-            self._duplex = "-"
-        elif (tdup & 0x02) == 0x02:
-            self._duplex = "+"
-        else:
-            self._duplex = ""
-
-        tval = tdup & 0x1C
-        if tval == 0x00:
-            self._tmode = ""
-        elif tval == 0x04:
-            self._tmode = "Tone"
-        elif tval == 0x0C:
-            self._tmode = "TSQL"
-        elif tval == 0x14:
-            self._tmode = "DTCS"
-        elif tval == 0x18:
-            self._tmode = "" # TSQL-R
-        elif tval == 0x1C:
-            self._tmode = "" # DTCS-R
-
-        polarity_values = {0x00 : "NN",
-                           0x04 : "NR",
-                           0x08 : "RN",
-                           0x0C : "RR" }
-
-        self._dtcs_polarity = polarity_values[ord(mmap[23]) & 0x0C]
-
-        mode = struct.unpack("B", mmap[21])[0] & 0xF0
-        if mode == 0:
-            self._mode = "FM"
-        elif mode == 0x10:
-            self._mode = "NFM"
-        elif mode == 0x30:
-            self._mode = "AM"
-        elif mode == 0x40:
-            self._mode = "DV"
-        elif mode == 0x20:
-            self._mode = "WFM"
-        else:
-            raise errors.InvalidDataError("Radio has invalid mode %02x" % mode)
-
-        tone = int("%02x%02x" % (ord(mmap[13]), ord(mmap[14])))
-        tone /= 10.0
-        if tone in chirp_common.TONES:
-            self._rtone = tone
-        else:
-            raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
-
-        tone = int("%02x%02x" % (ord(mmap[15]), ord(mmap[16])))
-        tone /= 10.0
-        if tone in chirp_common.TONES:
-            self._ctone = tone
-        else:
-            raise errors.InvalidDataError("Radio has invalid tone %.1f" % tone)
-
-        dtcs = int("%02x%02x" % (ord(mmap[17]), ord(mmap[18])))
-        if dtcs in chirp_common.DTCS_CODES:
-            self._dtcs = dtcs
-        else:
-            raise errors.InvalidDataError("Radio has invalid DTCS %03i" % dtcs)
-
-        self._offset = float("%x.%02x%02x%02x" % (ord(mmap[11]), ord(mmap[10]),
-                                                  ord(mmap[9]),  ord(mmap[8])))
-
-        index = ord(mmap[21]) & 0x0F
-        self._ts = TUNING_STEPS[index]               
-
-        skip = ord(mmap[23]) & 0x03
-        if skip == 0x02:
-            self._skip = "P"
-        elif skip == 0x01:
-            self._skip = "S"
-
-        if ord(mmap[24]) == 0:
-            self._bank = None
-            self._bank_index = -1;
-        else:
-            self._bank = ord(mmap[24]) - ord("A")
-            self._bank_index = int("%02x" % ord(mmap[25]))
-
-        if self.is_dv:
-            self._rpt2call = mmap[36:44].rstrip()
-            self._rpt1call = mmap[44:52].rstrip()
-            self._urcall = mmap[52:60].rstrip()
-
-    def _make_raw(self):
-        mmap = MemoryMap("\x00" * 60)
-
-        # Setup an empty memory map
-        mmap[0] = 0x01
-        mmap[10] = "\x60\x00\x00\x08\x85\x08\x85\x00" + \
-            "\x23\x22\x00\x06\x00\x00\x00\x00"
-        mmap[36] = (" " * 16)
-        mmap[52] = "CQCQCQ  "
-
-        mmap[1] = struct.pack(">H", int("%i" % self._number, 16))
-        mmap[3] = util.bcd_encode(int(self._freq * 1000000), bigendian=False)
-
-        mmap[26] = self._name.ljust(8)[:8]
-
-        dup = ord(mmap[22]) & 0xE0
-        if self._duplex == "-":
-            dup |= 0x01
-        elif self._duplex == "+":
-            dup |= 0x02
-
-        if self._tmode == "Tone":
-            dup |= 0x04
-        elif self._tmode == "TSQL":
-            dup |= 0x0C
-        elif self._tmode == "DTCS":
-            dup |= 0x14
-
-        mmap[22] = dup
-
-        mode = ord(mmap[21]) & 0x0F
-        if self._mode == "FM":
-            mode |= 0
-        elif self._mode == "NFM":
-            mode |= 0x10
-        elif self._mode == "AM":
-            mode |= 0x30
-        elif self._mode == "DV":
-            mode |= 0x40
-        elif self._mode == "WFM":
-            mode |= 0x20
-        else:
-            raise errors.InvalidDataError("Unsupported mode `%s'" % self._mode)
-
-        mmap[21] = mode
-
-        mmap[13] = util.bcd_encode(int(self._rtone * 10))
-        mmap[15] = util.bcd_encode(int(self._ctone * 10))
-        mmap[17] = util.bcd_encode(int(self._dtcs), width=4)
-        
-        mmap[8] = util.bcd_encode(int(self._offset * 1000000),
-                                  bigendian=False,
-                                  width=6)
-
-        val = ord(mmap[23]) & 0xF3
-        polarity_values = { "NN" : 0x00,
-                            "NR" : 0x04,
-                            "RN" : 0x08,
-                            "RR" : 0x0C }
-        val |= polarity_values[self._dtcs_polarity]
-        mmap[23] = val
-
-        val = ord(mmap[21]) & 0xF0
-        idx = TUNING_STEPS_REV[self._ts]
-        val |= idx
-        mmap[21] = val
-
-        val = ord(mmap[23]) & 0xFC
-        if self._skip == "S":
-            val |= 0x01
-        elif self._skip == "P":
-            val |= 0x02
-        mmap[23] = val
-
-        if self._bank is not None:
-            mmap[24] = chr(self._bank + ord("A"))
-        else:
-            mmap[24] = "\0"
-        print "Set bank to %s (%s)" % (mmap[24], self._bank)
-        mmap[25] = util.bcd_encode(self._bank_index)
-
-        if self._vfo == 2:
-            mmap[36] = self._rpt2call.ljust(8)
-            mmap[44] = self._rpt1call.ljust(8)
-            mmap[52] = self._urcall.ljust(8)
-
-        self._rawdata = struct.pack("BBBB", self._vfo, 0x80, 0x1A, 0x00)
-        if self._vfo == 1:
-            self._rawdata += mmap.get_packed()[:34]
-        else:
-            self._rawdata += mmap.get_packed()
-
-        print "Raw memory frame (%i):\n%s\n" % (\
-            len(self._rawdata) - 4,
-            util.hexprint(self._rawdata[4:]))
-
-    def set_memory(self, memory, vfo):
-        # This is really dumb... FIXME
-        self._name = memory.name.ljust(8)[0:8]
-        self._number = memory.number
-        self._freq = memory.freq
-        self._vfo = vfo
-        self._duplex = memory.duplex
-        self._offset = memory.offset
-        self._mode = memory.mode
-        self._rtone = memory.rtone
-        self._ctone = memory.ctone
-        self._dtcs = memory.dtcs
-        self._dtcs_polarity = memory.dtcs_polarity
-        self._tmode = memory.tmode
-        self._ts = memory.tuning_step
-        self._skip = memory.skip
-        self._bank = memory.bank
-        if memory.bank_index == -1:
-            self._bank_index = 0
-        else:
-            self._bank_index = memory.bank_index
-
-        if isinstance(memory, chirp_common.DVMemory) and vfo == 2:
-            self._urcall = memory.dv_urcall
-            self._rpt1call = memory.dv_rpt1call
-            self._rpt2call = memory.dv_rpt2call
-        else:
-            self._urcall = self._rpt1call = self._rpt2call = ""
-
-    def get_memory(self):
-        if self.is_dv:
-            mem = chirp_common.DVMemory()
-            mem.dv_urcall = self._urcall
-            mem.dv_rpt1call = self._rpt1call
-            mem.dv_rpt2call = self._rpt2call
-        else:
-            mem = chirp_common.Memory()
-
-        mem.freq = self._freq
-        mem.number = int("%02x" % self._number)
-        mem.name = self._name
-        mem.duplex = self._duplex
-        mem.offset = self._offset
-        mem.mode = self._mode
-        mem.rtone = self._rtone
-        mem.ctone = self._ctone
-        mem.dtcs = self._dtcs
-        mem.dtcs_polarity = self._dtcs_polarity
-
-        mem.tmode = self._tmode
-        mem.tuning_step = self._ts
-        mem.skip = self._skip
-        mem.bank = self._bank
-        mem.bank_index = self._bank_index
-        
-        return mem
-
-    def __str__(self):
-        return "%i: %.2f (%s) (DV=%s)" % (self._number,
-                                          self._freq,
-                                          self._name,
-                                          self.is_dv)
-
-def parse_frames(buf):
+def _ic9x_parse_frames(buf):
     frames = []
 
     while "\xfe\xfe" in buf:
@@ -483,7 +60,7 @@ def parse_frames(buf):
 
         try:
             frame = IC92Frame()
-            frame.from_raw(framedata)
+            frame.from_raw(framedata[2:-1])
             frames.append(frame)
         except errors.InvalidDataError, e:
             print "Broken frame: %s" % e
@@ -492,19 +69,14 @@ def parse_frames(buf):
 
     return frames
 
-def print_frames(frames):
-    count = 0
-    for i in frames:
-        print "Frame %i:" % count
-        print i
-        count += 1
+def ic9x_send(pipe, buf):
+    """Send @buf to @pipe, wrapped in a header and trailer.  Attempt to read
+    any response frames, which are returned as a list"""
 
-
-def send(pipe, buf, verbose=False):
+    # Add header and trailer
     realbuf = "\xfe\xfe" + buf + "\xfd"
 
-    if verbose:
-        print "Sending:\n%s" % util.hexprint(realbuf)
+    #print "Sending:\n%s" % util.hexprint(realbuf)
 
     pipe.write(realbuf)
     pipe.flush()
@@ -517,12 +89,384 @@ def send(pipe, buf, verbose=False):
 
         data += buf
 
-    return parse_frames(data)
+    return _ic9x_parse_frames(data)
 
-def send_magic(pipe, verbose=False):
+class IcomFrame:
+    pass
+
+class IC92Frame(IcomFrame):
+    def get_vfo(self):
+        return ord(self._map[0])
+
+    def set_vfo(self, vfo):
+        self._map[0] = chr(vfo)
+
+    def from_raw(self, data):
+        self._map = MemoryMap(data)
+
+        self._map.printable()
+
+    def from_frame(self, frame):
+        self._map = frame._map
+
+    def __init__(self, subcmd=0, flen=0, cmd=0x1A):
+        self._map = MemoryMap("\x00" * (4 + flen))
+        self._map[0] = "\x01\x80" + chr(cmd) + chr(subcmd)
+
+    def get_payload(self):
+        return self._map[4:]
+
+    def get_raw(self):
+        return self._map.get_packed()
+
+    def __str__(self):
+        string = "Frame VFO=%i (len = %i)\n" % (self.get_vfo(),
+                                                len(self.get_payload()))
+        string += util.hexprint(self.get_payload())
+        string += "\n"
+
+        return string
+
+    def send(self, pipe, verbose=False):
+        if verbose:
+            print "Sending:\n%s" % util.hexprint(self.get_raw())
+
+        response = ic9x_send(pipe, self.get_raw())
+
+        if len(response) == 0:
+            raise errors.InvalidDataError("No response from radio")
+
+        return response[0]
+
+    def __setitem__(self, start, value):
+        self._map[start+4] = value
+
+    def __getitem__(self, index):
+        return self._map[index+4]
+
+    def __getslice__(self, start, end):
+        return self._map[start+4:end+4]
+    
+class IC92GetBankFrame(IC92Frame):
+    def __init__(self):
+        IC92Frame.__init__(self, 0x09)
+
+    def send(self, pipe):
+        rframes = ic9x_send(pipe, self.get_raw())
+
+        if len(rframes) == 0:
+            raise errors.InvalidDataError("No response from radio")
+
+        return rframes
+
+class IC92BankFrame(IC92Frame):
+    def __init__(self):
+        # 1 byte for identifier
+        # 8 bytes for name
+        IC92Frame.__init__(self, 0x0B, 9)
+
+    def __str__(self):
+        return "Bank %s: %s" % (self._data[2], self._data[3:])
+
+    def get_name(self):
+        return self[1:]
+
+    def get_identifier(self):
+        return self[0]
+
+    def set_name(self, name):
+        self[1] = name[:8].ljust(8)
+
+    def set_identifier(self, ident):
+        self[0] = ident[0]
+
+class IC92MemClearFrame(IC92Frame):
+    def __init__(self, loc):
+        # 2 bytes for location
+        # 1 byte for 0xFF
+        IC92Frame.__init__(self, 0x00, 3)
+
+        self[0] = struct.pack(">HB", int("%i" % loc, 16), 0xFF)
+
+class IC92MemGetFrame(IC92Frame):
+    def __init__(self, loc):
+        # 2 bytes for location
+        IC92Frame.__init__(self, 0x00, 3)
+
+        self[0] = struct.pack(">BH", 1, int("%i" % loc, 16))
+
+class IC92GetCallsignFrame(IC92Frame):
+    def __init__(self, type, number):
+        IC92Frame.__init__(self, type, 1, 0x1D)
+
+        self[0] = chr(number)
+
+class IC92CallsignFrame(IC92Frame):
+    command = 0 # Invalid
+    width = 8
+
+    def __init__(self, number=0, callsign=""):
+        # 1 byte for index
+        # $width bytes for callsign
+        IC92Frame.__init__(self, self.command, self.width+1, 0x1D)
+
+        self[0] = chr(number) + callsign[:self.width].ljust(self.width)
+
+    def get_callsign(self):
+        return self[1:self.width+1].rstrip()
+
+class IC92YourCallsignFrame(IC92CallsignFrame):
+    command = 6 # Your
+
+class IC92RepeaterCallsignFrame(IC92CallsignFrame):
+    command = 7 # Repeater
+
+class IC92MyCallsignFrame(IC92CallsignFrame):
+    command = 8 # My
+    width = 12 # 4 bytes for /STID
+
+class IC92MemoryFrame(IC92Frame):
+    def __init__(self):
+        IC92Frame.__init__(self, 0, DV_MEM_LEN)
+
+        # For good measure, here is a whole, valid memory block
+        # at 146.010 FM.  Since the 9x will complain if any bits
+        # are invalid, it's easiest to start with a known-good one
+        # since we don't set everything.
+        self[0] = \
+            "\x01\x00\x03\x00\x00\x01\x46\x01" + \
+            "\x00\x00\x60\x00\x00\x08\x85\x08" + \
+            "\x85\x00\x23\x22\x80\x06\x00\x00" + \
+            "\x00\x00\x20\x20\x20\x20\x20\x20" + \
+            "\x20\x20\x00\x00\x20\x20\x20\x20" + \
+            "\x20\x20\x20\x20\x4b\x44\x37\x52" + \
+            "\x45\x58\x20\x43\x43\x51\x43\x51" + \
+            "\x43\x51\x20\x20"
+
+    def _encode_duptone(self, mem):
+        duptone = ord(self[22]) & 0xE0
+
+        if mem.duplex == "-":
+            duptone |= duptone | 0x01
+        elif mem.duplex == "+":
+            duptone |= duptone | 0x02
+
+        if mem.tmode == "Tone":
+            duptone |= 0x04
+        elif mem.tmode == "TSQL":
+            duptone |= 0x0C
+        elif mem.tmode == "DTCS":
+            duptone |= 0x14
+
+        self[22] = duptone
+
+    def _decode_duptone(self):
+        duptone = ord(self[22])
+
+        if duptone & 0x01:
+            duplex = "-"
+        elif duptone & 0x02:
+            duplex = "+"
+        else:
+            duplex = ""
+
+        if duptone & 0x0C:
+            tmode = "TSQL"
+        elif duptone & 0x14:
+            tmode = "DTCS"
+        elif duptone & 0x04:
+            tmode = "Tone"
+        else:
+            tmode = ""
+
+        return duplex, tmode
+
+    def _encode_mode(self, mem):
+        mode = ord(self[21]) & 0x0F
+
+        if mem.mode == "FM":
+            pass
+        elif mem.mode == "NFM":
+            mode |= 0x10
+        elif mem.mode == "WFM":
+            mode |= 0x20
+        elif mem.mode == "AM":
+            mode |= 0x30
+        elif mem.mode == "DV":
+            mode |= 0x40
+        else:
+            raise errors.InvalidDataError("Unsupported mode %s" % mem.mode)
+
+        self[21] = mode
+
+    def _decode_mode(self):
+        mode = ord(self[21])
+
+        if (mode & 0x10) == 0x10:
+            return "NFM"
+        elif (mode & 0x20) == 0x20:
+            return "WFM"
+        elif (mode & 0x30) == 0x30:
+            return "AM"
+        elif (mode & 0x40) == 0x40:
+            return "DV"
+        else:
+            return "FM"
+
+    def _encode_dtcs_polarity(self, mem):
+        pol = ord(self[23]) & 0xF3
+        if mem.dtcs_polarity[0] == "R":
+            pol |= 0x80
+        if mem.dtcs_polarity[1] == "R":
+            pol |= 0x40
+        self[23] = pol
+
+    def _decode_dtcs_polarity(self):
+        pol = ord(self[23])
+
+        pstr = ""
+        if pol & 0x80:
+            pstr += "R"
+        else:
+            pstr += "N"
+        if pol & 0x40:
+            pstr += "R"
+        else:
+            pstr += "N"
+
+        return pstr
+
+    def _encode_tuning_step(self, mem):
+        ts = ord(self[21]) & 0xF0
+        ts |= TUNING_STEPS_REV[mem.tuning_step]
+        self[21] = ts
+
+    def _decode_tuning_step(self):
+        ts = ord(self[21]) & 0x0F
+        return TUNING_STEPS[ts]
+
+    def _encode_skip(self, mem):
+        skip = ord(self[23]) & 0xFC
+        if mem.skip == "S":
+            skip |= 0x01
+        elif mem.skip == "P":
+            skip |= 0x02
+        self[23] = skip
+
+    def _decode_skip(self):
+        skip = ord(self[23])
+
+        if skip & 0x01:
+            return "S"
+        elif skip & 0x02:
+            return "P"
+        else:
+            return ""
+
+    def _encode_bank(self, mem):
+        if mem.bank is None:
+            self[24] = 0
+        else:
+            self[24] = chr(mem.bank + ord("A"))
+
+        if mem.bank_index == -1:
+            self[25] = util.bcd_encode(0)
+        else:
+            self[25] = util.bcd_encode(mem.bank_index)
+
+    def _decode_bank(self):
+        if ord(self[24]) == 0:
+            bank = None
+            index = -1
+        else:
+            bank = ord(self[24]) - ord("A")
+            index = int("%02x" % ord(self[25]))
+
+        return bank, index
+
+    def _encode_calls(self, mem):
+        if isinstance(mem, chirp_common.DVMemory):
+            uc = mem.dv_urcall
+            r1 = mem.dv_rpt1call
+            r2 = mem.dv_rpt2call
+        else:
+            uc = r1 = r2 = (" " * 8)
+
+        self[36] = uc
+        self[44] = r1
+        self[52] = r2
+
+    def _decode_calls(self):
+        return self[52:60].rstrip(), self[44:52].rstrip(),self[36:44].rstrip()
+
+    def _decode_freq(self):
+        hun = int("%x" % ord(self[7]))
+        ten = int("%x" % ord(self[6]))
+        dec = int("%02x%02x%02x" % (ord(self[5]),
+                                    ord(self[4]),
+                                    ord(self[3])))
+
+        return ((hun * 100) + ten) + (dec / 1000000.0)
+
+    def set_memory(self, mem):
+        self[1] = struct.pack(">H", int("%i" % mem.number, 16))
+        self[3] = util.bcd_encode(int(mem.freq * 1000000),
+                                  bigendian=False)
+        self[8] = util.bcd_encode(int(mem.offset * 1000000),
+                                  bigendian=True,
+                                  width=6)
+        self[13] = util.bcd_encode(int(mem.rtone * 10))
+        self[15] = util.bcd_encode(int(mem.ctone * 10))
+        self[17] = util.bcd_encode(int(mem.dtcs), width=4)
+        self._encode_mode(mem)
+        self._encode_tuning_step(mem)
+        self._encode_duptone(mem)
+        self._encode_dtcs_polarity(mem)
+        self._encode_skip(mem)
+        self._encode_bank(mem)
+        self._encode_calls(mem)
+        
+        self[26] = mem.name[:8].ljust(8)
+
+    def get_memory(self):
+        if self._decode_mode() == "DV":
+            mem = chirp_common.DVMemory()
+        else:
+            mem = chirp_common.Memory()
+
+        mem.number, = struct.unpack(">H", self[1:3])
+        mem.freq = self._decode_freq()
+        mem.offset = float("%x.%02x%02x%02x" % (ord(self[11]), ord(self[10]),
+                                                ord(self[9]),  ord(self[8])))
+        mem.rtone = int("%02x%02x" % (ord(self[13]), ord(self[14]))) / 10.0
+        mem.ctone = int("%02x%02x" % (ord(self[15]), ord(self[16]))) / 10.0
+        mem.dtcs = int("%02x%02x"  % (ord(self[17]), ord(self[18])))
+        mem.mode = self._decode_mode()
+        mem.tuning_step = self._decode_tuning_step()
+        mem.duplex, mem.tmode = self._decode_duptone()
+        mem.dtcs_polarity = self._decode_dtcs_polarity()
+        mem.skip = self._decode_skip()
+        mem.bank, mem.bank_index = self._decode_bank()
+
+        if mem.mode == "DV":
+            mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call = \
+                self._decode_calls()
+
+        mem.name = self[26:34].rstrip()
+
+        return mem
+
+def print_frames(frames):
+    count = 0
+    for i in frames:
+        print "Frame %i:" % count
+        print i
+        count += 1
+
+def send_magic(pipe):
     magic = ("\xfe" * 400) + "\x01\x80\x19"
 
-    send(pipe, magic, verbose)
+    ic9x_send(pipe, magic)
 
 def print_banks(pipe):
     frames = send(pipe, "\x01\x80\x1a\x09") # Banks
@@ -539,25 +483,95 @@ def print_banks(pipe):
         bf.from_frame(frames[i])
         print str(bf)
 
+def get_memory_frame(pipe, vfo, number):
+    frame = IC92MemGetFrame(number)
+    frame.set_vfo(vfo)
+
+    return frame.send(pipe)
+
 def get_memory(pipe, vfo, number):
-    seq = chr(vfo) + "\x80\x1a\x00\x01" + struct.pack(">H",
-                                                      int("%i" % number, 16))
-    frames = send(pipe, seq)
+    rframe = get_memory_frame(pipe, vfo, number)
 
-    if len(frames) == 0:
-        raise errors.InvalidDataError("No response from radio")
-
-    if len(frames[0].get_data()) < 6:
-        print "%s" % util.hexprint(frames[0].get_data())
+    if len(rframe.get_payload()) < 1:
         raise errors.InvalidDataError("Got a short, unknown block from radio")
 
-    if frames[0].get_data()[5] == '\xff':
+    if rframe.get_payload()[3] == '\xff':
         raise errors.InvalidMemoryLocation("Radio says location is empty")
 
     mf = IC92MemoryFrame()
-    mf.from_frame(frames[0])
+    mf.from_frame(rframe)
 
-    return mf
+    return mf.get_memory()
+
+def set_memory(pipe, vfo, memory):
+    frame = IC92MemoryFrame()
+    frame.set_vfo(vfo)
+    frame.set_memory(memory)
+
+    rframe = frame.send(pipe)
+
+    if rframe.get_raw()[2] != "\xfb":
+        raise errors.InvalidDataError("Radio reported error:\n%s" %\
+                                          util.hexprint(rframe.get_payload()))
+
+def erase_memory(pipe, vfo, number):
+    frame = IC92MemClearFrame(number)
+    frame.set_vfo(vfo)
+
+    rframe = frame.send(pipe)
+    if rframe.get_payload() != "\xfb":
+        raise errors.InvalidDataError("Radio reported error")
+
+def get_banks(pipe, vfo):
+    frame = IC92GetBankFrame()
+    frame.set_vfo(vfo)
+
+    rframes = frame.send(pipe)
+
+    if vfo == 1:
+        base = 180
+    else:
+        base = 237
+
+    banks = []
+
+    for i in range(base, base+26):
+        bframe = IC92BankFrame()
+        bframe.from_frame(rframes[i])
+
+        bank = chirp_common.Bank(bframe.get_name())
+        banks.append(bank)
+    
+    return banks
+
+def set_banks(pipe, vfo, banks):
+    for i in range(0, 26):
+        bframe = IC92BankFrame()
+        bframe.set_vfo(vfo)
+        bframe.set_identifier(chr(i + ord("A")))
+        bframe.set_name(banks[i])
+
+        rframe = bframe.send(pipe)
+        if rframe.get_payload() != "\xfb":
+            raise errors.InvalidDataError("Radio reported error")
+
+def get_call(pipe, cstype, number):
+    cframe = IC92GetCallsignFrame(cstype.command, number)
+    cframe.set_vfo(2)
+    rframe = cframe.send(pipe)
+
+    cframe = IC92CallsignFrame()
+    cframe.from_frame(rframe)
+
+    return cframe.get_callsign()
+
+def set_call(pipe, cstype, number, call):
+    cframe = cstype(number, call)
+    cframe.set_vfo(2)
+    rframe = cframe.send(pipe)
+
+    if rframe.get_payload() != "\xfb":
+        raise errors.RadioError("Radio reported error")
 
 def print_memory(pipe, vfo, number):
     if vfo not in [1, 2]:

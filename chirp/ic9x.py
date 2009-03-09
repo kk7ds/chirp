@@ -65,6 +65,11 @@ class IC9xRadio(chirp_common.IcomRadio):
         self.__memcache = {}
         self.__bankcache = {}
 
+    def _maybe_send_magic(self):
+        if (time.time() - self.__last) > 0.5:
+            ic9x_ll.send_magic(self.pipe)
+        self.__last = time.time()
+
     def get_available_bank_index(self, bank):
         indexes = []
         for mem in self.__memcache.values():
@@ -95,49 +100,35 @@ class IC9xRadio(chirp_common.IcomRadio):
         if self.__memcache.has_key(number):
             return self.__memcache[number]
 
-        if (time.time() - self.__last) > 0.5:
-            ic9x_ll.send_magic(self.pipe)
-        self.__last = time.time()
-
+        self._maybe_send_magic()
         try:
-            mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
-            m = mframe.get_memory()
+            mem = ic9x_ll.get_memory(self.pipe, self.vfo, number)
         except errors.InvalidMemoryLocation:
             if number > self.mem_upper_limit:
-                m = chirp_common.Memory()
-                m.number = number
+                mem = chirp_common.Memory()
+                mem.number = number
             else:
                 raise
 
         if number > self.mem_upper_limit:
-            m.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
-            m.immutable = ["number", "skip", "bank", "bank_index",
-                            "extd_number"]
+            mem.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
+            mem.immutable = ["number", "skip", "bank", "bank_index",
+                             "extd_number"]
 
-        self.__memcache[m.number] = m
+        self.__memcache[mem.number] = mem
 
-        return m
+        return mem
 
     def erase_memory(self, number):
-        eframe = ic9x_ll.IC92MemClearFrame(self.vfo, number)
-
-        ic9x_ll.send_magic(self.pipe)
-
-        result = eframe.send(self.pipe)
-
-        if len(result) == 0:
-            raise errors.InvalidDataError("No response from radio")
-
-        if result[0].get_data() != "\xfb":
-            raise errors.InvalidDataError("Radio reported error")
-
+        self._maybe_send_magic()
+        ic9x_ll.erase_memory(self.pipe, self.vfo, number)
         del self.__memcache[number]
 
     def get_raw_memory(self, number):
         ic9x_ll.send_magic(self.pipe)
-        mframe = ic9x_ll.get_memory(self.pipe, self.vfo, number)
+        mframe = ic9x_ll.get_memory_frame(self.pipe, self.vfo, number)
 
-        return memmap.MemoryMap(mframe.get_data()[2:])
+        return memmap.MemoryMap(mframe.get_payload())
 
     def get_memories(self, lo=0, hi=None):
         if hi is None:
@@ -161,65 +152,46 @@ class IC9xRadio(chirp_common.IcomRadio):
         return memories
         
     def set_memory(self, memory):
-        mframe = ic9x_ll.IC92MemoryFrame()
-        ic9x_ll.send_magic(self.pipe)
-        mframe.set_memory(memory, self.vfo)
-        
-        result = mframe.send(self.pipe)
-
-        if len(result) == 0:
-            raise errors.InvalidDataError("No response from radio")
-
-        if result[0].get_data() != "\xfb":
-            raise errors.InvalidDataError("Radio reported error")
-
+        self._maybe_send_magic()
+        ic9x_ll.set_memory(self.pipe, self.vfo, memory)
         self.__memcache[memory.number] = memory
 
     def get_banks(self):
         if len(self.__bankcache.keys()) == 26:
             return [self.__bankcache[k] for k in sorted(self.__bankcache.keys())]
 
-        ic9x_ll.send_magic(self.pipe)
-        bank_frames = ic9x_ll.send(self.pipe, "\x01\x80\x1a\x09")
+        self._maybe_send_magic()
+        banks = ic9x_ll.get_banks(self.pipe, self.vfo)
 
-        if self.vfo == 1:
-            base = 180
-        elif self.vfo == 2:
-            base = 237
-
-        banks = []
-
-        for i in range(base, base+26):
-            bf = ic9x_ll.IC92BankFrame()
-            bf.from_frame(bank_frames[i])
-
-            bank = chirp_common.Bank(bf.get_name())
-            banks.append(bank)
-            self.__bankcache[i-base] = bank
+        i = 0
+        for bank in banks:
+            self.__bankcache[i] = bank
+            i += 1
 
         return banks
-
+        
     def set_banks(self, banks):
-        ic9x_ll.send_magic(self.pipe)
 
         if len(banks) != len(self.__bankcache.keys()):
-            raise errors.InvalidDataError("Invalid bank list length")
+            raise errors.InvalidDataError("Invalid bank list length (%i:%i)" %\
+                                              (len(banks),
+                                               len(self.__bankcache.keys())))
 
-        cached_names = [str(self.__bankcache[x]) for x in sorted(self.__bankcache.keys())]
+        cached_names = [str(self.__bankcache[x]) \
+                            for x in sorted(self.__bankcache.keys())]
 
+        need_update = False
         for i in range(0, 26):
             if banks[i] != cached_names[i]:
+                need_update = True
+                self.__bankcache[i] = banks[i]
                 print "Updating %s: %s -> %s" % (chr(i + ord("A")),
                                                  cached_names[i],
                                                  banks[i])
-                bf = ic9x_ll.IC92BankFrame()
-                bf.set_vfo(self.vfo)
-                bf.set_identifier(chr(i + ord("A")))
-                bf.set_name(banks[i])
-                result = bf.send(self.pipe)
-                if result[0].get_data() != "\xfb":
-                    print "Raw packet was:\n%s" % util.hexprint(bf._rawdata)
-                    raise errors.InvalidDataError("Radio reported error")
+
+        if need_update:
+            self._maybe_send_magic()
+            ic9x_ll.set_banks(self.pipe, self.vfo, banks)
 
 class IC9xRadioA(IC9xRadio):
     vfo = 1
@@ -250,26 +222,16 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
         if cache:
             return cache
 
-        ic9x_ll.send_magic(self.pipe)
+        calls = []
 
-        for i in range(ulimit - 1):
-            cframe = cstype(i)
-            result = cframe.send(self.pipe)
+        self._maybe_send_magic()
+        for i in range(ulimit-1):
+            call = ic9x_ll.get_call(self.pipe, cstype, i+1)
+            calls.append(call)
 
-            callf = ic9x_ll.IC92CallsignFrame()
-            try:
-                callf.from_frame(result[0])
-            except IndexError:
-                raise errors.RadioError("No response from radio")
-
-            if callf.get_callsign():
-                cache.append(callf.get_callsign())
-
-        return cache
+        return calls
 
     def __set_call_list(self, cache, cstype, ulimit, calls):
-        sent_magic = False
-
         for i in range(ulimit - 1):
             blank = " " * 8
 
@@ -286,15 +248,8 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
             if acall == bcall:
                 continue # No change to this one
 
-            if not sent_magic:
-                ic9x_ll.send_magic(self.pipe)
-                sent_magic = True
-
-            cframe = cstype(i+1, bcall)
-            result = cframe.send(self.pipe)
-
-            if result[0].get_data() != "\xfb":
-                raise errors.RadioError("Radio reported error")
+            self._maybe_send_magic()
+            ic9x_ll.set_call(self.pipe, cstype, i+1, calls[i])
 
         return calls
 
