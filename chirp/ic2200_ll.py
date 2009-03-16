@@ -82,9 +82,15 @@ def set_used(mmap, number, used=True):
     mmap[POS_FLAGS_START + number] = val
 
 def get_freq(mmap):
+    ts = get_tune_step(mmap)
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
 
-    return (val * 5) / 1000.0
+    if ts == 12.5:
+        mult = 6.25
+    else:
+        mult = 5.0
+
+    return (val * mult) / 1000.0
 
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].replace("\x0E", "").strip()
@@ -243,8 +249,13 @@ def get_memory(_map, number):
     
     return mem
 
-def set_freq(mmap, freq):
-    mmap[POS_FREQ_START] = struct.pack("<H", int(freq * 1000) / 5)
+def set_freq(mmap, freq, ts):
+    if ts == 12.5:
+        mult = 6.25
+    else:
+        mult = 5.0
+
+    mmap[POS_FREQ_START] = struct.pack("<H", int((freq * 1000) / mult))
 
 def set_tune_step(mmap, ts):
     val = ord(mmap[POS_TUNE_STEP]) & 0xF0
@@ -405,7 +416,7 @@ def set_memory (_map, memory):
         mmap[10] = "\x08x08" + ("\x00" * 10)
 
     set_used(_map, memory.number, True)
-    set_freq(mmap, memory.freq)
+    set_freq(mmap, memory.freq, memory.tuning_step)
     set_name(mmap, memory.name)
     set_duplex(mmap, memory.duplex)
     set_dup_offset(mmap, memory.offset)
