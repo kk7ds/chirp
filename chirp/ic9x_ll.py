@@ -493,7 +493,7 @@ def get_memory(pipe, vfo, number):
     rframe = get_memory_frame(pipe, vfo, number)
 
     if len(rframe.get_payload()) < 1:
-        raise errors.InvalidDataError("Got a short, unknown block from radio")
+        raise errors.InvalidMemoryLocation("No response from radio")
 
     if rframe.get_payload()[3] == '\xff':
         raise errors.InvalidMemoryLocation("Radio says location is empty")
