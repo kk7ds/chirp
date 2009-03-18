@@ -193,7 +193,7 @@ class IC92MemGetFrame(IC92Frame):
         # 2 bytes for location
         IC92Frame.__init__(self, 0x00, 3)
 
-        self[0] = struct.pack(">BH", 1, int("%i" % loc, 16))
+        self[0] = struct.pack(">BH", 1, int("%x" % loc, 16))
 
 class IC92GetCallsignFrame(IC92Frame):
     def __init__(self, type, number):
