@@ -98,7 +98,10 @@ class IC9xRadio(chirp_common.IcomRadio):
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
         if self.__memcache.has_key(number):
-            return self.__memcache[number]
+            if self.__memcache[number] is None:
+                raise errors.InvalidMemoryLocation("Empty")
+            else:
+                return self.__memcache[number]
 
         self._maybe_send_magic()
         try:
@@ -108,6 +111,7 @@ class IC9xRadio(chirp_common.IcomRadio):
                 mem = chirp_common.Memory()
                 mem.number = number
             else:
+                self.__memcache[number] = None
                 raise
 
         if number > self.mem_upper_limit:
