@@ -2,7 +2,7 @@ import sys
 
 import os
 
-CHIRP_VERSION="0.1.9b5"
+from chirp import CHIRP_VERSION
 
 def win32_build():
     from distutils.core import setup
