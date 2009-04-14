@@ -190,12 +190,13 @@ class EditorSet(gtk.VBox):
         # interface to queue our own changes before opening it up to the
         # rest of the world.
 
-        dst_rthread._qlock_when_idle() # Suspend job submission when idle
+        dst_rthread._qlock_when_idle(5) # Suspend job submission when idle
 
         dialog = dlgclass(src_radio, dst_rthread.radio, self.parent_window)
         r = dialog.run()
         dialog.hide()
         if r != gtk.RESPONSE_OK:
+            dst_rthread._qunlock()
             return
 
         count = dialog.do_import(dst_rthread)
