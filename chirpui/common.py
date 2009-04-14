@@ -104,11 +104,18 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.__queue[priority].append(job)
         self.__counter.release()
 
-    def _qlock_when_idle(self):
+    def _queue_clear_below(self, priority):
+        for i in range(0, priority):
+            if self.__queue.has_key(i) and len(self.__queue[i]) != 0:
+                return False
+
+        return True
+
+    def _qlock_when_idle(self, priority=10):
         while True:
             print "Attempting queue lock (%i)" % len(self.__queue)
             self._qlock()
-            if not self.__queue:
+            if self._queue_clear_below(priority):
                 return
             self._qunlock()
             time.sleep(0.1)
