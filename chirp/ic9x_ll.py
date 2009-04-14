@@ -434,7 +434,7 @@ class IC92MemoryFrame(IC92Frame):
         else:
             mem = chirp_common.Memory()
 
-        mem.number, = struct.unpack(">H", self[1:3])
+        mem.number = int("%02x" % struct.unpack(">H", self[1:3])[0])
         mem.freq = self._decode_freq()
         mem.offset = float("%x.%02x%02x%02x" % (ord(self[11]), ord(self[10]),
                                                 ord(self[9]),  ord(self[8])))
