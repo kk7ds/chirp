@@ -157,12 +157,12 @@ class ImportDialog(gtk.Dialog):
         if ulist_changed:
             job = common.RadioJob(None, "set_urcall_list", ulist)
             job.set_desc("Updating URCALL list")
-            dst_rthread._qsubmit(job)
+            dst_rthread._qsubmit(job, 0)
 
         if rlist_changed:
             job = common.RadioJob(None, "set_repeater_call_list", ulist)
             job.set_desc("Updating RPTCALL list")
-            dst_rthread._qsubmit(job)
+            dst_rthread._qsubmit(job, 0)
             
         return
 
@@ -180,7 +180,7 @@ class ImportDialog(gtk.Dialog):
 
             job = common.RadioJob(None, "set_memory", mem)
             job.set_desc("Setting memory %i" % mem.number)
-            dst_rthread._qsubmit(job)
+            dst_rthread._qsubmit(job, 0)
 
             i += 1
 
