@@ -82,10 +82,9 @@ def set_used(mmap, number, used=True):
     mmap[POS_FLAGS_START + number] = val
 
 def get_freq(mmap):
-    ts = get_tune_step(mmap)
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
 
-    if ts == 12.5:
+    if ord(mmap[POS_FLAG]) & 0x80:
         mult = 6.25
     else:
         mult = 5.0
