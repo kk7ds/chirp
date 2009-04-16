@@ -175,10 +175,11 @@ class RadioThread(threading.Thread, gobject.GObject):
                     break
             self._qunlock()
             
-            self.lock()
-            self.status(job.desc)
-            job.execute(self.radio)
-            self.unlock()
+            if job:
+                self.lock()
+                self.status(job.desc)
+                job.execute(self.radio)
+                self.unlock()
    
         print "RadioThread exiting"
 
