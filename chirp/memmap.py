@@ -77,3 +77,6 @@ class MemoryMap:
 
     def __str__(self):
         return self.printable(printit=False)
+
+    def truncate(self, size):
+        self._data = self._data[:size]
