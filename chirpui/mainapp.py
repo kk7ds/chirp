@@ -453,16 +453,16 @@ class ChirpMain(gtk.Window):
 """
         actions = [\
             ('file', None, "_File", None, None, self.mh),
-            ('new', None, "_New", None, None, self.mh),
-            ('open', None, "_Open", None, None, self.mh),
-            ('open9x', None, "_Connect to an IC9x", None, None, self.mh),
+            ('new', gtk.STOCK_NEW, None, None, None, self.mh),
+            ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
+            ('open9x', gtk.STOCK_CONNECT, "_Connect to an IC9x", None, None, self.mh),
             ('open9xA', None, "Band A", None, None, self.mh),
             ('open9xB', None, "Band B", None, None, self.mh),
-            ('save', None, "_Save", None, None, self.mh),
-            ('saveas', None, "Save _As", None, None, self.mh),
-            ('converticf', None, "Convert .icf file", None, None, self.mh),
-            ('close', None, "_Close", None, None, self.mh),
-            ('quit', None, "_Quit", None, None, self.mh),
+            ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
+            ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
+            ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),
+            ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
+            ('quit', gtk.STOCK_QUIT, None, None, None, self.mh),
             ('view', None, "_View", None, None, self.mh),
             ('columns', None, 'Columns', None, None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),
@@ -472,9 +472,9 @@ class ChirpMain(gtk.Window):
             ('export', None, 'Export to...', None, None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
-            ('cancelq', None, 'Stop', None, None, self.mh),
+            ('cancelq', gtk.STOCK_STOP, None, None, None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
-            ('about', None, 'About', None, None, self.mh),
+            ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
             ]
 
         uim = gtk.UIManager()
