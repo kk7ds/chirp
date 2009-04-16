@@ -41,7 +41,7 @@ TUNING_STEPS_REV = {}
 for __idx, __val in TUNING_STEPS.items():
     TUNING_STEPS_REV[__val] = __idx
 
-MEM_LEN = 36
+MEM_LEN = 34
 DV_MEM_LEN = 60
 
 def _ic9x_parse_frames(buf):
@@ -242,6 +242,11 @@ class IC92MemoryFrame(IC92Frame):
             "\x20\x20\x20\x20\x4b\x44\x37\x52" + \
             "\x45\x58\x20\x43\x43\x51\x43\x51" + \
             "\x43\x51\x20\x20"
+
+    def set_vfo(self, vfo):
+        IC92Frame.set_vfo(self, vfo)
+        if vfo == 1:
+            self._map.truncate(MEM_LEN + 4)
 
     def _encode_duptone(self, mem):
         duptone = ord(self[22]) & 0xE0
@@ -505,8 +510,11 @@ def get_memory(pipe, vfo, number):
 
 def set_memory(pipe, vfo, memory):
     frame = IC92MemoryFrame()
-    frame.set_vfo(vfo)
     frame.set_memory(memory)
+    frame.set_vfo(vfo)
+
+    print "Sending (%i):" % (len(frame.get_raw()))
+    print util.hexprint(frame.get_raw())
 
     rframe = frame.send(pipe)
 
