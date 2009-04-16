@@ -72,6 +72,9 @@ class ChirpMain(gtk.Window):
 
         for i in ["save", "saveas", "cloneout"]:
             set_action_sensitive(i, mmap_sens)
+
+        for i in ["cancelq"]:
+            set_action_sensitive(i, eset is not None and not mmap_sens)
         
         for i in ["export", "import", "close", "columns"]:
             set_action_sensitive(i, eset is not None)
@@ -364,6 +367,10 @@ class ChirpMain(gtk.Window):
                                                 
         d.destroy()
 
+    def do_clearq(self):
+        eset = self.get_current_editorset()
+        eset.rthread.flush()
+
     def mh(self, _action):
         action = _action.get_name()
 
@@ -399,6 +406,8 @@ class ChirpMain(gtk.Window):
             self.do_about()
         elif action == "columns":
             self.do_columns()
+        elif action == "cancelq":
+            self.do_clearq()
         else:
             return
 
@@ -433,6 +442,8 @@ class ChirpMain(gtk.Window):
         <menuitem action="export_chirp"/>
         <menuitem action="export_csv"/>
       </menu>
+      <separator/>
+      <menuitem action="cancelq"/>
     </menu>
     <menu action="help">
       <menuitem action="about"/>
@@ -461,6 +472,7 @@ class ChirpMain(gtk.Window):
             ('export', None, 'Export to...', None, None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
+            ('cancelq', None, 'Stop', None, None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', None, 'About', None, None, self.mh),
             ]
