@@ -184,9 +184,9 @@ class IC92MemClearFrame(IC92Frame):
     def __init__(self, loc):
         # 2 bytes for location
         # 1 byte for 0xFF
-        IC92Frame.__init__(self, 0x00, 3)
+        IC92Frame.__init__(self, 0x00, 4)
 
-        self[0] = struct.pack(">HB", int("%i" % loc, 16), 0xFF)
+        self[0] = struct.pack(">BHB", 1, int("%i" % loc, 16), 0xFF)
 
 class IC92MemGetFrame(IC92Frame):
     def __init__(self, loc):
@@ -527,7 +527,7 @@ def erase_memory(pipe, vfo, number):
     frame.set_vfo(vfo)
 
     rframe = frame.send(pipe)
-    if rframe.get_payload() != "\xfb":
+    if rframe.get_raw()[2] != "\xfb":
         raise errors.InvalidDataError("Radio reported error")
 
 def get_banks(pipe, vfo):
