@@ -307,12 +307,12 @@ class IC92MemoryFrame(IC92Frame):
     def _decode_mode(self):
         mode = ord(self[21])
 
-        if (mode & 0x10) == 0x10:
+        if (mode & 0x30) == 0x30:
+            return "AM"
+        elif (mode & 0x10) == 0x10:
             return "NFM"
         elif (mode & 0x20) == 0x20:
             return "WFM"
-        elif (mode & 0x30) == 0x30:
-            return "AM"
         elif (mode & 0x40) == 0x40:
             return "DV"
         else:
