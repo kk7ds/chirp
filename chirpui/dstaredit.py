@@ -29,7 +29,6 @@ class CallsignEditor(gtk.HBox):
         }
 
     def _cs_changed(self, listw, callid):
-        print "CS Changed: %s %s" % (callid, self.first_fixed)
         if callid == 0 and self.first_fixed:
             return False
 
