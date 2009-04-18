@@ -275,11 +275,11 @@ class IC92MemoryFrame(IC92Frame):
         else:
             duplex = ""
 
-        if duptone & 0x0C:
+        if (duptone & 0x0C) == 0x0C:
             tmode = "TSQL"
-        elif duptone & 0x14:
+        elif (duptone & 0x14) == 0x14:
             tmode = "DTCS"
-        elif duptone & 0x04:
+        elif (duptone & 0x04) == 0x04:
             tmode = "Tone"
         else:
             tmode = ""
@@ -418,7 +418,7 @@ class IC92MemoryFrame(IC92Frame):
         self[3] = util.bcd_encode(int(mem.freq * 1000000),
                                   bigendian=False)
         self[8] = util.bcd_encode(int(mem.offset * 1000000),
-                                  bigendian=True,
+                                  bigendian=False,
                                   width=6)
         self[13] = util.bcd_encode(int(mem.rtone * 10))
         self[15] = util.bcd_encode(int(mem.ctone * 10))
