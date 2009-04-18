@@ -38,6 +38,10 @@ class Editor(gobject.GObject):
 
 gobject.type_register(Editor)
 
+def DBG(*args):
+    if False:
+        print args.join(" ")
+
 class RadioJob:
     def __init__(self, cb, func, *args, **kwargs):
         self.cb = cb
@@ -60,9 +64,9 @@ class RadioJob:
             return
 
         try:
-            print "Running %s (%s %s)" % (self.func,
-                                          str(self.args),
-                                          str(self.kwargs))
+            DBG("Running %s (%s %s)" % (self.func,
+                                        str(self.args),
+                                        str(self.kwargs)))
             result = func(*self.args, **self.kwargs)
         except errors.InvalidMemoryLocation, e:
             result = e
@@ -113,7 +117,7 @@ class RadioThread(threading.Thread, gobject.GObject):
 
     def _qlock_when_idle(self, priority=10):
         while True:
-            print "Attempting queue lock (%i)" % len(self.__queue)
+            DBG("Attempting queue lock (%i)" % len(self.__queue))
             self._qlock()
             if self._queue_clear_below(priority):
                 return
@@ -163,7 +167,7 @@ class RadioThread(threading.Thread, gobject.GObject):
 
     def run(self):
         while self.__enabled:
-            print "Waiting for a job"
+            DBG("Waiting for a job")
             self.status("Idle")
             self.__counter.acquire()
 
@@ -171,7 +175,7 @@ class RadioThread(threading.Thread, gobject.GObject):
             for i in sorted(self.__queue.keys()):
                 job = self._queue_pop(i)
                 if job:
-                    print "Running job at priority %i" % i
+                    DBG("Running job at priority %i" % i)
                     break
             self._qunlock()
             
