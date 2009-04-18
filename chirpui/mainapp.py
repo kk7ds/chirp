@@ -466,13 +466,13 @@ class ChirpMain(gtk.Window):
             ('view', None, "_View", None, None, self.mh),
             ('columns', None, 'Columns', None, None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),
-            ('clonein', None, "Download From Radio", None, None, self.mh),
-            ('cloneout', None, "Upload To Radio", None, None, self.mh),
-            ('import', None, 'Import from file', None, None, self.mh),
+            ('clonein', None, "Download From Radio", "<Alt>d", None, self.mh),
+            ('cloneout', None, "Upload To Radio", "<Alt>u", None, self.mh),
+            ('import', None, 'Import from file', "<Alt>i", None, self.mh),
             ('export', None, 'Export to...', None, None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
-            ('cancelq', gtk.STOCK_STOP, None, None, None, self.mh),
+            ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
             ]
@@ -483,6 +483,8 @@ class ChirpMain(gtk.Window):
 
         uim.insert_action_group(self.menu_ag, 0)
         uim.add_ui_from_string(menu_xml)
+
+        self.add_accel_group(uim.get_accel_group())
 
         return uim.get_widget("/MenuBar")
 
