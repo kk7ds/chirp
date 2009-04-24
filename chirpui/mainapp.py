@@ -27,7 +27,7 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, id800, ic2820, ic2200, ic9x, icx8x, xml
+from chirp import platform, id800, ic2820, ic2200, ic9x, icx8x, xml, idrp
 from chirp import CHIRP_VERSION, convert_icf
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
@@ -39,6 +39,7 @@ RADIOS = {
     "id800"  : id800.ID800v2Radio,
     "icx8x"  : icx8x.ICx8xRadio,
     "Virtual": xml.XMLRadio,
+    "idrp4000v" : idrp.IDRP4000V,
 }
 
 RTYPES = {}
@@ -139,6 +140,30 @@ class ChirpMain(gtk.Window):
 
         action = self.menu_ag.get_action("open9x")
         action.set_sensitive(False)
+
+        tab = self.tabs.append_page(eset, eset.get_tab_label())
+        self.tabs.set_current_page(tab)
+
+    def do_openrp(self, rclass):
+        dlg = clone.CloneSettingsDialog(clone_in=False,
+                                        filename="(live)",
+                                        rtype="idrp")
+        res = dlg.run()
+        port, _, _ = dlg.get_values()
+        dlg.destroy()
+
+        if res != gtk.RESPONSE_OK:
+            return
+
+        ser = serial.Serial(port=port,
+                            baudrate=rclass.BAUD_RATE,
+                            timeout=0.1)
+        radio = rclass(ser)
+
+        eset = editorset.EditorSet(radio, self)
+        eset.connect("want-close", self.do_close)
+        eset.connect("status", self.ev_status)
+        eset.show()
 
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
@@ -396,6 +421,8 @@ class ChirpMain(gtk.Window):
             self.do_open9x(ic9x.IC9xRadioA)
         elif action == "open9xB":
             self.do_open9x(ic9x.IC9xRadioB)
+        elif action == "openrp4k":
+            self.do_openrp(idrp.IDRP4000V)
         elif action == "import":
             self.do_import()
         elif action == "export_csv":
@@ -436,6 +463,9 @@ class ChirpMain(gtk.Window):
         <menuitem action="open9xA"/>
         <menuitem action="open9xB"/>
       </menu>
+      <menu action="openrp">
+        <menuitem action="openrp4k"/>
+      </menu>
       <separator/>
       <menuitem action="import"/>
       <menu action="export">
@@ -458,6 +488,8 @@ class ChirpMain(gtk.Window):
             ('open9x', gtk.STOCK_CONNECT, "_Connect to an IC9x", None, None, self.mh),
             ('open9xA', None, "Band A", None, None, self.mh),
             ('open9xB', None, "Band B", None, None, self.mh),
+            ('openrp', gtk.STOCK_CONNECT, "Connect to a _Repeater", None, None, self.mh),
+            ('openrp4k', None, "RP4000V", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),

@@ -29,7 +29,7 @@ from gobject import TYPE_INT, \
 import gobject
 
 from chirpui import common, shiftdialog
-from chirp import chirp_common, errors, id800, ic2200, icx8x
+from chirp import chirp_common, errors, id800, ic2200, icx8x, idrp
 
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    

@@ -19,7 +19,8 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, ic9x, icx8x, xml, csv, chirp_common
+from chirp import ic2820, ic2200, id800, ic9x, icx8x, xml, csv, idrp
+from chirp import chirp_common
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 
 def radio_class_from_file(filename):
@@ -62,9 +63,12 @@ class EditorSet(gtk.VBox):
             self.filename = source
             rclass = radio_class_from_file(self.filename)
             self.radio = rclass(self.filename)
-        elif isinstance(source, chirp_common.IcomRadio):
+        elif isinstance(source, ic9x.IC9xRadio):
             self.radio = source
             self.filename = "IC9x (live)"
+        elif isinstance(source, idrp.IcomRepeater):
+            self.radio = source
+            self.filename = "Repeater (live)"
         else:
             raise Exception("Unknown source type")
 
