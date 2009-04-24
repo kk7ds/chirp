@@ -106,7 +106,7 @@ RP_IMMUTABLE = ["number", "skip", "bank", "extd_number", "name", "rtone",
 class IcomRepeater(chirp_common.IcomRadio):
     pass
 
-class IDRP4000V(IcomRepeater):
+class IDRPx000V(IcomRepeater):
     BAUD_RATE = 19200
     mem_upper_limit = 0
         

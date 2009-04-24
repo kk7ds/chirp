@@ -39,7 +39,7 @@ RADIOS = {
     "id800"  : id800.ID800v2Radio,
     "icx8x"  : icx8x.ICx8xRadio,
     "Virtual": xml.XMLRadio,
-    "idrp4000v" : idrp.IDRP4000V,
+    "idrpx000v" : idrp.IDRPx000V,
 }
 
 RTYPES = {}
@@ -421,8 +421,8 @@ class ChirpMain(gtk.Window):
             self.do_open9x(ic9x.IC9xRadioA)
         elif action == "open9xB":
             self.do_open9x(ic9x.IC9xRadioB)
-        elif action == "openrp4k":
-            self.do_openrp(idrp.IDRP4000V)
+        elif action == "openrpxkv":
+            self.do_openrp(idrp.IDRPx000V)
         elif action == "import":
             self.do_import()
         elif action == "export_csv":
@@ -463,9 +463,7 @@ class ChirpMain(gtk.Window):
         <menuitem action="open9xA"/>
         <menuitem action="open9xB"/>
       </menu>
-      <menu action="openrp">
-        <menuitem action="openrp4k"/>
-      </menu>
+      <menuitem action="openrpxkv"/>
       <separator/>
       <menuitem action="import"/>
       <menu action="export">
@@ -488,8 +486,7 @@ class ChirpMain(gtk.Window):
             ('open9x', gtk.STOCK_CONNECT, "_Connect to an IC9x", None, None, self.mh),
             ('open9xA', None, "Band A", None, None, self.mh),
             ('open9xB', None, "Band B", None, None, self.mh),
-            ('openrp', gtk.STOCK_CONNECT, "Connect to a _Repeater", None, None, self.mh),
-            ('openrp4k', None, "RP4000V", None, None, self.mh),
+            ('openrpxkv', gtk.STOCK_CONNECT, "Connect to ID-RPx000V", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),

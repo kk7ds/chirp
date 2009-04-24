@@ -37,7 +37,7 @@ RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
            "ic2820": ic2820.IC2820Radio,
            "ic2200": ic2200.IC2200Radio,
            "icx8x" : icx8x.ICx8xRadio,
-           "idrp4kv" : idrp.IDRP4000V,
+           "idrpv" : idrp.IDRPx000V,
 }
 
 def store_tone(option, opt, value, parser):
