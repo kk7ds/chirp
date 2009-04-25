@@ -1,0 +1,154 @@
+#!/usr/bin/python
+#
+# Copyright 2009 Dan Smith <dsmith@danplanet.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+import serial
+import commands
+
+from chirp import idrp
+
+def get_port():
+    s, o = commands.getstatusoutput("./tools/icomsio.sh")
+    if s:
+        print "Unable to find a connected repeater module"
+        return ""
+
+    els = o.split()
+    if len(els) == 0:
+        print "Unable to determine repeater module device"
+        return ""
+
+    dev = els[-1]
+    if not os.path.exists(dev):
+        print "Device %s does not exist" % dev
+        return ""
+
+    return dev
+
+def open_device():
+    port = get_port()
+    if not port:
+        return
+
+    try:
+        s = serial.Serial(port=port,
+                          baudrate=idrp.IDRPx000V.BAUD_RATE,
+                          timeout=0.1)
+    except Exception, e:
+        print "Unable to open serial port %s: %s" % (port, e)
+        return None
+
+    rp = idrp.IDRPx000V(s)
+
+    return rp
+
+def read_freq():
+    rp = open_device()
+    if not rp:
+        return 0
+
+    try:
+        mem = rp.get_memory(0)
+    except Exception, e:
+        print "Unable to read memory from device: %s" % e
+        return 0
+
+    rp.pipe.close()
+
+    return mem.freq
+
+def _set_freq(rp):
+    try:
+        mem = rp.get_memory(0)
+    except Exception, e:
+        print "Unable to read memory from device: %s" % e
+        return False
+
+    print "\nNew frequency [%.5f]: " % mem.freq,
+    input = sys.stdin.readline().strip()
+
+    if not input:
+        print "Frequency unchanged"
+        return False
+
+    try:
+        mem.freq = float(input)
+    except Exception:
+        print "Invalid entry `%s'" % input
+        return False
+
+    try:
+        rp.set_memory(mem)
+    except Exception, e:
+        print "Failed to set frequency to %.5f: %s" % (mem.freq, e)
+        return False
+
+    print "Successfully set frequency to %.5f" % mem.freq
+    return True
+
+def set_freq():
+    rp = open_device()
+    if not rp:
+        return
+
+    try:
+        res = _set_freq(rp)
+    except Exception, e:
+        print "Unknown error while setting frequency: %s" % e
+        res = False
+    
+    rp.pipe.close()
+    return res
+
+def main_menu():
+    print "Looking for a repeater...",
+    sys.stdout.flush()
+    freq = read_freq()
+    if not freq:
+        return 1
+    print "\r                                          \r",
+
+    cmd = ""
+    while cmd != "3":
+        print """
+KK7DS ID-RP* Frequency Tool
+Current Setting: %.5f
+--------------------------------
+1. Set repeater frequency
+2. Re-read current frequency
+3. Quit
+--------------------------------
+> """ % freq,
+    
+        cmd = sys.stdin.readline().strip()
+
+        if cmd == "1":
+            if set_freq():
+                freq = read_freq()
+        elif cmd == "2":
+            freq = read_freq()
+        else:
+            print "Invalid entry"
+        
+    return 0
+
+if __name__ == "__main__":
+    if not os.geteuid() == 0:
+        print "Sorry, this must be run as root"
+        sys.exit(1)
+    sys.exit(main_menu())
