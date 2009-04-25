@@ -486,7 +486,7 @@ class ChirpMain(gtk.Window):
             ('open9x', gtk.STOCK_CONNECT, "_Connect to an IC9x", None, None, self.mh),
             ('open9xA', None, "Band A", None, None, self.mh),
             ('open9xB', None, "Band B", None, None, self.mh),
-            ('openrpxkv', gtk.STOCK_CONNECT, "Connect to ID-RPx000V", None, None, self.mh),
+            ('openrpxkv', gtk.STOCK_CONNECT, "Connect to an ID-RP*", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),
