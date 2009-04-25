@@ -85,12 +85,36 @@ def default_build():
         data_files=[('/usr/share/applications', desktop_files),
                     ('/usr/share/chirp/images', image_files),
                     ] + locale_files)
+
+def rpttool_build():
+    from distutils.core import setup
+    
+    setup(name="rpttool",
+          packages=["chirp"],
+          version="0.1",
+          scripts=["rpttool"],
+          )
+
+def nuke_manifest(*files):
+    for i in ["MANIFEST", "MANIFEST.in"]:
+        if os.path.exists(i):
+            os.remove(i)
+
+    if not files:
+        return
+
+    f = file("MANIFEST.in", "w")
+    for fn in files:
+        print >>f, fn
+    f.close()
                     
 if sys.platform == "darwin":
     macos_build()
 elif sys.platform == "win32":
     win32_build()
 else:
+    nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
+    rpttool_build()
+    nuke_manifest("include *.xsd", "include *.desktop")
     default_build()
-
 
