@@ -22,6 +22,8 @@ from chirp import chirp_common, errors
 from chirp.memmap import MemoryMap
 from chirp import util
 
+DEBUG_IDRP = False
+
 def parse_frames(buf):
     frames = []
 
@@ -49,7 +51,8 @@ def send(pipe, buffer):
             break
 
         data += buf
-        print "Got: \n%s" % util.hexprint(buf)
+        if DEBUG_IDRP:
+            print "Got: \n%s" % util.hexprint(buf)
 
     return parse_frames(data)
 
@@ -94,7 +97,8 @@ def get_freq(pipe):
                                              ord(els[1]),
                                              ord(els[0])))
             freq = freq / 10000.0
-            print "Freq: %f" % freq
+            if DEBUG_IDRP:
+                print "Freq: %f" % freq
             return freq
 
     raise errors.InvalidDataError("No frequency frame received")
