@@ -93,6 +93,8 @@ def rpttool_build():
           packages=["chirp"],
           version="0.1",
           scripts=["rpttool"],
+          description="A frequency tool for ICOM D-STAR Repeaters",
+          data_files=[('/usr/sbin', ["tools/icomsio.sh"])],
           )
 
 def nuke_manifest(*files):
@@ -115,6 +117,7 @@ elif sys.platform == "win32":
 else:
     nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
     rpttool_build()
-    nuke_manifest("include *.xsd", "include *.desktop")
-    default_build()
+    if os.path.exists("chirpui"):
+        nuke_manifest("include *.xsd", "include *.desktop")
+        default_build()
 
