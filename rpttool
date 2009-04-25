@@ -22,35 +22,9 @@ import commands
 
 from chirp import idrp
 
-def get_port():
-    if os.path.exists("./tools/icomsio.sh"):
-        path = "./tools/icomsio.sh"
-    else:
-        path = "icomsio.sh"
-    s, o = commands.getstatusoutput(path)
-    if s:
-        print "Unable to find a connected repeater module"
-        return ""
-
-    els = o.split()
-    if len(els) == 0:
-        print "Unable to determine repeater module device"
-        return ""
-
-    dev = els[-1]
-    if not os.path.exists(dev):
-        print "Device %s does not exist" % dev
-        return ""
-
-    return dev
-
 def open_device():
-    port = get_port()
-    if not port:
-        return
-
     try:
-        s = serial.Serial(port=port,
+        s = serial.Serial(port="/dev/icom",
                           baudrate=idrp.IDRPx000V.BAUD_RATE,
                           timeout=0.1)
     except Exception, e:
@@ -152,6 +126,14 @@ Current Setting: %.5f
     return 0
 
 if __name__ == "__main__":
+    if os.path.exists("tools/icomsio.sh"):
+        path = "tools/icomsio.sh"
+    else:
+        path = "icomsio.sh"
+    r = os.system(path)
+    if r:
+        sys.exit(r)
+
     if not os.geteuid() == 0:
         print "Sorry, this must be run as root"
         sys.exit(1)
