@@ -142,7 +142,7 @@ Current Setting: %.5f
                 freq = read_freq()
         elif cmd == "2":
             freq = read_freq()
-        else:
+        elif cmd != "3":
             print "Invalid entry"
         
     return 0
