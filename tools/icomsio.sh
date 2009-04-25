@@ -12,7 +12,19 @@
 
 LINK="icom"
 VENDOR="0x0c26"
-DEVICE=$(lsusb -d ${VENDOR}: | cut -d ' ' -f 6 | cut -d : -f 2)
+DEVICE=$(lsusb -d ${VENDOR}: | cut -d ' ' -f 6 | cut -d : -f 2 | sed -r 's/\n/ /g')
+
+product_to_name() {
+    local prod=$1
+
+    if [ "$prod" = "0010" ]; then
+	echo "ID-RP4000V TX"
+    elif [ "$prod" = "0011" ]; then
+	echo "ID-RP4000V RX"
+    else
+	echo "Unknown module"
+    fi
+}
 
 if [ $(id -u) != 0 ]; then
     echo "This script must be run as root"
@@ -25,12 +37,22 @@ if [ -z "$DEVICE" ]; then
 fi
 
 if echo $DEVICE | grep -q ' '; then
-    echo "Multiple devices found:"
+    echo "Multiple devices found.  Choose one:"
+    i=0
     for dev in $DEVICE; do
-	echo $dev
+	name=$(product_to_name $dev)
+	echo "  ${i}: ${name}"
+	i=$(($i + 1))
     done
 
-    exit 1
+    read num
+
+    array=($DEVICE)
+
+    DEVICE=${array[$num]}
+    if [ -z "$DEVICE" ]; then
+	exit
+    fi
 fi
 
 modprobe -r ftdi_sio || {
