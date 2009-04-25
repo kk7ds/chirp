@@ -43,6 +43,8 @@ modprobe ftdi_sio vendor=${VENDOR} product=0x${DEVICE} || {
     exit 1
 }
 
+sleep 0.5
+
 info=$(lsusb -d ${VENDOR}:0x${DEVICE})
 bus=$(echo $info | cut -d ' ' -f 2 | sed 's/^0*//')
 dev=$(echo $info | cut -d ' ' -f 4 | sed 's/^0*//')
