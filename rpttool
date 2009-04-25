@@ -23,7 +23,11 @@ import commands
 from chirp import idrp
 
 def get_port():
-    s, o = commands.getstatusoutput("./tools/icomsio.sh")
+    if os.path.exists("./tools/icomsio.sh"):
+        path = "./tools/icomsio.sh"
+    else:
+        path = "icomsio.sh"
+    s, o = commands.getstatusoutput(path)
     if s:
         print "Unable to find a connected repeater module"
         return ""
