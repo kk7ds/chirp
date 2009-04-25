@@ -1,0 +1,23 @@
+                  *** KK7DS ID-RP* Frequency Tool ***
+
+This is a simple tool that allows setting of the frequency parameters
+on ICOM D-STAR Repeaters.  It has been tested on the following
+modules:
+
+ - ID-RP2000V and ID-RP4000V
+ - ID-RP2D (the ID-RP2V is expected to work as well)
+
+To run the tool, connect one of the repeater's SERVICE ports to a USB
+port on this machine and then run the tool as root:
+
+  # ./rpttool
+
+WARNING: Do not connect or try to program the ID-RP2C controller
+module.  This tool should be safe to use, but no guarantees are made.
+The author believes that the ICOM devices are smart enough to prevent
+bricking, but you're on your own if anything happens.
+
+If you have any other devices connected that are using an FTDI
+USB-to-Serial device, they must be disconnected prior to running this
+tool.  The FTDI driver module will be re-loaded with a special
+parameter to allow it to recognize the ICOM device.
