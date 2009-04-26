@@ -2,7 +2,7 @@
 #
 # ICOM ID-RP* serial helper script
 #
-# Copyright 2008 Dan Smith <dsmith@danplanet.com>
+# Copyright 2009 Dan Smith <dsmith@danplanet.com>
 #
 # This script will scan the USB bus on this system and determine
 # the product ID of any attached ICOM repeater modules.  It will
@@ -17,12 +17,18 @@ DEVICE=$(lsusb -d ${VENDOR}: | cut -d ' ' -f 6 | cut -d : -f 2 | sed -r 's/\n/ /
 product_to_name() {
     local prod=$1
 
-    if [ "$prod" = "0010" ]; then
+    if [ "$prod" = "0012" ]; then
+	echo "ID-RP2000V TX"
+    elif [ "$prod" = "0013" ]; then
+	echo "ID-RP2000V RX"
+    elif [ "$prod" = "0010" ]; then
 	echo "ID-RP4000V TX"
     elif [ "$prod" = "0011" ]; then
 	echo "ID-RP4000V RX"
+    elif [ "$prod" = "000b" ]; then
+	echo "ID-RP2D"
     else
-	echo "Unknown module"
+	echo "Unknown module (id=${prod})"
     fi
 }
 
@@ -45,6 +51,7 @@ if echo $DEVICE | grep -q ' '; then
 	i=$(($i + 1))
     done
 
+    echo -n "> "
     read num
 
     array=($DEVICE)
@@ -75,8 +82,9 @@ for usbserial in /sys/class/tty/ttyUSB*; do
     driver=$(basename $(readlink -f ${usbserial}/device/driver))
     device=$(basename $usbserial)
     if [ "$driver" = "ftdi_sio" ]; then
+	name=$(product_to_name $DEVICE)
 	ln -sf /dev/${device} /dev/${LINK}
-	echo "Device is /dev/${device} -> /dev/${LINK}"
+	echo "Device $name is /dev/${device} -> /dev/${LINK}"
 	break
     fi
 done
