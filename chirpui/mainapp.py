@@ -174,9 +174,10 @@ class ChirpMain(gtk.Window):
         eset.save()
 
     def do_saveas(self):
+        types = [("*.*", "Radio Files")]
 
         while True:
-            fname = platform.get_platform().gui_save_file()
+            fname = platform.get_platform().gui_save_file(types=types)
             if not fname:
                 return
 
