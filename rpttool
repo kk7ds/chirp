@@ -28,7 +28,7 @@ def open_device():
                           baudrate=idrp.IDRPx000V.BAUD_RATE,
                           timeout=0.1)
     except Exception, e:
-        print "Unable to open serial port %s: %s" % (port, e)
+        print "Unable to open serial port %s: %s" % ("/dev/icom", e)
         return None
 
     rp = idrp.IDRPx000V(s)
