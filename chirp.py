@@ -264,10 +264,15 @@ if options.set_mem_name or options.set_mem_freq or \
 
 if options.get_mem:
     try:
-        mem = radio.get_memory(int(args[0]))
-    except errors.InvalidMemoryLocation:
+        pos = int(args[0])
+    except ValueError:
+        pos = args[0]
+
+    try:
+        mem = radio.get_memory(pos)
+    except errors.InvalidMemoryLocation, e:
         mem = chirp_common.Memory()
-        mem.number = int(args[0])
+        mem.number = pos
         
     print mem
 
