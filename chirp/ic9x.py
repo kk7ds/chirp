@@ -40,6 +40,12 @@ for i in range(0, 25):
     IC9xB_SPECIAL_REV[Bnum] = idA
     IC9xB_SPECIAL_REV[Bnum+1] = idB
 
+IC9xA_SPECIAL["C0"] = IC9xB_SPECIAL["C0"] = -1
+IC9xA_SPECIAL["C1"] = IC9xB_SPECIAL["C1"] = -2
+
+IC9xA_SPECIAL_REV[-1] = IC9xB_SPECIAL_REV[-1] = "C0"
+IC9xA_SPECIAL_REV[-2] = IC9xB_SPECIAL_REV[-2] = "C1"
+
 IC9x_SPECIAL = {
     1 : IC9xA_SPECIAL,
     2 : IC9xB_SPECIAL,
@@ -94,7 +100,7 @@ class IC9xRadio(chirp_common.IcomRadio):
             except KeyError:
                 raise InvalidMemoryLocation("Unknown channel %s" % number)
 
-        if number < 0 or number > 999:
+        if number < -2 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
         if self.__memcache.has_key(number):
@@ -114,7 +120,7 @@ class IC9xRadio(chirp_common.IcomRadio):
                 self.__memcache[number] = None
                 raise
 
-        if number > self.mem_upper_limit:
+        if number > self.mem_upper_limit or number < 0:
             mem.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
             mem.immutable = ["number", "skip", "bank", "bank_index",
                              "extd_number"]

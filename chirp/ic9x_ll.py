@@ -189,11 +189,16 @@ class IC92MemClearFrame(IC92Frame):
         self[0] = struct.pack(">BHB", 1, int("%i" % loc, 16), 0xFF)
 
 class IC92MemGetFrame(IC92Frame):
-    def __init__(self, loc):
+    def __init__(self, loc, call=False):
         # 2 bytes for location
         IC92Frame.__init__(self, 0x00, 3)
 
-        self[0] = struct.pack(">BH", 1, int("%i" % loc, 16))
+        if call:
+            c = 2
+        else:
+            c = 1
+
+        self[0] = struct.pack(">BH", c, int("%i" % loc, 16))
 
 class IC92GetCallsignFrame(IC92Frame):
     def __init__(self, type, number):
@@ -247,6 +252,15 @@ class IC92MemoryFrame(IC92Frame):
         IC92Frame.set_vfo(self, vfo)
         if vfo == 1:
             self._map.truncate(MEM_LEN + 4)
+
+    def set_iscall(self, iscall):
+        if iscall:
+            self[0] = 2
+        else:
+            self[0] = 1
+
+    def get_iscall(self):
+        return ord(self[0]) == 2
 
     def _encode_duptone(self, mem):
         duptone = ord(self[22]) & 0xE0
@@ -380,7 +394,7 @@ class IC92MemoryFrame(IC92Frame):
             self[25] = util.bcd_encode(mem.bank_index)
 
     def _decode_bank(self):
-        if ord(self[24]) == 0:
+        if ord(self[24]) == 0 or self.get_iscall():
             bank = None
             index = -1
         else:
@@ -414,6 +428,11 @@ class IC92MemoryFrame(IC92Frame):
         return ((hun * 100) + ten) + (dec / 1000000.0)
 
     def set_memory(self, mem):
+        if mem.number < 0:
+            self.set_iscall(True)
+            mem.number = abs(mem.number) - 1
+            print "Memory is %i (call %s)" % (mem.number, self.get_iscall())
+
         self[1] = struct.pack(">H", int("%i" % mem.number, 16))
         self[3] = util.bcd_encode(int(mem.freq * 1000000),
                                   bigendian=False)
@@ -440,6 +459,10 @@ class IC92MemoryFrame(IC92Frame):
             mem = chirp_common.Memory()
 
         mem.number = int("%02x" % struct.unpack(">H", self[1:3])[0])
+
+        if self.get_iscall():
+            mem.number = -1 - mem.number
+
         mem.freq = self._decode_freq()
         mem.offset = float("%x.%02x%02x%02x" % (ord(self[11]), ord(self[10]),
                                                 ord(self[9]),  ord(self[8])))
@@ -489,7 +512,13 @@ def print_banks(pipe):
         print str(bf)
 
 def get_memory_frame(pipe, vfo, number):
-    frame = IC92MemGetFrame(number)
+    if number < 0:
+        number = abs(number + 1)
+        call = True
+    else:
+        call = False
+
+    frame = IC92MemGetFrame(number, call)
     frame.set_vfo(vfo)
 
     return frame.send(pipe)
