@@ -27,8 +27,8 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, id800, ic2820, ic2200, ic9x, icx8x, xml, idrp
-from chirp import CHIRP_VERSION, convert_icf
+from chirp import platform, id800, ic2820, ic2200, ic9x, icx8x, xml, csv, idrp
+from chirp import CHIRP_VERSION, convert_icf, chirp_common
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
 RADIOS = {
@@ -174,7 +174,16 @@ class ChirpMain(gtk.Window):
         eset.save()
 
     def do_saveas(self):
-        types = [("*.*", "Radio Files")]
+        eset = self.get_current_editorset()
+
+        if isinstance(eset.radio, chirp_common.IcomMmapRadio):
+            types = [("Radio-specific Image (*.img)", "*.img")]
+        elif isinstance(eset.radio, csv.CSVRadio):
+            types = [("CSV File (*.csv)", "*.csv")]
+        elif isinstance(eset.radio, xml.XMLRadio):
+            types = [("CHIRP File (*.chirp)", "*.chirp")]
+        else:
+            types = [("ERROR", "*.*")]
 
         while True:
             fname = platform.get_platform().gui_save_file(types=types)
@@ -190,7 +199,6 @@ class ChirpMain(gtk.Window):
             else:
                 break
 
-        eset = self.get_current_editorset()
         eset.save(fname)
 
     def cb_clonein(self, radio, fn, emsg=None):
