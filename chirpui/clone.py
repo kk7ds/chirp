@@ -67,7 +67,11 @@ class CloneSettingsDialog(gtk.Dialog):
         self.clone_in = clone_in
 
         ports = platform.get_platform().list_serial_ports()
-        self.port = miscwidgets.make_choice(ports, True, ports[0])
+        if ports:
+            defport = ports[0]
+        else:
+            defport = ""
+        self.port = miscwidgets.make_choice(ports, True, defport)
         self.port.show()
 
         rtypes = ["ic2820", "ic2200", "id800", "icx8x", "idrpx000v"]
