@@ -35,6 +35,7 @@ POS_MULT_FLAG  = 21
 POS_DTCS_POL   = 22
 POS_DUPLEX     = 22
 POS_DIG        = 23
+POS_TXI        = 23
 
 POS_FLAGS_START= 0x1370
 POS_MYCALL     = 0x15E0
@@ -398,6 +399,11 @@ def get_memory(_map, number, base):
 
     return mem
 
+def clear_tx_inhibit(mmap):
+    txi = struct.unpack("B", mmap[POS_TXI])[0]
+    txi |= 0x40
+    mmap[POS_TXI] = txi
+
 def set_memory(_map, memory, base):
     mmap = get_raw_memory(_map, memory.number)
 
@@ -423,8 +429,17 @@ def set_memory(_map, memory, base):
                          memory.dv_rpt1call,
                          memory.dv_rpt2call)
 
+    if not is_used(_map, memory.number):
+        clear_tx_inhibit(mmap)
+
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     set_used(_map, memory.number)
+
+    return _map
+
+def erase_memory(_map, number):
+    set_used(_map, number, False)
+
     return _map
 
 def call_location(base, index):
