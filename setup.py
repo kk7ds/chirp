@@ -115,8 +115,9 @@ if sys.platform == "darwin":
 elif sys.platform == "win32":
     win32_build()
 else:
-    nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
-    rpttool_build()
+    if os.path.exists("rpttool"):
+        nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
+        rpttool_build()
     if os.path.exists("chirpui"):
         nuke_manifest("include *.xsd", "include *.desktop")
         default_build()
