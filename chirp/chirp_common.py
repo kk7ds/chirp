@@ -15,6 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import locale
+
+locale.setlocale(locale.LC_ALL, "")
+if locale.localeconv()["decimal_point"] == ".":
+    SEPCHAR = ","
+else:
+    SEPCHAR = ";"
+    
+print "Using separation character of '%s'" % SEPCHAR
+
 from chirp import errors, memmap
 
 TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
@@ -110,9 +120,13 @@ class Memory:
 
     immutable = []
 
-    CSV_FORMAT = "Location,Name,Frequency,Duplex,Offset,Tone," + \
-        "rToneFreq,cToneFreq,DtcsCode,DtcsPolarity," + \
-        "Mode,TStep,Skip,Bank,Bank Index,URCALL,RPT1CALL,RPT2CALL" 
+
+    CSV_FORMAT = SEPCHAR.join(["Location", "Name", "Frequency",
+                               "Duplex", "Offset", "Tone",
+                               "rToneFreq", "cToneFreq", "DtcsCode",
+                               "DtcsPolarity", "Mode", "TStep",
+                               "Skip", "Bank", "Bank Index",
+                               "URCALL", "RPT1CALL", "RPT2CALL"])
 
     def __setattr__(self, name, val):
         if not hasattr(self, name):
@@ -177,22 +191,23 @@ class Memory:
         else:
             bank = "%s" % chr(ord("A") + self.bank)
 
-        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%i,," % ( \
-            self.number,
-            self.name,
-            self.freq,
-            self.duplex,
-            self.offset,
-            self.tmode,
-            self.rtone,
-            self.ctone,
-            self.dtcs,
-            self.dtcs_polarity,
-            self.mode,
-            self.tuning_step,
-            self.skip,
-            bank,
-            self.bank_index)
+        string = SEPCHAR.join([
+                "%i"   % self.number,
+                "%s"   % self.name,
+                "%.5f" % self.freq,
+                "%s"   % self.duplex,
+                "%.5f" % self.offset,
+                "%s"   % self.tmode,
+                "%.1f" % self.rtone,
+                "%.1f" % self.ctone,
+                "%03i" % self.dtcs,
+                "%s"   % self.dtcs_polarity,
+                "%s"   % self.mode,
+                "%.2f" % self.tuning_step,
+                "%s"   % self.skip,
+                "%s"   % bank,
+                "%i"   % self.bank_index,
+                "", "", ""])
 
         return string
 
@@ -205,7 +220,7 @@ class Memory:
         if line.startswith("Location"):
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
-        vals = line.split(",")
+        vals = line.split(SEPCHAR)
         if len(vals) < 11:
             raise errors.InvalidDataError("CSV format error (14 columns expected)")
 
@@ -329,25 +344,25 @@ class DVMemory(Memory):
         else:
             bank = "%s" % chr(ord("A") + self.bank)
 
-        string = "%i,%s,%.5f,%s,%.5f,%s,%.1f,%.1f,%03i,%s,%s,%.2f,%s,%s,%i,%s,%s,%s," % ( \
-            self.number,
-            self.name,
-            self.freq,
-            self.duplex,
-            self.offset,
-            self.tmode,
-            self.rtone,
-            self.ctone,
-            self.dtcs,
-            self.dtcs_polarity,
-            self.mode,
-            self.tuning_step,
-            self.skip,
-            bank,
-            self.bank_index,
-            self.dv_urcall,
-            self.dv_rpt1call,
-            self.dv_rpt2call)
+        string = SEPCHAR.join([
+                "%i"   % self.number,
+                "%s"   % self.name,
+                "%.5f" % self.freq,
+                "%s"   % self.duplex,
+                "%.5f" % self.offset,
+                "%s"   % self.tmode,
+                "%.1f" % self.rtone,
+                "%.1f" % self.ctone,
+                "%03i" % self.dtcs,
+                "%s"   % self.dtcs_polarity,
+                "%s"   % self.mode,
+                "%.2f" % self.tuning_step,
+                "%s"   % self.skip,
+                "%s"   % bank,
+                "%i"   % self.bank_index,
+                "%s"   % self.dv_urcall,
+                "%s"   % self.dv_rpt1call,
+                "%s"   % self.dv_rpt2call])
 
         return string
 
