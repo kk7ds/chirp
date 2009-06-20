@@ -330,7 +330,7 @@ def get_urcall(mmap, index):
 
     start = call_location(POS_URCALL, index)
 
-    return mmap[start:start+8].strip()
+    return mmap[start:start+8].rstrip()
 
 def get_rptcall(mmap, index):
     if index > 59:
@@ -340,7 +340,7 @@ def get_rptcall(mmap, index):
 
     start = call_location(POS_RPTCALL, index)
 
-    return mmap[start:start+8].strip()
+    return mmap[start:start+8].rstrip()
 
 def parse_map_for_memory(mmap):
     """Returns a list of memories, given a valid memory map"""
@@ -366,8 +366,6 @@ def set_freq(mmap, freq):
         tflag |= 0x80
     else:
         mult = 5
-
-    print "Setting fractional %.5f" % freq
 
     mmap[POS_TUNE_FLAG] = tflag
     mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
