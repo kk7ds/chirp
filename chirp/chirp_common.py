@@ -106,6 +106,8 @@ class Memory:
     bank = None
     bank_index = -1
 
+    empty = False
+
     _valid_map = {
         "rtone"         : TONES,
         "ctone"         : TONES,
@@ -116,6 +118,7 @@ class Memory:
         "duplex"        : ["", "+", "-"],
         "skip"          : SKIP_VALUES,
         "bank"          : [x for x in range(0, 256)] + [None],
+        "empty"         : [True, False],
         }
 
     immutable = []
@@ -410,7 +413,10 @@ class IcomRadio:
         pass
 
     def erase_memory(self, number):
-        pass
+        m = Memory()
+        m.number = number
+        m.empty = True
+        self.set_memory(m)
 
     def get_memories(self, lo=None, hi=None):
         pass
