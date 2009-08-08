@@ -57,6 +57,7 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
+        ("_empty"    , TYPE_BOOLEAN,gtk.CellRendererText,  ),
         ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
         ("_extd"     , TYPE_STRING, gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
@@ -210,6 +211,8 @@ class MemoryEditor(common.Editor):
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
 
+        self.store.set(iter, self.col("_empty"), False)
+
     def _render(self, colnum, val, iter=None):
         if colnum == self.col("Frequency"):
             val = "%.5f" % val
@@ -267,6 +270,8 @@ class MemoryEditor(common.Editor):
         elif colnum == self.col("Bank Index"):
             d_unless_positive_bidx()
 
+        _enabled(not vals[self.col("_empty")])
+
     def insert_easy(self, store, _iter, delta):
         if delta < 0:
             iter = store.insert_before(_iter)
@@ -317,7 +322,7 @@ time.  Are you sure you want to do this?"""
             sd.destroy()
             mem = chirp_common.Memory()
             mem.number = pos
-            mem.freq = self.defaults["Frequency"]
+            mem.empty = True
             job = common.RadioJob(lambda x: self.prefill(), "set_memory", mem)
             job.set_desc("Adding memory %i" % mem.number)
             self.rthread.submit(job)
@@ -328,34 +333,24 @@ time.  Are you sure you want to do this?"""
         store, iter = self.view.get_selection().get_selected()
         cur_pos, = store.get(iter, self.col("Loc"))
 
-        next = store.iter_next(iter)
-        prev = iter_prev(store, iter)
-
-        if prev:
-            prev_pos, = store.get(prev, self.col("Loc"))
-        else:
-            prev_pos = -1
-
-        if next:
-            next_pos, = store.get(next, self.col("Loc"))
-        else:
-            next_pos = -1
-
         if action == "insert_next":
-            if next_pos != (cur_pos+1):
-                self.insert_easy(store, iter, 1)
-            else:
-                self.insert_hard(store, iter, 1)
+            self.insert_hard(store, iter, 1)
         elif action == "insert_prev":
-            if prev_pos != (cur_pos-1):
-                self.insert_easy(store, iter, -1)
-            else:
-                self.insert_hard(store, iter, -1)
+            self.insert_hard(store, iter, -1)
         elif action == "delete":
-            store.remove(iter)
+            store.set(iter, self.col("_empty"), True)
             job = common.RadioJob(None, "erase_memory", cur_pos)
             job.set_desc("Erasing memory %i" % cur_pos)
             self.rthread.submit(job)
+
+            def handler(mem):
+                if not isinstance(mem, Exception):
+                    gobject.idle_add(self.set_memory, mem)
+
+            job = common.RadioJob(handler, "get_memory", cur_pos)
+            job.set_desc("Getting memory %s" % cur_pos)
+            self.rthread.submit(job)
+
         elif action == "delete_s":
             self.insert_hard(store, iter, 0)
 
@@ -417,8 +412,8 @@ time.  Are you sure you want to do this?"""
         for _cap, _type, _rend in self.cols:
             rend = _rend()
             if _type == TYPE_BOOLEAN:
-                rend.set_property("activatable", True)
-                rend.connect("toggled", handle_toggle, self.store, i)
+                #rend.set_property("activatable", True)
+                #rend.connect("toggled", handle_toggle, self.store, i)
                 col = gtk.TreeViewColumn(_cap, rend, active=i)
             elif _rend == gtk.CellRendererCombo:
                 if isinstance(self.choices[_cap], gtk.ListStore):
@@ -448,7 +443,7 @@ time.  Are you sure you want to do this?"""
 
             i += 1
 
-        self.store.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        self.store.set_sort_column_id(self.col("Loc"), gtk.SORT_ASCENDING)
 
         self.view.show()
         sw.show()
@@ -504,6 +499,7 @@ time.  Are you sure you want to do this?"""
             bank = ""
 
         self.store.set(iter,
+                       self.col("_empty"), memory.empty,
                        self.col("Loc"), memory.number,
                        self.col("_extd"), memory.extd_number,
                        self.col("Name"), memory.name,
