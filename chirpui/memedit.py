@@ -345,11 +345,15 @@ time.  Are you sure you want to do this?"""
 
             def handler(mem):
                 if not isinstance(mem, Exception):
-                    gobject.idle_add(self.set_memory, mem)
+                    if not mem.empty or self.show_empty:
+                        gobject.idle_add(self.set_memory, mem)
 
             job = common.RadioJob(handler, "get_memory", cur_pos)
             job.set_desc("Getting memory %s" % cur_pos)
             self.rthread.submit(job)
+
+            if not self.show_empty:
+                store.remove(iter)
 
         elif action == "delete_s":
             self.insert_hard(store, iter, 0)
@@ -472,7 +476,8 @@ time.  Are you sure you want to do this?"""
 
         def handler(mem):
             if not isinstance(mem, Exception):
-                gobject.idle_add(self.set_memory, mem)
+                if not mem.empty or self.show_empty:
+                    gobject.idle_add(self.set_memory, mem)
 
         for i in range(lo, hi+1):
             job = common.RadioJob(handler, "get_memory", i)
@@ -634,7 +639,14 @@ time.  Are you sure you want to do this?"""
         showspecial.connect("toggled",
                             lambda x: self.set_show_special(x.get_active()))
         showspecial.show()
-        hbox.pack_start(showspecial, 0, 0,0)
+        hbox.pack_start(showspecial, 0, 0, 0)
+
+        showempty = gtk.CheckButton("Show Empty")
+        showempty.set_active(self.show_empty);
+        showempty.connect("toggled",
+                          lambda x: self.set_show_empty(x.get_active()))
+        showempty.show()
+        hbox.pack_start(showempty, 0, 0, 0)
 
         hbox.show()
 
@@ -654,6 +666,10 @@ time.  Are you sure you want to do this?"""
         self.show_special = show
         self.prefill()
 
+    def set_show_empty(self, show):
+        self.show_empty = show
+        self.prefill()
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
@@ -661,6 +677,7 @@ time.  Are you sure you want to do this?"""
         self.count = 100
         self.name_length = 8
         self.show_special = False
+        self.show_empty = True
 
         self.fill_thread = None
 
