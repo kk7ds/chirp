@@ -63,7 +63,9 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
             try:
                 mem = ic2820_ll.get_memory(self._mmap, i)
             except errors.InvalidMemoryLocation:
-                continue
+                mem = chirp_common.Memory()
+                mem.number = i
+                mem.empty = True
 
             self._memories[mem.number] = mem
 
@@ -83,10 +85,6 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
         except KeyError:
             raise errors.InvalidMemoryLocation("Location %s is empty" % number)
 
-    def erase_memory(self, number):
-        ic2820_ll.erase_memory(self._mmap, number)
-        self.process_mmap()
-
     def get_memories(self, lo=0, hi=499):
         if not self._mmap:
             self.sync_in()
@@ -97,7 +95,10 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
         if not self._mmap:
             self.sync_in()
 
-        self._mmap = ic2820_ll.set_memory(self._mmap, memory)
+        if memory.empty:
+            self._mmap = ic2820_ll.erase_memory(self._mmap, memory.number)
+        else:
+            self._mmap = ic2820_ll.set_memory(self._mmap, memory)
         self._memories[memory.number] = memory
 
     def sync_in(self):

@@ -380,10 +380,11 @@ def _get_memory(_map, mmap, base):
 
 def get_memory(_map, number, base):
     if not is_used(_map, number):
+        mem = chirp_common.Memory()
         if number < 200:
-            raise errors.InvalidMemoryLocation("Empty")
-        else:
-            mem = chirp_common.Memory()
+            mem.number = number
+            mem.empty = True
+            return mem
     else:
         mmap = get_raw_memory(_map, number)
         mem = _get_memory(_map, mmap, base)

@@ -104,21 +104,16 @@ class IC9xRadio(chirp_common.IcomRadio):
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
         if self.__memcache.has_key(number):
-            if self.__memcache[number] is None:
-                raise errors.InvalidMemoryLocation("Empty")
-            else:
                 return self.__memcache[number]
 
         self._maybe_send_magic()
         try:
             mem = ic9x_ll.get_memory(self.pipe, self.vfo, number)
         except errors.InvalidMemoryLocation:
-            if number > self.mem_upper_limit:
-                mem = chirp_common.Memory()
-                mem.number = number
-            else:
-                self.__memcache[number] = None
-                raise
+            mem = chirp_common.Memory()
+            mem.number = number
+            if number < self.mem_upper_limit:
+                mem.empty = True
 
         if number > self.mem_upper_limit or number < 0:
             mem.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
@@ -128,11 +123,6 @@ class IC9xRadio(chirp_common.IcomRadio):
         self.__memcache[mem.number] = mem
 
         return mem
-
-    def erase_memory(self, number):
-        self._maybe_send_magic()
-        ic9x_ll.erase_memory(self.pipe, self.vfo, number)
-        del self.__memcache[number]
 
     def get_raw_memory(self, number):
         ic9x_ll.send_magic(self.pipe)
@@ -163,7 +153,11 @@ class IC9xRadio(chirp_common.IcomRadio):
         
     def set_memory(self, memory):
         self._maybe_send_magic()
-        ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+        if memory.empty:
+            ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
+        else:
+            ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+
         self.__memcache[memory.number] = memory
 
     def get_banks(self):

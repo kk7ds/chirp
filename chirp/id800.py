@@ -88,9 +88,6 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
 
         return id800_ll.get_memory(self._mmap, number)
 
-    def erase_memory(self, number):
-        id800_ll.erase_memory(self._mmap, number)
-
     def get_memories(self, lo=0, hi=499):
         if not self._mmap:
             self.sync_in()
@@ -101,7 +98,11 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
         if not self._mmap:
             self.sync_in()
 
-        self._mmap = id800_ll.set_memory(self._mmap, memory)
+
+        if memory.empty:
+            self._mmap = id800_ll.erase_memory(self._mmap, memory.number)
+        else:
+            self._mmap = id800_ll.set_memory(self._mmap, memory)
 
     def sync_in(self):
         self._mmap = icf.clone_from_radio(self)

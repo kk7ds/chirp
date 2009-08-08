@@ -117,10 +117,10 @@ class ICx8xRadio(chirp_common.IcomMmapRadio,
         else:
             base = 0
 
-        self._mmap = icx8x_ll.set_memory(self._mmap, memory, base)
-
-    def erase_memory(self, number):
-        self._mmap = icx8x_ll.erase_memory(self._mmap, number)
+        if memory.empty:
+            self._mmap = icx8x_ll.erase_memory(self._mmap, memory.number)
+        else:
+            self._mmap = icx8x_ll.set_memory(self._mmap, memory, base)
 
     def get_raw_memory(self, number):
         return icx8x_ll.get_raw_memory(self._mmap, number)

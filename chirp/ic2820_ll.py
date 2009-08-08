@@ -270,6 +270,7 @@ def get_memory(_map, number):
 
 def erase_memory(mmap, number):
     set_used(mmap, number, False)
+    return mmap
 
 def set_freq(mmap, freq):
     mmap[POS_FREQ_START] = struct.pack(">I", int(freq * 1000000))

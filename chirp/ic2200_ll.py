@@ -229,10 +229,11 @@ def _get_memory(_map, mmap):
 
 def get_memory(_map, number):
     if not is_used(_map, number):
+        mem = chirp_common.Memory()
         if number < 200:
-            raise errors.InvalidMemoryLocation("Location %i is empty" % number)
-        else:
-            mem = chirp_common.Memory()
+            mem.number = number
+            mem.empty = True
+            return mem
     else:
         mmap = get_raw_memory(_map, number)
         mem = _get_memory(_map, mmap)
@@ -442,6 +443,7 @@ def set_memory (_map, memory):
 
 def erase_memory(mmap, number):
     set_used(mmap, number, False)
+    return mmap
 
 def call_location(base, index):
     return base + (8 * index)
