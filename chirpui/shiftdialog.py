@@ -75,6 +75,8 @@ class ShiftDialog(gtk.Dialog):
             self.status("Looking for a free spot (%i)" % pos, 0)
             try:
                 mem = self.rthread.radio.get_memory(pos)
+                if mem.empty:
+                    break
             except errors.InvalidMemoryLocation:
                 break
 
