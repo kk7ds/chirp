@@ -372,7 +372,7 @@ def set_freq(mmap, freq):
     mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
 
 def set_name(mmap, _name, enabled=True):
-    name = _name.ljust(8)[:8]
+    name = _name.ljust(6)[:6].upper()
     nibbles = []
 
     def val_of(char):
