@@ -312,6 +312,8 @@ class ImportDialog(gtk.Dialog):
                 mem = radio.get_memory(i)
             except errors.InvalidMemoryLocation, e:
                 continue
+            if mem.empty:
+                continue
 
             self.__store.append(row=(True,
                                      mem.number,
