@@ -106,7 +106,10 @@ class MemoryEditor(common.Editor):
         }
     
     def ed_name(self, _, __, new, ___):
-        return new[:self.name_length]
+        if self.rthread.radio.feature_longnames:
+            return new[:8]
+        else:
+            return new[:6].upper()
 
     def ed_freq(self, _, path, new, __):
         def set_offset(path, offset):
@@ -675,7 +678,6 @@ time.  Are you sure you want to do this?"""
         self.rthread = rthread
         self.allowed_bands = [144, 440]
         self.count = 100
-        self.name_length = 8
         self.show_special = False
         self.show_empty = True
 
