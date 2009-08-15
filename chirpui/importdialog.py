@@ -173,10 +173,18 @@ class ImportDialog(gtk.Dialog):
 
         self.ensure_calls(dst_rthread, import_list)
 
+        dst_banks = self.dst_radio.get_banks()
+
         for old, new in import_list:
             print "%sing %i -> %i" % (self.ACTION, old, new)
             mem = self.src_radio.get_memory(old)
             mem.number = new
+
+            if not self.dst_radio.feature_longnames:
+                mem.name = mem.name[:6].upper()
+
+            if not mem.bank in dst_banks:
+                mem.bank = None
 
             job = common.RadioJob(None, "set_memory", mem)
             job.set_desc("Setting memory %i" % mem.number)

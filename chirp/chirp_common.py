@@ -402,6 +402,7 @@ class IcomRadio:
     status_fn = lambda x, y: console_status(y)
 
     feature_bankindex = False
+    feature_longnames = False
 
     def __init__(self, pipe):
         self.pipe = pipe

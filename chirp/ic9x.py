@@ -64,6 +64,7 @@ class IC9xRadio(chirp_common.IcomRadio):
 
     feature_bankindex = True
     feature_req_call_lists = False
+    feature_longnames = True
 
     def __init__(self, *args, **kwargs):
         chirp_common.IcomRadio.__init__(self, *args, **kwargs)

@@ -35,6 +35,7 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
 
     feature_bankindex = True
     feature_req_call_lists = False
+    feature_longnames = True
 
     _memories = {}
 
