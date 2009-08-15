@@ -552,5 +552,5 @@ class Status:
         return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
 
 def is_fractional_step(freq):
-    dhz = freq * 10000
+    dhz = freq * 1000
     return int(dhz) != dhz
