@@ -633,6 +633,19 @@ time.  Are you sure you want to do this?"""
         refresh.connect("clicked", lambda x: self.prefill())
         hbox.pack_start(refresh, 0, 0, 0)
 
+        def activate_go(widget):
+            refresh.clicked()
+
+        def set_hi(widget, event):
+            loval = self.lo_limit_adj.get_value()
+            hival = self.hi_limit_adj.get_value()
+            if loval > hival:
+                self.hi_limit_adj.set_value(loval + 25)
+        
+        lo.connect_after("focus-out-event", set_hi)
+        lo.connect_after("activate", activate_go)
+        hi.connect_after("activate", activate_go)
+
         sep = gtk.VSeparator()
         sep.show()
         sep.set_size_request(20, -1)
