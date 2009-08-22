@@ -244,6 +244,36 @@ class ImportDialog(gtk.Dialog):
             self.__store.set(iter, self.col_import, _state)
             iter = self.__store.iter_next(iter)
 
+    def __incrnew(self, button, delta):
+        iter = self.__store.get_iter_first()
+        while iter:
+            pos = self.__store.get(iter, self.col_nloc)[0]
+            pos += delta
+            if pos < 0:
+                pos = 0
+            self.__store.set(iter, self.col_nloc, pos)
+            iter = self.__store.iter_next(iter)
+
+    def __autonew(self, button):
+        pos = 0
+        iter = self.__store.get_iter_first()
+        while iter:
+            self.__store.set(iter, self.col_nloc, pos)
+            pos += 1
+            iter = self.__store.iter_next(iter)
+
+    def __revrnew(self, button):
+        positions = []
+        iter = self.__store.get_iter_first()
+        while iter:
+            positions.append(self.__store.get(iter, self.col_nloc)[0])
+            iter = self.__store.iter_next(iter)
+
+        iter = self.__store.get_iter_first()
+        while iter:
+            self.__store.set(iter, self.col_nloc, positions.pop())
+            iter = self.__store.iter_next(iter)
+
     def make_select(self):
         hbox = gtk.HBox(True, 2)
 
@@ -272,6 +302,40 @@ class ImportDialog(gtk.Dialog):
 
         return frame
 
+    def make_adjust(self):
+        hbox = gtk.HBox(True, 2)
+
+        incr = gtk.Button("+1")
+        incr.connect("clicked", self.__incrnew, 1)
+        incr.set_size_request(50, 25)
+        incr.show()
+        hbox.pack_start(incr, 0, 0, 0)
+
+        decr = gtk.Button("-1")
+        decr.connect("clicked", self.__incrnew, -1)
+        decr.set_size_request(50, 25)
+        decr.show()
+        hbox.pack_start(decr, 0, 0, 0)
+
+        auto = gtk.Button("Auto")
+        auto.connect("clicked", self.__autonew)
+        auto.set_size_request(50, 25)
+        auto.show()
+        hbox.pack_start(auto, 0, 0, 0)
+
+        revr = gtk.Button("Reverse")
+        revr.connect("clicked", self.__revrnew)
+        revr.set_size_request(50, 25)
+        revr.show()
+        hbox.pack_start(revr, 0, 0, 0)
+
+        frame = gtk.Frame("Adjust New Location")
+        frame.show()
+        frame.add(hbox)
+        hbox.show()
+
+        return frame
+
     def make_options(self):
         hbox = gtk.HBox(True, 2)
 
@@ -292,6 +356,7 @@ class ImportDialog(gtk.Dialog):
         hbox = gtk.HBox(True, 2)
         
         hbox.pack_start(self.make_select(), 0, 0, 0)
+        hbox.pack_start(self.make_adjust(), 0, 0, 0)
         #hbox.pack_start(self.make_options(), 0, 0, 0)
         hbox.show()
 
