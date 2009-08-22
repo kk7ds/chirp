@@ -639,7 +639,7 @@ time.  Are you sure you want to do this?"""
         def set_hi(widget, event):
             loval = self.lo_limit_adj.get_value()
             hival = self.hi_limit_adj.get_value()
-            if loval > hival:
+            if loval >= hival:
                 self.hi_limit_adj.set_value(loval + 25)
         
         lo.connect_after("focus-out-event", set_hi)
