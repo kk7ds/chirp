@@ -59,7 +59,7 @@ class CloneSettingsDialog(gtk.Dialog):
 
         return result
 
-    def __init__(self, clone_in=True, filename=None, rtype=None):
+    def __init__(self, clone_in=True, filename=None, rtype=None, port=None):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, buttons=buttons, title="Clone")
@@ -67,7 +67,9 @@ class CloneSettingsDialog(gtk.Dialog):
         self.clone_in = clone_in
 
         ports = platform.get_platform().list_serial_ports()
-        if ports:
+        if port:
+            defport = port
+        elif ports:
             defport = ports[0]
         else:
             defport = ""
