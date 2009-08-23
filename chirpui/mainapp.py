@@ -213,8 +213,41 @@ class ChirpMain(gtk.Window):
     def cb_cloneout(self, radio, fn, emsg= None):
         radio.pipe.close()
 
-    def do_clonein(self):
-        dlg = clone.CloneSettingsDialog()
+    def record_recent_radio(self, port, rtype):
+        if (port, rtype) in self._recent:
+            return
+
+        spid = "sep-%s%s" % (port.replace("/", ""), rtype)
+        upid = "cloneout-%s%s" % (port.replace("/", ""), rtype)
+        dnid = "clonein-%s%s" % (port.replace("/", ""), rtype)
+
+        spaction = gtk.Action(spid, "", "", "")
+        upaction = gtk.Action(upid,
+                              "Upload to %s @ %s" % (rtype, port),
+                              "Upload to recent radio", "")
+        dnaction = gtk.Action(dnid,
+                              "Download from %s @ %s" % (rtype, port),
+                              "Download from recent radio", "")
+
+        upaction.connect("activate", self.mh, port, rtype)
+        dnaction.connect("activate", self.mh, port, rtype)
+
+        id = self.menu_uim.new_merge_id()
+        self.menu_uim.add_ui(id, "/MenuBar/radio/recent", upid, upid,
+                             gtk.UI_MANAGER_MENUITEM, True)
+        self.menu_uim.add_ui(id, "/MenuBar/radio/recent", dnid, dnid,
+                             gtk.UI_MANAGER_MENUITEM, True)
+        self.menu_uim.add_ui(id, "/MenuBar/radio/recent", spid, spid,
+                             gtk.UI_MANAGER_SEPARATOR, True)
+
+        self.menu_ag.add_action(spaction)
+        self.menu_ag.add_action(upaction)
+        self.menu_ag.add_action(dnaction)
+
+        self._recent.append((port, rtype))
+
+    def do_clonein(self, port=None, rtype=None):
+        dlg = clone.CloneSettingsDialog(rtype=rtype, port=port)
         res = dlg.run()
         port, rtype, fn = dlg.get_values()
         dlg.destroy()
@@ -233,16 +266,24 @@ class ChirpMain(gtk.Window):
 
         radio = rc(ser)
 
+        self.record_recent_radio(port, rtype)
+
         ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
         ct.start()
 
-    def do_cloneout(self):
+    def do_cloneout(self, port=None, rtype=None):
         eset = self.get_current_editorset()
         radio = eset.radio
 
+        if rtype != RTYPES[radio.__class__]:
+            common.show_error("Unable to upload to %s from current %s image" % (
+                    rtype, RTYPES[radio.__class__]))
+            return
+
         dlg = clone.CloneSettingsDialog(False,
                                         eset.filename,
-                                        RTYPES[radio.__class__])
+                                        RTYPES[radio.__class__],
+                                        port=port)
         res = dlg.run()
         port, rtype, _ = dlg.get_values()
         dlg.destroy()
@@ -260,6 +301,8 @@ class ChirpMain(gtk.Window):
             return
 
         radio.set_pipe(ser)
+
+        self.record_recent_radio(port, rtype)
 
         ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
         ct.start()
@@ -405,7 +448,7 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.rthread.flush()
 
-    def mh(self, _action):
+    def mh(self, _action, *args):
         action = _action.get_name()
 
         if action == "quit":
@@ -418,10 +461,10 @@ class ChirpMain(gtk.Window):
             self.do_save()
         elif action == "saveas":
             self.do_saveas()
-        elif action == "clonein":
-            self.do_clonein()
-        elif action == "cloneout":
-            self.do_cloneout()
+        elif action.startswith("clonein"):
+            self.do_clonein(*args)
+        elif action.startswith("cloneout"):
+            self.do_cloneout(*args)
         elif action == "close":
             self.do_close()
         elif action == "converticf":
@@ -465,7 +508,7 @@ class ChirpMain(gtk.Window):
     <menu action="view">
       <menuitem action="columns"/>
     </menu>
-    <menu action="radio">
+    <menu action="radio" name="radio">
       <menuitem action="clonein"/>
       <menuitem action="cloneout"/>
       <menu action="open9x">
@@ -473,6 +516,7 @@ class ChirpMain(gtk.Window):
         <menuitem action="open9xB"/>
       </menu>
       <menuitem action="openrpxkv"/>
+      <menu action="recent" name="recent"/>
       <separator/>
       <menuitem action="import"/>
       <menu action="export">
@@ -513,18 +557,21 @@ class ChirpMain(gtk.Window):
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
+            ('recent', None, "Recent", None, None, self.mh),
             ]
 
-        uim = gtk.UIManager()
+        self.menu_uim = gtk.UIManager()
         self.menu_ag = gtk.ActionGroup("MenuBar")
         self.menu_ag.add_actions(actions)
 
-        uim.insert_action_group(self.menu_ag, 0)
-        uim.add_ui_from_string(menu_xml)
+        self.menu_uim.insert_action_group(self.menu_ag, 0)
+        self.menu_uim.add_ui_from_string(menu_xml)
 
-        self.add_accel_group(uim.get_accel_group())
+        self.add_accel_group(self.menu_uim.get_accel_group())
 
-        return uim.get_widget("/MenuBar")
+        self.recentmenu = self.menu_uim.get_widget("/MenuBar/radio/recent")
+
+        return self.menu_uim.get_widget("/MenuBar")
 
     def make_tabs(self):
         self.tabs = gtk.Notebook()
@@ -573,6 +620,8 @@ class ChirpMain(gtk.Window):
         gtk.Window.__init__(self, *args, **kwargs)
 
         vbox = gtk.VBox(False, 2)
+
+        self._recent = []
 
         self.menu_ag = None
         mbar = self.make_menubar()
