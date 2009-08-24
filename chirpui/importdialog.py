@@ -187,6 +187,12 @@ class ImportDialog(gtk.Dialog):
             if not mem.bank in dst_banks:
                 mem.bank = None
 
+            if isinstance(mem, chirp_common.DVMemory):
+                if mem.dv_rpt1call == "*NOTUSE*":
+                    mem.dv_rpt1call = ""
+                if mem.dv_rpt2call == "*NOTUSE*":
+                    mem.dv_rpt2call = ""
+
             job = common.RadioJob(None, "set_memory", mem)
             job.set_desc("Setting memory %i" % mem.number)
             dst_rthread._qsubmit(job, 0)
