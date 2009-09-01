@@ -23,7 +23,7 @@ if locale.localeconv()["decimal_point"] == ".":
 else:
     SEPCHAR = ";"
     
-print "Using separation character of '%s'" % SEPCHAR
+#print "Using separation character of '%s'" % SEPCHAR
 
 from chirp import errors, memmap
 
