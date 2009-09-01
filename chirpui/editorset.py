@@ -19,7 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, ic9x, icx8x, xml, csv, idrp
+from chirp import ic2820, ic2200, id800, id880, ic9x, icx8x, xml, csv, idrp
 from chirp import chirp_common
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 
@@ -36,6 +36,7 @@ def radio_class_from_file(filename):
         ic2820.IC2820Radio,
         ic2200.IC2200Radio,
         id800.ID800v2Radio,
+        id880.ID880Radio,
         icx8x.ICx8xRadio,
         ]
 
