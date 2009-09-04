@@ -25,6 +25,8 @@ CMD_CLONE_IN  = 0xE3
 CMD_CLONE_DAT = 0xE4
 CMD_CLONE_END = 0xE5
 
+save_pipe = None
+
 class IcfFrame:
     src = 0
     dst = 0
@@ -163,7 +165,16 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
 
     frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
 
+    if save_pipe:
+        print "Saving data..."
+        save_pipe.write(frame)
+
     #print "Sending:\n%s" % util.hexprint(frame)
+    #print "Sending:\n%s" % util.hexprint(hed[6:])
+    if cmd == 0xe4:
+        # Uncomment to avoid cloning to the radio
+        # return frame
+        pass
     
     pipe.write(frame)
 
@@ -253,10 +264,20 @@ def send_mem_chunk(radio, start, stop, bs=32):
     return True
 
 def clone_to_radio(radio):
+    global save_pipe
+
+    # Uncomment to save out a capture of what we actually write to the radio
+    # save_pipe = file("pipe_capture.log", "w", 0)
+
     md = get_model_data(radio.pipe)
 
     if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
+
+    # This mimics what the Icom software does, but isn't required and just
+    # takes longer
+    # md = get_model_data(radio.pipe, model=md[0:2]+"\x00\x00")
+    # md = get_model_data(radio.pipe, model=md[0:2]+"\x00\x00")
 
     stream = RadioStream(radio.pipe)
 
@@ -271,6 +292,10 @@ def clone_to_radio(radio):
 
     send_clone_frame(radio.pipe, CMD_CLONE_END, radio.get_endframe(), raw=True)
     frames += stream.get_frames(True)
+
+    if save_pipe:
+        save_pipe.close()
+        save_pipe = None
 
     try:
         result = frames[-1]
