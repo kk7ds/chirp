@@ -34,6 +34,10 @@ POS_DTCS_POL   = 10
 
 POS_USED_START = 0xAA80
 
+POS_MYCALL     = 0xDE56
+POS_URCALL     = 0xDE9E
+POS_RPTCALL    = 0xF408
+
 MEM_LOC_SIZE = 41
 
 
@@ -163,3 +167,25 @@ def get_memory(_map, number):
     mem.number = number
 
     return mem
+
+def call_location(base, index):
+    return base + (8 * (index - 1))
+
+def get_call(mmap, index, base, limit, implied_first=False):
+    if index > limit:
+        raise errors.InvalidDataError("Call index must be <= %i" % limit)
+    elif index == 0 and implied_first:
+        return "CQCQCQ"
+
+    start = call_location(base, index)
+    print "start for %i is %x" % (index, start)
+    return mmap[start:start+8].rstrip()
+
+def get_mycall(mmap, index):
+    return get_call(mmap, index, POS_MYCALL, 6)
+
+def get_urcall(mmap, index):
+    return get_call(mmap, index, POS_URCALL, 60, True)
+
+def get_rptcall(mmap, index):
+    return get_call(mmap, index, POS_RPTCALL, 99) # FIXME: repeater limit

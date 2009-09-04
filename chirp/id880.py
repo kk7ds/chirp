@@ -22,9 +22,17 @@ class ID880Radio(chirp_common.IcomMmapRadio,
                  chirp_common.IcomDstarRadio):
     _model = "\x31\x67\x00\x01"
     _memsize = 62976
-    _endframe = "Icom Inc\x2eCB"
+    _endframe = "Icom Inc\x2eB1"
 
-    feature_hash_implicit_calls = True
+    _ranges = [(0x0000, 0xF5c0, 32),
+               (0xF5c0, 0xf5e0, 16),
+               (0xf5e0, 0xf600, 32)]
+
+    feature_has_implicit_calls = True
+
+    MYCALL_LIMIT = (1, 7)
+    URCALL_LIMIT = (1, 60)
+    RPTCALL_LIMIT = (1, 99)
 
     def sync_in(self):
         self._mmap = icf.clone_from_radio(self)
@@ -37,3 +45,31 @@ class ID880Radio(chirp_common.IcomMmapRadio,
 
     def get_memory(self, number):
         return id880_ll.get_memory(self._mmap, number)
+
+    def get_urcall_list(self):
+        calls = ["CQCQCQ"]
+
+        for i in range(*self.URCALL_LIMIT):
+            call = id880_ll.get_urcall(self._mmap, i)
+            calls.append(call)
+
+        return calls
+
+    def get_mycall_list(self):
+        calls = []
+
+        for i in range(*self.MYCALL_LIMIT):
+            call = id880_ll.get_mycall(self._mmap, i)
+            calls.append(call)
+
+        return calls
+
+    def get_repeater_call_list(self):
+        calls = ["*NOTUSE*"]
+
+        for i in range(*self.RPTCALL_LIMIT):
+            call = id880_ll.get_rptcall(self._mmap, i)
+            calls.append(call)
+
+        return calls
+        
