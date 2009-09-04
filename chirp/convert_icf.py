@@ -1,5 +1,5 @@
 from chirp import icf, errors, util
-from chirp import id800, ic2820, ic2200, icx8x
+from chirp import id800, ic2820, ic2200, icx8x, id880
 
 def icf_to_image(icf_file, img_file):
     mdata, mmap = icf.read_file(icf_file)
@@ -8,6 +8,7 @@ def icf_to_image(icf_file, img_file):
               ic2820.IC2820Radio,
               ic2200.IC2200Radio,
               icx8x.ICx8xRadio,
+              id880.ID880Radio,
               ]
 
     img_data = None
