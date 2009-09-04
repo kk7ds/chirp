@@ -24,13 +24,14 @@ POS_FREQ_START = 0
 POS_NAME_START = 11
 POS_NAME_END   = POS_NAME_START+8
 POS_DUP        = 10
-POS_OFFSET     =  4
+POS_OFFSET     =  3
 POS_MODE       =  6
 POS_RTONE      =  5
 POS_CTONE      =  5
 POS_DTCS       =  7
 POS_TMODE      = 10
 POS_DTCS_POL   = 10
+POS_TUNE_FLAG  =  8
 
 POS_USED_START = 0xAA80
 
@@ -49,13 +50,23 @@ def get_raw_memory(mmap, number):
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
 
 def get_freq(mmap):
-    return (struct.unpack("!i", "\x00" + mmap[:3])[0] * 5) / 1000.0
+    val = struct.unpack("b", mmap[POS_TUNE_FLAG])[0] & 0x10
+    if val:
+        mult = 6.25
+    else:
+        mult = 5.0
+
+    val = struct.unpack(">i", "\x00" + mmap[:3])[0]
+    val &= 0x000FFFFF
+
+    return (val * mult) / 1000.0
 
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
 
 def get_offset(mmap):
-    return (struct.unpack("b", mmap[POS_OFFSET])[0] * 5) / 1000.0
+    val = struct.unpack(">h", mmap[POS_OFFSET:POS_OFFSET+2])[0] & 0x0FFF
+    return (val * 5) / 1000.0
 
 def get_duplex(mmap):
     val = struct.unpack("b", mmap[POS_DUP])[0]
@@ -102,7 +113,9 @@ def get_mode(mmap):
 def get_tmode(mmap):
     val = (struct.unpack("b", mmap[POS_TMODE])[0] >> 4) & 0x07
 
-    if val == 1:
+    if val == 0:
+        return ""
+    elif val == 1:
         return "Tone"
     elif val == 3:
         return "TSQL"
