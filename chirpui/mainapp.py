@@ -406,7 +406,7 @@ class ChirpMain(gtk.Window):
         try:
             convert_icf.icf_to_image(icffile, imgfile)
         except Exception, e:
-            log_exception()
+            common.log_exception()
             common.show_error("Unable to convert ICF file: %s" % e)
 
         self.do_open(imgfile)
