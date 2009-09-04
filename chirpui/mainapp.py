@@ -277,7 +277,7 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         radio = eset.radio
 
-        if rtype != RTYPES[radio.__class__]:
+        if rtype and rtype != RTYPES[radio.__class__]:
             common.show_error("Unable to upload to %s from current %s image" % (
                     rtype, RTYPES[radio.__class__]))
             return
