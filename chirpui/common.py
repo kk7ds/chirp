@@ -73,6 +73,8 @@ class RadioJob:
         except Exception, e:
             print "Exception running RadioJob: %s" % e
             log_exception()
+            print "Job Args:   %s" % str(self.args)
+            print "Job KWArgs: %s" % str(self.kwargs)
             result = e
 
         if self.cb:
