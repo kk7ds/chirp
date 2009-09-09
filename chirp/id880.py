@@ -46,6 +46,15 @@ class ID880Radio(chirp_common.IcomMmapRadio,
     def get_memory(self, number):
         return id880_ll.get_memory(self._mmap, number)
 
+    def set_memory(self, memory):
+        if not self._mmap:
+            self.sync_in()
+
+        if memory.empty:
+            self._mmap = id880_ll.erase_memory(self._mmap, memory.number)
+        else:
+            self._mmap = id880_ll.set_memory(self._mmap, memory)
+
     def get_urcall_list(self):
         calls = ["CQCQCQ"]
 

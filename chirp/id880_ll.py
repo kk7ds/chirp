@@ -34,6 +34,8 @@ POS_DTCS_POL   = 10
 POS_TUNE_FLAG  =  8
 
 POS_USED_START = 0xAA80
+POS_SKIP_FLAGS = 0xAAFE
+POS_PSKP_FLAGS = 0xAB82
 
 POS_MYCALL     = 0xDE56
 POS_URCALL     = 0xDE9E
@@ -61,12 +63,31 @@ def get_freq(mmap):
 
     return (val * mult) / 1000.0
 
+def set_freq(mmap, freq):
+    val = struct.unpack("b", mmap[POS_TUNE_FLAG])[0] & 0xEF
+    if chirp_common.is_fractional_step(freq):
+        mult = 6.25
+        val |= 0x10
+    else:
+        mult = 5
+
+    mmap[POS_TUNE_FLAG] = val
+    mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
+
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
+
+def set_name(mmap, name):
+    mmap[POS_NAME_START] = name.rstrip()[:8]
 
 def get_offset(mmap):
     val = struct.unpack(">h", mmap[POS_OFFSET:POS_OFFSET+2])[0] & 0x0FFF
     return (val * 5) / 1000.0
+
+def set_offset(mmap, offset):
+    val = struct.unpack(">h", mmap[POS_OFFSET:POS_OFFSET+2])[0] & 0xF000
+    val |= (int(offset * 1000) / 5)
+    mmap[POS_OFFSET] = struct.pack(">h", val)
 
 def get_duplex(mmap):
     val = struct.unpack("b", mmap[POS_DUP])[0]
@@ -78,55 +99,84 @@ def get_duplex(mmap):
     else:
         return ""    
 
+def set_duplex(mmap, duplex):
+    val = struct.unpack("b", mmap[POS_DUP])[0] & 0xF3
+    if duplex == "-":
+        val |= 0x04
+    elif duplex == "+":
+        val |= 0x08
+    mmap[POS_DUP] = val
+
 def get_rtone(mmap):
     val = struct.unpack("b", mmap[POS_RTONE])[0] & 0xFC
     val >>= 2
 
     return chirp_common.TONES[val]
 
+def set_rtone(mmap, tone):
+    val = struct.unpack("b", mmap[POS_RTONE])[0] & 0x03
+    val |= chirp_common.TONES.index(tone) << 2
+    mmap[POS_RTONE] = val
+
 def get_ctone(mmap):
-    val = struct.unpack("!H", mmap[POS_CTONE:POS_CTONE+2])[0]
+    val = struct.unpack(">h", mmap[POS_CTONE:POS_CTONE+2])[0]
     val = (val & 0x03F0) >> 4
     
     return chirp_common.TONES[val]
+
+def set_ctone(mmap, tone):
+    val = struct.unpack(">h", mmap[POS_CTONE:POS_CTONE+2])[0] & 0xFC0F
+    val |= chirp_common.TONES.index(tone) << 4
+    mmap[POS_CTONE] = struct.pack(">h", val)
 
 def get_dtcs(mmap):
     val = struct.unpack("b", mmap[POS_DTCS])[0]
     return chirp_common.DTCS_CODES[val]
 
+def set_dtcs(mmap, code):
+    mmap[POS_DTCS] = chirp_common.DTCS_CODES.index(code)
+
+ID880_MODES = ["FM", "NFM", None, "AM", "NAM", "DV"]
+
 def get_mode(mmap):
     val = struct.unpack("b", mmap[POS_MODE])[0] & 0x07
 
-    if val == 0:
-        return "FM"
-    elif val == 1:
-        return "NFM"
-    elif val == 3:
-        return "AM"
-    elif val == 4:
-        return "NAM"
-    elif val == 5:
-        return "DV"
-    else:    
+    if val == 2:
+        raise errors.InvalidDataError("Mode 0x02 is not valid for this radio")
+
+    try:
+        return ID880_MODES[val]
+    except IndexError:
         raise errors.InvalidDataError("Unknown mode 0x%02x" % val)
+
+def set_mode(mmap, mode):
+    if mode not in ID880_MODES:
+        raise errors.InvalidDataError("Mode %s not supported" % mode)
+
+    val = struct.unpack("b", mmap[POS_MODE])[0] & 0xF8
+    val |= ID880_MODES.index(mode)
+    mmap[POS_MODE] = val
+
+ID880_TMODES = ["", "Tone", None, "TSQL", "DTCS", "TSQL-R", "DTCS-R"]
 
 def get_tmode(mmap):
     val = (struct.unpack("b", mmap[POS_TMODE])[0] >> 4) & 0x07
 
-    if val == 0:
-        return ""
-    elif val == 1:
-        return "Tone"
-    elif val == 3:
-        return "TSQL"
-    elif val == 5:
-        return "DTCS"
-    elif val == 6:
-        return "TSQL-R"
-    elif val == 7:
-        return "DTCS-R"
-    else:
+    if val == 2:
+        raise errors.InvalidDataError("TMode 0x02 is not valid for this radio")
+
+    try:
+        return ID880_TMODES[val]
+    except IndexError:
         raise errors.InvalidDataError("Unknown tone mode 0x%02x" % val)
+
+def set_tmode(mmap, tmode):
+    if tmode not in ID880_TMODES:
+        raise errors.InvalidDataError("Tone Mode %s not supported" % tmode)
+
+    val = struct.unpack("b", mmap[POS_TMODE])[0] & 0xF8
+    val |= ID880_TMODES.index(tmode)
+    mmap[POS_TMODE] = val
 
 def get_dtcs_polarity(mmap):
     val = struct.unpack("b", mmap[POS_DTCS_POL])[0] & 0x03
@@ -140,6 +190,20 @@ def get_dtcs_polarity(mmap):
     elif val == 3:
         return "RR"
 
+def set_dtcs_polarity(mmap, polarity):
+    val = struct.unpack("b", mmap[POS_DTCS_POL])[0] & 0xFC
+
+    if polarity == "NN":
+        pass
+    elif polarity == "NR":
+        val |= 1
+    elif polarity == "RN":
+        val |= 2
+    elif polarity == "RR":
+        val |= 3
+    else:
+        raise errors.InvalidDataError("Unknown DTCS polarity %s" % polarity)
+
 def is_used(mmap, number):
     byte = int(number / 8)
     bit = number % 8
@@ -148,6 +212,38 @@ def is_used(mmap, number):
     val &= (1 << bit)
 
     return not bool(val)
+
+def set_is_used(mmap, number, used):
+    byte = int(number / 8)
+    mask = ~(1 << (number % 8))
+
+    val = struct.unpack("b", mmap[POS_USED_START + byte])[0] & mask
+    if not used:
+        val |= (1 << (number % 8))
+    mmap[POS_USED_START + byte] = (val & 0xFF)
+
+def get_skip(mmap, number):
+    sval = struct.unpack("b", mmap[POS_SKIP_FLAGS + number])[0]
+    pval = struct.unpack("b", mmap[POS_PSKP_FLAGS + number])[0]
+
+    if not (sval & 0x40):
+        return ""
+    elif pval & 0x40:
+        return "P"
+    else:
+        return "S"
+
+def set_skip(mmap, number, skip):
+    sval = struct.unpack("b", mmap[POS_SKIP_FLAGS + number])[0] & 0xBF
+    pval = struct.unpack("b", mmap[POS_PSKP_FLAGS + number])[0] & 0xBF
+
+    if skip:
+        sval |= 0x40
+    if skip == "P":
+        pval |= 0x40
+
+    mmap[POS_SKIP_FLAGS] = sval
+    mmap[POS_PSKP_FLAGS] = pval
 
 def _get_memory(mmap, number):
     if get_mode(mmap) == "DV":
@@ -178,8 +274,34 @@ def get_memory(_map, number):
     mmap = get_raw_memory(_map, number)
     mem = _get_memory(mmap, number)
     mem.number = number
+    mem.skip = get_skip(_map, number)
 
     return mem
+
+def set_memory(_map, mem):
+    mmap = get_raw_memory(_map, mem.number)
+
+    set_freq(mmap, mem.freq)
+    set_name(mmap, mem.name)
+    set_duplex(mmap, mem.duplex)
+    set_offset(mmap, mem.offset)
+    set_mode(mmap, mem.mode)
+    set_rtone(mmap, mem.rtone)
+    set_ctone(mmap, mem.ctone)
+    set_dtcs(mmap, mem.dtcs)
+    set_tmode(mmap, mem.tmode)
+    set_dtcs_polarity(mmap, mem.dtcs_polarity)
+
+    _map[get_mem_offset(mem.number)] = mmap.get_packed()
+
+    set_skip(_map, mem.number, mem.skip)
+    set_is_used(_map, mem.number, True)
+
+    return _map
+
+def erase_memory(map, number):
+    set_is_used(map, number, False)
+    return map    
 
 def call_location(base, index):
     return base + (8 * (index - 1))
