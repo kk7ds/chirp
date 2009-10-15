@@ -411,9 +411,9 @@ class IC92MemoryFrame(IC92Frame):
         else:
             uc = r1 = r2 = (" " * 8)
 
-        self[36] = uc
-        self[44] = r1
-        self[52] = r2
+        self[36] = r2.ljust(8)
+        self[44] = r1.ljust(8)
+        self[52] = uc.ljust(8)
 
     def _decode_calls(self):
         return self[52:60].rstrip(), self[44:52].rstrip(),self[36:44].rstrip()
