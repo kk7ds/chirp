@@ -171,8 +171,10 @@ class ImportDialog(gtk.Dialog):
 
         import_list = self.get_import_list()
 
-        if self.dst_radio.feature_req_call_lists:
-                self.ensure_calls(dst_rthread, import_list)
+        has_dstar = isinstance(self.dst_radio, chirp_common.IcomDstarRadio)
+
+        if has_dstar and self.dst_radio.feature_req_call_lists:
+            self.ensure_calls(dst_rthread, import_list)
 
         dst_banks = self.dst_radio.get_banks()
 
