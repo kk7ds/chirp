@@ -28,7 +28,7 @@ class ID880Radio(chirp_common.IcomMmapRadio,
                (0xF5c0, 0xf5e0, 16),
                (0xf5e0, 0xf600, 32)]
 
-    feature_has_implicit_calls = True
+    feature_req_call_lists = False
 
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 60)

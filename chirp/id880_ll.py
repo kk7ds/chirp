@@ -245,9 +245,68 @@ def set_skip(mmap, number, skip):
     mmap[POS_SKIP_FLAGS] = sval
     mmap[POS_PSKP_FLAGS] = pval
 
+def decode_call(sevenbytes):
+    if len(sevenbytes) != 7:
+        raise Exception("%i (!=7) bytes to decode_call" % len(sevenbytes))
+
+    i = 0
+    rem = 0
+    str = ""
+    for byte in [ord(x) for x in sevenbytes]:
+        i += 1
+
+        mask = (1 << i) - 1           # Mask is 0x01, 0x03, 0x07, etc
+
+        code = (byte >> i) | rem      # Code gets the upper bits of remainder
+                                      # plus all but the i lower bits of this
+                                      # byte
+        str += chr(code)
+
+        rem = (byte & mask) << 7 - i  # Remainder for next time are the masked
+                                      # bits, moved to the high places for the
+                                      # next round
+
+    # After seven trips gathering overflow bits, we chould have seven
+    # left, which is the final character
+    str += chr(rem)
+
+    return str.rstrip()
+
+def encode_call(call):
+    call = call.ljust(8)
+    val = 0
+    
+    buf = []
+    
+    for i in range(0, 8):
+        byte = ord(call[i])
+        if i > 0:
+            last = buf[i-1]
+            himask = ~((1 << (7-i)) - 1) & 0x7F
+            last |= (byte & himask) >> (7-i)
+            buf[i-1] = last
+        else:
+            himask = 0
+
+        buf.append((byte & ~himask) << (i+1))
+
+    return "".join([chr(x) for x in buf[:7]])
+
+def get_mem_urcall(mmap):
+    return decode_call(mmap[20:20+7])
+
+def get_mem_rpt1call(mmap):
+    return decode_call(mmap[27:27+7])
+
+def get_mem_rpt2call(mmap):
+    return decode_call(mmap[34:34+7])
+
 def _get_memory(mmap, number):
     if get_mode(mmap) == "DV":
         mem = chirp_common.DVMemory()
+        mem.dv_urcall = get_mem_urcall(mmap)
+        mem.dv_rpt1call = get_mem_rpt1call(mmap)
+        mem.dv_rpt2call = get_mem_rpt2call(mmap)
     else:
         mem = chirp_common.Memory()
 
@@ -278,6 +337,15 @@ def get_memory(_map, number):
 
     return mem
 
+def set_urcall(mmap, call):
+    mmap[20] = encode_call(call)
+
+def set_rpt1call(mmap, call):
+    mmap[27] = encode_call(call)
+
+def set_rpt2call(mmap, call):
+    mmap[34] = encode_call(call)
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -291,6 +359,11 @@ def set_memory(_map, mem):
     set_dtcs(mmap, mem.dtcs)
     set_tmode(mmap, mem.tmode)
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
+
+    if isinstance(mem, chirp_common.DVMemory):
+        set_urcall(mmap, mem.dv_urcall)
+        set_rpt1call(mmap, mem.dv_rpt1call)
+        set_rpt2call(mmap, mem.dv_rpt2call)
 
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
 
