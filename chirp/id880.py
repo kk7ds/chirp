@@ -29,10 +29,27 @@ class ID880Radio(chirp_common.IcomMmapRadio,
                (0xf5e0, 0xf600, 32)]
 
     feature_req_call_lists = False
+    feature_bankindex = True
 
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 60)
     RPTCALL_LIMIT = (1, 99)
+
+    def get_available_bank_index(self, bank):
+        indexes = []
+        for i in range(0, 1000):
+            try:
+                mem = self.get_memory(i)
+            except:
+                continue
+            if mem.bank == bank and mem.bank_index >= 0:
+                indexes.append(mem.bank_index)
+
+        for i in range(0, 99):
+            if i not in indexes:
+                return i
+
+        raise errors.RadioError("Out of slots in this bank")
 
     def sync_in(self):
         self._mmap = icf.clone_from_radio(self)
@@ -42,6 +59,16 @@ class ID880Radio(chirp_common.IcomMmapRadio,
 
     def get_raw_memory(self, number):
         return id880_ll.get_raw_memory(self._mmap, number)
+
+    def get_banks(self):
+        banks = []
+        for i in range(0, 26):
+            banks.append(chirp_common.ImmutableBank(id880_ll.bank_name(i)))
+
+        return banks
+
+    def set_banks(self, banks):
+        raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_memory(self, number):
         return id880_ll.get_memory(self._mmap, number)

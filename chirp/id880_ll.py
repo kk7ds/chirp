@@ -37,12 +37,17 @@ POS_USED_START = 0xAA80
 POS_SKIP_FLAGS = 0xAAFE
 POS_PSKP_FLAGS = 0xAB82
 
+POS_BANKS      = 0xAD00
+
 POS_MYCALL     = 0xDE56
 POS_URCALL     = 0xDE9E
 POS_RPTCALL    = 0xF408
 
 MEM_LOC_SIZE = 41
 
+def bank_name(index):
+    char = chr(ord("A") + index)
+    return "BANK-%s" % char
 
 def get_mem_offset(number):
     return (number * MEM_LOC_SIZE)
@@ -301,6 +306,15 @@ def get_mem_rpt1call(mmap):
 def get_mem_rpt2call(mmap):
     return decode_call(mmap[34:34+7])
 
+def get_bank(mmap, number):
+    pos = POS_BANKS + (number * 2)
+    bnk, idx = struct.unpack("BB", mmap[pos:pos+2])
+
+    if bnk == 0xFF:
+        return None, -1
+
+    return bnk, idx
+
 def _get_memory(mmap, number):
     if get_mode(mmap) == "DV":
         mem = chirp_common.DVMemory()
@@ -335,6 +349,8 @@ def get_memory(_map, number):
     mem.number = number
     mem.skip = get_skip(_map, number)
 
+    mem.bank, mem.bank_index = get_bank(_map, number)
+
     return mem
 
 def set_urcall(mmap, call):
@@ -345,6 +361,15 @@ def set_rpt1call(mmap, call):
 
 def set_rpt2call(mmap, call):
     mmap[34] = encode_call(call)
+
+def set_bank(mmap, number, bank, idx):
+    if bank is None:
+        bank = idx = 0xFF
+    elif bank > 26 or idx > 99:
+        raise errors.InvalidDataError("Invalid bank/index")
+
+    pos = POS_BANKS + (number * 2)
+    mmap[pos] = struct.pack("BB", bank, idx)
 
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
@@ -368,6 +393,7 @@ def set_memory(_map, mem):
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
 
     set_skip(_map, mem.number, mem.skip)
+    set_bank(_map, mem.number, mem.bank, mem.bank_index)
     set_is_used(_map, mem.number, True)
 
     return _map
