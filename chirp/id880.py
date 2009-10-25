@@ -109,3 +109,5 @@ class ID880Radio(chirp_common.IcomMmapRadio,
 
         return calls
         
+    def get_memory_upper(self):
+        return 999

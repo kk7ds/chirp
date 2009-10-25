@@ -83,7 +83,7 @@ def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
 
 def set_name(mmap, name):
-    mmap[POS_NAME_START] = name.rstrip()[:8]
+    mmap[POS_NAME_START] = name.rstrip()[:8].ljust(8)
 
 def get_offset(mmap):
     val = struct.unpack(">h", mmap[POS_OFFSET:POS_OFFSET+2])[0] & 0x0FFF
@@ -169,6 +169,8 @@ def get_tmode(mmap):
 
     if val == 2:
         raise errors.InvalidDataError("TMode 0x02 is not valid for this radio")
+    elif val == 7:
+        return ""
 
     try:
         return ID880_TMODES[val]
