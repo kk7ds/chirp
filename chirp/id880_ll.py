@@ -32,6 +32,7 @@ POS_DTCS       =  7
 POS_TMODE      = 10
 POS_DTCS_POL   = 10
 POS_TUNE_FLAG  =  8
+POS_CODE       = 19
 
 POS_USED_START = 0xAA80
 POS_SKIP_FLAGS = 0xAAFE
@@ -317,12 +318,16 @@ def get_bank(mmap, number):
 
     return bnk, idx
 
+def get_digital_code(mmap):
+    return ord(mmap[POS_CODE]) & 0x7F
+
 def _get_memory(mmap, number):
     if get_mode(mmap) == "DV":
         mem = chirp_common.DVMemory()
         mem.dv_urcall = get_mem_urcall(mmap)
         mem.dv_rpt1call = get_mem_rpt1call(mmap)
         mem.dv_rpt2call = get_mem_rpt2call(mmap)
+        mem.dv_code = get_digital_code(mmap)
     else:
         mem = chirp_common.Memory()
 
@@ -373,6 +378,12 @@ def set_bank(mmap, number, bank, idx):
     pos = POS_BANKS + (number * 2)
     mmap[pos] = struct.pack("BB", bank, idx)
 
+def set_digital_code(mmap, code):
+    if code < 0 or code > 99:
+        raise errors.InvalidDataError("Digital code %i out of range" % code)
+
+    mmap[POS_CODE] = code
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -391,6 +402,7 @@ def set_memory(_map, mem):
         set_urcall(mmap, mem.dv_urcall)
         set_rpt1call(mmap, mem.dv_rpt1call)
         set_rpt2call(mmap, mem.dv_rpt2call)
+        set_digital_code(mmap, mem.dv_code)
 
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
 
