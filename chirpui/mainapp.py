@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
 from chirp import platform, id800, id880, ic2820, ic2200, ic9x, icx8x, idrp
 from chirp import xml, csv
-from chirp import CHIRP_VERSION, convert_icf, chirp_common
+from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
 RADIOS = {
@@ -256,6 +256,9 @@ class ChirpMain(gtk.Window):
 
         if res != gtk.RESPONSE_OK:
             return
+
+        if rtype == "Auto Detect":
+            rtype = detect.detect_radio(port)
 
         rc = RADIOS[rtype]
         try:
