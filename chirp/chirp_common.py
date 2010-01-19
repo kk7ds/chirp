@@ -555,3 +555,9 @@ class Status:
 def is_fractional_step(freq):
     dhz = freq * 1000
     return int(dhz) != dhz
+
+def is_12_5(freq):
+    return ((freq * 1000) - int(freq * 1000)) == 0.5
+
+def is_6_25(freq):
+    return ((freq * 1000) - int(freq * 1000)) == 0.25

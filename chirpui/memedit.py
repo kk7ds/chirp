@@ -128,11 +128,21 @@ class MemoryEditor(common.Editor):
 
             self.store.set(iter, self.col("Duplex"), dup)
 
+        def set_ts(path, ts):
+            iter = self.store.get_iter(path)
+
+            self.store.set(iter, self.col("Tune Step"), ts)
+
         try:
             new = float(new)
         except ValueError, e:
             print e
             new = None
+
+        if chirp_common.is_6_25(new):
+            set_ts(path, 6.25)
+        elif chirp_common.is_12_5(new):
+            set_ts(path, 12.5)
 
         if new:
             set_offset(path, 0)
