@@ -817,13 +817,15 @@ class DstarMemoryEditor(MemoryEditor):
             rjob.set_desc("Downloading RPTCALL list")
             rthread.submit(rjob)
 
+        _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
+
         if not rthread.radio.feature_req_call_lists:
             for i in _dv_columns:
+                if not self.choices.has_key(i):
+                    continue
                 column = self.view.get_column(self.col(i))
                 rend = column.get_cell_renderers()[0]
                 rend.set_property("has-entry", True)
-
-        _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
 
         for i in _dv_columns:
             col = self.view.get_column(self.col(i))
