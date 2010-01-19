@@ -145,19 +145,18 @@ def get_clone_resp(pipe, length=None):
     return resp
 
 def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
+    cs = 0
 
     if raw:
         hed = data
     else:
         hed = ""
         for byte in data:
-            hed += "%02X" % ord(byte)
+            val = ord(byte)
+            hed += "%02X" % val
+            cs += val
 
     if checksum:
-        cs = 0
-        for i in data:
-            cs += ord(i)
-
         cs = ((cs ^ 0xFFFF) + 1) & 0xFF
         cs = "%02X" % cs
     else:
@@ -240,6 +239,10 @@ def clone_from_radio(radio):
 def send_mem_chunk(radio, start, stop, bs=32):
     mmap = radio.get_mmap()
 
+    status = chirp_common.Status()
+    status.msg = "Cloning to radio"
+    status.max = radio.get_memsize()
+
     for i in range(start, stop, bs):
         if i + bs < stop:
             size = bs
@@ -254,11 +257,7 @@ def send_mem_chunk(radio, start, stop, bs=32):
                          checksum=True)
 
         if radio.status_fn:
-            status = chirp_common.Status()
-            status.msg = "Cloning to radio"
-            status.max = radio.get_memsize()
             status.cur = i+bs
-            
             radio.status_fn(status)
 
     return True
