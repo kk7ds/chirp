@@ -38,6 +38,7 @@ POS_TUNE_STEP  = 13
 POS_FLAGS_START= 0x1370
 POS_MYURCALL   = 17
 POS_RPTCALL    = 18
+POS_CODE       = 19
 
 POS_URCALL     = 0x1620
 POS_RPCALL     = 0x1650
@@ -199,6 +200,9 @@ def get_bank(mmap, number):
     else:
         return val
 
+def get_code(mmap):
+    return ord(mmap[POS_CODE]) & 0x7F
+
 def _get_memory(_map, mmap):
     if get_mode(mmap) == "DV":
         print "Doing DV"
@@ -207,6 +211,7 @@ def _get_memory(_map, mmap):
         mem.dv_urcall = get_urcall(_map, i_ucall)
         mem.dv_rpt1call = get_rptcall(_map, i_r1call)
         mem.dv_rpt2call = get_rptcall(_map, i_r2call)
+        mem.dv_code = get_code(mmap)
         print "Calls: %s %s %s" % (mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call)
         print "Indexes: %i %i %i" % (i_ucall, i_r1call, i_r2call)
     else:
@@ -410,6 +415,13 @@ def set_bank(mmap, number, bank):
     val |= index
     mmap[POS_FLAGS_START + number] = val    
 
+def set_code(mmap, code):
+    if code < 0 or code > 99:
+        raise InvalidDataError("Digital code %i out of range" % code)
+
+    mmap[POS_CODE] = code
+    print "Set code at %i to %i\n" % (POS_CODE, code)
+
 def set_memory (_map, memory):
     mmap = get_raw_memory(_map, memory.number)
 
@@ -440,6 +452,7 @@ def set_memory (_map, memory):
                          memory.dv_urcall,
                          memory.dv_rpt1call,
                          memory.dv_rpt2call)
+        set_code(mmap, memory.dv_code)
 
     _map[get_mem_offset(memory.number)] = mmap.get_packed()
     return _map
