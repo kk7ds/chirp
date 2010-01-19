@@ -418,6 +418,12 @@ class IC92MemoryFrame(IC92Frame):
     def _decode_calls(self):
         return self[52:60].rstrip(), self[44:52].rstrip(),self[36:44].rstrip()
 
+    def _decode_digital_code(self):
+        return int("%02x" % ord(self[35]))
+
+    def _encode_digital_code(self, mem):
+        self[35] = util.bcd_encode(mem.dv_code)
+
     def _decode_freq(self):
         hun = int("%x" % ord(self[7]))
         ten = int("%x" % ord(self[6]))
@@ -448,8 +454,10 @@ class IC92MemoryFrame(IC92Frame):
         self._encode_dtcs_polarity(mem)
         self._encode_skip(mem)
         self._encode_bank(mem)
-        self._encode_calls(mem)
-        
+        if mem.mode == "DV":
+            self._encode_calls(mem)
+            self._encode_digital_code(mem)
+
         self[26] = mem.name[:8].ljust(8)
 
     def get_memory(self):
@@ -479,6 +487,7 @@ class IC92MemoryFrame(IC92Frame):
         if mem.mode == "DV":
             mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call = \
                 self._decode_calls()
+            mem.dv_code = self._decode_digital_code()
 
         mem.name = self[26:34].rstrip()
 
