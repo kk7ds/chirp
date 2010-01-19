@@ -36,6 +36,7 @@ POS_DTCS_POL   = 11
 POS_DOFF_START =  3
 POS_DOFF_END   =  5
 POS_TUNE_FLAG  = 10
+POS_CODE       = 16
 POS_MYCALL     = 0x3220
 POS_URCALL     = 0x3250
 POS_RPTCALL    = 0x3570
@@ -267,6 +268,9 @@ def get_bank(mmap, number):
     else:
         return val
 
+def get_digital_code(mmap):
+    return ord(mmap[POS_CODE]) & 0x7F
+
 def _get_memory(_map, mmap):
     if get_mode(mmap) == "DV":
         mem = chirp_common.DVMemory()
@@ -274,6 +278,7 @@ def _get_memory(_map, mmap):
         mem.dv_urcall = get_urcall(_map, i_ucall)
         mem.dv_rpt1call = get_rptcall(_map, i_r1call)
         mem.dv_rpt2call = get_rptcall(_map, i_r2call)
+        mem.dv_code = get_digital_code(mmap)
     else:
         mem = chirp_common.Memory()
 
@@ -399,7 +404,8 @@ def set_name(mmap, _name, enabled=True):
     else:
         nibbles.insert(0, 0)
 
-    nibbles.append(0)
+    # Hmm, all of the sudden I have to disable this or it breaks?!
+    # nibbles.append(0)
 
     val = ""
 
@@ -538,6 +544,12 @@ def set_bank(mmap, number, bank):
     val |= index
     mmap[POS_FLAGS + number] = val    
 
+def set_digital_code(mmap, code):
+    if code < 0 or code > 99:
+        raise errors.InvalidDataError("Digital code %i out of range" % code)
+
+    mmap[POS_CODE] = code
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
@@ -557,6 +569,7 @@ def set_memory(_map, mem):
     if isinstance(mem, chirp_common.DVMemory):
         set_call_indices(_map, mmap,
                          mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call)
+        set_digital_code(mmap, mem.dv_code)
 
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
 
