@@ -252,10 +252,13 @@ def get_memory(_map, number):
 def set_freq(mmap, freq, ts):
     if ts == 12.5:
         mult = 6.25
+        flag = 0x80
     else:
         mult = 5.0
+        flag = 0x00
 
     mmap[POS_FREQ_START] = struct.pack("<H", int((freq * 1000) / mult))
+    mmap[POS_FLAG] = (ord(mmap[POS_FLAG]) & 0x7F) | flag
 
 def set_tune_step(mmap, ts):
     val = ord(mmap[POS_TUNE_STEP]) & 0xF0
