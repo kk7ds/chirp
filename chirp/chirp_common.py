@@ -119,6 +119,7 @@ class Memory:
         "skip"          : SKIP_VALUES,
         "bank"          : [x for x in range(0, 256)] + [None],
         "empty"         : [True, False],
+        "dv_code"       : [x for x in range(0, 100)],
         }
 
     immutable = []
@@ -210,7 +211,7 @@ class Memory:
                 "%s"   % self.skip,
                 "%s"   % bank,
                 "%i"   % self.bank_index,
-                "", "", ""])
+                "", "", "", ""])
 
         return string
 
@@ -331,6 +332,7 @@ class DVMemory(Memory):
     dv_urcall = "CQCQCQ"
     dv_rpt1call = ""
     dv_rpt2call = ""
+    dv_code = 0
 
     def __str__(self):
         string = Memory.__str__(self)
@@ -365,7 +367,8 @@ class DVMemory(Memory):
                 "%i"   % self.bank_index,
                 "%s"   % self.dv_urcall,
                 "%s"   % self.dv_rpt1call,
-                "%s"   % self.dv_rpt2call])
+                "%s"   % self.dv_rpt2call,
+                "%i"   % self.dv_code])
 
         return string
 
@@ -375,6 +378,7 @@ class DVMemory(Memory):
         self.dv_urcall = vals[15].rstrip()[:8]
         self.dv_rpt1call = vals[16].rstrip()[:8]
         self.dv_rpt2call = vals[17].rstrip()[:8]
+        self.dv_code = int(vals[18].strip())
 
 class Bank:
     def __init__(self, name):

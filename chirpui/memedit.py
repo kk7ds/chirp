@@ -750,7 +750,8 @@ class DstarMemoryEditor(MemoryEditor):
         def d_unless_mode(mode):
             _enabled(vals[self.col("Mode")] == mode)
 
-        dv_columns = [self.col(x) for x in ["URCALL", "RPT1CALL", "RPT2CALL"]]
+        _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
+        dv_columns = [self.col(x) for x in _dv_columns]
         if colnum in dv_columns:
             d_unless_mode("DV")
 
@@ -766,6 +767,7 @@ class DstarMemoryEditor(MemoryEditor):
         mem.dv_urcall = vals[self.col("URCALL")]
         mem.dv_rpt1call = vals[self.col("RPT1CALL")]
         mem.dv_rpt2call = vals[self.col("RPT2CALL")]
+        mem.dv_code = vals[self.col("Digital Code")]
 
         return mem
 
@@ -775,7 +777,9 @@ class DstarMemoryEditor(MemoryEditor):
         self.cols = self.cols + \
             [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
              ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
-             ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo)]
+             ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo),
+             ("Digital Code", TYPE_INT, gtk.CellRendererText),
+             ]
 
         self.choices = dict(self.choices)
         self.defaults = dict(self.defaults)
@@ -787,6 +791,7 @@ class DstarMemoryEditor(MemoryEditor):
         self.defaults["URCALL"] = ""
         self.defaults["RPT1CALL"] = ""
         self.defaults["RPT2CALL"] = ""
+        self.defaults["Digital Code"] = 0
 
         MemoryEditor.__init__(self, rthread)
     
@@ -813,12 +818,14 @@ class DstarMemoryEditor(MemoryEditor):
             rthread.submit(rjob)
 
         if not rthread.radio.feature_req_call_lists:
-            for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
+            for i in _dv_columns:
                 column = self.view.get_column(self.col(i))
                 rend = column.get_cell_renderers()[0]
                 rend.set_property("has-entry", True)
 
-        for i in ["URCALL", "RPT1CALL", "RPT2CALL"]:
+        _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
+
+        for i in _dv_columns:
             col = self.view.get_column(self.col(i))
             rend = col.get_cell_renderers()[0]
             rend.set_property("family", "Monospace")
@@ -845,12 +852,16 @@ class DstarMemoryEditor(MemoryEditor):
             self.store.set(iter,
                            self.col("URCALL"), memory.dv_urcall,
                            self.col("RPT1CALL"), memory.dv_rpt1call,
-                           self.col("RPT2CALL"), memory.dv_rpt2call)
+                           self.col("RPT2CALL"), memory.dv_rpt2call,
+                           self.col("Digital Code"), memory.dv_code,
+                           )
         else:
             self.store.set(iter,
                            self.col("URCALL"), "",
                            self.col("RPT1CALL"), "",
-                           self.col("RPT2CALL"), "")
+                           self.col("RPT2CALL"), "",
+                           self.col("Digital Code"), 0,
+                           )
 
 class ID800MemoryEditor(DstarMemoryEditor):
     pass
