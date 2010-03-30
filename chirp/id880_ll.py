@@ -182,8 +182,8 @@ def set_tmode(mmap, tmode):
     if tmode not in ID880_TMODES:
         raise errors.InvalidDataError("Tone Mode %s not supported" % tmode)
 
-    val = struct.unpack("b", mmap[POS_TMODE])[0] & 0xF8
-    val |= ID880_TMODES.index(tmode)
+    val = struct.unpack("b", mmap[POS_TMODE])[0] & 0x8F
+    val |= (ID880_TMODES.index(tmode) << 4)
     mmap[POS_TMODE] = val
 
 def get_dtcs_polarity(mmap):
