@@ -124,6 +124,12 @@ class Memory:
 
     immutable = []
 
+    def dupe(self):
+        m = self.__class__()
+        for k, v in self.__dict__.items():
+            m.__dict__[k] = v
+
+        return m
 
     CSV_FORMAT = SEPCHAR.join(["Location", "Name", "Frequency",
                                "Duplex", "Offset", "Tone",

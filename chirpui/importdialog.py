@@ -180,7 +180,7 @@ class ImportDialog(gtk.Dialog):
 
         for old, new in import_list:
             print "%sing %i -> %i" % (self.ACTION, old, new)
-            mem = self.src_radio.get_memory(old)
+            mem = self.src_radio.get_memory(old).dupe()
             mem.number = new
 
             if not self.dst_radio.feature_longnames:
