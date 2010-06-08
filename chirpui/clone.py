@@ -77,7 +77,7 @@ class CloneSettingsDialog(gtk.Dialog):
         self.port.show()
 
         rtypes = ["Auto Detect", "ic2820", "ic2200", "id800", "id880",
-                  "icx8x", "idrpx000v"]
+                  "icx8x", "idrpx000v", "vx7"]
         if rtype:
             if not rtype in rtypes:
                 rtypes.insert(0, rtype)

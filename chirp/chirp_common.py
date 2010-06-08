@@ -454,21 +454,6 @@ class IcomRadio:
         return 0
 
 class IcomFileBackedRadio(IcomRadio):
-    def save(self, filename=None):
-        pass
-
-    def load(self, filename=None):
-        pass
-
-class IcomMmapRadio(IcomFileBackedRadio):
-    BAUDRATE = 9600
-
-    _model = "\x00\x00\x00\x00"
-    _memsize = 0
-    _mmap = None
-    _endframe = ""
-    _ranges = []
-
     def __init__(self, pipe):
 
         if isinstance(pipe, str):
@@ -476,6 +461,15 @@ class IcomMmapRadio(IcomFileBackedRadio):
             self.load_mmap(pipe)
         else:
             IcomRadio.__init__(self, pipe)
+
+    def save(self, filename):
+        self.save_mmap(filename)
+
+    def load(self, filename):
+        self.load_mmap(filename)
+
+    def process_mmap(self):
+        pass
 
     def load_mmap(self, filename):
         mapfile = file(filename, "rb")
@@ -489,19 +483,19 @@ class IcomMmapRadio(IcomFileBackedRadio):
         mapfile.write(self._mmap.get_packed())
         mapfile.close()
 
-    def save(self, filename):
-        self.save_mmap(filename)
+class IcomMmapRadio(IcomFileBackedRadio):
+    BAUDRATE = 9600
 
-    def load(self, filename):
-        self.load_mmap(filename)
+    _model = "\x00\x00\x00\x00"
+    _memsize = 0
+    _mmap = None
+    _endframe = ""
+    _ranges = []
 
     def sync_in(self):
         pass
 
     def sync_out(self):
-        pass
-
-    def process_mmap(self):
         pass
 
     def get_model(self):
