@@ -28,6 +28,9 @@ def isUHF(pipe):
 
 class ICx8xRadio(chirp_common.IcomMmapRadio,
                  chirp_common.IcomDstarRadio):
+    VENDOR = "Icom"
+    MODEL = "IC-V82/U82"
+
     _model = "\x28\x26\x00\x01"
     _memsize = 6464
     _endframe = "Icom Inc\x2eCD"

@@ -112,6 +112,9 @@ class IcomRepeater(chirp_common.IcomRadio):
 
 class IDRPx000V(IcomRepeater):
     BAUD_RATE = 19200
+    VENDOR = "Icom"
+    MODEL = "ID-2000V/4000V/2D/2V"
+
     mem_upper_limit = 0
         
     def get_memory(self, number):

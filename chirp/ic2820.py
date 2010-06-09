@@ -19,6 +19,9 @@ from chirp import chirp_common, icf, ic2820_ll, errors
 
 class IC2820Radio(chirp_common.IcomMmapRadio,
                   chirp_common.IcomDstarRadio):
+    VENDOR = "Icom"
+    MODEL = "IC-2820H"
+
     _model = "\x29\x70\x00\x01"
     _memsize = 44224
     _endframe = "Icom Inc\x2e68"

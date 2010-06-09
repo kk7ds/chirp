@@ -19,6 +19,8 @@ from chirp import chirp_common, yaesu_clone, vx7_ll
 
 class VX7Radio(chirp_common.IcomFileBackedRadio):
     BAUD_RATE = 19200
+    VENDOR = "Yaesu"
+    MODEL = "VX-7"
 
     _memsize = 16211
     feature_bankindex = False

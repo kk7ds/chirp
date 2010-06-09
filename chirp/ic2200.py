@@ -20,6 +20,9 @@ from chirp import chirp_common, icf, ic2200_ll
 
 class IC2200Radio(chirp_common.IcomMmapRadio,
                   chirp_common.IcomDstarRadio):
+    VENDOR = "Icom"
+    MODEL = "IC-2200H"
+
     _model = "\x26\x98\x00\x01"
     _memsize = 6848
     _endframe = "Icom Inc\x2eD8"

@@ -58,6 +58,9 @@ IC9x_SPECIAL_REV = {
 
 class IC9xRadio(chirp_common.IcomRadio):
     BAUD_RATE = 38400
+    VENDOR = "Icom"
+    MODEL = "IC-91/92AD"
+
     vfo = 0
     __last = 0
     mem_upper_limit = 300

@@ -1,22 +1,29 @@
+# Copyright 2010 Dan Smith <dsmith@danplanet.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import serial
 
-from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880
-from chirp import chirp_common, errors, idrp, util, icf
-
-DRIVERS = { 
-    "id800" : id800.ID800v2Radio,
-    "id880" : id880.ID880Radio,
-    "ic2820": ic2820.IC2820Radio,
-    "ic2200": ic2200.IC2200Radio,
-    "icx8x" : icx8x.ICx8xRadio,
-    #"idrpv" : idrp.IDRPx000V,
-}
+from chirp import chirp_common, errors, idrp, util, icf, directory
 
 def detect_radio(port):
     s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
     md = icf.get_model_data(s)
 
-    for rtype, rclass in DRIVERS.items():
+    for rtype, rclass in directory.DRV_TO_RADIO.items():
+        if not issubclass(rclass, chirp_common.IcomFileBackedRadio):
+            continue
         if rclass._model[:4] == md[:4]:
             print "Auto-detected radio `%s' on port `%s'" % (rtype, port)
             return rtype

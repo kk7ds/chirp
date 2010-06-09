@@ -406,8 +406,15 @@ def console_status(status):
     sys.stderr.write("\r%s" % status)
     
 
+class Callable:
+    def __init__(self, target):
+        self.__call__ = target
+
 class IcomRadio:
     BAUD_RATE = 9600
+    VENDOR = "Unknown"
+    MODEL = "Unknown"
+    VARIANT = ""
 
     status_fn = lambda x, y: console_status(y)
 
@@ -416,6 +423,15 @@ class IcomRadio:
 
     def __init__(self, pipe):
         self.pipe = pipe
+
+    def _get_name_raw(*args):
+        cls = args[-1]
+        return "%s %s" % (cls.VENDOR, cls.MODEL)
+
+    def get_name(self):
+        return self._get_name_raw(self.__class__)
+
+    _get_name = Callable(_get_name_raw)
 
     def set_pipe(self, pipe):
         self.pipe = pipe

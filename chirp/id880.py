@@ -20,6 +20,9 @@ from chirp import chirp_common, icf, id880_ll
 
 class ID880Radio(chirp_common.IcomMmapRadio,
                  chirp_common.IcomDstarRadio):
+    VENDOR = "Icom"
+    MODEL = "ID-880H"
+
     _model = "\x31\x67\x00\x01"
     _memsize = 62976
     _endframe = "Icom Inc\x2eB1"

@@ -19,8 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import ic2820, ic2200, id800, id880, ic9x, icx8x, xml, csv, idrp, vx7
-from chirp import chirp_common
+from chirp import chirp_common, directory, ic9x, idrp
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 
 def radio_class_from_file(filename):
@@ -30,23 +29,7 @@ def radio_class_from_file(filename):
     if filename.endswith(".csv"):
         return csv.CSVRadio
 
-    size = os.stat(filename).st_size
-
-    classes = [
-        ic2820.IC2820Radio,
-        ic2200.IC2200Radio,
-        id800.ID800v2Radio,
-        id880.ID880Radio,
-        icx8x.ICx8xRadio,
-        vx7.VX7Radio,
-        ]
-
-    for cls in classes:
-        # pylint: disable-msg=W0212
-        if cls._memsize == size:
-            return cls
-
-    raise Exception("Unknown file format")
+    return directory.get_radio_by_image(filename)
 
 class EditorSet(gtk.VBox):
     __gsignals__ = {
@@ -65,12 +48,9 @@ class EditorSet(gtk.VBox):
             self.filename = source
             rclass = radio_class_from_file(self.filename)
             self.radio = rclass(self.filename)
-        elif isinstance(source, ic9x.IC9xRadio):
+        elif isinstance(source, chirp_common.IcomRadio):
             self.radio = source
-            self.filename = "IC9x (live)"
-        elif isinstance(source, idrp.IcomRepeater):
-            self.radio = source
-            self.filename = "Repeater (live)"
+            self.filename = "(live)"
         else:
             raise Exception("Unknown source type")
 
@@ -147,7 +127,7 @@ class EditorSet(gtk.VBox):
         else:
             text = fn
 
-        self.text_label.set_text(text)
+        self.text_label.set_text(self.radio.get_name() + ": " + text)
 
     def save(self, fname=None):
         if not fname:

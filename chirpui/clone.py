@@ -21,8 +21,10 @@ import os
 import gtk
 import gobject
 
-from chirp import platform
+from chirp import platform, directory, chirp_common
 from chirpui import miscwidgets, cloneprog, inputdialog, common
+
+AUTO_DETECT_STRING = "Auto Detect (Icom Only)"
 
 class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):
@@ -76,15 +78,23 @@ class CloneSettingsDialog(gtk.Dialog):
         self.port = miscwidgets.make_choice(ports, True, defport)
         self.port.show()
 
-        rtypes = ["Auto Detect", "ic2820", "ic2200", "id800", "id880",
-                  "icx8x", "idrpx000v", "vx7"]
+        self.__rtypes = {}
+        for drv in directory.DRV_TO_RADIO.keys():
+            cls = directory.get_radio(drv)
+            if issubclass(cls, chirp_common.IcomFileBackedRadio):
+                self.__rtypes[directory.get_radio_name(drv)] = drv
+
+        type_choices = sorted(self.__rtypes.keys())
+        type_choices.insert(0, AUTO_DETECT_STRING)
+        self.__rtypes[AUTO_DETECT_STRING] = AUTO_DETECT_STRING
+
         if rtype:
-            if not rtype in rtypes:
-                rtypes.insert(0, rtype)
-            self.rtype = miscwidgets.make_choice(rtypes, False, rtype)
+            self.rtype = miscwidgets.make_choice(type_choices, False,
+                                                 directory.get_radio_name(rtype))
             self.rtype.set_sensitive(False)
         else:
-            self.rtype = miscwidgets.make_choice(rtypes, False, rtypes[0])
+            self.rtype = miscwidgets.make_choice(type_choices, False,
+                                                 type_choices[0])
         self.rtype.show()
 
         types = [("CHIRP Radio Images (*.img)", "*.img")]
@@ -103,8 +113,10 @@ class CloneSettingsDialog(gtk.Dialog):
         self.make_field("Filename", self.filename)
 
     def get_values(self):
+        rtype = self.rtype.get_active_text()
+        
         return self.port.get_active_text(), \
-            self.rtype.get_active_text(),   \
+            self.__rtypes[rtype], \
             self.filename.get_filename()
 
 class CloneThread(threading.Thread):

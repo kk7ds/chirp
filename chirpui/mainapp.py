@@ -27,27 +27,9 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, id800, id880, ic2820, ic2200, ic9x, icx8x, idrp, vx7
-from chirp import xml, csv
+from chirp import platform, xml, csv, directory, ic9x
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
-
-RADIOS = {
-    "ic2820" : ic2820.IC2820Radio,
-    "ic2200" : ic2200.IC2200Radio,
-    "ic9x:A" : ic9x.IC9xRadioA,
-    "ic9x:B" : ic9x.IC9xRadioB,
-    "id800"  : id800.ID800v2Radio,
-    "id880"  : id880.ID880Radio,
-    "icx8x"  : icx8x.ICx8xRadio,
-    "Virtual": xml.XMLRadio,
-    "idrpx000v" : idrp.IDRPx000V,
-    "vx7"    : vx7.VX7Radio,
-}
-
-RTYPES = {}
-for __key, __val in RADIOS.items():
-    RTYPES[__val] = __key
 
 class ModifiedError(Exception):
     pass
@@ -258,11 +240,11 @@ class ChirpMain(gtk.Window):
         if res != gtk.RESPONSE_OK:
             return
 
-        if rtype == "Auto Detect":
+        if rtype == clone.AUTO_DETECT_STRING:
             rtype = detect.detect_radio(port)
 
-        rc = RADIOS[rtype]
         try:
+            rc = directory.get_radio(rtype)
             ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
@@ -281,14 +263,14 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         radio = eset.radio
 
-        if rtype and rtype != RTYPES[radio.__class__]:
+        if rtype and rtype != directory.get_driver(radio.__class__):
             common.show_error("Unable to upload to %s from current %s image" % (
-                    rtype, RTYPES[radio.__class__]))
+                    rtype, directory.get_driver(radio.__class__)))
             return
 
         dlg = clone.CloneSettingsDialog(False,
                                         eset.filename,
-                                        RTYPES[radio.__class__],
+                                        directory.get_driver(radio.__class__),
                                         port=port)
         res = dlg.run()
         port, rtype, _ = dlg.get_values()
@@ -297,8 +279,8 @@ class ChirpMain(gtk.Window):
         if res != gtk.RESPONSE_OK:
             return
 
-        rc = RADIOS[rtype]
         try:
+            rc = directory.get_radio(rtype)
             ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
