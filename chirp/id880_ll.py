@@ -31,7 +31,7 @@ POS_CTONE      =  5
 POS_DTCS       =  7
 POS_TMODE      = 10
 POS_DTCS_POL   = 10
-POS_TUNE_FLAG  =  8
+POS_TUNE_STEP  =  8
 POS_CODE       = 19
 
 POS_USED_START = 0xAA80
@@ -58,27 +58,36 @@ def get_raw_memory(mmap, number):
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
 
 def get_freq(mmap):
-    val = struct.unpack("b", mmap[POS_TUNE_FLAG])[0] & 0x10
-    if val:
+    val = struct.unpack(">i", "\x00" + mmap[:3])[0]
+    if val & 0x00200000:
         mult = 6.25
     else:
         mult = 5.0
-
-    val = struct.unpack(">i", "\x00" + mmap[:3])[0]
-    val &= 0x000FFFFF
-
+    val &= 0x0003FFFF
+    
     return (val * mult) / 1000.0
 
 def set_freq(mmap, freq):
-    val = struct.unpack("b", mmap[POS_TUNE_FLAG])[0] & 0xEF
     if chirp_common.is_fractional_step(freq):
         mult = 6.25
-        val |= 0x10
+        flag = 0x20
     else:
         mult = 5
+        flag = 0x00
 
-    mmap[POS_TUNE_FLAG] = val
     mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
+    mmap[POS_FREQ_START] = ord(mmap[POS_FREQ_START]) | flag
+
+def get_ts(mmap):
+    tsidx = ord(mmap[POS_TUNE_STEP]) >> 4
+
+    return chirp_common.TUNING_STEPS[tsidx]
+
+def set_ts(mmap, ts):
+    tsidx = chirp_common.TUNING_STEPS.index(ts)
+
+    val = mmap[POS_TUNE_STEP] & 0x0F
+    mmap[POS_TUNE_STEP] = val | (tsidx << 4)
 
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
@@ -341,6 +350,7 @@ def _get_memory(mmap, number):
     mem.dtcs = get_dtcs(mmap)
     mem.tmode = get_tmode(mmap)
     mem.dtcs_polarity = get_dtcs_polarity(mmap)
+    mem.tuning_step = get_ts(mmap)
 
     return mem
 
@@ -397,6 +407,7 @@ def set_memory(_map, mem):
     set_dtcs(mmap, mem.dtcs)
     set_tmode(mmap, mem.tmode)
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
+    set_ts(mmap, mem.tuning_step)
 
     if isinstance(mem, chirp_common.DVMemory):
         set_urcall(mmap, mem.dv_urcall)
