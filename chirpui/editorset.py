@@ -19,7 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import chirp_common, directory, ic9x, idrp
+from chirp import chirp_common, directory, ic9x, csv, xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 
 def radio_class_from_file(filename):
