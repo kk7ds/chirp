@@ -86,7 +86,7 @@ def get_ts(mmap):
 def set_ts(mmap, ts):
     tsidx = chirp_common.TUNING_STEPS.index(ts)
 
-    val = mmap[POS_TUNE_STEP] & 0x0F
+    val = ord(mmap[POS_TUNE_STEP]) & 0x0F
     mmap[POS_TUNE_STEP] = val | (tsidx << 4)
 
 def get_name(mmap):
