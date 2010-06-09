@@ -20,6 +20,8 @@ import os
 from chirp import chirp_common, errors
 
 class CSVRadio(chirp_common.IcomFileBackedRadio):
+    feature_longnames = True
+
     def __init__(self, pipe):
         chirp_common.IcomFileBackedRadio.__init__(self, None)
 
