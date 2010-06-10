@@ -35,8 +35,8 @@ POS_TUNE_STEP  =  8
 POS_CODE       = 19
 
 POS_USED_START = 0xAA80
-POS_SKIP_FLAGS = 0xAAFE
-POS_PSKP_FLAGS = 0xAB82
+POS_SKIP_FLAGS = 0xAB04
+POS_PSKP_FLAGS = 0xAB88
 
 POS_BANKS      = 0xAD00
 
@@ -240,27 +240,42 @@ def set_is_used(mmap, number, used):
     mmap[POS_USED_START + byte] = (val & 0xFF)
 
 def get_skip(mmap, number):
-    sval = struct.unpack("b", mmap[POS_SKIP_FLAGS + number])[0]
-    pval = struct.unpack("b", mmap[POS_PSKP_FLAGS + number])[0]
+    byte = int(number / 8)
+    bit = number % 8
+    
+    sval = struct.unpack("B", mmap[POS_SKIP_FLAGS + byte])[0]
+    pval = struct.unpack("B", mmap[POS_PSKP_FLAGS + byte])[0]
+    mask = (1 << bit)
 
-    if not (sval & 0x40):
-        return ""
-    elif pval & 0x40:
+    sval &= mask
+    pval &= mask
+
+    if pval:
         return "P"
-    else:
+    elif sval:
         return "S"
+    else:
+        return ""
 
 def set_skip(mmap, number, skip):
-    sval = struct.unpack("b", mmap[POS_SKIP_FLAGS + number])[0] & 0xBF
-    pval = struct.unpack("b", mmap[POS_PSKP_FLAGS + number])[0] & 0xBF
+    byte = int(number / 8)
+    bit = number % 8
+    
+    sval = struct.unpack("B", mmap[POS_SKIP_FLAGS + byte])[0]
+    pval = struct.unpack("B", mmap[POS_PSKP_FLAGS + byte])[0]
 
-    if skip:
-        sval |= 0x40
+    mask = (1 << bit)
+
+    sval &= ~mask
+    pval &= ~mask
+
     if skip == "P":
-        pval |= 0x40
+        pval |= mask
+    elif skip == "S":
+        sval |= mask
 
-    mmap[POS_SKIP_FLAGS] = sval
-    mmap[POS_PSKP_FLAGS] = pval
+    mmap[POS_SKIP_FLAGS + byte] = sval
+    mmap[POS_PSKP_FLAGS + byte] = pval
 
 def decode_call(sevenbytes):
     if len(sevenbytes) != 7:
