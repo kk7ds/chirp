@@ -64,14 +64,10 @@ class ID880Radio(chirp_common.IcomMmapRadio,
         return id880_ll.get_raw_memory(self._mmap, number)
 
     def get_banks(self):
-        banks = []
-        for i in range(0, 26):
-            banks.append(chirp_common.ImmutableBank(id880_ll.bank_name(i)))
-
-        return banks
+        return id880_ll.get_bank_names(self._mmap)
 
     def set_banks(self, banks):
-        raise errors.InvalidDataError("Bank naming not supported on this model")
+        return id880_ll.set_bank_names(self._mmap, banks)
 
     def get_memory(self, number):
         return id880_ll.get_memory(self._mmap, number)

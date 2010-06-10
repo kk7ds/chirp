@@ -39,6 +39,7 @@ POS_SKIP_FLAGS = 0xAB04
 POS_PSKP_FLAGS = 0xAB88
 
 POS_BANKS      = 0xAD00
+POS_BNAME_START= 0xB550
 
 POS_MYCALL     = 0xDE56
 POS_URCALL     = 0xDE9E
@@ -441,6 +442,24 @@ def set_memory(_map, mem):
 def erase_memory(map, number):
     set_is_used(map, number, False)
     return map    
+
+def get_bank_names(mmap):
+    names = []
+    for i in range(0, 26):
+        pos = POS_BNAME_START + (i * 6)
+        label = mmap[pos:pos+6].rstrip()
+        names.append(label)
+
+    return names
+
+def set_bank_names(mmap, banks):
+    if len(banks) != 26:
+        raise errors.InvalidDataError("Invalid number of " + \
+                                          "banks: %i " % len(banks) + \
+                                          "(Expected 26)")
+    for i in range(0, 26):
+        pos = POS_BNAME_START + (i * 6)
+        mmap[pos] = banks[i][:6].ljust(6)
 
 def call_location(base, index):
     return base + (8 * (index - 1))
