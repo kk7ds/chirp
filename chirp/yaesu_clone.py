@@ -20,53 +20,76 @@ CMD_ACK = 0x06
 from chirp import chirp_common, util, memmap
 import time
 
+def safe_read(pipe, count, times=60):
+    buf = ""
+    first = True
+    for i in range(0, 60):
+        buf += pipe.read(count - len(buf))
+        #print "safe_read: %i/%i\n" % (len(buf), count)
+        if buf:
+            if first and buf[0] == chr(CMD_ACK):
+                #print "Chewed an ack"
+                buf = buf[1:] # Chew an echo'd ack if using a 2-pin cable
+            first = False
+        if len(buf) == count:
+            break
+    print util.hexprint(buf)
+    return buf
+
+def chunk_read(pipe, count, status_fn):
+    block = 32
+    data = ""
+    first = True
+    for i in range(0, count, block):
+        data += pipe.read(block)
+        if data:
+            if data[0] == chr(CMD_ACK):
+                data = data[1:] # Chew an echo'd ack if using a 2-pin cable
+                #print "Chewed an ack"
+            first = False
+        status = chirp_common.Status()
+        status.msg = "Cloning from radio"
+        status.max = count
+        status.cur = len(data)
+        status_fn(status)
+    return data        
+
 def clone_in(radio):
     pipe = radio.pipe
 
-    block1 = ""
-    block2 = ""
-    block3 = ""
+    start = time.time()
 
-    for i in range(0, 60):
-        block1 += pipe.read(10 - len(block1))
-        #print "Got %i:\n%s" % (len(block1), util.hexprint(block1))
-        if len(block1) == 10:
-            break
-    if len(block1) != 10:
-        raise Exception("Timeout waiting for clone start")
-    #print "Got first block"
+    data = ""
+    blocks = 0
+    for block in radio._block_lengths:
+        blocks += 1
+        if blocks == len(radio._block_lengths):
+            data += chunk_read(pipe, block, radio.status_fn)
+        else:
+            data += safe_read(pipe, block)
+            pipe.write(chr(CMD_ACK))
 
-    pipe.write(chr(CMD_ACK))
-    pipe.read(1) # Chew the ack
+    print "Clone completed in %i seconds" % (time.time() - start)
 
-    for i in range(0, 10):
-        block2 += pipe.read(8 - len(block2))
-        #print "Got %i:\n%s" % (len(block2), util.hexprint(block2))
-        if len(block2) == 8:
-            break
-    if len(block2) != 8:
-        raise Exception("Timeout waiting for second block")
-    #print "Got second block"
+    return memmap.MemoryMap(data)
 
-    pipe.write(chr(CMD_ACK))
-    pipe.read(1) # Chew the ack
-
-    total = 16193
+def chunk_write(pipe, data, status_fn):
+    block = 8
+    delay = 0.03
     count = 0
-    while count < total:
-        chunk = pipe.read(32)
-        #print "Got %i: %s" % (len(chunk), util.hexprint(chunk))
-        block3 += chunk
+    for i in range(0, len(data), block):
+        chunk = data[i:i+block]
+        pipe.write(chunk)
         count += len(chunk)
+        print "Count is %i" % count
+        time.sleep(delay)
 
         status = chirp_common.Status()
-        status.msg = "Cloning from radio"
-        status.max = total
+        status.msg = "Cloning to radio"
+        status.max = len(data)
         status.cur = count
-        radio.status_fn(status)
-
-    return memmap.MemoryMap(block1 + block2 + block3)
-
+        status_fn(status)
+        
 def clone_out(radio):
     pipe = radio.pipe
     l = radio._block_lengths
@@ -79,35 +102,24 @@ def clone_out(radio):
         status.cur = total_written
         radio.status_fn(status)
 
-    pipe.write(radio._mmap[:l[0]])
-    pipe.read(l[0]) # Chew the first block
+    start = time.time()
 
-    ack = pipe.read(1)
-    print "Ack1: %02x" % ord(ack)
-    if ord(ack) != CMD_ACK:
-        raise Exception("Radio did not respond (1)")
-    total_written += l[0]
-    status()
+    blocks = 0
+    pos = 0
+    for block in radio._block_lengths:
+        blocks += 1
+        if blocks != len(radio._block_lengths):
+            #print "Sending %i-%i" % (pos, pos+block)
+            pipe.write(radio._mmap[pos:pos+block])
+            buf = pipe.read(1)
+            if buf and buf[0] != chr(CMD_ACK):
+                buf = pipe.read(block)
+            if not buf or buf[-1] != chr(CMD_ACK):
+                raise Exception("Radio did not ack block %i" % blocks)
+        else:
+            chunk_write(pipe, radio._mmap[pos:], radio.status_fn)
+        pos += block
 
-    pipe.write(radio._mmap[l[0]:l[0]+l[1]])
-    pipe.read(l[1]) # Chew the second block
-               
-    ack = pipe.read(1)
-    print "Ack2: %02x" % ord(ack)
-    if ord(ack) != CMD_ACK:
-        raise Exception("Radio did not respond (2)")
-    total_written += l[1]
-    status()
+    pipe.read(pos) # Chew the echo if using a 2-pin cable
 
-    base = l[0] + l[1]
-    block = 8
-    for i in range(0, l[2], block):
-        chunk = radio._mmap[base+i:base+i+block]
-        #print "Writing (%i@%i):\n%s" % (len(chunk), base+i,
-        #                                util.hexprint(chunk))
-        time.sleep(0.01) # Sucks, but we have no flow control!
-        pipe.write(chunk)
-        pipe.flush()
-        crap = pipe.read(block)
-        total_written += block
-        status()
+    print "Clone completed in %i seconds" % (time.time() - start)
