@@ -233,8 +233,10 @@ class UnixPlatform(Platform):
 class Win32Platform(Platform):
     def __init__(self, basepath=None):
         if not basepath:
-            basepath = os.path.abspath(os.path.join(os.getenv("APPDATA"),
-                                                    "D-RATS"))
+            appdata = os.getenv("APPDATA")
+            if not appdata:
+                appdata = "C:\\"
+            basepath = os.path.abspath(os.path.join(appdata, "D-RATS"))
 
         if not os.path.isdir(basepath):
             os.mkdir(basepath)
