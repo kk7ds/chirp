@@ -116,7 +116,7 @@ class CloneSettingsDialog(gtk.Dialog):
         rtype = self.rtype.get_active_text()
         
         return self.port.get_active_text(), \
-            self.__rtypes[rtype], \
+            self.__rtypes.get(rtype, None), \
             self.filename.get_filename()
 
 class CloneThread(threading.Thread):
