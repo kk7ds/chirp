@@ -150,11 +150,10 @@ def get_ts(mmap):
     return STEPS[val]
 
 def set_ts(mmap, ts):
-    val = ord(mmap[POS_STEP]) & 0xF0
-
     if not ts in STEPS:
         raise errors.InvalidDataError("Unsupported tune step %.1f" % ts)
 
+    val = ord(mmap[POS_STEP]) & 0xF0
     val |= STEPS.index(ts)
     mmap[POS_STEP] = val
 
@@ -203,7 +202,7 @@ def get_dtcs(mmap):
     val = ord(mmap[POS_DTCS]) & 0x3F
 
     if val > 0x67:
-        raise errors.InvalidDataError("Unknown DTCS code 0x%02i" % val)
+        raise errors.InvalidDataError("Unknown DTCS code 0x%02x" % val)
 
     return chirp_common.DTCS_CODES[val]
 

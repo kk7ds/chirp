@@ -73,15 +73,14 @@ def clone_in(radio):
 
     return memmap.MemoryMap(data)
 
-def chunk_write(pipe, data, status_fn):
-    block = 8
+def chunk_write(pipe, data, status_fn, block):
     delay = 0.03
     count = 0
     for i in range(0, len(data), block):
         chunk = data[i:i+block]
         pipe.write(chunk)
         count += len(chunk)
-        print "Count is %i" % count
+        #print "Count is %i" % count
         time.sleep(delay)
 
         status = chirp_common.Status()
@@ -117,7 +116,8 @@ def clone_out(radio):
             if not buf or buf[-1] != chr(CMD_ACK):
                 raise Exception("Radio did not ack block %i" % blocks)
         else:
-            chunk_write(pipe, radio._mmap[pos:], radio.status_fn)
+            chunk_write(pipe, radio._mmap[pos:],
+                        radio.status_fn, radio._block_size)
         pos += block
 
     pipe.read(pos) # Chew the echo if using a 2-pin cable

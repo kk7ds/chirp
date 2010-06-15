@@ -27,6 +27,7 @@ class VX7Radio(chirp_common.IcomFileBackedRadio):
     feature_longnames = True
 
     _block_lengths = [ 10, 8, 16193 ]
+    _block_size = 8
 
     def get_raw_memory(self, number):
         return vx7_ll.get_raw_memory(self._mmap, number)
