@@ -106,10 +106,7 @@ class MemoryEditor(common.Editor):
         }
     
     def ed_name(self, _, __, new, ___):
-        if self.rthread.radio.feature_longnames:
-            return new[:8]
-        else:
-            return new[:6].upper()
+        return self.rthread.radio.filter_name(new)
 
     def ed_freq(self, _, path, new, __):
         def set_offset(path, offset):

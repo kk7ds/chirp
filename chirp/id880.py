@@ -110,3 +110,6 @@ class ID880Radio(chirp_common.IcomMmapRadio,
         
     def get_memory_upper(self):
         return 999
+
+    def filter_name(self, name):
+        return chirp_common.name8(name, just_upper=True)

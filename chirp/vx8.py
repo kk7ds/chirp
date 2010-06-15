@@ -58,3 +58,6 @@ class VX8Radio(chirp_common.IcomFileBackedRadio):
 
     def get_memory_upper(self):
         return 900
+
+    def filter_name(self, name):
+        return chirp_common.name16(name)

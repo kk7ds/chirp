@@ -201,6 +201,9 @@ class IC9xRadio(chirp_common.IcomRadio):
             self._maybe_send_magic()
             ic9x_ll.set_banks(self.pipe, self.vfo, banks)
 
+    def filter_name(self, name):
+        return chirp_common.name8(name)
+
 class IC9xRadioA(IC9xRadio):
     vfo = 1
     mem_upper_limit = 849

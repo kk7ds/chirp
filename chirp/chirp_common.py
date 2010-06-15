@@ -469,6 +469,9 @@ class IcomRadio:
     def get_memory_upper(self):
         return 0
 
+    def filter_name(self, name):
+        return name6(name)
+
 class IcomFileBackedRadio(IcomRadio):
     def __init__(self, pipe):
 
@@ -581,3 +584,17 @@ def is_12_5(freq):
 
 def is_6_25(freq):
     return ((freq * 1000) - int(freq * 1000)) == 0.25
+
+def _name(name, len, just_upper):
+    if just_upper:
+        name = name.upper()
+    return name.ljust(len)[:len]
+
+def name6(name, just_upper=True):
+    return _name(name, 6, just_upper)
+
+def name8(name, just_upper=False):
+    return _name(name, 8, just_upper)
+
+def name16(name, just_upper=False):
+    return _name(name, 16, just_upper)

@@ -176,3 +176,6 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
                 call = " " * 8
 
             ic2820_ll.set_mycall(self._mmap, i, call)
+
+    def filter_name(self, name):
+        return chirp_common.name8(name)
