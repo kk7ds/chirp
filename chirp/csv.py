@@ -96,7 +96,7 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
             if mem.number == number:
                 return mem
 
-        raise errors.InvalidMemoryLocation("No such memory")
+        raise errors.InvalidMemoryLocation("No such memory %s" % number)
 
     def set_memory(self, newmem):
         self.erase_memory(newmem.number)
@@ -115,3 +115,6 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
             banks.append("BANK%s" % (chr(ord("A") + i)))
 
         return banks
+
+    def filter_name(self, name):
+        return name
