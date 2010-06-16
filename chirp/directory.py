@@ -16,10 +16,12 @@
 import os
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp
 from chirp import vx7, vx8
+from chirp import thd7
 from chirp import xml, chirp_common
 
 DRV_TO_RADIO = {
-    # Driver name    : Radio class
+
+    # Icom
     "ic2820"         : ic2820.IC2820Radio,
     "ic2200"         : ic2200.IC2200Radio,
     "ic9x"           : ic9x.IC9xRadio,
@@ -29,8 +31,14 @@ DRV_TO_RADIO = {
     "id880"          : id880.ID880Radio,
     "icx8x"          : icx8x.ICx8xRadio,
     "idrpx000v"      : idrp.IDRPx000V,
+
+    # Yaesu
     "vx7"            : vx7.VX7Radio,
     "vx8"            : vx8.VX8Radio,
+
+    # Kenwood
+    "thd7"           : thd7.THD7Radio,
+
 }
 
 RADIO_TO_DRV = {}
