@@ -27,7 +27,7 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, xml, csv, directory, ic9x
+from chirp import platform, xml, csv, directory, ic9x, thd7, idrp
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
@@ -51,7 +51,10 @@ class ChirpMain(gtk.Window):
         else:
             eset = self.get_current_editorset()
 
-        if not eset or isinstance(eset.radio, ic9x.IC9xRadio):
+        if not eset or \
+                isinstance(eset.radio, ic9x.IC9xRadio) or \
+                isinstance(eset.radio, thd7.THD7xRadio) or \
+                isinstance(eset.radio, idrp.IDRPx000V):
             mmap_sens = False
         else:
             mmap_sens = True
@@ -102,10 +105,10 @@ class ChirpMain(gtk.Window):
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
-    def do_open9x(self, rclass):
+    def do_open_live(self, rclass, rtype):
         dlg = clone.CloneSettingsDialog(clone_in=False,
                                         filename="(live)",
-                                        rtype="ic9x")
+                                        rtype=rtype)
         res = dlg.run()
         port, _, _ = dlg.get_values()
         dlg.destroy()
@@ -113,42 +116,18 @@ class ChirpMain(gtk.Window):
         if res != gtk.RESPONSE_OK:
             return
         
-        ser = serial.Serial(port=port,
-                            baudrate=38400,
-                            timeout=0.1)
-        radio = rclass(ser)
-        
-        eset = editorset.EditorSet(radio, self)
-        eset.connect("want-close", self.do_close)
-        eset.connect("status", self.ev_status)
-        eset.show()
-
-        action = self.menu_ag.get_action("open9x")
-        action.set_sensitive(False)
-
-        tab = self.tabs.append_page(eset, eset.get_tab_label())
-        self.tabs.set_current_page(tab)
-
-    def do_openrp(self, rclass):
-        dlg = clone.CloneSettingsDialog(clone_in=False,
-                                        filename="(live)",
-                                        rtype="idrp")
-        res = dlg.run()
-        port, _, _ = dlg.get_values()
-        dlg.destroy()
-
-        if res != gtk.RESPONSE_OK:
-            return
-
         ser = serial.Serial(port=port,
                             baudrate=rclass.BAUD_RATE,
                             timeout=0.1)
         radio = rclass(ser)
-
+        
         eset = editorset.EditorSet(radio, self)
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)
         eset.show()
+
+        action = self.menu_ag.get_action("openlive")
+        action.set_sensitive(False)
 
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
@@ -325,7 +304,7 @@ class ChirpMain(gtk.Window):
             eset.radio.pipe.close()
 
         if isinstance(eset.radio, ic9x.IC9xRadio):
-            action = self.menu_ag.get_action("open9x")
+            action = self.menu_ag.get_action("openlive")
             if action:
                 action.set_sensitive(True)
 
@@ -458,11 +437,13 @@ class ChirpMain(gtk.Window):
         elif action == "converticf":
             self.do_converticf()
         elif action == "open9xA":
-            self.do_open9x(ic9x.IC9xRadioA)
+            self.do_open_live(ic9x.IC9xRadioA, "ic9x")
         elif action == "open9xB":
-            self.do_open9x(ic9x.IC9xRadioB)
+            self.do_open_live(ic9x.IC9xRadioB, "ic9x")
+        elif action == "openTHD7x":
+            self.do_open_live(thd7.THD7Radio, "thd7")
         elif action == "openrpxkv":
-            self.do_openrp(idrp.IDRPx000V)
+            self.do_open_live(idrp.IDRPx000V, "idrpx000v")
         elif action == "import":
             self.do_import()
         elif action == "export_csv":
@@ -499,11 +480,12 @@ class ChirpMain(gtk.Window):
     <menu action="radio" name="radio">
       <menuitem action="clonein"/>
       <menuitem action="cloneout"/>
-      <menu action="open9x">
+      <menu action="openlive">
         <menuitem action="open9xA"/>
         <menuitem action="open9xB"/>
+        <menuitem action="openrpxkv"/>
+        <menuitem action="openTHD7x"/>
       </menu>
-      <menuitem action="openrpxkv"/>
       <menu action="recent" name="recent"/>
       <separator/>
       <menuitem action="import"/>
@@ -524,10 +506,11 @@ class ChirpMain(gtk.Window):
             ('file', None, "_File", None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
-            ('open9x', gtk.STOCK_CONNECT, "_Connect to an IC9x", None, None, self.mh),
-            ('open9xA', None, "Band A", None, None, self.mh),
-            ('open9xB', None, "Band B", None, None, self.mh),
-            ('openrpxkv', gtk.STOCK_CONNECT, "Connect to an ID-RP*", None, None, self.mh),
+            ('openlive', gtk.STOCK_CONNECT, "_Connect to a radio", None, None, self.mh),
+            ('open9xA', None, "Icom IC9x Band A", None, None, self.mh),
+            ('open9xB', None, "Icom IC9x Band B", None, None, self.mh),
+            ('openTHD7x', None, "Kenwood TH-D7", None, None, self.mh),
+            ('openrpxkv', gtk.STOCK_CONNECT, "Icom ID-RP*", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),
