@@ -36,7 +36,6 @@ def command(s, command, *args):
 def get_id(s):
     return command(s, "ID")
 
-
 def get_tmode(tone, ctcss, dcs):
     if dcs and int(dcs) == 1:
         return "DTCS"
@@ -87,8 +86,8 @@ def get_memory(s, number):
     mem.tmode = get_tmode(tone_on, ctcss_on, dcs_on)
     mem.rtone = chirp_common.TONES[int(tone) - 1]
     mem.ctone = chirp_common.TONES[int(ctcss) - 1]
-    if dcs and int(dcs) in chirp_common.DTCS_CODES:
-        mem.dtcs = int(dcs)
+    if dcs and dcs.isdigit():
+        mem.dtcs = chirp_common.DTCS_CODES[int(dcs) - 1]
     else:
         print "Unknown or invalid DCS: %s" % dcs
     if offset:
@@ -108,7 +107,13 @@ def set_memory(s, mem):
     if mem.empty:
         raise errors.InvalidDataError("Unable to delete right now")
 
-    spec = "0,0,%03i,%011i,%i,%i,%i,%i,%i,,%02i,,%02i,%09i,%i,%i" % (\
+    if self.__id == "TM-D700":
+        dtcs_on = (mem.tmode == "DTCS")
+        dtcs = chirp_common.DTCS_CODES.index(mem.dtcs) + 1
+    else:
+        dtcs_on = dtcs = ""
+
+    spec = "0,0,%03i,%011i,%i,%i,%i,%i,%i,%i,%02i,%03i0,%02i,%09i,%i,%i" % (\
         mem.number + 1,
         mem.freq * 1000000,
         STEPS.index(mem.tuning_step),
@@ -116,15 +121,14 @@ def set_memory(s, mem):
         0,
         mem.tmode == "Tone",
         mem.tmode == "TSQL",
-        # Skip DTCS
+        dtcs_on,
         chirp_common.TONES.index(mem.rtone) + 1,
-        # Skip DTCS code
+        dtcs,
         chirp_common.TONES.index(mem.ctone) + 1,
         mem.offset * 1000000,
         rev(MODES, mem.mode),
         0)
 
-    print "spec: %s" % spec
     result = command(s, "MW", spec)
     if result == "N":
         print "Failed to set %s" % spec
@@ -144,6 +148,11 @@ class THD7xRadio(chirp_common.IcomRadio):
         chirp_common.IcomRadio.__init__(self, *args, **kwargs)
 
         self.__memcache = {}
+
+        self.__id = get_id(self.pipe)
+        if " " in self.__id:
+            self.__id = self.__id.split(" ")[1]
+        print "Talking to a %s" % self.__id
 
     def get_memory(self, number):
         if number < 0 or number >= 200:
