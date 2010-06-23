@@ -1,4 +1,19 @@
 #!/usr/bin/python
+#
+# Copyright 2010 Dan Smith <dsmith@danplanet.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp import chirp_common, errors
 
@@ -87,7 +102,7 @@ def get_memory(s, number):
     mem.rtone = chirp_common.TONES[int(tone) - 1]
     mem.ctone = chirp_common.TONES[int(ctcss) - 1]
     if dcs and dcs.isdigit():
-        mem.dtcs = chirp_common.DTCS_CODES[int(dcs) - 1]
+        mem.dtcs = chirp_common.DTCS_CODES[int(dcs[:-1]) - 1]
     else:
         print "Unknown or invalid DCS: %s" % dcs
     if offset:
@@ -103,17 +118,17 @@ def get_memory(s, number):
 
     return mem
 
-def set_memory(s, mem):
+def set_memory(s, mem, do_dcs):
     if mem.empty:
         raise errors.InvalidDataError("Unable to delete right now")
 
-    if self.__id == "TM-D700":
-        dtcs_on = (mem.tmode == "DTCS")
-        dtcs = chirp_common.DTCS_CODES.index(mem.dtcs) + 1
+    if do_dcs:
+        dtcs_on = int(mem.tmode == "DTCS")
+        dtcs = "%03i0" % (chirp_common.DTCS_CODES.index(mem.dtcs) + 1)
     else:
         dtcs_on = dtcs = ""
 
-    spec = "0,0,%03i,%011i,%i,%i,%i,%i,%i,%i,%02i,%03i0,%02i,%09i,%i,%i" % (\
+    spec = "0,0,%03i,%011i,%i,%i,%i,%i,%i,%s,%02i,%s,%02i,%09i,%i,%i" % (\
         mem.number + 1,
         mem.freq * 1000000,
         STEPS.index(mem.tuning_step),
@@ -168,7 +183,7 @@ class THD7xRadio(chirp_common.IcomRadio):
     def set_memory(self, memory):
         if memory.number < 0 or memory.number >= 200:
             raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
-        if set_memory(self.pipe, memory):
+        if set_memory(self.pipe, memory, self.__id == "TM-D700"):
             self.__memcache[memory.number] = memory
 
     def get_memory_upper(self):
