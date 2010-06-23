@@ -185,7 +185,7 @@ def process_data_frame(frame, mmap):
 
     bytes = int(data[4:6], 16)
     fdata = data[6:6+(bytes * 2)]
-    #saddr = int(data[0:4], 16)
+    saddr = int(data[0:4], 16)
     #eaddr = saddr + bytes
     #try:
     #    checksum = data[6+(bytes * 2)]
@@ -193,17 +193,19 @@ def process_data_frame(frame, mmap):
     #    print "%i Frame data:\n%s" % (bytes, util.hexprint(data))
     #    raise errors.InvalidDataError("Short frame")
 
+    data = ""
     i = 0
     while i < range(len(fdata)) and i+1 < len(fdata):
         try:
             val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
             i += 2
-            mmap += struct.pack("B", val)
+            data += struct.pack("B", val)
         except ValueError, e:
             print "Failed to parse byte: %s" % e
             break
 
-    return mmap
+    mmap[saddr] = data
+    return saddr + bytes
 
 def clone_from_radio(radio):
     md = get_model_data(radio.pipe)
@@ -217,7 +219,8 @@ def clone_from_radio(radio):
 
     stream = RadioStream(radio.pipe)
 
-    mmap = ""
+    addr = 0
+    mmap = memmap.MemoryMap(chr(0x00) * radio._memsize)
     while True:
         frames = stream.get_frames()
         if not frames:
@@ -225,16 +228,16 @@ def clone_from_radio(radio):
 
         for frame in frames:
             if frame.cmd == CMD_CLONE_DAT:
-                mmap = process_data_frame(frame, mmap)
+                addr = process_data_frame(frame, mmap)
 
         if radio.status_fn:
             status = chirp_common.Status()
             status.msg = "Cloning from radio"
             status.max = radio.get_memsize()
-            status.cur = len(mmap)
+            status.cur = addr
             radio.status_fn(status)
 
-    return memmap.MemoryMap(mmap)
+    return mmap
 
 def send_mem_chunk(radio, start, stop, bs=32):
     mmap = radio.get_mmap()
