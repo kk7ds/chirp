@@ -25,6 +25,7 @@ class TMV71ARadio(chirp_common.IcomFileBackedRadio):
 
     mem_upper_limit = 200
     _memsize = 32512
+    _model = "" # FIXME: REMOVE
 
     def _detect_baud(self):
         for baud in [9600, 19200, 38400, 57600]:
