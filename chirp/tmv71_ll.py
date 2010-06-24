@@ -159,6 +159,23 @@ def set_used(map, number, freq):
     elif int(freq / 100) == 4:
         map[pos] = "\x08\x00"
 
+def get_skip(map, number):
+    pos = MEM_FLG_BASE + (number * 2)
+    flag = ord(map[pos+1])
+    if flag & 0x01:
+        return "S"
+    else:
+        return ""
+
+def set_skip(map, number, skip):
+    pos = MEM_FLG_BASE + (number * 2)
+    flag = ord(map[pos+1])
+    if skip:
+        flag |= 0x01
+    else:
+        flag &= ~0x01
+    map[pos+1] = flag
+
 def get_freq(mmap):
     freq, = struct.unpack("<I", mmap[0:4])
     return freq / 1000000.0
@@ -289,6 +306,9 @@ def get_memory(map, number):
     mem.offset = get_offset(mmap)
     mem.mode = get_mode(mmap)
 
+    if number < 999:
+        mem.skip = get_skip(map, number)
+
     if number > 999:
         mem.immutable = ["number", "bank", "extd_number", "name"]
     if number > 1020 and number < 1030:
@@ -325,6 +345,8 @@ def set_memory(map, mem):
     map[base] = mmap.get_packed()
 
     set_used(map, mem.number, mem.freq)
+    if mem.number < 999:
+        set_skip(map, mem.number, mem.skip)
 
     return map
 
