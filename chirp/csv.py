@@ -22,14 +22,22 @@ from chirp import chirp_common, errors
 class CSVRadio(chirp_common.IcomFileBackedRadio):
     feature_longnames = True
 
+    def _blank(self):
+        self.memories = []
+        for i in range(0, self.get_memory_upper()+1):
+            m = chirp_common.Memory()
+            m.number = i
+            m.empty = True
+            self.memories.append(m)
+
     def __init__(self, pipe):
         chirp_common.IcomFileBackedRadio.__init__(self, None)
-
-        self.memories = []
 
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
             self.load()
+        else:
+            self._blank()
 
     def get_memory_upper(self):
         return 999
@@ -40,7 +48,7 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
 
         mem = chirp_common.Memory.from_csv(line)
         if mem:
-            self.memories.append(mem)
+            self.memories[mem.number] = mem
 
     def load(self, filename=None):
         if filename is None and self._filename is None:
@@ -49,7 +57,7 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
         if filename:
             self._filename = filename
 
-        self.memories = []
+        self._blank()
         f = file(self._filename, "rU")
         
         header = f.readline().strip()
@@ -84,7 +92,8 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
         f.write(chirp_common.Memory.CSV_FORMAT + "\n")
 
         for mem in self.memories:
-            f.write(mem.to_csv() + "\n")
+            if not mem.empty:
+                f.write(mem.to_csv() + "\n")
 
         f.close()
 
@@ -92,22 +101,19 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
         return [x for x in self.memories if x.number >= lo and x.number <= hi]
 
     def get_memory(self, number):
-        for mem in self.memories:
-            if mem.number == number:
-                return mem
-
-        raise errors.InvalidMemoryLocation("No such memory %s" % number)
+        try:
+            return self.memories[number]
+        except:
+            raise errors.InvalidMemoryLocation("No such memory %s" % number)
 
     def set_memory(self, newmem):
-        self.erase_memory(newmem.number)
-        self.memories.append(newmem)
+        self.memories[newmem.number] = newmem
 
     def erase_memory(self, number):
-        newlist = []
-        for mem in self.memories:
-            if mem.number != number:
-                newlist.append(mem)
-        self.memories = newlist
+        m = chirp_common.Memory()
+        m.number = number
+        m.empty = True
+        self.memories[number] = m
         
     def get_banks(self):
         banks = []
