@@ -26,6 +26,10 @@ from chirpui import miscwidgets, cloneprog, inputdialog, common
 
 AUTO_DETECT_STRING = "Auto Detect (Icom Only)"
 
+_LAST_MODEL = None
+_LAST_PORT = None
+_LAST_FILE = None
+
 class CloneSettingsDialog(gtk.Dialog):
     def make_field(self, title, control):
         hbox = gtk.HBox(True, 2)
@@ -71,6 +75,8 @@ class CloneSettingsDialog(gtk.Dialog):
         ports = platform.get_platform().list_serial_ports()
         if port:
             defport = port
+        elif _LAST_PORT:
+            defport = _LAST_PORT
         elif ports:
             defport = ports[0]
         else:
@@ -88,13 +94,17 @@ class CloneSettingsDialog(gtk.Dialog):
         type_choices.insert(0, AUTO_DETECT_STRING)
         self.__rtypes[AUTO_DETECT_STRING] = AUTO_DETECT_STRING
 
+        if not _LAST_MODEL:
+            global _LAST_MODEL
+            _LAST_MODEL = type_choices[0]
+
         if rtype:
             self.rtype = miscwidgets.make_choice(type_choices, False,
                                                  directory.get_radio_name(rtype))
             self.rtype.set_sensitive(False)
         else:
             self.rtype = miscwidgets.make_choice(type_choices, False,
-                                                 type_choices[0])
+                                                 _LAST_MODEL)
         self.rtype.show()
 
         types = [("CHIRP Radio Images (*.img)", "*.img")]
@@ -103,6 +113,8 @@ class CloneSettingsDialog(gtk.Dialog):
             self.filename.set_sensitive(False)
         if filename:
             self.filename.set_filename(filename)
+        elif _LAST_FILE:
+            self.filename.set_filename(_LAST_FILE)
         else:
             self.filename.set_filename("MyRadio.img")
         self.filename.show()
@@ -113,11 +125,17 @@ class CloneSettingsDialog(gtk.Dialog):
         self.make_field("Filename", self.filename)
 
     def get_values(self):
+        global _LAST_MODEL
+        global _LAST_FILE
+        global _LAST_PORT
+
         rtype = self.rtype.get_active_text()
         
-        return self.port.get_active_text(), \
-            self.__rtypes.get(rtype, None), \
-            self.filename.get_filename()
+        _LAST_PORT = self.port.get_active_text()
+        _LAST_MODEL = rtype
+        _LAST_FILE = self.filename.get_filename()
+
+        return _LAST_PORT, self.__rtypes.get(rtype, None), _LAST_FILE
 
 class CloneThread(threading.Thread):
     def __status(self, status):

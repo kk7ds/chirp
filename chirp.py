@@ -21,7 +21,8 @@ import sys
 from optparse import OptionParser
 import optparse
 
-from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880
+from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880, vx7, vx8
+from chirp import tmv71
 from chirp import chirp_common, errors, idrp
 
 def fail_unsupported():
@@ -32,14 +33,24 @@ def fail_missing_mmap():
     print "mmap-only operation requires specification of an mmap file"
     sys.exit(1)
 
-RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
-           "ic9x:B": ic9x.IC9xRadioB,
-           "id800" : id800.ID800v2Radio,
-           "id880" : id880.ID880Radio,
-           "ic2820": ic2820.IC2820Radio,
-           "ic2200": ic2200.IC2200Radio,
-           "icx8x" : icx8x.ICx8xRadio,
-           "idrpv" : idrp.IDRPx000V,
+RADIOS = {
+    # ICOM Radios
+    "ic9x:A": ic9x.IC9xRadioA,
+    "ic9x:B": ic9x.IC9xRadioB,
+    "id800" : id800.ID800v2Radio,
+    "id880" : id880.ID880Radio,
+    "ic2820": ic2820.IC2820Radio,
+    "ic2200": ic2200.IC2200Radio,
+    "icx8x" : icx8x.ICx8xRadio,
+
+    # ICOM D-STAR Repeaters
+    "idrpv" : idrp.IDRPx000V,
+
+    # Yaesu Radios
+    "vx7" : vx7.VX7Radio,
+    "vx8" : vx8.VX8Radio,
+
+    "tmv71" : tmv71.TMV71ARadio,
 }
 
 def store_tone(option, opt, value, parser):
@@ -187,6 +198,7 @@ if options.serial == "mmap":
     else:
         s = options.radio + ".img"
 else:
+    print "opening %s at %i" % (options.serial, rclass.BAUD_RATE)
     s = serial.Serial(port=options.serial,
                       baudrate=rclass.BAUD_RATE,
                       timeout=0.5)
@@ -279,12 +291,12 @@ if options.get_mem:
     print mem
 
 if options.download_mmap:
-    isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
+    #isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
     radio.sync_in()
     radio.save_mmap(options.mmap)
 
 if options.upload_mmap:
-    isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
+    #isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
     radio.load_mmap(options.mmap)
     if radio.sync_out():
         print "Clone successful"
