@@ -223,6 +223,26 @@ def set_is_used(mmap, number, used):
     else:
         mmap[MEM_FLG_BASE + number] = 0x00
 
+def get_skip(mmap, number):
+    val = ord(mmap[MEM_FLG_BASE + number])
+
+    if val & 0x08:
+        return "P"
+    elif val & 0x04:
+        return "S"
+    else:
+        return ""
+
+def set_skip(mmap, number, skip):
+    val = ord(mmap[MEM_FLG_BASE + number]) & 0x03
+
+    if skip == "P":
+        val |= 0x08
+    elif skip == "S":
+        val |= 0x04
+
+    mmap[MEM_FLG_BASE + number] = val
+
 def get_memory(_map, number):
     mem = chirp_common.Memory()
     mem.number = number
@@ -240,6 +260,7 @@ def get_memory(_map, number):
     mem.tmode = get_tmode(mmap)
     mem.rtone = mem.ctone = get_tone(mmap)
     mem.dtcs = get_dtcs(mmap)
+    mem.skip = get_skip(_map, number)
     
     return mem
 
@@ -261,6 +282,7 @@ def set_memory(_map, mem):
 
     _map[get_mem_offset(mem.number)] = mmap.get_packed()
     set_is_used(_map, mem.number, True)
+    set_skip(_map, mem.number, mem.skip)
 
     return _map
 
