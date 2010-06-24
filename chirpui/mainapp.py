@@ -509,7 +509,7 @@ class ChirpMain(gtk.Window):
             ('openlive', gtk.STOCK_CONNECT, "_Connect to a radio", None, None, self.mh),
             ('open9xA', None, "Icom IC9x Band A", None, None, self.mh),
             ('open9xB', None, "Icom IC9x Band B", None, None, self.mh),
-            ('openTHD7x', None, "Kenwood TH-D7", None, None, self.mh),
+            ('openTHD7x', None, "Kenwood TH-D7/TM-D700", None, None, self.mh),
             ('openrpxkv', gtk.STOCK_CONNECT, "Icom ID-RP*", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
