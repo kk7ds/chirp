@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, errors
+from chirp import chirp_common, errors, util
 from chirp import tmv71_ll
 
 class TMV71ARadio(chirp_common.IcomFileBackedRadio):
@@ -23,7 +23,7 @@ class TMV71ARadio(chirp_common.IcomFileBackedRadio):
     VENDOR = "Kenwood"
     MODEL = "TM-V71A"
 
-    mem_upper_limit = 200
+    mem_upper_limit = 1022
     _memsize = 32512
     _model = "" # FIXME: REMOVE
 
@@ -42,13 +42,26 @@ class TMV71ARadio(chirp_common.IcomFileBackedRadio):
         raise errors.RadioError("No response from radio")
 
     def get_raw_memory(self, number):
-        return tmv71_ll.get_raw_mem(self._mmap, number)
+        return util.hexprint(tmv71_ll.get_raw_mem(self._mmap, number))
+
+    def get_special_locations(self):
+        return sorted(tmv71_ll.V71_SPECIAL.keys())
 
     def get_memory(self, number):
+        if isinstance(number, str):
+            try:
+                number = tmv71_ll.V71_SPECIAL[number]
+            except KeyError:
+                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
+                                                       number)
+
         return tmv71_ll.get_memory(self._mmap, number)
 
     def set_memory(self, mem):
         return tmv71_ll.set_memory(self._mmap, mem)
+
+    def erase_memory(self, number):
+        tmv71_ll.set_used(self._mmap, number, 0)
 
     def sync_in(self):
         self._detect_baud()

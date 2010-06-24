@@ -34,6 +34,20 @@ MEM_LOC_SIZE = 16
 MEM_TAG_BASE = 0x5800
 MEM_FLG_BASE = 0x0E00
 
+V71_SPECIAL = {}
+
+for i in range(0, 10):
+    V71_SPECIAL["L%i" % i] = 1000 + (i * 2)
+    V71_SPECIAL["U%i" % i] = 1000 + (i * 2) + 1
+for i in range(0, 10):
+    V71_SPECIAL["WX%i" % (i + 1)] = 1020 + i
+V71_SPECIAL["C VHF"] = 1030
+V71_SPECIAL["C UHF"] = 1031
+
+V71_SPECIAL_REV = {}
+for k,v in V71_SPECIAL.items():
+    V71_SPECIAL_REV[v] = k
+
 def command(s, cmd, timeout=0.5):
     start = time.time()
 
@@ -126,6 +140,7 @@ def get_mem_offset(number):
 
 def get_raw_mem(map, number):
     base = get_mem_offset(number)
+    #print "Offset for %i is %04x" % (number, base)
     return map[base:base+MEM_LOC_SIZE]
 
 def get_used(map, number):
@@ -133,6 +148,16 @@ def get_used(map, number):
     flag = ord(map[pos])
     print "Flag byte is %02x" % flag
     return not (flag & 0x80)
+
+def set_used(map, number, freq):
+    pos = MEM_FLG_BASE + (number * 2)
+    if freq == 0:
+        # Erase
+        map[pos] = "\xff\xff"
+    elif int(freq / 100) == 1:
+        map[pos] = "\x05\x00"
+    elif int(freq / 100) == 4:
+        map[pos] = "\x08\x00"
 
 def get_freq(mmap):
     freq, = struct.unpack("<I", mmap[0:4])
@@ -240,16 +265,19 @@ def set_mode(mmap, mode):
     mmap[POS_MODE] = val | modemap[mode]
 
 def get_memory(map, number):
-    if number < 0 or number >= 200:
-        raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
-
-    mmap = get_raw_mem(map, number)
+    if number < 0 or number > (max(V71_SPECIAL.values()) + 1):
+        raise errors.InvalidMemoryLocation("Number must be between 0 and 999")
 
     mem = chirp_common.Memory()
     mem.number = number
+
+    if number > 999:
+        mem.extd_number = V71_SPECIAL_REV[number]
     if not get_used(map, number):
         mem.empty = True
         return mem
+
+    mmap = get_raw_mem(map, number)
 
     mem.freq = get_freq(mmap)
     mem.name = get_name(map, number)
@@ -261,16 +289,30 @@ def get_memory(map, number):
     mem.offset = get_offset(mmap)
     mem.mode = get_mode(mmap)
 
+    if number > 999:
+        mem.immutable = ["number", "bank", "extd_number", "name"]
+    if number > 1020 and number < 1030:
+        mem.immutable += ["freq"] # FIXME: ALL
+
     return mem
 
+def initialize(mmap):
+    mmap[0] = \
+        "\x80\xc8\xb3\x08\x00\x01\x00\x08" + \
+        "\x08\x00\xc0\x27\x09\x00\x00\xff"
+
 def set_memory(map, mem):
-    if mem.number < 0 or mem.number > 200:
-        raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
+    if mem.number < 0 or mem.number > (max(V71_SPECIAL.values()) + 1):
+        raise errors.InvalidMemoryLocation("Number must be between 0 and 999")
 
     mmap = memmap.MemoryMap(get_raw_mem(map, mem.number))
 
+    if not get_used(map, mem.number):
+        initialize(mmap)
+
     set_freq(mmap, mem.freq)
-    set_name(map, mem.number, mem.name)
+    if mem.number < 999:
+        set_name(map, mem.number, mem.name)
     set_tmode(mmap, mem.tmode)
     set_tone(mmap, mem.rtone, POS_RTONE)
     set_tone(mmap, mem.ctone, POS_CTONE)
@@ -281,6 +323,8 @@ def set_memory(map, mem):
 
     base = get_mem_offset(mem.number)
     map[base] = mmap.get_packed()
+
+    set_used(map, mem.number, mem.freq)
 
     return map
 
