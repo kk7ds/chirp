@@ -23,7 +23,7 @@ import optparse
 
 from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880, vx7, vx8
 from chirp import tmv71
-from chirp import chirp_common, errors, idrp
+from chirp import chirp_common, errors, idrp, directory
 
 def fail_unsupported():
     print "Operation not supported by selected radio"
@@ -33,25 +33,7 @@ def fail_missing_mmap():
     print "mmap-only operation requires specification of an mmap file"
     sys.exit(1)
 
-RADIOS = {
-    # ICOM Radios
-    "ic9x:A": ic9x.IC9xRadioA,
-    "ic9x:B": ic9x.IC9xRadioB,
-    "id800" : id800.ID800v2Radio,
-    "id880" : id880.ID880Radio,
-    "ic2820": ic2820.IC2820Radio,
-    "ic2200": ic2200.IC2200Radio,
-    "icx8x" : icx8x.ICx8xRadio,
-
-    # ICOM D-STAR Repeaters
-    "idrpv" : idrp.IDRPx000V,
-
-    # Yaesu Radios
-    "vx7" : vx7.VX7Radio,
-    "vx8" : vx8.VX8Radio,
-
-    "tmv71" : tmv71.TMV71ARadio,
-}
+RADIOS = directory.DRV_TO_RADIO
 
 def store_tone(option, opt, value, parser):
     if value in chirp_common.TONES:
