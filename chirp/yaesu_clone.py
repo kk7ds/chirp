@@ -123,3 +123,23 @@ def clone_out(radio):
     pipe.read(pos) # Chew the echo if using a 2-pin cable
 
     print "Clone completed in %i seconds" % (time.time() - start)
+
+if __name__ == "__main__":
+    import sys, serial
+    s = serial.Serial(port=sys.argv[1], baudrate=19200, timeout=5)
+
+    d = s.read(20)
+    print util.hexprint(d)
+
+    s.write(chr(0x06))
+
+    d = ""
+    while True:
+        c = s.read(32)
+        if not c:
+            break
+        d += c
+
+    print len(d)
+
+    
