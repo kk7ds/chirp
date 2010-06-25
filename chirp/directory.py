@@ -15,7 +15,7 @@
 
 import os
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp
-from chirp import vx7, vx8
+from chirp import vx6, vx7, vx8
 from chirp import thd7, tmv71
 from chirp import xml, chirp_common
 
@@ -33,6 +33,7 @@ DRV_TO_RADIO = {
     "idrpx000v"      : idrp.IDRPx000V,
 
     # Yaesu
+    "vx6"            : vx6.VX6Radio,
     "vx7"            : vx7.VX7Radio,
     "vx8"            : vx8.VX8Radio,
 
