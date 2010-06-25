@@ -113,7 +113,7 @@ def get_duplex(mmap):
     return dupmap[val]
 
 def set_duplex(mmap, duplex):
-    val = ord(mmap[POS_DUP]) & 0xFC
+    val = ord(mmap[POS_DUP]) & 0xCF
 
     dupmap = {
         ""  : 0x00,
@@ -146,7 +146,7 @@ def set_tmode(mmap, tmode):
     if not tmodemap.has_key(tmode):
         raise errors.InvalidDataError("Tone mode %s not supported" % tmode)
 
-    val = ord(mmap[POS_TMODE]) & 0xFC
+    val = ord(mmap[POS_TMODE]) & 0xF0
     val |= tmodemap[tmode]
     mmap[POS_TMODE] = val
 
@@ -306,7 +306,7 @@ def set_unknowns(mmap):
     mmap[0] = \
         "\x00\x00\x14\x40\x00\xC0\xff\xff" + \
         "\xff\xff\xff\xff\x00\x06\x00\x08" + \
-        "\x00\xdd"
+        "\x00\x0d"
     
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
