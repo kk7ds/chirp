@@ -65,6 +65,9 @@ def get_tmode(tone, ctcss, dcs):
     else:
         return ""
 
+def iserr(result):
+    return result in ["N", "?"]
+
 class KenwoodLiveRadio(chirp_common.IcomRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
@@ -79,6 +82,8 @@ class KenwoodLiveRadio(chirp_common.IcomRadio):
 
         self.__id = get_id(self.pipe)
         print "Talking to a %s" % self.__id
+
+        command(self.pipe, "AI", "0")
 
     def get_memory(self, number):
         if number < 0 or number >= 200:
@@ -121,10 +126,10 @@ class KenwoodLiveRadio(chirp_common.IcomRadio):
 
         spec = self._make_mem_spec(memory)
         r1 = command(self.pipe, "MW", ",".join(spec))
-        if r1:
+        if not iserr(r1):
             r2 = command(self.pipe, "MNA", "0,%03i,%s" % (memory.number + 1,
                                                           memory.name))
-            if r2:
+            if not iserr(r2):
                 self.__memcache[memory.number] = memory
 
     def get_memory_upper(self):
@@ -132,6 +137,11 @@ class KenwoodLiveRadio(chirp_common.IcomRadio):
 
     def filter_name(self, name):
         return chirp_common.name8(name)
+
+    def erase_memory(self, number):
+        r = command(self.pipe, "MW", "0,0,%03i" % (number+1))
+        if iserr(r):
+            raise errors.RadioError("Radio refused delete of %i" % number)
 
 class THD7Radio(KenwoodLiveRadio):
     MODEL = "TH-D7(a)(g)"
