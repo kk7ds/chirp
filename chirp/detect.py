@@ -16,7 +16,7 @@
 import serial
 
 from chirp import chirp_common, errors, idrp, util, icf, directory
-from chirp import thd7
+from chirp import kenwood_live
 
 def detect_icom_radio(port):
     s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
@@ -38,13 +38,13 @@ def detect_icom_radio(port):
 
 def detect_kenwoodlive_radio(port):
     s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
-    r_id = thd7.get_id(s)
+    r_id = kenwood_live.get_id(s)
     s.close()
 
     models = {
-        "TH-D7"   : thd7.THD7Radio,
-        "TM-D700" : thd7.TMD700Radio,
-        "TM-V7"   : thd7.TMV7Radio,
+        "TH-D7"   : kenwood_live.THD7Radio,
+        "TM-D700" : kenwood_live.TMD700Radio,
+        "TM-V7"   : kenwood_live.TMV7Radio,
         }
 
     if r_id in models.keys():

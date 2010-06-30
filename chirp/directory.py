@@ -16,7 +16,7 @@
 import os
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp
 from chirp import vx6, vx7, vx8, ft7800
-from chirp import thd7, tmv71
+from chirp import kenwood_live, tmv71
 from chirp import xml, chirp_common
 
 DRV_TO_RADIO = {
@@ -39,9 +39,9 @@ DRV_TO_RADIO = {
     "ft7800"         : ft7800.FT7800Radio,
 
     # Kenwood
-    "thd7"           : thd7.THD7Radio,
-    "tmd700"         : thd7.TMD700Radio,
-    "tmv7"           : thd7.TMV7Radio,
+    "thd7"           : kenwood_live.THD7Radio,
+    "tmd700"         : kenwood_live.TMD700Radio,
+    "tmv7"           : kenwood_live.TMV7Radio,
     "v71a"           : tmv71.TMV71ARadio,
 }
 

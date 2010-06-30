@@ -27,7 +27,7 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirp import platform, xml, csv, directory, ic9x, thd7, idrp
+from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirpui import editorset, clone, inputdialog, miscwidgets, common
 
@@ -53,7 +53,7 @@ class ChirpMain(gtk.Window):
 
         if not eset or \
                 isinstance(eset.radio, ic9x.IC9xRadio) or \
-                isinstance(eset.radio, thd7.KenwoodLiveRadio) or \
+                isinstance(eset.radio, kenwood_live.KenwoodLiveRadio) or \
                 isinstance(eset.radio, idrp.IDRPx000V):
             mmap_sens = False
         else:
