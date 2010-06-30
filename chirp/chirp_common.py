@@ -457,7 +457,7 @@ class IcomRadio:
         pass
 
     def get_banks(self):
-        pass
+        return []
 
     def set_banks(self, banks):
         raise errors.InvalidDataError("This model does not support bank naming")
