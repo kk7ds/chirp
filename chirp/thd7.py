@@ -49,7 +49,11 @@ def command(s, command, *args):
     return result.strip()
 
 def get_id(s):
-    return command(s, "ID")
+    r = command(s, "ID")
+    if " " in r:
+        return r.split(" ")[1]
+    else:
+        raise errors.RadioError("No response from radio")
 
 def get_tmode(tone, ctcss, dcs):
     if dcs and int(dcs) == 1:
@@ -61,98 +65,7 @@ def get_tmode(tone, ctcss, dcs):
     else:
         return ""
 
-def get_memory(s, number):
-    mem = chirp_common.Memory()
-    mem.number = number
-
-    result = command(s, "MR", "0,0,%03i" % (number + 1))
-    if result == "N":
-        mem.empty = True
-        return mem
-
-    print result
-
-    value = result.split(" ")[1]
-
-    zero, split, loc, freq, step, duplex, reverse, tone_on, ctcss_on, dcs_on,\
-        tone, dcs, ctcss, offset, mode, scan_locked = value.split(",")
-
-    if True:
-        print "Memory location %i:" % number
-        print "    split: %s" % split
-        print "    loc: %s" % loc
-        print "    freq: %s" % freq
-        print "    step: %s" % step
-        print "    duplex: %s" % duplex
-        print "    reverse: %s" % reverse
-        print "    tone_on: %s" % tone_on
-        print "    ctcss_on: %s" % ctcss_on
-        print "    dcs_on: %s" % dcs_on
-        print "    tone: %s" % tone
-        print "    dcs: %s" % dcs
-        print "    ctcss: %s" % ctcss
-        print "    offset: %s" % offset
-        print "    mode: %s" % mode
-        print "    scan_locked: %s" % scan_locked
-
-    mem.freq = int(freq) / 1000000.0
-    mem.tuning_step = STEPS[int(step)]
-    mem.duplex = DUPLEX[int(duplex)]
-    mem.tmode = get_tmode(tone_on, ctcss_on, dcs_on)
-    mem.rtone = chirp_common.TONES[int(tone) - 1]
-    mem.ctone = chirp_common.TONES[int(ctcss) - 1]
-    if dcs and dcs.isdigit():
-        mem.dtcs = chirp_common.DTCS_CODES[int(dcs[:-1]) - 1]
-    else:
-        print "Unknown or invalid DCS: %s" % dcs
-    if offset:
-        mem.offset = int(offset) / 1000000.0
-    else:
-        mem.offset = 0.0
-    mem.mode = MODES[int(mode)]
-
-    result = command(s, "MNA", "0,%03i" % (number + 1))
-    if " " in result:
-        value = result.split(" ")[1]
-        zero, loc, mem.name = value.split(",")
-
-    return mem
-
-def set_memory(s, mem, do_dcs):
-    if mem.empty:
-        raise errors.InvalidDataError("Unable to delete right now")
-
-    if do_dcs:
-        dtcs_on = int(mem.tmode == "DTCS")
-        dtcs = "%03i0" % (chirp_common.DTCS_CODES.index(mem.dtcs) + 1)
-    else:
-        dtcs_on = dtcs = ""
-
-    spec = "0,0,%03i,%011i,%i,%i,%i,%i,%i,%s,%02i,%s,%02i,%09i,%i,%i" % (\
-        mem.number + 1,
-        mem.freq * 1000000,
-        STEPS.index(mem.tuning_step),
-        rev(DUPLEX, mem.duplex),
-        0,
-        mem.tmode == "Tone",
-        mem.tmode == "TSQL",
-        dtcs_on,
-        chirp_common.TONES.index(mem.rtone) + 1,
-        dtcs,
-        chirp_common.TONES.index(mem.ctone) + 1,
-        mem.offset * 1000000,
-        rev(MODES, mem.mode),
-        0)
-
-    result = command(s, "MW", spec)
-    if result == "N":
-        print "Failed to set %s" % spec
-        return False
-
-    result = command(s, "MNA", "0,%03i,%s" % (mem.number + 1, mem.name))
-    return result != "N"    
-
-class THD7xRadio(chirp_common.IcomRadio):
+class KenwoodLiveRadio(chirp_common.IcomRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = ""
@@ -165,8 +78,6 @@ class THD7xRadio(chirp_common.IcomRadio):
         self.__memcache = {}
 
         self.__id = get_id(self.pipe)
-        if " " in self.__id:
-            self.__id = self.__id.split(" ")[1]
         print "Talking to a %s" % self.__id
 
     def get_memory(self, number):
@@ -175,16 +86,46 @@ class THD7xRadio(chirp_common.IcomRadio):
         if self.__memcache.has_key(number):
             return self.__memcache[number]
 
-        mem = get_memory(self.pipe, number)
+        result = command(self.pipe, "MR", "0,0,%03i" % (number + 1))
+        if result == "N":
+            mem = chirp_common.Memory()
+            mem.number = number
+            mem.empty = True
+            return mem
+        elif " " not in result:
+            print "Not sure what to do with this: `%s'" % result
+            raise errors.RadioError("Unexpected result returned from radio")
+
+        value = result.split(" ")[1]
+        spec = value.split(",")
+
+        mem = self._parse_mem_spec(spec)
         self.__memcache[mem.number] = mem
 
+        result = command(self.pipe, "MNA", "0,%03i" % (number + 1))
+        if " " in result:
+            value = result.split(" ")[1]
+            zero, loc, mem.name = value.split(",")
+ 
         return mem
+
+    def _make_mem_spec(self, mem):
+        pass
+
+    def _parse_mem_spec(self, spec):
+        pass
 
     def set_memory(self, memory):
         if memory.number < 0 or memory.number >= 200:
             raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
-        if set_memory(self.pipe, memory, self.__id == "TM-D700"):
-            self.__memcache[memory.number] = memory
+
+        spec = self._make_mem_spec(memory)
+        r1 = command(self.pipe, "MW", ",".join(spec))
+        if r1:
+            r2 = command(self.pipe, "MNA", "0,%03i,%s" % (memory.number + 1,
+                                                          memory.name))
+            if r2:
+                self.__memcache[memory.number] = memory
 
     def get_memory_upper(self):
         return self.mem_upper_limit - 1
@@ -192,8 +133,138 @@ class THD7xRadio(chirp_common.IcomRadio):
     def filter_name(self, name):
         return chirp_common.name8(name)
 
-class THD7Radio(THD7xRadio):
+class THD7Radio(KenwoodLiveRadio):
     MODEL = "TH-D7(a)(g)"
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "0",
+            "0",
+            "%03i" % (mem.number + 1),
+            "%011i" % (mem.freq * 1000000),
+            "%i" % STEPS.index(mem.tuning_step),
+            "%i" % rev(DUPLEX, mem.duplex),
+            "0",
+            "%i" % (mem.tmode == "Tone"),
+            "%i" % (mem.tmode == "TSQL"),
+            "", # DCS Flag
+            "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
+            "", # DCS Code
+            "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
+            "%09i" % (mem.offset * 1000000),
+            "%i" % rev(MODES, mem.mode),
+            "0")
+
+        return spec
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+
+        mem.number = int(spec[2]) - 1
+        mem.freq = int(spec[3]) / 1000000.0
+        mem.tuning_step = STEPS[int(spec[4])]
+        mem.duplex = DUPLEX[int(spec[5])]
+        mem.tmode = get_tmode(spec[7], spec[8], spec[9])
+        mem.rtone = chirp_common.TONES[int(spec[10]) - 1]
+        mem.ctone = chirp_common.TONES[int(spec[12]) - 1]
+        if spec[11] and spec[11].isdigit():
+            mem.dtcs = chirp_common.DTCS_CODES[int(spec[11][:-1]) - 1]
+        else:
+            print "Unknown or invalid DCS: %s" % spec[11]
+        if spec[13]:
+            mem.offset = int(spec[13]) / 1000000.0
+        else:
+            mem.offset = 0.0
+        mem.mode = MODES[int(spec[14])]
+
+        return mem
+
+class TMD700Radio(KenwoodLiveRadio):
+    MODEL = "TH-D700"
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "0",
+            "0",
+            "%03i" % (mem.number + 1),
+            "%011i" % (mem.freq * 1000000),
+            "%i" % STEPS.index(mem.tuning_step),
+            "%i" % rev(DUPLEX, mem.duplex),
+            "0",
+            "%i" % (mem.tmode == "Tone"),
+            "%i" % (mem.tmode == "TSQL"),
+            "%i" % (mem.tmode == "DTCS"),
+            "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
+            "%03i0" % (chirp_common.DTCS_CODES.index(mem.dtcs) + 1),
+            "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
+            "%09i" % (mem.offset * 1000000),
+            "%i" % rev(MODES, mem.mode),
+            "0")
+
+        return spec
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+
+        mem.number = int(spec[2]) - 1
+        mem.freq = int(spec[3]) / 1000000.0
+        mem.tuning_step = STEPS[int(spec[4])]
+        mem.duplex = DUPLEX[int(spec[5])]
+        mem.tmode = get_tmode(spec[7], spec[8], spec[9])
+        mem.rtone = chirp_common.TONES[int(spec[10]) - 1]
+        mem.ctone = chirp_common.TONES[int(spec[12]) - 1]
+        if spec[11] and spec[11].isdigit():
+            mem.dtcs = chirp_common.DTCS_CODES[int(spec[11][:-1]) - 1]
+        else:
+            print "Unknown or invalid DCS: %s" % spec[11]
+        if spec[13]:
+            mem.offset = int(spec[13]) / 1000000.0
+        else:
+            mem.offset = 0.0
+        mem.mode = MODES[int(spec[14])]
+
+        return mem
+
+class TMV7Radio(KenwoodLiveRadio):
+    MODEL = "TM-V7"
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "0",
+            "0",
+            "%03i" % (mem.number + 1),
+            "%011i" % (mem.freq * 1000000),
+            "%i" % STEPS.index(mem.tuning_step),
+            "%i" % rev(DUPLEX, mem.duplex),
+            "0",
+            "%i" % (mem.tmode == "Tone"),
+            "%i" % (mem.tmode == "TSQL"),
+            "0",
+            "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
+            "000",
+            "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
+            "",
+            "0")
+
+        return spec
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+        mem.number = int(spec[2]) - 1
+        mem.freq = int(spec[3]) / 1000000.0
+        mem.tuning_step = STEPS[int(spec[4])]
+        mem.duplex = DUPLEX[int(spec[5])]
+        if int(spec[7]):
+            mem.tmode = "Tone"
+        elif int(spec[8]):
+            mem.tmode = "TSQL"
+        mem.rtone = chirp_common.TONES[int(spec[10]) - 1]
+        mem.ctone = chirp_common.TONES[int(spec[12]) - 1]
+
+        return mem
+
+    def filter_name(self, name):
+        return name[:7]
 
 if __name__ == "__main__":
     import serial

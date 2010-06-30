@@ -53,7 +53,7 @@ class ChirpMain(gtk.Window):
 
         if not eset or \
                 isinstance(eset.radio, ic9x.IC9xRadio) or \
-                isinstance(eset.radio, thd7.THD7xRadio) or \
+                isinstance(eset.radio, thd7.KenwoodLiveRadio) or \
                 isinstance(eset.radio, idrp.IDRPx000V):
             mmap_sens = False
         else:
@@ -115,6 +115,12 @@ class ChirpMain(gtk.Window):
 
         if res != gtk.RESPONSE_OK:
             return
+
+        if type(rclass).__name__ == "function":
+            # We have a detect function
+            fn = rclass
+            print "Running detect"
+            rclass = fn(port)
         
         ser = serial.Serial(port=port,
                             baudrate=rclass.BAUD_RATE,
@@ -220,7 +226,7 @@ class ChirpMain(gtk.Window):
             return
 
         if rtype == clone.AUTO_DETECT_STRING:
-            rtype = detect.detect_radio(port)
+            rtype = detect.detect_icom_radio(port)
 
         try:
             rc = directory.get_radio(rtype)
@@ -440,8 +446,8 @@ class ChirpMain(gtk.Window):
             self.do_open_live(ic9x.IC9xRadioA, "ic9x")
         elif action == "open9xB":
             self.do_open_live(ic9x.IC9xRadioB, "ic9x")
-        elif action == "openTHD7x":
-            self.do_open_live(thd7.THD7Radio, "thd7")
+        elif action == "openkenwlive":
+            self.do_open_live(detect.detect_kenwoodlive_radio, "thd7")
         elif action == "openrpxkv":
             self.do_open_live(idrp.IDRPx000V, "idrpx000v")
         elif action == "import":
@@ -484,7 +490,7 @@ class ChirpMain(gtk.Window):
         <menuitem action="open9xA"/>
         <menuitem action="open9xB"/>
         <menuitem action="openrpxkv"/>
-        <menuitem action="openTHD7x"/>
+        <menuitem action="openkenwlive"/>
       </menu>
       <menu action="recent" name="recent"/>
       <separator/>
@@ -509,7 +515,7 @@ class ChirpMain(gtk.Window):
             ('openlive', gtk.STOCK_CONNECT, "_Connect to a radio", None, None, self.mh),
             ('open9xA', None, "Icom IC9x Band A", None, None, self.mh),
             ('open9xB', None, "Icom IC9x Band B", None, None, self.mh),
-            ('openTHD7x', None, "Kenwood TH-D7/TM-D700", None, None, self.mh),
+            ('openkenwlive', None, "Kenwood TH-D7/TM-D700/TM-V7", None, None, self.mh),
             ('openrpxkv', gtk.STOCK_CONNECT, "Icom ID-RP*", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),

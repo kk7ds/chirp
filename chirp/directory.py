@@ -40,6 +40,8 @@ DRV_TO_RADIO = {
 
     # Kenwood
     "thd7"           : thd7.THD7Radio,
+    "tmd700"         : thd7.TMD700Radio,
+    "tmv7"           : thd7.TMV7Radio,
     "v71a"           : tmv71.TMV71ARadio,
 }
 
