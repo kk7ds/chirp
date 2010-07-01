@@ -311,7 +311,7 @@ def set_tone_enabled(mmap, mode):
     if mode == "Tone":
         val |= 0x04
     elif mode == "TSQL":
-        val |= 0x2C
+        val |= 0x0C
     elif mode == "DTCS":
         val |= 0x18
 
