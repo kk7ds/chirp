@@ -135,7 +135,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
         self._mmap = clone_in(self)
 
     def sync_out(self):
-        self.update_checksum()
+        self._update_checksum()
         clone_out(self)
 
 if __name__ == "__main__":
