@@ -132,7 +132,7 @@ class ImportDialog(gtk.Dialog):
         rlist_changed = False
         ulist_changed = False
 
-        if not isinstance(self.dst_radio, chirp_common.IcomDstarRadio):
+        if not isinstance(self.dst_radio, chirp_common.IcomDstarSupport):
             return
 
         ulist = self.dst_radio.get_urcall_list()
@@ -171,9 +171,9 @@ class ImportDialog(gtk.Dialog):
 
         import_list = self.get_import_list()
 
-        has_dstar = isinstance(self.dst_radio, chirp_common.IcomDstarRadio)
+        has_dstar = isinstance(self.dst_radio, chirp_common.IcomDstarSupport)
 
-        if has_dstar and self.dst_radio.feature_req_call_lists:
+        if has_dstar and self.dst_radio.get_features().requires_call_lists:
             self.ensure_calls(dst_rthread, import_list)
 
         dst_banks = self.dst_radio.get_banks()
@@ -183,8 +183,7 @@ class ImportDialog(gtk.Dialog):
             mem = self.src_radio.get_memory(old).dupe()
             mem.number = new
 
-            if not self.dst_radio.feature_longnames:
-                mem.name = mem.name[:6].upper()
+            mem.name = self.dst_radio.filter_name(mem.name)
 
             if dst_banks and not mem.bank in dst_banks:
                 mem.bank = None

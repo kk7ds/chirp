@@ -17,8 +17,7 @@
 
 from chirp import chirp_common, icf, ic2820_ll, errors
 
-class IC2820Radio(chirp_common.IcomMmapRadio,
-                  chirp_common.IcomDstarRadio):
+class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "IC-2820H"
 
@@ -36,11 +35,13 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)
 
-    feature_bankindex = True
-    feature_req_call_lists = False
-    feature_longnames = True
-
     _memories = {}
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank_index = True
+        rf.requires_call_lists = False
+        return rf
 
     def get_memory_upper(self):
         return 499
@@ -106,11 +107,8 @@ class IC2820Radio(chirp_common.IcomMmapRadio,
         self._memories[memory.number] = memory
 
     def sync_in(self):
-        self._mmap = icf.clone_from_radio(self)
+        icf.IcomCloneModeRadio.sync_in(self)
         self.process_mmap()
-
-    def sync_out(self):
-        return icf.clone_to_radio(self)
 
     def get_raw_memory(self, number):
         return ic2820_ll.get_raw_memory(self._mmap, number)

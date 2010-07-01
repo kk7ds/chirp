@@ -26,8 +26,7 @@ def isUHF(pipe):
 
     return uhf
 
-class ICx8xRadio(chirp_common.IcomMmapRadio,
-                 chirp_common.IcomDstarRadio):
+class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "IC-V82/U82"
 
@@ -68,7 +67,7 @@ class ICx8xRadio(chirp_common.IcomMmapRadio,
         return flag
 
     def __init__(self, pipe):
-        chirp_common.IcomMmapRadio.__init__(self, pipe)
+        icf.IcomCloneModeRadio.__init__(self, pipe)
 
         # Until I find a better way, I'll stash a boolean to indicate
         # UHF-ness in an unused region of memory.  If we're opening a
@@ -82,13 +81,12 @@ class ICx8xRadio(chirp_common.IcomMmapRadio,
 
     def sync_in(self):
         self._get_type()
-        self._mmap = icf.clone_from_radio(self)
+        icf.IcomCloneModeRadio.sync_in(self)
         self._mmap[0x1930] = self.isUHF and 1 or 0
 
     def sync_out(self):
         self._get_type()
-        from chirp import util
-        return icf.clone_to_radio(self)
+        icf.IcomCloneModeRadio.sync_out(self)
 
     def get_special_locations(self):
         return sorted(icx8x_ll.ICx8x_SPECIAL.keys())

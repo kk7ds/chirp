@@ -87,15 +87,15 @@ class CloneSettingsDialog(gtk.Dialog):
         self.__rtypes = {}
         for drv in directory.DRV_TO_RADIO.keys():
             cls = directory.get_radio(drv)
-            if issubclass(cls, chirp_common.IcomFileBackedRadio):
+            if issubclass(cls, chirp_common.CloneModeRadio):
                 self.__rtypes[directory.get_radio_name(drv)] = drv
 
         type_choices = sorted(self.__rtypes.keys())
         type_choices.insert(0, AUTO_DETECT_STRING)
         self.__rtypes[AUTO_DETECT_STRING] = AUTO_DETECT_STRING
 
+        global _LAST_MODEL
         if not _LAST_MODEL:
-            global _LAST_MODEL
             _LAST_MODEL = type_choices[0]
 
         if rtype:

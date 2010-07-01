@@ -17,7 +17,7 @@
 
 import time
 
-from chirp import chirp_common, errors, memmap, ic9x_ll, util
+from chirp import chirp_common, errors, memmap, ic9x_ll, util, icf
 
 IC9xA_SPECIAL = {}
 IC9xA_SPECIAL_REV = {}
@@ -56,7 +56,7 @@ IC9x_SPECIAL_REV = {
     2 : IC9xB_SPECIAL_REV,
 }
 
-class IC9xRadio(chirp_common.IcomRadio):
+class IC9xRadio(chirp_common.LiveRadio):
     BAUD_RATE = 38400
     VENDOR = "Icom"
     MODEL = "IC-91/92AD"
@@ -65,15 +65,17 @@ class IC9xRadio(chirp_common.IcomRadio):
     __last = 0
     mem_upper_limit = 300
 
-    feature_bankindex = True
-    feature_req_call_lists = False
-    feature_longnames = True
-
     def __init__(self, *args, **kwargs):
-        chirp_common.IcomRadio.__init__(self, *args, **kwargs)
+        chirp_common.LiveRadio.__init__(self, *args, **kwargs)
 
         self.__memcache = {}
         self.__bankcache = {}
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank_index = True
+        rf.requires_call_lists = False
+        return rf
 
     def _maybe_send_magic(self):
         if (time.time() - self.__last) > 0.5:
@@ -211,7 +213,7 @@ class IC9xRadioA(IC9xRadio):
     def get_memory_upper(self):
         return self.mem_upper_limit
 
-class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarRadio):
+class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
     vfo = 2
     mem_upper_limit = 399
 

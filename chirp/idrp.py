@@ -107,7 +107,7 @@ RP_IMMUTABLE = ["number", "skip", "bank", "extd_number", "name", "rtone",
                 "ctone", "dtcs", "tmode", "dtcs_polarity", "skip", "duplex",
                 "offset", "mode", "tuning_step", "bank_index"]
 
-class IcomRepeater(chirp_common.IcomRadio):
+class IcomRepeater(chirp_common.LiveRadio):
     pass
 
 class IDRPx000V(IcomRepeater):

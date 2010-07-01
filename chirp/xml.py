@@ -55,10 +55,9 @@ def default_banks():
 
     return banks
 
-class XMLRadio(chirp_common.IcomFileBackedRadio,
-               chirp_common.IcomDstarRadio):
+class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     def __init__(self, pipe):
-        chirp_common.IcomFileBackedRadio.__init__(self, None)
+        chirp_common.CloneModeRadio.__init__(self, None)
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
             self.doc = libxml2.parseFile(self._filename)

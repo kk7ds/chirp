@@ -51,10 +51,7 @@ class ChirpMain(gtk.Window):
         else:
             eset = self.get_current_editorset()
 
-        if not eset or \
-                isinstance(eset.radio, ic9x.IC9xRadio) or \
-                isinstance(eset.radio, kenwood_live.KenwoodLiveRadio) or \
-                isinstance(eset.radio, idrp.IDRPx000V):
+        if not eset or isinstance(eset.radio, chirp_common.LiveRadio):
             mmap_sens = False
         else:
             mmap_sens = True
@@ -146,7 +143,7 @@ class ChirpMain(gtk.Window):
     def do_saveas(self):
         eset = self.get_current_editorset()
 
-        if isinstance(eset.radio, chirp_common.IcomMmapRadio):
+        if isinstance(eset.radio, chirp_common.CloneModeRadio):
             types = [("Radio-specific Image (*.img)", "*.img")]
         elif isinstance(eset.radio, csv.CSVRadio):
             types = [("CSV File (*.csv)", "*.csv")]
@@ -309,7 +306,7 @@ class ChirpMain(gtk.Window):
         if eset.radio.pipe:
             eset.radio.pipe.close()
 
-        if isinstance(eset.radio, ic9x.IC9xRadio):
+        if isinstance(eset.radio, chirp_common.LiveRadio):
             action = self.menu_ag.get_action("openlive")
             if action:
                 action.set_sensitive(True)
@@ -513,10 +510,10 @@ class ChirpMain(gtk.Window):
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
             ('openlive', gtk.STOCK_CONNECT, "_Connect to a radio", None, None, self.mh),
-            ('open9xA', None, "Icom IC9x Band A", None, None, self.mh),
-            ('open9xB', None, "Icom IC9x Band B", None, None, self.mh),
+            ('open9xA', None, "Icom IC91/92AD Band A", None, None, self.mh),
+            ('open9xB', None, "Icom IC91/92AD Band B", None, None, self.mh),
             ('openkenwlive', None, "Kenwood TH-D7/TM-D700/TM-V7", None, None, self.mh),
-            ('openrpxkv', gtk.STOCK_CONNECT, "Icom ID-RP*", None, None, self.mh),
+            ('openrpxkv', gtk.STOCK_CONNECT, "Icom ID-RP2000V/4000V/2V/2D", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),

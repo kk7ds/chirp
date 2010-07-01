@@ -469,7 +469,7 @@ time.  Are you sure you want to do this?"""
     def col(self, caption):
         i = 0
         for column in self.cols:
-            if column[0] == caption:
+            if column[0].upper() == caption.upper():
                 return i
 
             i += 1
@@ -581,7 +581,7 @@ time.  Are you sure you want to do this?"""
         else:
             bidx = get_bank_index(bank)
             if vals[self.col("Bank Index")] == -1 and \
-                    self.rthread.radio.feature_bankindex:
+                    self.rthread.radio.get_features().has_bank_index:
                 bank_index = self.rthread.radio.get_available_bank_index(bidx)
                 print "Chose %i index for bank %s" % (bank_index, bank)
                 self.store.set(iter, self.col("Bank Index"), bank_index)
@@ -721,10 +721,23 @@ time.  Are you sure you want to do this?"""
         
         self.root = vbox
 
-        if not rthread.radio.feature_bankindex:
-            bi = self.view.get_column(self.col("Bank Index"))
-            bi.set_visible(False)
-
+        maybe_hide = [
+            ("has_bank_index", "Bank Index"),
+            ("has_bank", "Bank"),
+            ("has_dtcs", "DTCS Code"),
+            ("has_dtcs_polarity", "DTCS Pol"),
+            ("has_mode", "Mode"),
+            ("has_offset", "Offset"),
+            ("has_name", "Name"),
+            ("has_tuning_step", "Tune Step"),
+            ]
+            
+        for feature, colname in maybe_hide:
+            supported = self.rthread.radio.get_features()[feature]
+            print "%s supported: %s" % (colname, supported)
+            bi = self.view.get_column(self.col(colname))
+            bi.set_visible(supported)
+                
         self.prefill()
 
         # Run low priority jobs to get the rest of the memories
@@ -797,7 +810,7 @@ class DstarMemoryEditor(MemoryEditor):
             for call in calls:
                 self.choices["URCALL"].append((call, call))
         
-        if self.rthread.radio.feature_req_call_lists:
+        if self.rthread.radio.get_features().requires_call_lists:
             ujob = common.RadioJob(ucall_cb, "get_urcall_list")
             ujob.set_desc("Downloading URCALL list")
             rthread.submit(ujob)
@@ -809,14 +822,14 @@ class DstarMemoryEditor(MemoryEditor):
                 self.choices["RPT1CALL"].append((call, call))
                 self.choices["RPT2CALL"].append((call, call))
 
-        if self.rthread.radio.feature_req_call_lists:
+        if self.rthread.radio.get_features().requires_call_lists:
             rjob = common.RadioJob(rcall_cb, "get_repeater_call_list")
             rjob.set_desc("Downloading RPTCALL list")
             rthread.submit(rjob)
 
         _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
 
-        if not rthread.radio.feature_req_call_lists:
+        if not rthread.radio.get_features().requires_call_lists:
             for i in _dv_columns:
                 if not self.choices.has_key(i):
                     continue

@@ -351,6 +351,29 @@ def read_file(filename):
 
     return model, memmap.MemoryMap(_mmap)
 
+class IcomCloneModeRadio(chirp_common.CloneModeRadio):
+    BAUDRATE = 9600
+
+    _model = "\x00\x00\x00\x00"  # 4-byte model string
+    _endframe = ""               # Model-unique ending frame
+    _ranges = []                 # Ranges of the mmap to send to the radio
+
+    def get_model(self):
+        return self._model
+
+    def get_endframe(self):
+        return self._endframe
+
+    def get_ranges(self):
+        return self._ranges
+
+    def sync_in(self):
+        self._mmap = clone_from_radio(self)
+
+    def sync_out(self):
+        clone_to_radio(self)
+
+
 if __name__ == "__main__":
     import sys
 

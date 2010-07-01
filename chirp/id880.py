@@ -18,8 +18,7 @@
 from chirp import chirp_common, icf, id880_ll
 
 
-class ID880Radio(chirp_common.IcomMmapRadio,
-                 chirp_common.IcomDstarRadio):
+class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "ID-880H"
 
@@ -31,12 +30,16 @@ class ID880Radio(chirp_common.IcomMmapRadio,
                (0xF5c0, 0xf5e0, 16),
                (0xf5e0, 0xf600, 32)]
 
-    feature_req_call_lists = False
-    feature_bankindex = True
-
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 60)
     RPTCALL_LIMIT = (1, 99)
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.requires_call_lists = True
+        rf.has_bank_index = True
+        rf.valid_modes = [x for x in id880_ll.ID880_MODES if x is not None]
+        return rf
 
     def get_available_bank_index(self, bank):
         indexes = []
@@ -53,12 +56,6 @@ class ID880Radio(chirp_common.IcomMmapRadio,
                 return i
 
         raise errors.RadioError("Out of slots in this bank")
-
-    def sync_in(self):
-        self._mmap = icf.clone_from_radio(self)
-
-    def sync_out(self):
-        return icf.clone_to_radio(self)
 
     def get_raw_memory(self, number):
         return id880_ll.get_raw_memory(self._mmap, number)

@@ -19,9 +19,7 @@ import os
 
 from chirp import chirp_common, errors
 
-class CSVRadio(chirp_common.IcomFileBackedRadio):
-    feature_longnames = True
-
+class CSVRadio(chirp_common.CloneModeRadio):
     def _blank(self):
         self.memories = []
         for i in range(0, self.get_memory_upper()+1):
@@ -31,7 +29,7 @@ class CSVRadio(chirp_common.IcomFileBackedRadio):
             self.memories.append(m)
 
     def __init__(self, pipe):
-        chirp_common.IcomFileBackedRadio.__init__(self, None)
+        chirp_common.CloneModeRadio.__init__(self, None)
 
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):

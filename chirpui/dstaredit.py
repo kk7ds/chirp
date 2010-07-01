@@ -121,7 +121,7 @@ class DStarEditor(common.Editor):
     def make_callsigns(self):
         box = gtk.HBox(True, 2)
 
-        fixed = self.rthread.radio.feature_has_implicit_calls
+        fixed = self.rthread.radio.get_features().has_implicit_calls
 
         frame = gtk.Frame("Your callsign")
         self.editor_ucall = CallsignEditor(first_fixed=fixed)

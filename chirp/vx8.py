@@ -17,29 +17,28 @@
 
 from chirp import chirp_common, yaesu_clone, vx8_ll
 
-class VX8Radio(chirp_common.IcomFileBackedRadio):
+class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
     MODEL = "VX-8"
 
     _memsize = 65227
-    feature_bankindex = False
-    feature_longnames = True
 
     _block_lengths = [ 10, 65217 ]
     _block_size = 32
 
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank = False
+        rf.has_dtcs_polarity = False
+        rf.valid_modes = ["FM", "WFM", "AM"]
+        return rf
+
     def get_raw_memory(self, number):
         return vx8_ll.get_raw_memory(self._mmap, number)
 
-    def sync_in(self):
-        print "Cloning in..."
-        self._mmap = yaesu_clone.clone_in(self)
-
-    def sync_out(self):
-        print "Cloning out..."
+    def _update_checksum(self):
         vx8_ll.update_checksum(self._mmap)
-        yaesu_clone.clone_out(self)
 
     def get_memory(self, number):
         return vx8_ll.get_memory(self._mmap, number)

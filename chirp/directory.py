@@ -67,7 +67,7 @@ def get_radio_by_image(image_file):
     size = os.stat(image_file).st_size
 
     for radio in DRV_TO_RADIO.values():
-        if not issubclass(radio, chirp_common.IcomFileBackedRadio):
+        if not issubclass(radio, chirp_common.CloneModeRadio):
             continue
         if radio._memsize == size:
             return radio
@@ -76,3 +76,17 @@ def get_radio_by_image(image_file):
 def get_radio_name(driver):
     cls = DRV_TO_RADIO[driver]
     return cls._get_name(cls)
+
+if __name__ == "__main__":
+    vendors = {
+        "Icom" : {},
+        "Yaesu" : {},
+        "Kenwood" : {},
+        }
+
+    for radio in DRV_TO_RADIO.values():
+        vendors[radio.VENDOR][radio.MODEL]
+        print "%s %s:" % (radio.VENDOR, radio.MODEL)
+        if radio.VARIANT:
+            print "  Variant: %s" % radio.VARIANT
+        print "  Baudrate: %i" % radio.BAUD_RATE

@@ -24,7 +24,7 @@ def detect_icom_radio(port):
     s.close()
 
     for rtype, rclass in directory.DRV_TO_RADIO.items():
-        if not issubclass(rclass, chirp_common.IcomFileBackedRadio):
+        if not issubclass(rclass, icf.IcomCloneModeRadio):
             continue
         if rclass._model[:4] == md[:4]:
             print "Auto-detected radio `%s' on port `%s'" % (rtype, port)

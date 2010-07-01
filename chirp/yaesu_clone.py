@@ -124,6 +124,20 @@ def clone_out(radio):
 
     print "Clone completed in %i seconds" % (time.time() - start)
 
+class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
+    _block_lengths = [8, 65536]
+    _block_size = 8
+
+    def _update_checksum(self):
+        pass
+
+    def sync_in(self):
+        self._mmap = clone_in(self)
+
+    def sync_out(self):
+        self.update_checksum()
+        clone_out(self)
+
 if __name__ == "__main__":
     import sys, serial
     s = serial.Serial(port=sys.argv[1], baudrate=19200, timeout=5)

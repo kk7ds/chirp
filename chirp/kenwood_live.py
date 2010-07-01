@@ -68,7 +68,7 @@ def get_tmode(tone, ctcss, dcs):
 def iserr(result):
     return result in ["N", "?"]
 
-class KenwoodLiveRadio(chirp_common.IcomRadio):
+class KenwoodLiveRadio(chirp_common.LiveRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = ""
@@ -76,7 +76,7 @@ class KenwoodLiveRadio(chirp_common.IcomRadio):
     mem_upper_limit = 200
 
     def __init__(self, *args, **kwargs):
-        chirp_common.IcomRadio.__init__(self, *args, **kwargs)
+        chirp_common.LiveRadio.__init__(self, *args, **kwargs)
 
         self.__memcache = {}
 
@@ -145,6 +145,16 @@ class KenwoodLiveRadio(chirp_common.IcomRadio):
 
 class THD7Radio(KenwoodLiveRadio):
     MODEL = "TH-D7(a)(g)"
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_mode = False
+        rf.has_tuning_step = False
+        rf.valid_modes = MODES.values()
+        return rf
 
     def _make_mem_spec(self, mem):
         spec = ( \
@@ -237,6 +247,16 @@ class TMD700Radio(KenwoodLiveRadio):
 
 class TMV7Radio(KenwoodLiveRadio):
     MODEL = "TM-V7"
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_mode = False
+        rf.has_tuning_step = False
+        rf.valid_modes = ["FM"]
+        return rf
 
     def _make_mem_spec(self, mem):
         spec = ( \

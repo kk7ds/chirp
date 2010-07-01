@@ -386,7 +386,10 @@ class DVMemory(Memory):
         self.dv_urcall = vals[15].rstrip()[:8]
         self.dv_rpt1call = vals[16].rstrip()[:8]
         self.dv_rpt2call = vals[17].rstrip()[:8]
-        self.dv_code = int(vals[18].strip())
+        try:
+            self.dv_code = int(vals[18].strip())
+        except:
+            self.dv_code = 0
 
 class Bank:
     def __init__(self, name):
@@ -412,7 +415,61 @@ class Callable:
     def __init__(self, target):
         self.__call__ = target
 
-class IcomRadio:
+BOOLEAN = [True, False]
+
+class RadioFeatures:
+    _valid_map = {
+        # General
+        "has_bank_index"      : BOOLEAN,
+        "has_dtcs"            : BOOLEAN,
+        "has_dtcs_polarity"   : BOOLEAN,
+        "has_mode"            : BOOLEAN,
+        "has_offset"          : BOOLEAN,
+        "has_name"            : BOOLEAN,
+        "has_bank"            : BOOLEAN,
+        "has_tuning_step"     : BOOLEAN,
+
+        # Attributes
+        "valid_modes"         : [],
+
+        # D-STAR
+        "requires_call_lists" : BOOLEAN,
+        "has_implicit_calls"  : BOOLEAN,
+        }
+
+    def __setattr__(self, name, val):
+        if not name in self._valid_map.keys():
+            raise ValueError("No such attribute `%s'" % name)
+        elif self._valid_map.has_key(name) and \
+                self._valid_map[name] != [] and \
+                val not in self._valid_map[name]:
+            raise ValueError("Invalid value `%s' for attribute `%s'" % (val,
+                                                                        name))
+        else:
+            self.__dict__[name] = val
+
+    def __init__(self):
+        self.has_bank_index = False
+        self.has_dtcs = True
+        self.has_dtcs_polarity = True
+        self.has_mode = True
+        self.has_offset = True
+        self.has_name = True
+        self.has_bank = True
+        self.has_tuning_step = True
+
+        self.valid_modes = list(MODES)
+
+        self.requires_call_lists = True
+        self.has_implicit_calls = False
+
+    def is_a_feature(self, name):
+        return name in self._valid_map.keys()
+
+    def __getitem__(self, name):
+        return self.__dict__[name]
+
+class Radio:
     BAUD_RATE = 9600
     VENDOR = "Unknown"
     MODEL = "Unknown"
@@ -420,11 +477,11 @@ class IcomRadio:
 
     status_fn = lambda x, y: console_status(y)
 
-    feature_bankindex = False
-    feature_longnames = False
-
     def __init__(self, pipe):
         self.pipe = pipe
+
+    def get_features(self):
+        return RadioFeatures()
 
     def _get_name_raw(*args):
         cls = args[-1]
@@ -474,14 +531,21 @@ class IcomRadio:
     def filter_name(self, name):
         return name6(name)
 
-class IcomFileBackedRadio(IcomRadio):
+class CloneModeRadio(Radio):
+    """A clone-mode radio does a full memory dump in and out and we store
+    an image of the radio into an image file"""
+
+    _memsize = 0
+
     def __init__(self, pipe):
+
+        self._mmap = None
 
         if isinstance(pipe, str):
             self.pipe = None
             self.load_mmap(pipe)
         else:
-            IcomRadio.__init__(self, pipe)
+            Radio.__init__(self, pipe)
 
     def save(self, filename):
         self.save_mmap(filename)
@@ -504,26 +568,13 @@ class IcomFileBackedRadio(IcomRadio):
         mapfile.write(self._mmap.get_packed())
         mapfile.close()
 
-class IcomMmapRadio(IcomFileBackedRadio):
-    BAUDRATE = 9600
-
-    _model = "\x00\x00\x00\x00"
-    _memsize = 0
-    _mmap = None
-    _endframe = ""
-    _ranges = []
-
     def sync_in(self):
+        "Initiate a radio-to-PC clone operation"
         pass
 
     def sync_out(self):
+        "Initiate a PC-to-radio clone operation"
         pass
-
-    def get_model(self):
-        return self._model
-
-    def get_endframe(self):
-        return self._endframe
 
     def get_memsize(self):
         return self._memsize
@@ -531,17 +582,14 @@ class IcomMmapRadio(IcomFileBackedRadio):
     def get_mmap(self):
         return self._mmap
 
-    def get_ranges(self):
-        return self._ranges
+class LiveRadio(Radio):
+    pass
 
-class IcomDstarRadio:
+class IcomDstarSupport:
     MYCALL_LIMIT = (1, 1)
     URCALL_LIMIT = (1, 1)
     RPTCALL_LIMIT = (1, 1)
     
-    feature_req_call_lists = True
-    feature_has_implicit_calls = False
-
     def get_urcall_list(self):
         return []
 

@@ -17,8 +17,7 @@
 
 from chirp import chirp_common, icf, id800_ll
 
-class ID800v2Radio(chirp_common.IcomMmapRadio,
-                   chirp_common.IcomDstarRadio):
+class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "ID-800H"
     VARIANT = "v2"
@@ -68,7 +67,11 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
     URCALL_LIMIT  = (1, 99)
     RPTCALL_LIMIT = (1, 59)
 
-    feature_has_implicit_calls = True
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_implicit_calls = True
+        rf.valid_modes = id800_ll.ID800_MODES.values()
+        return rf
 
     def get_memory_upper(self):
         return 499
@@ -109,11 +112,8 @@ class ID800v2Radio(chirp_common.IcomMmapRadio,
             self._mmap = id800_ll.set_memory(self._mmap, memory)
 
     def sync_in(self):
-        self._mmap = icf.clone_from_radio(self)
+        icf.IcomCloneModeRadio.sync_in(self)
         self.process_mmap()
-
-    def sync_out(self):
-        return icf.clone_to_radio(self)
 
     def get_raw_memory(self, number):
         return id800_ll.get_raw_memory(self._mmap, number)

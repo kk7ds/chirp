@@ -17,14 +17,12 @@
 
 from chirp import chirp_common, yaesu_clone, ft7800_ll
 
-class FT7800Radio(chirp_common.IcomFileBackedRadio):
+class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODEL = "FT-7800"
 
     _memsize = 31561
-    _block_lengths = [8, 31552, 1]
-    _block_size = 64
 
     def sync_in(self):
         self._mmap = ft7800_ll.download(self)

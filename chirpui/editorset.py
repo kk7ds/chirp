@@ -19,7 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import chirp_common, directory, ic9x, csv, xml
+from chirp import chirp_common, directory, csv, xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 
 def radio_class_from_file(filename):
@@ -48,7 +48,7 @@ class EditorSet(gtk.VBox):
             self.filename = source
             rclass = radio_class_from_file(self.filename)
             self.radio = rclass(self.filename)
-        elif isinstance(source, chirp_common.IcomRadio):
+        elif isinstance(source, chirp_common.LiveRadio):
             self.radio = source
             self.filename = "(live)"
         else:
@@ -64,7 +64,7 @@ class EditorSet(gtk.VBox):
         self.tabs.connect("switch-page", self.tab_selected)
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
-        if isinstance(self.radio, chirp_common.IcomDstarRadio):
+        if isinstance(self.radio, chirp_common.IcomDstarSupport):
             self.memedit = memedit.DstarMemoryEditor(self.rthread)
             self.dstared = dstaredit.DStarEditor(self.rthread)
         else:
@@ -73,7 +73,7 @@ class EditorSet(gtk.VBox):
             print "Started"
             self.dstared = None
 
-        if self.radio.feature_bankindex:
+        if self.radio.get_features().has_bank_index:
             self.banked = bankedit.BankEditor(self.rthread)
         else:
             self.banked = None
@@ -158,7 +158,7 @@ class EditorSet(gtk.VBox):
         self.update_tab()
 
     def editor_changed(self, *args):
-        if not isinstance(self.radio, ic9x.IC9xRadio):
+        if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
 

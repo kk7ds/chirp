@@ -18,7 +18,7 @@
 from chirp import chirp_common, errors, util
 from chirp import tmv71_ll
 
-class TMV71ARadio(chirp_common.IcomFileBackedRadio):
+class TMV71ARadio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = "TM-V71A"
