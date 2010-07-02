@@ -115,6 +115,7 @@ class IDRPx000V(IcomRepeater):
     VENDOR = "Icom"
     MODEL = "ID-2000V/4000V/2D/2V"
 
+    _model = "0000" # Unknown
     mem_upper_limit = 0
         
     def get_memory(self, number):
