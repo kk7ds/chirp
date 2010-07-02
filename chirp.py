@@ -285,6 +285,6 @@ if options.upload_mmap:
     else:
         print "Clone failed"
 
-if options.mmap and isinstance(radio, chirp_common.IcomMmapRadio):
+if options.mmap and isinstance(radio, chirp_common.CloneModeRadio):
     radio.save_mmap(options.mmap)
     
