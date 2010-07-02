@@ -273,11 +273,16 @@ def get_memory(_map, number):
     
     return mem
 
+def initialize(mmap):
+    mmap[0] = "\x00\x00\x14\x65\x20\xc0\x00\x00"
+    mmap[8] = "\xff" * 16
+    mmap[24] = "\x00\x10\x00\x08\x00\x0d\x00\x18"
+
 def set_memory(_map, mem):
     mmap = get_raw_memory(_map, mem.number)
 
     if not is_used(_map, mem.number):
-        pass
+        initialize(mmap)
 
     set_freq(mmap, mem.freq)
     set_duplex(mmap, mem.duplex)
