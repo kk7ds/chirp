@@ -144,6 +144,10 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                                                            memory.name))
             if not iserr(r2):
                 self.__memcache[memory.number] = memory
+            else:
+                raise errors.InvalidDataError("Radio refused %i" % memory.number)
+        else:
+            raise errors.InvalidDataError("Radio refused %i" % memory.number)
 
     def get_memory_upper(self):
         return self.mem_upper_limit - 1
@@ -271,7 +275,7 @@ class TMD700Radio(KenwoodLiveRadio):
 class TMV7Radio(KenwoodLiveRadio):
     MODEL = "TM-V7"
 
-    mem_upper_limit = 90
+    mem_upper_limit = 200 # Will be updated
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -325,11 +329,57 @@ class TMV7Radio(KenwoodLiveRadio):
     def get_sub_devices(self):
         return [TMV7RadioVHF(self.pipe), TMV7RadioUHF(self.pipe)]
 
-class TMV7RadioVHF(TMV7Radio):
+    def __test_location(self, loc):
+        mem = self.get_memory(loc)
+        if not mem.empty:
+            # Memory was not empty, must be valid
+            return True
+
+        # Mem was empty (or invalid), try to set it
+        if self._vfo == 0:
+            mem.freq = 144.0
+        else:
+            mem.freq = 440.0
+        mem.empty = False
+        try:
+            self.set_memory(mem)
+        except:
+            # Failed, so we're past the limit
+            return False
+
+        # Erase what we did
+        try:
+            self.erase_memory(loc)
+        except:
+            pass # V7A Can't delete just yet
+
+        return True
+
+    def _detect_split(self):
+        # Valid  splits:
+        limits = [50, 70, 90, 110, 130, 140]
+
+        for limit in limits:
+            print "Testing %s" % (limit)
+            # FIXME mylimit+1 when we move to native addressing
+            if not self.__test_location(limit):
+                self.mem_upper_limit = limit
+                break
+
+        print "Detected limit for VFO %i is %i" % (self._vfo,
+                                                   self.mem_upper_limit)
+
+
+class TMV7RadioSub(TMV7Radio):
+    def __init__(self, pipe):
+        KenwoodLiveRadio.__init__(self, pipe)
+        self._detect_split()
+
+class TMV7RadioVHF(TMV7RadioSub):
     VARIANT = "VHF"
     _vfo = 0
 
-class TMV7RadioUHF(TMV7Radio):
+class TMV7RadioUHF(TMV7RadioSub):
     VARIANT = "UHF"
     _vfo = 1
 
