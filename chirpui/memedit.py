@@ -34,8 +34,7 @@ from chirp import chirp_common, errors
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    
 
-def handle_ed(_, path, new, store, col):
-    iter = store.get_iter(path)
+def handle_ed(_, iter, new, store, col):
     old, = store.get(iter, col)
     if old != new:
         store.set(iter, col, new)
@@ -193,14 +192,15 @@ class MemoryEditor(common.Editor):
             if new == "(None)":
                 new = ""
 
-        if not handle_ed(rend, path, new, self.store, self.col(cap)) and \
+        iter = self.store.get_iter(path)
+
+        if not handle_ed(rend, iter, new, self.store, self.col(cap)) and \
                 cap != "Frequency":
             # No change was made
             # For frequency, we make an exception, since the handler might
             # have altered the duplex.  That needs to be fixed.
             return
 
-        iter = self.store.get_iter(path)
 
         def cb(result):
             if isinstance(result, Exception):
