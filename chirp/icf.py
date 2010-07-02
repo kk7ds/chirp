@@ -121,15 +121,23 @@ class RadioStream:
         return self._process_frames()
 
 def get_model_data(pipe, model="\x00\x00\x00\x00"):
-    send_clone_frame(pipe, 0xe0, model, raw=True)
+    if pipe.getBaudrate() != 9600:
+        print "Sending magic"
+        pipe.write(("\xfe" * 402))
+        pipe.write("\xfe\xfe\x01\x80\x19\xfd")
+        resp = pipe.read(16)
+        if resp.startswith("\xfe\xfe\x80\x01\x19"):
+            return "ic9x" # Fake model info for IC91/IC92
+    else:
+        send_clone_frame(pipe, 0xe0, model, raw=True)
 
-    stream = RadioStream(pipe)
-    frames = stream.get_frames()
+        stream = RadioStream(pipe)
+        frames = stream.get_frames()
 
-    if len(frames) != 1:
-        raise errors.RadioError("Unexpected response from radio")
+        if len(frames) != 1:
+            raise errors.RadioError("Unexpected response from radio")
 
-    return frames[0].payload
+        return frames[0].payload
 
 def get_clone_resp(pipe, length=None):
     def exit_criteria(buf, length):
@@ -352,6 +360,7 @@ def read_file(filename):
     return model, memmap.MemoryMap(_mmap)
 
 class IcomCloneModeRadio(chirp_common.CloneModeRadio):
+    VENDOR = "Icom"
     BAUDRATE = 9600
 
     _model = "\x00\x00\x00\x00"  # 4-byte model string
@@ -373,6 +382,9 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     def sync_out(self):
         clone_to_radio(self)
 
+class IcomLiveRadio(chirp_common.LiveRadio):
+    VENDOR = "Icom"
+    BAUD_RATE = 38400
 
 if __name__ == "__main__":
     import sys
