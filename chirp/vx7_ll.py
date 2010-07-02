@@ -55,6 +55,15 @@ def _get_freq_at(mmap, index):
     khz = (int("%02x" % ord(mmap[index]), 10) * 10000) + \
         (int("%02x" % ord(mmap[index+1]), 10) * 100) + \
         (int("%02x" % ord(mmap[index+2]), 10))
+
+    mult1250 = (khz+0.5) / 12.5
+    mult0625 = (khz+0.25) / 6.25
+    
+    if mult1250 == int(mult1250):
+        khz += 0.5
+    elif mult0625 == int(mult0625):
+        khz += 0.25
+
     return khz / 1000.0
 
 def _set_freq_at(mmap, index, freq):
