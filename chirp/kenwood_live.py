@@ -98,7 +98,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         command(self.pipe, "AI", "0")
 
     def get_memory(self, number):
-        if number < 0 or number >= 200:
+        if number < 0 or number >= self.mem_upper_limit:
             raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
         if self.__memcache.has_key(number):
             return self.__memcache[number]
@@ -133,7 +133,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         pass
 
     def set_memory(self, memory):
-        if memory.number < 0 or memory.number >= 200:
+        if memory.number < 0 or memory.number >= self.mem_upper_limit:
             raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
 
         spec = self._make_mem_spec(memory)
@@ -270,6 +270,8 @@ class TMD700Radio(KenwoodLiveRadio):
 
 class TMV7Radio(KenwoodLiveRadio):
     MODEL = "TM-V7"
+
+    mem_upper_limit = 90
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
