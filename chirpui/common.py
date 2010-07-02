@@ -218,3 +218,14 @@ def ask_yesno_question(msg, parent=None):
     d.destroy()
 
     return r == gtk.RESPONSE_YES
+
+def combo_select(box, value):
+    store = box.get_model()
+    iter = store.get_iter_first()
+    while iter:
+        if store.get(iter, 0)[0] == value:
+            box.set_active_iter(iter)
+            return True
+        iter = store.iter_next(iter)
+
+    return False

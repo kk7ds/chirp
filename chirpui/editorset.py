@@ -39,7 +39,7 @@ class EditorSet(gtk.VBox):
                     (gobject.TYPE_STRING,))
         }
 
-    def __init__(self, source, parent_window=None):
+    def __init__(self, source, parent_window=None, tempname=None):
         gtk.VBox.__init__(self, True, 0)
 
         self.parent_window = parent_window
@@ -50,7 +50,7 @@ class EditorSet(gtk.VBox):
             self.radio = rclass(self.filename)
         elif isinstance(source, chirp_common.LiveRadio):
             self.radio = source
-            self.filename = "(live)"
+            self.filename = source.VARIANT
         else:
             raise Exception("Unknown source type")
 
@@ -102,7 +102,9 @@ class EditorSet(gtk.VBox):
 
         self.label = self.text_label = None
         self.make_label()
-        self.modified = False
+        self.modified = (tempname is not None)
+        if tempname:
+            self.filename = tempname
         self.update_tab()
 
     def make_label(self):
@@ -132,6 +134,8 @@ class EditorSet(gtk.VBox):
     def save(self, fname=None):
         if not fname:
             fname = self.filename
+            if not os.path.exists(self.filename):
+                return # Probably before the first "Save as"
         else:
             self.filename = fname
 

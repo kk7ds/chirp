@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import tempfile
 
 import gtk
 import gobject
@@ -56,8 +57,13 @@ class ChirpMain(gtk.Window):
         else:
             mmap_sens = True
 
-        for i in ["save", "saveas", "cloneout"]:
+        # If it's a MMAP radio and the file exists, then we can save
+        cansave = bool(eset and os.path.exists(eset.filename) and mmap_sens)
+
+        for i in ["saveas", "upload"]:
             set_action_sensitive(i, mmap_sens)
+
+        set_action_sensitive("save", cansave)
 
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
@@ -79,7 +85,7 @@ class ChirpMain(gtk.Window):
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
-    def do_open(self, fname=None):
+    def do_open(self, fname=None, tempname=None):
         if not fname:
             types = [("CHIRP Radio Images (*.img)", "*.img"),
                      ("CHIRP Files (*.chirp)", "*.chirp"),
@@ -90,7 +96,7 @@ class ChirpMain(gtk.Window):
                 return
 
         try:
-            eset = editorset.EditorSet(fname, self)
+            eset = editorset.EditorSet(fname, self, tempname=tempname)
         except Exception, e:
             common.log_exception()
             common.show_error("There was an error opening %s: %s" % (fname, e))
@@ -102,38 +108,20 @@ class ChirpMain(gtk.Window):
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
-    def do_open_live(self, rclass, rtype):
-        dlg = clone.CloneSettingsDialog(clone_in=False,
-                                        filename="(live)",
-                                        rtype=rtype)
-        res = dlg.run()
-        port, _, _ = dlg.get_values()
-        dlg.destroy()
-
-        if res != gtk.RESPONSE_OK:
-            return
-
-        if type(rclass).__name__ == "function":
-            # We have a detect function
-            fn = rclass
-            print "Running detect"
-            rclass = fn(port)
+    def do_open_live(self, radio):
+        if radio.get_features().has_sub_devices:
+            devices = radio.get_sub_devices()
+        else:
+            devices = [radio]
         
-        ser = serial.Serial(port=port,
-                            baudrate=rclass.BAUD_RATE,
-                            timeout=0.1)
-        radio = rclass(ser)
-        
-        eset = editorset.EditorSet(radio, self)
-        eset.connect("want-close", self.do_close)
-        eset.connect("status", self.ev_status)
-        eset.show()
+        for device in devices:
+            eset = editorset.EditorSet(device, self)
+            eset.connect("want-close", self.do_close)
+            eset.connect("status", self.ev_status)
+            eset.show()
 
-        action = self.menu_ag.get_action("openlive")
-        action.set_sensitive(False)
-
-        tab = self.tabs.append_page(eset, eset.get_tab_label())
-        self.tabs.set_current_page(tab)
+            tab = self.tabs.append_page(eset, eset.get_tab_label())
+            self.tabs.set_current_page(tab)
 
     def do_save(self, eset=None):
         if not eset:
@@ -171,7 +159,7 @@ class ChirpMain(gtk.Window):
     def cb_clonein(self, radio, fn, emsg=None):
         radio.pipe.close()
         if not emsg:
-            self.do_open(fn)
+            self.do_open(fn, tempname="(Untitled)")
         else:
             d = inputdialog.ExceptionDialog(emsg)
             d.run()
@@ -213,57 +201,52 @@ class ChirpMain(gtk.Window):
 
         self._recent.append((port, rtype))
 
-    def do_clonein(self, port=None, rtype=None):
-        dlg = clone.CloneSettingsDialog(rtype=rtype, port=port)
-        res = dlg.run()
-        port, rtype, fn = dlg.get_values()
-        dlg.destroy()
-
-        if res != gtk.RESPONSE_OK:
+    def do_download(self, port=None, rtype=None):
+        d = clone.CloneSettingsDialog(parent=self)
+        settings = d.run()
+        d.destroy()
+        if not settings:
             return
 
-        if rtype == clone.AUTO_DETECT_STRING:
-            rtype = detect.detect_icom_radio(port)
-
         try:
-            rc = directory.get_radio(rtype)
-            ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+            ser = serial.Serial(port=settings.port,
+                                baudrate=settings.radio_class.BAUD_RATE,
+                                timeout=0.25)
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
             d.run()
             d.destroy()
             return
 
-        radio = rc(ser)
+        radio = settings.radio_class(ser)
 
-        self.record_recent_radio(port, rtype)
+        #FIXME: Fix or remove
+        #self.record_recent_radio(port, rtype)
 
-        ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
-        ct.start()
+        fn = tempfile.mktemp()
+        if isinstance(radio, chirp_common.CloneModeRadio):
+            ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
+            ct.start()
+        else:
+            self.do_open_live(radio)
 
-    def do_cloneout(self, port=None, rtype=None):
+    def do_upload(self, port=None, rtype=None):
         eset = self.get_current_editorset()
         radio = eset.radio
 
-        if rtype and rtype != directory.get_driver(radio.__class__):
-            common.show_error("Unable to upload to %s from current %s image" % (
-                    rtype, directory.get_driver(radio.__class__)))
-            return
+        settings = clone.CloneSettings()
+        settings.radio_class = radio.__class__
 
-        dlg = clone.CloneSettingsDialog(False,
-                                        eset.filename,
-                                        directory.get_driver(radio.__class__),
-                                        port=port)
-        res = dlg.run()
-        port, rtype, _ = dlg.get_values()
-        dlg.destroy()
-
-        if res != gtk.RESPONSE_OK:
+        d = clone.CloneSettingsDialog(settings, parent=self)
+        settings = d.run()
+        d.destroy()
+        if not settings:
             return
 
         try:
-            rc = directory.get_radio(rtype)
-            ser = serial.Serial(port=port, baudrate=rc.BAUD_RATE, timeout=0.25)
+            ser = serial.Serial(port=settings.port,
+                                baudrate=radio.BAUD_RATE,
+                                timeout=0.25)
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
             d.run()
@@ -272,7 +255,8 @@ class ChirpMain(gtk.Window):
 
         radio.set_pipe(ser)
 
-        self.record_recent_radio(port, rtype)
+        #FIXME: Fix or remove
+        #self.record_recent_radio(port, rtype)
 
         ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
         ct.start()
@@ -431,10 +415,10 @@ class ChirpMain(gtk.Window):
             self.do_save()
         elif action == "saveas":
             self.do_saveas()
-        elif action.startswith("clonein"):
-            self.do_clonein(*args)
-        elif action.startswith("cloneout"):
-            self.do_cloneout(*args)
+        elif action.startswith("download"):
+            self.do_download(*args)
+        elif action.startswith("upload"):
+            self.do_upload(*args)
         elif action == "close":
             self.do_close()
         elif action == "converticf":
@@ -481,14 +465,8 @@ class ChirpMain(gtk.Window):
       <menuitem action="columns"/>
     </menu>
     <menu action="radio" name="radio">
-      <menuitem action="clonein"/>
-      <menuitem action="cloneout"/>
-      <menu action="openlive">
-        <menuitem action="open9xA"/>
-        <menuitem action="open9xB"/>
-        <menuitem action="openrpxkv"/>
-        <menuitem action="openkenwlive"/>
-      </menu>
+      <menuitem action="download"/>
+      <menuitem action="upload"/>
       <menu action="recent" name="recent"/>
       <separator/>
       <menuitem action="import"/>
@@ -509,11 +487,6 @@ class ChirpMain(gtk.Window):
             ('file', None, "_File", None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
-            ('openlive', gtk.STOCK_CONNECT, "_Connect to a radio", None, None, self.mh),
-            ('open9xA', None, "Icom IC91/92AD Band A", None, None, self.mh),
-            ('open9xB', None, "Icom IC91/92AD Band B", None, None, self.mh),
-            ('openkenwlive', None, "Kenwood TH-D7/TM-D700/TM-V7", None, None, self.mh),
-            ('openrpxkv', gtk.STOCK_CONNECT, "Icom ID-RP2000V/4000V/2V/2D", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),
@@ -522,8 +495,8 @@ class ChirpMain(gtk.Window):
             ('view', None, "_View", None, None, self.mh),
             ('columns', None, 'Columns', None, None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),
-            ('clonein', None, "Download From Radio", "<Alt>d", None, self.mh),
-            ('cloneout', None, "Upload To Radio", "<Alt>u", None, self.mh),
+            ('download', None, "Download From Radio", "<Alt>d", None, self.mh),
+            ('upload', None, "Upload To Radio", "<Alt>u", None, self.mh),
             ('import', None, 'Import from file', "<Alt>i", None, self.mh),
             ('export', None, 'Export to...', None, None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),

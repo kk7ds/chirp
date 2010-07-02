@@ -16,20 +16,30 @@
 import serial
 
 from chirp import chirp_common, errors, idrp, util, icf, directory
-from chirp import kenwood_live
+from chirp import kenwood_live, tmv71
 
 def detect_icom_radio(port):
-    s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
-    md = icf.get_model_data(s)
+    s = serial.Serial(port=port, timeout=0.5)
+    md = ""
+
+    for rate in [9600, 38400]:
+        try:
+            s.setBaudrate(rate)
+            md = icf.get_model_data(s)
+            break
+        except errors.RadioError:
+            pass
     s.close()
 
+    if not md:
+        raise errors.RadioError("Unable to probe radio model")
+
     for rtype, rclass in directory.DRV_TO_RADIO.items():
-        if not issubclass(rclass, icf.IcomCloneModeRadio):
+        if rclass.VENDOR != "Icom":
             continue
         if rclass._model[:4] == md[:4]:
             print "Auto-detected radio `%s' on port `%s'" % (rtype, port)
-            return rtype
-
+            return rclass
 
     raise errors.RadioError("Unknown radio type %02x%02x%02x%02x" % (md[0],
                                                                      md[1],
@@ -38,19 +48,36 @@ def detect_icom_radio(port):
 
 def detect_kenwoodlive_radio(port):
     s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
-    r_id = kenwood_live.get_id(s)
+    r_id = None
+
+    for rate in [9600, 19200, 38400, 57600]:
+        s.setBaudrate(rate)
+        try:
+            r_id = kenwood_live.get_id(s)
+            break
+        except errors.RadioError:
+            pass
     s.close()
+
+    if not r_id:
+        raise errors.RadioError("Unale to probe radio model")
 
     models = {
         "TH-D7"   : kenwood_live.THD7Radio,
         "TM-D700" : kenwood_live.TMD700Radio,
         "TM-V7"   : kenwood_live.TMV7Radio,
+        "TM-V71"  : tmv71.TMV71ARadio,
         }
 
     if r_id in models.keys():
         return models[r_id]
     else:
         raise errors.RadioError("Unsupported model `%s'" % r_id)
+
+DETECT_FUNCTIONS = {
+    "Icom" : detect_icom_radio,
+    "Kenwood" : detect_kenwoodlive_radio,
+}
 
 if __name__ == "__main__":
     import sys

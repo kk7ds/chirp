@@ -21,121 +21,156 @@ import os
 import gtk
 import gobject
 
-from chirp import platform, directory, chirp_common
+from chirp import platform, directory, detect, chirp_common
 from chirpui import miscwidgets, cloneprog, inputdialog, common
 
 AUTO_DETECT_STRING = "Auto Detect (Icom Only)"
 
-_LAST_MODEL = None
 _LAST_PORT = None
-_LAST_FILE = None
+_LAST_VENDOR = None
+_LAST_MODEL = None
+
+class CloneSettings:
+    def __init__(self):
+        self.port = None
+        self.radio_class = None
+
+    def __str__(self):
+        s = ""
+        if self.radio_class:
+            return "%s %s on %s" % (self.radio_class.VENDOR,
+                                    self.radio_class.MODEL,
+                                    self.port)
+        else:
+            return "Detect %s on %s" % (self.detect_fn, self.port)
 
 class CloneSettingsDialog(gtk.Dialog):
-    def make_field(self, title, control):
-        hbox = gtk.HBox(True, 2)
-        lab = gtk.Label(title)
-        lab.show()
-        hbox.pack_start(lab, 0, 0, 0)
-        hbox.pack_start(control, 1, 1, 0)
+    def __make_field(self, label, widget):
+        l = gtk.Label(label)
+        self.__table.attach(l, 0, 1, self.__row, self.__row+1)
+        self.__table.attach(widget, 1, 2, self.__row, self.__row+1)
+        self.__row += 1
 
-        hbox.show()
+        l.show()
+        widget.show()
 
-        # pylint: disable-msg=E1101
-        self.vbox.pack_start(hbox, 0, 0, 0)
-    
-    def fn_changed(self, fn):
-        self.set_response_sensitive(gtk.RESPONSE_OK,
-                                    len(fn.get_filename()) > 0)
-
-    def run(self):
-        while True:
-            result = gtk.Dialog.run(self)
-            if result == gtk.RESPONSE_CANCEL:
-                break
-
-            fn = self.filename.get_filename()
-            if self.clone_in and os.path.exists(fn):
-                dlg = inputdialog.OverwriteDialog(fn)
-                owrite = dlg.run()
-                dlg.destroy()
-                if owrite == gtk.RESPONSE_OK:
-                    break
-            else:
-                break
-
-        return result
-
-    def __init__(self, clone_in=True, filename=None, rtype=None, port=None):
-        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                   gtk.STOCK_OK, gtk.RESPONSE_OK)
-        gtk.Dialog.__init__(self, buttons=buttons, title="Clone")
-
-        self.clone_in = clone_in
-
-        ports = platform.get_platform().list_serial_ports()
-        if port:
-            defport = port
-        elif _LAST_PORT:
-            defport = _LAST_PORT
-        elif ports:
-            defport = ports[0]
-        else:
-            defport = ""
-        self.port = miscwidgets.make_choice(ports, True, defport)
-        self.port.show()
-
-        self.__rtypes = {}
-        for drv in directory.DRV_TO_RADIO.keys():
-            cls = directory.get_radio(drv)
-            if issubclass(cls, chirp_common.CloneModeRadio):
-                self.__rtypes[directory.get_radio_name(drv)] = drv
-
-        type_choices = sorted(self.__rtypes.keys())
-        type_choices.insert(0, AUTO_DETECT_STRING)
-        self.__rtypes[AUTO_DETECT_STRING] = AUTO_DETECT_STRING
-
-        global _LAST_MODEL
-        if not _LAST_MODEL:
-            _LAST_MODEL = type_choices[0]
-
-        if rtype:
-            self.rtype = miscwidgets.make_choice(type_choices, False,
-                                                 directory.get_radio_name(rtype))
-            self.rtype.set_sensitive(False)
-        else:
-            self.rtype = miscwidgets.make_choice(type_choices, False,
-                                                 _LAST_MODEL)
-        self.rtype.show()
-
-        types = [("CHIRP Radio Images (*.img)", "*.img")]
-        self.filename = miscwidgets.FilenameBox(types=types)
-        if not clone_in:
-            self.filename.set_sensitive(False)
-        if filename:
-            self.filename.set_filename(filename)
-        elif _LAST_FILE:
-            self.filename.set_filename(_LAST_FILE)
-        else:
-            self.filename.set_filename("MyRadio.img")
-        self.filename.show()
-        self.filename.connect("filename-changed", self.fn_changed)
-
-        self.make_field("Serial port", self.port)
-        self.make_field("Radio type", self.rtype)
-        self.make_field("Filename", self.filename)
-
-    def get_values(self):
-        global _LAST_MODEL
-        global _LAST_FILE
+    def __make_port(self, port):
         global _LAST_PORT
 
-        rtype = self.rtype.get_active_text()
-        
-        _LAST_PORT = self.port.get_active_text()
-        _LAST_MODEL = rtype
-        _LAST_FILE = self.filename.get_filename()
+        ports = platform.get_platform().list_serial_ports()
+        if not port:
+            if _LAST_PORT:
+                port = _LAST_PORT
+            else:
+                port = ports[0]
 
-        return _LAST_PORT, self.__rtypes.get(rtype, None), _LAST_FILE
+        return miscwidgets.make_choice(ports, True, port)
+
+    def __make_model(self):
+        return miscwidgets.make_choice([], False)
+
+    def __make_vendor(self, model):
+        vendors = {}
+        for rclass in directory.DRV_TO_RADIO.values():
+            if not vendors.has_key(rclass.VENDOR):
+                vendors[rclass.VENDOR] = []
+
+            if rclass.VENDOR not in detect.DETECT_FUNCTIONS:
+                vendors[rclass.VENDOR].append(rclass)
+
+        self.__vendors = vendors
+
+        global _LAST_VENDOR
+        if not _LAST_VENDOR:
+            _LAST_VENDOR = sorted(vendors.keys())[0]
+
+        v = miscwidgets.make_choice(vendors.keys(), False, _LAST_VENDOR)
+
+        def _changed(box, vendors, model):
+            models = vendors[box.get_active_text()]
+
+            model.get_model().clear()
+            for rclass in models:
+                model.append_text(rclass.MODEL)
+            if not models:
+                model.append_text("Detect")
+
+            model_names = [x.MODEL for x in models]
+            if _LAST_MODEL in model_names:
+                model.set_active(model_names.index(_LAST_MODEL))
+            else:
+                model.set_active(0)
+
+        v.connect("changed", _changed, vendors, model)
+        _changed(v, vendors, model)
+
+        return v
+
+    def __make_ui(self, settings):
+        self.__table = gtk.Table(3, 2)
+        self.__table.set_row_spacings(3)
+        self.__table.set_col_spacings(10)
+        self.__row = 0
+
+        self.__port = self.__make_port(settings and settings.port or None)
+        self.__modl = self.__make_model()
+        self.__vend = self.__make_vendor(self.__modl)
+
+        self.__make_field("Port", self.__port)
+        self.__make_field("Vendor", self.__vend)
+        self.__make_field("Model", self.__modl)
+
+        if settings and settings.radio_class:
+            common.combo_select(self.__vend, settings.radio_class.VENDOR)
+            self.__modl.get_model().clear()
+            self.__modl.append_text(settings.radio_class.MODEL)
+            common.combo_select(self.__modl, settings.radio_class.MODEL)
+            self.__vend.set_sensitive(False)
+            self.__modl.set_sensitive(False)
+
+        self.__table.show()
+        self.vbox.pack_start(self.__table, 1, 1, 1)
+
+    def __init__(self, settings=None, parent=None, title="Radio"):
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
+        gtk.Dialog.__init__(self, title, buttons=buttons, parent=parent)
+        
+        self.__make_ui(settings)
+
+    def run(self):
+        r = gtk.Dialog.run(self)
+        if r == gtk.RESPONSE_CANCEL:
+            return None
+
+        vendor = self.__vend.get_active_text()
+        model = self.__modl.get_active_text()
+
+        cs = CloneSettings()
+        cs.port = self.__port.get_active_text()
+        if model == "Detect":
+            try:
+                cs.radio_class = detect.DETECT_FUNCTIONS[vendor](cs.port)
+            except Exception, e:
+                d = inputdialog.ExceptionDialog(e)
+                d.run()
+                d.destroy()
+                return None
+        else:
+            for rclass in self.__vendors[vendor]:
+                if rclass.MODEL == model:
+                    cs.radio_class = rclass
+                    break
+
+        global _LAST_PORT
+        global _LAST_VENDOR
+        global _LAST_MODEL
+
+        _LAST_PORT = cs.port
+        _LAST_VENDOR = cs.radio_class.VENDOR
+        _LAST_MODEL = cs.radio_class.MODEL
+
+        return cs
 
 class CloneThread(threading.Thread):
     def __status(self, status):
@@ -179,3 +214,8 @@ class CloneThread(threading.Thread):
 
         if self.__cback:
             gobject.idle_add(self.__cback, self.__radio, self.__fname, emsg)
+
+if __name__ == "__main__":
+    d = CloneSettingsDialog("/dev/ttyUSB0")
+    r = d.run()
+    print r
