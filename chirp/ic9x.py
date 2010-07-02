@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import threading
 
 from chirp import chirp_common, errors, memmap, ic9x_ll, util, icf
 
@@ -56,11 +57,12 @@ IC9x_SPECIAL_REV = {
     2 : IC9xB_SPECIAL_REV,
 }
 
-class IC9xRadio(chirp_common.LiveRadio):
-    BAUD_RATE = 38400
-    VENDOR = "Icom"
+LOCK = threading.Lock()
+
+class IC9xRadio(icf.IcomLiveRadio):
     MODEL = "IC-91/92AD"
 
+    _model = "ic9x" # Fake model info for detect.py
     vfo = 0
     __last = 0
     mem_upper_limit = 300
@@ -68,17 +70,24 @@ class IC9xRadio(chirp_common.LiveRadio):
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
 
+        self.pipe.setTimeout(0.1)
+
         self.__memcache = {}
         self.__bankcache = {}
+
+        global LOCK
+        self._lock = LOCK
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank_index = True
         rf.requires_call_lists = False
+        rf.has_sub_devices = True
         return rf
 
     def _maybe_send_magic(self):
-        if (time.time() - self.__last) > 0.5:
+        if (time.time() - self.__last) > 1:
+            print "Sending magic"
             ic9x_ll.send_magic(self.pipe)
         self.__last = time.time()
 
@@ -112,6 +121,7 @@ class IC9xRadio(chirp_common.LiveRadio):
         if self.__memcache.has_key(number):
                 return self.__memcache[number]
 
+        self._lock.acquire()
         self._maybe_send_magic()
         try:
             mem = ic9x_ll.get_memory(self.pipe, self.vfo, number)
@@ -120,6 +130,7 @@ class IC9xRadio(chirp_common.LiveRadio):
             mem.number = number
             if number < self.mem_upper_limit:
                 mem.empty = True
+        self._lock.release()
 
         if number > self.mem_upper_limit or number < 0:
             mem.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
@@ -131,8 +142,10 @@ class IC9xRadio(chirp_common.LiveRadio):
         return mem
 
     def get_raw_memory(self, number):
+        self._lock.acquire()
         ic9x_ll.send_magic(self.pipe)
         mframe = ic9x_ll.get_memory_frame(self.pipe, self.vfo, number)
+        self._lock.release()
 
         return memmap.MemoryMap(mframe.get_payload())
 
@@ -158,11 +171,13 @@ class IC9xRadio(chirp_common.LiveRadio):
         return memories
         
     def set_memory(self, memory):
+        self._lock.acquire()
         self._maybe_send_magic()
         if memory.empty:
             ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
         else:
             ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+        self._lock.release()
 
         self.__memcache[memory.number] = memory
 
@@ -170,8 +185,10 @@ class IC9xRadio(chirp_common.LiveRadio):
         if len(self.__bankcache.keys()) == 26:
             return [self.__bankcache[k] for k in sorted(self.__bankcache.keys())]
 
+        self._lock.acquire()
         self._maybe_send_magic()
         banks = ic9x_ll.get_banks(self.pipe, self.vfo)
+        self._lock.release()
 
         i = 0
         for bank in banks:
@@ -200,13 +217,19 @@ class IC9xRadio(chirp_common.LiveRadio):
                                                  banks[i])
 
         if need_update:
+            self._lock.acquire()
             self._maybe_send_magic()
             ic9x_ll.set_banks(self.pipe, self.vfo, banks)
+            self._lock.release()
 
     def filter_name(self, name):
         return chirp_common.name8(name)
 
+    def get_sub_devices(self):
+        return [IC9xRadioA(self.pipe), IC9xRadioB(self.pipe)]
+
 class IC9xRadioA(IC9xRadio):
+    VARIANT = "Band A"
     vfo = 1
     mem_upper_limit = 849
 
@@ -214,6 +237,7 @@ class IC9xRadioA(IC9xRadio):
         return self.mem_upper_limit
 
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
+    VARIANT = "Band B"
     vfo = 2
     mem_upper_limit = 399
 

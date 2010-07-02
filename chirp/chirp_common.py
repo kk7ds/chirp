@@ -431,6 +431,7 @@ class RadioFeatures:
 
         # Attributes
         "valid_modes"         : [],
+        "has_sub_devices"     : BOOLEAN,
 
         # D-STAR
         "requires_call_lists" : BOOLEAN,
@@ -459,6 +460,7 @@ class RadioFeatures:
         self.has_tuning_step = True
 
         self.valid_modes = list(MODES)
+        self.has_sub_devices = False
 
         self.requires_call_lists = True
         self.has_implicit_calls = False
@@ -530,6 +532,9 @@ class Radio:
 
     def filter_name(self, name):
         return name6(name)
+
+    def get_sub_devices(self):
+        return []
 
 class CloneModeRadio(Radio):
     """A clone-mode radio does a full memory dump in and out and we store

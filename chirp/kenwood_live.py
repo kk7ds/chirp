@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import threading
+
 from chirp import chirp_common, errors
 
 DEBUG = True
@@ -31,7 +33,12 @@ def rev(hash, value):
 
     return reverse[value]
 
+LOCK = threading.Lock()
+
 def command(s, command, *args):
+    global LOCK
+
+    LOCK.acquire()
     cmd = command
     if args:
         cmd += " " + " ".join(args)
@@ -45,6 +52,8 @@ def command(s, command, *args):
 
     if DEBUG:
         print "D7->PC: %s" % result.strip()
+
+    LOCK.release()
 
     return result.strip()
 
@@ -73,10 +82,13 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     VENDOR = "Kenwood"
     MODEL = ""
 
+    _vfo = 0
     mem_upper_limit = 200
 
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
+
+        self.pipe.setTimeout(0.1)
 
         self.__memcache = {}
 
@@ -91,7 +103,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         if self.__memcache.has_key(number):
             return self.__memcache[number]
 
-        result = command(self.pipe, "MR", "0,0,%03i" % (number + 1))
+        result = command(self.pipe, "MR", "%i,0,%03i" % (self._vfo, number + 1))
         if result == "N":
             mem = chirp_common.Memory()
             mem.number = number
@@ -107,7 +119,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         mem = self._parse_mem_spec(spec)
         self.__memcache[mem.number] = mem
 
-        result = command(self.pipe, "MNA", "0,%03i" % (number + 1))
+        result = command(self.pipe, "MNA", "%i,%03i" % (self._vfo, number + 1))
         if " " in result:
             value = result.split(" ")[1]
             zero, loc, mem.name = value.split(",")
@@ -127,8 +139,9 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         spec = self._make_mem_spec(memory)
         r1 = command(self.pipe, "MW", ",".join(spec))
         if not iserr(r1):
-            r2 = command(self.pipe, "MNA", "0,%03i,%s" % (memory.number + 1,
-                                                          memory.name))
+            r2 = command(self.pipe, "MNA", "%i,%03i,%s" % (self._vfo,
+                                                           memory.number + 1,
+                                                           memory.name))
             if not iserr(r2):
                 self.__memcache[memory.number] = memory
 
@@ -139,7 +152,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         return chirp_common.name8(name)
 
     def erase_memory(self, number):
-        r = command(self.pipe, "MW", "0,0,%03i" % (number+1))
+        r = command(self.pipe, "MW", "%i,0,%03i" % (self._vfo, number+1))
         if iserr(r):
             raise errors.RadioError("Radio refused delete of %i" % number)
 
@@ -202,6 +215,16 @@ class THD7Radio(KenwoodLiveRadio):
 class TMD700Radio(KenwoodLiveRadio):
     MODEL = "TH-D700"
 
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_mode = False
+        rf.has_tuning_step = False
+        rf.valid_modes = MODES.values()
+        return rf
+
     def _make_mem_spec(self, mem):
         spec = ( \
             "0",
@@ -256,11 +279,12 @@ class TMV7Radio(KenwoodLiveRadio):
         rf.has_mode = False
         rf.has_tuning_step = False
         rf.valid_modes = ["FM"]
+        rf.has_sub_devices = True
         return rf
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "0",
+            "%i" % self._vfo,
             "0",
             "%03i" % (mem.number + 1),
             "%011i" % (mem.freq * 1000000),
@@ -295,6 +319,17 @@ class TMV7Radio(KenwoodLiveRadio):
 
     def filter_name(self, name):
         return name[:7]
+
+    def get_sub_devices(self):
+        return [TMV7RadioVHF(self.pipe), TMV7RadioUHF(self.pipe)]
+
+class TMV7RadioVHF(TMV7Radio):
+    VARIANT = "VHF"
+    _vfo = 0
+
+class TMV7RadioUHF(TMV7Radio):
+    VARIANT = "UHF"
+    _vfo = 1
 
 if __name__ == "__main__":
     import serial
