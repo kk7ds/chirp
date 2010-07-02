@@ -20,6 +20,9 @@ import os
 from chirp import chirp_common, errors
 
 class CSVRadio(chirp_common.CloneModeRadio):
+    VENDOR = "CSV"
+    MODEL = "Generic"
+
     def _blank(self):
         self.memories = []
         for i in range(0, self.get_memory_upper()+1):
