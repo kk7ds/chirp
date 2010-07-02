@@ -22,7 +22,7 @@ def detect_icom_radio(port):
     s = serial.Serial(port=port, timeout=0.5)
     md = ""
 
-    for rate in [9600, 38400]:
+    for rate in [9600, 4800, 38400]:
         try:
             s.setBaudrate(rate)
             md = icf.get_model_data(s)

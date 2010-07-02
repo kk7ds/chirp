@@ -19,6 +19,7 @@
 import struct
 
 from chirp import chirp_common, errors, util, memmap
+from chirp import ic9x_ll # for magic; may need to move later
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN  = 0xE3
@@ -123,11 +124,8 @@ class RadioStream:
 def get_model_data(pipe, model="\x00\x00\x00\x00"):
     if pipe.getBaudrate() != 9600:
         print "Sending magic"
-        pipe.write(("\xfe" * 402))
-        pipe.write("\xfe\xfe\x01\x80\x19\xfd")
-        resp = pipe.read(16)
-        if resp.startswith("\xfe\xfe\x80\x01\x19"):
-            return "ic9x" # Fake model info for IC91/IC92
+        ic9x_ll.send_magic(pipe)
+        return "ic9x" # Fake model info for IC91/IC92
     else:
         send_clone_frame(pipe, 0xe0, model, raw=True)
 

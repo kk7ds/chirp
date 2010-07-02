@@ -104,7 +104,7 @@ class IC92Frame(IcomFrame):
     def from_raw(self, data):
         self._map = MemoryMap(data)
 
-        self._map.printable()
+        #self._map.printable()
 
     def from_frame(self, frame):
         self._map = frame._map
@@ -500,10 +500,37 @@ def print_frames(frames):
         print i
         count += 1
 
-def send_magic(pipe):
-    magic = ("\xfe" * 400) + "\x01\x80\x19"
+def _send_magic_4800(pipe):
+    return ic9x_send(pipe, ("\xFE" * 25) + "\x01\x80\x19")
 
-    ic9x_send(pipe, magic)
+def _send_magic_38400(pipe):
+    return ic9x_send(pipe, ("\xFE" * 400) + "\x01\x80\x19")
+
+def send_magic(pipe):
+    if pipe.getBaudrate() == 38400:
+        r = _send_magic_38400(pipe)
+        if r:
+            return
+        print "Switching from 38400 to 4800"
+        pipe.setBaudrate(4800)
+        r = _send_magic_4800(pipe)
+        if r:
+            return
+        pipe.setBaudrate(38400)
+        raise errors.RadioError("Radio not responding")
+    elif pipe.getBaudrate() == 4800:
+        r = _send_magic_4800(pipe)
+        if r:
+            return
+        print "Switching from 4800 to 38400"
+        pipe.setBaudrate(38400)
+        r = _send_magic_38400(pipe)
+        if r:
+            return
+        pipe.setBaudrate(4800)
+        raise errors.RadioError("Radio not responding")
+    else:
+        raise errors.InvalidDataError("Radio in unknown state (%i)" % r.getBaudrate())    
 
 def print_banks(pipe):
     frames = send(pipe, "\x01\x80\x1a\x09") # Banks
@@ -551,8 +578,8 @@ def set_memory(pipe, vfo, memory):
     frame.set_memory(memory)
     frame.set_vfo(vfo)
 
-    print "Sending (%i):" % (len(frame.get_raw()))
-    print util.hexprint(frame.get_raw())
+    #print "Sending (%i):" % (len(frame.get_raw()))
+    #print util.hexprint(frame.get_raw())
 
     rframe = frame.send(pipe)
 
