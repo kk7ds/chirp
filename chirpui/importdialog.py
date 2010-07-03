@@ -374,14 +374,17 @@ class ImportDialog(gtk.Dialog):
         self.vbox.pack_start(self.make_controls(), 0, 0, 0)
 
     def record_use_of(self, number):
+        lo, hi = self.dst_radio.get_features().memory_bounds
+
+        if number < lo or number > hi:
+            return
+
         try:
-            self.dst_radio.get_memory(number)
-            if number not in self.used_list:
+            mem = self.dst_radio.get_memory(number)
+            if mem and not mem.empty and number not in self.used_list:
                 self.used_list.append(number)
         except errors.InvalidMemoryLocation:
             print "Location %i empty or at limit of destination radio" % number
-            if number not in self.not_used_list:
-                self.not_used_list.append(number)
         except errors.InvalidDataError, e:
             print "Got error from radio, assuming %i beyond limits: %s" % \
                 (number, e)
