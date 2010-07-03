@@ -27,6 +27,11 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
     _memsize = 32512
     _model = "" # FIXME: REMOVE
 
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.memory_bounds = (0, 999)
+        return rf
+
     def _detect_baud(self):
         for baud in [9600, 19200, 38400, 57600]:
             self.pipe.setBaudrate(baud)

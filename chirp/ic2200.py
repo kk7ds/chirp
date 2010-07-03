@@ -86,8 +86,10 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     URCALL_LIMIT  = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
-    def get_memory_upper(self):
-        return 199
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.memory_bounds = (0, 199)
+        return rf
 
     def process_mmap(self):
         self._memories = ic2200_ll.parse_map_for_memory(self._mmap)

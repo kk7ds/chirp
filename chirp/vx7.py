@@ -31,6 +31,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_dtcs_polarity = False
         rf.valid_modes = ["FM", "WFM", "AM"]
+        rf.memory_bounds = (1, 450)
         return rf
 
     def get_raw_memory(self, number):
@@ -53,9 +54,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_banks(self):
         return []
-
-    def get_memory_upper(self):
-        return 450
 
     def filter_name(self, name):
         return chirp_common.name8(name)

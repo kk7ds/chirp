@@ -614,14 +614,14 @@ time.  Are you sure you want to do this?"""
 
         return mem
 
-    def make_controls(self):
+    def make_controls(self, min, max):
         hbox = gtk.HBox(False, 2)
 
         lab = gtk.Label("Memory range:")
         lab.show()
         hbox.pack_start(lab, 0, 0, 0)
 
-        self.lo_limit_adj = gtk.Adjustment(0, 0, 999, 1, 10)
+        self.lo_limit_adj = gtk.Adjustment(min, min, max+1, 1, 10)
         lo = gtk.SpinButton(self.lo_limit_adj)
         lo.show()
         hbox.pack_start(lo, 0, 0, 0)
@@ -630,7 +630,7 @@ time.  Are you sure you want to do this?"""
         lab.show()
         hbox.pack_start(lab, 0, 0, 0)
 
-        self.hi_limit_adj = gtk.Adjustment(25, 1, 999, 1, 10)
+        self.hi_limit_adj = gtk.Adjustment(25, min+1, max, 1, 10)
         hi = gtk.SpinButton(self.hi_limit_adj)
         hi.show()
         hbox.pack_start(hi, 0, 0, 0)
@@ -708,6 +708,8 @@ time.  Are you sure you want to do this?"""
         self.lo_limit_adj = self.hi_limit_adj = None
         self.store = self.view = None
 
+        (min, max) = self.rthread.radio.get_features().memory_bounds
+
         self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
@@ -715,7 +717,7 @@ time.  Are you sure you want to do this?"""
         rthread.submit(job)
 
         vbox = gtk.VBox(False, 2)
-        vbox.pack_start(self.make_controls(), 0, 0, 0)
+        vbox.pack_start(self.make_controls(min, max), 0, 0, 0)
         vbox.pack_start(self.make_editor(), 1, 1, 1)
         vbox.show()
         
@@ -742,7 +744,7 @@ time.  Are you sure you want to do this?"""
 
         # Run low priority jobs to get the rest of the memories
         hi = int(self.hi_limit_adj.get_value())
-        for i in range(hi, self.rthread.radio.get_memory_upper()+1):
+        for i in range(hi, max+1):
             job = common.RadioJob(None, "get_memory", i)
             job.set_desc("Getting memory %i" % i)
             self.rthread.submit(job, 10)

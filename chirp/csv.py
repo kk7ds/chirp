@@ -25,7 +25,7 @@ class CSVRadio(chirp_common.CloneModeRadio):
 
     def _blank(self):
         self.memories = []
-        for i in range(0, self.get_memory_upper()+1):
+        for i in range(0, 1000):
             m = chirp_common.Memory()
             m.number = i
             m.empty = True
@@ -40,9 +40,14 @@ class CSVRadio(chirp_common.CloneModeRadio):
         else:
             self._blank()
 
-    def get_memory_upper(self):
-        return 999
-            
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank_index = True
+        rf.requires_call_lists = False
+        rf.has_implicit_calls = False
+        rf.memory_bounds = (0, 1000)
+        return rf
+
     def _parse_csv_line(self, line):
         line = line.replace("\n", "")
         line = line.replace("\r", "")

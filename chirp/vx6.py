@@ -34,6 +34,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_dtcs_polarity = False
         rf.valid_modes = ["FM", "WFM", "AM"]
+        rf.memory_bounds = (1, 900)
         return rf
 
     def get_raw_memory(self, number):

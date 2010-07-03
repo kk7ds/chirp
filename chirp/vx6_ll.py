@@ -281,11 +281,11 @@ def set_skip(map, number, skip):
     map[MEM_FLG_BASE + byte] = (val & mask) | bits
 
 def get_memory(map, number):
-    mmap = get_raw_memory(map, number)
+    mmap = get_raw_memory(map, number - 1)
 
     mem = chirp_common.Memory()
     mem.number = number
-    if not get_used(map, number):
+    if not get_used(map, number - 1):
         mem.empty = True
         return mem
 
@@ -298,7 +298,7 @@ def get_memory(map, number):
     mem.tuning_step = get_ts(mmap)
     mem.name = get_name(mmap)
     mem.mode = get_mode(mmap)
-    mem.skip = get_skip(map, number)
+    mem.skip = get_skip(map, number - 1)
 
     return mem
 
@@ -309,9 +309,10 @@ def set_unknowns(mmap):
         "\x00\x0d"
     
 def set_memory(_map, mem):
-    mmap = get_raw_memory(_map, mem.number)
+    number = mem.number - 1
+    mmap = get_raw_memory(_map, number)
 
-    if not get_used(_map, mem.number):
+    if not get_used(_map, number):
         set_unknowns(mmap)
 
     set_freq(mmap, mem.freq)
@@ -324,14 +325,14 @@ def set_memory(_map, mem):
     set_tmode(mmap, mem.tmode)
     set_offset(mmap, mem.offset)
 
-    _map[get_mem_offset(mem.number)] = mmap.get_packed()
-    set_used(_map, mem.number, True)
-    set_skip(_map, mem.number, mem.skip)
+    _map[get_mem_offset(number)] = mmap.get_packed()
+    set_used(_map, number, True)
+    set_skip(_map, number, mem.skip)
 
     return _map
 
 def erase_memory(map, number):
-    set_used(map, number, False)
+    set_used(map, number - 1, False)
 
 def update_checksum(mmap):
     cs = 0

@@ -41,11 +41,9 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf = chirp_common.RadioFeatures()
         rf.has_bank_index = True
         rf.requires_call_lists = False
+        rf.memory_bounds = (0, 499)
         return rf
 
-    def get_memory_upper(self):
-        return 499
-    
     def get_available_bank_index(self, bank):
         indexes = []
         for mem in self._memories.values():

@@ -65,7 +65,7 @@ class IC9xRadio(icf.IcomLiveRadio):
     _model = "ic9x" # Fake model info for detect.py
     vfo = 0
     __last = 0
-    mem_upper_limit = 300
+    _upper = 300
 
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
@@ -83,6 +83,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         rf.has_bank_index = True
         rf.requires_call_lists = False
         rf.has_sub_devices = True
+        rf.memory_bounds = (0, self._upper)
         return rf
 
     def _maybe_send_magic(self):
@@ -128,11 +129,11 @@ class IC9xRadio(icf.IcomLiveRadio):
         except errors.InvalidMemoryLocation:
             mem = chirp_common.Memory()
             mem.number = number
-            if number < self.mem_upper_limit:
+            if number < self._upper:
                 mem.empty = True
         self._lock.release()
 
-        if number > self.mem_upper_limit or number < 0:
+        if number > self._upper or number < 0:
             mem.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
             mem.immutable = ["number", "skip", "bank", "bank_index",
                              "extd_number"]
@@ -151,7 +152,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def get_memories(self, lo=0, hi=None):
         if hi is None:
-            hi = self.mem_upper_limit            
+            hi = self._upper            
 
         memories = []
 
@@ -231,22 +232,16 @@ class IC9xRadio(icf.IcomLiveRadio):
 class IC9xRadioA(IC9xRadio):
     VARIANT = "Band A"
     vfo = 1
-    mem_upper_limit = 849
-
-    def get_memory_upper(self):
-        return self.mem_upper_limit
+    _upper = 849
 
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
     VARIANT = "Band B"
     vfo = 2
-    mem_upper_limit = 399
+    _upper = 399
 
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)
-
-    def get_memory_upper(self):
-        return self.mem_upper_limit
 
     def __init__(self, *args, **kwargs):
         IC9xRadio.__init__(self, *args, **kwargs)

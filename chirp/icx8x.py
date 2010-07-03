@@ -53,8 +53,10 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     URCALL_LIMIT = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
-    def get_memory_upper(self):
-        return 199
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.memory_bounds = (0, 199)
+        return rf
 
     def _get_type(self):
         flag = (isUHF(self.pipe) != 0)

@@ -296,23 +296,24 @@ def _get_memory(_map, mmap):
     return mem
 
 def get_memory(_map, number):
-    if not is_used(_map, number):
+    index = number - 1
+    if not is_used(_map, index):
         mem = chirp_common.Memory()
         mem.number = number
-        if number < 500:
+        if index < 500:
             mem.empty = True
             return mem
     else:
-        mmap = get_raw_memory(_map, number)
+        mmap = get_raw_memory(_map, index)
         mem = _get_memory(_map, mmap)
 
     mem.number = number
 
-    if number < 500:
-        mem.skip = get_skip(_map, number)
-        mem.bank = get_bank(_map, number)
+    if index < 500:
+        mem.skip = get_skip(_map, index)
+        mem.bank = get_bank(_map, index)
     else:
-        mem.extd_number = ID800_SPECIAL_REV[number]
+        mem.extd_number = ID800_SPECIAL_REV[index]
         mem.immutable = ["number", "skip", "bank", "bank_index", "extd_number"]
 
     return mem
@@ -551,7 +552,8 @@ def set_digital_code(mmap, code):
     mmap[POS_CODE] = code
 
 def set_memory(_map, mem):
-    mmap = get_raw_memory(_map, mem.number)
+    index = mem.number - 1
+    mmap = get_raw_memory(_map, index)
 
     set_freq(mmap, mem.freq)
     set_name(mmap, mem.name)
@@ -563,22 +565,22 @@ def set_memory(_map, mem):
     set_dtcs(mmap, mem.dtcs)
     set_tone_enabled(mmap, mem.tmode)
     set_dtcs_polarity(mmap, mem.dtcs_polarity)
-    set_skip(_map, mem.number, mem.skip)
-    set_bank(_map, mem.number, mem.bank)
+    set_skip(_map, index, mem.skip)
+    set_bank(_map, index, mem.bank)
 
     if isinstance(mem, chirp_common.DVMemory):
         set_call_indices(_map, mmap,
                          mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call)
         set_digital_code(mmap, mem.dv_code)
 
-    _map[get_mem_offset(mem.number)] = mmap.get_packed()
+    _map[get_mem_offset(index)] = mmap.get_packed()
 
-    set_used(_map, mem.number, True)
+    set_used(_map, index, True)
 
     return _map
 
 def erase_memory(mmap, number):
-    set_used(mmap, number, False)
+    set_used(mmap, number-1, False)
 
     return mmap
 

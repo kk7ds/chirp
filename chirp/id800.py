@@ -71,10 +71,8 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf = chirp_common.RadioFeatures()
         rf.has_implicit_calls = True
         rf.valid_modes = id800_ll.ID800_MODES.values()
+        rf.memory_bounds = (1, 499)
         return rf
-
-    def get_memory_upper(self):
-        return 499
 
     def process_mmap(self):
         self._memories = id800_ll.parse_map_for_memory(self._mmap)

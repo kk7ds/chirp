@@ -432,6 +432,7 @@ class RadioFeatures:
         # Attributes
         "valid_modes"         : [],
         "has_sub_devices"     : BOOLEAN,
+        "memory_bounds"       : (0, 0),
 
         # D-STAR
         "requires_call_lists" : BOOLEAN,
@@ -441,13 +442,22 @@ class RadioFeatures:
     def __setattr__(self, name, val):
         if not name in self._valid_map.keys():
             raise ValueError("No such attribute `%s'" % name)
-        elif self._valid_map.has_key(name) and \
-                self._valid_map[name] != [] and \
-                val not in self._valid_map[name]:
+
+        if type(self._valid_map[name]) == tuple:
+            # Tuple, cardinality must match
+            if type(val) != tuple or len(val) != len(self._valid_map[name]):
+                raise ValueError("Invalid value `%s' for attribute `%s'" % \
+                                     (val, name))
+        elif type(self._valid_map[name]) == list and not self._valid_map[name]:
+            # Empty list, must be another list
+            if type(val) != list:
+                raise ValueError("Invalid value `%s' for attribute `%s'" % \
+                                     (val, name))
+        elif val not in self._valid_map[name]:
+            # Value not in the list of valid values
             raise ValueError("Invalid value `%s' for attribute `%s'" % (val,
                                                                         name))
-        else:
-            self.__dict__[name] = val
+        self.__dict__[name] = val
 
     def __init__(self):
         self.has_bank_index = False
@@ -461,6 +471,7 @@ class RadioFeatures:
 
         self.valid_modes = list(MODES)
         self.has_sub_devices = False
+        self.memory_bounds = (0, 1)
 
         self.requires_call_lists = True
         self.has_implicit_calls = False
@@ -526,9 +537,6 @@ class Radio:
 
     def get_special_locations(self):
         return []
-
-    def get_memory_upper(self):
-        return 0
 
     def filter_name(self, name):
         return name6(name)

@@ -39,6 +39,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.requires_call_lists = True
         rf.has_bank_index = True
         rf.valid_modes = [x for x in id880_ll.ID880_MODES if x is not None]
+        rf.memory_bounds = (0, 999)
         return rf
 
     def get_available_bank_index(self, bank):
@@ -105,8 +106,5 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return calls
         
-    def get_memory_upper(self):
-        return 999
-
     def filter_name(self, name):
         return chirp_common.name8(name, just_upper=True)

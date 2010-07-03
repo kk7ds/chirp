@@ -293,13 +293,14 @@ def set_skip(map, number, skip):
     map[MEM_FLG_BASE + byte] = (val & mask) | bits
 
 def get_memory(_map, number):
+    index = number - 1
     mem = chirp_common.Memory()
     mem.number = number
-    if not is_used(_map, number):
+    if not is_used(_map, index):
         mem.empty = True
         return mem
 
-    mmap = get_raw_memory(_map, number)
+    mmap = get_raw_memory(_map, index)
     mem.freq = get_freq(mmap)
     mem.duplex = get_duplex(mmap)
     mem.mode = get_mode(mmap)
@@ -309,12 +310,11 @@ def get_memory(_map, number):
     mem.dtcs = get_dtcs(mmap)
     mem.tmode = get_tmode(mmap)
     mem.offset = get_offset(mmap)
-    mem.skip = get_skip(_map, number)
+    mem.skip = get_skip(_map, index)
 
     return mem
     
-def set_unknowns(mmap, mem):
-    print "Initializing memory location %i" % mem.number
+def set_unknowns(mmap):
     mmap[0]  = 0x05
     mmap[1]  = 0x00 # Low power, Simplex, 5kHz
     mmap[5]  = 0x30 # Constant in upper 6 bits
@@ -325,10 +325,11 @@ def set_unknowns(mmap, mem):
     mmap[21] = 0x00
 
 def set_memory(_map, mem):
-    mmap = get_raw_memory(_map, mem.number)
+    index = mem.number - 1
+    mmap = get_raw_memory(_map, index)
 
-    if not is_used(_map, mem.number):
-        set_unknowns(mmap, mem)
+    if not is_used(_map, index):
+        set_unknowns(mmap)
 
     set_freq(mmap, mem.freq)
     set_duplex(mmap, mem.duplex)
@@ -340,14 +341,14 @@ def set_memory(_map, mem):
     set_tmode(mmap, mem.tmode)
     set_offset(mmap, mem.offset)
 
-    _map[get_mem_offset(mem.number)] = mmap.get_packed()
-    set_is_used(_map, mem.number, True)
-    set_skip(_map, mem.number, mem.skip)
+    _map[get_mem_offset(index)] = mmap.get_packed()
+    set_is_used(_map, index, True)
+    set_skip(_map, index, mem.skip)
 
     return _map
 
 def erase_memory(map, number):
-    set_is_used(map, number, False)
+    set_is_used(map, number-1, False)
     return map
 
 def update_checksum(mmap):

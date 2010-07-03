@@ -70,9 +70,14 @@ class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             radio.newProp("version", "0.1.1")
             self.set_banks(default_banks())
 
-    def get_memory_upper(self):
-        return 999
-
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank_index = True
+        rf.requires_call_lists = False
+        rf.has_implicit_calls = False
+        rf.memory_bounds = (0, 1000)
+        return rf
+        
     def load(self, filename=None):
         if not self._filename and not filename:
             raise errors.RadioError("Need a location to load from")

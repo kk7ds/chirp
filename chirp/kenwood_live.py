@@ -83,7 +83,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     MODEL = ""
 
     _vfo = 0
-    mem_upper_limit = 200
+    _upper = 200
 
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
@@ -98,12 +98,13 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         command(self.pipe, "AI", "0")
 
     def get_memory(self, number):
-        if number < 0 or number >= self.mem_upper_limit:
-            raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
+        if number < 1 or number > self._upper:
+            raise errors.InvalidMemoryLocation( \
+                "Number must be between 1 and %i" % self._upper)
         if self.__memcache.has_key(number):
             return self.__memcache[number]
 
-        result = command(self.pipe, "MR", "%i,0,%03i" % (self._vfo, number + 1))
+        result = command(self.pipe, "MR", "%i,0,%03i" % (self._vfo, number))
         if result == "N":
             mem = chirp_common.Memory()
             mem.number = number
@@ -119,7 +120,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         mem = self._parse_mem_spec(spec)
         self.__memcache[mem.number] = mem
 
-        result = command(self.pipe, "MNA", "%i,%03i" % (self._vfo, number + 1))
+        result = command(self.pipe, "MNA", "%i,%03i" % (self._vfo, number))
         if " " in result:
             value = result.split(" ")[1]
             zero, loc, mem.name = value.split(",")
@@ -133,14 +134,15 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         pass
 
     def set_memory(self, memory):
-        if memory.number < 0 or memory.number >= self.mem_upper_limit:
-            raise errors.InvalidMemoryLocation("Number must be between 0 and 200")
+        if memory.number < 1 or memory.number > self._upper:
+            raise errors.InvalidMemoryLocation( \
+                "Number must be between 1 and %i" % self._upper)
 
         spec = self._make_mem_spec(memory)
         r1 = command(self.pipe, "MW", ",".join(spec))
         if not iserr(r1):
             r2 = command(self.pipe, "MNA", "%i,%03i,%s" % (self._vfo,
-                                                           memory.number + 1,
+                                                           memory.number,
                                                            memory.name))
             if not iserr(r2):
                 self.__memcache[memory.number] = memory
@@ -149,14 +151,11 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         else:
             raise errors.InvalidDataError("Radio refused %i" % memory.number)
 
-    def get_memory_upper(self):
-        return self.mem_upper_limit - 1
-
     def filter_name(self, name):
         return chirp_common.name8(name)
 
     def erase_memory(self, number):
-        r = command(self.pipe, "MW", "%i,0,%03i" % (self._vfo, number+1))
+        r = command(self.pipe, "MW", "%i,0,%03i" % (self._vfo, number))
         if iserr(r):
             raise errors.RadioError("Radio refused delete of %i" % number)
 
@@ -171,13 +170,14 @@ class THD7Radio(KenwoodLiveRadio):
         rf.has_mode = False
         rf.has_tuning_step = False
         rf.valid_modes = MODES.values()
+        rf.memory_bounds = (1, self._upper)
         return rf
 
     def _make_mem_spec(self, mem):
         spec = ( \
             "0",
             "0",
-            "%03i" % (mem.number + 1),
+            "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
@@ -197,7 +197,7 @@ class THD7Radio(KenwoodLiveRadio):
     def _parse_mem_spec(self, spec):
         mem = chirp_common.Memory()
 
-        mem.number = int(spec[2]) - 1
+        mem.number = int(spec[2])
         mem.freq = int(spec[3]) / 1000000.0
         mem.tuning_step = STEPS[int(spec[4])]
         mem.duplex = DUPLEX[int(spec[5])]
@@ -227,13 +227,14 @@ class TMD700Radio(KenwoodLiveRadio):
         rf.has_mode = False
         rf.has_tuning_step = False
         rf.valid_modes = MODES.values()
+        rf.memory_bounds = (1, self._upper)
         return rf
 
     def _make_mem_spec(self, mem):
         spec = ( \
             "0",
             "0",
-            "%03i" % (mem.number + 1),
+            "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
@@ -253,7 +254,7 @@ class TMD700Radio(KenwoodLiveRadio):
     def _parse_mem_spec(self, spec):
         mem = chirp_common.Memory()
 
-        mem.number = int(spec[2]) - 1
+        mem.number = int(spec[2])
         mem.freq = int(spec[3]) / 1000000.0
         mem.tuning_step = STEPS[int(spec[4])]
         mem.duplex = DUPLEX[int(spec[5])]
@@ -286,13 +287,14 @@ class TMV7Radio(KenwoodLiveRadio):
         rf.has_tuning_step = False
         rf.valid_modes = ["FM"]
         rf.has_sub_devices = True
+        rf.memory_bounds = (1, self._upper)
         return rf
 
     def _make_mem_spec(self, mem):
         spec = ( \
             "%i" % self._vfo,
             "0",
-            "%03i" % (mem.number + 1),
+            "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
@@ -310,7 +312,7 @@ class TMV7Radio(KenwoodLiveRadio):
 
     def _parse_mem_spec(self, spec):
         mem = chirp_common.Memory()
-        mem.number = int(spec[2]) - 1
+        mem.number = int(spec[2])
         mem.freq = int(spec[3]) / 1000000.0
         mem.tuning_step = STEPS[int(spec[4])]
         mem.duplex = DUPLEX[int(spec[5])]
@@ -361,13 +363,12 @@ class TMV7Radio(KenwoodLiveRadio):
 
         for limit in limits:
             print "Testing %s" % (limit)
-            # FIXME mylimit+1 when we move to native addressing
-            if not self.__test_location(limit):
-                self.mem_upper_limit = limit
+            if not self.__test_location(limit+1):
+                self._upper = limit
                 break
 
         print "Detected limit for VFO %i is %i" % (self._vfo,
-                                                   self.mem_upper_limit)
+                                                   self._upper)
 
 
 class TMV7RadioSub(TMV7Radio):

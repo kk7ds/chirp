@@ -253,13 +253,14 @@ def set_skip(mmap, number, skip):
     mmap[MEM_FLG_BASE + number] = val
 
 def get_memory(_map, number):
+    index = number - 1
     mem = chirp_common.Memory()
     mem.number = number
-    if not is_used(_map, number):
+    if not is_used(_map, index):
         mem.empty = True
         return mem
 
-    mmap = get_raw_memory(_map, number)
+    mmap = get_raw_memory(_map, index)
     mem.freq = get_freq(mmap)
     mem.duplex = get_duplex(mmap)
     mem.offset = get_offset(mmap)
@@ -269,7 +270,7 @@ def get_memory(_map, number):
     mem.tmode = get_tmode(mmap)
     mem.rtone = mem.ctone = get_tone(mmap)
     mem.dtcs = get_dtcs(mmap)
-    mem.skip = get_skip(_map, number)
+    mem.skip = get_skip(_map, index)
     
     return mem
 
@@ -279,9 +280,10 @@ def initialize(mmap):
     mmap[24] = "\x00\x10\x00\x08\x00\x0d\x00\x18"
 
 def set_memory(_map, mem):
-    mmap = get_raw_memory(_map, mem.number)
+    index = mem.number - 1
+    mmap = get_raw_memory(_map, index)
 
-    if not is_used(_map, mem.number):
+    if not is_used(_map, index):
         initialize(mmap)
 
     set_freq(mmap, mem.freq)
@@ -294,14 +296,14 @@ def set_memory(_map, mem):
     set_tone(mmap, mem.rtone)
     set_dtcs(mmap, mem.dtcs)
 
-    _map[get_mem_offset(mem.number)] = mmap.get_packed()
-    set_is_used(_map, mem.number, True)
-    set_skip(_map, mem.number, mem.skip)
+    _map[get_mem_offset(index)] = mmap.get_packed()
+    set_is_used(_map, index, True)
+    set_skip(_map, index, mem.skip)
 
     return _map
 
 def erase_memory(map, number):
-    set_is_used(map, number, False)
+    set_is_used(map, number-1, False)
     return map
 
 def update_checksum(mmap):

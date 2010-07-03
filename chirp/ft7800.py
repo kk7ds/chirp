@@ -24,6 +24,11 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _memsize = 31561
 
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.memory_bounds = (0, 999)
+        return rf
+
     def sync_in(self):
         self._mmap = ft7800_ll.download(self)
 
