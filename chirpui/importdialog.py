@@ -185,7 +185,7 @@ class ImportDialog(gtk.Dialog):
 
             mem.name = self.dst_radio.filter_name(mem.name)
 
-            if dst_banks and not mem.bank in dst_banks:
+            if dst_banks and not mem.bank < len(dst_banks):
                 mem.bank = None
 
             if isinstance(mem, chirp_common.DVMemory):
