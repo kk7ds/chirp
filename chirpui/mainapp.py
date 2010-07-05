@@ -318,13 +318,21 @@ class ChirpMain(gtk.Window):
                   "csv" : ("CSV Files (*.csv)", "*.csv"),
                   }
 
-        defname = "radio.%s" % type
+        eset = self.get_current_editorset()
+
+        if os.path.exists(eset.filename):
+            base = os.path.basename(eset.filename)
+            if "." in base:
+                base = base[:base.rindex(".")]
+            defname = "%s.%s" % (base, type)
+        else:
+            defname = "radio.%s" % type
+
         filen = platform.get_platform().gui_save_file(default_name=defname,
                                                       types=[types[type]])
         if not filen:
             return
 
-        eset = self.get_current_editorset()
         eset.do_export(filen)
 
     def do_about(self):
