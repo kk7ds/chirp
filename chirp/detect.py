@@ -64,6 +64,7 @@ def detect_kenwoodlive_radio(port):
 
     models = {
         "TH-D7"   : kenwood_live.THD7Radio,
+        "TH-D7G"   : kenwood_live.THD7Radio,
         "TM-D700" : kenwood_live.TMD700Radio,
         "TM-V7"   : kenwood_live.TMV7Radio,
         "TM-V71"  : tmv71.TMV71ARadio,
