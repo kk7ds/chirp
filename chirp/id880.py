@@ -108,3 +108,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         
     def filter_name(self, name):
         return chirp_common.name8(name, just_upper=True)
+
+class ID80Radio(ID880Radio):
+    MODEL = "ID-880H"
+
+    _model = "\x31\x55\x00\x01"
+    

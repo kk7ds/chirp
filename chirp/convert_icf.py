@@ -9,6 +9,7 @@ def icf_to_image(icf_file, img_file):
               ic2200.IC2200Radio,
               icx8x.ICx8xRadio,
               id880.ID880Radio,
+              id880.ID80Radio,
               ]
 
     img_data = None

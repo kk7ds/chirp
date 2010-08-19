@@ -235,6 +235,8 @@ def clone_from_radio(radio):
         for frame in frames:
             if frame.cmd == CMD_CLONE_DAT:
                 addr = process_data_frame(frame, mmap)
+            elif frame.cmd == CMD_CLONE_END:
+                print "End frame:\n%s" % util.hexprint(frame.payload)
 
         if radio.status_fn:
             status = chirp_common.Status()
