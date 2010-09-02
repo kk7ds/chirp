@@ -151,16 +151,22 @@ class CloneSettingsDialog(gtk.Dialog):
         if model == "Detect":
             try:
                 cs.radio_class = detect.DETECT_FUNCTIONS[vendor](cs.port)
+                if not cs.radio_class:
+                    raise Exception("Unable to detect radio on %s" % cs.port)
             except Exception, e:
                 d = inputdialog.ExceptionDialog(e)
                 d.run()
                 d.destroy()
                 return None
         else:
-            for rclass in self.__vendors[vendor]:
+            for rclass in directory.DRV_TO_RADIO.values():
                 if rclass.MODEL == model:
                     cs.radio_class = rclass
                     break
+            if not cs.radio_class:
+                common.show_error("Internal error: Unable to upload to %s" % model)
+                print self.__vendors
+                return None
 
         global _LAST_PORT
         global _LAST_VENDOR
