@@ -16,7 +16,7 @@
 import serial
 
 from chirp import chirp_common, errors, idrp, util, icf, directory
-from chirp import kenwood_live, tmv71
+from chirp import kenwood_live, tmv71, tmv71_ll
 
 def detect_icom_radio(port):
     s = serial.Serial(port=port, timeout=0.5)
@@ -52,8 +52,11 @@ def detect_kenwoodlive_radio(port):
 
     for rate in [9600, 19200, 38400, 57600]:
         s.setBaudrate(rate)
+        s.write("\r")
+        s.read(25)
         try:
-            r_id = kenwood_live.get_id(s)
+            #r_id = kenwood_live.get_id(s)
+            r_id = tmv71_ll.get_id(s)
             break
         except errors.RadioError:
             pass
