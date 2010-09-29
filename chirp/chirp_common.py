@@ -573,13 +573,19 @@ class CloneModeRadio(Radio):
         mapfile = file(filename, "rb")
         self._mmap = memmap.MemoryMap(mapfile.read())
         mapfile.close()
-
         self.process_mmap()
 
     def save_mmap(self, filename):
-        mapfile = file(filename, "wb")
-        mapfile.write(self._mmap.get_packed())
-        mapfile.close()
+        """
+        try to open a file and write to it
+        If IOError raise a File Access Error Exception
+        """
+        try:
+            mapfile = file(filename, "wb")
+            mapfile.write(self._mmap.get_packed())
+            mapfile.close()
+        except IOError,e:
+            raise Exception("File Access Error")
 
     def sync_in(self):
         "Initiate a radio-to-PC clone operation"

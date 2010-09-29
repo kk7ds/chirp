@@ -154,7 +154,12 @@ class ChirpMain(gtk.Window):
             else:
                 break
 
-        eset.save(fname)
+        try:
+            eset.save(fname)
+        except Exception,e:
+            d = inputdialog.ExceptionDialog(e)
+            d.run()
+            d.destroy()
 
     def cb_clonein(self, radio, fn, emsg=None):
         radio.pipe.close()
