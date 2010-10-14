@@ -22,15 +22,19 @@ import gtk
 import gobject
 gobject.threads_init()
 
-import serial
-
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
+from chirpui import inputdialog, common
+try:
+    import serial
+except ImportError,e:
+    common.log_exception()
+    common.show_error("\nThe Pyserial module is not installed!")
 from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
-from chirpui import editorset, clone, inputdialog, miscwidgets, common
+from chirpui import editorset, clone, miscwidgets
 
 class ModifiedError(Exception):
     pass
