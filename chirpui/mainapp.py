@@ -32,7 +32,7 @@ try:
 except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
-from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp
+from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirpui import editorset, clone, miscwidgets
 
@@ -94,6 +94,7 @@ class ChirpMain(gtk.Window):
             types = [("CHIRP Radio Images (*.img)", "*.img"),
                      ("CHIRP Files (*.chirp)", "*.chirp"),
                      ("CSV Files (*.csv)", "*.csv"),
+                     ("VX7 Commander Files (*.vx7)", "*.vx7"),
                      ]
             fname = platform.get_platform().gui_open_file(types=types)
             if not fname:
@@ -143,6 +144,9 @@ class ChirpMain(gtk.Window):
             types = [("CHIRP File (*.chirp)", "*.chirp")]
         else:
             types = [("ERROR", "*.*")]
+
+        if isinstance(eset.radio, vx7.VX7Radio):
+            types += [("VX7 Commander (*.vx7)", "*.vx7")]
 
         while True:
             fname = platform.get_platform().gui_save_file(types=types)
@@ -313,7 +317,8 @@ class ChirpMain(gtk.Window):
     def do_import(self):
         types = [("CHIRP Files (*.chirp)", "*.chirp"),
                  ("CHIRP Radio Images (*.img)", "*.img"),
-                 ("CSV Files (*.csv)", "*.csv")]
+                 ("CSV Files (*.csv)", "*.csv"),
+                 ("VX7 Commander Files (*.vx7", "*.vx7")]
         filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
             return
