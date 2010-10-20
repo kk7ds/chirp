@@ -25,6 +25,8 @@ else:
     
 #print "Using separation character of '%s'" % SEPCHAR
 
+import threading
+
 from chirp import errors, memmap
 
 # 50 Tones
@@ -667,3 +669,27 @@ def name8(name, just_upper=False):
 
 def name16(name, just_upper=False):
     return _name(name, 16, just_upper)
+
+class KillableThread(threading.Thread):
+    def __tid(self):
+        if not self.isAlive():
+            raise threading.ThreadError("Not running")
+
+        for tid, thread in threading._active.items():
+            if thread == self:
+                return tid
+
+        raise threading.ThreadError("I don't know my own TID")
+
+    def kill(self, exception):
+        import ctypes
+        import inspect
+
+        if not inspect.isclass(exception):
+            raise Exception("Parameter is not an Exception")
+
+        ctype = ctypes.py_object(exception)
+        ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(self.__tid(), ctype)
+        if ret != 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(self.__tid(), 0)
+            raise Exception("Failed to signal thread!")

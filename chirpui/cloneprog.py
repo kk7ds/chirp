@@ -25,6 +25,12 @@ class CloneProg(gtk.Window):
         else:
             parent = None
 
+        if args.has_key("cancel"):
+            cancel = args["cancel"]
+            del args["cancel"]
+        else:
+            cancel = None
+
         gtk.Window.__init__(self, **args)
 
         self.set_transient_for(parent)
@@ -47,6 +53,11 @@ class CloneProg(gtk.Window):
         self.progbar.set_fraction(0.0)
         self.progbar.show()
         vbox.pack_start(self.progbar, 0, 0, 0)
+
+        cancel_b = gtk.Button("Cancel")
+        cancel_b.connect("clicked", lambda b: cancel())
+        cancel_b.show()
+        vbox.pack_start(cancel_b, 0, 0, 0)
 
     def status(self, _status):
         self.infolabel.set_text(_status.msg)

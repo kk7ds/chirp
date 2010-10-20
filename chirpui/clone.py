@@ -178,7 +178,10 @@ class CloneSettingsDialog(gtk.Dialog):
 
         return cs
 
-class CloneThread(threading.Thread):
+class CloneCancelledException(Exception):
+    pass
+
+class CloneThread(chirp_common.KillableThread):
     def __status(self, status):
         gobject.idle_add(self.__progw.status, status)
 
@@ -188,8 +191,13 @@ class CloneThread(threading.Thread):
         self.__radio = radio
         self.__fname = fname
         self.__cback = cb
+        self.__cancelled = False
 
-        self.__progw = cloneprog.CloneProg(parent=parent)
+        self.__progw = cloneprog.CloneProg(parent=parent, cancel=self.cancel)
+
+    def cancel(self):
+        self.__cancelled = True
+        self.kill(CloneCancelledException)
 
     def run(self):
         print "Clone thread started"
@@ -218,7 +226,7 @@ class CloneThread(threading.Thread):
 
         print "Clone thread ended"
 
-        if self.__cback:
+        if self.__cback and not self.__cancelled:
             gobject.idle_add(self.__cback, self.__radio, self.__fname, emsg)
 
 if __name__ == "__main__":
