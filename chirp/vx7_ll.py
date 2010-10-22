@@ -85,7 +85,7 @@ def get_duplex(mmap):
         0x00 : "",
         0x01 : "-",
         0x02 : "+",
-        0x03 : "i", # NOT SUPPORTED!
+        0x03 : "split", # non-standard repeater shift
         }
 
     return dupmap[val]
@@ -97,16 +97,14 @@ def set_duplex(mmap, duplex):
         val |= 0x10
     elif duplex == "+":
         val |= 0x20
+    elif duplex == "split":
+        val |= 0x30
 
     print "Duplex is %s, val %02x" % (duplex, val)
 
     mmap[POS_DUP] = val
 
 def get_offset(mmap):
-    dup = get_duplex(mmap)
-    if (dup == "i"):
-        return 1.0 # NOT SUPPORTED
-
     return _get_freq_at(mmap, POS_OFFSET)
 
 def set_offset(mmap, offset):

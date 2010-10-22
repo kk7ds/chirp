@@ -108,6 +108,7 @@ def get_duplex(mmap):
         0x00 : "",
         0x10 : "-",
         0x20 : "+",
+        0x30 : "split",
         }
 
     return dupmap[val]
@@ -116,9 +117,10 @@ def set_duplex(mmap, duplex):
     val = ord(mmap[POS_DUP]) & 0xCF
 
     dupmap = {
-        ""  : 0x00,
-        "-" : 0x10,
-        "+" : 0x20,
+        ""      : 0x00,
+        "-"     : 0x10,
+        "+"     : 0x20,
+        "split" : 0x30,
         }
 
     mmap[POS_DUP] = val | dupmap[duplex]
@@ -179,10 +181,6 @@ def set_dtcs(mmap, dtcs):
     mmap[POS_DTCS] = val
 
 def get_offset(mmap):
-    dup = get_duplex(mmap)
-    if (dup == "i"):
-        return 1.0 # NOT SUPPORTED
-
     return _get_freq_at(mmap, POS_OFFSET)
 
 def set_offset(mmap, offset):

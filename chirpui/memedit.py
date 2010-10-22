@@ -98,7 +98,7 @@ class MemoryEditor(common.Editor):
         "DTCS Code" : chirp_common.DTCS_CODES,
         "DTCS Pol" : ["NN", "NR", "RN", "RR"],
         "Mode" : chirp_common.MODES,
-        "Duplex" : ["", "-", "+"],
+        "Duplex" : ["", "-", "+", "split"],
         "Tune Step" : chirp_common.TUNING_STEPS,
         "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
         "Skip" : chirp_common.SKIP_VALUES,

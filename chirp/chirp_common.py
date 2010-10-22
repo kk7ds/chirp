@@ -119,7 +119,7 @@ class Memory:
         "tmode"         : TONE_MODES,
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
         "mode"          : MODES,
-        "duplex"        : ["", "+", "-"],
+        "duplex"        : ["", "+", "-", "split"],
         "skip"          : SKIP_VALUES,
         "bank"          : [x for x in range(0, 256)] + [None],
         "empty"         : [True, False],

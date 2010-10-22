@@ -173,6 +173,7 @@ def get_duplex(mmap):
         0x00 : "",
         0x01 : "-",
         0x02 : "+",
+        0x03 : "split",
         }
 
     return dupmap[val]
@@ -181,9 +182,10 @@ def set_duplex(mmap, duplex):
     val = ord(mmap[POS_DUPLEX]) & 0xFC
 
     dupmap = {
-        ""  : 0x00,
-        "-" : 0x01,
-        "+" : 0x02,
+        ""      : 0x00,
+        "-"     : 0x01,
+        "+"     : 0x02,
+        "split" : 0x03,
         }
     
     mmap[POS_DUPLEX] = val | dupmap[duplex]
