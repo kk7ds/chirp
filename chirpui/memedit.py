@@ -716,6 +716,11 @@ time.  Are you sure you want to do this?"""
         job.set_desc("Getting bank list")
         rthread.submit(job)
 
+        if not self.rthread.radio.get_features()["can_odd_split"]:
+            # We need a new list, so .remove() won't work for us
+            self.choices["Duplex"] = [x for x in self.choices["Duplex"]
+                                      if x != "split"]
+
         vbox = gtk.VBox(False, 2)
         vbox.pack_start(self.make_controls(min, max), 0, 0, 0)
         vbox.pack_start(self.make_editor(), 1, 1, 1)

@@ -27,6 +27,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 999)
+        rf.can_odd_split = True
         return rf
 
     def sync_in(self):

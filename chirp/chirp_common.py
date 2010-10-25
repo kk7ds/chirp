@@ -435,6 +435,7 @@ class RadioFeatures:
         "valid_modes"         : [],
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
+        "can_odd_split"       : BOOLEAN,
 
         # D-STAR
         "requires_call_lists" : BOOLEAN,
@@ -474,6 +475,7 @@ class RadioFeatures:
         self.valid_modes = list(MODES)
         self.has_sub_devices = False
         self.memory_bounds = (0, 1)
+        self.can_odd_split = False
 
         self.requires_call_lists = True
         self.has_implicit_calls = False
