@@ -16,6 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import struct
+
 from chirp import chirp_common, util, errors
 from chirp import memmap
 
@@ -32,6 +34,7 @@ POS_MODE   = 0
 POS_FREQ   = 1
 POS_TMODE  = 4
 POS_STEP   = 4
+POS_SPLIT  = 5
 POS_TONE   = 8
 POS_DTCS   = 9
 POS_OFFSET = 12
@@ -153,38 +156,48 @@ def set_tmode(mmap, tmode):
     mmap[POS_TMODE] = val | tmodemap[tmode]
 
 def get_duplex(mmap):
-    val = ord(mmap[POS_DUP]) & 0x03
+    val = ord(mmap[POS_DUP]) & 0x07
 
     dupmap = {
         0x00 : "",
-        0x01 : "split", #this will almost certainly fail is a spectacular way
         0x02 : "-",
         0x03 : "+",
+        0x04 : "split",
         }
 
     return dupmap[val]
 
 def set_duplex(mmap, duplex):
-    val = ord(mmap[POS_DUP]) & 0xFC
+    val = ord(mmap[POS_DUP]) & 0xF8
 
     dupmap = {
         ""      : 0x00,
-        "split" : 0x01, #this is even more likely to fail in a spectacular way
         "-"     : 0x02,
         "+"     : 0x03,
+        "split" : 0x04,
         }
 
     mmap[POS_DUP] = val | dupmap[duplex]
 
 def get_offset(mmap):
-    val = ord(mmap[POS_OFFSET])
-
-    return (val * 5) / 100.0
+    if get_duplex(mmap) == "split":
+        khz = (int("%02x" % (ord(mmap[POS_SPLIT])), 10) * 100000) + \
+            (int("%02x" % ord(mmap[POS_SPLIT+1]), 10) * 1000) + \
+            (int("%02x" % ord(mmap[POS_SPLIT+2]), 10) * 10)
+        return khz / 1000.0
+        
+    else:
+        val = ord(mmap[POS_OFFSET])
+        return (val * 5) / 100.0
 
 def set_offset(mmap, offset):
-    val = int(offset * 100) / 5
-
-    mmap[POS_OFFSET] = val
+    if get_duplex(mmap) == "split":
+        val = util.bcd_encode(int(offset * 10000), width=6)[:4]
+        mmap[POS_SPLIT] = (ord(mmap[POS_FREQ]) & 0xF0) | ord(val[0])
+        mmap[POS_SPLIT+1] = val[1:3]
+    else:
+        val = int(offset * 100) / 5
+        mmap[POS_OFFSET] = val
 
 def get_tone(mmap):
     val = ord(mmap[POS_TONE]) & 0x3F
