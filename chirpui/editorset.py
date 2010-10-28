@@ -47,8 +47,7 @@ class EditorSet(gtk.VBox):
 
         if isinstance(source, str):
             self.filename = source
-            rclass = radio_class_from_file(self.filename)
-            self.radio = rclass(self.filename)
+            self.radio = radio_class_from_file(self.filename)
         elif isinstance(source, chirp_common.Radio):
             self.radio = source
             self.filename = source.VARIANT
@@ -218,8 +217,7 @@ class EditorSet(gtk.VBox):
 
     def do_import(self, filen):
         try:
-            rc = radio_class_from_file(filen)
-            src_radio = rc(filen)
+            src_radio = radio_class_from_file(filen)
             if src_radio.get_features().has_sub_devices:
                 src_radio = self.choose_sub_device(src_radio)
         except Exception, e:

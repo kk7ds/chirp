@@ -14,10 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import tempfile
+
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp, icf, ic9x_icf
 from chirp import vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71
-from chirp import xml, chirp_common
+from chirp import xml, chirp_common, convert_icf
 
 DRV_TO_RADIO = {
 
@@ -64,7 +66,12 @@ def get_driver(radio):
 
 def get_radio_by_image(image_file):
     if icf.is_9x_icf(image_file):
-        return ic9x_icf.IC9xICFRadio
+        return ic9x_icf.IC9xICFRadio(image_file)
+    if icf.is_icf_file(image_file):
+        tempf = tempfile.mktemp()
+        convert_icf.icf_to_image(image_file, tempf)
+        print "Auto-converted %s -> %s" % (image_file, tempf)
+        image_file = tempf
 
     # Right now just detect by size
 
@@ -74,7 +81,7 @@ def get_radio_by_image(image_file):
         if not issubclass(radio, chirp_common.CloneModeRadio):
             continue
         if radio._memsize == size:
-            return radio
+            return radio(image_file)
     raise Exception("Unknown file format")
 
 def get_radio_name(driver):

@@ -17,6 +17,7 @@
 
 
 import struct
+import re
 
 from chirp import chirp_common, errors, util, memmap
 from chirp import ic9x_ll # for magic; may need to move later
@@ -365,6 +366,16 @@ def is_9x_icf(filename):
     f.close()
 
     return mdata in ["30660000"]
+
+def is_icf_file(filename):
+    f = file(filename)
+    data = f.readline()
+    data += f.readline()
+    f.close()
+
+    data = data.replace("\n", "").replace("\r", "")
+
+    return bool(re.match("^[0-9]{8}#", data))
 
 class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
