@@ -95,17 +95,28 @@ class ChirpMain(gtk.Window):
             types = [("CHIRP Radio Images (*.img)", "*.img"),
                      ("CHIRP Files (*.chirp)", "*.chirp"),
                      ("CSV Files (*.csv)", "*.csv"),
+                     ("ICF Files (*.icf)", "*.icf"),
                      ("VX7 Commander Files (*.vx7)", "*.vx7"),
                      ]
             fname = platform.get_platform().gui_open_file(types=types)
             if not fname:
                 return
 
-        # Oogly hack
-        # This is not as easy as we'd like because we can't call
-        # get_sub_devices() until we have a radio.  Could try to
-        # make it static, at some point.
+        if icf.is_icf_file(fname):
+            a = common.ask_yesno_question("ICF files cannot be edited, only " +
+                                          "displayed or imported into " +
+                                          "another file.  " +
+                                          "Open in read-only mode?",
+                                          self)
+            if not a:
+                return
+            read_only = True
+        else:
+            read_only = False
+
         if icf.is_9x_icf(fname):
+            # We have to actually instantiate the IC9xICFRadio to get its
+            # sub-devices
             radio = ic9x_icf.IC9xICFRadio(fname)
             devices = radio.get_sub_devices()
             del radio
@@ -121,6 +132,7 @@ class ChirpMain(gtk.Window):
                                                                          e))
                 return
     
+            eset.set_read_only(read_only)
             eset.connect("want-close", self.do_close)
             eset.connect("status", self.ev_status)
             eset.show()
