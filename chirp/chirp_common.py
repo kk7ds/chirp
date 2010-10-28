@@ -561,6 +561,10 @@ class CloneModeRadio(Radio):
         if isinstance(pipe, str):
             self.pipe = None
             self.load_mmap(pipe)
+        elif isinstance(pipe, memmap.MemoryMap):
+            self.pipe = None
+            self._mmap = pipe
+            self.process_mmap()
         else:
             Radio.__init__(self, pipe)
 
