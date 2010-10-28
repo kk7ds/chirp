@@ -348,16 +348,23 @@ def read_file(filename):
     f = file(filename)
 
     mod_str = f.readline()
-    cmt_str = f.readline()
     dat = f.readlines()
     
     model = convert_model(mod_str.strip())
 
     _mmap = ""
     for line in dat:
-        _mmap += convert_data_line(line)
+        if not line.startswith("#"):
+            _mmap += convert_data_line(line)
 
     return model, memmap.MemoryMap(_mmap)
+
+def is_9x_icf(filename):
+    f = file(filename)
+    mdata = f.read(8)
+    f.close()
+
+    return mdata in ["30660000"]
 
 class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
