@@ -283,3 +283,6 @@ class EditorSet(gtk.VBox):
         # Quick hack for D-STAR editor
         if pagenum == 1:
             self.dstared.focus()
+
+    def set_read_only(self, read_only=True):
+        self.memedit.set_read_only(read_only)

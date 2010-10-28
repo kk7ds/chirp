@@ -165,7 +165,8 @@ class MemoryEditor(common.Editor):
         return new
 
     def edited(self, rend, path, new, cap):
-        if self.fill_thread:
+        if self.read_only:
+            common.show_error("Unable to make changes to this model")
             return
 
         colnum = self.col(cap)
@@ -693,6 +694,9 @@ time.  Are you sure you want to do this?"""
         self.show_empty = show
         self.prefill()
 
+    def set_read_only(self, read_only):
+        self.read_only = read_only
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
@@ -701,7 +705,7 @@ time.  Are you sure you want to do this?"""
         self.show_special = False
         self.show_empty = True
 
-        self.fill_thread = None
+        self.read_only = False
 
         self.need_refresh = False
 
