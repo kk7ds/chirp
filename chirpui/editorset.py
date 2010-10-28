@@ -48,7 +48,7 @@ class EditorSet(gtk.VBox):
             self.filename = source
             rclass = radio_class_from_file(self.filename)
             self.radio = rclass(self.filename)
-        elif isinstance(source, chirp_common.LiveRadio):
+        elif isinstance(source, chirp_common.Radio):
             self.radio = source
             self.filename = source.VARIANT
         else:
