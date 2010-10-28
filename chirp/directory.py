@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp
+from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp, icf, ic9x_icf
 from chirp import vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71
 from chirp import xml, chirp_common
@@ -63,6 +63,9 @@ def get_driver(radio):
         raise Exception("Unknown radio type `%s'" % radio)
 
 def get_radio_by_image(image_file):
+    if icf.is_9x_icf(image_file):
+        return ic9x_icf.IC9xICFRadio
+
     # Right now just detect by size
 
     size = os.stat(image_file).st_size
