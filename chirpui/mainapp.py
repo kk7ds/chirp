@@ -34,6 +34,7 @@ except ImportError,e:
     common.show_error("\nThe Pyserial module is not installed!")
 from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
+from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets
 
 class ModifiedError(Exception):
@@ -100,18 +101,31 @@ class ChirpMain(gtk.Window):
             if not fname:
                 return
 
-        try:
-            eset = editorset.EditorSet(fname, self, tempname=tempname)
-        except Exception, e:
-            common.log_exception()
-            common.show_error("There was an error opening %s: %s" % (fname, e))
-            return
+        # Oogly hack
+        # This is not as easy as we'd like because we can't call
+        # get_sub_devices() until we have a radio.  Could try to
+        # make it static, at some point.
+        if icf.is_9x_icf(fname):
+            radio = ic9x_icf.IC9xICFRadio(fname)
+            devices = radio.get_sub_devices()
+            del radio
+        else:
+            devices = [fname]
 
-        eset.connect("want-close", self.do_close)
-        eset.connect("status", self.ev_status)
-        eset.show()
-        tab = self.tabs.append_page(eset, eset.get_tab_label())
-        self.tabs.set_current_page(tab)
+        for device in devices:
+            try:
+                eset = editorset.EditorSet(device, self, tempname=tempname)
+            except Exception, e:
+                common.log_exception()
+                common.show_error("There was an error opening %s: %s" % (fname,
+                                                                         e))
+                return
+    
+            eset.connect("want-close", self.do_close)
+            eset.connect("status", self.ev_status)
+            eset.show()
+            tab = self.tabs.append_page(eset, eset.get_tab_label())
+            self.tabs.set_current_page(tab)
 
     def do_open_live(self, radio):
         if radio.get_features().has_sub_devices:
