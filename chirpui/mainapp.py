@@ -387,6 +387,12 @@ class ChirpMain(gtk.Window):
         if not icffile:
             return
 
+        if icf.is_9x_icf(icffile):
+            common.show_error("IC9x files cannot be converted in this " +
+                              "manner.  Import them directly into an " +
+                              "open radio.")
+            return
+
         imgtypes = [("CHIRP Radio Images (*.img)", "*.img")]
         imgfile = platform.get_platform().gui_save_file(types=imgtypes)
         if not imgfile:
