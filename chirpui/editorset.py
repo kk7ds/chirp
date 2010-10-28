@@ -21,6 +21,7 @@ import gobject
 
 from chirp import chirp_common, directory, csv, xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
+from chirpui import inputdialog
 
 def radio_class_from_file(filename):
     if filename.endswith(".chirp"):
@@ -199,10 +200,28 @@ class EditorSet(gtk.VBox):
 
         return count
 
+    def choose_sub_device(self, radio):
+        devices = radio.get_sub_devices()
+        choices = [x.VARIANT for x in devices]
+
+        d = inputdialog.ChoiceDialog(choices)
+        r = d.run()
+        chosen = d.choice.get_active_text()
+        d.destroy()
+        if r == gtk.RESPONSE_CANCEL:
+            raise Exception("Cancelled")
+        for d in devices:
+            if d.VARIANT == chosen:
+                return d
+
+        raise Exception("Internal Error")
+
     def do_import(self, filen):
         try:
             rc = radio_class_from_file(filen)
             src_radio = rc(filen)
+            if src_radio.get_features().has_sub_devices:
+                src_radio = self.choose_sub_device(src_radio)
         except Exception, e:
             common.show_error(e)
             return
