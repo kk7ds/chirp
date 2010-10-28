@@ -332,6 +332,7 @@ class ChirpMain(gtk.Window):
         types = [("CHIRP Files (*.chirp)", "*.chirp"),
                  ("CHIRP Radio Images (*.img)", "*.img"),
                  ("CSV Files (*.csv)", "*.csv"),
+                 ("ICF Files (*.icf)", "*.icf"),
                  ("VX7 Commander Files (*.vx7", "*.vx7")]
         filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
