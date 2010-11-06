@@ -80,3 +80,8 @@ def bcd_encode(val, bigendian=True, width=None):
     
     return result
 
+def get_dict_rev(dict, key):
+    _dict = {}
+    for k,v in dict.items():
+        _dict[v] = k
+    return _dict[key]
