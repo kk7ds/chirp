@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2008 Dan Smith <dsmith@danplanet.com>
+# Copyright 2010 Dan Smith <dsmith@danplanet.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,76 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, ic2820_ll, errors
+from chirp import chirp_common, icf, errors, util
+from chirp import bitwise;
+
+mem_format = """
+struct {
+  u32  freq;
+  u32  offset;
+  char urcall[8];
+  char r1call[8];
+  char r2call[8];
+  u8   unknown1;
+  u8   unknown2:1,
+       duplex:2,
+       tmode:3,
+       unknown3:2;
+  u16  ctone:6,
+       rtone:6,
+       tune_step:4;
+  u16  dtcs:7,
+       mode:3,
+       unknown4:6;
+  u8   unknwon5:1,
+       digital_code:7;
+  u8   unknown6:2,
+       dtcs_polarity:2,
+       unknown7:4;
+  char name[8];
+} memory[522];
+
+#seekto 0x61E0;
+u8 used_flags[66];
+
+#seekto 0x6222;
+u8 skip_flags[65];
+u8 pskip_flags[65];
+
+#seekto 0x62A4;
+struct {
+  u8 bank;
+  u8 index;
+} bank_info[500];
+
+#seekto 0x66C0;
+struct {
+  char name[8];
+} bank_names[26];
+
+#seekto 0x6970;
+struct {
+  char call[8];
+  u8 unknown[4];
+} mycall[6];
+
+#seekto 0x69B8;
+struct {
+  char call[8];
+} urcall[60];
+
+struct {
+  char call[8];
+} rptcall[60];
+
+"""
+
+TMODES = ["", "Tone", "??0", "TSQL", "??1", "??2", "DTCS"]
+DUPLEX = ["", "-", "+", "+"] # Not sure about index 3
+MODES  = ["FM", "NFM", "AM", "??", "DV"]
+DTCSP  = ["NN", "NR", "RN", "RR"]
+
+MEM_LOC_SIZE = 48
 
 class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
@@ -56,122 +125,201 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         raise errors.RadioError("Out of slots in this bank")
 
+    def _get_special(self):
+        special = {"C0" : 500 + 20,
+                   "C1" : 500 + 21}
+
+        for i in range(0, 10):
+            idA = "%iA" % i
+            idB = "%iB" % i
+            special[idA] = 500 + i * 2
+            special[idB] = 500 + i * 2 + 1
+
+        return special
+
     def get_special_locations(self):
-        return sorted(ic2820_ll.IC2820_SPECIAL.keys())
+        return sorted(self._get_special().keys())
 
     def process_mmap(self):
-        self._memories = {}
-        count = 500 + len(ic2820_ll.IC2820_SPECIAL.keys())
-        for i in range(0, count):
-            try:
-                mem = ic2820_ll.get_memory(self._mmap, i)
-            except errors.InvalidMemoryLocation:
-                mem = chirp_common.Memory()
-                mem.number = i
-                mem.empty = True
-
-            self._memories[mem.number] = mem
+        self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_memory(self, number):
-        if not self._mmap:
-            self.sync_in()
-
         if isinstance(number, str):
-            try:
-                number = ic2820_ll.IC2820_SPECIAL[number]
-            except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
-                                                       number)
-        
-        try:
-            return self._memories[number]
-        except KeyError:
-            raise errors.InvalidMemoryLocation("Location %s is empty" % number)
+            number = self._get_special()[number]
 
-    def get_memories(self, lo=0, hi=499):
-        if not self._mmap:
-            self.sync_in()
+        bitpos = (1 << (number % 8))
+        bytepos = number / 8
 
-        return [m for m in self._memories.values() if m.number >= lo and m.number <= hi]
+        _mem = self._memobj["memory"][number]
+        _used = self._memobj["used_flags"][bytepos]
 
-    def set_memory(self, memory):
-        if not self._mmap:
-            self.sync_in()
+        is_used = ((_used & bitpos) == 0)
 
-        if memory.empty:
-            self._mmap = ic2820_ll.erase_memory(self._mmap, memory.number)
+        if is_used and MODES[_mem["mode"]] == "DV":
+            mem = chirp_common.DVMemory()
+            mem.dv_urcall = bitwise.get_string(_mem["urcall"])
+            mem.dv_rpt1call = bitwise.get_string(_mem["r1call"])
+            mem.dv_rpt2call = bitwise.get_string(_mem["r2call"])
         else:
-            self._mmap = ic2820_ll.set_memory(self._mmap, memory)
-        self._memories[memory.number] = memory
+            mem = chirp_common.Memory()
 
+        mem.number = number
+        if number < 500:
+            _bank = self._memobj["bank_info"][number]
+            mem.bank = _bank["bank"]
+            mem.bank_index = _bank["index"]
+            if mem.bank == 0xFF:
+                mem.bank = None
+                mem.bank_index = -1
+
+            _skip = self._memobj["skip_flags"][bytepos]
+            _pskip = self._memobj["pskip_flags"][bytepos]
+            if _skip & bitpos:
+                mem.skip = "S"
+            elif _pskip & bitpos:
+                mem.skip = "P"
+        else:
+            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.immutable = ["number", "skip", "bank", "bank_index",
+                             "extd_number"]
+
+        if not is_used:
+            mem.empty = True
+            return mem
+
+        mem.freq = _mem["freq"] / 1000000.0
+        mem.offset = _mem["offset"] / 1000000.0
+        mem.rtone = chirp_common.TONES[_mem["rtone"]]
+        mem.ctone = chirp_common.TONES[_mem["ctone"]]
+        mem.tmode = TMODES[_mem["tmode"]]
+        mem.duplex = DUPLEX[_mem["duplex"]]
+        mem.mode = MODES[_mem["mode"]]
+        mem.dtcs = chirp_common.DTCS_CODES[_mem["dtcs"]]
+        mem.dtcs_polarity = DTCSP[_mem["dtcs_polarity"]]
+        if _mem["tune_step"] > 8:
+            mem.tuning_step = 5.0 # Sometimes TS is garbage?
+        else:
+            mem.tuning_step = chirp_common.TUNING_STEPS[_mem["tune_step"]]
+        mem.name = bitwise.get_string(_mem["name"]).rstrip()
+
+        return mem
+
+    def set_memory(self, mem):
+        bitpos = (1 << (mem.number % 8))
+        bytepos = mem.number / 8
+
+        _mem = self._memobj["memory"][mem.number]
+        _used = self._memobj["used_flags"][bytepos]
+
+        if mem.empty:
+            _used.set_value(_used | bitpos)
+        else:
+            _used.set_value(_used & ~bitpos)
+
+        _mem["freq"]._ = int(mem.freq * 1000000)
+        _mem["offset"]._ = int(mem.offset * 1000000)
+        _mem["rtone"]._ = chirp_common.TONES.index(mem.rtone)
+        _mem["ctone"]._ = chirp_common.TONES.index(mem.ctone)
+        _mem["tmode"]._ = TMODES.index(mem.tmode)
+        _mem["duplex"]._ = DUPLEX.index(mem.duplex)
+        _mem["mode"]._ = MODES.index(mem.mode)
+        _mem["dtcs"]._ = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem["dtcs_polarity"]._ = DTCSP.index(mem.dtcs_polarity)
+        _mem["tune_step"]._ = chirp_common.TUNING_STEPS.index(mem.tuning_step)
+        bitwise.set_string(_mem["name"], mem.name.ljust(8))        
+
+        skip = self._memobj["skip_flags"][bytepos]
+        pskip = self._memobj["pskip_flags"][bytepos]
+        if mem.skip == "S":
+            skip |= bitpos
+        else:
+            skip &= ~bitpos
+        if mem.skip == "P":
+            pskip |= bitpos
+        else:
+            pskip &= ~bitpos
+            
     def sync_in(self):
         icf.IcomCloneModeRadio.sync_in(self)
         self.process_mmap()
 
     def get_raw_memory(self, number):
-        return ic2820_ll.get_raw_memory(self._mmap, number)
+        offset = number * MEM_LOC_SIZE
+        return MemoryMap(self._mmap[offset:offset+MEM_LOC_SIZE])
     
     def get_banks(self):
-        return ic2820_ll.get_bank_names(self._mmap)
+        _banks = self._memobj["bank_names"]
+
+        banks = []
+        for i in range(0, 26):
+            banks.append(bitwise.get_string(_banks[i]["name"]).rstrip())
+
+        return banks
 
     def set_banks(self, banks):
-        return ic2820_ll.set_bank_names(self._mmap, banks)
+        _banks = self._memobj["bank_names"]
+        for i in range(0, 26):
+            bitwise.set_string(_banks[i]["name"], banks[i].ljust(8)[:8])
 
     def get_urcall_list(self):
+        _calls = self._memobj["urcall"]
         calls = []
 
         for i in range(*self.URCALL_LIMIT):
-            call = ic2820_ll.get_urcall(self._mmap, i)
-            calls.append(call)
+            calls.append(bitwise.get_string(_calls[i-1]["call"]))
 
         return calls
 
     def get_repeater_call_list(self):
+        _calls = self._memobj["rptcall"]
         calls = []
 
         for i in range(*self.RPTCALL_LIMIT):
-            call = ic2820_ll.get_rptcall(self._mmap, i)
-            calls.append(call)
+            calls.append(bitwise.get_string(_calls[i-1]["call"]))
 
         return calls
 
     def get_mycall_list(self):
+        _calls = self._memobj["mycall"]
         calls = []
         
         for i in range(*self.MYCALL_LIMIT):
-            call = ic2820_ll.get_mycall(self._mmap, i)
-            calls.append(call)
+            calls.append(bitwise.get_string(_calls[i-1]["call"]))
 
         return calls
 
     def set_urcall_list(self, calls):
+        _calls = self._memobj["urcall"]
+
         for i in range(*self.URCALL_LIMIT):
             try:
                 call = calls[i-1]
             except IndexError:
-                print "No call for %i" % i
                 call = " " * 8
 
-            ic2820_ll.set_urcall(self._mmap, i, call)
-
+            bitwise.set_string(_calls[i-1]["call"], call.ljust(8)[:8])
 
     def set_repeater_call_list(self, calls):
+        _calls = self._memobj["rptcall"]
+
         for i in range(*self.RPTCALL_LIMIT):
             try:
                 call = calls[i-1]
             except IndexError:
                 call = " " * 8
 
-            ic2820_ll.set_rptcall(self._mmap, i, call)
+            bitwise.set_string(_calls[i-1]["call"], call.ljust(8)[:8])
 
     def set_mycall_list(self, calls):
+        _calls = self._memobj["mycall"]
+
         for i in range(*self.MYCALL_LIMIT):
             try:
                 call = calls[i-1]
             except IndexError:
                 call = " " * 8
 
-            ic2820_ll.set_mycall(self._mmap, i, call)
+            bitwise.set_string(_calls[i-1]["call"], call.ljust(8)[:8])
 
     def filter_name(self, name):
         return chirp_common.name8(name)
