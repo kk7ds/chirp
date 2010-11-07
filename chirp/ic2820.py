@@ -228,6 +228,11 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem["tune_step"]._ = chirp_common.TUNING_STEPS.index(mem.tuning_step)
         bitwise.set_string(_mem["name"], mem.name.ljust(8))        
 
+        if isinstance(mem, chirp_common.DVMemory):
+            bitwise.set_string(_mem["urcall"], mem.dv_urcall.ljust(8))
+            bitwise.set_string(_mem["r1call"], mem.dv_rpt1call.ljust(8))
+            bitwise.set_string(_mem["r2call"], mem.dv_rpt2call.ljust(8))
+
         skip = self._memobj["skip_flags"][bytepos]
         pskip = self._memobj["pskip_flags"][bytepos]
         if mem.skip == "S":
