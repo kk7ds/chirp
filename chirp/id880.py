@@ -77,7 +77,7 @@ struct {
 
 """
 
-TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R"]
+TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", ""]
 DUPLEX = ["", "-", "+", "?3"]
 DTCSP  = ["NN", "NR", "RN", "RR"]
 MODES  = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
@@ -263,7 +263,10 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.mode = MODES[_mem["mode"]]
         mem.dtcs = chirp_common.DTCS_CODES[_mem["dtcs"]]
         mem.dtcs_polarity = DTCSP[_mem["dtcs_polarity"]]
-        mem.tuning_step = chirp_common.TUNING_STEPS[_mem["tune_step"]]
+        if _mem["tune_step"] >= len(chirp_common.TUNING_STEPS):
+            mem.tuning_step = 5.0
+        else:
+            mem.tuning_step = chirp_common.TUNING_STEPS[_mem["tune_step"]]
         mem.name = bitwise.get_string(_mem["name"]).rstrip()
 
         return mem
@@ -293,6 +296,11 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem["tune_step"]._ = chirp_common.TUNING_STEPS.index(mem.tuning_step)
         bitwise.set_string(_mem["name"], mem.name.ljust(8))
 
+        if isinstance(mem, chirp_common.DVMemory):
+            bitwise.set_string(_mem["urcall"], encode_call(mem.dv_urcall))
+            bitwise.set_string(_mem["r1call"], encode_call(mem.dv_rpt1call))
+            bitwise.set_string(_mem["r2call"], encode_call(mem.dv_rpt2call))
+            
         if mem.number < 1000:
             _bank = self._memobj["bank_info"][mem.number]
             if mem.bank:
