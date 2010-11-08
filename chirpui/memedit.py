@@ -468,16 +468,10 @@ time.  Are you sure you want to do this?"""
         return sw
 
     def col(self, caption):
-        i = 0
-        for column in self.cols:
-            if column[0].upper() == caption.upper():
-                return i
-
-            i += 1
-
-        print "Not found: %s" % caption
-
-        return None
+        try:
+            return self._cached_cols[caption]
+        except KeyError:
+            raise Exception("Internal Error: Column %s not found" % caption)
 
     def prefill(self):
         self.store.clear()
@@ -697,6 +691,15 @@ time.  Are you sure you want to do this?"""
     def set_read_only(self, read_only):
         self.read_only = read_only
 
+    def __cache_columns(self):
+        # We call self.col() a lot.  Caching the name->column# lookup
+        # makes a significant performance improvement
+        self._cached_cols = {}
+        i = 0
+        for x in self.cols:
+            self._cached_cols[x[0]] = i
+            i += 1
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
@@ -711,6 +714,8 @@ time.  Are you sure you want to do this?"""
 
         self.lo_limit_adj = self.hi_limit_adj = None
         self.store = self.view = None
+
+        self.__cache_columns()
 
         (min, max) = self.rthread.radio.get_features().memory_bounds
 
