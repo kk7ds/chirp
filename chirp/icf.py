@@ -212,7 +212,7 @@ def process_data_frame(frame, mmap):
             break
 
     mmap[saddr] = data
-    return saddr + bytes
+    return saddr, saddr + bytes
 
 def clone_from_radio(radio):
     md = get_model_data(radio.pipe)
@@ -235,7 +235,10 @@ def clone_from_radio(radio):
 
         for frame in frames:
             if frame.cmd == CMD_CLONE_DAT:
-                addr = process_data_frame(frame, mmap)
+                src, dst = process_data_frame(frame, mmap)
+                if addr != src:
+                    print "ICF GAP %04x - %04x" % (addr, src)
+                addr = dst
             elif frame.cmd == CMD_CLONE_END:
                 print "End frame:\n%s" % util.hexprint(frame.payload)
 
