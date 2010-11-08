@@ -139,14 +139,14 @@ class ChirpMain(gtk.Window):
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             self.tabs.set_current_page(tab)
 
-    def do_open_live(self, radio):
+    def do_open_live(self, radio, tempname=None):
         if radio.get_features().has_sub_devices:
             devices = radio.get_sub_devices()
         else:
             devices = [radio]
         
         for device in devices:
-            eset = editorset.EditorSet(device, self)
+            eset = editorset.EditorSet(device, self, tempname)
             eset.connect("want-close", self.do_close)
             eset.connect("status", self.ev_status)
             eset.show()
@@ -198,7 +198,7 @@ class ChirpMain(gtk.Window):
     def cb_clonein(self, radio, fn, emsg=None):
         radio.pipe.close()
         if not emsg:
-            self.do_open(fn, tempname="(Untitled)")
+            self.do_open_live(radio, tempname="(Untitled)")
         else:
             d = inputdialog.ExceptionDialog(emsg)
             d.run()

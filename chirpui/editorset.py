@@ -50,7 +50,7 @@ class EditorSet(gtk.VBox):
             self.radio = radio_class_from_file(self.filename)
         elif isinstance(source, chirp_common.Radio):
             self.radio = source
-            self.filename = source.VARIANT
+            self.filename = tempname or source.VARIANT
         else:
             raise Exception("Unknown source type")
 

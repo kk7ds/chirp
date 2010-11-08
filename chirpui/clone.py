@@ -209,7 +209,6 @@ class CloneThread(chirp_common.KillableThread):
         try:
             if self.__fname:
                 self.__radio.sync_in()
-                self.__radio.save_mmap(self.__fname)
             else:
                 self.__radio.sync_out()
 
