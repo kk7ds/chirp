@@ -56,7 +56,7 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
-        ("_empty"    , TYPE_BOOLEAN,gtk.CellRendererText,  ),
+        ("_filled"   , TYPE_BOOLEAN,gtk.CellRendererText,  ),
         ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
         ("_extd"     , TYPE_STRING, gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
@@ -222,7 +222,7 @@ class MemoryEditor(common.Editor):
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
 
-        self.store.set(iter, self.col("_empty"), False)
+        self.store.set(iter, self.col("_filled"), True)
 
     def _render(self, colnum, val, iter=None):
         if colnum == self.col("Frequency"):
@@ -244,44 +244,9 @@ class MemoryEditor(common.Editor):
         return val
 
     def render(self, _, rend, model, iter, colnum):
-        vals = model.get(iter, *tuple(range(0, len(self.cols))))
-        val = vals[colnum]
-
-        def _enabled(sensitive):
-            rend.set_property("sensitive", sensitive)
-
-        def d_unless_tmode(tmode):
-            _enabled(vals[self.col("Tone Mode")] == tmode)
-
-        def d_unless_dup():
-            _enabled(vals[self.col("Duplex")])
-
-        def d_if_mode(mode):
-            if vals[self.col("Mode")] == mode:
-                _enabled(False)
-
-        def d_unless_positive_bidx():
-            _enabled(int(val) != -1)
-
+        val, = model.get(iter, colnum)
         val = self._render(colnum, val, iter)
         rend.set_property("text", "%s" % val)
-
-        if colnum == self.col("DTCS Code"):
-            d_unless_tmode("DTCS")
-        elif colnum == self.col("DTCS Pol"):
-            d_unless_tmode("DTCS")
-        elif colnum == self.col("Tone"):
-            d_unless_tmode("Tone")
-            d_if_mode("DV")
-        elif colnum == self.col("ToneSql"):
-            d_unless_tmode("TSQL")
-            d_if_mode("DV")
-        elif colnum == self.col("Offset"):
-            d_unless_dup()
-        elif colnum == self.col("Bank Index"):
-            d_unless_positive_bidx()
-
-        _enabled(not vals[self.col("_empty")])
 
     def insert_easy(self, store, _iter, delta):
         if delta < 0:
@@ -349,7 +314,7 @@ time.  Are you sure you want to do this?"""
         elif action == "insert_prev":
             self.insert_hard(store, iter, -1)
         elif action == "delete":
-            store.set(iter, self.col("_empty"), True)
+            store.set(iter, self.col("_filled"), False)
             job = common.RadioJob(None, "erase_memory", cur_pos)
             job.set_desc("Erasing memory %i" % cur_pos)
             self.rthread.submit(job)
@@ -423,13 +388,15 @@ time.  Are you sure you want to do this?"""
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add(self.view)
 
+        filled = self.col("_filled")
+
         i = 0
         for _cap, _type, _rend in self.cols:
             rend = _rend()
             if _type == TYPE_BOOLEAN:
                 #rend.set_property("activatable", True)
                 #rend.connect("toggled", handle_toggle, self.store, i)
-                col = gtk.TreeViewColumn(_cap, rend, active=i)
+                col = gtk.TreeViewColumn(_cap, rend, active=i, sensitive=filled)
             elif _rend == gtk.CellRendererCombo:
                 if isinstance(self.choices[_cap], gtk.ListStore):
                     choices = self.choices[_cap]
@@ -442,12 +409,12 @@ time.  Are you sure you want to do this?"""
                 rend.set_property("editable", True)
                 rend.set_property("has-entry", False)
                 rend.connect("edited", self.edited, _cap)
-                col = gtk.TreeViewColumn(_cap, rend, text=i)
+                col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
             else:
                 rend.set_property("editable", True)
                 rend.connect("edited", self.edited, _cap)
-                col = gtk.TreeViewColumn(_cap, rend, text=i)
+                col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
                 
             col.set_sort_column_id(i)
@@ -509,7 +476,7 @@ time.  Are you sure you want to do this?"""
             bank = ""
 
         self.store.set(iter,
-                       self.col("_empty"), memory.empty,
+                       self.col("_filled"), not memory.empty,
                        self.col("Loc"), memory.number,
                        self.col("_extd"), memory.extd_number,
                        self.col("Name"), memory.name,
