@@ -34,9 +34,23 @@ if hasattr(sys, "frozen"):
 
 a = mainapp.ChirpMain()
 
-for i in sys.argv[1:]:
+if sys.argv[1] == "--profile":
+    profile = True
+    index = 2
+else:
+    profile = False
+    index = 1
+
+for i in sys.argv[index:]:
     print "Opening %s" % i
     a.do_open(i)
 
 a.show()
-gtk.main()
+
+if profile:
+    import cProfile, pstats
+    cProfile.run("gtk.main()", "chirpw.stats")
+    p = pstats.Stats("chirpw.stats")
+    p.sort_stats("cumulative").print_stats(10)
+else:
+    gtk.main()
