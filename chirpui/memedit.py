@@ -713,6 +713,7 @@ time.  Are you sure you want to do this?"""
             ("has_offset", "Offset"),
             ("has_name", "Name"),
             ("has_tuning_step", "Tune Step"),
+            ("has_name", "Name"),
             ]
             
         for feature, colname in maybe_hide:

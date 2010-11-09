@@ -430,6 +430,7 @@ class RadioFeatures:
         "has_name"            : BOOLEAN,
         "has_bank"            : BOOLEAN,
         "has_tuning_step"     : BOOLEAN,
+        "has_name"            : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
