@@ -368,9 +368,7 @@ class structDataElement(DataElement):
         self._generators = {}
         self._count = 1
         DataElement.__init__(self, *args, **kwargs)
-    
-        # Only enable the __setattr__ handler after we're initialized
-        self.__setattr__ = self.__setattr
+        self.__init = True
 
     def _value(self, data, generators):
         result = {}
@@ -400,8 +398,11 @@ class structDataElement(DataElement):
     def __getattr__(self, name):
         return self._generators[name]
 
-    def __setattr(self, name, value):
-        self.__dict__["_generators"].set_value(value)
+    def __setattr__(self, name, value):
+        if not self.__dict__.has_key("_structDataElement__init"):
+            self.__dict__[name] = value
+        else:
+            self.__dict__["_generators"][name].set_value(value)
 
     def size(self):
         size = 0
