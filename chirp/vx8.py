@@ -20,7 +20,9 @@ from chirp import bitwise
 
 mem_format = """
 #seekto 0x2C4A;
-u8 flag[900];
+struct {
+  u8 flag;
+} flag[900];
 
 #seekto 0x328A;
 struct {
@@ -85,7 +87,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         vx8_ll.update_checksum(self._mmap)
 
     def get_memory(self, number):
-        flag = self._memobj["flag"][number-1]
+        flag = self._memobj["flag"][number-1]["flag"]
         _mem = self._memobj["memory"][number-1]
 
         mem = chirp_common.Memory()
@@ -112,20 +114,20 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def set_memory(self, mem):
         flag = self._memobj["flag"][mem.number-1]
         if mem.empty:
-            flag.set_value(0)
+            flag["flag"] = 0
             return
-        flag._ = 3
+        flag["flag"] = 3
 
         _mem = self._memobj["memory"][mem.number-1]
 
         bitwise.int_to_bcd(_mem["freq"], int(mem.freq * 1000))
         bitwise.int_to_bcd(_mem["offset"], int(mem.offset * 1000))
-        _mem["tone"]._ = chirp_common.TONES.index(mem.rtone)
-        _mem["tone_mode"]._ = TMODES.index(mem.tmode)
-        _mem["duplex"]._ = DUPLEX.index(mem.duplex)
-        _mem["mode"]._ = MODES.index(mem.mode)
-        _mem["dcs"]._ = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem["tune_step"]._ = STEPS.index(mem.tuning_step)
+        _mem["tone"] = chirp_common.TONES.index(mem.rtone)
+        _mem["tone_mode"] = TMODES.index(mem.tmode)
+        _mem["duplex"] = DUPLEX.index(mem.duplex)
+        _mem["mode"] = MODES.index(mem.mode)
+        _mem["dcs"] = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem["tune_step"] = STEPS.index(mem.tuning_step)
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
         bitwise.set_string(_mem["label"], label.ljust(16, "\xFF"))

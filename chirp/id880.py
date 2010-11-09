@@ -212,7 +212,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mult = 5.0
             flag = 0x00000000
 
-        _mem["freq"]._ = int((freq * 1000) / mult) | flag
+        _mem["freq"] = int((freq * 1000) / mult) | flag
 
     def get_memory(self, number):
         bytepos = number / 8
@@ -285,15 +285,15 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _used &= ~bitpos
 
         self._set_freq(_mem, mem.freq)
-        _mem["offset"]._ = int((mem.offset * 1000) / 5)
-        _mem["rtone"]._ = chirp_common.TONES.index(mem.rtone)
-        _mem["ctone"]._ = chirp_common.TONES.index(mem.ctone)
-        _mem["tmode"]._ = TMODES.index(mem.tmode)
-        _mem["duplex"]._ = DUPLEX.index(mem.duplex)
-        _mem["mode"]._ = MODES.index(mem.mode)
-        _mem["dtcs"]._ = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem["dtcs_polarity"]._ = DTCSP.index(mem.dtcs_polarity)
-        _mem["tune_step"]._ = chirp_common.TUNING_STEPS.index(mem.tuning_step)
+        _mem["offset"] = int((mem.offset * 1000) / 5)
+        _mem["rtone"] = chirp_common.TONES.index(mem.rtone)
+        _mem["ctone"] = chirp_common.TONES.index(mem.ctone)
+        _mem["tmode"] = TMODES.index(mem.tmode)
+        _mem["duplex"] = DUPLEX.index(mem.duplex)
+        _mem["mode"] = MODES.index(mem.mode)
+        _mem["dtcs"] = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem["dtcs_polarity"] = DTCSP.index(mem.dtcs_polarity)
+        _mem["tune_step"] = chirp_common.TUNING_STEPS.index(mem.tuning_step)
         bitwise.set_string(_mem["name"], mem.name.ljust(8))
 
         if isinstance(mem, chirp_common.DVMemory):
@@ -304,11 +304,11 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if mem.number < 1000:
             _bank = self._memobj["bank_info"][mem.number]
             if mem.bank:
-                _bank["bank"]._ = mem.bank
-                _bank["index"]._ = mem.bank_index
+                _bank["bank"] = mem.bank
+                _bank["index"] = mem.bank_index
             else:
-                _bank["bank"]._ = 0xFF
-                _bank["index"]._ = 0
+                _bank["bank"] = 0xFF
+                _bank["index"] = 0
 
             skip = self._memobj["skip_flags"][bytepos]
             pskip = self._memobj["pskip_flags"][bytepos]

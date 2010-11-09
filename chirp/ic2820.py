@@ -211,38 +211,48 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem = self._memobj["memory"][mem.number]
         _used = self._memobj["used_flags"][bytepos]
 
-        if mem.empty:
-            _used.set_value(_used | bitpos)
-        else:
-            _used.set_value(_used & ~bitpos)
+        if mem.number < 500:
+            _bank = self._memobj["bank_info"][mem.number]
+            if mem.bank:
+                _bank["bank"] = mem.bank
+                _bank["index"] = mem.bank_index
+            else:
+                _bank["bank"] = 0xFF
+                _bank["index"] = 0xFF
 
-        _mem["freq"]._ = int(mem.freq * 1000000)
-        _mem["offset"]._ = int(mem.offset * 1000000)
-        _mem["rtone"]._ = chirp_common.TONES.index(mem.rtone)
-        _mem["ctone"]._ = chirp_common.TONES.index(mem.ctone)
-        _mem["tmode"]._ = TMODES.index(mem.tmode)
-        _mem["duplex"]._ = DUPLEX.index(mem.duplex)
-        _mem["mode"]._ = MODES.index(mem.mode)
-        _mem["dtcs"]._ = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem["dtcs_polarity"]._ = DTCSP.index(mem.dtcs_polarity)
-        _mem["tune_step"]._ = chirp_common.TUNING_STEPS.index(mem.tuning_step)
+            skip = self._memobj["skip_flags"][bytepos]
+            pskip = self._memobj["pskip_flags"][bytepos]
+            if mem.skip == "S":
+                skip |= bitpos
+            else:
+                skip &= ~bitpos
+            if mem.skip == "P":
+                pskip |= bitpos
+            else:
+                pskip &= ~bitpos
+
+        if mem.empty:
+            _used |= bitpos
+            return
+        else:
+            _used &= ~bitpos
+
+        _mem["freq"] = int(mem.freq * 1000000)
+        _mem["offset"] = int(mem.offset * 1000000)
+        _mem["rtone"] = chirp_common.TONES.index(mem.rtone)
+        _mem["ctone"] = chirp_common.TONES.index(mem.ctone)
+        _mem["tmode"] = TMODES.index(mem.tmode)
+        _mem["duplex"] = DUPLEX.index(mem.duplex)
+        _mem["mode"] = MODES.index(mem.mode)
+        _mem["dtcs"] = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem["dtcs_polarity"] = DTCSP.index(mem.dtcs_polarity)
+        _mem["tune_step"] = chirp_common.TUNING_STEPS.index(mem.tuning_step)
         bitwise.set_string(_mem["name"], mem.name.ljust(8))        
 
         if isinstance(mem, chirp_common.DVMemory):
             bitwise.set_string(_mem["urcall"], mem.dv_urcall.ljust(8))
             bitwise.set_string(_mem["r1call"], mem.dv_rpt1call.ljust(8))
             bitwise.set_string(_mem["r2call"], mem.dv_rpt2call.ljust(8))
-
-        skip = self._memobj["skip_flags"][bytepos]
-        pskip = self._memobj["pskip_flags"][bytepos]
-        if mem.skip == "S":
-            skip |= bitpos
-        else:
-            skip &= ~bitpos
-        if mem.skip == "P":
-            pskip |= bitpos
-        else:
-            pskip &= ~bitpos
             
     def get_raw_memory(self, number):
         offset = number * MEM_LOC_SIZE

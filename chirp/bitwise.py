@@ -129,11 +129,24 @@ class DataElement:
     def set_value(self, value):
         raise Exception("Not implemented")
 
-    def __setattr__(self, name, val):
-        if name == "_":
-            self.set_value(val)
-        else:
-            self.__dict__[name] = val
+class arrayDataElement(DataElement):
+    def __init__(self):
+        self.__items = []
+
+    def append(self, item):
+        self.__items.append(item)
+
+    def get_value(self):
+        return list(self.__items)
+
+    def __setitem__(self, index, val):
+        self.__items[index].set_value(val)
+
+    def __getitem__(self, index):
+        return self.__items[index]
+
+    def __len__(self):
+        return len(self.__items)
 
 class intDataElement(DataElement):
     def __int__(self):
@@ -463,7 +476,7 @@ class ProcessStruct(Processor):
                 sym = defn[1]
 
             name = sym[1]
-            res = []
+            res = arrayDataElement()
             size = 0
             for i in range(0, count):
                 gen = self._types[dtype](self._data, self._offset)
@@ -485,7 +498,7 @@ class ProcessStruct(Processor):
             name = deftype[0][1]
             count = 1
 
-        result = []
+        result = arrayDataElement()
         for i in range(0, count):
             element = structDataElement(self._offset, count)
             result.append(element)

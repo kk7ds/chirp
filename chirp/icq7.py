@@ -106,7 +106,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         _flag = self._memobj["flags"][mem.number]
         
         if mem.empty:
-            self._memobj["flags_whole"][mem.number]._ = 0xFF
+            self._memobj["flags_whole"][mem.number] = 0xFF
             print "Set flags: %02x" % self._memobj["flags_whole"][mem.number]
             return
 
