@@ -87,24 +87,24 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         vx8_ll.update_checksum(self._mmap)
 
     def get_memory(self, number):
-        flag = self._memobj["flag"][number-1]["flag"]
-        _mem = self._memobj["memory"][number-1]
+        flag = self._memobj.flag[number-1].flag
+        _mem = self._memobj.memory[number-1]
 
         mem = chirp_common.Memory()
         mem.number = number
         if flag != 0x03:
             mem.empty = True
             return mem
-        mem.freq = bitwise.bcd_to_int(_mem["freq"]) / 1000.0
-        mem.offset = bitwise.bcd_to_int(_mem["offset"]) / 1000.0
-        mem.rtone = mem.ctone = chirp_common.TONES[int(_mem["tone"])]
-        mem.tmode = TMODES[_mem["tone_mode"]]
-        mem.duplex = DUPLEX[_mem["duplex"]]
-        mem.mode = MODES[_mem["mode"]]
-        mem.dtcs = chirp_common.DTCS_CODES[_mem["dcs"]]
-        mem.tuning_step = STEPS[_mem["tune_step"]]
+        mem.freq = bitwise.bcd_to_int(_mem.freq) / 1000.0
+        mem.offset = bitwise.bcd_to_int(_mem.offset) / 1000.0
+        mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+        mem.tmode = TMODES[_mem.tone_mode]
+        mem.duplex = DUPLEX[_mem.duplex]
+        mem.mode = MODES[_mem.mode]
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
+        mem.tuning_step = STEPS[_mem.tune_step]
 
-        for i in bitwise.get_string(_mem["label"]):
+        for i in bitwise.get_string(_mem.label):
             if i == "\xFF":
                 break
             mem.name += CHARSET[ord(i)]
@@ -112,25 +112,25 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        flag = self._memobj["flag"][mem.number-1]
+        flag = self._memobj.flag[mem.number-1]
         if mem.empty:
-            flag["flag"] = 0
+            flag.flag = 0
             return
-        flag["flag"] = 3
+        flag.flag = 3
 
-        _mem = self._memobj["memory"][mem.number-1]
+        _mem = self._memobj.memory[mem.number-1]
 
-        bitwise.int_to_bcd(_mem["freq"], int(mem.freq * 1000))
-        bitwise.int_to_bcd(_mem["offset"], int(mem.offset * 1000))
-        _mem["tone"] = chirp_common.TONES.index(mem.rtone)
-        _mem["tone_mode"] = TMODES.index(mem.tmode)
-        _mem["duplex"] = DUPLEX.index(mem.duplex)
-        _mem["mode"] = MODES.index(mem.mode)
-        _mem["dcs"] = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem["tune_step"] = STEPS.index(mem.tuning_step)
+        bitwise.int_to_bcd(_mem.freq, int(mem.freq * 1000))
+        bitwise.int_to_bcd(_mem.offset, int(mem.offset * 1000))
+        _mem.tone = chirp_common.TONES.index(mem.rtone)
+        _mem.tone_mode = TMODES.index(mem.tmode)
+        _mem.duplex = DUPLEX.index(mem.duplex)
+        _mem.mode = MODES.index(mem.mode)
+        _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem.tune_step = STEPS.index(mem.tuning_step)
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
-        bitwise.set_string(_mem["label"], label.ljust(16, "\xFF"))
+        bitwise.set_string(_mem.label, label.ljust(16, "\xFF"))
 
     def get_banks(self):
         return []

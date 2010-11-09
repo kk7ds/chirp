@@ -173,27 +173,27 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         raise errors.RadioError("Out of slots in this bank")
 
     def get_raw_memory(self, number):
-        size = self._memobj["memory"][0].size() / 8
+        size = self._memobj.memory[0].size() / 8
         offset = number * size
         return MemoryMap(self._mmap[offset:offset+size])
 
     def get_banks(self):
-        _banks = self._memobj["bank_names"]
+        _banks = self._memobj.bank_names
 
         banks = []
         for i in range(0, 26):
-            banks.append(bitwise.get_string(_banks[i]["name"]).rstrip())
+            banks.append(bitwise.get_string(_banks[i].name).rstrip())
 
         return banks
 
     def set_banks(self, banks):
-        _banks = self._memobj["bank_names"]
+        _banks = self._memobj.bank_names
 
         for i in range(0, 26):
-            bitwise.set_string(_banks[i]["name"], banks[i].ljust(6)[:6])
+            bitwise.set_string(_banks[i].name, banks[i].ljust(6)[:6])
 
     def _get_freq(self, _mem):
-        val = _mem["freq"]
+        val = _mem.freq
 
         if val & 0x00200000:
             mult = 6.25
@@ -212,37 +212,37 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mult = 5.0
             flag = 0x00000000
 
-        _mem["freq"] = int((freq * 1000) / mult) | flag
+        _mem.freq = int((freq * 1000) / mult) | flag
 
     def get_memory(self, number):
         bytepos = number / 8
         bitpos = 1 << (number % 8)
 
-        _mem = self._memobj["memory"][number]
-        _used = self._memobj["used_flags"][bytepos]
+        _mem = self._memobj.memory[number]
+        _used = self._memobj.used_flags[bytepos]
 
         is_used = ((_used & bitpos) == 0)
 
-        if is_used and MODES[_mem["mode"]] == "DV":
+        if is_used and MODES[_mem.mode] == "DV":
             mem = chirp_common.DVMemory()
-            mem.dv_urcall = decode_call(bitwise.get_string(_mem["urcall"]))
-            mem.dv_rpt1call = decode_call(bitwise.get_string(_mem["r1call"]))
-            mem.dv_rpt2call = decode_call(bitwise.get_string(_mem["r2call"]))
+            mem.dv_urcall = decode_call(bitwise.get_string(_mem.urcall))
+            mem.dv_rpt1call = decode_call(bitwise.get_string(_mem.r1call))
+            mem.dv_rpt2call = decode_call(bitwise.get_string(_mem.r2call))
         else:
             mem = chirp_common.Memory()
 
         mem.number = number
 
         if number < 1000:
-            _bank = self._memobj["bank_info"][number]
-            mem.bank = _bank["bank"]
-            mem.bank_index = _bank["index"]
+            _bank = self._memobj.bank_info[number]
+            mem.bank = _bank.bank
+            mem.bank_index = _bank.index
             if mem.bank == 0xFF:
                 mem.bank = None
                 mem.bank_index = -1
 
-            _skip = self._memobj["skip_flags"][bytepos]
-            _pskip = self._memobj["pskip_flags"][bytepos]
+            _skip = self._memobj.skip_flags[bytepos]
+            _pskip = self._memobj.pskip_flags[bytepos]
             if _skip & bitpos:
                 mem.skip = "S"
             elif _pskip & bitpos:
@@ -255,19 +255,19 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             return mem
 
         mem.freq = self._get_freq(_mem)
-        mem.offset = (_mem["offset"] * 5) / 1000.0
-        mem.rtone = chirp_common.TONES[_mem["rtone"]]
-        mem.ctone = chirp_common.TONES[_mem["ctone"]]
-        mem.tmode = TMODES[_mem["tmode"]]
-        mem.duplex = DUPLEX[_mem["duplex"]]
-        mem.mode = MODES[_mem["mode"]]
-        mem.dtcs = chirp_common.DTCS_CODES[_mem["dtcs"]]
-        mem.dtcs_polarity = DTCSP[_mem["dtcs_polarity"]]
-        if _mem["tune_step"] >= len(chirp_common.TUNING_STEPS):
+        mem.offset = (_mem.offset * 5) / 1000.0
+        mem.rtone = chirp_common.TONES[_mem.rtone]
+        mem.ctone = chirp_common.TONES[_mem.ctone]
+        mem.tmode = TMODES[_mem.tmode]
+        mem.duplex = DUPLEX[_mem.duplex]
+        mem.mode = MODES[_mem.mode]
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
+        mem.dtcs_polarity = DTCSP[_mem.dtcs_polarity]
+        if _mem.tune_step >= len(chirp_common.TUNING_STEPS):
             mem.tuning_step = 5.0
         else:
-            mem.tuning_step = chirp_common.TUNING_STEPS[_mem["tune_step"]]
-        mem.name = bitwise.get_string(_mem["name"]).rstrip()
+            mem.tuning_step = chirp_common.TUNING_STEPS[_mem.tune_step]
+        mem.name = bitwise.get_string(_mem.name).rstrip()
 
         return mem
 
@@ -275,8 +275,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         bitpos = (1 << (mem.number % 8))
         bytepos = mem.number / 8
 
-        _mem = self._memobj["memory"][mem.number]
-        _used = self._memobj["used_flags"][bytepos]
+        _mem = self._memobj.memory[mem.number]
+        _used = self._memobj.used_flags[bytepos]
 
         if mem.empty:
             _used |= bitpos
@@ -285,33 +285,33 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _used &= ~bitpos
 
         self._set_freq(_mem, mem.freq)
-        _mem["offset"] = int((mem.offset * 1000) / 5)
-        _mem["rtone"] = chirp_common.TONES.index(mem.rtone)
-        _mem["ctone"] = chirp_common.TONES.index(mem.ctone)
-        _mem["tmode"] = TMODES.index(mem.tmode)
-        _mem["duplex"] = DUPLEX.index(mem.duplex)
-        _mem["mode"] = MODES.index(mem.mode)
-        _mem["dtcs"] = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem["dtcs_polarity"] = DTCSP.index(mem.dtcs_polarity)
-        _mem["tune_step"] = chirp_common.TUNING_STEPS.index(mem.tuning_step)
-        bitwise.set_string(_mem["name"], mem.name.ljust(8))
+        _mem.offset = int((mem.offset * 1000) / 5)
+        _mem.rtone = chirp_common.TONES.index(mem.rtone)
+        _mem.ctone = chirp_common.TONES.index(mem.ctone)
+        _mem.tmode = TMODES.index(mem.tmode)
+        _mem.duplex = DUPLEX.index(mem.duplex)
+        _mem.mode = MODES.index(mem.mode)
+        _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
+        _mem.tune_step = chirp_common.TUNING_STEPS.index(mem.tuning_step)
+        bitwise.set_string(_mem.name, mem.name.ljust(8))
 
         if isinstance(mem, chirp_common.DVMemory):
-            bitwise.set_string(_mem["urcall"], encode_call(mem.dv_urcall))
-            bitwise.set_string(_mem["r1call"], encode_call(mem.dv_rpt1call))
-            bitwise.set_string(_mem["r2call"], encode_call(mem.dv_rpt2call))
+            bitwise.set_string(_mem.urcall, encode_call(mem.dv_urcall))
+            bitwise.set_string(_mem.r1call, encode_call(mem.dv_rpt1call))
+            bitwise.set_string(_mem.r2call, encode_call(mem.dv_rpt2call))
             
         if mem.number < 1000:
-            _bank = self._memobj["bank_info"][mem.number]
+            _bank = self._memobj.bank_info[mem.number]
             if mem.bank:
-                _bank["bank"] = mem.bank
-                _bank["index"] = mem.bank_index
+                _bank.bank = mem.bank
+                _bank.index = mem.bank_index
             else:
-                _bank["bank"] = 0xFF
-                _bank["index"] = 0
+                _bank.bank = 0xFF
+                _bank.index = 0
 
-            skip = self._memobj["skip_flags"][bytepos]
-            pskip = self._memobj["pskip_flags"][bytepos]
+            skip = self._memobj.skip_flags[bytepos]
+            pskip = self._memobj.pskip_flags[bytepos]
             if mem.skip == "S":
                 skip |= bitpos
             else:
@@ -322,25 +322,25 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 pskip &= ~bitpos
 
     def get_urcall_list(self):
-        _calls = self._memobj["urcall"]
+        _calls = self._memobj.urcall
         calls = ["CQCQCQ"]
 
         for i in range(*self.URCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1]["call"]))
+            calls.append(bitwise.get_string(_calls[i-1].call))
 
         return calls
 
     def get_mycall_list(self):
-        _calls = self._memobj["mycall"]
+        _calls = self._memobj.mycall
         calls = []
 
         for i in range(*self.MYCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1]["call"]))
+            calls.append(bitwise.get_string(_calls[i-1].call))
 
         return calls
 
     def get_repeater_call_list(self):
-        _calls = self._memobj["rptcall"]
+        _calls = self._memobj.rptcall
         calls = ["*NOTUSE*"]
 
         for i in range(*self.RPTCALL_LIMIT):

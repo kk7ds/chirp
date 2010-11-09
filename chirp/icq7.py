@@ -69,54 +69,53 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
-        size = self._memobj["memory"][0].size() / 8
+        size = self._memobj.memory[0].size() / 8
         offset = int(number * size)
         return MemoryMap(self._mmap[offset:offset+size])
 
     def get_memory(self, number):
-        _mem = self._memobj["memory"][number]
-        _flag = self._memobj["flags"][number]
+        _mem = self._memobj.memory[number]
+        _flag = self._memobj.flags[number]
 
         mem = chirp_common.Memory()
         mem.number = number
-        if self._memobj["flags_whole"][number] == 0xFF:
+        if self._memobj.flags_whole[number] == 0xFF:
             mem.empty = True
             return mem
 
-        mem.freq = bitwise.bcd_to_int(_mem["freq"]) / 1000.0
-        mem.offset = bitwise.bcd_to_int(_mem["offset"]) / 1000.0
-        mem.rtone = chirp_common.TONES[_mem["rtone"]]
-        mem.ctone = chirp_common.TONES[_mem["ctone"]]
+        mem.freq = bitwise.bcd_to_int(_mem.freq) / 1000.0
+        mem.offset = bitwise.bcd_to_int(_mem.offset) / 1000.0
+        mem.rtone = chirp_common.TONES[_mem.rtone]
+        mem.ctone = chirp_common.TONES[_mem.ctone]
         try:
-            mem.tuning_step = STEPS[_mem["tune_step"]]
+            mem.tuning_step = STEPS[_mem.tune_step]
         except IndexError:
-            print "Invalid tune step index %i" % _mem["tune_step"]
-        mem.tmode = TMODES[_flag["tmode"]]
-        mem.duplex = DUPLEX[_flag["duplex"]]
-        mem.mode = MODES[_flag["mode"]]
-        if _flag["pskip"]:
+            print "Invalid tune step index %i" % _mem.tune_step
+        mem.tmode = TMODES[_flag.tmode]
+        mem.duplex = DUPLEX[_flag.duplex]
+        mem.mode = MODES[_flag.mode]
+        if _flag.pskip:
             mem.skip = "P"
-        elif _flag["skip"]:
+        elif _flag.skip:
             mem.skip = "S"
 
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memobj["memory"][mem.number]
-        _flag = self._memobj["flags"][mem.number]
+        _mem = self._memobj.memory[mem.number]
+        _flag = self._memobj.flags[mem.number]
         
         if mem.empty:
-            self._memobj["flags_whole"][mem.number] = 0xFF
-            print "Set flags: %02x" % self._memobj["flags_whole"][mem.number]
+            self._memobj.flags_whole[mem.number] = 0xFF
             return
 
-        bitwise.int_to_bcd(_mem["freq"], int(mem.freq * 1000))
-        bitwise.int_to_bcd(_mem["offset"], int(mem.offset * 1000))
-        _mem["rtone"] = chirp_common.TONES.index(mem.rtone)
-        _mem["ctone"] = chirp_common.TONES.index(mem.ctone)
-        _mem["tune_step"] = STEPS.index(mem.tuning_step)
-        _flag["tmode"] = TMODES.index(mem.tmode)
-        _flag["duplex"] = DUPLEX.index(mem.duplex)
-        _flag["mode"] = MODES.index(mem.mode)
-        _flag["skip"] = mem.skip == "S" and 1 or 0
-        _flag["pskip"] = mem.skip == "P" and 1 or 0
+        bitwise.int_to_bcd(_mem.freq, int(mem.freq * 1000))
+        bitwise.int_to_bcd(_mem.offset, int(mem.offset * 1000))
+        _mem.rtone = chirp_common.TONES.index(mem.rtone)
+        _mem.ctone = chirp_common.TONES.index(mem.ctone)
+        _mem.tune_step = STEPS.index(mem.tuning_step)
+        _flag.tmode = TMODES.index(mem.tmode)
+        _flag.duplex = DUPLEX.index(mem.duplex)
+        _flag.mode = MODES.index(mem.mode)
+        _flag.skip = mem.skip == "S" and 1 or 0
+        _flag.pskip = mem.skip == "P" and 1 or 0
