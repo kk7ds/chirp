@@ -407,20 +407,6 @@ class structDataElement(DataElement):
         return size
 
 class Processor:
-    def __init__(self, data, offset):
-        self._data = data
-        self._offset = offset
-        self._obj = {}
-
-    def _process(self, node):
-        raise Exception("Not implemented")
-        
-    def process(self, data):
-        self._obj = {}
-        self._process(data)
-        return self._obj
-
-class ProcessStruct(Processor):
 
     _types = {
         "u8"   : u8DataElement,
@@ -431,6 +417,11 @@ class ProcessStruct(Processor):
         "lbcd" : lbcdDataElement,
         "bbcd" : bbcdDataElement,
         }
+
+    def __init__(self, data, offset):
+        self._data = data
+        self._offset = offset
+        self._obj = None
 
     def do_symbol(self, symdef, gen):
         name = symdef[1]
@@ -503,11 +494,8 @@ class ProcessStruct(Processor):
             element = structDataElement(self._offset, count)
             result.append(element)
             tmp = self._generators
-            self._generators = {}
+            self._generators = element
             self.parse_block(block)
-            #element._generators.append(self._generators)
-            for k,v in self._generators.items():
-                element._generators[k] = v
             self._generators = tmp
 
         if count == 1:
@@ -533,7 +521,6 @@ class ProcessStruct(Processor):
             print "%s: %i (0x%08X)" % (string[1:-1], self._offset, self._offset)
 
     def parse_block(self, lang):
-        self._generators = {}
         for t, d in lang:
             #print t
             if t == "struct":
@@ -545,22 +532,14 @@ class ProcessStruct(Processor):
         
 
     def parse(self, lang):
+        self._generators = structDataElement(self._data, self._offset)
         self.parse_block(lang[0])
         return self._generators
 
-    def process(self, data):
-        return self._generators
-
-        result = {}
-
-        for name, gen in self._generators.items():
-            result[name] = gen.get_value(data)
-
-        return result
 
 def parse(spec, data, offset=0):
     ast = bitwise_grammar.parse(spec)
-    p = ProcessStruct(data, offset)
+    p = Processor(data, offset)
     return p.parse(ast)
 
 if __name__ == "__main__":
@@ -589,7 +568,7 @@ if __name__ == "__main__":
     pp(ast)
     
     # Mess with it a little
-    p = ProcessStruct(data, 0)
+    p = Processor(data, 0)
     obj = p.parse(ast)
     print "Object: %s" % obj
     print obj["foo"][0]["bcdL"]
