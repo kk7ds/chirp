@@ -228,6 +228,7 @@ def clone_from_radio(radio):
 
     addr = 0
     mmap = memmap.MemoryMap(chr(0x00) * radio._memsize)
+    last_size = 0
     while True:
         frames = stream.get_frames()
         if not frames:
@@ -236,11 +237,17 @@ def clone_from_radio(radio):
         for frame in frames:
             if frame.cmd == CMD_CLONE_DAT:
                 src, dst = process_data_frame(frame, mmap)
+                if last_size != (dst - src):
+                    print "ICF Size change from %i to %i at %04x" % (last_size,
+                                                                     dst - src,
+                                                                     src)
+                    last_size = dst - src
                 if addr != src:
                     print "ICF GAP %04x - %04x" % (addr, src)
                 addr = dst
             elif frame.cmd == CMD_CLONE_END:
                 print "End frame:\n%s" % util.hexprint(frame.payload)
+                print "Last addr: %04x" % addr
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -399,6 +406,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     def sync_in(self):
         self._mmap = clone_from_radio(self)
+        self.process_mmap()
 
     def sync_out(self):
         clone_to_radio(self)
