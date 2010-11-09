@@ -245,6 +245,9 @@ class intDataElement(DataElement):
     def __ge__(self, val):
         return self.get_value() >= val
 
+    def __nonzero__(self):
+        return self.get_value() != 0
+
 class u8DataElement(intDataElement):
     _size = 1
 
