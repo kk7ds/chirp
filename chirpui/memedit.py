@@ -311,8 +311,10 @@ time.  Are you sure you want to do this?"""
 
         if action == "insert_next":
             self.insert_hard(store, iter, 1)
+            self.emit("changed")
         elif action == "insert_prev":
             self.insert_hard(store, iter, -1)
+            self.emit("changed")
         elif action == "delete":
             store.set(iter, self.col("_filled"), False)
             job = common.RadioJob(None, "erase_memory", cur_pos)
@@ -331,8 +333,11 @@ time.  Are you sure you want to do this?"""
             if not self.show_empty:
                 store.remove(iter)
 
+            self.emit("changed")
+
         elif action == "delete_s":
             self.insert_hard(store, iter, 0)
+            self.emit("changed")
 
     def make_context_menu(self):
         menu_xml = """
