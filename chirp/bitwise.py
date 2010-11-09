@@ -118,7 +118,7 @@ class DataElement:
         self._count = count
 
     def size(self):
-        return self._size * self._count
+        return self._size * 8
 
     def _get_value(self, data):
         raise Exception("Not implemented")
@@ -128,9 +128,6 @@ class DataElement:
 
     def set_value(self, value):
         raise Exception("Not implemented")
-
-    def size(self):
-        return self._size
 
     def __setattr__(self, name, val):
         if name == "_":
@@ -351,11 +348,12 @@ class bitDataElement(intDataElement):
         self._subgen(self._data, self._offset).set_value(value)
         
     def size(self):
-        return self._nbits / (self._subgen._size * 8.0)
+        return self._nbits
 
 class structDataElement(DataElement):
     def __init__(self, *args, **kwargs):
         self._generators = {}
+        self._count = 1
         DataElement.__init__(self, *args, **kwargs)
     
     def _value(self, data, generators):
@@ -426,7 +424,7 @@ class ProcessStruct(Processor):
         self._generators[name] = gen
 
     def do_bitfield(self, dtype, bitfield):
-        bytes = self._types[dtype](self._data, 0).size()
+        bytes = self._types[dtype](self._data, 0).size() / 8
         bitsleft = bytes * 8
 
         for _bitdef, defn in bitfield:
@@ -470,7 +468,7 @@ class ProcessStruct(Processor):
             for i in range(0, count):
                 gen = self._types[dtype](self._data, self._offset)
                 res.append(gen)
-                self._offset += gen.size()
+                self._offset += (gen.size() / 8)
 
             if count == 1:
                 self._generators[name] = res[0]
