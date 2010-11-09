@@ -195,7 +195,7 @@ class ChirpMain(gtk.Window):
             d.run()
             d.destroy()
 
-    def cb_clonein(self, radio, fn, emsg=None):
+    def cb_clonein(self, radio, emsg=None):
         radio.pipe.close()
         if not emsg:
             self.do_open_live(radio, tempname="(Untitled)")
@@ -264,7 +264,7 @@ class ChirpMain(gtk.Window):
 
         fn = tempfile.mktemp()
         if isinstance(radio, chirp_common.CloneModeRadio):
-            ct = clone.CloneThread(radio, fn, cb=self.cb_clonein, parent=self)
+            ct = clone.CloneThread(radio, "in", cb=self.cb_clonein, parent=self)
             ct.start()
         else:
             self.do_open_live(radio)
@@ -297,7 +297,7 @@ class ChirpMain(gtk.Window):
         #FIXME: Fix or remove
         #self.record_recent_radio(port, rtype)
 
-        ct = clone.CloneThread(radio, cb=self.cb_cloneout, parent=self)
+        ct = clone.CloneThread(radio, "out", cb=self.cb_cloneout, parent=self)
         ct.start()
 
     def do_close(self, tab_child=None):

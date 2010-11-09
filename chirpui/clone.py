@@ -185,11 +185,11 @@ class CloneThread(chirp_common.KillableThread):
     def __status(self, status):
         gobject.idle_add(self.__progw.status, status)
 
-    def __init__(self, radio, fname=None, cb=None, parent=None):
+    def __init__(self, radio, direction, cb=None, parent=None):
         threading.Thread.__init__(self)
 
         self.__radio = radio
-        self.__fname = fname
+        self.__out = direction == "out"
         self.__cback = cb
         self.__cancelled = False
 
@@ -207,10 +207,10 @@ class CloneThread(chirp_common.KillableThread):
         self.__radio.status_fn = self.__status
         
         try:
-            if self.__fname:
-                self.__radio.sync_in()
-            else:
+            if self.__out:
                 self.__radio.sync_out()
+            else:
+                self.__radio.sync_in()
 
             emsg = None
         except Exception, e:
@@ -226,7 +226,7 @@ class CloneThread(chirp_common.KillableThread):
         print "Clone thread ended"
 
         if self.__cback and not self.__cancelled:
-            gobject.idle_add(self.__cback, self.__radio, self.__fname, emsg)
+            gobject.idle_add(self.__cback, self.__radio, emsg)
 
 if __name__ == "__main__":
     d = CloneSettingsDialog("/dev/ttyUSB0")
