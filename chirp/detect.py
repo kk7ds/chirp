@@ -41,10 +41,11 @@ def detect_icom_radio(port):
             print "Auto-detected radio `%s' on port `%s'" % (rtype, port)
             return rclass
 
-    raise errors.RadioError("Unknown radio type %02x%02x%02x%02x" % (md[0],
-                                                                     md[1],
-                                                                     md[2],
-                                                                     md[3]))
+    raise errors.RadioError("Unknown radio type %02x%02x%02x%02x" %\
+                                (ord(md[0]),
+                                 ord(md[1]),
+                                 ord(md[2]),
+                                 ord(md[3])))
 
 def detect_kenwoodlive_radio(port):
     s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
