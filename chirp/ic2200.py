@@ -125,10 +125,6 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         else:
             self._mmap = ic2200_ll.set_memory(self._mmap, memory)
 
-    def sync_in(self):
-        icf.IcomCloneModeRadio.sync_in(self)
-        self.process_mmap()
-    
     def get_raw_memory(self, number):
         return ic2200_ll.get_raw_memory(self._mmap, number)
 

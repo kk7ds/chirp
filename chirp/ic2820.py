@@ -244,10 +244,6 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         else:
             pskip &= ~bitpos
             
-    def sync_in(self):
-        icf.IcomCloneModeRadio.sync_in(self)
-        self.process_mmap()
-
     def get_raw_memory(self, number):
         offset = number * MEM_LOC_SIZE
         return MemoryMap(self._mmap[offset:offset+MEM_LOC_SIZE])
