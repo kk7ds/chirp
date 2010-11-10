@@ -157,8 +157,8 @@ class RadioThread(threading.Thread, gobject.GObject):
     
     def status(self, msg):
         jobs = 0
-        for i in self.__queue:
-            jobs += len(self.__queue[i])
+        for i in dict(self.__queue):
+                jobs += len(self.__queue[i])
         gobject.idle_add(self.emit, "status", "[%i] %s" % (jobs, msg))
             
     def _queue_pop(self, priority):
