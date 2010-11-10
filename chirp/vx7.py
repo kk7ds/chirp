@@ -176,8 +176,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
 
-        _flag["%s_pskip" % nibble] = mem.skip == "S" and 1 or 0
-        _flag["%s_skip" % nibble] = mem.skip == "P" and 1 or 0
+        _flag["%s_pskip" % nibble] = mem.skip == "P"
+        _flag["%s_skip" % nibble] = mem.skip == "S"
 
         for i in range(0, 8):
             _mem.name[i] = CHARSET.index(mem.name.ljust(8)[i])
