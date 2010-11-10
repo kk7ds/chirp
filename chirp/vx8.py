@@ -42,6 +42,9 @@ struct {
      dcs:7;
   u8 unknown5[3];
 } memory[900];
+
+#seekto 0xFECA;
+u8 checksum;
 """
 
 TMODES = ["", "Tone", "TSQL", "DTCS"]
@@ -84,7 +87,12 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         return vx8_ll.get_raw_memory(self._mmap, number)
 
     def _update_checksum(self):
-        vx8_ll.update_checksum(self._mmap)
+        cs = 0
+        for i in range(0x0000, 0xFECA):
+            cs += ord(self._mmap[i])
+        cs %= 256
+        print "Checksum old=%02x new=%02x" % (self._memobj.checksum, cs)
+        self._memobj.checksum = cs
 
     def get_memory(self, number):
         flag = self._memobj.flag[number-1].flag
