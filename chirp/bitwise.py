@@ -148,6 +148,22 @@ class arrayDataElement(DataElement):
     def __len__(self):
         return len(self.__items)
 
+    def __str__(self):
+        if isinstance(self.__items[0], charDataElement):
+            return "".join([x.get_value() for x in self.__items])
+        else:
+            return str(self.__items)
+
+    def __int__(self):
+        if isinstance(self.__items[0], bcdDataElement):
+            val = 0
+            for i in self.__items:
+                tens, ones = i.get_value()
+                val = (val * 100) + (tens * 10) + ones
+            return val
+        else:
+            raise ValueError("Cannot coerce this to int")
+
 class intDataElement(DataElement):
     def __int__(self):
         return self.get_value()
@@ -553,6 +569,30 @@ def parse(spec, data, offset=0):
     return p.parse(ast)
 
 if __name__ == "__main__":
+    defn = """
+struct {
+  u8 foo;
+  u8 highbit:1,
+     sixzeros:6,
+     lowbit:1;
+  char string[3];
+  bbcd fourdigits[2];
+} mystruct[1];
+"""
+    data = "\x7F\x81abc\x12\x34"
+    tree = parse(defn, data)
+
+    print "Foo %i" % tree.mystruct.foo
+    print "Highbit: %i SixZeros: %i: Lowbit: %i" % (tree.mystruct.highbit,
+                                                    tree.mystruct.sixzeros,
+                                                    tree.mystruct.lowbit)
+    print "String: %s" % tree.mystruct.string
+    print "Fourdigits: %i" % tree.mystruct.fourdigits
+
+    import sys
+    sys.exit(0)
+
+
     test = """
     struct {
       u16 bar;
