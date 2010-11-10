@@ -164,6 +164,27 @@ class arrayDataElement(DataElement):
         else:
             raise ValueError("Cannot coerce this to int")
 
+    def __set_value_bcd(self, value):
+        for i in reversed(self.__items):
+            twodigits = value % 100
+            value /= 100
+            i.set_value(twodigits)
+
+    def __set_value_char(self, value):
+        for i in range(0, len(self.__items)):
+            self.__items[i].set_value(value[i])
+
+    def set_value(self, value):
+        if isinstance(self.__items[0], bcdDataElement):
+            self.__set_value_bcd(value)
+        elif isinstance(self.__items[0], charDataElement):
+            self.__set_value_char(value)
+        elif len(value) != len(self.__items):
+            raise ValueError("Array cardinality mismatch")
+        else:
+            for i in range(0, len(value)):
+                self.__items[i].set_value(value[i])
+
 class intDataElement(DataElement):
     def __int__(self):
         return self.get_value()
