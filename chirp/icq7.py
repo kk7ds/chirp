@@ -83,8 +83,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = bitwise.bcd_to_int(_mem.freq) / 1000.0
-        mem.offset = bitwise.bcd_to_int(_mem.offset) / 1000.0
+        mem.freq = int(_mem.freq) / 1000.0
+        mem.offset = int(_mem.offset) / 1000.0
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         try:
@@ -109,8 +109,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
             self._memobj.flags_whole[mem.number] = 0xFF
             return
 
-        bitwise.int_to_bcd(_mem.freq, int(mem.freq * 1000))
-        bitwise.int_to_bcd(_mem.offset, int(mem.offset * 1000))
+        _mem.freq = int(mem.freq * 1000)
+        _mem.offset = int(mem.offset * 1000)
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tune_step = STEPS.index(mem.tuning_step)

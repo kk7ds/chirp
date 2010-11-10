@@ -95,8 +95,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if flag != 0x03:
             mem.empty = True
             return mem
-        mem.freq = bitwise.bcd_to_int(_mem.freq) / 1000.0
-        mem.offset = bitwise.bcd_to_int(_mem.offset) / 1000.0
+        mem.freq = int(_mem.freq) / 1000.0
+        mem.offset = int(_mem.offset) / 1000.0
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tone_mode]
         mem.duplex = DUPLEX[_mem.duplex]
@@ -104,7 +104,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
 
-        for i in bitwise.get_string(_mem.label):
+        for i in str(_mem.label):
             if i == "\xFF":
                 break
             mem.name += CHARSET[ord(i)]
@@ -120,8 +120,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         _mem = self._memobj.memory[mem.number-1]
 
-        bitwise.int_to_bcd(_mem.freq, int(mem.freq * 1000))
-        bitwise.int_to_bcd(_mem.offset, int(mem.offset * 1000))
+        _mem.freq = int(mem.freq * 1000)
+        _mem.offset = int(mem.offset * 1000)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tone_mode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
@@ -130,7 +130,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tune_step = STEPS.index(mem.tuning_step)
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
-        bitwise.set_string(_mem.label, label.ljust(16, "\xFF"))
+        _mem.label = label.ljust(16, "\xFF")
 
     def get_banks(self):
         return []

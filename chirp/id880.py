@@ -182,7 +182,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         banks = []
         for i in range(0, 26):
-            banks.append(bitwise.get_string(_banks[i].name).rstrip())
+            banks.append(str(_banks[i].name).rstrip())
 
         return banks
 
@@ -190,7 +190,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _banks = self._memobj.bank_names
 
         for i in range(0, 26):
-            bitwise.set_string(_banks[i].name, banks[i].ljust(6)[:6])
+            _banks[i].name = banks[i].ljust(6)[:6]
 
     def _get_freq(self, _mem):
         val = _mem.freq
@@ -225,9 +225,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if is_used and MODES[_mem.mode] == "DV":
             mem = chirp_common.DVMemory()
-            mem.dv_urcall = decode_call(bitwise.get_string(_mem.urcall))
-            mem.dv_rpt1call = decode_call(bitwise.get_string(_mem.r1call))
-            mem.dv_rpt2call = decode_call(bitwise.get_string(_mem.r2call))
+            mem.dv_urcall = decode_call(str(_mem.urcall))
+            mem.dv_rpt1call = decode_call(str(_mem.r1call))
+            mem.dv_rpt2call = decode_call(str(_mem.r2call))
         else:
             mem = chirp_common.Memory()
 
@@ -267,7 +267,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.tuning_step = 5.0
         else:
             mem.tuning_step = chirp_common.TUNING_STEPS[_mem.tune_step]
-        mem.name = bitwise.get_string(_mem.name).rstrip()
+        mem.name = str(_mem.name).rstrip()
 
         return mem
 
@@ -294,12 +294,12 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
         _mem.tune_step = chirp_common.TUNING_STEPS.index(mem.tuning_step)
-        bitwise.set_string(_mem.name, mem.name.ljust(8))
+        _mem.name = mem.name.ljust(8)
 
         if isinstance(mem, chirp_common.DVMemory):
-            bitwise.set_string(_mem.urcall, encode_call(mem.dv_urcall))
-            bitwise.set_string(_mem.r1call, encode_call(mem.dv_rpt1call))
-            bitwise.set_string(_mem.r2call, encode_call(mem.dv_rpt2call))
+            _mem.urcall = encode_call(mem.dv_urcall)
+            _mem.r1call = encode_call(mem.dv_rpt1call)
+            _mem.r2call = encode_call(mem.dv_rpt2call)
             
         if mem.number < 1000:
             _bank = self._memobj.bank_info[mem.number]
@@ -326,7 +326,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         calls = ["CQCQCQ"]
 
         for i in range(*self.URCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1].call))
+            calls.append(str(_calls[i-1].call))
 
         return calls
 
@@ -335,7 +335,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         calls = []
 
         for i in range(*self.MYCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1].call))
+            calls.append(str(_calls[i-1].call))
 
         return calls
 

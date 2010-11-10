@@ -157,9 +157,9 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if is_used and MODES[_mem.mode] == "DV":
             mem = chirp_common.DVMemory()
-            mem.dv_urcall = bitwise.get_string(_mem.urcall)
-            mem.dv_rpt1call = bitwise.get_string(_mem.r1call)
-            mem.dv_rpt2call = bitwise.get_string(_mem.r2call)
+            mem.dv_urcall = str(_mem.urcall)
+            mem.dv_rpt1call = str(_mem.r1call)
+            mem.dv_rpt2call = str(_mem.r2call)
         else:
             mem = chirp_common.Memory()
 
@@ -200,7 +200,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.tuning_step = 5.0 # Sometimes TS is garbage?
         else:
             mem.tuning_step = chirp_common.TUNING_STEPS[_mem.tune_step]
-        mem.name = bitwise.get_string(_mem.name).rstrip()
+        mem.name = str(_mem.name).rstrip()
 
         return mem
 
@@ -247,12 +247,12 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
         _mem.tune_step = chirp_common.TUNING_STEPS.index(mem.tuning_step)
-        bitwise.set_string(_mem.name, mem.name.ljust(8))        
+        _mem.name = mem.name.ljust(8)
 
         if isinstance(mem, chirp_common.DVMemory):
-            bitwise.set_string(_mem.urcall, mem.dv_urcall.ljust(8))
-            bitwise.set_string(_mem.r1call, mem.dv_rpt1call.ljust(8))
-            bitwise.set_string(_mem.r2call, mem.dv_rpt2call.ljust(8))
+            _mem.urcall = mem.dv_urcall.ljust(8)
+            _mem.r1call = mem.dv_rpt1call.ljust(8)
+            _mem.r2call = mem.dv_rpt2call.ljust(8)
             
     def get_raw_memory(self, number):
         offset = number * MEM_LOC_SIZE
@@ -263,21 +263,21 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         banks = []
         for i in range(0, 26):
-            banks.append(bitwise.get_string(_banks[i].name).rstrip())
+            banks.append(str(_banks[i].name).rstrip())
 
         return banks
 
     def set_banks(self, banks):
         _banks = self._memobj.bank_names
         for i in range(0, 26):
-            bitwise.set_string(_banks[i].name, banks[i].ljust(8)[:8])
+            _banks[i].name = banks[i].ljust(8)[:8]
 
     def get_urcall_list(self):
         _calls = self._memobj.urcall
         calls = []
 
         for i in range(*self.URCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1].call))
+            calls.append(str(_calls[i-1].call))
 
         return calls
 
@@ -286,7 +286,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         calls = []
 
         for i in range(*self.RPTCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1].call))
+            calls.append(str(_calls[i-1].call))
 
         return calls
 
@@ -295,7 +295,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         calls = []
         
         for i in range(*self.MYCALL_LIMIT):
-            calls.append(bitwise.get_string(_calls[i-1].call))
+            calls.append(str(_calls[i-1].call))
 
         return calls
 
@@ -308,7 +308,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             except IndexError:
                 call = " " * 8
 
-            bitwise.set_string(_calls[i-1].call, call.ljust(8)[:8])
+            _calls[i-1].call = call.ljust(8)[:8]
 
     def set_repeater_call_list(self, calls):
         _calls = self._memobj.rptcall
@@ -319,7 +319,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             except IndexError:
                 call = " " * 8
 
-            bitwise.set_string(_calls[i-1].call, call.ljust(8)[:8])
+            _calls[i-1].call = call.ljust(8)[:8]
 
     def set_mycall_list(self, calls):
         _calls = self._memobj.mycall
@@ -330,7 +330,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             except IndexError:
                 call = " " * 8
 
-            bitwise.set_string(_calls[i-1].call, call.ljust(8)[:8])
+            _calls[i-1].call = call.ljust(8)[:8]
 
     def filter_name(self, name):
         return chirp_common.name8(name)
