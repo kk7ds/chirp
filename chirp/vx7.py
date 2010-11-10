@@ -165,8 +165,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag["%s_masked" % nibble] = not mem.empty
         _flag["%s_valid" % nibble] = not mem.empty
         if mem.empty:
-            print "Mem is empty %i %i" % (_flag["%s_masked" % nibble],
-                                          _flag["%s_valid" % nibble])
             return
 
         _mem.freq = int(mem.freq * 1000)
