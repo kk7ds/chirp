@@ -696,6 +696,8 @@ time.  Are you sure you want to do this?"""
             self.choices["Tone Mode"] = list(self.choices["Tone Mode"])
             self.choices["Tone Mode"].remove("DTCS")
 
+        self.choices["Mode"] = self.rthread.radio.get_features()["valid_modes"]
+
         job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc("Getting bank list")
         rthread.submit(job)
