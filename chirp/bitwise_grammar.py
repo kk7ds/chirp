@@ -73,4 +73,4 @@ def _language():
     return _block_inner
 
 def parse(data):
-    return parseLine(data, _language) 
+    return parseLine(data, _language, resultSoFar=[]) 
