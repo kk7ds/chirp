@@ -431,6 +431,7 @@ class RadioFeatures:
         "has_bank"            : BOOLEAN,
         "has_tuning_step"     : BOOLEAN,
         "has_name"            : BOOLEAN,
+        "has_ctone"           : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
@@ -472,6 +473,7 @@ class RadioFeatures:
         self.has_name = True
         self.has_bank = True
         self.has_tuning_step = True
+        self.has_ctone = True
 
         self.valid_modes = list(MODES)
         self.has_sub_devices = False

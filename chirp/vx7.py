@@ -121,6 +121,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_modes = ["FM", "WFM", "AM"]
         rf.memory_bounds = (1, 450)
         rf.can_odd_split = True
+        rf.has_ctone = False
         return rf
 
     def get_raw_memory(self, number):
