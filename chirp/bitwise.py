@@ -21,6 +21,7 @@
 #
 #  u8   foo;     /* Unsigned 8-bit value                    */
 #  u16  foo;     /* Unsigned 16-bit value                   */
+#  ul16 foo;     /* Unsigned 16-bit value (LE)              */
 #  u24  foo;     /* Unsigned 24-bit value                   */
 #  u32  foo;     /* Unsigned 32-bit value                   */
 #  char foo;     /* Character (single-byte                  */
@@ -45,18 +46,8 @@
 # to parse to the parse() function.  The result is a structure with 
 # dict-like objects for structures, indexed by name, and lists of
 # objects for arrays.  The actual data elements can be interpreted
-# as integers directly (for int types) and the following helper
-# functions will facilitate composing or decomposing array types:
-#
-# bcd_to_int()
-# int_to_bcd()
-# get_string()
-# set_string()
-#
-# Discrete types can be set using their "_" property as so:
-#
-# obj["mystruct"]["mybyte"]._ = 123
-#
+# as integers directly (for int types).  Strings and BCD arrays
+# behave as expected.
 
 import struct
 from chirp import bitwise_grammar
@@ -127,7 +118,7 @@ class DataElement:
         return self._get_value(self._data[self._offset:self._offset+self._size])
 
     def set_value(self, value):
-        raise Exception("Not implemented")
+        raise Exception("Not implemented for %s" % self.__class__)
 
 class arrayDataElement(DataElement):
     def __init__(self):
@@ -184,6 +175,17 @@ class arrayDataElement(DataElement):
         else:
             for i in range(0, len(value)):
                 self.__items[i].set_value(value[i])
+
+    def index(self, value):
+        index = 0
+        for i in self.__items:
+            if i.get_value() == value:
+                return index
+            index += 1
+        raise IndexError()            
+
+    def __iter__(self):
+        return iter(self.__items)
 
 class intDataElement(DataElement):
     def __int__(self):
@@ -306,12 +308,16 @@ class u8DataElement(intDataElement):
 
 class u16DataElement(intDataElement):
     _size = 2
+    _endianess = ">"
 
     def _get_value(self, data):
-        return struct.unpack(">H", data)[0]
+        return struct.unpack(self._endianess + "H", data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(">H", value)
+        self._data[self._offset] = struct.pack(self._endianess + "H", value)
+
+class ul16DataElement(u16DataElement):
+    _endianess = "<"
 
 class u24DataElement(intDataElement):
     _size = 3
@@ -458,6 +464,7 @@ class Processor:
     _types = {
         "u8"   : u8DataElement,
         "u16"  : u16DataElement,
+        "ul16" : ul16DataElement,
         "u24"  : u24DataElement,
         "u32"  : u32DataElement,
         "char" : charDataElement,
