@@ -124,7 +124,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def _get_special(self):
         special = { "C" : 206 }
         for i in range(0, 3):
-            idA = "%iA" % (i+1
+            idA = "%iA" % (i+1)
             idB = "%iB" % (i+1)
             num = 200 + i * 2
             special[idA] = num
