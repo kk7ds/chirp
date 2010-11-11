@@ -458,7 +458,7 @@ class structDataElement(DataElement):
 
     def size(self):
         size = 0
-        for gen in self._generators.values():
+        for name, gen in self._generators.items():
             if not isinstance(gen, list):
                 gen = [gen]
 
@@ -466,7 +466,12 @@ class structDataElement(DataElement):
             for el in gen:
                 i += 1
                 size += el.size()
+                #print "Size of %s[%i] = %i" % (name, i, el.size())
         return size
+
+    def get_raw(self):
+        size = self.size() / 8
+        return self._data[self._offset:self._offset+size]
 
 class Processor:
 
