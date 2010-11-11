@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone
+from chirp import chirp_common, yaesu_clone, util
 from chirp import bitwise
 
 mem_format = """
@@ -125,7 +125,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return vx7_ll.get_raw_memory(self._mmap, number)
+        return util.hexprint(vx7_ll.get_raw_memory(self._mmap, number))
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -157,16 +157,27 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return mem
 
+    def _wipe_memory(self, mem):
+        print "Wiping..."
+        self._mmap[mem.get_offset()] = "\x00" * mem.size()
+        mem.unknown1 = 0x05
+        mem.ones = 0x03
+
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
         _flag = self._memobj.flags[(mem.number-1)/2]
 
         nibble = ((mem.number-1) % 2) and "even" or "odd"
         
+        was_valid = int(_flag["%s_valid" % nibble])
+
         _flag["%s_masked" % nibble] = not mem.empty
         _flag["%s_valid" % nibble] = not mem.empty
         if mem.empty:
             return
+
+        if not was_valid:
+            self._wipe_memory(_mem)
 
         _mem.freq = int(mem.freq * 1000)
         _mem.offset = int(mem.offset * 1000)
