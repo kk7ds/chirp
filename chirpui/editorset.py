@@ -25,10 +25,10 @@ from chirpui import inputdialog
 
 def radio_class_from_file(filename):
     if filename.endswith(".chirp"):
-        return xml.XMLRadio
+        return xml.XMLRadio(filename)
 
     if filename.endswith(".csv"):
-        return csv.CSVRadio
+        return csv.CSVRadio(filename)
 
     return directory.get_radio_by_image(filename)
 
