@@ -111,6 +111,9 @@ class DataElement:
     def size(self):
         return self._size * 8
 
+    def get_offset(self):
+        return self._offset
+
     def _get_value(self, data):
         raise Exception("Not implemented")
 
@@ -186,6 +189,12 @@ class arrayDataElement(DataElement):
 
     def __iter__(self):
         return iter(self.__items)
+
+    def size(self):
+        size = 0
+        for i in self.__items:
+            size += i.size()
+        return size
 
 class intDataElement(DataElement):
     def __int__(self):
@@ -545,7 +554,7 @@ class Processor:
 
         result = arrayDataElement()
         for i in range(0, count):
-            element = structDataElement(self._offset, count)
+            element = structDataElement(self._data, self._offset, count)
             result.append(element)
             tmp = self._generators
             self._generators = element
