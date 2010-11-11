@@ -269,6 +269,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return mem
 
+    def _wipe_memory(self, mem, char):
+        mem.set_raw(char * (mem.size() / 8))
+
     def set_memory(self, mem):
         bitpos = (1 << (mem.number % 8))
         bytepos = mem.number / 8
@@ -276,11 +279,17 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem = self._memobj.memory[mem.number]
         _used = self._memobj.used_flags[bytepos]
 
+        was_empty = _used & bitpos
+
         if mem.empty:
             _used |= bitpos
+            self._wipe_memory(_mem, "\xFF")
             return
 
         _used &= ~bitpos
+
+        if was_empty:
+            self._wipe_memory(_mem, "\x00")
 
         self._set_freq(_mem, mem.freq)
         _mem.offset = int((mem.offset * 1000) / 5)

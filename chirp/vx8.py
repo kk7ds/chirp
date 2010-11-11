@@ -120,14 +120,21 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return mem
 
+    def _wipe_memory(self, mem):
+        mem.set_raw("\x00" * (mem.size() / 8))
+        mem.unknown1 = 0x05
+
     def set_memory(self, mem):
         flag = self._memobj.flag[mem.number-1]
+        was_empty = flag.flag == 0
         if mem.empty:
             flag.flag = 0
             return
         flag.flag = 3
 
         _mem = self._memobj.memory[mem.number-1]
+        if was_empty:
+            self._wipe_memory(_mem)
 
         _mem.freq = int(mem.freq * 1000)
         _mem.offset = int(mem.offset * 1000)

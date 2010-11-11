@@ -190,7 +190,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return [m for m in self._memories if m.number >= lo and m.number <= hi]
 
     def _wipe_memory(self, mem, char):
-        self._mmap[mem.get_offset()] = char * (mem.size() / 8)
+        mem.set_raw(char * (mem.size() / 8))
 
     def set_memory(self, mem):
         if isinstance(mem.number, str):
