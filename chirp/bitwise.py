@@ -473,6 +473,11 @@ class structDataElement(DataElement):
         size = self.size() / 8
         return self._data[self._offset:self._offset+size]
 
+    def set_raw(self, buffer):
+        if len(buffer) != (self.size() / 8):
+            raise ValueError("Struct size mismatch during set_raw()")
+        self._data[self._offset] = buffer
+
 class Processor:
 
     _types = {
