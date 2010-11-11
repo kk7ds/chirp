@@ -56,9 +56,9 @@ struct {
   bbcd offset[3];
   u8   zeros3:3,
        tone:5;
-  u8   zero:1,
+  u8   zeros4:1,
        dcs:7;
-  u8   zeros:6,
+  u8   zeros5:6,
        tmode:2;
   u8   charset;
 } memory[450];
@@ -125,7 +125,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return util.hexprint(vx7_ll.get_raw_memory(self._mmap, number))
+        return self._memobj.memory[number].get_raw()
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -158,7 +158,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def _wipe_memory(self, mem):
-        print "Wiping..."
         self._mmap[mem.get_offset()] = "\x00" * mem.size()
         mem.unknown1 = 0x05
         mem.ones = 0x03

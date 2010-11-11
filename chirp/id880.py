@@ -173,9 +173,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         raise errors.RadioError("Out of slots in this bank")
 
     def get_raw_memory(self, number):
-        size = self._memobj.memory[0].size() / 8
-        offset = number * size
-        return MemoryMap(self._mmap[offset:offset+size])
+        return self._memobj.memory[number].get_raw()
 
     def get_banks(self):
         _banks = self._memobj.bank_names

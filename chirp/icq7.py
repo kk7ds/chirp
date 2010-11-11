@@ -69,9 +69,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
-        size = self._memobj.memory[0].size() / 8
-        offset = int(number * size)
-        return MemoryMap(self._mmap[offset:offset+size])
+        return self._memobj.memory[number].get_raw()
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]

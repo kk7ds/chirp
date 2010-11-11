@@ -21,6 +21,7 @@ import sys
 from optparse import OptionParser
 import optparse
 
+from chirp import util
 from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880, vx7, vx8
 from chirp import tmv71
 from chirp import chirp_common, errors, idrp, directory
@@ -158,7 +159,6 @@ if __name__ == "__main__":
 
 	if options.id:
 	    from chirp import icf
-	    from chirp import util
 
 	    s = serial.Serial(port=options.serial,
 			      baudrate=9600,
@@ -193,7 +193,7 @@ if __name__ == "__main__":
 	    data = radio.get_raw_memory(int(args[0]))
 	    print "Memory location %i (%i):\n%s" % (int(args[0]),
 						    len(data),
-						    data)
+						    util.hexprint(data))
 	    sys.exit(0)
 
 	if options.set_mem_dup is not None:
