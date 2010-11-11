@@ -15,8 +15,71 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from chirp import chirp_common, icf, util
+from chirp import bitwise
 
-from chirp import chirp_common, icf, ic2200_ll
+mem_format = """
+struct {
+  ul16  freq;
+  ul16  offset;
+  char name[6];
+  u8   unknown1:2,
+       rtone:6;
+  u8   unknown2:2,
+       ctone:6;
+  u8   unknown3:1,
+       dtcs:7;
+  u8   unknown4:4,
+       tuning_step:4;
+  u8   unknown5[3];
+  u8   unknown6:4,
+       urcall:4;
+  u8   r1call:4,
+       r2call:4;
+  u8   unknown7:1,
+       digital_code:7;
+  u8   is_625:1,
+       unknown8:1,
+       mode_am:1,
+       mode_narrow:1,
+       unknown9:2,
+       tmode:2;
+  u8   dtcs_polarity:2,
+       duplex:2,
+       unknown10:4;
+  u8   unknown11;
+  u8   mode_dv:1,
+       unknown12:7;
+} memory[207];
+
+#seekto 0x1370;
+struct {
+  u8 unknown:2,
+     empty:1,
+     skip:1,
+     bank:4;
+} flags[207];
+
+#seekto 0x15F0;
+struct {
+  char call[8];
+} mycalls[6];
+
+struct {
+  char call[8];
+} urcalls[6];
+
+struct {
+  char call[8];
+} rptcalls[6];
+
+"""
+
+TMODES = ["", "Tone", "TSQL", "DTCS"]
+DUPLEX = ["", "-", "+"]
+DTCSP  = ["NN", "NR", "RN", "RR"]
+STEPS = list(chirp_common.TUNING_STEPS)
+STEPS.remove(6.25)
 
 class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
@@ -46,42 +109,6 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                (0x1AB8, 0x1AC0,  8),
                ]
 
-    foo = [
-               (0x1A80, 0x2B18, 32),
-               (0x2B18, 0x2B20,  8),
-               (0x2B20, 0x2BE0, 32),
-               (0x2BE0, 0x2BF4, 20),
-               (0x2BF4, 0x2C00, 12),
-               (0x2C00, 0x2DE0, 32),
-               (0x2DE0, 0x2DF4, 20),
-               (0x2DF4, 0x2E00, 12),
-               (0x2E00, 0x2E20, 32),
-
-               (0x2F00, 0x3070, 32),
-
-               (0x30D0, 0x30E0, 16),
-               (0x30E0, 0x3160, 32),
-               (0x3160, 0x3180, 16),
-               (0x3180, 0x32A0, 32),
-               (0x31A0, 0x31B0, 16),
-
-               (0x3220, 0x3240, 32),
-               (0x3240, 0x3260, 16),
-               (0x3260, 0x3560, 32),
-               (0x3560, 0x3580, 16),
-               (0x3580, 0x3720, 32),
-               (0x3720, 0x3780,  8),
-
-               (0x3798, 0x37A0,  8),
-               (0x37A0, 0x37B0, 16),
-               (0x37B0, 0x37B1,  1),
-
-               (0x37D8, 0x37E0,  8),
-               (0x37E0, 0x3898, 32),
-               (0x3898, 0x389A,  2),
-
-               (0x38A8, 0x38C0, 16)]
-
     MYCALL_LIMIT  = (0, 6)
     URCALL_LIMIT  = (0, 6)
     RPTCALL_LIMIT = (0, 6)
@@ -92,47 +119,128 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def process_mmap(self):
-        self._memories = ic2200_ll.parse_map_for_memory(self._mmap)
+        self._memobj = bitwise.parse(mem_format, self._mmap)
+
+    def _get_special(self):
+        special = { "C" : 206 }
+        for i in range(0, 3):
+            idA = "%iA" % (i+1
+            idB = "%iB" % (i+1)
+            num = 200 + i * 2
+            special[idA] = num
+            special[idB] = num + 1
+
+        return special
 
     def get_special_locations(self):
-        return sorted(ic2200_ll.IC2200_SPECIAL.keys())
+        return sorted(self._get_special().keys())
 
     def get_memory(self, number):
-        if not self._mmap:
-            self.sync_in()
-
         if isinstance(number, str):
-            try:
-                number = ic2200_ll.IC2200_SPECIAL[number]
-            except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
-                                                       number)
+            number = self._get_special()[number]
 
-        return ic2200_ll.get_memory(self._mmap, number)
+        _mem = self._memobj.memory[number]
+        _flag = self._memobj.flags[number]
+
+        if _mem.mode_dv and not _flag.empty:
+            mem = chirp_common.DVMemory()
+            mem.dv_urcall   = \
+                str(self._memobj.urcalls[_mem.urcall].call).rstrip()
+            mem.dv_rpt1call = \
+                str(self._memobj.rptcalls[_mem.r1call].call).rstrip()
+            mem.dv_rpt2call = \
+                str(self._memobj.rptcalls[_mem.r2call].call).rstrip()
+        else:
+            mem = chirp_common.Memory()
+
+        mem.number = number
+        if number < 200:
+            mem.skip = _flag.skip and "S" or ""
+            mem.bank = _flag.bank != 0x0A and _flag.bank or None
+            if _flag.bank != 0x0A:
+                mem.bank = _flag.bank
+        else:
+            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.immutable = ["number", "skip", "bank", "bank_index",
+                             "extd_number"]
+
+        if _flag.empty:
+            mem.empty = True
+            return mem
+
+        mult = _mem.is_625 and 6.25 or 5.0
+        mem.freq = (_mem.freq * mult) / 1000.0
+        mem.offset = (_mem.offset * 5.0) / 1000.0
+        mem.rtone = chirp_common.TONES[_mem.rtone]
+        mem.ctone = chirp_common.TONES[_mem.ctone]
+        mem.tmode = TMODES[_mem.tmode]
+        mem.duplex = DUPLEX[_mem.duplex]
+        mem.mode = _mem.mode_dv and "DV" or _mem.mode_am and "AM" or "FM"
+        if _mem.mode_narrow:
+            mem.mode = "N%s" % mem.mode
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
+        mem.dtcs_polarity = DTCSP[_mem.dtcs_polarity]
+        mem.tuning_step = STEPS[_mem.tuning_step]
+        mem.name = str(_mem.name).replace("\x0E", "").rstrip()
+
+        return mem
 
     def get_memories(self, lo=0, hi=199):
-        if not self._mmap:
-            self.sync_in()
 
         return [m for m in self._memories if m.number >= lo and m.number <= hi]
 
-    def set_memory(self, memory):
-        if not self._mmap:
-            self.sync_in()
-
-        if memory.empty:
-            self._mmap = ic2200_ll.erase_memory(self._mmap, memory.number)
+    def set_memory(self, mem):
+        if isinstance(mem.number, str):
+            number = self._get_special()[mem.number]
         else:
-            self._mmap = ic2200_ll.set_memory(self._mmap, memory)
+            number = mem.number
+
+        _mem = self._memobj.memory[number]
+        _flag = self._memobj.flags[number]
+
+        _flag.empty = mem.empty
+        if mem.empty:
+            return
+
+        _mem.unknown8 = 0
+        _mem.is_625 = chirp_common.is_fractional_step(mem.freq)
+        mult = _mem.is_625 and 6.25 or 5.0
+        _mem.freq = int((mem.freq * 1000) / mult)
+        _mem.offset = int((mem.offset * 1000) / mult)
+        _mem.rtone = chirp_common.TONES.index(mem.rtone)
+        _mem.ctone = chirp_common.TONES.index(mem.ctone)
+        _mem.tmode = TMODES.index(mem.tmode)
+        _mem.duplex = DUPLEX.index(mem.duplex)
+        _mem.mode_dv = mem.mode == "DV"
+        _mem.mode_am = mem.mode.endswith("AM")
+        _mem.mode_narrow = mem.mode.startswith("N")
+        _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
+        _mem.tuning_step = STEPS.index(mem.tuning_step)
+        _mem.name = mem.name.ljust(6)
+
+        if number < 200:
+            _flag.skip = mem.skip != ""
+            _flag.bank = mem.bank or 0x0A
+
+        if isinstance(mem, chirp_common.DVMemory):
+            urcalls = self.get_urcall_list()
+            rptcalls = self.get_rptcall_list()
+            _mem.urcall = urcalls.index(mem.dv_urcall.ljust(8))
+            _mem.r1call = rptcalls.index(mem.dv_rpt1call.ljust(8))
+            _mem.r2call = rptcalls.index(mem.dv_rpt2call.ljust(8))
 
     def get_raw_memory(self, number):
-        return ic2200_ll.get_raw_memory(self._mmap, number)
+        size = self._memobj[0].size()
+        offset = (number * size)
+        return self._mmap[offset:offset+size]
 
     def get_banks(self):
         banks = []
 
         for i in range(0, 10):
-            banks.append(chirp_common.ImmutableBank(ic2200_ll.bank_name(i)))
+            bank = chirp_common.ImmutableBank("BANK-%s" % (chr(ord("A")+i)))
+            banks.append(bank)
 
         return banks
 
@@ -140,55 +248,22 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_urcall_list(self):
-        calls = []
-
-        for i in range(*self.URCALL_LIMIT):
-            call = ic2200_ll.get_urcall(self._mmap, i)
-            calls.append(call)
-
-        return calls
+        return [str(x.call) for x in self._memobj.urcalls]
 
     def get_repeater_call_list(self):
-        calls = []
-
-        for i in range(*self.RPTCALL_LIMIT):
-            call = ic2200_ll.get_rptcall(self._mmap, i)
-            calls.append(call)
-
-        return calls
+        return [str(x.call) for x in self._memobj.rptcalls]
 
     def get_mycall_list(self):
-        calls = []
-
-        for i in range(*self.MYCALL_LIMIT):
-            call = ic2200_ll.get_mycall(self._mmap, i)
-            calls.append(call)
-
-        return calls
+        return [str(x.call) for x in self._memobj.mycalls]
 
     def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
-            try:
-                call = calls[i]
-            except IndexError:
-                call = " " * 8
-
-            ic2200_ll.set_urcall(self._mmap, i, call)
+            self._memobj.urcalls[i].call = calls[i].ljust(8)
 
     def set_repeater_call_list(self, calls):
         for i in range(*self.RPTCALL_LIMIT):
-            try:
-                call = calls[i]
-            except IndexError:
-                call = " " * 8
-
-            ic2200_ll.set_rptcall(self._mmap, i, call)
+            self._memobj.rptcalls[i].call = calls[i].ljust(8)
 
     def set_mycall_list(self, calls):
         for i in range(*self.MYCALL_LIMIT):
-            try:
-                call = calls[i]
-            except IndexError:
-                call = " " * 8
-
-            ic2200_ll.set_mycall(self._mmap, i, call)
+            self._memobj.mycalls[i].call = calls[i].ljust(8)
