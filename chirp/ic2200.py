@@ -189,6 +189,9 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return [m for m in self._memories if m.number >= lo and m.number <= hi]
 
+    def _wipe_memory(self, mem, char):
+        self._mmap[mem.get_offset()] = char * (mem.size() / 8)
+
     def set_memory(self, mem):
         if isinstance(mem.number, str):
             number = self._get_special()[mem.number]
@@ -200,7 +203,10 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         _flag.empty = mem.empty
         if mem.empty:
+            self._wipe_memory(_mem, "\xFF")
             return
+
+        self._wipe_memory(_mem, "\x00")
 
         _mem.unknown8 = 0
         _mem.is_625 = chirp_common.is_fractional_step(mem.freq)
@@ -231,9 +237,9 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.r2call = rptcalls.index(mem.dv_rpt2call.ljust(8))
 
     def get_raw_memory(self, number):
-        size = self._memobj[0].size()
+        size = self._memobj.memory[0].size() / 8
         offset = (number * size)
-        return self._mmap[offset:offset+size]
+        return util.hexprint(self._mmap[offset:offset+size])
 
     def get_banks(self):
         banks = []
