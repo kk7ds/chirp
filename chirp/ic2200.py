@@ -201,12 +201,15 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem = self._memobj.memory[number]
         _flag = self._memobj.flags[number]
 
+        was_empty = int(_flag.empty)
+
         _flag.empty = mem.empty
         if mem.empty:
             self._wipe_memory(_mem, "\xFF")
             return
 
-        self._wipe_memory(_mem, "\x00")
+        if was_empty:
+            self._wipe_memory(_mem, "\x00")
 
         _mem.unknown8 = 0
         _mem.is_625 = chirp_common.is_fractional_step(mem.freq)
