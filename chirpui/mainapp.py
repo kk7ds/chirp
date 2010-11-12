@@ -644,7 +644,7 @@ class ChirpMain(gtk.Window):
 
         self.add(vbox)
 
-        self.set_default_size(640, 480)
+        self.set_default_size(800, 600)
         self.set_title("CHIRP")
 
         self.connect("delete_event", self.ev_delete)
