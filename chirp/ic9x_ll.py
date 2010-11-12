@@ -501,10 +501,14 @@ def print_frames(frames):
         count += 1
 
 def _send_magic_4800(pipe):
-    return ic9x_send(pipe, ("\xFE" * 25) + "\x01\x80\x19")
+    magic = ("\xFE" * 25) + "\x01\x80\x19"
+    r = ic9x_send(pipe, magic)
+    return r and r[0].get_raw() != magic
 
 def _send_magic_38400(pipe):
-    return ic9x_send(pipe, ("\xFE" * 400) + "\x01\x80\x19")
+    magic = ("\xFE" * 400) + "\x01\x80\x19"
+    r = ic9x_send(pipe, magic)
+    return r and r[0].get_raw() != magic
 
 def send_magic(pipe):
     if pipe.getBaudrate() == 38400:
