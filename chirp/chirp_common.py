@@ -54,7 +54,7 @@ DTCS_CODES = [
     731, 732, 734, 743, 754,
      ]
 
-MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV"]
+MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY"]
 
 STD_2M_OFFSETS = [
     (145.1, 145.5, -0.600),
@@ -439,6 +439,8 @@ class RadioFeatures:
         "valid_duplexes"      : [],
         "valid_tuning_steps"  : [],
         "valid_bands"         : [],
+        "valid_skips"         : [],
+
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
         "can_odd_split"       : BOOLEAN,
@@ -484,6 +486,8 @@ class RadioFeatures:
         self.valid_duplexes = ["", "+", "-"]
         self.valid_tuning_steps = list(TUNING_STEPS)
         self.valid_bands = []
+        self.valid_skips = ["", "S"]
+
         self.has_sub_devices = False
         self.memory_bounds = (0, 1)
         self.can_odd_split = False
