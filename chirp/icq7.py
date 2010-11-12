@@ -58,7 +58,12 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
-        rf.valid_modes = MODES
+        rf.valid_modes = list(MODES)
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(DUPLEX)
+        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_bands = []
+        rf.valid_skips = ["", "S", "P"]
         rf.has_dtcs = False
         rf.has_dtcs_polarity = False
         rf.has_bank = False

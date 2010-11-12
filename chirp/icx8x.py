@@ -56,6 +56,13 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
+        rf.valid_modes = ["FM", "NFM", "DV"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_tuning_steps = [x for x in chirp_common.TUNING_STEPS
+                                 if x != 6.25]
+        rf.valid_bands = [(118.0, 176.0)]
+        rf.valid_skips = ["", "S"]
         return rf
 
     def _get_type(self):

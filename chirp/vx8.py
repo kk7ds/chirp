@@ -49,7 +49,7 @@ u8 checksum;
 
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM", "?"]
+MODES  = ["FM", "AM", "WFM"]
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(30.0)
 STEPS.append(100.0)
@@ -78,7 +78,12 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs_polarity = False
-        rf.valid_modes = ["FM", "WFM", "AM"]
+        rf.valid_modes = list(MODES)
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(DUPLEX)
+        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_bands = [(0.5, 999.9)]
+        rf.valid_skips = ["", "S"]
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
         rf.has_ctone = False

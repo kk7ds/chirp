@@ -118,7 +118,12 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs_polarity = False
-        rf.valid_modes = ["FM", "WFM", "AM"]
+        rf.valid_modes = list(set(MODES))
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(DUPLEX)
+        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_bands = [(0.5, 999.0)]
+        rf.valid_skips = ["", "S", "P"]
         rf.memory_bounds = (1, 450)
         rf.can_odd_split = True
         rf.has_ctone = False

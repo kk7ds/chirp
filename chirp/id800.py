@@ -71,6 +71,12 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf = chirp_common.RadioFeatures()
         rf.has_implicit_calls = True
         rf.valid_modes = id800_ll.ID800_MODES.values()
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_bands = [(118.0, 173.995), (230.0, 549.995),
+                          (810.0, 999.990)]
+        rf.valid_skips = ["", "S", "P"]
         rf.memory_bounds = (1, 499)
         return rf
 

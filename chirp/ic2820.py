@@ -111,6 +111,12 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_index = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, 499)
+        rf.valid_modes = list(MODES)
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(set(DUPLEX))
+        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_bands = [(118.0, 999.99)]
+        rf.valid_skips = ["", "S", "P"]
         return rf
 
     def get_available_bank_index(self, bank):

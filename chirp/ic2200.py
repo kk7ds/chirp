@@ -116,6 +116,12 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
+        rf.valid_modes = ["FM", "NFM", "AM", "NAM"]
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(DUPLEX)
+        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_bands = [(118.0, 174.0)]
+        rf.valid_skips = ["", "S", "P"]
         return rf
 
     def process_mmap(self):

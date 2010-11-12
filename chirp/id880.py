@@ -153,6 +153,13 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.requires_call_lists = False
         rf.has_bank_index = True
         rf.valid_modes = [x for x in MODES if x is not None]
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(DUPLEX)
+        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_bands = [(118.0, 173.995), (230.0, 549.995),
+                          (810.0, 823.990), (849.0, 868.990),
+                          (894.0, 999.990)]
+        rf.valid_skips = ["", "S", "P"]
         rf.memory_bounds = (0, 999)
         return rf
 
