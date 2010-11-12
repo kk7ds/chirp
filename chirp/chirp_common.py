@@ -435,6 +435,10 @@ class RadioFeatures:
 
         # Attributes
         "valid_modes"         : [],
+        "valid_tmodes"        : [],
+        "valid_duplexes"      : [],
+        "valid_tuning_steps"  : [],
+        "valid_bands"         : [],
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
         "can_odd_split"       : BOOLEAN,
@@ -476,6 +480,10 @@ class RadioFeatures:
         self.has_ctone = True
 
         self.valid_modes = list(MODES)
+        self.valid_tmodes = []
+        self.valid_duplexes = ["", "+", "-"]
+        self.valid_tuning_steps = list(TUNING_STEPS)
+        self.valid_bands = []
         self.has_sub_devices = False
         self.memory_bounds = (0, 1)
         self.can_odd_split = False
@@ -550,6 +558,38 @@ class Radio:
 
     def get_sub_devices(self):
         return []
+
+    def validate_memory(self, mem):
+        msgs = []
+        rf = self.get_features()
+
+        lo, hi = rf.memory_bounds
+        if mem.number < lo or mem.number > hi:
+            msgs.append("Location %i is out of range" % mem.number)
+
+        if rf.valid_modes and mem.mode not in rf.valid_modes:
+            msgs.append("Mode %s not supported" % mem.mode)
+
+        if rf.valid_tmodes and mem.tmode not in rf.valid_tmodes:
+            msgs.append("Tone mode %s not supported" % mem.tmode)
+
+        if rf.valid_duplexes and mem.duplex not in rf.valid_duplexes:
+            msgs.append("Duplex %s not supported" % mem.duplex)
+
+        ts = mem.tuning_step
+        if rf.valid_tuning_steps and ts not in rf.valid_tuning_steps:
+            msgs.append("Tuning step %.2f not supported" % ts)
+
+        if rf.valid_bands:
+            valid = False
+            for lo, hi in rf.valid_bands:
+                if mem.freq > lo and mem.freq < hi:
+                    valid = True
+                    break
+            if not valid:
+                msgs.append("Frequency %.5f is out of range" % mem.freq)
+
+        return msgs
 
 class CloneModeRadio(Radio):
     """A clone-mode radio does a full memory dump in and out and we store

@@ -218,6 +218,14 @@ class MemoryEditor(common.Editor):
             self.emit('changed')
 
         mem = self._get_memory(iter)
+
+        msgs = self.rthread.radio.validate_memory(mem)
+        if msgs:
+            common.show_error("Error setting memory:\r\n" + \
+                                  "\r\n".join(msgs))
+            self.prefill()
+            return
+
         job = common.RadioJob(cb, "set_memory", mem)
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)

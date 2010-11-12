@@ -169,6 +169,8 @@ class ImportDialog(gtk.Dialog):
     def do_import(self, dst_rthread):
         i = 0
 
+        error_messages = {}
+
         import_list = self.get_import_list()
 
         has_dstar = isinstance(self.dst_radio, chirp_common.IcomDstarSupport)
@@ -194,11 +196,21 @@ class ImportDialog(gtk.Dialog):
                 if mem.dv_rpt2call == "*NOTUSE*":
                     mem.dv_rpt2call = ""
 
-            job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc("Setting memory %i" % mem.number)
-            dst_rthread._qsubmit(job, 0)
+            msgs = dst_rthread.radio.validate_memory(mem)
+            if msgs:
+                error_messages[mem.number] = msgs
+            else:
+                job = common.RadioJob(None, "set_memory", mem)
+                job.set_desc("Setting memory %i" % mem.number)
+                dst_rthread._qsubmit(job, 0)
 
             i += 1
+
+        if error_messages.keys():
+            msg = "Error importing memories:\r\n"
+            for num, msgs in error_messages.items():
+                msg += "%i: %s" % (num, ",".join(msgs))
+            common.show_error(msg)
 
         return i
 
@@ -209,7 +221,9 @@ class ImportDialog(gtk.Dialog):
                                      gobject.TYPE_INT,
                                      gobject.TYPE_INT,
                                      gobject.TYPE_STRING,
-                                     gobject.TYPE_DOUBLE)
+                                     gobject.TYPE_DOUBLE,
+                                     gobject.TYPE_BOOLEAN,
+                                     gobject.TYPE_STRING)
         self.__view = gtk.TreeView(self.__store)
         self.__view.show()
 
@@ -219,13 +233,18 @@ class ImportDialog(gtk.Dialog):
             if t == gobject.TYPE_BOOLEAN:
                 rend = gtk.CellRendererToggle()
                 rend.connect("toggled", self._toggle, k)
-                column = gtk.TreeViewColumn(self.caps[k], rend, active=k)
+                column = gtk.TreeViewColumn(self.caps[k], rend,
+                                            active=k,
+                                            sensitive=self.col_okay,
+                                            activatable=self.col_okay)
             else:
                 rend = gtk.CellRendererText()
                 if k in editable:
                     rend.set_property("editable", True)
                     rend.connect("edited", self._edited, k)
-                column = gtk.TreeViewColumn(self.caps[k], rend, text=k)
+                column = gtk.TreeViewColumn(self.caps[k], rend,
+                                            text=k,
+                                            sensitive=self.col_okay)
 
             if k == self.col_nloc:
                 column.set_cell_data_func(rend, self._render, k)
@@ -389,21 +408,30 @@ class ImportDialog(gtk.Dialog):
             print "Got error from radio, assuming %i beyond limits: %s" % \
                 (number, e)
 
-    def populate_list(self, radio):
-        for i in range(*radio.get_features().memory_bounds):
+    def populate_list(self):
+        for i in range(*self.src_radio.get_features().memory_bounds):
             self.ww.grind()
             try:
-                mem = radio.get_memory(i)
+                mem = self.src_radio.get_memory(i)
             except errors.InvalidMemoryLocation, e:
                 continue
             if mem.empty:
                 continue
 
-            self.__store.append(row=(True,
+            msgs = self.dst_radio.validate_memory(mem)
+            if msgs:
+                msg = "Unsupported by destination radio: %s" % (",".join(msgs))
+            else:
+                msg = str(mem)
+
+            self.__store.append(row=(not bool(msgs),
                                      mem.number,
                                      mem.number,
                                      mem.name,
-                                     mem.freq))
+                                     mem.freq,
+                                     not bool(msgs),
+                                     msg
+                                     ))
             self.record_use_of(mem.number)
 
 
@@ -422,6 +450,8 @@ class ImportDialog(gtk.Dialog):
         self.col_oloc = 2
         self.col_name = 3
         self.col_freq = 4
+        self.col_okay = 5
+        self.col_tmsg = 6
 
         self.caps = {
             self.col_import : self.ACTION,
@@ -437,6 +467,8 @@ class ImportDialog(gtk.Dialog):
             self.col_nloc   : gobject.TYPE_INT,
             self.col_name   : gobject.TYPE_STRING,
             self.col_freq   : gobject.TYPE_DOUBLE,
+            self.col_okay   : gobject.TYPE_BOOLEAN,
+            self.col_tmsg   : gobject.TYPE_STRING,
             }
 
         self.src_radio = src_radio
@@ -452,7 +484,7 @@ class ImportDialog(gtk.Dialog):
         self.ww.show()
         self.ww.grind()
 
-        self.populate_list(src_radio)
+        self.populate_list()
 
         self.ww.hide()
 
