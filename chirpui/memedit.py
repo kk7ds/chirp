@@ -697,20 +697,22 @@ time.  Are you sure you want to do this?"""
 
         self.__cache_columns()
 
-        (min, max) = self.rthread.radio.get_features().memory_bounds
+        features = self.rthread.radio.get_features()
+
+        (min, max) = features.memory_bounds
 
         self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-        if not self.rthread.radio.get_features()["has_dtcs"]:
+        if not features["has_dtcs"]:
             self.choices["Tone Mode"] = list(self.choices["Tone Mode"])
             self.choices["Tone Mode"].remove("DTCS")
 
-        self.choices["Mode"] = self.rthread.radio.get_features()["valid_modes"]
+        self.choices["Mode"] = features["valid_modes"]
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc("Getting bank list")
         rthread.submit(job)
 
-        if not self.rthread.radio.get_features()["can_odd_split"]:
+        if not features["can_odd_split"]:
             # We need a new list, so .remove() won't work for us
             self.choices["Duplex"] = [x for x in self.choices["Duplex"]
                                       if x != "split"]
@@ -720,6 +722,8 @@ time.  Are you sure you want to do this?"""
         vbox.pack_start(self.make_editor(), 1, 1, 1)
         vbox.show()
         
+        self.choices["Mode"] = features.valid_modes
+
         self.root = vbox
 
         maybe_hide = [
@@ -733,11 +737,20 @@ time.  Are you sure you want to do this?"""
             ("has_tuning_step", "Tune Step"),
             ("has_name", "Name"),
             ("has_ctone", "ToneSql"),
+            ("valid_tmodes", "Tone Mode"),
+            ("valid_tmodes", "Tone"),
+            ("valid_duplexes", "Duplex"),
+            ("valid_tuning_steps", "Tune Step"),
+            ("valid_skips", "Skip"),
             ]
             
         for feature, colname in maybe_hide:
-            supported = self.rthread.radio.get_features()[feature]
-            print "%s supported: %s" % (colname, supported)
+            if feature.startswith("has_"):
+                supported = features[feature]
+                print "%s supported: %s" % (colname, supported)
+            elif feature.startswith("valid_"):
+                supported = len(features[feature]) != 0
+
             bi = self.view.get_column(self.col(colname))
             bi.set_visible(supported)
                 
