@@ -149,18 +149,31 @@ class arrayDataElement(DataElement):
             return str(self.__items)
 
     def __int__(self):
-        if isinstance(self.__items[0], bcdDataElement):
+        if isinstance(self.__items[0], bbcdDataElement):
             val = 0
             for i in self.__items:
                 tens, ones = i.get_value()
                 val = (val * 100) + (tens * 10) + ones
             return val
+        elif isinstance(self.__items[0], lbcdDataElement):
+            val = 0
+            for i in reversed(self.__items):
+                ones, tens = i.get_value()
+                val = (val * 100) + (tens * 10) + ones
+            return val
         else:
             raise ValueError("Cannot coerce this to int")
 
-    def __set_value_bcd(self, value):
+    def __set_value_bbcd(self, value):
         for i in reversed(self.__items):
             twodigits = value % 100
+            value /= 100
+            i.set_value(twodigits)
+
+    def __set_value_lbcd(self, value):
+        for i in self.__items:
+            twodigits = value % 100
+            print "Twodigits: %i" % twodigits
             value /= 100
             i.set_value(twodigits)
 
@@ -169,8 +182,10 @@ class arrayDataElement(DataElement):
             self.__items[i].set_value(value[i])
 
     def set_value(self, value):
-        if isinstance(self.__items[0], bcdDataElement):
-            self.__set_value_bcd(value)
+        if isinstance(self.__items[0], bbcdDataElement):
+            self.__set_value_bbcd(value)
+        elif isinstance(self.__items[0], lbcdDataElement):
+            self.__set_value_lbcd(value)
         elif isinstance(self.__items[0], charDataElement):
             self.__set_value_char(value)
         elif len(value) != len(self.__items):
@@ -368,7 +383,6 @@ class lbcdDataElement(bcdDataElement):
 
     def set_value(self, value):
         value = int("%02i" % value, 16)
-        value = ((value & 0x0F) << 4) | ((value & 0xF0) >> 4)
         self._data[self._offset] = value
 
 class bbcdDataElement(bcdDataElement):
