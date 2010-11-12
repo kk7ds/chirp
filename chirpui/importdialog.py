@@ -80,10 +80,14 @@ class ImportDialog(gtk.Dialog):
 
     def _render(self, _, rend, model, iter, colnum):
         newloc, imp = model.get(iter, self.col_nloc, self.col_import)
+        lo,hi = self.dst_radio.get_features().memory_bounds
 
+        rend.set_property("text", "%i" % newloc)
         if newloc in self.used_list and imp:
+            rend.set_property("foreground", "goldenrod")
+            rend.set_property("weight", pango.WEIGHT_BOLD)
+        elif newloc < lo or newloc > hi:
             rend.set_property("foreground", "red")
-            rend.set_property("text", "%i" % newloc)
             rend.set_property("weight", pango.WEIGHT_BOLD)
         else:
             rend.set_property("foreground", "black")
@@ -262,11 +266,13 @@ class ImportDialog(gtk.Dialog):
     def __select_all(self, button, state):
         iter = self.__store.get_iter_first()
         while iter:
+            _state, okay, = self.__store.get(iter,
+                                             self.col_import,
+                                             self.col_okay)
             if state is None:
-                _state, = self.__store.get(iter, self.col_import)
-                _state = not _state
+                _state = not _state and okay
             else:
-                _state = state
+                _state = state and okay
             self.__store.set(iter, self.col_import, _state)
             iter = self.__store.iter_next(iter)
 
@@ -281,7 +287,7 @@ class ImportDialog(gtk.Dialog):
             iter = self.__store.iter_next(iter)
 
     def __autonew(self, button):
-        pos = 0
+        pos = self.dst_radio.get_features().memory_bounds[0]
         iter = self.__store.get_iter_first()
         while iter:
             self.__store.set(iter, self.col_nloc, pos)
@@ -419,9 +425,15 @@ class ImportDialog(gtk.Dialog):
                 continue
 
             msgs = self.dst_radio.validate_memory(mem)
-            if msgs:
+            # We want to special-case an invalid memory that only failed
+            # because its target location was invalid
+            if len(msgs) == 1 and msgs[0].startswith("Location"):
+                msgs = []
+                msg = str(mem)
+            elif msgs:
                 msg = "Unsupported by destination radio: %s" % (",".join(msgs))
             else:
+                msgs = []
                 msg = str(mem)
 
             self.__store.append(row=(not bool(msgs),
