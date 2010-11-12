@@ -123,20 +123,15 @@ class RadioStream:
         return self._process_frames()
 
 def get_model_data(pipe, model="\x00\x00\x00\x00"):
-    if pipe.getBaudrate() != 9600:
-        print "Sending magic"
-        ic9x_ll.send_magic(pipe)
-        return "ic9x" # Fake model info for IC91/IC92
-    else:
-        send_clone_frame(pipe, 0xe0, model, raw=True)
+    send_clone_frame(pipe, 0xe0, model, raw=True)
+    
+    stream = RadioStream(pipe)
+    frames = stream.get_frames()
 
-        stream = RadioStream(pipe)
-        frames = stream.get_frames()
+    if len(frames) != 1:
+        raise errors.RadioError("Unexpected response from radio")
 
-        if len(frames) != 1:
-            raise errors.RadioError("Unexpected response from radio")
-
-        return frames[0].payload
+    return frames[0].payload
 
 def get_clone_resp(pipe, length=None):
     def exit_criteria(buf, length):
