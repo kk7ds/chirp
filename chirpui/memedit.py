@@ -312,9 +312,9 @@ time.  Are you sure you want to do this?"""
             self.rthread.submit(job)
 
 
-    def mh(self, _action):
+    def mh(self, _action, store, paths):
         action = _action.get_name()
-        store, iter = self.view.get_selection().get_selected()
+        iter = store.get_iter(paths[0])
         cur_pos, = store.get(iter, self.col("Loc"))
 
         if action == "insert_next":
@@ -324,22 +324,25 @@ time.  Are you sure you want to do this?"""
             self.insert_hard(store, iter, -1)
             self.emit("changed")
         elif action == "delete":
-            store.set(iter, self.col("_filled"), False)
-            job = common.RadioJob(None, "erase_memory", cur_pos)
-            job.set_desc("Erasing memory %i" % cur_pos)
-            self.rthread.submit(job)
-
-            def handler(mem):
-                if not isinstance(mem, Exception):
-                    if not mem.empty or self.show_empty:
-                        gobject.idle_add(self.set_memory, mem)
-
-            job = common.RadioJob(handler, "get_memory", cur_pos)
-            job.set_desc("Getting memory %s" % cur_pos)
-            self.rthread.submit(job)
-
-            if not self.show_empty:
-                store.remove(iter)
+            for path in paths:
+                iter = store.get_iter(path)
+                cur_pos, = store.get(iter, self.col("Loc"))
+                store.set(iter, self.col("_filled"), False)
+                job = common.RadioJob(None, "erase_memory", cur_pos)
+                job.set_desc("Erasing memory %i" % cur_pos)
+                self.rthread.submit(job)
+                
+                def handler(mem):
+                    if not isinstance(mem, Exception):
+                        if not mem.empty or self.show_empty:
+                            gobject.idle_add(self.set_memory, mem)
+                
+                job = common.RadioJob(handler, "get_memory", cur_pos)
+                job.set_desc("Getting memory %s" % cur_pos)
+                self.rthread.submit(job)
+                
+                if not self.show_empty:
+                    store.remove(iter)
 
             self.emit("changed")
 
@@ -359,15 +362,26 @@ time.  Are you sure you want to do this?"""
 </ui>
 """
 
+        (store, paths) = self.view.get_selection().get_selected_rows()
+        issingle = len(paths) == 1
+
         actions = [
-            ("insert_prev",None,"Insert row above",None,None, self.mh),
-            ("insert_next",None,"Insert row below",None,None, self.mh),
-            ("delete", None, "Delete", None, None, self.mh),
-            ("delete_s", None, "Delete (and shift up)", None, None, self.mh),
+            ("insert_prev", "Insert row above"),
+            ("insert_next", "Insert row below"),
+            ("delete", issingle and "Delete" or "Delete all"),
+            ("delete_s", "Delete (and shift up)"),
             ]
 
+        no_multiple = ["insert_prev", "insert_next", "delete_s"]
+
         ag = gtk.ActionGroup("Menu")
-        ag.add_actions(actions)
+
+        for name, label in actions:
+            a = gtk.Action(name, label, "", 0)
+            a.connect("activate", self.mh, store, paths)
+            if name in no_multiple:
+                a.set_sensitive(issingle)
+            ag.add_action(a)
 
         uim = gtk.UIManager()
         uim.insert_action_group(ag, 0)
@@ -377,10 +391,12 @@ time.  Are you sure you want to do this?"""
 
     def click_cb(self, view, event):
         if event.button != 3:
-            return
+            return False
 
         menu = self.make_context_menu()
         menu.popup(None, None, None, event.button, event.time)
+
+        return False
         
     def get_column_visible(self, col):
         column = self.view.get_column(col)
@@ -395,6 +411,7 @@ time.  Are you sure you want to do this?"""
         self.store = gtk.ListStore(*types)
 
         self.view = gtk.TreeView(self.store)
+        self.view.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.view.set_rules_hint(True)
 
         sw = gtk.ScrolledWindow()
