@@ -171,8 +171,11 @@ if __name__ == "__main__":
 	    sys.exit(0)
 
 	if not options.radio:
-	    print "Must specify a radio model"
-	    sys.exit(1)
+            if options.mmap:
+                rclass = directory.get_radio_by_image(options.mmap).__class__
+            else:
+                print "Must specify a radio model"
+                sys.exit(1)
 	else:
 	    rclass = RADIOS[options.radio]
 
