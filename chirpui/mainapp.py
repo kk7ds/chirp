@@ -437,6 +437,8 @@ class ChirpMain(gtk.Window):
 
         fields = []
         for colspec in eset.memedit.cols:
+            if colspec[0].startswith("_"):
+                continue
             label = colspec[0]
             visible = eset.memedit.get_column_visible(eset.memedit.col(label))
             widget = gtk.CheckButton(label)
