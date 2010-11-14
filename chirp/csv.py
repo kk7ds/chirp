@@ -103,6 +103,13 @@ class CSVRadio(chirp_common.CloneModeRadio):
 
         f.close()
 
+    # MMAP compatibility
+    def save_mmap(self, filename):
+        return self.save(filename)
+
+    def load_mmap(self, filename):
+        return self.load(filename)
+
     def get_memories(self, lo=0, hi=999):
         return [x for x in self.memories if x.number >= lo and x.number <= hi]
 
