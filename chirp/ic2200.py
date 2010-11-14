@@ -116,7 +116,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
-        rf.valid_modes = ["FM", "NFM", "AM", "NAM"]
+        rf.valid_modes = ["FM", "NFM", "AM", "NAM", "DV"]
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
@@ -240,7 +240,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if isinstance(mem, chirp_common.DVMemory):
             urcalls = self.get_urcall_list()
-            rptcalls = self.get_rptcall_list()
+            rptcalls = self.get_repeater_call_list()
             _mem.urcall = urcalls.index(mem.dv_urcall.ljust(8))
             _mem.r1call = rptcalls.index(mem.dv_rpt1call.ljust(8))
             _mem.r2call = rptcalls.index(mem.dv_rpt2call.ljust(8))
