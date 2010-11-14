@@ -20,7 +20,7 @@ from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp, icf, ic9x_icf
 from chirp import icq7, icomciv
 from chirp import vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71
-from chirp import xml, chirp_common, convert_icf
+from chirp import xml, chirp_common, convert_icf, csv
 
 DRV_TO_RADIO = {
 
@@ -68,8 +68,15 @@ def get_driver(radio):
         raise Exception("Unknown radio type `%s'" % radio)
 
 def get_radio_by_image(image_file):
+    if image_file.lower().endswith(".chirp"):
+        return xml.XMLRadio(image_file)
+
+    if image_file.lower().endswith(".csv"):
+        return csv.CSVRadio(image_file)
+
     if icf.is_9x_icf(image_file):
         return ic9x_icf.IC9xICFRadio(image_file)
+
     if icf.is_icf_file(image_file):
         tempf = tempfile.mktemp()
         convert_icf.icf_to_image(image_file, tempf)

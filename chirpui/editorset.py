@@ -23,15 +23,6 @@ from chirp import chirp_common, directory, csv, xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 from chirpui import inputdialog
 
-def radio_class_from_file(filename):
-    if filename.endswith(".chirp"):
-        return xml.XMLRadio(filename)
-
-    if filename.endswith(".csv"):
-        return csv.CSVRadio(filename)
-
-    return directory.get_radio_by_image(filename)
-
 class EditorSet(gtk.VBox):
     __gsignals__ = {
         "want-close" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
@@ -47,7 +38,7 @@ class EditorSet(gtk.VBox):
 
         if isinstance(source, str):
             self.filename = source
-            self.radio = radio_class_from_file(self.filename)
+            self.radio = directory.get_radio_by_image(self.filename)
         elif isinstance(source, chirp_common.Radio):
             self.radio = source
             self.filename = tempname or source.VARIANT
@@ -217,7 +208,7 @@ class EditorSet(gtk.VBox):
 
     def do_import(self, filen):
         try:
-            src_radio = radio_class_from_file(filen)
+            src_radio = directory.get_radio_by_image(filen)
             if src_radio.get_features().has_sub_devices:
                 src_radio = self.choose_sub_device(src_radio)
         except Exception, e:
