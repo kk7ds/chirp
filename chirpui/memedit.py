@@ -28,7 +28,7 @@ from gobject import TYPE_INT, \
     TYPE_BOOLEAN
 import gobject
 
-from chirpui import common, shiftdialog
+from chirpui import common, shiftdialog, miscwidgets
 from chirp import chirp_common, errors
 
 def handle_toggle(_, path, store, col):
@@ -830,11 +830,25 @@ time.  Are you sure you want to do this?"""
 
         iter = store.get_iter(paths[0])
 
+        always = False
+
         for i in text.strip().split("\r\n"):
             loc, filled = store.get(iter, self.col("Loc"), self.col("_filled"))
-            if filled:
-                r = common.ask_yesno_question("Overwrite location %i?" % loc)
-                if not r:
+            if filled and not always:
+                d = miscwidgets.YesNoDialog(title="Overwrite?",
+                                            buttons=(gtk.STOCK_YES, 1,
+                                                     gtk.STOCK_NO, 2,
+                                                     gtk.STOCK_CANCEL, 3,
+                                                     "All", 4))
+                d.set_text("Overwrite location %i?" % loc)
+                r = d.run()
+                d.destroy()
+                if r == 4:
+                    always = True
+                elif r == 3:
+                    break
+                elif r == 2:
+                    iter = store.iter_next(iter)
                     continue
 
             if not i:
@@ -846,6 +860,7 @@ time.  Are you sure you want to do this?"""
                 except Exception, e:
                     print "Failed to convert pasted line: %s" % i
                     common.log_exception()
+                    iter = store.iter_next(iter)
                     continue
 
             mem.number = loc
