@@ -457,6 +457,18 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.rthread.flush()
 
+    def do_copy(self, cut):
+        eset = self.get_current_editorset()
+        eset.memedit.copy_selection(cut)
+
+    def do_paste(self):
+        eset = self.get_current_editorset()
+        eset.memedit.paste_selection()
+
+    def do_delete(self):
+        eset = self.get_current_editorset()
+        eset.memedit.copy_selection(True)
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -498,6 +510,14 @@ class ChirpMain(gtk.Window):
             self.do_columns()
         elif action == "cancelq":
             self.do_clearq()
+        elif action == "cut":
+            self.do_copy(cut=True)
+        elif action == "copy":
+            self.do_copy(cut=False)
+        elif action == "paste":
+            self.do_paste()
+        elif action == "delete":
+            self.do_delete()
         else:
             return
 
@@ -515,6 +535,12 @@ class ChirpMain(gtk.Window):
       <menuitem action="close"/>
       <menuitem action="converticf"/>
       <menuitem action="quit"/>
+    </menu>
+    <menu action="edit">
+      <menuitem action="cut"/>
+      <menuitem action="copy"/>
+      <menuitem action="paste"/>
+      <menuitem action="delete"/>
     </menu>
     <menu action="view">
       <menuitem action="columns"/>
@@ -547,6 +573,11 @@ class ChirpMain(gtk.Window):
             ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),
             ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
             ('quit', gtk.STOCK_QUIT, None, None, None, self.mh),
+            ('edit', None, "_Edit", None, None, self.mh),
+            ('cut', None, "_Cut", "<Ctrl>x", None, self.mh),
+            ('copy', None, "_Copy", "<Ctrl>c", None, self.mh),
+            ('paste', None, "_Paste", "<Ctrl>v", None, self.mh),
+            ('delete', None, "_Delete", "Delete", None, self.mh),
             ('view', None, "_View", None, None, self.mh),
             ('columns', None, 'Columns', None, None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),

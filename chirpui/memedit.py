@@ -202,21 +202,6 @@ class MemoryEditor(common.Editor):
             # have altered the duplex.  That needs to be fixed.
             return
 
-
-        def cb(result):
-            if isinstance(result, Exception):
-                # FIXME: This can't be in the thread
-                dlg = ValueErrorDialog(result)
-                dlg.run()
-                dlg.destroy()
-                self.prefill()
-            elif self.need_refresh:
-                self.prefill()
-                self.need_refresh = False
-
-            # pylint: disable-msg=E1101
-            self.emit('changed')
-
         mem = self._get_memory(iter)
 
         msgs = self.rthread.radio.validate_memory(mem)
@@ -226,7 +211,7 @@ class MemoryEditor(common.Editor):
             self.prefill()
             return
 
-        job = common.RadioJob(cb, "set_memory", mem)
+        job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
 
@@ -349,6 +334,10 @@ time.  Are you sure you want to do this?"""
         elif action == "delete_s":
             self.insert_hard(store, iter, 0)
             self.emit("changed")
+        elif action in ["cut", "copy"]:
+            self.copy_selection(action=="cut")
+        elif action == "paste":
+            self.paste_selection()
 
     def make_context_menu(self):
         menu_xml = """
@@ -358,6 +347,10 @@ time.  Are you sure you want to do this?"""
     <menuitem action="insert_next"/>
     <menuitem action="delete"/>
     <menuitem action="delete_s"/>
+    <separator/>
+    <menuitem action="cut"/>
+    <menuitem action="copy"/>
+    <menuitem action="paste"/>
   </popup>
 </ui>
 """
@@ -370,9 +363,12 @@ time.  Are you sure you want to do this?"""
             ("insert_next", "Insert row below"),
             ("delete", issingle and "Delete" or "Delete all"),
             ("delete_s", "Delete (and shift up)"),
+            ("cut", "Cut"),
+            ("copy", "Copy"),
+            ("paste", "Paste"),
             ]
 
-        no_multiple = ["insert_prev", "insert_next", "delete_s"]
+        no_multiple = ["insert_prev", "insert_next", "delete_s", "paste"]
 
         ag = gtk.ActionGroup("Menu")
 
@@ -598,6 +594,7 @@ time.  Are you sure you want to do this?"""
         mem.skip = vals[self.col("Skip")]
         mem.bank = bidx
         mem.bank_index = bank_index
+        mem.empty = not vals[self.col("_filled")]
 
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
@@ -779,6 +776,89 @@ time.  Are you sure you want to do this?"""
             job = common.RadioJob(None, "get_memory", i)
             job.set_desc("Getting memory %i" % i)
             self.rthread.submit(job, 10)
+
+    def _set_memory_cb(self, result):
+        if isinstance(result, Exception):
+            # FIXME: This can't be in the thread
+            dlg = ValueErrorDialog(result)
+            dlg.run()
+            dlg.destroy()
+            self.prefill()
+        elif self.need_refresh:
+            self.prefill()
+            self.need_refresh = False
+
+        self.emit('changed')
+
+    def copy_selection(self, cut=False):
+        result = ""
+        (store, paths) = self.view.get_selection().get_selected_rows()
+
+        maybe_cut = []
+
+        for path in paths:
+            iter = store.get_iter(path)
+            mem = self._get_memory(iter)
+            if mem.empty:
+                result += "\r\n"
+            else:
+                result += mem.to_csv().strip() + "\r\n"
+            maybe_cut.append((iter, mem))
+        
+        if cut:
+            for iter, mem in maybe_cut:
+                mem.empty = True
+                job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
+                job.set_desc("Cutting memory %i" % mem.number)
+                self.rthread.submit(job)
+
+                self._set_memory(iter, mem)
+
+        clipboard = gtk.Clipboard(selection="PRIMARY")
+        clipboard.set_text(result)
+
+        return result        
+
+    def _paste_selection(self, clipboard, text, data):
+        if not text:
+            return
+
+        (store, paths) = self.view.get_selection().get_selected_rows()
+        if len(paths) > 1:
+            common.show_error("To paste, select only the starting location")
+            return
+
+        iter = store.get_iter(paths[0])
+
+        for i in text.strip().split("\r\n"):
+            loc, filled = store.get(iter, self.col("Loc"), self.col("_filled"))
+            if filled:
+                r = common.ask_yesno_question("Overwrite location %i?" % loc)
+                if not r:
+                    continue
+
+            if not i:
+                mem = chirp_common.Memory()
+                mem.empty = True
+            else:
+                try:
+                    mem = chirp_common.Memory.from_csv(i)
+                except Exception, e:
+                    print "Failed to convert pasted line: %s" % i
+                    common.log_exception()
+                    continue
+
+            mem.number = loc
+            self._set_memory(iter, mem)
+            iter = store.iter_next(iter)
+
+            job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
+            job.set_desc("Writing memory %i" % mem.number)
+            self.rthread.submit(job)
+
+    def paste_selection(self):
+        clipboard = gtk.Clipboard(selection="PRIMARY")
+        clipboard.request_text(self._paste_selection)
 
 class DstarMemoryEditor(MemoryEditor):
     def render(self, _, rend, model, iter, colnum):
