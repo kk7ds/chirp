@@ -81,7 +81,7 @@ class ChirpMain(gtk.Window):
         self.sb_radio.push(0, msg)
 
     def do_new(self):
-        eset = editorset.EditorSet("Untitled.chirp", self)
+        eset = editorset.EditorSet("Untitled.csv", self)
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)
         eset.prime()
