@@ -270,7 +270,6 @@ class EditorSet(gtk.VBox):
     def prime(self):
         mem = chirp_common.Memory()
         mem.freq = 146.1
-        mem.name = "Empty"
 
         def cb(*args):
             gobject.idle_add(self.memedit.prefill)
