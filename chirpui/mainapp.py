@@ -490,14 +490,6 @@ class ChirpMain(gtk.Window):
             self.do_close()
         elif action == "converticf":
             self.do_converticf()
-        elif action == "open9xA":
-            self.do_open_live(ic9x.IC9xRadioA, "ic9x")
-        elif action == "open9xB":
-            self.do_open_live(ic9x.IC9xRadioB, "ic9x")
-        elif action == "openkenwlive":
-            self.do_open_live(detect.detect_kenwoodlive_radio, "thd7")
-        elif action == "openrpxkv":
-            self.do_open_live(idrp.IDRPx000V, "idrpx000v")
         elif action == "import":
             self.do_import()
         elif action == "export_csv":
