@@ -392,7 +392,7 @@ time.  Are you sure you want to do this?"""
         menu = self.make_context_menu()
         menu.popup(None, None, None, event.button, event.time)
 
-        return False
+        return True
         
     def get_column_visible(self, col):
         column = self.view.get_column(col)
