@@ -56,7 +56,7 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
-        ("_filled"   , TYPE_BOOLEAN,gtk.CellRendererText,  ),
+        ("_filled"   , TYPE_BOOLEAN,gtk.CellRendererToggle,  ),
         ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
         ("_extd"     , TYPE_STRING, gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
