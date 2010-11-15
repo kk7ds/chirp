@@ -46,9 +46,10 @@ struct {
 #seekto 0x4988;
 struct {
   char name[6];
-  u8 used:1,
+  u8 enabled:1,
      unknown1:7;
-  u8 unknown2;
+  u8 used:1,
+     unknown2:7;
 } names[1000];
 
 #seekto 0x7648;
@@ -108,7 +109,7 @@ def download(radio):
         send(radio.pipe, ACK)
         if radio.status_fn:
             status = chirp_common.Status()
-            status.max = radio._block_lengths[1]
+            status.max = radio._memsize
             status.cur = i+len(chunk)
             status.msg = "Cloning from radio"
             radio.status_fn(status)
@@ -123,8 +124,8 @@ def upload(radio):
     for block in radio._block_lengths:
         for i in range(0, block, 64):
             length = min(64, block)
-            print "i=%i length=%i range: %i-%i" % (i, length,
-                                                   cur, cur+length)
+            #print "i=%i length=%i range: %i-%i" % (i, length,
+            #                                       cur, cur+length)
             send(radio.pipe, radio._mmap[cur:cur+length])
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
@@ -251,8 +252,10 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
             name = [chr(CHARSET.index(x)) for x in mem.name.ljust(6)]
             _nam.name = "".join(name)
             _nam.used = 1
+            _nam.enabled = 1
         else:
             _nam.used = 0
+            _nam.enabled = 0
 
         flgidx = (mem.number - 1) % 4
         _flg["skip%i" % flgidx] = SKIPS.index(mem.skip)
