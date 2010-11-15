@@ -211,6 +211,8 @@ class MemoryEditor(common.Editor):
             self.prefill()
             return
 
+        mem.empty = False
+
         job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
