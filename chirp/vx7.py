@@ -163,7 +163,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def _wipe_memory(self, mem):
-        mem.set_raw("\x00" * mem.size())
+        mem.set_raw("\x00" * (mem.size() / 8))
         mem.unknown1 = 0x05
         mem.ones = 0x03
 
