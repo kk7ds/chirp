@@ -78,20 +78,6 @@ class IC9xRadio(icf.IcomLiveRadio):
         global LOCK
         self._lock = LOCK
 
-    def get_features(self):
-        rf = chirp_common.RadioFeatures()
-        rf.has_bank_index = True
-        rf.requires_call_lists = False
-        rf.has_sub_devices = True
-        rf.memory_bounds = (0, self._upper)
-        rf.valid_modes = ["FM", "NFM", "WFM", "AM", "DV"]
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
-        rf.valid_duplexes = ["", "-", "+"]
-        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
-        rf.valid_bands = [(0.0, 999.0)]
-        rf.valid_skips = ["", "S", "P"]
-        return rf
-
     def _maybe_send_magic(self):
         if (time.time() - self.__last) > 1:
             print "Sending magic"
@@ -235,10 +221,27 @@ class IC9xRadio(icf.IcomLiveRadio):
     def get_sub_devices(self):
         return [IC9xRadioA(self.pipe), IC9xRadioB(self.pipe)]
 
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_sub_devices = True
+        return rf
+
 class IC9xRadioA(IC9xRadio):
     VARIANT = "Band A"
     vfo = 1
     _upper = 849
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank_index = True
+        rf.memory_bounds = (0, self._upper)
+        rf.valid_modes = ["FM", "WFM", "AM"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_bands = [(0.0, 999.0)]
+        rf.valid_skips = ["", "S", "P"]
+        return rf
 
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
     VARIANT = "Band B"
@@ -248,6 +251,19 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_bank_index = True
+        rf.requires_call_lists = False
+        rf.memory_bounds = (0, self._upper)
+        rf.valid_modes = ["FM", "NFM", "AM", "DV"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_bands = [(118.0, 174.0), (350.0, 470.0)]
+        rf.valid_skips = ["", "S", "P"]
+        return rf
 
     def __init__(self, *args, **kwargs):
         IC9xRadio.__init__(self, *args, **kwargs)
