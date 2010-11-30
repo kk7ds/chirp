@@ -501,14 +501,23 @@ def print_frames(frames):
         count += 1
 
 def _send_magic_4800(pipe):
-    magic = ("\xFE" * 25) + "\x01\x80\x19"
-    r = ic9x_send(pipe, magic)
-    return r and r[0].get_raw() != magic
+    cmd = "\x01\x80\x19"
+    magic = ("\xFE" * 25) + cmd
+    for i in [0,1]:
+        r = ic9x_send(pipe, magic)
+        if r:
+            return r[0].get_raw()[0] == "\x80"
+    return r and r[0].get_raw()[:3] == rsp
 
 def _send_magic_38400(pipe):
-    magic = ("\xFE" * 400) + "\x01\x80\x19"
-    r = ic9x_send(pipe, magic)
-    return r and r[0].get_raw() != magic
+    cmd = "\x01\x80\x19"
+    rsp = "\x80\x01\x19"
+    magic = ("\xFE" * 400) + cmd
+    for i in [0,1]:
+        r = ic9x_send(pipe, magic)
+        if r:
+            return r[0].get_raw()[0] == "\x80"
+    return False
 
 def send_magic(pipe):
     if pipe.getBaudrate() == 38400:
@@ -518,9 +527,9 @@ def send_magic(pipe):
         print "Switching from 38400 to 4800"
         pipe.setBaudrate(4800)
         r = _send_magic_4800(pipe)
+        pipe.setBaudrate(38400)
         if r:
             return
-        pipe.setBaudrate(38400)
         raise errors.RadioError("Radio not responding")
     elif pipe.getBaudrate() == 4800:
         r = _send_magic_4800(pipe)
