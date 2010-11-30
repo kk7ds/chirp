@@ -115,14 +115,18 @@ class IC9xRadio(icf.IcomLiveRadio):
                 return self.__memcache[number]
 
         self._lock.acquire()
-        self._maybe_send_magic()
         try:
+            self._maybe_send_magic()
             mem = ic9x_ll.get_memory(self.pipe, self.vfo, number)
         except errors.InvalidMemoryLocation:
             mem = chirp_common.Memory()
             mem.number = number
             if number < self._upper:
                 mem.empty = True
+        except:
+            self._lock.release()
+            raise
+
         self._lock.release()
 
         if number > self._upper or number < 0:
@@ -136,8 +140,13 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def get_raw_memory(self, number):
         self._lock.acquire()
-        ic9x_ll.send_magic(self.pipe)
-        mframe = ic9x_ll.get_memory_frame(self.pipe, self.vfo, number)
+        try:
+            ic9x_ll.send_magic(self.pipe)
+            mframe = ic9x_ll.get_memory_frame(self.pipe, self.vfo, number)
+        except:
+            self._lock.release()
+            raise
+
         self._lock.release()
 
         return memmap.MemoryMap(mframe.get_payload())
@@ -166,10 +175,15 @@ class IC9xRadio(icf.IcomLiveRadio):
     def set_memory(self, memory):
         self._lock.acquire()
         self._maybe_send_magic()
-        if memory.empty:
-            ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
-        else:
-            ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+        try:
+           if memory.empty:
+               ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
+           else:
+               ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+        except:
+            self._lock.release()
+            raise
+
         self._lock.release()
 
         self.__memcache[memory.number] = memory
@@ -179,8 +193,13 @@ class IC9xRadio(icf.IcomLiveRadio):
             return [self.__bankcache[k] for k in sorted(self.__bankcache.keys())]
 
         self._lock.acquire()
-        self._maybe_send_magic()
-        banks = ic9x_ll.get_banks(self.pipe, self.vfo)
+        try:
+            self._maybe_send_magic()
+            banks = ic9x_ll.get_banks(self.pipe, self.vfo)
+        except:
+            self._lock.release()
+            raise
+
         self._lock.release()
 
         i = 0
@@ -211,8 +230,13 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         if need_update:
             self._lock.acquire()
-            self._maybe_send_magic()
-            ic9x_ll.set_banks(self.pipe, self.vfo, banks)
+            try:
+                self._maybe_send_magic()
+                ic9x_ll.set_banks(self.pipe, self.vfo, banks)
+            except:
+                self._lock.release()
+                raise
+
             self._lock.release()
 
     def filter_name(self, name):
