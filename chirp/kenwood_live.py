@@ -26,6 +26,8 @@ MODES = { 0 : "FM", 1 : "AM" }
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.append(100.0)
 
+THF6_MODES = ["FM", "WFM", "AM", "LSB", "USB", "CW"]
+
 def rev(hash, value):
     reverse = {}
     for k, v in hash.items():
@@ -97,14 +99,26 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
 
         command(self.pipe, "AI", "0")
 
+    def _cmd_get_memory(self, number):
+        return "MR", "%i,0,%03i" % (self._vfo, number)
+
+    def _cmd_get_memory_name(self, number):
+        return "MNA", "%i,%03i" % (self._vfo, number)
+
+    def _cmd_set_memory(self, number):
+        return "MW", "%i,0,%03i" % (self._vfo, number)
+
+    def _cmd_set_memory_name(self, number, name):
+        return "MNA", "%i,%03i,%s" % (self._vfo, number, name)
+
     def get_memory(self, number):
-        if number < 1 or number > self._upper:
+        if number < 0 or number > self._upper:
             raise errors.InvalidMemoryLocation( \
-                "Number must be between 1 and %i" % self._upper)
+                "Number must be between 0 and %i" % self._upper)
         if self.__memcache.has_key(number):
             return self.__memcache[number]
 
-        result = command(self.pipe, "MR", "%i,0,%03i" % (self._vfo, number))
+        result = command(self.pipe, *self._cmd_get_memory(number))
         if result == "N":
             mem = chirp_common.Memory()
             mem.number = number
@@ -120,7 +134,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         mem = self._parse_mem_spec(spec)
         self.__memcache[mem.number] = mem
 
-        result = command(self.pipe, "MNA", "%i,%03i" % (self._vfo, number))
+        result = command(self.pipe, "MNA", *self._cmd_get_memory_name(number))
         if " " in result:
             value = result.split(" ")[1]
             zero, loc, mem.name = value.split(",")
@@ -134,16 +148,15 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         pass
 
     def set_memory(self, memory):
-        if memory.number < 1 or memory.number > self._upper:
+        if memory.number < 0 or memory.number > self._upper:
             raise errors.InvalidMemoryLocation( \
-                "Number must be between 1 and %i" % self._upper)
+                "Number must be between 0 and %i" % self._upper)
 
         spec = self._make_mem_spec(memory)
         r1 = command(self.pipe, "MW", ",".join(spec))
         if not iserr(r1):
-            r2 = command(self.pipe, "MNA", "%i,%03i,%s" % (self._vfo,
-                                                           memory.number,
-                                                           memory.name))
+            r2 = command(self.pipe, *self._cmd_set_memory_name(memory.number,
+                                                               memory.name))
             if not iserr(r2):
                 self.__memcache[memory.number] = memory
             else:
@@ -155,9 +168,10 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         return chirp_common.name8(name)
 
     def erase_memory(self, number):
-        r = command(self.pipe, "MW", "%i,0,%03i" % (self._vfo, number))
+        r = command(self.pipe, *self._cmd_set_memory(number))
         if iserr(r):
             raise errors.RadioError("Radio refused delete of %i" % number)
+        del self.__memcache[number]
 
 class THD7Radio(KenwoodLiveRadio):
     MODEL = "TH-D7(a)(g)"
@@ -393,3 +407,75 @@ if __name__ == "__main__":
     print get_id(s)
     print get_memory(s, int(sys.argv[2]))
 
+class THF6ARadio(KenwoodLiveRadio):
+    MODEL = "TH-F6A"
+
+    _upper = 399
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.valid_modes = list(THF6_MODES)
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_bands = [(0.1, 1300.0)]
+        rf.valid_skips = ["", "S"]
+        rf.memory_bounds = (0, self._upper)
+        return rf
+
+    def _cmd_get_memory(self, number):
+        return "MR", "0,%03i" % number
+
+    def _cmd_get_memory_name(self, number):
+        return "MNA", "%i,%03i" % (self._vfo, number)
+
+    def _cmd_set_memory(self, number):
+        return "MW", "%i,%03i" % (self._vfo, number)
+
+    def _cmd_set_memory_name(self, number, name):
+        return "MNA", "%03i,%s" % (number, name)
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+
+        mem.number = int(spec[1])
+        mem.freq = int(spec[2]) / 1000000.0
+        mem.tuning_step = STEPS[int(spec[3])]
+        mem.duplex = DUPLEX[int(spec[4])]
+        mem.tmode = get_tmode(spec[6], spec[7], spec[8])
+        mem.rtone = chirp_common.TONES[int(spec[9])]
+        mem.ctone = chirp_common.TONES[int(spec[10])]
+        if spec[11] and spec[11].isdigit():
+            mem.dtcs = chirp_common.DTCS_CODES[int(spec[11])]
+        else:
+            print "Unknown or invalid DCS: %s" % spec[11]
+        if spec[11]:
+            mem.offset = int(spec[12]) / 1000000.0
+        else:
+            mem.offset = 0.0
+        mem.mode = THF6_MODES[int(spec[13])]
+        if spec[14] == "1":
+            mem.skip = "S"
+
+        return mem
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "0",
+            "%03i" % mem.number,
+            "%011i" % (mem.freq * 1000000),
+            "%i" % STEPS.index(mem.tuning_step),
+            "%i" % rev(DUPLEX, mem.duplex),
+            "0",
+            "%i" % (mem.tmode == "Tone"),
+            "%i" % (mem.tmode == "TSQL"),
+            "%i" % (mem.tmode == "DTCS"),
+            "%02i" % (chirp_common.TONES.index(mem.rtone)),
+            "%02i" % (chirp_common.TONES.index(mem.ctone)),
+            "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
+            "%09i" % (mem.offset * 1000000),
+            "%i" % (THF6_MODES.index(mem.mode)),
+            "%i" % (mem.skip == "S"))
+
+        return spec
