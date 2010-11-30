@@ -128,6 +128,9 @@ class Memory:
 
     immutable = []
 
+    def __repr__(self):
+        return "Memory[%i]" % self.number
+
     def dupe(self):
         m = self.__class__()
         for k, v in self.__dict__.items():
