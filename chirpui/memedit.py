@@ -269,11 +269,12 @@ class MemoryEditor(common.Editor):
         self.rthread.submit(job)
 
     def insert_hard(self, store, _iter, delta):
-        txt = """This operation requires moving all subsequent channels
+	if isinstance(self.rthread.radio, chirp_common.LiveRadio):
+            txt = """This operation requires moving all subsequent channels
 by one spot until an empty location is reached.  This can take a LONG
 time.  Are you sure you want to do this?"""
-        if not common.ask_yesno_question(txt):
-            return
+            if not common.ask_yesno_question(txt):
+                return
 
         if delta <= 0:
             iter = _iter
