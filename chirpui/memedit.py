@@ -718,11 +718,8 @@ time.  Are you sure you want to do this?"""
         (min, max) = features.memory_bounds
 
         self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-        if not features["has_dtcs"]:
-            self.choices["Tone Mode"] = list(self.choices["Tone Mode"])
-            self.choices["Tone Mode"].remove("DTCS")
-
         self.choices["Mode"] = features["valid_modes"]
+        self.choices["Tone Mode"] = features["valid_tmodes"]
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc("Getting bank list")
