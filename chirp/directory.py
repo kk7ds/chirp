@@ -16,8 +16,8 @@
 import os
 import tempfile
 
-from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, idrp, icf, ic9x_icf
-from chirp import icq7, icomciv
+from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, ic2100
+from chirp import icq7, icomciv, idrp, icf, ic9x_icf
 from chirp import vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71
 from chirp import xml, chirp_common, convert_icf, csv
@@ -27,6 +27,7 @@ DRV_TO_RADIO = {
     # Icom
     "ic2820"         : ic2820.IC2820Radio,
     "ic2200"         : ic2200.IC2200Radio,
+    "ic2100"         : ic2100.IC2100Radio,
     "ic9x"           : ic9x.IC9xRadio,
     "ic9x:A"         : ic9x.IC9xRadioA,
     "ic9x:B"         : ic9x.IC9xRadioB,
