@@ -168,9 +168,11 @@ class RadioThread(threading.Thread, gobject.GObject):
             return None
 
     def run(self):
+        last_job_desc = "idle"
         while self.__enabled:
             DBG("Waiting for a job")
-            self.status("Idle")
+            if last_job_desc:
+                self.status("Completed " + last_job_desc + " (idle)")
             self.__counter.acquire()
 
             self._qlock()
@@ -185,6 +187,7 @@ class RadioThread(threading.Thread, gobject.GObject):
                 self.lock()
                 self.status(job.desc)
                 job.execute(self.radio)
+                last_job_desc = job.desc
                 self.unlock()
    
         print "RadioThread exiting"
