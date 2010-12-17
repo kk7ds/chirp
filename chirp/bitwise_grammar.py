@@ -18,7 +18,7 @@
 import re
 from chirp.pyPEG import keyword, parseLine
 
-TYPES = ["u8", "u16", "ul16", "u24", "u32", "char", "lbcd", "bbcd"]
+TYPES = ["u8", "u16", "ul16", "u24", "u32", "ul32", "char", "lbcd", "bbcd"]
 DIRECTIVES = ["seekto", "seek", "printoffset"]
 
 def string():

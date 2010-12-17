@@ -354,12 +354,16 @@ class u24DataElement(intDataElement):
 
 class u32DataElement(intDataElement):
     _size = 4
+    _endianess = ">"
 
     def _get_value(self, data):
-        return struct.unpack(">I", data)[0]
+        return struct.unpack(self._endianess + "I", data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(">I", value)
+        self._data[self._offset] = struct.pack(self._endianess + "I", value)
+
+class ul32DataElement(u32DataElement):
+    _endianess = "<"
 
 class charDataElement(DataElement):
     _size = 1
@@ -500,6 +504,7 @@ class Processor:
         "ul16" : ul16DataElement,
         "u24"  : u24DataElement,
         "u32"  : u32DataElement,
+        "ul32" : ul32DataElement,
         "char" : charDataElement,
         "lbcd" : lbcdDataElement,
         "bbcd" : bbcdDataElement,
