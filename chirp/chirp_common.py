@@ -54,6 +54,13 @@ DTCS_CODES = [
     731, 732, 734, 743, 754,
      ]
 
+CROSS_MODES = [
+    "DCS->Off",
+    "Tone->DCS",
+    "DCS->CTCSS",
+    "Tone->CTCSS",
+]
+
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY"]
 
 STD_2M_OFFSETS = [
@@ -81,6 +88,7 @@ TONE_MODES = [
     "DTCS",
     "DTCS-R",
     "TSQL-R",
+    "Cross",
 ]
 
 TUNING_STEPS = [
@@ -99,6 +107,7 @@ class Memory:
     ctone = 88.5
     dtcs = 23
     tmode = ""
+    cross_mode = "DCS->Off"
     dtcs_polarity = "NN"
     skip = ""
 
@@ -118,6 +127,7 @@ class Memory:
         "dtcs"          : DTCS_CODES,
         "tmode"         : TONE_MODES,
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
+		"cross_mode"    : CROSS_MODES,
         "mode"          : MODES,
         "duplex"        : ["", "+", "-", "split"],
         "skip"          : SKIP_VALUES,
@@ -435,6 +445,7 @@ class RadioFeatures:
         "has_tuning_step"     : BOOLEAN,
         "has_name"            : BOOLEAN,
         "has_ctone"           : BOOLEAN,
+        "has_cross"           : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
@@ -483,6 +494,7 @@ class RadioFeatures:
         self.has_bank = True
         self.has_tuning_step = True
         self.has_ctone = True
+        self.has_cross = False
 
         self.valid_modes = list(MODES)
         self.valid_tmodes = []

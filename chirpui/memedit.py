@@ -66,6 +66,7 @@ class MemoryEditor(common.Editor):
         ("ToneSql"   , TYPE_FLOAT,  gtk.CellRendererCombo, ),
         ("DTCS Code" , TYPE_INT,    gtk.CellRendererCombo, ),
         ("DTCS Pol"  , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Cross Mode", TYPE_STRING, gtk.CellRendererCombo, ),
         ("Duplex"    , TYPE_STRING, gtk.CellRendererCombo, ),
         ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
         ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
@@ -82,6 +83,7 @@ class MemoryEditor(common.Editor):
         "ToneSql"   : 88.5,
         "DTCS Code" : 23,
         "DTCS Pol"  : "NN",
+        "Cross Mode": "DCS->Off",
         "Duplex"    : "",
         "Offset"    : 0.0,
         "Mode"      : "FM",
@@ -101,7 +103,7 @@ class MemoryEditor(common.Editor):
         "Duplex" : ["", "-", "+", "split"],
         "Tune Step" : chirp_common.TUNING_STEPS,
         "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
-        "Skip" : chirp_common.SKIP_VALUES,
+        "Cross Mode" : chirp_common.CROSS_MODES,
         }
     
     def ed_name(self, _, __, new, ___):
@@ -515,6 +517,7 @@ time.  Are you sure you want to do this?"""
                        self.col("ToneSql"), memory.ctone,
                        self.col("DTCS Code"), memory.dtcs,
                        self.col("DTCS Pol"), memory.dtcs_polarity,
+                       self.col("Cross Mode"), memory.cross_mode,
                        self.col("Duplex"), memory.duplex,
                        self.col("Offset"), memory.offset,
                        self.col("Mode"), memory.mode,
@@ -589,6 +592,7 @@ time.  Are you sure you want to do this?"""
         mem.ctone = vals[self.col("ToneSql")]
         mem.dtcs = vals[self.col("DTCS Code")]
         mem.tmode = vals[self.col("Tone Mode")]
+        mem.cross_mode = vals[self.col("Cross Mode")]
         mem.dtcs_polarity = vals[self.col("DTCS Pol")]
         mem.duplex = vals[self.col("Duplex")]
         mem.offset = vals[self.col("Offset")]
@@ -721,6 +725,7 @@ time.  Are you sure you want to do this?"""
         self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices["Mode"] = features["valid_modes"]
         self.choices["Tone Mode"] = features["valid_tmodes"]
+        self.choices["Skip"] = features["valid_skips"]
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc("Getting bank list")
@@ -751,6 +756,7 @@ time.  Are you sure you want to do this?"""
             ("has_tuning_step", "Tune Step"),
             ("has_name", "Name"),
             ("has_ctone", "ToneSql"),
+            ("has_cross", "Cross Mode"),
             ("valid_tmodes", "Tone Mode"),
             ("valid_tmodes", "Tone"),
             ("valid_duplexes", "Duplex"),

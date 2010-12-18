@@ -16,7 +16,7 @@
 import serial
 
 from chirp import chirp_common, errors, idrp, util, icf, directory, ic9x_ll
-from chirp import kenwood_live, tmv71, tmv71_ll, icomciv
+from chirp import kenwood_live, tmv71, tmv71_ll, icomciv, thd72
 
 def _icom_model_data_to_rclass(md):
     for rtype, rclass in directory.DRV_TO_RADIO.items():
@@ -99,10 +99,11 @@ def detect_kenwoodlive_radio(port):
     s.close()
 
     if not r_id:
-        raise errors.RadioError("Unale to probe radio model")
+        raise errors.RadioError("Unable to probe radio model")
 
     models = {
         "TH-D7"   : kenwood_live.THD7Radio,
+        "TH-D72"  : thd72.THD72Radio,
         "TH-D7G"   : kenwood_live.THD7Radio,
         "TM-D700" : kenwood_live.TMD700Radio,
         "TM-V7"   : kenwood_live.TMV7Radio,
