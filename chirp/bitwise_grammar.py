@@ -28,7 +28,7 @@ def symbol():
     return re.compile(r"\w+")
 
 def count():
-    return re.compile(r"([1-9][0-9]*|0x[0-9A-F]+)")
+    return re.compile(r"([1-9][0-9]*|0x[0-9a-fA-F]+)")
 
 def bitdef():
     return symbol, ":", count, -1
