@@ -46,6 +46,14 @@ class CSVRadio(chirp_common.CloneModeRadio):
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
         rf.memory_bounds = (0, 1000)
+
+        rf.valid_modes = list(chirp_common.MODES)
+        rf.valid_tmodes = list(chirp_common.TONE_MODES)
+        rf.valid_duplexes = ["", "-", "+", "split"]
+        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_bands = [(0.01, 10000.0)]
+        rf.valid_skips = ["", "S"]
+        
         return rf
 
     def _parse_csv_line(self, line):
