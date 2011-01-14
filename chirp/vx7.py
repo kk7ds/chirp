@@ -54,8 +54,8 @@ struct {
   u8   name[8];
   u8 zero;
   bbcd offset[3];
-  u8   zeros3:3,
-       tone:5;
+  u8   zeros3:2,
+       tone:6;
   u8   zeros4:1,
        dcs:7;
   u8   zeros5:6,
