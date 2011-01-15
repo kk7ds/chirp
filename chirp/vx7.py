@@ -158,6 +158,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.skip = pskip and "P" or skip and "S" or ""
 
         for i in _mem.name:
+            if i == "\xFF":
+                break
             mem.name += CHARSET[i]
 
         return mem
