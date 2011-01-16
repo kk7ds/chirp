@@ -671,6 +671,18 @@ class CloneModeRadio(Radio):
     def get_mmap(self):
         return self._mmap
 
+    @classmethod
+    def match_model(cls, filedata):
+        """Given contents of a stored file (@filedata), return True if 
+        this radio driver handles the represented model"""
+
+        # Unless the radio driver does something smarter, claim
+        # support if the data is the same size as our memory.
+        # Ideally, each radio would perform an intelligent analysis to
+        # make this determination to avoid model conflicts with
+        # memories of the same size.
+        return len(filedata) == cls._memsize
+
 class LiveRadio(Radio):
     pass
 

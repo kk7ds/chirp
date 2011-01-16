@@ -86,14 +86,14 @@ def get_radio_by_image(image_file):
         print "Auto-converted %s -> %s" % (image_file, tempf)
         image_file = tempf
 
-    # Right now just detect by size
-
-    size = os.stat(image_file).st_size
+    f = file(image_file, "rb")
+    filedata = f.read()
+    f.close()
 
     for radio in DRV_TO_RADIO.values():
         if not issubclass(radio, chirp_common.CloneModeRadio):
             continue
-        if radio._memsize == size:
+        if radio.match_model(filedata):
             return radio(image_file)
     raise Exception("Unknown file format")
 
