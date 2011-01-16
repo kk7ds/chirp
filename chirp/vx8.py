@@ -66,8 +66,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "VX-8"
 
+    _model = "AH029"
     _memsize = 65227
-
     _block_lengths = [ 10, 65217 ]
     _block_size = 32
 

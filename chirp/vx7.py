@@ -205,3 +205,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def filter_name(self, name):
         return chirp_common.name8(name)
+
+    @classmethod
+    def match_model(cls, filedata):
+        # VX7 doesn't have an easy model string to detect?
+        return len(filedata) == cls._memsize

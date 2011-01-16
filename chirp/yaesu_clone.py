@@ -128,6 +128,8 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     _block_lengths = [8, 65536]
     _block_size = 8
 
+    _model = "ABCDE"
+
     def _update_checksum(self):
         pass
 
@@ -138,6 +140,10 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     def sync_out(self):
         self._update_checksum()
         clone_out(self)
+
+    @classmethod
+    def match_model(cls, filedata):
+        return filedata[:5] == cls._model
 
 if __name__ == "__main__":
     import sys, serial

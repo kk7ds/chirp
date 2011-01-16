@@ -144,6 +144,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-7800"
 
+    _model = "AH016"
     _memsize = 31561
 
     def get_features(self):

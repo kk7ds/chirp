@@ -22,6 +22,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "VX-6"
 
+    _model = "AH021"
     _memsize = 32587
     _block_lengths = [10, 32578]
     _block_size = 16
