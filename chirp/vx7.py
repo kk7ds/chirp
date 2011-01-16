@@ -168,6 +168,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.set_raw("\x00" * (mem.size() / 8))
         mem.unknown1 = 0x05
         mem.ones = 0x03
+        mem.power = 0b11
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
