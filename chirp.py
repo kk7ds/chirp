@@ -22,7 +22,7 @@ from optparse import OptionParser
 import optparse
 
 from chirp import util
-from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880, vx7, vx8
+from chirp import ic9x, id800, ic2820, ic2200, icx8x, id880, vx3, vx7, vx8
 from chirp import tmv71
 from chirp import chirp_common, errors, idrp, directory
 

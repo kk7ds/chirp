@@ -18,7 +18,7 @@ import tempfile
 
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, ic2100
 from chirp import icq7, icomciv, idrp, icf, ic9x_icf
-from chirp import vx6, vx7, vx8, ft7800, ft50
+from chirp import vx3, vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71, thd72
 from chirp import xml, chirp_common, convert_icf, csv
 
@@ -39,6 +39,7 @@ DRV_TO_RADIO = {
     "icom7200"       : icomciv.Icom7200Radio,
 
     # Yaesu
+    "vx3"            : vx3.VX3Radio,
     "vx6"            : vx6.VX6Radio,
     "vx7"            : vx7.VX7Radio,
     "vx8"            : vx8.VX8Radio,
