@@ -96,13 +96,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     #attempts to speed it up appear unstable, more testing required
     _block_size = 8
 
-    def _update_checksum(self):
-        cs = 0
-        for i in range(0x0000, 0x7F4A):
-            cs += ord(self._mmap[i])
-        cs %= 256
-        print "Checksum3 old=%02x new=%02x" % (self._memobj.checksum, cs)
-        self._memobj.checksum = cs
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
