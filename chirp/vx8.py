@@ -92,13 +92,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_raw_memory(self, number):
         return self._memobj.memory[number].get_raw()
 
-    def _update_checksum(self):
-        cs = 0
-        for i in range(0x0000, 0xFECA):
-            cs += ord(self._mmap[i])
-        cs %= 256
-        print "Checksum old=%02x new=%02x" % (self._memobj.checksum, cs)
-        self._memobj.checksum = cs
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0000, 0xFECB) ]
 
     def get_memory(self, number):
         flag = self._memobj.flag[number-1].flag

@@ -162,23 +162,19 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.can_odd_split = True
         return rf
 
-    def _update_checksum(self):
-        cs = 0
-        for i in range(0, 0x7B48):
-            cs += ord(self._mmap[i])
-        cs %= 256
-        print "Checksum old=%02x new=%02x" % (self._memobj.checksum, cs)
-        self._memobj.checksum = cs
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0000, 0x7B47) ]
 
     def sync_in(self):
         self._mmap = download(self)
+        self.check_checksums()
         self.process_mmap()
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def sync_out(self):
-        self._update_checksum()
+        self.update_checksums()
         upload(self)
 
     def get_raw_memory(self, number):

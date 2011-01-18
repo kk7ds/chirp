@@ -90,27 +90,11 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_lengths = [ 10, 8, 16193 ]
     _block_size = 8
 
-    def _update_checksum(self):
-        cs = 0
-        for i in range(0x0592, 0x0611):
-            cs += ord(self._mmap[i])
-        cs %= 256
-        print "Checksum1 old=%02x new=%02x" % (self._memobj.checksum1, cs)
-        self._memobj.checksum1 = cs
-    
-        cs = 0
-        for i in range(0x0612, 0x0691):
-            cs += ord(self._mmap[i])
-        cs %= 256
-        print "Checksum2 old=%02x new=%02x" % (self._memobj.checksum2, cs)
-        self._memobj.checksum2 = cs
-    
-        cs = 0
-        for i in range(0x0000, 0x3F52):
-            cs += ord(self._mmap[i])
-        cs %= 256
-        print "Checksum3 old=%02x new=%02x" % (self._memobj.checksum3, cs)
-        self._memobj.checksum3 = cs
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0592, 0x0610),
+                 yaesu_clone.YaesuChecksum(0x0612, 0x0690),
+                 yaesu_clone.YaesuChecksum(0x0000, 0x3F51),
+                 ]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)

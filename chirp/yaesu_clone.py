@@ -124,21 +124,61 @@ def clone_out(radio):
 
     print "Clone completed in %i seconds" % (time.time() - start)
 
+class YaesuChecksum:
+    def __init__(self, start, stop, address=None):
+        self._start = start
+        self._stop = stop
+        if address:
+            self._address = address
+        else:
+            self._address = stop + 1
+
+    def get_existing(self, mmap):
+        """Return the existing checksum in mmap"""
+        return ord(mmap[self._address])
+
+    def get_calculated(self, mmap):
+        cs = 0
+        for i in range(self._start, self._stop+1):
+            cs += ord(mmap[i])
+        return cs % 256
+
+    def update(self, mmap):
+        mmap[self._address] = self.get_calculated(mmap)
+
+    def __str__(self):
+        return "%04X-%04X (@%04X)" % (self._start,
+                                      self._stop,
+                                      self._address)
+
 class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     _block_lengths = [8, 65536]
     _block_size = 8
 
     _model = "ABCDE"
 
-    def _update_checksum(self):
-        pass
+    def _checksums(self):
+        """Return a list of checksum objects that need to be calculated"""
+        return []
+
+    def update_checksums(self):
+        for checksum in self._checksums():
+            checksum.update(self._mmap)
+
+    def check_checksums(self):
+        for checksum in self._checksums():
+            if checksum.get_existing(self._mmap) != \
+                    checksum.get_calculated(self._mmap):
+                raise Exception("Checksum Failed [%s]" % checksum)
+            print "Checksum %s: OK" % checksum
 
     def sync_in(self):
         self._mmap = clone_in(self)
+        self.check_checksums()
         self.process_mmap()
 
     def sync_out(self):
-        self._update_checksum()
+        self.update_checksums()
         clone_out(self)
 
     @classmethod

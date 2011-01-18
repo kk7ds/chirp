@@ -30,6 +30,9 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     def _update_checksum(self):
         vx6_ll.update_checksum(self._mmap)
 
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False

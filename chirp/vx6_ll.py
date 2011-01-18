@@ -331,11 +331,3 @@ def set_memory(_map, mem):
 
 def erase_memory(map, number):
     set_used(map, number - 1, False)
-
-def update_checksum(mmap):
-    cs = 0
-    for i in range(0x0000, 0x7F4A):
-        cs += ord(mmap[i])
-    cs %= 256
-    print "Checksum old=%02x new=%02x" % (ord(mmap[0x7F4A]), cs)
-    mmap[0x7F4A] = cs
