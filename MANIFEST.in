@@ -1,2 +1,3 @@
 include *.xsd
 include *.desktop
+include COPYING
