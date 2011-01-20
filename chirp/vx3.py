@@ -153,13 +153,13 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _wipe_memory(self, mem):
         mem.set_raw("\x00" * (mem.size() / 8))
-        mem.power = 0b11 #this sets power to full by default
+        mem.power = 0x03 #this sets power to full by default
         #the following settings are set to match the defaults
         #on the radio, some of these fields are unknown
         mem.name = [0xFF for i in range(0, 6)]
         mem.unknown5 = 0x0D #not sure what this is
-        mem.unknown7 = 0b0001 #this likely is part of autostep
-        mem.automode = 0b1 #autoselect mode
+        mem.unknown7 = 0x01 #this likely is part of autostep
+        mem.automode = 0x01 #autoselect mode
 
 
     def set_memory(self, mem):
