@@ -516,6 +516,15 @@ class RadioFeatures:
     def __getitem__(self, name):
         return self.__dict__[name]
 
+class ValidationMessage(str):
+    pass
+
+class ValidationWarning(ValidationMessage):
+    pass
+
+class ValidationError(ValidationMessage):
+    pass
+
 class Radio:
     BAUD_RATE = 9600
     VENDOR = "Unknown"
@@ -584,20 +593,25 @@ class Radio:
 
         lo, hi = rf.memory_bounds
         if mem.number < lo or mem.number > hi:
-            msgs.append("Location %i is out of range" % mem.number)
+            msg = ValidationWarning("Location %i is out of range" % mem.number)
+            msgs.append(msg)
 
         if rf.valid_modes and mem.mode not in rf.valid_modes:
-            msgs.append("Mode %s not supported" % mem.mode)
+            msg = ValidationError("Mode %s not supported" % mem.mode)
+            msgs.append(msg)
 
         if rf.valid_tmodes and mem.tmode not in rf.valid_tmodes:
-            msgs.append("Tone mode %s not supported" % mem.tmode)
+            msg = ValidationError("Tone mode %s not supported" % mem.tmode)
+            msgs.append(msg)
 
         if rf.valid_duplexes and mem.duplex not in rf.valid_duplexes:
-            msgs.append("Duplex %s not supported" % mem.duplex)
+            msg = ValidationError("Duplex %s not supported" % mem.duplex)
+            msgs.append(msg)
 
         ts = mem.tuning_step
         if rf.valid_tuning_steps and ts not in rf.valid_tuning_steps:
-            msgs.append("Tuning step %.2f not supported" % ts)
+            msg = ValidationError("Tuning step %.2f not supported" % ts)
+            msgs.append(msg)
 
         if rf.valid_bands:
             valid = False
@@ -606,7 +620,8 @@ class Radio:
                     valid = True
                     break
             if not valid:
-                msgs.append("Frequency %.5f is out of range" % mem.freq)
+                msg = ValidationError("Frequency %.5f is out of range" % mem.freq)
+                msgs.append(msg)
 
         return msgs
 
