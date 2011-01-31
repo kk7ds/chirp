@@ -19,9 +19,33 @@ import os
 
 from chirp import chirp_common, errors
 
+class OmittedHeaderError(Exception):
+    pass
+
 class CSVRadio(chirp_common.CloneModeRadio):
     VENDOR = "CSV"
     MODEL = "Generic"
+
+    ATTR_MAP = {
+        "Location"     : (int,   "number"),
+        "Name"         : (str,   "name"),
+        "Frequency"    : (float, "freq"),
+        "Duplex"       : (str,   "duplex"),
+        "Offset"       : (float, "offset"),
+        "Tone"         : (str,   "tmode"),
+        "rToneFreq"    : (float, "rtone"),
+        "cToneFreq"    : (float, "ctone"),
+        "DtcsCode"     : (int,   "dtcs"),
+        "DtcsPolarity" : (str,   "dtcs_polarity"),
+        "Mode"         : (str,   "mode"),
+        "TStep"        : (float, "tuning_step"),
+        "Skip"         : (str,   "skip"),
+        "Bank"         : (int,   "bank"),
+        "Bank Index"   : (int,   "bank_index"),
+        "URCALL"       : (str,   "dv_urcall"),
+        "RPT1CALL"     : (str,   "dv_rpt1call"),
+        "RPT2CALL"     : (str,   "dv_rpt2call"),
+        }
 
     def _blank(self):
         self.memories = []
@@ -56,13 +80,43 @@ class CSVRadio(chirp_common.CloneModeRadio):
         
         return rf
 
-    def _parse_csv_line(self, line):
+    def _parse_quoted_line(self, line):
         line = line.replace("\n", "")
         line = line.replace("\r", "")
+        line = line.replace('"', "")
 
-        mem = chirp_common.Memory.from_csv(line)
-        if mem:
-            self.memories[mem.number] = mem
+        return line.split(",")
+
+    def _get_datum_by_header(self, headers, data, header):
+        if header not in headers:
+            raise OmittedHeaderError("Header %s not provided" % header)
+
+        return data[headers.index(header)]
+
+    def _parse_csv_data_line(self, headers, line):
+
+        data = self._parse_quoted_line(line)
+
+        mem = chirp_common.Memory()
+        try:
+            if self._get_datum_by_header(headers, data, "Mode") == "DV":
+                mem = chirp_common.DVMemory()
+        except OmittedHeaderError:
+            pass
+
+        for header, (typ, attr) in self.ATTR_MAP.items():
+            try:
+                val = self._get_datum_by_header(headers, data, header)
+                if not val and typ == int:
+                    val = None
+                else:
+                    val = typ(val)
+                if hasattr(mem, attr):
+                    setattr(mem, attr, val)
+            except OmittedHeaderError, e:
+                pass
+
+        return mem
 
     def load(self, filename=None):
         if filename is None and self._filename is None:
@@ -75,23 +129,19 @@ class CSVRadio(chirp_common.CloneModeRadio):
         f = file(self._filename, "rU")
         
         header = f.readline().strip()
-
-        if header != chirp_common.Memory.CSV_FORMAT:
-            print "Got:      %s" % header
-            print "Expected: %s" % chirp_common.Memory.CSV_FORMAT
-            raise errors.InvalidDataError("CSV format mismatch")
-
+        headers = self._parse_quoted_line(header)
         lines = f.readlines()
         f.close()
 
-        i = 0
+        i = 1
         for line in lines:
             i += 1
             try:
-                self._parse_csv_line(line)
+                mem = self._parse_csv_data_line(headers, line)
+                self.memories[mem.number] = mem
             except errors.InvalidMemoryLocation:
                 print "Invalid memory location on line %i" % i
-            except errors.InvalidDataError, e:
+            except Exception, e:
                 raise errors.InvalidDataError("%s on line %i" % (e, i))
 
     def save(self, filename=None):
