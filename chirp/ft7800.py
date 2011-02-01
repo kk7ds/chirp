@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 from chirp import chirp_common, yaesu_clone, memmap
 from chirp import bitwise, util, errors
 
@@ -31,7 +32,7 @@ struct {
   bbcd freq[3];
   u8 unknown3:1,
      tune_step:3,
-     unknown4:2,
+     power:2,
      tmode:2;
   bbcd split[3];
   u8 unknown5:2,
@@ -80,6 +81,8 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     list("*+,- /|      [ ] _") + \
     list("?" * 100)
 
+POWER_LEVELS = ["Hi", "Mid1", "Mid2", "Low"]
+
 def send(s, data):
     #print "Sending %i:\n%s" % (len(data), util.hexprint(data))
     s.write(data)
@@ -106,6 +109,7 @@ def download(radio):
         if len(chunk) != 64:
             break
             raise Exception("No block at %i" % i)
+        time.sleep(0.01)
         send(radio.pipe, ACK)
         if radio.status_fn:
             status = chirp_common.Status()
@@ -180,70 +184,47 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_raw_memory(self, number):
         return self._memobj.memory[number-1].get_raw()
 
-    def get_memory(self, number):
-        _mem = self._memobj.memory[number - 1]
-        _flg = self._memobj.flags[(number - 1) / 4]
-        _nam = self._memobj.names[number - 1]
-
-        mem = chirp_common.Memory()
-        mem.number = number
-        mem.empty = not _mem.used
-        if mem.empty:
-            return mem
-
-        mem.freq = (int(_mem.freq) / 100.0)
+    def _get_mem_freq(self, mem, _mem):
         if mem.freq > 4000:
             # Dirty hack because the high-order digit has 0x40
             # if 12.5kHz step
-            mem.freq -= 4000
-            mem.freq += .00250
-
-        mem.rtone = chirp_common.TONES[_mem.tone]
-        mem.tmode = TMODES[_mem.tmode]
-        mem.mode = _mem.mode_am and "AM" or "FM"
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
-        mem.tuning_step = STEPS[_mem.tune_step]
-        mem.duplex = DUPLEX[_mem.duplex]
-        if mem.duplex == "split":
-            mem.offset = int(_mem.split) / 100.0
+            return (mem.freq - 4000) + 0.00250
         else:
-            mem.offset = (_mem.offset * 5) / 100.0
+            return mem.freq
 
-        if _nam.used:
-            for i in str(_nam.name):
-                mem.name += CHARSET[ord(i)]
-        else:
-            mem.name = ""
-
-        flgidx = (number - 1) % 4
-        mem.skip = SKIPS[_flg["skip%i" % flgidx]]
-
-        return mem
-
-    def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number - 1]
-        _flg = self._memobj.flags[(mem.number - 1) / 4]
-        _nam = self._memobj.names[mem.number - 1]
-
-        _mem.used = int(not mem.empty)
-        if mem.empty:
-            return
-
+    def _set_mem_freq(self, mem, _mem):
         if chirp_common.is_12_5(mem.freq):
             f = mem.freq - 0.0025
             f += 4000
         else:
             f = mem.freq
 
-        _mem.freq = int(f * 100)
-        _mem.tone = chirp_common.TONES.index(mem.rtone)
-        _mem.tmode = TMODES.index(mem.tmode)
-        _mem.mode_am = mem.mode == "AM" and 1 or 0
-        _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem.tune_step = STEPS.index(mem.tuning_step)
-        _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.offset = (int(mem.offset * 100) / 5)
-        _mem.split = mem.duplex == "split" and int (mem.offset * 100) or 0
+        return int(f * 100)
+
+    def _get_mem_offset(self, mem, _mem):
+        if mem.duplex == "split":
+            return int(_mem.split) / 100.0
+        else:
+            return (_mem.offset * 5) / 100.0
+
+    def _set_mem_offset(self, mem, _mem):
+        if mem.duplex == "split":
+            _mem.split = int(mem.offset * 100)
+        else:
+            _mem.offset = (int(mem.offset * 100) / 5)
+
+    def _get_mem_name(self, mem, _mem):
+        _nam = self._memobj.names[mem.number - 1]
+
+        name = ""
+        if _nam.used:
+            for i in str(_nam.name):
+                name += CHARSET[ord(i)]
+
+        return name
+
+    def _set_mem_name(self, mem, _mem):
+        _nam = self._memobj.names[mem.number - 1]
 
         if mem.name.rstrip():
             name = [chr(CHARSET.index(x)) for x in mem.name.ljust(6)]
@@ -254,8 +235,184 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
             _nam.used = 0
             _nam.enabled = 0
 
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number - 1]
+        _flg = self._memobj.flags[(number - 1) / 4]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+        mem.empty = not _mem.used
+        if mem.empty:
+            return mem
+
+        mem.freq = (int(_mem.freq) / 100.0)
+        mem.freq = self._get_mem_freq(mem, _mem)
+
+        mem.rtone = chirp_common.TONES[_mem.tone]
+        mem.tmode = TMODES[_mem.tmode]
+        mem.mode = _mem.mode_am and "AM" or "FM"
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
+        mem.tuning_step = STEPS[_mem.tune_step]
+        mem.duplex = DUPLEX[_mem.duplex]
+        mem.offset = self._get_mem_offset(mem, _mem)
+        mem.name = self._get_mem_name(mem, _mem)
+
+        flgidx = (number - 1) % 4
+        mem.skip = SKIPS[_flg["skip%i" % flgidx]]
+
+        return mem
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number - 1]
+        _flg = self._memobj.flags[(mem.number - 1) / 4]
+
+        _mem.used = int(not mem.empty)
+        if mem.empty:
+            return
+
+        _mem.freq = self._set_mem_freq(mem, _mem)
+        _mem.tone = chirp_common.TONES.index(mem.rtone)
+        _mem.tmode = TMODES.index(mem.tmode)
+        _mem.mode_am = mem.mode == "AM" and 1 or 0
+        _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem.tune_step = STEPS.index(mem.tuning_step)
+        _mem.duplex = DUPLEX.index(mem.duplex)
+        _mem.split = mem.duplex == "split" and int (mem.offset * 100) or 0
+
+        # NB: Leave offset after mem name for the 8800!
+        self._set_mem_name(mem, _mem)
+        self._set_mem_offset(mem, _mem)
+
         flgidx = (mem.number - 1) % 4
         _flg["skip%i" % flgidx] = SKIPS.index(mem.skip)
 
 class FT7900Radio(FT7800Radio):
     MODEL = "FT-7900"
+
+mem_format_8800 = """
+#seekto %s;
+struct {
+  u8 used:1,
+     unknown1:2,
+     mode_am:1,
+     unknown2:1,
+     duplex:3;
+  bbcd freq[3];
+  u8 unknown3:1,
+     tune_step:3,
+     power:2,
+     tmode:2;
+  bbcd split[3];
+  u8 nameused:1,
+     unknown5:1,
+     tone:6;
+  u8 namevalid:1,
+     dtcs:7;
+  u8 name[6];
+} memory[500];
+
+#seekto 0x51C8;
+struct {
+  u8 skip0:2,
+     skip1:2,
+     skip2:2,
+     skip3:2;
+} flags[250];
+
+#seekto 0x7B48;
+u8 checksum;
+"""
+
+class FT8800Radio(FT7800Radio):
+    MODEL = "FT-8800"
+
+    _model = "AH018"
+    _memsize = 22217
+
+    _block_lengths = [8, 22208, 1]
+    _block_size = 64
+
+    _memstart = ""
+
+    def get_features(self):
+        rf = FT7800Radio.get_features(self)
+        rf.has_sub_devices = True
+        rf.memory_bounds = (1, 499)
+        return rf
+
+    def get_sub_devices(self):
+        return [FT8800RadioLeft(self._mmap), FT8800RadioRight(self._mmap)]
+
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0000, 0x56C7) ]
+
+    def process_mmap(self):
+        if not self._memstart:
+            return
+
+        self._memobj = bitwise.parse(mem_format_8800 % self._memstart,
+                                     self._mmap)
+
+    def _get_mem_freq(self, mem, _mem):
+        if mem.freq > 8000:
+            # Dirty hack because the high-order digit has 0x80
+            # if 12.5kHz step
+            return (mem.freq - 8000) + 0.00250
+        else:
+            return mem.freq
+
+    def _set_mem_freq(self, mem, _mem):
+        if chirp_common.is_12_5(mem.freq):
+            f = mem.freq - 0.0025
+            f += 8000
+        else:
+            f = mem.freq
+
+        return int(f * 100)
+        
+    def _get_mem_offset(self, mem, _mem):
+        if mem.duplex == "split":
+            return int(_mem.split) / 100.0
+
+        # The offset is packed into the upper two bits of the last four
+        # bytes of the name (?!)
+        val = 0
+        for i in _mem.name[2:6]:
+            val <<= 2
+            val |= ((i & 0xC0) >> 6)
+
+        return (val * 5) / 100.0
+
+    def _set_mem_offset(self, mem, _mem):
+        if mem.duplex == "split":
+            _mem.split = int(mem.offset * 100)
+            return
+
+        val = int(mem.offset * 100) / 5
+        for i in reversed(range(2, 6)):
+            _mem.name[i] = (_mem.name[i] & 0x3F) | ((val & 0x03) << 6)
+            val >>= 2
+
+    def _get_mem_name(self, mem, _mem):
+        name = ""
+        if _mem.namevalid:
+            for i in _mem.name:
+                if i < len(CHARSET):
+                    name += CHARSET[i & 0x3F]
+
+        return name
+
+    def _set_mem_name(self, mem, _mem):
+        _mem.name = [CHARSET.index(x) for x in mem.name.ljust(6)]
+        _mem.namevalid = 1
+        _mem.nameused = bool(mem.name.rstrip())
+
+class FT8800RadioLeft(FT8800Radio):
+    VARIANT = "Left"
+    _memstart = "0x0948"
+
+class FT8800RadioRight(FT8800Radio):
+    VARIANT = "Right"
+    _memstart = "0x2948"
+
+        
