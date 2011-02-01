@@ -397,8 +397,9 @@ class FT8800Radio(FT7800Radio):
         name = ""
         if _mem.namevalid:
             for i in _mem.name:
-                if i < len(CHARSET):
-                    name += CHARSET[i & 0x3F]
+                index = int(i) & 0x3F
+                if index < len(CHARSET):
+                    name += CHARSET[index]
 
         return name
 
