@@ -121,7 +121,13 @@ class ChirpMain(gtk.Window):
             devices = radio.get_sub_devices()
             del radio
         else:
-            devices = [fname]
+            radio = directory.get_radio_by_image(fname)
+            if radio.get_features().has_sub_devices:
+                devices = radio.get_sub_devices()
+                tempname = fname
+            else:
+                del radio
+                devices = [fname]
 
         for device in devices:
             try:
