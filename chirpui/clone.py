@@ -22,13 +22,9 @@ import gtk
 import gobject
 
 from chirp import platform, directory, detect, chirp_common
-from chirpui import miscwidgets, cloneprog, inputdialog, common
+from chirpui import miscwidgets, cloneprog, inputdialog, common, config
 
 AUTO_DETECT_STRING = "Auto Detect (Icom Only)"
-
-_LAST_PORT = None
-_LAST_VENDOR = None
-_LAST_MODEL = None
 
 class CloneSettings:
     def __init__(self):
@@ -55,12 +51,12 @@ class CloneSettingsDialog(gtk.Dialog):
         widget.show()
 
     def __make_port(self, port):
-        global _LAST_PORT
+        conf = config.get("state")
 
         ports = platform.get_platform().list_serial_ports()
         if not port:
-            if _LAST_PORT:
-                port = _LAST_PORT
+            if conf.get("last_port"):
+                port = conf.get("last_port")
             else:
                 port = ports[0]
 
@@ -80,11 +76,12 @@ class CloneSettingsDialog(gtk.Dialog):
 
         self.__vendors = vendors
 
-        global _LAST_VENDOR
-        if not _LAST_VENDOR:
-            _LAST_VENDOR = sorted(vendors.keys())[0]
+        conf = config.get("state")
+        if not conf.get("last_vendor"):
+            conf.set("last_vendor", sorted(vendors.keys())[0])
 
-        v = miscwidgets.make_choice(vendors.keys(), False, _LAST_VENDOR)
+        v = miscwidgets.make_choice(vendors.keys(), False,
+                                    conf.get("last_vendor"))
 
         def _changed(box, vendors, model):
             models = vendors[box.get_active_text()]
@@ -96,8 +93,8 @@ class CloneSettingsDialog(gtk.Dialog):
                 model.append_text("Detect")
 
             model_names = [x.MODEL for x in models]
-            if _LAST_MODEL in model_names:
-                model.set_active(model_names.index(_LAST_MODEL))
+            if conf.get("last_model") in model_names:
+                model.set_active(model_names.index(conf.get("last_model")))
             else:
                 model.set_active(0)
 
@@ -168,13 +165,10 @@ class CloneSettingsDialog(gtk.Dialog):
                 print self.__vendors
                 return None
 
-        global _LAST_PORT
-        global _LAST_VENDOR
-        global _LAST_MODEL
-
-        _LAST_PORT = cs.port
-        _LAST_VENDOR = cs.radio_class.VENDOR
-        _LAST_MODEL = cs.radio_class.MODEL
+        conf = config.get("state")
+        conf.set("last_port", cs.port)
+        conf.set("last_vendor", cs.radio_class.VENDOR)
+        conf.set("last_model", cs.radio_class.MODEL)
 
         return cs
 
