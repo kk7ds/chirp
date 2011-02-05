@@ -18,7 +18,7 @@
 CMD_ACK = 0x06
 
 from chirp import chirp_common, util, memmap
-import time
+import time, os
 
 def safe_read(pipe, count, times=60):
     buf = ""
@@ -52,6 +52,8 @@ def chunk_read(pipe, count, status_fn):
         status.max = count
         status.cur = len(data)
         status_fn(status)
+        if os.getenv("CHIRP_DEBUG"):
+            print "Read %i/%i" % (len(data), count)
     return data        
 
 def clone_in(radio):
