@@ -175,7 +175,7 @@ class UnixPlatform(Platform):
     def __init__(self, basepath):
         if not basepath:
             basepath = os.path.abspath(os.path.join(self.default_dir(),
-                                                    ".d-rats"))
+                                                    ".chirp"))
         
         if not os.path.isdir(basepath):
             os.mkdir(basepath)
@@ -236,7 +236,7 @@ class Win32Platform(Platform):
             appdata = os.getenv("APPDATA")
             if not appdata:
                 appdata = "C:\\"
-            basepath = os.path.abspath(os.path.join(appdata, "D-RATS"))
+            basepath = os.path.abspath(os.path.join(appdata, "CHIRP"))
 
         if not os.path.isdir(basepath):
             os.mkdir(basepath)
