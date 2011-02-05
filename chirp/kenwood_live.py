@@ -134,7 +134,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         mem = self._parse_mem_spec(spec)
         self.__memcache[mem.number] = mem
 
-        result = command(self.pipe, "MNA", *self._cmd_get_memory_name(number))
+        result = command(self.pipe, *self._cmd_get_memory_name(number))
         if " " in result:
             value = result.split(" ")[1]
             zero, loc, mem.name = value.split(",")
