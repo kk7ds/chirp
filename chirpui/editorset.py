@@ -195,6 +195,9 @@ class EditorSet(gtk.VBox):
         choices = [x.VARIANT for x in devices]
 
         d = inputdialog.ChoiceDialog(choices)
+        d.label.set_text(("The %s %s " % (radio.VENDOR, radio.MODEL)) +
+                         "has multiple independent sub-devices." +
+                         os.linesep + "Choose one to import from:")
         r = d.run()
         chosen = d.choice.get_active_text()
         d.destroy()
