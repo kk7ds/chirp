@@ -62,8 +62,7 @@ def _detect_icom_radio(s):
 
     s.close()
 
-    if not md:
-        raise errors.RadioError("Unable to get radio model")
+    raise errors.RadioError("Unable to get radio model")
 
 def detect_icom_radio(port):
     s = serial.Serial(port=port, timeout=0.5)
