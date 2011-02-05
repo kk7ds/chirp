@@ -35,7 +35,9 @@ except ImportError,e:
 from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirp import icf, ic9x_icf
-from chirpui import editorset, clone, miscwidgets
+from chirpui import editorset, clone, miscwidgets, config
+
+CONF = config.get()
 
 class ModifiedError(Exception):
     pass
@@ -145,6 +147,25 @@ class ChirpMain(gtk.Window):
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             self.tabs.set_current_page(tab)
 
+    def do_live_warning(self, radio):
+        d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+        d.set_markup("<big><b>Note:</b></big>")
+        d.format_secondary_markup("The %s %s " % (radio.VENDOR, radio.MODEL)  +
+                                  "operates in <b>live mode</b>.  "           +
+                                  "This means that any changes you make "     +
+                                  "are immediately sent to the radio.  "      +
+                                  "Because of this, you cannot perform the "  +
+                                  "<u>Save</u> or <u>Upload</u> operations."  +
+                                  "If you wish to edit the contents offline, "+
+                                  "please <u>Export</u> to a CSV file, using "+
+                                  "the <b>Radio menu</b>.")
+        again = gtk.CheckButton("Don't show this again")
+        again.show()
+        d.vbox.pack_start(again, 0, 0, 0)
+        d.run()
+        CONF.set_bool("live_mode", again.get_active(), "noconfirm")
+        d.destroy()
+
     def do_open_live(self, radio, tempname=None):
         if radio.get_features().has_sub_devices:
             devices = radio.get_sub_devices()
@@ -159,6 +180,9 @@ class ChirpMain(gtk.Window):
 
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             self.tabs.set_current_page(tab)
+
+        if not CONF.get_bool("live_mode", "noconfirm"):
+            self.do_live_warning(radio)
 
     def do_save(self, eset=None):
         if not eset:
