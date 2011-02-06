@@ -85,7 +85,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "VX-7"
 
-    _model = "\x0A\x01\x02\x06\x09" #0x0a01020609 isn't really ascii
+    _model = ""
     _memsize = 16211
     _block_lengths = [ 10, 8, 16193 ]
     _block_size = 8
@@ -191,3 +191,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def filter_name(self, name):
         return chirp_common.name8(name)
+
+    @classmethod
+    def match_model(cls, filedata):
+        return len(filedata) == cls._memsize
