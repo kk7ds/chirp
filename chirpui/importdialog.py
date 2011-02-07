@@ -170,6 +170,32 @@ class ImportDialog(gtk.Dialog):
             
         return
 
+    def _convert_power(self, dst_levels, src_levels, mem):
+        if not dst_levels:
+            mem.power = None
+            return
+        elif not mem.power:
+            # Source radio does not support power levels, so choose the
+            # first (highest) level from the destination radio.
+            mem.power = dst_levels[0]
+            return ""
+
+        # If both radios support power levels, we need to decide how to
+        # convert the source power level to a valid one for the destination
+        # radio.  To do that, find the absolute level of the source value
+        # and calculate the different between it and all the levels of the
+        # destination, choosing the one that matches most closely.
+
+        deltas = [abs(mem.power - power) for power in dst_levels]
+        mem.power = dst_levels[deltas.index(min(deltas))]
+
+    def do_soft_conversions(self, dst_features, src_features, mem):
+        self._convert_power(dst_features.valid_power_levels,
+                            src_features.valid_power_levels,
+                            mem)
+
+        return mem
+
     def do_import(self, dst_rthread):
         i = 0
 
@@ -178,16 +204,21 @@ class ImportDialog(gtk.Dialog):
         import_list = self.get_import_list()
 
         has_dstar = isinstance(self.dst_radio, chirp_common.IcomDstarSupport)
+        dst_features = self.dst_radio.get_features()
+        src_features = self.src_radio.get_features()
 
-        if has_dstar and self.dst_radio.get_features().requires_call_lists:
+        if has_dstar and dst_features.requires_call_lists:
             self.ensure_calls(dst_rthread, import_list)
 
         dst_banks = self.dst_radio.get_banks()
 
         for old, new in import_list:
+            i += 1
             print "%sing %i -> %i" % (self.ACTION, old, new)
             mem = self.src_radio.get_memory(old).dupe()
             mem.number = new
+
+            self.do_soft_conversions(dst_features, src_features, mem)
 
             mem.name = self.dst_radio.filter_name(mem.name)
 
@@ -207,8 +238,6 @@ class ImportDialog(gtk.Dialog):
                 job = common.RadioJob(None, "set_memory", mem)
                 job.set_desc("Setting memory %i" % mem.number)
                 dst_rthread._qsubmit(job, 0)
-
-            i += 1
 
         if error_messages.keys():
             msg = "Error importing memories:\r\n"
@@ -425,15 +454,11 @@ class ImportDialog(gtk.Dialog):
                 continue
 
             msgs = self.dst_radio.validate_memory(mem)
-            # We want to special-case an invalid memory that only failed
-            # because its target location was invalid
-            if len(msgs) == 1 and msgs[0].startswith("Location"):
-                msgs = []
-                msg = str(mem)
-            elif msgs:
+            errors = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
+            if errors:
                 msg = "Unsupported by destination radio: %s" % (",".join(msgs))
             else:
-                msgs = []
+                errors = []
                 msg = str(mem)
 
             self.__store.append(row=(not bool(msgs),
@@ -441,7 +466,7 @@ class ImportDialog(gtk.Dialog):
                                      mem.number,
                                      mem.name,
                                      mem.freq,
-                                     not bool(msgs),
+                                     not bool(errors),
                                      msg
                                      ))
             self.record_use_of(mem.number)

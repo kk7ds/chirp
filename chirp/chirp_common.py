@@ -26,6 +26,7 @@ else:
 #print "Using separation character of '%s'" % SEPCHAR
 
 import threading
+import math
 
 from chirp import errors, memmap
 
@@ -97,6 +98,48 @@ TUNING_STEPS = [
 
 SKIP_VALUES = [ "", "S", "P" ]
 
+def watts_to_dBm(watts):
+    return int(10 * math.log10(int(watts * 1000)))
+
+def dBm_to_watts(dBm):
+    return int(math.pow(10, (dBm - 30) / 10))
+
+class PowerLevel:
+    def __init__(self, label, watts=0, dBm=0):
+        if watts:
+            dBm = watts_to_dBm(watts)
+        self._power = int(dBm)
+        self._label = label
+
+    def __str__(self):
+        return str(self._label)
+
+    def __int__(self):
+        return self._power
+
+    def __sub__(self, val):
+        return int(self) - int(val)
+
+    def __add__(self, val):
+        return int(self) + int(val)
+
+    def __eq__(self, val):
+        if val is not None:
+            return int(self) == int(val)
+        return False
+
+    def __lt__(self, val):
+        return int(self) < int(val)
+
+    def __gt__(self, val):
+        return int(self) > int(val)
+
+    def __nonzero__(self):
+        return int(self) != 0
+
+    def __repr__(self):
+        return "%s (%i dBm)" % (self._label, self._power)
+
 class Memory:
     freq = 0.0
     number = 0
@@ -110,7 +153,7 @@ class Memory:
     cross_mode = "DCS->Off"
     dtcs_polarity = "NN"
     skip = ""
-
+    power = None
     duplex = ""
     offset = 0.600
     mode = "FM"
@@ -127,7 +170,7 @@ class Memory:
         "dtcs"          : DTCS_CODES,
         "tmode"         : TONE_MODES,
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
-		"cross_mode"    : CROSS_MODES,
+        "cross_mode"    : CROSS_MODES,
         "mode"          : MODES,
         "duplex"        : ["", "+", "-", "split"],
         "skip"          : SKIP_VALUES,
@@ -454,6 +497,7 @@ class RadioFeatures:
         "valid_tuning_steps"  : [],
         "valid_bands"         : [],
         "valid_skips"         : [],
+        "valid_power_levels"  : [],
 
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
@@ -502,6 +546,7 @@ class RadioFeatures:
         self.valid_tuning_steps = list(TUNING_STEPS)
         self.valid_bands = []
         self.valid_skips = ["", "S"]
+        self.valid_power_levels = []
 
         self.has_sub_devices = False
         self.memory_bounds = (0, 1)
@@ -622,6 +667,10 @@ class Radio:
             if not valid:
                 msg = ValidationError("Frequency %.5f is out of range" % mem.freq)
                 msgs.append(msg)
+
+        if rf.valid_power_levels and mem.power not in rf.valid_power_levels:
+            msg = ValidationWarning("Power level %s not supported" % mem.power)
+            msgs.append(msg)
 
         return msgs
 

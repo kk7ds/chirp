@@ -56,7 +56,7 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
-        ("_filled"   , TYPE_BOOLEAN,gtk.CellRendererToggle,  ),
+        ("_filled"   , TYPE_BOOLEAN,gtk.CellRendererToggle,),
         ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
         ("_extd"     , TYPE_STRING, gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
@@ -70,6 +70,7 @@ class MemoryEditor(common.Editor):
         ("Duplex"    , TYPE_STRING, gtk.CellRendererCombo, ),
         ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
         ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
+        ("Power"     , TYPE_STRING, gtk.CellRendererCombo, ),
         ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
         ("Skip"      , TYPE_STRING, gtk.CellRendererCombo, ),
         ("Bank"      , TYPE_STRING, gtk.CellRendererCombo, ),
@@ -87,6 +88,7 @@ class MemoryEditor(common.Editor):
         "Duplex"    : "",
         "Offset"    : 0.0,
         "Mode"      : "FM",
+        "Power"     : "",
         "Tune Step" : 10.0,
         "Tone Mode" : "",
         "Skip"      : "",
@@ -100,6 +102,7 @@ class MemoryEditor(common.Editor):
         "DTCS Code" : chirp_common.DTCS_CODES,
         "DTCS Pol" : ["NN", "NR", "RN", "RR"],
         "Mode" : chirp_common.MODES,
+        "Power" : [],
         "Duplex" : ["", "-", "+", "split"],
         "Tune Step" : chirp_common.TUNING_STEPS,
         "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
@@ -171,6 +174,11 @@ class MemoryEditor(common.Editor):
             common.show_error("Unable to make changes to this model")
             return
 
+        iter = self.store.get_iter(path)
+        if not self.store.get(iter, self.col("_filled"))[0]:
+            print "Editing new item, taking defaults"
+            self.insert_new(iter)
+
         colnum = self.col(cap)
         funcs = {
             "Loc" : self.ed_loc,
@@ -194,8 +202,6 @@ class MemoryEditor(common.Editor):
         elif self.store.get_column_type(colnum) == TYPE_STRING:
             if new == "(None)":
                 new = ""
-
-        iter = self.store.get_iter(path)
 
         if not handle_ed(rend, iter, new, self.store, self.col(cap)) and \
                 cap != "Frequency":
@@ -221,6 +227,10 @@ class MemoryEditor(common.Editor):
 
         self.store.set(iter, self.col("_filled"), True)
 
+        persist_defaults = ["Power", "Frequency"]
+        if cap in persist_defaults:
+            self.defaults[cap] = new
+
     def _render(self, colnum, val, iter=None):
         if colnum == self.col("Frequency"):
             val = "%.5f" % val
@@ -245,6 +255,21 @@ class MemoryEditor(common.Editor):
         val = self._render(colnum, val, iter)
         rend.set_property("text", "%s" % val)
 
+    def insert_new(self, iter, loc=None):
+        line = []
+        for key, val in self.defaults.items():
+            line.append(self.col(key))
+            line.append(val)
+        
+        if not loc:
+            loc, = self.store.get(iter, self.col("Loc"))
+
+        self.store.set(iter,
+                       0, loc,
+                       *tuple(line))
+        
+        return self._get_memory(iter)
+
     def insert_easy(self, store, _iter, delta):
         if delta < 0:
             iter = store.insert_before(_iter)
@@ -256,16 +281,7 @@ class MemoryEditor(common.Editor):
 
         print "Insert easy: %i" % delta
 
-        line = []
-        for key, val in self.defaults.items():
-            line.append(self.col(key))
-            line.append(val)
-        
-        store.set(iter,
-                  0, newpos,
-                  *tuple(line))
-
-        mem = self._get_memory(iter)
+        mem = self.insert_new(iter, newpos)
         job = common.RadioJob(None, "set_memory", mem)
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
@@ -506,6 +522,8 @@ time.  Are you sure you want to do this?"""
             print "Unable to get bank: %s" % e
             bank = ""
 
+        features = self.rthread.radio.get_features()
+
         self.store.set(iter,
                        self.col("_filled"), not memory.empty,
                        self.col("Loc"), memory.number,
@@ -521,6 +539,7 @@ time.  Are you sure you want to do this?"""
                        self.col("Duplex"), memory.duplex,
                        self.col("Offset"), memory.offset,
                        self.col("Mode"), memory.mode,
+                       self.col("Power"), memory.power or "",
                        self.col("Tune Step"), memory.tuning_step,
                        self.col("Skip"), memory.skip,
                        self.col("Bank"), bank,
@@ -568,19 +587,24 @@ time.  Are you sure you want to do this?"""
 
             return bidx
 
+        features = self.rthread.radio.get_features()
+
         bank = vals[self.col("Bank")]
         if bank is "":
             bidx = None
             bank_index = vals[self.col("Bank Index")]
         else:
             bidx = get_bank_index(bank)
-            if vals[self.col("Bank Index")] == -1 and \
-                    self.rthread.radio.get_features().has_bank_index:
+            if vals[self.col("Bank Index")] == -1 and features.has_bank_index:
                 bank_index = self.rthread.radio.get_available_bank_index(bidx)
                 print "Chose %i index for bank %s" % (bank_index, bank)
                 self.store.set(iter, self.col("Bank Index"), bank_index)
             else:
                 bank_index = vals[self.col("Bank Index")]
+
+        power_levels = {"" : None}
+        for i in features.valid_power_levels:
+            power_levels[str(i)] = i
 
         mem.freq = vals[self.col("Frequency")]
         mem.number = vals[self.col("Loc")]
@@ -597,6 +621,7 @@ time.  Are you sure you want to do this?"""
         mem.duplex = vals[self.col("Duplex")]
         mem.offset = vals[self.col("Offset")]
         mem.mode = vals[self.col("Mode")]
+        mem.power = power_levels[vals[self.col("Power")]]
         mem.tuning_step = vals[self.col("Tune Step")]
         mem.skip = vals[self.col("Skip")]
         mem.bank = bidx
@@ -726,6 +751,10 @@ time.  Are you sure you want to do this?"""
         self.choices["Mode"] = features["valid_modes"]
         self.choices["Tone Mode"] = features["valid_tmodes"]
         self.choices["Skip"] = features["valid_skips"]
+        self.choices["Power"] = [str(x) for x in features["valid_power_levels"]]
+
+        if features["valid_power_levels"]:
+            self.defaults["Power"] = features["valid_power_levels"][0]
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc("Getting bank list")
@@ -762,6 +791,7 @@ time.  Are you sure you want to do this?"""
             ("valid_duplexes", "Duplex"),
             ("valid_tuning_steps", "Tune Step"),
             ("valid_skips", "Skip"),
+            ("valid_power_levels", "Power"),
             ]
             
         for feature, colname in maybe_hide:
