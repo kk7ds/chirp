@@ -42,7 +42,7 @@ struct {
        unknown8:1,
        mode_am:1,
        mode_narrow:1,
-       unknown9:2,
+       power:2,
        tmode:2;
   u8   dtcs_polarity:2,
        duplex:2,
@@ -80,6 +80,10 @@ DUPLEX = ["", "-", "+"]
 DTCSP  = ["NN", "NR", "RN", "RR"]
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(6.25)
+POWER_LEVELS = [chirp_common.PowerLevel("High", watts=65),
+                chirp_common.PowerLevel("Mid", watts=25),
+                chirp_common.PowerLevel("MidLow", watts=10),
+                chirp_common.PowerLevel("Low", watts=5)]
 
 class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
@@ -122,6 +126,8 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(118.0, 174.0)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_power_levels = POWER_LEVELS
+
         return rf
 
     def process_mmap(self):
@@ -172,6 +178,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if _flag.empty:
             mem.empty = True
+            mem.power = POWER_LEVELS[0]
             return mem
 
         mult = _mem.is_625 and 6.25 or 5.0
@@ -188,6 +195,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.dtcs_polarity = DTCSP[_mem.dtcs_polarity]
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.name = str(_mem.name).replace("\x0E", "").rstrip()
+        mem.power = POWER_LEVELS[_mem.power]
 
         return mem
 
@@ -233,6 +241,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
         _mem.tuning_step = STEPS.index(mem.tuning_step)
         _mem.name = mem.name.ljust(6)
+        _mem.power = POWER_LEVELS.index(mem.power)
 
         if number < 200:
             _flag.skip = mem.skip != ""
