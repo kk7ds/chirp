@@ -81,7 +81,15 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     list("*+,- /|      [ ] _") + \
     list("?" * 100)
 
-POWER_LEVELS = ["Hi", "Mid1", "Mid2", "Low"]
+POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
+                    chirp_common.PowerLevel("Mid1", watts=20),
+                    chirp_common.PowerLevel("Mid2", watts=10),
+                    chirp_common.PowerLevel("Low", watts=5)]
+
+POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
+                    chirp_common.PowerLevel("Mid1", watts=20),
+                    chirp_common.PowerLevel("Mid2", watts=10),
+                    chirp_common.PowerLevel("Low", watts=5)]
 
 def send(s, data):
     #print "Sending %i:\n%s" % (len(data), util.hexprint(data))
@@ -163,6 +171,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(108.0, 520.0), (700.0, 990.0)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_power_levels = POWER_LEVELS_VHF
         rf.can_odd_split = True
         return rf
 
@@ -257,6 +266,11 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.offset = self._get_mem_offset(mem, _mem)
         mem.name = self._get_mem_name(mem, _mem)
 
+        if int(mem.freq / 100) == 4:
+            mem.power = POWER_LEVELS_UHF[_mem.power]
+        else:
+            mem.power = POWER_LEVELS_VHF[_mem.power]
+
         flgidx = (number - 1) % 4
         mem.skip = SKIPS[_flg["skip%i" % flgidx]]
 
@@ -278,6 +292,10 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int (mem.offset * 100) or 0
+        if int(mem.freq / 100) == 4:
+            _mem.power = POWER_LEVELS_UHF.index(mem.power)
+        else:
+            _mem.power = POWER_LEVELS_VHF.index(mem.power)
 
         # NB: Leave offset after mem name for the 8800!
         self._set_mem_name(mem, _mem)
