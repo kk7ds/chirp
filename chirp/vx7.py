@@ -80,6 +80,13 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     list(".,:;!\"#$%&'()*+-.=<>?@[?]^_\\{|}") + \
     list("?" * 100)
 
+POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
+                chirp_common.PowerLevel("L3", watts=2.50),
+                chirp_common.PowerLevel("L2", watts=1.00),
+                chirp_common.PowerLevel("L1", watts=0.05)]
+POWER_LEVELS_220 = [chirp_common.PowerLevel("L2", watts=0.30),
+                    chirp_common.PowerLevel("L1", watts=0.05)]
+
 class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
     VENDOR = "Yaesu"
@@ -109,6 +116,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(0.5, 999.0)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 450)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -130,6 +138,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.number = number
         if not used:
             mem.empty = True
+            mem.power = POWER_LEVELS[0]
             return mem
 
         mem.freq = int(_mem.freq) / 1000.0
@@ -142,6 +151,11 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
 
+        if mem.freq > 220 and mem.freq < 225:
+            mem.power = POWER_LEVELS_220[1 - _mem.power]
+        else:
+            mem.power = POWER_LEVELS[3 - _mem.power]
+
         for i in _mem.name:
             if i == "\xFF":
                 break
@@ -153,7 +167,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.set_raw("\x00" * (mem.size() / 8))
         mem.unknown1 = 0x05
         mem.ones = 0x03
-        mem.power = 0x03
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
@@ -179,6 +192,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
+        _mem.power = 3 - POWER_LEVELS.index(mem.power)
 
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
@@ -191,6 +205,16 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def filter_name(self, name):
         return chirp_common.name8(name)
+
+    def validate_memory(self, mem):
+        msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
+
+        if mem.freq >= 222 and mem.freq <= 225:
+            if mem.power not in POWER_LEVELS_220:
+                msgs.append(chirp_common.ValidationError(\
+                        "Power level %s not supported on 220MHz band" % mem.power))
+
+        return msgs
 
     @classmethod
     def match_model(cls, filedata):
