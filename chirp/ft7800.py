@@ -92,8 +92,10 @@ POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
                     chirp_common.PowerLevel("Low", watts=5)]
 
 def send(s, data):
-    #print "Sending %i:\n%s" % (len(data), util.hexprint(data))
-    s.write(data)
+
+    for i in data:
+        s.write(i)
+        time.sleep(0.002)
     s.read(len(data))
 
 def download(radio):
@@ -106,7 +108,7 @@ def download(radio):
             break
 
     if len(chunk) != radio._block_lengths[0]:
-        raise Exception("Failed to read header")
+        raise Exception("Failed to read header (%i)" % len(chunk))
     data += chunk
 
     send(radio.pipe, ACK)
@@ -179,7 +181,9 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7B47) ]
 
     def sync_in(self):
+        t = time.time()
         self._mmap = download(self)
+        print "Download finished in %i seconds" % (time.time() - t)
         self.check_checksums()
         self.process_mmap()
 
@@ -188,7 +192,9 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def sync_out(self):
         self.update_checksums()
+        t = time.time()
         upload(self)
+        print "Upload finished in %i seconds" % (time.time() - t)
 
     def get_raw_memory(self, number):
         return self._memobj.memory[number-1].get_raw()
@@ -244,9 +250,18 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
             _nam.used = 0
             _nam.enabled = 0
 
+    def _get_mem_skip(self, mem, _mem):
+        _flg = self._memobj.flags[(mem.number - 1) / 4]
+        flgidx = (mem.number - 1) % 4
+        return SKIPS[_flg["skip%i" % flgidx]]
+
+    def _set_mem_skip(self, mem, _mem):
+        _flg = self._memobj.flags[(mem.number - 1) / 4]
+        flgidx = (mem.number - 1) % 4
+        _flg["skip%i" % flgidx] = SKIPS.index(mem.skip)
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
-        _flg = self._memobj.flags[(number - 1) / 4]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -271,14 +286,12 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             mem.power = POWER_LEVELS_VHF[_mem.power]
 
-        flgidx = (number - 1) % 4
-        mem.skip = SKIPS[_flg["skip%i" % flgidx]]
+        mem.skip = self._get_mem_skip(mem, _mem)
 
         return mem
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
-        _flg = self._memobj.flags[(mem.number - 1) / 4]
 
         _mem.used = int(not mem.empty)
         if mem.empty:
@@ -292,17 +305,14 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int (mem.offset * 100) or 0
-        if int(mem.freq / 100) == 4:
-            _mem.power = POWER_LEVELS_UHF.index(mem.power)
-        else:
-            _mem.power = POWER_LEVELS_VHF.index(mem.power)
+        _mem.power = POWER_LEVELS_VHF.index(mem.power)
 
         # NB: Leave offset after mem name for the 8800!
         self._set_mem_name(mem, _mem)
         self._set_mem_offset(mem, _mem)
 
-        flgidx = (mem.number - 1) % 4
-        _flg["skip%i" % flgidx] = SKIPS.index(mem.skip)
+        self._set_mem_skip(mem, _mem)
+
 
 class FT7900Radio(FT7800Radio):
     MODEL = "FT-7900"
@@ -313,8 +323,8 @@ struct {
   u8 used:1,
      unknown1:2,
      mode_am:1,
-     unknown2:1,
-     duplex:3;
+     unknown2:2,
+     duplex:2;
   bbcd freq[3];
   u8 unknown3:1,
      tune_step:3,
@@ -434,4 +444,79 @@ class FT8800RadioRight(FT8800Radio):
     VARIANT = "Right"
     _memstart = "0x2948"
 
+mem_format_8900 = """
+#seekto 0x0708;
+struct {
+  u8 used:1,
+     skip:2,
+     sub_used:1,
+     unknown2:2,
+     duplex:2;
+  bbcd freq[3];
+  u8 mode_am:1,
+     unknown3:1,
+     nameused:1,
+     tune_step:1,
+     power:2,
+     tmode:2;
+  bbcd split[3];
+  u8 unknown4:1,
+     unknown5:1,
+     tone:6;
+  u8 namevalid:1,
+     dtcs:7;
+  u8 name[6];
+} memory[500];
+
+#seekto 0x51C8;
+struct {
+  u8 skip0:2,
+     skip1:2,
+     skip2:2,
+     skip3:2;
+} flags[250];
+
+#seekto 0x7B48;
+u8 checksum;
+"""
         
+class FT8900Radio(FT8800Radio):
+    MODEL = "FT-8900"
+
+    _model = "AH008"
+    _memsize = 14793
+    _block_lengths = [8, 14784, 1]
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(mem_format_8900, self._mmap)
+
+    def get_features(self):
+        rf = FT8800Radio.get_features(self)
+        rf.has_sub_devices = False
+        rf.valid_bands = [(28.0,   29.7),
+                          (50.0,   54.0),
+                          (108.0, 180.0),
+                          (320.0, 480.0),
+                          (700.0, 985.0)]
+
+        return rf
+
+    def _checksums(self):
+        return [ yaesu_clone.YaesuChecksum(0x0000, 0x39C7) ]
+
+    def _get_mem_skip(self, mem, _mem):
+        return SKIPS[_mem.skip]
+
+    def _set_mem_skip(self, mem, _mem):
+        _mem.skip = SKIPS.index(mem.skip)
+
+    def set_memory(self, mem):
+        FT8800Radio.set_memory(self, mem)
+
+        # The 8900 has a bit flag that tells the radio whether or not
+        # the memory should show up on the sub (right) band
+        _mem = self._memobj.memory[mem.number - 1]
+        if mem.freq < 108.0 or mem.freq > 480.0:
+            _mem.sub_used = 0;
+        else:
+            _mem.sub_used = 1
