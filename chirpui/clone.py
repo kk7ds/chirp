@@ -132,7 +132,7 @@ class CloneSettingsDialog(gtk.Dialog):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, title, buttons=buttons, parent=parent)
-        
+        self.set_default_response(gtk.RESPONSE_OK)
         self.__make_ui(settings)
 
     def run(self):

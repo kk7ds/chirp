@@ -94,6 +94,7 @@ class FieldDialog(gtk.Dialog):
                                  gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
 
         self.__fields = {}
+        self.set_default_response(gtk.RESPONSE_OK)
 
         gtk.Dialog.__init__(self, **kwargs)
 
