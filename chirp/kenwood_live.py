@@ -123,6 +123,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             mem = chirp_common.Memory()
             mem.number = number
             mem.empty = True
+            self.__memcache[mem.number] = mem
             return mem
         elif " " not in result:
             print "Not sure what to do with this: `%s'" % result
