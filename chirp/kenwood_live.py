@@ -168,6 +168,9 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         return chirp_common.name8(name)
 
     def erase_memory(self, number):
+        if not self.__memcache.has_key(number):
+            return
+
         r = command(self.pipe, *self._cmd_set_memory(number))
         if iserr(r):
             raise errors.RadioError("Radio refused delete of %i" % number)
