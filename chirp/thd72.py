@@ -477,12 +477,13 @@ if __name__ == "__main__":
         return r
 
     def usage():
-        print "Usage: %s <-i input.img>|<-o output.img> -p port [-f first-addr] [-l last-addr]" % sys.argv[0]
+        print "Usage: %s <-i input.img>|<-o output.img> -p port [[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" % sys.argv[0]
         sys.exit(1)
 
-    opts, args = getopt.getopt(sys.argv[1:], "i:o:p:f:l:")
+    opts, args = getopt.getopt(sys.argv[1:], "i:o:p:f:l:b:")
     opts = fixopts(opts)
     first = last = 0
+    blocks = None
     if '-i' in opts:
         fname = opts['-i']
         download = False
@@ -500,23 +501,29 @@ if __name__ == "__main__":
         first = int(opts['-f'],0)
     if '-l' in opts:
         last = int(opts['-l'],0)
+    if '-b' in opts:
+        blocks = [int(b, 0) for b in opts['-b'].split(',')]
+        blocks.sort()
 
     ser = serial.Serial(port=port, baudrate=9600, timeout=0.25)
     r = THD72Radio(ser)
     memmax = r._memsize
     if not download:
         memmax -= 512
-    if first < 0 or first > (r._memsize - 1):
-        raise errors.RadioError("first address out of range")
-    if (last > 0 and last < first) or last > memmax:
-        raise errors.RadioError("last address out of range")
-    elif last == 0:
-        last = memmax
-    first /= 256
-    if last % 256 != 0:
-        last += 256
-    last /= 256
-    blocks = range(first, last)
+
+    if blocks is None:
+        if first < 0 or first > (r._memsize - 1):
+            raise errors.RadioError("first address out of range")
+        if (last > 0 and last < first) or last > memmax:
+            raise errors.RadioError("last address out of range")
+        elif last == 0:
+            last = memmax
+        first /= 256
+        if last % 256 != 0:
+            last += 256
+        last /= 256
+        blocks = range(first, last)
+
     if download:
         data = r.download(True, blocks)
         file(fname, "wb").write(data)
