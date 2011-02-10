@@ -52,6 +52,12 @@ class WaitWindow(gtk.Window):
 
         self.prog.pulse()
 
+    def set(self, fraction):
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        self.prog.set_fraction(fraction)
+
 class ImportDialog(gtk.Dialog):
 
     def _check_for_dupe(self, location):
@@ -444,8 +450,9 @@ class ImportDialog(gtk.Dialog):
                 (number, e)
 
     def populate_list(self):
-        for i in range(*self.src_radio.get_features().memory_bounds):
-            self.ww.grind()
+        start, end = self.src_radio.get_features().memory_bounds
+        for i in range(start, end):
+            self.ww.set(float(i) / end)
             try:
                 mem = self.src_radio.get_memory(i)
             except errors.InvalidMemoryLocation, e:
@@ -517,7 +524,7 @@ class ImportDialog(gtk.Dialog):
         self.build_ui()
         self.set_default_size(400, 300)
 
-        self.ww = WaitWindow("Communicating with the radio", parent=parent)
+        self.ww = WaitWindow("Preparing memory list...", parent=parent)
         self.ww.show()
         self.ww.grind()
 
