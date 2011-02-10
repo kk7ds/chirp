@@ -20,6 +20,7 @@ from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, ic2100, ic2720
 from chirp import icq7, icomciv, idrp, icf, ic9x_icf
 from chirp import vx3, vx5, vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71, thd72
+from chirp import alinco
 from chirp import xml, chirp_common, convert_icf, csv
 
 DRV_TO_RADIO = {
@@ -57,6 +58,14 @@ DRV_TO_RADIO = {
     "tmd700"         : kenwood_live.TMD700Radio,
     "tmv7"           : kenwood_live.TMV7Radio,
     "v71a"           : tmv71.TMV71ARadio,
+
+    # Jetstream
+    "jt220m"         : alinco.JT220MRadio,
+
+    # Alinco
+    "dr135"          : alinco.DR135Radio,
+    "dr235"          : alinco.DR235Radio,
+    "dr435"          : alinco.DR435Radio,
 }
 
 RADIO_TO_DRV = {}
