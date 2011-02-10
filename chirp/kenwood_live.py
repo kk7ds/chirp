@@ -105,8 +105,10 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     def _cmd_get_memory_name(self, number):
         return "MNA", "%i,%03i" % (self._vfo, number)
 
-    def _cmd_set_memory(self, number):
-        return "MW", "%i,0,%03i" % (self._vfo, number)
+    def _cmd_set_memory(self, number, spec):
+        if spec:
+            spec = "," + spec
+        return "MW", "%i,0,%03i%s" % (self._vfo, number, spec)
 
     def _cmd_set_memory_name(self, number, name):
         return "MNA", "%i,%03i,%s" % (self._vfo, number, name)
@@ -137,8 +139,11 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
 
         result = command(self.pipe, *self._cmd_get_memory_name(number))
         if " " in result:
-            value = result.split(" ")[1]
-            zero, loc, mem.name = value.split(",")
+            value = result.split(" ", 1)[1]
+            if value.count(",") == 2:
+                zero, loc, mem.name = value.split(",")
+            else:
+                loc, mem.name = value.split(",")
  
         return mem
 
@@ -154,7 +159,8 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                 "Number must be between 0 and %i" % self._upper)
 
         spec = self._make_mem_spec(memory)
-        r1 = command(self.pipe, "MW", ",".join(spec))
+        spec = ",".join(spec)
+        r1 = command(self.pipe, *self._cmd_set_memory(memory.number, spec))
         if not iserr(r1):
             r2 = command(self.pipe, *self._cmd_set_memory_name(memory.number,
                                                                memory.name))
@@ -172,7 +178,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         if not self.__memcache.has_key(number):
             return
 
-        r = command(self.pipe, *self._cmd_set_memory(number))
+        r = command(self.pipe, *self._cmd_set_memory(number, ""))
         if iserr(r):
             raise errors.RadioError("Radio refused delete of %i" % number)
         del self.__memcache[number]
@@ -193,9 +199,6 @@ class THD7Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "0",
-            "0",
-            "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
@@ -250,9 +253,6 @@ class TMD700Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "0",
-            "0",
-            "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
@@ -310,8 +310,6 @@ class TMV7Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "%i" % self._vfo,
-            "0",
             "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
@@ -434,9 +432,6 @@ class THF6ARadio(KenwoodLiveRadio):
     def _cmd_get_memory_name(self, number):
         return "MNA", "%i,%03i" % (self._vfo, number)
 
-    def _cmd_set_memory(self, number):
-        return "MW", "%i,%03i" % (self._vfo, number)
-
     def _cmd_set_memory_name(self, number, name):
         return "MNA", "%03i,%s" % (number, name)
 
@@ -466,8 +461,6 @@ class THF6ARadio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "0",
-            "%03i" % mem.number,
             "%011i" % (mem.freq * 1000000),
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
@@ -481,5 +474,80 @@ class THF6ARadio(KenwoodLiveRadio):
             "%09i" % (mem.offset * 1000000),
             "%i" % (THF6_MODES.index(mem.mode)),
             "%i" % (mem.skip == "S"))
+
+        return spec
+
+D710_DUPLEX = ["", "+", "-"]
+D710_MODES = ["FM", "NFM", "AM"]
+
+class TMD710Radio(KenwoodLiveRadio):
+    MODEL = "TM-D710"
+    
+    _upper = 999
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = D710_MODES
+        rf.memory_bounds = (0, 999)
+        return rf
+
+    def _cmd_get_memory(self, number):
+        return "ME", "%03i" % number
+
+    def _cmd_get_memory_name(self, number):
+        return "MN", "%03i" % number
+
+    def _cmd_set_memory(self, number, spec):
+        return "ME", "%03i,%s" % (number, spec)
+
+    def _cmd_set_memory_name(self, number, name):
+        return "MN", "%03i,%s" % (number, name)
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+
+        mem.number = int(spec[0])
+        mem.freq = int(spec[1]) / 1000000.0
+        mem.tuning_step = chirp_common.TUNING_STEPS[int(spec[2], 16)]
+        mem.duplex = D710_DUPLEX[int(spec[3])]
+        # Reverse
+        if int(spec[5]):
+            mem.tmode = "Tone"
+        elif int(spec[6]):
+            mem.tmode = "TSQL"
+        elif int(spec[7]):
+            mem.tmode = "DTCS"
+        mem.rtone = chirp_common.TONES[int(spec[8]) - 1]
+        mem.ctone = chirp_common.TONES[int(spec[9]) - 1]
+        mem.dtcs = chirp_common.DTCS_CODES[int(spec[10])]
+        mem.offset = int(spec[11]) / 1000000.0
+        mem.mode = D710_MODES[int(spec[12])]
+        # TX Frequency?
+        # Unknown
+        # Memory Lockout
+
+        return mem
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "%010i" % (mem.freq * 1000000),
+            "%X" % chirp_common.TUNING_STEPS.index(mem.tuning_step),
+            "%i" % D710_DUPLEX.index(mem.duplex),
+            "0", # Reverse
+            "%i" % (mem.tmode == "Tone" and 1 or 0),
+            "%i" % (mem.tmode == "TSQL" and 1 or 0),
+            "%i" % (mem.tmode == "DTCS" and 1 or 0),
+            "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
+            "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
+            "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
+            "%08i" % (mem.offset * 1000000),
+            "%i" % D710_MODES.index(mem.mode),
+            "%010i" % 0, # TX Frequency?
+            "0", # Unknown
+            "0", # Memory Lockout
+            )
 
         return spec
