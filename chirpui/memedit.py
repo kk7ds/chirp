@@ -789,7 +789,6 @@ time.  Are you sure you want to do this?"""
             ("valid_tmodes", "Tone Mode"),
             ("valid_tmodes", "Tone"),
             ("valid_duplexes", "Duplex"),
-            ("valid_tuning_steps", "Tune Step"),
             ("valid_skips", "Skip"),
             ("valid_power_levels", "Power"),
             ]
