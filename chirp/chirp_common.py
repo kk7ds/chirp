@@ -55,6 +55,9 @@ DTCS_CODES = [
     731, 732, 734, 743, 754,
      ]
 
+# Some radios have some strange codes
+DTCS_EXTRA_CODES = [ 17, ]
+
 CROSS_MODES = [
     "DCS->Off",
     "Tone->DCS",
@@ -167,7 +170,7 @@ class Memory:
     _valid_map = {
         "rtone"         : TONES,
         "ctone"         : TONES,
-        "dtcs"          : DTCS_CODES,
+        "dtcs"          : DTCS_CODES + DTCS_EXTRA_CODES,
         "tmode"         : TONE_MODES,
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
         "cross_mode"    : CROSS_MODES,
