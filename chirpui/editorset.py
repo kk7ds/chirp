@@ -233,6 +233,7 @@ class EditorSet(gtk.VBox):
             else:
                 dst_radio = xml.XMLRadio(filen)
         except Exception, e:
+            common.log_exception()
             common.show_error(e)
             return
 
