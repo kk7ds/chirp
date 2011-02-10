@@ -193,7 +193,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
-    if mem.power == POWER_LEVELS[1]: # Low
+        if mem.power == POWER_LEVELS[1]: # Low
             _mem.power = 0x00
         else: # Default to High
             _mem.power = 0x03
@@ -213,4 +213,4 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
-    return msgs
+        return msgs
