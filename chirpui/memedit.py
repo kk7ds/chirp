@@ -89,7 +89,7 @@ class MemoryEditor(common.Editor):
         "Offset"    : 0.0,
         "Mode"      : "FM",
         "Power"     : "",
-        "Tune Step" : 10.0,
+        "Tune Step" : 5.0,
         "Tone Mode" : "",
         "Skip"      : "",
         "Bank"      : "",
@@ -113,6 +113,8 @@ class MemoryEditor(common.Editor):
         return self.rthread.radio.filter_name(new)
 
     def ed_freq(self, _, path, new, __):
+        iter = self.store.get_iter(path)
+
         def set_offset(path, offset):
             if offset > 0:
                 dup = "+"
@@ -122,17 +124,16 @@ class MemoryEditor(common.Editor):
                 dup = "-"
                 offset *= -1
 
-            iter = self.store.get_iter(path)
-            
             if offset:
                 self.store.set(iter, self.col("Offset"), offset)
 
             self.store.set(iter, self.col("Duplex"), dup)
 
         def set_ts(path, ts):
-            iter = self.store.get_iter(path)
-
             self.store.set(iter, self.col("Tune Step"), ts)
+
+        def get_ts(path):
+            return self.store.get(iter, self.col("Tune Step"))[0]
 
         try:
             new = float(new)
@@ -141,9 +142,13 @@ class MemoryEditor(common.Editor):
             new = None
 
         if chirp_common.is_6_25(new):
-            set_ts(path, 6.25)
+            set_ts(6.25)
         elif chirp_common.is_12_5(new):
-            set_ts(path, 12.5)
+            set_ts(12.5)
+        else:
+            ts = get_ts(path)
+            if int(new * 1000) % ts:
+                set_ts(5.0)
 
         if new:
             set_offset(path, 0)
