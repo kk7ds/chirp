@@ -35,8 +35,8 @@ struct {
   u8 ctone;
   u8 dtcs_tx;
   u8 dtcs_rx;
-  u8 name[6];
-  u8 unknown8[10];
+  u8 name[7];
+  u8 unknown8[9];
 } memory[100];
 
 #seekto 0x0130;
@@ -148,19 +148,17 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
 DUPLEX = ["", "-", "+"]
 TMODES = ["", "Tone", "", "TSQL"] + [""] * 12
 TMODES[12] = "DTCS"
-DCS_CODES = [17] + chirp_common.DTCS_CODES
+DCS_CODES = {
+    "Alinco" : chirp_common.DTCS_CODES,
+    "Jetstream" : [17] + chirp_common.DTCS_CODES,
+}
 
-JT_CHARSET = (["\x00"] * 0x30) + \
+CHARSET = (["\x00"] * 0x30) + \
     [chr(x + ord("0")) for x in range(0, 10)] + \
     [chr(x + ord("A")) for x in range(0, 26)] + [" "] + \
     list("?" * 128)
 
-AL_CHARSET = [chr(x + ord("0")) for x in range(0, 10)] + \
-    [chr(x + ord("A")) for x in range(0, 26)] + [" "] + \
-    list("?" * 128)
-
 class DRx35Radio(AlincoStyleRadio):
-    _charset = AL_CHARSET
     _range = (118, 155)
 
     def _get_name(self, mem, _mem):
@@ -168,13 +166,13 @@ class DRx35Radio(AlincoStyleRadio):
         for i in _mem.name:
             if not i:
                 break
-            mem.name += self._charset[i]
+            name += CHARSET[i]
         return name
 
     def _set_name(self, mem, _mem):
-        name = [0x00] * 6
-        for i in range(0, 6):
-            name[i] = self._charset.index(mem.name[i])
+        name = [0x00] * 7
+        for i in range(0, 7):
+            name[i] = CHARSET.index(mem.name[i])
         return name
 
     def get_features(self):
@@ -182,7 +180,8 @@ class DRx35Radio(AlincoStyleRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_skips = ["", "S"]
-        rf.memory_bounds = self._range
+        rf.valid_bands = [self._range]
+        rf.memory_bounds = (0, 99)
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_tuning_step = False
@@ -203,7 +202,7 @@ class DRx35Radio(AlincoStyleRadio):
         mem.duplex = DUPLEX[_mem.duplex]
         mem.offset = int(_mem.offset) / 10000.0
         mem.tmode = TMODES[_mem.tmode]
-        mem.dtcs = DCS_CODES[_mem.dtcs_tx]
+        mem.dtcs = DCS_CODES[self.VENDOR][_mem.dtcs_tx]
 
         if _mem.isnarrow:
             mem.mode = "NFM"
@@ -226,8 +225,8 @@ class DRx35Radio(AlincoStyleRadio):
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.offset = int(mem.offset * 10000)
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.dtcs_tx = DCS_CODES.index(mem.dtcs)
-        _mem.dtcs_rx = DCS_CODES.index(mem.dtcs)
+        _mem.dtcs_tx = DCS_CODES[self.VENDOR].index(mem.dtcs)
+        _mem.dtcs_rx = DCS_CODES[self.VENDOR].index(mem.dtcs)
 
         _mem.isnarrow = mem.mode == "NFM"
 
@@ -238,6 +237,8 @@ class DRx35Radio(AlincoStyleRadio):
 
         _mem.name = self._set_name(mem, _mem)
             
+    def filter_name(self, name):
+        return chirp_common._name(name, 7, True)
 
 class DR135Radio(DRx35Radio):
     VENDOR = "Alinco"
@@ -285,7 +286,6 @@ class JT220MRadio(DRx35Radio):
     _model = "DR136"
     _memsize = 4096
     _range = (216.0, 280.0)
-    _charset = JT_CHARSET
 
     @classmethod
     def match_model(cls, filedata):
