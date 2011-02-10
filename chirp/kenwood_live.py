@@ -191,9 +191,10 @@ class THD7Radio(KenwoodLiveRadio):
         rf.has_dtcs = False
         rf.has_dtcs_polarity = False
         rf.has_bank = False
-        rf.has_mode = False
+        rf.has_mode = True
         rf.has_tuning_step = False
         rf.valid_modes = MODES.values()
+        rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -242,12 +243,13 @@ class TMD700Radio(KenwoodLiveRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_dtcs = False
+        rf.has_dtcs = True
         rf.has_dtcs_polarity = False
         rf.has_bank = False
         rf.has_mode = False
         rf.has_tuning_step = False
-        rf.valid_modes = MODES.values()
+        rf.valid_modes = ["FM"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -304,6 +306,7 @@ class TMV7Radio(KenwoodLiveRadio):
         rf.has_mode = False
         rf.has_tuning_step = False
         rf.valid_modes = ["FM"]
+        rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.has_sub_devices = True
         rf.memory_bounds = (1, self._upper)
         return rf
