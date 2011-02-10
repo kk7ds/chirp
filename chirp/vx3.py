@@ -65,7 +65,6 @@ struct {
 } memory[900];
 """
 
-#power is 11 for 1W and 00 for 100mW
 #fix auto mode setting and auto step setting
 
 DUPLEX = ["", "-", "+", "split"]
@@ -82,6 +81,9 @@ STEPS = [ 5.0, 9, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0 ]
 
 #Empty char should be 0xFF but right now we are coding in a space
 CHARSET = list("0123456789" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ " + "+-/?[](){}??_?????????????*??,'|????\?????" + "?"*59)
+
+POWER_LEVELS = [chirp_common.PowerLevel("High", watts=1.50),
+                chirp_common.PowerLevel("Low", watts=0.10)]
 
 class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
@@ -112,6 +114,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(0.5, 999.0)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -133,6 +136,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.number = number
         if not used:
             mem.empty = True
+            mem.power = POWER_LEVELS[0]
             return mem
 
         mem.freq = int(_mem.freq) / 1000.0
@@ -144,6 +148,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
+        mem.power = POWER_LEVELS[~_mem.power & 0x01]
 
         for i in _mem.name:
             if i == 0xFF:
@@ -153,7 +158,6 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _wipe_memory(self, mem):
         mem.set_raw("\x00" * (mem.size() / 8))
-        mem.power = 0x03 #this sets power to full by default
         #the following settings are set to match the defaults
         #on the radio, some of these fields are unknown
         mem.name = [0xFF for i in range(0, 6)]
@@ -173,6 +177,9 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag["%s_masked" % nibble] = not mem.empty
         _flag["%s_valid" % nibble] = not mem.empty
         if mem.empty:
+        #stubbed waiting for wipe_memory option in gui
+        #only erases deleted memories not ones which are blank when read in
+        #    _mem.set_raw("\xFF" * (_mem.size() / 8))
             return
 
         if not was_valid:
@@ -186,6 +193,10 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
+    if mem.power == POWER_LEVELS[1]: # Low
+            _mem.power = 0x00
+        else: # Default to High
+            _mem.power = 0x03
 
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
@@ -199,3 +210,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def filter_name(self, name):
         return chirp_common.name6(name, just_upper=True)
+
+    def validate_memory(self, mem):
+        msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
+    return msgs
