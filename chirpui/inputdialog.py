@@ -77,7 +77,8 @@ class EditableChoiceDialog(ChoiceDialog):
 
 class ExceptionDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
-        gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
+        gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK,
+                                   type=gtk.MESSAGE_ERROR, **args)
         self.set_property("text", "An error has occurred")
         self.format_secondary_text(str(exception))
 

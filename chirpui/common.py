@@ -201,7 +201,8 @@ def log_exception():
 	print "------"
 
 def show_error(msg, parent=None):
-    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent)
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent,
+                          type=gtk.MESSAGE_ERROR)
     d.set_property("text", msg)
 
     if not parent:
@@ -211,7 +212,8 @@ def show_error(msg, parent=None):
     d.destroy()
 
 def ask_yesno_question(msg, parent=None):
-    d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO, parent=parent)
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO, parent=parent,
+                          type=gtk.MESSAGE_QUESTION)
     d.set_property("text", msg)
 
     if not parent:
