@@ -31,16 +31,17 @@ struct {
      duplex:2,
      tune_step:4;
   bbcd freq[3];
-  u8 unknown2:6,
+  u8 power:2,
+     unknown2:4,
      tone_mode:2;
-  u8 unknown[2];
+  u8 unknown4[2];
   char label[16];
   bbcd offset[3];
-  u8 unknown3:2,
+  u8 unknown5:2,
      tone:6;
-  u8 unknown4:1,
+  u8 unknown6:1,
      dcs:7;
-  u8 unknown5[3];
+  u8 unknown7[3];
 } memory[900];
 
 #seekto 0xFECA;
@@ -60,6 +61,11 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [" ",] + \
     [chr(x) for x in range(ord("a"), ord("z")+1)] + \
     list(".,:;*#_-/&()@!?^ ") + list("?" * 100)
+
+POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
+                chirp_common.PowerLevel("L3", watts=2.50),
+                chirp_common.PowerLevel("L2", watts=1.00),
+                chirp_common.PowerLevel("L1", watts=0.05)]
 
 class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 38400
@@ -84,6 +90,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(0.5, 999.9)]
         rf.valid_skips = ["", "S"]
+        rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -112,6 +119,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.mode = MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
+        mem.power = POWER_LEVELS[3 - _mem.power]
 
         for i in str(_mem.label):
             if i == "\xFF":
@@ -144,6 +152,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
+        _mem.power = 3 - POWER_LEVELS.index(mem.power)
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
         _mem.label = label.ljust(16, "\xFF")
@@ -153,3 +162,6 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def filter_name(self, name):
         return chirp_common.name16(name)
+
+class VX8DRadio(VX8Radio):
+    _model = "AH29D"
