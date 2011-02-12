@@ -84,7 +84,7 @@ def default_build():
         scripts=["chirpw"],
         data_files=[('/usr/share/applications', desktop_files),
                     ('/usr/share/chirp/images', image_files),
-                    ('/usr/share/doc/chirp/COPYING', 'COPYING'),
+                    ('/usr/share/doc/chirp', ['COPYING']),
                     ] + locale_files)
 
 def rpttool_build():
