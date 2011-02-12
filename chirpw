@@ -34,11 +34,16 @@ if hasattr(sys, "frozen"):
 
 a = mainapp.ChirpMain()
 
-if len(sys.argv) > 1 and sys.argv[1] == "--profile":
-    profile = True
+profile = False
+if len(sys.argv) > 1:
+    arg = sys.argv[1]
     index = 2
+    if arg == "--profile":
+        profile = True
+    elif arg == "--help":
+        print "Usage: %s [file...]" % sys.argv[0]
+        sys.exit(0)
 else:
-    profile = False
     index = 1
 
 for i in sys.argv[index:]:
