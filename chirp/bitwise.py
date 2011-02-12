@@ -173,7 +173,6 @@ class arrayDataElement(DataElement):
     def __set_value_lbcd(self, value):
         for i in self.__items:
             twodigits = value % 100
-            print "Twodigits: %i" % twodigits
             value /= 100
             i.set_value(twodigits)
 
