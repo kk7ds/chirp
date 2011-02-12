@@ -85,6 +85,7 @@ def default_build():
         data_files=[('/usr/share/applications', desktop_files),
                     ('/usr/share/chirp/images', image_files),
                     ('/usr/share/doc/chirp', ['COPYING']),
+                    ('/usr/man/man1/chirpw.1', ["share/chirpw.1"]),
                     ] + locale_files)
 
 def rpttool_build():
@@ -120,6 +121,9 @@ else:
         nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
         rpttool_build()
     if os.path.exists("chirpui"):
-        nuke_manifest("include *.xsd", "include *.desktop", "include COPYING")
+        nuke_manifest("include *.xsd",
+                      "include share/*.desktop",
+                      "include share/*.1",
+                      "include COPYING")
         default_build()
 
