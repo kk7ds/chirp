@@ -80,8 +80,11 @@ class CloneSettingsDialog(gtk.Dialog):
         if not conf.get("last_vendor"):
             conf.set("last_vendor", sorted(vendors.keys())[0])
 
-        v = miscwidgets.make_choice(vendors.keys(), False,
-                                    conf.get("last_vendor"))
+        last_vendor = conf.get("last_vendor")
+        if last_vendor not in vendors.keys():
+            last_vendor = vendors.keys()[0]
+
+        v = miscwidgets.make_choice(vendors.keys(), False, last_vendor)
 
         def _changed(box, vendors, model):
             models = vendors[box.get_active_text()]
