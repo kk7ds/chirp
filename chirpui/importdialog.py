@@ -461,11 +461,11 @@ class ImportDialog(gtk.Dialog):
                 continue
 
             msgs = self.dst_radio.validate_memory(mem)
-            errors = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
-            if errors:
+            errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
+            if errs:
                 msg = "Unsupported by destination radio: %s" % (",".join(msgs))
             else:
-                errors = []
+                errs = []
                 msg = str(mem)
 
             self.__store.append(row=(not bool(msgs),
@@ -473,7 +473,7 @@ class ImportDialog(gtk.Dialog):
                                      mem.number,
                                      mem.name,
                                      mem.freq,
-                                     not bool(errors),
+                                     not bool(errs),
                                      msg
                                      ))
             self.record_use_of(mem.number)
