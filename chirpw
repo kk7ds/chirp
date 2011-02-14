@@ -43,6 +43,8 @@ if len(sys.argv) > 1:
     elif arg == "--help":
         print "Usage: %s [file...]" % sys.argv[0]
         sys.exit(0)
+    else:
+        index = 1
 else:
     index = 1
 
