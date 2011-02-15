@@ -18,6 +18,7 @@
 import gtk
 
 from miscwidgets import make_choice
+from chirpui import reporting
 
 class TextInputDialog(gtk.Dialog):
     def respond_ok(self, _):
@@ -84,6 +85,7 @@ class ExceptionDialog(gtk.MessageDialog):
 
         import traceback
         import sys
+        reporting.report_exception(traceback.format_exc(limit=30))
         print "--- Exception Dialog: %s ---" % exception
         traceback.print_exc(limit=100, file=sys.stdout)
         print "----------------------------"

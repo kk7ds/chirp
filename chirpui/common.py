@@ -22,6 +22,7 @@ import threading
 import time
 
 from chirp import errors
+from chirpui import reporting
 
 class Editor(gobject.GObject):
     __gsignals__ = {
@@ -195,6 +196,8 @@ class RadioThread(threading.Thread, gobject.GObject):
 def log_exception():
 	import traceback
 	import sys
+
+        reporting.report_exception(traceback.format_exc(limit=30))
 
 	print "-- Exception: --"
 	traceback.print_exc(limit=30, file=sys.stdout)

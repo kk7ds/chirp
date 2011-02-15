@@ -35,7 +35,7 @@ except ImportError,e:
 from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
 from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
 from chirp import icf, ic9x_icf
-from chirpui import editorset, clone, miscwidgets, config
+from chirpui import editorset, clone, miscwidgets, config, reporting
 
 CONF = config.get()
 
@@ -186,8 +186,10 @@ class ChirpMain(gtk.Window):
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             self.tabs.set_current_page(tab)
 
-        if not CONF.get_bool("live_mode", "noconfirm"):
-            self.do_live_warning(radio)
+        if isinstance(radio, chirp_common.LiveRadio):
+            reporting.report_model_usage(radio, "live", True)
+            if not CONF.get_bool("live_mode", "noconfirm"):
+                self.do_live_warning(radio)
 
     def do_save(self, eset=None):
         if not eset:
@@ -232,6 +234,7 @@ class ChirpMain(gtk.Window):
 
     def cb_clonein(self, radio, emsg=None):
         radio.pipe.close()
+        reporting.report_model_usage(radio, "download", bool(emsg))
         if not emsg:
             self.do_open_live(radio, tempname="(Untitled)")
         else:
@@ -241,6 +244,7 @@ class ChirpMain(gtk.Window):
 
     def cb_cloneout(self, radio, fn, emsg= None):
         radio.pipe.close()
+        reporting.report_model_usage(radio, "upload", True)
 
     def record_recent_radio(self, port, rtype):
         if (port, rtype) in self._recent:
@@ -386,7 +390,8 @@ class ChirpMain(gtk.Window):
             return
 
         eset = self.get_current_editorset()
-        eset.do_import(filen)
+        count = eset.do_import(filen)
+        reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
     def do_export(self, type="chirp"):
         
@@ -409,7 +414,8 @@ class ChirpMain(gtk.Window):
         if not filen:
             return
 
-        eset.do_export(filen)
+        count = eset.do_export(filen)
+        reporting.report_model_usage(eset.rthread.radio, "export", count > 0)
 
     def do_about(self):
         d = gtk.AboutDialog()
@@ -506,6 +512,29 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
         eset.memedit.copy_selection(True)
 
+    def do_toggle_report(self, action):
+        if not action.get_active():
+            d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO,
+                                  parent=self)
+            d.set_markup("<b><big>Reporting is disabled</big></b>")
+            msg = "The reporting feature of CHIRP is designed to help "       +\
+                "<u>improve quality</u> by allowing the authors to focus on " +\
+                "the radio drivers used most often and errors experienced by "+\
+                "the users.  The reports contain no identifying information " +\
+                "and are used only for statistical purposes by the authors.  "+\
+                "Your privacy is extremely important, but <u>please consider "+\
+                "leaving this feature enabled to help make CHIRP better!</u>" +\
+                "\r\n\r\n"                                                    +\
+                "<b>Are you sure you want to disable this feature?</b>"
+            d.format_secondary_markup(msg)
+            r = d.run()
+            d.destroy()
+            if r == gtk.RESPONSE_NO:
+                action.set_active(not action.get_active())
+
+        conf = config.get()
+        conf.set_bool("no_report", not action.get_active())
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -547,6 +576,8 @@ class ChirpMain(gtk.Window):
             self.do_paste()
         elif action == "delete":
             self.do_delete()
+        elif action == "report":
+            self.do_toggle_report(_action)
         else:
             return
 
@@ -589,6 +620,7 @@ class ChirpMain(gtk.Window):
     </menu>
     <menu action="help">
       <menuitem action="about"/>
+      <menuitem action="report"/>
     </menu>
   </menubar>
 </ui>
@@ -622,9 +654,17 @@ class ChirpMain(gtk.Window):
             ('recent', None, "Recent", None, None, self.mh),
             ]
 
+        conf = config.get()
+        re = not conf.get_bool("no_report");
+
+        toggles = [\
+            ('report', None, "Report statistics", None, None, self.mh, re),
+            ]
+
         self.menu_uim = gtk.UIManager()
         self.menu_ag = gtk.ActionGroup("MenuBar")
         self.menu_ag.add_actions(actions)
+        self.menu_ag.add_toggle_actions(toggles)
 
         self.menu_uim.insert_action_group(self.menu_ag, 0)
         self.menu_uim.add_ui_from_string(menu_xml)
@@ -701,7 +741,6 @@ class ChirpMain(gtk.Window):
 
         vbox.show()
 
-
         self.add(vbox)
 
         self.set_default_size(800, 600)
@@ -709,3 +748,13 @@ class ChirpMain(gtk.Window):
 
         self.connect("delete_event", self.ev_delete)
         self.connect("destroy", self.ev_destroy)
+
+        if not CONF.get_bool("warned_about_reporting") and \
+                not CONF.get_bool("no_report"):
+            d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=self)
+            d.set_markup("<b><big>Error reporting is enabled</big></b>")
+            d.format_secondary_markup("If you wish to disable this feature " +
+                                      "you may do so in the <u>Help</u> menu")
+            d.run()
+            d.destroy()
+        CONF.set_bool("warned_about_reporting", True)
