@@ -21,6 +21,7 @@ from chirp import icq7, icomciv, idrp, icf, ic9x_icf
 from chirp import vx3, vx5, vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
+from chirp import wouxun
 from chirp import xml, chirp_common, convert_icf, csv
 
 DRV_TO_RADIO = {
@@ -68,6 +69,9 @@ DRV_TO_RADIO = {
     "dr135"          : alinco.DR135Radio,
     "dr235"          : alinco.DR235Radio,
     "dr435"          : alinco.DR435Radio,
+
+    # Wouxun
+    "kguvd1p"        : wouxun.KGUVD1PRadio,
 }
 
 RADIO_TO_DRV = {}
