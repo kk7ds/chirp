@@ -134,13 +134,20 @@ class CloneSettingsDialog(gtk.Dialog):
     def __init__(self, settings=None, parent=None, title="Radio"):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
-        gtk.Dialog.__init__(self, title, buttons=buttons, parent=parent)
-        self.set_default_response(gtk.RESPONSE_OK)
+        gtk.Dialog.__init__(self, title,
+                            parent=parent,
+                            flags=gtk.DIALOG_MODAL)
         self.__make_ui(settings)
+        self.__cancel_button = self.add_button(gtk.STOCK_CANCEL,
+                                               gtk.RESPONSE_CANCEL)
+        self.__okay_button = self.add_button(gtk.STOCK_OK,
+                                             gtk.RESPONSE_OK)
+        self.__okay_button.grab_default()
+        self.__okay_button.grab_focus()
 
     def run(self):
         r = gtk.Dialog.run(self)
-        if r == gtk.RESPONSE_CANCEL:
+        if r != gtk.RESPONSE_OK:
             return None
 
         vendor = self.__vend.get_active_text()
