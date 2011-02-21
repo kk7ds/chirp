@@ -192,13 +192,19 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
         return mem
 
+    def wipe_memory(self, _mem, byte):
+        _mem.set_raw(byte * (_mem.size() / 8))
+
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            self.wipe_memory(_mem, "\x00")
             return
+
+        if _mem.get_raw() == ("\xFF" * 16):
+            self.wipe_memory(_mem, "\x00")
 
         _mem.rx_freq = int(mem.freq * 100000)
         if mem.duplex == "+":
