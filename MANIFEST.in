@@ -1,3 +1,4 @@
 include *.xsd
-include *.desktop
+include share/*.desktop
+include share/*.1
 include COPYING
