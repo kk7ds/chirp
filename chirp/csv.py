@@ -22,7 +22,7 @@ from chirp import chirp_common, errors
 class OmittedHeaderError(Exception):
     pass
 
-class CSVRadio(chirp_common.CloneModeRadio):
+class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "CSV"
     MODEL = "Generic"
 
