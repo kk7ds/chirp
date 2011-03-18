@@ -336,7 +336,10 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         self._detect_baud()
-        self.upload(self._dirty_blocks)
+        if len(self._dirty_blocks):
+            self.upload(self._dirty_blocks)
+        else:
+            self.upload()
 
     def read_block(self, block, count=256):
         self.pipe.write(struct.pack("<cBHB", "R", 0, block, 0))
