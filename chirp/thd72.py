@@ -210,7 +210,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         return sorted(THD72_SPECIAL.keys())
 
     def filter_name(self, name):
-        return chirp_common.name8(name, False)
+        return name[:8]
 
     def add_dirty_block(self, memobj):
         block = memobj._offset / 256
