@@ -17,7 +17,7 @@ import os
 import tempfile
 
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, ic2100, ic2720
-from chirp import icq7, icomciv, idrp, icf, ic9x_icf, icw32
+from chirp import icq7, icomciv, idrp, icf, ic9x_icf, icw32, ict70
 from chirp import vx3, vx5, vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
@@ -40,6 +40,7 @@ DRV_TO_RADIO = {
     "idrpx000v"      : idrp.IDRPx000V,
     "icq7"           : icq7.ICQ7Radio,
     "icw32"          : icw32.ICW32ARadio,
+    "ict70"          : ict70.ICT70Radio,
     "icom7200"       : icomciv.Icom7200Radio,
 
     # Yaesu
