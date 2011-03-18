@@ -129,7 +129,7 @@ class MemoryEditor(common.Editor):
 
             self.store.set(iter, self.col("Duplex"), dup)
 
-        def set_ts(path, ts):
+        def set_ts(ts):
             self.store.set(iter, self.col("Tune Step"), ts)
 
         def get_ts(path):
