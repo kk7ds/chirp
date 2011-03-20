@@ -23,6 +23,8 @@ from chirp import chirp_common, errors, xml_ll, platform
 def validate_doc(doc):
     basepath = platform.get_platform().executable_path()
     path = os.path.abspath(os.path.join(basepath, "chirp.xsd"))
+    if not os.path.exists(path):
+        path = "/usr/share/chirp/chirp.xsd"         
 
     try:
         ctx = libxml2.schemaNewParserCtxt(path)
