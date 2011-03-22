@@ -432,6 +432,11 @@ class THF6ARadio(KenwoodLiveRadio):
     def _cmd_get_memory(self, number):
         return "MR", "0,%03i" % number
 
+    def _cmd_set_memory(self, number, spec):
+        if spec:
+            spec = "," + spec
+        return "MW", "%i,%03i%s" % (self._vfo, number, spec)
+
     def _cmd_get_memory_name(self, number):
         return "MNA", "%i,%03i" % (self._vfo, number)
 
