@@ -27,6 +27,7 @@ def win32_build():
     opts = {
         "py2exe" : {
             "includes" : "pango,atk,gobject,cairo,pangocairo,win32gui,win32com,win32com.shell,email.iterators,email.generator",
+
             "compressed" : 1,
             "optimize" : 2,
             "bundle_files" : 3,
@@ -35,7 +36,9 @@ def win32_build():
         }
 
     setup(
-        windows=[{'script' : "chirpw" },],
+        windows=[{'script'        : "chirpw",
+                  'icon_resources': [(0x0004, 'share/chirp.ico')],
+		 }],
         options=opts)
 
 def macos_build():
@@ -85,7 +88,8 @@ def default_build():
         data_files=[('/usr/share/applications', desktop_files),
                     ('/usr/share/chirp/images', image_files),
                     ('/usr/share/doc/chirp', ['COPYING']),
-                    ('/usr/man/man1/chirpw.1', ["share/chirpw.1"]),
+		    ('/usr/share/pixmaps', ['share/chirp.png']),
+                    ('/usr/man/man1', ["share/chirpw.1"]),
                     ] + locale_files)
 
 def rpttool_build():
