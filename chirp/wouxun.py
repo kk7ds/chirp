@@ -26,13 +26,13 @@ struct {
   lbcd tx_freq[4];
   ul16 rx_tone;
   ul16 tx_tone;
-  u8 unknown[2];
+  u8 _3_unknown;
   u8 _2_unknown_1:1,
      skip:1,
      _2_unknown_2:1,
-     isnarrow:1,
+     iswide:1,
      _2_unknown_3:4;
-  u8 _3_unknown;
+  u8 unknown[2];
 } memory[128];
 
 #seekto 0x1000;
@@ -171,9 +171,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         elif mem.offset:
             mem.duplex = "+"
         mem.offset = abs(mem.offset)
-        if _mem.skip:
+        if not _mem.skip:
             mem.skip = "S"
-        if _mem.isnarrow:
+        if not _mem.iswide:
             mem.mode = "NFM"
             
         if _mem.tx_tone == 0xFFFF:
@@ -213,8 +213,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             _mem.tx_freq = int(mem.freq * 100000) - int(mem.offset * 100000)
         else:
             _mem.tx_freq = int(mem.freq * 100000)
-        _mem.skip = mem.skip == "S"
-        _mem.isnarrow = mem.mode == "NFM"
+        _mem.skip = mem.skip != "S"
+        _mem.iswide = mem.mode != "NFM"
 
         if mem.tmode == "DTCS":
             _mem.tx_tone = int("%i" % mem.dtcs, 8) + 0x2800
