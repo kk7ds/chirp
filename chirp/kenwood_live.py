@@ -432,13 +432,8 @@ class THF6ARadio(KenwoodLiveRadio):
     def _cmd_get_memory(self, number):
         return "MR", "0,%03i" % number
 
-    def _cmd_set_memory(self, number, spec):
-        if spec:
-            spec = "," + spec
-        return "MW", "%i,%03i%s" % (self._vfo, number, spec)
-
     def _cmd_get_memory_name(self, number):
-        return "MNA", "%03i" % number
+        return "MNA", "%i,%03i" % (self._vfo, number)
 
     def _cmd_set_memory_name(self, number, name):
         return "MNA", "%03i,%s" % (number, name)
@@ -528,8 +523,8 @@ class TMD710Radio(KenwoodLiveRadio):
             mem.tmode = "TSQL"
         elif int(spec[7]):
             mem.tmode = "DTCS"
-        mem.rtone = chirp_common.TONES[int(spec[8]) - 1]
-        mem.ctone = chirp_common.TONES[int(spec[9]) - 1]
+        mem.rtone = chirp_common.TONES[int(spec[8])]
+        mem.ctone = chirp_common.TONES[int(spec[9])]
         mem.dtcs = chirp_common.DTCS_CODES[int(spec[10])]
         mem.offset = int(spec[11]) / 1000000.0
         mem.mode = D710_MODES[int(spec[12])]
@@ -548,8 +543,8 @@ class TMD710Radio(KenwoodLiveRadio):
             "%i" % (mem.tmode == "Tone" and 1 or 0),
             "%i" % (mem.tmode == "TSQL" and 1 or 0),
             "%i" % (mem.tmode == "DTCS" and 1 or 0),
-            "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
-            "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
+            "%02i" % (chirp_common.TONES.index(mem.rtone)),
+            "%02i" % (chirp_common.TONES.index(mem.ctone)),
             "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
             "%08i" % (mem.offset * 1000000),
             "%i" % D710_MODES.index(mem.mode),
@@ -559,3 +554,6 @@ class TMD710Radio(KenwoodLiveRadio):
             )
 
         return spec
+
+class TMV71Radio(TMD710Radio):
+	MODEL = "TM-V71"	

@@ -106,9 +106,9 @@ def detect_kenwoodlive_radio(port):
         "TH-D7G"   : kenwood_live.THD7Radio,
         "TM-D700" : kenwood_live.TMD700Radio,
         "TM-D710" : kenwood_live.TMD710Radio,
+        "TM-V71" : kenwood_live.TMV71Radio,
         "TM-V7"   : kenwood_live.TMV7Radio,
         "TH-F6"  : kenwood_live.THF6ARadio,
-        "TM-V71"  : tmv71.TMV71ARadio,
         }
 
     if r_id in models.keys():
