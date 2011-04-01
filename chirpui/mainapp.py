@@ -33,7 +33,7 @@ except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
 from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
-from chirp import CHIRP_VERSION, convert_icf, chirp_common, detect
+from chirp import CHIRP_VERSION, chirp_common, detect
 from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting
 
@@ -434,31 +434,6 @@ class ChirpMain(gtk.Window):
         d.run()
         d.destroy()
 
-    def do_converticf(self):
-        icftypes = [("ICF Files (*.icf)", "*.icf")]
-        icffile = platform.get_platform().gui_open_file(types=icftypes)
-        if not icffile:
-            return
-
-        if icf.is_9x_icf(icffile):
-            common.show_error("IC9x files cannot be converted in this " +
-                              "manner.  Import them directly into an " +
-                              "open radio.")
-            return
-
-        imgtypes = [("CHIRP Radio Images (*.img)", "*.img")]
-        imgfile = platform.get_platform().gui_save_file(types=imgtypes)
-        if not imgfile:
-            return
-
-        try:
-            convert_icf.icf_to_image(icffile, imgfile)
-        except Exception, e:
-            common.log_exception()
-            common.show_error("Unable to convert ICF file: %s" % e)
-
-        self.do_open(imgfile)
-
     def do_columns(self):
         eset = self.get_current_editorset()
         d = gtk.Dialog(title="Select Columns",
@@ -554,8 +529,6 @@ class ChirpMain(gtk.Window):
             self.do_upload(*args)
         elif action == "close":
             self.do_close()
-        elif action == "converticf":
-            self.do_converticf()
         elif action == "import":
             self.do_import()
         elif action == "export_csv":
@@ -593,7 +566,6 @@ class ChirpMain(gtk.Window):
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <menuitem action="close"/>
-      <menuitem action="converticf"/>
       <menuitem action="quit"/>
     </menu>
     <menu action="edit">
@@ -631,7 +603,6 @@ class ChirpMain(gtk.Window):
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
-            ('converticf', gtk.STOCK_CONVERT, "Convert .icf file", None, None, self.mh),
             ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
             ('quit', gtk.STOCK_QUIT, None, None, None, self.mh),
             ('edit', None, "_Edit", None, None, self.mh),

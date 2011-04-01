@@ -22,7 +22,7 @@ from chirp import vx3, vx5, vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
 from chirp import wouxun
-from chirp import xml, chirp_common, convert_icf, csv
+from chirp import xml, chirp_common, csv, util
 
 DRV_TO_RADIO = {
 
@@ -92,6 +92,27 @@ def get_driver(radio):
     else:
         raise Exception("Unknown radio type `%s'" % radio)
 
+def icf_to_image(icf_file, img_file):
+    mdata, mmap = icf.read_file(icf_file)
+    img_data = None
+
+    for model in DRV_TO_RADIO.values():
+        try:
+            if model._model == mdata:
+                img_data = mmap.get_packed()[:model._memsize]
+                break
+        except Exception:
+            pass # Skip non-Icoms
+
+    if img_data:
+        f = file(img_file, "wb")
+        f.write(img_data)
+        f.close()
+    else:
+        print "Unsupported model data:"
+        print util.hexprint(mdata)
+        raise Exception("Unsupported model")
+
 def get_radio_by_image(image_file):
     if image_file.lower().endswith(".chirp"):
         return xml.XMLRadio(image_file)
@@ -104,7 +125,7 @@ def get_radio_by_image(image_file):
 
     if icf.is_icf_file(image_file):
         tempf = tempfile.mktemp()
-        convert_icf.icf_to_image(image_file, tempf)
+        icf_to_image(image_file, tempf)
         print "Auto-converted %s -> %s" % (image_file, tempf)
         image_file = tempf
 
