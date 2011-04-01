@@ -32,9 +32,6 @@ class ChirpConfig:
         if os.path.exists(cfg):
             self.__config.read(cfg)
 
-    def __del__(self):
-        self.save()
-
     def save(self):
         cfg = os.path.join(self.__basepath, self.__name)
         cfg_file = file(cfg, "w")

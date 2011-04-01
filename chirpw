@@ -24,7 +24,7 @@ platform.get_platform()
 import gtk
 import sys
 
-from chirpui import mainapp
+from chirpui import mainapp, config
 
 if hasattr(sys, "frozen"):
     log = file("debug.log", "w", 0)
@@ -61,3 +61,6 @@ if profile:
     p.sort_stats("cumulative").print_stats(10)
 else:
     gtk.main()
+
+if config._CONFIG:
+    config._CONFIG.save()
