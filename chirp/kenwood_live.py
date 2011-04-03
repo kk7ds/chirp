@@ -429,11 +429,16 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.memory_bounds = (0, self._upper)
         return rf
 
+    def _cmd_set_memory(self, number, spec):
+        if spec:
+            spec = "," + spec
+        return "MW", "0,%03i%s" % (number, spec)
+
     def _cmd_get_memory(self, number):
         return "MR", "0,%03i" % number
 
     def _cmd_get_memory_name(self, number):
-        return "MNA", "%i,%03i" % (self._vfo, number)
+        return "MNA", "%03i" % number
 
     def _cmd_set_memory_name(self, number, name):
         return "MNA", "%03i,%s" % (number, name)
