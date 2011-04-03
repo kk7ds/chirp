@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from chirp import platform
+from chirp import platform, CHIRP_VERSION
 
 # Hack to setup environment
 platform.get_platform()
@@ -30,7 +30,8 @@ if hasattr(sys, "frozen"):
     log = file("debug.log", "w", 0)
     sys.stderr = log
     sys.stdout = log
-    print "Log initialized"
+
+print "CHIRP %s" % CHIRP_VERSION
 
 a = mainapp.ChirpMain()
 
