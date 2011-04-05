@@ -91,7 +91,8 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
 
         mem.freq = int(_mem.freq) / 1000.0
         mem.offset = int(_mem.offset) / 10000.0
-        mem.name = str(_mem.name).rstrip()
+        if str(_mem.name)[0] != chr(0xFF):
+            mem.name = str(_mem.name).rstrip()
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
 
@@ -111,7 +112,10 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
 
         _mem.freq = int(mem.freq * 1000.0)
         _mem.offset = int(mem.offset * 10000.0)
-        _mem.name = mem.name.ljust(8)[:8]
+        if mem.name:
+            _mem.name = mem.name.ljust(8)[:8]
+        else:
+            _mem.name = ["\xFF" * 8]
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
 
