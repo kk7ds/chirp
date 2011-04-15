@@ -29,7 +29,7 @@ struct {
   u8 _3_unknown;
   u8 _2_unknown_1:1,
      skip:1,
-     _2_unknown_2:1,
+     power_high:1,
      iswide:1,
      _2_unknown_3:4;
   u8 unknown[2];
@@ -126,6 +126,9 @@ def upload(radio):
 CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
     list("?" * 128)
 
+POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                chirp_common.PowerLevel("Low", watts=1.00)]
+
 class KGUVD1PRadio(chirp_common.CloneModeRadio):
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
@@ -145,6 +148,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
+        rf.valid_power_levels = POWER_LEVELS
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.memory_bounds = (1, 128)
@@ -184,6 +188,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         else:
             mem.rtone = _mem.tx_tone / 10.0
             mem.tmode = _mem.tx_tone == _mem.rx_tone and "TSQL" or "Tone"
+
+        mem.power = POWER_LEVELS[not _mem.power_high]
 
         for i in _nam.name:
             if i == 0xFF:
@@ -225,6 +231,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         else:
             _mem.rx_tone = 0xFFFF
             _mem.tx_tone = 0xFFFF
+
+        _mem.power_high = not POWER_LEVELS.index(mem.power)
 
         _nam.name = [0xFF] * 6
         for i in range(0, len(mem.name)):
