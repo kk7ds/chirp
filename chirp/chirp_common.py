@@ -635,7 +635,8 @@ class Radio:
         rf = self.get_features()
 
         lo, hi = rf.memory_bounds
-        if mem.number < lo or mem.number > hi:
+        if (mem.number < lo or mem.number > hi) and \
+                mem.extd_number not in self.get_special_locations():
             msg = ValidationWarning("Location %i is out of range" % mem.number)
             msgs.append(msg)
 

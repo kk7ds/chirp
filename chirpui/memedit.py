@@ -613,8 +613,7 @@ time.  Are you sure you want to do this?"""
 
         mem.freq = vals[self.col("Frequency")]
         mem.number = vals[self.col("Loc")]
-        if mem.number < 0:
-            mem.extd_number = vals[self.col("_extd")]
+        mem.extd_number = vals[self.col("_extd")]
         mem.name = vals[self.col("Name")]
         mem.vfo = 0
         mem.rtone = vals[self.col("Tone")]
