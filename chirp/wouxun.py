@@ -180,7 +180,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         if not _mem.iswide:
             mem.mode = "NFM"
             
-        if _mem.tx_tone == 0xFFFF:
+        if _mem.tx_tone == 0xFFFF or _mem.tx_tone == 0x0000:
             pass # No tone
         elif _mem.tx_tone > 0x2800:
             mem.dtcs = int("%03o" % (_mem.tx_tone - 0x2800))
@@ -206,7 +206,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            self.wipe_memory(_mem, "\x00")
+            self.wipe_memory(_mem, "\xFF")
             return
 
         if _mem.get_raw() == ("\xFF" * 16):
