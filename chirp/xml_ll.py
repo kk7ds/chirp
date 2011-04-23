@@ -168,9 +168,9 @@ def set_memory(doc, mem):
 
     if mem.bank is not None:
         bank = memnode.newChild(None, "bank", None)
-        bank.newProp("bankId", str(mem.bank))
+        bank.newProp("bankId", str(int(mem.bank)))
         if mem.bank_index >= 0:
-            bank.newProp("bankIndex", str(mem.bank_index))
+            bank.newProp("bankIndex", str(int(mem.bank_index)))
 
     if isinstance(mem, chirp_common.DVMemory):
         dv = memnode.newChild(None, "dv", None)
