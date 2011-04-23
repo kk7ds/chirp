@@ -20,7 +20,7 @@ import gobject
 
 import threading
 
-from chirp import errors
+from chirp import errors, chirp_common
 
 class ShiftDialog(gtk.Dialog):
     def __init__(self, rthread, parent=None):
@@ -91,7 +91,14 @@ class ShiftDialog(gtk.Dialog):
         mems = self._get_mems_until_hole(start)
         mems.reverse()
         if mems:
-            return self._shift_memories(1, mems)
+            ret = self._shift_memories(1, mems)
+            if ret:
+                # Clear the hole we made
+                m = chirp_common.Memory()
+                m.number = start
+                m.empty = True
+                self.rthread.radio.set_memory(m)
+            return ret
         else:
             print "No memory list?"
             return 0
