@@ -26,7 +26,7 @@ struct {
   u8 rtone;
   u8 ctone;
   char name[8];
-} memory[100];
+} memory[102];
 
 #seekto 0x%x;
 struct {
@@ -35,7 +35,16 @@ struct {
      tmode:2,
      duplex:2,
      unk3:2;
-} flag[100];
+} flag[102];
+
+#seekto 0x0F20;
+struct {
+  bbcd freq[3];
+  bbcd offset[3];
+  u8 rtone;
+  u8 ctone;
+} callchans[2];
+
 """
 
 DUPLEX = ["", "", "-", "+"]
@@ -78,7 +87,19 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
     def get_raw_memory(self, number):
         return self._memobj.memory[number].get_raw()
 
+    def _get_special(self):
+        special = {"M1A" : 99+1,
+                   "M1B" : 99+2,
+                   }
+        return special            
+
+    def get_special_locations(self):
+        return sorted(self._get_special().keys())
+
     def get_memory(self, number):
+        if isinstance(number, str):
+            number = self._get_special()[number]
+
         _mem = self._memobj.memory[number]
         _flg = self._memobj.flag[number]
 
@@ -98,7 +119,14 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
 
         mem.duplex = DUPLEX[_flg.duplex]
         mem.tmode = TONE[_flg.tmode]
-        mem.skip = _flg.skip and "S" or ""
+
+        if number < 100:
+            # Normal memories
+            mem.skip = _flg.skip and "S" or ""
+        else:
+            # Special memories
+            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.immutable = ["number", "skip", "extd_number", "name"]
 
         return mem
 
@@ -115,7 +143,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         if mem.name:
             _mem.name = mem.name.ljust(8)[:8]
         else:
-            _mem.name = ["\xFF" * 8]
+            _mem.name = "".join(["\xFF" * 8])
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
 
