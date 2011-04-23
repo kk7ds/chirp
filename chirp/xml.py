@@ -36,17 +36,23 @@ def validate_doc(doc):
 
     del ctx
 
+    errors = []
+    warnings = []
+
     def err(msg, arg=None):
-        print "ERROR: %s" % msg
+        errors.append("ERROR: %s" % msg)
 
     def wrn(msg, arg=None):
         print "WARNING: %s" % msg
+        warnings.append("WARNING: %s" % msg)
 
     validCtx = schema.schemaNewValidCtxt()
     validCtx.setValidityErrorHandler(err, wrn)
     err = validCtx.schemaValidateDoc(doc)
+    print os.linesep.join(warnings)
     if err:
         print "---DOC---\n%s\n------" % doc.serialize(format=1)
+        print os.linesep.join(errors)
         raise errors.RadioError("Schema error")
 
 def default_banks():
