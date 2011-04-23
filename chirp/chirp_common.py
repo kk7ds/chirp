@@ -259,11 +259,6 @@ class Memory:
              self.bank and "(%s%s)" % (self.bank, bindex) or "")
 
     def to_csv(self):
-        if self.bank is None:
-            bank = ""
-        else:
-            bank = "%s" % chr(ord("A") + self.bank)
-
         string = SEPCHAR.join([
                 "%i"   % self.number,
                 "%s"   % self.name,
@@ -278,7 +273,7 @@ class Memory:
                 "%s"   % self.mode,
                 "%.2f" % self.tuning_step,
                 "%s"   % self.skip,
-                "%s"   % bank,
+                "%s"   % self.bank and int(self.bank) or "",
                 "%i"   % self.bank_index,
                 "", "", "", ""])
 
