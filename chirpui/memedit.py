@@ -25,10 +25,11 @@ import gtk
 from gobject import TYPE_INT, \
     TYPE_DOUBLE as TYPE_FLOAT, \
     TYPE_STRING, \
-    TYPE_BOOLEAN
+    TYPE_BOOLEAN, \
+    TYPE_PYOBJECT
 import gobject
 
-from chirpui import common, shiftdialog, miscwidgets
+from chirpui import common, shiftdialog, miscwidgets, config
 from chirp import chirp_common, errors
 
 def handle_toggle(_, path, store, col):
@@ -56,25 +57,26 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
-        ("_filled"   , TYPE_BOOLEAN,gtk.CellRendererToggle,),
-        ("Loc"       , TYPE_INT,    gtk.CellRendererText,  ),
-        ("_extd"     , TYPE_STRING, gtk.CellRendererText,  ),
-        ("Name"      , TYPE_STRING, gtk.CellRendererText,  ), 
-        ("Frequency" , TYPE_FLOAT,  gtk.CellRendererText,  ),
-        ("Tone Mode" , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Tone"      , TYPE_FLOAT,  gtk.CellRendererCombo, ),
-        ("ToneSql"   , TYPE_FLOAT,  gtk.CellRendererCombo, ),
-        ("DTCS Code" , TYPE_INT,    gtk.CellRendererCombo, ),
-        ("DTCS Pol"  , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Cross Mode", TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Duplex"    , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Offset"    , TYPE_FLOAT,  gtk.CellRendererText,  ),
-        ("Mode"      , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Power"     , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Tune Step" , TYPE_FLOAT,  gtk.CellRendererCombo, ),
-        ("Skip"      , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Bank"      , TYPE_STRING, gtk.CellRendererCombo, ),
-        ("Bank Index", TYPE_INT,    gtk.CellRendererText,  ),
+        ("_filled"   , TYPE_BOOLEAN, gtk.CellRendererToggle,),
+        ("_hide_cols", TYPE_PYOBJECT,gtk.CellRendererText,  ),
+        ("Loc"       , TYPE_INT,     gtk.CellRendererText,  ),
+        ("_extd"     , TYPE_STRING,  gtk.CellRendererText,  ),
+        ("Name"      , TYPE_STRING,  gtk.CellRendererText,  ), 
+        ("Frequency" , TYPE_FLOAT,   gtk.CellRendererText,  ),
+        ("Tone Mode" , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Tone"      , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        ("ToneSql"   , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        ("DTCS Code" , TYPE_INT,     gtk.CellRendererCombo, ),
+        ("DTCS Pol"  , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Cross Mode", TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Duplex"    , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Offset"    , TYPE_FLOAT,   gtk.CellRendererText,  ),
+        ("Mode"      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Power"     , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Tune Step" , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        ("Skip"      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Bank"      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        ("Bank Index", TYPE_INT,     gtk.CellRendererText,  ),
         ]
 
     defaults = {
@@ -174,6 +176,42 @@ class MemoryEditor(common.Editor):
 
         return new
 
+    def _get_cols_to_hide(self, iter):
+        tmode, duplex, bank = self.store.get(iter,
+                                             self.col("Tone Mode"),
+                                             self.col("Duplex"),
+                                             self.col("Bank"))
+
+        hide = []
+
+        if tmode == "Tone":
+            hide += [self.col("ToneSql"),
+                     self.col("DTCS Code"),
+                     self.col("DTCS Pol")]
+        elif tmode == "TSQL":
+            hide += [self.col("Tone"),
+                     self.col("DTCS Code"),
+                     self.col("DTCS Pol")]
+        elif tmode == "DTCS":
+            hide += [self.col("Tone"), self.col("ToneSql")]
+        elif tmode == "" or tmode == "(None)":
+            hide += [self.col("Tone"),
+                     self.col("ToneSql"),
+                     self.col("DTCS Code"),
+                     self.col("DTCS Pol")]
+
+        if duplex == "" or duplex == "(None)":
+            hide += [self.col("Offset")]
+
+        if bank == "":
+            hide += [self.col("Bank Index")]
+
+        return hide
+
+    def maybe_hide_cols(self, iter):
+        hide_cols = self._get_cols_to_hide(iter)
+        self.store.set(iter, self.col("_hide_cols"), hide_cols)
+
     def edited(self, rend, path, new, cap):
         if self.read_only:
             common.show_error("Unable to make changes to this model")
@@ -232,11 +270,16 @@ class MemoryEditor(common.Editor):
 
         self.store.set(iter, self.col("_filled"), True)
 
+        self.maybe_hide_cols(iter)
+
         persist_defaults = ["Power", "Frequency"]
         if cap in persist_defaults:
             self.defaults[cap] = new
 
-    def _render(self, colnum, val, iter=None):
+    def _render(self, colnum, val, iter=None, hide=[]):
+        if colnum in hide and self.hide_unused:
+            return ""
+
         if colnum == self.col("Frequency"):
             val = "%.5f" % val
         elif colnum == self.col("DTCS Code"):
@@ -253,11 +296,12 @@ class MemoryEditor(common.Editor):
             if extd:
                 val = extd
 
+
         return val
 
     def render(self, _, rend, model, iter, colnum):
-        val, = model.get(iter, colnum)
-        val = self._render(colnum, val, iter)
+        val, hide = model.get(iter, colnum, self.col("_hide_cols"))
+        val = self._render(colnum, val, iter, hide or [])
         rend.set_property("text", "%s" % val)
 
     def insert_new(self, iter, loc=None):
@@ -550,6 +594,9 @@ time.  Are you sure you want to do this?"""
                        self.col("Bank"), bank,
                        self.col("Bank Index"), memory.bank_index)
 
+        hide = self._get_cols_to_hide(iter)
+        self.store.set(iter, self.col("_hide_cols"), hide)
+
     def set_memory(self, memory):
         iter = self.store.get_iter_first()
 
@@ -721,6 +768,10 @@ time.  Are you sure you want to do this?"""
     def set_read_only(self, read_only):
         self.read_only = read_only
 
+    def set_hide_unused(self, hide_unused):
+        self.hide_unused = hide_unused
+        self.prefill()
+
     def __cache_columns(self):
         # We call self.col() a lot.  Caching the name->column# lookup
         # makes a significant performance improvement
@@ -733,11 +784,14 @@ time.  Are you sure you want to do this?"""
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
+
+        self._config = config.get("memedit")
+
         self.allowed_bands = [144, 440]
         self.count = 100
         self.show_special = False
         self.show_empty = True
-
+        self.hide_unused = self._config.get_bool("hide_unused")
         self.read_only = False
 
         self.need_refresh = False
@@ -773,6 +827,8 @@ time.  Are you sure you want to do this?"""
         vbox.pack_start(self.make_controls(min, max), 0, 0, 0)
         vbox.pack_start(self.make_editor(), 1, 1, 1)
         vbox.show()
+
+        self.prefill()
         
         self.choices["Mode"] = features.valid_modes
 
@@ -806,7 +862,7 @@ time.  Are you sure you want to do this?"""
 
             bi = self.view.get_column(self.col(colname))
             bi.set_visible(supported)
-                
+
         self.prefill()
 
         # Run low priority jobs to get the rest of the memories
@@ -915,6 +971,17 @@ time.  Are you sure you want to do this?"""
         clipboard.request_text(self._paste_selection)
 
 class DstarMemoryEditor(MemoryEditor):
+    def _get_cols_to_hide(self, iter):
+        hide = MemoryEditor._get_cols_to_hide(self, iter)
+
+        mode, = self.store.get(iter, self.col("Mode"))
+        if mode != "DV":
+            hide += [self.col("URCALL"),
+                     self.col("RPT1CALL"),
+                     self.col("RPT2CALL")]
+
+        return hide
+
     def render(self, _, rend, model, iter, colnum):
         MemoryEditor.render(self, _, rend, model, iter, colnum)
 

@@ -471,6 +471,12 @@ class ChirpMain(gtk.Window):
                                                 
         d.destroy()
 
+    def do_hide_unused(self, action):
+        CONF.set_bool("hide_unused", action.get_active(), "memedit")
+
+        eset = self.get_current_editorset()
+        eset.memedit.set_hide_unused(action.get_active())
+
     def do_clearq(self):
         eset = self.get_current_editorset()
         eset.rthread.flush()
@@ -539,6 +545,8 @@ class ChirpMain(gtk.Window):
             self.do_about()
         elif action == "columns":
             self.do_columns()
+        elif action == "hide_unused":
+            self.do_hide_unused(_action)
         elif action == "cancelq":
             self.do_clearq()
         elif action == "cut":
@@ -576,6 +584,7 @@ class ChirpMain(gtk.Window):
     </menu>
     <menu action="view">
       <menuitem action="columns"/>
+      <menuitem action="hide_unused"/>
     </menu>
     <menu action="radio" name="radio">
       <menuitem action="download"/>
@@ -627,9 +636,11 @@ class ChirpMain(gtk.Window):
 
         conf = config.get()
         re = not conf.get_bool("no_report");
+        hu = conf.get_bool("hide_unused", "memedit")
 
         toggles = [\
             ('report', None, "Report statistics", None, None, self.mh, re),
+            ('hide_unused', None, 'Hide Unused Fields', None, None, self.mh, hu),
             ]
 
         self.menu_uim = gtk.UIManager()
