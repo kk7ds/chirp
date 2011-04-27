@@ -21,7 +21,7 @@ import gobject
 
 from chirp import chirp_common, directory, csv, xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
-from chirpui import inputdialog
+from chirpui import inputdialog, reporting
 
 class EditorSet(gtk.VBox):
     __gsignals__ = {
@@ -219,9 +219,10 @@ class EditorSet(gtk.VBox):
             return
 
         try:
-            self._do_import_locked(importdialog.ImportDialog,
-                                   src_radio,
-                                   self.rthread)
+            count = self._do_import_locked(importdialog.ImportDialog,
+                                           src_radio,
+                                           self.rthread)
+            reporting.report_model_usage(src_radio, "importsrc", True)
         except Exception, e:
             common.log_exception()
             common.show_error("There was an error during import: %s" % e)

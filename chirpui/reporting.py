@@ -64,7 +64,7 @@ def should_report():
 
 def _report_model_usage(model, direction, success):
     global ENABLED
-    if direction not in ["live", "download", "upload", "import", "export"]:
+    if direction not in ["live", "download", "upload", "import", "export", "importsrc"]:
         print "Invalid direction `%s'" % direction
         return True # This is a bug, but not fatal
 
