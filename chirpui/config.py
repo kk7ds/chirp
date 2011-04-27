@@ -76,6 +76,18 @@ class ChirpConfigProxy:
 
         self.set(key, "%i" % value, section)
 
+    def get_float(self, key, section=None):
+        try:
+            return float(self.get(key, section))
+        except ValueError:
+            return 0
+
+    def set_float(self, key, value, section=None):
+        if not isinstance(value, float):
+            raise ValueError("Value is not an integer")
+
+        self.set(key, "%i" % value, section)
+       
     def get_bool(self, key, section=None):
         return self.get(key, section) == "True"
 
