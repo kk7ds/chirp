@@ -126,6 +126,7 @@ class ChirpMain(gtk.Window):
             try:
                 radio = directory.get_radio_by_image(fname)
             except Exception, e:
+                common.log_exception()
                 common.show_error(os.path.basename(fname) + ": " + str(e))
                 return
 
