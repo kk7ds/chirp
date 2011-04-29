@@ -91,7 +91,11 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         if header not in headers:
             raise OmittedHeaderError("Header %s not provided" % header)
 
-        return data[headers.index(header)]
+        try:
+            return data[headers.index(header)]
+        except IndexError:
+            raise OmittedHeaderError("Header %s not provided on this line" %\
+                                     header)
 
     def _parse_csv_data_line(self, headers, line):
 
