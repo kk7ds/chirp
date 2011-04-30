@@ -19,7 +19,7 @@ import gtk
 import gobject
 import pango
 
-from chirp import errors, chirp_common
+from chirp import errors, chirp_common, xml
 from chirpui import common
 
 class WaitWindow(gtk.Window):
@@ -535,6 +535,26 @@ class ImportDialog(gtk.Dialog):
 class ExportDialog(ImportDialog):
     TITLE = "Export To File"
     ACTION = "Export"
+
+    def do_export_banks(self):
+        dst_banks = self.dst_radio.get_banks()
+        src_banks = self.src_radio.get_banks()
+        if not isinstance(self.dst_radio, xml.XMLRadio) and \
+                len(dst_banks) != len(src_banks):
+            print "Source and destination radios have a different number of banks"
+        else:
+            self.dst_radio.set_banks(src_banks)
+
+    def do_import(self, dst_rthread):
+        count = ImportDialog.do_import(self, dst_rthread)
+
+        try:
+            self.do_export_banks()
+        except Exception, e:
+            common.log_exception()
+            print "Failed to export banks: %s" % e
+
+        return count
 
 if __name__ == "__main__":
     from chirpui import editorset
