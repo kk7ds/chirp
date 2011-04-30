@@ -273,7 +273,7 @@ class Memory:
                 "%s"   % self.mode,
                 "%.2f" % self.tuning_step,
                 "%s"   % self.skip,
-                "%s"   % self.bank and int(self.bank) or "",
+                "%s"   % (self.bank and int(self.bank) or ""),
                 "%i"   % self.bank_index,
                 "", "", "", ""])
 
@@ -408,11 +408,6 @@ class DVMemory(Memory):
         return string
 
     def to_csv(self):
-        if self.bank is None:
-            bank = ""
-        else:
-            bank = "%s" % chr(ord("A") + self.bank)
-
         string = SEPCHAR.join([
                 "%i"   % self.number,
                 "%s"   % self.name,
@@ -427,7 +422,7 @@ class DVMemory(Memory):
                 "%s"   % self.mode,
                 "%.2f" % self.tuning_step,
                 "%s"   % self.skip,
-                "%s"   % bank,
+                "%s"   % (self.bank and int(self.bank) or ""),
                 "%i"   % self.bank_index,
                 "%s"   % self.dv_urcall,
                 "%s"   % self.dv_rpt1call,
