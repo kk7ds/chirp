@@ -201,16 +201,16 @@ class ChirpMain(gtk.Window):
         eset = self.get_current_editorset()
 
         if isinstance(eset.radio, chirp_common.CloneModeRadio):
-            types = [("Radio-specific Image (*.img)", "*.img")]
+            types = [("Radio-specific Image (*.img)", "img")]
         elif isinstance(eset.radio, csv.CSVRadio):
-            types = [("CSV File (*.csv)", "*.csv")]
+            types = [("CSV File (*.csv)", "csv")]
         elif isinstance(eset.radio, xml.XMLRadio):
-            types = [("CHIRP File (*.chirp)", "*.chirp")]
+            types = [("CHIRP File (*.chirp)", "chirp")]
         else:
-            types = [("ERROR", "*.*")]
+            types = [("ERROR", "*")]
 
         if isinstance(eset.radio, vx7.VX7Radio):
-            types += [("VX7 Commander (*.vx7)", "*.vx7")]
+            types += [("VX7 Commander (*.vx7)", "vx7")]
 
         while True:
             fname = platform.get_platform().gui_save_file(types=types)
@@ -394,11 +394,10 @@ class ChirpMain(gtk.Window):
         count = eset.do_import(filen)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
-    def do_export(self, type="chirp"):
-        
-        types = { "chirp": ("CHIRP Files (*.chirp)", "*.chirp"),
-                  "csv" : ("CSV Files (*.csv)", "*.csv"),
-                  }
+    def do_export(self):
+        types = [("CSV Files (*.csv)", "csv"),
+                 ("CHIRP Files (*.chirp)", "chirp"),
+                 ]
 
         eset = self.get_current_editorset()
 
@@ -406,12 +405,12 @@ class ChirpMain(gtk.Window):
             base = os.path.basename(eset.filename)
             if "." in base:
                 base = base[:base.rindex(".")]
-            defname = "%s.%s" % (base, type)
+            defname = base
         else:
-            defname = "radio.%s" % type
+            defname = "radio"
 
         filen = platform.get_platform().gui_save_file(default_name=defname,
-                                                      types=[types[type]])
+                                                      types=types)
         if not filen:
             return
 
@@ -538,10 +537,8 @@ class ChirpMain(gtk.Window):
             self.do_close()
         elif action == "import":
             self.do_import()
-        elif action == "export_csv":
-            self.do_export("csv")
-        elif action == "export_chirp":
-            self.do_export("chirp")
+        elif action == "export":
+            self.do_export()
         elif action == "about":
             self.do_about()
         elif action == "columns":
@@ -576,10 +573,7 @@ class ChirpMain(gtk.Window):
       <menuitem action="saveas"/>
       <separator/>
       <menuitem action="import"/>
-      <menu action="export">
-        <menuitem action="export_chirp"/>
-        <menuitem action="export_csv"/>
-      </menu>
+      <menuitem action="export"/>
       <separator/>
       <menuitem action="close"/>
       <menuitem action="quit"/>
@@ -626,8 +620,8 @@ class ChirpMain(gtk.Window):
             ('radio', None, "_Radio", None, None, self.mh),
             ('download', None, "Download From Radio", "<Alt>d", None, self.mh),
             ('upload', None, "Upload To Radio", "<Alt>u", None, self.mh),
-            ('import', None, 'Import from file', "<Alt>i", None, self.mh),
-            ('export', None, 'Export to...', None, None, self.mh),
+            ('import', None, 'Import', "<Alt>i", None, self.mh),
+            ('export', None, 'Export', "<Alt>e", None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),

@@ -123,14 +123,21 @@ class Platform:
         if default_name:
             dlg.set_current_name(default_name)
 
-        for desc, spec in types:
+        extensions = {}
+        for desc, ext in types:
             ff = gtk.FileFilter()
             ff.set_name(desc)
-            ff.add_pattern(spec)
+            ff.add_pattern("*.%s" % ext)
+            extensions[desc] = ext
             dlg.add_filter(ff)
 
         res = dlg.run()
+
         fname = dlg.get_filename()
+        ext = extensions[dlg.get_filter().get_name()]
+        if fname and not fname.endswith(".%s" % ext):
+            fname = "%s.%s" % (fname, ext)
+
         dlg.destroy()
 
         if res == gtk.RESPONSE_OK:
@@ -303,14 +310,18 @@ class Win32Platform(Platform):
         import win32gui
 
         typestrs = ""
-        for desc, spec in types:
-            typestrs += "%s\0%s\0" % (desc, spec)
+        for desc, ext in types[1:]:
+            typestrs += "%s\0%s\0" % (desc, "*.%s" % ext)
         if not typestrs:
             typestrs = None
 
+        custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
+        def_ext = "*.%s" % types[0][1]
         try:
-            fname, _, _ = win32gui.GetSaveFileNameW(File=default_name,
-                                                    Filter=typestrs)
+            fname, filter, _ = win32gui.GetSaveFileNameW(File=default_name,
+                                                         CustomFilter=custom,
+                                                         DefExt=def_ext,
+                                                         Filter=typestrs)
         except Exception, e:
             print "Failed to get filename: %s" % e
             return None
