@@ -574,6 +574,13 @@ class ChirpMain(gtk.Window):
       <menuitem action="open"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
+      <separator/>
+      <menuitem action="import"/>
+      <menu action="export">
+        <menuitem action="export_chirp"/>
+        <menuitem action="export_csv"/>
+      </menu>
+      <separator/>
       <menuitem action="close"/>
       <menuitem action="quit"/>
     </menu>
@@ -591,12 +598,6 @@ class ChirpMain(gtk.Window):
       <menuitem action="download"/>
       <menuitem action="upload"/>
       <menu action="recent" name="recent"/>
-      <separator/>
-      <menuitem action="import"/>
-      <menu action="export">
-        <menuitem action="export_chirp"/>
-        <menuitem action="export_csv"/>
-      </menu>
       <separator/>
       <menuitem action="cancelq"/>
     </menu>
