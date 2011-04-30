@@ -283,7 +283,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def set_banks(self, banks):
         _banks = self._memobj.bank_names
         for i in range(0, 26):
-            _banks[i].name = banks[i].ljust(8)[:8]
+            _banks[i].name = str(banks[i]).ljust(8)[:8]
 
     def get_urcall_list(self):
         _calls = self._memobj.urcall
