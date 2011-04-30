@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import errors
+import re
 
 from chirp import chirp_common
 
@@ -109,11 +110,13 @@ def set_memory(doc, mem):
     memnode = radio.newChild(None, "memory", None)
     memnode.newProp("location", "%i" % mem.number)
 
+    sname_filter = "[^A-Z0-9/ >-]"
     sname = memnode.newChild(None, "shortName", None)
-    sname.addContent(mem.name.upper()[:6])
+    sname.addContent(re.sub(sname_filter, "", mem.name.upper()[:6]))
 
+    lname_filter = "[^.A-Za-z0-9/ >-]"
     lname = memnode.newChild(None, "longName", None)
-    lname.addContent(mem.name)
+    lname.addContent(re.sub(lname_filter, "", mem.name[:16]))
     
     freq = memnode.newChild(None, "frequency", None)
     freq.newProp("units", "MHz")
