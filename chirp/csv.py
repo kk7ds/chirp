@@ -190,12 +190,5 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         m.empty = True
         self.memories[number] = m
         
-    def get_banks(self):
-        banks = []
-        for i in range(0, 26):
-            banks.append("BANK%s" % (chr(ord("A") + i)))
-
-        return banks
-
     def filter_name(self, name):
         return name

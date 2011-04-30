@@ -206,6 +206,8 @@ class ImportDialog(gtk.Dialog):
         try:
             dst_banks = self.dst_radio.get_banks()
             src_banks = self.src_radio.get_banks()
+            if not dst_banks or not src_banks:
+                raise Exception()
         except Exception:
             print "One or more of the radios doesn't support banks"
             return
