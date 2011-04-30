@@ -151,6 +151,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.has_ctone = False
         rf.has_tuning_step = False
+        rf.has_bank = False
         rf.memory_bounds = (1, 128)
         return rf
 
