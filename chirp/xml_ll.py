@@ -47,6 +47,10 @@ def get_memory(doc, number):
         mem.dv_urcall = _get("/dv/urcall/text()")
         mem.dv_rpt1call = _get("/dv/rpt1call/text()")
         mem.dv_rpt2call = _get("/dv/rpt2call/text()")
+        try:
+            mem.dv_code = _get("/dv/digitalCode/text()")
+        except ValueError:
+            mem.dv_code = 0
     else:
         mem = chirp_common.Memory()
 
@@ -188,6 +192,9 @@ def set_memory(doc, mem):
         r2 = dv.newChild(None, "rpt2call", None)
         if mem.dv_rpt2call and mem.dv_rpt2call != "*NOTUSE*":
             r2.addContent(mem.dv_rpt2call)
+
+        dc = dv.newChild(None, "digitalCode", None)
+        dc.addContent(str(mem.dv_code))
 
 def del_memory(doc, number):
     path = "//radio/memories/memory[@location=%i]" % number

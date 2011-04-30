@@ -89,12 +89,19 @@
       <xsd:element name="urcall" type="callsignType"/>
       <xsd:element name="rpt1call" type="callsignType"/>
       <xsd:element name="rpt2call" type="callsignType"/>
+      <xsd:element name="digitalCode" type="digitalCodeType" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:simpleType name="callsignType">
     <xsd:restriction base="xsd:string">
       <xsd:pattern value="[A-Z0-9/ ]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="digitalCodeType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="0"/>
     </xsd:restriction>
   </xsd:simpleType>
 
