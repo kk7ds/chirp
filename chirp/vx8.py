@@ -108,7 +108,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
-        if flag != 0x03:
+        if (flag & 0x03) != 0x03:
             mem.empty = True
             return mem
         mem.freq = int(_mem.freq) / 1000.0
