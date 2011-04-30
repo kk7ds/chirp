@@ -202,6 +202,20 @@ class ImportDialog(gtk.Dialog):
 
         return mem
 
+    def do_import_banks(self):
+        try:
+            dst_banks = self.dst_radio.get_banks()
+            src_banks = self.src_radio.get_banks()
+        except Exception:
+            print "One or more of the radios doesn't support banks"
+            return
+
+        if not isinstance(self.dst_radio, xml.XMLRadio) and \
+                len(dst_banks) != len(src_banks):
+            print "Source and destination radios have a different number of banks"
+        else:
+            self.dst_radio.set_banks(src_banks)
+
     def do_import(self, dst_rthread):
         i = 0
 
@@ -245,10 +259,16 @@ class ImportDialog(gtk.Dialog):
                 job.set_desc("Setting memory %i" % mem.number)
                 dst_rthread._qsubmit(job, 0)
 
+        try:
+            self.do_import_banks()
+        except Exception, e:
+            common.log_exception()
+            error_messages["Banks"] = [str(e)]
+
         if error_messages.keys():
             msg = "Error importing memories:\r\n"
             for num, msgs in error_messages.items():
-                msg += "%i: %s" % (num, ",".join(msgs))
+                msg += "%s: %s" % (num, ",".join(msgs))
             common.show_error(msg)
 
         return i
@@ -535,26 +555,6 @@ class ImportDialog(gtk.Dialog):
 class ExportDialog(ImportDialog):
     TITLE = "Export To File"
     ACTION = "Export"
-
-    def do_export_banks(self):
-        dst_banks = self.dst_radio.get_banks()
-        src_banks = self.src_radio.get_banks()
-        if not isinstance(self.dst_radio, xml.XMLRadio) and \
-                len(dst_banks) != len(src_banks):
-            print "Source and destination radios have a different number of banks"
-        else:
-            self.dst_radio.set_banks(src_banks)
-
-    def do_import(self, dst_rthread):
-        count = ImportDialog.do_import(self, dst_rthread)
-
-        try:
-            self.do_export_banks()
-        except Exception, e:
-            common.log_exception()
-            print "Failed to export banks: %s" % e
-
-        return count
 
 if __name__ == "__main__":
     from chirpui import editorset
