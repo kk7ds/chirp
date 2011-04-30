@@ -229,10 +229,12 @@ class EditorSet(gtk.VBox):
         
     def do_export(self, filen):
         try:
-            if filen.endswith(".csv"):
+            if filen.lower().endswith(".csv"):
                 dst_radio = csv.CSVRadio(filen)
-            else:
+            elif filen.lower().endswith(".chirp"):
                 dst_radio = xml.XMLRadio(filen)
+            else:
+                raise Exception("Unsupported file type")
         except Exception, e:
             common.log_exception()
             common.show_error(e)
