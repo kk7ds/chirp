@@ -57,10 +57,7 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
-        ("_filled"   , TYPE_BOOLEAN, gtk.CellRendererToggle,),
-        ("_hide_cols", TYPE_PYOBJECT,gtk.CellRendererText,  ),
         ("Loc"       , TYPE_INT,     gtk.CellRendererText,  ),
-        ("_extd"     , TYPE_STRING,  gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING,  gtk.CellRendererText,  ), 
         ("Frequency" , TYPE_FLOAT,   gtk.CellRendererText,  ),
         ("Tone Mode" , TYPE_STRING,  gtk.CellRendererCombo, ),
@@ -77,6 +74,9 @@ class MemoryEditor(common.Editor):
         ("Skip"      , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Bank"      , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Bank Index", TYPE_INT,     gtk.CellRendererText,  ),
+        ("_filled"   , TYPE_BOOLEAN, None,                  ),
+        ("_hide_cols", TYPE_PYOBJECT,None,                  ),
+        ("_extd"     , TYPE_STRING,  None,                  ),
         ]
 
     defaults = {
@@ -488,6 +488,8 @@ time.  Are you sure you want to do this?"""
 
         i = 0
         for _cap, _type, _rend in self.cols:
+            if not _rend:
+                continue
             rend = _rend()
             if _type == TYPE_BOOLEAN:
                 #rend.set_property("activatable", True)
@@ -1018,12 +1020,15 @@ class DstarMemoryEditor(MemoryEditor):
     def __init__(self, rthread):
         # I think self.cols is "static" or "unbound" or something else
         # like that and += modifies the type, not self (how bizarre)
-        self.cols = self.cols + \
-            [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
-             ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
-             ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo),
-             ("Digital Code", TYPE_INT, gtk.CellRendererText),
-             ]
+        self.cols = list(self.cols)
+        new_cols = [("URCALL", TYPE_STRING, gtk.CellRendererCombo),
+                    ("RPT1CALL", TYPE_STRING, gtk.CellRendererCombo),
+                    ("RPT2CALL", TYPE_STRING, gtk.CellRendererCombo),
+                    ("Digital Code", TYPE_INT, gtk.CellRendererText),
+                    ]
+        for col in new_cols:
+            index = self.cols.index(("_filled", TYPE_BOOLEAN, None))
+            self.cols.insert(index, col)
 
         self.choices = dict(self.choices)
         self.defaults = dict(self.defaults)
