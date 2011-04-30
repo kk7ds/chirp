@@ -41,6 +41,7 @@ class Platform:
 
     def __init__(self, basepath):
         self._base = basepath
+        self._last_dir = self.default_dir()
 
     def config_dir(self):
         return self._base
@@ -78,6 +79,9 @@ class Platform:
     def gui_open_file(self, start_dir=None, types=[]):
         import gtk
 
+        if not start_dir:
+            start_dir = self._last_dir
+
         dlg = gtk.FileChooserDialog("Select a file to open",
                                     None,
                                     gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -97,12 +101,16 @@ class Platform:
         dlg.destroy()
 
         if res == gtk.RESPONSE_OK:
+            self._last_dir = os.path.dirname(fname)
             return fname
         else:
             return None
 
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
         import gtk
+
+        if not start_dir:
+            start_dir = self._last_dir
 
         dlg = gtk.FileChooserDialog("Save file as",
                                     None,
@@ -126,12 +134,16 @@ class Platform:
         dlg.destroy()
 
         if res == gtk.RESPONSE_OK:
+            self._last_dir = os.path.dirname(fname)
             return fname
         else:
             return None
 
     def gui_select_dir(self, start_dir=None):
         import gtk
+
+        if not start_dir:
+            start_dir = self._last_dir
 
         dlg = gtk.FileChooserDialog("Choose folder",
                                     None,
@@ -146,6 +158,7 @@ class Platform:
         dlg.destroy()
 
         if res == gtk.RESPONSE_OK and os.path.isdir(fname):
+            self._last_dir = fname
             return fname
         else:
             return None
