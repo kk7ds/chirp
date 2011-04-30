@@ -36,11 +36,11 @@ def validate_doc(doc):
 
     del ctx
 
-    errors = []
+    errs = []
     warnings = []
 
     def err(msg, arg=None):
-        errors.append("ERROR: %s" % msg)
+        errs.append("ERROR: %s" % msg)
 
     def wrn(msg, arg=None):
         print "WARNING: %s" % msg
@@ -52,7 +52,7 @@ def validate_doc(doc):
     print os.linesep.join(warnings)
     if err:
         print "---DOC---\n%s\n------" % doc.serialize(format=1)
-        print os.linesep.join(errors)
+        print os.linesep.join(errs)
         raise errors.RadioError("Schema error")
 
 def default_banks():
