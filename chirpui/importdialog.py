@@ -473,7 +473,7 @@ class ImportDialog(gtk.Dialog):
 
     def populate_list(self):
         start, end = self.src_radio.get_features().memory_bounds
-        for i in range(start, end):
+        for i in range(start, end+1):
             self.ww.set(float(i) / end)
             try:
                 mem = self.src_radio.get_memory(i)
