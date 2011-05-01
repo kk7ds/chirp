@@ -95,7 +95,7 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(118.0, 174.0)]
-        rf.valid_skips = ["", "S", "P"]
+        rf.valid_skips = ["", "S"]
         return rf
 
     def process_mmap(self):
