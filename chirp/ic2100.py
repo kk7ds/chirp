@@ -229,7 +229,7 @@ class IC2100Radio(icf.IcomCloneModeRadio):
                 _skp |= mask
             else:
                 _skp &= ~mask
-            _mem.name = mem.name
+            _mem.name = mem.name.ljust(6)
 
         self.__set_freq(_mem, int(mem.freq * 1000))
         self.__set_offset(_mem, int(mem.offset * 1000))
