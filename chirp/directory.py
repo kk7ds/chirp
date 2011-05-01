@@ -89,6 +89,8 @@ def get_radio(driver):
 def get_driver(radio):
     if RADIO_TO_DRV.has_key(radio):
         return RADIO_TO_DRV[radio]
+    elif RADIO_TO_DRV.has_key(radio.__bases__[0]):
+        return RADIO_TO_DRV[radio.__bases__[0]]
     else:
         raise Exception("Unknown radio type `%s'" % radio)
 
