@@ -692,6 +692,14 @@ class Radio:
             msg = ValidationWarning("Power level %s not supported" % mem.power)
             msgs.append(msg)
 
+        if rf.valid_tuning_steps:
+            if is_12_5(mem.freq) and 12.5 not in rf.valid_tuning_steps:
+                msg = ValidationError("Frequency requires 12.6kHz step")
+                msgs.append(msg)
+            elif is_6_25(mem.freq) and 6.25 not in rf.valid_tuning_steps:
+                msg = ValidationError("Frequency requires 6.25kHz step")
+                msgs.append(msg)
+
         return msgs
 
 class CloneModeRadio(Radio):
