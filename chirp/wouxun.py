@@ -233,7 +233,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             _mem.rx_tone = 0xFFFF
             _mem.tx_tone = 0xFFFF
 
-        _mem.power_high = not POWER_LEVELS.index(mem.power)
+        if mem.power:
+            _mem.power_high = not POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power_high = True
 
         _nam.name = [0xFF] * 6
         for i in range(0, len(mem.name)):
