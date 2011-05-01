@@ -178,7 +178,7 @@ def get_rtone(mmap):
     try:
         return chirp_common.TONES[idx]
     except IndexError:
-        print "Unknown rtone of %i, assuming default" % idx
+        #print "Unknown rtone of %i, assuming default" % idx
         return chirp_common.TONES[8]
 
 def get_ctone(mmap):
