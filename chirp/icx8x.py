@@ -84,7 +84,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         # that flag.
         if isinstance(pipe, str):
             self.isUHF = (ord(self._mmap[0x1930]) != 0)
-            print "Found %s image" % (self.isUHF and "UHF" or "VHF")
+            #print "Found %s image" % (self.isUHF and "UHF" or "VHF")
         else:
             self.isUHF = None
 

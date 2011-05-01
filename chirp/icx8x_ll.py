@@ -361,7 +361,6 @@ def _get_memory(_map, mmap, base):
         mem.dv_rpt1call = get_rptcall(_map, i_r1call)
         mem.dv_rpt2call = get_rptcall(_map, i_r2call)
     else:
-        print "Non-DV"
         mem = chirp_common.Memory()
 
     mem.freq = get_freq(mmap, base)
