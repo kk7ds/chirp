@@ -91,14 +91,12 @@ def _get_freq_at(mmap, index):
 
 def _set_freq_at(mmap, index, freq):
     val = util.bcd_encode(freq, width=6)[:3]
-    print "set freq %.4f: %s" % (freq, [val])
     mmap[index] = val
 
 def get_freq(mmap):
     return _get_freq_at(mmap, POS_FREQ)
 
 def set_freq(mmap, freq):
-    print "Setting freq %f" % (freq * 10)
     return _set_freq_at(mmap, POS_FREQ, int(freq * 1000))
 
 def get_duplex(mmap):
@@ -203,7 +201,6 @@ def get_name(mmap):
     for i in mmap[POS_NAME:POS_NAME+6]:
         if ord(i) == 0xFF:
             break
-        print "%02x" % (ord(i) & 0x7F)
         name += CHARSET[ord(i) & 0x7F]
     return name.rstrip()
 
@@ -217,8 +214,6 @@ def set_name(mmap, name):
 
 def get_mode(mmap):
     val = ord(mmap[POS_MODE]) & 0xC0
-
-    print "Mode val %02x" % val
 
     modemap = {
         0x00 : "FM",
