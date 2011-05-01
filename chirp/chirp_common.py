@@ -167,6 +167,34 @@ class Memory:
 
     empty = False
 
+    immutable = []
+
+    def __init__(self):
+        self.freq = 0.0                   
+        self.number = 0                   
+        self.extd_number = ""             
+        self.name = ""                    
+        self.vfo = 0                      
+        self.rtone = 88.5                 
+        self.ctone = 88.5                 
+        self.dtcs = 23                    
+        self.tmode = ""                   
+        self.cross_mode = "DCS->Off"      
+        self.dtcs_polarity = "NN"         
+        self.skip = ""                    
+        self.power = None                 
+        self.duplex = ""                  
+        self.offset = 0.600               
+        self.mode = "FM"                  
+        self.tuning_step = 5.0            
+                                          
+        self.bank = None                  
+        self.bank_index = -1              
+                                          
+        self.empty = False                
+
+        self.immutable = []
+
     _valid_map = {
         "rtone"         : TONES,
         "ctone"         : TONES,
@@ -181,8 +209,6 @@ class Memory:
         "empty"         : [True, False],
         "dv_code"       : [x for x in range(0, 100)],
         }
-
-    immutable = []
 
     def __repr__(self):
         return "Memory[%i]" % self.number
