@@ -605,7 +605,7 @@ class Processor:
                 offset = int(offset[2:], 16)
             else:
                 offset = int(offset)
-            print "NOTICE: Setting offset to %i (0x%X)" % (offset, offset)
+            #print "NOTICE: Setting offset to %i (0x%X)" % (offset, offset)
             self._offset = offset
         elif name == "seek":
             offset = int(directive[0][1][0][1])
