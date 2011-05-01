@@ -61,7 +61,10 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_duplexes = ["", "-", "+"]
         rf.valid_tuning_steps = [x for x in chirp_common.TUNING_STEPS
                                  if x != 6.25]
-        rf.valid_bands = [(118.0, 176.0)]
+        if self.isUHF:
+            rf.valid_bands = [(420.0, 470.0)]
+        else:
+            rf.valid_bands = [(118.0, 176.0)]
         rf.valid_skips = ["", "S"]
         return rf
 
@@ -199,3 +202,6 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 call = " " * 8
 
             icx8x_ll.set_mycall(self._mmap, i, call)
+
+    def filter_name(self, name):
+        return name.upper()[:5]

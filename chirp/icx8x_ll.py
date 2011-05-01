@@ -317,8 +317,6 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
     except ValueError:
         raise errors.InvalidDataError("Call `%s' not in RCALL list" % r2call)
 
-    print "Setting calls: %i %i %i" % (uindex, r1index, r2index)
-
     mmap[18] = (ord(mmap[18]) & 0xF0) | uindex
     mmap[19] = (r1index << 4) | r2index
 
@@ -354,7 +352,6 @@ def set_bank(mmap, number, bank):
 
 def _get_memory(_map, mmap, base):
     if get_mode(mmap) == "DV":
-        print "Doing DV"
         mem = chirp_common.DVMemory()
         i_ucall, i_r1call, i_r2call = get_call_indices(mmap)
         mem.dv_urcall = get_urcall(_map, i_ucall)
