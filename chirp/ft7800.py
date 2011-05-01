@@ -305,7 +305,10 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int (mem.offset * 100) or 0
-        _mem.power = POWER_LEVELS_VHF.index(mem.power)
+        if mem.power:
+            _mem.power = POWER_LEVELS_VHF.index(mem.power)
+        else:
+            _mem.power = 0
 
         # NB: Leave offset after mem name for the 8800!
         self._set_mem_name(mem, _mem)

@@ -181,4 +181,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         else:
             _bnk.bank_even = val
 
-        _mem.power = POWER_LEVELS_VHF.index(mem.power)
+        if mem.power:
+            _mem.power = POWER_LEVELS_VHF.index(mem.power)
+        else:
+            _mem.power = 0

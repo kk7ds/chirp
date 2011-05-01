@@ -192,7 +192,10 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
-        _mem.power = 3 - POWER_LEVELS.index(mem.power)
+        if mem.power:
+            _mem.power = 3 - POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
 
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"

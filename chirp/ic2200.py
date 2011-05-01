@@ -241,7 +241,10 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
         _mem.tuning_step = STEPS.index(mem.tuning_step)
         _mem.name = mem.name.ljust(6)
-        _mem.power = POWER_LEVELS.index(mem.power)
+        if mem.power:
+            _mem.power = POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
 
         if number < 200:
             _flag.skip = mem.skip != ""

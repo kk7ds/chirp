@@ -189,9 +189,12 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
         _mem.narrow = mem.mode == "NFM"
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.power = POWER_LEVELS.index(mem.power)
         _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
         _mem.tmode = TMODES.index(mem.tmode)
+        if mem.power:
+            _mem.power = POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
 
         if mem.bank is None:
             _bnk.bank = 0xFF
