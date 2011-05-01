@@ -160,6 +160,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
             if i == "\xFF":
                 break
             mem.name += CHARSET[i]
+        mem.name = mem.name.rstrip()
 
         return mem
 
