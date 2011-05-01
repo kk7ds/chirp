@@ -693,11 +693,9 @@ class Radio:
             msgs.append(msg)
 
         if rf.valid_tuning_steps:
-            if is_12_5(mem.freq) and 12.5 not in rf.valid_tuning_steps:
-                msg = ValidationError("Frequency requires 12.6kHz step")
-                msgs.append(msg)
-            elif is_6_25(mem.freq) and 6.25 not in rf.valid_tuning_steps:
-                msg = ValidationError("Frequency requires 6.25kHz step")
+            if required_step(mem.freq) not in rf.valid_tuning_steps:
+                msg = ValidationError("Frequency requires %fkHz step" %\
+                                          required_step(mem.freq))
                 msgs.append(msg)
 
         return msgs
@@ -819,14 +817,32 @@ class Status:
         return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
 
 def is_fractional_step(freq):
-    dhz = freq * 1000
-    return int(dhz) != dhz
+    return not is_5_0(freq) and (is_12_5(freq) or is_6_25(freq))
+
+def is_int(value):
+    return int(value) == value
+
+def is_5_0(freq):
+    return is_int((freq * 1000) / 5.0)
 
 def is_12_5(freq):
-    return ((freq * 1000) - int(freq * 1000)) == 0.5
+    return is_int((freq * 1000) / 12.5)
 
 def is_6_25(freq):
-    return ((freq * 1000) - int(freq * 1000)) == 0.25
+    return is_int((freq * 1000) / 6.25)
+
+def is_2_5(freq):
+    return is_int((freq * 1000) / 2.5)
+
+def required_step(freq):
+    if is_5_0(freq):
+        return 5.0
+    elif is_12_5(freq):
+        return 12.5
+    elif is_6_25(freq):
+        return 6.25
+    elif is_2_5(freq):
+        return 2.5
 
 def _name(name, len, just_upper):
     if just_upper:
