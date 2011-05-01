@@ -688,7 +688,9 @@ class Radio:
                 msg = ValidationError("Frequency %.5f is out of range" % mem.freq)
                 msgs.append(msg)
 
-        if rf.valid_power_levels and mem.power not in rf.valid_power_levels:
+        if mem.power and \
+                rf.valid_power_levels and \
+                mem.power not in rf.valid_power_levels:
             msg = ValidationWarning("Power level %s not supported" % mem.power)
             msgs.append(msg)
 
