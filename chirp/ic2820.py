@@ -163,9 +163,9 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if is_used and MODES[_mem.mode] == "DV":
             mem = chirp_common.DVMemory()
-            mem.dv_urcall = str(_mem.urcall)
-            mem.dv_rpt1call = str(_mem.r1call)
-            mem.dv_rpt2call = str(_mem.r2call)
+            mem.dv_urcall = str(_mem.urcall).rstrip()
+            mem.dv_rpt1call = str(_mem.r1call).rstrip()
+            mem.dv_rpt2call = str(_mem.r2call).rstrip()
         else:
             mem = chirp_common.Memory()
 
