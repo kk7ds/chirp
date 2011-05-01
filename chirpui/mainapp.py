@@ -164,7 +164,7 @@ class ChirpMain(gtk.Window):
                                   "<u>Save</u> or <u>Upload</u> operations."  +
                                   "If you wish to edit the contents offline, "+
                                   "please <u>Export</u> to a CSV file, using "+
-                                  "the <b>Radio menu</b>.")
+                                  "the <b>File menu</b>.")
         again = gtk.CheckButton("Don't show this again")
         again.show()
         d.vbox.pack_start(again, 0, 0, 0)
