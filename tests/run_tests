@@ -1,0 +1,354 @@
+#!/usr/bin/python
+#
+# Copyright 2011 Dan Smith <dsmith@danplanet.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import traceback, sys, os, shutil, glob, tempfile
+
+# Assume we're running in the tests/ directory of the archive
+sys.path.insert(0, "../")
+
+from chirp import chirp_common, directory, csv
+
+class TestError(Exception):
+    def get_detail(self):
+        return str(self)
+
+class TestInternalError(TestError):
+    pass
+
+class TestCrashError(TestError):
+    def __init__(self, tb, exc, args):
+        Exception.__init__(self, str(exc))
+        self.__tb = tb
+        self.__exc = exc
+        self.__args = args
+
+    def __str__(self):
+        return str(self.__exc)
+
+    def get_detail(self):
+        return str(self.__exc) + os.linesep + \
+            ("Args were: %s" % self.__args) + os.linesep + \
+            self.__tb
+
+class TestFailedError(TestError):
+    def __init__(self, msg, detail=""):
+        TestError.__init__(self, msg)
+        self._detail = detail
+
+    def get_detail(self):
+        return self._detail
+
+def get_tb():
+    return traceback.format_exc()
+
+class TestWrapper:
+    def __init__(self, dstclass, filename):
+        self._dstclass = dstclass
+        self._filename = filename
+        self._make_reload = False
+        self.open()
+
+    def make_reload(self):
+        self._make_reload = True
+
+    def open(self):
+        self._dst = self._dstclass(self._filename)
+
+    def close(self):
+        self._dst.save_mmap(self._filename)
+
+    def do(self, function, *args, **kwargs):
+        if self._make_reload:
+            try:
+                self.open()
+            except Exception, e:
+                raise TestCrashError(get_tb(), e, "[Loading]")
+        
+        try:
+            fn = getattr(self._dst, function)
+        except KeyError:
+            raise TestInternalError("Model lacks function `%s'" % function)
+
+        try:
+            ret = fn(*args, **kwargs)
+        except Exception, e:
+            details = str(args) + str(kwargs)
+            for arg in args:
+                if isinstance(arg, chirp_common.Memory):
+                    details += os.linesep + \
+                        os.linesep.join(["%s:%s" % (k,v) \
+                                             for k,v in arg.__dict__.items()])
+            raise TestCrashError(get_tb(), e, details)
+
+        if self._make_reload:
+            try:
+                self.close()
+            except Exception, e:
+                raise TestCrashError(get_tb(), e, "[Saving]")
+
+        return ret
+
+    def get_id(self):
+        return "%s %s %s" % (self._dst.VENDOR,
+                             self._dst.MODEL,
+                             self._dst.VARIANT)
+
+class TestCase:
+    def __init__(self, wrapper):
+        self._wrapper = wrapper
+
+    def prepare(self):
+        pass
+
+    def run(self):
+        "Return True or False for Pass/Fail"
+        pass
+
+    def cleanup(self):
+        pass
+
+    def compare_mem(self, a, b):
+        rf = self._wrapper.do("get_features")
+
+        for k, v in a.__dict__.items():
+            if k == "power":
+                continue # FIXME
+            elif k == "immutable":
+                continue
+            elif k == "name":
+                if not rf.has_name:
+                    continue # Don't complain about name, if not supported
+                else:
+                    # Name mismatch fair if filter_name() is right
+                    v = self._wrapper.do("filter_name", v).rstrip()
+            try:
+                if b.__dict__[k] != v:
+                    msg = "Field `%s' " % k + \
+                        "is `%s', " % b.__dict__[k] + \
+                        "expected `%s' " % v
+                    raise TestFailedError(msg)
+            except KeyError, e:
+                print sorted(a.__dict__.keys())
+                print sorted(b.__dict__.keys())
+                raise
+
+class TestCaseCopyAll(TestCase):
+    "Copy Memories From CSV"
+
+    def __str__(self):
+        return "CopyAll"
+
+    def prepare(self):
+        self._src = csv.CSVRadio("images/csv.csv")
+
+    def run(self):
+        src_rf = self._src.get_features()
+        bounds = src_rf.memory_bounds
+
+        dst_rf = self._src.get_features()
+        dst_number = dst_rf.memory_bounds[0]
+
+        failures = []
+
+        for number in range(bounds[0], bounds[1]):
+            src_mem = self._src.get_memory(number)
+            if src_mem.empty:
+                continue
+
+            src_mem.number = dst_number
+            dst_mem = src_mem.dupe()
+
+            if self._wrapper.do("validate_memory", dst_mem):
+                continue # Returning some messages means "no"
+
+            self._wrapper.do("set_memory", dst_mem)
+            ret_mem = self._wrapper.do("get_memory", dst_number)
+
+            try:
+                self.compare_mem(src_mem, ret_mem)
+            except TestFailedError, e:
+                failures.append(TestFailedError("<%i>: %s" % (number, e)))
+
+        return failures
+
+class TestCaseBrute(TestCase):
+    def __str__(self):
+        return "BruteForce"
+
+    def set_and_compare(self, m):
+        msgs = self._wrapper.do("validate_memory", m)
+        if msgs:
+            
+            raise TestFailedError("Radio did not validate a valid memory",
+                                  os.linesep.join(["%s:%s" % (k,v) for k,v in m.__dict__.items()]) + os.linesep + os.linesep.join(msgs))
+
+        self._wrapper.do("set_memory", m)
+        ret_m = self._wrapper.do("get_memory", m.number)
+
+        self.compare_mem(m, ret_m)
+
+    def do_tone(self, m, rf):
+        for tone in chirp_common.TONES:
+            for tmode in rf.valid_tmodes:
+                if tmode not in chirp_common.TONE_MODES:
+                    continue
+
+                m.tmode = tmode
+                m.rtone = tone
+                self.set_and_compare(m)
+
+    def do_duplex(self, m, rf):
+        for duplex in rf.valid_duplexes:
+            if duplex not in ["", "-", "+", "split"]:
+                continue
+            m.duplex = duplex
+            self.set_and_compare(m)
+
+    def do_skip(self, m, rf):
+        for skip in rf.valid_skips:
+            m.skip = skip
+            self.set_and_compare(m)
+
+    def do_mode(self, m, rf):
+        for mode in rf.valid_modes:
+            if mode not in chirp_common.MODES:
+                continue
+            m.mode = mode
+            self.set_and_compare(m)
+
+    def run(self):
+        rf = self._wrapper.do("get_features")
+        m = chirp_common.Memory()
+        m.number = rf.memory_bounds[0]
+        if rf.valid_bands:
+            m.freq = rf.valid_bands[0][0] + 0.1
+        else:
+            m.freq = 146.52
+
+        self.do_tone(m, rf)
+        self.do_duplex(m, rf)
+        self.do_skip(m, rf)
+        self.do_mode(m, rf)
+
+        return []
+
+class TestRunner:
+    def __init__(self, images_dir, test_list):
+        self._images_dir = images_dir
+        self._test_list = test_list
+        if not os.path.exists("tmp"):
+            os.mkdir("tmp")
+        if not os.path.exists("logs"):
+            os.mkdir("logs")
+
+    def _make_list(self):
+        run_list = []
+        images = glob.glob(os.path.join(self._images_dir, "*.img"))
+        for image in images:
+            drv_name, _ = os.path.splitext(os.path.basename(image))
+            run_list.append((directory.get_radio(drv_name), image))
+        return run_list
+
+    def report(self, rclass, tc, msg, e):
+        print "%9s %-13s %-10s %8s: %s" % (rclass.VENDOR,
+                                           ("%s %s" % (rclass.MODEL,
+                                                       rclass.VARIANT)),
+                                           tc,
+                                           msg, e)
+
+    def log(self, rclass, tc, e):
+        fn = "logs/%s_%s.log" % (directory.get_driver(rclass), tc)
+        log = file(fn, "a")
+        print >>log, "---- Begin test %s ----" % tc
+        log.write(e.get_detail())
+        print >>log
+        print >>log, "---- End test %s ----" % tc
+        log.close()
+
+    def nuke_log(self, rclass, tc):
+        fn = "logs/%s_%s.log" % (directory.get_driver(rclass), tc)
+        if os.path.exists(fn):
+            os.remove(fn)
+
+    def _run_one(self, tw, rclass):
+        for tcclass in self._test_list:
+            nfailed = 0
+            tc = tcclass(tw)
+
+            self.nuke_log(rclass, tc)
+
+            tc.prepare()
+
+            try:
+                failures = tc.run()
+                for e in failures:
+                    self.report(rclass, tc, "FAILED", e)
+                    if e.get_detail():
+                        self.log(rclass, tc, e)
+                    nfailed += 1
+            except TestFailedError, e:
+                self.report(rclass, tc, "FAILED", e)
+                if e.get_detail():
+                    self.log(rclass, tc, e)
+                nfailed += 1
+            except TestCrashError, e:
+                self.report(rclass, tc, "CRASHED", e)
+                self.log(rclass, tc, e)
+                nfailed = -1
+                break
+
+            tc.cleanup()
+
+            if not nfailed:
+                self.report(rclass, tc, "PASSED", "All tests")
+
+    def run_rclass_image(self, rclass, image):
+        rid = "%s_%s_" % (rclass.VENDOR, rclass.MODEL)
+        rid = rid.replace("/", "_")
+        testimage = tempfile.mktemp(".img", rid)
+        shutil.copy(image, testimage)
+
+        tw = TestWrapper(rclass, testimage)
+        rf = tw.do("get_features")
+        if rf.has_sub_devices:
+            devices = tw.do("get_sub_devices")
+            for dev in devices:
+                self.run_rclass_image(dev.__class__, image)
+        else:
+            return self._run_one(tw, rclass)
+
+    def run_list(self, run_list):
+        for rclass, image in sorted(run_list):
+            self.run_rclass_image(rclass, image)
+
+    def run_all(self):
+        run_list = self._make_list()
+        self.run_list(run_list)
+                                                  
+    def run_one(self, drv_name):
+        self.run_rclass_image(directory.get_radio(drv_name),
+                              os.path.join("images", "%s.img" % drv_name))
+
+
+if __name__ == "__main__":
+    import sys
+
+    tr = TestRunner("images", [TestCaseCopyAll, TestCaseBrute])
+    if len(sys.argv) > 1:
+        tr.run_one(sys.argv[1])
+    else:
+        tr.run_all()
