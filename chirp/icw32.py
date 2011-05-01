@@ -70,7 +70,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         rf.valid_modes = ["FM", "AM"]
         rf.valid_tmodes = ["", "Tone", "TSQL"]
 
-        rf.has_sub_devices = True
+        rf.has_sub_devices = self.VARIANT == ""
         rf.has_ctone = True
         rf.has_dtcs = False
         rf.has_dtcs_polarity = False

@@ -367,7 +367,7 @@ class FT8800Radio(FT7800Radio):
 
     def get_features(self):
         rf = FT7800Radio.get_features(self)
-        rf.has_sub_devices = True
+        rf.has_sub_devices = self.VARIANT == ""
         rf.memory_bounds = (1, 499)
         return rf
 
