@@ -171,8 +171,15 @@ class DRx35Radio(AlincoStyleRadio):
 
     def _set_name(self, mem, _mem):
         name = [0x00] * 7
+        j = 0
         for i in range(0, 7):
-            name[i] = CHARSET.index(mem.name[i])
+            try:
+                name[j] = CHARSET.index(mem.name[i])
+                j += 1
+            except IndexError:
+                pass
+            except ValueError:
+                pass
         return name
 
     def get_features(self):
