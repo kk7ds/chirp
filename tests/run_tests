@@ -140,7 +140,15 @@ class TestCase:
                     msg = "Field `%s' " % k + \
                         "is `%s', " % b.__dict__[k] + \
                         "expected `%s' " % v
-                    raise TestFailedError(msg)
+
+                    details = msg
+                    details += os.linesep + "### Wanted:" + os.linesep
+                    details += os.linesep.join(["%s:%s" % (k,v) for k,v in \
+                                                    a.__dict__.items()])
+                    details += os.linesep + "### Got:" + os.linesep
+                    details += os.linesep.join(["%s:%s" % (k,v) for k,v in \
+                                                    b.__dict__.items()])
+                    raise TestFailedError(msg, details)
             except KeyError, e:
                 print sorted(a.__dict__.keys())
                 print sorted(b.__dict__.keys())
