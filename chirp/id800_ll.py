@@ -244,7 +244,7 @@ def get_mem_offset(number):
 
 def get_raw_memory(mmap, number):
     offset = get_mem_offset(number)
-    print "Offset for %i is %04x" % (number, offset)
+    #print "Offset for %i is %04x" % (number, offset)
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
 
 def get_call_indices(mmap):
