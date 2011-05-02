@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone
+from chirp import chirp_common, yaesu_clone, errors
 from chirp import bitwise
 
 mem_format = """
@@ -120,6 +120,15 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.power = POWER_LEVELS[3 - _mem.power]
+
+        try:
+            step = chirp_common.required_step(mem.freq)
+        except errors.InvalidDataError:
+            # Correct for 12.5kHz step frequencies
+            # NB: Just adding 0.00005 will cause some roundoff error,
+            #     so convert to integral Hz first, add, and then back
+            freq = int(mem.freq * 1000000) + 500
+            mem.freq = (freq / 1000000.0) 
 
         for i in str(_mem.label):
             if i == "\xFF":
