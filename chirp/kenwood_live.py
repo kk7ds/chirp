@@ -487,6 +487,7 @@ class THF6ARadio(KenwoodLiveRadio):
 
 D710_DUPLEX = ["", "+", "-"]
 D710_MODES = ["FM", "NFM", "AM"]
+D710_SKIP = ["", "S"]
 
 class TMD710Radio(KenwoodLiveRadio):
     MODEL = "TM-D710"
@@ -535,7 +536,7 @@ class TMD710Radio(KenwoodLiveRadio):
         mem.mode = D710_MODES[int(spec[12])]
         # TX Frequency?
         # Unknown
-        # Memory Lockout
+        mem.skip = D710_SKIP[int(spec[15])] # Memory Lockout
 
         return mem
 
@@ -555,7 +556,7 @@ class TMD710Radio(KenwoodLiveRadio):
             "%i" % D710_MODES.index(mem.mode),
             "%010i" % 0, # TX Frequency?
             "0", # Unknown
-            "0", # Memory Lockout
+            "%i" % D710_SKIP.index(mem.skip), # Memory Lockout
             )
 
         return spec
