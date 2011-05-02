@@ -28,6 +28,8 @@ from gobject import TYPE_INT, \
     TYPE_BOOLEAN, \
     TYPE_PYOBJECT
 import gobject
+import pickle
+import os
 
 from chirpui import common, shiftdialog, miscwidgets, config
 from chirp import chirp_common, errors
@@ -902,18 +904,15 @@ time.  Are you sure you want to do this?"""
         self.emit('changed')
 
     def copy_selection(self, cut=False):
-        result = ""
         (store, paths) = self.view.get_selection().get_selected_rows()
 
         maybe_cut = []
+        selection = []
 
         for path in paths:
             iter = store.get_iter(path)
             mem = self._get_memory(iter)
-            if mem.empty:
-                result += "\r\n"
-            else:
-                result += mem.to_csv().strip() + "\r\n"
+            selection.append(mem.dupe())
             maybe_cut.append((iter, mem))
         
         if cut:
@@ -925,6 +924,7 @@ time.  Are you sure you want to do this?"""
 
                 self._set_memory(iter, mem)
 
+        result = pickle.dumps(selection)
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.set_text(result)
 
@@ -943,7 +943,13 @@ time.  Are you sure you want to do this?"""
 
         always = False
 
-        for i in text.strip().split("\r\n"):
+        try:
+            mem_list = pickle.loads(text)
+        except Exception:
+            print "Paste failed to unpickle"
+            return
+
+        for mem in pickle.loads(text):
             loc, filled = store.get(iter, self.col("Loc"), self.col("_filled"))
             if filled and not always:
                 d = miscwidgets.YesNoDialog(title="Overwrite?",
@@ -962,19 +968,28 @@ time.  Are you sure you want to do this?"""
                     iter = store.iter_next(iter)
                     continue
 
-            if not i:
-                mem = chirp_common.Memory()
-                mem.empty = True
-            else:
-                try:
-                    mem = chirp_common.Memory.from_csv(i)
-                except Exception, e:
-                    print "Failed to convert pasted line: %s" % i
-                    common.log_exception()
+            mem.name = self.rthread.radio.filter_name(mem.name)
+            if not self.rthread.radio.get_features().has_bank:
+                mem.bank = None
+                mem.bank_index = -1
+
+            src_number = mem.number
+            mem.number = loc
+            msgs = self.rthread.radio.validate_memory(mem)
+            if msgs:
+                d = miscwidgets.YesNoDialog(title="Incompatible Memory",
+                                            buttons=(gtk.STOCK_OK, 1,
+                                                     gtk.STOCK_CANCEL, 2))
+                d.set_text("Pasted memory %i is not compatible with this radio because:%s%s" %\
+                               (src_number, os.linesep, os.linesep.join(msgs)))
+                r = d.run()
+                d.destroy()
+                if r == 2:
+                    break
+                else:
                     iter = store.iter_next(iter)
                     continue
 
-            mem.number = loc
             self._set_memory(iter, mem)
             iter = store.iter_next(iter)
 
