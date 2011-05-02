@@ -26,12 +26,14 @@ struct {
   lbcd tx_freq[4];
   ul16 rx_tone;
   ul16 tx_tone;
-  u8 _3_unknown;
+  u8 _3_unknown_1:4,
+     bcl:1,
+     _3_unknown_2:3;
   u8 _2_unknown_1:1,
      skip:1,
      power_high:1,
      iswide:1,
-     _2_unknown_3:4;
+     _2_unknown_2:4;
   u8 unknown[2];
 } memory[128];
 
@@ -237,6 +239,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             _mem.power_high = not POWER_LEVELS.index(mem.power)
         else:
             _mem.power_high = True
+
+        # Default to disabling the busy channel lockout
+        _mem.bcl = 0
 
         _nam.name = [0xFF] * 6
         for i in range(0, len(mem.name)):
