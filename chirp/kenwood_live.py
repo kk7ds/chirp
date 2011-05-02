@@ -485,7 +485,7 @@ class THF6ARadio(KenwoodLiveRadio):
 
         return spec
 
-D710_DUPLEX = ["", "+", "-"]
+D710_DUPLEX = ["", "+", "-", "split"]
 D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
 
@@ -500,6 +500,8 @@ class TMD710Radio(KenwoodLiveRadio):
         rf.has_bank = False
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = D710_MODES
+        rf.can_odd_split = True
+        rf.valid_duplexes = D710_DUPLEX
         rf.memory_bounds = (0, 999)
         return rf
 
@@ -534,7 +536,10 @@ class TMD710Radio(KenwoodLiveRadio):
         mem.dtcs = chirp_common.DTCS_CODES[int(spec[10])]
         mem.offset = int(spec[11]) / 1000000.0
         mem.mode = D710_MODES[int(spec[12])]
-        # TX Frequency?
+        # TX Frequency
+        if int(spec[13]):
+            mem.duplex = "split"
+            mem.offset = int(spec[13]) / 1000000.0
         # Unknown
         mem.skip = D710_SKIP[int(spec[15])] # Memory Lockout
 
@@ -544,7 +549,7 @@ class TMD710Radio(KenwoodLiveRadio):
         spec = ( \
             "%010i" % (mem.freq * 1000000),
             "%X" % chirp_common.TUNING_STEPS.index(mem.tuning_step),
-            "%i" % D710_DUPLEX.index(mem.duplex),
+            "%i" % (0 if mem.duplex == "split" else D710_DUPLEX.index(mem.duplex)),
             "0", # Reverse
             "%i" % (mem.tmode == "Tone" and 1 or 0),
             "%i" % (mem.tmode == "TSQL" and 1 or 0),
@@ -552,9 +557,9 @@ class TMD710Radio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.rtone)),
             "%02i" % (chirp_common.TONES.index(mem.ctone)),
             "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
-            "%08i" % (mem.offset * 1000000),
+            "%08i" % (0 if mem.duplex == "split" else mem.offset * 1000000), # Offset
             "%i" % D710_MODES.index(mem.mode),
-            "%010i" % 0, # TX Frequency?
+            "%010i" % (mem.offset * 1000000 if mem.duplex == "split" else 0), # TX Frequency
             "0", # Unknown
             "%i" % D710_SKIP.index(mem.skip), # Memory Lockout
             )

@@ -169,6 +169,26 @@ class MemoryEditor(common.Editor):
 
         return new
 
+    def ed_duplex(self, _, path, new, __):
+        if new == "":
+            return # Fast path outta here
+
+        iter = self.store.get_iter(path)
+        freq, = self.store.get(iter, self.col("Frequency"))
+        if new == "split":
+            # If we're going to split mode, use the current
+            # RX frequency as the default TX frequency
+            self.store.set(iter, self.col("Offset"), freq)
+        else:
+            band = int(freq / 100)
+            if chirp_common.STD_OFFSETS.has_key(band):
+                offset = chirp_common.STD_OFFSETS[band][0][2]
+            else:
+                offset = 0.0
+            self.store.set(iter, self.col("Offset"), abs(offset))
+
+        return new
+
     def _get_cols_to_hide(self, iter):
         tmode, duplex, bank = self.store.get(iter,
                                              self.col("Tone Mode"),
@@ -220,6 +240,7 @@ class MemoryEditor(common.Editor):
             "Loc" : self.ed_loc,
             "Name" : self.ed_name,
             "Frequency" : self.ed_freq,
+            "Duplex" : self.ed_duplex,
             }
 
         if funcs.has_key(cap):
