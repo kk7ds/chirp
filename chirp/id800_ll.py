@@ -45,19 +45,7 @@ POS_FLAGS      = 0x2bf4
 MEM_LOC_SIZE  = 22
 MEM_LOC_START = 0x20
 
-ID800_TS = {
-    0x0: 5.0,
-    0xA: 6.25,
-    0x1: 10.0,
-    0x2: 12.5,
-    0x3: 15,
-    0x4: 20,
-    0x5: 25,
-    0x6: 30,
-    0x7: 50,
-    0x8: 100,
-    0x9: 200,
-}
+ID800_TS = [5.0, 10.0, 12.5, 15, 20.0, 25.0, 30.0, 50.0, 100.0, 200.0, 6.25]
 
 ID800_MODES = {
     0x00 : "FM",
@@ -155,9 +143,8 @@ def get_freq_ts(mmap):
         mult = 5.0
 
     freq = ((struct.unpack(">i", fval)[0] * mult) / 1000.0)
-    
 
-    return freq, ID800_TS.get(tsval, 5.0)
+    return freq, ID800_TS[tsval]
 
 def get_duplex(mmap):
     val = struct.unpack("B", mmap[POS_DUPX])[0] & 0xC0
@@ -368,7 +355,7 @@ def parse_map_for_memory(mmap):
 
     return memories
 
-def set_freq(mmap, freq):
+def set_freq_ts(mmap, freq, ts):
     tflag = ord(mmap[POS_TUNE_FLAG]) & 0x7F
 
     if chirp_common.is_fractional_step(freq):
@@ -379,6 +366,7 @@ def set_freq(mmap, freq):
 
     mmap[POS_TUNE_FLAG] = tflag
     mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
+    mmap[POS_TSTEP] = (ord(mmap[POS_TSTEP]) & 0x0F) | (ID800_TS.index(ts) << 4)
 
 def set_name(mmap, _name, enabled=True):
     name = _name.ljust(6)[:6].upper()
@@ -558,7 +546,7 @@ def set_memory(_map, mem):
     index = mem.number - 1
     mmap = get_raw_memory(_map, index)
 
-    set_freq(mmap, mem.freq)
+    set_freq_ts(mmap, mem.freq, mem.tuning_step)
     set_name(mmap, mem.name)
     set_duplex(mmap, mem.duplex)
     set_dup_offset(mmap, mem.offset)
