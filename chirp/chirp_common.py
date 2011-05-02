@@ -696,7 +696,7 @@ class Radio:
 
         if rf.valid_tuning_steps:
             if required_step(mem.freq) not in rf.valid_tuning_steps:
-                msg = ValidationError("Frequency requires %fkHz step" %\
+                msg = ValidationError("Frequency requires %.2fkHz step" %\
                                           required_step(mem.freq))
                 msgs.append(msg)
 
@@ -845,6 +845,9 @@ def required_step(freq):
         return 6.25
     elif is_2_5(freq):
         return 2.5
+    else:
+        raise errors.InvalidDataError("Unable to calculate the required " +
+                                      "tuning step for %.5f" % freq)
 
 def _name(name, len, just_upper):
     if just_upper:

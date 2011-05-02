@@ -143,14 +143,7 @@ class MemoryEditor(common.Editor):
             print e
             new = None
 
-        if chirp_common.is_6_25(new):
-            set_ts(6.25)
-        elif chirp_common.is_12_5(new):
-            set_ts(12.5)
-        else:
-            ts = get_ts(path)
-            if int(new * 1000) % ts:
-                set_ts(5.0)
+        set_ts(chirp_common.required_step(new))
 
         if new:
             set_offset(path, 0)
