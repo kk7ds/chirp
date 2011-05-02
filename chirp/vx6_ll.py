@@ -151,12 +151,12 @@ def set_tmode(mmap, tmode):
     mmap[POS_TMODE] = val
 
 def get_tone(mmap):
-    val = ord(mmap[POS_TONE]) & 0x1F
+    val = ord(mmap[POS_TONE]) & 0x3F
 
     return chirp_common.TONES[val]
 
 def set_tone(mmap, tone):
-    val = ord(mmap[POS_TONE]) & 0xE0
+    val = ord(mmap[POS_TONE]) & 0xC0
 
     if tone not in chirp_common.TONES:
         raise errors.InvalidDataError("Tone %.1f not supported" % tone)
@@ -285,7 +285,7 @@ def get_memory(map, number):
     mem.freq = get_freq(mmap)
     mem.duplex = get_duplex(mmap)
     mem.tmode = get_tmode(mmap)
-    mem.rtone = mem.ctone = get_tone(mmap)
+    mem.rtone = get_tone(mmap)
     mem.dtcs = get_dtcs(mmap)
     mem.offset = get_offset(mmap)
     mem.tuning_step = get_ts(mmap)
@@ -313,7 +313,7 @@ def set_memory(_map, mem):
     set_mode(mmap, mem.mode)
     set_name(mmap, mem.name)
     set_ts(mmap, mem.tuning_step)
-    set_tone(mmap, mem.ctone)
+    set_tone(mmap, mem.rtone)
     set_dtcs(mmap, mem.dtcs)
     set_tmode(mmap, mem.tmode)
     set_offset(mmap, mem.offset)
