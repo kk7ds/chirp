@@ -803,6 +803,8 @@ time.  Are you sure you want to do this?"""
         common.Editor.__init__(self)
         self.rthread = rthread
 
+        self.defaults = dict(self.defaults)
+
         self._config = config.get("memedit")
 
         self.allowed_bands = [144, 440]
