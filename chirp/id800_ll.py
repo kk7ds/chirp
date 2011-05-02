@@ -333,7 +333,7 @@ def get_rptcall(mmap, index):
     if index > 59:
         raise errors.InvalidDataError("RPTCALL index must be <= 59")
     elif index == 0:
-        return "*NOTUSE*"
+        return ""
 
     start = call_location(POS_RPTCALL, index)
 
@@ -502,8 +502,6 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
             r2index = rlist.index(r2call)
     except ValueError:
         raise errors.InvalidDataError("Call `%s' not in Repeater list" % r2call)
-
-    print "Setting calls: %i %i %i" % (uindex, r1index, r2index)
 
     mmap[18] = uindex
     mmap[19] = r1index
