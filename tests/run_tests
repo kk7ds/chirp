@@ -189,7 +189,7 @@ class TestCaseCopyAll(TestCase):
             try:
                 self.compare_mem(src_mem, ret_mem)
             except TestFailedError, e:
-                failures.append(TestFailedError("<%i>: %s" % (number, e)))
+                failures.append(TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
 
         return failures
 
