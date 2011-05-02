@@ -214,10 +214,39 @@ class TestCaseBrute(TestCase):
             for tmode in rf.valid_tmodes:
                 if tmode not in chirp_common.TONE_MODES:
                     continue
+                elif tmode in ["DTCS", "DTCS-R"]:
+                    continue # We'll test DCS separately
 
                 m.tmode = tmode
-                m.rtone = tone
+                if tmode == "":
+                    pass
+                elif tmode == "Tone":
+                    m.rtone = tone
+                elif tmode in ["TSQL", "TSQL-R"]:
+                    if rf.has_ctone:
+                        m.ctone = tone
+                    else:
+                        m.rtone = tone
+                else:
+                    raise TestInternalError("Unknown tone mode `%s'" % tmode)
+
                 self.set_and_compare(m)
+
+    def do_dtcs(self, m, rf):
+        if not rf.has_dtcs:
+            return
+
+        m.tmode = "DTCS"
+        for code in chirp_common.DTCS_CODES:
+            m.dtcs = code
+            self.set_and_compare(m)
+
+        if not rf.has_dtcs_polarity:
+            return
+
+        for pol in ["NN", "RN", "NR", "RR"]:
+            m.dtcs_polarity = pol
+            self.set_and_compare(m)
 
     def do_duplex(self, m, rf):
         for duplex in rf.valid_duplexes:
@@ -248,6 +277,7 @@ class TestCaseBrute(TestCase):
             m.freq = 146.52
 
         self.do_tone(m, rf)
+        self.do_dtcs(m, rf)
         self.do_duplex(m, rf)
         self.do_skip(m, rf)
         self.do_mode(m, rf)
