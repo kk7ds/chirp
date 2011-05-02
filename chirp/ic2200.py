@@ -183,7 +183,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         mult = _mem.is_625 and 6.25 or 5.0
         mem.freq = (_mem.freq * mult) / 1000.0
-        mem.offset = (_mem.offset * 5.0) / 1000.0
+        mem.offset = (_mem.offset * mult) / 1000.0
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
