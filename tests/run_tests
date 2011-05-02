@@ -167,7 +167,7 @@ class TestCaseCopyAll(TestCase):
         src_rf = self._src.get_features()
         bounds = src_rf.memory_bounds
 
-        dst_rf = self._src.get_features()
+        dst_rf = self._wrapper.do("get_features")
         dst_number = dst_rf.memory_bounds[0]
 
         failures = []
