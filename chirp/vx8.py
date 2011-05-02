@@ -138,7 +138,13 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             flag.flag = 0
             return
-        flag.flag = 3
+
+        if mem.freq < 30 or \
+                (mem.freq > 88 and mem.freq < 108) or \
+                mem.freq > 580:
+            flag.flag = 0x83 # Masked from VFO B
+        else:
+            flag.flag = 0x03 # Available in both VFOs
 
         _mem = self._memobj.memory[mem.number-1]
         if was_empty:
