@@ -36,6 +36,9 @@ import sys
 import glob
 from subprocess import Popen
 
+def find_me():
+    return sys.modules["chirp.platform"].__file__
+
 class Platform:
     # pylint: disable-msg=R0201
 
@@ -178,10 +181,12 @@ class Platform:
             return hasattr(sys, "frozen")
 
         if we_are_frozen():
+            # Win32, find the directory of the executable
             return os.path.dirname(unicode(sys.executable,
                                            sys.getfilesystemencoding()))
-
-        return "."
+        else:
+            # UNIX: Find the parent directory of this module
+            return os.path.dirname(os.path.abspath(os.path.join(find_me(), "..")))
 
 def _unix_editor():
     macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
