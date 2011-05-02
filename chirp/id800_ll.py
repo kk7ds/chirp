@@ -109,6 +109,9 @@ def set_used(mmap, number, used):
 
     mmap[POS_FLAGS + number] = val
 
+ALPHA_CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+NUMERIC_CHARSET = "0123456789+-=*/()|"
+
 def get_name(mmap):
     nibbles = []
 
@@ -133,10 +136,10 @@ def get_name(mmap):
 
         if this == 0:
             name += " "
-        elif (this & 0x20) == 0:
-            name += chr(ord("1") + (this & 0x0F) - 1)
+        elif this & 0x20:
+            name += ALPHA_CHARSET[this & 0x1F]
         else:
-            name += chr(ord("A") + (this & 0x1F) - 1)
+            name += NUMERIC_CHARSET[this & 0x0F]
 
         i += 1
 
@@ -384,10 +387,10 @@ def set_name(mmap, _name, enabled=True):
     def val_of(char):
         if char == " ":
             return 0
-        elif char.isdigit():
-            return (int(char) & 0x3F) | 0x10
+        elif char.isalpha():
+            return ALPHA_CHARSET.index(char) | 0x20
         else:
-            return ((ord(char) - ord("A") + 1) & 0x3F) | 0x20
+            return NUMERIC_CHARSET.index(char) | 0x10
 
     for i in range(0, len(name), 2):
         c1 = name[i]
