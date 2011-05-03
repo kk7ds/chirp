@@ -126,7 +126,7 @@ def upload(radio):
             radio.status_fn(s)
 
 CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
-    list("?" * 128)
+    list("?+ ")
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                 chirp_common.PowerLevel("Low", watts=1.00)]
