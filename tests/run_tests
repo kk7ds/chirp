@@ -135,6 +135,9 @@ class TestCase:
                 else:
                     # Name mismatch fair if filter_name() is right
                     v = self._wrapper.do("filter_name", v).rstrip()
+            elif k == "ctone" and not rf.has_ctone:
+                continue
+
             try:
                 if b.__dict__[k] != v:
                     msg = "Field `%s' " % k + \
