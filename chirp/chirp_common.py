@@ -27,6 +27,7 @@ else:
 
 import threading
 import math
+from decimal import Decimal
 
 from chirp import errors, memmap
 
@@ -830,18 +831,20 @@ def is_int(value):
     return int(value) == value
 
 def is_5_0(freq):
-    return is_int((freq * 1000) / 5.0)
+    return is_int((Decimal("%f" % freq) * 1000) / Decimal("5.00"))
 
 def is_12_5(freq):
-    return is_int((freq * 1000) / 12.5)
+    return is_int((Decimal("%f" % freq) * 1000) / Decimal("12.50"))
 
 def is_6_25(freq):
-    return is_int((freq * 1000) / 6.25)
+    return is_int((Decimal("%f" % freq) * 1000) / Decimal("6.25"))
 
 def is_2_5(freq):
-    return is_int((freq * 1000) / 2.5)
+    return is_int((Decimal("%f" % freq) * 1000) / Decimal("2.50"))
 
 def required_step(freq):
+    freq = Decimal("%f" % freq)
+
     if is_5_0(freq):
         return 5.0
     elif is_12_5(freq):
@@ -855,29 +858,32 @@ def required_step(freq):
                                       "tuning step for %.5f" % freq)
 
 def fix_rounded_step(freq):
+    freq = Decimal("%f" % freq)
+
     try:
         required_step(freq)
-        return freq
-    except errors.InvalidDataError:
-        pass
-
-    freq_hz = int(freq * 1000000)
-
-    try:
-        required_step((freq_hz + 500) / 1000000.0)
-        return (freq_hz + 500) / 1000000.0
+        return float(freq)
     except errors.InvalidDataError:
         pass
 
     try:
-        required_step((freq_hz + 250) / 1000000.0)
-        return (freq_hz + 250) / 1000000.0
+        c = freq + Decimal("0.0005")
+        required_step(c)
+        return float(c)
     except errors.InvalidDataError:
         pass
 
     try:
-        required_step((freq_hz + 750) / 1000000.0)
-        return (freq_hz + 750) / 1000000.0
+        c = freq + Decimal("0.00025")
+        required_step(c)
+        return float(c)
+    except errors.InvalidDataError:
+        pass
+
+    try:
+        c = freq + Decimal("0.00075")
+        required_step(c)
+        return float(c)
     except errors.InvalidDataError:
         pass
 
