@@ -849,6 +849,29 @@ def required_step(freq):
         raise errors.InvalidDataError("Unable to calculate the required " +
                                       "tuning step for %.5f" % freq)
 
+def fix_rounded_step(freq):
+    try:
+        required_step(freq)
+        return freq
+    except errors.InvalidDataError:
+        pass
+
+    freq_hz = int(freq * 1000000)
+
+    try:
+        required_step((freq_hz + 500) / 1000000.0)
+        return (freq_hz + 500) / 1000000.0
+    except errors.InvalidDataError:
+        pass
+
+    try:
+        required_step((freq_hz + 250) / 1000000.0)
+        return (freq_hz + 250) / 1000000.0
+    except errors.InvalidDataError:
+        pass
+
+    raise errors.InvalidDataError("Unable to correct rounded frequency %.5f" % freq)
+
 def _name(name, len, just_upper):
     if just_upper:
         name = name.upper()

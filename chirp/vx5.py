@@ -104,7 +104,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.freq) / 1000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
         mem.duplex = DUPLEX[_mem.duplex]
         mem.name = str(_mem.name).rstrip()
         mem.mode = MODES[_mem.mode]
