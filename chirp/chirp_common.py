@@ -875,6 +875,12 @@ def fix_rounded_step(freq):
     except errors.InvalidDataError:
         pass
 
+    try:
+        required_step((freq_hz + 750) / 1000000.0)
+        return (freq_hz + 750) / 1000000.0
+    except errors.InvalidDataError:
+        pass
+
     raise errors.InvalidDataError("Unable to correct rounded frequency %.5f" % freq)
 
 def _name(name, len, just_upper):
