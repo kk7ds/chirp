@@ -695,10 +695,15 @@ class Radio:
             msgs.append(msg)
 
         if rf.valid_tuning_steps:
-            if required_step(mem.freq) not in rf.valid_tuning_steps:
-                msg = ValidationError("Frequency requires %.2fkHz step" %\
-                                          required_step(mem.freq))
-                msgs.append(msg)
+            try:
+                step = required_step(mem.freq)
+                if step not in rf.valid_tuning_steps:
+                    msg = ValidationError("Frequency requires %.2fkHz step" %\
+                                              required_step(mem.freq))
+                    msgs.append(msg)
+            except errors.InvalidDataError, e:
+                msgs.append(str(e))
+
 
         return msgs
 
