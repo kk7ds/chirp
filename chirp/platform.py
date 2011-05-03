@@ -311,6 +311,13 @@ class Win32Platform(Platform):
         return str(fname)
 
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
+        import win32api
+        (pform, _, build, _, _) = win32api.GetVersionEx()
+        if pform > 5:
+            # Temporary workaround on Windows Vista/7 to avoid GetSaveFileName,
+            # which is apparently broken there (!?)
+            return Platform.gui_save_file(self, start_dir, default_name, types)
+
         # pylint: disable-msg=W0703,W0613
         import win32gui
 
