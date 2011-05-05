@@ -251,7 +251,7 @@ class UnixPlatform(Platform):
         # pylint: disable-msg=W0703
         try:
             issue = file("/etc/issue.net", "r")
-            ver = issue.read().strip()
+            ver = issue.read().strip().replace("\r", "").replace("\n", "")[:64]
             issue.close()
             ver = "%s - %s" % (os.uname()[0], ver)
         except Exception:
@@ -352,11 +352,12 @@ class Win32Platform(Platform):
 
         vers = { 4: "Win2k",
                  5: "WinXP",
+                 6: "WinVista/7",
                  }
 
-        (pform, _, build, _, _) = win32api.GetVersionEx()
+        (pform, sub, build, _, _) = win32api.GetVersionEx()
 
-        return vers.get(pform, "Win32 (Unknown %i:%i)" % (pform, build))
+        return vers.get(pform, "Win32 (Unknown %i.%i:%i)" % (pform, sub, build))
 
 def _get_platform(basepath):
     if os.name == "nt":
