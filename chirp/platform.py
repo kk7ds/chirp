@@ -311,23 +311,17 @@ class Win32Platform(Platform):
         return str(fname)
 
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
-        import win32api
-        (pform, _, build, _, _) = win32api.GetVersionEx()
-        if pform > 5:
-            # Temporary workaround on Windows Vista/7 to avoid GetSaveFileName,
-            # which is apparently broken there (!?)
-            return Platform.gui_save_file(self, start_dir, default_name, types)
-
         # pylint: disable-msg=W0703,W0613
         import win32gui
 
         typestrs = ""
+        custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
         for desc, ext in types[1:]:
             typestrs += "%s\0%s\0" % (desc, "*.%s" % ext)
         if not typestrs:
-            typestrs = None
+            typestrs = custom
+            custom = None
 
-        custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
         def_ext = "*.%s" % types[0][1]
         try:
             fname, filter, _ = win32gui.GetSaveFileNameW(File=default_name,
