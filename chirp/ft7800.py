@@ -177,6 +177,9 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.can_odd_split = True
         return rf
 
+    def filter_name(self, name):
+        return chirp_common.name6(name, True)
+
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7B47) ]
 
@@ -236,13 +239,13 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
             for i in str(_nam.name):
                 name += CHARSET[ord(i)]
 
-        return name
+        return name.rstrip()
 
     def _set_mem_name(self, mem, _mem):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.name.rstrip():
-            name = [chr(CHARSET.index(x)) for x in mem.name.ljust(6)]
+            name = [chr(CHARSET.index(x)) for x in mem.name.ljust(6)[:6]]
             _nam.name = "".join(name)
             _nam.used = 1
             _nam.enabled = 1
@@ -432,10 +435,10 @@ class FT8800Radio(FT7800Radio):
                 if index < len(CHARSET):
                     name += CHARSET[index]
 
-        return name
+        return name.rstrip()
 
     def _set_mem_name(self, mem, _mem):
-        _mem.name = [CHARSET.index(x) for x in mem.name.ljust(6)]
+        _mem.name = [CHARSET.index(x) for x in mem.name.ljust(6)[:6]]
         _mem.namevalid = 1
         _mem.nameused = bool(mem.name.rstrip())
 
