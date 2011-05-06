@@ -292,6 +292,61 @@ class TestCaseBruteForce(TestCase):
         return []
 TESTS["BruteForce"] = TestCaseBruteForce
 
+class TestCaseEdges(TestCase):
+    def __str__(self):
+        return "Edges"
+
+    def do_longname(self, rf, loc):
+        m = chirp_common.Memory()
+        m.number = loc
+
+        m.freq = rf.valid_bands[0][0] + 1.0
+        m.name = ("X" * 256) # Should be longer than any radio can handle
+        m.name = self._wrapper.do("filter_name", m.name)
+
+        self._wrapper.do("set_memory", m)
+        n = self._wrapper.do("get_memory", loc)
+
+        self.compare_mem(m, n)
+
+    def do_badname(self, rf, loc):
+        m = chirp_common.Memory()
+        m.number = loc
+        m.freq = rf.valid_bands[0][0] + 1.0
+
+        ascii = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
+        for i in range(0, len(ascii), 4):
+            m.name = self._wrapper.do("filter_name", ascii[i:i+4])
+            self._wrapper.do("set_memory", m)
+            n = self._wrapper.do("get_memory", loc)
+            self.compare_mem(m, n)
+
+    def do_bandedges(self, rf, loc):
+        m = chirp_common.Memory()
+        m.number = loc
+
+        for limits in rf.valid_bands:
+            for freq in limits:
+                m.freq = freq
+                self._wrapper.do("set_memory", m)
+                n = self._wrapper.do("get_memory", loc)
+                self.compare_mem(m, n)
+
+    def run(self):
+        rf = self._wrapper.do("get_features")
+
+        if not rf.valid_bands:
+            raise TestFailedError("Radio does not provide valid bands!")
+
+        loc = rf.memory_bounds[0]
+
+        self.do_longname(rf, loc)
+        self.do_bandedges(rf, loc)
+        self.do_badname(rf, loc)
+
+        return []
+TESTS["Edges"] = TestCaseEdges
+
 class TestRunner:
     def __init__(self, images_dir, test_list):
         self._images_dir = images_dir
