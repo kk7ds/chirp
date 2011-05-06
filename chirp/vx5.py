@@ -149,3 +149,6 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def match_model(cls, filedata):
         return len(filedata) == cls._memsize
+
+    def filter_name(self, name):
+        return chirp_common.name8(name, True)
