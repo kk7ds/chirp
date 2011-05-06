@@ -139,7 +139,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.power = POWER_LEVELS[0]
             return mem
 
-        mem.freq = int(_mem.freq) / 1000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
         mem.offset = int(_mem.offset) / 1000.0
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
