@@ -16,11 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import traceback, sys, os, shutil, glob, tempfile
+from optparse import OptionParser
 
 # Assume we're running in the tests/ directory of the archive
 sys.path.insert(0, "../")
 
 from chirp import chirp_common, directory, csv
+
+TESTS = {}
 
 class TestError(Exception):
     def get_detail(self):
@@ -195,8 +198,9 @@ class TestCaseCopyAll(TestCase):
                 failures.append(TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
 
         return failures
+TESTS["CopyAll"] = TestCaseCopyAll
 
-class TestCaseBrute(TestCase):
+class TestCaseBruteForce(TestCase):
     def __str__(self):
         return "BruteForce"
 
@@ -286,6 +290,7 @@ class TestCaseBrute(TestCase):
         self.do_mode(m, rf)
 
         return []
+TESTS["BruteForce"] = TestCaseBruteForce
 
 class TestRunner:
     def __init__(self, images_dir, test_list):
@@ -388,8 +393,30 @@ class TestRunner:
 if __name__ == "__main__":
     import sys
 
-    tr = TestRunner("images", [TestCaseCopyAll, TestCaseBrute])
-    if len(sys.argv) > 1:
-        tr.run_one(sys.argv[1])
+    images = glob.glob("images/*.img")
+    tests = [os.path.splitext(os.path.basename(img))[0] for img in images]
+
+    op = OptionParser()
+    op.add_option("-d", "--driver", dest="driver", default=None,
+                  help="Driver to test (omit for all)")
+    op.add_option("-t", "--test", dest="test", default=None,
+                  help="Test to run (omit for all)")
+    op.usage = """
+Available drivers:
+%s
+Available tests:
+%s
+""" % ("\n".join(["  %s" % x for x in tests]),
+       "\n".join(["  %s" % x for x in TESTS.keys()]))
+
+    (options, args) = op.parse_args()
+
+    if options.test:
+        tr = TestRunner("images", [TESTS[options.test]])
+    else:
+        tr = TestRunner("images", TESTS.values())
+
+    if options.driver:
+        tr.run_one(options.driver)
     else:
         tr.run_all()
