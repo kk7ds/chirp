@@ -55,6 +55,7 @@ STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(30.0)
 STEPS.append(100.0)
 STEPS.insert(2, 0.0) # There is a skipped tuning step ad index 2 (?)
+SKIPS = ["", "S", "P"]
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
@@ -89,7 +90,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(0.5, 999.9)]
-        rf.valid_skips = ["", "S"]
+        rf.valid_skips = SKIPS
         rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
@@ -120,6 +121,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.power = POWER_LEVELS[3 - _mem.power]
+        mem.skip = SKIPS[((flag & 0x0C) >> 2)]
 
         for i in str(_mem.label):
             if i == "\xFF":
@@ -165,6 +167,9 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
         _mem.label = label.ljust(16, "\xFF")
+
+        skipbits = SKIPS.index(mem.skip) << 2
+        flag.flag |= skipbits
 
     def get_banks(self):
         return []
