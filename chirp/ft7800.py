@@ -460,13 +460,11 @@ struct {
      duplex:2;
   bbcd freq[3];
   u8 mode_am:1,
-     unknown3:1,
-     nameused:1,
-     tune_step:1,
+     tune_step:3,
      power:2,
      tmode:2;
   bbcd split[3];
-  u8 unknown4:1,
+  u8 nameused:1,
      unknown5:1,
      tone:6;
   u8 namevalid:1,
