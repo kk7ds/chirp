@@ -154,6 +154,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
             if i == 0xFF:
                 break
             mem.name += CHARSET[i & 0x7F]
+        mem.name = mem.name.rstrip()
         return mem
 
     def _wipe_memory(self, mem):
