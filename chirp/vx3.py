@@ -112,7 +112,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(0.5, 999.0)]
+        rf.valid_bands = [(500000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
@@ -139,8 +139,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.power = POWER_LEVELS[0]
             return mem
 
-        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
-        mem.offset = int(_mem.offset) / 1000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
+        mem.offset = int(_mem.offset) * 1000
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
@@ -186,8 +186,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         if not was_valid:
             self._wipe_memory(_mem)
 
-        _mem.freq = int(mem.freq * 1000)
-        _mem.offset = int(mem.offset * 1000)
+        _mem.freq = mem.freq / 1000
+        _mem.offset = mem.offset / 1000
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
