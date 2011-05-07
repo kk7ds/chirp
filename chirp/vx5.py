@@ -84,6 +84,9 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = TMODES
         rf.valid_duplexes = DUPLEX
         rf.memory_bounds = (1, 220)
+        rf.valid_bands = [(   500000,  16000000),
+                          ( 47000000, 729000000),
+                          (800000000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         return rf
 
@@ -104,14 +107,14 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
         mem.duplex = DUPLEX[_mem.duplex]
         mem.name = str(_mem.name).rstrip()
         mem.mode = MODES[_mem.mode]
         if mem.mode == "FM" and _mem.half_deviation:
             mem.mode = "NFM"
         mem.tuning_step = STEPS[_mem.tuning_step]
-        mem.offset = int(_mem.offset) / 1000.0
+        mem.offset = int(_mem.offset) * 1000
         mem.tmode = TMODES[_mem.tmode]
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
@@ -128,7 +131,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return
 
-        _mem.freq = int(mem.freq * 1000)
+        _mem.freq = int(mem.freq / 1000)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.name = mem.name.ljust(8)
         if mem.mode == "NFM":
@@ -138,7 +141,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.mode = MODES.index(mem.mode)
             _mem.half_deviation = 0
         _mem.tuning_step = STEPS.index(mem.tuning_step)
-        _mem.offset = int(mem.offset * 1000)
+        _mem.offset = int(mem.offset / 1000)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
