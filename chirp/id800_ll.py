@@ -138,11 +138,11 @@ def get_freq_ts(mmap):
     tsval = (ord(mmap[POS_TSTEP]) >> 4) & 0x0F
 
     if (ord(mmap[POS_TUNE_FLAG]) & 0x80) == 0x80:
-        mult = 6.25
+        mult = 6250
     else:
-        mult = 5.0
+        mult = 5000
 
-    freq = ((struct.unpack(">i", fval)[0] * mult) / 1000.0)
+    freq = (struct.unpack(">i", fval)[0] * mult)
 
     return freq, ID800_TS[tsval]
 
@@ -222,7 +222,7 @@ def get_dtcs_polarity(mmap):
 def get_dup_offset(mmap):
     val = struct.unpack(">H", mmap[POS_DOFF_START:POS_DOFF_END])[0] & 0xEFFF
 
-    return float(val * 5.0) / 1000.0
+    return val * 5000
 
 def get_mem_offset(number):
     if number < 510:
@@ -359,13 +359,13 @@ def set_freq_ts(mmap, freq, ts):
     tflag = ord(mmap[POS_TUNE_FLAG]) & 0x7F
 
     if chirp_common.is_fractional_step(freq):
-        mult = 6.25
+        mult = 6250
         tflag |= 0x80
     else:
-        mult = 5
+        mult = 5000
 
     mmap[POS_TUNE_FLAG] = tflag
-    mmap[POS_FREQ_START] = struct.pack(">i", int((freq * 1000) / mult))[1:]
+    mmap[POS_FREQ_START] = struct.pack(">i", freq / mult)[1:]
     mmap[POS_TSTEP] = (ord(mmap[POS_TSTEP]) & 0x0F) | (ID800_TS.index(ts) << 4)
 
 def set_name(mmap, _name, enabled=True):
@@ -418,7 +418,7 @@ def set_duplex(mmap, duplex):
     mmap[POS_DUPX] = val
 
 def set_dup_offset(mmap, offset):
-    val = struct.pack(">H", int(offset * 1000) / 5)
+    val = struct.pack(">H", offset / 5000)
 
     mmap[POS_DOFF_START] = val
 
