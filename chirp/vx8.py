@@ -89,7 +89,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(0.5, 999.9)]
+        rf.valid_bands = [(500000, 999900000)]
         rf.valid_skips = SKIPS
         rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
@@ -112,8 +112,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if (flag & 0x03) != 0x03:
             mem.empty = True
             return mem
-        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
-        mem.offset = int(_mem.offset) / 1000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
+        mem.offset = int(_mem.offset) * 1000.0
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tone_mode]
         mem.duplex = DUPLEX[_mem.duplex]
@@ -141,9 +141,9 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             flag.flag = 0
             return
 
-        if mem.freq < 30 or \
-                (mem.freq > 88 and mem.freq < 108) or \
-                mem.freq > 580:
+        if mem.freq < 30000000 or \
+                (mem.freq > 88000000 and mem.freq < 108000000) or \
+                mem.freq > 580000000:
             flag.flag = 0x83 # Masked from VFO B
         else:
             flag.flag = 0x03 # Available in both VFOs
@@ -152,8 +152,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if was_empty:
             self._wipe_memory(_mem)
 
-        _mem.freq = int(mem.freq * 1000)
-        _mem.offset = int(mem.offset * 1000)
+        _mem.freq = int(mem.freq / 1000)
+        _mem.offset = int(mem.offset / 1000)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tone_mode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
