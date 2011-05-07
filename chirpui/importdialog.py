@@ -532,7 +532,7 @@ class ImportDialog(gtk.Dialog):
             self.col_oloc   : gobject.TYPE_INT,
             self.col_nloc   : gobject.TYPE_INT,
             self.col_name   : gobject.TYPE_STRING,
-            self.col_freq   : gobject.TYPE_DOUBLE,
+            self.col_freq   : gobject.TYPE_INT64,
             self.col_okay   : gobject.TYPE_BOOLEAN,
             self.col_tmsg   : gobject.TYPE_STRING,
             }

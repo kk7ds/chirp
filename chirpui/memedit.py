@@ -26,7 +26,8 @@ from gobject import TYPE_INT, \
     TYPE_DOUBLE as TYPE_FLOAT, \
     TYPE_STRING, \
     TYPE_BOOLEAN, \
-    TYPE_PYOBJECT
+    TYPE_PYOBJECT, \
+    TYPE_INT64
 import gobject
 import pickle
 import os
@@ -61,7 +62,7 @@ class MemoryEditor(common.Editor):
     cols = [
         ("Loc"       , TYPE_INT,     gtk.CellRendererText,  ),
         ("Name"      , TYPE_STRING,  gtk.CellRendererText,  ), 
-        ("Frequency" , TYPE_FLOAT,   gtk.CellRendererText,  ),
+        ("Frequency" , TYPE_INT64,   gtk.CellRendererText,  ),
         ("Tone Mode" , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Tone"      , TYPE_FLOAT,   gtk.CellRendererCombo, ),
         ("ToneSql"   , TYPE_FLOAT,   gtk.CellRendererCombo, ),
@@ -69,7 +70,7 @@ class MemoryEditor(common.Editor):
         ("DTCS Pol"  , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Cross Mode", TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Duplex"    , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Offset"    , TYPE_FLOAT,   gtk.CellRendererText,  ),
+        ("Offset"    , TYPE_INT64,   gtk.CellRendererText,  ),
         ("Mode"      , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Power"     , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Tune Step" , TYPE_FLOAT,   gtk.CellRendererCombo, ),
@@ -83,14 +84,14 @@ class MemoryEditor(common.Editor):
 
     defaults = {
         "Name"      : "",
-        "Frequency" : 146.010,
+        "Frequency" : 146010000,
         "Tone"      : 88.5,
         "ToneSql"   : 88.5,
         "DTCS Code" : 23,
         "DTCS Pol"  : "NN",
         "Cross Mode": "DCS->Off",
         "Duplex"    : "",
-        "Offset"    : 0.0,
+        "Offset"    : 0,
         "Mode"      : "FM",
         "Power"     : "",
         "Tune Step" : 5.0,
@@ -116,6 +117,9 @@ class MemoryEditor(common.Editor):
     def ed_name(self, _, __, new, ___):
         return self.rthread.radio.filter_name(new)
 
+    def ed_offset(self, _, path, new, __):
+        return chirp_common.parse_freq(new)
+
     def ed_freq(self, _, path, new, __):
         iter = self.store.get_iter(path)
 
@@ -140,7 +144,7 @@ class MemoryEditor(common.Editor):
             return self.store.get(iter, self.col("Tune Step"))[0]
 
         try:
-            new = float(new)
+            new = chirp_common.parse_freq(new)
         except ValueError, e:
             print e
             new = None
@@ -149,7 +153,7 @@ class MemoryEditor(common.Editor):
 
         if new:
             set_offset(path, 0)
-            band = int(new / 100)
+            band = int(new / 100000000)
             if chirp_common.STD_OFFSETS.has_key(band):
                 offsets = chirp_common.STD_OFFSETS[band]
                 for lo, hi, offset in offsets:
@@ -182,11 +186,11 @@ class MemoryEditor(common.Editor):
             # RX frequency as the default TX frequency
             self.store.set(iter, self.col("Offset"), freq)
         else:
-            band = int(freq / 100)
+            band = int(freq / 100000000)
             if chirp_common.STD_OFFSETS.has_key(band):
                 offset = chirp_common.STD_OFFSETS[band][0][2]
             else:
-                offset = 0.0
+                offset = 0
             self.store.set(iter, self.col("Offset"), abs(offset))
 
         return new
@@ -243,6 +247,7 @@ class MemoryEditor(common.Editor):
             "Name" : self.ed_name,
             "Frequency" : self.ed_freq,
             "Duplex" : self.ed_duplex,
+            "Offset" : self.ed_offset,
             }
 
         if funcs.has_key(cap):
@@ -297,11 +302,11 @@ class MemoryEditor(common.Editor):
             return ""
 
         if colnum == self.col("Frequency"):
-            val = "%.5f" % val
+            val = chirp_common.format_freq(val)
         elif colnum == self.col("DTCS Code"):
             val = "%03i" % int(val)
         elif colnum == self.col("Offset"):
-            val = "%.3f" % val
+            val = chirp_common.format_freq(val)
         elif colnum in [self.col("Tone"), self.col("ToneSql")]:
             val = "%.1f" % val
         elif colnum in [self.col("Tone Mode"), self.col("Duplex")]:
