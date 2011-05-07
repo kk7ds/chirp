@@ -279,7 +279,7 @@ class TestCaseBruteForce(TestCase):
         m = chirp_common.Memory()
         m.number = rf.memory_bounds[0]
         if rf.valid_bands:
-            m.freq = rf.valid_bands[0][0] + 0.1
+            m.freq = rf.valid_bands[0][0] + 100000
         else:
             m.freq = 146.52
 
@@ -300,7 +300,7 @@ class TestCaseEdges(TestCase):
         m = chirp_common.Memory()
         m.number = loc
 
-        m.freq = rf.valid_bands[0][0] + 1.0
+        m.freq = rf.valid_bands[0][0] + 1000000
         m.name = ("X" * 256) # Should be longer than any radio can handle
         m.name = self._wrapper.do("filter_name", m.name)
 
@@ -312,7 +312,7 @@ class TestCaseEdges(TestCase):
     def do_badname(self, rf, loc):
         m = chirp_common.Memory()
         m.number = loc
-        m.freq = rf.valid_bands[0][0] + 1.0
+        m.freq = rf.valid_bands[0][0] + 1000000
 
         ascii = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
         for i in range(0, len(ascii), 4):
