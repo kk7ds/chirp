@@ -115,7 +115,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(set(DUPLEX))
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
-        rf.valid_bands = [(118.0, 999.99)]
+        rf.valid_bands = [(118000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
         return rf
 
@@ -193,8 +193,8 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.empty = True
             return mem
 
-        mem.freq = _mem.freq / 1000000.0
-        mem.offset = _mem.offset / 1000000.0
+        mem.freq = int(_mem.freq)
+        mem.offset = int(_mem.offset)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -251,8 +251,8 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if was_empty:
             self._wipe_memory(_mem, "\x00")
 
-        _mem.freq = int(mem.freq * 1000000)
-        _mem.offset = int(mem.offset * 1000000)
+        _mem.freq = mem.freq
+        _mem.offset = mem.offset
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
