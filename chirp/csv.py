@@ -29,9 +29,9 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     ATTR_MAP = {
         "Location"     : (int,   "number"),
         "Name"         : (str,   "name"),
-        "Frequency"    : (float, "freq"),
+        "Frequency"    : (chirp_common.parse_freq, "freq"),
         "Duplex"       : (str,   "duplex"),
-        "Offset"       : (float, "offset"),
+        "Offset"       : (chirp_common.parse_freq, "offset"),
         "Tone"         : (str,   "tmode"),
         "rToneFreq"    : (float, "rtone"),
         "cToneFreq"    : (float, "ctone"),
@@ -75,7 +75,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tmodes = list(chirp_common.TONE_MODES)
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
-        rf.valid_bands = [(0.01, 10000.0)]
+        rf.valid_bands = [(1, 10000000000)]
         rf.valid_skips = ["", "S"]
         
         return rf
