@@ -159,7 +159,7 @@ CHARSET = (["\x00"] * 0x30) + \
     list("?" * 128)
 
 class DRx35Radio(AlincoStyleRadio):
-    _range = (118, 155)
+    _range = (118000000, 155000000)
 
     def _get_name(self, mem, _mem):
         name = ""
@@ -203,11 +203,11 @@ class DRx35Radio(AlincoStyleRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
-        mem.freq = int(_mem.freq) / 100.0
+        mem.freq = int(_mem.freq) * 1000
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.duplex = DUPLEX[_mem.duplex]
-        mem.offset = int(_mem.offset) / 10000.0
+        mem.offset = int(_mem.offset)
         mem.tmode = TMODES[_mem.tmode]
         mem.dtcs = DCS_CODES[self.VENDOR][_mem.dtcs_tx]
 
@@ -226,11 +226,11 @@ class DRx35Radio(AlincoStyleRadio):
         _skp = self._memobj.skips[mem.number / 8]
         bit = (0x80 >> (mem.number % 8))
 
-        _mem.freq = int(mem.freq * 100)
+        _mem.freq = mem.freq / 1000
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.offset = int(mem.offset * 10000)
+        _mem.offset = mem.offset
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.dtcs_tx = DCS_CODES[self.VENDOR].index(mem.dtcs)
         _mem.dtcs_rx = DCS_CODES[self.VENDOR].index(mem.dtcs)
@@ -253,7 +253,7 @@ class DR135Radio(DRx35Radio):
 
     _model = "DR135"
     _memsize = 4096
-    _range = (118.0, 173.0)
+    _range = (118000000, 173000000)
 
     @classmethod
     def match_model(cls, filedata):
@@ -266,7 +266,7 @@ class DR235Radio(DRx35Radio):
 
     _model = "DR235"
     _memsize = 4096
-    _range = (216.0, 280.0)
+    _range = (216000000, 280000000)
 
     @classmethod
     def match_model(cls, filedata):
@@ -279,7 +279,7 @@ class DR435Radio(DRx35Radio):
 
     _model = "DR435"
     _memsize = 4096
-    _range = (350.0, 511.0)
+    _range = (350000000, 511000000)
 
     @classmethod
     def match_model(cls, filedata):
@@ -292,7 +292,7 @@ class JT220MRadio(DRx35Radio):
 
     _model = "DR136"
     _memsize = 4096
-    _range = (216.0, 280.0)
+    _range = (216000000, 280000000)
 
     @classmethod
     def match_model(cls, filedata):
