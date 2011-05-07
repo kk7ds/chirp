@@ -69,16 +69,16 @@ CROSS_MODES = [
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY"]
 
 STD_2M_OFFSETS = [
-    (145.1, 145.5, -0.600),
-    (146.0, 146.4, 0.600),
-    (146.6, 147.0, -0.600),
-    (147.0, 147.4, 0.600),
-    (147.6, 148.0, -0.600),
+    (145100000, 145500000, -600000),
+    (146000000, 146400000,  600000),
+    (146600000, 147000000, -600000),
+    (147000000, 147400000,  600000),
+    (147600000, 148000000, -600000),
     ]
 
 STD_70CM_OFFSETS = [
-    (440.0, 445.0, 5),
-    (445.0, 450.0, -5),
+    (440000000, 445000000,  5000000),
+    (445000000, 450000000, -5000000),
     ]
 
 STD_OFFSETS = {
@@ -144,8 +144,23 @@ class PowerLevel:
     def __repr__(self):
         return "%s (%i dBm)" % (self._label, self._power)
 
+def parse_freq(freqstr):
+    if "." in freqstr:
+        MHz, kHz = freqstr.split(".")
+    else:
+        MHz = freqstr
+        kHz = 0
+    if not MHz.isdigit() and kHz.isdigit():
+        raise ValueError("Invalid value")
+
+    # Make kHz exactly six decimal places
+    return int(("%s%-6s" % (MHz, kHz)).replace(" ", "0"))
+
+def format_freq(freq):
+    return "%i.%06i" % (freq / 1000000, freq % 1000000)
+
 class Memory:
-    freq = 0.0
+    freq = 0
     number = 0
     extd_number = ""
     name = ""
@@ -159,7 +174,7 @@ class Memory:
     skip = ""
     power = None
     duplex = ""
-    offset = 0.600
+    offset = 600000
     mode = "FM"
     tuning_step = 5.0
 
@@ -171,7 +186,7 @@ class Memory:
     immutable = []
 
     def __init__(self):
-        self.freq = 0.0                   
+        self.freq = 0
         self.number = 0                   
         self.extd_number = ""             
         self.name = ""                    
@@ -185,7 +200,7 @@ class Memory:
         self.skip = ""                    
         self.power = None                 
         self.duplex = ""                  
-        self.offset = 0.600               
+        self.offset = 600000
         self.mode = "FM"                  
         self.tuning_step = 5.0            
                                           
@@ -242,6 +257,13 @@ class Memory:
 
         self.__dict__[name] = val
 
+    def format_freq(self):
+        return format_freq(self.freq)
+
+    def parse_freq(self, freqstr):
+        self.freq = parse_freq(freqstr)
+        return self.freq
+
     def __str__(self):
         if self.tmode == "Tone":
             tenc = "*"
@@ -268,11 +290,11 @@ class Memory:
         else:
             bindex = ":%i" % self.bank_index
 
-        return "Memory %i: %.5f%s%0.3f %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f] %s" % \
+        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f] %s" % \
             (self.number,
-             self.freq,
+             format_freq(self.freq),
              dup,
-             self.offset,
+             format_freq(self.offset),
              self.mode,
              self.name,
              self.rtone,
@@ -289,9 +311,9 @@ class Memory:
         string = SEPCHAR.join([
                 "%i"   % self.number,
                 "%s"   % self.name,
-                "%.5f" % self.freq,
+                format_freq(self.freq),
                 "%s"   % self.duplex,
-                "%.5f" % self.offset,
+                format_freq(self.offset),
                 "%s"   % self.tmode,
                 "%.1f" % self.rtone,
                 "%.1f" % self.ctone,
@@ -438,9 +460,9 @@ class DVMemory(Memory):
         string = SEPCHAR.join([
                 "%i"   % self.number,
                 "%s"   % self.name,
-                "%.5f" % self.freq,
+                format_freq(self.freq),
                 "%s"   % self.duplex,
-                "%.5f" % self.offset,
+                format_freq(self.offset),
                 "%s"   % self.tmode,
                 "%.1f" % self.rtone,
                 "%.1f" % self.ctone,
@@ -827,24 +849,19 @@ class Status:
 def is_fractional_step(freq):
     return not is_5_0(freq) and (is_12_5(freq) or is_6_25(freq))
 
-def is_int(value):
-    return int(value) == value
-
 def is_5_0(freq):
-    return is_int((Decimal("%f" % freq) * 1000) / Decimal("5.00"))
+    return (freq % 5000) == 0
 
 def is_12_5(freq):
-    return is_int((Decimal("%f" % freq) * 1000) / Decimal("12.50"))
+    return (freq % 12500) == 0
 
 def is_6_25(freq):
-    return is_int((Decimal("%f" % freq) * 1000) / Decimal("6.25"))
+    return (freq % 6250) == 0
 
 def is_2_5(freq):
-    return is_int((Decimal("%f" % freq) * 1000) / Decimal("2.50"))
+    return (freq % 2500) == 0
 
 def required_step(freq):
-    freq = Decimal("%f" % freq)
-
     if is_5_0(freq):
         return 5.0
     elif is_12_5(freq):
@@ -855,7 +872,8 @@ def required_step(freq):
         return 2.5
     else:
         raise errors.InvalidDataError("Unable to calculate the required " +
-                                      "tuning step for %.5f" % freq)
+                                      "tuning step for %i.%5i" % (freq / 1000000,
+                                                                  freq % 1000000))
 
 def fix_rounded_step(freq):
     freq = Decimal("%f" % freq)
