@@ -409,8 +409,7 @@ class TestRunner:
             except TestCrashError, e:
                 self.report(rclass, tc, "CRASHED", e)
                 self.log(rclass, tc, e)
-                nfailed = -1
-                break
+                nfailed += 1
 
             tc.cleanup()
 
