@@ -87,7 +87,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(set(DUPLEX))
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(118.0, 999.99)]
+        rf.valid_bands = [(118000000, 999990000)]
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS_VHF
         return rf
@@ -117,8 +117,8 @@ class IC2720Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = _mem.freq / 1000000.0
-        mem.offset = _mem.offset / 1000000.0
+        mem.freq = int(_mem.freq)
+        mem.offset = int(_mem.offset)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
@@ -137,7 +137,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         if mem.bank == 0x0A:
             mem.bank = None
 
-        if int(mem.freq / 100) == 1:
+        if int(mem.freq / 100000000) == 1:
             mem.power = POWER_LEVELS_VHF[_mem.power]
         else:
             mem.power = POWER_LEVELS_UHF[_mem.power]
@@ -157,8 +157,8 @@ class IC2720Radio(icf.IcomCloneModeRadio):
             _usd |= bitpos
             return
 
-        _mem.freq = int(mem.freq * 1000000)
-        _mem.offset = int(mem.offset * 1000000)
+        _mem.freq = mem.freq
+        _mem.offset = mem.offset
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
