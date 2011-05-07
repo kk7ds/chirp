@@ -156,9 +156,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
-        rf.valid_bands = [(118.0, 173.995), (230.0, 549.995),
-                          (810.0, 823.990), (849.0, 868.990),
-                          (894.0, 999.990)]
+        rf.valid_bands = [(118000000, 173995000), (230000000, 549995000),
+                          (810000000, 823990000), (849000000, 868990000),
+                          (894000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
         rf.memory_bounds = (0, 999)
         return rf
@@ -201,23 +201,23 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         val = _mem.freq
 
         if val & 0x00200000:
-            mult = 6.25
+            mult = 6250
         else:
-            mult = 5.0
+            mult = 5000
 
         val &= 0x0003FFFF
 
-        return (val * mult) / 1000.0
+        return (val * mult)
 
     def _set_freq(self, _mem, freq):
         if chirp_common.is_fractional_step(freq):
-            mult = 6.25
+            mult = 6250
             flag = 0x00200000
         else:
-            mult = 5.0
+            mult = 5000
             flag = 0x00000000
 
-        _mem.freq = int((freq * 1000) / mult) | flag
+        _mem.freq = (freq / mult) | flag
 
     def get_memory(self, number):
         bytepos = number / 8
@@ -260,7 +260,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             return mem
 
         mem.freq = self._get_freq(_mem)
-        mem.offset = (_mem.offset * 5) / 1000.0
+        mem.offset = (_mem.offset * 5) * 1000
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -299,7 +299,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             self._wipe_memory(_mem, "\x00")
 
         self._set_freq(_mem, mem.freq)
-        _mem.offset = int((mem.offset * 1000) / 5)
+        _mem.offset = int((mem.offset / 1000) / 5)
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
