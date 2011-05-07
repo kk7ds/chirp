@@ -114,7 +114,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(0.5, 999.0)]
+        rf.valid_bands = [(500000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 450)
@@ -141,8 +141,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.power = POWER_LEVELS[0]
             return mem
 
-        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
-        mem.offset = int(_mem.offset) / 1000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
+        mem.offset = int(_mem.offset) * 1000
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
@@ -151,7 +151,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
 
-        if mem.freq > 220 and mem.freq < 225:
+        if mem.freq > 220000000 and mem.freq < 225000000:
             mem.power = POWER_LEVELS_220[1 - _mem.power]
         else:
             mem.power = POWER_LEVELS[3 - _mem.power]
@@ -185,8 +185,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         if not was_valid:
             self._wipe_memory(_mem)
 
-        _mem.freq = int(mem.freq * 1000)
-        _mem.offset = int(mem.offset * 1000)
+        _mem.freq = mem.freq / 1000
+        _mem.offset = mem.offset / 1000
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
@@ -213,7 +213,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 
-        if mem.freq >= 222 and mem.freq <= 225:
+        if mem.freq >= 222000000 and mem.freq <= 225000000:
             if mem.power not in POWER_LEVELS_220:
                 msgs.append(chirp_common.ValidationError(\
                         "Power level %s not supported on 220MHz band" % mem.power))
