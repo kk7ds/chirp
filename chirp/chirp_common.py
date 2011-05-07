@@ -876,36 +876,32 @@ def required_step(freq):
                                                                   freq % 1000000))
 
 def fix_rounded_step(freq):
-    freq = Decimal("%f" % freq)
-
     try:
         required_step(freq)
-        return float(freq)
+        return freq
     except errors.InvalidDataError:
         pass
 
     try:
-        c = freq + Decimal("0.0005")
-        required_step(c)
-        return float(c)
+        required_step(freq + 500)
+        return freq + 500
     except errors.InvalidDataError:
         pass
 
     try:
-        c = freq + Decimal("0.00025")
-        required_step(c)
-        return float(c)
+        required_step(freq + 250)
+        return freq + 250
     except errors.InvalidDataError:
         pass
 
     try:
-        c = freq + Decimal("0.00075")
-        required_step(c)
-        return float(c)
+        required_step(freq + 750)
+        return float(freq + 750)
     except errors.InvalidDataError:
         pass
 
-    raise errors.InvalidDataError("Unable to correct rounded frequency %.5f" % freq)
+    raise errors.InvalidDataError("Unable to correct rounded frequency " + \
+                                      format_freq(freq))
 
 def _name(name, len, just_upper):
     if just_upper:
