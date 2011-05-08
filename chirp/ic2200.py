@@ -253,9 +253,9 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if isinstance(mem, chirp_common.DVMemory):
             urcalls = self.get_urcall_list()
             rptcalls = self.get_repeater_call_list()
-            _mem.urcall = urcalls.index(mem.dv_urcall.ljust(8))
-            _mem.r1call = rptcalls.index(mem.dv_rpt1call.ljust(8))
-            _mem.r2call = rptcalls.index(mem.dv_rpt2call.ljust(8))
+            _mem.urcall = urcalls.index(mem.dv_urcall)
+            _mem.r1call = rptcalls.index(mem.dv_rpt1call)
+            _mem.r2call = rptcalls.index(mem.dv_rpt2call)
 
     def get_raw_memory(self, number):
         return self._memobj.memory[number].get_raw()
@@ -273,13 +273,13 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_urcall_list(self):
-        return [str(x.call) for x in self._memobj.urcalls]
+        return [str(x.call).rstrip() for x in self._memobj.urcalls]
 
     def get_repeater_call_list(self):
-        return [str(x.call) for x in self._memobj.rptcalls]
+        return [str(x.call).rstrip() for x in self._memobj.rptcalls]
 
     def get_mycall_list(self):
-        return [str(x.call) for x in self._memobj.mycalls]
+        return [str(x.call).rstrip() for x in self._memobj.mycalls]
 
     def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
