@@ -337,6 +337,31 @@ class TestCaseEdges(TestCase):
                 n = self._wrapper.do("get_memory", loc)
                 self.compare_mem(m, n)
 
+    def do_oddsteps(self, rf, loc):
+        odd_steps = {
+            145 : [145.85625, 145.86250],
+            445 : [445.85625, 445.86250],
+            862 : [862.73125, 862.73750],
+            }
+
+        m = chirp_common.Memory()
+        m.number = loc
+
+        for low, high in rf.valid_bands:
+            for band, totest in odd_steps.items():
+                if band < low or band > high:
+                    continue
+                for testfreq in totest:
+                    if chirp_common.required_step(testfreq) not in\
+                            rf.valid_tuning_steps:
+                        continue
+
+                    m.freq = testfreq
+                    self._wrapper.do("set_memory", m)
+                    n = self._wrapper.do("get_memory", loc)
+                    self.compare_mem(m, n)
+        
+
     def run(self):
         rf = self._wrapper.do("get_features")
 
@@ -347,6 +372,7 @@ class TestCaseEdges(TestCase):
 
         self.do_longname(rf, loc)
         self.do_bandedges(rf, loc)
+        self.do_oddsteps(rf, loc)
         self.do_badname(rf, loc)
 
         return []
