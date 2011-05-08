@@ -19,7 +19,7 @@ import gtk
 import gobject
 import pango
 
-from chirp import errors, chirp_common, xml
+from chirp import errors, chirp_common, xml, import_logic
 from chirpui import common
 
 class WaitWindow(gtk.Window):
@@ -220,52 +220,26 @@ class ImportDialog(gtk.Dialog):
 
     def do_import(self, dst_rthread):
         i = 0
-
         error_messages = {}
-
         import_list = self.get_import_list()
-
-        has_dstar = isinstance(self.dst_radio, chirp_common.IcomDstarSupport)
-        dst_features = self.dst_radio.get_features()
-        src_features = self.src_radio.get_features()
-
-        if has_dstar and dst_features.requires_call_lists:
-            self.ensure_calls(dst_rthread, import_list)
-
-        dst_banks = self.dst_radio.get_banks()
 
         for old, new in import_list:
             i += 1
             print "%sing %i -> %i" % (self.ACTION, old, new)
-            mem = self.src_radio.get_memory(old).dupe()
-            mem.number = new
 
-            self.do_soft_conversions(dst_features, src_features, mem)
+            src = self.src_radio.get_memory(old)
 
-            mem.name = self.dst_radio.filter_name(mem.name)
+            try:
+                mem = import_logic.import_mem(self.dst_radio, src,
+                                             {"number" : new})
+            except import_logic.ImportError, e:
+                print e
+                error_messages[new] = str(e)
+                continue
 
-            if dst_banks and not mem.bank < len(dst_banks):
-                mem.bank = None
-
-            if isinstance(mem, chirp_common.DVMemory):
-                if mem.dv_rpt1call == "*NOTUSE*":
-                    mem.dv_rpt1call = ""
-                if mem.dv_rpt2call == "*NOTUSE*":
-                    mem.dv_rpt2call = ""
-
-            msgs = dst_rthread.radio.validate_memory(mem)
-            if msgs:
-                error_messages[mem.number] = msgs
-            else:
-                job = common.RadioJob(None, "set_memory", mem)
-                job.set_desc("Setting memory %i" % mem.number)
-                dst_rthread._qsubmit(job, 0)
-
-        try:
-            self.do_import_banks()
-        except Exception, e:
-            common.log_exception()
-            error_messages["Banks"] = [str(e)]
+            job = common.RadioJob(None, "set_memory", mem)
+            job.set_desc("Setting memory %i" % mem.number)
+            dst_rthread._qsubmit(job, 0)
 
         if error_messages.keys():
             msg = "Error importing memories:\r\n"

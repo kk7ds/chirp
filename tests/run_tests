@@ -21,7 +21,7 @@ from optparse import OptionParser
 # Assume we're running in the tests/ directory of the archive
 sys.path.insert(0, "../")
 
-from chirp import chirp_common, directory, csv
+from chirp import chirp_common, directory, csv, import_logic
 
 TESTS = {}
 
@@ -110,6 +110,9 @@ class TestWrapper:
                              self._dst.MODEL,
                              self._dst.VARIANT)
 
+    def get_radio(self):
+        return self._dst
+
 class TestCase:
     def __init__(self, wrapper):
         self._wrapper = wrapper
@@ -139,6 +142,16 @@ class TestCase:
                     # Name mismatch fair if filter_name() is right
                     v = self._wrapper.do("filter_name", v).rstrip()
             elif k == "ctone" and not rf.has_ctone:
+                continue
+            elif k == "tuning_step" and not rf.has_tuning_step:
+                continue
+            elif k == "rtone" and a.tmode != "Tone":
+                continue
+            elif k == "ctone" and a.tmode != "TSQL":
+                continue
+            elif k == "dtcs" and a.tmode != "DTCS":
+                continue
+            elif k == "offset" and not a.duplex:
                 continue
 
             try:
@@ -183,17 +196,24 @@ class TestCaseCopyAll(TestCase):
             if src_mem.empty:
                 continue
 
-            src_mem.number = dst_number
-            dst_mem = src_mem.dupe()
-
-            if self._wrapper.do("validate_memory", dst_mem):
-                continue # Returning some messages means "no"
+            try:
+                dst_mem = import_logic.import_mem(self._wrapper.get_radio(),
+                                                  src_mem,
+                                                  overrides={"number":dst_number})
+            except import_logic.DestNotCompatible:
+                continue
+            except import_logic.ImportError, e:
+                failures.append(TestFailedError("<%i>: Import Failed: %s" %\
+                                                    (dst_number, e)))
+                continue
+            except Exception, e:
+                raise TestCrashError(get_tb(), e, "[Import]")
 
             self._wrapper.do("set_memory", dst_mem)
             ret_mem = self._wrapper.do("get_memory", dst_number)
 
             try:
-                self.compare_mem(src_mem, ret_mem)
+                self.compare_mem(dst_mem, ret_mem)
             except TestFailedError, e:
                 failures.append(TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
 
@@ -271,6 +291,11 @@ class TestCaseBruteForce(TestCase):
         for mode in rf.valid_modes:
             if mode not in chirp_common.MODES:
                 continue
+            if mode == "DV":
+                _m = m
+                m = chirp_common.DVMemory()
+                m.number = _m.number
+                m.freq = _m.freq
             m.mode = mode
             self.set_and_compare(m)
 
@@ -332,6 +357,31 @@ class TestCaseEdges(TestCase):
                 n = self._wrapper.do("get_memory", loc)
                 self.compare_mem(m, n)
 
+    def do_oddsteps(self, rf, loc):
+        odd_steps = {
+            145 : [145.85625, 145.86250],
+            445 : [445.85625, 445.86250],
+            862 : [862.73125, 862.73750],
+            }
+
+        m = chirp_common.Memory()
+        m.number = loc
+
+        for low, high in rf.valid_bands:
+            for band, totest in odd_steps.items():
+                if band < low or band > high:
+                    continue
+                for testfreq in totest:
+                    if chirp_common.required_step(testfreq) not in\
+                            rf.valid_tuning_steps:
+                        continue
+
+                    m.freq = testfreq
+                    self._wrapper.do("set_memory", m)
+                    n = self._wrapper.do("get_memory", loc)
+                    self.compare_mem(m, n)
+        
+
     def run(self):
         rf = self._wrapper.do("get_features")
 
@@ -342,6 +392,7 @@ class TestCaseEdges(TestCase):
 
         self.do_longname(rf, loc)
         self.do_bandedges(rf, loc)
+        self.do_oddsteps(rf, loc)
         self.do_badname(rf, loc)
 
         return []
@@ -409,8 +460,7 @@ class TestRunner:
             except TestCrashError, e:
                 self.report(rclass, tc, "CRASHED", e)
                 self.log(rclass, tc, e)
-                nfailed = -1
-                break
+                nfailed += 1
 
             tc.cleanup()
 
