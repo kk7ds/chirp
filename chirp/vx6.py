@@ -60,10 +60,8 @@ STEPS.append(100.0)
 STEPS.append(9.0)
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
-    [" "] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
-    [chr(x) for x in range(ord("a"), ord("z")+1)] + \
-    list(".,:;!\"#$%&'()*+-.=<>?@[?]^_\\{|}") + \
+    list(" +-/?[]__?????????$%%?**.|=\\?@") + \
     list("?" * 100)
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
@@ -105,7 +103,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return vx6_ll.get_raw_memory(self._mmap, number).get_packed()
+        return self._memobj.memory[number-1].get_raw()
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -135,7 +133,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         for i in _mem.name:
             if i == 0xFF:
                 break
-            mem.name += CHARSET[i]
+            mem.name += CHARSET[i & 0x7F]
         mem.name = mem.name.rstrip()
 
         return mem
@@ -165,8 +163,12 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
 
+        _mem.name == ("\xFF" * 6)
         for i in range(0, 6):
             _mem.name[i] = CHARSET.index(mem.name.ljust(6)[i])
+
+        if mem.name.strip():
+            _mem.name[0] |= 0x80
 
     def filter_name(self, name):
         return chirp_common.name6(name, True)
