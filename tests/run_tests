@@ -21,7 +21,7 @@ from optparse import OptionParser
 # Assume we're running in the tests/ directory of the archive
 sys.path.insert(0, "../")
 
-from chirp import chirp_common, directory, csv
+from chirp import chirp_common, directory, csv, import_logic
 
 TESTS = {}
 
@@ -110,6 +110,9 @@ class TestWrapper:
                              self._dst.MODEL,
                              self._dst.VARIANT)
 
+    def get_radio(self):
+        return self._dst
+
 class TestCase:
     def __init__(self, wrapper):
         self._wrapper = wrapper
@@ -183,17 +186,24 @@ class TestCaseCopyAll(TestCase):
             if src_mem.empty:
                 continue
 
-            src_mem.number = dst_number
-            dst_mem = src_mem.dupe()
-
-            if self._wrapper.do("validate_memory", dst_mem):
-                continue # Returning some messages means "no"
+            try:
+                dst_mem = import_logic.import_mem(self._wrapper.get_radio(),
+                                                  src_mem,
+                                                  overrides={"number":dst_number})
+            except import_logic.DestNotCompatible:
+                continue
+            except import_logic.ImportError, e:
+                failures.append(TestFailedError("<%i>: Import Failed: %s" %\
+                                                    (dst_number, e)))
+                continue
+            except Exception, e:
+                raise TestCrashError(get_tb(), e, "[Import]")
 
             self._wrapper.do("set_memory", dst_mem)
             ret_mem = self._wrapper.do("get_memory", dst_number)
 
             try:
-                self.compare_mem(src_mem, ret_mem)
+                self.compare_mem(dst_mem, ret_mem)
             except TestFailedError, e:
                 failures.append(TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
 
