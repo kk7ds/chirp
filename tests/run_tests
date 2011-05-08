@@ -271,6 +271,11 @@ class TestCaseBruteForce(TestCase):
         for mode in rf.valid_modes:
             if mode not in chirp_common.MODES:
                 continue
+            if mode == "DV":
+                _m = m
+                m = chirp_common.DVMemory()
+                m.number = _m.number
+                m.freq = _m.freq
             m.mode = mode
             self.set_and_compare(m)
 
