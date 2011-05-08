@@ -143,6 +143,14 @@ class TestCase:
                     v = self._wrapper.do("filter_name", v).rstrip()
             elif k == "ctone" and not rf.has_ctone:
                 continue
+            elif k == "rtone" and a.tmode != "Tone":
+                continue
+            elif k == "ctone" and a.tmode != "TSQL":
+                continue
+            elif k == "dtcs" and a.tmode != "DTCS":
+                continue
+            elif k == "offset" and not a.duplex:
+                continue
 
             try:
                 if b.__dict__[k] != v:
