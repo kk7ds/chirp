@@ -75,7 +75,7 @@ def _import_power(dst_radio, mem):
     if not levels:
         mem.power = None
         return
-    elif not mem.power:
+    elif mem.power is None:
         # Source radio did not support power levels, so choose the
         # first (highest) level from the destination radio.
         mem.power = levels[0]
