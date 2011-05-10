@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, vx6_ll
+from chirp import chirp_common, yaesu_clone
 from chirp import bitwise
 
 mem_format = """
@@ -80,9 +80,6 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     _memsize = 32587
     _block_lengths = [10, 32578]
     _block_size = 16
-
-    def _update_checksum(self):
-        vx6_ll.update_checksum(self._mmap)
 
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
