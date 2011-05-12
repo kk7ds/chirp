@@ -18,6 +18,24 @@
 from chirp import chirp_common, yaesu_clone
 from chirp import bitwise
 
+# flags.{even|odd}_pskip: These are actually "preferential *scan* channels".
+# Is that what they mean on other radios as well?
+
+# memory {
+#   step_changed: Channel step has been changed. Bit stays on even after
+#                 you switch back to default step. Don't know why you would
+#                 care
+#   half_deviation: 2.5 kHz deviation
+#   cpu_shifted:  CPU freq has been shifted (to move a birdie out of channel)
+#   power:        0-3: ["L1", "L2", "L3", "Hi"]
+#   pager:        Set if this is a paging memory
+#   tmodes:       0-7: ["", "Tone", "TSQL", "DTCS", "Rv Tn", "D Code", "T DCS", "D Tone"]
+#                      Rv Tn: Reverse CTCSS - mutes receiver on tone
+#                      The final 3 are for split:
+#                      D Code: DCS Encode only
+#                      T DCS:  Encodes tone, decodes DCS code
+#                      D Tone: Encodes DCS code, decodes tone
+# }
 mem_format = """
 #seekto 0x1ECA;
 struct {
@@ -33,13 +51,19 @@ struct {
 
 #seekto 0x21CA;
 struct {
-  u8 unknown1;
+  u8 unknown11:1,
+     step_changed:1,
+     half_deviation:1,
+     cpu_shifted:1,
+     unknown12:4;
   u8 mode:2,
      duplex:2,
      tune_step:4;
   bbcd freq[3];
-  u8 unknown2:6,
-     tmode:2;
+  u8 power:2,
+     unknown2:2,
+     pager:1,
+     tmode:3;
   u8 name[6];
   bbcd offset[3];
   u8 unknown3:2,
