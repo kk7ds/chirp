@@ -91,9 +91,11 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
                 chirp_common.PowerLevel("L2", watts=1.00),
-                chirp_common.PowerLevel("L1", watts=0.05)]
-POWER_LEVELS_220 = [chirp_common.PowerLevel("L2", watts=0.30),
-                    chirp_common.PowerLevel("L1", watts=0.05)]
+                chirp_common.PowerLevel("L1", watts=0.30)]
+POWER_LEVELS_220 = [chirp_common.PowerLevel("Hi", watts=1.50),
+                chirp_common.PowerLevel("L3", watts=1.00),
+                chirp_common.PowerLevel("L2", watts=0.50),
+                chirp_common.PowerLevel("L1", watts=0.20)]
 
 class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
@@ -115,8 +117,9 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs_polarity = False
-        rf.valid_modes = ["FM", "WFM", "AM"]
+        rf.valid_modes = ["FM", "WFM", "AM", "NFM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
         rf.valid_bands = [(0.5, 998.990)]
         rf.can_odd_split = True
@@ -139,6 +142,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.number = number
         if not used:
             mem.empty = True
+            mem.power = POWER_LEVELS[0]
             return mem
 
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
@@ -147,10 +151,17 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = MODES[_mem.mode]
+        if mem.mode == "FM" and _mem.half_deviation:
+            mem.mode = "NFM"
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
         
+        if mem.freq > 220 and mem.freq < 225:
+            mem.power = POWER_LEVELS_220[3 - _mem.power]
+        else:
+            mem.power = POWER_LEVELS[3 - _mem.power]
+
         for i in _mem.name:
             if i == 0xFF:
                 break
@@ -177,9 +188,18 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.mode = MODES.index(mem.mode)
+        if mem.mode == "NFM":
+            _mem.mode = MODES.index("FM")
+            _mem.half_deviation = 1
+        else:
+            _mem.mode = MODES.index(mem.mode)
+            _mem.half_deviation = 0
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
+        if mem.power:
+            _mem.power = 3 - POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
 
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
