@@ -171,7 +171,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_modes = ["FM", "AM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_tuning_steps = STEPS
         rf.valid_bands = [(108.0, 520.0), (700.0, 990.0)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS_VHF
