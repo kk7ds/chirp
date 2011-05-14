@@ -34,7 +34,8 @@ struct {
      skip:1,
      tmode:2,
      duplex:2,
-     unk3:2;
+     unk3:1,
+     am:1;
 } flag[111];
 
 #seekto 0x0F20;
@@ -67,14 +68,17 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 99)
         rf.valid_bands = [self._limits]
-        rf.valid_modes = ["FM", "AM"]
+        if int(self._limits[0] / 100) == 1:
+            rf.valid_modes = ["FM", "AM"]
+        else:
+            rf.valid_modes = ["FM"]
         rf.valid_tmodes = ["", "Tone", "TSQL"]
 
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_ctone = True
         rf.has_dtcs = False
         rf.has_dtcs_polarity = False
-        rf.has_mode = False
+        rf.has_mode = "AM" in rf.valid_modes
         rf.has_tuning_step = False
         rf.has_bank = False
 
@@ -119,13 +123,14 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.freq) / 1000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
         mem.offset = int(_mem.offset) / 10000.0
         if str(_mem.name)[0] != chr(0xFF):
             mem.name = str(_mem.name).rstrip()
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
 
+        mem.mode = _flg.am and "AM" or "FM"
         mem.duplex = DUPLEX[_flg.duplex]
         mem.tmode = TONE[_flg.tmode]
 
@@ -154,6 +159,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         _flg.duplex = DUPLEX.index(mem.duplex)
         _flg.tmode = TONE.index(mem.tmode)
         _flg.skip = mem.skip == "S"
+        _flg.am = mem.mode == "AM"
 
     def get_sub_devices(self):
         return [ICW32ARadioVHF(self._mmap), ICW32ARadioUHF(self._mmap)]
