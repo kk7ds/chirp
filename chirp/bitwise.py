@@ -123,6 +123,12 @@ class DataElement:
     def set_value(self, value):
         raise Exception("Not implemented for %s" % self.__class__)
 
+    def get_raw(self):
+        return self._data[self._offset:self._offset+self._size]
+
+    def set_raw(self, data):
+        self._data[self._offset] = data[:self._size]
+
 class arrayDataElement(DataElement):
     def __init__(self):
         self.__items = []
