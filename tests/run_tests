@@ -416,6 +416,14 @@ class TestRunner:
         return run_list
 
     def report(self, rclass, tc, msg, e):
+        if os.isatty(1):
+            if msg == "PASSED":
+                msg = "\033[1;32m%s\033[0m" % msg
+            elif msg == "FAILED":
+                msg = "\033[1;41m%s\033[0m" % msg
+            elif msg == "CRASHED":
+                msg = "\033[1;45m%s\033[0m" % msg
+                
         print "%9s %-13s %-10s %8s: %s" % (rclass.VENDOR,
                                            ("%s %s" % (rclass.MODEL,
                                                        rclass.VARIANT)),
