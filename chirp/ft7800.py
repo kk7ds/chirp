@@ -18,6 +18,7 @@
 import time
 from chirp import chirp_common, yaesu_clone, memmap
 from chirp import bitwise, util, errors
+from decimal import Decimal
 
 ACK = chr(0x06)
 
@@ -203,19 +204,27 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         return self._memobj.memory[number-1].get_raw()
 
     def _get_mem_freq(self, mem, _mem):
-        if mem.freq > 4000:
-            # Dirty hack because the high-order digit has 0x40
-            # if 12.5kHz step
-            return (mem.freq - 4000) + 0.00250
-        else:
-            return mem.freq
+        f = Decimal("%f" % int(_mem.freq)) / 100
+        # Ugh.  The 0x80 and 0x40 indicate values to add to get the
+        # real frequency.  Gross.  Even gross-er until I get
+        # integral hertz in here :)
+
+        if f > 8000:
+            f = (f - 8000) + Decimal("0.00500")
+
+        if f > 4000:
+            f -= 4000
+            while chirp_common.required_step(f) != 12.5:
+                f += Decimal("0.00250")
+
+        return float(f)
 
     def _set_mem_freq(self, mem, _mem):
-        if chirp_common.is_12_5(mem.freq):
-            f = mem.freq - 0.0025
+        f = Decimal("%f" % mem.freq)
+        if ((f * 1000) % 10) == 5:
+            f += 8000
+        elif chirp_common.is_fractional_step(mem.freq):
             f += 4000
-        else:
-            f = mem.freq
 
         return int(f * 100)
 
@@ -329,8 +338,8 @@ struct {
   u8 used:1,
      unknown1:2,
      mode_am:1,
-     unknown2:2,
-     duplex:2;
+     unknown2:1,
+     duplex:3;
   bbcd freq[3];
   u8 unknown3:1,
      tune_step:3,
@@ -387,23 +396,6 @@ class FT8800Radio(FT7800Radio):
         self._memobj = bitwise.parse(mem_format_8800 % self._memstart,
                                      self._mmap)
 
-    def _get_mem_freq(self, mem, _mem):
-        if mem.freq > 8000:
-            # Dirty hack because the high-order digit has 0x80
-            # if 12.5kHz step
-            return (mem.freq - 8000) + 0.00250
-        else:
-            return mem.freq
-
-    def _set_mem_freq(self, mem, _mem):
-        if chirp_common.is_12_5(mem.freq):
-            f = mem.freq - 0.0025
-            f += 8000
-        else:
-            f = mem.freq
-
-        return int(f * 100)
-        
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
             return int(_mem.split) / 100.0
@@ -456,8 +448,8 @@ struct {
   u8 used:1,
      skip:2,
      sub_used:1,
-     unknown2:2,
-     duplex:2;
+     unknown2:1,
+     duplex:3;
   bbcd freq[3];
   u8 mode_am:1,
      tune_step:3,
