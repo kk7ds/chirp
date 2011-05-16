@@ -200,7 +200,7 @@ class THD7Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "%011i" % (mem.freq * 1000000),
+            "%011i" % mem.freq,
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
@@ -210,7 +210,7 @@ class THD7Radio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
             "", # DCS Code
             "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
-            "%09i" % (mem.offset * 1000000),
+            "%09i" % mem.offset,
             "%i" % rev(MODES, mem.mode),
             "0")
 
@@ -220,7 +220,7 @@ class THD7Radio(KenwoodLiveRadio):
         mem = chirp_common.Memory()
 
         mem.number = int(spec[2])
-        mem.freq = int(spec[3]) / 1000000.0
+        mem.freq = int(spec[3], 10)
         mem.tuning_step = STEPS[int(spec[4])]
         mem.duplex = DUPLEX[int(spec[5])]
         mem.tmode = get_tmode(spec[7], spec[8], spec[9])
@@ -231,9 +231,9 @@ class THD7Radio(KenwoodLiveRadio):
         else:
             print "Unknown or invalid DCS: %s" % spec[11]
         if spec[13]:
-            mem.offset = int(spec[13]) / 1000000.0
+            mem.offset = int(spec[13])
         else:
-            mem.offset = 0.0
+            mem.offset = 0
         mem.mode = MODES[int(spec[14])]
 
         return mem
@@ -255,7 +255,7 @@ class TMD700Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "%011i" % (mem.freq * 1000000),
+            "%011i" % mem.freq,
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
@@ -265,7 +265,7 @@ class TMD700Radio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.rtone) + 1),
             "%03i0" % (chirp_common.DTCS_CODES.index(mem.dtcs) + 1),
             "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
-            "%09i" % (mem.offset * 1000000),
+            "%09i" % mem.offset,
             "%i" % rev(MODES, mem.mode),
             "0")
 
@@ -275,7 +275,7 @@ class TMD700Radio(KenwoodLiveRadio):
         mem = chirp_common.Memory()
 
         mem.number = int(spec[2])
-        mem.freq = int(spec[3]) / 1000000.0
+        mem.freq = int(spec[3])
         mem.tuning_step = STEPS[int(spec[4])]
         mem.duplex = DUPLEX[int(spec[5])]
         mem.tmode = get_tmode(spec[7], spec[8], spec[9])
@@ -286,9 +286,9 @@ class TMD700Radio(KenwoodLiveRadio):
         else:
             print "Unknown or invalid DCS: %s" % spec[11]
         if spec[13]:
-            mem.offset = int(spec[13]) / 1000000.0
+            mem.offset = int(spec[13])
         else:
-            mem.offset = 0.0
+            mem.offset = 0
         mem.mode = MODES[int(spec[14])]
 
         return mem
@@ -314,7 +314,7 @@ class TMV7Radio(KenwoodLiveRadio):
     def _make_mem_spec(self, mem):
         spec = ( \
             "%03i" % mem.number,
-            "%011i" % (mem.freq * 1000000),
+            "%011i" % mem.freq,
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
@@ -332,7 +332,7 @@ class TMV7Radio(KenwoodLiveRadio):
     def _parse_mem_spec(self, spec):
         mem = chirp_common.Memory()
         mem.number = int(spec[2])
-        mem.freq = int(spec[3]) / 1000000.0
+        mem.freq = int(spec[3])
         mem.tuning_step = STEPS[int(spec[4])]
         mem.duplex = DUPLEX[int(spec[5])]
         if int(spec[7]):
@@ -358,9 +358,9 @@ class TMV7Radio(KenwoodLiveRadio):
 
         # Mem was empty (or invalid), try to set it
         if self._vfo == 0:
-            mem.freq = 144.0
+            mem.freq = 144000000
         else:
-            mem.freq = 440.0
+            mem.freq = 440000000
         mem.empty = False
         try:
             self.set_memory(mem)
@@ -447,7 +447,7 @@ class THF6ARadio(KenwoodLiveRadio):
         mem = chirp_common.Memory()
 
         mem.number = int(spec[1])
-        mem.freq = int(spec[2]) / 1000000.0
+        mem.freq = int(spec[2])
         mem.tuning_step = STEPS[int(spec[3])]
         mem.duplex = DUPLEX[int(spec[4])]
         mem.tmode = get_tmode(spec[6], spec[7], spec[8])
@@ -458,9 +458,9 @@ class THF6ARadio(KenwoodLiveRadio):
         else:
             print "Unknown or invalid DCS: %s" % spec[11]
         if spec[11]:
-            mem.offset = int(spec[12]) / 1000000.0
+            mem.offset = int(spec[12])
         else:
-            mem.offset = 0.0
+            mem.offset = 0
         mem.mode = THF6_MODES[int(spec[13])]
         if spec[14] == "1":
             mem.skip = "S"
@@ -469,7 +469,7 @@ class THF6ARadio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "%011i" % (mem.freq * 1000000),
+            "%011i" % mem.freq,
             "%i" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
@@ -479,7 +479,7 @@ class THF6ARadio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.rtone)),
             "%02i" % (chirp_common.TONES.index(mem.ctone)),
             "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
-            "%09i" % (mem.offset * 1000000),
+            "%09i" % mem.offset,
             "%i" % (THF6_MODES.index(mem.mode)),
             "%i" % (mem.skip == "S"))
 
@@ -521,7 +521,7 @@ class TMD710Radio(KenwoodLiveRadio):
         mem = chirp_common.Memory()
 
         mem.number = int(spec[0])
-        mem.freq = int(spec[1]) / 1000000.0
+        mem.freq = int(spec[1])
         mem.tuning_step = chirp_common.TUNING_STEPS[int(spec[2], 16)]
         mem.duplex = D710_DUPLEX[int(spec[3])]
         # Reverse
@@ -534,12 +534,12 @@ class TMD710Radio(KenwoodLiveRadio):
         mem.rtone = chirp_common.TONES[int(spec[8])]
         mem.ctone = chirp_common.TONES[int(spec[9])]
         mem.dtcs = chirp_common.DTCS_CODES[int(spec[10])]
-        mem.offset = int(spec[11]) / 1000000.0
+        mem.offset = int(spec[11])
         mem.mode = D710_MODES[int(spec[12])]
         # TX Frequency
         if int(spec[13]):
             mem.duplex = "split"
-            mem.offset = int(spec[13]) / 1000000.0
+            mem.offset = int(spec[13])
         # Unknown
         mem.skip = D710_SKIP[int(spec[15])] # Memory Lockout
 
@@ -547,7 +547,7 @@ class TMD710Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "%010i" % (mem.freq * 1000000),
+            "%010i" % mem.freq,
             "%X" % chirp_common.TUNING_STEPS.index(mem.tuning_step),
             "%i" % (0 if mem.duplex == "split" else D710_DUPLEX.index(mem.duplex)),
             "0", # Reverse
@@ -557,9 +557,9 @@ class TMD710Radio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.rtone)),
             "%02i" % (chirp_common.TONES.index(mem.ctone)),
             "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
-            "%08i" % (0 if mem.duplex == "split" else mem.offset * 1000000), # Offset
+            "%08i" % (0 if mem.duplex == "split" else mem.offset), # Offset
             "%i" % D710_MODES.index(mem.mode),
-            "%010i" % (mem.offset * 1000000 if mem.duplex == "split" else 0), # TX Frequency
+            "%010i" % (mem.offset if mem.duplex == "split" else 0), # TX Frequency
             "0", # Unknown
             "%i" % D710_SKIP.index(mem.skip), # Memory Lockout
             )
