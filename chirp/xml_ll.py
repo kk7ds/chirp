@@ -56,7 +56,7 @@ def get_memory(doc, number):
 
     mem.number = int(memnode.prop("location"))
     mem.name = _get("/longName/text()")
-    mem.freq = float(_get("/frequency/text()"))
+    mem.freq = chirp_common.parse_freq(_get("/frequency/text()"))
     mem.rtone = float(_get("/squelch[@id='rtone']/tone/text()"))
     mem.ctone = float(_get("/squelch[@id='ctone']/tone/text()"))
     mem.dtcs = int(_get("/squelch[@id='dtcs']/code/text()"), 10)
@@ -79,7 +79,7 @@ def get_memory(doc, number):
     dupx = _get("/duplex/text()")
     mem.duplex = dmap.get(dupx, "")
 
-    mem.offset = float(_get("/offset/text()"))
+    mem.offset = chirp_common.parse_freq(_get("/offset/text()"))
     mem.mode = _get("/mode/text()")
     mem.tuning_step = float(_get("/tuningStep/text()"))
 
@@ -124,7 +124,7 @@ def set_memory(doc, mem):
     
     freq = memnode.newChild(None, "frequency", None)
     freq.newProp("units", "MHz")
-    freq.addContent("%.5f" % mem.freq)
+    freq.addContent(chirp_common.format_freq(mem.freq))
     
     rtone = memnode.newChild(None, "squelch", None)
     rtone.newProp("id", "rtone")
@@ -160,7 +160,7 @@ def set_memory(doc, mem):
 
     oset = memnode.newChild(None, "offset", None)
     oset.newProp("units", "MHz")
-    oset.addContent("%.5f" % mem.offset)
+    oset.addContent(chirp_common.format_freq(mem.offset))
 
     mode = memnode.newChild(None, "mode", None)
     mode.addContent(mem.mode)
