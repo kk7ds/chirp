@@ -256,7 +256,7 @@ class ImportDialog(gtk.Dialog):
                                      gobject.TYPE_INT,
                                      gobject.TYPE_INT,
                                      gobject.TYPE_STRING,
-                                     gobject.TYPE_DOUBLE,
+                                     gobject.TYPE_STRING,
                                      gobject.TYPE_BOOLEAN,
                                      gobject.TYPE_STRING)
         self.__view = gtk.TreeView(self.__store)
@@ -468,7 +468,7 @@ class ImportDialog(gtk.Dialog):
                                      mem.number,
                                      mem.number,
                                      mem.name,
-                                     mem.freq,
+                                     chirp_common.format_freq(mem.freq),
                                      not bool(errs),
                                      msg
                                      ))
@@ -506,7 +506,7 @@ class ImportDialog(gtk.Dialog):
             self.col_oloc   : gobject.TYPE_INT,
             self.col_nloc   : gobject.TYPE_INT,
             self.col_name   : gobject.TYPE_STRING,
-            self.col_freq   : gobject.TYPE_INT64,
+            self.col_freq   : gobject.TYPE_STRING,
             self.col_okay   : gobject.TYPE_BOOLEAN,
             self.col_tmsg   : gobject.TYPE_STRING,
             }
