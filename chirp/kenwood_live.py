@@ -488,6 +488,7 @@ class THF6ARadio(KenwoodLiveRadio):
 D710_DUPLEX = ["", "+", "-", "split"]
 D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
+D710_STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
 class TMD710Radio(KenwoodLiveRadio):
     MODEL = "TM-D710"
@@ -496,12 +497,13 @@ class TMD710Radio(KenwoodLiveRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.can_odd_split = True
         rf.has_dtcs_polarity = False
         rf.has_bank = False
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = D710_MODES
-        rf.can_odd_split = True
         rf.valid_duplexes = D710_DUPLEX
+        rf.valid_tuning_steps = D710_STEPS
         rf.memory_bounds = (0, 999)
         return rf
 
@@ -522,7 +524,7 @@ class TMD710Radio(KenwoodLiveRadio):
 
         mem.number = int(spec[0])
         mem.freq = int(spec[1])
-        mem.tuning_step = chirp_common.TUNING_STEPS[int(spec[2], 16)]
+        mem.tuning_step = D710_STEPS[int(spec[2], 16)]
         mem.duplex = D710_DUPLEX[int(spec[3])]
         # Reverse
         if int(spec[5]):
@@ -546,9 +548,10 @@ class TMD710Radio(KenwoodLiveRadio):
         return mem
 
     def _make_mem_spec(self, mem):
+        print "Index %i for step %.2f" % (chirp_common.TUNING_STEPS.index(mem.tuning_step), mem.tuning_step)
         spec = ( \
             "%010i" % mem.freq,
-            "%X" % chirp_common.TUNING_STEPS.index(mem.tuning_step),
+            "%X" % D710_STEPS.index(mem.tuning_step),
             "%i" % (0 if mem.duplex == "split" else D710_DUPLEX.index(mem.duplex)),
             "0", # Reverse
             "%i" % (mem.tmode == "Tone" and 1 or 0),
