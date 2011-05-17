@@ -263,13 +263,13 @@ class THD72Radio(chirp_common.CloneModeRadio):
             return mem
 
         mem.name = self.get_channel_name(number)
-        mem.freq = int(_mem.freq) / 1000000.0
+        mem.freq = int(_mem.freq)
         mem.tmode = TMODES[int(_mem.tone_mode)]
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.duplex = DUPLEX[int(_mem.duplex)]
-        mem.offset = int(_mem.offset) / 1000000.0
+        mem.offset = int(_mem.offset)
         mem.mode = MODES[int(_mem.mode)]
 
         if number < 999:
@@ -311,7 +311,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         if was_empty:
             self.initialize(_mem)
 
-        _mem.freq = int(mem.freq * 1000000)
+        _mem.freq = mem.freq
 
         if mem.number < 999:
             self.set_channel_name(mem.number, mem.name)
@@ -322,7 +322,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.cross_mode = chirp_common.CROSS_MODES.index(mem.cross_mode)
         _mem.duplex = DUPLEX_REV[mem.duplex]
-        _mem.offset = int(mem.offset * 1000000)
+        _mem.offset = mem.offset
         _mem.mode = MODES_REV[mem.mode]
 
         if mem.number < 999:
