@@ -18,7 +18,6 @@
 import time
 from chirp import chirp_common, yaesu_clone, memmap
 from chirp import bitwise, util, errors
-from decimal import Decimal
 
 ACK = chr(0x06)
 
@@ -172,7 +171,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tuning_steps = STEPS
-        rf.valid_bands = [(108.0, 520.0), (700.0, 990.0)]
+        rf.valid_bands = [(108000000, 520000000), (700000000, 990000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS_VHF
         rf.can_odd_split = True
@@ -204,41 +203,42 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         return self._memobj.memory[number-1].get_raw()
 
     def _get_mem_freq(self, mem, _mem):
-        f = Decimal("%f" % int(_mem.freq)) / 100
+        f = mem.freq
         # Ugh.  The 0x80 and 0x40 indicate values to add to get the
-        # real frequency.  Gross.  Even gross-er until I get
-        # integral hertz in here :)
+        # real frequency.  Gross.
 
-        if f > 8000:
-            f = (f - 8000) + Decimal("0.00500")
+        if f > 8000000000:
+            f = (f - 8000000000) + 5000
 
-        if f > 4000:
-            f -= 4000
-            while chirp_common.required_step(f) != 12.5:
-                f += Decimal("0.00250")
+        if f > 4000000000:
+            f -= 4000000000
+            for i in range(0, 3):
+                f += 2500
+                if chirp_common.required_step(f) == 12.5:
+                    break
 
-        return float(f)
+        return f
 
     def _set_mem_freq(self, mem, _mem):
-        f = Decimal("%f" % mem.freq)
-        if ((f * 1000) % 10) == 5:
-            f += 8000
+        f = mem.freq
+        if ((f / 1000) % 10) == 5:
+            f += 8000000000
         elif chirp_common.is_fractional_step(mem.freq):
-            f += 4000
+            f += 4000000000
 
-        return int(f * 100)
+        return int(f / 10000)
 
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            return int(_mem.split) / 100.0
+            return int(_mem.split) * 10000
         else:
-            return (_mem.offset * 5) / 100.0
+            return (_mem.offset * 5) * 10000
 
     def _set_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            _mem.split = int(mem.offset * 100)
+            _mem.split = int(mem.offset / 10000)
         else:
-            _mem.offset = (int(mem.offset * 100) / 5)
+            _mem.offset = (int(mem.offset / 10000) / 5)
 
     def _get_mem_name(self, mem, _mem):
         _nam = self._memobj.names[mem.number - 1]
@@ -281,7 +281,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return mem
 
-        mem.freq = (int(_mem.freq) / 100.0)
+        mem.freq = int(_mem.freq) * 10000
         mem.freq = self._get_mem_freq(mem, _mem)
 
         mem.rtone = chirp_common.TONES[_mem.tone]
@@ -316,7 +316,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.split = mem.duplex == "split" and int (mem.offset * 100) or 0
+        _mem.split = mem.duplex == "split" and int (mem.offset / 10000) or 0
         if mem.power:
             _mem.power = POWER_LEVELS_VHF.index(mem.power)
         else:
@@ -398,7 +398,7 @@ class FT8800Radio(FT7800Radio):
 
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            return int(_mem.split) / 100.0
+            return int(_mem.split) * 10000
 
         # The offset is packed into the upper two bits of the last four
         # bytes of the name (?!)
@@ -407,14 +407,14 @@ class FT8800Radio(FT7800Radio):
             val <<= 2
             val |= ((i & 0xC0) >> 6)
 
-        return (val * 5) / 100.0
+        return (val * 5) * 10000
 
     def _set_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            _mem.split = int(mem.offset * 100)
+            _mem.split = int(mem.offset / 10000)
             return
 
-        val = int(mem.offset * 100) / 5
+        val = int(mem.offset / 10000) / 5
         for i in reversed(range(2, 6)):
             _mem.name[i] = (_mem.name[i] & 0x3F) | ((val & 0x03) << 6)
             val >>= 2
@@ -489,11 +489,11 @@ class FT8900Radio(FT8800Radio):
     def get_features(self):
         rf = FT8800Radio.get_features(self)
         rf.has_sub_devices = False
-        rf.valid_bands = [(28.0,   29.7),
-                          (50.0,   54.0),
-                          (108.0, 180.0),
-                          (320.0, 480.0),
-                          (700.0, 985.0)]
+        rf.valid_bands = [( 28000000,  29700000),
+                          ( 50000000,  54000000),
+                          (108000000, 180000000),
+                          (320000000, 480000000),
+                          (700000000, 985000000)]
 
         return rf
 
