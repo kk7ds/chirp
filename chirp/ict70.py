@@ -87,7 +87,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         rf.valid_duplexes = DUPLEX
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_modes = ["FM", "NFM"]
-        rf.valid_bands = [(136.0, 174.0), (400.0, 479.0)]
+        rf.valid_bands = [(136000000, 174000000), (400000000, 479000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.has_ctone = True
         rf.has_bank_index = True
@@ -141,8 +141,8 @@ class ICT70Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = (_mem.freq * 5.0) / 1000
-        mem.offset = (_mem.offset * 5.0) / 1000
+        mem.freq = _mem.freq * 5000
+        mem.offset = _mem.offset * 5000
         mem.name = str(_mem.name).rstrip()
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
@@ -180,8 +180,8 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
         _usd &= ~bit
 
-        _mem.freq = int(mem.freq * 1000 / 5.0) 
-        _mem.offset = int(mem.offset * 1000 / 5.0)
+        _mem.freq = mem.freq / 5000
+        _mem.offset = mem.offset / 5000
         _mem.name = mem.name.ljust(6)[:6]
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
