@@ -123,8 +123,8 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) / 1000.0)
-        mem.offset = int(_mem.offset) / 10000.0
+        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
+        mem.offset = int(_mem.offset) * 100
         if str(_mem.name)[0] != chr(0xFF):
             mem.name = str(_mem.name).rstrip()
         mem.rtone = chirp_common.TONES[_mem.rtone]
@@ -147,8 +147,8 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         if mem.empty:
             return
 
-        _mem.freq = int(mem.freq * 1000.0)
-        _mem.offset = int(mem.offset * 10000.0)
+        _mem.freq = mem.freq / 1000
+        _mem.offset = mem.offset / 100
         if mem.name:
             _mem.name = mem.name.ljust(8)[:8]
         else:
@@ -169,10 +169,10 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
 
 class ICW32ARadioVHF(ICW32ARadio):
     VARIANT = "VHF"
-    _limits = (118.0, 174.0)
+    _limits = (118000000, 174000000)
     _mem_positions = (0x0000, 0x0DC0)
 
 class ICW32ARadioUHF(ICW32ARadio):
     VARIANT = "UHF"
-    _limits = (400.0, 470.0)
+    _limits = (400000000, 470000000)
     _mem_positions = (0x06E0, 0x0E2E)
