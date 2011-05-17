@@ -124,7 +124,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(118.0, 174.0)]
+        rf.valid_bands = [(118000000, 174000000)]
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS
 
@@ -181,9 +181,9 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.power = POWER_LEVELS[0]
             return mem
 
-        mult = _mem.is_625 and 6.25 or 5.0
-        mem.freq = (_mem.freq * mult) / 1000.0
-        mem.offset = (_mem.offset * mult) / 1000.0
+        mult = _mem.is_625 and 6250 or 5000
+        mem.freq = (_mem.freq * mult)
+        mem.offset = (_mem.offset * mult)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -227,9 +227,9 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         _mem.unknown8 = 0
         _mem.is_625 = chirp_common.is_fractional_step(mem.freq)
-        mult = _mem.is_625 and 6.25 or 5.0
-        _mem.freq = int((mem.freq * 1000) / mult)
-        _mem.offset = int((mem.offset * 1000) / mult)
+        mult = _mem.is_625 and 6250 or 5000
+        _mem.freq = mem.freq / mult
+        _mem.offset = mem.offset / mult
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
