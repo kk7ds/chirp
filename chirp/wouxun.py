@@ -151,6 +151,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.has_bank = False
@@ -171,8 +172,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.rx_freq) / 100000.0
-        mem.offset = (int(_mem.tx_freq) / 100000.0) - mem.freq
+        mem.freq = int(_mem.rx_freq) * 10
+        mem.offset = (int(_mem.tx_freq) * 10) - mem.freq
         if mem.offset < 0:
             mem.duplex = "-"
         elif mem.offset:
@@ -215,13 +216,13 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         if _mem.get_raw() == ("\xFF" * 16):
             self.wipe_memory(_mem, "\x00")
 
-        _mem.rx_freq = int(mem.freq * 100000)
+        _mem.rx_freq = int(mem.freq / 10)
         if mem.duplex == "+":
-            _mem.tx_freq = int(mem.freq * 100000) + int(mem.offset * 100000)
+            _mem.tx_freq = int(mem.freq / 10) + int(mem.offset / 10)
         elif mem.duplex == "-":
-            _mem.tx_freq = int(mem.freq * 100000) - int(mem.offset * 100000)
+            _mem.tx_freq = int(mem.freq / 10) - int(mem.offset / 10)
         else:
-            _mem.tx_freq = int(mem.freq * 100000)
+            _mem.tx_freq = int(mem.freq / 10)
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
