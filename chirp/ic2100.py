@@ -94,7 +94,7 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(118.0, 174.0)]
+        rf.valid_bands = [(118000000, 174000000)]
         rf.valid_skips = ["", "S"]
         return rf
 
@@ -198,8 +198,8 @@ class IC2100Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(self.__get_freq(_mem)) / 1000.0
-        mem.offset = int(self.__get_offset(_mem)) / 1000.0
+        mem.freq = int(self.__get_freq(_mem)) * 1000
+        mem.offset = int(self.__get_offset(_mem)) * 1000
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -231,8 +231,8 @@ class IC2100Radio(icf.IcomCloneModeRadio):
                 _skp &= ~mask
             _mem.name = mem.name.ljust(6)
 
-        self.__set_freq(_mem, int(mem.freq * 1000))
-        self.__set_offset(_mem, int(mem.offset * 1000))
+        self.__set_freq(_mem, int(mem.freq / 1000))
+        self.__set_offset(_mem, int(mem.offset / 1000))
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
