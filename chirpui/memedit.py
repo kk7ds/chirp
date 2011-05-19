@@ -116,8 +116,9 @@ class MemoryEditor(common.Editor):
     def ed_name(self, _, __, new, ___):
         return self.rthread.radio.filter_name(new)
 
-    def ed_freq(self, _, path, new, __):
+    def ed_freq(self, _, path, new, colnum):
         iter = self.store.get_iter(path)
+        prev, = self.store.get(iter, colnum)
 
         def set_offset(path, offset):
             if offset > 0:
@@ -147,7 +148,7 @@ class MemoryEditor(common.Editor):
 
         set_ts(chirp_common.required_step(new))
 
-        if new and self._config.get_bool("autorpt"):
+        if new and self._config.get_bool("autorpt") and new != prev:
             band = int(new / 100)
             if chirp_common.STD_OFFSETS.has_key(band):
                 offsets = chirp_common.STD_OFFSETS[band]
