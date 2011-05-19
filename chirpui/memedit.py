@@ -148,10 +148,10 @@ class MemoryEditor(common.Editor):
         set_ts(chirp_common.required_step(new))
 
         if new and self._config.get_bool("autorpt"):
-            set_offset(path, 0)
             band = int(new / 100)
             if chirp_common.STD_OFFSETS.has_key(band):
                 offsets = chirp_common.STD_OFFSETS[band]
+                set_offset(path, 0)
                 for lo, hi, offset in offsets:
                     if new < hi and new > lo:
                         set_offset(path, offset)
