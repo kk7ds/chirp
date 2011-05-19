@@ -53,6 +53,9 @@ class ChirpConfig:
 
         self.__config.set(section, key, value)
 
+    def is_defined(self, key, section):
+        return self.__config.has_option(section, key)
+
 class ChirpConfigProxy:
     def __init__(self, config, section="global"):
         self._config = config
@@ -93,6 +96,9 @@ class ChirpConfigProxy:
 
     def set_bool(self, key, value, section=None):
         self.set(key, str(bool(value)), section)
+
+    def is_defined(self, key, section=None):
+        return self._config.is_defined(key, section or self._section)
 
 _CONFIG = None
 def get(section="global"):
