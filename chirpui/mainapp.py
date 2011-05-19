@@ -516,6 +516,9 @@ class ChirpMain(gtk.Window):
         conf = config.get()
         conf.set_bool("no_report", not action.get_active())
 
+    def do_toggle_autorpt(self, action):
+        CONF.set_bool("autorpt", action.get_active(), "memedit")
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -557,6 +560,8 @@ class ChirpMain(gtk.Window):
             self.do_delete()
         elif action == "report":
             self.do_toggle_report(_action)
+        elif action == "autorpt":
+            self.do_toggle_autorpt(_action)
         else:
             return
 
@@ -592,6 +597,8 @@ class ChirpMain(gtk.Window):
       <menuitem action="download"/>
       <menuitem action="upload"/>
       <menu action="recent" name="recent"/>
+      <separator/>
+      <menuitem action="autorpt"/>
       <separator/>
       <menuitem action="cancelq"/>
     </menu>
@@ -633,10 +640,12 @@ class ChirpMain(gtk.Window):
         conf = config.get()
         re = not conf.get_bool("no_report");
         hu = conf.get_bool("hide_unused", "memedit")
+        ro = conf.get_bool("autorpt", "memedit")
 
         toggles = [\
             ('report', None, "Report statistics", None, None, self.mh, re),
             ('hide_unused', None, 'Hide Unused Fields', None, None, self.mh, hu),
+            ('autorpt', None, 'Automatic Repeater Offset', None, None, self.mh, ro),
             ]
 
         self.menu_uim = gtk.UIManager()
@@ -736,3 +745,7 @@ class ChirpMain(gtk.Window):
             d.run()
             d.destroy()
         CONF.set_bool("warned_about_reporting", True)
+
+        if not CONF.is_defined("autorpt", "memedit"):
+            print "autorpt not set et"
+            CONF.set_bool("autorpt", True, "memedit")
