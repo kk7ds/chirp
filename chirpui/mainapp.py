@@ -17,6 +17,7 @@
 
 import os
 import tempfile
+import urllib
 
 import gtk
 import gobject
@@ -38,6 +39,63 @@ from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting
 
 CONF = config.get()
+
+FIPS_CODES = {
+    "Alaska"               : 2,
+    "Alabama"              : 1,
+    "Arkansas"             : 5,
+    "Arizona"              : 4,
+    "California"           : 6,
+    "Colorado"             : 8,
+    "Connecticut"          : 9,
+    "District of Columbia" : 11,
+    "Delaware"             : 10,
+    "Florida"              : 12,
+    "Georgia"              : 13,
+    "Guam"                 : 66,
+    "Hawaii"               : 15,
+    "Iowa"                 : 19,
+    "Idaho"                : 16,
+    "Illinois"             : 17,
+    "Indiana"              : 18,
+    "Kansas"               : 20,
+    "Kentucky"             : 21,
+    "Louisiana"            : 22,
+    "Massachusetts"        : 25,
+    "Maryland"             : 24,
+    "Maine"                : 23,
+    "Michigan"             : 26,
+    "Minnesota"            : 27,
+    "Missouri"             : 29,
+    "Mississippi"          : 28,
+    "Montana"              : 30,
+    "North Carolina"       : 37,
+    "North Dakota"         : 38,
+    "Nebraska"             : 31,
+    "New Hampshire"        : 33,
+    "New Jersey"           : 34,
+    "New Mexico"           : 35,
+    "Nevada"               : 32,
+    "New York"             : 36,
+    "Ohio"                 : 39,
+    "Oklahoma"             : 40,
+    "Oregon"               : 41,
+    "Pennsylvania"         : 32,
+    "Puerto Rico"          : 72,
+    "Rhode Island"         : 44,
+    "South Carolina"       : 45,
+    "South Dakota"         : 46,
+    "Tennessee"            : 47,
+    "Texas"                : 48,
+    "Utah"                 : 49,
+    "Virginia"             : 51,
+    "Virgin Islands"       : 78,
+    "Vermont"              : 50,
+    "Washington"           : 53,
+    "Wisconsin"            : 55,
+    "West Virginia"        : 54,
+    "Wyoming"              : 56,
+}
 
 class ModifiedError(Exception):
     pass
@@ -75,7 +133,7 @@ class ChirpMain(gtk.Window):
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
-        for i in ["export", "import", "close", "columns"]:
+        for i in ["export", "import", "close", "columns", "rbook"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
@@ -394,6 +452,68 @@ class ChirpMain(gtk.Window):
         count = eset.do_import(filen)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
+    def do_repeaterbook_prompt(self):
+        default = "Oregon"
+        try:
+            code = int(CONF.get("state", "repeaterbook"))
+            for k,v in FIPS_CODES.items():
+                if code == v:
+                    default = k
+                    break
+        except:
+            pass
+
+        state = miscwidgets.make_choice(sorted(FIPS_CODES.keys()),
+                                        False, default)
+        d = inputdialog.FieldDialog(title="RepeaterBook Query", parent=self)
+        d.add_field("State", state)
+
+        r = d.run()
+        d.destroy()
+        if r != gtk.RESPONSE_OK:
+            return False
+
+        code = FIPS_CODES[state.get_active_text()]
+        CONF.set("state", str(code), "repeaterbook")
+
+        return True
+
+    def do_repeaterbook(self):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_repeaterbook_prompt():
+            self.window.set_cursor(None)
+            return
+
+        try:
+            code = int(CONF.get("state", "repeaterbook"))
+        except:
+            code = 41 # Oregon default
+
+        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
+            "func=default&state_id=%i&band=%%&freq=%%&band6=%%&loc=%%" + \
+            "&county_id=%%&status_id=%%&features=%%&coverage=%%&use=%%"
+        query = query % code
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        fn = tempfile.mktemp(".csv")
+        filename, headers = urllib.urlretrieve(query, fn)
+        if not os.path.exists(filename):
+            print "Failed, headers were:"
+            print str(headers)
+            common.show_error("RepeaterBook query failed")
+            self.window.set_cursor(None)
+            return
+
+        self.window.set_cursor(None)
+        eset = self.get_current_editorset()
+        count = eset.do_import(filename)
+        reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
+
     def do_export(self):
         types = [("CSV Files (*.csv)", "csv"),
                  ("CHIRP Files (*.chirp)", "chirp"),
@@ -542,6 +662,8 @@ class ChirpMain(gtk.Window):
             self.do_import()
         elif action == "export":
             self.do_export()
+        elif action == "rbook":
+            self.do_repeaterbook()
         elif action == "about":
             self.do_about()
         elif action == "columns":
@@ -597,6 +719,7 @@ class ChirpMain(gtk.Window):
       <menuitem action="download"/>
       <menuitem action="upload"/>
       <menu action="recent" name="recent"/>
+      <menuitem action="rbook"/>
       <separator/>
       <menuitem action="autorpt"/>
       <separator/>
@@ -631,6 +754,7 @@ class ChirpMain(gtk.Window):
             ('export', None, 'Export', "<Alt>e", None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
+            ('rbook', None, "Import from RepeaterBook", None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
