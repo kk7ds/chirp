@@ -69,7 +69,8 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_index = True
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
-        rf.memory_bounds = (0, 1000)
+        rf.memory_bounds = (0, len(self.memories))
+        rf.has_infinite_number = True
 
         rf.valid_modes = list(chirp_common.MODES)
         rf.valid_tmodes = list(chirp_common.TONE_MODES)
@@ -142,9 +143,8 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             i += 1
             try:
                 mem = self._parse_csv_data_line(headers, line)
+                self.__grow(mem.number)
                 self.memories[mem.number] = mem
-            except errors.InvalidMemoryLocation:
-                print "Invalid memory location on line %i" % i
             except Exception, e:
                 raise errors.InvalidDataError("%s on line %i" % (e, i))
 
@@ -181,7 +181,21 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         except:
             raise errors.InvalidMemoryLocation("No such memory %s" % number)
 
+    def __grow(self, target):
+        delta = target - len(self.memories)
+        if delta < 0:
+            return
+
+        delta += 1
+        
+        for i in range(len(self.memories), len(self.memories) + delta + 1):
+            m = chirp_common.Memory()
+            m.empty = True
+            m.number = i
+            self.memories.append(m)
+
     def set_memory(self, newmem):
+        self.__grow(newmem.number)
         self.memories[newmem.number] = newmem
 
     def erase_memory(self, number):
