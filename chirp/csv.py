@@ -48,6 +48,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         }
 
     def _blank(self):
+        self.errors = []
         self.memories = []
         for i in range(0, 1000):
             m = chirp_common.Memory()
@@ -139,14 +140,22 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         f.close()
 
         i = 1
+        good = 0
         for line in lines:
             i += 1
             try:
                 mem = self._parse_csv_data_line(headers, line)
+                if mem.number is None:
+                    raise Exception("Location field must not be empty")
                 self.__grow(mem.number)
                 self.memories[mem.number] = mem
+                good += 1
             except Exception, e:
-                raise errors.InvalidDataError("%s on line %i" % (e, i))
+                print "CSV Line %i: %s" % (i, e)
+                self.errors.append("Line %i: %s" % (i, e))
+
+        if not good:
+            raise errors.InvalidDataError("No channels found")
 
     def save(self, filename=None):
         if filename is None and self._filename is None:

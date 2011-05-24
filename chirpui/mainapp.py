@@ -211,6 +211,13 @@ class ChirpMain(gtk.Window):
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             self.tabs.set_current_page(tab)
 
+            if hasattr(eset.rthread.radio, "errors") and \
+                    eset.rthread.radio.errors:
+                msg = "%i errors during open, check the " + \
+                                      "debug log for details"
+                msg = msg % len(eset.rthread.radio.errors)
+                common.show_error(msg)
+
     def do_live_warning(self, radio):
         d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
         d.set_markup("<big><b>Note:</b></big>")
