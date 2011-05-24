@@ -263,7 +263,7 @@ class IC9xRadioA(IC9xRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+"]
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
-        rf.valid_bands = [(0.0, 999.0)]
+        rf.valid_bands = [(500000, 9990000000)]
         rf.valid_skips = ["", "S", "P"]
         return rf
 
@@ -285,7 +285,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+"]
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
-        rf.valid_bands = [(118.0, 174.0), (350.0, 470.0)]
+        rf.valid_bands = [(118000000, 174000000), (350000000, 470000000)]
         rf.valid_skips = ["", "S", "P"]
         return rf
 

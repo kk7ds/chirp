@@ -425,13 +425,11 @@ class IC92MemoryFrame(IC92Frame):
         self[35] = util.bcd_encode(mem.dv_code)
 
     def _decode_freq(self):
-        hun = int("%x" % ord(self[7]))
-        ten = int("%x" % ord(self[6]))
-        dec = int("%02x%02x%02x" % (ord(self[5]),
-                                    ord(self[4]),
-                                    ord(self[3])))
-
-        return ((hun * 100) + ten) + (dec / 1000000.0)
+        return int("%02x%02x%02x%02x%02x" % (ord(self[7]),
+                                             ord(self[6]),
+                                             ord(self[5]),
+                                             ord(self[4]),
+                                             ord(self[3])))
 
     def set_memory(self, mem):
         if mem.number < 0:
@@ -440,9 +438,11 @@ class IC92MemoryFrame(IC92Frame):
             print "Memory is %i (call %s)" % (mem.number, self.get_iscall())
 
         self[1] = struct.pack(">H", int("%i" % mem.number, 16))
-        self[3] = util.bcd_encode(int(mem.freq * 1000000),
-                                  bigendian=False)
-        self[8] = util.bcd_encode(int(mem.offset * 1000000),
+
+        self[3] = util.bcd_encode(mem.freq,
+                                  bigendian=False,
+                                  width=10)
+        self[8] = util.bcd_encode(mem.offset,
                                   bigendian=False,
                                   width=6)
         self[13] = util.bcd_encode(int(mem.rtone * 10))
@@ -472,8 +472,8 @@ class IC92MemoryFrame(IC92Frame):
             mem.number = -1 - mem.number
 
         mem.freq = self._decode_freq()
-        mem.offset = float("%x.%02x%02x%02x" % (ord(self[11]), ord(self[10]),
-                                                ord(self[9]),  ord(self[8])))
+        mem.offset = float("%02x%02x%02x%02x" % (ord(self[11]), ord(self[10]),
+                                                 ord(self[9]),  ord(self[8])))
         mem.rtone = int("%02x%02x" % (ord(self[13]), ord(self[14]))) / 10.0
         mem.ctone = int("%02x%02x" % (ord(self[15]), ord(self[16]))) / 10.0
         mem.dtcs = int("%02x%02x"  % (ord(self[17]), ord(self[18])))
