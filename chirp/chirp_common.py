@@ -531,6 +531,7 @@ class RadioFeatures:
         "has_name"            : BOOLEAN,
         "has_ctone"           : BOOLEAN,
         "has_cross"           : BOOLEAN,
+        "has_infinite_number" : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
@@ -581,6 +582,7 @@ class RadioFeatures:
         self.has_tuning_step = True
         self.has_ctone = True
         self.has_cross = False
+        self.has_infinite_number = False
 
         self.valid_modes = list(MODES)
         self.valid_tmodes = []
@@ -679,7 +681,8 @@ class Radio:
         rf = self.get_features()
 
         lo, hi = rf.memory_bounds
-        if (mem.number < lo or mem.number > hi) and \
+        if not rf.has_infinite_number and \
+                (mem.number < lo or mem.number > hi) and \
                 mem.extd_number not in self.get_special_locations():
             msg = ValidationWarning("Location %i is out of range" % mem.number)
             msgs.append(msg)

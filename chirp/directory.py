@@ -74,6 +74,9 @@ DRV_TO_RADIO = {
 
     # Wouxun
     "kguvd1p"        : wouxun.KGUVD1PRadio,
+
+    # Puxing
+    "px777"          : wouxun.Puxing777Radio,
 }
 
 RADIO_TO_DRV = {}

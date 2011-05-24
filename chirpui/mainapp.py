@@ -17,6 +17,7 @@
 
 import os
 import tempfile
+import urllib
 
 import gtk
 import gobject
@@ -38,6 +39,83 @@ from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting
 
 CONF = config.get()
+
+FIPS_CODES = {
+    "Alaska"               : 2,
+    "Alabama"              : 1,
+    "Arkansas"             : 5,
+    "Arizona"              : 4,
+    "California"           : 6,
+    "Colorado"             : 8,
+    "Connecticut"          : 9,
+    "District of Columbia" : 11,
+    "Delaware"             : 10,
+    "Florida"              : 12,
+    "Georgia"              : 13,
+    "Guam"                 : 66,
+    "Hawaii"               : 15,
+    "Iowa"                 : 19,
+    "Idaho"                : 16,
+    "Illinois"             : 17,
+    "Indiana"              : 18,
+    "Kansas"               : 20,
+    "Kentucky"             : 21,
+    "Louisiana"            : 22,
+    "Massachusetts"        : 25,
+    "Maryland"             : 24,
+    "Maine"                : 23,
+    "Michigan"             : 26,
+    "Minnesota"            : 27,
+    "Missouri"             : 29,
+    "Mississippi"          : 28,
+    "Montana"              : 30,
+    "North Carolina"       : 37,
+    "North Dakota"         : 38,
+    "Nebraska"             : 31,
+    "New Hampshire"        : 33,
+    "New Jersey"           : 34,
+    "New Mexico"           : 35,
+    "Nevada"               : 32,
+    "New York"             : 36,
+    "Ohio"                 : 39,
+    "Oklahoma"             : 40,
+    "Oregon"               : 41,
+    "Pennsylvania"         : 32,
+    "Puerto Rico"          : 72,
+    "Rhode Island"         : 44,
+    "South Carolina"       : 45,
+    "South Dakota"         : 46,
+    "Tennessee"            : 47,
+    "Texas"                : 48,
+    "Utah"                 : 49,
+    "Virginia"             : 51,
+    "Virgin Islands"       : 78,
+    "Vermont"              : 50,
+    "Washington"           : 53,
+    "Wisconsin"            : 55,
+    "West Virginia"        : 54,
+    "Wyoming"              : 56,
+}
+
+RB_BANDS = {
+    "--All--"                 : 0,
+    "10 meters (29MHz)"       : 29,
+    "6 meters (54MHz)"        : 5,
+    "2 meters (144MHz)"       : 14,
+    "1.25 meters (220MHz)"    : 22,
+    "70 centimeters (440MHz)" : 4,
+    "33 centimeters (900MHz)" : 9,
+    "23 centimeters (1.2GHz)" : 12,
+}
+
+def key_bands(band):
+    if band.startswith("-"):
+        return -1
+
+    amount, units, mhz = band.split(" ")
+    scale = units == "meters" and 100 or 1
+
+    return 100000 - (float(amount) * scale)
 
 class ModifiedError(Exception):
     pass
@@ -75,7 +153,7 @@ class ChirpMain(gtk.Window):
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
-        for i in ["export", "import", "close", "columns"]:
+        for i in ["export", "import", "close", "columns", "rbook"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
@@ -152,6 +230,13 @@ class ChirpMain(gtk.Window):
             eset.show()
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             self.tabs.set_current_page(tab)
+
+            if hasattr(eset.rthread.radio, "errors") and \
+                    eset.rthread.radio.errors:
+                msg = "%i errors during open, check the " + \
+                                      "debug log for details"
+                msg = msg % len(eset.rthread.radio.errors)
+                common.show_error(msg)
 
     def do_live_warning(self, radio):
         d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
@@ -394,6 +479,96 @@ class ChirpMain(gtk.Window):
         count = eset.do_import(filen)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
+    def do_repeaterbook_prompt(self):
+        if not CONF.get_bool("has_seen_credit", "repeaterbook"):
+            d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+            d.set_markup("<big><big><b>RepeaterBook</b></big>\r\n" + \
+                             "<i>North American Repeater Directory</i></big>")
+            d.format_secondary_markup("For more information about this " +\
+                                          "free service, please go to\r\n" +\
+                                          "http://www.repeaterbook.com")
+            d.run()
+            d.destroy()
+            CONF.set_bool("has_seen_credit", True, "repeaterbook")
+
+        default_state = "Oregon"
+        default_band = "--All--"
+        try:
+            code = int(CONF.get("state", "repeaterbook"))
+            for k,v in FIPS_CODES.items():
+                if code == v:
+                    default_state = k
+                    break
+
+            code = int(CONF.get("band", "repeaterbook"))
+            for k,v in RB_BANDS.items():
+                if code == v:
+                    default_band = k
+                    break
+        except:
+            pass
+
+        state = miscwidgets.make_choice(sorted(FIPS_CODES.keys()),
+                                        False, default_state)
+        band = miscwidgets.make_choice(sorted(RB_BANDS.keys(), key=key_bands),
+                                       False, default_band)
+        d = inputdialog.FieldDialog(title="RepeaterBook Query", parent=self)
+        d.add_field("State", state)
+        d.add_field("Band", band)
+
+        r = d.run()
+        d.destroy()
+        if r != gtk.RESPONSE_OK:
+            return False
+
+        code = FIPS_CODES[state.get_active_text()]
+        freq = RB_BANDS[band.get_active_text()]
+        CONF.set("state", str(code), "repeaterbook")
+        CONF.set("band", str(freq), "repeaterbook")
+
+        return True
+
+    def do_repeaterbook(self):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_repeaterbook_prompt():
+            self.window.set_cursor(None)
+            return
+
+        try:
+            code = int(CONF.get("state", "repeaterbook"))
+        except:
+            code = 41 # Oregon default
+
+        try:
+            band = int(CONF.get("band", "repeaterbook"))
+        except:
+            band = 14 # 2m default
+
+        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
+            "func=default&state_id=%02i&band=%s&freq=%%&band6=%%&loc=%%" + \
+            "&county_id=%%&status_id=%%&features=%%&coverage=%%&use=%%"
+        query = query % (code, band and band or "%%")
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        fn = tempfile.mktemp(".csv")
+        filename, headers = urllib.urlretrieve(query, fn)
+        if not os.path.exists(filename):
+            print "Failed, headers were:"
+            print str(headers)
+            common.show_error("RepeaterBook query failed")
+            self.window.set_cursor(None)
+            return
+
+        self.window.set_cursor(None)
+        eset = self.get_current_editorset()
+        count = eset.do_import(filename)
+        reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
+
     def do_export(self):
         types = [("CSV Files (*.csv)", "csv"),
                  ("CHIRP Files (*.chirp)", "chirp"),
@@ -516,6 +691,9 @@ class ChirpMain(gtk.Window):
         conf = config.get()
         conf.set_bool("no_report", not action.get_active())
 
+    def do_toggle_autorpt(self, action):
+        CONF.set_bool("autorpt", action.get_active(), "memedit")
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -539,6 +717,8 @@ class ChirpMain(gtk.Window):
             self.do_import()
         elif action == "export":
             self.do_export()
+        elif action == "rbook":
+            self.do_repeaterbook()
         elif action == "about":
             self.do_about()
         elif action == "columns":
@@ -557,6 +737,8 @@ class ChirpMain(gtk.Window):
             self.do_delete()
         elif action == "report":
             self.do_toggle_report(_action)
+        elif action == "autorpt":
+            self.do_toggle_autorpt(_action)
         else:
             return
 
@@ -592,6 +774,9 @@ class ChirpMain(gtk.Window):
       <menuitem action="download"/>
       <menuitem action="upload"/>
       <menu action="recent" name="recent"/>
+      <menuitem action="rbook"/>
+      <separator/>
+      <menuitem action="autorpt"/>
       <separator/>
       <menuitem action="cancelq"/>
     </menu>
@@ -624,6 +809,7 @@ class ChirpMain(gtk.Window):
             ('export', None, 'Export', "<Alt>e", None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
+            ('rbook', None, "Import from RepeaterBook", None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
@@ -633,10 +819,12 @@ class ChirpMain(gtk.Window):
         conf = config.get()
         re = not conf.get_bool("no_report");
         hu = conf.get_bool("hide_unused", "memedit")
+        ro = conf.get_bool("autorpt", "memedit")
 
         toggles = [\
             ('report', None, "Report statistics", None, None, self.mh, re),
             ('hide_unused', None, 'Hide Unused Fields', None, None, self.mh, hu),
+            ('autorpt', None, 'Automatic Repeater Offset', None, None, self.mh, ro),
             ]
 
         self.menu_uim = gtk.UIManager()
@@ -736,3 +924,7 @@ class ChirpMain(gtk.Window):
             d.run()
             d.destroy()
         CONF.set_bool("warned_about_reporting", True)
+
+        if not CONF.is_defined("autorpt", "memedit"):
+            print "autorpt not set et"
+            CONF.set_bool("autorpt", True, "memedit")
