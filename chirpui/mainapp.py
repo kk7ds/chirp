@@ -453,6 +453,17 @@ class ChirpMain(gtk.Window):
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
     def do_repeaterbook_prompt(self):
+        if not CONF.get_bool("has_seen_credit", "repeaterbook"):
+            d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+            d.set_markup("<big><big><b>RepeaterBook</b></big>\r\n" + \
+                             "<i>North American Repeater Directory</i></big>")
+            d.format_secondary_markup("For more information about this " +\
+                                          "free service, please go to\r\n" +\
+                                          "http://www.repeaterbook.com")
+            d.run()
+            d.destroy()
+            CONF.set_bool("has_seen_credit", True, "repeaterbook")
+
         default = "Oregon"
         try:
             code = int(CONF.get("state", "repeaterbook"))
@@ -490,7 +501,7 @@ class ChirpMain(gtk.Window):
             code = 41 # Oregon default
 
         query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
-            "func=default&state_id=%i&band=%%&freq=%%&band6=%%&loc=%%" + \
+            "func=default&state_id=%02i&band=%%&freq=%%&band6=%%&loc=%%" + \
             "&county_id=%%&status_id=%%&features=%%&coverage=%%&use=%%"
         query = query % code
 
