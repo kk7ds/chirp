@@ -97,6 +97,26 @@ FIPS_CODES = {
     "Wyoming"              : 56,
 }
 
+RB_BANDS = {
+    "--All--"                 : 0,
+    "10 meters (29MHz)"       : 29,
+    "6 meters (54MHz)"        : 5,
+    "2 meters (144MHz)"       : 14,
+    "1.25 meters (220MHz)"    : 22,
+    "70 centimeters (440MHz)" : 4,
+    "33 centimeters (900MHz)" : 9,
+    "23 centimeters (1.2GHz)" : 12,
+}
+
+def key_bands(band):
+    if band.startswith("-"):
+        return -1
+
+    amount, units, mhz = band.split(" ")
+    scale = units == "meters" and 100 or 1
+
+    return 100000 - (float(amount) * scale)
+
 class ModifiedError(Exception):
     pass
 
@@ -471,20 +491,30 @@ class ChirpMain(gtk.Window):
             d.destroy()
             CONF.set_bool("has_seen_credit", True, "repeaterbook")
 
-        default = "Oregon"
+        default_state = "Oregon"
+        default_band = "--All--"
         try:
             code = int(CONF.get("state", "repeaterbook"))
             for k,v in FIPS_CODES.items():
                 if code == v:
-                    default = k
+                    default_state = k
+                    break
+
+            code = int(CONF.get("band", "repeaterbook"))
+            for k,v in RB_BANDS.items():
+                if code == v:
+                    default_band = k
                     break
         except:
             pass
 
         state = miscwidgets.make_choice(sorted(FIPS_CODES.keys()),
-                                        False, default)
+                                        False, default_state)
+        band = miscwidgets.make_choice(sorted(RB_BANDS.keys(), key=key_bands),
+                                       False, default_band)
         d = inputdialog.FieldDialog(title="RepeaterBook Query", parent=self)
         d.add_field("State", state)
+        d.add_field("Band", band)
 
         r = d.run()
         d.destroy()
@@ -492,7 +522,9 @@ class ChirpMain(gtk.Window):
             return False
 
         code = FIPS_CODES[state.get_active_text()]
+        freq = RB_BANDS[band.get_active_text()]
         CONF.set("state", str(code), "repeaterbook")
+        CONF.set("band", str(freq), "repeaterbook")
 
         return True
 
@@ -507,10 +539,15 @@ class ChirpMain(gtk.Window):
         except:
             code = 41 # Oregon default
 
+        try:
+            band = int(CONF.get("band", "repeaterbook"))
+        except:
+            band = 14 # 2m default
+
         query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
-            "func=default&state_id=%02i&band=%%&freq=%%&band6=%%&loc=%%" + \
+            "func=default&state_id=%02i&band=%s&freq=%%&band6=%%&loc=%%" + \
             "&county_id=%%&status_id=%%&features=%%&coverage=%%&use=%%"
-        query = query % code
+        query = query % (code, band and band or "%%")
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
