@@ -20,7 +20,7 @@ import sys
 import serial
 import commands
 
-from chirp import idrp
+from chirp import idrp, chirp_common
 
 def open_device():
     try:
@@ -57,7 +57,7 @@ def _set_freq(rp):
         print "Unable to read memory from device: %s" % e
         return False
 
-    print "\nNew frequency [%.5f]: " % mem.freq,
+    print "\nNew frequency [%s]: " % chirp_common.format_freq(mem.freq),
     input = sys.stdin.readline().strip()
 
     if not input:
@@ -65,7 +65,7 @@ def _set_freq(rp):
         return False
 
     try:
-        mem.freq = float(input)
+        mem.freq = chirp_common.parse_freq(input)
     except Exception:
         print "Invalid entry `%s'" % input
         return False
@@ -73,10 +73,12 @@ def _set_freq(rp):
     try:
         rp.set_memory(mem)
     except Exception, e:
-        print "Failed to set frequency to %.5f: %s" % (mem.freq, e)
+        print "Failed to set frequency to %s: %s" % \
+            (chirp_common.format_freq(mem.freq), e)
         return False
 
-    print "Successfully set frequency to %.5f" % mem.freq
+    print "Successfully set frequency to %s" % \
+        chirp_common.format_freq(mem.freq)
     return True
 
 def set_freq():
@@ -105,13 +107,13 @@ def main_menu():
     while cmd != "3":
         print """
 KK7DS ID-RP* Frequency Tool
-Current Setting: %.5f
+Current Setting: %s
 --------------------------------
 1. Set repeater frequency
 2. Re-read current frequency
 3. Quit
 --------------------------------
-> """ % freq,
+> """ % chirp_common.format_freq(freq),
     
         cmd = sys.stdin.readline().strip()
 

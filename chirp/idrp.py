@@ -66,9 +66,7 @@ def drain(pipe):
             break
 
 def set_freq(pipe, freq):
-    freq *= 1000000
-
-    freqbcd = util.bcd_encode(int(freq), bigendian=False, width=9)
+    freqbcd = util.bcd_encode(freq, bigendian=False, width=9)
     buf = "\x01\x7f\x05" + freqbcd
 
     drain(pipe)
@@ -97,7 +95,6 @@ def get_freq(pipe):
                                                  ord(els[2]),
                                                  ord(els[1]),
                                                  ord(els[0])))
-            freq = freq / 1000000.0
             if DEBUG_IDRP:
                 print "Freq: %f" % freq
             return freq
