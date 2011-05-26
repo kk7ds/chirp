@@ -215,6 +215,8 @@ class ChirpMain(gtk.Window):
                 del radio
                 devices = [fname]
 
+        prio = len(devices)
+        first_tab = False
         for device in devices:
             try:
                 eset = editorset.EditorSet(device, self, tempname=tempname)
@@ -229,7 +231,9 @@ class ChirpMain(gtk.Window):
             eset.connect("status", self.ev_status)
             eset.show()
             tab = self.tabs.append_page(eset, eset.get_tab_label())
-            self.tabs.set_current_page(tab)
+            if first_tab:
+                self.tabs.set_current_page(tab)
+                first_tab = False
 
             if hasattr(eset.rthread.radio, "errors") and \
                     eset.rthread.radio.errors:
@@ -263,6 +267,7 @@ class ChirpMain(gtk.Window):
         else:
             devices = [radio]
         
+        first_tab = True
         for device in devices:
             eset = editorset.EditorSet(device, self, tempname)
             eset.connect("want-close", self.do_close)
@@ -270,7 +275,9 @@ class ChirpMain(gtk.Window):
             eset.show()
 
             tab = self.tabs.append_page(eset, eset.get_tab_label())
-            self.tabs.set_current_page(tab)
+            if first_tab:
+                self.tabs.set_current_page(tab)
+                first_tab = False
 
         if isinstance(radio, chirp_common.LiveRadio):
             reporting.report_model_usage(radio, "live", True)
