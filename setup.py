@@ -97,7 +97,7 @@ def rpttool_build():
     
     setup(name="rpttool",
           packages=["chirp"],
-          version="0.1",
+          version="0.2",
           scripts=["rpttool"],
           description="A frequency tool for ICOM D-STAR Repeaters",
           data_files=[('/usr/sbin', ["tools/icomsio.sh"])],

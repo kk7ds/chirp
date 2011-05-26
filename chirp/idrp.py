@@ -66,10 +66,10 @@ def drain(pipe):
             break
 
 def set_freq(pipe, freq):
-    freq *= 10000
+    freq *= 1000000
 
-    freqbcd = util.bcd_encode(int(freq), bigendian=False, width=7)
-    buf = "\x01\x7f\x05\x00" + freqbcd
+    freqbcd = util.bcd_encode(int(freq), bigendian=False, width=9)
+    buf = "\x01\x7f\x05" + freqbcd
 
     drain(pipe)
     send_magic(pipe)
@@ -90,13 +90,14 @@ def get_freq(pipe):
 
     for frame in resp:
         if frame[4] == "\x03":
-            els = frame[6:10]
+            els = frame[5:10]
 
-            freq = int("%02x%02x%02x%02x" % (ord(els[3]),
-                                             ord(els[2]),
-                                             ord(els[1]),
-                                             ord(els[0])))
-            freq = freq / 10000.0
+            freq = int("%02x%02x%02x%02x%02x" % (ord(els[4]),
+                                                 ord(els[3]),
+                                                 ord(els[2]),
+                                                 ord(els[1]),
+                                                 ord(els[0])))
+            freq = freq / 1000000.0
             if DEBUG_IDRP:
                 print "Freq: %f" % freq
             return freq
