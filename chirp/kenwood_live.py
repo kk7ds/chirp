@@ -424,7 +424,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_modes = list(THF6_MODES)
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(0.1, 1300.0)]
+        rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
         rf.memory_bounds = (0, self._upper)
         return rf
