@@ -35,6 +35,19 @@ from chirp import bitwise
 #                      D Tone: Encodes DCS code, decodes tone
 # }
 mem_format = """
+#seekto 0x018A;
+u16 bank_sizes[24];
+
+#seekto 0x097A;
+struct {
+  u8 name[6];
+} bank_names[24];
+
+#seekto 0x0C0A;
+struct {
+  u16 channel[100];
+} bank_channels[24];
+
 #seekto 0x1ECA;
 struct {
   u8 even_pskip:1,
@@ -210,3 +223,29 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
 
         if mem.name.strip():
             _mem.name[0] |= 0x80
+
+    def get_banks(self):
+        _banks = self._memobj.bank_names
+
+        banks = []
+        for bank in _banks:
+            name = ""
+            for i in bank.name:
+                name += CHARSET[i & 0x7F]
+            banks.append(name.rstrip())
+
+        return banks
+
+    # Return channels for a bank. Bank given as number
+    def get_bank_channels(self, bank):
+        nchannels = 0
+        size = self._memobj.bank_sizes[bank]
+        if size <= 198:
+            nchannels = 1 + size/2
+        _channels = self._memobj.bank_channels[bank]
+        channels = []
+        for i in range(0, nchannels):
+            channels.append(int(_channels.channel[i]))
+
+        return channels
+

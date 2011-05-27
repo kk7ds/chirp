@@ -51,6 +51,11 @@ struct {
      unknown2:7;
 } names[1000];
 
+#seekto 0x6c48;
+struct {
+   u32 bitmap[32];
+} bank_channels[20];
+
 #seekto 0x7648;
 struct {
   u8 skip0:2,
@@ -322,6 +327,17 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         self._set_mem_offset(mem, _mem)
 
         self._set_mem_skip(mem, _mem)
+
+    # Return channels for a bank. Bank given as number
+    def get_bank_channels(self, bank):
+        channels = []
+        for i in range(1000):
+            _bitmap = self._memobj.bank_channels[bank].bitmap[i/32]
+            ishft = 31 - (i % 32)
+            if (_bitmap >> ishft) & 1 == 1: 
+                channels.append(i)
+
+        return channels
 
 
 class FT7900Radio(FT7800Radio):

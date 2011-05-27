@@ -27,6 +27,11 @@ mem_format = """
 #seekto 0x7F4A;
 u8 checksum;
 
+#seekto 0x0B7A;
+struct {
+  u8 name[6];
+} bank_names[24];
+
 #seekto 0x20CA;
 struct {
   u8 even_pskip:1,
@@ -211,7 +216,16 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.name.strip(): _mem.name[0] |= 0x80
       
     def get_banks(self):
-        return []
+        _banks = self._memobj.bank_names
+
+        banks = []
+        for _bank in _banks:
+            name = ""
+            for i in _bank.name:
+                name += CHARSET[i & 0x7F]
+            banks.append(name.rstrip())
+
+        return banks
 
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)

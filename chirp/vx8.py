@@ -17,6 +17,22 @@ from chirp import chirp_common, yaesu_clone
 from chirp import bitwise
 
 mem_format = """
+#seekto 0x54a;
+struct {
+    u16 in_use;
+} bank_used[24];
+
+#seekto 0x135A;
+struct {
+  u8 unknown[2];
+  u8 name[16];
+} bank_info[24];
+
+#seekto 0x198a;
+struct {
+    u16 channel[100];
+} bank_members[24];
+
 #seekto 0x2C4A;
 struct {
   u8 flag;
@@ -176,7 +192,29 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         flag.flag |= skipbits
 
     def get_banks(self):
-        return []
+        _banks = self._memobj.bank_info
+
+        banks = []
+        for _bank in _banks:
+            name = ""
+            for i in _bank.name:
+                if i == 0xFF:
+                    break
+                name += CHARSET[i & 0x7F]
+            banks.append(name.rstrip())
+
+        return banks
+
+    # Return channels for a bank. Bank given as number
+    def get_bank_channels(self, bank):
+        _members = self._memobj.bank_members[bank]
+        channels = []
+        for channel in _members.channel:
+            if channel == 0xffff:
+                break
+            channels.append(int(channel))
+
+        return channels
 
 class VX8DRadio(VX8Radio):
     _model = "AH29D"
