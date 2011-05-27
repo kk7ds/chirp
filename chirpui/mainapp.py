@@ -153,7 +153,7 @@ class ChirpMain(gtk.Window):
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
-        for i in ["export", "import", "close", "columns", "rbook"]:
+        for i in ["export", "import", "close", "columns", "rbook", "rfinder"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
@@ -576,6 +576,67 @@ class ChirpMain(gtk.Window):
         count = eset.do_import(filename)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
+    def do_rfinder_prompt(self):
+        fields = {"1Email"    : (gtk.Entry(),
+                                lambda x: "@" in x),
+                  "2Password" : (gtk.Entry(),
+                                lambda x: x),
+                  "3Latitude" : (gtk.Entry(),
+                                lambda x: float(x) < 90 and float(x) > -90),
+                  "4Longitude": (gtk.Entry(),
+                                lambda x: float(x) < 180 and float(x) > -180),
+                  }
+
+        d = inputdialog.FieldDialog(title="RFinder Login", parent=self)
+        for k in sorted(fields.keys()):
+            d.add_field(k[1:], fields[k][0])
+            fields[k][0].set_text(CONF.get(k[1:], "rfinder") or "")
+            fields[k][0].set_visibility(k != "2Password")
+
+        while d.run() == gtk.RESPONSE_OK:
+            valid = True
+            for k in sorted(fields.keys()):
+                widget, validator = fields[k]
+                try:
+                    if validator(widget.get_text()):
+                        CONF.set(k[1:], widget.get_text(), "rfinder")
+                        continue
+                except Exception:
+                    pass
+                common.show_error("Invalid value for %s" % k[1:])
+                valid = False
+                break
+
+            if valid:
+                d.destroy()
+                return True
+
+        d.destroy()
+        return False
+
+    def do_rfinder(self):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_rfinder_prompt():
+            self.window.set_cursor(None)
+            return
+
+        lat = CONF.get_float("Latitude", "rfinder")
+        lon = CONF.get_float("Longitude", "rfinder")
+        passwd = CONF.get("Password", "rfinder")
+        email = CONF.get("Email", "rfinder")
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        eset = self.get_current_editorset()
+        count = eset.do_import("rfinder://%s/%s/%f/%f" % (email, passwd, lat, lon))
+        reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
+
+        self.window.set_cursor(None)
+
     def do_export(self):
         types = [("CSV Files (*.csv)", "csv"),
                  ("CHIRP Files (*.chirp)", "chirp"),
@@ -722,6 +783,8 @@ class ChirpMain(gtk.Window):
             self.do_close()
         elif action == "import":
             self.do_import()
+        elif action == "rfinder":
+            self.do_rfinder()
         elif action == "export":
             self.do_export()
         elif action == "rbook":
@@ -782,6 +845,7 @@ class ChirpMain(gtk.Window):
       <menuitem action="upload"/>
       <menu action="recent" name="recent"/>
       <menuitem action="rbook"/>
+      <menuitem action="rfinder"/>
       <separator/>
       <menuitem action="autorpt"/>
       <separator/>
@@ -814,6 +878,7 @@ class ChirpMain(gtk.Window):
             ('upload', None, "Upload To Radio", "<Alt>u", None, self.mh),
             ('import', None, 'Import', "<Alt>i", None, self.mh),
             ('export', None, 'Export', "<Alt>e", None, self.mh),
+            ('rfinder', None, "Import from RFinder", None, None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
             ('rbook', None, "Import from RepeaterBook", None, None, self.mh),

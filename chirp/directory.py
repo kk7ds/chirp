@@ -22,7 +22,7 @@ from chirp import vx3, vx5, vx6, vx7, vx8, ft7800, ft50
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
 from chirp import wouxun
-from chirp import xml, chirp_common, csv, util
+from chirp import xml, chirp_common, csv, util, rfinder
 
 DRV_TO_RADIO = {
 
@@ -119,6 +119,12 @@ def icf_to_image(icf_file, img_file):
         raise Exception("Unsupported model")
 
 def get_radio_by_image(image_file):
+    if image_file.startswith("rfinder://"):
+        method, _, email, passwd, lat, lon = image_file.split("/")
+        rf = rfinder.RFinderRadio(None)
+        rf.set_params(float(lat), float(lon), email, passwd)
+        return rf
+    
     if image_file.lower().endswith(".chirp"):
         return xml.XMLRadio(image_file)
 
