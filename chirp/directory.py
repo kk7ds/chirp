@@ -32,8 +32,6 @@ DRV_TO_RADIO = {
     "ic2200"         : ic2200.IC2200Radio,
     "ic2100"         : ic2100.IC2100Radio,
     "ic9x"           : ic9x.IC9xRadio,
-    "ic9x:A"         : ic9x.IC9xRadioA,
-    "ic9x:B"         : ic9x.IC9xRadioB,
     "id800"          : id800.ID800v2Radio,
     "id880"          : id880.ID880Radio,
     "icx8x"          : icx8x.ICx8xRadio,
