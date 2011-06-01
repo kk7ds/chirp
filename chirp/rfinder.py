@@ -80,7 +80,7 @@ class RFinderParser:
         if vals["OFFSETSIGN"] != "X":
             mem.duplex = vals["OFFSETSIGN"]
         if vals["OFFSETFREQ"]:
-            mem.offset = chirp_common.format_freq(vals["OFFSETFREQ"])
+            mem.offset = chirp_common.parse_freq(vals["OFFSETFREQ"])
 
         if vals["PL"] and vals["PL"] != "0":
             mem.rtone = float(vals["PL"])
@@ -104,6 +104,8 @@ class RFinderParser:
                 number += 1
                 self.__memories.append(mem)
             except Exception, e:
+                #import traceback, sys
+                #traceback.print_exc(file=sys.stdout)
                 print "Error in record %s:" % self.__cheat["DOC_ID"]
                 print e
                 print self.__cheat
