@@ -373,16 +373,16 @@ PUXING_MODELS = {
 }
 
 PUXING_777_BANDS = [
-    (67.0,   72.0),
-    (136.0, 174.0),
-    (240.0, 260.0),
-    (350.0, 390.0),
-    (400.0, 430.0),
-    (430.0, 450.0),
-    (450.0, 470.0),
-    (470.0, 490.0),
-    (400.0, 470.0),
-    (460.0, 520.0),
+    ( 67000000,  72000000),
+    (136000000, 174000000),
+    (240000000, 260000000),
+    (350000000, 390000000),
+    (400000000, 430000000),
+    (430000000, 450000000),
+    (450000000, 470000000),
+    (470000000, 490000000),
+    (400000000, 470000000),
+    (460000000, 520000000),
 ]
 
 class Puxing777Radio(KGUVD1PRadio):
@@ -480,8 +480,8 @@ class Puxing777Radio(KGUVD1PRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.rx_freq) / 100000.0
-        mem.offset = (int(_mem.tx_freq) / 100000.0) - mem.freq
+        mem.freq = int(_mem.rx_freq) * 10
+        mem.offset = (int(_mem.tx_freq) * 10) - mem.freq
         if mem.offset < 0:
             mem.duplex = "-"
         elif mem.offset:
@@ -519,13 +519,13 @@ class Puxing777Radio(KGUVD1PRadio):
             self.wipe_memory(_mem, "\xFF")
             return
 
-        _mem.rx_freq = int(mem.freq * 100000)
+        _mem.rx_freq = mem.freq / 10
         if mem.duplex == "+":
-            _mem.tx_freq = int(mem.freq * 100000) + int(mem.offset * 100000)
+            _mem.tx_freq = (mem.freq / 10) + (mem.offset / 10)
         elif mem.duplex == "-":
-            _mem.tx_freq = int(mem.freq * 100000) - int(mem.offset * 100000)
+            _mem.tx_freq = (mem.freq / 10) - (mem.offset / 10)
         else:
-            _mem.tx_freq = int(mem.freq * 100000)
+            _mem.tx_freq = (mem.freq / 10)
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
