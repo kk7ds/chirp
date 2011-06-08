@@ -383,7 +383,11 @@ class charDataElement(DataElement):
         self._data[self._offset] = value
 
 class bcdDataElement(DataElement):
-    pass
+    def set_bits(self, mask):
+        self._data[self._offset] = ord(self._data[self._offset]) | mask
+
+    def clr_bits(self, mask):
+        self._data[self._offset] = ord(self._data[self._offset]) & ~mask
 
 class lbcdDataElement(bcdDataElement):
     _size = 1
