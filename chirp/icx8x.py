@@ -62,9 +62,9 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tuning_steps = [x for x in chirp_common.TUNING_STEPS
                                  if x != 6.25]
         if self.isUHF:
-            rf.valid_bands = [(420.0, 470.0)]
+            rf.valid_bands = [(420000000, 470000000)]
         else:
-            rf.valid_bands = [(118.0, 176.0)]
+            rf.valid_bands = [(118000000, 176000000)]
         rf.valid_skips = ["", "S"]
         return rf
 

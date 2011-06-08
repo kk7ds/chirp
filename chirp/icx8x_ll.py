@@ -19,6 +19,7 @@ import struct
 
 from chirp import chirp_common, errors
 from chirp.memmap import MemoryMap
+from chirp.chirp_common import to_MHz
 
 POS_FREQ_START = 0
 POS_FREQ_END   = 2
@@ -63,25 +64,24 @@ def bank_name(index):
 
 def get_freq(mmap, base):
     if (ord(mmap[POS_MULT_FLAG]) & 0x80) == 0x80:
-        mult = 6.25
+        mult = 6250
     else:
-        mult = 5
+        mult = 5000
 
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
 
-    return ((val * mult) / 1000.0) + base
+    return (val * mult) + to_MHz(base)
 
 def set_freq(mmap, freq, base):
     tflag = ord(mmap[POS_MULT_FLAG]) & 0x7F
 
     if chirp_common.is_fractional_step(freq):
-        mult = 6.25
+        mult = 6250
         tflag |= 0x80
     else:
-        mult = 5
+        mult = 5000
 
-    # Silly precision
-    value = int(round(((freq - base) * 1000) / mult))
+    value = (freq - to_MHz(base)) / mult
 
     mmap[POS_MULT_FLAG] = tflag
     mmap[POS_FREQ_START] = struct.pack("<H", value)
@@ -139,12 +139,10 @@ def set_dtcs_polarity(mmap, polarity):
 
 def get_dup_offset(mmap):
     val = struct.unpack("<H", mmap[POS_OFFSET:POS_OFFSET+2])[0]
-
-    return float((val / 5) * 2.5) / 100.0
+    return val * 5000
 
 def set_dup_offset(mmap, offset):
-    val = struct.pack("<H", int((offset * 100) / 2.5) * 5)
-
+    val = struct.pack("<H", offset / 5000)
     mmap[POS_OFFSET] = val
 
 def get_duplex(mmap):
