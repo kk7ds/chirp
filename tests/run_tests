@@ -288,6 +288,16 @@ class TestCaseBruteForce(TestCase):
             self.set_and_compare(m)
 
     def do_mode(self, m, rf):
+        def ensure_urcall(call):
+            l = self._wrapper.do("get_urcall_list")
+            l[0] = call
+            self._wrapper.do("set_urcall_list", l)
+
+        def ensure_rptcall(call):
+            l = self._wrapper.do("get_repeater_call_list")
+            l[0] = call
+            self._wrapper.do("set_repeater_call_list", l)
+
         for mode in rf.valid_modes:
             if mode not in chirp_common.MODES:
                 continue
@@ -296,6 +306,9 @@ class TestCaseBruteForce(TestCase):
                 m = chirp_common.DVMemory()
                 m.number = _m.number
                 m.freq = _m.freq
+                ensure_urcall(m.dv_urcall)
+                ensure_rptcall(m.dv_rpt1call)
+                ensure_rptcall(m.dv_rpt2call)
             m.mode = mode
             self.set_and_compare(m)
 
