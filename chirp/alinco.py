@@ -217,7 +217,7 @@ class DRx35Radio(AlincoStyleRadio):
         if _skp & bit:
             mem.skip = "S"
 
-        mem.name = self._get_name(mem, _mem)
+        mem.name = self._get_name(mem, _mem).rstrip()
 
         return mem
 
