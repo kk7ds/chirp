@@ -16,6 +16,7 @@
 from chirp import chirp_common, icf, errors, util
 from chirp import bitwise
 from chirp.memmap import MemoryMap
+from chirp.chirp_common import to_GHz, from_GHz
 
 mem_format = """
 struct {
@@ -117,7 +118,13 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
             self._memobj.flags_whole[mem.number] = 0xFF
             return
 
-        _mem.freq = mem.freq / 1000
+        if mem.freq > to_GHz(1):
+            _mem.freq = (mem.freq / 1000) - to_GHz(1)
+            upper = from_GHz(mem.freq) << 4
+            _mem.freq[0].clr_bits(0xF0)
+            _mem.freq[0].set_bits(upper)
+        else:
+            _mem.freq = mem.freq / 1000
         _mem.fractional = chirp_common.is_fractional_step(mem.freq)
         _mem.offset = mem.offset / 1000
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
