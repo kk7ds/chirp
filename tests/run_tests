@@ -15,13 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import traceback, sys, os, shutil, glob, tempfile
+import traceback, sys, os, shutil, glob, tempfile, time
 from optparse import OptionParser
 
 # Assume we're running in the tests/ directory of the archive
 sys.path.insert(0, "../")
 
-from chirp import chirp_common, directory, csv, import_logic
+from chirp import chirp_common, directory, csv, import_logic, CHIRP_VERSION
 
 TESTS = {}
 
@@ -398,10 +398,101 @@ class TestCaseEdges(TestCase):
         return []
 TESTS["Edges"] = TestCaseEdges
 
+class TestOutput:
+    def prepare(self):
+        pass
+
+    def cleanup(self):
+        pass
+
+    def report(self, rclass, tc, msg, e):
+        print "%9s %-13s %-10s %8s: %s" % (rclass.VENDOR,
+                                           ("%s %s" % (rclass.MODEL,
+                                                       rclass.VARIANT)),
+                                           tc,
+                                           msg, e)
+
+class TestOutputANSI(TestOutput):
+    def report(self, rclass, tc, msg, e):
+        if os.isatty(1):
+            if msg == "PASSED":
+                msg = "\033[1;32m%s\033[0m" % msg
+            elif msg == "FAILED":
+                msg = "\033[1;41m%s\033[0m" % msg
+            elif msg == "CRASHED":
+                msg = "\033[1;45m%s\033[0m" % msg
+
+        TestOutput.report(self, rclass, tc, msg, e)
+
+class TestOutputHTML(TestOutput):
+    def __init__(self, filename):
+        self._filename = filename
+
+    def prepare(self):
+        print "Writing to %s" % self._filename,
+        sys.stdout.flush()
+        self._out = file(self._filename, "w")
+        s = """
+<html>
+<head>
+<title>Test report for CHIRP version %s</title>
+<style>
+table.testlist {
+  border: thin solid black;
+  border-collapse: collapse;
+}
+td {
+  border: thin solid black;
+  padding: 2px;
+}
+th {
+  background-color: silver;
+  border: thin solid black;
+  padding: 2px;
+}
+td.PASSED {
+  background-color: green;
+}
+td.FAILED {
+  background-color: red;
+}
+td.CRASHED {
+  background-color: purple;
+}
+</style>
+</head>
+<body>
+<h1>Test report for CHIRP version %s</h1>
+<h3>Generated on %s (%s)</h3>
+<table class="testlist">
+<tr>
+  <th>Vendor</th><th>Model</th><th>Test Case</th><th>Status</th><th>Message</th>
+</tr>
+""" % (CHIRP_VERSION, CHIRP_VERSION, time.strftime("%x at %X"), os.name)
+        print >>self._out, s
+
+    def cleanup(self):
+        print >>self._out, "</table></body>"
+        self._out.close()
+        print "Done"
+
+    def report(self, rclass, tc, msg, e):
+        s = ("<tr class='%s'>" % msg) + \
+            ("<td class='vendor'>%s</td>" % rclass.VENDOR) + \
+            ("<td class='model'>%s %s</td>" % (rclass.MODEL, rclass.VARIANT))+\
+            ("<td class='tc'>%s</td>" % tc) + \
+            ("<td class='%s'>%s</td>" % (msg,msg)) + \
+            ("<td class='error'>%s</td>" % e) + \
+            "</tr>"
+        print >>self._out, s
+        sys.stdout.write(".")
+        sys.stdout.flush()
+
 class TestRunner:
-    def __init__(self, images_dir, test_list):
+    def __init__(self, images_dir, test_list, test_out):
         self._images_dir = images_dir
         self._test_list = test_list
+        self._test_out = test_out
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
         if not os.path.exists("logs"):
@@ -416,19 +507,7 @@ class TestRunner:
         return run_list
 
     def report(self, rclass, tc, msg, e):
-        if os.isatty(1):
-            if msg == "PASSED":
-                msg = "\033[1;32m%s\033[0m" % msg
-            elif msg == "FAILED":
-                msg = "\033[1;41m%s\033[0m" % msg
-            elif msg == "CRASHED":
-                msg = "\033[1;45m%s\033[0m" % msg
-                
-        print "%9s %-13s %-10s %8s: %s" % (rclass.VENDOR,
-                                           ("%s %s" % (rclass.MODEL,
-                                                       rclass.VARIANT)),
-                                           tc,
-                                           msg, e)
+        self._test_out.report(rclass, tc, msg, e)
 
     def log(self, rclass, tc, e):
         fn = "logs/%s_%s.log" % (directory.get_driver(rclass), tc)
@@ -514,6 +593,8 @@ if __name__ == "__main__":
                   help="Driver to test (omit for all)")
     op.add_option("-t", "--test", dest="test", default=None,
                   help="Test to run (omit for all)")
+    op.add_option("", "--html", dest="html", default=None,
+                  help="Output to HTML file")
     op.usage = """
 Available drivers:
 %s
@@ -524,12 +605,21 @@ Available tests:
 
     (options, args) = op.parse_args()
 
-    if options.test:
-        tr = TestRunner("images", [TESTS[options.test]])
+    if options.html:
+        test_out = TestOutputHTML(options.html)
     else:
-        tr = TestRunner("images", TESTS.values())
+        test_out = TestOutputANSI()        
+
+    test_out.prepare()
+
+    if options.test:
+        tr = TestRunner("images", [TESTS[options.test]], test_out)
+    else:
+        tr = TestRunner("images", TESTS.values(), test_out)
 
     if options.driver:
         tr.run_one(options.driver)
     else:
         tr.run_all()
+
+    test_out.cleanup()
