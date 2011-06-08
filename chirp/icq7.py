@@ -20,7 +20,8 @@ from chirp.memmap import MemoryMap
 mem_format = """
 struct {
   bbcd freq[3];
-  u8  unknown;
+  u8  fractional:1,
+      unknown:7;
   bbcd offset[2];
   u16 ctone:6
       rtone:6,
@@ -89,6 +90,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
             return mem
 
         mem.freq = int(_mem.freq) * 1000
+        if _mem.fractional:
+            mem.freq = chirp_common.fix_rounded_step(mem.freq)
         mem.offset = int(_mem.offset) * 1000
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
@@ -115,6 +118,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
             return
 
         _mem.freq = mem.freq / 1000
+        _mem.fractional = chirp_common.is_fractional_step(mem.freq)
         _mem.offset = mem.offset / 1000
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
