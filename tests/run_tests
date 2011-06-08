@@ -501,7 +501,7 @@ class TestRunner:
     def _make_list(self):
         run_list = []
         images = glob.glob(os.path.join(self._images_dir, "*.img"))
-        for image in images:
+        for image in sorted(images):
             drv_name, _ = os.path.splitext(os.path.basename(image))
             run_list.append((directory.get_radio(drv_name), image))
         return run_list
