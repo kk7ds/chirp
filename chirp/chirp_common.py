@@ -943,3 +943,21 @@ class KillableThread(threading.Thread):
         if ret != 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(self.__tid(), 0)
             raise Exception("Failed to signal thread!")
+
+def to_GHz(val):
+    return val * 1000000000
+
+def to_MHz(val):
+    return val * 1000000
+
+def to_kHz(val):
+    return val * 1000
+
+def from_GHz(val):
+    return val / 100000000
+
+def from_MHz(val):
+    return val / 100000
+
+def from_kHz(val):
+    return val / 100
