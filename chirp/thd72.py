@@ -186,6 +186,8 @@ class THD72Radio(chirp_common.CloneModeRadio):
         rf.valid_tmodes = TMODES_REV.keys()
         rf.valid_duplexes = DUPLEX_REV.keys()
         rf.valid_skips = ["", "S"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 8
         return rf
 
     def process_mmap(self):
@@ -208,9 +210,6 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     def get_special_locations(self):
         return sorted(THD72_SPECIAL.keys())
-
-    def filter_name(self, name):
-        return name[:8]
 
     def add_dirty_block(self, memobj):
         block = memobj._offset / 256

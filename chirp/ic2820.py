@@ -117,6 +117,8 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(118000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 8
         return rf
 
     def get_available_bank_index(self, bank):
@@ -344,6 +346,3 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 call = " " * 8
 
             _calls[i-1].call = call.ljust(8)[:8]
-
-    def filter_name(self, name):
-        return chirp_common.name8(name)

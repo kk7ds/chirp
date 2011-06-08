@@ -156,7 +156,7 @@ DCS_CODES = {
 CHARSET = (["\x00"] * 0x30) + \
     [chr(x + ord("0")) for x in range(0, 10)] + \
     [chr(x + ord("A")) for x in range(0, 26)] + [" "] + \
-    list("?" * 128)
+    list("\x00" * 128)
 
 class DRx35Radio(AlincoStyleRadio):
     _range = (118000000, 155000000)
@@ -194,6 +194,7 @@ class DRx35Radio(AlincoStyleRadio):
         rf.has_tuning_step = False
         rf.has_dtcs_polarity = False
         rf.valid_tuning_steps = []
+        rf.valid_name_length = 7
         return rf
 
     def get_memory(self, number):
@@ -244,9 +245,6 @@ class DRx35Radio(AlincoStyleRadio):
 
         _mem.name = self._set_name(mem, _mem)
             
-    def filter_name(self, name):
-        return chirp_common._name(name, 7, True)
-
 class DR135Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR135T"

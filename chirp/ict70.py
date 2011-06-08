@@ -89,9 +89,9 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_bands = [(136000000, 174000000), (400000000, 479000000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_name_length = 6
         rf.has_ctone = True
         rf.has_bank_index = True
-
         return rf
 
     def process_mmap(self):
@@ -212,7 +212,4 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         else:
             _skp &= ~bit
             _psk &= ~bit
-
-    def filter_name(self, name):
-        return chirp_common.name6(name)
         

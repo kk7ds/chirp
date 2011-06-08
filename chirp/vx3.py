@@ -80,7 +80,11 @@ STEPS = [ 5.0, 9, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0 ]
 #STEPS.append(9.0) #this fails because 9 is out of order in the list
 
 #Empty char should be 0xFF but right now we are coding in a space
-CHARSET = list("0123456789" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ " + "+-/?[](){}??_?????????????*??,'|????\?????" + "?"*59)
+CHARSET = list("0123456789" + \
+                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ " + \
+                   "+-/\x00[](){}\x00\x00_" + \
+                   ("\x00" * 13) + "*" + "\x00\x00,'|\x00\x00\x00\x00" + \
+                   ("\x00" * 64))
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=1.50),
                 chirp_common.PowerLevel("Low", watts=0.10)]
@@ -115,6 +119,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_bands = [(500000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_characters = "".join(CHARSET)
+        rf.valid_name_length = 6
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -208,9 +214,6 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
       
     def get_banks(self):
         return []
-
-    def filter_name(self, name):
-        return chirp_common.name6(name, just_upper=True)
 
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)

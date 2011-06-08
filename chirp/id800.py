@@ -166,6 +166,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_bands = [(118000000, 173995000), (230000000, 549995000),
                           (810000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_name_length = 6
         rf.memory_bounds = (1, 499)
         return rf
 
@@ -370,6 +371,3 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 call = " " * 8
 
             self._memobj.mycalls[i-1].call = call.ljust(8)[:8]
-
-    def filter_name(self, name):
-        return chirp_common.name6(name, True)

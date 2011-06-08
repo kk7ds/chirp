@@ -171,9 +171,6 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         else:
             raise errors.InvalidDataError("Radio refused %i" % memory.number)
 
-    def filter_name(self, name):
-        return chirp_common.name8(name)
-
     def erase_memory(self, number):
         if not self.__memcache.has_key(number):
             return
@@ -195,6 +192,8 @@ class THD7Radio(KenwoodLiveRadio):
         rf.has_tuning_step = False
         rf.valid_modes = MODES.values()
         rf.valid_tmodes = ["", "Tone", "TSQL"]
+        rf.valid_characters = chirp.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 7
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -250,6 +249,8 @@ class TMD700Radio(KenwoodLiveRadio):
         rf.has_tuning_step = False
         rf.valid_modes = ["FM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 7
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -307,6 +308,8 @@ class TMV7Radio(KenwoodLiveRadio):
         rf.has_tuning_step = False
         rf.valid_modes = ["FM"]
         rf.valid_tmodes = ["", "Tone", "TSQL"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 7
         rf.has_sub_devices = True
         rf.memory_bounds = (1, self._upper)
         return rf
@@ -343,9 +346,6 @@ class TMV7Radio(KenwoodLiveRadio):
         mem.ctone = chirp_common.TONES[int(spec[12]) - 1]
 
         return mem
-
-    def filter_name(self, name):
-        return name[:7]
 
     def get_sub_devices(self):
         return [TMV7RadioVHF(self.pipe), TMV7RadioUHF(self.pipe)]
@@ -426,6 +426,8 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 7
         rf.memory_bounds = (0, self._upper)
         return rf
 
@@ -504,6 +506,8 @@ class TMD710Radio(KenwoodLiveRadio):
         rf.valid_modes = D710_MODES
         rf.valid_duplexes = D710_DUPLEX
         rf.valid_tuning_steps = D710_STEPS
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 7
         rf.memory_bounds = (0, 999)
         return rf
 

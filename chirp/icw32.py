@@ -73,6 +73,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         else:
             rf.valid_modes = ["FM"]
         rf.valid_tmodes = ["", "Tone", "TSQL"]
+        rf.valid_name_length = 8
 
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_ctone = True
@@ -163,9 +164,6 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
 
     def get_sub_devices(self):
         return [ICW32ARadioVHF(self._mmap), ICW32ARadioUHF(self._mmap)]
-
-    def filter_name(self, name):
-        return chirp_common.name8(name, True)
 
 class ICW32ARadioVHF(ICW32ARadio):
     VARIANT = "VHF"

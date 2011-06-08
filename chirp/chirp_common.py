@@ -102,6 +102,10 @@ TUNING_STEPS = [
 
 SKIP_VALUES = [ "", "S", "P" ]
 
+CHARSET_UPPER_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890"
+CHARSET_ALPHANUMERIC = \
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz 1234567890"
+
 def watts_to_dBm(watts):
     return int(10 * math.log10(int(watts * 1000)))
 
@@ -541,6 +545,8 @@ class RadioFeatures:
         "valid_bands"         : [],
         "valid_skips"         : [],
         "valid_power_levels"  : [],
+        "valid_characters"    : "",
+        "valid_name_length"   : 0,
 
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
@@ -563,6 +569,14 @@ class RadioFeatures:
         elif type(self._valid_map[name]) == list and not self._valid_map[name]:
             # Empty list, must be another list
             if type(val) != list:
+                raise ValueError("Invalid value `%s' for attribute `%s'" % \
+                                     (val, name))
+        elif type(self._valid_map[name]) == str:
+            if type(val) != str:
+                raise ValueError("Invalid value `%s' for attribute `%s'" % \
+                                     (val, name))
+        elif type(self._valid_map[name]) == int:
+            if type(val) != int:
                 raise ValueError("Invalid value `%s' for attribute `%s'" % \
                                      (val, name))
         elif val not in self._valid_map[name]:
@@ -591,6 +605,8 @@ class RadioFeatures:
         self.valid_bands = []
         self.valid_skips = ["", "S"]
         self.valid_power_levels = []
+        self.valid_characters = CHARSET_UPPER_NUMERIC
+        self.valid_name_length = 6
 
         self.has_sub_devices = False
         self.memory_bounds = (0, 1)
@@ -671,7 +687,11 @@ class Radio:
         return []
 
     def filter_name(self, name):
-        return name6(name)
+        rf = self.get_features()
+        if rf.valid_characters == rf.valid_characters.upper():
+            # Radio only supports uppercase, so help out here
+            name = name.upper()
+        return "".join([x for x in name[:rf.valid_name_length] if x in rf.valid_characters])
 
     def get_sub_devices(self):
         return []
@@ -730,6 +750,12 @@ class Radio:
             except errors.InvalidDataError, e:
                 msgs.append(str(e))
 
+        if rf.valid_characters:
+            for char in mem.name:
+                if char not in rf.valid_characters:
+                    msgs.append(ValidationError(("Name character `%s'" % char) +
+                                                " not supported"))
+                    break
 
         return msgs
 

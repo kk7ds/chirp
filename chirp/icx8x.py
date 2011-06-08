@@ -66,6 +66,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         else:
             rf.valid_bands = [(118000000, 176000000)]
         rf.valid_skips = ["", "S"]
+        rf.valid_name_length = 5
         return rf
 
     def _get_type(self):
@@ -202,6 +203,3 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 call = " " * 8
 
             icx8x_ll.set_mycall(self._mmap, i, call)
-
-    def filter_name(self, name):
-        return name.upper()[:5]

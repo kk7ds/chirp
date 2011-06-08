@@ -160,6 +160,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                           (810000000, 823990000), (849000000, 868990000),
                           (894000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_name_length = 8
         rf.memory_bounds = (0, 999)
         return rf
 
@@ -364,9 +365,6 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return calls
         
-    def filter_name(self, name):
-        return chirp_common.name8(name, just_upper=True)
-
 class ID80Radio(ID880Radio):
     MODEL = "ID-880H"
 

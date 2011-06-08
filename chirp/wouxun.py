@@ -169,6 +169,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
+        rf.valid_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        rf.valid_name_length = 6
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.has_bank = False
@@ -294,15 +296,6 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             return True
         return False
 
-    def filter_name(self, name):
-        newname = ""
-        for i in name.upper():
-            if len(newname) == 6:
-                break
-            elif i in "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-                newname += i
-        return newname
-
 def _puxing_prep(radio):
     radio.pipe.write("\x02PROGRA")
     ack = radio.pipe.read(1)
@@ -415,6 +408,8 @@ class Puxing777Radio(KGUVD1PRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        rf.valid_name_length = 6
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.has_bank = False

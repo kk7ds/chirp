@@ -78,7 +78,7 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
     [chr(x) for x in range(ord("a"), ord("z")+1)] + \
     list(".,:;!\"#$%&'()*+-.=<>?@[?]^_\\{|}") + \
-    list("?" * 100)
+    list("\x00" * 100)
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
@@ -117,6 +117,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_bands = [(500000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_characters = "".join(CHARSET)
+        rf.valid_name_length = 8
         rf.memory_bounds = (1, 450)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -206,9 +208,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         
     def get_banks(self):
         return []
-
-    def filter_name(self, name):
-        return chirp_common.name8(name)
 
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)

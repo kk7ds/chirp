@@ -239,9 +239,6 @@ class IC9xRadio(icf.IcomLiveRadio):
 
             self._lock.release()
 
-    def filter_name(self, name):
-        return chirp_common.name8(name)
-
     def get_sub_devices(self):
         return [IC9xRadioA(self.pipe), IC9xRadioB(self.pipe)]
 
@@ -265,6 +262,8 @@ class IC9xRadioA(IC9xRadio):
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(500000, 9990000000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 8
         return rf
 
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
@@ -287,6 +286,8 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(118000000, 174000000), (350000000, 470000000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_name_length = 8
         return rf
 
     def __init__(self, *args, **kwargs):

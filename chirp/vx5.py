@@ -88,6 +88,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
                           ( 47000000, 729000000),
                           (800000000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_name_length = 8
         return rf
 
     def process_mmap(self):
@@ -152,6 +153,3 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def match_model(cls, filedata):
         return len(filedata) == cls._memsize
-
-    def filter_name(self, name):
-        return chirp_common.name8(name, True)

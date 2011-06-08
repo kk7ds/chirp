@@ -61,7 +61,7 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
     [" ",] + \
     [chr(x) for x in range(ord("a"), ord("z")+1)] + \
-    list(".,:;*#_-/&()@!?^ ") + list("?" * 100)
+    list(".,:;*#_-/&()@!?^ ") + list("\x00" * 100)
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
@@ -92,6 +92,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_bands = [(500000, 999900000)]
         rf.valid_skips = SKIPS
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_characters = "".join(CHARSET)
+        rf.valid_name_length = 16
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -173,9 +175,6 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_banks(self):
         return []
-
-    def filter_name(self, name):
-        return chirp_common.name16(name)
 
 class VX8DRadio(VX8Radio):
     _model = "AH29D"

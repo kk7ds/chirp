@@ -212,6 +212,3 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         m.number = number
         m.empty = True
         self.memories[number] = m
-        
-    def filter_name(self, name):
-        return name
