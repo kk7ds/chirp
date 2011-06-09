@@ -17,6 +17,7 @@
 
 import traceback, sys, os, shutil, glob, tempfile, time
 from optparse import OptionParser
+from serial import Serial
 
 # Assume we're running in the tests/ directory of the archive
 sys.path.insert(0, "../")
@@ -594,6 +595,16 @@ class TestRunner:
         self.run_rclass_image(directory.get_radio(drv_name),
                               os.path.join("images", "%s.img" % drv_name))
 
+    def run_one_live(self, drv_name, port):
+        rclass = directory.get_radio(drv_name)
+        pipe = Serial(port=port, baudrate=rclass.BAUD_RATE, timeout=0.5)
+        tw = TestWrapper(rclass, pipe)
+        rf = tw.do("get_features")
+        if rf.has_sub_devices:
+            devices = tw.do("get_sub_devices")
+            for device in devices:
+                tw = TestWrapper(device.__class__, pipe)
+                self._run_one(tw, device.__class__)
 
 if __name__ == "__main__":
     import sys
@@ -606,8 +617,10 @@ if __name__ == "__main__":
                   help="Driver to test (omit for all)")
     op.add_option("-t", "--test", dest="test", default=None,
                   help="Test to run (omit for all)")
-    op.add_option("", "--html", dest="html", default=None,
+    op.add_option("",   "--html", dest="html", default=None,
                   help="Output to HTML file")
+    op.add_option("-l", "--live", dest="live", default=None,
+                  help="Live radio on this port (requires -d)")
     op.usage = """
 Available drivers:
 %s
@@ -630,7 +643,12 @@ Available tests:
     else:
         tr = TestRunner("images", TESTS.values(), test_out)
 
-    if options.driver:
+    if options.live:
+        if not options.driver:
+            print "Live mode requires a driver to be specified"
+            sys.exit(1)
+        tr.run_one_live(options.driver, options.live)
+    elif options.driver:
         tr.run_one(options.driver)
     else:
         tr.run_all()
