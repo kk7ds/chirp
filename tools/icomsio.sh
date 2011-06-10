@@ -27,6 +27,10 @@ product_to_name() {
 	echo "ID-RP4000V RX"
     elif [ "$prod" = "000b" ]; then
 	echo "ID-RP2D"
+    elif [ "$prod" = "000c" ]; then
+	echo "ID-RP2V TX"
+    elif [ "$prod" = "000d" ]; then
+	echo "ID-RP2V RX"
     else
 	echo "Unknown module (id=${prod})"
     fi
