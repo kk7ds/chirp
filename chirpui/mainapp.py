@@ -142,13 +142,8 @@ class ChirpMain(gtk.Window):
         else:
             mmap_sens = True
 
-        # If it's a MMAP radio and the file exists, then we can save
-        cansave = bool(eset and os.path.exists(eset.filename) and mmap_sens)
-
-        for i in ["saveas", "upload"]:
+        for i in ["save", "saveas", "upload"]:
             set_action_sensitive(i, mmap_sens)
-
-        set_action_sensitive("save", cansave)
 
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
@@ -287,6 +282,12 @@ class ChirpMain(gtk.Window):
     def do_save(self, eset=None):
         if not eset:
             eset = self.get_current_editorset()
+
+        # For usability, allow Ctrl-S to short-circuit to Save-As if
+        # we are working on a yet-to-be-saved image
+        if not os.path.exists(eset.filename):
+            return self.do_saveas()
+
         eset.save()
 
     def do_saveas(self):
