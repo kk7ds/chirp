@@ -46,6 +46,12 @@ class Platform:
         self._base = basepath
         self._last_dir = self.default_dir()
 
+    def get_last_dir(self):
+        return self._last_dir
+
+    def set_last_dir(self, last_dir):
+        self._last_dir = last_dir
+
     def config_dir(self):
         return self._base
 

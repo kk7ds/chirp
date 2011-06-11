@@ -959,6 +959,10 @@ class ChirpMain(gtk.Window):
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
+        d = CONF.get("last_dir", "state")
+        if d and os.path.isdir(d):
+            platform.get_platform().set_last_dir(d)
+
         vbox = gtk.VBox(False, 2)
 
         self._recent = []

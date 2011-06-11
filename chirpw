@@ -64,4 +64,7 @@ else:
     gtk.main()
 
 if config._CONFIG:
+    config._CONFIG.set("last_dir",
+                       platform.get_platform().get_last_dir(),
+                       "state")
     config._CONFIG.save()
