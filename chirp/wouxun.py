@@ -430,7 +430,8 @@ class Puxing777Radio(KGUVD1PRadio):
 
     @classmethod
     def match_model(cls, filedata):
-        if ord(filedata[0x080B]) != PUXING_MODELS[777]:
+        if len(filedata) > 0x080B and \
+                ord(filedata[0x080B]) != PUXING_MODELS[777]:
             print "Invalid model: %02x" % ord(filedata[0x080B])
             return False
         return len(filedata) == 3168
