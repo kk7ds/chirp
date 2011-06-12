@@ -141,7 +141,10 @@ class ICT70Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = _mem.freq * 5000
+        if _mem.freq & 0x800000:
+            mem.freq = (_mem.freq & ~0x800000) * 6250
+        else:
+            mem.freq = _mem.freq * 5000
         mem.offset = _mem.offset * 5000
         mem.name = str(_mem.name).rstrip()
         mem.rtone = chirp_common.TONES[_mem.rtone]
@@ -180,7 +183,10 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
         _usd &= ~bit
 
-        _mem.freq = mem.freq / 5000
+        if chirp_common.is_12_5(mem.freq):
+            _mem.freq = (mem.freq / 6250) | 0x800000
+        else:
+            _mem.freq = mem.freq / 5000
         _mem.offset = mem.offset / 5000
         _mem.name = mem.name.ljust(6)[:6]
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
