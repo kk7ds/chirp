@@ -23,7 +23,8 @@ struct {
   bbcd  freq[3];
   u8    unknown1;
   bbcd  offset[2];
-  u8    unknownbits:4,
+  u8    is125:1,
+        unknownbits:3,
         duplex:2,
         tmode:2;
   u8    ctone;
@@ -122,21 +123,28 @@ class IC2100Radio(icf.IcomCloneModeRadio):
             # it means that we need to add 5kHz
             raw[2] = ord(raw[2]) & 0xF0
             mem.set_raw(raw.get_packed())
-            freq = int(mem.freq) + 5
+            freq = int(mem.freq) * 1000 + 5000
             raw[2] = ord(raw[2]) | 0x0A
             mem.set_raw(raw.get_packed())
             return freq
         else:
-            return mem.freq
+            freq = int(mem.freq) * 1000
+            if mem.is125:
+                freq -= 2500
+            return freq
 
     def __set_freq(self, mem, freq):
-        if (freq % 10) == 5:
+        if (freq % 10) == 5000:
             extra = 0x0A
-            freq -= 5
+            freq -= 5000
         else:
             extra = 0x00
 
-        mem.freq = freq
+        mem.is125 = chirp_common.is_fractional_step(freq)
+        if mem.is125:
+            freq += 2500
+
+        mem.freq = freq / 1000
         raw = memmap.MemoryMap(mem.get_raw())
         raw[2] = ord(raw[2]) | extra
         mem.set_raw(raw.get_packed())
@@ -146,21 +154,21 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         if ord(raw[5]) & 0x0A:
             raw[5] = ord(raw[5]) & 0xF0
             mem.set_raw(raw.get_packed())
-            offset = int(mem.offset) + 5
+            offset = int(mem.offset) * 1000 + 5000
             raw[5] = ord(raw[5]) | 0x0A
             mem.set_raw(raw.get_packed())
             return offset
         else:
-            return mem.offset
+            return int(mem.offset) * 1000
 
     def __set_offset(self, mem, offset):
-        if (offset % 10) == 5:
+        if (offset % 10) == 5000:
             extra = 0x0A
-            offset -= 5
+            offset -= 5000
         else:
             extra = 0x00
 
-        mem.offset = offset
+        mem.offset = offset / 1000
         raw = memmap.MemoryMap(mem.get_raw())
         raw[5] = ord(raw[5]) | extra
         mem.set_raw(raw.get_packed())
@@ -198,8 +206,8 @@ class IC2100Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(self.__get_freq(_mem)) * 1000
-        mem.offset = int(self.__get_offset(_mem)) * 1000
+        mem.freq = self.__get_freq(_mem)
+        mem.offset = self.__get_offset(_mem)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -231,8 +239,8 @@ class IC2100Radio(icf.IcomCloneModeRadio):
                 _skp &= ~mask
             _mem.name = mem.name.ljust(6)
 
-        self.__set_freq(_mem, int(mem.freq / 1000))
-        self.__set_offset(_mem, int(mem.offset / 1000))
+        self.__set_freq(_mem, mem.freq)
+        self.__set_offset(_mem, mem.offset)
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
