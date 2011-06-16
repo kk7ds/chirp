@@ -20,10 +20,13 @@ from chirp import bitwise, memmap
 
 mem_format = """
 struct {
-  bbcd  freq[3];
+  bbcd  freq[2];
+  u8    freq_10khz:4,
+        freq_1khz:3,
+        zero:1;
   u8    unknown1;
   bbcd  offset[2];
-  u8    is125:1,
+  u8    is_12_5:1,
         unknownbits:3,
         duplex:2,
         tmode:2;
@@ -72,6 +75,7 @@ struct {
 TMODES = ["", "Tone", "", "TSQL"]
 DUPLEX = ["", "", "+", "-"]
 STEPS = list(chirp_common.TUNING_STEPS)
+STEPS.remove(6.25)
 
 class IC2100Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
@@ -117,37 +121,30 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         return sorted(self._get_special().keys())
 
     def __get_freq(self, mem):
-        raw = memmap.MemoryMap(mem.get_raw())
-        if ord(raw[2]) & 0x0A:
-            # If the low-nibble of the frequency has this bit set,
-            # it means that we need to add 5kHz
-            raw[2] = ord(raw[2]) & 0xF0
-            mem.set_raw(raw.get_packed())
-            freq = int(mem.freq) * 1000 + 5000
-            raw[2] = ord(raw[2]) | 0x0A
-            mem.set_raw(raw.get_packed())
-            return freq
-        else:
-            freq = int(mem.freq) * 1000
-            if mem.is125:
-                freq -= 2500
-            return freq
+        freq = (int(mem.freq) * 100000) + \
+            (mem.freq_10khz * 10000) + \
+            (mem.freq_1khz * 1000)
+
+        if mem.is_12_5:
+            if chirp_common.is_12_5(freq):
+                pass
+            elif mem.freq_1khz == 2:
+                freq += 500
+            elif mem.freq_1khz == 5:
+                freq += 2500
+            else:
+                raise Exception("Unable to resolve 12.5kHz: %i" % freq)
+
+        return freq
 
     def __set_freq(self, mem, freq):
-        if (freq % 10) == 5000:
-            extra = 0x0A
-            freq -= 5000
-        else:
-            extra = 0x00
-
-        mem.is125 = chirp_common.is_fractional_step(freq)
-        if mem.is125:
-            freq += 2500
-
-        mem.freq = freq / 1000
-        raw = memmap.MemoryMap(mem.get_raw())
-        raw[2] = ord(raw[2]) | extra
-        mem.set_raw(raw.get_packed())
+        mem.freq = freq / 100000
+        mem.freq_10khz = (freq / 10000) % 10
+        khz = (freq / 1000) % 10
+        if khz == 7:
+            khz = 5 # Dunno dude. Dunno.
+        mem.freq_1khz = khz
+        mem.is_12_5 = chirp_common.is_12_5(freq)
 
     def __get_offset(self, mem):
         raw = memmap.MemoryMap(mem.get_raw())
