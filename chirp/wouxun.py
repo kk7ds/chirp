@@ -43,7 +43,7 @@ struct {
   u8 unknown[2];
 } memory[128];
 
-#seekto 0x1000;
+#seekto 0x1008;
 struct {
   u8 unknown[8];
   u8 name[6];
