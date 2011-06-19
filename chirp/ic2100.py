@@ -132,6 +132,8 @@ class IC2100Radio(icf.IcomCloneModeRadio):
                 freq += 500
             elif mem.freq_1khz == 5:
                 freq += 2500
+            elif mem.freq_1khz == 7:
+                freq += 500
             else:
                 raise Exception("Unable to resolve 12.5kHz: %i" % freq)
 
@@ -141,8 +143,6 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         mem.freq = freq / 100000
         mem.freq_10khz = (freq / 10000) % 10
         khz = (freq / 1000) % 10
-        if khz == 7:
-            khz = 5 # Dunno dude. Dunno.
         mem.freq_1khz = khz
         mem.is_12_5 = chirp_common.is_12_5(freq)
 
