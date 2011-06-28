@@ -166,7 +166,7 @@ def set_memory(doc, mem):
     mode.addContent(mem.mode)
 
     step = memnode.newChild(None, "tuningStep", None)
-    step.newProp("units", "MHz")
+    step.newProp("units", "kHz")
     step.addContent("%.5f" % mem.tuning_step)
     
     if mem.skip:
