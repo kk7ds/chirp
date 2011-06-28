@@ -38,10 +38,14 @@ struct {
 
 #seekto 0x0640;
 struct {
-  bbcd  freq[3];
+  bbcd  freq[2];
+  u8    freq_10khz:4,
+        freq_1khz:3,
+        zero:1;
   u8    unknown1;
   bbcd  offset[2];
-  u8    unknownbits:4,
+  u8    is_12_5:1,
+        unknownbits:3,
         duplex:2,
         tmode:2;
   u8    ctone;
@@ -50,10 +54,14 @@ struct {
 
 #seekto 0x0680;
 struct {
-  bbcd  freq[3];
+  bbcd  freq[2];
+  u8    freq_10khz:4,
+        freq_1khz:3,
+        zero:1;
   u8    unknown1;
   bbcd  offset[2];
-  u8    unknownbits:4,
+  u8    is_12_5:1,
+        unknownbits:3,
         duplex:2,
         tmode:2;
   u8    ctone;
