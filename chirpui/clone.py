@@ -57,7 +57,7 @@ class CloneSettingsDialog(gtk.Dialog):
         if not port:
             if conf.get("last_port"):
                 port = conf.get("last_port")
-            else:
+            elif ports:
                 port = ports[0]
 
         return miscwidgets.make_choice(ports, True, port)
