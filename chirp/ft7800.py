@@ -511,7 +511,7 @@ class FT8900Radio(FT8800Radio):
         # The 8900 has a bit flag that tells the radio whether or not
         # the memory should show up on the sub (right) band
         _mem = self._memobj.memory[mem.number - 1]
-        if mem.freq < 108.0 or mem.freq > 480.0:
+        if mem.freq < 108000000 or mem.freq > 480000000:
             _mem.sub_used = 0;
         else:
             _mem.sub_used = 1
