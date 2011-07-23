@@ -758,8 +758,8 @@ class Radio:
         if rf.valid_characters:
             for char in mem.name:
                 if char not in rf.valid_characters:
-                    msgs.append(ValidationError(("Name character `%s'" % char) +
-                                                " not supported"))
+                    msgs.append(ValidationWarning(("Name character `%s'" % char) +
+                                                  " not supported"))
                     break
 
         return msgs
