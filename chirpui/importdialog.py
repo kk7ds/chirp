@@ -252,11 +252,12 @@ class ImportDialog(gtk.Dialog):
     def make_view(self):
         editable = [self.col_nloc]
 
-        self.__store = gtk.ListStore(gobject.TYPE_BOOLEAN,
-                                     gobject.TYPE_INT,
-                                     gobject.TYPE_INT,
-                                     gobject.TYPE_STRING,
-                                     gobject.TYPE_STRING,
+        self.__store = gtk.ListStore(gobject.TYPE_BOOLEAN, # Import
+                                     gobject.TYPE_INT,     # Source loc
+                                     gobject.TYPE_INT,     # Destination loc
+                                     gobject.TYPE_STRING,  # Name
+                                     gobject.TYPE_STRING,  # Frequency
+                                     gobject.TYPE_STRING,  # Comment
                                      gobject.TYPE_BOOLEAN,
                                      gobject.TYPE_STRING)
         self.__view = gtk.TreeView(self.__store)
@@ -469,6 +470,7 @@ class ImportDialog(gtk.Dialog):
                                      mem.number,
                                      mem.name,
                                      chirp_common.format_freq(mem.freq),
+                                     mem.comment,
                                      not bool(errs),
                                      msg
                                      ))
@@ -490,8 +492,9 @@ class ImportDialog(gtk.Dialog):
         self.col_oloc = 2
         self.col_name = 3
         self.col_freq = 4
-        self.col_okay = 5
-        self.col_tmsg = 6
+        self.col_comm = 5
+        self.col_okay = 6
+        self.col_tmsg = 7
 
         self.caps = {
             self.col_import : self.ACTION,
@@ -499,6 +502,7 @@ class ImportDialog(gtk.Dialog):
             self.col_oloc   : "Location",
             self.col_name   : "Name",
             self.col_freq   : "Frequency",
+            self.col_comm   : "",
             }
 
         self.types = {
@@ -507,6 +511,7 @@ class ImportDialog(gtk.Dialog):
             self.col_nloc   : gobject.TYPE_INT,
             self.col_name   : gobject.TYPE_STRING,
             self.col_freq   : gobject.TYPE_STRING,
+            self.col_comm   : gobject.TYPE_STRING,
             self.col_okay   : gobject.TYPE_BOOLEAN,
             self.col_tmsg   : gobject.TYPE_STRING,
             }

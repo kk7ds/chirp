@@ -186,6 +186,8 @@ class Memory:
     bank = None
     bank_index = -1
 
+    comment = ""
+
     empty = False
 
     immutable = []
@@ -212,6 +214,8 @@ class Memory:
         self.bank = None                  
         self.bank_index = -1              
                                           
+        self.comment = ""
+
         self.empty = False                
 
         self.immutable = []

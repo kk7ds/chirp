@@ -45,6 +45,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         "URCALL"       : (str,   "dv_urcall"),
         "RPT1CALL"     : (str,   "dv_rpt1call"),
         "RPT2CALL"     : (str,   "dv_rpt2call"),
+        "Comment"      : (str,   "comment"),
         }
 
     def _blank(self):
