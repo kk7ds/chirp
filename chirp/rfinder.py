@@ -16,7 +16,11 @@
 import urllib
 import hashlib
 
+from math import pi,cos,acos,sin,atan2
+
 from chirp import chirp_common, CHIRP_VERSION
+
+EARTH_RADIUS = 3963.1
 
 SCHEMA = [
     "ID",
@@ -42,10 +46,114 @@ SCHEMA = [
     "DOC_ID",
     ]
 
+def deg2rad(deg):
+    return deg * (pi / 180)
+
+def rad2deg(rad):
+    return rad / (pi / 180)
+
+def dm2deg(deg, min):
+    return deg + (min / 60.0)
+
+def deg2dm(decdeg):
+    deg = int(decdeg)
+    min = (decdeg - deg) * 60.0
+
+    return deg, min
+
+def nmea2deg(nmea, dir="N"):
+    deg = int(nmea) / 100
+    try:
+        min = nmea % (deg * 100)
+    except ZeroDivisionError, e:
+        min = int(nmea)
+
+    if dir == "S" or dir == "W":
+        m = -1
+    else:
+        m = 1
+
+    return dm2deg(deg, min) * m
+
+def deg2nmea(deg):
+    deg, min = deg2dm(deg)
+
+    return (deg * 100) + min
+
+def meters2feet(meters):
+    return meters * 3.2808399
+
+def feet2meters(feet):
+    return feet * 0.3048
+
+def distance(lat_a, lon_a, lat_b, lon_b):
+    lat_a = deg2rad(lat_a)
+    lon_a = deg2rad(lon_a)
+    
+    lat_b = deg2rad(lat_b)
+    lon_b = deg2rad(lon_b)
+    
+    earth_radius = EARTH_RADIUS
+    
+    tmp = (cos(lat_a) * cos(lon_a) * \
+               cos(lat_b) * cos(lon_b)) + \
+               (cos(lat_a) * sin(lon_a) * \
+                    cos(lat_b) * sin(lon_b)) + \
+                    (sin(lat_a) * sin(lat_b))
+
+    # Correct round-off error (which is just *silly*)
+    if tmp > 1:
+        tmp = 1
+    elif tmp < -1:
+        tmp = -1
+
+    distance = acos(tmp)
+
+    return distance * earth_radius
+
+def bearing(lat_a, lon_a, lat_b, lon_b):
+    lat_me = deg2rad(lat_a)
+    lon_me = deg2rad(lon_a)
+
+    lat_u = deg2rad(lat_b)
+    lon_u = deg2rad(lon_b)
+
+    lat_d = deg2rad(lat_b - lat_a)
+    lon_d = deg2rad(lon_b - lon_a)
+
+    y = sin(lon_d) * cos(lat_u)
+    x = cos(lat_me) * sin(lat_u) - \
+        sin(lat_me) * cos(lat_u) * cos(lon_d)
+
+    bearing = rad2deg(atan2(y, x))
+
+    return (bearing + 360) % 360
+
+def fuzzy_to(lat_a, lon_a, lat_b, lon_b):
+    dir = bearing(lat_a, lon_a, lat_b, lon_b)
+
+    dirs = ["N", "NNE", "NE", "ENE", "E",
+            "ESE", "SE", "SSE", "S",
+            "SSW", "SW", "WSW", "W",
+            "WNW", "NW", "NNW"]
+
+    delta = 22.5
+    angle = 0
+
+    direction = "?"
+    for i in dirs:
+        if dir > angle and dir < (angle + delta):
+            direction = i
+        angle += delta
+
+    return direction
+
 class RFinderParser:
-    def __init__(self):
+    def __init__(self, lat, lon):
         self.__memories = []
         self.__cheat = {}
+        self.__lat = lat
+        self.__lon = lon
 
     def fetch_data(self, lat, lon, email, passwd):
         args = {
@@ -88,6 +196,19 @@ class RFinderParser:
         elif vals["DCS"] and vals["DCS"] != "0":
             mem.dtcs = int(vals["DCS"])
             mem.tmode = "DTCS"
+
+        if vals["NOTES"]:
+            mem.comment = vals["NOTES"].strip()
+
+        if vals["LATITUDE"] and vals["LONGITUDE"]:
+            try:
+                lat = float(vals["LATITUDE"])
+                lon = float(vals["LONGITUDE"])
+                d = distance(self.__lat, self.__lon, lat, lon)
+                b = fuzzy_to(self.__lat, self.__lon, lat, lon)
+                mem.comment = "(%imi %s) %s" % (d, b, mem.comment)
+            except Exception, e:
+                print "Failed to calculate distance: %s" % e
 
         return mem
 
@@ -135,8 +256,11 @@ class RFinderRadio(chirp_common.Radio):
         self._email = email
 
     def do_fetch(self):
-        self._rfp = RFinderParser()
-        self._rfp.parse_data(self._rfp.fetch_data(self._lat, self._lon, self._call, self._email))
+        self._rfp = RFinderParser(self._lat, self._lon)
+        self._rfp.parse_data(self._rfp.fetch_data(self._lat,
+                                                  self._lon,
+                                                  self._call,
+                                                  self._email))
         
     def get_features(self):
         if not self._rfp:
