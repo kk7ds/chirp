@@ -87,6 +87,8 @@ class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
         rf.memory_bounds = (0, 1000)
+        rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_name_length = 999
         return rf
         
     def load(self, filename=None):

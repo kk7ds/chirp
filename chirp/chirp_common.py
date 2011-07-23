@@ -105,6 +105,7 @@ SKIP_VALUES = [ "", "S", "P" ]
 CHARSET_UPPER_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890"
 CHARSET_ALPHANUMERIC = \
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz 1234567890"
+CHARSET_ASCII = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
 
 def watts_to_dBm(watts):
     return int(10 * math.log10(int(watts * 1000)))
