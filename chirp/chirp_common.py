@@ -257,7 +257,7 @@ class Memory:
             raise ValueError("No such attribute `%s'" % name)
 
         if name in self.immutable:
-            raise ValueError("Field %s is not mutable on this memory")
+            raise ValueError("Field %s is not mutable on this memory" % name)
 
         if self._valid_map.has_key(name) and val not in self._valid_map[name]:
             raise ValueError("`%s' is not in valid list: %s" % (\
