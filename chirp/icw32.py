@@ -135,7 +135,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         mem.duplex = DUPLEX[_flg.duplex]
         mem.tmode = TONE[_flg.tmode]
 
-        if number < 100:
+        if number > 100:
             mem.immutable = ["number", "skip", "extd_number", "name"]
 
         return mem
