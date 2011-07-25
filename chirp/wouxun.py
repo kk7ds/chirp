@@ -578,3 +578,185 @@ class Puxing777Radio(KGUVD1PRadio):
                 _nam.name[i] = CHARSET.index(mem.name[i])
             except IndexError:
                 raise Exception("Character `%s' not supported")
+
+def _uv3r_prep(radio):
+    radio.pipe.write("\x05PROGRAM")
+    ack = radio.pipe.read(1)
+    if ack != "\x06":
+        raise Exception("Radio did not ACK first command")
+
+    radio.pipe.write("\x02")
+    ident = radio.pipe.read(8)
+    if len(ident) != 8:
+        print util.hexprint(ident)
+        raise Exception("Radio did not send identification")
+
+    radio.pipe.write("\x06")
+    if radio.pipe.read(1) != "\x06":
+        raise Exception("Radio did not ACK ident")
+
+def uv3r_prep(radio):
+    for i in range(0, 10):
+        try:
+            return _uv3r_prep(radio)
+        except Exception, e:
+            time.sleep(1)
+
+    raise e
+
+def uv3r_download(radio):
+    uv3r_prep(radio)
+    return do_download(radio, 0x0000, 0x0E40, 0x0010)
+
+def uv3r_upload(radio):
+    uv3r_prep(radio)
+    return do_upload(radio, 0x0000, 0x0E40, 0x0010)
+
+uv3r_mem_format = """
+#seekto 0x0010;
+struct {
+  lbcd rx_freq[4];
+  u8 rxtone;
+  lbcd offset[4];
+  u8 txtone;
+  u8 ishighpower:1,
+     iswide:1,
+     dtcsinvt:1,
+     unknown1:1,
+     dtcsinvr:1,
+     unknown2:1,
+     duplex:2;
+  u8 unknown;
+  lbcd tx_freq[4];
+} tx_memory[99];
+#seekto 0x0810;
+struct {
+  lbcd rx_freq[4];
+  u8 rxtone;
+  lbcd offset[4];
+  u8 txtone;
+  u8 ishighpower:1,
+     iswide:1,
+     dtcsinvt:1,
+     unknown1:1,
+     dtcsinvr:1,
+     unknown2:1,
+     duplex:2;
+  u8 unknown;
+  lbcd tx_freq[4];
+} rx_memory[99];
+
+#seekto 0x1008;
+struct {
+  u8 unknown[8];
+  u8 name[6];
+  u8 pad[2];
+} names[128];
+"""
+
+UV3R_DUPLEX = ["", "-", "+", ""]
+UV3R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                     chirp_common.PowerLevel("Low", watts=0.50)]
+UV3R_DTCS_POL = ["NN", "NR", "RN", "RR"]
+
+class UV3RRadio(KGUVD1PRadio):
+    VENDOR = "Baofeng"
+    MODEL = "UV-3R"
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = ["FM", "NFM"]
+        rf.valid_power_levels = UV3R_POWER_LEVELS
+        rf.valid_bands = [(136000000, 174000000), (400000000, 470000000)]
+        rf.valid_skips = []
+        rf.has_ctone = False
+        rf.has_tuning_step = False
+        rf.has_bank = False
+        rf.has_name = False
+        rf.memory_bounds = (1, 99)
+        return rf
+
+    def sync_in(self):
+        self._mmap = uv3r_download(self)
+        self.process_mmap()
+
+    def sync_out(self):
+        uv3r_upload(self)
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(uv3r_mem_format, self._mmap)
+
+    def get_memory(self, number):
+        _mem = self._memobj.rx_memory[number - 1]
+        mem = chirp_common.Memory()
+        mem.number = number
+
+        if _mem.get_raw()[:8] == ("\xff" * 8):
+            mem.empty = True
+            return mem
+
+        mem.freq = int(_mem.rx_freq) * 10
+        mem.offset = int(_mem.offset) * 10;
+        mem.duplex = UV3R_DUPLEX[_mem.duplex]
+        mem.power = UV3R_POWER_LEVELS[1 - _mem.ishighpower]
+        if not _mem.iswide:
+            mem.mode = "NFM"
+
+        dtcspol = (int(_mem.dtcsinvt) << 1) + _mem.dtcsinvr
+
+        if _mem.txtone == 0:
+            mem.tmode = ""
+        elif _mem.txtone < 0x33:
+            mem.rtone = chirp_common.TONES[_mem.txtone - 1]
+            mem.tmode = _mem.txtone == _mem.rxtone and "TSQL" or "Tone"
+        elif _mem.txtone >= 0x33:
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.txtone - 0x33]
+            mem.tmode = "DTCS"
+            mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
+        elif _mem.rxtone >= 0x33:
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.rxtone - 0x33]
+            mem.tmode = "DTCS"
+            mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
+
+        return mem
+
+    def _set_memory(self, mem, _mem):
+        if mem.empty:
+            _mem.set_raw("\xff" * 16)
+            return
+
+        _mem.rx_freq = mem.freq / 10
+        _mem.offset = mem.offset / 10
+        _mem.tx_freq = (mem.freq + mem.offset) / 10
+        _mem.duplex = UV3R_DUPLEX.index(mem.duplex)
+        _mem.ishighpower = mem.power == UV3R_POWER_LEVELS[0]
+        _mem.iswide = mem.mode == "FM"
+
+        if mem.tmode == "DTCS":
+            _mem.rxtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 0x33
+            _mem.txtone = _mem.rxtone
+            _mem.dtcsinvt = mem.dtcs_polarity[0] == "R"
+            _mem.dtcsinvr = mem.dtcs_polarity[1] == "R"
+        elif mem.tmode:
+            _mem.txtone = chirp_common.TONES.index(mem.rtone) + 1
+            _mem.rxtone = mem.tmode == "TSQL" and _mem.txtone or 0
+        else:
+            _mem.txtone = 0
+            _mem.rxtone = 0
+
+    def set_memory(self, mem):
+        _tmem = self._memobj.tx_memory[mem.number - 1]
+        _rmem = self._memobj.rx_memory[mem.number - 1]
+
+        self._set_memory(mem, _tmem)
+        self._set_memory(mem, _rmem)
+
+    @classmethod
+    def match_model(cls, filedata):
+        return len(filedata) == 3648
+
+    def get_raw_memory(self, number):
+        _rmem = self._memobj.rx_memory[number - 1]
+        _tmem = self._memobj.rx_memory[number - 1]
+        return _rmem.get_raw() + _tmem.get_raw()
