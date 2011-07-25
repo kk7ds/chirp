@@ -38,6 +38,18 @@ struct {
      am:1;
 } flag[111];
 
+#seekto 0x0E9C;
+struct {
+  u8 unknown1:7,
+     right_scan_direction:1;
+  u8 right_scanning:1,
+     unknown2:7;
+  u8 unknown3:7,
+     left_scan_direction:1;
+  u8 left_scanning:1,
+     unknown4:7;
+} state[1];
+
 #seekto 0x0F20;
 struct {
   bbcd freq[3];
@@ -161,6 +173,13 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         _flg.tmode = TONE.index(mem.tmode)
         _flg.skip = mem.skip == "S"
         _flg.am = mem.mode == "AM"
+
+        if self._memobj.state.left_scanning:
+            print "Canceling scan on left VFO"
+            self._memobj.state.left_scanning = 0
+        if self._memobj.state.right_scanning:
+            print "Canceling scan on right VFO"
+            self._memobj.state.right_scanning = 0
 
     def get_sub_devices(self):
         return [ICW32ARadioVHF(self._mmap), ICW32ARadioUHF(self._mmap)]
