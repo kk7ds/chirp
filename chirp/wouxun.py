@@ -692,7 +692,7 @@ class UV3RRadio(KGUVD1PRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:8] == ("\xff" * 8):
+        if _mem.get_raw()[0] == "\xff":
             mem.empty = True
             return mem
 
