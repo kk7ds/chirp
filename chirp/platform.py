@@ -319,11 +319,19 @@ class Win32Platform(Platform):
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
         # pylint: disable-msg=W0703,W0613
         import win32gui
+        import win32api
+        
+        (pform, _, build, _, _) = win32api.GetVersionEx()
 
         typestrs = ""
         custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
         for desc, ext in types[1:]:
             typestrs += "%s\0%s\0" % (desc, "*.%s" % ext)
+
+        if pform > 5:
+            typestrs = "%s\0%s\0" % (types[0][0], "*.%s" % types[0][1]) + \
+                typestrs
+
         if not typestrs:
             typestrs = custom
             custom = None
