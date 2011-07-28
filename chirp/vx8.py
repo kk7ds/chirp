@@ -34,7 +34,7 @@ struct {
   u8 power:2,
      unknown2:4,
      tone_mode:2;
-  u8 unknown4[2];
+  u8 charsetbits[2];
   char label[16];
   bbcd offset[3];
   u8 unknown5:2,
@@ -169,6 +169,9 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
         _mem.label = label.ljust(16, "\xFF")
+        # We only speak english here in chirpville
+        _mem.charsetbits[0] = 0x00
+        _mem.charsetbits[1] = 0x00
 
         skipbits = SKIPS.index(mem.skip) << 2
         flag.flag |= skipbits
