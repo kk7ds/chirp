@@ -89,9 +89,13 @@ class CloneSettingsDialog(gtk.Dialog):
         def _changed(box, vendors, model):
             models = vendors[box.get_active_text()]
 
+            added_models = []
+
             model.get_model().clear()
             for rclass in models:
-                model.append_text(rclass.MODEL)
+                if rclass.MODEL not in added_models:
+                    model.append_text(rclass.MODEL)
+                    added_models.append(rclass.MODEL)
             if not models:
                 model.append_text("Detect")
 
