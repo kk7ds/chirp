@@ -40,6 +40,8 @@ from chirpui import editorset, clone, miscwidgets, config, reporting
 
 CONF = config.get()
 
+KEEP_RECENT = 8
+
 FIPS_CODES = {
     "Alaska"               : 2,
     "Alabama"              : 1,
@@ -176,6 +178,8 @@ class ChirpMain(gtk.Window):
             fname = platform.get_platform().gui_open_file(types=types)
             if not fname:
                 return
+
+        self.record_recent_file(fname)
 
         if icf.is_icf_file(fname):
             a = common.ask_yesno_question("ICF files cannot be edited, only " +
@@ -340,38 +344,50 @@ class ChirpMain(gtk.Window):
         radio.pipe.close()
         reporting.report_model_usage(radio, "upload", True)
 
-    def record_recent_radio(self, port, rtype):
-        if (port, rtype) in self._recent:
-            return
+    def _get_recent_list(self):
+        recent = []
+        for i in range(0, KEEP_RECENT):
+            fn = CONF.get("recent%i" % i, "state")
+            if fn:
+                recent.append(fn)
+        return recent
+                    
+    def _set_recent_list(self, recent):
+        for fn in recent:
+            CONF.set("recent%i" % recent.index(fn), fn, "state")
 
-        spid = "sep-%s%s" % (port.replace("/", ""), rtype)
-        upid = "cloneout-%s%s" % (port.replace("/", ""), rtype)
-        dnid = "clonein-%s%s" % (port.replace("/", ""), rtype)
+    def update_recent_files(self):
+        i = 0
+        for fname in self._get_recent_list():
+            action_name = "recent%i" % i
+            path = "/MenuBar/file/recent"
 
-        spaction = gtk.Action(spid, "", "", "")
-        upaction = gtk.Action(upid,
-                              "Upload to %s @ %s" % (rtype, port),
-                              "Upload to recent radio", "")
-        dnaction = gtk.Action(dnid,
-                              "Download from %s @ %s" % (rtype, port),
-                              "Download from recent radio", "")
+            old_action = self.menu_ag.get_action(action_name)
+            if old_action:
+                self.menu_ag.remove_action(old_action)
 
-        upaction.connect("activate", self.mh, port, rtype)
-        dnaction.connect("activate", self.mh, port, rtype)
+            file_basename = os.path.basename(fname).replace("_", "__")
+            action = gtk.Action(action_name,
+                                "_%i. %s" % (i+1, file_basename),
+                                "Open recent file %s" % fname, "")
+            action.connect("activate", lambda a,f: self.do_open(f), fname)
+            mid = self.menu_uim.new_merge_id()
+            self.menu_uim.add_ui(mid, path, 
+                                 action_name, action_name,
+                                 gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_ag.add_action(action)
+            i += 1
 
-        id = self.menu_uim.new_merge_id()
-        self.menu_uim.add_ui(id, "/MenuBar/radio/recent", upid, upid,
-                             gtk.UI_MANAGER_MENUITEM, True)
-        self.menu_uim.add_ui(id, "/MenuBar/radio/recent", dnid, dnid,
-                             gtk.UI_MANAGER_MENUITEM, True)
-        self.menu_uim.add_ui(id, "/MenuBar/radio/recent", spid, spid,
-                             gtk.UI_MANAGER_SEPARATOR, True)
+    def record_recent_file(self, filename):
 
-        self.menu_ag.add_action(spaction)
-        self.menu_ag.add_action(upaction)
-        self.menu_ag.add_action(dnaction)
+        recent_files = self._get_recent_list()
+        if filename not in recent_files:
+            if len(recent_files) == KEEP_RECENT:
+                del recent_files[-1]
+            recent_files.insert(0, filename)
+            self._set_recent_list(recent_files)
 
-        self._recent.append((port, rtype))
+        self.update_recent_files()
 
     def do_download(self, port=None, rtype=None):
         d = clone.CloneSettingsDialog(parent=self)
@@ -391,9 +407,6 @@ class ChirpMain(gtk.Window):
             return
 
         radio = settings.radio_class(ser)
-
-        #FIXME: Fix or remove
-        #self.record_recent_radio(port, rtype)
 
         fn = tempfile.mktemp()
         if isinstance(radio, chirp_common.CloneModeRadio):
@@ -426,9 +439,6 @@ class ChirpMain(gtk.Window):
             return
 
         radio.set_pipe(ser)
-
-        #FIXME: Fix or remove
-        #self.record_recent_radio(port, rtype)
 
         ct = clone.CloneThread(radio, "out", cb=self.cb_cloneout, parent=self)
         ct.start()
@@ -836,6 +846,7 @@ class ChirpMain(gtk.Window):
     <menu action="file">
       <menuitem action="new"/>
       <menuitem action="open"/>
+      <menu action="recent" name="recent"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <separator/>
@@ -858,7 +869,6 @@ class ChirpMain(gtk.Window):
     <menu action="radio" name="radio">
       <menuitem action="download"/>
       <menuitem action="upload"/>
-      <menu action="recent" name="recent"/>
       <menuitem action="rbook"/>
       <menuitem action="rfinder"/>
       <separator/>
@@ -877,6 +887,7 @@ class ChirpMain(gtk.Window):
             ('file', None, "_File", None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
+            ('recent', None, "_Recent", None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
@@ -900,7 +911,6 @@ class ChirpMain(gtk.Window):
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, 'Help', None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
-            ('recent', None, "Recent", None, None, self.mh),
             ]
 
         conf = config.get()
@@ -924,7 +934,7 @@ class ChirpMain(gtk.Window):
 
         self.add_accel_group(self.menu_uim.get_accel_group())
 
-        self.recentmenu = self.menu_uim.get_widget("/MenuBar/radio/recent")
+        self.recentmenu = self.menu_uim.get_widget("/MenuBar/file/recent")
 
         return self.menu_uim.get_widget("/MenuBar")
 
@@ -1019,3 +1029,5 @@ class ChirpMain(gtk.Window):
         if not CONF.is_defined("autorpt", "memedit"):
             print "autorpt not set et"
             CONF.set_bool("autorpt", True, "memedit")
+
+        self.update_recent_files()
