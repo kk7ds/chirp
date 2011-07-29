@@ -33,7 +33,7 @@ import pickle
 import os
 
 from chirpui import common, shiftdialog, miscwidgets, config
-from chirp import chirp_common, errors
+from chirp import chirp_common, errors, directory
 
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    
@@ -805,6 +805,57 @@ time.  Are you sure you want to do this?"""
             self._cached_cols[x[0]] = i
             i += 1
 
+    def get_unsupported_columns(self):
+        maybe_hide = [
+            ("has_bank_index", "Bank Index"),
+            ("has_bank", "Bank"),
+            ("has_dtcs", "DTCS Code"),
+            ("has_dtcs_polarity", "DTCS Pol"),
+            ("has_mode", "Mode"),
+            ("has_offset", "Offset"),
+            ("has_name", "Name"),
+            ("has_tuning_step", "Tune Step"),
+            ("has_name", "Name"),
+            ("has_ctone", "ToneSql"),
+            ("has_cross", "Cross Mode"),
+            ("valid_tmodes", "Tone Mode"),
+            ("valid_tmodes", "Tone"),
+            ("valid_duplexes", "Duplex"),
+            ("valid_skips", "Skip"),
+            ("valid_power_levels", "Power"),
+            ]
+
+        unsupported = []
+        features = self.rthread.radio.get_features()
+        for feature, colname in maybe_hide:
+            if feature.startswith("has_"):
+                supported = features[feature]
+                print "%s supported: %s" % (colname, supported)
+            elif feature.startswith("valid_"):
+                supported = len(features[feature]) != 0
+
+            if not supported:
+                unsupported.append(colname)
+
+        return unsupported
+
+    def set_columns_visible(self):
+        unsupported = self.get_unsupported_columns()
+        driver = directory.get_driver(self.rthread.radio.__class__)
+        user_visible = self._config.get(driver, "memedit_columns")
+        if user_visible:
+            user_visible = user_visible.split(",")
+        else:
+            # No setting for this radio, so assume all
+            user_visible = [x[0] for x in self.cols if x not in unsupported]
+
+        for colname in [colspec[0] for colspec in self.cols]:
+            if colname.startswith("_"):
+                continue
+            bi = self.view.get_column(self.col(colname))
+            bi.set_visible(colname not in unsupported and \
+                               colname in user_visible)
+
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
@@ -860,34 +911,7 @@ time.  Are you sure you want to do this?"""
 
         self.root = vbox
 
-        maybe_hide = [
-            ("has_bank_index", "Bank Index"),
-            ("has_bank", "Bank"),
-            ("has_dtcs", "DTCS Code"),
-            ("has_dtcs_polarity", "DTCS Pol"),
-            ("has_mode", "Mode"),
-            ("has_offset", "Offset"),
-            ("has_name", "Name"),
-            ("has_tuning_step", "Tune Step"),
-            ("has_name", "Name"),
-            ("has_ctone", "ToneSql"),
-            ("has_cross", "Cross Mode"),
-            ("valid_tmodes", "Tone Mode"),
-            ("valid_tmodes", "Tone"),
-            ("valid_duplexes", "Duplex"),
-            ("valid_skips", "Skip"),
-            ("valid_power_levels", "Power"),
-            ]
-            
-        for feature, colname in maybe_hide:
-            if feature.startswith("has_"):
-                supported = features[feature]
-                print "%s supported: %s" % (colname, supported)
-            elif feature.startswith("valid_"):
-                supported = len(features[feature]) != 0
-
-            bi = self.view.get_column(self.col(colname))
-            bi.set_visible(supported)
+        self.set_columns_visible()
 
         self.prefill()
 

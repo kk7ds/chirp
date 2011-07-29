@@ -680,6 +680,10 @@ class ChirpMain(gtk.Window):
 
     def do_columns(self):
         eset = self.get_current_editorset()
+        driver = directory.get_driver(eset.rthread.radio.__class__)
+        radio_name = "%s %s %s" % (eset.rthread.radio.VENDOR,
+                                   eset.rthread.radio.MODEL,
+                                   eset.rthread.radio.VARIANT)
         d = gtk.Dialog(title="Select Columns",
                        parent=self,
                        buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -695,9 +699,16 @@ class ChirpMain(gtk.Window):
         d.set_size_request(-1, 300)
         d.set_resizable(False)
 
+        label = gtk.Label("Visible columns for %s" % radio_name)
+        label.show()
+        vbox.pack_start(label)
+
         fields = []
+        unsupported = eset.memedit.get_unsupported_columns()
         for colspec in eset.memedit.cols:
             if colspec[0].startswith("_"):
+                continue
+            elif colspec[0] in unsupported:
                 continue
             label = colspec[0]
             visible = eset.memedit.get_column_visible(eset.memedit.col(label))
@@ -708,12 +719,17 @@ class ChirpMain(gtk.Window):
             widget.show()
 
         res = d.run()
+        selected_columns = []
         if res == gtk.RESPONSE_OK:
             for widget in fields:
                 colnum = eset.memedit.col(widget.get_label())
                 eset.memedit.set_column_visible(colnum, widget.get_active())
+                if widget.get_active():
+                    selected_columns.append(widget.get_label())
                                                 
         d.destroy()
+
+        CONF.set(driver, ",".join(selected_columns), "memedit_columns")
 
     def do_hide_unused(self, action):
         CONF.set_bool("hide_unused", action.get_active(), "memedit")
