@@ -755,6 +755,7 @@ time.  Are you sure you want to do this?"""
         hbox.pack_start(sep, 0, 0, 0)
 
         showspecial = gtk.CheckButton("Special Channels")
+        showspecial.set_active(self.show_special)
         showspecial.connect("toggled",
                             lambda x: self.set_show_special(x.get_active()))
         showspecial.show()
@@ -784,10 +785,12 @@ time.  Are you sure you want to do this?"""
     def set_show_special(self, show):
         self.show_special = show
         self.prefill()
+        self._config.set_bool("show_special", show)
 
     def set_show_empty(self, show):
         self.show_empty = show
         self.prefill()
+        self._config.set_bool("hide_empty", not show)
 
     def set_read_only(self, read_only):
         self.read_only = read_only
@@ -795,6 +798,7 @@ time.  Are you sure you want to do this?"""
     def set_hide_unused(self, hide_unused):
         self.hide_unused = hide_unused
         self.prefill()
+        self._config.set_bool("hide_unused", hide_unused)
 
     def __cache_columns(self):
         # We call self.col() a lot.  Caching the name->column# lookup
@@ -866,8 +870,8 @@ time.  Are you sure you want to do this?"""
 
         self.allowed_bands = [144, 440]
         self.count = 100
-        self.show_special = False
-        self.show_empty = True
+        self.show_special = self._config.get_bool("show_special")
+        self.show_empty = not self._config.get_bool("hide_empty")
         self.hide_unused = self._config.get_bool("hide_unused")
         self.read_only = False
 

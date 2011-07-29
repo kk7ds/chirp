@@ -732,8 +732,6 @@ class ChirpMain(gtk.Window):
         CONF.set(driver, ",".join(selected_columns), "memedit_columns")
 
     def do_hide_unused(self, action):
-        CONF.set_bool("hide_unused", action.get_active(), "memedit")
-
         eset = self.get_current_editorset()
         eset.memedit.set_hide_unused(action.get_active())
 
