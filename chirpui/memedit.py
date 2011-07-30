@@ -728,7 +728,8 @@ time.  Are you sure you want to do this?"""
     def _limit_key(self, which):
         if which not in ["lo", "hi"]:
             raise Exception("Internal Error: Invalid limit %s" % which)
-        return "%s_%s" % (directory.get_driver(self.rthread.radio.__class__), which)
+        return "%s_%s" % (directory.get_driver(self.rthread.radio.__class__),
+                          which)
 
     def _store_limit(self, sb, which):
         self._config.set_int(self._limit_key(which), int(sb.get_value()))
