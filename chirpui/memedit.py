@@ -357,8 +357,8 @@ class MemoryEditor(common.Editor):
         job.set_desc("Writing memory %i" % mem.number)
         self.rthread.submit(job)
 
-    def insert_hard(self, store, _iter, delta):
-	if isinstance(self.rthread.radio, chirp_common.LiveRadio):
+    def insert_hard(self, store, _iter, delta, warn=True):
+	if isinstance(self.rthread.radio, chirp_common.LiveRadio) and warn:
             txt = """This operation requires moving all subsequent channels
 by one spot until an empty location is reached.  This can take a LONG
 time.  Are you sure you want to do this?"""
@@ -424,7 +424,22 @@ time.  Are you sure you want to do this?"""
             self.emit("changed")
 
         elif action == "delete_s":
-            self.insert_hard(store, iter, 0)
+            starting_loc, = store.get(iter, self.col("Loc"))
+
+            # Check that they are all contiguous
+            for path in paths[1:]:
+                if store.get_path(store.iter_next(iter)) != path:
+                    common.show_error("This operation only works on " + \
+                                          "contiguous memories")
+                    return
+                iter = store.iter_next(iter)
+
+            for i in range(0, len(paths)):
+                sd = shiftdialog.ShiftDialog(self.rthread)
+                sd.delete(starting_loc, quiet=True)
+                sd.destroy()
+
+            self.prefill()
             self.emit("changed")
         elif action in ["cut", "copy"]:
             self.copy_selection(action=="cut")
@@ -460,7 +475,7 @@ time.  Are you sure you want to do this?"""
             ("paste", "Paste"),
             ]
 
-        no_multiple = ["insert_prev", "insert_next", "delete_s", "paste"]
+        no_multiple = ["insert_prev", "insert_next", "paste"]
 
         ag = gtk.ActionGroup("Menu")
 

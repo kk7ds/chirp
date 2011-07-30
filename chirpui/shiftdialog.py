@@ -41,6 +41,8 @@ class ShiftDialog(gtk.Dialog):
         self.vbox.pack_start(self.__prog, 1, 1, 1)
         self.vbox.pack_start(self.__labl, 0, 0, 0)
 
+        self.quiet = False
+
         self.thread = None
 
         self.set_response_sensitive(gtk.RESPONSE_OK, False)
@@ -114,7 +116,10 @@ class ShiftDialog(gtk.Dialog):
             return 0
 
     def finished(self):
-        gobject.idle_add(self.set_response_sensitive, gtk.RESPONSE_OK, True)
+        if self.quiet:
+            gobject.idle_add(self.response, gtk.RESPONSE_OK)
+        else:
+            gobject.idle_add(self.set_response_sensitive, gtk.RESPONSE_OK, True)
 
     def threadfn(self, newhole, func):
         self.status("Waiting for radio to become available", 0)
@@ -127,13 +132,15 @@ class ShiftDialog(gtk.Dialog):
 
         self.finished()
 
-    def insert(self, newhole):
+    def insert(self, newhole, quiet=False):
+        self.quiet = quiet
         self.thread = threading.Thread(target=self.threadfn,
                                        args=(newhole,self._insert_hole))
         self.thread.start()
         gtk.Dialog.run(self)
 
-    def delete(self, newhole):
+    def delete(self, newhole, quiet=False):
+        self.quiet = quiet
         self.thread = threading.Thread(target=self.threadfn,
                                        args=(newhole,self._delete_hole))
         self.thread.start()
