@@ -725,6 +725,14 @@ time.  Are you sure you want to do this?"""
 
         return mem
 
+    def _limit_key(self, which):
+        if which not in ["lo", "hi"]:
+            raise Exception("Internal Error: Invalid limit %s" % which)
+        return "%s_%s" % (directory.get_driver(self.rthread.radio.__class__), which)
+
+    def _store_limit(self, sb, which):
+        self._config.set_int(self._limit_key(which), int(sb.get_value()))
+
     def make_controls(self, min, max):
         hbox = gtk.HBox(False, 2)
 
@@ -732,8 +740,16 @@ time.  Are you sure you want to do this?"""
         lab.show()
         hbox.pack_start(lab, 0, 0, 0)
 
-        self.lo_limit_adj = gtk.Adjustment(min, min, max+1, 1, 10)
+        lokey = self._limit_key("lo")
+        hikey = self._limit_key("hi")
+        lostart = self._config.is_defined(lokey) and \
+            self._config.get_int(lokey) or min
+        histart = self._config.is_defined(hikey) and \
+            self._config.get_int(hikey) or 25
+
+        self.lo_limit_adj = gtk.Adjustment(lostart, min, max-1, 1, 10)
         lo = gtk.SpinButton(self.lo_limit_adj)
+        lo.connect("value-changed", self._store_limit, "lo")
         lo.show()
         hbox.pack_start(lo, 0, 0, 0)
 
@@ -741,8 +757,9 @@ time.  Are you sure you want to do this?"""
         lab.show()
         hbox.pack_start(lab, 0, 0, 0)
 
-        self.hi_limit_adj = gtk.Adjustment(25, min+1, max, 1, 10)
+        self.hi_limit_adj = gtk.Adjustment(histart, min+1, max, 1, 10)
         hi = gtk.SpinButton(self.hi_limit_adj)
+        hi.connect("value-changed", self._store_limit, "hi")
         hi.show()
         hbox.pack_start(hi, 0, 0, 0)
 
