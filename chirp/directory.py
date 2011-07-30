@@ -25,6 +25,9 @@ from chirp import wouxun
 from chirp import xml, chirp_common, csv, util, rfinder
 
 DRV_TO_RADIO = {
+    # Virtual/Generic
+    "csv"            : csv.CSVRadio,
+    "xml"            : xml.XMLRadio,
 
     # Icom
     "ic2720"         : ic2720.IC2720Radio,

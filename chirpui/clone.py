@@ -68,6 +68,9 @@ class CloneSettingsDialog(gtk.Dialog):
     def __make_vendor(self, model):
         vendors = {}
         for rclass in sorted(directory.DRV_TO_RADIO.values()):
+            if rclass.VENDOR == "Generic":
+                continue
+
             if not vendors.has_key(rclass.VENDOR):
                 vendors[rclass.VENDOR] = []
 
