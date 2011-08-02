@@ -903,7 +903,7 @@ class ChirpMain(gtk.Window):
             ('download', None, "Download From Radio", "<Alt>d", None, self.mh),
             ('upload', None, "Upload To Radio", "<Alt>u", None, self.mh),
             ('import', None, 'Import', "<Alt>i", None, self.mh),
-            ('export', None, 'Export', "<Alt>e", None, self.mh),
+            ('export', None, 'Export', "<Alt>x", None, self.mh),
             ('rfinder', None, "Import from RFinder", None, None, self.mh),
             ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
             ('export_csv', None, 'CSV File', None, None, self.mh),
