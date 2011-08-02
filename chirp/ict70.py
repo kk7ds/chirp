@@ -101,7 +101,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         banks = []
         for i in range(0, 26):
             name = str(self._memobj.bank_names[i].name)
-            banks.append(name)
+            banks.append(name.rstrip())
         return banks
 
     def set_banks(self, banks):
