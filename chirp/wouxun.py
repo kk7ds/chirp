@@ -705,7 +705,7 @@ class UV3RRadio(KGUVD1PRadio):
 
         dtcspol = (int(_mem.dtcsinvt) << 1) + _mem.dtcsinvr
 
-        if _mem.txtone == 0:
+        if _mem.txtone == 0 or _mem.txtone == 0xFF:
             mem.tmode = ""
         elif _mem.txtone < 0x33:
             mem.rtone = chirp_common.TONES[_mem.txtone - 1]
@@ -714,7 +714,7 @@ class UV3RRadio(KGUVD1PRadio):
             mem.dtcs = chirp_common.DTCS_CODES[_mem.txtone - 0x33]
             mem.tmode = "DTCS"
             mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
-        elif _mem.rxtone >= 0x33:
+        elif _mem.rxtone >= 0x33 and _mem.rxtone != 0xFF:
             mem.dtcs = chirp_common.DTCS_CODES[_mem.rxtone - 0x33]
             mem.tmode = "DTCS"
             mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
