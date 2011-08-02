@@ -93,7 +93,8 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         return rf
 
     def get_banks(self):
-        return [chr(ord("A") + i) for i in range(0,10)]
+        return [chirp_common.ImmutableBank(chr(ord("A") + i)) \
+                    for i in range(0,10)]
         
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
