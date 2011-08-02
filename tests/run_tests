@@ -56,6 +56,9 @@ class TestFailedError(TestError):
     def get_detail(self):
         return self._detail
 
+class TestSkippedError(TestError):
+    pass
+
 def get_tb():
     return traceback.format_exc()
 
@@ -435,6 +438,8 @@ class TestOutputANSI(TestOutput):
                 msg = "\033[1;41m%s\033[0m" % msg
             elif msg == "CRASHED":
                 msg = "\033[1;45m%s\033[0m" % msg
+            elif msg == "SKIPPED":
+                msg = "\033[1;32m%s\033[0m" % msg
 
         TestOutput.report(self, rclass, tc, msg, e)
 
@@ -472,6 +477,9 @@ td.FAILED {
 }
 td.CRASHED {
   background-color: purple;
+}
+td.SKIPPED {
+  background-color: green;
 }
 </style>
 </head>
@@ -560,6 +568,10 @@ class TestRunner:
                 nfailed += 1
             except TestCrashError, e:
                 self.report(rclass, tc, "CRASHED", e)
+                self.log(rclass, tc, e)
+                nfailed += 1
+            except TestSkippedError, e:
+                self.report(rclass, tc, "SKIPPED", e)
                 self.log(rclass, tc, e)
                 nfailed += 1
 
