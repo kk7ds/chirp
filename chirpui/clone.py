@@ -104,7 +104,7 @@ class CloneSettingsDialog(gtk.Dialog):
 
             model_names = [x.MODEL for x in models]
             if conf.get("last_model") in model_names:
-                model.set_active(model_names.index(conf.get("last_model")))
+                model.set_active(added_models.index(conf.get("last_model")))
             else:
                 model.set_active(0)
 
