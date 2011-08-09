@@ -675,6 +675,9 @@ class TestRunner:
             for device in devices:
                 tw = TestWrapper(device.__class__, pipe)
                 self._run_one(tw, device.__class__)
+        else:
+            tw = TestWrapper(rclass, pipe)
+            self._run_one(tw, rclass)
 
 if __name__ == "__main__":
     import sys
