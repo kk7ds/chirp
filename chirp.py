@@ -194,10 +194,14 @@ if __name__ == "__main__":
 
 	if options.raw:
 	    data = radio.get_raw_memory(int(args[0]))
-	    print "Memory location %i (%i):\n%s" % (int(args[0]),
-						    len(data),
-						    util.hexprint(data))
-	    sys.exit(0)
+            for i in data:
+                if ord(i) > 0x7F:
+                    print "Memory location %i (%i):\n%s" % (int(args[0]),
+                                                            len(data),
+                                                            util.hexprint(data))
+                    sys.exit(0)
+            print data
+            sys.exit(0)
 
 	if options.set_mem_dup is not None:
 	    if options.set_mem_dup != "+" and \
