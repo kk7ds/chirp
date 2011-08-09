@@ -575,3 +575,92 @@ class TMD710Radio(KenwoodLiveRadio):
 
 class TMV71Radio(TMD710Radio):
 	MODEL = "TM-V71"	
+
+THK2_DUPLEX = ["", "+", "-"]
+THK2_MODES = ["FM", "NFM"]
+THK2_TONES = list(chirp_common.TONES)
+THK2_TONES.remove(159.8) # ??
+THK2_TONES.remove(165.5) # ??
+THK2_TONES.remove(171.3) # ??
+THK2_TONES.remove(177.3) # ??
+THK2_TONES.remove(183.5) # ??
+THK2_TONES.remove(189.9) # ??
+THK2_TONES.remove(196.6) # ??
+THK2_TONES.remove(199.5) # ??
+
+THK2_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "-/"
+
+class THK2Radio(KenwoodLiveRadio):
+    MODEL = "TH-K2"
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.can_odd_split = False
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_tuning_step = False
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = THK2_MODES
+        rf.valid_duplexes = THK2_DUPLEX
+        rf.valid_characters = THK2_CHARS
+        rf.valid_name_length = 6
+        rf.valid_bands = [(136000000, 173990000)]
+        rf.valid_skips = ["", "S"]
+        rf.valid_tuning_steps = [5.0]
+        rf.memory_bounds = (1, 50)
+        return rf
+
+    def _cmd_get_memory(self, number):
+        return "ME", "%02i" % number
+
+    def _cmd_get_memory_name(self, number):
+        return "MN", "%02i" % number
+
+    def _cmd_set_memory(self, number, spec):
+        return "ME", "%02i,%s" % (number, spec)
+
+    def _cmd_set_memory_name(self, number, name):
+        return "MN", "%02i,%s" % (number, name)
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+
+        mem.number = int(spec[0])
+        mem.freq = int(spec[1])
+        #mem.tuning_step = 
+        mem.duplex = THK2_DUPLEX[int(spec[3])]
+        if int(spec[5]):
+            mem.tmode = "Tone"
+        elif int(spec[6]):
+            mem.tmode = "TSQL"
+        elif int(spec[7]):
+            mem.tmode = "DTCS"
+        mem.rtone = THK2_TONES[int(spec[8])]
+        mem.ctone = THK2_TONES[int(spec[9])]
+        mem.dtcs = chirp_common.DTCS_CODES[int(spec[10])]
+        mem.offset = int(spec[11])
+        mem.mode = THK2_MODES[int(spec[12])]
+        mem.skip = int(spec[16]) and "S" or ""
+        return mem
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "%010i" % mem.freq,
+            "0",
+            "%i"    % THK2_DUPLEX.index(mem.duplex),
+            "0",
+            "%i"    % int(mem.tmode == "Tone"),
+            "%i"    % int(mem.tmode == "TSQL"),
+            "%i"    % int(mem.tmode == "DTCS"),
+            "%02i"  % THK2_TONES.index(mem.rtone),
+            "%02i"  % THK2_TONES.index(mem.ctone),
+            "%03i"  % chirp_common.DTCS_CODES.index(mem.dtcs),
+            "%08i"  % mem.offset,
+            "%i"    % THK2_MODES.index(mem.mode),
+            "0",
+            "%010i" % 0,
+            "0",
+            "%i"    % int(mem.skip == "S")
+            )
+        return spec
+            
