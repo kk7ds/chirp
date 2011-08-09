@@ -137,12 +137,12 @@ class DataElement:
 class arrayDataElement(DataElement):
     def __repr__(self):
         if isinstance(self.__items[0], bcdDataElement):
-            return "[<%i>]" % int(self)
+            return "%i:[(%i)]" % (len(self.__items), int(self))
 
         if isinstance(self.__items[0], charDataElement):
-            return "[<%s>]" % str(self)
+            return "%i:[(%s)]" % (len(self.__items), str(self))
 
-        s = "["
+        s = "%i:[" % len(self.__items)
         s += ",".join([repr(item) for item in self.__items])
         s += "]"
         return s
@@ -469,16 +469,21 @@ class bitDataElement(intDataElement):
 
 class structDataElement(DataElement):
     def __repr__(self):
-        s = "{\n"
+        s = "struct {\n"
         for prop in sorted(self._generators.keys(),
                            key=lambda p: self._generators[p]._offset):
-            s += "  %s: %s\n" % (prop, repr(self._generators[prop]))
-        s += "}"
+            s += "  %15s: %s\n" % (prop, repr(self._generators[prop]))
+        s += "} %s\n" % self._name
         return s
 
     def __init__(self, *args, **kwargs):
         self._generators = {}
         self._count = 1
+        if "name" in kwargs.keys():
+            self._name = kwargs["name"]
+            del kwargs["name"]
+        else:
+            self._name = "(anonymous)"
         DataElement.__init__(self, *args, **kwargs)
         self.__init = True
 
@@ -625,7 +630,8 @@ class Processor:
 
         result = arrayDataElement(self._offset)
         for i in range(0, count):
-            element = structDataElement(self._data, self._offset, count)
+            element = structDataElement(self._data, self._offset, count,
+                                        name=name)
             result.append(element)
             tmp = self._generators
             self._generators = element
