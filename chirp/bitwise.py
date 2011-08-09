@@ -368,7 +368,8 @@ class u16DataElement(intDataElement):
         return struct.unpack(self._endianess + "H", data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(self._endianess + "H", value)
+        self._data[self._offset] = struct.pack(self._endianess + "H",
+                                               value & 0xFFFF)
 
 class ul16DataElement(u16DataElement):
     _endianess = "<"
@@ -380,7 +381,7 @@ class u24DataElement(intDataElement):
         return struct.unpack(">I", "\x00" + data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(">I", value)[1:]
+        self._data[self._offset] = struct.pack(">I", value & 0xFFFFFFFF)[1:]
 
 class u32DataElement(intDataElement):
     _size = 4
@@ -390,7 +391,8 @@ class u32DataElement(intDataElement):
         return struct.unpack(self._endianess + "I", data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(self._endianess + "I", value)
+        self._data[self._offset] = struct.pack(self._endianess + "I",
+                                               value & 0xFFFFFFFF)
 
 class ul32DataElement(u32DataElement):
     _endianess = "<"
