@@ -129,9 +129,27 @@ class DataElement:
     def set_raw(self, data):
         self._data[self._offset] = data[:self._size]
 
+    def __repr__(self):
+        return "(%s:%i bytes @ %04x)" % (self.__class__.__name__,
+                                         self._size,
+                                         self._offset)
+
 class arrayDataElement(DataElement):
-    def __init__(self):
+    def __repr__(self):
+        if isinstance(self.__items[0], bcdDataElement):
+            return "[<%i>]" % int(self)
+
+        if isinstance(self.__items[0], charDataElement):
+            return "[<%s>]" % str(self)
+
+        s = "["
+        s += ",".join([repr(item) for item in self.__items])
+        s += "]"
+        return s
+
+    def __init__(self, offset):
         self.__items = []
+        self._offset = offset
 
     def append(self, item):
         self.__items.append(item)
@@ -217,6 +235,10 @@ class arrayDataElement(DataElement):
         return size
 
 class intDataElement(DataElement):
+    def __repr__(self):
+        fmt = "0x%%0%iX" % (self._size * 2)
+        return fmt % int(self)
+    
     def __int__(self):
         return self.get_value()
 
@@ -446,6 +468,14 @@ class bitDataElement(intDataElement):
         return self._nbits
 
 class structDataElement(DataElement):
+    def __repr__(self):
+        s = "{\n"
+        for prop in sorted(self._generators.keys(),
+                           key=lambda p: self._generators[p]._offset):
+            s += "  %s: %s\n" % (prop, repr(self._generators[prop]))
+        s += "}"
+        return s
+
     def __init__(self, *args, **kwargs):
         self._generators = {}
         self._count = 1
@@ -571,7 +601,7 @@ class Processor:
                 sym = defn[1]
 
             name = sym[1]
-            res = arrayDataElement()
+            res = arrayDataElement(self._offset)
             size = 0
             for i in range(0, count):
                 gen = self._types[dtype](self._data, self._offset)
@@ -593,7 +623,7 @@ class Processor:
             name = deftype[0][1]
             count = 1
 
-        result = arrayDataElement()
+        result = arrayDataElement(self._offset)
         for i in range(0, count):
             element = structDataElement(self._data, self._offset, count)
             result.append(element)
