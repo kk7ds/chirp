@@ -322,8 +322,11 @@ class ImportDialog(gtk.Dialog):
         pos = self.dst_radio.get_features().memory_bounds[0]
         iter = self.__store.get_iter_first()
         while iter:
-            self.__store.set(iter, self.col_nloc, pos)
-            pos += 1
+            selected, okay = self.__store.get(iter,
+                                              self.col_import, self.col_okay)
+            if selected and okay:
+                self.__store.set(iter, self.col_nloc, pos)
+                pos += 1
             iter = self.__store.iter_next(iter)
 
     def __revrnew(self, button):
