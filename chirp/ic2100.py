@@ -252,4 +252,4 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         _mem.duplex = DUPLEX.index(mem.duplex)
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])

@@ -125,7 +125,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]

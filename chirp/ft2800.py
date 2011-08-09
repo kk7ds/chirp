@@ -194,7 +194,6 @@ class FT2800Radio(YaesuCloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-        return self._memobj.memory[number].get_raw()
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]

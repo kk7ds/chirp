@@ -199,7 +199,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         print "Upload finished in %i seconds" % (time.time() - t)
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number-1].get_raw()
+        return repr(self._memobj.memory[number-1])
 
     def _get_mem_freq(self, mem, _mem):
         f = mem.freq

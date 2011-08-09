@@ -122,7 +122,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         raise errors.RadioError("Out of slots in this bank")
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
     def get_memory(self, number):
         bit = 1 << (number % 8)

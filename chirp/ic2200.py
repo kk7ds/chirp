@@ -258,7 +258,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.r2call = rptcalls.index(mem.dv_rpt2call)
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
     def get_banks(self):
         banks = []

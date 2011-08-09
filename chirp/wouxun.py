@@ -178,7 +178,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number - 1].get_raw()
+        return repr(self._memobj.memory[number - 1])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -757,6 +757,6 @@ class UV3RRadio(KGUVD1PRadio):
         return len(filedata) == 3648
 
     def get_raw_memory(self, number):
-        _rmem = self._memobj.rx_memory[number - 1]
+        _rmem = self._memobj.tx_memory[number - 1]
         _tmem = self._memobj.rx_memory[number - 1]
-        return _rmem.get_raw() + _tmem.get_raw()
+        return repr(_rmem) + repr(_tmem)

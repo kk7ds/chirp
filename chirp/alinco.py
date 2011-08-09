@@ -143,7 +143,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
         self._upload(self._memsize)
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
 DUPLEX = ["", "-", "+"]
 TMODES = ["", "Tone", "", "TSQL"] + [""] * 12

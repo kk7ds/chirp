@@ -271,7 +271,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.r2call = mem.dv_rpt2call.ljust(8)
             
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
     
     def get_banks(self):
         _banks = self._memobj.bank_names

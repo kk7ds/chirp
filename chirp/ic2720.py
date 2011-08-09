@@ -100,7 +100,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
     def get_memory(self, number):
         bitpos = (1 << (number % 8))

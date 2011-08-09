@@ -102,7 +102,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         self._memobj = bitwise.parse(format, self._mmap)
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
     def _get_special(self):
         special = {}

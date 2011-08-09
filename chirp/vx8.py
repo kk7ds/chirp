@@ -100,7 +100,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number].get_raw()
+        return repr(self._memobj.memory[number])
 
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0xFEC9) ]
