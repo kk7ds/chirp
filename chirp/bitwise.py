@@ -50,6 +50,8 @@
 # behave as expected.
 
 import struct
+import os
+
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
 
@@ -471,11 +473,12 @@ class bitDataElement(intDataElement):
 
 class structDataElement(DataElement):
     def __repr__(self):
-        s = "struct {\n"
+        s = "struct {" + os.linesep
         for prop in sorted(self._generators.keys(),
                            key=lambda p: self._generators[p]._offset):
-            s += "  %15s: %s\n" % (prop, repr(self._generators[prop]))
-        s += "} %s\n" % self._name
+            s += "  %15s: %s%s" % (prop, repr(self._generators[prop]),
+                                   os.linesep)
+        s += "} %s%s" % (self._name, os.linesep)
         return s
 
     def __init__(self, *args, **kwargs):
