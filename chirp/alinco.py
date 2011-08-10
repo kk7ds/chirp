@@ -204,7 +204,7 @@ class DRx35Radio(AlincoStyleRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
-        mem.freq = int(_mem.freq) * 1000
+        mem.freq = int(_mem.freq) * 10000
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.duplex = DUPLEX[_mem.duplex]
@@ -227,7 +227,7 @@ class DRx35Radio(AlincoStyleRadio):
         _skp = self._memobj.skips[mem.number / 8]
         bit = (0x80 >> (mem.number % 8))
 
-        _mem.freq = mem.freq / 1000
+        _mem.freq = mem.freq / 10000
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.duplex = DUPLEX.index(mem.duplex)
