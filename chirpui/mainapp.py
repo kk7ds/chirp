@@ -787,6 +787,10 @@ class ChirpMain(gtk.Window):
     def do_toggle_autorpt(self, action):
         CONF.set_bool("autorpt", action.get_active(), "memedit")
 
+    def do_toggle_developer(self, action):
+        conf = config.get()
+        conf.set_bool("developer", action.get_active(), "state")
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -834,6 +838,8 @@ class ChirpMain(gtk.Window):
             self.do_toggle_report(_action)
         elif action == "autorpt":
             self.do_toggle_autorpt(_action)
+        elif action == "developer":
+            self.do_toggle_developer(_action)
         else:
             return
 
@@ -879,6 +885,7 @@ class ChirpMain(gtk.Window):
     <menu action="help">
       <menuitem action="about"/>
       <menuitem action="report"/>
+      <menuitem action="developer"/>
     </menu>
   </menubar>
 </ui>
@@ -917,11 +924,13 @@ class ChirpMain(gtk.Window):
         re = not conf.get_bool("no_report");
         hu = conf.get_bool("hide_unused", "memedit")
         ro = conf.get_bool("autorpt", "memedit")
+        dv = conf.get_bool("developer", "state")
 
         toggles = [\
             ('report', None, "Report statistics", None, None, self.mh, re),
             ('hide_unused', None, 'Hide Unused Fields', None, None, self.mh, hu),
             ('autorpt', None, 'Automatic Repeater Offset', None, None, self.mh, ro),
+            ('developer', None, "Enable Developer Functions", None, None, self.mh, dv),
             ]
 
         self.menu_uim = gtk.UIManager()

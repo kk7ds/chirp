@@ -22,6 +22,7 @@ if __name__ == "__main__":
 import threading
 
 import gtk
+import pango
 from gobject import TYPE_INT, \
     TYPE_DOUBLE as TYPE_FLOAT, \
     TYPE_STRING, \
@@ -57,6 +58,45 @@ def iter_prev(store, iter):
     if row == 0:
         return None
     return store.get_iter((row - 1,))
+
+# A quick hacked up tool to show a blob of text in a dialog window
+# using fixed-width fonts. It also highlights lines that start with
+# a '-' in red bold font and '+' with blue bold font.
+def show_blob(title, result):
+    d = gtk.Dialog(title=title,
+                   buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
+    b = gtk.TextBuffer()
+
+    tags = b.get_tag_table()
+    for color in ["red", "blue", "green", "grey"]:
+        tag = gtk.TextTag(color)
+        tag.set_property("foreground", color)
+        tags.add(tag)
+    tag = gtk.TextTag("bold")
+    tag.set_property("weight", pango.WEIGHT_BOLD)
+    tags.add(tag)
+
+    lines = result.split(os.linesep)
+    for line in lines:
+        if line.startswith("-"):
+            tags = ("red", "bold")
+        elif line.startswith("+"):
+            tags = ("blue", "bold")
+        else:
+            tags = ()
+        b.insert_with_tags_by_name(b.get_end_iter(), line + os.linesep, *tags)
+    v = gtk.TextView(b)
+    fontdesc = pango.FontDescription("Courier 11")
+    v.modify_font(fontdesc)
+    v.set_editable(False)
+    v.show()
+    s = gtk.ScrolledWindow()
+    s.add(v)
+    s.show()
+    d.vbox.pack_start(s, 1, 1, 1)
+    d.set_size_request(600, 400)
+    d.run()
+    d.destroy()
 
 class MemoryEditor(common.Editor):
     cols = [
@@ -445,8 +485,66 @@ time.  Are you sure you want to do this?"""
             self.copy_selection(action=="cut")
         elif action == "paste":
             self.paste_selection()
+        elif action == "devshowraw":
+
+            def idle_show_raw(result):
+                gobject.idle_add(show_blob, "Raw memory %i" % cur_pos, result)
+
+            job = common.RadioJob(idle_show_raw, "get_raw_memory", cur_pos)
+            job.set_desc("Getting raw memory %i" % cur_pos)
+            self.rthread.submit(job)
+        elif action == "devdiffraw":
+            if len(paths) != 2:
+                common.show_error("You can only diff two memories!")
+                return
+
+            loc_a = store.get(store.get_iter(paths[0]), self.col("Loc"))[0]
+            loc_b = store.get(store.get_iter(paths[1]), self.col("Loc"))[0]
+
+            raw = {}
+
+            def simple_diff(a, b):
+                lines_a = a.split(os.linesep)
+                lines_b = b.split(os.linesep)
+
+                diff = ""
+                for i in range(0, len(lines_a)):
+                    if lines_a[i] != lines_b[i]:
+                        diff += "-%s%s" % (lines_a[i], os.linesep)
+                        diff += "+%s%s" % (lines_b[i], os.linesep)
+                    else:
+                        diff += " %s%s" % (lines_a[i], os.linesep)
+                return diff
+
+            def diff_raw(which, result):
+                raw[which] = "Memory %i:%s%s" % (which, os.linesep, result)
+
+                if len(raw.keys()) == 2:
+                    diff = simple_diff(raw[loc_a], raw[loc_b])
+                    gobject.idle_add(show_blob,
+                                     "Diff of %i and %i" % (loc_a, loc_b),
+                                     diff)
+
+            job = common.RadioJob(lambda r: diff_raw(loc_a, r),
+                                  "get_raw_memory", loc_a)
+            job.set_desc("Getting raw memory %i" % loc_a)
+            self.rthread.submit(job)
+
+            job = common.RadioJob(lambda r: diff_raw(loc_b, r),
+                                  "get_raw_memory", loc_b)
+            job.set_desc("Getting raw memory %i" % loc_b)
+            self.rthread.submit(job)
 
     def make_context_menu(self):
+        if self._config.get_bool("developer", "state"):
+            devmenu = """
+<separator/>
+<menuitem action="devshowraw"/>
+<menuitem action="devdiffraw"/>
+"""
+        else:
+            devmenu = ""
+
         menu_xml = """
 <ui>
   <popup name="Menu">
@@ -458,12 +556,15 @@ time.  Are you sure you want to do this?"""
     <menuitem action="cut"/>
     <menuitem action="copy"/>
     <menuitem action="paste"/>
+    %s
   </popup>
 </ui>
-"""
+""" % devmenu
+
 
         (store, paths) = self.view.get_selection().get_selected_rows()
         issingle = len(paths) == 1
+        istwo = len(paths) == 2
 
         actions = [
             ("insert_prev", "Insert row above"),
@@ -473,9 +574,12 @@ time.  Are you sure you want to do this?"""
             ("cut", "Cut"),
             ("copy", "Copy"),
             ("paste", "Paste"),
+            ("devshowraw", "Show Raw Memory"),
+            ("devdiffraw", "Diff Raw Memories"),
             ]
 
-        no_multiple = ["insert_prev", "insert_next", "paste"]
+        no_multiple = ["insert_prev", "insert_next", "paste", "devshowraw"]
+        only_two = ["devdiffraw"]
 
         ag = gtk.ActionGroup("Menu")
 
@@ -484,6 +588,8 @@ time.  Are you sure you want to do this?"""
             a.connect("activate", self.mh, store, paths)
             if name in no_multiple:
                 a.set_sensitive(issingle)
+            if name in only_two:
+                a.set_sensitive(istwo)
             ag.add_action(a)
 
         uim = gtk.UIManager()
