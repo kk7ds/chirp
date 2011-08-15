@@ -89,6 +89,7 @@ class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         rf.memory_bounds = (0, 1000)
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 999
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         return rf
         
     def load(self, filename=None):
