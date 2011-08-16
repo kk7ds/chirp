@@ -55,6 +55,13 @@ import os
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
 
+def format_binary(nbits, value, pad=8):
+    s = ""
+    for i in range(0, nbits):
+        s = "%i%s" % (value & 0x01, s)
+        value >>= 1
+    return "%s%s" % ((pad - len(s)) * ".", s)
+
 def bits_between(start, end):
     bits = (1 << (end - start )) - 1
     return bits << start
@@ -443,6 +450,10 @@ class bitDataElement(intDataElement):
     _shift = 0
     _subgen = None
 
+    def __repr__(self):
+        fmt = "0x%%0%iX (%%sb)" % (self._size * 2)
+        return fmt % (int(self), format_binary(self._nbits, self.get_value()))
+
     def get_value(self):
         data = self._subgen(self._data, self._offset).get_value()
         mask = bits_between(self._shift-self._nbits, self._shift)
@@ -474,15 +485,18 @@ class bitDataElement(intDataElement):
 class structDataElement(DataElement):
     def __repr__(self):
         s = "struct {" + os.linesep
-        for prop in sorted(self._generators.keys(),
-                           key=lambda p: self._generators[p]._offset):
+        for prop in self._keys:
             s += "  %15s: %s%s" % (prop, repr(self._generators[prop]),
                                    os.linesep)
-        s += "} %s%s" % (self._name, os.linesep)
+        s += "} %s (%i bytes at 0x%04X)%s" % (self._name,
+                                              self.size() / 8,
+                                              self._offset,
+                                              os.linesep)
         return s
 
     def __init__(self, *args, **kwargs):
         self._generators = {}
+        self._keys = []
         self._count = 1
         if "name" in kwargs.keys():
             self._name = kwargs["name"]
@@ -516,6 +530,7 @@ class structDataElement(DataElement):
             self._generators[key].set_value(value)
         else:
             self._generators[key] = value
+            self._keys.append(key)
 
     def __getattr__(self, name):
         return self._generators[name]
