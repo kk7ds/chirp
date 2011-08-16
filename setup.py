@@ -127,6 +127,7 @@ else:
     if os.path.exists("chirpui"):
         nuke_manifest("include *.xsd",
                       "include share/*.desktop",
+                      "include share/chirp.png",
                       "include share/*.1",
                       "include COPYING")
         default_build()
