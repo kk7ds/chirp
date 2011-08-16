@@ -208,7 +208,7 @@ class DRx35Radio(AlincoStyleRadio):
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.duplex = DUPLEX[_mem.duplex]
-        mem.offset = int(_mem.offset)
+        mem.offset = int(_mem.offset) * 100
         mem.tmode = TMODES[_mem.tmode]
         mem.dtcs = DCS_CODES[self.VENDOR][_mem.dtcs_tx]
 
@@ -231,7 +231,7 @@ class DRx35Radio(AlincoStyleRadio):
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.offset = mem.offset
+        _mem.offset = mem.offset / 100
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.dtcs_tx = DCS_CODES[self.VENDOR].index(mem.dtcs)
         _mem.dtcs_rx = DCS_CODES[self.VENDOR].index(mem.dtcs)
