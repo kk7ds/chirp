@@ -48,11 +48,11 @@ def get_raw_memory(mmap, number):
 
 def get_freq(mmap):
     val, = struct.unpack(">I", "\x00" + mmap[POS_FREQ:POS_FREQ+3])
-    return (val * 5.0) / 1000.0
+    return val * 5000
 
 def get_offset(mmap):
     val, = struct.unpack(">H", mmap[POS_OFFSET:POS_OFFSET+2])
-    return (val * 5.0) / 1000.0
+    return val * 5000
 
 def get_rtone(mmap):
     val = (ord(mmap[POS_TONE]) & 0xFC) >> 2
@@ -119,6 +119,6 @@ def get_memory(_mmap, number):
     mem.duplex = get_duplex(mmap)
     mem.name = get_name(mmap)
 
-    mem.empty = mem.freq == 0.0
+    mem.empty = mem.freq == 0
 
     return mem

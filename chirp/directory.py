@@ -43,6 +43,7 @@ DRV_TO_RADIO = {
     "icw32"          : icw32.ICW32ARadio,
     "ict70"          : ict70.ICT70Radio,
     "icom7200"       : icomciv.Icom7200Radio,
+    "ic9xicf"        : ic9x_icf.IC9xICFRadio,
 
     # Yaesu
     "vx3"            : vx3.VX3Radio,
