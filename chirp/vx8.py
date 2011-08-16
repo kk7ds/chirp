@@ -115,7 +115,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
-        mem.offset = int(_mem.offset) * 1000.0
+        mem.offset = int(_mem.offset) * 1000
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tone_mode]
         mem.duplex = DUPLEX[_mem.duplex]
