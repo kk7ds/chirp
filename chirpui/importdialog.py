@@ -230,7 +230,9 @@ class ImportDialog(gtk.Dialog):
             src = self.src_radio.get_memory(old)
 
             try:
-                mem = import_logic.import_mem(self.dst_radio, src,
+                mem = import_logic.import_mem(self.dst_radio,
+                                              self.src_radio,
+                                              src,
                                              {"number" : new})
             except import_logic.ImportError, e:
                 print e

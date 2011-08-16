@@ -61,16 +61,16 @@ def ensure_has_calls(radio, memory):
         radio.set_repeater_cal_list(rlist)
 
 # Filter the name according to the destination's rules
-def _import_name(dst_radio, mem):
+def _import_name(dst_radio, src_radio, mem):
     mem.name = dst_radio.filter_name(mem.name)
 
 # If the bank is out of range for the destination, revert to "no bank"
-def _import_bank(dst_radio, mem):
+def _import_bank(dst_radio, src_radio, mem):
     nbanks = len(dst_radio.get_banks())
     if mem.bank >= nbanks:
         mem.bank = None
 
-def _import_power(dst_radio, mem):
+def _import_power(dst_radio, src_radio, mem):
     levels = dst_radio.get_features().valid_power_levels
     if not levels:
         mem.power = None
@@ -90,7 +90,26 @@ def _import_power(dst_radio, mem):
     deltas = [abs(mem.power - power) for power in levels]
     mem.power = levels[deltas.index(min(deltas))]
 
-def import_mem(dst_radio, src_mem, overrides={}):
+def _import_tone(dst_radio, src_radio, mem):
+    srcrf = src_radio.get_features()
+    dstrf = dst_radio.get_features()
+
+    # Some radios keep separate tones for Tone and TSQL modes (rtone and
+    # ctone). If we're importing to or from radios with differing models,
+    # do the conversion here.
+
+    if srcrf.has_ctone and not dstrf.has_ctone:
+        # If copying from a radio with separate rtone/ctone to a radio
+        # without, and the tmode is TSQL, then use the ctone value
+        if mem.tmode == "TSQL":
+            mem.rtone = mem.ctone
+    elif not srcrf.has_ctone and dstrf.has_ctone:
+        # If copying from a radio without separate rtone/ctone to a radio
+        # with it, set the dest ctone to the src rtone
+        if mem.tmode == "TSQL":
+            mem.ctone = mem.rtone
+
+def import_mem(dst_radio, src_radio, src_mem, overrides={}):
     dst_rf = dst_radio.get_features()
 
     if isinstance(src_mem, chirp_common.DVMemory):
@@ -104,10 +123,11 @@ def import_mem(dst_radio, src_mem, overrides={}):
     helpers = [_import_name,
                _import_bank,
                _import_power,
+               _import_tone,
                ]
 
     for helper in helpers:
-        helper(dst_radio, dst_mem)
+        helper(dst_radio, src_radio, dst_mem)
 
     for k, v in overrides.items():
         dst_mem.__dict__[k] = v
