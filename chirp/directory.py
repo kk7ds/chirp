@@ -74,6 +74,7 @@ DRV_TO_RADIO = {
     "dr135"          : alinco.DR135Radio,
     "dr235"          : alinco.DR235Radio,
     "dr435"          : alinco.DR435Radio,
+    "dj596"          : alinco.DJ596Radio,
 
     # Wouxun
     "kguvd1p"        : wouxun.KGUVD1PRadio,

@@ -159,7 +159,7 @@ CHARSET = (["\x00"] * 0x30) + \
     list("\x00" * 128)
 
 class DRx35Radio(AlincoStyleRadio):
-    _range = (118000000, 155000000)
+    _range = [(118000000, 155000000)]
 
     def _get_name(self, mem, _mem):
         name = ""
@@ -187,7 +187,7 @@ class DRx35Radio(AlincoStyleRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_skips = ["", "S"]
-        rf.valid_bands = [self._range]
+        rf.valid_bands = self._range
         rf.memory_bounds = (0, 99)
         rf.has_ctone = True
         rf.has_bank = False
@@ -251,7 +251,7 @@ class DR135Radio(DRx35Radio):
 
     _model = "DR135"
     _memsize = 4096
-    _range = (118000000, 173000000)
+    _range = [(118000000, 173000000)]
 
     @classmethod
     def match_model(cls, filedata):
@@ -264,7 +264,7 @@ class DR235Radio(DRx35Radio):
 
     _model = "DR235"
     _memsize = 4096
-    _range = (216000000, 280000000)
+    _range = [(216000000, 280000000)]
 
     @classmethod
     def match_model(cls, filedata):
@@ -277,12 +277,25 @@ class DR435Radio(DRx35Radio):
 
     _model = "DR435"
     _memsize = 4096
-    _range = (350000000, 511000000)
+    _range = [(350000000, 511000000)]
 
     @classmethod
     def match_model(cls, filedata):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x04) and filedata[0x65] == chr(0x00)
+
+class DJ596Radio(DRx35Radio):
+    VENDOR = "Alinco"
+    MODEL = "DJ596"
+
+    _model = "DJ596"
+    _memsize = 4096
+    _range = [(136000000, 174000000), (400000000, 511000000)]
+
+    @classmethod
+    def match_model(cls, filedata):
+        return len(filedata) == cls._memsize and \
+            filedata[0x64] == chr(0x45) and filedata[0x65] == chr(0x01)
 
 class JT220MRadio(DRx35Radio):
     VENDOR = "Jetstream"
@@ -290,7 +303,7 @@ class JT220MRadio(DRx35Radio):
 
     _model = "DR136"
     _memsize = 4096
-    _range = (216000000, 280000000)
+    _range = [(216000000, 280000000)]
 
     @classmethod
     def match_model(cls, filedata):
