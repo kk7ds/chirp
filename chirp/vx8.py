@@ -72,6 +72,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
     MODEL = "VX-8"
+    VARIANT = "R"
 
     _model = "AH029"
     _memsize = 65227
@@ -181,3 +182,4 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
 class VX8DRadio(VX8Radio):
     _model = "AH29D"
+    VARIANT = "DR"

@@ -19,7 +19,7 @@ from chirp import chirp_common, icf, ic9x_icf_ll
 
 class IC9xICFRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
-    MODEL = "IC-9x"
+    MODEL = "IC-91/92AD"
     VARIANT = "ICF File"
 
     _upper = 1200
