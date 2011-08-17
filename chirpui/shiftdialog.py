@@ -72,8 +72,10 @@ class ShiftDialog(gtk.Dialog):
     def _get_mems_until_hole(self, start):
         mems = []
 
+        llimit, ulimit = self.rthread.radio.get_features().memory_bounds
+
         pos = start
-        while True:
+        while pos <= ulimit:
             self.status("Looking for a free spot (%i)" % pos, 0)
             try:
                 mem = self.rthread.radio.get_memory(pos)
