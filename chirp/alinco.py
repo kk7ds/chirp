@@ -20,8 +20,10 @@ import time
 DRx35_mem_format = """
 #seekto 0x0200;
 struct {
-  u8 unknown1:4,
+  u8 unknown1:2,
      isnarrow:1,
+     unknown9:1,
+     ishigh:1,
      unknown2:3;
   u8 unknown3:6,
      duplex:2;
@@ -160,6 +162,7 @@ CHARSET = (["\x00"] * 0x30) + \
 
 class DRx35Radio(AlincoStyleRadio):
     _range = [(118000000, 155000000)]
+    _power_levels = []
 
     def _get_name(self, mem, _mem):
         name = ""
@@ -195,6 +198,7 @@ class DRx35Radio(AlincoStyleRadio):
         rf.has_dtcs_polarity = False
         rf.valid_tuning_steps = []
         rf.valid_name_length = 7
+        rf.valid_power_levels = self._power_levels
         return rf
 
     def get_memory(self, number):
@@ -214,6 +218,9 @@ class DRx35Radio(AlincoStyleRadio):
 
         if _mem.isnarrow:
             mem.mode = "NFM"
+
+        if self._power_levels:
+            mem.power = self._power_levels[_mem.ishigh]
 
         if _skp & bit:
             mem.skip = "S"
@@ -237,6 +244,9 @@ class DRx35Radio(AlincoStyleRadio):
         _mem.dtcs_rx = DCS_CODES[self.VENDOR].index(mem.dtcs)
 
         _mem.isnarrow = mem.mode == "NFM"
+        if self._power_levels:
+            _mem.ishigh = mem.power is None or \
+                mem.power == self._power_levels[1]
 
         if mem.skip:
             _skp |= bit
@@ -291,6 +301,8 @@ class DJ596Radio(DRx35Radio):
     _model = "DJ596"
     _memsize = 4096
     _range = [(136000000, 174000000), (400000000, 511000000)]
+    _power_levels = [chirp_common.PowerLevel("Low", watts=1.00),
+                     chirp_common.PowerLevel("High", watts=5.00)]
 
     @classmethod
     def match_model(cls, filedata):
