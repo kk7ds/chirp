@@ -415,7 +415,10 @@ class Puxing777Radio(KGUVD1PRadio):
         rf.has_bank = False
         rf.memory_bounds = (1, 128)
 
-        limit_idx = self._memobj.model.limits - 0xEE
+        if not hasattr(self, "_memobj"):
+            limit_idx = 1
+        else:
+            limit_idx = self._memobj.model.limits - 0xEE
         try:
             rf.valid_bands = [PUXING_777_BANDS[limit_idx]]
         except IndexError:

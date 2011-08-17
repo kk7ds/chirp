@@ -90,14 +90,14 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
 
-        self.pipe.setTimeout(0.1)
-
         self.__memcache = {}
 
-        self.__id = get_id(self.pipe)
-        print "Talking to a %s" % self.__id
+        if self.pipe:
+            self.pipe.setTimeout(0.1)
+            self.__id = get_id(self.pipe)
+            print "Talking to a %s" % self.__id
 
-        command(self.pipe, "AI", "0")
+            command(self.pipe, "AI", "0")
 
     def _cmd_get_memory(self, number):
         return "MR", "%i,0,%03i" % (self._vfo, number)
@@ -377,18 +377,7 @@ class TMV7Radio(KenwoodLiveRadio):
         return True
 
     def _detect_split(self):
-        # Valid  splits:
-        limits = [50, 70, 90, 110, 130, 140]
-
-        for limit in limits:
-            print "Testing %s" % (limit)
-            if not self.__test_location(limit+1):
-                self._upper = limit
-                break
-
-        print "Detected limit for VFO %i is %i" % (self._vfo,
-                                                   self._upper)
-
+        return 50
 
 class TMV7RadioSub(TMV7Radio):
     def __init__(self, pipe):

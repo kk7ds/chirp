@@ -70,7 +70,8 @@ class IC9xRadio(icf.IcomLiveRadio):
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
 
-        self.pipe.setTimeout(0.1)
+        if self.pipe:
+            self.pipe.setTimeout(0.1)
 
         self.__memcache = {}
         self.__bankcache = {}
