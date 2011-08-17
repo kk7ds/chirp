@@ -18,6 +18,9 @@ from chirp import chirp_common, bitwise, memmap
 import time
 
 DRx35_mem_format = """
+#seekto 0x0120;
+u8 used_flags[25];
+
 #seekto 0x0200;
 struct {
   u8 unknown1:2,
@@ -204,10 +207,15 @@ class DRx35Radio(AlincoStyleRadio):
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _skp = self._memobj.skips[number / 8]
+        _usd = self._memobj.used_flags[number / 8]
         bit = (0x80 >> (number % 8))
 
         mem = chirp_common.Memory()
         mem.number = number
+        if not _usd & bit and self.MODEL != "JT220M":
+            mem.empty = True
+            return mem
+
         mem.freq = int(_mem.freq) * 100
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
@@ -232,7 +240,14 @@ class DRx35Radio(AlincoStyleRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number]
         _skp = self._memobj.skips[mem.number / 8]
+        _usd = self._memobj.used_flags[mem.number / 8]
         bit = (0x80 >> (mem.number % 8))
+
+        if mem.empty:
+            _usd &= ~bit
+            return
+        else:
+            _usd |= bit
 
         _mem.freq = mem.freq / 100
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
