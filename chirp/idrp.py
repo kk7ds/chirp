@@ -116,6 +116,26 @@ class IDRPx000V(IcomRepeater):
     _model = "0000" # Unknown
     mem_upper_limit = 0
         
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.valid_modes = ["DV"]
+        rf.valid_tmodes = []
+        rf.valid_characters = ""
+        rf.valid_duplexes = [""]
+        rf.valid_name_length = 0
+        rf.valid_skips = []
+        rf.valid_tuning_steps = []
+        rf.has_bank = False
+        rf.has_ctone = False
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_mode = False
+        rf.has_name = False
+        rf.has_offset = False
+        rf.has_tuning_step = False        
+        rf.memory_bounds = (0, 0)
+        return rf
+
     def get_memory(self, number):
         if number != 0:
             raise errors.InvalidMemoryLocation("Repeaters have only one slot")
