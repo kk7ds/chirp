@@ -35,7 +35,7 @@ struct {
   u8 _3_unknown_1:4,
      bcl:1,
      _3_unknown_2:3;
-  u8 _2_unknown_1:1,
+  u8 splitdup:1,
      skip:1,
      power_high:1,
      iswide:1,
@@ -171,10 +171,12 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
         rf.valid_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         rf.valid_name_length = 6
+        rf.valid_duplexes = ["", "+", "-", "split"]
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.memory_bounds = (1, 128)
+        rf.can_odd_split = True
         return rf
 
     def get_raw_memory(self, number):
@@ -192,12 +194,20 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             return mem
 
         mem.freq = int(_mem.rx_freq) * 10
-        mem.offset = (int(_mem.tx_freq) * 10) - mem.freq
-        if mem.offset < 0:
-            mem.duplex = "-"
-        elif mem.offset:
+        if _mem.splitdup:
+            mem.duplex = "split"
+        elif int(_mem.rx_freq) < int(_mem.tx_freq):
             mem.duplex = "+"
-        mem.offset = abs(mem.offset)
+        elif int(_mem.rx_freq) > int(_mem.tx_freq):
+            mem.duplex = "-"
+
+        if mem.duplex == "":
+            mem.offset = 0
+        elif mem.duplex == "split":
+            mem.offset = int(_mem.tx_freq) * 10
+        else:
+            mem.offset = abs(int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
+
         if not _mem.skip:
             mem.skip = "S"
         if not _mem.iswide:
@@ -244,12 +254,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             self.wipe_memory(_mem, "\x00")
 
         _mem.rx_freq = int(mem.freq / 10)
-        if mem.duplex == "+":
+        if mem.duplex == "split":
+            _mem.tx_freq = int(mem.offset / 10)
+        elif mem.duplex == "+":
             _mem.tx_freq = int(mem.freq / 10) + int(mem.offset / 10)
         elif mem.duplex == "-":
             _mem.tx_freq = int(mem.freq / 10) - int(mem.offset / 10)
         else:
             _mem.tx_freq = int(mem.freq / 10)
+        _mem.splitdup = mem.duplex == "split"
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
