@@ -686,10 +686,12 @@ class UV3RRadio(KGUVD1PRadio):
         rf.valid_power_levels = UV3R_POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (400000000, 470000000)]
         rf.valid_skips = []
+        rf.valid_duplexes = ["", "-", "+", "split"]
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.has_name = False
+        rf.can_odd_split = True
         rf.memory_bounds = (1, 99)
         return rf
 
@@ -715,6 +717,12 @@ class UV3RRadio(KGUVD1PRadio):
         mem.freq = int(_mem.rx_freq) * 10
         mem.offset = int(_mem.offset) * 10;
         mem.duplex = UV3R_DUPLEX[_mem.duplex]
+        if mem.offset > 60000000:
+            if mem.duplex == "+":
+                mem.offset = mem.freq + mem.offset
+            elif mem.duplex == "-":
+                mem.offset = mem.freq - mem.offset
+            mem.duplex = "split"
         mem.power = UV3R_POWER_LEVELS[1 - _mem.ishighpower]
         if not _mem.iswide:
             mem.mode = "NFM"
@@ -743,9 +751,17 @@ class UV3RRadio(KGUVD1PRadio):
             return
 
         _mem.rx_freq = mem.freq / 10
-        _mem.offset = mem.offset / 10
-        _mem.tx_freq = (mem.freq + mem.offset) / 10
-        _mem.duplex = UV3R_DUPLEX.index(mem.duplex)
+        if mem.duplex == "split":
+            diff = mem.freq - mem.offset
+            _mem.offset = abs(diff) / 10
+            _mem.duplex = UV3R_DUPLEX.index(diff < 0 and "+" or "-")
+            for i in range(0, 4):
+                _mem.tx_freq[i].set_raw("\xFF")
+        else:
+            _mem.offset = mem.offset / 10
+            _mem.duplex = UV3R_DUPLEX.index(mem.duplex)
+            _mem.tx_freq = (mem.freq + mem.offset) / 10
+
         _mem.ishighpower = mem.power == UV3R_POWER_LEVELS[0]
         _mem.iswide = mem.mode == "FM"
 
