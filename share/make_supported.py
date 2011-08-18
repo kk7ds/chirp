@@ -8,8 +8,9 @@ sys.path.insert(0, "..")
 
 from chirp import directory, chirp_common
 
-KEYS = [x for x in sorted(chirp_common.RadioFeatures().__dict__.keys()) \
-            if "_" in x]
+RF = chirp_common.RadioFeatures()
+KEYS = [x for x in sorted(RF.__dict__.keys()) \
+            if "_" in x and not x.startswith("_")]
 
 def supported_row(radio, odd):
     row = '<tr class="%s" title="%s %s %s">' % (odd and "odd" or "even",
@@ -36,7 +37,7 @@ def supported_row(radio, odd):
         if key == "memory_bounds":
             value = "%i-%i" % value
 
-        if key.startswith("has_"):
+        if isinstance(value, bool):
             row += '<td class="%s"><span class="%s">%s</span></td>' % \
                 (key,
                  value,
@@ -51,7 +52,7 @@ def header_row():
     row += "<th>Radio</th>\n"
     for key in KEYS:
         Key = key.split("_", 1)[1].title().replace("_", " ")
-        row += "<th>%s</th>" % Key
+        row += '<th title="%s">%s</th>' % (RF.get_doc(key), Key)
     row += "</tr></thead>\n"
     return row
 

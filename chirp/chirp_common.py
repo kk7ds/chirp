@@ -563,7 +563,10 @@ class RadioFeatures:
         }
 
     def __setattr__(self, name, val):
-        if not name in self._valid_map.keys():
+        if name.startswith("_"):
+            self.__dict__[name] = val
+            return
+        elif not name in self._valid_map.keys():
             raise ValueError("No such attribute `%s'" % name)
 
         if type(self._valid_map[name]) == tuple:
@@ -590,35 +593,78 @@ class RadioFeatures:
                                                                         name))
         self.__dict__[name] = val
 
+    def init(self, attribute, default, doc=None):
+        self.__setattr__(attribute, default)
+        self.__docs[attribute] = doc
+
+    def get_doc(self, attribute):
+        return self.__docs[attribute]
+
     def __init__(self):
-        self.has_bank_index = False
-        self.has_dtcs = True
-        self.has_dtcs_polarity = True
-        self.has_mode = True
-        self.has_offset = True
-        self.has_name = True
-        self.has_bank = True
-        self.has_tuning_step = True
-        self.has_ctone = True
-        self.has_cross = False
-        self.has_infinite_number = False
+        self.__docs = {}
+        self.init("has_bank_index", False,
+                  "Indicates that memories in a bank can be stored in " +
+                  "an order other than in main memory")
+        self.init("has_dtcs", True,
+                  "Indicates that DTCS tone mode is available")
+        self.init("has_dtcs_polarity", True,
+                  "Indicates that the DTCS polarity can be changed")
+        self.init("has_mode", True,
+                  "Indicates that multiple emission modes are supported")
+        self.init("has_offset", True,
+                  "Indicates that the TX offset memory property is supported")
+        self.init("has_name", True,
+                  "Indicates that an alphanumeric memory name is supported")
+        self.init("has_bank", True,
+                  "Indicates that memories may be placed into banks")
+        self.init("has_tuning_step", True,
+                  "Indicates that memories store their tuning step")
+        self.init("has_ctone", True,
+                  "Indicates that the radio keeps separate tone frequencies " +
+                  "for repeater and CTCSS operation")
+        self.init("has_cross", False,
+                  "Indicates that the radios supports different tone modes " +
+                  "on transmit and receive")
+        self.init("has_infinite_number", False,
+                  "Indicates that the radio is not constrained in the " +
+                  "number of memories that it can store")
 
-        self.valid_modes = list(MODES)
-        self.valid_tmodes = []
-        self.valid_duplexes = ["", "+", "-"]
-        self.valid_tuning_steps = list(TUNING_STEPS)
-        self.valid_bands = []
-        self.valid_skips = ["", "S"]
-        self.valid_power_levels = []
-        self.valid_characters = CHARSET_UPPER_NUMERIC
-        self.valid_name_length = 6
+        self.init("valid_modes", list(MODES),
+                  "Supported emission (or receive) modes")
+        self.init("valid_tmodes", [],
+                  "Supported tone squelch modes")
+        self.init("valid_duplexes", ["", "+", "-"],
+                  "Supported duplex modes")
+        self.init("valid_tuning_steps", list(TUNING_STEPS),
+                  "Supported tuning steps")
+        self.init("valid_bands", [],
+                  "Supported frequency ranges")
+        self.init("valid_skips", ["", "S"],
+                  "Supported memory scan skip settings")
+        self.init("valid_power_levels", [],
+                  "Supported power levels")
+        self.init("valid_characters", CHARSET_UPPER_NUMERIC,
+                  "Supported characters for a memory's alphanumeric tag")
+        self.init("valid_name_length", 6,
+                  "The maximum number of characters in a memory's " +
+                  "alphanumeric tag")
 
-        self.has_sub_devices = False
-        self.memory_bounds = (0, 1)
-        self.can_odd_split = False
+        self.init("has_sub_devices", False,
+                  "Indicates that the radio behaves as two semi-independent " +
+                  "devices")
+        self.init("memory_bounds", (0, 1),
+                  "The minimum and maximum channel numbers")
+        self.init("can_odd_split", False,
+                  "Indicates that the radio can store an independent " +
+                  "transmit frequency")
 
-        self.requires_call_lists = True
-        self.has_implicit_calls = False
+        self.init("requires_call_lists", True,
+                  "[D-STAR] Indicates that the radio requires all callsigns " +
+                  "to be in the master list and cannot be stored " +
+                  "arbitrarily in each memory channel")
+        self.init("has_implicit_calls", False,
+                  "[D-STAR] Indicates that the radio has an implied " +
+                  "callsign at the beginning of the master URCALL list")
 
     def is_a_feature(self, name):
         return name in self._valid_map.keys()
