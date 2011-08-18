@@ -89,7 +89,7 @@ def default_build():
                     ('/usr/share/chirp/images', image_files),
                     ('/usr/share/doc/chirp', ['COPYING']),
 		    ('/usr/share/pixmaps', ['share/chirp.png']),
-                    ('/usr/man/man1', ["share/chirpw.1"]),
+                    ('/usr/share/man/man1', ["share/chirpw.1"]),
                     ] + locale_files)
 
 def rpttool_build():
