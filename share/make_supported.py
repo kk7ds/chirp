@@ -37,7 +37,17 @@ def supported_row(radio, odd):
         if key == "memory_bounds":
             value = "%i-%i" % value
 
-        if isinstance(value, bool):
+        if key == "requires_call_lists":
+            if "DV" not in rf.valid_modes:
+                value = None
+            elif value:
+                value = "Required"
+            else:
+                value = "Optional"
+
+        if value is None:
+            row += '<td class="%s"><span class="False">N/A</span></td>' % key
+        elif isinstance(value, bool):
             row += '<td class="%s"><span class="%s">%s</span></td>' % \
                 (key,
                  value,
