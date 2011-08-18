@@ -66,7 +66,8 @@ DRV_TO_RADIO = {
     "tmd710"         : kenwood_live.TMD710Radio,
     "tmv7"           : kenwood_live.TMV7Radio,
     "thk2"           : kenwood_live.THK2Radio,
-    "v71a"           : tmv71.TMV71ARadio,
+    "thf6"           : kenwood_live.THF6ARadio,
+    "v71a"           : kenwood_live.TMV71Radio,
 
     # Jetstream
     "jt220m"         : alinco.JT220MRadio,
