@@ -29,6 +29,12 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
         rf.has_bank_index = True
         rf.memory_bounds = (0, self._upper)
         rf.has_sub_devices = True
+        rf.valid_modes = ["FM", "AM"]
+        if "A" in self.VARIANT:
+            rf.valid_modes.append("WFM")
+        else:
+            rf.valid_modes.append("DV")
+            rf.valid_modes.append("NFM")
         return rf
 
     def get_memory(self, number):
