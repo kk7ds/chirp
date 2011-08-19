@@ -101,8 +101,8 @@ def show_blob(title, result):
 class MemoryEditor(common.Editor):
     cols = [
         ("Loc"       , TYPE_INT,     gtk.CellRendererText,  ),
-        ("Name"      , TYPE_STRING,  gtk.CellRendererText,  ), 
         ("Frequency" , TYPE_INT64,   gtk.CellRendererText,  ),
+        ("Name"      , TYPE_STRING,  gtk.CellRendererText,  ), 
         ("Tone Mode" , TYPE_STRING,  gtk.CellRendererCombo, ),
         ("Tone"      , TYPE_FLOAT,   gtk.CellRendererCombo, ),
         ("ToneSql"   , TYPE_FLOAT,   gtk.CellRendererCombo, ),
@@ -629,6 +629,20 @@ time.  Are you sure you want to do this?"""
 
         filled = self.col("_filled")
 
+        default_col_order = [x for x,y,z in self.cols if z]
+        try:
+            col_order = self._config.get("column_order_%s" % \
+                                             self.__class__.__name__).split(",")
+            if len(col_order) != len(default_col_order):
+                raise Exception()
+            for i in col_order:
+                if i not in default_col_order:
+                    raise Exception()
+        except Exception, e:
+            print e
+            col_order = default_col_order
+
+        cols = {}
         i = 0
         for _cap, _type, _rend in self.cols:
             if not _rend:
@@ -658,13 +672,16 @@ time.  Are you sure you want to do this?"""
                 col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
                 
+            col.set_reorderable(True)
             col.set_sort_column_id(i)
             col.set_resizable(True)
             col.set_min_width(1)
             col.set_visible(not _cap.startswith("_"))
-            self.view.append_column(col)
-
+            cols[_cap] = col
             i += 1
+
+        for cap in col_order:
+            self.view.append_column(cols[cap])
 
         self.store.set_sort_column_id(self.col("Loc"), gtk.SORT_ASCENDING)
 
@@ -1175,6 +1192,12 @@ time.  Are you sure you want to do this?"""
     def paste_selection(self):
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.request_text(self._paste_selection)
+
+    def prepare_close(self):
+        cols = self.view.get_columns()
+        self._config.set("column_order_%s" % self.__class__.__name__,
+                         ",".join([x.get_title() for x in cols]))
+            
 
 class DstarMemoryEditor(MemoryEditor):
     def _get_cols_to_hide(self, iter):

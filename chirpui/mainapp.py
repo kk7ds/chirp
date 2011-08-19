@@ -469,6 +469,8 @@ class ChirpMain(gtk.Window):
         eset.rthread.stop()
         eset.rthread.join()
     
+        eset.prepare_close()
+
         if eset.radio.pipe:
             eset.radio.pipe.close()
 

@@ -283,3 +283,6 @@ class EditorSet(gtk.VBox):
 
     def set_read_only(self, read_only=True):
         self.memedit.set_read_only(read_only)
+
+    def prepare_close(self):
+        self.memedit.prepare_close()
