@@ -680,7 +680,7 @@ class ChirpMain(gtk.Window):
 
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)
-        d.set_copyright("Copyright 2010 Dan Smith (KK7DS)")
+        d.set_copyright("Copyright 2011 Dan Smith (KK7DS)")
         d.set_website("http://chirp.danplanet.com")
         d.set_authors(("Dan Smith <dsmith@danplanet.com>",))
         d.set_comments(verinfo)
