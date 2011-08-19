@@ -21,6 +21,7 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-91/92AD"
     VARIANT = "ICF File"
+    _model = None
 
     _upper = 1200
 
