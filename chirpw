@@ -23,6 +23,7 @@ platform.get_platform()
 
 import gtk
 import sys
+import os
 
 from chirpui import mainapp, config
 
@@ -30,6 +31,10 @@ if hasattr(sys, "frozen"):
     log = file("debug.log", "w", 0)
     sys.stderr = log
     sys.stdout = log
+elif not os.isatty(0):
+    log = file(platform.get_platform().config_file("debug.log"), "w", 0)
+    sys.stdout = log
+    sys.stderr = log
 
 print "CHIRP %s on %s" % (CHIRP_VERSION, platform.get_platform().os_version_string())
 
