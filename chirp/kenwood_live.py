@@ -16,6 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import threading
+import os
+
+NOCACHE = os.environ.has_key("CHIRP_NOCACHE")
 
 from chirp import chirp_common, errors
 
@@ -117,7 +120,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         if number < 0 or number > self._upper:
             raise errors.InvalidMemoryLocation( \
                 "Number must be between 0 and %i" % self._upper)
-        if self.__memcache.has_key(number):
+        if self.__memcache.has_key(number) and not NOCACHE:
             return self.__memcache[number]
 
         result = command(self.pipe, *self._cmd_get_memory(number))
@@ -162,12 +165,16 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         spec = ",".join(spec)
         r1 = command(self.pipe, *self._cmd_set_memory(memory.number, spec))
         if not iserr(r1):
+            import time
+            time.sleep(0.5)
             r2 = command(self.pipe, *self._cmd_set_memory_name(memory.number,
                                                                memory.name))
             if not iserr(r2):
                 self.__memcache[memory.number] = memory
             else:
-                raise errors.InvalidDataError("Radio refused %i" % memory.number)
+                raise errors.InvalidDataError("Radio refused name %i: %s" %\
+                                                  (memory.number,
+                                                   repr(memory.name)))
         else:
             raise errors.InvalidDataError("Radio refused %i" % memory.number)
 
@@ -633,6 +640,12 @@ class THK2Radio(KenwoodLiveRadio):
         return mem
 
     def _make_mem_spec(self, mem):
+        try:
+            rti = THK2_TONES.index(mem.rtone)
+            cti = THK2_TONES.index(mem.ctone)
+        except ValueError:
+            raise errors.UnsupportedToneError()
+
         spec = ( \
             "%010i" % mem.freq,
             "0",
@@ -641,8 +654,8 @@ class THK2Radio(KenwoodLiveRadio):
             "%i"    % int(mem.tmode == "Tone"),
             "%i"    % int(mem.tmode == "TSQL"),
             "%i"    % int(mem.tmode == "DTCS"),
-            "%02i"  % THK2_TONES.index(mem.rtone),
-            "%02i"  % THK2_TONES.index(mem.ctone),
+            "%02i"  % rti,
+            "%02i"  % cti,
             "%03i"  % chirp_common.DTCS_CODES.index(mem.dtcs),
             "%08i"  % mem.offset,
             "%i"    % THK2_MODES.index(mem.mode),
@@ -653,3 +666,35 @@ class THK2Radio(KenwoodLiveRadio):
             )
         return spec
             
+
+class TM271Radio(THK2Radio):
+    MODEL = "TM-271"
+    
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.can_odd_split = False
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_tuning_step = False
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = THK2_MODES
+        rf.valid_duplexes = THK2_DUPLEX
+        rf.valid_characters = THK2_CHARS
+        rf.valid_name_length = 6
+        rf.valid_bands = [(137000000, 173990000)]
+        rf.valid_skips = ["", "S"]
+        rf.valid_tuning_steps = [5.0]
+        rf.memory_bounds = (0, 99)
+        return rf
+
+    def _cmd_get_memory(self, number):
+        return "ME", "%03i" % number
+
+    def _cmd_get_memory_name(self, number):
+        return "MN", "%03i" % number
+
+    def _cmd_set_memory(self, number, spec):
+        return "ME", "%03i,%s" % (number, spec)
+
+    def _cmd_set_memory_name(self, number, name):
+        return "MN", "%03i,%s" % (number, name)

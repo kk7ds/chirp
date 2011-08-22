@@ -26,3 +26,6 @@ class InvalidMemoryLocation(Exception):
 
 class RadioError(Exception):
     pass
+
+class UnsupportedToneError(Exception):
+    pass
