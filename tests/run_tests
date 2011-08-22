@@ -23,6 +23,7 @@ from serial import Serial
 sys.path.insert(0, "../")
 
 from chirp import chirp_common, directory, csv, import_logic, CHIRP_VERSION
+from chirp import errors
 
 TESTS = {}
 
@@ -48,6 +49,9 @@ class TestCrashError(TestError):
             ("Args were: %s" % self.__args) + os.linesep + \
             self.__tb
 
+    def get_original_exception(self):
+        return self.__exc
+
 class TestFailedError(TestError):
     def __init__(self, msg, detail=""):
         TestError.__init__(self, msg)
@@ -64,10 +68,17 @@ def get_tb():
 
 class TestWrapper:
     def __init__(self, dstclass, filename):
+        self._ignored_exceptions = []
         self._dstclass = dstclass
         self._filename = filename
         self._make_reload = False
         self.open()
+
+    def pass_exception_type(self, et):
+        self._ignored_exceptions.append(et)
+
+    def nopass_exception_type(self, et):
+        self._ignored_exceptions.remove(et)
 
     def make_reload(self):
         self._make_reload = True
@@ -242,6 +253,7 @@ class TestCaseBruteForce(TestCase):
         self.compare_mem(m, ret_m)
 
     def do_tone(self, m, rf):
+        self._wrapper.pass_exception_type(errors.UnsupportedToneError)
         for tone in chirp_common.TONES:
             for tmode in rf.valid_tmodes:
                 if tmode not in chirp_common.TONE_MODES:
@@ -262,7 +274,14 @@ class TestCaseBruteForce(TestCase):
                 else:
                     raise TestInternalError("Unknown tone mode `%s'" % tmode)
 
-                self.set_and_compare(m)
+                try:
+                    self.set_and_compare(m)
+                except errors.UnsupportedToneError:
+                    # If a radio doesn't support a particular tone value,
+                    # don't punish it
+                    print "Ignoring unsupported tone"
+                    pass
+        self._wrapper.nopass_exception_type(errors.UnsupportedToneError)
 
     def do_dtcs(self, m, rf):
         if not rf.has_dtcs:
