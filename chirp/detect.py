@@ -102,17 +102,10 @@ def detect_kenwoodlive_radio(port):
     if not r_id:
         raise errors.RadioError("Unable to probe radio model")
 
-    models = {
-        "TH-D7"   : kenwood_live.THD7Radio,
-        "TH-D72"  : thd72.THD72Radio,
-        "TH-D7G"   : kenwood_live.THD7Radio,
-        "TM-D700" : kenwood_live.TMD700Radio,
-        "TM-D710" : kenwood_live.TMD710Radio,
-        "TM-V71" : kenwood_live.TMV71Radio,
-        "TM-V7"   : kenwood_live.TMV7Radio,
-        "TH-F6"  : kenwood_live.THF6ARadio,
-        "TH-K2"  : kenwood_live.THK2Radio,
-        }
+    models = {}
+    for rclass in directory.DRV_TO_RADIO.values():
+        if rclass.VENDOR == "Kenwood":
+            models[rclass.MODEL] = rclass
 
     if r_id in models.keys():
         return models[r_id]
