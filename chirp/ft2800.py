@@ -17,16 +17,22 @@
 
 import time
 import struct
+import os
 
 from chirp import util, memmap, chirp_common, bitwise
 from chirp.yaesu_clone import YaesuCloneModeRadio
+
+DEBUG = os.getenv("CHIRP_DEBUG") and True or False
 
 def send(s, data):
 
     for i in data:
         s.write(i)
-        time.sleep(0.002)
-    if len(s.read(len(data))) != len(data):
+        time.sleep(0.001)
+    rslt = s.read(len(data))
+    if rslt != data:
+        print "Sent:\n%s" % util.hexprint(data)
+        print "Read:\n%s" % util.hexprint(rslt)
         raise Exception("Failed to read echo")
 
 IDBLOCK = "\x0c\x01\x41\x33\x35\x02\x00\xb8"
@@ -40,7 +46,8 @@ def download(radio):
         if data == IDBLOCK:
             break
 
-    print "Header:\n%s" % util.hexprint(data)
+    if DEBUG:
+        print "Header:\n%s" % util.hexprint(data)
 
     if len(data) != 8:
         raise Exception("Failed to read header")
@@ -52,7 +59,8 @@ def download(radio):
     while len(data) < radio._block_sizes[1]:
         time.sleep(0.1)
         chunk = radio.pipe.read(38)
-        print "Got: %i:\n%s" % (len(chunk), util.hexprint(chunk))
+        if DEBUG:
+            print "Got: %i:\n%s" % (len(chunk), util.hexprint(chunk))
         if len(chunk) == 8:
             print "END?"
         elif len(chunk) != 38:
@@ -76,7 +84,8 @@ def download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    print "Total: %i" % len(data)
+    if DEBUG:
+        print "Total: %i" % len(data)
 
     return memmap.MemoryMap(data)
 
@@ -86,7 +95,8 @@ def upload(radio):
     time.sleep(1)
 
     ack = radio.pipe.read(3)
-    print "Ack was:\n%s" % util.hexprint(ack)
+    if DEBUG:
+        print "Ack was:\n%s" % util.hexprint(ack)
     if ack != ACK:
         raise Exception("Radio did not ack ID")
 
@@ -99,7 +109,8 @@ def upload(radio):
             cs += ord(byte)
         data += chr(cs & 0xFF)
 
-        print "Writing block %i:\n%s" % (block, util.hexprint(data))
+        if DEBUG:
+            print "Writing block %i:\n%s" % (block, util.hexprint(data))
 
         send(radio.pipe, data)
         time.sleep(0.1)
@@ -111,7 +122,7 @@ def upload(radio):
             status = chirp_common.Status()
             status.max = radio._block_sizes[1]
             status.cur = block * 32
-            status.msg = "Cloning from radio"
+            status.msg = "Cloning to radio"
             radio.status_fn(status)
         block += 1
 
@@ -186,6 +197,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
+        self.pipe.setTimeout(1)
         self.pipe.setParity("E")
         upload(self)
 
