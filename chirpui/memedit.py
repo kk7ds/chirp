@@ -481,6 +481,123 @@ time.  Are you sure you want to do this?"""
 
             self.prefill()
             self.emit("changed")
+        elif action in ["move_up", "move_dn"]:
+            if action.endswith("up"):
+                delta = -1
+                donor_path = paths[-1]
+                victim_path = paths[0]
+            else:
+                delta = 1
+                donor_path = paths[0]
+                victim_path = paths[-1]
+
+            try:
+                victim_path = (victim_path[0] + delta,)
+                if victim_path[0] < 0:
+                    raise ValueError()
+                donor_loc = store.get(store.get_iter(donor_path),
+                                      self.col("Loc"))[0]
+                victim_loc = store.get(store.get_iter(victim_path),
+                                       self.col("Loc"))[0]
+            except ValueError:
+                print "No room to %s" % action
+                return
+
+            class Context:
+                pass
+            ctx = Context()
+
+            ctx.victim_mem = None
+            ctx.donor_loc = donor_loc
+            ctx.done_count = 0
+            ctx.path_count = len(paths)
+
+            # Steps:
+            # 1. Grab the victim (the one that will need to be saved and moved
+            #    from the front to the back or back to the front) and save it
+            # 2. Grab each memory along the way, storing it in the +delta
+            #    destination location after we get it
+            # 3. If we're the final move, then schedule storing the victim
+            #    in the hole we created
+
+            def update_selection():
+                sel = self.view.get_selection()
+                sel.unselect_all()
+                for path in paths:
+                    gobject.idle_add(sel.select_path, (path[0]+delta,))
+
+            def save_victim(mem, ctx):
+                ctx.victim_mem = mem
+
+            def store_victim(mem, dest):
+                old = mem.number
+                mem.number = dest
+                job = common.RadioJob(None, "set_memory", mem)
+                job.set_desc("Moving memory from %i to %i" % (old, dest))
+                self.rthread.submit(job)
+                self._set_memory(store.get_iter(donor_path), mem)
+                update_selection()
+
+            def move_mem(mem, delta, ctx, iter):
+                old = mem.number
+                mem.number += delta
+                job = common.RadioJob(None, "set_memory", mem)
+                job.set_desc("Moving memory from %i to %i" % (old, old+delta))
+                self.rthread.submit(job)
+                self._set_memory(iter, mem)
+                ctx.done_count += 1
+                if ctx.done_count == ctx.path_count:
+                    store_victim(ctx.victim_mem, ctx.donor_loc)
+
+            job = common.RadioJob(lambda m: save_victim(m, ctx),
+                                  "get_memory", victim_loc)
+            job.set_desc("Getting memory %i" % victim_loc)
+            self.rthread.submit(job)
+
+            for i in range(len(paths)):
+                path = paths[i]
+                if delta > 0:
+                    dest = i+1
+                else:
+                    dest = i-1
+
+                if dest < 0 or dest >= len(paths):
+                    dest = victim_path
+                else:
+                    dest = paths[dest]
+                print "This: %s Next: %s" % (str(path), str(dest))
+
+                iter = store.get_iter(path)
+                loc, = store.get(iter, self.col("Loc"))
+                job = common.RadioJob(move_mem, "get_memory", loc)
+                job.set_cb_args(delta, ctx, store.get_iter(dest))
+                job.set_desc("Getting memory %i" % loc)
+                self.rthread.submit(job)
+
+        elif action == "exchange":
+            loc_a, = store.get(store.get_iter(paths[0]), self.col("Loc"))
+            loc_b, = store.get(store.get_iter(paths[1]), self.col("Loc"))
+
+            def store_mem(mem, dst):
+                src = mem.number
+                mem.number = dst
+                job = common.RadioJob(None, "set_memory", mem)
+                job.set_desc("Moving memory from %i to %i" % (src, dst))
+                self.rthread.submit(job)
+                if dst == loc_a:
+                    self.prefill()
+
+            job = common.RadioJob(lambda m: store_mem(m, loc_b),
+                                  "get_memory", loc_a)
+            job.set_desc("Getting memory %i" % loc_a)
+            self.rthread.submit(job)
+
+            job = common.RadioJob(lambda m: store_mem(m, loc_a),
+                                  "get_memory", loc_b)
+            job.set_desc("Getting memory %i" % loc_b)
+            self.rthread.submit(job)
+
+
         elif action in ["cut", "copy"]:
             self.copy_selection(action=="cut")
         elif action == "paste":
@@ -552,6 +669,9 @@ time.  Are you sure you want to do this?"""
     <menuitem action="insert_next"/>
     <menuitem action="delete"/>
     <menuitem action="delete_s"/>
+    <menuitem action="move_up"/>
+    <menuitem action="move_dn"/>
+    <menuitem action="exchange"/>
     <separator/>
     <menuitem action="cut"/>
     <menuitem action="copy"/>
@@ -571,6 +691,9 @@ time.  Are you sure you want to do this?"""
             ("insert_next", "Insert row below"),
             ("delete", issingle and "Delete" or "Delete all"),
             ("delete_s", "Delete (and shift up)"),
+            ("move_up", "Move up"),
+            ("move_dn", "Move down"),
+            ("exchange", "Exchange memories"),
             ("cut", "Cut"),
             ("copy", "Copy"),
             ("paste", "Paste"),
@@ -579,7 +702,7 @@ time.  Are you sure you want to do this?"""
             ]
 
         no_multiple = ["insert_prev", "insert_next", "paste", "devshowraw"]
-        only_two = ["devdiffraw"]
+        only_two = ["devdiffraw", "exchange"]
 
         ag = gtk.ActionGroup("Menu")
 
