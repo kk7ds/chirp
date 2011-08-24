@@ -41,7 +41,9 @@ gobject.type_register(Editor)
 
 def DBG(*args):
     if False:
-        print args.join(" ")
+        print " ".join(args)
+
+VERBOSE = False
 
 class RadioJob:
     def __init__(self, cb, func, *args, **kwargs):
@@ -68,6 +70,8 @@ class RadioJob:
             DBG("Running %s (%s %s)" % (self.func,
                                         str(self.args),
                                         str(self.kwargs)))
+            if VERBOSE:
+                print self.desc
             result = func(*self.args, **self.kwargs)
         except errors.InvalidMemoryLocation, e:
             result = e
