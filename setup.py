@@ -80,6 +80,8 @@ def default_build():
 
     print "LOC: %s" % str(locale_files)
 
+    xsd_files = glob("chirp*.xsd")
+
     setup(
         name="chirp",
         packages=["chirp", "chirpui"],
@@ -87,6 +89,7 @@ def default_build():
         scripts=["chirpw"],
         data_files=[('/usr/share/applications', desktop_files),
                     ('/usr/share/chirp/images', image_files),
+                    ('/usr/share/chirp', xsd_files),
                     ('/usr/share/doc/chirp', ['COPYING']),
 		    ('/usr/share/pixmaps', ['share/chirp.png']),
                     ('/usr/share/man/man1', ["share/chirpw.1"]),
