@@ -48,6 +48,7 @@ VERBOSE = False
 class RadioJob:
     def __init__(self, cb, func, *args, **kwargs):
         self.cb = cb
+        self.cb_args = ()
         self.func = func
         self.args = args
         self.kwargs = kwargs
@@ -58,6 +59,9 @@ class RadioJob:
 
     def set_desc(self, desc):
         self.desc = desc
+
+    def set_cb_args(self, *args):
+        self.cb_args = args
 
     def execute(self, radio):
         try:
@@ -83,7 +87,7 @@ class RadioJob:
             result = e
 
         if self.cb:
-            gobject.idle_add(self.cb, result)
+            gobject.idle_add(self.cb, result, *self.cb_args)
 
 class RadioThread(threading.Thread, gobject.GObject):
     __gsignals__ = {
