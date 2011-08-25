@@ -428,11 +428,220 @@ time.  Are you sure you want to do this?"""
             job.set_desc("Adding memory %i" % mem.number)
             self.rthread.submit(job)
 
+    def _delete_rows(self, paths):
+        for path in paths:
+            iter = self.store.get_iter(path)
+            cur_pos, = self.store.get(iter, self.col("Loc"))
+            self.store.set(iter, self.col("_filled"), False)
+            job = common.RadioJob(None, "erase_memory", cur_pos)
+            job.set_desc("Erasing memory %i" % cur_pos)
+            self.rthread.submit(job)
+            
+            def handler(mem):
+                if not isinstance(mem, Exception):
+                    if not mem.empty or self.show_empty:
+                        gobject.idle_add(self.set_memory, mem)
+            
+            job = common.RadioJob(handler, "get_memory", cur_pos)
+            job.set_desc("Getting memory %s" % cur_pos)
+            self.rthread.submit(job)
+            
+            if not self.show_empty:
+                self.store.remove(iter)
+
+        self.emit("changed")
+
+    def _delete_rows_and_shift(self, paths):
+        iter = self.store.get_iter(paths[0])
+        starting_loc, = self.store.get(iter, self.col("Loc"))
+        for i in range(0, len(paths)):
+            sd = shiftdialog.ShiftDialog(self.rthread)
+            sd.delete(starting_loc, quiet=True)
+            sd.destroy()
+
+        self.prefill()
+        self.emit("changed")
+
+    def _move_up_down(self, paths, action):
+        if action.endswith("up"):
+            delta = -1
+            donor_path = paths[-1]
+            victim_path = paths[0]
+        else:
+            delta = 1
+            donor_path = paths[0]
+            victim_path = paths[-1]
+
+        try:
+            victim_path = (victim_path[0] + delta,)
+            if victim_path[0] < 0:
+                raise ValueError()
+            donor_loc = self.store.get(self.store.get_iter(donor_path),
+                                  self.col("Loc"))[0]
+            victim_loc = self.store.get(self.store.get_iter(victim_path),
+                                   self.col("Loc"))[0]
+        except ValueError:
+            print "No room to %s" % action
+            return
+
+        class Context:
+            pass
+        ctx = Context()
+
+        ctx.victim_mem = None
+        ctx.donor_loc = donor_loc
+        ctx.done_count = 0
+        ctx.path_count = len(paths)
+
+        # Steps:
+        # 1. Grab the victim (the one that will need to be saved and moved
+        #    from the front to the back or back to the front) and save it
+        # 2. Grab each memory along the way, storing it in the +delta
+        #    destination location after we get it
+        # 3. If we're the final move, then schedule storing the victim
+        #    in the hole we created
+
+        def update_selection():
+            sel = self.view.get_selection()
+            sel.unselect_all()
+            for path in paths:
+                gobject.idle_add(sel.select_path, (path[0]+delta,))
+
+        def save_victim(mem, ctx):
+            ctx.victim_mem = mem
+
+        def store_victim(mem, dest):
+            old = mem.number
+            mem.number = dest
+            job = common.RadioJob(None, "set_memory", mem)
+            job.set_desc("Moving memory from %i to %i" % (old, dest))
+            self.rthread.submit(job)
+            self._set_memory(self.store.get_iter(donor_path), mem)
+            update_selection()
+
+        def move_mem(mem, delta, ctx, iter):
+            old = mem.number
+            mem.number += delta
+            job = common.RadioJob(None, "set_memory", mem)
+            job.set_desc("Moving memory from %i to %i" % (old, old+delta))
+            self.rthread.submit(job)
+            self._set_memory(iter, mem)
+            ctx.done_count += 1
+            if ctx.done_count == ctx.path_count:
+                store_victim(ctx.victim_mem, ctx.donor_loc)
+
+        job = common.RadioJob(lambda m: save_victim(m, ctx),
+                              "get_memory", victim_loc)
+        job.set_desc("Getting memory %i" % victim_loc)
+        self.rthread.submit(job)
+
+        for i in range(len(paths)):
+            path = paths[i]
+            if delta > 0:
+                dest = i+1
+            else:
+                dest = i-1
+
+            if dest < 0 or dest >= len(paths):
+                dest = victim_path
+            else:
+                dest = paths[dest]
+
+            iter = self.store.get_iter(path)
+            loc, = self.store.get(iter, self.col("Loc"))
+            job = common.RadioJob(move_mem, "get_memory", loc)
+            job.set_cb_args(delta, ctx, self.store.get_iter(dest))
+            job.set_desc("Getting memory %i" % loc)
+            self.rthread.submit(job)
+
+    def _exchange_memories(self, paths):
+        loc_a, = self.store.get(self.store.get_iter(paths[0]), self.col("Loc"))
+        loc_b, = self.store.get(self.store.get_iter(paths[1]), self.col("Loc"))
+
+        def store_mem(mem, dst):
+            src = mem.number
+            mem.number = dst
+            job = common.RadioJob(None, "set_memory", mem)
+            job.set_desc("Moving memory from %i to %i" % (src, dst))
+            self.rthread.submit(job)
+            if dst == loc_a:
+                self.prefill()
+
+        job = common.RadioJob(lambda m: store_mem(m, loc_b),
+                              "get_memory", loc_a)
+        job.set_desc("Getting memory %i" % loc_a)
+        self.rthread.submit(job)
+
+        job = common.RadioJob(lambda m: store_mem(m, loc_a),
+                              "get_memory", loc_b)
+        job.set_desc("Getting memory %i" % loc_b)
+        self.rthread.submit(job)
+
+    def _show_raw(self, cur_pos):
+        def idle_show_raw(result):
+            gobject.idle_add(show_blob, "Raw memory %i" % cur_pos, result)
+
+        job = common.RadioJob(idle_show_raw, "get_raw_memory", cur_pos)
+        job.set_desc("Getting raw memory %i" % cur_pos)
+        self.rthread.submit(job)
+
+    def _diff_raw(self, paths):
+        if len(paths) != 2:
+            common.show_error("You can only diff two memories!")
+            return
+
+        loc_a = self.store.get(self.store.get_iter(paths[0]),
+                               self.col("Loc"))[0]
+        loc_b = self.store.get(self.store.get_iter(paths[1]),
+                               self.col("Loc"))[0]
+
+        raw = {}
+
+        def simple_diff(a, b):
+            lines_a = a.split(os.linesep)
+            lines_b = b.split(os.linesep)
+
+            diff = ""
+            for i in range(0, len(lines_a)):
+                if lines_a[i] != lines_b[i]:
+                    diff += "-%s%s" % (lines_a[i], os.linesep)
+                    diff += "+%s%s" % (lines_b[i], os.linesep)
+                else:
+                    diff += " %s%s" % (lines_a[i], os.linesep)
+            return diff
+
+        def diff_raw(which, result):
+            raw[which] = "Memory %i:%s%s" % (which, os.linesep, result)
+
+            if len(raw.keys()) == 2:
+                diff = simple_diff(raw[loc_a], raw[loc_b])
+                gobject.idle_add(show_blob,
+                                 "Diff of %i and %i" % (loc_a, loc_b),
+                                 diff)
+
+        job = common.RadioJob(lambda r: diff_raw(loc_a, r),
+                              "get_raw_memory", loc_a)
+        job.set_desc("Getting raw memory %i" % loc_a)
+        self.rthread.submit(job)
+
+        job = common.RadioJob(lambda r: diff_raw(loc_b, r),
+                              "get_raw_memory", loc_b)
+        job.set_desc("Getting raw memory %i" % loc_b)
+        self.rthread.submit(job)
 
     def mh(self, _action, store, paths):
         action = _action.get_name()
         iter = store.get_iter(paths[0])
         cur_pos, = store.get(iter, self.col("Loc"))
+
+        require_contiguous = ["delete", "delete_s", "move_up", "move_dn"]
+        if action in require_contiguous:
+            for path in paths[1:]:
+                if store.get_path(store.iter_next(iter)) != path:
+                    common.show_error("This operation only works on " + \
+                                          "contiguous memories")
+                    return
+            iter = store.iter_next(iter)
 
         if action == "insert_next":
             self.insert_hard(store, iter, 1)
@@ -441,223 +650,21 @@ time.  Are you sure you want to do this?"""
             self.insert_hard(store, iter, -1)
             self.emit("changed")
         elif action == "delete":
-            for path in paths:
-                iter = store.get_iter(path)
-                cur_pos, = store.get(iter, self.col("Loc"))
-                store.set(iter, self.col("_filled"), False)
-                job = common.RadioJob(None, "erase_memory", cur_pos)
-                job.set_desc("Erasing memory %i" % cur_pos)
-                self.rthread.submit(job)
-                
-                def handler(mem):
-                    if not isinstance(mem, Exception):
-                        if not mem.empty or self.show_empty:
-                            gobject.idle_add(self.set_memory, mem)
-                
-                job = common.RadioJob(handler, "get_memory", cur_pos)
-                job.set_desc("Getting memory %s" % cur_pos)
-                self.rthread.submit(job)
-                
-                if not self.show_empty:
-                    store.remove(iter)
-
-            self.emit("changed")
-
+            self._delete_rows(paths)
         elif action == "delete_s":
-            starting_loc, = store.get(iter, self.col("Loc"))
-
-            # Check that they are all contiguous
-            for path in paths[1:]:
-                if store.get_path(store.iter_next(iter)) != path:
-                    common.show_error("This operation only works on " + \
-                                          "contiguous memories")
-                    return
-                iter = store.iter_next(iter)
-
-            for i in range(0, len(paths)):
-                sd = shiftdialog.ShiftDialog(self.rthread)
-                sd.delete(starting_loc, quiet=True)
-                sd.destroy()
-
-            self.prefill()
-            self.emit("changed")
+            return self._delete_rows_and_shift(paths)
         elif action in ["move_up", "move_dn"]:
-            last = paths[0][0]
-            for path, in paths[1:]:
-                if path != last+1:
-                    print "Not contiguous"
-                    return
-
-            if action.endswith("up"):
-                delta = -1
-                donor_path = paths[-1]
-                victim_path = paths[0]
-            else:
-                delta = 1
-                donor_path = paths[0]
-                victim_path = paths[-1]
-
-            try:
-                victim_path = (victim_path[0] + delta,)
-                if victim_path[0] < 0:
-                    raise ValueError()
-                donor_loc = store.get(store.get_iter(donor_path),
-                                      self.col("Loc"))[0]
-                victim_loc = store.get(store.get_iter(victim_path),
-                                       self.col("Loc"))[0]
-            except ValueError:
-                print "No room to %s" % action
-                return
-
-            class Context:
-                pass
-            ctx = Context()
-
-            ctx.victim_mem = None
-            ctx.donor_loc = donor_loc
-            ctx.done_count = 0
-            ctx.path_count = len(paths)
-
-            # Steps:
-            # 1. Grab the victim (the one that will need to be saved and moved
-            #    from the front to the back or back to the front) and save it
-            # 2. Grab each memory along the way, storing it in the +delta
-            #    destination location after we get it
-            # 3. If we're the final move, then schedule storing the victim
-            #    in the hole we created
-
-            def update_selection():
-                sel = self.view.get_selection()
-                sel.unselect_all()
-                for path in paths:
-                    gobject.idle_add(sel.select_path, (path[0]+delta,))
-
-            def save_victim(mem, ctx):
-                ctx.victim_mem = mem
-
-            def store_victim(mem, dest):
-                old = mem.number
-                mem.number = dest
-                job = common.RadioJob(None, "set_memory", mem)
-                job.set_desc("Moving memory from %i to %i" % (old, dest))
-                self.rthread.submit(job)
-                self._set_memory(store.get_iter(donor_path), mem)
-                update_selection()
-
-            def move_mem(mem, delta, ctx, iter):
-                old = mem.number
-                mem.number += delta
-                job = common.RadioJob(None, "set_memory", mem)
-                job.set_desc("Moving memory from %i to %i" % (old, old+delta))
-                self.rthread.submit(job)
-                self._set_memory(iter, mem)
-                ctx.done_count += 1
-                if ctx.done_count == ctx.path_count:
-                    store_victim(ctx.victim_mem, ctx.donor_loc)
-
-            job = common.RadioJob(lambda m: save_victim(m, ctx),
-                                  "get_memory", victim_loc)
-            job.set_desc("Getting memory %i" % victim_loc)
-            self.rthread.submit(job)
-
-            for i in range(len(paths)):
-                path = paths[i]
-                if delta > 0:
-                    dest = i+1
-                else:
-                    dest = i-1
-
-                if dest < 0 or dest >= len(paths):
-                    dest = victim_path
-                else:
-                    dest = paths[dest]
-                print "This: %s Next: %s" % (str(path), str(dest))
-
-                iter = store.get_iter(path)
-                loc, = store.get(iter, self.col("Loc"))
-                job = common.RadioJob(move_mem, "get_memory", loc)
-                job.set_cb_args(delta, ctx, store.get_iter(dest))
-                job.set_desc("Getting memory %i" % loc)
-                self.rthread.submit(job)
-
+            self._move_up_down(paths, action)
         elif action == "exchange":
-            loc_a, = store.get(store.get_iter(paths[0]), self.col("Loc"))
-            loc_b, = store.get(store.get_iter(paths[1]), self.col("Loc"))
-
-            def store_mem(mem, dst):
-                src = mem.number
-                mem.number = dst
-                job = common.RadioJob(None, "set_memory", mem)
-                job.set_desc("Moving memory from %i to %i" % (src, dst))
-                self.rthread.submit(job)
-                if dst == loc_a:
-                    self.prefill()
-
-            job = common.RadioJob(lambda m: store_mem(m, loc_b),
-                                  "get_memory", loc_a)
-            job.set_desc("Getting memory %i" % loc_a)
-            self.rthread.submit(job)
-
-            job = common.RadioJob(lambda m: store_mem(m, loc_a),
-                                  "get_memory", loc_b)
-            job.set_desc("Getting memory %i" % loc_b)
-            self.rthread.submit(job)
-
-
+            self._exchange_memories(paths)
         elif action in ["cut", "copy"]:
             self.copy_selection(action=="cut")
         elif action == "paste":
             self.paste_selection()
         elif action == "devshowraw":
-
-            def idle_show_raw(result):
-                gobject.idle_add(show_blob, "Raw memory %i" % cur_pos, result)
-
-            job = common.RadioJob(idle_show_raw, "get_raw_memory", cur_pos)
-            job.set_desc("Getting raw memory %i" % cur_pos)
-            self.rthread.submit(job)
+            self._show_raw(cur_pos)
         elif action == "devdiffraw":
-            if len(paths) != 2:
-                common.show_error("You can only diff two memories!")
-                return
-
-            loc_a = store.get(store.get_iter(paths[0]), self.col("Loc"))[0]
-            loc_b = store.get(store.get_iter(paths[1]), self.col("Loc"))[0]
-
-            raw = {}
-
-            def simple_diff(a, b):
-                lines_a = a.split(os.linesep)
-                lines_b = b.split(os.linesep)
-
-                diff = ""
-                for i in range(0, len(lines_a)):
-                    if lines_a[i] != lines_b[i]:
-                        diff += "-%s%s" % (lines_a[i], os.linesep)
-                        diff += "+%s%s" % (lines_b[i], os.linesep)
-                    else:
-                        diff += " %s%s" % (lines_a[i], os.linesep)
-                return diff
-
-            def diff_raw(which, result):
-                raw[which] = "Memory %i:%s%s" % (which, os.linesep, result)
-
-                if len(raw.keys()) == 2:
-                    diff = simple_diff(raw[loc_a], raw[loc_b])
-                    gobject.idle_add(show_blob,
-                                     "Diff of %i and %i" % (loc_a, loc_b),
-                                     diff)
-
-            job = common.RadioJob(lambda r: diff_raw(loc_a, r),
-                                  "get_raw_memory", loc_a)
-            job.set_desc("Getting raw memory %i" % loc_a)
-            self.rthread.submit(job)
-
-            job = common.RadioJob(lambda r: diff_raw(loc_b, r),
-                                  "get_raw_memory", loc_b)
-            job.set_desc("Getting raw memory %i" % loc_b)
-            self.rthread.submit(job)
-
+            self._diff_raw(paths)
     def hotkey(self, action):
         (store, paths) = self.view.get_selection().get_selected_rows()
         if len(paths) == 0:
