@@ -451,7 +451,7 @@ time.  Are you sure you want to do this?"""
             if not self.show_empty:
                 self.store.remove(iter)
 
-            return True # We changed memories
+        return True # We changed memories
 
     def _delete_rows_and_shift(self, paths):
         iter = self.store.get_iter(paths[0])
@@ -640,14 +640,14 @@ time.  Are you sure you want to do this?"""
         iter = store.get_iter(paths[0])
         cur_pos, = store.get(iter, self.col("Loc"))
 
-        require_contiguous = ["delete", "delete_s", "move_up", "move_dn"]
+        require_contiguous = ["delete_s", "move_up", "move_dn"]
         if action in require_contiguous:
+            last = paths[0][0]
             for path in paths[1:]:
-                if store.get_path(store.iter_next(iter)) != path:
-                    common.show_error("This operation only works on " + \
-                                          "contiguous memories")
+                if path[0] != last+1:
+                    self.emit("usermsg", "Memories must be contiguous")
                     return
-            iter = store.iter_next(iter)
+                last = path[0]
 
         changed = False
 
