@@ -482,6 +482,12 @@ time.  Are you sure you want to do this?"""
             self.prefill()
             self.emit("changed")
         elif action in ["move_up", "move_dn"]:
+            last = paths[0][0]
+            for path, in paths[1:]:
+                if path != last+1:
+                    print "Not contiguous"
+                    return
+
             if action.endswith("up"):
                 delta = -1
                 donor_path = paths[-1]
@@ -654,6 +660,8 @@ time.  Are you sure you want to do this?"""
 
     def hotkey(self, action):
         (store, paths) = self.view.get_selection().get_selected_rows()
+        if len(paths) == 0:
+            return
         self.mh(action, store, paths)
 
     def make_context_menu(self):
