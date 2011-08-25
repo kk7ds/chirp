@@ -24,9 +24,10 @@ from chirp.yaesu_clone import YaesuCloneModeRadio
 
 DEBUG = os.getenv("CHIRP_DEBUG") and True or False
 
+CHUNK_SIZE = 16
 def send(s, data):
-    for i in range(0, len(data), 16):
-        chunk = data[i:i+16]
+    for i in range(0, len(data), CHUNK_SIZE):
+        chunk = data[i:i+CHUNK_SIZE]
         s.write(chunk)
         echo = s.read(len(chunk))
         if chunk != echo:
@@ -190,13 +191,17 @@ class FT2800Radio(YaesuCloneModeRadio):
 
     def sync_in(self):
         self.pipe.setParity("E")
+        start = time.time()
         self._mmap = download(self)
+        print "Downloaded in %.2f sec" % (time.time() - start)
         self.process_mmap()
 
     def sync_out(self):
         self.pipe.setTimeout(1)
         self.pipe.setParity("E")
+        start = time.time()
         upload(self)
+        print "Uploaded in %.2f sec" % (time.time() - start)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
