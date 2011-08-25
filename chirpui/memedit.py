@@ -652,6 +652,10 @@ time.  Are you sure you want to do this?"""
             job.set_desc("Getting raw memory %i" % loc_b)
             self.rthread.submit(job)
 
+    def hotkey(self, action):
+        (store, paths) = self.view.get_selection().get_selected_rows()
+        self.mh(action, store, paths)
+
     def make_context_menu(self):
         if self._config.get_bool("developer", "state"):
             devmenu = """

@@ -992,6 +992,23 @@ class ChirpMain(gtk.Window):
         if not self.close_out():
             return True # Don't exit
 
+    def setup_extra_hotkeys(self):
+        accelg = self.menu_uim.get_accel_group()
+
+        actions = [
+            ("move_up", "<Control>Up",
+             lambda a: self.get_current_editorset().memedit.hotkey(a)),
+            ("move_dn", "<Control>Down",
+             lambda a: self.get_current_editorset().memedit.hotkey(a)),
+            ]
+
+        for name, key, fn in actions:
+            a = gtk.Action(name, name, name, "")
+            a.connect("activate", fn)
+            self.menu_ag.add_action_with_accel(a, key)
+            a.set_accel_group(accelg)
+            a.connect_accelerator()
+        
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
@@ -1042,3 +1059,4 @@ class ChirpMain(gtk.Window):
             CONF.set_bool("autorpt", True, "memedit")
 
         self.update_recent_files()
+        self.setup_extra_hotkeys()
