@@ -28,7 +28,10 @@ class EditorSet(gtk.VBox):
         "want-close" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "status" : (gobject.SIGNAL_RUN_LAST,
                     gobject.TYPE_NONE,
-                    (gobject.TYPE_STRING,))
+                    (gobject.TYPE_STRING,)),
+        "usermsg": (gobject.SIGNAL_RUN_LAST,
+                   gobject.TYPE_NONE,
+                   (gobject.TYPE_STRING,)),
         }
 
     def __init__(self, source, parent_window=None, tempname=None):
@@ -63,6 +66,8 @@ class EditorSet(gtk.VBox):
             self.memedit = memedit.MemoryEditor(self.rthread)
             print "Started"
             self.dstared = None
+
+        self.memedit.connect("usermsg", lambda e, m: self.emit("usermsg", m))
 
         if self.radio.get_features().has_bank_index:
             self.banked = bankedit.BankEditor(self.rthread)

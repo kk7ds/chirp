@@ -483,7 +483,7 @@ time.  Are you sure you want to do this?"""
             victim_loc = self.store.get(self.store.get_iter(victim_path),
                                    self.col("Loc"))[0]
         except ValueError:
-            print "No room to %s" % action
+            self.emit("usermsg", "No room to %s" % (action.replace("_", " ")))
             return False # No change
 
         class Context:
@@ -676,6 +676,7 @@ time.  Are you sure you want to do this?"""
             self.emit("changed")
 
     def hotkey(self, action):
+        self.emit("usermsg", "")
         (store, paths) = self.view.get_selection().get_selected_rows()
         if len(paths) == 0:
             return
@@ -751,6 +752,7 @@ time.  Are you sure you want to do this?"""
         return uim.get_widget("/Menu")
 
     def click_cb(self, view, event):
+        self.emit("usermsg", "")
         if event.button != 3:
             return False
 

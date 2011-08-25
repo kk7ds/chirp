@@ -26,7 +26,9 @@ from chirpui import reporting
 
 class Editor(gobject.GObject):
     __gsignals__ = {
-        'changed' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+        'changed' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        'usermsg' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                     (gobject.TYPE_STRING,)),
         }
 
     root = None

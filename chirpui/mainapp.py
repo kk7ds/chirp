@@ -157,10 +157,15 @@ class ChirpMain(gtk.Window):
         self.sb_radio.pop(0)
         self.sb_radio.push(0, msg)
 
+    def ev_usermsg(self, editorset, msg):
+        self.sb_general.pop(0)
+        self.sb_general.push(0, msg)
+
     def do_new(self):
         eset = editorset.EditorSet("Untitled.csv", self)
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)
+        eset.connect("usermsg", self.ev_usermsg)
         eset.prime()
         eset.show()
 
@@ -228,6 +233,7 @@ class ChirpMain(gtk.Window):
             eset.set_read_only(read_only)
             eset.connect("want-close", self.do_close)
             eset.connect("status", self.ev_status)
+            eset.connect("usermsg", self.ev_usermsg)
             eset.show()
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             if first_tab:
