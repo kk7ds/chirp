@@ -25,15 +25,12 @@ from chirp.yaesu_clone import YaesuCloneModeRadio
 DEBUG = os.getenv("CHIRP_DEBUG") and True or False
 
 def send(s, data):
-
-    for i in data:
-        s.write(i)
-        time.sleep(0.001)
-    rslt = s.read(len(data))
-    if rslt != data:
-        print "Sent:\n%s" % util.hexprint(data)
-        print "Read:\n%s" % util.hexprint(rslt)
-        raise Exception("Failed to read echo")
+    for i in range(0, len(data), 16):
+        chunk = data[i:i+16]
+        s.write(chunk)
+        echo = s.read(len(chunk))
+        if chunk != echo:
+            raise Exception("Failed to read echo chunk")
 
 IDBLOCK = "\x0c\x01\x41\x33\x35\x02\x00\xb8"
 TRAILER = "\x0c\x02\x41\x33\x35\x00\x00\xb7"
