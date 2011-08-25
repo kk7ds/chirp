@@ -403,7 +403,7 @@ class MemoryEditor(common.Editor):
 by one spot until an empty location is reached.  This can take a LONG
 time.  Are you sure you want to do this?"""
             if not common.ask_yesno_question(txt):
-                return
+                return False # No change
 
         if delta <= 0:
             iter = _iter
@@ -428,6 +428,8 @@ time.  Are you sure you want to do this?"""
             job.set_desc("Adding memory %i" % mem.number)
             self.rthread.submit(job)
 
+        return True # We changed memories
+
     def _delete_rows(self, paths):
         for path in paths:
             iter = self.store.get_iter(path)
@@ -449,7 +451,7 @@ time.  Are you sure you want to do this?"""
             if not self.show_empty:
                 self.store.remove(iter)
 
-        self.emit("changed")
+            return True # We changed memories
 
     def _delete_rows_and_shift(self, paths):
         iter = self.store.get_iter(paths[0])
@@ -460,7 +462,7 @@ time.  Are you sure you want to do this?"""
             sd.destroy()
 
         self.prefill()
-        self.emit("changed")
+        return True # We changed memories
 
     def _move_up_down(self, paths, action):
         if action.endswith("up"):
@@ -482,7 +484,7 @@ time.  Are you sure you want to do this?"""
                                    self.col("Loc"))[0]
         except ValueError:
             print "No room to %s" % action
-            return
+            return False # No change
 
         class Context:
             pass
@@ -554,6 +556,8 @@ time.  Are you sure you want to do this?"""
             job.set_desc("Getting memory %i" % loc)
             self.rthread.submit(job)
 
+        return True # We (scheduled some) change to the memories
+
     def _exchange_memories(self, paths):
         loc_a, = self.store.get(self.store.get_iter(paths[0]), self.col("Loc"))
         loc_b, = self.store.get(self.store.get_iter(paths[1]), self.col("Loc"))
@@ -576,6 +580,8 @@ time.  Are you sure you want to do this?"""
                               "get_memory", loc_b)
         job.set_desc("Getting memory %i" % loc_b)
         self.rthread.submit(job)
+
+        # We (scheduled some) change to the memories
 
     def _show_raw(self, cur_pos):
         def idle_show_raw(result):
@@ -643,28 +649,32 @@ time.  Are you sure you want to do this?"""
                     return
             iter = store.iter_next(iter)
 
+        changed = False
+
         if action == "insert_next":
-            self.insert_hard(store, iter, 1)
-            self.emit("changed")
+            changed = self.insert_hard(store, iter, 1)
         elif action == "insert_prev":
-            self.insert_hard(store, iter, -1)
-            self.emit("changed")
+            changed = self.insert_hard(store, iter, -1)
         elif action == "delete":
-            self._delete_rows(paths)
+            changed = self._delete_rows(paths)
         elif action == "delete_s":
-            return self._delete_rows_and_shift(paths)
+            changed = self._delete_rows_and_shift(paths)
         elif action in ["move_up", "move_dn"]:
-            self._move_up_down(paths, action)
+            changed = self._move_up_down(paths, action)
         elif action == "exchange":
-            self._exchange_memories(paths)
+            changed = self._exchange_memories(paths)
         elif action in ["cut", "copy"]:
-            self.copy_selection(action=="cut")
+            changed = self.copy_selection(action=="cut")
         elif action == "paste":
-            self.paste_selection()
+            changed = self.paste_selection()
         elif action == "devshowraw":
             self._show_raw(cur_pos)
         elif action == "devdiffraw":
             self._diff_raw(paths)
+
+        if changed:
+            self.emit("changed")
+
     def hotkey(self, action):
         (store, paths) = self.view.get_selection().get_selected_rows()
         if len(paths) == 0:
@@ -1262,7 +1272,7 @@ time.  Are you sure you want to do this?"""
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.set_text(result)
 
-        return result        
+        return cut # Only changed if we did a cut
 
     def _paste_selection(self, clipboard, text, data):
         if not text:
