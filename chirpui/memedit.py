@@ -559,6 +559,10 @@ time.  Are you sure you want to do this?"""
         return True # We (scheduled some) change to the memories
 
     def _exchange_memories(self, paths):
+        if len(paths) != 2:
+            self.emit("usermsg", "Select two memories first")
+            return False
+
         loc_a, = self.store.get(self.store.get_iter(paths[0]), self.col("Loc"))
         loc_b, = self.store.get(self.store.get_iter(paths[1]), self.col("Loc"))
 
@@ -582,6 +586,7 @@ time.  Are you sure you want to do this?"""
         self.rthread.submit(job)
 
         # We (scheduled some) change to the memories
+        return True
 
     def _show_raw(self, cur_pos):
         def idle_show_raw(result):

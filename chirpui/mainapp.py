@@ -799,6 +799,9 @@ class ChirpMain(gtk.Window):
         conf = config.get()
         conf.set_bool("developer", action.get_active(), "state")
 
+        devaction = self.menu_ag.get_action("viewdeveloper")
+        devaction.set_visible(action.get_active())
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -834,20 +837,16 @@ class ChirpMain(gtk.Window):
             self.do_hide_unused(_action)
         elif action == "cancelq":
             self.do_clearq()
-        elif action == "cut":
-            self.do_copy(cut=True)
-        elif action == "copy":
-            self.do_copy(cut=False)
-        elif action == "paste":
-            self.do_paste()
-        elif action == "delete":
-            self.do_delete()
         elif action == "report":
             self.do_toggle_report(_action)
         elif action == "autorpt":
             self.do_toggle_autorpt(_action)
         elif action == "developer":
             self.do_toggle_developer(_action)
+        elif action in ["cut", "copy", "paste", "delete",
+                        "move_up", "move_dn", "exchange",
+                        "devshowraw", "devdiffraw"]:
+            self.get_current_editorset().memedit.hotkey(_action)
         else:
             return
 
@@ -875,10 +874,18 @@ class ChirpMain(gtk.Window):
       <menuitem action="copy"/>
       <menuitem action="paste"/>
       <menuitem action="delete"/>
+      <separator/>
+      <menuitem action="move_up"/>
+      <menuitem action="move_dn"/>
+      <menuitem action="exchange"/>
     </menu>
     <menu action="view">
       <menuitem action="columns"/>
       <menuitem action="hide_unused"/>
+      <menu action="viewdeveloper">
+        <menuitem action="devshowraw"/>
+        <menuitem action="devdiffraw"/>
+      </menu>
     </menu>
     <menu action="radio" name="radio">
       <menuitem action="download"/>
@@ -912,8 +919,14 @@ class ChirpMain(gtk.Window):
             ('copy', None, "_Copy", "<Ctrl>c", None, self.mh),
             ('paste', None, "_Paste", "<Ctrl>v", None, self.mh),
             ('delete', None, "_Delete", "Delete", None, self.mh),
+            ('move_up', None, "Move _Up", "<Control>Up", None, self.mh),
+            ('move_dn', None, "Move D_n", "<Control>Down", None, self.mh),
+            ('exchange', None, "E_xchange", "<Control><Shift>x", None, self.mh),
             ('view', None, "_View", None, None, self.mh),
             ('columns', None, 'Columns', None, None, self.mh),
+            ('viewdeveloper', None, "Developer", None, None, self.mh),
+            ('devshowraw', None, 'Show raw memory', "<Control><Shift>r", None, self.mh),
+            ('devdiffraw', None, 'Diff raw memories', "<Control><Shift>d", None, self.mh),
             ('radio', None, "_Radio", None, None, self.mh),
             ('download', None, "Download From Radio", "<Alt>d", None, self.mh),
             ('upload', None, "Upload To Radio", "<Alt>u", None, self.mh),
@@ -952,6 +965,9 @@ class ChirpMain(gtk.Window):
         self.add_accel_group(self.menu_uim.get_accel_group())
 
         self.recentmenu = self.menu_uim.get_widget("/MenuBar/file/recent")
+
+        # Initialize
+        self.do_toggle_developer(self.menu_ag.get_action("developer"))
 
         return self.menu_uim.get_widget("/MenuBar")
 
@@ -1001,11 +1017,10 @@ class ChirpMain(gtk.Window):
     def setup_extra_hotkeys(self):
         accelg = self.menu_uim.get_accel_group()
 
+        memedit = lambda a: self.get_current_editorset().memedit.hotkey(a)
+
         actions = [
-            ("move_up", "<Control>Up",
-             lambda a: self.get_current_editorset().memedit.hotkey(a)),
-            ("move_dn", "<Control>Down",
-             lambda a: self.get_current_editorset().memedit.hotkey(a)),
+            # ("action_name", "key", function)
             ]
 
         for name, key, fn in actions:
