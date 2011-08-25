@@ -32,6 +32,9 @@ class EditorSet(gtk.VBox):
         "usermsg": (gobject.SIGNAL_RUN_LAST,
                    gobject.TYPE_NONE,
                    (gobject.TYPE_STRING,)),
+        "editor-selected" : (gobject.SIGNAL_RUN_LAST,
+                             gobject.TYPE_NONE,
+                             (gobject.TYPE_STRING,)),
         }
 
     def __init__(self, source, parent_window=None, tempname=None):
@@ -282,9 +285,13 @@ class EditorSet(gtk.VBox):
         self.rthread.submit(job)
 
     def tab_selected(self, notebook, foo, pagenum):
+        pages = ["memory", "dstar", "banks"]
+
         # Quick hack for D-STAR editor
         if pagenum == 1:
             self.dstared.focus()
+
+        self.emit("editor-selected", pages[pagenum])
 
     def set_read_only(self, read_only=True):
         self.memedit.set_read_only(read_only)

@@ -161,11 +161,25 @@ class ChirpMain(gtk.Window):
         self.sb_general.pop(0)
         self.sb_general.push(0, msg)
 
-    def do_new(self):
-        eset = editorset.EditorSet("Untitled.csv", self)
+    def ev_editor_selected(self, editorset, editortype):
+        mappings = {
+            "memory" : ["view", "edit"],
+            }
+
+        for _editortype, actions in mappings.items():
+            for _action in actions:
+                action = self.menu_ag.get_action(_action)
+                action.set_sensitive(_editortype == editortype)
+
+    def _connect_editorset(self, eset):
         eset.connect("want-close", self.do_close)
         eset.connect("status", self.ev_status)
         eset.connect("usermsg", self.ev_usermsg)
+        eset.connect("editor-selected", self.ev_editor_selected)
+
+    def do_new(self):
+        eset = editorset.EditorSet("Untitled.csv", self)
+        self._connect_editorset(eset)
         eset.prime()
         eset.show()
 
@@ -231,9 +245,7 @@ class ChirpMain(gtk.Window):
                 return
     
             eset.set_read_only(read_only)
-            eset.connect("want-close", self.do_close)
-            eset.connect("status", self.ev_status)
-            eset.connect("usermsg", self.ev_usermsg)
+            self._connect_editorset(eset)
             eset.show()
             tab = self.tabs.append_page(eset, eset.get_tab_label())
             if first_tab:
