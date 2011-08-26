@@ -32,7 +32,8 @@ struct {
      duplex:2;
   u8 unknown4:4,
      tmode:4;
-  u8 unknown5;
+  u8 unknown5:4,
+     step:4;
   bbcd freq[4];
   u8 unknown6[1];
   bbcd offset[3];
@@ -54,6 +55,8 @@ u8 skips[25];
 # 3. 16 bytes in hex (32 characters)
 # 4. \r\n
 RLENGTH = 2 + 5 + 32 + 2
+
+STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0]
 
 class AlincoStyleRadio(chirp_common.CloneModeRadio):
     _memsize = 0
@@ -197,9 +200,8 @@ class DRx35Radio(AlincoStyleRadio):
         rf.memory_bounds = (0, 99)
         rf.has_ctone = True
         rf.has_bank = False
-        rf.has_tuning_step = False
         rf.has_dtcs_polarity = False
-        rf.valid_tuning_steps = []
+        rf.valid_tuning_steps = STEPS
         rf.valid_name_length = 7
         rf.valid_power_levels = self._power_levels
         return rf
@@ -223,6 +225,7 @@ class DRx35Radio(AlincoStyleRadio):
         mem.offset = int(_mem.offset) * 100
         mem.tmode = TMODES[_mem.tmode]
         mem.dtcs = DCS_CODES[self.VENDOR][_mem.dtcs_tx]
+        mem.tuning_step = STEPS[_mem.step]
 
         if _mem.isnarrow:
             mem.mode = "NFM"
@@ -257,6 +260,7 @@ class DRx35Radio(AlincoStyleRadio):
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.dtcs_tx = DCS_CODES[self.VENDOR].index(mem.dtcs)
         _mem.dtcs_rx = DCS_CODES[self.VENDOR].index(mem.dtcs)
+        _mem.step = STEPS.index(mem.tuning_step)
 
         _mem.isnarrow = mem.mode == "NFM"
         if self._power_levels:
