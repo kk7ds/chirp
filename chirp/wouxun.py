@@ -84,7 +84,9 @@ def do_download(radio, start, end, blocksize):
         length = len(cmd) + blocksize
         r = radio.pipe.read(length)
         if len(r) != (len(cmd) + blocksize):
-            raise Exception("Failed to read full block")
+            print util.hexprint(r)
+            raise Exception("Failed to read full block (%i!=%i)" % (len(r),
+                                                                    len(cmd)+blocksize))
         
         radio.pipe.write("\x06")
         radio.pipe.read(1)
@@ -594,6 +596,151 @@ class Puxing777Radio(KGUVD1PRadio):
                 _nam.name[i] = CHARSET.index(mem.name[i])
             except IndexError:
                 raise Exception("Character `%s' not supported")
+
+def puxing_2r_prep(radio):
+    radio.pipe.setTimeout(1)
+    radio.pipe.write("PROGRAM\x02")
+    ack = radio.pipe.read(1)
+    if ack != "\x06":
+        raise Exception("No ack")
+
+    radio.pipe.write(ack)
+    ident = radio.pipe.read(13)
+    print "Radio ident: %s" % repr(ident)
+
+def puxing_2r_download(radio):
+    puxing_2r_prep(radio)
+    return do_download(radio, 0x0000, 0x0FE0, 0x0010)
+
+puxing_2r_mem_format = """
+#seekto 0x0010;
+struct {
+  u8 unknown1;
+  lbcd freq[4];
+  lbcd offset[4];
+  u8 rx_tone;
+  u8 tx_tone;
+  u8 duplex:2,
+     txdtcsinv:1,
+     rxdtcsinv:1,
+     simplex:1,
+     unknown2:1,
+     iswide:1,
+     ishigh:1;
+  u8 name[4];
+} memory[128];
+"""
+
+PX2R_DUPLEX = ["", "+", "-", ""]
+PX2R_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.0),
+                     chirp_common.PowerLevel("High", watts=2.0)]
+PX2R_CHARSET = "- ABCDEFGHIJKLMNOPQRSTUVWXYZ +"
+
+class Puxing2RRadio(KGUVD1PRadio):
+    VENDOR = "Puxing"
+    MODEL = "PX-2R"
+    _memsize = 0x0FE0
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = ["FM", "NFM"]
+        rf.valid_power_levels = PX2R_POWER_LEVELS
+        rf.valid_bands = [(400000000, 470000000)]
+        rf.valid_characters = PX2R_CHARSET
+        rf.valid_name_length = 4
+        rf.valid_duplexes = ["", "+", "-"]
+        rf.valid_skips = []
+        rf.has_ctone = False
+        rf.has_tuning_step = False
+        rf.has_bank = False
+        rf.memory_bounds = (1, 128)
+        rf.can_odd_split = False
+        return rf
+
+    @classmethod
+    def match_model(cls, filedata):
+        return len(filedata) == cls._memsize
+
+    def sync_in(self):
+        self._mmap = puxing_2r_download(self)
+        self.process_mmap()
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(puxing_2r_mem_format, self._mmap)
+
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number-1]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+        if _mem.get_raw()[1:5] == "\xff\xff\xff\xff":
+            mem.empty = True
+            return mem
+
+        mem.freq = int(_mem.freq) * 10
+        mem.offset = int(_mem.offset) * 10
+        mem.mode = _mem.iswide and "FM" or "NFM"
+        mem.duplex = PX2R_DUPLEX[_mem.duplex]
+        mem.power = PX2R_POWER_LEVELS[_mem.ishigh]
+
+        if _mem.tx_tone >= 0x33:
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.tx_tone - 0x33]
+            mem.tmode = "DTCS"
+            mem.dtcs_polarity = \
+                (_mem.txdtcsinv and "R" or "N") + \
+                (_mem.rxdtcsinv and "R" or "N")
+        elif _mem.tx_tone:
+            mem.rtone = chirp_common.TONES[_mem.tx_tone - 1]
+            mem.tmode = _mem.rx_tone and "TSQL" or "Tone"
+
+        c = 0
+        for i in _mem.name:
+            if i == 0xFF:
+                break
+            try:
+                mem.name += PX2R_CHARSET[i - 0x0A]
+            except:
+                print "Unknown name char %i: 0x%02x (mem %i)" % (c, i, number)
+                mem.name += " "
+            c += 1
+        mem.name = mem.name.rstrip()
+
+        return mem
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number-1]
+
+        if mem.empty:
+            _mem.set_raw("\xff" * 16)
+            return
+
+        _mem.freq = mem.freq / 10
+        _mem.offset = mem.offset / 10
+        _mem.iswide = mem.mode == "FM"
+        _mem.duplex = PX2R_DUPLEX.index(mem.duplex)
+        _mem.ishigh = mem.power == PX2R_POWER_LEVELS[1]
+
+        if mem.tmode == "DTCS":
+            _mem.tx_tone = chirp_common.DTCS_CODES.index(mem.dtcs) + 0x33
+            _mem.rx_tone = chirp_common.DTCS_CODES.index(mem.dtcs) + 0x33
+            _mem.txdtcsinv = mem.dtcs_polarity[0] == "R" 
+            _mem.rxdtcsinv = mem.dtcs_polarity[1] == "R"
+        elif mem.tmode in ["Tone", "TSQL"]:
+            _mem.tx_tone = chirp_common.TONES.index(mem.rtone) + 1
+            _mem.rx_tone = mem.tmode == "TSQL" and int(_mem.tx_tone) or 0
+        else:
+            _mem.tx_tone = 0
+            _mem.rx_tone = 0
+
+        for i in range(0, 4):
+            try:
+                _mem.name[i] = PX2R_CHARSET.index(mem.name[i]) + 0x0A           
+            except IndexError:
+                _mem.name[i] = 0xFF
+
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number-1])
 
 def _uv3r_prep(radio):
     radio.pipe.write("\x05PROGRAM")

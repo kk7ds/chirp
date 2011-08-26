@@ -84,6 +84,7 @@ DRV_TO_RADIO = {
 
     # Puxing
     "px777"          : wouxun.Puxing777Radio,
+    "px2r"           : wouxun.Puxing2RRadio,
    
     # Baofeng
     "uv3r"	     : wouxun.UV3RRadio,
