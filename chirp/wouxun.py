@@ -598,24 +598,27 @@ class Puxing777Radio(KGUVD1PRadio):
                 raise Exception("Character `%s' not supported")
 
 def puxing_2r_prep(radio):
-    radio.pipe.setTimeout(1)
+    radio.pipe.setTimeout(0.2)
     radio.pipe.write("PROGRAM\x02")
     ack = radio.pipe.read(1)
     if ack != "\x06":
-        raise Exception("No ack")
+        raise Exception("Radio is not responding")
 
     radio.pipe.write(ack)
-    ident = radio.pipe.read(13)
-    print "Radio ident: %s" % repr(ident)
+    ident = radio.pipe.read(16)
+    print "Radio ident: %s (%i)" % (repr(ident), len(ident))
 
 def puxing_2r_download(radio):
     puxing_2r_prep(radio)
     return do_download(radio, 0x0000, 0x0FE0, 0x0010)
 
+def puxing_2r_upload(radio):
+    puxing_2r_prep(radio)
+    return do_upload(radio, 0x0000, 0x0FE0, 0x0010)
+
 puxing_2r_mem_format = """
 #seekto 0x0010;
 struct {
-  u8 unknown1;
   lbcd freq[4];
   lbcd offset[4];
   u8 rx_tone;
@@ -627,14 +630,14 @@ struct {
      unknown2:1,
      iswide:1,
      ishigh:1;
-  u8 name[4];
+  u8 name[5];
 } memory[128];
 """
 
 PX2R_DUPLEX = ["", "+", "-", ""]
 PX2R_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.0),
                      chirp_common.PowerLevel("High", watts=2.0)]
-PX2R_CHARSET = "- ABCDEFGHIJKLMNOPQRSTUVWXYZ +"
+PX2R_CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ +"
 
 class Puxing2RRadio(KGUVD1PRadio):
     VENDOR = "Puxing"
@@ -648,7 +651,7 @@ class Puxing2RRadio(KGUVD1PRadio):
         rf.valid_power_levels = PX2R_POWER_LEVELS
         rf.valid_bands = [(400000000, 470000000)]
         rf.valid_characters = PX2R_CHARSET
-        rf.valid_name_length = 4
+        rf.valid_name_length = 5
         rf.valid_duplexes = ["", "+", "-"]
         rf.valid_skips = []
         rf.has_ctone = False
@@ -666,6 +669,9 @@ class Puxing2RRadio(KGUVD1PRadio):
         self._mmap = puxing_2r_download(self)
         self.process_mmap()
 
+    def sync_out(self):
+        puxing_2r_upload(self)
+
     def process_mmap(self):
         self._memobj = bitwise.parse(puxing_2r_mem_format, self._mmap)
 
@@ -674,7 +680,7 @@ class Puxing2RRadio(KGUVD1PRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
-        if _mem.get_raw()[1:5] == "\xff\xff\xff\xff":
+        if _mem.get_raw()[0:4] == "\xff\xff\xff\xff":
             mem.empty = True
             return mem
 
@@ -699,7 +705,7 @@ class Puxing2RRadio(KGUVD1PRadio):
             if i == 0xFF:
                 break
             try:
-                mem.name += PX2R_CHARSET[i - 0x0A]
+                mem.name += PX2R_CHARSET[i]
             except:
                 print "Unknown name char %i: 0x%02x (mem %i)" % (c, i, number)
                 mem.name += " "
@@ -733,9 +739,9 @@ class Puxing2RRadio(KGUVD1PRadio):
             _mem.tx_tone = 0
             _mem.rx_tone = 0
 
-        for i in range(0, 4):
+        for i in range(0, 5):
             try:
-                _mem.name[i] = PX2R_CHARSET.index(mem.name[i]) + 0x0A           
+                _mem.name[i] = PX2R_CHARSET.index(mem.name[i])
             except IndexError:
                 _mem.name[i] = 0xFF
 
