@@ -184,6 +184,12 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
     def get_sub_devices(self):
         return [ICW32ARadioVHF(self._mmap), ICW32ARadioUHF(self._mmap)]
 
+    @classmethod
+    def match_model(cls, filedata):
+        if not len(filedata) == cls._memsize:
+            return False
+        return filedata[-16:] == "IcomCloneFormat3"
+
 class ICW32ARadioVHF(ICW32ARadio):
     VARIANT = "VHF"
     _limits = (118000000, 174000000)
