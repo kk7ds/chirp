@@ -18,7 +18,7 @@ import tempfile
 
 from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, ic2100, ic2720
 from chirp import icq7, icomciv, idrp, icf, ic9x_icf, icw32, ict70
-from chirp import vx3, vx5, vx6, vx7, vx8, ft2800, ft7800, ft50
+from chirp import vx3, vx5, vx6, vx7, vx8, ft2800, ft7800, ft50, ft60
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
 from chirp import wouxun
@@ -58,6 +58,7 @@ DRV_TO_RADIO = {
     "ft8800"         : ft7800.FT8800Radio,
     "ft8900"         : ft7800.FT8900Radio,
     #"ft50"           : ft50.FT50Radio,
+    "ft60"           : ft60.FT60Radio,
 
     # Kenwood
     "thd7"           : kenwood_live.THD7Radio,
