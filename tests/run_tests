@@ -493,6 +493,28 @@ class TestCaseBanks(TestCase):
 
 TESTS["Banks"] = TestCaseBanks
 
+class TestCaseDetect(TestCase):
+    def __str__(self):
+        return "Detect"
+
+    def run(self):
+        filename = self._wrapper._filename
+
+        try:
+            radio = directory.get_radio_by_image(filename)
+        except Exception, e:
+            raise TestFailedError("Failed to detect", str(e))
+
+        if issubclass(self._wrapper._dstclass, radio.__class__):
+            pass
+        elif radio.__class__ != self._wrapper._dstclass:
+            raise TestFailedError("%s detected as %s" % \
+                                      (self._wrapper._dstclass,
+                                       radio.__class__))
+        return []
+
+TESTS["Detect"] = TestCaseDetect
+
 class TestOutput:
     def prepare(self):
         pass
