@@ -34,7 +34,7 @@ except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
 from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
-from chirp import CHIRP_VERSION, chirp_common, detect
+from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting
 
@@ -186,6 +186,43 @@ class ChirpMain(gtk.Window):
         tab = self.tabs.append_page(eset, eset.get_tab_label())
         self.tabs.set_current_page(tab)
 
+    def _do_manual_select(self, filename):
+        radiolist = {}
+        for drv, radio in directory.DRV_TO_RADIO.items():
+            if not issubclass(radio, chirp_common.CloneModeRadio):
+                continue
+            radiolist["%s %s" % (radio.VENDOR, radio.MODEL)] = drv
+
+        lab = gtk.Label("""<b><big>Unable to detect model!</big></b>
+
+If you think that it is valid, you can select a radio model below to force an open attempt. If selecting the model manually works, please file a bug on the website and attach your image. If selecting the model does not work, it is likely that you are trying to open some other type of file.
+""")
+
+        lab.set_justify(gtk.JUSTIFY_FILL)
+        lab.set_line_wrap(True)
+        lab.set_use_markup(True)
+        lab.show()
+        choice = miscwidgets.make_choice(sorted(radiolist.keys()), False,
+                                         sorted(radiolist.keys())[0])
+        d = gtk.Dialog(title="Detection Failed",
+                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        d.vbox.pack_start(lab, 0, 0, 0)
+        d.vbox.pack_start(choice, 0, 0, 0)
+        d.vbox.set_spacing(5)
+        choice.show()
+        d.set_default_size(400, 200)
+        #d.set_resizable(False)
+        r = d.run()
+        d.destroy()
+        if r != gtk.RESPONSE_OK:
+            return
+        try:
+            rc = directory.DRV_TO_RADIO[radiolist[choice.get_active_text()]]
+            return rc(filename)
+        except:
+            return
+
     def do_open(self, fname=None, tempname=None):
         if not fname:
             types = [("CHIRP Radio Images (*.img)", "*.img"),
@@ -221,6 +258,11 @@ class ChirpMain(gtk.Window):
         else:
             try:
                 radio = directory.get_radio_by_image(fname)
+            except errors.ImageDetectFailed:
+                radio = self._do_manual_select(fname)
+                if not radio:
+                    return
+                print "Manually selected %s" % radio
             except Exception, e:
                 common.log_exception()
                 common.show_error(os.path.basename(fname) + ": " + str(e))
@@ -230,8 +272,7 @@ class ChirpMain(gtk.Window):
                 devices = radio.get_sub_devices()
                 tempname = fname
             else:
-                del radio
-                devices = [fname]
+                devices = [radio]
 
         prio = len(devices)
         first_tab = False

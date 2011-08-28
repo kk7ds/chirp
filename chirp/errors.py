@@ -29,3 +29,6 @@ class RadioError(Exception):
 
 class UnsupportedToneError(Exception):
     pass
+
+class ImageDetectFailed(Exception):
+    pass

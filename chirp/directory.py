@@ -22,7 +22,7 @@ from chirp import vx3, vx5, vx6, vx7, vx8, ft2800, ft7800, ft50, ft60
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
 from chirp import wouxun
-from chirp import xml, chirp_common, csv, util, rfinder
+from chirp import xml, chirp_common, csv, util, rfinder, errors
 
 DRV_TO_RADIO = {
     # Virtual/Generic
@@ -161,7 +161,7 @@ def get_radio_by_image(image_file):
             continue
         if radio.match_model(filedata):
             return radio(image_file)
-    raise Exception("Unknown file format")
+    raise errors.ImageDetectFailed("Unknown file format")
 
 def get_radio_name(driver):
     cls = DRV_TO_RADIO[driver]
