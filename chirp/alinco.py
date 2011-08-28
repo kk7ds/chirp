@@ -333,7 +333,7 @@ class JT220MRadio(DRx35Radio):
     MODEL = "JT220M"
 
     _model = "DR136"
-    _memsize = 4096
+    _memsize = 8192
     _range = [(216000000, 280000000)]
 
     @classmethod
