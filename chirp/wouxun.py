@@ -302,8 +302,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata):
         # New-style image (CHIRP 0.1.12)
-        if len(filedata) == 8192 and \
-                filedata[0] == "\xFF":
+        if len(filedata) == 8192:
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
