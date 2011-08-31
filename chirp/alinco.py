@@ -107,9 +107,14 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
         return memmap.MemoryMap(data)
 
     def _identify(self):
-        self._send("%s\r\n" % self._model)
-        resp = self.pipe.read(6)
-        return resp.strip() == "OK"
+        for i in range(0, 3):
+            self._send("%s\r\n" % self._model)
+            resp = self.pipe.read(6)
+            if resp.strip() == "OK":
+                return True
+            time.sleep(1)
+
+        return False
 
     def _upload_chunk(self, addr):
         if addr % 16:
