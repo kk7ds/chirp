@@ -88,13 +88,17 @@ def download(radio):
     return memmap.MemoryMap(data)
 
 def upload(radio):
+    while True:
+        data = radio.pipe.read(256)
+        if not data:
+            break
+        print "What is this garbage?\n%s" % util.hexprint(data)
+
     send(radio.pipe, IDBLOCK)
-
     time.sleep(1)
-
-    ack = radio.pipe.read(3)
+    ack = radio.pipe.read(300)
     if DEBUG:
-        print "Ack was:\n%s" % util.hexprint(ack)
+        print "Ack was (%i):\n%s" % (len(ack), util.hexprint(ack))
     if ack != ACK:
         raise Exception("Radio did not ack ID")
 
