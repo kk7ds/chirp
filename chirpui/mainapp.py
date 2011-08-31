@@ -459,6 +459,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ser = serial.Serial(port=settings.port,
                                 baudrate=settings.radio_class.BAUD_RATE,
                                 timeout=0.25)
+            ser.flushInput()
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
             d.run()
@@ -491,6 +492,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ser = serial.Serial(port=settings.port,
                                 baudrate=radio.BAUD_RATE,
                                 timeout=0.25)
+            ser.flushInput()
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
             d.run()
