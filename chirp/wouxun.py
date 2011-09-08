@@ -647,7 +647,7 @@ class Puxing2RRadio(KGUVD1PRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = PX2R_POWER_LEVELS
-        rf.valid_bands = [(400000000, 470000000)]
+        rf.valid_bands = [(400000000, 500000000)]
         rf.valid_characters = PX2R_CHARSET
         rf.valid_name_length = 5
         rf.valid_duplexes = ["", "+", "-"]
