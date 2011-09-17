@@ -157,6 +157,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         if mem.empty:
             _usd |= bitpos
             return
+        _usd &= ~bitpos
 
         _mem.freq = mem.freq
         _mem.offset = mem.offset
