@@ -461,7 +461,7 @@ struct {
   u8 namevalid:1,
      dtcs:7;
   u8 name[6];
-} memory[500];
+} memory[799];
 
 #seekto 0x51C8;
 struct {
@@ -469,7 +469,7 @@ struct {
      skip1:2,
      skip2:2,
      skip3:2;
-} flags[250];
+} flags[400];
 
 #seekto 0x7B48;
 u8 checksum;
@@ -493,6 +493,7 @@ class FT8900Radio(FT8800Radio):
                           (108000000, 180000000),
                           (320000000, 480000000),
                           (700000000, 985000000)]
+        rf.memory_bounds = (1, 799)
 
         return rf
 
