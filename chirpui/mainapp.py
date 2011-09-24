@@ -268,9 +268,9 @@ If you think that it is valid, you can select a radio model below to force an op
                 common.show_error(os.path.basename(fname) + ": " + str(e))
                 return
 
+            tempname = fname
             if radio.get_features().has_sub_devices:
                 devices = radio.get_sub_devices()
-                tempname = fname
             else:
                 devices = [radio]
 
