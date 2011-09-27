@@ -33,7 +33,8 @@ try:
 except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
-from chirp import platform, xml, csv, directory, ic9x, kenwood_live, idrp, vx7
+from chirp import platform, xml, generic_csv, directory
+from chirp import ic9x, kenwood_live, idrp, vx7
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting
@@ -358,7 +359,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
         if isinstance(eset.radio, chirp_common.CloneModeRadio):
             types = [("Radio-specific Image (*.img)", "img")]
-        elif isinstance(eset.radio, csv.CSVRadio):
+        elif isinstance(eset.radio, generic_csv.CSVRadio):
             types = [("CSV File (*.csv)", "csv")]
         elif isinstance(eset.radio, xml.XMLRadio):
             types = [("CHIRP File (*.chirp)", "chirp")]

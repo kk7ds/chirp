@@ -22,11 +22,11 @@ from chirp import vx3, vx5, vx6, vx7, vx8, ft2800, ft7800, ft50, ft60
 from chirp import kenwood_live, tmv71, thd72
 from chirp import alinco
 from chirp import wouxun
-from chirp import xml, chirp_common, csv, util, rfinder, errors
+from chirp import xml, chirp_common, generic_csv, util, rfinder, errors
 
 DRV_TO_RADIO = {
     # Virtual/Generic
-    "csv"            : csv.CSVRadio,
+    "csv"            : generic_csv.CSVRadio,
     "xml"            : xml.XMLRadio,
 
     # Icom
@@ -141,7 +141,7 @@ def get_radio_by_image(image_file):
         return xml.XMLRadio(image_file)
 
     if image_file.lower().endswith(".csv"):
-        return csv.CSVRadio(image_file)
+        return generic_csv.CSVRadio(image_file)
 
     if icf.is_9x_icf(image_file):
         return ic9x_icf.IC9xICFRadio(image_file)

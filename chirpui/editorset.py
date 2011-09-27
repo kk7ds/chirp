@@ -19,7 +19,7 @@ import os
 import gtk
 import gobject
 
-from chirp import chirp_common, directory, csv, xml
+from chirp import chirp_common, directory, generic_csv, xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 from chirpui import inputdialog, reporting
 
@@ -238,7 +238,7 @@ class EditorSet(gtk.VBox):
     def do_export(self, filen):
         try:
             if filen.lower().endswith(".csv"):
-                dst_radio = csv.CSVRadio(filen)
+                dst_radio = generic_csv.CSVRadio(filen)
             elif filen.lower().endswith(".chirp"):
                 dst_radio = xml.XMLRadio(filen)
             else:
