@@ -245,12 +245,12 @@ class Memory:
 
         return m
 
-    CSV_FORMAT = SEPCHAR.join(["Location", "Name", "Frequency",
-                               "Duplex", "Offset", "Tone",
-                               "rToneFreq", "cToneFreq", "DtcsCode",
-                               "DtcsPolarity", "Mode", "TStep",
-                               "Skip", "Bank", "Bank Index",
-                               "URCALL", "RPT1CALL", "RPT2CALL"])
+    CSV_FORMAT = ["Location", "Name", "Frequency",
+                  "Duplex", "Offset", "Tone",
+                  "rToneFreq", "cToneFreq", "DtcsCode",
+                  "DtcsPolarity", "Mode", "TStep",
+                  "Skip", "Bank", "Bank Index",
+                  "URCALL", "RPT1CALL", "RPT2CALL"]
 
     def __setattr__(self, name, val):
         if not hasattr(self, name):
@@ -317,25 +317,23 @@ class Memory:
              self.bank and "(%s%s)" % (self.bank, bindex) or "")
 
     def to_csv(self):
-        string = SEPCHAR.join([
-                "%i"   % self.number,
-                "%s"   % self.name,
-                format_freq(self.freq),
-                "%s"   % self.duplex,
-                format_freq(self.offset),
-                "%s"   % self.tmode,
-                "%.1f" % self.rtone,
-                "%.1f" % self.ctone,
-                "%03i" % self.dtcs,
-                "%s"   % self.dtcs_polarity,
-                "%s"   % self.mode,
-                "%.2f" % self.tuning_step,
-                "%s"   % self.skip,
-                "%s"   % (self.bank and int(self.bank) or ""),
-                "%i"   % self.bank_index,
-                "", "", "", ""])
-
-        return string
+        return [
+            "%i"   % self.number,
+            "%s"   % self.name,
+            format_freq(self.freq),
+            "%s"   % self.duplex,
+            format_freq(self.offset),
+            "%s"   % self.tmode,
+            "%.1f" % self.rtone,
+            "%.1f" % self.ctone,
+            "%03i" % self.dtcs,
+            "%s"   % self.dtcs_polarity,
+            "%s"   % self.mode,
+            "%.2f" % self.tuning_step,
+            "%s"   % self.skip,
+            "%s"   % (self.bank and int(self.bank) or ""),
+            "%i"   % self.bank_index,
+            "", "", "", ""]
 
     class Callable:
         def __init__(self, target):
@@ -466,28 +464,26 @@ class DVMemory(Memory):
         return string
 
     def to_csv(self):
-        string = SEPCHAR.join([
-                "%i"   % self.number,
-                "%s"   % self.name,
-                format_freq(self.freq),
-                "%s"   % self.duplex,
-                format_freq(self.offset),
-                "%s"   % self.tmode,
-                "%.1f" % self.rtone,
-                "%.1f" % self.ctone,
-                "%03i" % self.dtcs,
-                "%s"   % self.dtcs_polarity,
-                "%s"   % self.mode,
-                "%.2f" % self.tuning_step,
-                "%s"   % self.skip,
-                "%s"   % (self.bank and int(self.bank) or ""),
-                "%i"   % self.bank_index,
-                "%s"   % self.dv_urcall,
-                "%s"   % self.dv_rpt1call,
-                "%s"   % self.dv_rpt2call,
-                "%i"   % self.dv_code])
-
-        return string
+        return [
+            "%i"   % self.number,
+            "%s"   % self.name,
+            format_freq(self.freq),
+            "%s"   % self.duplex,
+            format_freq(self.offset),
+            "%s"   % self.tmode,
+            "%.1f" % self.rtone,
+            "%.1f" % self.ctone,
+            "%03i" % self.dtcs,
+            "%s"   % self.dtcs_polarity,
+            "%s"   % self.mode,
+            "%.2f" % self.tuning_step,
+            "%s"   % self.skip,
+            "%s"   % (self.bank and int(self.bank) or ""),
+            "%i"   % self.bank_index,
+            "%s"   % self.dv_urcall,
+            "%s"   % self.dv_rpt1call,
+            "%s"   % self.dv_rpt2call,
+            "%i"   % self.dv_code]
 
     def really_from_csv(self, vals):
         Memory.really_from_csv(self, vals)

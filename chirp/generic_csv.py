@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import csv
 
 from chirp import chirp_common, errors
 
@@ -103,19 +104,16 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
                                      header)
 
     def _parse_csv_data_line(self, headers, line):
-
-        data = self._parse_quoted_line(line)
-
         mem = chirp_common.Memory()
         try:
-            if self._get_datum_by_header(headers, data, "Mode") == "DV":
+            if self._get_datum_by_header(headers, line, "Mode") == "DV":
                 mem = chirp_common.DVMemory()
         except OmittedHeaderError:
             pass
 
         for header, (typ, attr) in self.ATTR_MAP.items():
             try:
-                val = self._get_datum_by_header(headers, data, header)
+                val = self._get_datum_by_header(headers, line, header)
                 if not val and typ == int:
                     val = None
                 else:
@@ -135,30 +133,50 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             self._filename = filename
 
         self._blank()
-        f = file(self._filename, "rU")
-        
-        header = f.readline().strip()
-        headers = self._parse_quoted_line(header)
-        lines = f.readlines()
-        f.close()
 
-        i = 1
+        f = file(self._filename, "rU")
+        header = f.readline().strip()
+
+        if '"' in header:
+            quote = '"'
+        else:
+            quote = None
+
+        f.seek(0, 0)
+        reader = csv.reader(f, delimiter=chirp_common.SEPCHAR, quotechar=quote)
+
         good = 0
-        for line in lines:
-            i += 1
+        lineno = 0
+        for line in reader:
+            lineno += 1
+            if lineno == 1:
+                header = line
+                continue
+
+            if len(header) > len(line):
+                self.errors.append("Column number mismatch on line %i" % lineno)
+                continue
+
             try:
-                mem = self._parse_csv_data_line(headers, line)
+                mem = self._parse_csv_data_line(header, line)
                 if mem.number is None:
-                    raise Exception("Location field must not be empty")
-                self.__grow(mem.number)
-                self.memories[mem.number] = mem
-                good += 1
+                    raise Exception("Invalid Location field" % lineno)
             except Exception, e:
-                print "CSV Line %i: %s" % (i, e)
-                self.errors.append("Line %i: %s" % (i, e))
+                self.errors.append("Line %i: %s" % (lineno, e))
+                continue
+
+            self.__grow(mem.number)
+            self.memories[mem.number] = mem
+            good += 1
 
         if not good:
             raise errors.InvalidDataError("No channels found")
+
+    def save_memory(self, writer, mem):
+        if mem.empty:
+            return
+        
+        writer.writerow(mem.to_csv())
 
     def save(self, filename=None):
         if filename is None and self._filename is None:
@@ -168,12 +186,11 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             self._filename = filename
 
         f = file(self._filename, "w")
-
-        f.write(chirp_common.Memory.CSV_FORMAT + "\n")
+        writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
+        writer.writerow(chirp_common.Memory.CSV_FORMAT)
 
         for mem in self.memories:
-            if not mem.empty:
-                f.write(mem.to_csv() + "\n")
+            self.save_memory(writer, mem)
 
         f.close()
 
