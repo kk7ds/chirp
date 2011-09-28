@@ -22,7 +22,8 @@ from serial import Serial
 # Assume we're running in the tests/ directory of the archive
 sys.path.insert(0, "../")
 
-from chirp import chirp_common, directory, csv, import_logic, CHIRP_VERSION
+from chirp import CHIRP_VERSION
+from chirp import chirp_common, directory, generic_csv, import_logic
 from chirp import errors
 
 TESTS = {}
@@ -195,7 +196,7 @@ class TestCaseCopyAll(TestCase):
         return "CopyAll"
 
     def prepare(self):
-        self._src = csv.CSVRadio("images/csv.csv")
+        self._src = generic_csv.CSVRadio("images/csv.csv")
 
     def run(self):
         src_rf = self._src.get_features()
