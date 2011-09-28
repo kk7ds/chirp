@@ -812,6 +812,8 @@ class CloneModeRadio(Radio):
 
     _memsize = 0
 
+    FILE_EXTENSION = "img"
+
     def __init__(self, pipe):
 
         self._mmap = None

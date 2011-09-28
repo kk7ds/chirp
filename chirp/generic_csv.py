@@ -26,6 +26,7 @@ class OmittedHeaderError(Exception):
 class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Generic"
     MODEL = "CSV"
+    FILE_EXTENSION = "csv"
 
     ATTR_MAP = {
         "Location"     : (int,   "number"),

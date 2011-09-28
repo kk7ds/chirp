@@ -357,14 +357,10 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_saveas(self):
         eset = self.get_current_editorset()
 
-        if isinstance(eset.radio, chirp_common.CloneModeRadio):
-            types = [("Radio-specific Image (*.img)", "img")]
-        elif isinstance(eset.radio, generic_csv.CSVRadio):
-            types = [("CSV File (*.csv)", "csv")]
-        elif isinstance(eset.radio, xml.XMLRadio):
-            types = [("CHIRP File (*.chirp)", "chirp")]
-        else:
-            types = [("ERROR", "*")]
+        types = [("%s %s image file (*.%s)" % (eset.radio.VENDOR,
+                                               eset.radio.MODEL,
+                                               eset.radio.FILE_EXTENSION),
+                  eset.radio.FILE_EXTENSION)]
 
         if isinstance(eset.radio, vx7.VX7Radio):
             types += [("VX7 Commander (*.vx7)", "vx7")]

@@ -66,6 +66,7 @@ def default_banks():
 class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Generic"
     MODEL = "XML"
+    FILE_EXTENSION = "chirp"
 
     def __init__(self, pipe):
         chirp_common.CloneModeRadio.__init__(self, None)
