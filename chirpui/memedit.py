@@ -431,9 +431,11 @@ time.  Are you sure you want to do this?"""
         return True # We changed memories
 
     def _delete_rows(self, paths):
+        to_remove = []
         for path in paths:
             iter = self.store.get_iter(path)
             cur_pos, = self.store.get(iter, self.col("Loc"))
+            to_remove.append(cur_pos)
             self.store.set(iter, self.col("_filled"), False)
             job = common.RadioJob(None, "erase_memory", cur_pos)
             job.set_desc("Erasing memory %i" % cur_pos)
@@ -448,8 +450,24 @@ time.  Are you sure you want to do this?"""
             job.set_desc("Getting memory %s" % cur_pos)
             self.rthread.submit(job)
             
-            if not self.show_empty:
-                self.store.remove(iter)
+
+        if not self.show_empty:
+            # We need to actually remove the rows from the store
+            # now, but carefully! Get a list of deleted locations
+            # in order and proceed from the first path in the list
+            # until we run out of rows or we've removed all the
+            # desired ones.
+            to_remove.sort()
+            to_remove.reverse()
+            iter = self.store.get_iter(paths[0])
+            while to_remove and iter:
+                pos, = self.store.get(iter, self.col("Loc"))
+                if pos in to_remove:
+                    to_remove.remove(pos)
+                    if not self.store.remove(iter):
+                        break # This was the last row
+                else:
+                    iter = self.store.iter_next(iter)
 
         return True # We changed memories
 
