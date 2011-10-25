@@ -258,3 +258,5 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             except IndexError:
                 _nam.name[i] = CHARSET.index(" ")
             
+        _nam.use_name = mem.name.strip() and True or False
+            
