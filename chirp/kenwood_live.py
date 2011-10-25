@@ -188,7 +188,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         del self.__memcache[number]
 
 class THD7Radio(KenwoodLiveRadio):
-    MODEL = "TH-D7(a)(g)"
+    MODEL = "TH-D7"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -245,7 +245,7 @@ class THD7Radio(KenwoodLiveRadio):
         return mem
 
 class TMD700Radio(KenwoodLiveRadio):
-    MODEL = "TH-D700"
+    MODEL = "TM-D700"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -409,7 +409,7 @@ if __name__ == "__main__":
     print get_memory(s, int(sys.argv[2]))
 
 class THF6ARadio(KenwoodLiveRadio):
-    MODEL = "TH-F6A"
+    MODEL = "TH-F6"
 
     _upper = 399
 
