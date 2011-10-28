@@ -76,6 +76,8 @@ DRV_TO_RADIO = {
     "jt220m"         : alinco.JT220MRadio,
 
     # Alinco
+    "dr03"           : alinco.DR03Radio,
+    "dr06"           : alinco.DR06Radio,
     "dr135"          : alinco.DR135Radio,
     "dr235"          : alinco.DR235Radio,
     "dr435"          : alinco.DR435Radio,

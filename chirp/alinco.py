@@ -287,6 +287,32 @@ class DRx35Radio(AlincoStyleRadio):
             _skp &= ~bit
 
         _mem.name = self._set_name(mem, _mem)
+
+class DR03Radio(DRx35Radio):
+    VENDOR = "Alinco"
+    MODEL = "DR03T"
+
+    _model = "DR135"
+    _memsize = 4096
+    _range = [(28000000, 29695000)]
+
+    @classmethod
+    def match_model(cls, filedata):
+        return len(filedata) == cls._memsize and \
+            filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x28)
+
+class DR06Radio(DRx35Radio):
+    VENDOR = "Alinco"
+    MODEL = "DR06T"
+
+    _model = "DR435"
+    _memsize = 4096
+    _range = [(50000000, 53995000)]
+
+    @classmethod
+    def match_model(cls, filedata):
+        return len(filedata) == cls._memsize and \
+            filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x50)
             
 class DR135Radio(DRx35Radio):
     VENDOR = "Alinco"
