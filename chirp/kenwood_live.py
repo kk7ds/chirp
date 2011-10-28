@@ -244,6 +244,9 @@ class THD7Radio(KenwoodLiveRadio):
 
         return mem
 
+class THD7GRadio(THD7Radio):
+    MODEL = "TH-D7G"
+
 class TMD700Radio(KenwoodLiveRadio):
     MODEL = "TM-D700"
 
