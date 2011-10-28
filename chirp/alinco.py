@@ -174,6 +174,7 @@ CHARSET = (["\x00"] * 0x30) + \
 class DRx35Radio(AlincoStyleRadio):
     _range = [(118000000, 155000000)]
     _power_levels = []
+    _valid_tones = list(chirp_common.TONES)
 
     def _get_name(self, mem, _mem):
         name = ""
@@ -224,8 +225,8 @@ class DRx35Radio(AlincoStyleRadio):
             return mem
 
         mem.freq = int(_mem.freq) * 100
-        mem.rtone = chirp_common.TONES[_mem.rtone]
-        mem.ctone = chirp_common.TONES[_mem.ctone]
+        mem.rtone = self._valid_tones[_mem.rtone]
+        mem.ctone = self._valid_tones[_mem.ctone]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.offset = int(_mem.offset) * 100
         mem.tmode = TMODES[_mem.tmode]
@@ -258,8 +259,16 @@ class DRx35Radio(AlincoStyleRadio):
             _usd |= bit
 
         _mem.freq = mem.freq / 100
-        _mem.rtone = chirp_common.TONES.index(mem.rtone)
-        _mem.ctone = chirp_common.TONES.index(mem.ctone)
+
+        try:
+            _tone = mem.rtone
+            _mem.rtone = self._valid_tones.index(mem.rtone)
+            _tone = mem.ctone
+            _mem.ctone = self._valid_tones.index(mem.ctone)
+        except IndexError:
+            raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % _tone)
+
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.offset = mem.offset / 100
         _mem.tmode = TMODES.index(mem.tmode)
@@ -318,6 +327,19 @@ class DR435Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x04) and filedata[0x65] == chr(0x00)
 
+DJ596_TONES = list(chirp_common.TONES)
+DJ596_TONES.remove(159.8)
+DJ596_TONES.remove(165.5)
+DJ596_TONES.remove(171.3)
+DJ596_TONES.remove(177.3)
+DJ596_TONES.remove(183.5)
+DJ596_TONES.remove(189.9)
+DJ596_TONES.remove(196.6)
+DJ596_TONES.remove(199.5)
+DJ596_TONES.remove(206.5)
+DJ596_TONES.remove(229.1)
+DJ596_TONES.remove(254.1)
+
 class DJ596Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DJ596"
@@ -327,6 +349,7 @@ class DJ596Radio(DRx35Radio):
     _range = [(136000000, 174000000), (400000000, 511000000)]
     _power_levels = [chirp_common.PowerLevel("Low", watts=1.00),
                      chirp_common.PowerLevel("High", watts=5.00)]
+    _valid_tones = DJ596_TONES
 
     @classmethod
     def match_model(cls, filedata):
