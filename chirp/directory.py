@@ -70,6 +70,7 @@ DRV_TO_RADIO = {
     "tmv7"           : kenwood_live.TMV7Radio,
     "thk2"           : kenwood_live.THK2Radio,
     "thf6"           : kenwood_live.THF6ARadio,
+    "thf7"           : kenwood_live.THF7ERadio,
     "v71a"           : kenwood_live.TMV71Radio,
 
     # Jetstream

@@ -486,6 +486,9 @@ class THF6ARadio(KenwoodLiveRadio):
 
         return spec
 
+class THF7ERadio(THF6ARadio):
+    MODEL = "TH-F7"
+
 D710_DUPLEX = ["", "+", "-", "split"]
 D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
