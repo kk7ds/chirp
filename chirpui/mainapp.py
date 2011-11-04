@@ -728,6 +728,14 @@ If you think that it is valid, you can select a radio model below to force an op
         if not filen:
             return
 
+        if os.path.exists(filen):
+            dlg = inputdialog.OverwriteDialog(filen)
+            owrite = dlg.run()
+            dlg.destroy()
+            if owrite != gtk.RESPONSE_OK:
+                return
+            os.remove(filen)
+
         count = eset.do_export(filen)
         reporting.report_model_usage(eset.rthread.radio, "export", count > 0)
 
