@@ -213,11 +213,15 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.step]
         mem.skip = SKIPS[skip]
 
-        for i in _nam.name:
-            if i == 0xFF:
-                break
-            mem.name += CHARSET[i]
-        mem.name = mem.name.rstrip()
+        if _nam.use_name:
+            for i in _nam.name:
+                if i == 0xFF:
+                    break
+                try:
+                    mem.name += CHARSET[i]
+                except IndexError:
+                    print "Memory %i: Unknown char index: %i " % (number, i)
+            mem.name = mem.name.rstrip()
 
         return mem
 
