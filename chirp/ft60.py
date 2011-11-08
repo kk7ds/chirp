@@ -213,7 +213,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.step]
         mem.skip = SKIPS[skip]
 
-        if _nam.use_name:
+        if _nam.use_name and _nam.valid:
             for i in _nam.name:
                 if i == 0xFF:
                     break
@@ -263,4 +263,4 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                 _nam.name[i] = CHARSET.index(" ")
             
         _nam.use_name = mem.name.strip() and True or False
-            
+        _nam.valid = _nam.use_name
