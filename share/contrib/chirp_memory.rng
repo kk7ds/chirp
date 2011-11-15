@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="memoryType">
+    <optional>
+      <attribute name="location">
+        <data type="nonNegativeInteger"/>
+      </attribute>
+    </optional>
+    <ref name="shortName"/>
+    <optional>
+      <ref name="longName"/>
+    </optional>
+    <ref name="frequency"/>
+    <ref name="SquelchList"/>
+    <optional>
+      <ref name="squelchSetting"/>
+    </optional>
+    <ref name="duplex"/>
+    <ref name="offset"/>
+    <ref name="mode"/>
+    <ref name="tuningStep"/>
+    <optional>
+      <ref name="skip"/>
+    </optional>
+    <optional>
+      <ref name="bank"/>
+    </optional>
+    <optional>
+      <ref name="dv"/>
+    </optional>
+  </define>
+  <define name="shortName">
+    <element name="shortName">
+      <data type="string">
+        <param name="pattern">[A-Z0-9/ &gt;\-]{0,6}</param>
+      </data>
+    </element>
+  </define>
+  <define name="frequencyType">
+    <attribute name="units">
+      <choice>
+        <value>Hz</value>
+        <value>kHz</value>
+        <value>MHz</value>
+        <value>GHz</value>
+      </choice>
+    </attribute>
+    <data type="decimal"/>
+  </define>
+  <define name="longName">
+    <element name="longName">
+      <data type="string">
+        <param name="pattern">[.A-Za-z0-9/ &gt;\-]{0,16}</param>
+      </data>
+    </element>
+  </define>
+  <define name="frequency">
+    <element name="frequency">
+      <ref name="frequencyType"/>
+    </element>
+  </define>
+  <define name="SquelchList">
+    <optional>
+      <element name="squelch">
+        <ref name="squelchType"/>
+      </element>
+    </optional>
+    <optional>
+      <element name="squelch">
+        <ref name="squelchType"/>
+      </element>
+    </optional>
+    <optional>
+      <element name="squelch">
+        <ref name="squelchType"/>
+      </element>
+    </optional>
+  </define>
+  <define name="squelchType">
+    <optional>
+      <element name="tone">
+        <data type="decimal">
+          <param name="minInclusive">67.0</param>
+          <param name="maxInclusive">254.1</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <!-- could also use enumeration -->
+      <element name="code">
+        <data type="positiveInteger"/>
+      </element>
+    </optional>
+    <optional>
+      <element name="polarity">
+        <data type="string">
+          <param name="pattern">[RN]{2}</param>
+        </data>
+      </element>
+    </optional>
+    <optional>
+      <attribute name="id"/>
+    </optional>
+    <optional>
+      <attribute name="type"/>
+    </optional>
+  </define>
+  <define name="offset">
+    <element name="offset">
+      <ref name="frequencyType"/>
+    </element>
+  </define>
+  <define name="tuningStep">
+    <element name="tuningStep">
+      <ref name="frequencyType"/>
+    </element>
+  </define>
+  <define name="squelchSetting">
+    <element name="squelchSetting">
+      <data type="string"/>
+    </element>
+  </define>
+  <define name="duplex">
+    <element name="duplex">
+      <choice>
+        <value>positive</value>
+        <value>negative</value>
+        <value>none</value>
+      </choice>
+    </element>
+  </define>
+  <define name="mode">
+    <element name="mode">
+      <choice>
+        <value>FM</value>
+        <value>NFM</value>
+        <value>WFM</value>
+        <value>AM</value>
+        <value>NAM</value>
+        <value>DV</value>
+      </choice>
+    </element>
+  </define>
+  <define name="dv">
+    <element name="dv">
+      <element name="urcall">
+        <ref name="callsignType"/>
+      </element>
+      <element name="rpt1call">
+        <ref name="callsignType"/>
+      </element>
+      <element name="rpt2call">
+        <ref name="callsignType"/>
+      </element>
+      <optional>
+        <element name="digitalCode">
+          <ref name="digitalCodeType"/>
+        </element>
+      </optional>
+    </element>
+  </define>
+  <define name="callsignType">
+    <data type="string">
+      <param name="pattern">[A-Z0-9/ ]*</param>
+    </data>
+  </define>
+  <define name="digitalCodeType">
+    <data type="integer">
+      <param name="minInclusive">0</param>
+    </data>
+  </define>
+  <define name="skip">
+    <element name="skip">
+      <choice>
+        <value>S</value>
+        <value>P</value>
+        <value/>
+      </choice>
+    </element>
+  </define>
+  <define name="bank">
+    <element name="bank">
+      <attribute name="bankId">
+        <data type="nonNegativeInteger"/>
+      </attribute>
+      <optional>
+        <attribute name="bankIndex">
+          <data type="nonNegativeInteger"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+</grammar>

@@ -1,0 +1,64 @@
+memoryType =
+  attribute location { xsd:nonNegativeInteger }?,
+  shortName,
+  longName?,
+  frequency,
+  SquelchList,
+  squelchSetting?,
+  duplex,
+  offset,
+  mode,
+  tuningStep,
+  skip?,
+  bank?,
+  dv?
+
+shortName = element shortName { xsd:string { pattern = "[A-Z0-9/ >\-]{0,6}" } }
+
+frequencyType = 
+   attribute units { "Hz" | "kHz" | "MHz" | "GHz" },
+   xsd:decimal
+
+longName = element longName { xsd:string { pattern = "[.A-Za-z0-9/ >\-]{0,16}" } }
+
+frequency = element frequency { frequencyType }
+
+SquelchList = 
+   element squelch { squelchType }?, 
+   element squelch { squelchType }?, 
+   element squelch { squelchType }?
+
+squelchType =
+   element tone { xsd:decimal { minInclusive = "67.0" maxInclusive = "254.1" } }?,  # could also use enumeration
+   element code { xsd:positiveInteger }?,
+   element polarity { xsd:string { pattern = "[RN]{2}" } }?,
+   attribute id { text }?,
+   attribute type { text }?
+
+offset = element offset { frequencyType }
+
+tuningStep = element tuningStep { frequencyType }
+
+squelchSetting = element squelchSetting { xsd:string }
+
+duplex = element duplex { "positive" | "negative" | "none" }
+
+mode = element mode { "FM" | "NFM" | "WFM" | "AM" | "NAM" | "DV" }
+
+dv = element dv {
+  element urcall { callsignType },
+  element rpt1call { callsignType },
+  element rpt2call { callsignType },
+  element digitalCode { digitalCodeType }?
+}
+
+callsignType = xsd:string { pattern = "[A-Z0-9/ ]*" }
+
+digitalCodeType = xsd:integer { minInclusive = "0" }
+
+skip = element skip { "S" | "P" | "" }
+
+bank = element bank {
+  attribute bankId { xsd:nonNegativeInteger },
+  attribute bankIndex { xsd:nonNegativeInteger }?
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!--
+    
+    CHIRP XML Schema
+    Copyright 2008 Dan Smith <dsmith@danplanet.com>
+    
+  -->
+  <include href="chirp_memory.rng"/>
+  <include href="chirp_banks.rng"/>
+  <start>
+    <ref name="radio"/>
+  </start>
+  <define name="radio">
+    <element name="radio">
+      <optional>
+        <attribute name="version">
+          <ref name="chirpSchemaVersionType"/>
+        </attribute>
+      </optional>
+      <optional>
+        <ref name="comment"/>
+      </optional>
+      <ref name="memories"/>
+      <ref name="banks"/>
+    </element>
+  </define>
+  <define name="comment">
+    <optional>
+      <element name="comment">
+        <data type="string"/>
+      </element>
+    </optional>
+  </define>
+  <define name="memories">
+    <element name="memories">
+      <zeroOrMore>
+        <element name="memory">
+          <ref name="memoryType"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="banks">
+    <element name="banks">
+      <zeroOrMore>
+        <element name="bank">
+          <ref name="bankType"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="chirpSchemaVersionType">
+    <data type="string">
+      <param name="pattern">[0-9][0-9]*.[0-9][0-9]*.[0-9]{1,4}</param>
+    </data>
+  </define>
+</grammar>
