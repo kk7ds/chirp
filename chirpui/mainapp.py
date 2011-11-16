@@ -1090,12 +1090,24 @@ If you think that it is valid, you can select a radio model below to force an op
             a.set_accel_group(accelg)
             a.connect_accelerator()
         
+    def _set_icon(self):
+        execpath = platform.get_platform().executable_path()
+        path = os.path.abspath(os.path.join(execpath, "share", "chirp.png"))
+        if not os.path.exists(path):
+            path = "/usr/share/pixmaps/chirp.png"
+
+        self.set_icon_from_file(path)
+
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
         d = CONF.get("last_dir", "state")
         if d and os.path.isdir(d):
             platform.get_platform().set_last_dir(d)
+
+        if os.name != "nt":
+            # Windows gets the icon from the exe
+            self._set_icon()
 
         vbox = gtk.VBox(False, 2)
 
