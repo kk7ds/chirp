@@ -287,7 +287,8 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tmode = TMODES[_mem.tmode]
         mem.mode = _mem.mode_am and "AM" or "FM"
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
-        mem.tuning_step = STEPS[_mem.tune_step]
+        if self.get_features().has_tuning_step:
+            mem.tuning_step = STEPS[_mem.tune_step]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.offset = self._get_mem_offset(mem, _mem)
         mem.name = self._get_mem_name(mem, _mem)
@@ -313,7 +314,8 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.mode_am = mem.mode == "AM" and 1 or 0
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem.tune_step = STEPS.index(mem.tuning_step)
+        if self.get_features().has_tuning_step:
+            _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int (mem.offset / 10000) or 0
         if mem.power:
@@ -451,12 +453,13 @@ struct {
      duplex:3;
   bbcd freq[3];
   u8 mode_am:1,
-     tune_step:3,
+     unknown3:1,
+     nameused:1,
+     unknown4:1,
      power:2,
      tmode:2;
   bbcd split[3];
-  u8 nameused:1,
-     unknown5:1,
+  u8 unknown5:2,
      tone:6;
   u8 namevalid:1,
      dtcs:7;
@@ -494,6 +497,7 @@ class FT8900Radio(FT8800Radio):
                           (320000000, 480000000),
                           (700000000, 985000000)]
         rf.memory_bounds = (1, 799)
+        rf.has_tuning_step = False
 
         return rf
 
