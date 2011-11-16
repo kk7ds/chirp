@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, bitwise, memmap
+from chirp import chirp_common, bitwise, memmap, errors
 
 import time
 
@@ -265,7 +265,7 @@ class DRx35Radio(AlincoStyleRadio):
             _mem.rtone = self._valid_tones.index(mem.rtone)
             _tone = mem.ctone
             _mem.ctone = self._valid_tones.index(mem.ctone)
-        except IndexError:
+        except ValueError:
             raise errors.UnsupportedToneError("This radio does not support " +
                                               "tone %.1fHz" % _tone)
 
