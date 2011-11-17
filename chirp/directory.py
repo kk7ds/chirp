@@ -54,7 +54,6 @@ DRV_TO_RADIO = {
     "vx8d"           : vx8.VX8DRadio,
     "ft2800"         : ft2800.FT2800Radio,
     "ft7800"         : ft7800.FT7800Radio,
-    "ft7900"         : ft7800.FT7900Radio,
     "ft8800"         : ft7800.FT8800Radio,
     "ft8900"         : ft7800.FT8900Radio,
     #"ft50"           : ft50.FT50Radio,
