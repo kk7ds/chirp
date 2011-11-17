@@ -527,25 +527,46 @@ class TestOutput:
         pass
 
     def report(self, rclass, tc, msg, e):
-        print "%9s %-13s %-10s %8s: %s" % (rclass.VENDOR,
+        print "%9s %-13s %-10s %s %s" % (rclass.VENDOR,
                                            ("%s %s" % (rclass.MODEL,
                                                        rclass.VARIANT)),
                                            tc,
                                            msg, e)
 
 class TestOutputANSI(TestOutput):
+    def __init__(self):
+        self.__counts = {
+            "PASSED"  : 0,
+            "FAILED"  : 0,
+            "CRASHED" : 0,
+            "SKIPPED" : 0,
+            }
+        self.__total = 0
+
     def report(self, rclass, tc, msg, e):
+        self.__total += 1
+        self.__counts[msg] += 1
+        msg += ":"
         if os.isatty(1):
-            if msg == "PASSED":
-                msg = "\033[1;32m%s\033[0m" % msg
-            elif msg == "FAILED":
-                msg = "\033[1;41m%s\033[0m" % msg
-            elif msg == "CRASHED":
-                msg = "\033[1;45m%s\033[0m" % msg
-            elif msg == "SKIPPED":
-                msg = "\033[1;32m%s\033[0m" % msg
+            if msg == "PASSED:":
+                msg = "\033[1;32m%8s\033[0m" % msg
+            elif msg == "FAILED:":
+                msg = "\033[1;41m%8s\033[0m" % msg
+            elif msg == "CRASHED:":
+                msg = "\033[1;45m%8s\033[0m" % msg
+            elif msg == "SKIPPED:":
+                msg = "\033[1;32m%8s\033[0m" % msg
+        else:
+            msg = "%8s" % msg
 
         TestOutput.report(self, rclass, tc, msg, e)
+
+    def cleanup(self):
+        print "-" * 70
+        print "Results:"
+        print "  %-7s: %i" % ("TOTAL", self.__total)
+        for t,c in self.__counts.items():
+            print "  %-7s: %i" % (t, c)
 
 class TestOutputHTML(TestOutput):
     def __init__(self, filename):
@@ -650,8 +671,9 @@ class TestRunner:
             os.remove(fn)
 
     def _run_one(self, tw, rclass):
+        nfailed = 0
         for tcclass in self._test_list:
-            nfailed = 0
+            nprinted = 0
             tc = tcclass(tw)
 
             self.nuke_log(rclass, tc)
@@ -665,24 +687,29 @@ class TestRunner:
                     if e.get_detail():
                         self.log(rclass, tc, e)
                     nfailed += 1
+                    nprinted += 1
             except TestFailedError, e:
                 self.report(rclass, tc, "FAILED", e)
                 if e.get_detail():
                     self.log(rclass, tc, e)
                 nfailed += 1
+                nprinted += 1
             except TestCrashError, e:
                 self.report(rclass, tc, "CRASHED", e)
                 self.log(rclass, tc, e)
                 nfailed += 1
+                nprinted += 1
             except TestSkippedError, e:
                 self.report(rclass, tc, "SKIPPED", e)
                 self.log(rclass, tc, e)
-                nfailed += 1
+                nprinted += 1
 
             tc.cleanup()
 
-            if not nfailed:
+            if not nprinted:
                 self.report(rclass, tc, "PASSED", "All tests")
+
+        return nfailed
 
     def run_rclass_image(self, rclass, image):
         rid = "%s_%s_" % (rclass.VENDOR, rclass.MODEL)
@@ -694,22 +721,27 @@ class TestRunner:
         rf = tw.do("get_features")
         if rf.has_sub_devices:
             devices = tw.do("get_sub_devices")
+            failed = 0
             for dev in devices:
-                self.run_rclass_image(dev.__class__, image)
+                failed += self.run_rclass_image(dev.__class__, image)
+            return failed
         else:
             return self._run_one(tw, rclass)
 
     def run_list(self, run_list):
+        failed = 0
         for rclass, image in sorted(run_list):
-            self.run_rclass_image(rclass, image)
+            failed += self.run_rclass_image(rclass, image)
+        return failed
 
     def run_all(self):
         run_list = self._make_list()
-        self.run_list(run_list)
+        return self.run_list(run_list)
                                                   
     def run_one(self, drv_name):
-        self.run_rclass_image(directory.get_radio(drv_name),
-                              os.path.join("images", "%s.img" % drv_name))
+        return self.run_rclass_image(directory.get_radio(drv_name),
+                                     os.path.join("images",
+                                                  "%s.img" % drv_name))
 
     def run_one_live(self, drv_name, port):
         rclass = directory.get_radio(drv_name)
@@ -718,12 +750,14 @@ class TestRunner:
         rf = tw.do("get_features")
         if rf.has_sub_devices:
             devices = tw.do("get_sub_devices")
+            failed = 0
             for device in devices:
                 tw = TestWrapper(device.__class__, pipe)
-                self._run_one(tw, device.__class__)
+                failed += self._run_one(tw, device.__class__)
+            return failed
         else:
             tw = TestWrapper(rclass, pipe)
-            self._run_one(tw, rclass)
+            return self._run_one(tw, rclass)
 
 if __name__ == "__main__":
     import sys
@@ -766,10 +800,12 @@ Available tests:
         if not options.driver:
             print "Live mode requires a driver to be specified"
             sys.exit(1)
-        tr.run_one_live(options.driver, options.live)
+        failed = tr.run_one_live(options.driver, options.live)
     elif options.driver:
-        tr.run_one(options.driver)
+        failed = tr.run_one(options.driver)
     else:
-        tr.run_all()
+        failed = tr.run_all()
 
     test_out.cleanup()
+
+    sys.exit(failed)
