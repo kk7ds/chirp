@@ -819,6 +819,8 @@ time.  Are you sure you want to do this?"""
             print e
             col_order = default_col_order
 
+        non_editable = ["Loc"]
+
         cols = {}
         i = 0
         for _cap, _type, _rend in self.cols:
@@ -844,7 +846,7 @@ time.  Are you sure you want to do this?"""
                 col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
             else:
-                rend.set_property("editable", True)
+                rend.set_property("editable", _cap not in non_editable)
                 rend.connect("edited", self.edited, _cap)
                 col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
