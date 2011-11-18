@@ -199,7 +199,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _banks[i].name = banks[i].ljust(6)[:6]
 
     def _get_freq(self, _mem):
-        val = _mem.freq
+        val = int(_mem.freq)
 
         if val & 0x00200000:
             mult = 6250
