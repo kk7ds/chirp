@@ -207,7 +207,7 @@ class THD7Radio(KenwoodLiveRadio):
     def _make_mem_spec(self, mem):
         spec = ( \
             "%011i" % mem.freq,
-            "%i" % STEPS.index(mem.tuning_step),
+            "%X" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
             "%i" % (mem.tmode == "Tone"),
@@ -227,7 +227,7 @@ class THD7Radio(KenwoodLiveRadio):
 
         mem.number = int(spec[2])
         mem.freq = int(spec[3], 10)
-        mem.tuning_step = STEPS[int(spec[4])]
+        mem.tuning_step = STEPS[int(spec[4], 16)]
         mem.duplex = DUPLEX[int(spec[5])]
         mem.tmode = get_tmode(spec[7], spec[8], spec[9])
         mem.rtone = chirp_common.TONES[int(spec[10]) - 1]
@@ -267,7 +267,7 @@ class TMD700Radio(KenwoodLiveRadio):
     def _make_mem_spec(self, mem):
         spec = ( \
             "%011i" % mem.freq,
-            "%i" % STEPS.index(mem.tuning_step),
+            "%X" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
             "%i" % (mem.tmode == "Tone"),
@@ -287,7 +287,7 @@ class TMD700Radio(KenwoodLiveRadio):
 
         mem.number = int(spec[2])
         mem.freq = int(spec[3])
-        mem.tuning_step = STEPS[int(spec[4])]
+        mem.tuning_step = STEPS[int(spec[4], 16)]
         mem.duplex = DUPLEX[int(spec[5])]
         mem.tmode = get_tmode(spec[7], spec[8], spec[9])
         mem.rtone = chirp_common.TONES[int(spec[10]) - 1]
@@ -328,7 +328,7 @@ class TMV7Radio(KenwoodLiveRadio):
         spec = ( \
             "%03i" % mem.number,
             "%011i" % mem.freq,
-            "%i" % STEPS.index(mem.tuning_step),
+            "%X" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
             "%i" % (mem.tmode == "Tone"),
@@ -346,7 +346,7 @@ class TMV7Radio(KenwoodLiveRadio):
         mem = chirp_common.Memory()
         mem.number = int(spec[2])
         mem.freq = int(spec[3])
-        mem.tuning_step = STEPS[int(spec[4])]
+        mem.tuning_step = STEPS[int(spec[4], 16)]
         mem.duplex = DUPLEX[int(spec[5])]
         if int(spec[7]):
             mem.tmode = "Tone"
@@ -449,7 +449,7 @@ class THF6ARadio(KenwoodLiveRadio):
 
         mem.number = int(spec[1])
         mem.freq = int(spec[2])
-        mem.tuning_step = STEPS[int(spec[3])]
+        mem.tuning_step = STEPS[int(spec[3], 16)]
         mem.duplex = DUPLEX[int(spec[4])]
         mem.tmode = get_tmode(spec[6], spec[7], spec[8])
         mem.rtone = chirp_common.TONES[int(spec[9])]
@@ -471,7 +471,7 @@ class THF6ARadio(KenwoodLiveRadio):
     def _make_mem_spec(self, mem):
         spec = ( \
             "%011i" % mem.freq,
-            "%i" % STEPS.index(mem.tuning_step),
+            "%X" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
             "0",
             "%i" % (mem.tmode == "Tone"),
