@@ -81,6 +81,8 @@ TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", ""]
 DUPLEX = ["", "-", "+", "?3"]
 DTCSP  = ["NN", "NR", "RN", "RR"]
 MODES  = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
+STEPS  = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
+          100.0, 125.0, 200.0]
 
 def decode_call(sevenbytes):
     if len(sevenbytes) != 7:
@@ -155,7 +157,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_modes = [x for x in MODES if x is not None]
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
-        rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
+        rf.valid_tuning_steps = STEPS
         rf.valid_bands = [(118000000, 173995000), (230000000, 549995000),
                           (810000000, 823990000), (849000000, 868990000),
                           (894000000, 999990000)]
@@ -269,10 +271,10 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.mode = MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.dtcs_polarity = DTCSP[_mem.dtcs_polarity]
-        if _mem.tune_step >= len(chirp_common.TUNING_STEPS):
+        if _mem.tune_step >= len(STEPS):
             mem.tuning_step = 5.0
         else:
-            mem.tuning_step = chirp_common.TUNING_STEPS[_mem.tune_step]
+            mem.tuning_step = STEPS[_mem.tune_step]
         mem.name = str(_mem.name).rstrip()
 
         return mem
@@ -308,7 +310,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.mode = MODES.index(mem.mode)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
-        _mem.tune_step = chirp_common.TUNING_STEPS.index(mem.tuning_step)
+        _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.name = mem.name.ljust(8)
 
         if isinstance(mem, chirp_common.DVMemory):
