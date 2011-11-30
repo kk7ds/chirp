@@ -27,8 +27,6 @@ import os
 import locale
 import gettext
 
-from chirpui import mainapp, config
-
 if hasattr(sys, "frozen"):
     log = file("debug.log", "w", 0)
     sys.stderr = log
@@ -55,6 +53,8 @@ gettext.bindtextdomain("CHIRP", localepath)
 gettext.textdomain("CHIRP")
 lang = gettext.translation("CHIRP", localepath, languages=langs, fallback=True)
 lang.install()
+
+from chirpui import mainapp, config
 
 a = mainapp.ChirpMain()
 
