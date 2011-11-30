@@ -50,7 +50,7 @@ def handle_ed(_, iter, new, store, col):
 class ValueErrorDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
-        self.set_property("text", "Invalid value for this field")
+        self.set_property("text", _("Invalid value for this field"))
         self.format_secondary_text(str(exception))
 
 def iter_prev(store, iter):
@@ -100,58 +100,58 @@ def show_blob(title, result):
 
 class MemoryEditor(common.Editor):
     cols = [
-        ("Loc"       , TYPE_INT,     gtk.CellRendererText,  ),
-        ("Frequency" , TYPE_INT64,   gtk.CellRendererText,  ),
-        ("Name"      , TYPE_STRING,  gtk.CellRendererText,  ), 
-        ("Tone Mode" , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Tone"      , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        ("ToneSql"   , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        ("DTCS Code" , TYPE_INT,     gtk.CellRendererCombo, ),
-        ("DTCS Pol"  , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Cross Mode", TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Duplex"    , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Offset"    , TYPE_INT64,   gtk.CellRendererText,  ),
-        ("Mode"      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Power"     , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Tune Step" , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        ("Skip"      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Bank"      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        ("Bank Index", TYPE_INT,     gtk.CellRendererText,  ),
-        ("_filled"   , TYPE_BOOLEAN, None,                  ),
-        ("_hide_cols", TYPE_PYOBJECT,None,                  ),
-        ("_extd"     , TYPE_STRING,  None,                  ),
+        (_("Loc")       , TYPE_INT,     gtk.CellRendererText,  ),
+        (_("Frequency") , TYPE_INT64,   gtk.CellRendererText,  ),
+        (_("Name")      , TYPE_STRING,  gtk.CellRendererText,  ), 
+        (_("Tone Mode") , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Tone")      , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        (_("ToneSql")   , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        (_("DTCS Code") , TYPE_INT,     gtk.CellRendererCombo, ),
+        (_("DTCS Pol")  , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Cross Mode"), TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Duplex")    , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Offset")    , TYPE_INT64,   gtk.CellRendererText,  ),
+        (_("Mode")      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Power")     , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Tune Step") , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        (_("Skip")      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Bank")      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Bank Index"), TYPE_INT,     gtk.CellRendererText,  ),
+        ("_filled"      , TYPE_BOOLEAN, None,                  ),
+        ("_hide_cols"   , TYPE_PYOBJECT,None,                  ),
+        ("_extd"        , TYPE_STRING,  None,                  ),
         ]
 
     defaults = {
-        "Name"      : "",
-        "Frequency" : 146010000,
-        "Tone"      : 88.5,
-        "ToneSql"   : 88.5,
-        "DTCS Code" : 23,
-        "DTCS Pol"  : "NN",
-        "Cross Mode": "DCS->Off",
-        "Duplex"    : "",
-        "Offset"    : 0,
-        "Mode"      : "FM",
-        "Power"     : "",
-        "Tune Step" : 5.0,
-        "Tone Mode" : "",
-        "Skip"      : "",
-        "Bank"      : "",
-        "Bank Index": 0,
+        _("Name")      : "",
+        _("Frequency") : 146010000,
+        _("Tone")      : 88.5,
+        _("ToneSql")   : 88.5,
+        _("DTCS Code") : 23,
+        _("DTCS Pol")  : "NN",
+        _("Cross Mode"): "DCS->Off",
+        _("Duplex")    : "",
+        _("Offset")    : 0,
+        _("Mode")      : "FM",
+        _("Power")     : "",
+        _("Tune Step") : 5.0,
+        _("Tone Mode") : "",
+        _("Skip")      : "",
+        _("Bank")      : "",
+        _("Bank Index"): 0,
         }
 
     choices = {
-        "Tone" : chirp_common.TONES,
-        "ToneSql" : chirp_common.TONES,
-        "DTCS Code" : chirp_common.DTCS_CODES,
-        "DTCS Pol" : ["NN", "NR", "RN", "RR"],
-        "Mode" : chirp_common.MODES,
-        "Power" : [],
-        "Duplex" : ["", "-", "+", "split"],
-        "Tune Step" : chirp_common.TUNING_STEPS,
-        "Tone Mode" : ["", "Tone", "TSQL", "DTCS"],
-        "Cross Mode" : chirp_common.CROSS_MODES,
+        _("Tone") : chirp_common.TONES,
+        _("ToneSql") : chirp_common.TONES,
+        _("DTCS Code") : chirp_common.DTCS_CODES,
+        _("DTCS Pol") : ["NN", "NR", "RN", "RR"],
+        _("Mode") : chirp_common.MODES,
+        _("Power") : [],
+        _("Duplex") : ["", "-", "+", "split"],
+        _("Tune Step") : chirp_common.TUNING_STEPS,
+        _("Tone Mode") : ["", "Tone", "TSQL", "DTCS"],
+        _("Cross Mode") : chirp_common.CROSS_MODES,
         }
     
     def ed_name(self, _, __, new, ___):
@@ -174,15 +174,15 @@ class MemoryEditor(common.Editor):
                 offset *= -1
 
             if offset:
-                self.store.set(iter, self.col("Offset"), offset)
+                self.store.set(iter, self.col(_("Offset")), offset)
 
-            self.store.set(iter, self.col("Duplex"), dup)
+            self.store.set(iter, self.col(_("Duplex")), dup)
 
         def set_ts(ts):
-            self.store.set(iter, self.col("Tune Step"), ts)
+            self.store.set(iter, self.col(_("Tune Step")), ts)
 
         def get_ts(path):
-            return self.store.get(iter, self.col("Tune Step"))[0]
+            return self.store.get(iter, self.col(_("Tune Step")))[0]
 
         try:
             new = chirp_common.parse_freq(new)
@@ -206,10 +206,10 @@ class MemoryEditor(common.Editor):
 
     def ed_loc(self, _, path, new, __):
         iter = self.store.get_iter(path)
-        curloc, = self.store.get(iter, self.col("Loc"))
+        curloc, = self.store.get(iter, self.col(_("Loc")))
 
         job = common.RadioJob(None, "erase_memory", curloc)
-        job.set_desc("Erasing memory %i" % curloc)
+        job.set_desc(_("Erasing memory {loc}").format(loc=curloc))
         self.rthread.submit(job)
 
         self.need_refresh = True
@@ -221,7 +221,7 @@ class MemoryEditor(common.Editor):
             return # Fast path outta here
 
         iter = self.store.get_iter(path)
-        freq, = self.store.get(iter, self.col("Frequency"))
+        freq, = self.store.get(iter, self.col(_("Frequency")))
         if new == "split":
             # If we're going to split mode, use the current
             # RX frequency as the default TX frequency
@@ -232,39 +232,39 @@ class MemoryEditor(common.Editor):
                 offset = chirp_common.STD_OFFSETS[band][0][2]
             else:
                 offset = 0
-            self.store.set(iter, self.col("Offset"), abs(offset))
+            self.store.set(iter, self.col(_("Offset")), abs(offset))
 
         return new
 
     def _get_cols_to_hide(self, iter):
         tmode, duplex, bank = self.store.get(iter,
-                                             self.col("Tone Mode"),
-                                             self.col("Duplex"),
-                                             self.col("Bank"))
+                                             self.col(_("Tone Mode")),
+                                             self.col(_("Duplex")),
+                                             self.col(_("Bank")))
 
         hide = []
 
         if tmode == "Tone":
-            hide += [self.col("ToneSql"),
-                     self.col("DTCS Code"),
-                     self.col("DTCS Pol")]
+            hide += [self.col(_("ToneSql")),
+                     self.col(_("DTCS Code")),
+                     self.col(_("DTCS Pol"))]
         elif tmode == "TSQL":
-            hide += [self.col("Tone"),
-                     self.col("DTCS Code"),
-                     self.col("DTCS Pol")]
+            hide += [self.col(_("Tone")),
+                     self.col(_("DTCS Code")),
+                     self.col(_("DTCS Pol"))]
         elif tmode == "DTCS":
-            hide += [self.col("Tone"), self.col("ToneSql")]
+            hide += [self.col(_("Tone")), self.col(_("ToneSql"))]
         elif tmode == "" or tmode == "(None)":
-            hide += [self.col("Tone"),
-                     self.col("ToneSql"),
-                     self.col("DTCS Code"),
-                     self.col("DTCS Pol")]
+            hide += [self.col(_("Tone")),
+                     self.col(_("ToneSql")),
+                     self.col(_("DTCS Code")),
+                     self.col(_("DTCS Pol"))]
 
         if duplex == "" or duplex == "(None)":
-            hide += [self.col("Offset")]
+            hide += [self.col(_("Offset"))]
 
         if bank == "":
-            hide += [self.col("Bank Index")]
+            hide += [self.col(_("Bank Index"))]
 
         return hide
 
@@ -274,28 +274,28 @@ class MemoryEditor(common.Editor):
 
     def edited(self, rend, path, new, cap):
         if self.read_only:
-            common.show_error("Unable to make changes to this model")
+            common.show_error(_("Unable to make changes to this model"))
             return
 
         iter = self.store.get_iter(path)
         if not self.store.get(iter, self.col("_filled"))[0]:
-            print "Editing new item, taking defaults"
+            print _("Editing new item, taking defaults")
             self.insert_new(iter)
 
         colnum = self.col(cap)
         funcs = {
-            "Loc" : self.ed_loc,
-            "Name" : self.ed_name,
-            "Frequency" : self.ed_freq,
-            "Duplex" : self.ed_duplex,
-            "Offset" : self.ed_offset,
+            _("Loc") : self.ed_loc,
+            _("Name") : self.ed_name,
+            _("Frequency") : self.ed_freq,
+            _("Duplex") : self.ed_duplex,
+            _("Offset") : self.ed_offset,
             }
 
         if funcs.has_key(cap):
             new = funcs[cap](rend, path, new, colnum)
 
         if new is None:
-            print "Bad value for %s: %s" % (cap, new)
+            print _("Bad value for {col}: {val}").format(col=cap, val=new)
             return
 
         if self.store.get_column_type(colnum) == TYPE_INT:
@@ -309,7 +309,7 @@ class MemoryEditor(common.Editor):
                 new = ""
 
         if not handle_ed(rend, iter, new, self.store, self.col(cap)) and \
-                cap != "Frequency":
+                cap != _("Frequency"):
             # No change was made
             # For frequency, we make an exception, since the handler might
             # have altered the duplex.  That needs to be fixed.
@@ -319,22 +319,22 @@ class MemoryEditor(common.Editor):
 
         msgs = self.rthread.radio.validate_memory(mem)
         if msgs:
-            common.show_error("Error setting memory:\r\n" + \
-                                  "\r\n".join(msgs))
+            common.show_error(_("Error setting memory") + \
+                                  "\r\n\r\n".join(msgs))
             self.prefill()
             return
 
         mem.empty = False
 
         job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
-        job.set_desc("Writing memory %i" % mem.number)
+        job.set_desc(_("Writing memory {number}").format(number=mem.number))
         self.rthread.submit(job)
 
         self.store.set(iter, self.col("_filled"), True)
 
         self.maybe_hide_cols(iter)
 
-        persist_defaults = ["Power", "Frequency"]
+        persist_defaults = [_("Power"), _("Frequency")]
         if cap in persist_defaults:
             self.defaults[cap] = new
 
@@ -342,18 +342,18 @@ class MemoryEditor(common.Editor):
         if colnum in hide and self.hide_unused:
             return ""
 
-        if colnum == self.col("Frequency"):
+        if colnum == self.col(_("Frequency")):
             val = chirp_common.format_freq(val)
-        elif colnum == self.col("DTCS Code"):
+        elif colnum == self.col(_("DTCS Code")):
             val = "%03i" % int(val)
-        elif colnum == self.col("Offset"):
+        elif colnum == self.col(_("Offset")):
             val = chirp_common.format_freq(val)
-        elif colnum in [self.col("Tone"), self.col("ToneSql")]:
+        elif colnum in [self.col(_("Tone")), self.col(_("ToneSql"))]:
             val = "%.1f" % val
-        elif colnum in [self.col("Tone Mode"), self.col("Duplex")]:
+        elif colnum in [self.col(_("Tone Mode")), self.col(_("Duplex"))]:
             if not val:
                 val = "(None)"
-        elif colnum == self.col("Loc") and iter is not None:
+        elif colnum == self.col(_("Loc")) and iter is not None:
             extd, = self.store.get(iter, self.col("_extd"))
             if extd:
                 val = extd
@@ -373,7 +373,7 @@ class MemoryEditor(common.Editor):
             line.append(val)
         
         if not loc:
-            loc, = self.store.get(iter, self.col("Loc"))
+            loc, = self.store.get(iter, self.col(_("Loc")))
 
         self.store.set(iter,
                        0, loc,
@@ -387,21 +387,21 @@ class MemoryEditor(common.Editor):
         else:
             iter = store.insert_after(_iter)
 
-        newpos, = store.get(_iter, self.col("Loc"))
+        newpos, = store.get(_iter, self.col(_("Loc")))
         newpos += delta
 
         print "Insert easy: %i" % delta
 
         mem = self.insert_new(iter, newpos)
         job = common.RadioJob(None, "set_memory", mem)
-        job.set_desc("Writing memory %i" % mem.number)
+        job.set_desc(_("Writing memory {number}").format(number=mem.number))
         self.rthread.submit(job)
 
     def insert_hard(self, store, _iter, delta, warn=True):
 	if isinstance(self.rthread.radio, chirp_common.LiveRadio) and warn:
-            txt = """This operation requires moving all subsequent channels
-by one spot until an empty location is reached.  This can take a LONG
-time.  Are you sure you want to do this?"""
+            txt = _("This operation requires moving all subsequent channels "
+                    "by one spot until an empty location is reached.  This "
+                    "can take a LONG time.  Are you sure you want to do this?")
             if not common.ask_yesno_question(txt):
                 return False # No change
 
@@ -425,7 +425,7 @@ time.  Are you sure you want to do this?"""
             mem.number = pos
             mem.empty = True
             job = common.RadioJob(lambda x: self.prefill(), "set_memory", mem)
-            job.set_desc("Adding memory %i" % mem.number)
+            job.set_desc(_("Adding memory {number}").format(number=mem.number))
             self.rthread.submit(job)
 
         return True # We changed memories
@@ -438,7 +438,7 @@ time.  Are you sure you want to do this?"""
             to_remove.append(cur_pos)
             self.store.set(iter, self.col("_filled"), False)
             job = common.RadioJob(None, "erase_memory", cur_pos)
-            job.set_desc("Erasing memory %i" % cur_pos)
+            job.set_desc(_("Erasing memory {number}").format(number=cur_pos))
             self.rthread.submit(job)
             
             def handler(mem):
@@ -447,7 +447,7 @@ time.  Are you sure you want to do this?"""
                         gobject.idle_add(self.set_memory, mem)
             
             job = common.RadioJob(handler, "get_memory", cur_pos)
-            job.set_desc("Getting memory %s" % cur_pos)
+            job.set_desc(_("Getting memory {number}").format(number=cur_pos))
             self.rthread.submit(job)
             
 
@@ -461,7 +461,7 @@ time.  Are you sure you want to do this?"""
             to_remove.reverse()
             iter = self.store.get_iter(paths[0])
             while to_remove and iter:
-                pos, = self.store.get(iter, self.col("Loc"))
+                pos, = self.store.get(iter, self.col(_("Loc")))
                 if pos in to_remove:
                     to_remove.remove(pos)
                     if not self.store.remove(iter):
@@ -473,7 +473,7 @@ time.  Are you sure you want to do this?"""
 
     def _delete_rows_and_shift(self, paths):
         iter = self.store.get_iter(paths[0])
-        starting_loc, = self.store.get(iter, self.col("Loc"))
+        starting_loc, = self.store.get(iter, self.col(_("Loc")))
         for i in range(0, len(paths)):
             sd = shiftdialog.ShiftDialog(self.rthread)
             sd.delete(starting_loc, quiet=True)
@@ -497,9 +497,9 @@ time.  Are you sure you want to do this?"""
             if victim_path[0] < 0:
                 raise ValueError()
             donor_loc = self.store.get(self.store.get_iter(donor_path),
-                                  self.col("Loc"))[0]
+                                  self.col(_("Loc")))[0]
             victim_loc = self.store.get(self.store.get_iter(victim_path),
-                                   self.col("Loc"))[0]
+                                   self.col(_("Loc")))[0]
         except ValueError:
             self.emit("usermsg", "No room to %s" % (action.replace("_", " ")))
             return False # No change
@@ -534,7 +534,9 @@ time.  Are you sure you want to do this?"""
             old = mem.number
             mem.number = dest
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc("Moving memory from %i to %i" % (old, dest))
+            job.set_desc(\
+                _("Moving memory from {old} to {new}").format(old=old,
+                                                              new=dest))
             self.rthread.submit(job)
             self._set_memory(self.store.get_iter(donor_path), mem)
             update_selection()
@@ -543,7 +545,9 @@ time.  Are you sure you want to do this?"""
             old = mem.number
             mem.number += delta
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc("Moving memory from %i to %i" % (old, old+delta))
+            job.set_desc(\
+                _("Moving memory from {old} to {new}").format(old=old,
+                                                              new=old+delta))
             self.rthread.submit(job)
             self._set_memory(iter, mem)
             ctx.done_count += 1
@@ -552,7 +556,7 @@ time.  Are you sure you want to do this?"""
 
         job = common.RadioJob(lambda m: save_victim(m, ctx),
                               "get_memory", victim_loc)
-        job.set_desc("Getting memory %i" % victim_loc)
+        job.set_desc(_("Getting memory {number}").format(number=victim_loc))
         self.rthread.submit(job)
 
         for i in range(len(paths)):
@@ -568,7 +572,7 @@ time.  Are you sure you want to do this?"""
                 dest = paths[dest]
 
             iter = self.store.get_iter(path)
-            loc, = self.store.get(iter, self.col("Loc"))
+            loc, = self.store.get(iter, self.col(_("Loc")))
             job = common.RadioJob(move_mem, "get_memory", loc)
             job.set_cb_args(delta, ctx, self.store.get_iter(dest))
             job.set_desc("Getting memory %i" % loc)
@@ -581,26 +585,29 @@ time.  Are you sure you want to do this?"""
             self.emit("usermsg", "Select two memories first")
             return False
 
-        loc_a, = self.store.get(self.store.get_iter(paths[0]), self.col("Loc"))
-        loc_b, = self.store.get(self.store.get_iter(paths[1]), self.col("Loc"))
+        loc_a, = self.store.get(self.store.get_iter(paths[0]),
+                                self.col(_("Loc")))
+        loc_b, = self.store.get(self.store.get_iter(paths[1]),
+                                self.col(_("Loc")))
 
         def store_mem(mem, dst):
             src = mem.number
             mem.number = dst
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc("Moving memory from %i to %i" % (src, dst))
+            job.set_desc(_("Moving memory from {old} to {new}").format(old=src,
+                                                                       new=dst))
             self.rthread.submit(job)
             if dst == loc_a:
                 self.prefill()
 
         job = common.RadioJob(lambda m: store_mem(m, loc_b),
                               "get_memory", loc_a)
-        job.set_desc("Getting memory %i" % loc_a)
+        job.set_desc(_("Getting memory {number}").format(number=loc_a))
         self.rthread.submit(job)
 
         job = common.RadioJob(lambda m: store_mem(m, loc_a),
                               "get_memory", loc_b)
-        job.set_desc("Getting memory %i" % loc_b)
+        job.set_desc(_("Getting memory {number}").format(number=loc_b))
         self.rthread.submit(job)
 
         # We (scheduled some) change to the memories
@@ -608,21 +615,23 @@ time.  Are you sure you want to do this?"""
 
     def _show_raw(self, cur_pos):
         def idle_show_raw(result):
-            gobject.idle_add(show_blob, "Raw memory %i" % cur_pos, result)
+            gobject.idle_add(show_blob,
+                             _("Raw memory {number}").format(number=cur_pos),
+                                                             result)
 
         job = common.RadioJob(idle_show_raw, "get_raw_memory", cur_pos)
-        job.set_desc("Getting raw memory %i" % cur_pos)
+        job.set_desc(_("Getting raw memory {number}").format(number=cur_pos))
         self.rthread.submit(job)
 
     def _diff_raw(self, paths):
         if len(paths) != 2:
-            common.show_error("You can only diff two memories!")
+            common.show_error(_("You can only diff two memories!"))
             return
 
         loc_a = self.store.get(self.store.get_iter(paths[0]),
-                               self.col("Loc"))[0]
+                               self.col(_("Loc")))[0]
         loc_b = self.store.get(self.store.get_iter(paths[1]),
-                               self.col("Loc"))[0]
+                               self.col(_("Loc")))[0]
 
         raw = {}
 
@@ -640,35 +649,37 @@ time.  Are you sure you want to do this?"""
             return diff
 
         def diff_raw(which, result):
-            raw[which] = "Memory %i:%s%s" % (which, os.linesep, result)
+            raw[which] = _("Memory {number}").format(number=which) + \
+                os.linesep + result
 
             if len(raw.keys()) == 2:
                 diff = simple_diff(raw[loc_a], raw[loc_b])
                 gobject.idle_add(show_blob,
-                                 "Diff of %i and %i" % (loc_a, loc_b),
+                                 _("Diff of {a} and {b}").format(a=loc_a,
+                                                                 b=loc_b),
                                  diff)
 
         job = common.RadioJob(lambda r: diff_raw(loc_a, r),
                               "get_raw_memory", loc_a)
-        job.set_desc("Getting raw memory %i" % loc_a)
+        job.set_desc(_("Getting raw memory {number}").format(number=loc_a))
         self.rthread.submit(job)
 
         job = common.RadioJob(lambda r: diff_raw(loc_b, r),
                               "get_raw_memory", loc_b)
-        job.set_desc("Getting raw memory %i" % loc_b)
+        job.set_desc(_("Getting raw memory {number}").format(number=loc_b))
         self.rthread.submit(job)
 
     def mh(self, _action, store, paths):
         action = _action.get_name()
         iter = store.get_iter(paths[0])
-        cur_pos, = store.get(iter, self.col("Loc"))
+        cur_pos, = store.get(iter, self.col(_("Loc")))
 
         require_contiguous = ["delete_s", "move_up", "move_dn"]
         if action in require_contiguous:
             last = paths[0][0]
             for path in paths[1:]:
                 if path[0] != last+1:
-                    self.emit("usermsg", "Memories must be contiguous")
+                    self.emit("usermsg", _("Memories must be contiguous"))
                     return
                 last = path[0]
 
@@ -740,18 +751,18 @@ time.  Are you sure you want to do this?"""
         istwo = len(paths) == 2
 
         actions = [
-            ("insert_prev", "Insert row above"),
-            ("insert_next", "Insert row below"),
-            ("delete", issingle and "Delete" or "Delete all"),
-            ("delete_s", "Delete (and shift up)"),
-            ("move_up", "Move up"),
-            ("move_dn", "Move down"),
-            ("exchange", "Exchange memories"),
-            ("cut", "Cut"),
-            ("copy", "Copy"),
-            ("paste", "Paste"),
-            ("devshowraw", "Show Raw Memory"),
-            ("devdiffraw", "Diff Raw Memories"),
+            ("insert_prev", _("Insert row above")),
+            ("insert_next", _("Insert row below")),
+            ("delete", issingle and _("Delete") or _("Delete all")),
+            ("delete_s", _("Delete (and shift up)")),
+            ("move_up", _("Move up")),
+            ("move_dn", _("Move down")),
+            ("exchange", _("Exchange memories")),
+            ("cut", _("Cut")),
+            ("copy", _("Copy")),
+            ("paste", _("Paste")),
+            ("devshowraw", _("Show Raw Memory")),
+            ("devdiffraw", _("Diff Raw Memories")),
             ]
 
         no_multiple = ["insert_prev", "insert_next", "paste", "devshowraw"]
@@ -862,7 +873,7 @@ time.  Are you sure you want to do this?"""
         for cap in col_order:
             self.view.append_column(cols[cap])
 
-        self.store.set_sort_column_id(self.col("Loc"), gtk.SORT_ASCENDING)
+        self.store.set_sort_column_id(self.col(_("Loc")), gtk.SORT_ASCENDING)
 
         self.view.show()
         sw.show()
@@ -875,7 +886,7 @@ time.  Are you sure you want to do this?"""
         try:
             return self._cached_cols[caption]
         except KeyError:
-            raise Exception("Internal Error: Column %s not found" % caption)
+            raise Exception(_("Internal Error: Column {name} not found").format(name=caption))
 
     def prefill(self):
         self.store.clear()
@@ -890,13 +901,13 @@ time.  Are you sure you want to do this?"""
 
         for i in range(lo, hi+1):
             job = common.RadioJob(handler, "get_memory", i)
-            job.set_desc("Getting memory %s" % i)
+            job.set_desc(_("Getting memory {number}").format(number=i))
             self.rthread.submit(job, 2)
 
         if self.show_special:
             for i in self.rthread.radio.get_special_locations():
                 job = common.RadioJob(handler, "get_memory", i)
-                job.set_desc("Getting channel %s" % i)
+                job.set_desc(_("Getting channel {chan}").format(chan=i))
                 self.rthread.submit(job, 2)
 
     def _set_memory(self, iter, memory):
@@ -905,8 +916,8 @@ time.  Are you sure you want to do this?"""
                 bank = ""
             else:
                 pathstr = "%i" % (memory.bank + 1)
-                bi = self.choices["Bank"].get_iter_from_string(pathstr)
-                bank, = self.choices["Bank"].get(bi, 1)
+                bi = self.choices[_("Bank")].get_iter_from_string(pathstr)
+                bank, = self.choices[_("Bank")].get(bi, 1)
         except Exception, e:
             common.log_exception()
             print "Unable to get bank: %s" % e
@@ -916,24 +927,24 @@ time.  Are you sure you want to do this?"""
 
         self.store.set(iter,
                        self.col("_filled"), not memory.empty,
-                       self.col("Loc"), memory.number,
+                       self.col(_("Loc")), memory.number,
                        self.col("_extd"), memory.extd_number,
-                       self.col("Name"), memory.name,
-                       self.col("Frequency"), memory.freq,
-                       self.col("Tone Mode"), memory.tmode,
-                       self.col("Tone"), memory.rtone,
-                       self.col("ToneSql"), memory.ctone,
-                       self.col("DTCS Code"), memory.dtcs,
-                       self.col("DTCS Pol"), memory.dtcs_polarity,
-                       self.col("Cross Mode"), memory.cross_mode,
-                       self.col("Duplex"), memory.duplex,
-                       self.col("Offset"), memory.offset,
-                       self.col("Mode"), memory.mode,
-                       self.col("Power"), memory.power or "",
-                       self.col("Tune Step"), memory.tuning_step,
-                       self.col("Skip"), memory.skip,
-                       self.col("Bank"), bank,
-                       self.col("Bank Index"), memory.bank_index)
+                       self.col(_("Name")), memory.name,
+                       self.col(_("Frequency")), memory.freq,
+                       self.col(_("Tone Mode")), memory.tmode,
+                       self.col(_("Tone")), memory.rtone,
+                       self.col(_("ToneSql")), memory.ctone,
+                       self.col(_("DTCS Code")), memory.dtcs,
+                       self.col(_("DTCS Pol")), memory.dtcs_polarity,
+                       self.col(_("Cross Mode")), memory.cross_mode,
+                       self.col(_("Duplex")), memory.duplex,
+                       self.col(_("Offset")), memory.offset,
+                       self.col(_("Mode")), memory.mode,
+                       self.col(_("Power")), memory.power or "",
+                       self.col(_("Tune Step")), memory.tuning_step,
+                       self.col(_("Skip")), memory.skip,
+                       self.col(_("Bank")), bank,
+                       self.col(_("Bank Index")), memory.bank_index)
 
         hide = self._get_cols_to_hide(iter)
         self.store.set(iter, self.col("_hide_cols"), hide)
@@ -942,7 +953,7 @@ time.  Are you sure you want to do this?"""
         iter = self.store.get_iter_first()
 
         while iter is not None:
-            loc, = self.store.get(iter, self.col("Loc"))
+            loc, = self.store.get(iter, self.col(_("Loc")))
             if loc == memory.number:
                 return self._set_memory(iter, memory)
 
@@ -954,13 +965,13 @@ time.  Are you sure you want to do this?"""
     def clear_memory(self, number):
         iter = self.store.get_iter_first()
         while iter:
-            loc, = self.store.get(iter, self.col("Loc"))
+            loc, = self.store.get(iter, self.col(_("Loc")))
             if loc == number:
                 print "Deleting %i" % number
                 # FIXME: Make the actual remove happen on callback
                 self.store.remove(iter)
                 job = common.RadioJob(None, "erase_memory", number)
-                job.set_desc("Erasing memory %i" % number)
+                job.set_desc(_("Erasing memory {number}").format(number=number))
                 self.rthread.submit()
                 break
             iter = self.store.iter_next(iter)
@@ -968,7 +979,7 @@ time.  Are you sure you want to do this?"""
     def _set_mem_vals(self, mem, vals, iter):
         def get_bank_index(name):
             bidx = 0
-            banks = self.choices["Bank"]
+            banks = self.choices[_("Bank")]
             iter = banks.get_iter_first()
             iter = banks.iter_next(iter)
             while iter:
@@ -982,40 +993,40 @@ time.  Are you sure you want to do this?"""
 
         features = self.rthread.radio.get_features()
 
-        bank = vals[self.col("Bank")]
+        bank = vals[self.col(_("Bank"))]
         if bank is "":
             bidx = None
-            bank_index = vals[self.col("Bank Index")]
+            bank_index = vals[self.col(_("Bank Index"))]
         else:
             bidx = get_bank_index(bank)
-            if vals[self.col("Bank Index")] == -1 and features.has_bank_index:
+            if vals[self.col(_("Bank Index"))] == -1 and features.has_bank_index:
                 bank_index = self.rthread.radio.get_available_bank_index(bidx)
                 print "Chose %i index for bank %s" % (bank_index, bank)
-                self.store.set(iter, self.col("Bank Index"), bank_index)
+                self.store.set(iter, self.col(_("Bank Index")), bank_index)
             else:
-                bank_index = vals[self.col("Bank Index")]
+                bank_index = vals[self.col(_("Bank Index"))]
 
         power_levels = {"" : None}
         for i in features.valid_power_levels:
             power_levels[str(i)] = i
 
-        mem.freq = vals[self.col("Frequency")]
-        mem.number = vals[self.col("Loc")]
+        mem.freq = vals[self.col(_("Frequency"))]
+        mem.number = vals[self.col(_("Loc"))]
         mem.extd_number = vals[self.col("_extd")]
-        mem.name = vals[self.col("Name")]
+        mem.name = vals[self.col(_("Name"))]
         mem.vfo = 0
-        mem.rtone = vals[self.col("Tone")]
-        mem.ctone = vals[self.col("ToneSql")]
-        mem.dtcs = vals[self.col("DTCS Code")]
-        mem.tmode = vals[self.col("Tone Mode")]
-        mem.cross_mode = vals[self.col("Cross Mode")]
-        mem.dtcs_polarity = vals[self.col("DTCS Pol")]
-        mem.duplex = vals[self.col("Duplex")]
-        mem.offset = vals[self.col("Offset")]
-        mem.mode = vals[self.col("Mode")]
-        mem.power = power_levels[vals[self.col("Power")]]
-        mem.tuning_step = vals[self.col("Tune Step")]
-        mem.skip = vals[self.col("Skip")]
+        mem.rtone = vals[self.col(_("Tone"))]
+        mem.ctone = vals[self.col(_("ToneSql"))]
+        mem.dtcs = vals[self.col(_("DTCS Code"))]
+        mem.tmode = vals[self.col(_("Tone Mode"))]
+        mem.cross_mode = vals[self.col(_("Cross Mode"))]
+        mem.dtcs_polarity = vals[self.col(_("DTCS Pol"))]
+        mem.duplex = vals[self.col(_("Duplex"))]
+        mem.offset = vals[self.col(_("Offset"))]
+        mem.mode = vals[self.col(_("Mode"))]
+        mem.power = power_levels[vals[self.col(_("Power"))]]
+        mem.tuning_step = vals[self.col(_("Tune Step"))]
+        mem.skip = vals[self.col(_("Skip"))]
         mem.bank = bidx
         mem.bank_index = bank_index
         mem.empty = not vals[self.col("_filled")]
@@ -1029,7 +1040,7 @@ time.  Are you sure you want to do this?"""
 
     def _limit_key(self, which):
         if which not in ["lo", "hi"]:
-            raise Exception("Internal Error: Invalid limit %s" % which)
+            raise Exception(_("Internal Error: Invalid limit {number").format(number=which))
         return "%s_%s" % (directory.get_driver(self.rthread.radio.__class__),
                           which)
 
@@ -1039,7 +1050,7 @@ time.  Are you sure you want to do this?"""
     def make_controls(self, min, max):
         hbox = gtk.HBox(False, 2)
 
-        lab = gtk.Label("Memory range:")
+        lab = gtk.Label(_("Memory range:"))
         lab.show()
         hbox.pack_start(lab, 0, 0, 0)
 
@@ -1066,7 +1077,7 @@ time.  Are you sure you want to do this?"""
         hi.show()
         hbox.pack_start(hi, 0, 0, 0)
 
-        refresh = gtk.Button("Go")
+        refresh = gtk.Button(_("Go"))
         refresh.show()
         refresh.connect("clicked", lambda x: self.prefill())
         hbox.pack_start(refresh, 0, 0, 0)
@@ -1089,14 +1100,14 @@ time.  Are you sure you want to do this?"""
         sep.set_size_request(20, -1)
         hbox.pack_start(sep, 0, 0, 0)
 
-        showspecial = gtk.CheckButton("Special Channels")
+        showspecial = gtk.CheckButton(_("Special Channels"))
         showspecial.set_active(self.show_special)
         showspecial.connect("toggled",
                             lambda x: self.set_show_special(x.get_active()))
         showspecial.show()
         hbox.pack_start(showspecial, 0, 0, 0)
 
-        showempty = gtk.CheckButton("Show Empty")
+        showempty = gtk.CheckButton(_("Show Empty"))
         showempty.set_active(self.show_empty);
         showempty.connect("toggled",
                           lambda x: self.set_show_empty(x.get_active()))
@@ -1108,13 +1119,13 @@ time.  Are you sure you want to do this?"""
         return hbox
 
     def set_bank_list(self, banks):
-        self.choices["Bank"].clear()
-        self.choices["Bank"].append(("", "(None)"))
+        self.choices[_("Bank")].clear()
+        self.choices[_("Bank")].append(("", "(None)"))
 
         i = ord("A")
         for bank in banks:
-            self.choices["Bank"].append((str(bank),
-                                         ("%s-%s" % (chr(i), str(bank)))))
+            self.choices[_("Bank")].append((str(bank),
+                                            ("%s-%s" % (chr(i), str(bank)))))
             i += 1
         
     def set_show_special(self, show):
@@ -1146,22 +1157,22 @@ time.  Are you sure you want to do this?"""
 
     def get_unsupported_columns(self):
         maybe_hide = [
-            ("has_bank_index", "Bank Index"),
-            ("has_bank", "Bank"),
-            ("has_dtcs", "DTCS Code"),
-            ("has_dtcs_polarity", "DTCS Pol"),
-            ("has_mode", "Mode"),
-            ("has_offset", "Offset"),
-            ("has_name", "Name"),
-            ("has_tuning_step", "Tune Step"),
-            ("has_name", "Name"),
-            ("has_ctone", "ToneSql"),
-            ("has_cross", "Cross Mode"),
-            ("valid_tmodes", "Tone Mode"),
-            ("valid_tmodes", "Tone"),
-            ("valid_duplexes", "Duplex"),
-            ("valid_skips", "Skip"),
-            ("valid_power_levels", "Power"),
+            ("has_bank_index", _("Bank Index")),
+            ("has_bank", _("Bank")),
+            ("has_dtcs", _("DTCS Code")),
+            ("has_dtcs_polarity", _("DTCS Pol")),
+            ("has_mode", _("Mode")),
+            ("has_offset", _("Offset")),
+            ("has_name", _("Name")),
+            ("has_tuning_step", _("Tune Step")),
+            ("has_name", _("Name")),
+            ("has_ctone", _("ToneSql")),
+            ("has_cross", _("Cross Mode")),
+            ("valid_tmodes", _("Tone Mode")),
+            ("valid_tmodes", _("Tone")),
+            ("valid_duplexes", _("Duplex")),
+            ("valid_skips", _("Skip")),
+            ("valid_power_levels", _("Power")),
             ]
 
         unsupported = []
@@ -1221,22 +1232,22 @@ time.  Are you sure you want to do this?"""
 
         (min, max) = features.memory_bounds
 
-        self.choices["Bank"] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-        self.choices["Mode"] = features["valid_modes"]
-        self.choices["Tone Mode"] = features["valid_tmodes"]
-        self.choices["Skip"] = features["valid_skips"]
-        self.choices["Power"] = [str(x) for x in features["valid_power_levels"]]
+        self.choices[_("Bank")] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
+        self.choices[_("Mode")] = features["valid_modes"]
+        self.choices[_("Tone Mode")] = features["valid_tmodes"]
+        self.choices[_("Skip")] = features["valid_skips"]
+        self.choices[_("Power")] = [str(x) for x in features["valid_power_levels"]]
 
         if features["valid_power_levels"]:
-            self.defaults["Power"] = features["valid_power_levels"][0]
+            self.defaults[_("Power")] = features["valid_power_levels"][0]
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
-        job.set_desc("Getting bank list")
+        job.set_desc(_("Getting bank list"))
         rthread.submit(job)
 
         if not features["can_odd_split"]:
             # We need a new list, so .remove() won't work for us
-            self.choices["Duplex"] = [x for x in self.choices["Duplex"]
+            self.choices[_("Duplex")] = [x for x in self.choices[_("Duplex")]
                                       if x != "split"]
 
         vbox = gtk.VBox(False, 2)
@@ -1258,7 +1269,7 @@ time.  Are you sure you want to do this?"""
         hi = int(self.hi_limit_adj.get_value())
         for i in range(hi, max+1):
             job = common.RadioJob(None, "get_memory", i)
-            job.set_desc("Getting memory %i" % i)
+            job.set_desc(_("Getting memory {number}").format(number=i))
             self.rthread.submit(job, 10)
 
     def _set_memory_cb(self, result):
@@ -1290,7 +1301,7 @@ time.  Are you sure you want to do this?"""
             for iter, mem in maybe_cut:
                 mem.empty = True
                 job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
-                job.set_desc("Cutting memory %i" % mem.number)
+                job.set_desc(_("Cutting memory {number}").format(mem.number))
                 self.rthread.submit(job)
 
                 self._set_memory(iter, mem)
@@ -1321,14 +1332,15 @@ time.  Are you sure you want to do this?"""
             return
 
         for mem in pickle.loads(text):
-            loc, filled = store.get(iter, self.col("Loc"), self.col("_filled"))
+            loc, filled = store.get(iter,
+                                    self.col(_("Loc")), self.col("_filled"))
             if filled and not always:
-                d = miscwidgets.YesNoDialog(title="Overwrite?",
+                d = miscwidgets.YesNoDialog(title=_("Overwrite?"),
                                             buttons=(gtk.STOCK_YES, 1,
                                                      gtk.STOCK_NO, 2,
                                                      gtk.STOCK_CANCEL, 3,
                                                      "All", 4))
-                d.set_text("Overwrite location %i?" % loc)
+                d.set_text(_("Overwrite location {number}?").format(number=loc))
                 r = d.run()
                 d.destroy()
                 if r == 4:
@@ -1348,11 +1360,12 @@ time.  Are you sure you want to do this?"""
             mem.number = loc
             msgs = self.rthread.radio.validate_memory(mem)
             if msgs:
-                d = miscwidgets.YesNoDialog(title="Incompatible Memory",
+                d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
                                             buttons=(gtk.STOCK_OK, 1,
                                                      gtk.STOCK_CANCEL, 2))
-                d.set_text("Pasted memory %i is not compatible with this radio because:%s%s" %\
-                               (src_number, os.linesep, os.linesep.join(msgs)))
+                d.set_text(_("Pasted memory {number} is not compatible with "
+                             "this radio because:").format(number=src_number) +\
+                               os.linesep + os.linesep.join(msgs))
                 r = d.run()
                 d.destroy()
                 if r == 2:
@@ -1365,7 +1378,7 @@ time.  Are you sure you want to do this?"""
             iter = store.iter_next(iter)
 
             job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
-            job.set_desc("Writing memory %i" % mem.number)
+            job.set_desc(_("Writing memory {number}").format(number=mem.number))
             self.rthread.submit(job)
 
     def paste_selection(self):
@@ -1382,7 +1395,7 @@ class DstarMemoryEditor(MemoryEditor):
     def _get_cols_to_hide(self, iter):
         hide = MemoryEditor._get_cols_to_hide(self, iter)
 
-        mode, = self.store.get(iter, self.col("Mode"))
+        mode, = self.store.get(iter, self.col(_("Mode")))
         if mode != "DV":
             hide += [self.col("URCALL"),
                      self.col("RPT1CALL"),
@@ -1409,7 +1422,7 @@ class DstarMemoryEditor(MemoryEditor):
 
     def _get_memory(self, iter):
         vals = self.store.get(iter, *range(0, len(self.cols)))
-        if vals[self.col("Mode")] != "DV":
+        if vals[self.col(_("Mode"))] != "DV":
             return MemoryEditor._get_memory(self, iter)
 
         mem = chirp_common.DVMemory()
@@ -1457,7 +1470,7 @@ class DstarMemoryEditor(MemoryEditor):
         
         if self.rthread.radio.get_features().requires_call_lists:
             ujob = common.RadioJob(ucall_cb, "get_urcall_list")
-            ujob.set_desc("Downloading URCALL list")
+            ujob.set_desc(_("Downloading URCALL list"))
             rthread.submit(ujob)
 
         def rcall_cb(calls):
@@ -1469,7 +1482,7 @@ class DstarMemoryEditor(MemoryEditor):
 
         if self.rthread.radio.get_features().requires_call_lists:
             rjob = common.RadioJob(rcall_cb, "get_repeater_call_list")
-            rjob.set_desc("Downloading RPTCALL list")
+            rjob.set_desc(_("Downloading RPTCALL list"))
             rthread.submit(rjob)
 
         _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
