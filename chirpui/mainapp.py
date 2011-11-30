@@ -179,7 +179,7 @@ class ChirpMain(gtk.Window):
         eset.connect("editor-selected", self.ev_editor_selected)
 
     def do_new(self):
-        eset = editorset.EditorSet("Untitled.csv", self)
+        eset = editorset.EditorSet(_("Untitled") + ".csv", self)
         self._connect_editorset(eset)
         eset.prime()
         eset.show()
@@ -226,11 +226,11 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_open(self, fname=None, tempname=None):
         if not fname:
-            types = [("CHIRP Radio Images (*.img)", "*.img"),
-                     ("CHIRP Files (*.chirp)", "*.chirp"),
-                     ("CSV Files (*.csv)", "*.csv"),
-                     ("ICF Files (*.icf)", "*.icf"),
-                     ("VX7 Commander Files (*.vx7)", "*.vx7"),
+            types = [(_("CHIRP Radio Images") + " (*.img)", "*.img"),
+                     (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
+                     (_("CSV Files") + " (*.csv)", "*.csv"),
+                     (_("ICF Files") + " (*.icf)", "*.icf"),
+                     (_("VX7 Commander Files") + " (*.vx7)", "*.vx7"),
                      ]
             fname = platform.get_platform().gui_open_file(types=types)
             if not fname:
@@ -239,11 +239,10 @@ If you think that it is valid, you can select a radio model below to force an op
         self.record_recent_file(fname)
 
         if icf.is_icf_file(fname):
-            a = common.ask_yesno_question("ICF files cannot be edited, only " +
-                                          "displayed or imported into " +
-                                          "another file.  " +
-                                          "Open in read-only mode?",
-                                          self)
+            a = common.ask_yesno_question(\
+                _("ICF files cannot be edited, only displayed or imported "
+                  "into another file. Open in read-only mode?"),
+                self)
             if not a:
                 return
             read_only = True
@@ -282,8 +281,10 @@ If you think that it is valid, you can select a radio model below to force an op
                 eset = editorset.EditorSet(device, self, tempname=tempname)
             except Exception, e:
                 common.log_exception()
-                common.show_error("There was an error opening %s: %s" % (fname,
-                                                                         e))
+                common.show_error(
+                    _("There was an error opening {fname}: {error}").format(
+                        fname=fname,
+                        error=error))
                 return
     
             eset.set_read_only(read_only)
@@ -296,24 +297,23 @@ If you think that it is valid, you can select a radio model below to force an op
 
             if hasattr(eset.rthread.radio, "errors") and \
                     eset.rthread.radio.errors:
-                msg = "%i errors during open, check the " + \
-                                      "debug log for details"
+                msg = _("%i errors during open, check the debug log for details")
                 msg = msg % len(eset.rthread.radio.errors)
                 common.show_error(msg)
 
     def do_live_warning(self, radio):
         d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
-        d.set_markup("<big><b>Note:</b></big>")
-        d.format_secondary_markup("The %s %s " % (radio.VENDOR, radio.MODEL)  +
-                                  "operates in <b>live mode</b>.  "           +
-                                  "This means that any changes you make "     +
-                                  "are immediately sent to the radio.  "      +
-                                  "Because of this, you cannot perform the "  +
-                                  "<u>Save</u> or <u>Upload</u> operations."  +
-                                  "If you wish to edit the contents offline, "+
-                                  "please <u>Export</u> to a CSV file, using "+
-                                  "the <b>File menu</b>.")
-        again = gtk.CheckButton("Don't show this again")
+        d.set_markup("<big><b>" + _("Note:") + "</b></big>")
+        msg = _("The {vendor} {model} operates in <b>live mode</b>. "
+                "This means that any changes you make are immediately sent "
+                "to the radio. Because of this, you cannot perform the "
+                "<u>Save</u> or <u>Upload</u> operations. If you wish to "
+                "edit the contents offline, please <u>Export</u> to a CSV "
+                "file, using the <b>File menu</b>.").format(vendor=radio.VENDOR,
+                                                            model=radio.MODEL)
+        d.format_secondary_markup(msg)
+
+        again = gtk.CheckButton(_("Don't show this again"))
         again.show()
         d.vbox.pack_start(again, 0, 0, 0)
         d.run()
@@ -357,13 +357,14 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_saveas(self):
         eset = self.get_current_editorset()
 
-        types = [("%s %s image file (*.%s)" % (eset.radio.VENDOR,
-                                               eset.radio.MODEL,
-                                               eset.radio.FILE_EXTENSION),
-                  eset.radio.FILE_EXTENSION)]
+        label = _("{vendor} {model} image file").format(eset.radio.VENDOR,
+                                                        eset.radio.MODEL)
+                                                     
+        types = [(label + " (*.%s)" % eset.radio.FILE_EXTENSION,
+                 eset.radio.FILE_EXTENSION)]
 
         if isinstance(eset.radio, vx7.VX7Radio):
-            types += [("VX7 Commander (*.vx7)", "vx7")]
+            types += [(_("VX7 Commander") + " (*.vx7)", "vx7")]
 
         while True:
             fname = platform.get_platform().gui_save_file(types=types)
@@ -390,7 +391,7 @@ If you think that it is valid, you can select a radio model below to force an op
         radio.pipe.close()
         reporting.report_model_usage(radio, "download", bool(emsg))
         if not emsg:
-            self.do_open_live(radio, tempname="(Untitled)")
+            self.do_open_live(radio, tempname="(" + _("Untitled") + ")")
         else:
             d = inputdialog.ExceptionDialog(emsg)
             d.run()
@@ -425,7 +426,8 @@ If you think that it is valid, you can select a radio model below to force an op
             file_basename = os.path.basename(fname).replace("_", "__")
             action = gtk.Action(action_name,
                                 "_%i. %s" % (i+1, file_basename),
-                                "Open recent file %s" % fname, "")
+                                _("Open recent file {name}").format(name=fname),
+                                "")
             action.connect("activate", lambda a,f: self.do_open(f), fname)
             mid = self.menu_uim.new_merge_id()
             self.menu_uim.add_ui(mid, path, 
@@ -511,12 +513,12 @@ If you think that it is valid, you can select a radio model below to force an op
             return False
 
         if eset.is_modified():
-            dlg = miscwidgets.YesNoDialog(title="Discard Changes?",
+            dlg = miscwidgets.YesNoDialog(title=_("Discard Changes?"),
                                           parent=self,
                                           buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
                                                    gtk.STOCK_NO, gtk.RESPONSE_NO,
                                                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-            dlg.set_text("File is modified, save changes before closing?")
+            dlg.set_text(_("File is modified, save changes before closing?"))
             res = dlg.run()
             dlg.destroy()
             if res == gtk.RESPONSE_YES:
@@ -544,11 +546,11 @@ If you think that it is valid, you can select a radio model below to force an op
         return True
 
     def do_import(self):
-        types = [("CHIRP Files (*.chirp)", "*.chirp"),
-                 ("CHIRP Radio Images (*.img)", "*.img"),
-                 ("CSV Files (*.csv)", "*.csv"),
-                 ("ICF Files (*.icf)", "*.icf"),
-                 ("VX7 Commander Files (*.vx7)", "*.vx7")]
+        types = [(_("CHIRP Files") + " (*.chirp)", "*.chirp"),
+                 (_("CHIRP Radio Images") + " (*.img)", "*.img"),
+                 (_("CSV Files") + " (*.csv)", "*.csv"),
+                 (_("ICF Files") + " (*.icf)", "*.icf"),
+                 (_("VX7 Commander Files") + " (*.vx7)", "*.vx7")]
         filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
             return
@@ -709,8 +711,8 @@ If you think that it is valid, you can select a radio model below to force an op
         self.window.set_cursor(None)
 
     def do_export(self):
-        types = [("CSV Files (*.csv)", "csv"),
-                 ("CHIRP Files (*.chirp)", "chirp"),
+        types = [(_("CSV Files") + " (*.csv)", "csv"),
+                 (_("CHIRP Files") + " (*.chirp)", "chirp"),
                  ]
 
         eset = self.get_current_editorset()
@@ -762,7 +764,7 @@ If you think that it is valid, you can select a radio model below to force an op
         radio_name = "%s %s %s" % (eset.rthread.radio.VENDOR,
                                    eset.rthread.radio.MODEL,
                                    eset.rthread.radio.VARIANT)
-        d = gtk.Dialog(title="Select Columns",
+        d = gtk.Dialog(title=_("Select Columns"),
                        parent=self,
                        buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
@@ -777,7 +779,7 @@ If you think that it is valid, you can select a radio model below to force an op
         d.set_size_request(-1, 300)
         d.set_resizable(False)
 
-        label = gtk.Label("Visible columns for %s" % radio_name)
+        label = gtk.Label(_("Visible columns for {radio}").format(radio_name))
         label.show()
         vbox.pack_start(label)
 
@@ -833,17 +835,17 @@ If you think that it is valid, you can select a radio model below to force an op
         if not action.get_active():
             d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO,
                                   parent=self)
-            d.set_markup("<b><big>Reporting is disabled</big></b>")
-            msg = "The reporting feature of CHIRP is designed to help "       +\
-                "<u>improve quality</u> by allowing the authors to focus on " +\
-                "the radio drivers used most often and errors experienced by "+\
-                "the users.  The reports contain no identifying information " +\
-                "and are used only for statistical purposes by the authors.  "+\
-                "Your privacy is extremely important, but <u>please consider "+\
-                "leaving this feature enabled to help make CHIRP better!</u>" +\
-                "\r\n\r\n"                                                    +\
-                "<b>Are you sure you want to disable this feature?</b>"
-            d.format_secondary_markup(msg)
+            d.set_markup("<b><big>" + _("Reporting is disabled") + "</big></b>")
+            msg = _("The reporting feature of CHIRP is designed to help "
+                    "<u>improve quality</u> by allowing the authors to focus "
+                    "on the radio drivers used most often and errors "
+                    "experienced by the users. The reports contain no "
+                    "identifying information and are used only for statistical "
+                    "purposes by the authors. Your privacy is extremely "
+                    "important, but <u>please consider leaving this feature "
+                    "enabled to help make CHIRP better!</u>\n\n<b>Are you "
+                    "sure you want to disable this feature?</b>")
+            d.format_secondary_markup(msg.replace("\n", "\r\n"))
             r = d.run()
             d.destroy()
             if r == gtk.RESPONSE_NO:
@@ -966,38 +968,38 @@ If you think that it is valid, you can select a radio model below to force an op
 </ui>
 """
         actions = [\
-            ('file', None, "_File", None, None, self.mh),
+            ('file', None, _("_File"), None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
-            ('recent', None, "_Recent", None, None, self.mh),
+            ('recent', None, _("_Recent"), None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
             ('quit', gtk.STOCK_QUIT, None, None, None, self.mh),
-            ('edit', None, "_Edit", None, None, self.mh),
-            ('cut', None, "_Cut", "<Ctrl>x", None, self.mh),
-            ('copy', None, "_Copy", "<Ctrl>c", None, self.mh),
-            ('paste', None, "_Paste", "<Ctrl>v", None, self.mh),
-            ('delete', None, "_Delete", "Delete", None, self.mh),
-            ('move_up', None, "Move _Up", "<Control>Up", None, self.mh),
-            ('move_dn', None, "Move D_n", "<Control>Down", None, self.mh),
-            ('exchange', None, "E_xchange", "<Control><Shift>x", None, self.mh),
-            ('view', None, "_View", None, None, self.mh),
-            ('columns', None, 'Columns', None, None, self.mh),
-            ('viewdeveloper', None, "Developer", None, None, self.mh),
-            ('devshowraw', None, 'Show raw memory', "<Control><Shift>r", None, self.mh),
-            ('devdiffraw', None, 'Diff raw memories', "<Control><Shift>d", None, self.mh),
-            ('radio', None, "_Radio", None, None, self.mh),
-            ('download', None, "Download From Radio", "<Alt>d", None, self.mh),
-            ('upload', None, "Upload To Radio", "<Alt>u", None, self.mh),
-            ('import', None, 'Import', "<Alt>i", None, self.mh),
-            ('export', None, 'Export', "<Alt>x", None, self.mh),
-            ('rfinder', None, "Import from RFinder", None, None, self.mh),
-            ('export_chirp', None, 'CHIRP Native File', None, None, self.mh),
-            ('export_csv', None, 'CSV File', None, None, self.mh),
-            ('rbook', None, "Import from RepeaterBook", None, None, self.mh),
+            ('edit', None, _("_Edit"), None, None, self.mh),
+            ('cut', None, _("_Cut"), "<Ctrl>x", None, self.mh),
+            ('copy', None, _("_Copy"), "<Ctrl>c", None, self.mh),
+            ('paste', None, _("_Paste"), "<Ctrl>v", None, self.mh),
+            ('delete', None, _("_Delete"), "Delete", None, self.mh),
+            ('move_up', None, _("Move _Up"), "<Control>Up", None, self.mh),
+            ('move_dn', None, _("Move D_n"), "<Control>Down", None, self.mh),
+            ('exchange', None, _("E_xchange"), "<Control><Shift>x", None, self.mh),
+            ('view', None, _("_View"), None, None, self.mh),
+            ('columns', None, _("Columns"), None, None, self.mh),
+            ('viewdeveloper', None, _("Developer"), None, None, self.mh),
+            ('devshowraw', None, _('Show raw memory'), "<Control><Shift>r", None, self.mh),
+            ('devdiffraw', None, _("Diff raw memories"), "<Control><Shift>d", None, self.mh),
+            ('radio', None, _("_Radio"), None, None, self.mh),
+            ('download', None, _("Download From Radio"), "<Alt>d", None, self.mh),
+            ('upload', None, _("Upload To Radio"), "<Alt>u", None, self.mh),
+            ('import', None, _("Import"), "<Alt>i", None, self.mh),
+            ('export', None, _("Export"), "<Alt>x", None, self.mh),
+            ('rfinder', None, _("Import from RFinder"), None, None, self.mh),
+            ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
+            ('export_csv', None, _("CSV File"), None, None, self.mh),
+            ('rbook', None, _("Import from RepeaterBook"), None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
-            ('help', None, 'Help', None, None, self.mh),
+            ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
             ]
 
@@ -1008,10 +1010,10 @@ If you think that it is valid, you can select a radio model below to force an op
         dv = conf.get_bool("developer", "state")
 
         toggles = [\
-            ('report', None, "Report statistics", None, None, self.mh, re),
-            ('hide_unused', None, 'Hide Unused Fields', None, None, self.mh, hu),
-            ('autorpt', None, 'Automatic Repeater Offset', None, None, self.mh, ro),
-            ('developer', None, "Enable Developer Functions", None, None, self.mh, dv),
+            ('report', None, _("Report statistics"), None, None, self.mh, re),
+            ('hide_unused', None, _("Hide Unused Fields"), None, None, self.mh, hu),
+            ('autorpt', None, _("Automatic Repeater Offset"), None, None, self.mh, ro),
+            ('developer', None, _("Enable Developer Functions"), None, None, self.mh, dv),
             ]
 
         self.menu_uim = gtk.UIManager()
@@ -1140,9 +1142,12 @@ If you think that it is valid, you can select a radio model below to force an op
         if not CONF.get_bool("warned_about_reporting") and \
                 not CONF.get_bool("no_report"):
             d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=self)
-            d.set_markup("<b><big>Error reporting is enabled</big></b>")
-            d.format_secondary_markup("If you wish to disable this feature " +
-                                      "you may do so in the <u>Help</u> menu")
+            d.set_markup("<b><big>" +
+                         _("Error reporting is enabled") +
+                         "</big></b>")
+            d.format_secondary_markup(\
+                _("If you wish to disable this feature you may do so in "
+                  "the <u>Help</u> menu"))
             d.run()
             d.destroy()
         CONF.set_bool("warned_about_reporting", True)
