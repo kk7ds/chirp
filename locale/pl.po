@@ -8,239 +8,232 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-29 15:41-0800\n"
-"PO-Revision-Date: 2011-11-29 16:14-0800\n"
-"Last-Translator: Grzegorz <mancymonek@wp.pl>\n"
+"PO-Revision-Date: 2011-11-30 20:57+0100\n"
+"Last-Translator: Grzegorz Błoński-Kubiak <mancymonek@wp.pl>\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../chirpui/mainapp.py:180 ../chirpui/mainapp.py:392
+#: ../chirpui/mainapp.py:180
+#: ../chirpui/mainapp.py:392
 msgid "Untitled"
-msgstr ""
+msgstr "Bez nazwy"
 
-#: ../chirpui/mainapp.py:227 ../chirpui/mainapp.py:547
+#: ../chirpui/mainapp.py:227
+#: ../chirpui/mainapp.py:547
 msgid "CHIRP Radio Images"
-msgstr ""
+msgstr "Zrzuty z urządzeń CHIRP"
 
-#: ../chirpui/mainapp.py:228 ../chirpui/mainapp.py:546
+#: ../chirpui/mainapp.py:228
+#: ../chirpui/mainapp.py:546
 #: ../chirpui/mainapp.py:712
 msgid "CHIRP Files"
-msgstr ""
+msgstr "Pliki CHIRP"
 
-#: ../chirpui/mainapp.py:229 ../chirpui/mainapp.py:548
+#: ../chirpui/mainapp.py:229
+#: ../chirpui/mainapp.py:548
 #: ../chirpui/mainapp.py:711
 msgid "CSV Files"
-msgstr ""
+msgstr "Pliki CSV"
 
-#: ../chirpui/mainapp.py:230 ../chirpui/mainapp.py:549
+#: ../chirpui/mainapp.py:230
+#: ../chirpui/mainapp.py:549
 msgid "ICF Files"
-msgstr ""
+msgstr "Pliki ICF"
 
-#: ../chirpui/mainapp.py:231 ../chirpui/mainapp.py:550
+#: ../chirpui/mainapp.py:231
+#: ../chirpui/mainapp.py:550
 msgid "VX7 Commander Files"
-msgstr ""
+msgstr "Pliki VX7 Commander "
 
 #: ../chirpui/mainapp.py:241
-msgid ""
-"ICF files cannot be edited, only displayed or imported into another file. "
-"Open in read-only mode?"
-msgstr ""
+msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+msgstr "Plik ICF nie może być edytowany, może być wyświetlany oraz importowany do innego pliku.Otworzyć w trybie do odczytu?"
 
 #: ../chirpui/mainapp.py:283
 msgid "There was an error opening {fname}: {error}"
-msgstr ""
+msgstr "Wystąpił błąd podczas otwierania {fname}: {error}"
 
 #: ../chirpui/mainapp.py:298
 #, python-format
 msgid "%i errors during open, check the debug log for details"
-msgstr ""
+msgstr "%i błędów podczas otwierania, sprawdź log by obejrzeć szczegóły"
 
 #: ../chirpui/mainapp.py:304
 msgid "Note:"
-msgstr ""
+msgstr "Uwaga:"
 
 #: ../chirpui/mainapp.py:305
-msgid ""
-"The {vendor} {model} operates in <b>live mode</b>. This means that any "
-"changes you make are immediately sent to the radio. Because of this, you "
-"cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to "
-"edit the contents offline, please <u>Export</u> to a CSV file, using the "
-"<b>File menu</b>."
-msgstr ""
+msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+msgstr "Urządzenie {vendor} {model} pracuje w trybie <b>na żywo</b>. To oznacza, że każda zmiana zostaje natychmiast wysłana do urządzenia. Z tego powodu nie możesz wykonać akcji <u>Zapisz</u> lub <u>Wyślij</u>.Jeśli chcesz edytować zwartość w trybie bez połączenia użyj polecenia <u>Eksportuj</u> do pliku CSV korzystając z menu <b>Plik</b>."
 
 #: ../chirpui/mainapp.py:314
 msgid "Don't show this again"
-msgstr ""
+msgstr "Nie pokazuj tego więcej"
 
 #: ../chirpui/mainapp.py:358
 msgid "{vendor} {model} image file"
-msgstr ""
+msgstr "{vendor} {model} plik zrzutu"
 
 #: ../chirpui/mainapp.py:365
 msgid "VX7 Commander"
-msgstr ""
+msgstr "VX7 Commander"
 
 #: ../chirpui/mainapp.py:427
 msgid "Open recent file {name}"
-msgstr ""
+msgstr "Otwórz poprzednio otwarty plik {name}"
 
 #: ../chirpui/mainapp.py:513
 msgid "Discard Changes?"
-msgstr ""
+msgstr "Anulować zmiany?"
 
 #: ../chirpui/mainapp.py:518
 msgid "File is modified, save changes before closing?"
-msgstr ""
+msgstr "Plik został zmodyfikowany, zapisać przed zakończeniem?"
 
 #: ../chirpui/mainapp.py:764
 msgid "Select Columns"
-msgstr ""
+msgstr "Wybierz kolumny"
 
 #: ../chirpui/mainapp.py:779
 msgid "Visible columns for {radio}"
-msgstr ""
+msgstr "Widoczne kolumny dla {radio}"
 
 #: ../chirpui/mainapp.py:835
 msgid "Reporting is disabled"
-msgstr ""
+msgstr "Raportowanie jest wyłączone"
 
 #: ../chirpui/mainapp.py:836
 msgid ""
-"The reporting feature of CHIRP is designed to help <u>improve quality</u> by "
-"allowing the authors to focus on the radio drivers used most often and "
-"errors experienced by the users. The reports contain no identifying "
-"information and are used only for statistical purposes by the authors. Your "
-"privacy is extremely important, but <u>please consider leaving this feature "
-"enabled to help make CHIRP better!</u>\n"
+"The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
 "\n"
 "<b>Are you sure you want to disable this feature?</b>"
-msgstr ""
+msgstr "Funkcja raportowanie programu CHIRP została zaprojektowana by pomóc <u>podnosić jakość<u/> dając autorom możliwość skupienia się na sterownikach urządzeń najczęściej używanych i błędach które napotykają użytkowników.Raporty nie zawierają danych identyfikujących użytkownika i są wykorzystywane tylko w celach statystycznych przez autorów.Twoja prywatność jest najważniejsza , lecz rozważ pozostawienie tej funkcji włączonej by pomóc ulepszać oprogramowanie CHIRP!"
 
 #: ../chirpui/mainapp.py:968
 msgid "_File"
-msgstr ""
+msgstr "_Plik"
 
 #: ../chirpui/mainapp.py:971
 msgid "_Recent"
-msgstr ""
+msgstr "_Niedawny"
 
 #: ../chirpui/mainapp.py:976
 msgid "_Edit"
-msgstr ""
+msgstr "_Edycja"
 
 #: ../chirpui/mainapp.py:977
 msgid "_Cut"
-msgstr ""
+msgstr "_Wytnij"
 
 #: ../chirpui/mainapp.py:978
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopiuj"
 
 #: ../chirpui/mainapp.py:979
 msgid "_Paste"
-msgstr ""
+msgstr "_Wklej"
 
 #: ../chirpui/mainapp.py:980
 msgid "_Delete"
-msgstr ""
+msgstr "_Usuń"
 
 #: ../chirpui/mainapp.py:981
 msgid "Move _Up"
-msgstr ""
+msgstr "W górę"
 
 #: ../chirpui/mainapp.py:982
 msgid "Move D_n"
-msgstr ""
+msgstr "W dół"
 
 #: ../chirpui/mainapp.py:983
 msgid "E_xchange"
-msgstr ""
+msgstr "Zamień"
 
 #: ../chirpui/mainapp.py:984
 msgid "_View"
-msgstr ""
+msgstr "_Podgląd"
 
 #: ../chirpui/mainapp.py:985
 msgid "Columns"
-msgstr ""
+msgstr "Kolumny"
 
 #: ../chirpui/mainapp.py:986
 msgid "Developer"
-msgstr ""
+msgstr "Deweloper"
 
 #: ../chirpui/mainapp.py:987
 msgid "Show raw memory"
-msgstr ""
+msgstr "Pokaż surową pamięć"
 
 #: ../chirpui/mainapp.py:988
 msgid "Diff raw memories"
-msgstr ""
+msgstr "Porównaj surowe pamięci"
 
 #: ../chirpui/mainapp.py:989
 msgid "_Radio"
-msgstr ""
+msgstr "_Urządzenie"
 
 #: ../chirpui/mainapp.py:990
 msgid "Download From Radio"
-msgstr ""
+msgstr "Pobierz z urządzenia"
 
 #: ../chirpui/mainapp.py:991
 msgid "Upload To Radio"
-msgstr ""
+msgstr "Wyślij do urządzenia"
 
 #: ../chirpui/mainapp.py:992
 msgid "Import"
-msgstr ""
+msgstr "Importuj"
 
 #: ../chirpui/mainapp.py:993
 msgid "Export"
-msgstr ""
+msgstr "Eksportuj"
 
 #: ../chirpui/mainapp.py:994
 msgid "Import from RFinder"
-msgstr ""
+msgstr "Importuj z RFinder"
 
 #: ../chirpui/mainapp.py:995
 msgid "CHIRP Native File"
-msgstr ""
+msgstr "Natywny plik CHIRP"
 
 #: ../chirpui/mainapp.py:996
 msgid "CSV File"
-msgstr ""
+msgstr "Plik CSV"
 
 #: ../chirpui/mainapp.py:997
 msgid "Import from RepeaterBook"
-msgstr ""
+msgstr "Importuj z RepeaterBook"
 
 #: ../chirpui/mainapp.py:999
 msgid "Help"
-msgstr ""
+msgstr "Pomoc"
 
 #: ../chirpui/mainapp.py:1010
 msgid "Report statistics"
-msgstr ""
+msgstr "Raport statystyk"
 
 #: ../chirpui/mainapp.py:1011
 msgid "Hide Unused Fields"
-msgstr ""
+msgstr "Ukryj nieużywane pola"
 
 #: ../chirpui/mainapp.py:1012
 msgid "Automatic Repeater Offset"
-msgstr ""
+msgstr "Automatyczny offset repeatera"
 
 #: ../chirpui/mainapp.py:1013
 msgid "Enable Developer Functions"
-msgstr ""
+msgstr "Włącz funkcje deweloperskie"
 
 #: ../chirpui/mainapp.py:1143
 msgid "Error reporting is enabled"
-msgstr ""
+msgstr "Raportowanie błędów jest włączone"
 
 #: ../chirpui/mainapp.py:1146
-msgid ""
-"If you wish to disable this feature you may do so in the <u>Help</u> menu"
-msgstr ""
+msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgstr "Jeśli chcesz wyłączyć tą funkcję możesz to zrobić w menu <u>Pomoc</>"
+
