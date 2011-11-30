@@ -1,0 +1,246 @@
+# Polish translations for CHIRP package.
+# Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
+# This file is distributed under the same license as the CHIRP package.
+# Dan Smith <mancymonek@wp.pl>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-11-29 15:41-0800\n"
+"PO-Revision-Date: 2011-11-29 16:14-0800\n"
+"Last-Translator: Grzegorz <mancymonek@wp.pl>\n"
+"Language-Team: Polish\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: ../chirpui/mainapp.py:180 ../chirpui/mainapp.py:392
+msgid "Untitled"
+msgstr ""
+
+#: ../chirpui/mainapp.py:227 ../chirpui/mainapp.py:547
+msgid "CHIRP Radio Images"
+msgstr ""
+
+#: ../chirpui/mainapp.py:228 ../chirpui/mainapp.py:546
+#: ../chirpui/mainapp.py:712
+msgid "CHIRP Files"
+msgstr ""
+
+#: ../chirpui/mainapp.py:229 ../chirpui/mainapp.py:548
+#: ../chirpui/mainapp.py:711
+msgid "CSV Files"
+msgstr ""
+
+#: ../chirpui/mainapp.py:230 ../chirpui/mainapp.py:549
+msgid "ICF Files"
+msgstr ""
+
+#: ../chirpui/mainapp.py:231 ../chirpui/mainapp.py:550
+msgid "VX7 Commander Files"
+msgstr ""
+
+#: ../chirpui/mainapp.py:241
+msgid ""
+"ICF files cannot be edited, only displayed or imported into another file. "
+"Open in read-only mode?"
+msgstr ""
+
+#: ../chirpui/mainapp.py:283
+msgid "There was an error opening {fname}: {error}"
+msgstr ""
+
+#: ../chirpui/mainapp.py:298
+#, python-format
+msgid "%i errors during open, check the debug log for details"
+msgstr ""
+
+#: ../chirpui/mainapp.py:304
+msgid "Note:"
+msgstr ""
+
+#: ../chirpui/mainapp.py:305
+msgid ""
+"The {vendor} {model} operates in <b>live mode</b>. This means that any "
+"changes you make are immediately sent to the radio. Because of this, you "
+"cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to "
+"edit the contents offline, please <u>Export</u> to a CSV file, using the "
+"<b>File menu</b>."
+msgstr ""
+
+#: ../chirpui/mainapp.py:314
+msgid "Don't show this again"
+msgstr ""
+
+#: ../chirpui/mainapp.py:358
+msgid "{vendor} {model} image file"
+msgstr ""
+
+#: ../chirpui/mainapp.py:365
+msgid "VX7 Commander"
+msgstr ""
+
+#: ../chirpui/mainapp.py:427
+msgid "Open recent file {name}"
+msgstr ""
+
+#: ../chirpui/mainapp.py:513
+msgid "Discard Changes?"
+msgstr ""
+
+#: ../chirpui/mainapp.py:518
+msgid "File is modified, save changes before closing?"
+msgstr ""
+
+#: ../chirpui/mainapp.py:764
+msgid "Select Columns"
+msgstr ""
+
+#: ../chirpui/mainapp.py:779
+msgid "Visible columns for {radio}"
+msgstr ""
+
+#: ../chirpui/mainapp.py:835
+msgid "Reporting is disabled"
+msgstr ""
+
+#: ../chirpui/mainapp.py:836
+msgid ""
+"The reporting feature of CHIRP is designed to help <u>improve quality</u> by "
+"allowing the authors to focus on the radio drivers used most often and "
+"errors experienced by the users. The reports contain no identifying "
+"information and are used only for statistical purposes by the authors. Your "
+"privacy is extremely important, but <u>please consider leaving this feature "
+"enabled to help make CHIRP better!</u>\n"
+"\n"
+"<b>Are you sure you want to disable this feature?</b>"
+msgstr ""
+
+#: ../chirpui/mainapp.py:968
+msgid "_File"
+msgstr ""
+
+#: ../chirpui/mainapp.py:971
+msgid "_Recent"
+msgstr ""
+
+#: ../chirpui/mainapp.py:976
+msgid "_Edit"
+msgstr ""
+
+#: ../chirpui/mainapp.py:977
+msgid "_Cut"
+msgstr ""
+
+#: ../chirpui/mainapp.py:978
+msgid "_Copy"
+msgstr ""
+
+#: ../chirpui/mainapp.py:979
+msgid "_Paste"
+msgstr ""
+
+#: ../chirpui/mainapp.py:980
+msgid "_Delete"
+msgstr ""
+
+#: ../chirpui/mainapp.py:981
+msgid "Move _Up"
+msgstr ""
+
+#: ../chirpui/mainapp.py:982
+msgid "Move D_n"
+msgstr ""
+
+#: ../chirpui/mainapp.py:983
+msgid "E_xchange"
+msgstr ""
+
+#: ../chirpui/mainapp.py:984
+msgid "_View"
+msgstr ""
+
+#: ../chirpui/mainapp.py:985
+msgid "Columns"
+msgstr ""
+
+#: ../chirpui/mainapp.py:986
+msgid "Developer"
+msgstr ""
+
+#: ../chirpui/mainapp.py:987
+msgid "Show raw memory"
+msgstr ""
+
+#: ../chirpui/mainapp.py:988
+msgid "Diff raw memories"
+msgstr ""
+
+#: ../chirpui/mainapp.py:989
+msgid "_Radio"
+msgstr ""
+
+#: ../chirpui/mainapp.py:990
+msgid "Download From Radio"
+msgstr ""
+
+#: ../chirpui/mainapp.py:991
+msgid "Upload To Radio"
+msgstr ""
+
+#: ../chirpui/mainapp.py:992
+msgid "Import"
+msgstr ""
+
+#: ../chirpui/mainapp.py:993
+msgid "Export"
+msgstr ""
+
+#: ../chirpui/mainapp.py:994
+msgid "Import from RFinder"
+msgstr ""
+
+#: ../chirpui/mainapp.py:995
+msgid "CHIRP Native File"
+msgstr ""
+
+#: ../chirpui/mainapp.py:996
+msgid "CSV File"
+msgstr ""
+
+#: ../chirpui/mainapp.py:997
+msgid "Import from RepeaterBook"
+msgstr ""
+
+#: ../chirpui/mainapp.py:999
+msgid "Help"
+msgstr ""
+
+#: ../chirpui/mainapp.py:1010
+msgid "Report statistics"
+msgstr ""
+
+#: ../chirpui/mainapp.py:1011
+msgid "Hide Unused Fields"
+msgstr ""
+
+#: ../chirpui/mainapp.py:1012
+msgid "Automatic Repeater Offset"
+msgstr ""
+
+#: ../chirpui/mainapp.py:1013
+msgid "Enable Developer Functions"
+msgstr ""
+
+#: ../chirpui/mainapp.py:1143
+msgid "Error reporting is enabled"
+msgstr ""
+
+#: ../chirpui/mainapp.py:1146
+msgid ""
+"If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgstr ""
