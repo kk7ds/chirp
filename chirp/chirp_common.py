@@ -15,13 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import locale
-
-locale.setlocale(locale.LC_ALL, "")
-if locale.localeconv()["decimal_point"] == ".":
-    SEPCHAR = ","
-else:
-    SEPCHAR = ";"
+SEPCHAR = ","
     
 #print "Using separation character of '%s'" % SEPCHAR
 

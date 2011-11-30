@@ -71,8 +71,7 @@ def default_build():
     desktop_files = glob("share/*.desktop")
     #form_files = glob("forms/*.x?l")
     image_files = glob("images/*")
-    #_locale_files = glob("locale/*/LC_MESSAGES/D-RATS.mo")
-    _locale_files = []
+    _locale_files = glob("locale/*/LC_MESSAGES/D-RATS.mo")
 
     locale_files = []
     for f in _locale_files:

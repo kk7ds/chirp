@@ -24,6 +24,8 @@ platform.get_platform()
 import gtk
 import sys
 import os
+import locale
+import gettext
 
 from chirpui import mainapp, config
 
@@ -37,6 +39,22 @@ elif not os.isatty(0):
     sys.stderr = log
 
 print "CHIRP %s on %s" % (CHIRP_VERSION, platform.get_platform().os_version_string())
+
+execpath = platform.get_platform().executable_path()
+localepath = os.path.abspath(os.path.join(execpath, "locale"))
+if not os.path.exists(localepath):
+    localepath = "/usr/share/chirp/locale"
+
+langs = []
+lc, encoding = locale.getdefaultlocale()
+if (lc):
+	langs = [lc]
+langs += os.getenv("LANG").split(":")
+path = "locale"
+gettext.bindtextdomain("CHIRP", localepath)
+gettext.textdomain("CHIRP")
+lang = gettext.translation("CHIRP", localepath, languages=langs, fallback=True)
+lang.install()
 
 a = mainapp.ChirpMain()
 
