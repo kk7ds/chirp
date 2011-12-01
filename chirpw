@@ -36,7 +36,9 @@ elif not os.isatty(0):
     sys.stdout = log
     sys.stderr = log
 
-print "CHIRP %s on %s" % (CHIRP_VERSION, platform.get_platform().os_version_string())
+print "CHIRP %s on %s (Python %s)" % (CHIRP_VERSION,
+                                      platform.get_platform().os_version_string(),
+                                      sys.version.split()[0])
 
 execpath = platform.get_platform().executable_path()
 localepath = os.path.abspath(os.path.join(execpath, "locale"))
@@ -47,7 +49,10 @@ langs = []
 lc, encoding = locale.getdefaultlocale()
 if (lc):
 	langs = [lc]
-langs += os.getenv("LANG").split(":")
+try:
+    langs += os.getenv("LANG").split(":")
+except Exception:
+    pass
 path = "locale"
 gettext.bindtextdomain("CHIRP", localepath)
 gettext.textdomain("CHIRP")

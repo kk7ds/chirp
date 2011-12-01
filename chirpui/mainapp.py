@@ -744,9 +744,11 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_about(self):
         d = gtk.AboutDialog()
         d.set_transient_for(self)
-        verinfo = "GTK %s\nPyGTK %s\n" % ( \
+        import sys
+        verinfo = "GTK %s\nPyGTK %s\nPython %s\n" % ( \
             ".".join([str(x) for x in gtk.gtk_version]),
-            ".".join([str(x) for x in gtk.pygtk_version]))
+            ".".join([str(x) for x in gtk.pygtk_version]),
+            sys.version.split()[0])
 
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)
