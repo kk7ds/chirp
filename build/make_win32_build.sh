@@ -14,7 +14,7 @@ shift
 
 build_win32() {
 	echo Building Win32 executable...
-	/cygdrive/c/Python25/python.exe setup.py py2exe >> $LOG
+	/cygdrive/c/Python27/python.exe setup.py py2exe >> $LOG
 	if [ $? -ne 0 ]; then
 		echo "Build failed"
 		exit
