@@ -8,49 +8,50 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-30 13:00-0800\n"
-"PO-Revision-Date: 2011-11-30 20:57+0100\n"
+"PO-Revision-Date: 2011-12-01 07:56+0100\n"
 "Last-Translator: Grzegorz Błoński-Kubiak <mancymonek@wp.pl>\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../chirpui/mainapp.py:182 ../chirpui/mainapp.py:394
+#: ../chirpui/mainapp.py:182
+#: ../chirpui/mainapp.py:394
 msgid "Untitled"
 msgstr "Bez nazwy"
 
-#: ../chirpui/mainapp.py:229 ../chirpui/mainapp.py:550
+#: ../chirpui/mainapp.py:229
+#: ../chirpui/mainapp.py:550
 msgid "CHIRP Radio Images"
 msgstr "Zrzuty z urządzeń CHIRP"
 
-#: ../chirpui/mainapp.py:230 ../chirpui/mainapp.py:549
+#: ../chirpui/mainapp.py:230
+#: ../chirpui/mainapp.py:549
 #: ../chirpui/mainapp.py:715
 msgid "CHIRP Files"
 msgstr "Pliki CHIRP"
 
-#: ../chirpui/mainapp.py:231 ../chirpui/mainapp.py:551
+#: ../chirpui/mainapp.py:231
+#: ../chirpui/mainapp.py:551
 #: ../chirpui/mainapp.py:714
 msgid "CSV Files"
 msgstr "Pliki CSV"
 
-#: ../chirpui/mainapp.py:232 ../chirpui/mainapp.py:552
+#: ../chirpui/mainapp.py:232
+#: ../chirpui/mainapp.py:552
 msgid "ICF Files"
 msgstr "Pliki ICF"
 
-#: ../chirpui/mainapp.py:233 ../chirpui/mainapp.py:553
+#: ../chirpui/mainapp.py:233
+#: ../chirpui/mainapp.py:553
 msgid "VX7 Commander Files"
 msgstr "Pliki VX7 Commander "
 
 #: ../chirpui/mainapp.py:243
-msgid ""
-"ICF files cannot be edited, only displayed or imported into another file. "
-"Open in read-only mode?"
-msgstr ""
-"Plik ICF nie może być edytowany, może być wyświetlany oraz importowany do "
-"innego pliku.Otworzyć w trybie do odczytu?"
+msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+msgstr "Plik ICF nie może być edytowany, może być wyświetlany oraz importowany do innego pliku.Otworzyć w trybie do odczytu?"
 
 #: ../chirpui/mainapp.py:285
 msgid "There was an error opening {fname}: {error}"
@@ -66,18 +67,8 @@ msgid "Note:"
 msgstr "Uwaga:"
 
 #: ../chirpui/mainapp.py:307
-msgid ""
-"The {vendor} {model} operates in <b>live mode</b>. This means that any "
-"changes you make are immediately sent to the radio. Because of this, you "
-"cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to "
-"edit the contents offline, please <u>Export</u> to a CSV file, using the "
-"<b>File menu</b>."
-msgstr ""
-"Urządzenie {vendor} {model} pracuje w trybie <b>na żywo</b>. To oznacza, że "
-"każda zmiana zostaje natychmiast wysłana do urządzenia. Z tego powodu nie "
-"możesz wykonać akcji <u>Zapisz</u> lub <u>Wyślij</u>.Jeśli chcesz edytować "
-"zwartość w trybie bez połączenia użyj polecenia <u>Eksportuj</u> do pliku "
-"CSV korzystając z menu <b>Plik</b>."
+msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+msgstr "Urządzenie {vendor} {model} pracuje w trybie <b>na żywo</b>. To oznacza, że każda zmiana zostaje natychmiast wysłana do urządzenia. Z tego powodu nie możesz wykonać akcji <u>Zapisz</u> lub <u>Wyślij</u>.Jeśli chcesz edytować zwartość w trybie bez połączenia użyj polecenia <u>Eksportuj</u> do pliku CSV korzystając z menu <b>Plik</b>."
 
 #: ../chirpui/mainapp.py:316
 msgid "Don't show this again"
@@ -117,22 +108,10 @@ msgstr "Raportowanie jest wyłączone"
 
 #: ../chirpui/mainapp.py:839
 msgid ""
-"The reporting feature of CHIRP is designed to help <u>improve quality</u> by "
-"allowing the authors to focus on the radio drivers used most often and "
-"errors experienced by the users. The reports contain no identifying "
-"information and are used only for statistical purposes by the authors. Your "
-"privacy is extremely important, but <u>please consider leaving this feature "
-"enabled to help make CHIRP better!</u>\n"
+"The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
 "\n"
 "<b>Are you sure you want to disable this feature?</b>"
-msgstr ""
-"Funkcja raportowanie programu CHIRP została zaprojektowana by pomóc "
-"<u>podnosić jakość<u/> dając autorom możliwość skupienia się na sterownikach "
-"urządzeń najczęściej używanych i błędach które napotykają użytkowników."
-"Raporty nie zawierają danych identyfikujących użytkownika i są "
-"wykorzystywane tylko w celach statystycznych przez autorów.Twoja prywatność "
-"jest najważniejsza , lecz rozważ pozostawienie tej funkcji włączonej by "
-"pomóc ulepszać oprogramowanie CHIRP!"
+msgstr "Funkcja raportowanie programu CHIRP została zaprojektowana by pomóc <u>podnosić jakość<u/> dając autorom możliwość skupienia się na sterownikach urządzeń najczęściej używanych i błędach które napotykają użytkowników.Raporty nie zawierają danych identyfikujących użytkownika i są wykorzystywane tylko w celach statystycznych przez autorów.Twoja prywatność jest najważniejsza , lecz rozważ pozostawienie tej funkcji włączonej by pomóc ulepszać oprogramowanie CHIRP!"
 
 #: ../chirpui/mainapp.py:971
 msgid "_File"
@@ -255,236 +234,318 @@ msgid "Error reporting is enabled"
 msgstr "Raportowanie błędów jest włączone"
 
 #: ../chirpui/mainapp.py:1149
-msgid ""
-"If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
 msgstr "Jeśli chcesz wyłączyć tą funkcję możesz to zrobić w menu <u>Pomoc</>"
 
 #: ../chirpui/memedit.py:53
 msgid "Invalid value for this field"
-msgstr ""
+msgstr "Niewłaściwa wartość"
 
-#: ../chirpui/memedit.py:103 ../chirpui/memedit.py:209
-#: ../chirpui/memedit.py:287 ../chirpui/memedit.py:356
-#: ../chirpui/memedit.py:376 ../chirpui/memedit.py:390
-#: ../chirpui/memedit.py:464 ../chirpui/memedit.py:476
-#: ../chirpui/memedit.py:500 ../chirpui/memedit.py:502
-#: ../chirpui/memedit.py:575 ../chirpui/memedit.py:589
-#: ../chirpui/memedit.py:591 ../chirpui/memedit.py:632
-#: ../chirpui/memedit.py:634 ../chirpui/memedit.py:675
-#: ../chirpui/memedit.py:876 ../chirpui/memedit.py:930
-#: ../chirpui/memedit.py:956 ../chirpui/memedit.py:968
-#: ../chirpui/memedit.py:1014 ../chirpui/memedit.py:1336
+#: ../chirpui/memedit.py:103
+#: ../chirpui/memedit.py:209
+#: ../chirpui/memedit.py:287
+#: ../chirpui/memedit.py:356
+#: ../chirpui/memedit.py:376
+#: ../chirpui/memedit.py:390
+#: ../chirpui/memedit.py:464
+#: ../chirpui/memedit.py:476
+#: ../chirpui/memedit.py:500
+#: ../chirpui/memedit.py:502
+#: ../chirpui/memedit.py:575
+#: ../chirpui/memedit.py:589
+#: ../chirpui/memedit.py:591
+#: ../chirpui/memedit.py:632
+#: ../chirpui/memedit.py:634
+#: ../chirpui/memedit.py:675
+#: ../chirpui/memedit.py:876
+#: ../chirpui/memedit.py:930
+#: ../chirpui/memedit.py:956
+#: ../chirpui/memedit.py:968
+#: ../chirpui/memedit.py:1014
+#: ../chirpui/memedit.py:1336
 msgid "Loc"
-msgstr ""
+msgstr "Lp."
 
-#: ../chirpui/memedit.py:104 ../chirpui/memedit.py:127
-#: ../chirpui/memedit.py:224 ../chirpui/memedit.py:289
-#: ../chirpui/memedit.py:312 ../chirpui/memedit.py:337
-#: ../chirpui/memedit.py:345 ../chirpui/memedit.py:933
+#: ../chirpui/memedit.py:104
+#: ../chirpui/memedit.py:127
+#: ../chirpui/memedit.py:224
+#: ../chirpui/memedit.py:289
+#: ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:337
+#: ../chirpui/memedit.py:345
+#: ../chirpui/memedit.py:933
 #: ../chirpui/memedit.py:1013
 msgid "Frequency"
-msgstr ""
+msgstr "Częstotliwość"
 
-#: ../chirpui/memedit.py:105 ../chirpui/memedit.py:126
-#: ../chirpui/memedit.py:288 ../chirpui/memedit.py:932
-#: ../chirpui/memedit.py:1016 ../chirpui/memedit.py:1166
+#: ../chirpui/memedit.py:105
+#: ../chirpui/memedit.py:126
+#: ../chirpui/memedit.py:288
+#: ../chirpui/memedit.py:932
+#: ../chirpui/memedit.py:1016
+#: ../chirpui/memedit.py:1166
 #: ../chirpui/memedit.py:1168
 msgid "Name"
-msgstr ""
+msgstr "Nazwa"
 
-#: ../chirpui/memedit.py:106 ../chirpui/memedit.py:138
-#: ../chirpui/memedit.py:153 ../chirpui/memedit.py:241
-#: ../chirpui/memedit.py:353 ../chirpui/memedit.py:934
-#: ../chirpui/memedit.py:1021 ../chirpui/memedit.py:1171
+#: ../chirpui/memedit.py:106
+#: ../chirpui/memedit.py:138
+#: ../chirpui/memedit.py:153
+#: ../chirpui/memedit.py:241
+#: ../chirpui/memedit.py:353
+#: ../chirpui/memedit.py:934
+#: ../chirpui/memedit.py:1021
+#: ../chirpui/memedit.py:1171
 #: ../chirpui/memedit.py:1237
 msgid "Tone Mode"
-msgstr ""
+msgstr "Tryb tonu"
 
-#: ../chirpui/memedit.py:107 ../chirpui/memedit.py:128
-#: ../chirpui/memedit.py:145 ../chirpui/memedit.py:252
-#: ../chirpui/memedit.py:256 ../chirpui/memedit.py:258
-#: ../chirpui/memedit.py:351 ../chirpui/memedit.py:935
-#: ../chirpui/memedit.py:1018 ../chirpui/memedit.py:1172
+#: ../chirpui/memedit.py:107
+#: ../chirpui/memedit.py:128
+#: ../chirpui/memedit.py:145
+#: ../chirpui/memedit.py:252
+#: ../chirpui/memedit.py:256
+#: ../chirpui/memedit.py:258
+#: ../chirpui/memedit.py:351
+#: ../chirpui/memedit.py:935
+#: ../chirpui/memedit.py:1018
+#: ../chirpui/memedit.py:1172
 msgid "Tone"
-msgstr ""
+msgstr "Ton"
 
-#: ../chirpui/memedit.py:108 ../chirpui/memedit.py:129
-#: ../chirpui/memedit.py:146 ../chirpui/memedit.py:248
-#: ../chirpui/memedit.py:256 ../chirpui/memedit.py:259
-#: ../chirpui/memedit.py:351 ../chirpui/memedit.py:936
-#: ../chirpui/memedit.py:1019 ../chirpui/memedit.py:1169
+#: ../chirpui/memedit.py:108
+#: ../chirpui/memedit.py:129
+#: ../chirpui/memedit.py:146
+#: ../chirpui/memedit.py:248
+#: ../chirpui/memedit.py:256
+#: ../chirpui/memedit.py:259
+#: ../chirpui/memedit.py:351
+#: ../chirpui/memedit.py:936
+#: ../chirpui/memedit.py:1019
+#: ../chirpui/memedit.py:1169
 msgid "ToneSql"
-msgstr ""
+msgstr "Blokada tonu"
 
-#: ../chirpui/memedit.py:109 ../chirpui/memedit.py:130
-#: ../chirpui/memedit.py:147 ../chirpui/memedit.py:249
-#: ../chirpui/memedit.py:253 ../chirpui/memedit.py:260
-#: ../chirpui/memedit.py:347 ../chirpui/memedit.py:937
-#: ../chirpui/memedit.py:1020 ../chirpui/memedit.py:1162
+#: ../chirpui/memedit.py:109
+#: ../chirpui/memedit.py:130
+#: ../chirpui/memedit.py:147
+#: ../chirpui/memedit.py:249
+#: ../chirpui/memedit.py:253
+#: ../chirpui/memedit.py:260
+#: ../chirpui/memedit.py:347
+#: ../chirpui/memedit.py:937
+#: ../chirpui/memedit.py:1020
+#: ../chirpui/memedit.py:1162
 msgid "DTCS Code"
-msgstr ""
+msgstr "Kod DTCS"
 
-#: ../chirpui/memedit.py:110 ../chirpui/memedit.py:131
-#: ../chirpui/memedit.py:148 ../chirpui/memedit.py:250
-#: ../chirpui/memedit.py:254 ../chirpui/memedit.py:261
-#: ../chirpui/memedit.py:938 ../chirpui/memedit.py:1023
+#: ../chirpui/memedit.py:110
+#: ../chirpui/memedit.py:131
+#: ../chirpui/memedit.py:148
+#: ../chirpui/memedit.py:250
+#: ../chirpui/memedit.py:254
+#: ../chirpui/memedit.py:261
+#: ../chirpui/memedit.py:938
+#: ../chirpui/memedit.py:1023
 #: ../chirpui/memedit.py:1163
 msgid "DTCS Pol"
-msgstr ""
+msgstr "Polaryzacja DTCS"
 
-#: ../chirpui/memedit.py:111 ../chirpui/memedit.py:132
-#: ../chirpui/memedit.py:154 ../chirpui/memedit.py:939
-#: ../chirpui/memedit.py:1022 ../chirpui/memedit.py:1170
+#: ../chirpui/memedit.py:111
+#: ../chirpui/memedit.py:132
+#: ../chirpui/memedit.py:154
+#: ../chirpui/memedit.py:939
+#: ../chirpui/memedit.py:1022
+#: ../chirpui/memedit.py:1170
 msgid "Cross Mode"
-msgstr ""
+msgstr "Tryb krzyżowy"
 
-#: ../chirpui/memedit.py:112 ../chirpui/memedit.py:133
-#: ../chirpui/memedit.py:151 ../chirpui/memedit.py:179
-#: ../chirpui/memedit.py:242 ../chirpui/memedit.py:290
-#: ../chirpui/memedit.py:353 ../chirpui/memedit.py:940
-#: ../chirpui/memedit.py:1024 ../chirpui/memedit.py:1173
+#: ../chirpui/memedit.py:112
+#: ../chirpui/memedit.py:133
+#: ../chirpui/memedit.py:151
+#: ../chirpui/memedit.py:179
+#: ../chirpui/memedit.py:242
+#: ../chirpui/memedit.py:290
+#: ../chirpui/memedit.py:353
+#: ../chirpui/memedit.py:940
+#: ../chirpui/memedit.py:1024
+#: ../chirpui/memedit.py:1173
 #: ../chirpui/memedit.py:1250
 msgid "Duplex"
-msgstr ""
+msgstr "Dupleks"
 
-#: ../chirpui/memedit.py:113 ../chirpui/memedit.py:134
-#: ../chirpui/memedit.py:177 ../chirpui/memedit.py:235
-#: ../chirpui/memedit.py:264 ../chirpui/memedit.py:291
-#: ../chirpui/memedit.py:349 ../chirpui/memedit.py:941
-#: ../chirpui/memedit.py:1025 ../chirpui/memedit.py:1165
+#: ../chirpui/memedit.py:113
+#: ../chirpui/memedit.py:134
+#: ../chirpui/memedit.py:177
+#: ../chirpui/memedit.py:235
+#: ../chirpui/memedit.py:264
+#: ../chirpui/memedit.py:291
+#: ../chirpui/memedit.py:349
+#: ../chirpui/memedit.py:941
+#: ../chirpui/memedit.py:1025
+#: ../chirpui/memedit.py:1165
 msgid "Offset"
-msgstr ""
+msgstr "Przesunięcie"
 
-#: ../chirpui/memedit.py:114 ../chirpui/memedit.py:135
-#: ../chirpui/memedit.py:149 ../chirpui/memedit.py:942
-#: ../chirpui/memedit.py:1026 ../chirpui/memedit.py:1164
-#: ../chirpui/memedit.py:1236 ../chirpui/memedit.py:1398
+#: ../chirpui/memedit.py:114
+#: ../chirpui/memedit.py:135
+#: ../chirpui/memedit.py:149
+#: ../chirpui/memedit.py:942
+#: ../chirpui/memedit.py:1026
+#: ../chirpui/memedit.py:1164
+#: ../chirpui/memedit.py:1236
+#: ../chirpui/memedit.py:1398
 #: ../chirpui/memedit.py:1425
 msgid "Mode"
-msgstr ""
+msgstr "Tryb"
 
-#: ../chirpui/memedit.py:115 ../chirpui/memedit.py:136
-#: ../chirpui/memedit.py:150 ../chirpui/memedit.py:337
-#: ../chirpui/memedit.py:943 ../chirpui/memedit.py:1027
-#: ../chirpui/memedit.py:1175 ../chirpui/memedit.py:1239
+#: ../chirpui/memedit.py:115
+#: ../chirpui/memedit.py:136
+#: ../chirpui/memedit.py:150
+#: ../chirpui/memedit.py:337
+#: ../chirpui/memedit.py:943
+#: ../chirpui/memedit.py:1027
+#: ../chirpui/memedit.py:1175
+#: ../chirpui/memedit.py:1239
 #: ../chirpui/memedit.py:1242
 msgid "Power"
-msgstr ""
+msgstr "Moc"
 
-#: ../chirpui/memedit.py:116 ../chirpui/memedit.py:137
-#: ../chirpui/memedit.py:152 ../chirpui/memedit.py:182
-#: ../chirpui/memedit.py:185 ../chirpui/memedit.py:944
-#: ../chirpui/memedit.py:1028 ../chirpui/memedit.py:1167
+#: ../chirpui/memedit.py:116
+#: ../chirpui/memedit.py:137
+#: ../chirpui/memedit.py:152
+#: ../chirpui/memedit.py:182
+#: ../chirpui/memedit.py:185
+#: ../chirpui/memedit.py:944
+#: ../chirpui/memedit.py:1028
+#: ../chirpui/memedit.py:1167
 msgid "Tune Step"
-msgstr ""
+msgstr "Krok strojenia"
 
-#: ../chirpui/memedit.py:117 ../chirpui/memedit.py:139
-#: ../chirpui/memedit.py:945 ../chirpui/memedit.py:1029
-#: ../chirpui/memedit.py:1174 ../chirpui/memedit.py:1238
+#: ../chirpui/memedit.py:117
+#: ../chirpui/memedit.py:139
+#: ../chirpui/memedit.py:945
+#: ../chirpui/memedit.py:1029
+#: ../chirpui/memedit.py:1174
+#: ../chirpui/memedit.py:1238
 msgid "Skip"
-msgstr ""
+msgstr "Przeskocz"
 
-#: ../chirpui/memedit.py:118 ../chirpui/memedit.py:140
-#: ../chirpui/memedit.py:243 ../chirpui/memedit.py:919
-#: ../chirpui/memedit.py:920 ../chirpui/memedit.py:946
-#: ../chirpui/memedit.py:982 ../chirpui/memedit.py:996
-#: ../chirpui/memedit.py:1122 ../chirpui/memedit.py:1123
-#: ../chirpui/memedit.py:1127 ../chirpui/memedit.py:1161
+#: ../chirpui/memedit.py:118
+#: ../chirpui/memedit.py:140
+#: ../chirpui/memedit.py:243
+#: ../chirpui/memedit.py:919
+#: ../chirpui/memedit.py:920
+#: ../chirpui/memedit.py:946
+#: ../chirpui/memedit.py:982
+#: ../chirpui/memedit.py:996
+#: ../chirpui/memedit.py:1122
+#: ../chirpui/memedit.py:1123
+#: ../chirpui/memedit.py:1127
+#: ../chirpui/memedit.py:1161
 #: ../chirpui/memedit.py:1235
 msgid "Bank"
-msgstr ""
+msgstr "Bank"
 
-#: ../chirpui/memedit.py:119 ../chirpui/memedit.py:141
-#: ../chirpui/memedit.py:267 ../chirpui/memedit.py:947
-#: ../chirpui/memedit.py:999 ../chirpui/memedit.py:1002
-#: ../chirpui/memedit.py:1005 ../chirpui/memedit.py:1007
+#: ../chirpui/memedit.py:119
+#: ../chirpui/memedit.py:141
+#: ../chirpui/memedit.py:267
+#: ../chirpui/memedit.py:947
+#: ../chirpui/memedit.py:999
+#: ../chirpui/memedit.py:1002
+#: ../chirpui/memedit.py:1005
+#: ../chirpui/memedit.py:1007
 #: ../chirpui/memedit.py:1160
 msgid "Bank Index"
-msgstr ""
+msgstr "Indeks banków"
 
 #: ../chirpui/memedit.py:212
 msgid "Erasing memory {loc}"
-msgstr ""
+msgstr "Kasowanie pamięci {loc}"
 
 #: ../chirpui/memedit.py:277
 msgid "Unable to make changes to this model"
-msgstr ""
+msgstr "Nie potrafię wprowadzić zmian w tym modelu"
 
 #: ../chirpui/memedit.py:282
 msgid "Editing new item, taking defaults"
-msgstr ""
+msgstr "Edycja nowej pozycji, przyjmuję wartości standardowe"
 
 #: ../chirpui/memedit.py:298
 msgid "Bad value for {col}: {val}"
-msgstr ""
+msgstr "Zła wartość dla {col}: {val}"
 
 #: ../chirpui/memedit.py:322
 msgid "Error setting memory"
-msgstr ""
+msgstr "Błąd ustawiania pamięci"
 
-#: ../chirpui/memedit.py:330 ../chirpui/memedit.py:397
+#: ../chirpui/memedit.py:330
+#: ../chirpui/memedit.py:397
 #: ../chirpui/memedit.py:1381
 msgid "Writing memory {number}"
-msgstr ""
+msgstr "Zapisywanie pamięci {number}"
 
 #: ../chirpui/memedit.py:402
-msgid ""
-"This operation requires moving all subsequent channels by one spot until an "
-"empty location is reached.  This can take a LONG time.  Are you sure you "
-"want to do this?"
-msgstr ""
+msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
+msgstr "Ta operacja wymaga przesunięcia wszystkich komórek pamięci o jeden.Może to zająć dużo czasu.Czy na pewno chcesz to zrobić?"
 
 #: ../chirpui/memedit.py:428
 msgid "Adding memory {number}"
-msgstr ""
+msgstr "Dodawanie pamięci {number}"
 
-#: ../chirpui/memedit.py:441 ../chirpui/memedit.py:974
+#: ../chirpui/memedit.py:441
+#: ../chirpui/memedit.py:974
 msgid "Erasing memory {number}"
-msgstr ""
+msgstr "Kasowanie pamięci {number}"
 
-#: ../chirpui/memedit.py:450 ../chirpui/memedit.py:559
-#: ../chirpui/memedit.py:605 ../chirpui/memedit.py:610
-#: ../chirpui/memedit.py:904 ../chirpui/memedit.py:1272
+#: ../chirpui/memedit.py:450
+#: ../chirpui/memedit.py:559
+#: ../chirpui/memedit.py:605
+#: ../chirpui/memedit.py:610
+#: ../chirpui/memedit.py:904
+#: ../chirpui/memedit.py:1272
 msgid "Getting memory {number}"
-msgstr ""
+msgstr "Pobieranie pamięci {number}"
 
-#: ../chirpui/memedit.py:538 ../chirpui/memedit.py:549
+#: ../chirpui/memedit.py:538
+#: ../chirpui/memedit.py:549
 #: ../chirpui/memedit.py:597
 msgid "Moving memory from {old} to {new}"
-msgstr ""
+msgstr "Przenoszenie pamięci z {old} do {new}"
 
 #: ../chirpui/memedit.py:619
 msgid "Raw memory {number}"
-msgstr ""
+msgstr "Surowa pamięć {number}"
 
-#: ../chirpui/memedit.py:623 ../chirpui/memedit.py:664
+#: ../chirpui/memedit.py:623
+#: ../chirpui/memedit.py:664
 #: ../chirpui/memedit.py:669
 msgid "Getting raw memory {number}"
-msgstr ""
+msgstr "Pobieranie surowej pamięci {number}"
 
 #: ../chirpui/memedit.py:628
 msgid "You can only diff two memories!"
-msgstr ""
+msgstr "Aby porównać wybierz dwie pamięci !"
 
 #: ../chirpui/memedit.py:652
 msgid "Memory {number}"
-msgstr ""
+msgstr "Pamięć {number}"
 
 #: ../chirpui/memedit.py:658
 msgid "Diff of {a} and {b}"
-msgstr ""
+msgstr "Różnice {a} i {b}"
 
 #: ../chirpui/memedit.py:682
 msgid "Memories must be contiguous"
-msgstr ""
+msgstr "Pamięci muszą zachować ciągłość"
 
 #: ../chirpui/memedit.py:754
 msgid "Insert row above"
-msgstr ""
+msgstr "Umieść wiersz wyżej"
 
 #: ../chirpui/memedit.py:755
 msgid "Insert row below"
-msgstr ""
+msgstr "Umieść wiersz niżej"
 
 #: ../chirpui/memedit.py:756
 #, fuzzy
@@ -492,13 +553,12 @@ msgid "Delete"
 msgstr "_Usuń"
 
 #: ../chirpui/memedit.py:756
-#, fuzzy
 msgid "Delete all"
-msgstr "_Usuń"
+msgstr "_Usuń wszystkie"
 
 #: ../chirpui/memedit.py:757
 msgid "Delete (and shift up)"
-msgstr ""
+msgstr "Skasuj (i skocz wyżej)"
 
 #: ../chirpui/memedit.py:758
 #, fuzzy
@@ -511,9 +571,8 @@ msgid "Move down"
 msgstr "W dół"
 
 #: ../chirpui/memedit.py:760
-#, fuzzy
 msgid "Exchange memories"
-msgstr "Zamień"
+msgstr "Zamień pamięci"
 
 #: ../chirpui/memedit.py:761
 #, fuzzy
@@ -542,60 +601,61 @@ msgstr "Porównaj surowe pamięci"
 
 #: ../chirpui/memedit.py:889
 msgid "Internal Error: Column {name} not found"
-msgstr ""
+msgstr "Błąd wewnętrzny: Kolumna {name} nie znaleziona"
 
 #: ../chirpui/memedit.py:910
 msgid "Getting channel {chan}"
-msgstr ""
+msgstr "Pobieranie kanału {chan}"
 
 #: ../chirpui/memedit.py:1043
 msgid "Internal Error: Invalid limit {number"
-msgstr ""
+msgstr "Błąd wewnętrzny: Niewłaściwy limit {number}"
 
 #: ../chirpui/memedit.py:1053
 msgid "Memory range:"
-msgstr ""
+msgstr "Zakres pamięci:"
 
 #: ../chirpui/memedit.py:1080
 msgid "Go"
-msgstr ""
+msgstr "Ok"
 
 #: ../chirpui/memedit.py:1103
 msgid "Special Channels"
-msgstr ""
+msgstr "Kanały specjalne"
 
 #: ../chirpui/memedit.py:1110
 msgid "Show Empty"
-msgstr ""
+msgstr "Pokaż puste"
 
 #: ../chirpui/memedit.py:1245
 msgid "Getting bank list"
-msgstr ""
+msgstr "Pobieranie listy banków pamięci"
 
 #: ../chirpui/memedit.py:1304
 msgid "Cutting memory {number}"
-msgstr ""
+msgstr "Wycinanie pamięci {number}"
 
 #: ../chirpui/memedit.py:1338
 msgid "Overwrite?"
-msgstr ""
+msgstr "Nadpisać ?"
 
 #: ../chirpui/memedit.py:1343
 msgid "Overwrite location {number}?"
-msgstr ""
+msgstr "Nadpisać pozycję {number}?"
 
 #: ../chirpui/memedit.py:1363
 msgid "Incompatible Memory"
-msgstr ""
+msgstr "Niekompatybilna pamięć"
 
 #: ../chirpui/memedit.py:1366
 msgid "Pasted memory {number} is not compatible with this radio because:"
-msgstr ""
+msgstr "Wklejona komórka pamięci {number} jest nie kompatybilna z tym urządzeniem:"
 
 #: ../chirpui/memedit.py:1473
 msgid "Downloading URCALL list"
-msgstr ""
+msgstr "Pobieranie listy URCALL"
 
 #: ../chirpui/memedit.py:1485
 msgid "Downloading RPTCALL list"
-msgstr ""
+msgstr "Pobieranie listy RPTCALL"
+
