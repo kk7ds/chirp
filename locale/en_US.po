@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-30 13:00-0800\n"
+"POT-Creation-Date: 2011-12-02 17:05-0800\n"
 "PO-Revision-Date: 2011-11-29 16:07-0800\n"
 "Last-Translator: Dan Smith <dan@theine>\n"
 "Language-Team: English\n"
@@ -16,6 +16,166 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../chirpui/common.py:186
+msgid "Completed"
+msgstr ""
+
+#: ../chirpui/common.py:187
+msgid "idle"
+msgstr ""
+
+#: ../chirpui/bankedit.py:34
+msgid "Retrieving bank list"
+msgstr ""
+
+#: ../chirpui/bankedit.py:50
+msgid "Setting bank list"
+msgstr ""
+
+#: ../chirpui/bankedit.py:60 ../chirpui/memedit.py:118
+#: ../chirpui/memedit.py:140 ../chirpui/memedit.py:243
+#: ../chirpui/memedit.py:919 ../chirpui/memedit.py:920
+#: ../chirpui/memedit.py:946 ../chirpui/memedit.py:982
+#: ../chirpui/memedit.py:996 ../chirpui/memedit.py:1122
+#: ../chirpui/memedit.py:1123 ../chirpui/memedit.py:1127
+#: ../chirpui/memedit.py:1161 ../chirpui/memedit.py:1235
+msgid "Bank"
+msgstr ""
+
+#: ../chirpui/bankedit.py:61 ../chirpui/importdialog.py:511
+#: ../chirpui/memedit.py:105 ../chirpui/memedit.py:126
+#: ../chirpui/memedit.py:288 ../chirpui/memedit.py:932
+#: ../chirpui/memedit.py:1016 ../chirpui/memedit.py:1166
+#: ../chirpui/memedit.py:1168
+msgid "Name"
+msgstr ""
+
+#: ../chirpui/inputdialog.py:83
+msgid "An error has occurred"
+msgstr ""
+
+#: ../chirpui/inputdialog.py:132
+msgid "Overwrite"
+msgstr ""
+
+#: ../chirpui/inputdialog.py:135
+msgid "File Exists"
+msgstr ""
+
+#: ../chirpui/inputdialog.py:138
+msgid "The file {name} already exists. Do you want to overwrite it?"
+msgstr ""
+
+#: ../chirpui/importdialog.py:79
+msgid ""
+"Location {number} is already being imported. Choose another value for 'New "
+"Location' before selection 'Import'"
+msgstr ""
+
+#: ../chirpui/importdialog.py:110
+msgid "Invalid value. Must be an integer."
+msgstr ""
+
+#: ../chirpui/importdialog.py:119
+msgid "Location {number} is already being imported"
+msgstr ""
+
+#: ../chirpui/importdialog.py:171
+msgid "Updating URCALL list"
+msgstr ""
+
+#: ../chirpui/importdialog.py:176
+msgid "Updating RPTCALL list"
+msgstr ""
+
+#: ../chirpui/importdialog.py:245
+msgid "Setting memory {number}"
+msgstr ""
+
+#: ../chirpui/importdialog.py:249
+#, fuzzy
+msgid "Error importing memories:"
+msgstr "Error reporting is enabled"
+
+#: ../chirpui/importdialog.py:351
+msgid "All"
+msgstr ""
+
+#: ../chirpui/importdialog.py:357
+msgid "None"
+msgstr ""
+
+#: ../chirpui/importdialog.py:363
+msgid "Inverse"
+msgstr ""
+
+#: ../chirpui/importdialog.py:369
+#, fuzzy
+msgid "Select"
+msgstr "Select Columns"
+
+#: ../chirpui/importdialog.py:391
+msgid "Auto"
+msgstr ""
+
+#: ../chirpui/importdialog.py:397
+msgid "Reverse"
+msgstr ""
+
+#: ../chirpui/importdialog.py:403
+msgid "Adjust New Location"
+msgstr ""
+
+#: ../chirpui/importdialog.py:413
+msgid "Confirm overwrites"
+msgstr ""
+
+#: ../chirpui/importdialog.py:419
+msgid "Options"
+msgstr ""
+
+#: ../chirpui/importdialog.py:470
+msgid "Unsuppported by destination radio: {msgs}"
+msgstr ""
+
+#: ../chirpui/importdialog.py:488
+#, fuzzy
+msgid "Import From File"
+msgstr "Import from RFinder"
+
+#: ../chirpui/importdialog.py:489 ../chirpui/mainapp.py:997
+msgid "Import"
+msgstr "Import"
+
+#: ../chirpui/importdialog.py:509
+msgid "New location"
+msgstr ""
+
+#: ../chirpui/importdialog.py:510
+msgid "Location"
+msgstr ""
+
+#: ../chirpui/importdialog.py:512 ../chirpui/memedit.py:104
+#: ../chirpui/memedit.py:127 ../chirpui/memedit.py:224
+#: ../chirpui/memedit.py:289 ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:337 ../chirpui/memedit.py:345
+#: ../chirpui/memedit.py:933 ../chirpui/memedit.py:1013
+msgid "Frequency"
+msgstr ""
+
+#: ../chirpui/importdialog.py:536
+msgid "Preparing memory list..."
+msgstr ""
+
+#: ../chirpui/importdialog.py:545
+#, fuzzy
+msgid "Export To File"
+msgstr "Import from RFinder"
+
+#: ../chirpui/importdialog.py:546 ../chirpui/mainapp.py:998
+msgid "Export"
+msgstr "Export"
 
 #: ../chirpui/mainapp.py:182 ../chirpui/mainapp.py:394
 msgid "Untitled"
@@ -102,19 +262,19 @@ msgstr "Discard Changes?"
 msgid "File is modified, save changes before closing?"
 msgstr "File is modified, save changes before closing?"
 
-#: ../chirpui/mainapp.py:767
+#: ../chirpui/mainapp.py:769
 msgid "Select Columns"
 msgstr "Select Columns"
 
-#: ../chirpui/mainapp.py:782
+#: ../chirpui/mainapp.py:784
 msgid "Visible columns for {radio}"
 msgstr "Visible columns for {radio}"
 
-#: ../chirpui/mainapp.py:838
+#: ../chirpui/mainapp.py:840
 msgid "Reporting is disabled"
 msgstr "Reporting is disabled"
 
-#: ../chirpui/mainapp.py:839
+#: ../chirpui/mainapp.py:841
 msgid ""
 "The reporting feature of CHIRP is designed to help <u>improve quality</u> by "
 "allowing the authors to focus on the radio drivers used most often and "
@@ -134,131 +294,264 @@ msgstr ""
 "\n"
 "<b>Are you sure you want to disable this feature?</b>"
 
-#: ../chirpui/mainapp.py:971
+#: ../chirpui/mainapp.py:973
 msgid "_File"
 msgstr "_File"
 
-#: ../chirpui/mainapp.py:974
+#: ../chirpui/mainapp.py:976
 msgid "_Recent"
 msgstr "_Recent"
 
-#: ../chirpui/mainapp.py:979
+#: ../chirpui/mainapp.py:981
 msgid "_Edit"
 msgstr "_Edit"
 
-#: ../chirpui/mainapp.py:980
+#: ../chirpui/mainapp.py:982
 msgid "_Cut"
 msgstr "_Cut"
 
-#: ../chirpui/mainapp.py:981
+#: ../chirpui/mainapp.py:983
 msgid "_Copy"
 msgstr "_Copy"
 
-#: ../chirpui/mainapp.py:982
+#: ../chirpui/mainapp.py:984
 msgid "_Paste"
 msgstr "_Paste"
 
-#: ../chirpui/mainapp.py:983
+#: ../chirpui/mainapp.py:985
 msgid "_Delete"
 msgstr "_Delete"
 
-#: ../chirpui/mainapp.py:984
+#: ../chirpui/mainapp.py:986
 msgid "Move _Up"
 msgstr "Move _Up"
 
-#: ../chirpui/mainapp.py:985
+#: ../chirpui/mainapp.py:987
 msgid "Move D_n"
 msgstr "Move D_n"
 
-#: ../chirpui/mainapp.py:986
+#: ../chirpui/mainapp.py:988
 msgid "E_xchange"
 msgstr "E_xchange"
 
-#: ../chirpui/mainapp.py:987
+#: ../chirpui/mainapp.py:989
 msgid "_View"
 msgstr "_View"
 
-#: ../chirpui/mainapp.py:988
+#: ../chirpui/mainapp.py:990
 msgid "Columns"
 msgstr "Columns"
 
-#: ../chirpui/mainapp.py:989
+#: ../chirpui/mainapp.py:991
 msgid "Developer"
 msgstr "Developer"
 
-#: ../chirpui/mainapp.py:990
+#: ../chirpui/mainapp.py:992
 msgid "Show raw memory"
 msgstr "Show raw memory"
 
-#: ../chirpui/mainapp.py:991
+#: ../chirpui/mainapp.py:993
 msgid "Diff raw memories"
 msgstr "Diff raw memories"
 
-#: ../chirpui/mainapp.py:992
+#: ../chirpui/mainapp.py:994
 msgid "_Radio"
 msgstr "_Radio"
 
-#: ../chirpui/mainapp.py:993
+#: ../chirpui/mainapp.py:995
 msgid "Download From Radio"
 msgstr "Download From Radio"
 
-#: ../chirpui/mainapp.py:994
+#: ../chirpui/mainapp.py:996
 msgid "Upload To Radio"
 msgstr "Upload To Radio"
 
-#: ../chirpui/mainapp.py:995
-msgid "Import"
-msgstr "Import"
-
-#: ../chirpui/mainapp.py:996
-msgid "Export"
-msgstr "Export"
-
-#: ../chirpui/mainapp.py:997
+#: ../chirpui/mainapp.py:999
 msgid "Import from RFinder"
 msgstr "Import from RFinder"
 
-#: ../chirpui/mainapp.py:998
+#: ../chirpui/mainapp.py:1000
 msgid "CHIRP Native File"
 msgstr "CHIRP Native File"
 
-#: ../chirpui/mainapp.py:999
+#: ../chirpui/mainapp.py:1001
 msgid "CSV File"
 msgstr "CSV File"
 
-#: ../chirpui/mainapp.py:1000
+#: ../chirpui/mainapp.py:1002
 msgid "Import from RepeaterBook"
 msgstr "Import from RepeaterBook"
 
-#: ../chirpui/mainapp.py:1002
+#: ../chirpui/mainapp.py:1004
 msgid "Help"
 msgstr "Help"
 
-#: ../chirpui/mainapp.py:1013
+#: ../chirpui/mainapp.py:1015
 msgid "Report statistics"
 msgstr "Report statistics"
 
-#: ../chirpui/mainapp.py:1014
+#: ../chirpui/mainapp.py:1016
 msgid "Hide Unused Fields"
 msgstr "Hide Unused Fields"
 
-#: ../chirpui/mainapp.py:1015
+#: ../chirpui/mainapp.py:1017
 msgid "Automatic Repeater Offset"
 msgstr "Automatic Repeater Offset"
 
-#: ../chirpui/mainapp.py:1016
+#: ../chirpui/mainapp.py:1018
 msgid "Enable Developer Functions"
 msgstr "Enable Developer Functions"
 
-#: ../chirpui/mainapp.py:1146
+#: ../chirpui/mainapp.py:1148
 msgid "Error reporting is enabled"
 msgstr "Error reporting is enabled"
 
-#: ../chirpui/mainapp.py:1149
+#: ../chirpui/mainapp.py:1151
 msgid ""
 "If you wish to disable this feature you may do so in the <u>Help</u> menu"
 msgstr ""
 "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+
+#: ../chirpui/cloneprog.py:45
+msgid "Clone Progress"
+msgstr ""
+
+#: ../chirpui/cloneprog.py:48
+msgid "Cloning"
+msgstr ""
+
+#: ../chirpui/cloneprog.py:57
+msgid "Cancel"
+msgstr ""
+
+#: ../chirpui/shiftdialog.py:28
+msgid "Shift"
+msgstr ""
+
+#: ../chirpui/shiftdialog.py:64
+msgid "Moving {src} to {dst}"
+msgstr ""
+
+#: ../chirpui/shiftdialog.py:81
+msgid "Looking for a free spot ({number})"
+msgstr ""
+
+#: ../chirpui/shiftdialog.py:136
+msgid "Moved {count} memories"
+msgstr ""
+
+#: ../chirpui/clone.py:37
+#, fuzzy
+msgid "{vendor} {model} on {port}"
+msgstr "{vendor} {model} image file"
+
+#: ../chirpui/clone.py:102 ../chirpui/clone.py:164
+msgid "Detect"
+msgstr ""
+
+#: ../chirpui/clone.py:125
+msgid "Port"
+msgstr ""
+
+#: ../chirpui/clone.py:126
+msgid "Vendor"
+msgstr ""
+
+#: ../chirpui/clone.py:127
+msgid "Model"
+msgstr ""
+
+#: ../chirpui/clone.py:140
+#, fuzzy
+msgid "Radio"
+msgstr "_Radio"
+
+#: ../chirpui/clone.py:168
+msgid "Unable to detect radio on {port}"
+msgstr ""
+
+#: ../chirpui/clone.py:180
+msgid "Internal error: Unable to upload to {model}"
+msgstr ""
+
+#: ../chirpui/clone.py:228
+msgid "Clone failed: {error}"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:42
+msgid "Callsign"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:126
+msgid "Your callsign"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:134
+msgid "Repeater callsign"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:142
+msgid "My callsign"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:172 ../chirpui/memedit.py:1473
+msgid "Downloading URCALL list"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:176 ../chirpui/memedit.py:1485
+msgid "Downloading RPTCALL list"
+msgstr ""
+
+#: ../chirpui/dstaredit.py:180
+msgid "Downloading MYCALL list"
+msgstr ""
+
+#: ../chirpui/editorset.py:80
+#, fuzzy
+msgid "Memories"
+msgstr "Diff raw memories"
+
+#: ../chirpui/editorset.py:85
+msgid "D-STAR"
+msgstr ""
+
+#: ../chirpui/editorset.py:91
+msgid "Banks"
+msgstr ""
+
+#: ../chirpui/editorset.py:206
+msgid "The {vendor} {model} has multiple independent sub-devices"
+msgstr ""
+
+#: ../chirpui/editorset.py:209
+msgid "Choose one to import from:"
+msgstr ""
+
+#: ../chirpui/editorset.py:214
+msgid "Cancelled"
+msgstr ""
+
+#: ../chirpui/editorset.py:219
+msgid "Internal Error"
+msgstr ""
+
+#: ../chirpui/editorset.py:237
+#, fuzzy
+msgid "There was an error during import: {error}"
+msgstr "There was an error opening {fname}: {error}"
+
+#: ../chirpui/editorset.py:247
+msgid "Unsupported file type"
+msgstr ""
+
+#: ../chirpui/editorset.py:263 ../chirpui/editorset.py:278
+#, fuzzy
+msgid "There was an error during export: {error}"
+msgstr "There was an error opening {fname}: {error}"
+
+#: ../chirpui/editorset.py:290
+msgid "Priming memory"
+msgstr ""
 
 #: ../chirpui/memedit.py:53
 msgid "Invalid value for this field"
@@ -276,21 +569,6 @@ msgstr ""
 #: ../chirpui/memedit.py:956 ../chirpui/memedit.py:968
 #: ../chirpui/memedit.py:1014 ../chirpui/memedit.py:1336
 msgid "Loc"
-msgstr ""
-
-#: ../chirpui/memedit.py:104 ../chirpui/memedit.py:127
-#: ../chirpui/memedit.py:224 ../chirpui/memedit.py:289
-#: ../chirpui/memedit.py:312 ../chirpui/memedit.py:337
-#: ../chirpui/memedit.py:345 ../chirpui/memedit.py:933
-#: ../chirpui/memedit.py:1013
-msgid "Frequency"
-msgstr ""
-
-#: ../chirpui/memedit.py:105 ../chirpui/memedit.py:126
-#: ../chirpui/memedit.py:288 ../chirpui/memedit.py:932
-#: ../chirpui/memedit.py:1016 ../chirpui/memedit.py:1166
-#: ../chirpui/memedit.py:1168
-msgid "Name"
 msgstr ""
 
 #: ../chirpui/memedit.py:106 ../chirpui/memedit.py:138
@@ -383,16 +661,6 @@ msgstr ""
 #: ../chirpui/memedit.py:945 ../chirpui/memedit.py:1029
 #: ../chirpui/memedit.py:1174 ../chirpui/memedit.py:1238
 msgid "Skip"
-msgstr ""
-
-#: ../chirpui/memedit.py:118 ../chirpui/memedit.py:140
-#: ../chirpui/memedit.py:243 ../chirpui/memedit.py:919
-#: ../chirpui/memedit.py:920 ../chirpui/memedit.py:946
-#: ../chirpui/memedit.py:982 ../chirpui/memedit.py:996
-#: ../chirpui/memedit.py:1122 ../chirpui/memedit.py:1123
-#: ../chirpui/memedit.py:1127 ../chirpui/memedit.py:1161
-#: ../chirpui/memedit.py:1235
-msgid "Bank"
 msgstr ""
 
 #: ../chirpui/memedit.py:119 ../chirpui/memedit.py:141
@@ -591,12 +859,4 @@ msgstr ""
 
 #: ../chirpui/memedit.py:1366
 msgid "Pasted memory {number} is not compatible with this radio because:"
-msgstr ""
-
-#: ../chirpui/memedit.py:1473
-msgid "Downloading URCALL list"
-msgstr ""
-
-#: ../chirpui/memedit.py:1485
-msgid "Downloading RPTCALL list"
 msgstr ""
