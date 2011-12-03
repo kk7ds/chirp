@@ -80,7 +80,7 @@ class ExceptionDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK,
                                    type=gtk.MESSAGE_ERROR, **args)
-        self.set_property("text", "An error has occurred")
+        self.set_property("text", _("An error has occurred"))
         self.format_secondary_text(str(exception))
 
         import traceback
@@ -129,14 +129,14 @@ class FieldDialog(gtk.Dialog):
 class OverwriteDialog(gtk.MessageDialog):
     def __init__(self, filename):
         gtk.Dialog.__init__(self,
-                            buttons=("Overwrite", gtk.RESPONSE_OK,
+                            buttons=(_("Overwrite"), gtk.RESPONSE_OK,
                                      gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 
-        self.set_property("text", "File Exists")
+        self.set_property("text", _("File Exists"))
 
         text = \
-            "The file %s already exists.  " % filename + \
-            "Do you want to overwrite it?"
+            _("The file {name} already exists. "
+              "Do you want to overwrite it?").format(name=filename)
 
         self.format_secondary_text(text)
 

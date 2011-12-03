@@ -183,7 +183,8 @@ class RadioThread(threading.Thread, gobject.GObject):
         while self.__enabled:
             DBG("Waiting for a job")
             if last_job_desc:
-                self.status("Completed " + last_job_desc + " (idle)")
+                self.status(_("Completed") + " " + last_job_desc + \
+                                " (" + _("idle") + ")")
             self.__counter.acquire()
 
             self._qlock()

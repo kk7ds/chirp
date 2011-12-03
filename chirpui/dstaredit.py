@@ -39,7 +39,7 @@ class CallsignEditor(gtk.HBox):
     def make_list(self, width):
         cols = [ (gobject.TYPE_INT, ""),
                  (gobject.TYPE_INT, ""),
-                 (gobject.TYPE_STRING, "Callsign"),
+                 (gobject.TYPE_STRING, _("Callsign")),
                  ]
 
         self.listw = miscwidgets.KeyedListWidget(cols)
@@ -123,7 +123,7 @@ class DStarEditor(common.Editor):
 
         fixed = self.rthread.radio.get_features().has_implicit_calls
 
-        frame = gtk.Frame("Your callsign")
+        frame = gtk.Frame(_("Your callsign"))
         self.editor_ucall = CallsignEditor(first_fixed=fixed)
         self.editor_ucall.set_size_request(-1, 200)
         self.editor_ucall.show()
@@ -131,7 +131,7 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        frame = gtk.Frame("Repeater callsign")
+        frame = gtk.Frame(_("Repeater callsign"))
         self.editor_rcall = CallsignEditor(first_fixed=fixed)
         self.editor_rcall.set_size_request(-1, 200)
         self.editor_rcall.show()
@@ -139,7 +139,7 @@ class DStarEditor(common.Editor):
         frame.show()
         box.pack_start(frame, 1, 1, 0)
 
-        frame = gtk.Frame("My callsign")
+        frame = gtk.Frame(_("My callsign"))
         self.editor_mcall = CallsignEditor()
         self.editor_mcall.set_size_request(-1, 200)
         self.editor_mcall.show()
@@ -169,15 +169,15 @@ class DStarEditor(common.Editor):
             self.editor_mcall.connect("changed", self.__cs_changed)
 
         job = common.RadioJob(set_ucall, "get_urcall_list")
-        job.set_desc("Downloading URCALL list")
+        job.set_desc(_("Downloading URCALL list"))
         self.rthread.submit(job)
 
         job = common.RadioJob(set_rcall, "get_repeater_call_list")
-        job.set_desc("Downloading RPTCALL list")
+        job.set_desc(_("Downloading RPTCALL list"))
         self.rthread.submit(job)
 
         job = common.RadioJob(set_mcall, "get_mycall_list")
-        job.set_desc("Downloading MYCALL list")
+        job.set_desc(_("Downloading MYCALL list"))
         self.rthread.submit(job)
 
     def __init__(self, rthread):

@@ -781,7 +781,7 @@ If you think that it is valid, you can select a radio model below to force an op
         d.set_size_request(-1, 300)
         d.set_resizable(False)
 
-        label = gtk.Label(_("Visible columns for {radio}").format(radio_name))
+        label = gtk.Label(_("Visible columns for {radio}").format(radio=radio_name))
         label.show()
         vbox.pack_start(label)
 

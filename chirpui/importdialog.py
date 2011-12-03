@@ -76,9 +76,10 @@ class ImportDialog(gtk.Dialog):
         if not imp and self._check_for_dupe(nloc):
             d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
             d.set_property("text",
-                           "Location %i is already being imported.  " % nloc + \
-                               "Choose another value for 'New Location' " + \
-                               "before selecting 'Import'")
+                           _("Location {number} is already being imported. "
+                             "Choose another value for 'New Location' "
+                             "before selection 'Import'").format(\
+                    number=nloc))
             d.run()
             d.destroy()
         else:
@@ -106,7 +107,7 @@ class ImportDialog(gtk.Dialog):
         try:
             val = int(new)
         except ValueError:
-            common.show_error("Invalid value.  Must be an integer.")
+            common.show_error(_("Invalid value. Must be an integer."))
             return
 
         if val == nloc:
@@ -115,7 +116,8 @@ class ImportDialog(gtk.Dialog):
         if self._check_for_dupe(val):
             d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
             d.set_property("text",
-                           "Location %i is already being imported" % val)
+                           _("Location {number} is already being "
+                             "imported").format(number=val))
             d.run()
             d.destroy()
             return
@@ -166,12 +168,12 @@ class ImportDialog(gtk.Dialog):
                 
         if ulist_changed:
             job = common.RadioJob(None, "set_urcall_list", ulist)
-            job.set_desc("Updating URCALL list")
+            job.set_desc(_("Updating URCALL list"))
             dst_rthread._qsubmit(job, 0)
 
         if rlist_changed:
             job = common.RadioJob(None, "set_repeater_call_list", ulist)
-            job.set_desc("Updating RPTCALL list")
+            job.set_desc(_("Updating RPTCALL list"))
             dst_rthread._qsubmit(job, 0)
             
         return
@@ -240,11 +242,11 @@ class ImportDialog(gtk.Dialog):
                 continue
 
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc("Setting memory %i" % mem.number)
+            job.set_desc(_("Setting memory {number}").format(number=mem.number))
             dst_rthread._qsubmit(job, 0)
 
         if error_messages.keys():
-            msg = "Error importing memories:\r\n"
+            msg = _("Error importing memories:") + "\r\n"
             for num, msgs in error_messages.items():
                 msg += "%s: %s" % (num, ",".join(msgs))
             common.show_error(msg)
@@ -346,25 +348,25 @@ class ImportDialog(gtk.Dialog):
     def make_select(self):
         hbox = gtk.HBox(True, 2)
 
-        all = gtk.Button("All");
+        all = gtk.Button(_("All"));
         all.connect("clicked", self.__select_all, True)
         all.set_size_request(50, 25)
         all.show()
         hbox.pack_start(all, 0, 0, 0)
 
-        none = gtk.Button("None");
+        none = gtk.Button(_("None"));
         none.connect("clicked", self.__select_all, False)
         none.set_size_request(50, 25)
         none.show()
         hbox.pack_start(none, 0, 0, 0)
 
-        inv = gtk.Button("Inverse")
+        inv = gtk.Button(_("Inverse"))
         inv.connect("clicked", self.__select_all, None)
         inv.set_size_request(50, 25)
         inv.show()
         hbox.pack_start(inv, 0, 0, 0)
 
-        frame = gtk.Frame("Select")
+        frame = gtk.Frame(_("Select"))
         frame.show()
         frame.add(hbox)
         hbox.show()
@@ -386,19 +388,19 @@ class ImportDialog(gtk.Dialog):
         decr.show()
         hbox.pack_start(decr, 0, 0, 0)
 
-        auto = gtk.Button("Auto")
+        auto = gtk.Button(_("Auto"))
         auto.connect("clicked", self.__autonew)
         auto.set_size_request(50, 25)
         auto.show()
         hbox.pack_start(auto, 0, 0, 0)
 
-        revr = gtk.Button("Reverse")
+        revr = gtk.Button(_("Reverse"))
         revr.connect("clicked", self.__revrnew)
         revr.set_size_request(50, 25)
         revr.show()
         hbox.pack_start(revr, 0, 0, 0)
 
-        frame = gtk.Frame("Adjust New Location")
+        frame = gtk.Frame(_("Adjust New Location"))
         frame.show()
         frame.add(hbox)
         hbox.show()
@@ -408,13 +410,13 @@ class ImportDialog(gtk.Dialog):
     def make_options(self):
         hbox = gtk.HBox(True, 2)
 
-        confirm = gtk.CheckButton("Confirm overwrites")
+        confirm = gtk.CheckButton(_("Confirm overwrites"))
         confirm.connect("toggled", __set_confirm)
         confirm.show()
 
         hbox.pack_start(confirm, 0, 0, 0)
 
-        frame = gtk.Frame("Options")
+        frame = gtk.Frame(_("Options"))
         frame.add(hbox)
         frame.show()
         hbox.show()
@@ -465,7 +467,8 @@ class ImportDialog(gtk.Dialog):
             msgs = self.dst_radio.validate_memory(mem)
             errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
             if errs:
-                msg = "Unsupported by destination radio: %s" % (",".join(msgs))
+                msg = _("Unsuppported by destination radio: {msgs}").format(\
+                msgs=",".join(msgs))
             else:
                 errs = []
                 msg = str(mem)
@@ -482,8 +485,8 @@ class ImportDialog(gtk.Dialog):
             self.record_use_of(mem.number)
 
 
-    TITLE = "Import From File"
-    ACTION = "Import"
+    TITLE = _("Import From File")
+    ACTION = _("Import")
 
     def __init__(self, src_radio, dst_radio, parent=None):
         gtk.Dialog.__init__(self,
@@ -503,10 +506,10 @@ class ImportDialog(gtk.Dialog):
 
         self.caps = {
             self.col_import : self.ACTION,
-            self.col_nloc   : "New location",
-            self.col_oloc   : "Location",
-            self.col_name   : "Name",
-            self.col_freq   : "Frequency",
+            self.col_nloc   : _("New location"),
+            self.col_oloc   : _("Location"),
+            self.col_name   : _("Name"),
+            self.col_freq   : _("Frequency"),
             self.col_comm   : "",
             }
 
@@ -530,7 +533,7 @@ class ImportDialog(gtk.Dialog):
         self.build_ui()
         self.set_default_size(400, 300)
 
-        self.ww = WaitWindow("Preparing memory list...", parent=parent)
+        self.ww = WaitWindow(_("Preparing memory list..."), parent=parent)
         self.ww.show()
         self.ww.grind()
 
@@ -539,8 +542,8 @@ class ImportDialog(gtk.Dialog):
         self.ww.hide()
 
 class ExportDialog(ImportDialog):
-    TITLE = "Export To File"
-    ACTION = "Export"
+    TITLE = _("Export To File")
+    ACTION = _("Export")
 
 if __name__ == "__main__":
     from chirpui import editorset

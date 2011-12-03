@@ -42,10 +42,10 @@ class CloneProg(gtk.Window):
         vbox.show()
         self.add(vbox)
 
-        self.set_title("Clone Progress")
+        self.set_title(_("Clone Progress"))
         self.set_resizable(False)
 
-        self.infolabel = gtk.Label("Cloning")
+        self.infolabel = gtk.Label(_("Cloning"))
         self.infolabel.show()
         vbox.pack_start(self.infolabel, 1, 1, 1)
 
@@ -54,7 +54,7 @@ class CloneProg(gtk.Window):
         self.progbar.show()
         vbox.pack_start(self.progbar, 0, 0, 0)
 
-        cancel_b = gtk.Button("Cancel")
+        cancel_b = gtk.Button(_("Cancel"))
         cancel_b.connect("clicked", lambda b: cancel())
         cancel_b.show()
         vbox.pack_start(cancel_b, 0, 0, 0)

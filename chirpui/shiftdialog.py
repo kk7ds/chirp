@@ -25,7 +25,7 @@ from chirp import errors, chirp_common
 class ShiftDialog(gtk.Dialog):
     def __init__(self, rthread, parent=None):
         gtk.Dialog.__init__(self,
-                            title="Shift",
+                            title=_("Shift"),
                             buttons=(gtk.STOCK_CLOSE, gtk.RESPONSE_OK))
 
         self.set_position(gtk.WIN_POS_CENTER_ALWAYS)
@@ -61,7 +61,9 @@ class ShiftDialog(gtk.Dialog):
             dst = src + delta
 
             print "Moving %i to %i" % (src, dst)
-            self.status("Moving %i to %i" % (src, dst), count / len(memories))
+            self.status(_("Moving {src} to {dst}").format(src=src,
+                                                          dst=dst),
+                        count / len(memories))
 
             i.number = dst
             self.rthread.radio.set_memory(i)
@@ -76,7 +78,8 @@ class ShiftDialog(gtk.Dialog):
 
         pos = start
         while pos <= ulimit:
-            self.status("Looking for a free spot (%i)" % pos, 0)
+            self.status(_("Looking for a free spot ({number})").format(\
+                        number=pos), 0)
             try:
                 mem = self.rthread.radio.get_memory(pos)
                 if mem.empty:
@@ -130,7 +133,7 @@ class ShiftDialog(gtk.Dialog):
         count = func(newhole)
 
         self.rthread.unlock()
-        self.status("Moved %i memories" % count, 1)
+        self.status(_("Moved {count} memories").format(count=count), 1)
 
         self.finished()
 

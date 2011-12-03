@@ -77,18 +77,18 @@ class EditorSet(gtk.VBox):
         else:
             self.banked = None
 
-        lab = gtk.Label("Memories")
+        lab = gtk.Label(_("Memories"))
         self.tabs.append_page(self.memedit.root, lab)
         self.memedit.root.show()
 
         if self.dstared:
-            lab = gtk.Label("D-STAR")
+            lab = gtk.Label(_("D-STAR"))
             self.tabs.append_page(self.dstared.root, lab)
             self.dstared.root.show()
             self.dstared.connect("changed", self.dstar_changed)
 
         if self.banked:
-            lab = gtk.Label("Banks")
+            lab = gtk.Label(_("Banks"))
             self.tabs.append_page(self.banked.root, lab)
             self.banked.root.show()
             self.banked.connect("changed", self.banks_changed)
@@ -203,19 +203,20 @@ class EditorSet(gtk.VBox):
         choices = [x.VARIANT for x in devices]
 
         d = inputdialog.ChoiceDialog(choices)
-        d.label.set_text(("The %s %s " % (radio.VENDOR, radio.MODEL)) +
-                         "has multiple independent sub-devices." +
-                         os.linesep + "Choose one to import from:")
+        d.label.set_text(_("The {vendor} {model} has multiple "
+                           "independent sub-devices").format( \
+                vendor=radio.VENDOR, model=radio.MODEL) + os.linesep + \
+                             _("Choose one to import from:"))
         r = d.run()
         chosen = d.choice.get_active_text()
         d.destroy()
         if r == gtk.RESPONSE_CANCEL:
-            raise Exception("Cancelled")
+            raise Exception(_("Cancelled"))
         for d in devices:
             if d.VARIANT == chosen:
                 return d
 
-        raise Exception("Internal Error")
+        raise Exception(_("Internal Error"))
 
     def do_import(self, filen):
         try:
@@ -233,7 +234,8 @@ class EditorSet(gtk.VBox):
             reporting.report_model_usage(src_radio, "importsrc", True)
         except Exception, e:
             common.log_exception()
-            common.show_error("There was an error during import: %s" % e)
+            common.show_error(_("There was an error during "
+                                "import: {error}").format(error=e))
         
     def do_export(self, filen):
         try:
@@ -242,7 +244,7 @@ class EditorSet(gtk.VBox):
             elif filen.lower().endswith(".chirp"):
                 dst_radio = xml.XMLRadio(filen)
             else:
-                raise Exception("Unsupported file type")
+                raise Exception(_("Unsupported file type"))
         except Exception, e:
             common.log_exception()
             common.show_error(e)
@@ -258,7 +260,9 @@ class EditorSet(gtk.VBox):
                                            dst_rthread)
         except Exception, e:
             common.log_exception()
-            common.show_error("There was an error during export: %s" % e)
+            common.show_error(_("There was an error during "
+                                "export: {error}").format(error=e),
+                              self)
             return
 
         if count <= 0:
@@ -271,7 +275,9 @@ class EditorSet(gtk.VBox):
             dst_radio.save(filename=filen)
         except Exception, e:
             common.log_exception()
-            common.show_error("There was an error during export: %s" % e, self)
+            common.show_error(_("There was an error during "
+                                "export: {error}").format(error=e),
+                              self)
             
     def prime(self):
         mem = chirp_common.Memory()
@@ -281,7 +287,7 @@ class EditorSet(gtk.VBox):
             gobject.idle_add(self.memedit.prefill)
 
         job = common.RadioJob(cb, "set_memory", mem)
-        job.set_desc("Priming memory")
+        job.set_desc(_("Priming memory"))
         self.rthread.submit(job)
 
     def tab_selected(self, notebook, foo, pagenum):

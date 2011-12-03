@@ -34,11 +34,10 @@ class CloneSettings:
     def __str__(self):
         s = ""
         if self.radio_class:
-            return "%s %s on %s" % (self.radio_class.VENDOR,
-                                    self.radio_class.MODEL,
-                                    self.port)
-        else:
-            return "Detect %s on %s" % (self.detect_fn, self.port)
+            return _("{vendor} {model} on {port}").format(\
+                vendor=self.radio_class.VENDOR,
+                model=self.radio_class.MODEL,
+                port=self.port)
 
 class CloneSettingsDialog(gtk.Dialog):
     def __make_field(self, label, widget):
@@ -100,7 +99,7 @@ class CloneSettingsDialog(gtk.Dialog):
                     model.append_text(rclass.MODEL)
                     added_models.append(rclass.MODEL)
             if not models:
-                model.append_text("Detect")
+                model.append_text(_("Detect"))
 
             model_names = [x.MODEL for x in models]
             if conf.get("last_model") in model_names:
@@ -123,9 +122,9 @@ class CloneSettingsDialog(gtk.Dialog):
         self.__modl = self.__make_model()
         self.__vend = self.__make_vendor(self.__modl)
 
-        self.__make_field("Port", self.__port)
-        self.__make_field("Vendor", self.__vend)
-        self.__make_field("Model", self.__modl)
+        self.__make_field(_("Port"), self.__port)
+        self.__make_field(_("Vendor"), self.__vend)
+        self.__make_field(_("Model"), self.__modl)
 
         if settings and settings.radio_class:
             common.combo_select(self.__vend, settings.radio_class.VENDOR)
@@ -138,7 +137,7 @@ class CloneSettingsDialog(gtk.Dialog):
         self.__table.show()
         self.vbox.pack_start(self.__table, 1, 1, 1)
 
-    def __init__(self, settings=None, parent=None, title="Radio"):
+    def __init__(self, settings=None, parent=None, title=_("Radio")):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, title,
@@ -162,11 +161,11 @@ class CloneSettingsDialog(gtk.Dialog):
 
         cs = CloneSettings()
         cs.port = self.__port.get_active_text()
-        if model == "Detect":
+        if model == _("Detect"):
             try:
                 cs.radio_class = detect.DETECT_FUNCTIONS[vendor](cs.port)
                 if not cs.radio_class:
-                    raise Exception("Unable to detect radio on %s" % cs.port)
+                    raise Exception(_("Unable to detect radio on {port}").format(port=cs.port))
             except Exception, e:
                 d = inputdialog.ExceptionDialog(e)
                 d.run()
@@ -178,7 +177,7 @@ class CloneSettingsDialog(gtk.Dialog):
                     cs.radio_class = rclass
                     break
             if not cs.radio_class:
-                common.show_error("Internal error: Unable to upload to %s" % model)
+                common.show_error(_("Internal error: Unable to upload to {model}").format(model=model))
                 print self.__vendors
                 return None
 
@@ -226,7 +225,7 @@ class CloneThread(chirp_common.KillableThread):
             emsg = None
         except Exception, e:
             common.log_exception()
-            print "Clone failed: %s" % e
+            print _("Clone failed: {error}").format(error=e)
             emsg = e
 
         gobject.idle_add(self.__progw.hide)

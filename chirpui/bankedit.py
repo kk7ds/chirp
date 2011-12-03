@@ -31,7 +31,7 @@ class BankEditor(common.Editor):
             self.listw.connect("item-set", self.bank_changed)
 
         job = common.RadioJob(set_banks, "get_banks")
-        job.set_desc("Retrieving bank list")
+        job.set_desc(_("Retrieving bank list"))
         self.rthread.submit(job)
 
     def get_bank_list(self):
@@ -47,7 +47,7 @@ class BankEditor(common.Editor):
             self.emit("changed")
 
         job = common.RadioJob(cb, "set_banks", self.get_bank_list())
-        job.set_desc("Setting bank list")
+        job.set_desc(_("Setting bank list"))
         self.rthread.submit(job)
 
         return True
@@ -57,8 +57,8 @@ class BankEditor(common.Editor):
         self.rthread = rthread
 
         types = [(gobject.TYPE_STRING, "key"),
-                 (gobject.TYPE_STRING, "Bank"),
-                 (gobject.TYPE_STRING, "Name")]
+                 (gobject.TYPE_STRING, _("Bank")),
+                 (gobject.TYPE_STRING, _("Name"))]
 
         self.listw = miscwidgets.KeyedListWidget(types)
         self.listw.set_editable(1, True)
