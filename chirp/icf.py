@@ -370,7 +370,7 @@ def is_9x_icf(filename):
     mdata = f.read(8)
     f.close()
 
-    return mdata in ["30660000", "28800000"]
+    return mdata in ["30660000", "28880000"]
 
 def is_icf_file(filename):
     f = file(filename)
