@@ -894,14 +894,21 @@ class MemoryEditor(common.Editor):
         lo = int(self.lo_limit_adj.get_value())
         hi = int(self.hi_limit_adj.get_value())
 
-        def handler(mem):
+        def handler(mem, number):
             if not isinstance(mem, Exception):
                 if not mem.empty or self.show_empty:
                     gobject.idle_add(self.set_memory, mem)
+            else:
+                mem = chirp_common.Memory()
+                mem.number = number
+                mem.name = "ERROR"
+                mem.empty = True
+                gobject.idle_add(self.set_memory, mem)
 
         for i in range(lo, hi+1):
             job = common.RadioJob(handler, "get_memory", i)
             job.set_desc(_("Getting memory {number}").format(number=i))
+            job.set_cb_args(i)
             self.rthread.submit(job, 2)
 
         if self.show_special:
