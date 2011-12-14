@@ -411,7 +411,7 @@ if __name__ == "__main__":
     print get_id(s)
     print get_memory(s, int(sys.argv[2]))
 
-THF6A_STEPS = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+THF6A_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
 class THF6ARadio(KenwoodLiveRadio):
     MODEL = "TH-F6"
