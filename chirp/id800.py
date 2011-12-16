@@ -35,7 +35,8 @@ struct {
       unknown3:5,
       tmode:2;
   u16 dtcs_polarity:2,
-      empty:2,
+      usealpha:1,
+      empty:1,
       name1:6,
       name2:6;
   u24 name3:6,
@@ -204,6 +205,8 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         name = name.ljust(6)[:6]
 
+        _mem.usealpha = bool(name.strip())
+
         # The element override calling convention makes this harder to automate.
         # It's just six, so do it manually
         _mem.name1 = get_index(name[0])
@@ -262,8 +265,8 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem = self._memobj.memory[mem.number-1]
         _flg = self._memobj.flags[mem.number-1]
 
+        _flg.empty = mem.empty
         if mem.empty:
-            _flg.empty = 1
             return
 
         mult = chirp_common.is_fractional_step(mem.freq) and 6250 or 5000
