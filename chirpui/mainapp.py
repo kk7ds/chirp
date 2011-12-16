@@ -357,8 +357,9 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_saveas(self):
         eset = self.get_current_editorset()
 
-        label = _("{vendor} {model} image file").format(eset.radio.VENDOR,
-                                                        eset.radio.MODEL)
+        label = _("{vendor} {model} image file").format(\
+            vendor=eset.radio.VENDOR,
+            model=eset.radio.MODEL)
                                                      
         types = [(label + " (*.%s)" % eset.radio.FILE_EXTENSION,
                  eset.radio.FILE_EXTENSION)]

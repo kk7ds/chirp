@@ -160,7 +160,7 @@ class MemoryEditor(common.Editor):
     def ed_offset(self, _, path, new, __):
         return chirp_common.parse_freq(new)
 
-    def ed_freq(self, _, path, new, colnum):
+    def ed_freq(self, _foo, path, new, colnum):
         iter = self.store.get_iter(path)
         prev, = self.store.get(iter, colnum)
 
