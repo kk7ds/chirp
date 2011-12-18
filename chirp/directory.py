@@ -66,7 +66,7 @@ DRV_TO_RADIO = {
     "tm271"          : kenwood_live.TM271Radio,
     "tmd700"         : kenwood_live.TMD700Radio,
     "tmd710"         : kenwood_live.TMD710Radio,
-    "tmv7"           : kenwood_live.TMV7Radio,
+    "tmv7"           : kenwood_live.TMV7RadioSub,
     "thk2"           : kenwood_live.THK2Radio,
     "thf6"           : kenwood_live.THF6ARadio,
     "thf7"           : kenwood_live.THF7ERadio,
