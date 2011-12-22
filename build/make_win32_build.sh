@@ -56,6 +56,14 @@ Section ""
   CreateDirectory "\$SMPROGRAMS\CHIRP"
   CreateShortCut "\$SMPROGRAMS\CHIRP\CHIRP.lnk" "\$INSTDIR\chirpw.exe"
   Delete "\$SMPROGRAMS\CHIRP\CSV Dump.lnk"
+  WriteUninstaller \$INSTDIR\Uninstall.exe
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\CHIRP" "DisplayName" "CHIRP"  
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\CHIRP" "UninstallString" \$\"\$INSTDIR\Uninstall.exe\$\""  
+SectionEnd
+Section "Uninstall"
+  RMDir /r "\$INSTDIR"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\CHIRP"
+  RMDir /r "\$SMPROGRAMS\CHIRP"
 SectionEnd
 EOF
 	unix2dos chirp.nsi
