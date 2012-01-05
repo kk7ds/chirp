@@ -216,7 +216,7 @@ class MemoryEditor(common.Editor):
 
         return new
 
-    def ed_duplex(self, _, path, new, __):
+    def ed_duplex(self, _foo1, path, new, _foo2):
         if new == "":
             return # Fast path outta here
 
@@ -1308,7 +1308,7 @@ class MemoryEditor(common.Editor):
             for iter, mem in maybe_cut:
                 mem.empty = True
                 job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
-                job.set_desc(_("Cutting memory {number}").format(mem.number))
+                job.set_desc(_("Cutting memory {number}").format(number=mem.number))
                 self.rthread.submit(job)
 
                 self._set_memory(iter, mem)
