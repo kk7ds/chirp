@@ -413,6 +413,9 @@ if __name__ == "__main__":
 
 THF6A_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
+THF6A_DUPLEX = list(DUPLEX)
+THF6A_DUPLEX.append("split")
+
 class THF6ARadio(KenwoodLiveRadio):
     MODEL = "TH-F6"
 
@@ -422,11 +425,13 @@ class THF6ARadio(KenwoodLiveRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_dtcs_polarity = False
         rf.has_bank = False
+        rf.can_odd_split = True
         rf.valid_modes = list(THF6_MODES)
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_tuning_steps = list(THF6A_STEPS)
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
+        rf.valid_duplex = THF6A_DUPLEX
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 7
         rf.memory_bounds = (0, self._upper)
@@ -452,7 +457,7 @@ class THF6ARadio(KenwoodLiveRadio):
         mem.number = int(spec[1])
         mem.freq = int(spec[2])
         mem.tuning_step = THF6A_STEPS[int(spec[3], 16)]
-        mem.duplex = DUPLEX[int(spec[4])]
+        mem.duplex = THF6A_DUPLEX[int(spec[4])]
         mem.tmode = get_tmode(spec[6], spec[7], spec[8])
         mem.rtone = chirp_common.TONES[int(spec[9])]
         mem.ctone = chirp_common.TONES[int(spec[10])]
@@ -474,7 +479,7 @@ class THF6ARadio(KenwoodLiveRadio):
         spec = ( \
             "%011i" % mem.freq,
             "%X" % THF6A_STEPS.index(mem.tuning_step),
-            "%i" % rev(DUPLEX, mem.duplex),
+            "%i" % rev(THF6A_DUPLEX, mem.duplex),
             "0",
             "%i" % (mem.tmode == "Tone"),
             "%i" % (mem.tmode == "TSQL"),
