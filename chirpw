@@ -59,13 +59,13 @@ gettext.textdomain("CHIRP")
 lang = gettext.translation("CHIRP", localepath, languages=langs, fallback=True)
 lang.install()
 
-# Require Python 2.7.0 or newer
+# Require Python 2.6.0 or newer
 try:
     pyver = sys.version.split()[0]
     vmaj, vmin, vrel = pyver.split(".", 3)
-    if int(vmaj) < 2 or int(vmin) < 7:
+    if int(vmaj) < 2 or int(vmin) < 6:
         raise Exception(_("Unsupported Python version "
-                          "({ver}>=v2.7.0 required)").format(ver=pyver))
+                          "({ver}>=v2.6.0 required)").format(ver=pyver))
 except Exception, e:
     d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, type=gtk.MESSAGE_ERROR)
     d.set_markup("<b>Error Starting CHIRP</b>")
