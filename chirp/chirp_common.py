@@ -60,7 +60,7 @@ CROSS_MODES = [
     "Tone->CTCSS",
 ]
 
-MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY"]
+MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR"]
 
 STD_2M_OFFSETS = [
     (145100000, 145500000, -600000),
@@ -94,7 +94,7 @@ TUNING_STEPS = [
     5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0,
     125.0, 200.0,
     # Need to fix drivers using this list as an index!
-    9.0,
+    9.0, 1.0
 ]
 
 SKIP_VALUES = [ "", "S", "P" ]
