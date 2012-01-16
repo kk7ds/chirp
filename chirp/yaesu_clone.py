@@ -157,6 +157,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     _block_lengths = [8, 65536]
     _block_size = 8
 
+    VENDOR = "Yaesu"
     _model = "ABCDE"
 
     def _checksums(self):
