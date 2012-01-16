@@ -60,7 +60,7 @@ CROSS_MODES = [
     "Tone->CTCSS",
 ]
 
-MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR"]
+MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR"]
 
 STD_2M_OFFSETS = [
     (145100000, 145500000, -600000),

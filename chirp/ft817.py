@@ -139,8 +139,8 @@ struct {
   u8   unknown5:2,
        tx_mode:3,
        tx_freq_range:3;
-  u8   unknown7:3,
-       tone:5;
+  u8   unknown7:2,
+       tone:6;
   u8   unknown8:1,
        dcs:7;
   ul16 rit;
@@ -231,7 +231,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         elif mem.mode == "AM":
             mem.tuning_step = STEPSAM[_mem.am_step]
         elif mem.mode == "CW" or mem.mode == "CWR":
-            if mem.is_cwdig_narrow == 1:
+            if _mem.is_cwdig_narrow == 1:
                 mem.mode = "N" + mem.mode
             mem.tuning_step = STEPSSSB[_mem.ssb_step]
         else:   # TODO more investigation needed on steps for other modes 
