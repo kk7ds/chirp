@@ -58,6 +58,7 @@ DRV_TO_RADIO = {
     "ft8900"         : ft7800.FT8900Radio,
     #"ft50"           : ft50.FT50Radio,
     "ft60"           : ft60.FT60Radio,
+    "ft817"          : ft817.FT817Radio,
     "ft817nd"        : ft817.FT817NDRadio,
 
     # Kenwood

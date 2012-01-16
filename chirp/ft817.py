@@ -83,6 +83,7 @@ def clone_out(radio):
         else:
             repeat = 1
 	for i in range(0, repeat):
+            time.sleep(0.01)
             checksum = yaesu_clone.YaesuChecksum(pos, pos+block-1)
             if os.getenv("CHIRP_DEBUG"):
                 print "Block %i - will send from %i to %i byte " % (blocks, pos, pos+block)
@@ -165,15 +166,14 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),       # not used in m
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.5)]
 
-class FT817NDRadio(yaesu_clone.YaesuCloneModeRadio):
+class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
-    VENDOR = "Yaesu"
-    MODEL = "FT-817ND"
+    MODEL = "FT-817"
 
     _model = ""
-    _memsize = 6521
+    _memsize = 6509
     # block 9 (130 Bytes long) is to be repeted 40 times
-    _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130]
+    _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 118]
 
 
     def sync_in(self):
@@ -329,3 +329,12 @@ class FT817NDRadio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def match_model(cls, filedata):
         return len(filedata) == cls._memsize
+
+class FT817NDRadio(FT817Radio):
+    MODEL = "FT-817ND"
+
+    _model = ""
+    _memsize = 6521
+    # block 9 (130 Bytes long) is to be repeted 40 times
+    _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130]
+
