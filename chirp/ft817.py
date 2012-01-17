@@ -241,11 +241,14 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
 
-        for i in _mem.name:
-            if i == "\xFF":
-                break
-            mem.name += CHARSET[i]
-        mem.name = mem.name.rstrip()
+	if _mem.tag_on_off == 1:
+            for i in _mem.name:
+                if i == "\xFF":
+                    break
+                mem.name += CHARSET[i]
+            mem.name = mem.name.rstrip()
+        else:
+            mem.name = ""
 
         return mem
 
