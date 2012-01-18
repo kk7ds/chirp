@@ -75,6 +75,9 @@ struct {
   char extension[4];
 } rptcall[99];
 
+#seekto 0x0FB8;
+u8 name_flags[132];
+
 """
 
 TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", ""]
@@ -288,6 +291,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         _mem = self._memobj.memory[mem.number]
         _used = self._memobj.used_flags[bytepos]
+        _namf = self._memobj.name_flags[bytepos]
 
         was_empty = _used & bitpos
 
@@ -312,6 +316,10 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
         _mem.tune_step = STEPS.index(mem.tuning_step)
         _mem.name = mem.name.ljust(8)
+        if mem.name.strip():
+            _namf |= bitpos
+        else:
+            _namf &= ~bitpos
 
         if isinstance(mem, chirp_common.DVMemory):
             _mem.urcall = encode_call(mem.dv_urcall)
