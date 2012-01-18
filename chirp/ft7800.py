@@ -32,10 +32,10 @@ struct {
   bbcd freq[3];
   u8 unknown3:1,
      tune_step:3,
-     power:2,
+     unknown5:2,
      tmode:2;
   bbcd split[3];
-  u8 unknown5:2,
+  u8 power:2,
      tone:6;
   u8 unknown6:1,
      dtcs:7;
@@ -144,7 +144,7 @@ def upload(radio):
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
             cur += length
-            #time.sleep(0.1)
+            time.sleep(0.01)
 
             if radio.status_fn:
                 s = chirp_common.Status()
@@ -322,6 +322,7 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.power = POWER_LEVELS_VHF.index(mem.power)
         else:
             _mem.power = 0
+        _mem.unknown5 = 0 # Make sure we don't leave garbage here
 
         # NB: Leave offset after mem name for the 8800!
         self._set_mem_name(mem, _mem)
