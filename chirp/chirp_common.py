@@ -56,6 +56,8 @@ CROSS_MODES = [
     "Tone->DCS",
     "DCS->CTCSS",
     "Tone->CTCSS",
+    "Off->Tone",
+    "Off->DCS",
 ]
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR"]

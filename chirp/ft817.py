@@ -126,10 +126,10 @@ struct {
        is_fm_narrow:1,
        freq_range:3;
   u8   skip:1,
-       unknown3:1,
+       unknown2:1,
        ipo:1,
        att:1,
-       unknown2:4;
+       unknown3:4;
   u8   ssb_step:2,
        am_step:3,
        fm_step:3;
@@ -138,9 +138,9 @@ struct {
   u8   unknown5:2,
        tx_mode:3,
        tx_freq_range:3;
-  u8   unknown7:2,
+  u8   unknown6:2,
        tone:6;
-  u8   unknown8:1,
+  u8   unknown7:1,
        dcs:7;
   ul16 rit;
   u32 freq;
@@ -149,25 +149,25 @@ struct {
 } memory[200];
 """
 
-DUPLEX = ["", "-", "+", "split"]
-MODES  = ["LSB", "USB", "CW", "CWR", "AM", "FM", "DIG", "PKT", "NCW", "NCWR", "NFM"]   # narrow modes has to be at end
-TMODES = ["", "Tone", "TSQL", "DTCS"]
-STEPSFM = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
-STEPSAM = [2.5, 5.0, 9.0, 10.0, 12.5, 25.0]
-STEPSSSB = [1.0, 2.5, 5.0]
-VALID_BANDS = [(100000,33000000), (33000000,56000000), (76000000,108000000), (108000000,137000000), (137000000,154000000), (420000000,470000000)] # warning ranges has to be in this exact order
-
-
-CHARSET = [chr(x) for x in range(0, 256)]
-
-POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),       # not used in memory
-                chirp_common.PowerLevel("L3", watts=2.50),
-                chirp_common.PowerLevel("L2", watts=1.00),
-                chirp_common.PowerLevel("L1", watts=0.5)]
-
 class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     MODEL = "FT-817"
+
+    DUPLEX = ["", "-", "+", "split"]
+    MODES  = ["LSB", "USB", "CW", "CWR", "AM", "FM", "DIG", "PKT", "NCW", "NCWR", "NFM"]   # narrow modes has to be at end
+    TMODES = ["", "Tone", "TSQL", "DTCS"]
+    STEPSFM = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
+    STEPSAM = [2.5, 5.0, 9.0, 10.0, 12.5, 25.0]
+    STEPSSSB = [1.0, 2.5, 5.0]
+    VALID_BANDS = [(100000,33000000), (33000000,56000000), (76000000,108000000), (108000000,137000000), (137000000,154000000), (420000000,470000000)] # warning ranges has to be in this exact order
+
+
+    CHARSET = [chr(x) for x in range(0, 256)]
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),       # not used in memory
+                    chirp_common.PowerLevel("L3", watts=2.50),
+                    chirp_common.PowerLevel("L2", watts=1.00),
+                    chirp_common.PowerLevel("L1", watts=0.5)]
 
     _model = ""
     _memsize = 6509
@@ -190,14 +190,14 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_dtcs_polarity = False
         rf.has_nostep_tuning = True
-        rf.valid_modes = list(set(MODES))
-        rf.valid_tmodes = list(TMODES)
-        rf.valid_duplexes = list(DUPLEX)
-        rf.valid_tuning_steps = list(STEPSFM)
-        rf.valid_bands = VALID_BANDS
+        rf.valid_modes = list(set(self.MODES))
+        rf.valid_tmodes = list(self.TMODES)
+        rf.valid_duplexes = list(self.DUPLEX)
+        rf.valid_tuning_steps = list(self.STEPSFM)
+        rf.valid_bands = self.VALID_BANDS
         rf.valid_skips = ["", "S"]
-        rf.valid_power_levels = POWER_LEVELS
-        rf.valid_characters = "".join(CHARSET)
+        rf.valid_power_levels = self.POWER_LEVELS
+        rf.valid_characters = "".join(self.CHARSET)
         rf.valid_name_length = 8
         rf.memory_bounds = (1, 200)
         rf.can_odd_split = True
@@ -206,6 +206,15 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
+
+    def get_duplex(self, mem, _mem):
+        if _mem.is_duplex == 1:
+            mem.duplex = self.DUPLEX[_mem.duplex]
+        else:
+            mem.duplex = ""
+
+    def get_tmode(self, mem, _mem):
+        mem.tmode = self.TMODES[_mem.tmode]
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -219,25 +228,22 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem.freq = int(_mem.freq) * 10
         mem.offset = int(_mem.offset) * 10
-        if _mem.is_duplex == 1:
-            mem.duplex = DUPLEX[_mem.duplex]
-        else:
-            mem.duplex = ""
-        mem.mode = MODES[_mem.mode]
+        self.get_duplex(mem, _mem)
+        mem.mode = self.MODES[_mem.mode]
         if mem.mode == "FM":
             if _mem.is_fm_narrow == 1:
                 mem.mode = "NFM"
-            mem.tuning_step = STEPSFM[_mem.fm_step]
+            mem.tuning_step = self.STEPSFM[_mem.fm_step]
         elif mem.mode == "AM":
-            mem.tuning_step = STEPSAM[_mem.am_step]
+            mem.tuning_step = self.STEPSAM[_mem.am_step]
         elif mem.mode == "CW" or mem.mode == "CWR":
             if _mem.is_cwdig_narrow == 1:
                 mem.mode = "N" + mem.mode
-            mem.tuning_step = STEPSSSB[_mem.ssb_step]
+            mem.tuning_step = self.STEPSSSB[_mem.ssb_step]
         else:   # TODO more investigation needed on steps for other modes 
-            mem.tuning_step = STEPSSSB[_mem.ssb_step]
+            mem.tuning_step = self.STEPSSSB[_mem.ssb_step]
         mem.skip = _mem.skip and "S" or ""
-        mem.tmode = TMODES[_mem.tmode]
+        self.get_tmode(mem, _mem)
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
 
@@ -245,18 +251,29 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             for i in _mem.name:
                 if i == "\xFF":
                     break
-                mem.name += CHARSET[i]
+                mem.name += self.CHARSET[i]
             mem.name = mem.name.rstrip()
         else:
             mem.name = ""
 
         return mem
 
+    def set_duplex(self, mem, _mem):
+        _mem.duplex = self.DUPLEX.index(mem.duplex)
+        _mem.is_duplex = mem.duplex != ""
+
+    def set_tmode(self, mem, _mem):
+        _mem.tmode = self.TMODES.index(mem.tmode)
+
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
         was_valid = (self._memobj.visible[(mem.number-1)/8] >> (mem.number-1)%8) & 0x01
 
         if mem.empty:
+            if mem.number == 1:
+                # as Dan says "yaesus are not good about that :("
+		# if you ulpoad an empty image you can brick your radio
+                raise Exception("Sorry, can't delete first memory") 
             self._memobj.visible[(mem.number-1)/8] &= ~ (1 << (mem.number-1)%8)
             self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
             return
@@ -270,16 +287,15 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             _mem.tag_on_off = 0
         _mem.tag_default = 0       # never use default label "CH-nnn"
-        _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.is_duplex = mem.duplex != ""
+        self.set_duplex(mem, _mem)
         if mem.mode[0] == "N": # is it narrow?
-            _mem.mode = MODES.index(mem.mode[1:])
+            _mem.mode = self.MODES.index(mem.mode[1:])
             _mem.is_fm_narrow = _mem.is_cwdig_narrow = 1       # here I suppose it's safe to set both
         else:
-            _mem.mode = MODES.index(mem.mode)
+            _mem.mode = self.MODES.index(mem.mode)
             _mem.is_fm_narrow = _mem.is_cwdig_narrow = 0       # here I suppose it's safe to set both
         i = 0                                   # This search can probably be written better but
-        for lo, hi in VALID_BANDS:              # I just don't know python enought
+        for lo, hi in self.VALID_BANDS:              # I just don't know python enought
             if mem.freq > lo and mem.freq < hi:
                 break 
             i+=1
@@ -287,7 +303,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.duplex == "split":	# all this should be safe also when not in split but ... 
             _mem.tx_mode = _mem.mode
             i = 0                                   # This search can probably be written better but
-            for lo, hi in VALID_BANDS:              # I just don't know python enought
+            for lo, hi in self.VALID_BANDS:              # I just don't know python enought
                 if mem.offset >= lo and mem.offset < hi:
                     break 
                 i+=1
@@ -295,17 +311,17 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.skip = mem.skip == "S"
         _mem.ipo = 0	# not supported in chirp
         _mem.att = 0    # not supported in chirp
-        _mem.tmode = TMODES.index(mem.tmode)
+        self.set_tmode(mem, _mem)
         try:
-            _mem.ssb_step = STEPSSSB.index(mem.tuning_step)
+            _mem.ssb_step = self.STEPSSSB.index(mem.tuning_step)
         except ValueError:
             pass
         try:
-            _mem.am_step = STEPSAM.index(mem.tuning_step)
+            _mem.am_step = self.STEPSAM.index(mem.tuning_step)
         except ValueError:
             pass
         try:
-            _mem.fm_step = STEPSFM.index(mem.tuning_step)
+            _mem.fm_step = self.STEPSFM.index(mem.tuning_step)
         except ValueError:
             pass
         _mem.tone = chirp_common.TONES.index(mem.rtone)
@@ -314,7 +330,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 10
         for i in range(0, 8):
-            _mem.name[i] = CHARSET.index(mem.name.ljust(8)[i])
+            _mem.name[i] = self.CHARSET.index(mem.name.ljust(8)[i])
         
     def get_banks(self):
         return []
@@ -322,10 +338,10 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 
-	lo, hi = VALID_BANDS[3]    # this is fm broadcasting
+	lo, hi = self.VALID_BANDS[3]    # this is fm broadcasting
 	if mem.freq >= lo and mem.freq <= hi:
-            if mem.mode != "WFM":
-                msgs.append(chirp_common.ValidationError("Only wide FM is supported in this band"))
+            if mem.mode != "FM":
+                msgs.append(chirp_common.ValidationError("Only FM is supported in this band"))
         # TODO check that step is valid in current mode
         return msgs
 
