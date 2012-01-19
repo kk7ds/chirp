@@ -534,6 +534,7 @@ class RadioFeatures:
         "has_ctone"           : BOOLEAN,
         "has_cross"           : BOOLEAN,
         "has_infinite_number" : BOOLEAN,
+        "has_nostep_tuning"   : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
@@ -621,6 +622,9 @@ class RadioFeatures:
         self.init("has_infinite_number", False,
                   "Indicates that the radio is not constrained in the " +
                   "number of memories that it can store")
+        self.init("has_nostep_tuning", False,
+                  "Indicates that the radio does not require a valid " +
+                  "tuning step to store a frequency")
 
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")
@@ -784,7 +788,7 @@ class Radio:
             msg = ValidationWarning("Power level %s not supported" % mem.power)
             msgs.append(msg)
 
-        if rf.valid_tuning_steps:
+        if rf.valid_tuning_steps and not rf.has_nostep_tuning:
             try:
                 step = required_step(mem.freq)
                 if step not in rf.valid_tuning_steps:

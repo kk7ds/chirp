@@ -190,7 +190,13 @@ class MemoryEditor(common.Editor):
             print e
             new = None
 
-        set_ts(chirp_common.required_step(new))
+        features = self.rthread.radio.get_features()
+
+        try:
+            set_ts(chirp_common.required_step(new))
+        except errors.InvalidDataError, e:
+            if not features.has_nostep_tuning:
+                raise e
 
         if new and self._config.get_bool("autorpt") and new != prev:
             band = int(new / 100000000)
