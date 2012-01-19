@@ -190,6 +190,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs_polarity = False
+        rf.has_nostep_tuning = True
         rf.valid_modes = list(set(MODES))
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
