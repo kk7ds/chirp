@@ -17,6 +17,7 @@
 
 
 from chirp import platform, CHIRP_VERSION
+from chirpui import config
 
 # Hack to setup environment
 platform.get_platform()
@@ -44,6 +45,17 @@ execpath = platform.get_platform().executable_path()
 localepath = os.path.abspath(os.path.join(execpath, "locale"))
 if not os.path.exists(localepath):
     localepath = "/usr/share/chirp/locale"
+
+conf = config.get()
+manual_language = conf.get("language", "state")
+if manual_language and manual_language != "Auto":
+    lang_codes = { "English" : "en_US",
+                   "Polish"  : "pl",
+                   }
+    try:
+        os.environ["LANG"] = lang_codes[manual_language]
+    except KeyError:
+        print "Unsupported language `%s'" % manual_language
 
 langs = []
 lc, encoding = locale.getdefaultlocale()

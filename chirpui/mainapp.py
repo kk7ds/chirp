@@ -867,6 +867,22 @@ If you think that it is valid, you can select a radio model below to force an op
         devaction = self.menu_ag.get_action("viewdeveloper")
         devaction.set_visible(action.get_active())
 
+    def do_change_language(self):
+        langs = ["Auto", "English", "Polish"]
+        d = inputdialog.ChoiceDialog(langs, parent=self,
+                                     title="Choose Language")
+        d.label.set_text(_("Choose a language or Auto to use the "
+                           "operating system default. You will need to "
+                           "restart the application before the change "
+                           "will take effect"))
+        d.label.set_line_wrap(True)
+        r = d.run()
+        if r == gtk.RESPONSE_OK:
+            print "Chose language %s" % d.choice.get_active_text()
+            conf = config.get()
+            conf.set("language", d.choice.get_active_text(), "state")
+        d.destroy()
+
     def mh(self, _action, *args):
         action = _action.get_name()
 
@@ -912,6 +928,8 @@ If you think that it is valid, you can select a radio model below to force an op
                         "move_up", "move_dn", "exchange",
                         "devshowraw", "devdiffraw"]:
             self.get_current_editorset().memedit.hotkey(_action)
+        elif action == "language":
+            self.do_change_language()
         else:
             return
 
@@ -951,6 +969,7 @@ If you think that it is valid, you can select a radio model below to force an op
         <menuitem action="devshowraw"/>
         <menuitem action="devdiffraw"/>
       </menu>
+      <menuitem action="language"/>
     </menu>
     <menu action="radio" name="radio">
       <menuitem action="download"/>
@@ -992,6 +1011,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
             ('devshowraw', None, _('Show raw memory'), "<Control><Shift>r", None, self.mh),
             ('devdiffraw', None, _("Diff raw memories"), "<Control><Shift>d", None, self.mh),
+            ('language', None, _("Change language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
             ('download', None, _("Download From Radio"), "<Alt>d", None, self.mh),
             ('upload', None, _("Upload To Radio"), "<Alt>u", None, self.mh),
