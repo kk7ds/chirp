@@ -108,7 +108,7 @@ class FT857Radio(ft817.FT817Radio):
         rf = ft817.FT817Radio.get_features(self)
         rf.has_cross = True
         rf.valid_tmodes = self.TMODES_REV.keys()
-        # rf.valid_cross_mode = CROSS_MODES_REV.keys() # TODO will do this later
+        rf.valid_cross_modes = self.CROSS_MODES_REV.keys()
         return rf
 
     def get_duplex(self, mem, _mem):
