@@ -1249,6 +1249,7 @@ class MemoryEditor(common.Editor):
         self.choices[_("Bank")] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices[_("Mode")] = features["valid_modes"]
         self.choices[_("Tone Mode")] = features["valid_tmodes"]
+        self.choices[_("Cross Mode")] = features["valid_cross_modes"]
         self.choices[_("Skip")] = features["valid_skips"]
         self.choices[_("Power")] = [str(x) for x in features["valid_power_levels"]]
 

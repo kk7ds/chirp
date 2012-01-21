@@ -579,6 +579,7 @@ class RadioFeatures:
         "valid_power_levels"  : [],
         "valid_characters"    : "",
         "valid_name_length"   : 0,
+        "valid_cross_modes"   : [],
 
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
@@ -678,6 +679,8 @@ class RadioFeatures:
         self.init("valid_name_length", 6,
                   "The maximum number of characters in a memory's " +
                   "alphanumeric tag")
+        self.init("valid_cross_modes", list(CROSS_MODES),
+                  "Supported tone cross modes")
 
         self.init("has_sub_devices", False,
                   "Indicates that the radio behaves as two semi-independent " +
@@ -795,6 +798,11 @@ class Radio:
         if rf.valid_tmodes and mem.tmode not in rf.valid_tmodes:
             msg = ValidationError("Tone mode %s not supported" % mem.tmode)
             msgs.append(msg)
+        else:
+            if mem.tmode == "Cross":
+                if rf.valid_cross_modes and mem.cross_mode not in rf.valid_cross_modes:
+                    msg = ValidationError("Cross tone mode %s not supported" % mem.cross_mode)
+                    msgs.append(msg)
 
         if rf.valid_duplexes and mem.duplex not in rf.valid_duplexes:
             msg = ValidationError("Duplex %s not supported" % mem.duplex)
