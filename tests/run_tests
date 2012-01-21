@@ -261,8 +261,8 @@ class TestCaseBruteForce(TestCase):
             for tmode in rf.valid_tmodes:
                 if tmode not in chirp_common.TONE_MODES:
                     continue
-                elif tmode in ["DTCS", "DTCS-R"]:
-                    continue # We'll test DCS separately
+                elif tmode in ["DTCS", "DTCS-R", "Cross"]:
+                    continue # We'll test DCS and Cross tones separately
 
                 m.tmode = tmode
                 if tmode == "":
