@@ -306,7 +306,7 @@ class TestCaseBruteForce(TestCase):
             return
 
         m.tmode = "Cross"
-        for cross_mode in chirp_common.CROSS_MODES:
+        for cross_mode in rf.valid_cross_modes:
             m.cross_mode = cross_mode
             self.set_and_compare(m)
 
