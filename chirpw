@@ -28,12 +28,13 @@ import os
 import locale
 import gettext
 
+p = platform.get_platform()
 if hasattr(sys, "frozen"):
-    log = file("debug.log", "w", 0)
+    log = file(p.config_file("debug.log"), "w", 0)
     sys.stderr = log
     sys.stdout = log
 elif not os.isatty(0):
-    log = file(platform.get_platform().config_file("debug.log"), "w", 0)
+    log = file(p.config_file("debug.log"), "w", 0)
     sys.stdout = log
     sys.stderr = log
 
