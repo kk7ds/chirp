@@ -350,10 +350,20 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         return len(filedata) == cls._memsize
 
 class FT817NDRadio(FT817Radio):
-    MODEL = "FT-817ND"
+    MODEL = "FT-817ND (Intl versions)"
 
     _model = ""
     _memsize = 6521
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130]
+
+class FT817ND_US_Radio(FT817Radio):
+    # seems that radios configured for 5MHz operations send one paket more than others
+    # so we have to distinguish sub models
+    MODEL = "FT-817ND (US Version)"
+
+    _model = ""
+    _memsize = 6651
+    # block 9 (130 Bytes long) is to be repeted 40 times
+    _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130, 130]
 
