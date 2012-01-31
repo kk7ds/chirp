@@ -141,7 +141,7 @@ class FT857_US_Radio(FT857Radio):
     MODEL = "FT-857 (US Version)"
 
     _model = ""
-    _memsize = 7181
+    _memsize = 7481
     # block 9 (140 Bytes long) is to be repeted 40 times 
     # should be 42 times but this way I cam use original 817 functions
     _block_lengths = [ 2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140, 38, 176, 140]
