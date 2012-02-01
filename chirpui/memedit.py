@@ -199,14 +199,15 @@ class MemoryEditor(common.Editor):
                 raise e
 
         if new and self._config.get_bool("autorpt") and new != prev:
-            band = int(new / 100000000)
-            if chirp_common.STD_OFFSETS.has_key(band):
-                offsets = chirp_common.STD_OFFSETS[band]
+            try:
+                band = chirp_common.freq_to_band(new)
                 set_offset(path, 0)
-                for lo, hi, offset in offsets:
-                    if new < hi and new > lo:
+                for lo, hi, offset in chirp_common.STD_OFFSETS[band]:
+                    if new > lo and new < hi:
                         set_offset(path, offset)
                         break
+            except Exception, e:
+                pass
 
         return new
 

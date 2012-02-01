@@ -62,6 +62,12 @@ CROSS_MODES = [
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR"]
 
+STD_6M_OFFSETS = [
+    (51620000, 51980000, -500000),
+    (52500000, 52980000, -500000),
+    (53500000, 53980000, -500000),
+    ]
+
 STD_2M_OFFSETS = [
     (145100000, 145500000, -600000),
     (146000000, 146400000,  600000),
@@ -76,14 +82,36 @@ STD_220_OFFSETS = [
 
 STD_70CM_OFFSETS = [
     (440000000, 445000000,  5000000),
-    (445000000, 450000000, -5000000),
+    (447000000, 450000000, -5000000),
     ]
 
+STD_23CM_OFFSETS = [
+    (1282000000, 1288000000, -12000000),
+    ]
+
+# Standard offsets, indexed by band (wavelength in cm)
 STD_OFFSETS = {
-    1 : STD_2M_OFFSETS,
-    2 : STD_220_OFFSETS,
-    4 : STD_70CM_OFFSETS,
+    600 : STD_6M_OFFSETS,
+    200 : STD_2M_OFFSETS,
+    125 : STD_220_OFFSETS,
+     70 : STD_70CM_OFFSETS,
+     23 : STD_23CM_OFFSETS,
     }
+
+BAND_TO_MHZ = {
+    600 : (   50000000,   54000000 ),
+    200 : (  144000000,  148000000 ),
+    125 : (  219000000,  225000000 ),
+    70 :  (  420000000,  450000000 ),
+    23 :  ( 1240000000, 1300000000 ),
+}
+
+# NB: This only works for some bands, throws an Exception otherwise
+def freq_to_band(freq):
+    for band, (lo, hi) in BAND_TO_MHZ.items():
+        if int(freq) > lo and int(freq) < hi:
+            return band
+    raise Exception("No conversion for frequency %i" % freq)
 
 TONE_MODES = [
     "",
