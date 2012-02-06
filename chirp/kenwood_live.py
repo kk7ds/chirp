@@ -326,7 +326,6 @@ class TMV7Radio(KenwoodLiveRadio):
 
     def _make_mem_spec(self, mem):
         spec = ( \
-            "%03i" % mem.number,
             "%011i" % mem.freq,
             "%X" % STEPS.index(mem.tuning_step),
             "%i" % rev(DUPLEX, mem.duplex),
