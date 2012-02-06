@@ -412,8 +412,8 @@ if __name__ == "__main__":
 
 THF6A_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
-THF6A_DUPLEX = list(DUPLEX)
-THF6A_DUPLEX.append("split")
+THF6A_DUPLEX = dict(DUPLEX)
+THF6A_DUPLEX[3] = "split"
 
 class THF6ARadio(KenwoodLiveRadio):
     MODEL = "TH-F6"
@@ -430,7 +430,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_tuning_steps = list(THF6A_STEPS)
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
-        rf.valid_duplexes = THF6A_DUPLEX
+        rf.valid_duplexes = THF6A_DUPLEX.values()
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 7
         rf.memory_bounds = (0, self._upper)
