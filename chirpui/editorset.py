@@ -227,6 +227,13 @@ class EditorSet(gtk.VBox):
             common.show_error(e)
             return
 
+        if len(src_radio.errors) > 0:
+            _filen = os.path.basename(filen)
+            common.show_error_text(_("There were errors while opening {file}. "
+                                     "The affected memories will not "
+                                     "be importable!").format(file=_filen),
+                                   "\r\n".join(src_radio.errors))
+
         try:
             count = self._do_import_locked(importdialog.ImportDialog,
                                            src_radio,

@@ -248,3 +248,23 @@ def combo_select(box, value):
         iter = store.iter_next(iter)
 
     return False
+
+def show_error_text(msg, text, parent=None):
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent,
+                          type=gtk.MESSAGE_ERROR)
+    d.set_property("text", msg)
+
+    v = gtk.TextView()
+    v.get_buffer().set_text(text)
+    v.show()
+    sw = gtk.ScrolledWindow()
+    sw.add(v)
+    sw.show()
+    d.vbox.pack_start(sw, 1,1,1)
+
+    if not parent:
+        d.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+
+    d.set_size_request(600, 400)
+    d.run()
+    d.destroy()

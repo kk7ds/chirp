@@ -297,9 +297,9 @@ If you think that it is valid, you can select a radio model below to force an op
 
             if hasattr(eset.rthread.radio, "errors") and \
                     eset.rthread.radio.errors:
-                msg = _("%i errors during open, check the debug log for details")
-                msg = msg % len(eset.rthread.radio.errors)
-                common.show_error(msg)
+                msg = _("{num} errors during open:").format(num=len(eset.rthread.radio.errors))
+                common.show_error_text(msg,
+                                       "\r\n".join(eset.rthread.radio.errors))
 
     def do_live_warning(self, radio):
         d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
