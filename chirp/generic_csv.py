@@ -123,6 +123,8 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
                     setattr(mem, attr, val)
             except OmittedHeaderError, e:
                 pass
+            except Exception, e:
+                raise Exception("[%s] %s" % (attr, e))
 
         return mem
 
@@ -163,6 +165,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
                 if mem.number is None:
                     raise Exception("Invalid Location field" % lineno)
             except Exception, e:
+                print "Line %i: %s" % (lineno, e)
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
 
