@@ -189,12 +189,10 @@ class MemoryEditor(common.Editor):
             print e
             new = None
 
-        features = self.rthread.radio.get_features()
-
         try:
             set_ts(chirp_common.required_step(new))
         except errors.InvalidDataError, e:
-            if not features.has_nostep_tuning:
+            if not self._features.has_nostep_tuning:
                 raise e
 
         if new and self._config.get_bool("autorpt") and new != prev:
@@ -937,8 +935,6 @@ class MemoryEditor(common.Editor):
             print "Unable to get bank: %s" % e
             bank = ""
 
-        features = self.rthread.radio.get_features()
-
         self.store.set(iter,
                        self.col("_filled"), not memory.empty,
                        self.col(_("Loc")), memory.number,
@@ -1005,15 +1001,14 @@ class MemoryEditor(common.Editor):
 
             return bidx
 
-        features = self.rthread.radio.get_features()
-
         bank = vals[self.col(_("Bank"))]
         if bank is "":
             bidx = None
             bank_index = vals[self.col(_("Bank Index"))]
         else:
             bidx = get_bank_index(bank)
-            if vals[self.col(_("Bank Index"))] == -1 and features.has_bank_index:
+            if vals[self.col(_("Bank Index"))] == -1 and \
+                    self._features.has_bank_index:
                 bank_index = self.rthread.radio.get_available_bank_index(bidx)
                 print "Chose %i index for bank %s" % (bank_index, bank)
                 self.store.set(iter, self.col(_("Bank Index")), bank_index)
@@ -1021,7 +1016,7 @@ class MemoryEditor(common.Editor):
                 bank_index = vals[self.col(_("Bank Index"))]
 
         power_levels = {"" : None}
-        for i in features.valid_power_levels:
+        for i in self._features.valid_power_levels:
             power_levels[str(i)] = i
 
         mem.freq = vals[self.col(_("Frequency"))]
@@ -1190,13 +1185,12 @@ class MemoryEditor(common.Editor):
             ]
 
         unsupported = []
-        features = self.rthread.radio.get_features()
         for feature, colname in maybe_hide:
             if feature.startswith("has_"):
-                supported = features[feature]
+                supported = self._features[feature]
                 print "%s supported: %s" % (colname, supported)
             elif feature.startswith("valid_"):
-                supported = len(features[feature]) != 0
+                supported = len(self._features[feature]) != 0
 
             if not supported:
                 unsupported.append(colname)
@@ -1242,25 +1236,26 @@ class MemoryEditor(common.Editor):
 
         self.__cache_columns()
 
-        features = self.rthread.radio.get_features()
+        self._features = self.rthread.radio.get_features()
 
-        (min, max) = features.memory_bounds
+        (min, max) = self._features.memory_bounds
 
         self.choices[_("Bank")] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
-        self.choices[_("Mode")] = features["valid_modes"]
-        self.choices[_("Tone Mode")] = features["valid_tmodes"]
-        self.choices[_("Cross Mode")] = features["valid_cross_modes"]
-        self.choices[_("Skip")] = features["valid_skips"]
-        self.choices[_("Power")] = [str(x) for x in features["valid_power_levels"]]
+        self.choices[_("Mode")] = self._features["valid_modes"]
+        self.choices[_("Tone Mode")] = self._features["valid_tmodes"]
+        self.choices[_("Cross Mode")] = self._features["valid_cross_modes"]
+        self.choices[_("Skip")] = self._features["valid_skips"]
+        self.choices[_("Power")] = [str(x) for x in
+                                    self._features["valid_power_levels"]]
 
-        if features["valid_power_levels"]:
-            self.defaults[_("Power")] = features["valid_power_levels"][0]
+        if self._features["valid_power_levels"]:
+            self.defaults[_("Power")] = self._features["valid_power_levels"][0]
 
         job = common.RadioJob(self.set_bank_list, "get_banks")
         job.set_desc(_("Getting bank list"))
         rthread.submit(job)
 
-        if not features["can_odd_split"]:
+        if not self._features["can_odd_split"]:
             # We need a new list, so .remove() won't work for us
             self.choices[_("Duplex")] = [x for x in self.choices[_("Duplex")]
                                       if x != "split"]
@@ -1272,7 +1267,7 @@ class MemoryEditor(common.Editor):
 
         self.prefill()
         
-        self.choices["Mode"] = features.valid_modes
+        self.choices["Mode"] = self._features.valid_modes
 
         self.root = vbox
 
@@ -1367,7 +1362,7 @@ class MemoryEditor(common.Editor):
                     continue
 
             mem.name = self.rthread.radio.filter_name(mem.name)
-            if not self.rthread.radio.get_features().has_bank:
+            if not self._features.has_bank:
                 mem.bank = None
                 mem.bank_index = -1
 
@@ -1483,7 +1478,7 @@ class DstarMemoryEditor(MemoryEditor):
             for call in calls:
                 self.choices["URCALL"].append((call, call))
         
-        if self.rthread.radio.get_features().requires_call_lists:
+        if self._features.requires_call_lists:
             ujob = common.RadioJob(ucall_cb, "get_urcall_list")
             ujob.set_desc(_("Downloading URCALL list"))
             rthread.submit(ujob)
@@ -1495,14 +1490,14 @@ class DstarMemoryEditor(MemoryEditor):
                 self.choices["RPT1CALL"].append((call, call))
                 self.choices["RPT2CALL"].append((call, call))
 
-        if self.rthread.radio.get_features().requires_call_lists:
+        if self._features.requires_call_lists:
             rjob = common.RadioJob(rcall_cb, "get_repeater_call_list")
             rjob.set_desc(_("Downloading RPTCALL list"))
             rthread.submit(rjob)
 
         _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
 
-        if not rthread.radio.get_features().requires_call_lists:
+        if not self._features.requires_call_lists:
             for i in _dv_columns:
                 if not self.choices.has_key(i):
                     continue
