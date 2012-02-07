@@ -127,7 +127,7 @@ TUNING_STEPS = [
     5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0,
     125.0, 200.0,
     # Need to fix drivers using this list as an index!
-    9.0, 1.0
+    9.0, 1.0, 2.5,
 ]
 
 SKIP_VALUES = [ "", "S", "P" ]
