@@ -147,6 +147,40 @@ struct {
   u32 offset;
   u8   name[8];
 } memory[200];
+
+#seekto 0x1979;
+struct {
+  u8   tag_on_off:1,
+       tag_default:1,
+       unknown1:3,
+       mode:3;
+  u8   duplex:2,
+       is_duplex:1,
+       is_cwdig_narrow:1,
+       is_fm_narrow:1,
+       freq_range:3;
+  u8   skip:1,
+       unknown2:1,
+       ipo:1,
+       att:1,
+       unknown3:4;
+  u8   ssb_step:2,
+       am_step:3,
+       fm_step:3;
+  u8   unknown4:6,
+       tmode:2;
+  u8   unknown5:2,
+       tx_mode:3,
+       tx_freq_range:3;
+  u8   unknown6:2,
+       tone:6;
+  u8   unknown7:1,
+       dcs:7;
+  ul16 rit;
+  u32 freq;
+  u32 offset;
+  u8   name[8];
+} sixtymeterchannels[5];
 """
 
 class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -357,6 +391,14 @@ class FT817NDRadio(FT817Radio):
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130]
 
+SPECIAL_60M = {
+    "M-601" : -1,
+    "M-602" : -2,
+    "M-603" : -3,
+    "M-604" : -4,
+    "M-605" : -5,
+    }
+
 class FT817ND_US_Radio(FT817Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
     # so we have to distinguish sub models
@@ -367,3 +409,38 @@ class FT817ND_US_Radio(FT817Radio):
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130, 130]
 
+    def get_special_locations(self):
+        return SPECIAL_60M.keys()
+
+    def _get_special(self, number):
+        mem = chirp_common.Memory()
+        mem.number = SPECIAL_60M[number]
+        mem.extd_number = number
+
+        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+
+        mem.freq = int(_mem.freq) * 10
+
+        mem.immutable = ["number", "skip", "bank_index", "rtone", "ctone",
+                         "extd_number", "name", "dtcs", "tmode", "cross_mode",
+                         "dtcs_polarity", "power", "duplex", "offset", "mode",
+                         "tuning_step", "comment", "empty"]
+
+        return mem
+
+    def _set_special(self, memory):
+        _mem = self._memobj.sixtymeterchannels[abs(memory.number)-1]
+
+        _mem.freq = memory.freq / 10
+
+    def get_memory(self, number):
+        if isinstance(number, str):
+            return self._get_special(number)
+        else:
+            return FT817Radio.get_memory(self, number)
+
+    def set_memory(self, memory):
+        if memory.number < 0:
+            return self._set_special(memory)
+        else:
+            return FT817Radio.set_memory(self, memory)
