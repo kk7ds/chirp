@@ -80,8 +80,7 @@ struct {
 
 TMODES = ["", "Tone", "", "TSQL"]
 DUPLEX = ["", "", "+", "-"]
-STEPS = list(chirp_common.TUNING_STEPS)
-STEPS.remove(6.25)
+STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 
 class IC2100Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"

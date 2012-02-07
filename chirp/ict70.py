@@ -63,7 +63,7 @@ struct {
 TMODES = ["", "Tone", "TSQL", "TSQL", "DTCS", "DTCS"]
 DUPLEX = ["", "-", "+"]
 DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
-TUNING_STEPS = [5.0, "", "", "", 10.0, 12.5, 15.0, 20.0, 25.0, 30.0,
+TUNING_STEPS = [5.0, 5.0, 5.0, 5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0,
                 50.0, 100.0, 125.0, 200.0]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Low", watts=0.5),
@@ -89,6 +89,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_bands = [(136000000, 174000000), (400000000, 479000000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_tuning_steps = TUNING_STEPS
         rf.valid_name_length = 6
         rf.has_ctone = True
         rf.has_bank_index = True

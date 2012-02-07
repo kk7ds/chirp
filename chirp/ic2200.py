@@ -76,8 +76,8 @@ struct {
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+"]
 DTCSP  = ["NN", "NR", "RN", "RR"]
-STEPS = list(chirp_common.TUNING_STEPS)
-STEPS.remove(6.25)
+STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
+
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=65),
                 chirp_common.PowerLevel("Mid", watts=25),
                 chirp_common.PowerLevel("MidLow", watts=10),
