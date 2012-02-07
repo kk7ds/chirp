@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# ex: set tabstop=4 expandtab shiftwidth=4 softtabstop=4:
-#
 # Copyright 2010 Vernon Mauery <vernon@mauery.org>
 #
 # This program is free software: you can redistribute it and/or modify

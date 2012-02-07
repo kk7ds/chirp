@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 # Copyright 2012 Filippi Marco <iz3gme.marco@gmail.com>
 #

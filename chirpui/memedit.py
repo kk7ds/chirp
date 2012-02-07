@@ -1,4 +1,3 @@
-#/usr/bin/python
 #
 # Copyright 2008 Dan Smith <dsmith@danplanet.com>
 #
