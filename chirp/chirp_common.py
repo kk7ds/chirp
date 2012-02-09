@@ -723,6 +723,7 @@ class Radio:
     status_fn = lambda x, y: console_status(y)
 
     def __init__(self, pipe):
+        self.errors = []
         self.pipe = pipe
 
     def get_features(self):
@@ -857,7 +858,7 @@ class CloneModeRadio(Radio):
     FILE_EXTENSION = "img"
 
     def __init__(self, pipe):
-
+        self.errors = []
         self._mmap = None
 
         if isinstance(pipe, str):
