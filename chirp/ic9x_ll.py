@@ -470,8 +470,8 @@ class IC92MemoryFrame(IC92Frame):
             mem.number = -1 - mem.number
 
         mem.freq = self._decode_freq()
-        mem.offset = float("%02x%02x%02x%02x" % (ord(self[11]), ord(self[10]),
-                                                 ord(self[9]),  ord(self[8])))
+        mem.offset = int("%02x%02x%02x%02x" % (ord(self[11]), ord(self[10]),
+                                               ord(self[9]),  ord(self[8])))
         mem.rtone = int("%02x%02x" % (ord(self[13]), ord(self[14]))) / 10.0
         mem.ctone = int("%02x%02x" % (ord(self[15]), ord(self[16]))) / 10.0
         mem.dtcs = int("%02x%02x"  % (ord(self[17]), ord(self[18])))
