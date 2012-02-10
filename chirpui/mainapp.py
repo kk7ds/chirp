@@ -151,7 +151,8 @@ class ChirpMain(gtk.Window):
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
-        for i in ["export", "import", "close", "columns", "rbook", "rfinder"]:
+        for i in ["export", "import", "close", "columns", "rbook", "rfinder",
+                  "stock"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
