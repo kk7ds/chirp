@@ -71,6 +71,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_implicit_calls = False
         rf.memory_bounds = (0, len(self.memories))
         rf.has_infinite_number = True
+        rf.has_nostep_tuning = True
 
         rf.valid_modes = list(chirp_common.MODES)
         rf.valid_tmodes = list(chirp_common.TONE_MODES)
