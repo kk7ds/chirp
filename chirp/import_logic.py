@@ -62,12 +62,6 @@ def ensure_has_calls(radio, memory):
 def _import_name(dst_radio, src_radio, mem):
     mem.name = dst_radio.filter_name(mem.name)
 
-# If the bank is out of range for the destination, revert to "no bank"
-def _import_bank(dst_radio, src_radio, mem):
-    nbanks = len(dst_radio.get_banks())
-    if mem.bank >= nbanks:
-        mem.bank = None
-
 def _import_power(dst_radio, src_radio, mem):
     levels = dst_radio.get_features().valid_power_levels
     if not levels:
@@ -119,7 +113,6 @@ def import_mem(dst_radio, src_radio, src_mem, overrides={}):
     dst_mem = src_mem.dupe()
 
     helpers = [_import_name,
-               _import_bank,
                _import_power,
                _import_tone,
                ]
@@ -138,3 +131,37 @@ def import_mem(dst_radio, src_radio, src_mem, overrides={}):
 
     return dst_mem
         
+def import_bank(dst_radio, src_radio, dst_mem, src_mem):
+    """Attempt to set the same banks for @mem(by index) in @dst_radio that
+    it has in @src_radio"""
+
+    dst_bm = dst_radio.get_bank_model()
+    if not dst_bm:
+        return
+
+    dst_banks = dst_bm.get_banks()
+
+    src_bm = src_radio.get_bank_model()
+    if not src_bm:
+        return
+
+    src_banks = src_bm.get_banks()
+    src_mem_banks = src_bm.get_memory_banks(src_mem)
+    src_indexes = [src_banks.index(b) for b in src_mem_banks]
+
+    for bank in dst_bm.get_memory_banks(dst_mem):
+        dst_bm.remove_memory_from_bank(dst_mem, bank)
+
+    for index in src_indexes:
+        try:
+            bank = dst_banks[index]
+            print "Adding memory to bank %s" % bank
+            dst_bm.add_memory_to_bank(dst_mem, bank)
+            if isinstance(dst_bm, chirp_common.BankIndexInterface):
+                dst_bm.set_memory_index(dst_mem, bank,
+                                        dst_bm.get_next_bank_index(bank))
+
+        except IndexError:
+            pass
+
+    

@@ -219,6 +219,10 @@ class TestCaseCopyAll(TestCase):
                                                   self._src,
                                                   src_mem,
                                                   overrides={"number":dst_number})
+                import_logic.import_bank(self._wrapper.get_radio(),
+                                         self._src,
+                                         dst_mem,
+                                         src_mem)
             except import_logic.DestNotCompatible:
                 continue
             except import_logic.ImportError, e:

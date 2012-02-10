@@ -56,6 +56,19 @@ class WaitWindow(gtk.Window):
 
         self.prog.set_fraction(fraction)
 
+class ImportMemoryBankJob(common.RadioJob):
+    def __init__(self, cb, dst_mem, src_radio, src_mem):
+        common.RadioJob.__init__(self, cb, None)
+        self.__dst_mem = dst_mem
+        self.__src_radio = src_radio
+        self.__src_mem = src_mem
+
+    def execute(self, radio):
+        import_logic.import_bank(radio, self.__src_radio,
+                                 self.__dst_mem, self.__src_mem)
+        if self.cb:
+            gobject.idle_add(self.cb, *self.cb_args)
+
 class ImportDialog(gtk.Dialog):
 
     def _check_for_dupe(self, location):
@@ -233,7 +246,7 @@ class ImportDialog(gtk.Dialog):
                 mem = import_logic.import_mem(self.dst_radio,
                                               self.src_radio,
                                               src,
-                                             {"number" : new})
+                                              {"number" : new})
             except import_logic.ImportError, e:
                 print e
                 error_messages[new] = str(e)
@@ -241,6 +254,10 @@ class ImportDialog(gtk.Dialog):
 
             job = common.RadioJob(None, "set_memory", mem)
             job.set_desc(_("Setting memory {number}").format(number=mem.number))
+            dst_rthread._qsubmit(job, 0)
+
+            job = ImportMemoryBankJob(None, mem, self.src_radio, src)
+            job.set_desc(_("Importing bank information"))
             dst_rthread._qsubmit(job, 0)
 
         if error_messages.keys():
