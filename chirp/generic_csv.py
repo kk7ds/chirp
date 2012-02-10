@@ -170,6 +170,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             good += 1
 
         if not good:
+            print self.errors
             raise errors.InvalidDataError("No channels found")
 
     def save_memory(self, writer, mem):

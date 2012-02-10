@@ -272,7 +272,7 @@ class Memory:
                   "Duplex", "Offset", "Tone",
                   "rToneFreq", "cToneFreq", "DtcsCode",
                   "DtcsPolarity", "Mode", "TStep",
-                  "Skip", "Bank", "Bank Index",
+                  "Skip",
                   "URCALL", "RPT1CALL", "RPT2CALL"]
 
     def __setattr__(self, name, val):
