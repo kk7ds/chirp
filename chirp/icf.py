@@ -380,6 +380,82 @@ def is_icf_file(filename):
 
     return bool(re.match("^[0-9]{8}#", data))
 
+class IcomBank(chirp_common.Bank):
+    # Integral index of the bank (not to be confused with per-memory
+    # bank indexes
+    index = 0
+
+class IcomBankModel(chirp_common.BankModel):
+    """Icom radios all have pretty much the same simple bank model. This
+    central implementation can, with a few icom-specific radio interfaces
+    serve most/all of them"""
+
+    def get_num_banks(self):
+        return self._radio._num_banks
+
+    def get_banks(self):
+        banks = []
+        
+        for i in range(0, self._radio._num_banks):
+            index = chr(ord("A") + i)
+            bank = self._radio._bank_class(self, index, "BANK-%s" % index)
+            bank.index = i
+            banks.append(bank)
+        return banks
+
+    def add_memory_to_bank(self, memory, bank):
+        self._radio._set_bank(memory.number, bank.index)
+
+    def remove_memory_from_bank(self, memory, bank):
+        if self._radio._get_bank(memory.number) != bank.index:
+            raise Exception("Memory %i not in bank %s. Cannot remove." % \
+                                (memory.number, bank))
+
+        self._radio._set_bank(memory.number, None)
+
+    def get_bank_memories(self, bank):
+        memories = []
+        for i in range(*self._radio.get_features().memory_bounds):
+            if self._radio._get_bank(i) == bank.index:
+                memories.append(self._radio.get_memory(i))
+        return memories
+
+    def get_memory_banks(self, memory):
+        index = self._radio._get_bank(memory.number)
+        if index is None:
+            return []
+        else:
+            return [self.get_banks()[index]]
+    
+class IcomIndexedBankModel(IcomBankModel, chirp_common.BankIndexInterface):
+    def get_index_bounds(self):
+        return self._radio._bank_index_bounds
+
+    def get_memory_index(self, memory, bank):
+        return self._radio._get_bank_index(memory.number)
+
+    def set_memory_index(self, memory, bank, index):
+        if bank not in self.get_memory_banks(memory):
+            raise Exception("Memory %i is not in bank %s" % (memory.number,
+                                                             bank))
+
+        if index not in range(*self._radio._bank_index_bounds):
+            raise Exception("Invalid index")
+        self._radio._set_bank_index(memory.number, index)
+
+    def get_next_bank_index(self, bank):
+        indexes = []
+        for i in range(*self._radio.get_features().memory_bounds):
+            if self._radio._get_bank(i) == bank.index:
+                indexes.append(self._radio._get_bank_index(i))
+                
+        for i in range(0, 256):
+            if i not in indexes:
+                return i
+
+        raise errors.RadioError("Out of slots in this bank")
+        
+
 class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
     BAUDRATE = 9600
@@ -387,6 +463,9 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _model = "\x00\x00\x00\x00"  # 4-byte model string
     _endframe = ""               # Model-unique ending frame
     _ranges = []                 # Ranges of the mmap to send to the radio
+    _num_banks = 10              # Most simple Icoms have 10 banks, A-J
+    _bank_index_bounds = (0, 99)
+    _bank_class = IcomBank
 
     def get_model(self):
         return self._model
@@ -403,6 +482,26 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         clone_to_radio(self)
+
+    def get_bank_model(self):
+        rf = self.get_features()
+        if rf.has_bank:
+            if rf.has_bank_index:
+                return IcomIndexedBankModel(self)
+            else:
+                return IcomBankModel(self)
+        else:
+            return None
+
+    # Icom-specific bank routines
+    def _get_bank(self, loc):
+        """Get the integral bank index of memory @loc, or None"""
+        raise Exception("Not implemented")
+
+    def _set_bank(self, loc, index):
+        """Set the integral bank index of memory @loc to @index, or
+        no bank if None"""
+        raise Exception("Not implemented")
 
 class IcomLiveRadio(chirp_common.LiveRadio):
     VENDOR = "Icom"
