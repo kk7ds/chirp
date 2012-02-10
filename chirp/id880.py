@@ -132,6 +132,15 @@ def encode_call(call):
 
     return "".join([chr(x) for x in buf[:7]])
 
+class ID880Bank(icf.IcomBank):
+    def get_name(self):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        return str(_bank.name).rstrip()
+
+    def set_name(self, name):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        _bank.name = name.ljust(6)[:6]
+
 class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "ID-880H"
@@ -144,9 +153,34 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                (0xF5c0, 0xf5e0, 16),
                (0xf5e0, 0xf600, 32)]
 
+    _num_banks = 26
+    _bank_class = ID880Bank
+
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 60)
     RPTCALL_LIMIT = (1, 99)
+
+    def _get_bank(self, loc):
+        _bank = self._memobj.bank_info[loc]
+        if _bank.bank == 0xFF:
+            return None
+        else:
+            return _bank.bank
+
+    def _set_bank(self, loc, bank):
+        _bank = self._memobj.bank_info[loc]
+        if bank is None:
+            _bank.bank = 0xFF
+        else:
+            _bank.bank = bank
+
+    def _get_bank_index(self, loc):
+        _bank = self._memobj.bank_info[loc]
+        return _bank.index
+        
+    def _set_bank_index(self, loc, index):
+        _bank = self._memobj.bank_info[loc]
+        _bank.index = index
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
@@ -154,7 +188,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.requires_call_lists = False
+        rf.has_bank = True
         rf.has_bank_index = True
+        rf.has_bank_names = True
         rf.valid_modes = [x for x in MODES if x is not None]
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
@@ -167,39 +203,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.memory_bounds = (0, 999)
         return rf
 
-    def get_available_bank_index(self, bank):
-        indexes = []
-        for i in range(0, 1000):
-            try:
-                mem = self.get_memory(i)
-            except:
-                continue
-            if mem.bank == bank and mem.bank_index >= 0:
-                indexes.append(mem.bank_index)
-
-        for i in range(0, 99):
-            if i not in indexes:
-                return i
-
-        raise errors.RadioError("Out of slots in this bank")
-
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-
-    def get_banks(self):
-        _banks = self._memobj.bank_names
-
-        banks = []
-        for i in range(0, 26):
-            banks.append(str(_banks[i].name).rstrip())
-
-        return banks
-
-    def set_banks(self, banks):
-        _banks = self._memobj.bank_names
-
-        for i in range(0, 26):
-            _banks[i].name = banks[i].ljust(6)[:6]
 
     def _get_freq(self, _mem):
         val = int(_mem.freq)
@@ -243,13 +248,6 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.number = number
 
         if number < 1000:
-            _bank = self._memobj.bank_info[number]
-            mem.bank = _bank.bank
-            mem.bank_index = _bank.index
-            if mem.bank == 0xFF:
-                mem.bank = None
-                mem.bank_index = -1
-
             _skip = self._memobj.skip_flags[bytepos]
             _pskip = self._memobj.pskip_flags[bytepos]
             if _skip & bitpos:
@@ -296,6 +294,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if mem.empty:
             _used |= bitpos
             self._wipe_memory(_mem, "\xFF")
+            self._set_bank(mem.number, None)
             return
 
         _used &= ~bitpos
@@ -325,14 +324,6 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.r2call = encode_call(mem.dv_rpt2call)
             
         if mem.number < 1000:
-            _bank = self._memobj.bank_info[mem.number]
-            if mem.bank:
-                _bank.bank = mem.bank
-                _bank.index = mem.bank_index
-            else:
-                _bank.bank = 0xFF
-                _bank.index = 0
-
             skip = self._memobj.skip_flags[bytepos]
             pskip = self._memobj.pskip_flags[bytepos]
             if mem.skip == "S":
