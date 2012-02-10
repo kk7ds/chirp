@@ -482,8 +482,7 @@ If you think that it is valid, you can select a radio model below to force an op
         if not self.copy_shipped_stock_configs(stock_dir):
             return
 
-        configs = glob(os.path.join(stock_dir, "*.csv"))
-        for config in configs:
+        def _do_import_action(config):
             name = os.path.splitext(os.path.basename(config))[0]
             action_name = "stock-%i" % configs.index(config)
             path = "/MenuBar/radio/stock"
@@ -498,6 +497,28 @@ If you think that it is valid, you can select a radio model below to force an op
                                        action_name, action_name,
                                        gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
+
+        def _do_open_action(config):
+            name = os.path.splitext(os.path.basename(config))[0]
+            action_name = "openstock-%i" % configs.index(config)
+            path = "/MenuBar/file/openstock"
+            action = gtk.Action(action_name,
+                                name,
+                                _("Open stock "
+                                  "configuration {name}").format(name=name),
+                                "")
+            action.connect("activate", lambda a,c: self.do_open(c), config)
+            mid = self.menu_uim.new_merge_id()
+            mid = self.menu_uim.add_ui(mid, path,
+                                       action_name, action_name,
+                                       gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_ag.add_action(action)
+            
+
+        configs = glob(os.path.join(stock_dir, "*.csv"))
+        for config in configs:
+            _do_import_action(config)
+            _do_open_action(config)
 
     def do_download(self, port=None, rtype=None):
         d = clone.CloneSettingsDialog(parent=self)
@@ -1000,6 +1021,7 @@ If you think that it is valid, you can select a radio model below to force an op
     <menu action="file">
       <menuitem action="new"/>
       <menuitem action="open"/>
+      <menu action="openstock" name="openstock"/>
       <menu action="recent" name="recent"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
@@ -1052,6 +1074,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('file', None, _("_File"), None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
+            ('openstock', None, _("Open stock config"), None, None, self.mh),
             ('recent', None, _("_Recent"), None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
