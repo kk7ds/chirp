@@ -51,6 +51,12 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     URCALL_LIMIT = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
+    def _get_bank(self, loc):
+        return icx8x_ll.get_bank(self._mmap, loc)
+
+    def _set_bank(self, loc, bank):
+        return icx8x_ll.set_bank(self._mmap, loc, bank)
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
@@ -136,17 +142,6 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_raw_memory(self, number):
         return icx8x_ll.get_raw_memory(self._mmap, number)
-
-    def get_banks(self):
-        banks = []
-
-        for i in range(0, 10):
-            banks.append(chirp_common.ImmutableBank(icx8x_ll.bank_name(i)))
-
-        return banks
-
-    def set_banks(self, banks):
-        raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_urcall_list(self):
         calls = []

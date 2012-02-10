@@ -385,7 +385,6 @@ def get_memory(_map, number, base):
 
     if number < 200:
         mem.skip = get_skip(_map, number)
-        mem.bank = get_bank(_map, number)
     else:
         mem.extd_number = ICx8x_SPECIAL_REV[number]
         mem.immutable = ["number", "skip", "bank", "bank_index", "extd_number"]
@@ -413,7 +412,6 @@ def set_memory(_map, memory, base):
     set_mode(mmap, memory.mode)
     if memory.number < 200:
         set_skip(_map, memory.number, memory.skip)
-        set_bank(_map, memory.number, memory.bank)
 
     if isinstance(memory, chirp_common.DVMemory):
         set_call_indices(_map,
