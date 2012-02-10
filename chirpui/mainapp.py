@@ -844,14 +844,15 @@ If you think that it is valid, you can select a radio model below to force an op
         vbox.pack_start(label)
 
         fields = []
-        unsupported = eset.memedit.get_unsupported_columns()
-        for colspec in eset.memedit.cols:
+        memedit = eset.editors["memedit"]
+        unsupported = memedit.get_unsupported_columns()
+        for colspec in memedit.cols:
             if colspec[0].startswith("_"):
                 continue
             elif colspec[0] in unsupported:
                 continue
             label = colspec[0]
-            visible = eset.memedit.get_column_visible(eset.memedit.col(label))
+            visible = memedit.get_column_visible(memedit.col(label))
             widget = gtk.CheckButton(label)
             widget.set_active(visible)
             fields.append(widget)
@@ -862,8 +863,8 @@ If you think that it is valid, you can select a radio model below to force an op
         selected_columns = []
         if res == gtk.RESPONSE_OK:
             for widget in fields:
-                colnum = eset.memedit.col(widget.get_label())
-                eset.memedit.set_column_visible(colnum, widget.get_active())
+                colnum = memedit.col(widget.get_label())
+                memedit.set_column_visible(colnum, widget.get_active())
                 if widget.get_active():
                     selected_columns.append(widget.get_label())
                                                 
@@ -873,7 +874,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_hide_unused(self, action):
         eset = self.get_current_editorset()
-        eset.memedit.set_hide_unused(action.get_active())
+        eset.editors["memedit"].set_hide_unused(action.get_active())
 
     def do_clearq(self):
         eset = self.get_current_editorset()
@@ -881,15 +882,15 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_copy(self, cut):
         eset = self.get_current_editorset()
-        eset.memedit.copy_selection(cut)
+        eset.editors["memedit"].copy_selection(cut)
 
     def do_paste(self):
         eset = self.get_current_editorset()
-        eset.memedit.paste_selection()
+        eset.editors["memedit"].paste_selection()
 
     def do_delete(self):
         eset = self.get_current_editorset()
-        eset.memedit.copy_selection(True)
+        eset.editors["memedit"].copy_selection(True)
 
     def do_toggle_report(self, action):
         if not action.get_active():
@@ -984,7 +985,7 @@ If you think that it is valid, you can select a radio model below to force an op
         elif action in ["cut", "copy", "paste", "delete",
                         "move_up", "move_dn", "exchange",
                         "devshowraw", "devdiffraw"]:
-            self.get_current_editorset().memedit.hotkey(_action)
+            self.get_current_editorset().editors["memedit"].hotkey(_action)
         elif action == "language":
             self.do_change_language()
         else:
@@ -1161,7 +1162,7 @@ If you think that it is valid, you can select a radio model below to force an op
     def setup_extra_hotkeys(self):
         accelg = self.menu_uim.get_accel_group()
 
-        memedit = lambda a: self.get_current_editorset().memedit.hotkey(a)
+        memedit = lambda a: self.get_current_editorset().editors["memedit"].hotkey(a)
 
         actions = [
             # ("action_name", "key", function)
