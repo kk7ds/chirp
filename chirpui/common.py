@@ -53,6 +53,7 @@ class RadioJob:
         self.args = args
         self.kwargs = kwargs
         self.desc = "Working"
+        self.target = None
 
     def __str__(self):
         return "RadioJob(%s,%s,%s)" % (self.func, self.args, self.kwargs)
@@ -63,13 +64,10 @@ class RadioJob:
     def set_cb_args(self, *args):
         self.cb_args = args
 
-    def execute(self, radio):
-        try:
-            func = getattr(radio, self.func)
-        except AttributeError, e:
-            print "No such radio function `%s'" % self.func
-            return
+    def set_target(self, target):
+        self.target = target
 
+    def _execute(self, target, func):
         try:
             DBG("Running %s (%s %s)" % (self.func,
                                         str(self.args),
@@ -88,6 +86,18 @@ class RadioJob:
 
         if self.cb:
             gobject.idle_add(self.cb, result, *self.cb_args)
+
+    def execute(self, radio):
+        if not self.target:
+            self.target = radio
+
+        try:
+            func = getattr(self.target, self.func)
+        except AttributeError, e:
+            print "No such radio function `%s'" % self.func
+            return
+
+        self._execute(self.target, func)
 
 class RadioThread(threading.Thread, gobject.GObject):
     __gsignals__ = {
