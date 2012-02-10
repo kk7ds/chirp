@@ -70,6 +70,15 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Mid", watts=1.0),
                 ]
 
+class ICT70Bank(icf.IcomBank):
+    def get_name(self):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        return str(_bank.name).rstrip()
+
+    def set_name(self, name):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        _bank.name = name.ljust(8)[:8]
+
 class ICT70Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-T70"
@@ -80,6 +89,31 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
     _ranges = [(0x0000, 0x19E0, 32)]
 
+    _num_banks = 26
+    _bank_class = ICT70Bank
+    
+    def _get_bank(self, loc):
+        _bank = self._memobj.banks[loc]
+        if _bank.bank != 0xFF:
+            return _bank.bank
+        else:
+            return None
+
+    def _set_bank(self, loc, bank):
+        _bank = self._memobj.banks[loc]
+        if bank is None:
+            _bank.bank = 0xFF
+        else:
+            _bank.bank = bank
+
+    def _get_bank_index(self, loc):
+        _bank = self._memobj.banks[loc]
+        return _bank.index
+
+    def _set_bank_index(self, loc, index):
+        _bank = self._memobj.banks[loc]
+        _bank.index = index
+   
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 299)
@@ -92,35 +126,13 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         rf.valid_tuning_steps = TUNING_STEPS
         rf.valid_name_length = 6
         rf.has_ctone = True
+        rf.has_bank = True
         rf.has_bank_index = True
+        rf.has_bank_names = True
         return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
-
-    def get_banks(self):
-        banks = []
-        for i in range(0, 26):
-            name = str(self._memobj.bank_names[i].name)
-            banks.append(name.rstrip())
-        return banks
-
-    def set_banks(self, banks):
-        for i in range(0, 26):
-            self._memobj.bank_names[i].name = banks[i].upper().ljust(6)[:6]
-
-    def get_available_bank_index(self, bank):
-        indexes = []
-        for i in range(0, 299):
-            m = self.get_memory(i)
-            if m.bank == bank and m.bank_index >= 0:
-                indexes.append(m.bank_index)
-
-        for i in range(0, 256):
-            if i not in indexes:
-                return i
-
-        raise errors.RadioError("Out of slots in this bank")
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
@@ -131,7 +143,6 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
         _mem = self._memobj.memory[number]
         _usd = self._memobj.used[byte]
-        _bnk = self._memobj.banks[number]
         _skp = self._memobj.skips[byte]
         _psk = self._memobj.pskips[byte]
 
@@ -157,11 +168,6 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         mem.power = POWER_LEVELS[_mem.power]
         mem.dtcs_polarity = DTCS_POLARITY[_mem.dtcs_polarity]
         mem.tmode = TMODES[_mem.tmode]
-
-        if _bnk.bank != 0xFF:
-            mem.bank = _bnk.bank
-            mem.bank_index = _bnk.index
-
         mem.skip = (_psk & bit and "P") or (_skp & bit and "S") or ""
         
         return mem
@@ -172,7 +178,6 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
         _mem = self._memobj.memory[mem.number]
         _usd = self._memobj.used[byte]
-        _bnk = self._memobj.banks[mem.number]
         _skp = self._memobj.skips[byte]
         _psk = self._memobj.pskips[byte]
 
@@ -202,13 +207,6 @@ class ICT70Radio(icf.IcomCloneModeRadio):
             _mem.power = POWER_LEVELS.index(mem.power)
         else:
             _mem.power = 0
-
-        if mem.bank is None:
-            _bnk.bank = 0xFF
-            _bnk.index = 0xFF
-        else:
-            _bnk.bank = mem.bank
-            _bnk.index = mem.bank_index
 
         if mem.skip == "S":
             _skp |= bit
