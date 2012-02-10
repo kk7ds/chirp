@@ -507,6 +507,20 @@ class IcomLiveRadio(chirp_common.LiveRadio):
     VENDOR = "Icom"
     BAUD_RATE = 38400
 
+    _num_banks = 26              # Most live Icoms have 26 banks, A-Z
+    _bank_index_bounds = (0, 99)
+    _bank_class = IcomBank
+
+    def get_bank_model(self):
+        rf = self.get_features()
+        if rf.has_bank:
+            if rf.has_bank_index:
+                return IcomIndexedBankModel(self)
+            else:
+                return IcomBankModel(self)
+        else:
+            return None
+
 if __name__ == "__main__":
     import sys
 

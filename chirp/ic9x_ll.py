@@ -42,6 +42,18 @@ for __idx, __val in TUNING_STEPS.items():
 MEM_LEN = 34
 DV_MEM_LEN = 60
 
+# Dirty hack until I clean up this IC9x mess
+class IC9xMemory(chirp_common.Memory):
+    _bank = None
+    _bank_index = 0
+    def __init__(self):
+        chirp_common.Memory.__init__(self)
+class IC9xDVMemory(chirp_common.DVMemory):
+    _bank = None
+    _bank_index = 0
+    def __init__(self):
+        chirp_common.DVMemory.__init__(self)
+
 def _ic9x_parse_frames(buf):
     frames = []
 
@@ -381,15 +393,15 @@ class IC92MemoryFrame(IC92Frame):
             return ""
 
     def _encode_bank(self, mem):
-        if mem.bank is None:
+        if mem._bank is None:
             self[24] = 0
         else:
-            self[24] = chr(mem.bank + ord("A"))
+            self[24] = chr(mem._bank + ord("A"))
 
-        if mem.bank_index == -1:
+        if mem._bank_index == -1:
             self[25] = util.bcd_encode(0)
         else:
-            self[25] = util.bcd_encode(mem.bank_index)
+            self[25] = util.bcd_encode(mem._bank_index)
 
     def _decode_bank(self):
         if ord(self[24]) == 0 or self.get_iscall():
@@ -460,9 +472,9 @@ class IC92MemoryFrame(IC92Frame):
 
     def get_memory(self):
         if self._decode_mode() == "DV":
-            mem = chirp_common.DVMemory()
+            mem = IC9xDVMemory()
         else:
-            mem = chirp_common.Memory()
+            mem = IC9xMemory()
 
         mem.number = int("%02x" % struct.unpack(">H", self[1:3])[0])
 
@@ -480,7 +492,7 @@ class IC92MemoryFrame(IC92Frame):
         mem.duplex, mem.tmode = self._decode_duptone()
         mem.dtcs_polarity = self._decode_dtcs_polarity()
         mem.skip = self._decode_skip()
-        mem.bank, mem.bank_index = self._decode_bank()
+        mem._bank, mem._bank_index = self._decode_bank()
 
         if mem.mode == "DV":
             mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call = \
@@ -623,8 +635,7 @@ def get_banks(pipe, vfo):
         bframe = IC92BankFrame()
         bframe.from_frame(rframes[i])
 
-        bank = chirp_common.Bank(bframe.get_name())
-        banks.append(bank)
+        banks.append(bframe.get_name().rstrip())
     
     return banks
 

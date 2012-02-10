@@ -60,6 +60,16 @@ CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
 
 LOCK = threading.Lock()
 
+class IC9xBank(icf.IcomBank):
+    def get_name(self):
+        banks = self._model._radio._ic9x_get_banks()
+        return banks[self.index]
+
+    def set_name(self, name):
+        banks = self._model._radio._ic9x_get_banks()
+        banks[self.index] = name
+        self._model._radio._ic9x_set_banks(banks)
+
 class IC9xRadio(icf.IcomLiveRadio):
     MODEL = "IC-91/92AD"
 
@@ -67,6 +77,27 @@ class IC9xRadio(icf.IcomLiveRadio):
     vfo = 0
     __last = 0
     _upper = 300
+
+    _num_banks = 26
+    _bank_class = IC9xBank
+
+    def _get_bank(self, loc):
+        mem = self.get_memory(loc)
+        return mem._bank
+
+    def _set_bank(self, loc, bank):
+        mem = self.get_memory(loc)
+        mem._bank = bank
+        self.set_memory(mem)
+
+    def _get_bank_index(self, loc):
+        mem = self.get_memory(loc)
+        return mem._bank_index
+
+    def _set_bank_index(self, loc, index):
+        mem = self.get_memory(loc)
+        mem._bank_index = index
+        self.set_memory(mem)
 
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
@@ -178,10 +209,10 @@ class IC9xRadio(icf.IcomLiveRadio):
         self._lock.acquire()
         self._maybe_send_magic()
         try:
-           if memory.empty:
-               ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
-           else:
-               ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+            if memory.empty:
+                ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
+            else:
+                ic9x_ll.set_memory(self.pipe, self.vfo, memory)
         except:
             self._lock.release()
             raise
@@ -190,7 +221,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         self.__memcache[memory.number] = memory
 
-    def get_banks(self):
+    def _ic9x_get_banks(self):
         if len(self.__bankcache.keys()) == 26:
             return [self.__bankcache[k] for k in sorted(self.__bankcache.keys())]
 
@@ -211,7 +242,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         return banks
         
-    def set_banks(self, banks):
+    def _ic9x_set_banks(self, banks):
 
         if len(banks) != len(self.__bankcache.keys()):
             raise errors.InvalidDataError("Invalid bank list length (%i:%i)" %\
@@ -256,7 +287,9 @@ class IC9xRadioA(IC9xRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_bank = True
         rf.has_bank_index = True
+        rf.has_bank_names = True
         rf.memory_bounds = (0, self._upper)
         rf.valid_modes = ["FM", "WFM", "AM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
@@ -279,7 +312,9 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_bank = True
         rf.has_bank_index = True
+        rf.has_bank_names = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, self._upper)
         rf.valid_modes = ["FM", "NFM", "AM", "DV"]
