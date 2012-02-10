@@ -16,6 +16,8 @@
 import os
 import tempfile
 import urllib
+from glob import glob
+import shutil
 
 import gtk
 import gobject
@@ -445,6 +447,57 @@ If you think that it is valid, you can select a radio model below to force an op
             self._set_recent_list(recent_files)
 
         self.update_recent_files()
+
+    def import_stock_config(self, action, config):
+        eset = self.get_current_editorset()
+        count = eset.do_import(config)
+
+    def copy_shipped_stock_configs(self, stock_dir):
+        execpath = platform.get_platform().executable_path()
+        basepath = os.path.abspath(os.path.join(execpath, "stock_configs"))
+        if not os.path.exists(basepath):
+            basepath = "/usr/share/chirp/stock_configs"
+
+        files = glob(os.path.join(basepath, "*.csv"))
+        for fn in files:
+            if os.path.exists(os.path.join(stock_dir, os.path.basename(fn))):
+                print "Skipping existing stock config"
+                continue
+            try:
+                shutil.copy(fn, stock_dir)
+                print "Copying %s -> %s" % (fn, stock_dir)
+            except Exception, e:
+                print "ERROR: Unable to copy %s to %s: %s" % (fn, stock_dir, e)
+                return False
+        return True
+
+    def update_stock_configs(self):
+        stock_dir = platform.get_platform().config_file("stock_configs")
+        if not os.path.isdir(stock_dir):
+            try:
+                os.mkdir(stock_dir)
+            except Exception, e:
+                print "ERROR: Unable to create directory: %s" % stock_dir
+                return
+        if not self.copy_shipped_stock_configs(stock_dir):
+            return
+
+        configs = glob(os.path.join(stock_dir, "*.csv"))
+        for config in configs:
+            name = os.path.splitext(os.path.basename(config))[0]
+            action_name = "stock-%i" % configs.index(config)
+            path = "/MenuBar/radio/stock"
+            action = gtk.Action(action_name,
+                                name,
+                                _("Import stock "
+                                  "configuration {name}").format(name=name),
+                                "")
+            action.connect("activate", self.import_stock_config, config)
+            mid = self.menu_uim.new_merge_id()
+            mid = self.menu_uim.add_ui(mid, path,
+                                       action_name, action_name,
+                                       gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_ag.add_action(action)
 
     def do_download(self, port=None, rtype=None):
         d = clone.CloneSettingsDialog(parent=self)
@@ -980,6 +1033,7 @@ If you think that it is valid, you can select a radio model below to force an op
       <menuitem action="upload"/>
       <menuitem action="rbook"/>
       <menuitem action="rfinder"/>
+      <menu action="stock" name="stock"/>
       <separator/>
       <menuitem action="autorpt"/>
       <separator/>
@@ -1025,6 +1079,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
             ('rbook', None, _("Import from RepeaterBook"), None, None, self.mh),
+            ('stock', None, _("Import from stock config"), None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
@@ -1184,4 +1239,5 @@ If you think that it is valid, you can select a radio model below to force an op
             CONF.set_bool("autorpt", True, "memedit")
 
         self.update_recent_files()
+        self.update_stock_configs()
         self.setup_extra_hotkeys()
