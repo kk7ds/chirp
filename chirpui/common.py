@@ -94,7 +94,8 @@ class RadioJob:
         try:
             func = getattr(self.target, self.func)
         except AttributeError, e:
-            print "No such radio function `%s'" % self.func
+            print "No such radio function `%s' in %s" % (self.func,
+                                                         self.target)
             return
 
         self._execute(self.target, func)

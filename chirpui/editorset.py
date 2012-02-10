@@ -59,43 +59,57 @@ class EditorSet(gtk.VBox):
         self.tabs.connect("switch-page", self.tab_selected)
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
+        self.editors = {
+            "memedit"      : None,
+            "dstar"        : None,
+            "bank_names"   : None,
+            "bank_members" : None,
+            }
+
         if isinstance(self.radio, chirp_common.IcomDstarSupport):
-            self.memedit = memedit.DstarMemoryEditor(self.rthread)
-            self.dstared = dstaredit.DStarEditor(self.rthread)
+            self.editors["memedit"] = memedit.DstarMemoryEditor(self.rthread)
+            self.editors["dstar"] = dstaredit.DStarEditor(self.rthread)
         else:
-            print "Starting memedit"
-            self.memedit = memedit.MemoryEditor(self.rthread)
-            print "Started"
-            self.dstared = None
+            self.editors["memedit"] = memedit.MemoryEditor(self.rthread)
 
-        self.memedit.connect("usermsg", lambda e, m: self.emit("usermsg", m))
+        self.editors["memedit"].connect("usermsg",
+                                        lambda e, m: self.emit("usermsg", m))
 
-        if self.radio.get_features().has_bank_index:
-            self.banked = bankedit.BankEditor(self.rthread)
-        else:
-            self.banked = None
+        rf = self.radio.get_features()
+
+        if rf.has_bank:
+            self.editors["bank_members"] = \
+                bankedit.BankMembershipEditor(self.rthread)
+        
+        if rf.has_bank_names:
+            self.editors["bank_names"] = bankedit.BankNameEditor(self.rthread)
 
         lab = gtk.Label(_("Memories"))
-        self.tabs.append_page(self.memedit.root, lab)
-        self.memedit.root.show()
+        self.tabs.append_page(self.editors["memedit"].root, lab)
+        self.editors["memedit"].root.show()
 
-        if self.dstared:
+        if self.editors["dstar"]:
             lab = gtk.Label(_("D-STAR"))
-            self.tabs.append_page(self.dstared.root, lab)
-            self.dstared.root.show()
-            self.dstared.connect("changed", self.dstar_changed)
+            self.tabs.append_page(self.editors["dstar"].root, lab)
+            self.editors["dstar"].root.show()
+            self.editors["dstar"].connect("changed", self.dstar_changed)
 
-        if self.banked:
+        if self.editors["bank_names"]:
+            lab = gtk.Label(_("Bank Names"))
+            self.tabs.append_page(self.editors["bank_names"].root, lab)
+            self.editors["bank_names"].root.show()
+            self.editors["bank_names"].connect("changed", self.banks_changed)
+
+        if self.editors["bank_members"]:
             lab = gtk.Label(_("Banks"))
-            self.tabs.append_page(self.banked.root, lab)
-            self.banked.root.show()
-            self.banked.connect("changed", self.banks_changed)
+            self.tabs.append_page(self.editors["bank_members"].root, lab)
+            self.editors["bank_members"].root.show()
 
         self.pack_start(self.tabs)
         self.tabs.show()
 
         # pylint: disable-msg=E1101
-        self.memedit.connect("changed", self.editor_changed)
+        self.editors["memedit"].connect("changed", self.editor_changed)
 
         self.label = self.text_label = None
         self.make_label()
@@ -145,16 +159,17 @@ class EditorSet(gtk.VBox):
 
     def dstar_changed(self, *args):
         print "D-STAR editor changed"
-        self.memedit.set_urcall_list(self.dstared.editor_ucall.get_callsigns())
-        self.memedit.set_repeater_list(self.dstared.editor_rcall.get_callsigns())
-        self.memedit.prefill()
+        memedit = self.editors["memedit"]
+        dstared = self.editors["dstar"]
+        memedit.set_urcall_list(dstared.editor_ucall.get_callsigns())
+        memedit.set_repeater_list(dstared.editor_rcall.get_callsigns())
+        memedit.prefill()
         self.modified = True
         self.update_tab()
 
     def banks_changed(self, *args):
         print "Banks changed"
-        self.memedit.set_bank_list(self.banked.get_bank_list())
-        self.memedit.prefill()
+        self.editors["bank_members"].banks_changed()
         self.modified = True
         self.update_tab()
 
@@ -162,6 +177,8 @@ class EditorSet(gtk.VBox):
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
+        if self.editors["bank_members"]:
+            self.editors["bank_members"].memories_changed()
 
     def get_tab_label(self):
         return self.label
@@ -190,7 +207,7 @@ class EditorSet(gtk.VBox):
         print "Imported %i" % count
         if count > 0:
             self.editor_changed()
-            gobject.idle_add(self.memedit.prefill)
+            gobject.idle_add(self.editors["memedit"].prefill)
 
         dst_rthread._qunlock()
 
@@ -289,23 +306,22 @@ class EditorSet(gtk.VBox):
         mem.freq = 146010000
 
         def cb(*args):
-            gobject.idle_add(self.memedit.prefill)
+            gobject.idle_add(self.editors["memedit"].prefill)
 
         job = common.RadioJob(cb, "set_memory", mem)
         job.set_desc(_("Priming memory"))
         self.rthread.submit(job)
 
     def tab_selected(self, notebook, foo, pagenum):
-        pages = ["memory", "dstar", "banks"]
-
-        # Quick hack for D-STAR editor
-        if pagenum == 1:
-            self.dstared.focus()
-
-        self.emit("editor-selected", pages[pagenum])
+        widget = notebook.get_nth_page(pagenum)
+        for k,v in self.editors.items():
+            if v and v.root == widget:
+                v.focus()
+                self.emit("editor-selected", k)
+                break
 
     def set_read_only(self, read_only=True):
-        self.memedit.set_read_only(read_only)
+        self.editors["memedit"].set_read_only(read_only)
 
     def prepare_close(self):
-        self.memedit.prepare_close()
+        self.editors["memedit"].prepare_close()

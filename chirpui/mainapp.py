@@ -162,7 +162,7 @@ class ChirpMain(gtk.Window):
 
     def ev_editor_selected(self, editorset, editortype):
         mappings = {
-            "memory" : ["view", "edit"],
+            "memedit" : ["view", "edit"],
             }
 
         for _editortype, actions in mappings.items():

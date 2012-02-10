@@ -114,8 +114,6 @@ class MemoryEditor(common.Editor):
         (_("Power")     , TYPE_STRING,  gtk.CellRendererCombo, ),
         (_("Tune Step") , TYPE_FLOAT,   gtk.CellRendererCombo, ),
         (_("Skip")      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Bank")      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Bank Index"), TYPE_INT,     gtk.CellRendererText,  ),
         ("_filled"      , TYPE_BOOLEAN, None,                  ),
         ("_hide_cols"   , TYPE_PYOBJECT,None,                  ),
         ("_extd"        , TYPE_STRING,  None,                  ),
@@ -136,8 +134,6 @@ class MemoryEditor(common.Editor):
         _("Tune Step") : 5.0,
         _("Tone Mode") : "",
         _("Skip")      : "",
-        _("Bank")      : "",
-        _("Bank Index"): 0,
         }
 
     choices = {
@@ -241,10 +237,9 @@ class MemoryEditor(common.Editor):
         return new
 
     def _get_cols_to_hide(self, iter):
-        tmode, duplex, bank = self.store.get(iter,
-                                             self.col(_("Tone Mode")),
-                                             self.col(_("Duplex")),
-                                             self.col(_("Bank")))
+        tmode, duplex = self.store.get(iter,
+                                       self.col(_("Tone Mode")),
+                                       self.col(_("Duplex")))
 
         hide = []
 
@@ -266,9 +261,6 @@ class MemoryEditor(common.Editor):
 
         if duplex == "" or duplex == "(None)":
             hide += [self.col(_("Offset"))]
-
-        if bank == "":
-            hide += [self.col(_("Bank Index"))]
 
         return hide
 
@@ -923,18 +915,6 @@ class MemoryEditor(common.Editor):
                 self.rthread.submit(job, 2)
 
     def _set_memory(self, iter, memory):
-        try:
-            if memory.bank is None:
-                bank = ""
-            else:
-                pathstr = "%i" % (memory.bank + 1)
-                bi = self.choices[_("Bank")].get_iter_from_string(pathstr)
-                bank, = self.choices[_("Bank")].get(bi, 1)
-        except Exception, e:
-            common.log_exception()
-            print "Unable to get bank: %s" % e
-            bank = ""
-
         self.store.set(iter,
                        self.col("_filled"), not memory.empty,
                        self.col(_("Loc")), memory.number,
@@ -952,9 +932,7 @@ class MemoryEditor(common.Editor):
                        self.col(_("Mode")), memory.mode,
                        self.col(_("Power")), memory.power or "",
                        self.col(_("Tune Step")), memory.tuning_step,
-                       self.col(_("Skip")), memory.skip,
-                       self.col(_("Bank")), bank,
-                       self.col(_("Bank Index")), memory.bank_index)
+                       self.col(_("Skip")), memory.skip)
 
         hide = self._get_cols_to_hide(iter)
         self.store.set(iter, self.col("_hide_cols"), hide)
@@ -987,34 +965,6 @@ class MemoryEditor(common.Editor):
             iter = self.store.iter_next(iter)
 
     def _set_mem_vals(self, mem, vals, iter):
-        def get_bank_index(name):
-            bidx = 0
-            banks = self.choices[_("Bank")]
-            iter = banks.get_iter_first()
-            iter = banks.iter_next(iter)
-            while iter:
-                _bank, = banks.get(iter, 1)
-                if name == _bank:
-                    break
-                iter = banks.iter_next(iter)
-                bidx += 1
-
-            return bidx
-
-        bank = vals[self.col(_("Bank"))]
-        if bank is "":
-            bidx = None
-            bank_index = vals[self.col(_("Bank Index"))]
-        else:
-            bidx = get_bank_index(bank)
-            if vals[self.col(_("Bank Index"))] == -1 and \
-                    self._features.has_bank_index:
-                bank_index = self.rthread.radio.get_available_bank_index(bidx)
-                print "Chose %i index for bank %s" % (bank_index, bank)
-                self.store.set(iter, self.col(_("Bank Index")), bank_index)
-            else:
-                bank_index = vals[self.col(_("Bank Index"))]
-
         power_levels = {"" : None}
         for i in self._features.valid_power_levels:
             power_levels[str(i)] = i
@@ -1036,8 +986,6 @@ class MemoryEditor(common.Editor):
         mem.power = power_levels[vals[self.col(_("Power"))]]
         mem.tuning_step = vals[self.col(_("Tune Step"))]
         mem.skip = vals[self.col(_("Skip"))]
-        mem.bank = bidx
-        mem.bank_index = bank_index
         mem.empty = not vals[self.col("_filled")]
 
     def _get_memory(self, iter):
@@ -1127,16 +1075,6 @@ class MemoryEditor(common.Editor):
 
         return hbox
 
-    def set_bank_list(self, banks):
-        self.choices[_("Bank")].clear()
-        self.choices[_("Bank")].append(("", "(None)"))
-
-        i = ord("A")
-        for bank in banks:
-            self.choices[_("Bank")].append((str(bank),
-                                            ("%s-%s" % (chr(i), str(bank)))))
-            i += 1
-        
     def set_show_special(self, show):
         self.show_special = show
         self.prefill()
@@ -1166,8 +1104,6 @@ class MemoryEditor(common.Editor):
 
     def get_unsupported_columns(self):
         maybe_hide = [
-            ("has_bank_index", _("Bank Index")),
-            ("has_bank", _("Bank")),
             ("has_dtcs", _("DTCS Code")),
             ("has_dtcs_polarity", _("DTCS Pol")),
             ("has_mode", _("Mode")),
@@ -1240,7 +1176,6 @@ class MemoryEditor(common.Editor):
 
         (min, max) = self._features.memory_bounds
 
-        self.choices[_("Bank")] = gtk.ListStore(TYPE_STRING, TYPE_STRING)
         self.choices[_("Mode")] = self._features["valid_modes"]
         self.choices[_("Tone Mode")] = self._features["valid_tmodes"]
         self.choices[_("Cross Mode")] = self._features["valid_cross_modes"]
@@ -1250,10 +1185,6 @@ class MemoryEditor(common.Editor):
 
         if self._features["valid_power_levels"]:
             self.defaults[_("Power")] = self._features["valid_power_levels"][0]
-
-        job = common.RadioJob(self.set_bank_list, "get_banks")
-        job.set_desc(_("Getting bank list"))
-        rthread.submit(job)
 
         if not self._features["can_odd_split"]:
             # We need a new list, so .remove() won't work for us
@@ -1362,9 +1293,6 @@ class MemoryEditor(common.Editor):
                     continue
 
             mem.name = self.rthread.radio.filter_name(mem.name)
-            if not self._features.has_bank:
-                mem.bank = None
-                mem.bank_index = -1
 
             src_number = mem.number
             mem.number = loc
