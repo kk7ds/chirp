@@ -82,6 +82,91 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
+class VX8Bank(chirp_common.NamedBank):
+    def get_name(self):
+        _bank = self._model._radio._memobj.bank_info[self.index]
+        _bank_used = self._model._radio._memobj.bank_used[self.index]
+                      
+        name = ""
+        for i in _bank.name:
+            if i == 0xFF:
+                break
+            name += CHARSET[i & 0x7F]
+        return name.rstrip()
+
+    def set_name(self, name):
+        _bank = self._model._radio._memobj.bank_info[self.index]
+        _bank.name = [CHARSET.index(x) for x in name.ljust(16)[:16]]
+
+class VX8BankModel(chirp_common.BankModel):
+    def get_num_banks(self):
+        return 24
+
+    def get_banks(self):
+        banks = []
+        _banks = self._radio._memobj.bank_info
+
+        index = 0
+        for _bank in _banks:
+            bank = VX8Bank(self, "%i" % index, "BANK-%i" % index)
+            bank.index = index
+            banks.append(bank)
+            index += 1
+
+        return banks
+
+    def add_memory_to_bank(self, memory, bank):
+        _members = self._radio._memobj.bank_members[bank.index]
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        for i in range(0, 100):
+            if _members.channel[i] == 0xFFFF:
+                _members.channel[i] = memory.number - 1
+                _bank_used.in_use = 0x06
+                break
+
+    def remove_memory_from_bank(self, memory, bank):
+        _members = self._radio._memobj.bank_members[bank.index]
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+
+        remaining_members = 0
+        found = False
+        for i in range(0, len(_members.channel)):
+            if _members.channel[i] == (memory.number - 1):
+                _members.channel[i] = 0xFFFF
+                found = True
+            elif _members.channel[i] != 0xFFFF:
+                remaining_members += 1
+
+        if not found:
+            raise Exception("Memory %i is not in bank %s. Cannot remove" % \
+                                (memory.number, bank))
+
+        if not remaining_members:
+            _bank_used.in_use = 0xFFFF
+
+    def get_bank_memories(self, bank):
+        memories = []
+        _members = self._radio._memobj.bank_members[bank.index]
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+
+        if _bank_used.in_use == 0xFFFF:
+            return memories
+
+        for channel in _members.channel:
+            if channel != 0xFFFF:
+                memories.append(self._radio.get_memory(int(channel)+1))
+
+        return memories
+
+    def get_memory_banks(self, memory):
+        banks = []
+        for bank in self.get_banks():
+            if memory.number in \
+                    [x.number for x in self.get_bank_memories(bank)]:
+                banks.append(bank)
+
+        return banks
+
 class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
@@ -98,7 +183,6 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank = False
         rf.has_dtcs_polarity = False
         rf.valid_modes = list(MODES)
         rf.valid_tmodes = list(TMODES)
@@ -112,6 +196,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
         rf.has_ctone = False
+        rf.has_bank_names = True
         return rf
 
     def get_raw_memory(self, number):
@@ -191,30 +276,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         skipbits = SKIPS.index(mem.skip) << 2
         flag.flag |= skipbits
 
-    def get_banks(self):
-        _banks = self._memobj.bank_info
-
-        banks = []
-        for _bank in _banks:
-            name = ""
-            for i in _bank.name:
-                if i == 0xFF:
-                    break
-                name += CHARSET[i & 0x7F]
-            banks.append(name.rstrip())
-
-        return banks
-
-    # Return channels for a bank. Bank given as number
-    def get_bank_channels(self, bank):
-        _members = self._memobj.bank_members[bank]
-        channels = []
-        for channel in _members.channel:
-            if channel == 0xffff:
-                break
-            channels.append(int(channel))
-
-        return channels
+    def get_bank_model(self):
+        return VX8BankModel(self)
 
 class VX8DRadio(VX8Radio):
     _model = "AH29D"
