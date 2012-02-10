@@ -213,9 +213,6 @@ class Memory:
     mode = "FM"
     tuning_step = 5.0
 
-    bank = None
-    bank_index = -1
-
     comment = ""
 
     empty = False
@@ -241,9 +238,6 @@ class Memory:
         self.mode = "FM"                  
         self.tuning_step = 5.0            
                                           
-        self.bank = None                  
-        self.bank_index = -1              
-                                          
         self.comment = ""
 
         self.empty = False                
@@ -260,7 +254,6 @@ class Memory:
         "mode"          : MODES,
         "duplex"        : ["", "+", "-", "split"],
         "skip"          : SKIP_VALUES,
-        "bank"          : [x for x in range(0, 256)] + [None],
         "empty"         : [True, False],
         "dv_code"       : [x for x in range(0, 100)],
         }
@@ -324,12 +317,7 @@ class Memory:
         else:
             dup = self.duplex
 
-        if self.bank_index == -1:
-            bindex = ""
-        else:
-            bindex = ":%i" % self.bank_index
-
-        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f] %s" % \
+        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f]"% \
             (self.number,
              format_freq(self.freq),
              dup,
@@ -343,8 +331,7 @@ class Memory:
              self.dtcs,
              dtcs,
              self.dtcs_polarity,
-             self.tuning_step,
-             self.bank and "(%s%s)" % (self.bank, bindex) or "")
+             self.tuning_step)
 
     def to_csv(self):
         return [
@@ -361,8 +348,6 @@ class Memory:
             "%s"   % self.mode,
             "%.2f" % self.tuning_step,
             "%s"   % self.skip,
-            "%s"   % (self.bank and int(self.bank) or ""),
-            "%i"   % self.bank_index,
             "", "", "", ""]
 
     class Callable:
@@ -457,25 +442,6 @@ class Memory:
         except:
             raise errors.InvalidDataError("Skip value is not valid")
 
-        try:
-            if not vals[13]:
-                self.bank = None
-            else:
-                ind = ord(vals[13][0])
-                if ind >= ord("A") and ind <= ord("Z"):
-                    self.bank = ind - ord("A")
-                elif ind >= ord("a") and ind <= ord("z"):
-                    self.bank = ind - ord("a")
-                else:
-                    raise Exception()
-        except:
-            raise errors.InvalidDataError("Bank value is not valid")
-
-        try:
-            self.bank_index = int(vals[14])
-        except:
-            raise errors.InvalidDataError("Bank Index value is not valid")
-
         return True
 
 class DVMemory(Memory):
@@ -508,8 +474,6 @@ class DVMemory(Memory):
             "%s"   % self.mode,
             "%.2f" % self.tuning_step,
             "%s"   % self.skip,
-            "%s"   % (self.bank and int(self.bank) or ""),
-            "%i"   % self.bank_index,
             "%s"   % self.dv_urcall,
             "%s"   % self.dv_rpt1call,
             "%s"   % self.dv_rpt2call,
@@ -527,18 +491,86 @@ class DVMemory(Memory):
             self.dv_code = 0
 
 class Bank:
-    def __init__(self, name):
-        self.__dict__["name"] = name
+    def __init__(self, model, index, name):
+        self._model = model
+        self._index = index
+        self._name = name
 
     def __str__(self):
-        return self.name
+        return self.get_name()
 
-class ImmutableBank(Bank):
-    def __setattr__(self, name, val):
-        if not hasattr(self, name):
-            raise ValueError("No such attribute `%s'" % name)
-        else:
-            raise ValueError("Property is immutable")    
+    def __repr__(self):
+        return "Bank-%s" % self._index
+
+    def get_name(self):
+        """Returns the static or user-adjustable bank name"""
+        return self._name
+
+    def get_index(self):
+        """Returns the immutable bank index (string or int)"""
+        return self._index
+
+    def __eq__(self, other):
+        return self.get_index() == other.get_index()
+
+class NamedBank(Bank):
+    def set_name(self, name):
+        """Changes the user-adjustable bank name"""
+        self._name = name
+
+class BankModel:
+    """A bank model where one memory is in zero or one banks at any point"""
+    def __init__(self, radio):
+        self._radio = radio
+
+    def get_num_banks(self):
+        """Returns the number of banks (should be callable without
+        consulting the radio"""
+        raise Exception("Not implemented")
+
+    def get_banks(self):
+        """Return a list of banks"""
+        raise Exception("Not implemented")
+
+    def add_memory_to_bank(self, memory, bank):
+        """Add @memory to @bank."""
+        raise Exception("Not implemented")
+
+    def remove_memory_from_bank(self, memory, bank):
+        """Remove @memory from @bank.
+        Shall raise exception if @memory is not in @bank."""
+        raise Exception("Not implemented")
+
+    def get_bank_memories(self, bank):
+        """Return a list of memories in @bank"""
+        raise Exception("Not implemented")
+
+    def get_memory_banks(self, memory):
+        """Returns a list of the banks that @memory is in"""
+        raise Exception("Not implemented")
+
+class BankIndexInterface:
+    def get_index_bounds(self):
+        """Returns a tuple (lo,hi) of the minimum and maximum bank indices"""
+        raise Exception("Not implemented")
+
+    def get_memory_index(self, memory, bank):
+        """Returns the index of @memory in @bank"""
+        raise Exception("Not implemented")
+
+    def set_memory_index(self, memory, bank, index):
+        """Sets the index of @memory in @bank to @index"""
+        raise Exception("Not implemented")
+
+    def get_next_bank_index(self, bank):
+        """Returns the next available bank index in @bank, or raises
+        Exception if full"""
+        raise Exception("Not implemented")
+
+
+class MTOBankModel(BankModel):
+    """A bank model where one memory can be in multiple banks at once """
+    pass
 
 def console_status(status):
     import sys
@@ -562,6 +594,7 @@ class RadioFeatures:
         "has_offset"          : BOOLEAN,
         "has_name"            : BOOLEAN,
         "has_bank"            : BOOLEAN,
+        "has_bank_names"      : BOOLEAN,
         "has_tuning_step"     : BOOLEAN,
         "has_name"            : BOOLEAN,
         "has_ctone"           : BOOLEAN,
@@ -645,6 +678,8 @@ class RadioFeatures:
                   "Indicates that an alphanumeric memory name is supported")
         self.init("has_bank", True,
                   "Indicates that memories may be placed into banks")
+        self.init("has_bank_names", False,
+                  "Indicates that banks may be named")
         self.init("has_tuning_step", True,
                   "Indicates that memories store their tuning step")
         self.init("has_ctone", True,
@@ -759,11 +794,9 @@ class Radio:
     def set_memories(self, memories):
         pass
 
-    def get_banks(self):
-        return []
-
-    def set_banks(self, banks):
-        raise errors.InvalidDataError("This model does not support bank naming")
+    def get_bank_model(self):
+        """Returns either a BankModel or None if not supported"""
+        return None
 
     def get_raw_memory(self, number):
         pass
