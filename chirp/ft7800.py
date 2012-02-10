@@ -151,13 +151,9 @@ def upload(radio):
                 s.msg = "Cloning to radio"
                 radio.status_fn(s)
 
-class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
+class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
-    MODEL = "FT-7800"
-
-    _model = "AH016"
-    _memsize = 31561
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -328,17 +324,72 @@ class FT7800Radio(yaesu_clone.YaesuCloneModeRadio):
 
         self._set_mem_skip(mem, _mem)
 
-    # Return channels for a bank. Bank given as number
-    def get_bank_channels(self, bank):
-        channels = []
-        for i in range(1000):
-            _bitmap = self._memobj.bank_channels[bank].bitmap[i/32]
+class FT7800BankModel(chirp_common.BankModel):
+    def get_num_banks(self):
+        return 20
+
+    def get_banks(self):
+        banks = []
+        for i in range(0, 20):
+            bank = chirp_common.Bank(self, "%i" % i, "BANK-%i" % i)
+            bank.index = i
+            banks.append(bank)
+
+        return banks
+
+    def add_memory_to_bank(self, memory, bank):
+        index = memory.number - 1
+        _bitmap = self._radio._memobj.bank_channels[bank.index]
+        ishft = 31 - (index % 32)
+        _bitmap.bitmap[index / 32] |= (1 << ishft)
+
+    def remove_memory_from_bank(self, memory, bank):
+        index = memory.number - 1
+        _bitmap = self._radio._memobj.bank_channels[bank.index]
+        ishft = 31 - (index % 32)
+        if not (_bitmap.bitmap[index / 32] & (1 << ishft)):
+            raise Exception(_("Memory {num} is "
+                              "not in bank {bank}").format(num=memory.number,
+                                                           bank=bank))
+        _bitmap.bitmap[index / 32] &= ~(1 << ishft)
+
+    def get_bank_memories(self, bank):
+        memories = []
+        for i in range(0, 1000):
+            _bitmap = self._radio._memobj.bank_channels[bank.index].bitmap[i/32]
             ishft = 31 - (i % 32)
-            if (_bitmap >> ishft) & 1 == 1: 
-                channels.append(i)
+            if _bitmap & (1 << ishft):
+                memories.append(self._radio.get_memory(i + 1))
+        return memories
 
-        return channels
+    def get_memory_banks(self, memory):
+        banks = []
+        for bank in self.get_banks():
+            if memory.number in \
+                    [x.number for x in self.get_bank_memories(bank)]:
+                banks.append(bank)
+        return banks
 
+class FT7800Radio(FTx800Radio):
+    MODEL = "FT-7800"
+
+    _model = "AH016"
+    _memsize = 31561
+
+    def get_bank_model(self):
+        return FT7800BankModel(self)
+
+    def get_features(self):
+        rf = FTx800Radio.get_features(self)
+        rf.has_bank = True
+        return rf
+
+    def set_memory(self, memory):
+        if memory.empty:
+            model = self.get_bank_model()
+            for bank in model.get_memory_banks(memory):
+                model.remove_memory_from_bank(memory, bank)
+        FTx800Radio.set_memory(self, memory)
 
 class FT7900Radio(FT7800Radio):
     MODEL = "FT-7900"
@@ -377,7 +428,7 @@ struct {
 u8 checksum;
 """
 
-class FT8800Radio(FT7800Radio):
+class FT8800Radio(FTx800Radio):
     MODEL = "FT-8800"
 
     _model = "AH018"
@@ -389,7 +440,7 @@ class FT8800Radio(FT7800Radio):
     _memstart = ""
 
     def get_features(self):
-        rf = FT7800Radio.get_features(self)
+        rf = FTx800Radio.get_features(self)
         rf.has_sub_devices = self.VARIANT == ""
         rf.memory_bounds = (1, 499)
         return rf
