@@ -40,8 +40,6 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         "Mode"         : (str,   "mode"),
         "TStep"        : (float, "tuning_step"),
         "Skip"         : (str,   "skip"),
-        "Bank"         : (int,   "bank"),
-        "Bank Index"   : (int,   "bank_index"),
         "URCALL"       : (str,   "dv_urcall"),
         "RPT1CALL"     : (str,   "dv_rpt1call"),
         "RPT2CALL"     : (str,   "dv_rpt2call"),
@@ -68,7 +66,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank_index = True
+        rf.has_bank = False
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
         rf.memory_bounds = (0, len(self.memories))

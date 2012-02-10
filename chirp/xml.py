@@ -81,7 +81,8 @@ class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank_index = True
+        rf.has_bank = False
+        #rf.has_bank_index = True
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
         rf.memory_bounds = (0, 1000)
