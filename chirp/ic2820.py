@@ -84,6 +84,15 @@ DTCSP  = ["NN", "NR", "RN", "RR"]
 
 MEM_LOC_SIZE = 48
 
+class IC2820Bank(icf.IcomBank):
+    def get_name(self):
+        _banks = self._model._radio._memobj.bank_names
+        return str(_banks[self.index].name).rstrip()
+
+    def set_name(self, name):
+        _banks = self._model._radio._memobj.bank_names
+        _banks[self.index].name = str(name).ljust(8)[:8]
+
 class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "IC-2820H"
@@ -98,15 +107,41 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                (0x7160, 0x7180, 16),
                (0x7180, 0xACC0, 32),]
 
+    _num_banks = 26
+    _bank_class = IC2820Bank
+
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)
 
     _memories = {}
 
+    def _get_bank(self, loc):
+        _bank = self._memobj.bank_info[loc]
+        if _bank.bank == 0xFF:
+            return None
+        else:
+            return _bank.bank
+
+    def _set_bank(self, loc, bank):
+        _bank = self._memobj.bank_info[loc]
+        if bank is None:
+            _bank.bank = 0xFF
+        else:
+            _bank.bank = bank
+
+    def _get_bank_index(self, loc):
+        _bank = self._memobj.bank_info[loc]
+        return _bank.index
+
+    def _set_bank_index(self, loc, index):
+        _bank = self._memobj.bank_info[loc]
+        _bank.index = index
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank_index = True
+        rf.has_bank_names = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, 499)
         rf.valid_modes = list(MODES)
@@ -118,18 +153,6 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
         return rf
-
-    def get_available_bank_index(self, bank):
-        indexes = []
-        for mem in self._memories.values():
-            if mem.bank == bank and mem.bank_index >= 0:
-                indexes.append(mem.bank_index)
-
-        for i in range(0, 256):
-            if i not in indexes:
-                return i
-
-        raise errors.RadioError("Out of slots in this bank")
 
     def _get_special(self):
         special = {"C0" : 500 + 20,
@@ -149,9 +172,14 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
-    def get_memory(self, number):
+    def _resolve_memory_number(self, number):
         if isinstance(number, str):
-            number = self._get_special()[number]
+            return self._get_special()[number]
+        else:
+            return number
+
+    def get_memory(self, number):
+        number = self._resolve_memory_number(number)
 
         bitpos = (1 << (number % 8))
         bytepos = number / 8
@@ -171,13 +199,6 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         mem.number = number
         if number < 500:
-            _bank = self._memobj.bank_info[number]
-            mem.bank = _bank.bank
-            mem.bank_index = _bank.index
-            if mem.bank == 0xFF:
-                mem.bank = None
-                mem.bank_index = -1
-
             _skip = self._memobj.skip_flags[bytepos]
             _pskip = self._memobj.pskip_flags[bytepos]
             if _skip & bitpos:
@@ -223,14 +244,6 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         was_empty = _used & bitpos
 
         if mem.number < 500:
-            _bank = self._memobj.bank_info[mem.number]
-            if mem.bank:
-                _bank.bank = mem.bank
-                _bank.index = mem.bank_index
-            else:
-                _bank.bank = 0xFF
-                _bank.index = 0xFF
-
             skip = self._memobj.skip_flags[bytepos]
             pskip = self._memobj.pskip_flags[bytepos]
             if mem.skip == "S":
@@ -245,6 +258,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if mem.empty:
             _used |= bitpos
             self._wipe_memory(_mem, "\xFF")
+            self._set_bank(mem.number, None)
             return
 
         _used &= ~bitpos
@@ -271,20 +285,6 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
     
-    def get_banks(self):
-        _banks = self._memobj.bank_names
-
-        banks = []
-        for i in range(0, 26):
-            banks.append(str(_banks[i].name).rstrip())
-
-        return banks
-
-    def set_banks(self, banks):
-        _banks = self._memobj.bank_names
-        for i in range(0, 26):
-            _banks[i].name = str(banks[i]).ljust(8)[:8]
-
     def get_urcall_list(self):
         _calls = self._memobj.urcall
         calls = []
