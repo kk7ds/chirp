@@ -92,6 +92,35 @@ CHARSET = list("0123456789" + \
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=1.50),
                 chirp_common.PowerLevel("Low", watts=0.10)]
 
+class VX3Bank(chirp_common.NamedBank):
+    def get_name(self):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        name = ""
+        for i in _bank.name:
+            if i == 0xFF:
+                break
+            name += CHARSET[i & 0x7F]
+        return name
+
+    def set_name(self, name):
+        name = name.upper()
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        _bank.name = [CHARSET.index(x) for x in name.ljust(6)[:6]]
+
+class VX3BankModel(chirp_common.BankModel):
+    def get_num_banks(self):
+        return 24
+
+    def get_banks(self):
+        _banks = self._radio._memobj.bank_names
+
+        banks = []
+        for i in range(0, self.get_num_banks()):
+            bank = VX3Bank(self, "%i" % i, "Bank-%i" % i)
+            bank.index = i
+            banks.append(bank)
+        return banks
+
 class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
     VENDOR = "Yaesu"
@@ -114,6 +143,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
+        rf.has_bank_names = True
         rf.has_dtcs_polarity = False
         rf.valid_modes = list(set(MODES))
         rf.valid_tmodes = list(TMODES)
@@ -215,18 +245,9 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.name[i] = CHARSET.index(mem.name.ljust(6)[i])
         if mem.name.strip(): _mem.name[0] |= 0x80
       
-    def get_banks(self):
-        _banks = self._memobj.bank_names
-
-        banks = []
-        for _bank in _banks:
-            name = ""
-            for i in _bank.name:
-                name += CHARSET[i & 0x7F]
-            banks.append(name.rstrip())
-
-        return banks
-
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
         return msgs
+
+    def get_bank_model(self):
+        return VX3BankModel(self)
