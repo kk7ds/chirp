@@ -72,10 +72,11 @@ def default_build():
     #form_files = glob("forms/*.x?l")
     image_files = glob("images/*")
     _locale_files = glob("locale/*/LC_MESSAGES/D-RATS.mo")
+    stock_configs = glob("stock_configs/*")
 
     locale_files = []
     for f in _locale_files:
-        locale_files.append(("/usr/share/chirp/%s" % os.path.dirname(f), [f]))
+        locale_files.append(("usr/share/chirp/%s" % os.path.dirname(f), [f]))
 
     print "LOC: %s" % str(locale_files)
 
@@ -86,12 +87,13 @@ def default_build():
         packages=["chirp", "chirpui"],
         version=CHIRP_VERSION,
         scripts=["chirpw"],
-        data_files=[('/usr/share/applications', desktop_files),
-                    ('/usr/share/chirp/images', image_files),
-                    ('/usr/share/chirp', xsd_files),
-                    ('/usr/share/doc/chirp', ['COPYING']),
-		    ('/usr/share/pixmaps', ['share/chirp.png']),
-                    ('/usr/share/man/man1', ["share/chirpw.1"]),
+        data_files=[('usr/share/applications', desktop_files),
+                    ('usr/share/chirp/images', image_files),
+                    ('usr/share/chirp', xsd_files),
+                    ('usr/share/doc/chirp', ['COPYING']),
+		    ('usr/share/pixmaps', ['share/chirp.png']),
+                    ('usr/share/man/man1', ["share/chirpw.1"]),
+                    ('usr/share/chirp/stock_configs', stock_configs),
                     ] + locale_files)
 
 def rpttool_build():
@@ -131,6 +133,7 @@ else:
                       "include share/*.desktop",
                       "include share/chirp.png",
                       "include share/*.1",
+                      "include stock_configs/*",
                       "include COPYING")
         default_build()
 

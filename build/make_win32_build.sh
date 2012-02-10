@@ -28,9 +28,9 @@ copy_lib() {
 
 copy_data() {
 	mkdir dist
-	list="COPYING *.xsd"
+	list="COPYING *.xsd stock_configs"
 	for i in $list; do
-		cp -v $i dist >> $LOG
+		cp -rv $i dist >> $LOG
 	done
 }
 

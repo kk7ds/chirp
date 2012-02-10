@@ -1,5 +1,6 @@
 include *.xsd
 include share/*.desktop
+include share/chirp.png
 include share/*.1
+include stock_configs/*
 include COPYING
-include locale

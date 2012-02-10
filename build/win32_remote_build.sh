@@ -15,9 +15,9 @@ temp_dir() {
 
 copy_source() {
     tmp=$1
-    list=$(hg status -nmca)
+    hg status -nmca > .files
 
-    rsync -arRv $list $HOST:$tmp
+    rsync -av --files-from=.files . $HOST:$tmp
 }
 
 do_build() {
