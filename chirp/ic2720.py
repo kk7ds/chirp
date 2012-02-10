@@ -77,6 +77,27 @@ class IC2720Radio(icf.IcomCloneModeRadio):
 
     _ranges = [(0x0000, 0x1400, 32)]
 
+    def _get_bank(self, loc):
+        _bank = self._memobj.banks[loc / 2]
+        if loc % 2:
+            bank = _bank.bank_odd
+        else:
+            bank = _bank.bank_even
+
+        if bank == 0x0A:
+            return None
+        else:
+            return bank
+
+    def _set_bank(self, loc, index):
+        _bank = self._memobj.banks[loc / 2]
+        if index is None:
+            index = 0x0A
+        if loc % 2:
+            _bank.bank_odd = index
+        else:
+            _bank.bank_even = index
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_name = False
@@ -90,10 +111,6 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS_VHF
         return rf
 
-    def get_banks(self):
-        return [chirp_common.ImmutableBank(chr(ord("A") + i)) \
-                    for i in range(0,10)]
-        
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
@@ -107,7 +124,6 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         _mem = self._memobj.memory[number]
         _skp = self._memobj.skips[bytepos]
         _usd = self._memobj.used[bytepos]
-        _bnk = self._memobj.banks[number / 2]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -129,13 +145,6 @@ class IC2720Radio(icf.IcomCloneModeRadio):
 
         mem.skip = (_skp & bitpos) and "S" or ""
 
-        if number % 2:
-            mem.bank = int(_bnk.bank_odd)
-        else:
-            mem.bank = int(_bnk.bank_even)
-        if mem.bank == 0x0A:
-            mem.bank = None
-
         if int(mem.freq / 100000000) == 1:
             mem.power = POWER_LEVELS_VHF[_mem.power]
         else:
@@ -150,10 +159,10 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         _mem = self._memobj.memory[mem.number]
         _skp = self._memobj.skips[bytepos]
         _usd = self._memobj.used[bytepos]
-        _bnk = self._memobj.banks[mem.number / 2]
         
         if mem.empty:
             _usd |= bitpos
+            self._set_bank(mem.number, None)
             return
         _usd &= ~bitpos
 
@@ -172,16 +181,6 @@ class IC2720Radio(icf.IcomCloneModeRadio):
             _skp |= bitpos
         else:
             _skp &= ~bitpos
-
-        if mem.bank is None:
-            val = 0x0A
-        else:
-            val = int(mem.bank)
-
-        if mem.number % 2:
-            _bnk.bank_odd = val
-        else:
-            _bnk.bank_even = val
 
         if mem.power:
             _mem.power = POWER_LEVELS_VHF.index(mem.power)
