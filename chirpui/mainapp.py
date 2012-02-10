@@ -152,7 +152,8 @@ class ChirpMain(gtk.Window):
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
         for i in ["export", "import", "close", "columns", "rbook", "rfinder",
-                  "stock"]:
+                  "stock", "move_up", "move_dn", "exchange",
+                  "cut", "copy", "paste", "delete", "viewdeveloper"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
@@ -1087,7 +1088,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('paste', None, _("_Paste"), "<Ctrl>v", None, self.mh),
             ('delete', None, _("_Delete"), "Delete", None, self.mh),
             ('move_up', None, _("Move _Up"), "<Control>Up", None, self.mh),
-            ('move_dn', None, _("Move D_n"), "<Control>Down", None, self.mh),
+            ('move_dn', None, _("Move Dow_n"), "<Control>Down", None, self.mh),
             ('exchange', None, _("E_xchange"), "<Control><Shift>x", None, self.mh),
             ('view', None, _("_View"), None, None, self.mh),
             ('columns', None, _("Columns"), None, None, self.mh),
@@ -1230,6 +1231,7 @@ If you think that it is valid, you can select a radio model below to force an op
         self.tabs = None
         tabs = self.make_tabs()
         tabs.connect("switch-page", lambda n, _, p: self.ev_tab_switched(p))
+        tabs.connect("page-removed", lambda *a: self.ev_tab_switched())
         tabs.show()
         self.ev_tab_switched()
         vbox.pack_start(tabs, 1, 1, 1)
