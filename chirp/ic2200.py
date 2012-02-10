@@ -115,6 +115,20 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     URCALL_LIMIT  = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
+    def _get_bank(self, loc):
+        _flag = self._memobj.flags[loc]
+        if _flag.bank == 0x0A:
+            return None
+        else:
+            return _flag.bank
+
+    def _set_bank(self, loc, bank):
+        _flag = self._memobj.flags[loc]
+        if bank is None:
+            _flag.bank = 0x0A
+        else:
+            _flag.bank = bank
+        
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
@@ -166,9 +180,6 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.number = number
         if number < 200:
             mem.skip = _flag.skip and "S" or ""
-            mem.bank = _flag.bank != 0x0A and _flag.bank or None
-            if _flag.bank != 0x0A:
-                mem.bank = _flag.bank
         else:
             mem.extd_number = util.get_dict_rev(self._get_special(), number)
             mem.immutable = ["number", "skip", "bank", "bank_index",
@@ -246,7 +257,6 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if number < 200:
             _flag.skip = mem.skip != ""
-            _flag.bank = mem.bank or 0x0A
 
         if isinstance(mem, chirp_common.DVMemory):
             urcalls = self.get_urcall_list()
@@ -257,18 +267,6 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-
-    def get_banks(self):
-        banks = []
-
-        for i in range(0, 10):
-            bank = chirp_common.ImmutableBank("BANK-%s" % (chr(ord("A")+i)))
-            banks.append(bank)
-
-        return banks
-
-    def set_banks(self, banks):
-        raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_urcall_list(self):
         return [str(x.call).rstrip() for x in self._memobj.urcalls]
