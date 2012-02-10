@@ -154,9 +154,6 @@ class IDRPx000V(IcomRepeater):
 
         set_freq(self.pipe, mem.freq)
 
-    def get_banks(self):
-        return []
-
 if __name__ == "__main__":
     pipe = serial.Serial(port="/dev/icom", baudrate=19200, timeout=0.5)
     #set_freq(pipe, 439.920)
