@@ -205,11 +205,11 @@ class EditorSet(gtk.VBox):
 
         count = dialog.do_import(dst_rthread)
         print "Imported %i" % count
+        dst_rthread._qunlock()
+
         if count > 0:
             self.editor_changed()
             gobject.idle_add(self.editors["memedit"].prefill)
-
-        dst_rthread._qunlock()
 
         return count
 
@@ -318,7 +318,8 @@ class EditorSet(gtk.VBox):
             if v and v.root == widget:
                 v.focus()
                 self.emit("editor-selected", k)
-                break
+            elif v:
+                v.unfocus()
 
     def set_read_only(self, read_only=True):
         self.editors["memedit"].set_read_only(read_only)

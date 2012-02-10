@@ -324,6 +324,7 @@ class BankMembershipEditor(common.Editor):
         self.rthread.submit(job)
 
     def focus(self):
+        common.Editor.focus(self)
         if self._loaded:
             return
 
@@ -333,6 +334,8 @@ class BankMembershipEditor(common.Editor):
 
     def memories_changed(self):
         self._loaded = False
+        if self.is_focused():
+            self.refresh_all_memories()
 
     def banks_changed(self):
         self.refresh_banks()

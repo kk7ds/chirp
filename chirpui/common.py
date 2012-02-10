@@ -33,9 +33,16 @@ class Editor(gobject.GObject):
 
     def __init__(self):
         gobject.GObject.__init__(self)
+        self._focused = False
+
+    def is_focused(self):
+        return self._focused
 
     def focus(self):
-        pass
+        self._focused = True
+
+    def unfocus(self):
+        self._focused = False
 
 gobject.type_register(Editor)
 
