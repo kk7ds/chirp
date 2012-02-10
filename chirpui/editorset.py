@@ -169,7 +169,8 @@ class EditorSet(gtk.VBox):
 
     def banks_changed(self, *args):
         print "Banks changed"
-        self.editors["bank_members"].banks_changed()
+        if self.editors["bank_members"]:
+            self.editors["bank_members"].banks_changed()
         self.modified = True
         self.update_tab()
 
