@@ -204,9 +204,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         for i in range(0, 8):
             _mem.name[i] = CHARSET.index(mem.name.ljust(8)[i])
         
-    def get_banks(self):
-        return []
-
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 

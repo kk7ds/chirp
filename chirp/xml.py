@@ -78,7 +78,6 @@ class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             radio.newChild(None, "memories", None)
             radio.newChild(None, "banks", None)
             radio.newProp("version", "0.1.1")
-            self.set_banks(default_banks())
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -132,12 +131,6 @@ class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
 
     def erase_memory(self, number):
         xml_ll.del_memory(self.doc, number)
-
-    def get_banks(self):
-        return xml_ll.get_banks(self.doc)
-
-    def set_banks(self, banks):
-        return xml_ll.set_banks(self.doc, banks)
 
 if __name__ == "__main__":
     r = XMLRadio("testmem.chirp")
