@@ -457,45 +457,137 @@ class TestCaseBanks(TestCase):
     def __str__(self):
         return "Banks"
 
-    def _do_bank_names(self, rf, base):
-        banks = self._wrapper.do("get_banks")
+    def _do_bank_names(self, rf, testname):
+        bm = self._wrapper.do("get_bank_model")
+        banks = bm.get_banks()
 
-        if isinstance(banks[0], chirp_common.ImmutableBank):
-            return [], [] # Bank names not supported
-
-        newbanks = []
         for bank in banks:
-            newbanks.append("%s%i" % (base, len(newbanks) + 1))
+            name = bank.get_name()
+            try:
+                bank.set_name(testname)
+            except AttributeError:
+                return [], []
+            except Exception, e:
+                if str(e) == "Not implemented":
+                    return [], []
+                else:
+                    raise e
 
-        self._wrapper.do("set_banks", newbanks)
-        banks = self._wrapper.do("get_banks")
-
-        return banks, newbanks
+        return banks, bm.get_banks()
 
     def do_bank_names(self, rf):
         banks, newbanks = self._do_bank_names(rf, "T")
-    
-        if banks != newbanks:
-            raise TestFailedError("Bank names not preserved",
-                                  "Tried: %s\nGot:%s" % (repr(newbanks),
-                                                         repr(banks)))
-
-    def do_bank_names_toolong(self, rf):
-        banks, newbanks = self._do_bank_names(rf, "Not possibly this long")
 
         for i in range(0, len(banks)):
+            if banks[i].get_name() != newbanks[i].get_name():
+                raise TestFailedError("Bank names not preserved",
+                                      "Tried %s on %i\nGot %s" % (banks[i],
+                                                                  i,
+                                                                  newbanks[i]))
+
+    def do_bank_names_toolong(self, rf):
+        testname = "Not possibly this long"
+        banks, newbanks = self._do_bank_names(rf, testname)
+
+        for i in range(0, len(newbanks)):
             # Truncation is allowed, but not failure
-            if not newbanks[i].lower().startswith(banks[i].lower()):
+            if not testname.lower().startswith(str(newbanks[i]).lower()):
                 raise TestFailedError("Bank names not properly truncated",
-                                      "Tried: %s\nGot: %s" % (repr(newbanks),
-                                                              repr(banks)))
+                                      "Tried: %s on %i\nGot: %s" % (testname,
+                                                                    i,
+                                                                    newbanks[i]))
 
     def do_bank_names_no_trailing_whitespace(self, rf):
-        banks = self._wrapper.do("get_banks")
+        banks, newbanks = self._do_bank_names(rf, "foo  ")
 
-        for bank in banks:
+        for bank in newbanks:
             if str(bank) != str(bank).rstrip():
-                raise TestFailedError("Bank names contain trailing whitespace")
+                raise TestFailedError("Bank names stored with " +
+                                      "trailing whitespace")
+
+    def do_bank_store(self, rf):
+        loc = rf.memory_bounds[0]
+        mem = chirp_common.Memory()
+        mem.number = loc
+        mem.freq = rf.valid_bands[0][0] + 100000
+
+        # Make sure the memory is empty and we create it from scratch
+        mem.empty = True
+        self._wrapper.do("set_memory", mem)
+
+        mem.empty = False
+        self._wrapper.do("set_memory", mem)
+
+        model = self._wrapper.do("get_bank_model")
+
+        mem_banks = model.get_memory_banks(mem)
+        if len(mem_banks) != 0:
+            raise TestFailedError("Freshly-created memory has banks and " +\
+                                  "should not",
+                                  "Banks: %s" % str(mem_banks))
+
+        banks = model.get_banks()
+
+        def verify(bank):
+            if bank not in model.get_memory_banks(mem):
+                return "Memory does not claim bank"
+
+            if loc not in [x.number for x in model.get_bank_memories(bank)]:
+                return "Bank does not claim memory"
+
+            return None
+
+        model.add_memory_to_bank(mem, banks[0])
+        reason = verify(banks[0])
+        if reason is not None:
+            raise TestFailedError("Setting memory bank does not persist",
+                                  "%s\nMemory banks:%s\nBank memories:%s" %\
+                                      (reason,
+                                       model.get_memory_banks(mem),
+                                       model.get_bank_memories(banks[0])))
+
+        model.remove_memory_from_bank(mem, banks[0])
+        reason = verify(banks[0])
+        if reason is None:
+            raise TestFailedError("Memory remains in bank after remove",
+                                  reason)
+
+        try:
+            model.remove_memory_from_bank(mem, banks[0])
+            did_error = False
+        except Exception:
+            did_error = True
+        
+        if not did_error:
+            raise TestFailedError("Removing memory from non-member bank " +\
+                                      "did not raise Exception")
+
+    def do_bank_index(self, rf):
+        if not rf.has_bank_index:
+            return
+
+        loc = rf.memory_bounds[0]
+        mem = chirp_common.Memory()
+        mem.number = loc
+        mem.freq = rf.valid_bands[0][0] + 100000
+
+        self._wrapper.do("set_memory", mem)
+
+        model = self._wrapper.do("get_bank_model")
+        banks = model.get_banks()
+        index_bounds = model.get_index_bounds()
+
+        model.add_memory_to_bank(mem, banks[0])
+        for i in range(0, *index_bounds):
+            model.set_memory_index(mem, banks[0], i)
+            if model.get_memory_index(mem, banks[0]) != i:
+                raise TestFailedError("Bank index not persisted")
+
+        suggested_index = model.get_next_bank_index(banks[0])
+        if suggested_index  not in range(*index_bounds):
+            raise TestFailedError("Suggested bank index not in valid range",
+                                  "Got %i, range is %s" % (suggested_index,
+                                                           index_bounds))
 
     def run(self):
         rf = self._wrapper.do("get_features")
@@ -506,6 +598,9 @@ class TestCaseBanks(TestCase):
         self.do_bank_names(rf)
         self.do_bank_names_toolong(rf)
         self.do_bank_names_no_trailing_whitespace(rf)        
+        self.do_bank_store(rf)
+        self.do_bank_store(rf) # Again to make sure we clear bank info on delete
+        self.do_bank_index(rf)
 
         return []
 
