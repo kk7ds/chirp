@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import ft817
+from chirp import ft817, chirp_common
 from chirp import bitwise
 
 mem_format = """
@@ -60,6 +60,44 @@ struct {
   u32 offset;
   u8   name[8];
 } memory[200];
+
+#seekto 0x1CAD;
+struct {
+  u8   tag_on_off:1,
+       tag_default:1,
+       unknown1:3,
+       mode:3;
+  u8   duplex:2,
+       is_duplex:1,
+       is_cwdig_narrow:1,
+       is_fm_narrow:1,
+       freq_range:3;
+  u8   skip:1,
+       unknokwn1_1:1,
+       ipo:1,
+       att:1,
+       unknown2:4;
+  u8   ssb_step:2,
+       am_step:3,
+       fm_step:3;
+  u8   unknown3:3,
+       is_split_tone:1,
+       tmode:4;
+  u8   unknown4:2,
+       tx_mode:3,
+       tx_freq_range:3;
+  u8   unknown5:2,
+       tone:6;
+  u8   unknown6:8;
+  u8   unknown7:1,
+       dcs:7;
+  u8   unknown8:8;
+  ul16 rit;
+  u32 freq;
+  u32 offset;
+  u8   name[8];
+} sixtymeterchannels[5];
+
 """
 
 
@@ -135,6 +173,14 @@ class FT857Radio(ft817.FT817Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
+SPECIAL_60M = {
+    "M-601" : -1,
+    "M-602" : -2,
+    "M-603" : -3,
+    "M-604" : -4,
+    "M-605" : -5,
+    }
+
 class FT857_US_Radio(FT857Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
     # so we have to distinguish sub models
@@ -147,3 +193,38 @@ class FT857_US_Radio(FT857Radio):
     _block_lengths = [ 2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140, 38, 176, 140]
 
 
+    def get_special_locations(self):
+        return SPECIAL_60M.keys()
+
+    def _get_special(self, number):
+        mem = chirp_common.Memory()
+        mem.number = SPECIAL_60M[number]
+        mem.extd_number = number
+
+        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+
+        mem.freq = int(_mem.freq) * 10
+
+        mem.immutable = ["number", "skip", "bank_index", "rtone", "ctone",
+                         "extd_number", "name", "dtcs", "tmode", "cross_mode",
+                         "dtcs_polarity", "power", "duplex", "offset", "mode",
+                         "tuning_step", "comment", "empty"]
+
+        return mem
+
+    def _set_special(self, memory):
+        _mem = self._memobj.sixtymeterchannels[abs(memory.number)-1]
+
+        _mem.freq = memory.freq / 10
+
+    def get_memory(self, number):
+        if isinstance(number, str):
+            return self._get_special(number)
+        else:
+            return FT857Radio.get_memory(self, number)
+
+    def set_memory(self, memory):
+        if memory.number < 0:
+            return self._set_special(memory)
+        else:
+            return FT857Radio.set_memory(self, memory)
