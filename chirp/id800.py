@@ -154,6 +154,20 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     URCALL_LIMIT  = (1, 99)
     RPTCALL_LIMIT = (1, 59)
 
+    def _get_bank(self, loc):
+        _flg = self._memobj.flags[loc-1]
+        if _flg.bank >= 0x0A:
+            return None
+        else:
+            return _flg.bank
+
+    def _set_bank(self, loc, bank):
+        _flg = self._memobj.flags[loc-1]
+        if bank is None:
+            _flg.bank = 0x0A
+        else:
+            _flg.bank = bank
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_implicit_calls = True
@@ -255,7 +269,6 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.name = self._get_name(_mem)
 
         mem.skip = _flg.pskip and "P" or _flg.skip and "S" or ""
-        mem.bank = _flg.bank < 10 and _flg.bank or None
 
         return mem
 
@@ -265,6 +278,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         _flg.empty = mem.empty
         if mem.empty:
+            self._set_bank(mem.number, None)
             return
 
         mult = chirp_common.is_fractional_step(mem.freq) and 6250 or 5000
@@ -283,7 +297,6 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         _flg.pskip = mem.skip == "P"
         _flg.skip = mem.skip == "S"
-        _flg.bank = mem.bank or 10
 
         if mem.mode == "DV":
             urcalls = self.get_urcall_list()
@@ -310,17 +323,6 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
-
-    def get_banks(self):
-        banks = []
-
-        for i in range(0, 10):
-            banks.append(chirp_common.ImmutableBank("Bank%s" % (chr(ord("A") + i))))
-
-        return banks
-
-    def set_banks(self, banks):
-        raise errors.InvalidDataError("Bank naming not supported on this model")
 
     def get_urcall_list(self):
         calls = ["CQCQCQ"]
