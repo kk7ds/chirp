@@ -23,6 +23,16 @@ u8 checksum1;
 #seekto 0x0691;
 u8 checksum2;
 
+#seekto 0x0742;
+struct {
+  u16 in_use;
+} bank_used[9];
+
+#seekto 0x0EA2;
+struct {
+  u16 members[48];
+} bank_members[9];
+
 #seekto 0x3F52;
 u8 checksum3;
 
@@ -85,6 +95,69 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
 POWER_LEVELS_220 = [chirp_common.PowerLevel("L2", watts=0.30),
                     chirp_common.PowerLevel("L1", watts=0.05)]
 
+class VX7BankModel(chirp_common.BankModel):
+    def get_num_banks(self):
+        return 9
+
+    def get_banks(self):
+        banks = []
+        for i in range(0, self.get_num_banks()):
+            bank = chirp_common.Bank(self, "%i" % (i+1), "MG%i" % (i+1))
+            bank.index = i
+            banks.append(bank)
+        return banks
+
+    def add_memory_to_bank(self, memory, bank):
+        _members = self._radio._memobj.bank_members[bank.index]
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        for i in range(0, 48):
+            if _members.members[i] == 0xFFFF:
+                _members.members[i] = memory.number - 1
+                _bank_used.in_use = 0x0000
+                break
+
+    def remove_memory_from_bank(self, memory, bank):
+        _members = self._radio._memobj.bank_members[bank.index].members
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+
+        found = False
+        remaining_members = 0
+        for i in range(0, len(_members)):
+            if _members[i] == (memory.number - 1):
+                _members[i] = 0xFFFF
+                found = True
+            elif _members[i] != 0xFFFF:
+                remaining_members += 1
+
+        if not found:
+            raise Exception(_("Memory {num} not in "
+                              "bank {bank}").format(num=memory.number,
+                                                    bank=bank))
+        if not remaining_members:
+            _bank_used.in_use = 0xFFFF
+
+    def get_bank_memories(self, bank):
+        memories = []
+
+        _members = self._radio._memobj.bank_members[bank.index].members
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+
+        if _bank_used.in_use == 0xFFFF:
+            return memories
+
+        for number in _members:
+            if number == 0xFFFF:
+                continue
+            memories.append(self._radio.get_memory(number+1))
+        return memories
+
+    def get_memory_banks(self, memory):
+        banks = []
+        for bank in self.get_banks():
+            if memory.number in [x.number for x in self.get_bank_memories(bank)]:
+                    banks.append(bank)
+        return banks
+
 class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
     VENDOR = "Yaesu"
@@ -106,7 +179,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank = False
+        rf.has_bank = True
         rf.has_dtcs_polarity = False
         rf.valid_modes = list(set(MODES))
         rf.valid_tmodes = list(TMODES)
@@ -217,3 +290,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def match_model(cls, filedata):
         return len(filedata) == cls._memsize
+
+    def get_bank_model(self):
+        return VX7BankModel(self)
