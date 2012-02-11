@@ -85,22 +85,8 @@ def detect_icom_radio(port):
 
 def detect_kenwoodlive_radio(port):
     s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
-    r_id = None
-
-    for rate in [9600, 19200, 38400, 57600]:
-        s.setBaudrate(rate)
-        s.write("\r")
-        s.read(25)
-        try:
-            #r_id = kenwood_live.get_id(s)
-            r_id = tmv71_ll.get_id(s)
-            break
-        except errors.RadioError:
-            pass
+    r_id = kenwood_live.get_id(s)
     s.close()
-
-    if not r_id:
-        raise errors.RadioError("Unable to probe radio model")
 
     models = {}
     for rclass in directory.DRV_TO_RADIO.values():

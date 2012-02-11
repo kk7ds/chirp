@@ -15,6 +15,7 @@
 
 import threading
 import os
+import time
 
 NOCACHE = os.environ.has_key("CHIRP_NOCACHE")
 
@@ -41,17 +42,22 @@ LOCK = threading.Lock()
 def command(s, command, *args):
     global LOCK
 
+    start = time.time()
+
     LOCK.acquire()
     cmd = command
     if args:
         cmd += " " + " ".join(args)
     if DEBUG:
-        print "PC->D7: %s" % cmd
+        print "PC->RADIO: %s" % cmd
     s.write(cmd + "\r")
 
     result = ""
     while not result.endswith("\r"):
         result += s.read(8)
+        if (time.time() - start) > 0.5:
+            print "Timeout waiting for data"
+            break
 
     if DEBUG:
         print "D7->PC: %s" % result.strip()
@@ -60,12 +66,24 @@ def command(s, command, *args):
 
     return result.strip()
 
+LAST_BAUD = 9600
 def get_id(s):
-    r = command(s, "ID")
-    if " " in r:
-        return r.split(" ")[1]
-    else:
-        raise errors.RadioError("No response from radio")
+    global LAST_BAUD
+    bauds = [9600, 19200, 38400, 57600]
+    bauds.remove(LAST_BAUD)
+    bauds.insert(0, LAST_BAUD)
+
+    for i in bauds:
+        print "Trying ID at baud %i" % i
+        s.setBaudrate(i)
+        s.write("\r")
+        s.read(25)
+        r = command(s, "ID")
+        if " " in r:
+            LAST_BAUD = i
+            return r.split(" ")[1]
+
+    raise errors.RadioError("No response from radio")
 
 def get_tmode(tone, ctcss, dcs):
     if dcs and int(dcs) == 1:
