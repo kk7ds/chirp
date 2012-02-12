@@ -42,6 +42,9 @@ def ft817_read(pipe, block, blocknum):
 def clone_in(radio):
     pipe = radio.pipe
 
+    # Be very patient with the radio
+    pipe.setTimeout(2)
+
     start = time.time()
 
     data = ""
