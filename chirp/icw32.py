@@ -21,8 +21,8 @@ mem_format = """
 struct {
   bbcd freq[3];
   bbcd offset[3];
-  u8 rtone;
   u8 ctone;
+  u8 rtone;
   char name[8];
 } memory[111];
 
@@ -52,8 +52,8 @@ struct {
 struct {
   bbcd freq[3];
   bbcd offset[3];
-  u8 rtone;
   u8 ctone;
+  u8 rtone;
 } callchans[2];
 
 """
