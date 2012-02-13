@@ -514,7 +514,7 @@ struct {
      duplex:3;
   bbcd freq[3];
   u8 mode_am:1,
-     unknown3:1,
+     is_fm_narrow:1,
      nameused:1,
      unknown4:1,
      power:2,
@@ -538,7 +538,7 @@ struct {
 #seekto 0x7B48;
 u8 checksum;
 """
-        
+
 class FT8900Radio(FT8800Radio):
     MODEL = "FT-8900"
 
@@ -552,6 +552,7 @@ class FT8900Radio(FT8800Radio):
     def get_features(self):
         rf = FT8800Radio.get_features(self)
         rf.has_sub_devices = False
+        rf.valid_modes = ["FM", "NFM", "AM"]
         rf.valid_bands = [( 28000000,  29700000),
                           ( 50000000,  54000000),
                           (108000000, 180000000),
@@ -571,6 +572,16 @@ class FT8900Radio(FT8800Radio):
     def _set_mem_skip(self, mem, _mem):
         _mem.skip = SKIPS.index(mem.skip)
 
+    def get_memory(self, number):
+        mem = FT8800Radio.get_memory(self, number)
+
+        _mem = self._memobj.memory[number - 1]
+        if mem.mode == "FM":
+            if _mem.is_fm_narrow == 1:
+                mem.mode = "NFM"
+
+        return mem
+
     def set_memory(self, mem):
         FT8800Radio.set_memory(self, mem)
 
@@ -581,3 +592,7 @@ class FT8900Radio(FT8800Radio):
             _mem.sub_used = 0;
         else:
             _mem.sub_used = 1
+
+        if mem.mode[0] == "N": # is it narrow?
+            _mem.is_fm_narrow = 1
+
