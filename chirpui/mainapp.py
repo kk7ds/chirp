@@ -355,7 +355,6 @@ If you think that it is valid, you can select a radio model below to force an op
                 common.show_error(os.path.basename(fname) + ": " + str(e))
                 return
 
-            tempname = fname
             if radio.get_features().has_sub_devices:
                 devices = radio.get_sub_devices()
             else:
@@ -365,7 +364,9 @@ If you think that it is valid, you can select a radio model below to force an op
         first_tab = False
         for device in devices:
             try:
-                eset = editorset.EditorSet(device, self, tempname=tempname)
+                eset = editorset.EditorSet(device, self,
+                                           filename=fname,
+                                           tempname=tempname)
             except Exception, e:
                 common.log_exception()
                 common.show_error(
@@ -415,7 +416,7 @@ If you think that it is valid, you can select a radio model below to force an op
         
         first_tab = True
         for device in devices:
-            eset = editorset.EditorSet(device, self, tempname)
+            eset = editorset.EditorSet(device, self, tempname=tempname)
             eset.connect("want-close", self.do_close)
             eset.connect("status", self.ev_status)
             eset.show()

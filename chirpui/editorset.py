@@ -35,7 +35,7 @@ class EditorSet(gtk.VBox):
                              (gobject.TYPE_STRING,)),
         }
 
-    def __init__(self, source, parent_window=None, tempname=None):
+    def __init__(self, source, parent_window=None, filename=None, tempname=None):
         gtk.VBox.__init__(self, True, 0)
 
         self.parent_window = parent_window
@@ -45,7 +45,7 @@ class EditorSet(gtk.VBox):
             self.radio = directory.get_radio_by_image(self.filename)
         elif isinstance(source, chirp_common.Radio):
             self.radio = source
-            self.filename = tempname or source.VARIANT
+            self.filename = filename or tempname or source.VARIANT
         else:
             raise Exception("Unknown source type")
 
