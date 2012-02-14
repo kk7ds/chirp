@@ -16,7 +16,7 @@
 import struct
 import time
 import os
-from chirp import util, chirp_common, bitwise, memmap
+from chirp import util, chirp_common, bitwise, memmap, errors
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -748,23 +748,23 @@ def _uv3r_prep(radio):
     radio.pipe.write("\x05PROGRAM")
     ack = radio.pipe.read(1)
     if ack != "\x06":
-        raise Exception("Radio did not ACK first command")
+        raise errors.RadioError("Radio did not ACK first command")
 
     radio.pipe.write("\x02")
     ident = radio.pipe.read(8)
     if len(ident) != 8:
         print util.hexprint(ident)
-        raise Exception("Radio did not send identification")
+        raise errors.RadioError("Radio did not send identification")
 
     radio.pipe.write("\x06")
     if radio.pipe.read(1) != "\x06":
-        raise Exception("Radio did not ACK ident")
+        raise errors.RadioError("Radio did not ACK ident")
 
 def uv3r_prep(radio):
     for i in range(0, 10):
         try:
             return _uv3r_prep(radio)
-        except Exception, e:
+        except errors.RadioError, e:
             time.sleep(1)
 
     raise e
