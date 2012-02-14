@@ -272,7 +272,7 @@ class Memory:
                   "Duplex", "Offset", "Tone",
                   "rToneFreq", "cToneFreq", "DtcsCode",
                   "DtcsPolarity", "Mode", "TStep",
-                  "Skip",
+                  "Skip", "Comment",
                   "URCALL", "RPT1CALL", "RPT2CALL"]
 
     def __setattr__(self, name, val):
@@ -348,6 +348,7 @@ class Memory:
             "%s"   % self.mode,
             "%.2f" % self.tuning_step,
             "%s"   % self.skip,
+            "%s"   % self.comment,
             "", "", "", ""]
 
     class Callable:
@@ -474,6 +475,7 @@ class DVMemory(Memory):
             "%s"   % self.mode,
             "%.2f" % self.tuning_step,
             "%s"   % self.skip,
+            "%s" % self.comment,
             "%s"   % self.dv_urcall,
             "%s"   % self.dv_rpt1call,
             "%s"   % self.dv_rpt2call,
@@ -601,6 +603,7 @@ class RadioFeatures:
         "has_cross"           : BOOLEAN,
         "has_infinite_number" : BOOLEAN,
         "has_nostep_tuning"   : BOOLEAN,
+        "has_comment"         : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
@@ -694,6 +697,9 @@ class RadioFeatures:
         self.init("has_nostep_tuning", False,
                   "Indicates that the radio does not require a valid " +
                   "tuning step to store a frequency")
+        self.init("has_comment", False,
+                  "Indicates that the radio supports storing a comment " +
+                  "with each memory")
 
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")

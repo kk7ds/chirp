@@ -72,6 +72,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         rf.memory_bounds = (0, len(self.memories))
         rf.has_infinite_number = True
         rf.has_nostep_tuning = True
+        rf.has_comment = True
 
         rf.valid_modes = list(chirp_common.MODES)
         rf.valid_tmodes = list(chirp_common.TONE_MODES)
@@ -137,13 +138,8 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         f = file(self._filename, "rU")
         header = f.readline().strip()
 
-        if '"' in header:
-            quote = '"'
-        else:
-            quote = None
-
         f.seek(0, 0)
-        reader = csv.reader(f, delimiter=chirp_common.SEPCHAR, quotechar=quote)
+        reader = csv.reader(f, delimiter=chirp_common.SEPCHAR, quotechar='"')
 
         good = 0
         lineno = 0

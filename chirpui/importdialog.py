@@ -527,7 +527,7 @@ class ImportDialog(gtk.Dialog):
             self.col_oloc   : _("Location"),
             self.col_name   : _("Name"),
             self.col_freq   : _("Frequency"),
-            self.col_comm   : "",
+            self.col_comm   : _("Comment"),
             }
 
         self.types = {
@@ -548,7 +548,7 @@ class ImportDialog(gtk.Dialog):
         self.not_used_list = []
 
         self.build_ui()
-        self.set_default_size(400, 300)
+        self.set_default_size(600, 400)
 
         self.ww = WaitWindow(_("Preparing memory list..."), parent=parent)
         self.ww.show()

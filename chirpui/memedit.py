@@ -75,6 +75,7 @@ class MemoryEditor(common.Editor):
         (_("Power")     , TYPE_STRING,  gtk.CellRendererCombo, ),
         (_("Tune Step") , TYPE_FLOAT,   gtk.CellRendererCombo, ),
         (_("Skip")      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Comment")   , TYPE_STRING,  gtk.CellRendererText,  ),
         ("_filled"      , TYPE_BOOLEAN, None,                  ),
         ("_hide_cols"   , TYPE_PYOBJECT,None,                  ),
         ("_extd"        , TYPE_STRING,  None,                  ),
@@ -95,6 +96,7 @@ class MemoryEditor(common.Editor):
         _("Tune Step") : 5.0,
         _("Tone Mode") : "",
         _("Skip")      : "",
+        _("Comment")   : "",
         }
 
     choices = {
@@ -880,7 +882,8 @@ class MemoryEditor(common.Editor):
                        self.col(_("Mode")), memory.mode,
                        self.col(_("Power")), memory.power or "",
                        self.col(_("Tune Step")), memory.tuning_step,
-                       self.col(_("Skip")), memory.skip)
+                       self.col(_("Skip")), memory.skip,
+                       self.col(_("Comment")), memory.comment)
 
         hide = self._get_cols_to_hide(iter)
         self.store.set(iter, self.col("_hide_cols"), hide)
@@ -934,6 +937,7 @@ class MemoryEditor(common.Editor):
         mem.power = power_levels[vals[self.col(_("Power"))]]
         mem.tuning_step = vals[self.col(_("Tune Step"))]
         mem.skip = vals[self.col(_("Skip"))]
+        mem.comment = vals[self.col(_("Comment"))]
         mem.empty = not vals[self.col("_filled")]
 
     def _get_memory(self, iter):
@@ -1061,6 +1065,7 @@ class MemoryEditor(common.Editor):
             ("has_name", _("Name")),
             ("has_ctone", _("ToneSql")),
             ("has_cross", _("Cross Mode")),
+            ("has_comment", _("Comment")),
             ("valid_tmodes", _("Tone Mode")),
             ("valid_tmodes", _("Tone")),
             ("valid_duplexes", _("Duplex")),
