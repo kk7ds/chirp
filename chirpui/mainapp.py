@@ -33,7 +33,7 @@ try:
 except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
-from chirp import platform, xml, generic_csv, directory
+from chirp import platform, xml, generic_csv, directory, util
 from chirp import ic9x, kenwood_live, idrp, vx7
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
@@ -179,6 +179,91 @@ class ChirpMain(gtk.Window):
         eset.connect("status", self.ev_status)
         eset.connect("usermsg", self.ev_usermsg)
         eset.connect("editor-selected", self.ev_editor_selected)
+
+    def do_diff_radio(self):
+        if self.tabs.get_n_pages() < 2:
+            common.show_error("Diff tabs requires at least two open tabs!")
+            return
+
+        esets = []
+        for i in range(0, self.tabs.get_n_pages()):
+            esets.append(self.tabs.get_nth_page(i))
+
+        d = gtk.Dialog(title="Diff Radios",
+                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
+                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
+                       parent=self)
+
+        choices = []
+        for eset in esets:
+            choices.append("%s %s (%s)" % (eset.rthread.radio.VENDOR,
+                                           eset.rthread.radio.MODEL,
+                                           eset.filename))
+        choice_a = miscwidgets.make_choice(choices, False, choices[0])
+        choice_a.show()
+        chan_a = gtk.SpinButton()
+        chan_a.get_adjustment().set_all(1, -1, 999, 1, 10, 0)
+        chan_a.show()
+        hbox = gtk.HBox(False, 3)
+        hbox.pack_start(choice_a, 1, 1, 1)
+        hbox.pack_start(chan_a, 0, 0, 0)
+        hbox.show()
+        d.vbox.pack_start(hbox, 0, 0, 0)
+
+        choice_b = miscwidgets.make_choice(choices, False, choices[1])
+        choice_b.show()
+        chan_b = gtk.SpinButton()
+        chan_b.get_adjustment().set_all(1, -1, 999, 1, 10, 0)
+        chan_b.show()
+        hbox = gtk.HBox(False, 3)
+        hbox.pack_start(choice_b, 1, 1, 1)
+        hbox.pack_start(chan_b, 0, 0, 0)
+        hbox.show()
+        d.vbox.pack_start(hbox, 0, 0, 0)
+
+        r = d.run()
+        sel_a = choice_a.get_active_text()
+        sel_chan_a = chan_a.get_value()
+        sel_b = choice_b.get_active_text()
+        sel_chan_b = chan_b.get_value()
+        d.destroy()
+        if r == gtk.RESPONSE_CANCEL:
+            return
+
+        if sel_a == sel_b:
+            common.show_error("Can't diff the same tab!")
+            return
+
+        print "Selected %s@%i and %s@%i" % (sel_a, sel_chan_a,
+                                            sel_b, sel_chan_b)
+
+        eset_a = esets[choices.index(sel_a)]
+        eset_b = esets[choices.index(sel_b)]
+
+        def _show_diff(mem_b, mem_a):
+            # Step 3: Show the diff
+            diff = common.simple_diff(mem_a, mem_b)
+            common.show_diff_blob("Differences", diff)
+
+        def _get_mem_b(mem_a):
+            # Step 2: Get memory b
+            job = common.RadioJob(_show_diff, "get_raw_memory", int(sel_chan_b))
+            job.set_cb_args(mem_a)
+            eset_b.rthread.submit(job)
+            
+        if sel_chan_a >= 0 and sel_chan_b >= 0:
+            # Diff numbered memory
+            # Step 1: Get memory a
+            job = common.RadioJob(_get_mem_b, "get_raw_memory", int(sel_chan_a))
+            eset_a.rthread.submit(job)
+        elif isinstance(eset_a.rthread.radio, chirp_common.CloneModeRadio) and\
+                isinstance(eset_b.rthread.radio, chirp_common.CloneModeRadio):
+            # Diff whole (can do this without a job, since both are clone-mode)
+            a = util.hexprint(eset_a.rthread.radio._mmap.get_packed())
+            b = util.hexprint(eset_b.rthread.radio._mmap.get_packed())
+            common.show_diff_blob("Differences", common.simple_diff(a, b))
+        else:
+            common.show_error("Cannot diff whole live-mode radios!")
 
     def do_new(self):
         eset = editorset.EditorSet(_("Untitled") + ".csv", self)
@@ -1009,6 +1094,8 @@ If you think that it is valid, you can select a radio model below to force an op
                         "move_up", "move_dn", "exchange",
                         "devshowraw", "devdiffraw"]:
             self.get_current_editorset().editors["memedit"].hotkey(_action)
+        elif action == "devdifftab":
+            self.do_diff_radio()
         elif action == "language":
             self.do_change_language()
         else:
@@ -1050,6 +1137,7 @@ If you think that it is valid, you can select a radio model below to force an op
       <menu action="viewdeveloper">
         <menuitem action="devshowraw"/>
         <menuitem action="devdiffraw"/>
+        <menuitem action="devdifftab"/>
       </menu>
       <menuitem action="language"/>
     </menu>
@@ -1095,6 +1183,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
             ('devshowraw', None, _('Show raw memory'), "<Control><Shift>r", None, self.mh),
             ('devdiffraw', None, _("Diff raw memories"), "<Control><Shift>d", None, self.mh),
+            ('devdifftab', None, _("Diff tabs"), None, None, self.mh),
             ('language', None, _("Change language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
             ('download', None, _("Download From Radio"), "<Alt>d", None, self.mh),

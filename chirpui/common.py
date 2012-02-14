@@ -15,9 +15,11 @@
 
 import gtk
 import gobject
+import pango
 
 import threading
 import time
+import os
 
 from chirp import errors
 from chirpui import reporting
@@ -284,3 +286,56 @@ def show_error_text(msg, text, parent=None):
     d.set_size_request(600, 400)
     d.run()
     d.destroy()
+
+def simple_diff(a, b):
+    lines_a = a.split(os.linesep)
+    lines_b = b.split(os.linesep)
+
+    diff = ""
+    for i in range(0, len(lines_a)):
+        if lines_a[i] != lines_b[i]:
+            diff += "-%s%s" % (lines_a[i], os.linesep)
+            diff += "+%s%s" % (lines_b[i], os.linesep)
+        else:
+            diff += " %s%s" % (lines_a[i], os.linesep)
+    return diff
+
+# A quick hacked up tool to show a blob of text in a dialog window
+# using fixed-width fonts. It also highlights lines that start with
+# a '-' in red bold font and '+' with blue bold font.
+def show_diff_blob(title, result):
+    d = gtk.Dialog(title=title,
+                   buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
+    b = gtk.TextBuffer()
+
+    tags = b.get_tag_table()
+    for color in ["red", "blue", "green", "grey"]:
+        tag = gtk.TextTag(color)
+        tag.set_property("foreground", color)
+        tags.add(tag)
+    tag = gtk.TextTag("bold")
+    tag.set_property("weight", pango.WEIGHT_BOLD)
+    tags.add(tag)
+
+    lines = result.split(os.linesep)
+    for line in lines:
+        if line.startswith("-"):
+            tags = ("red", "bold")
+        elif line.startswith("+"):
+            tags = ("blue", "bold")
+        else:
+            tags = ()
+        b.insert_with_tags_by_name(b.get_end_iter(), line + os.linesep, *tags)
+    v = gtk.TextView(b)
+    fontdesc = pango.FontDescription("Courier 11")
+    v.modify_font(fontdesc)
+    v.set_editable(False)
+    v.show()
+    s = gtk.ScrolledWindow()
+    s.add(v)
+    s.show()
+    d.vbox.pack_start(s, 1, 1, 1)
+    d.set_size_request(600, 400)
+    d.run()
+    d.destroy()
+

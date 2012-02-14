@@ -58,45 +58,6 @@ def iter_prev(store, iter):
         return None
     return store.get_iter((row - 1,))
 
-# A quick hacked up tool to show a blob of text in a dialog window
-# using fixed-width fonts. It also highlights lines that start with
-# a '-' in red bold font and '+' with blue bold font.
-def show_blob(title, result):
-    d = gtk.Dialog(title=title,
-                   buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
-    b = gtk.TextBuffer()
-
-    tags = b.get_tag_table()
-    for color in ["red", "blue", "green", "grey"]:
-        tag = gtk.TextTag(color)
-        tag.set_property("foreground", color)
-        tags.add(tag)
-    tag = gtk.TextTag("bold")
-    tag.set_property("weight", pango.WEIGHT_BOLD)
-    tags.add(tag)
-
-    lines = result.split(os.linesep)
-    for line in lines:
-        if line.startswith("-"):
-            tags = ("red", "bold")
-        elif line.startswith("+"):
-            tags = ("blue", "bold")
-        else:
-            tags = ()
-        b.insert_with_tags_by_name(b.get_end_iter(), line + os.linesep, *tags)
-    v = gtk.TextView(b)
-    fontdesc = pango.FontDescription("Courier 11")
-    v.modify_font(fontdesc)
-    v.set_editable(False)
-    v.show()
-    s = gtk.ScrolledWindow()
-    s.add(v)
-    s.show()
-    d.vbox.pack_start(s, 1, 1, 1)
-    d.set_size_request(600, 400)
-    d.run()
-    d.destroy()
-
 class MemoryEditor(common.Editor):
     cols = [
         (_("Loc")       , TYPE_INT,     gtk.CellRendererText,  ),
@@ -611,7 +572,7 @@ class MemoryEditor(common.Editor):
 
     def _show_raw(self, cur_pos):
         def idle_show_raw(result):
-            gobject.idle_add(show_blob,
+            gobject.idle_add(common.show_diff_blob,
                              _("Raw memory {number}").format(number=cur_pos),
                                                              result)
 
@@ -631,26 +592,13 @@ class MemoryEditor(common.Editor):
 
         raw = {}
 
-        def simple_diff(a, b):
-            lines_a = a.split(os.linesep)
-            lines_b = b.split(os.linesep)
-
-            diff = ""
-            for i in range(0, len(lines_a)):
-                if lines_a[i] != lines_b[i]:
-                    diff += "-%s%s" % (lines_a[i], os.linesep)
-                    diff += "+%s%s" % (lines_b[i], os.linesep)
-                else:
-                    diff += " %s%s" % (lines_a[i], os.linesep)
-            return diff
-
         def diff_raw(which, result):
             raw[which] = _("Memory {number}").format(number=which) + \
                 os.linesep + result
 
             if len(raw.keys()) == 2:
-                diff = simple_diff(raw[loc_a], raw[loc_b])
-                gobject.idle_add(show_blob,
+                diff = common.simple_diff(raw[loc_a], raw[loc_b])
+                gobject.idle_add(common.show_diff_blob,
                                  _("Diff of {a} and {b}").format(a=loc_a,
                                                                  b=loc_b),
                                  diff)
