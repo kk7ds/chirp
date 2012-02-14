@@ -306,6 +306,8 @@ class ImportDialog(gtk.Dialog):
 
             column.set_sort_column_id(k)
             self.__view.append_column(column)
+
+        self.__view.set_tooltip_column(self.col_tmsg)
         
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -482,11 +484,11 @@ class ImportDialog(gtk.Dialog):
             msgs = self.dst_radio.validate_memory(mem)
             errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
             if errs:
-                msg = _("Unsuppported by destination radio: {msgs}").format(\
-                msgs=",".join(msgs))
+                msg = _("Cannot be imported because:\r\n{msgs}").format(\
+                msgs=",".join(errs))
             else:
                 errs = []
-                msg = str(mem)
+                msg = "Memory can be imported into target"
 
             self.__store.append(row=(not bool(msgs),
                                      mem.number,
