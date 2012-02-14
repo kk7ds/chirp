@@ -203,7 +203,7 @@ class FT857_US_Radio(FT857Radio):
 
         _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
 
-        mem.freq = int(_mem.freq) * 10
+        self._get_memory(mem, _mem)
 
         mem.immutable = ["number", "skip", "bank_index", "rtone", "ctone",
                          "extd_number", "name", "dtcs", "tmode", "cross_mode",
@@ -212,10 +212,12 @@ class FT857_US_Radio(FT857Radio):
 
         return mem
 
-    def _set_special(self, memory):
-        _mem = self._memobj.sixtymeterchannels[abs(memory.number)-1]
-
-        _mem.freq = memory.freq / 10
+    def _set_special(self, mem):
+        if mem.mode not in ["USB", "LSB", "CW", "CWR", "NCW", "NCWR", "DIG"]:
+            raise errors.RadioError(_("Mode {mode} is not valid "
+                                      "in 60m channels").format(mode=mem.mode))
+        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+        self._set_memory(mem, _mem)
 
     def get_memory(self, number):
         if isinstance(number, str):

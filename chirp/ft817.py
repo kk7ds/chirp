@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util, memmap
+from chirp import chirp_common, yaesu_clone, util, memmap, errors
 from chirp import bitwise
 import time, os
 
@@ -263,6 +263,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
 
+        return self._get_memory(mem, _mem)
+
+    def _get_memory(self, mem, _mem):
         mem.freq = int(_mem.freq) * 10
         mem.offset = int(_mem.offset) * 10
         self.get_duplex(mem, _mem)
@@ -304,8 +307,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
-        was_valid = (self._memobj.visible[(mem.number-1)/8] >> (mem.number-1)%8) & 0x01
-
         if mem.empty:
             if mem.number == 1:
                 # as Dan says "yaesus are not good about that :("
@@ -314,7 +315,10 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             self._memobj.visible[(mem.number-1)/8] &= ~ (1 << (mem.number-1)%8)
             self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
             return
+        
+        self._set_memory(mem, _mem)
 
+    def _set_memory(self, mem, _mem):
         self._memobj.visible[(mem.number-1)/8] |= 1 << (mem.number-1)%8
         self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
 
@@ -419,19 +423,28 @@ class FT817ND_US_Radio(FT817Radio):
 
         _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
 
-        mem.freq = int(_mem.freq) * 10
+        mem = self._get_memory(mem, _mem)
 
-        mem.immutable = ["number", "skip", "bank_index", "rtone", "ctone",
+        mem.immutable = ["number", "skip", "rtone", "ctone",
                          "extd_number", "name", "dtcs", "tmode", "cross_mode",
-                         "dtcs_polarity", "power", "duplex", "offset", "mode",
-                         "tuning_step", "comment", "empty"]
+                         "dtcs_polarity", "power", "duplex", "offset",
+                         "comment", "empty"]
 
         return mem
 
-    def _set_special(self, memory):
-        _mem = self._memobj.sixtymeterchannels[abs(memory.number)-1]
+    def _set_special(self, mem):
+        cur_mem = self._get_special(mem.extd_number)
 
-        _mem.freq = memory.freq / 10
+        for key in cur_mem.immutable:
+            if cur_mem.__dict__[key] != mem.__dict__[key]:
+                raise errors.RadioError("Editing field `%s' " % key +
+                                        "is not supported on M-60x channels")
+
+        if mem.mode not in ["USB", "LSB", "CW", "CWR", "NCW", "NCWR", "DIG"]:
+            raise errors.RadioError(_("Mode {mode} is not valid "
+                                      "in 60m channels").format(mode=mem.mode))
+        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+        self._set_memory(mem, _mem)
 
     def get_memory(self, number):
         if isinstance(number, str):
