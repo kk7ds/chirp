@@ -45,8 +45,12 @@ def get_raw_memory(mmap, number):
     return MemoryMap(mmap[offset:offset+size])
 
 def get_freq(mmap):
+    if ord(mmap[10]) & 0x10:
+        mult = 6250
+    else:
+        mult = 5000
     val, = struct.unpack(">I", "\x00" + mmap[POS_FREQ:POS_FREQ+3])
-    return val * 5000
+    return val * mult
 
 def get_offset(mmap):
     val, = struct.unpack(">H", mmap[POS_OFFSET:POS_OFFSET+2])

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, ic9x_icf_ll
+from chirp import chirp_common, icf, ic9x_icf_ll, util
 
 class IC9xICFRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
@@ -25,7 +25,7 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank_index = True
+        rf.has_bank = False
         rf.memory_bounds = (0, self._upper)
         rf.has_sub_devices = True
         rf.valid_modes = ["FM", "AM"]
@@ -35,6 +35,10 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
             rf.valid_modes.append("DV")
             rf.valid_modes.append("NFM")
         return rf
+
+    def get_raw_memory(self, number):
+        raw = ic9x_icf_ll.get_raw_memory(self._mmap, number).get_packed()
+        return util.hexprint(raw)
 
     def get_memory(self, number):
         return ic9x_icf_ll.get_memory(self._mmap, number)
