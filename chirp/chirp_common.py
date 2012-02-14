@@ -854,7 +854,9 @@ class Radio:
                     valid = True
                     break
             if not valid:
-                msg = ValidationError("Frequency %.5f is out of range" % mem.freq)
+                msg = ValidationError(
+                    _("Frequency {freq} is out "
+                      "of supported range").format(freq=format_freq(mem.freq)))
                 msgs.append(msg)
 
         if mem.power and \
