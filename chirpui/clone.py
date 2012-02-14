@@ -204,8 +204,8 @@ class CloneThread(chirp_common.KillableThread):
         self.__progw = cloneprog.CloneProg(parent=parent, cancel=self.cancel)
 
     def cancel(self):
+        self.__radio.pipe.close()
         self.__cancelled = True
-        self.kill(CloneCancelledException)
 
     def run(self):
         print "Clone thread started"
