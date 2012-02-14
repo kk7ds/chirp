@@ -282,6 +282,8 @@ class ImportDialog(gtk.Dialog):
         self.__view = gtk.TreeView(self.__store)
         self.__view.show()
 
+        tips = gtk.Tooltips()
+
         for k in self.caps.keys():
             t = self.types[k]
 
@@ -304,6 +306,12 @@ class ImportDialog(gtk.Dialog):
             if k == self.col_nloc:
                 column.set_cell_data_func(rend, self._render, k)
 
+            if k in self.tips.keys():
+                print "Doing %s" % k
+                lab = gtk.Label(self.caps[k])
+                column.set_widget(lab)
+                tips.set_tip(lab, self.tips[k])
+                lab.show()
             column.set_sort_column_id(k)
             self.__view.append_column(column)
 
@@ -523,11 +531,16 @@ class ImportDialog(gtk.Dialog):
 
         self.caps = {
             self.col_import : self.ACTION,
-            self.col_nloc   : _("New location"),
-            self.col_oloc   : _("Location"),
+            self.col_nloc   : _("To"),
+            self.col_oloc   : _("From"),
             self.col_name   : _("Name"),
             self.col_freq   : _("Frequency"),
             self.col_comm   : _("Comment"),
+            }
+
+        self.tips = {
+            self.col_nloc : _("Location memory will be imported into"),
+            self.col_oloc : _("Location of memory in the file being imported"),
             }
 
         self.types = {
