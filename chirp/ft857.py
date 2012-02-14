@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import ft817, chirp_common
+from chirp import ft817, chirp_common, errors
 from chirp import bitwise
 
 mem_format = """
@@ -205,14 +205,21 @@ class FT857_US_Radio(FT857Radio):
 
         self._get_memory(mem, _mem)
 
-        mem.immutable = ["number", "skip", "bank_index", "rtone", "ctone",
+        mem.immutable = ["number", "skip", "rtone", "ctone",
                          "extd_number", "name", "dtcs", "tmode", "cross_mode",
-                         "dtcs_polarity", "power", "duplex", "offset", "mode",
+                         "dtcs_polarity", "power", "duplex", "offset",
                          "tuning_step", "comment", "empty"]
 
         return mem
 
     def _set_special(self, mem):
+        cur_mem = self._get_special(mem.extd_number)
+
+        for key in cur_mem.immutable:
+            if cur_mem.__dict__[key] != mem.__dict__[key]:
+                raise errors.RadioError("Editing field `%s' " % key +
+                                        "is not supported on M-60x channels")
+
         if mem.mode not in ["USB", "LSB", "CW", "CWR", "NCW", "NCWR", "DIG"]:
             raise errors.RadioError(_("Mode {mode} is not valid "
                                       "in 60m channels").format(mode=mem.mode))
