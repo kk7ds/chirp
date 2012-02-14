@@ -849,7 +849,8 @@ class Radio:
             msgs.append(msg)
 
         ts = mem.tuning_step
-        if rf.valid_tuning_steps and ts not in rf.valid_tuning_steps:
+        if rf.valid_tuning_steps and ts not in rf.valid_tuning_steps and \
+                not rf.has_nostep_tuning:
             msg = ValidationError("Tuning step %.2f not supported" % ts)
             msgs.append(msg)
 
