@@ -615,6 +615,10 @@ If you think that it is valid, you can select a radio model below to force an op
         if not settings:
             return
 
+        print "User selected %s %s on port %s" % (settings.radio_class.VENDOR,
+                                                  settings.radio_class.MODEL,
+                                                  settings.port)
+
         try:
             ser = serial.Serial(port=settings.port,
                                 baudrate=settings.radio_class.BAUD_RATE,
@@ -1296,7 +1300,10 @@ If you think that it is valid, you can select a radio model below to force an op
         if not os.path.exists(path):
             path = "/usr/share/pixmaps/chirp.png"
 
-        self.set_icon_from_file(path)
+        if os.path.exists(path):
+            self.set_icon_from_file(path)
+        else:
+            print "Icon %s not found" % path
 
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
