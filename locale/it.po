@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-16 12:02-0800\n"
+"POT-Creation-Date: 2012-02-16 12:06-0800\n"
 "PO-Revision-Date: 2012-02-15 11:42+0100\n"
 "Last-Translator: Fabio Rusconi <iz2qdh@gmail.com>\n"
 "Language-Team: English\n"
@@ -200,9 +200,7 @@ msgid "Options"
 msgstr "Opzioni"
 
 #: ../chirpui/importdialog.py:495
-msgid ""
-"Cannot be imported because:\r\n"
-"{msgs}"
+msgid "Cannot be imported because"
 msgstr ""
 
 #: ../chirpui/importdialog.py:513

@@ -492,8 +492,8 @@ class ImportDialog(gtk.Dialog):
             msgs = self.dst_radio.validate_memory(mem)
             errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
             if errs:
-                msg = _("Cannot be imported because:\r\n{msgs}").format(\
-                msgs=",".join(errs))
+                msg = _("Cannot be imported because") + ":\r\n"
+                msg += ",".join(errs)
             else:
                 errs = []
                 msg = "Memory can be imported into target"
