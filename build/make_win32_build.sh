@@ -12,6 +12,11 @@ export PATH=$PATH:/cygdrive/c/GTK/bin
 
 shift
 
+build_locale() {
+	/bin/find.exe . -name '*.py'
+	make -C locale
+}
+
 build_win32() {
 	echo Building Win32 executable...
 	/cygdrive/c/Python27/python.exe setup.py py2exe >> $LOG
@@ -28,7 +33,7 @@ copy_lib() {
 
 copy_data() {
 	mkdir dist
-	list="COPYING *.xsd stock_configs"
+	list="COPYING *.xsd stock_configs locale"
 	for i in $list; do
 		cp -rv $i dist >> $LOG
 	done
@@ -68,10 +73,12 @@ SectionEnd
 EOF
 	unix2dos chirp.nsi
 	/cygdrive/c/Program\ Files/NSIS/makensis chirp.nsi
+	chmod a+x $IST
 }
 
 rm -f $LOG
 
+build_locale
 copy_data
 build_win32
 copy_lib
