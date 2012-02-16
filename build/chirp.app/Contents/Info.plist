@@ -4,32 +4,23 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>****</string>
-				<string>fold</string>
-				<string>disk</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>chirp</string>
 	<key>CFBundleIconFile</key>
-	<string>drats_icon.icns</string>
+	<string>chirp</string>
 	<key>CFBundleIdentifier</key>
-	<string>chirp<string>
+	<string>com.danplanet.chirp</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>chirp</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
+	<key>CFBundleShortVersionString</key>
+        <string>0.1</string>
+        <key>CFBundleVersion</key>
+        <string>0.1</string>
+        <key>LSHasLocalizedDisplayName</key>
+        <false/>
+        <key>LSMinimumSystemVersion</key>
+        <string>10.5</string>
 </dict>
 </plist>
