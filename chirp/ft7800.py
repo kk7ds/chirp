@@ -142,7 +142,7 @@ def upload(radio):
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
             cur += length
-            time.sleep(0.01)
+            time.sleep(0.05)
 
             if radio.status_fn:
                 s = chirp_common.Status()
