@@ -67,12 +67,11 @@ else:
     except:
         pass
 
-if langs:
-    path = "locale"
-    gettext.bindtextdomain("CHIRP", localepath)
-    gettext.textdomain("CHIRP")
-    lang = gettext.translation("CHIRP", localepath, languages=langs,
-                               fallback=True)
+path = "locale"
+gettext.bindtextdomain("CHIRP", localepath)
+gettext.textdomain("CHIRP")
+lang = gettext.translation("CHIRP", localepath, languages=langs,
+                           fallback=True)
 
 # Python <2.6 does not have str.format(), which chirp uses to make translation
 # strings nicer. So, instead of installing the gettext standard "_()" function,
