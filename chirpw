@@ -54,18 +54,18 @@ if manual_language and manual_language != "Auto":
                    "Polish"  : "pl",
                    }
     try:
-        os.environ["LANG"] = lang_codes[manual_language]
+        langs = [lang_codes[manual_language]]
     except KeyError:
         print "Unsupported language `%s'" % manual_language
-
-langs = []
-lc, encoding = locale.getdefaultlocale()
-if (lc):
+else:
+    lc, encoding = locale.getdefaultlocale()
+    if (lc):
 	langs = [lc]
-try:
-    langs += os.getenv("LANG").split(":")
-except Exception:
-    pass
+    try:
+        langs += os.getenv("LANG").split(":")
+    except:
+        pass
+
 path = "locale"
 gettext.bindtextdomain("CHIRP", localepath)
 gettext.textdomain("CHIRP")
