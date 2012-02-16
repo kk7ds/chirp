@@ -1294,8 +1294,8 @@ class DstarMemoryEditor(MemoryEditor):
 
         return hide
 
-    def render(self, _, rend, model, iter, colnum):
-        MemoryEditor.render(self, _, rend, model, iter, colnum)
+    def render(self, null, rend, model, iter, colnum):
+        MemoryEditor.render(self, null, rend, model, iter, colnum)
 
         vals = model.get(iter, *tuple(range(0, len(self.cols))))
         val = vals[colnum]
@@ -1304,9 +1304,10 @@ class DstarMemoryEditor(MemoryEditor):
             rend.set_property("sensitive", sensitive)
 
         def d_unless_mode(mode):
-            _enabled(vals[self.col("Mode")] == mode)
+            _enabled(vals[self.col(_("Mode"))] == mode)
 
-        _dv_columns = ["URCALL", "RPT1CALL", "RPT2CALL", "Digital Code"]
+        _dv_columns = [_("URCALL"), _("RPT1CALL"), _("RPT2CALL"),
+                       _("Digital Code")]
         dv_columns = [self.col(x) for x in _dv_columns]
         if colnum in dv_columns:
             d_unless_mode("DV")
@@ -1320,10 +1321,10 @@ class DstarMemoryEditor(MemoryEditor):
 
         MemoryEditor._set_mem_vals(self, mem, vals, iter)
 
-        mem.dv_urcall = vals[self.col("URCALL")]
-        mem.dv_rpt1call = vals[self.col("RPT1CALL")]
-        mem.dv_rpt2call = vals[self.col("RPT2CALL")]
-        mem.dv_code = vals[self.col("Digital Code")]
+        mem.dv_urcall = vals[self.col(_("URCALL"))]
+        mem.dv_rpt1call = vals[self.col(_("RPT1CALL"))]
+        mem.dv_rpt2call = vals[self.col(_("RPT2CALL"))]
+        mem.dv_code = vals[self.col(_("Digital Code"))]
 
         return mem
 
