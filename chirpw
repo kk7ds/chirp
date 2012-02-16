@@ -49,6 +49,7 @@ if not os.path.exists(localepath):
 
 conf = config.get()
 manual_language = conf.get("language", "state")
+langs = []
 if manual_language and manual_language != "Auto":
     lang_codes = { "English" : "en_US",
                    "Polish"  : "pl",
@@ -66,10 +67,12 @@ else:
     except:
         pass
 
-path = "locale"
-gettext.bindtextdomain("CHIRP", localepath)
-gettext.textdomain("CHIRP")
-lang = gettext.translation("CHIRP", localepath, languages=langs, fallback=True)
+if langs:
+    path = "locale"
+    gettext.bindtextdomain("CHIRP", localepath)
+    gettext.textdomain("CHIRP")
+    lang = gettext.translation("CHIRP", localepath, languages=langs,
+                               fallback=True)
 
 # Python <2.6 does not have str.format(), which chirp uses to make translation
 # strings nicer. So, instead of installing the gettext standard "_()" function,
