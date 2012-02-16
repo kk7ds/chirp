@@ -27,13 +27,19 @@ do_build() {
     shift
     shift
 
-    ssh $HOST "cd $tmp && ./build/make_win32_build.sh $out $* && chmod 644 $out/*"
+    ssh $HOST "cd $tmp && ./build/make_win32_build.sh $out $* && chmod 755 $out/*"
 }
 
 grab_builds() {
     out=$1
 
     scp -r "$HOST:$out/*" dist
+}
+
+cleanup () {
+    tmp=$1
+
+    ssh $HOST "rm -Rf $tmp"
 }
 
 sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
@@ -43,3 +49,4 @@ tmp2=$(temp_dir output)
 copy_source $tmp1
 do_build $tmp1 $tmp2 $*
 grab_builds $tmp2
+cleanup $tmp1

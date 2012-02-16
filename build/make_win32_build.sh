@@ -73,7 +73,6 @@ SectionEnd
 EOF
 	unix2dos chirp.nsi
 	/cygdrive/c/Program\ Files/NSIS/makensis chirp.nsi
-	chmod a+x $IST
 }
 
 rm -f $LOG
