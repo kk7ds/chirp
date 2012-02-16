@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 VERSION=$(cat build/version)
 HOST=$1
@@ -10,7 +10,7 @@ if [ -z "$HOST" ]; then
 fi
 
 temp_dir() {
-    ssh $HOST "mktemp -d"
+    ssh $HOST "mktemp -d /tmp/${1}.XXXXXX"
 }
 
 copy_source() {
@@ -38,8 +38,8 @@ grab_builds() {
 
 sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
 
-tmp1=$(temp_dir)
-tmp2=$(temp_dir)
+tmp1=$(temp_dir build)
+tmp2=$(temp_dir output)
 copy_source $tmp1
 do_build $tmp1 $tmp2 $*
 grab_builds $tmp2
