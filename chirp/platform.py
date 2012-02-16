@@ -294,7 +294,30 @@ class Win32Platform(Platform):
         os.system("explorer %s" % path)
     
     def list_serial_ports(self):
-        return ["COM%i" % x for x in range(1, 8)]
+        import win32file
+        import win32con
+
+        ports = []
+        for i in range(1, 257):
+            portname = "COM%i" % i
+            try:
+                mode = win32con.GENERIC_READ | win32con.GENERIC_WRITE
+                port = \
+                    win32file.CreateFile(portname,
+                                         mode,
+                                         win32con.FILE_SHARE_READ,
+                                         None,
+                                         win32con.OPEN_EXISTING,
+                                         0,
+                                         None)
+                ports.append(portname)
+                win32file.CloseHandle(port)
+                port = None
+            except Exception, e:
+                print "%s: %s" % (portname, e)
+                pass
+
+        return ports
 
     def gui_open_file(self, start_dir=None, types=[]):
         # pylint: disable-msg=W0703,W0613
