@@ -232,6 +232,6 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         self.memories[number] = m
 
     def get_raw_memory(self, number):
-        return chirp_common.Memory.CSV_FORMAT + \
+        return ",".join(chirp_common.Memory.CSV_FORMAT) + \
             os.linesep + \
-            self.memories[number].to_csv()
+            ",".join(self.memories[number].to_csv())
