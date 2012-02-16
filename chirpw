@@ -70,22 +70,30 @@ path = "locale"
 gettext.bindtextdomain("CHIRP", localepath)
 gettext.textdomain("CHIRP")
 lang = gettext.translation("CHIRP", localepath, languages=langs, fallback=True)
-lang.install()
 
-# Require Python 2.6.0 or newer
-try:
-    pyver = sys.version.split()[0]
-    vmaj, vmin, vrel = pyver.split(".", 3)
-    if int(vmaj) < 2 or int(vmin) < 6:
-        raise Exception(_("Unsupported Python version "
-                          "({ver}>=v2.6.0 required)").format(ver=pyver))
-except Exception, e:
-    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, type=gtk.MESSAGE_ERROR)
-    d.set_markup("<b>Error Starting CHIRP</b>")
-    d.format_secondary_markup(str(e))
-    d.run()
-    d.destroy()
-    sys.exit(1)
+# Python <2.6 does not have str.format(), which chirp uses to make translation
+# strings nicer. So, instead of installing the gettext standard "_()" function,
+# we can install our own, which returns a string of the following class,
+# which emulates the new behavior, thus allowing us to run on older Python
+# versions.
+class CompatStr(str):
+    def format(self, **kwargs):
+        base = lang.gettext(self)
+        for k,v in kwargs.items():
+            base = base.replace("{%s}" % k, str(v))
+        return base
+
+pyver = sys.version.split()[0]
+vmaj, vmin, vrel = pyver.split(".", 3)
+if int(vmaj) < 2 or int(vmin) < 6:
+    # Python <2.6, emulate str.format()
+    import __builtin__
+    def lang_with_format(string):
+        return CompatStr(string)
+    __builtin__._ = lang_with_format
+else:
+    # Python >=2.6, use normal gettext behavior
+    lang.install()
 
 from chirpui import mainapp, config
 
