@@ -12,7 +12,7 @@ clean:
 	for mo in $(MOFILES); do rmdir -p `dirname $$mo`; done
 
 chirpui.pot:
-	find ../chirpui -name '*.py' > .files
+	/usr/bin/find ../chirpui -name '*.py' > .files
 	xgettext -L Python -k_ -o chirpui.pot -f .files $(XGT_OPTS)
 
 %.po: chirpui.pot
