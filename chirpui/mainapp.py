@@ -1329,8 +1329,7 @@ If you think that it is valid, you can select a radio model below to force an op
             print "Enabled OSX menubar integration"
         except ImportError:
             pass
-
-        mbar.show()
+        
         vbox.pack_start(mbar, 0, 0, 0)
 
         self.tabs = None
