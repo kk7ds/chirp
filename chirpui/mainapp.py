@@ -1322,6 +1322,14 @@ If you think that it is valid, you can select a radio model below to force an op
 
         self.menu_ag = None
         mbar = self.make_menubar()
+        try:
+            import gtkmacintegration
+            mbar.hide()
+            gtkmacintegration.gtk_mac_menu_set_menu_bar(mbar)
+            print "Enabled OSX menubar integration"
+        except ImportError:
+            pass
+
         mbar.show()
         vbox.pack_start(mbar, 0, 0, 0)
 
