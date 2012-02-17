@@ -135,7 +135,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
 
         self._blank()
 
-        f = file(self._filename, "rU")
+        f = file(self._filename, "r")
         header = f.readline().strip()
 
         f.seek(0, 0)
@@ -150,6 +150,9 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
                 continue
 
             if len(header) > len(line):
+                print "Line %i has %i columns, expected %i" % (lineno,
+                                                               len(line),
+                                                               len(header))
                 self.errors.append("Column number mismatch on line %i" % lineno)
                 continue
 
