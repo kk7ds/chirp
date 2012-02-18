@@ -16,7 +16,7 @@
 import struct
 import time
 import os
-from chirp import util, chirp_common, bitwise, memmap, errors
+from chirp import util, chirp_common, bitwise, memmap, errors, directory
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -137,6 +137,7 @@ CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                 chirp_common.PowerLevel("Low", watts=1.00)]
 
+@directory.register
 class KGUVD1PRadio(chirp_common.CloneModeRadio):
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
@@ -404,6 +405,7 @@ PUXING_777_BANDS = [
     (460000000, 520000000),
 ]
 
+@directory.register
 class Puxing777Radio(KGUVD1PRadio):
     VENDOR = "Puxing"
     MODEL = "PX-777"
@@ -635,6 +637,7 @@ PX2R_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.0),
                      chirp_common.PowerLevel("High", watts=2.0)]
 PX2R_CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ +"
 
+@directory.register
 class Puxing2RRadio(KGUVD1PRadio):
     VENDOR = "Puxing"
     MODEL = "PX-2R"
@@ -824,6 +827,7 @@ UV3R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                      chirp_common.PowerLevel("Low", watts=0.50)]
 UV3R_DTCS_POL = ["NN", "NR", "RN", "RR"]
 
+@directory.register
 class UV3RRadio(KGUVD1PRadio):
     VENDOR = "Baofeng"
     MODEL = "UV-3R"

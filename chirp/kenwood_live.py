@@ -19,7 +19,7 @@ import time
 
 NOCACHE = os.environ.has_key("CHIRP_NOCACHE")
 
-from chirp import chirp_common, errors
+from chirp import chirp_common, errors, directory
 
 DEBUG = True
 
@@ -203,6 +203,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             raise errors.RadioError("Radio refused delete of %i" % number)
         del self.__memcache[number]
 
+@directory.register
 class THD7Radio(KenwoodLiveRadio):
     MODEL = "TH-D7"
 
@@ -260,9 +261,11 @@ class THD7Radio(KenwoodLiveRadio):
 
         return mem
 
+@directory.register
 class THD7GRadio(THD7Radio):
     MODEL = "TH-D7G"
 
+@directory.register
 class TMD700Radio(KenwoodLiveRadio):
     MODEL = "TM-D700"
 
@@ -320,6 +323,7 @@ class TMD700Radio(KenwoodLiveRadio):
 
         return mem
 
+@directory.register
 class TMV7Radio(KenwoodLiveRadio):
     MODEL = "TM-V7"
 
@@ -431,6 +435,7 @@ THF6A_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 1
 THF6A_DUPLEX = dict(DUPLEX)
 THF6A_DUPLEX[3] = "split"
 
+@directory.register
 class THF6ARadio(KenwoodLiveRadio):
     MODEL = "TH-F6"
 
@@ -508,6 +513,7 @@ class THF6ARadio(KenwoodLiveRadio):
 
         return spec
 
+@directory.register
 class THF7ERadio(THF6ARadio):
     MODEL = "TH-F7"
 
@@ -516,6 +522,7 @@ D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
 D710_STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
+@directory.register
 class TMD710Radio(KenwoodLiveRadio):
     MODEL = "TM-D710"
     
@@ -597,6 +604,7 @@ class TMD710Radio(KenwoodLiveRadio):
 
         return spec
 
+@directory.register
 class TMV71Radio(TMD710Radio):
 	MODEL = "TM-V71"	
 
@@ -614,6 +622,7 @@ THK2_TONES.remove(199.5) # ??
 
 THK2_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "-/"
 
+@directory.register
 class THK2Radio(KenwoodLiveRadio):
     MODEL = "TH-K2"
 
@@ -695,6 +704,7 @@ class THK2Radio(KenwoodLiveRadio):
         return spec
             
 
+@directory.register
 class TM271Radio(THK2Radio):
     MODEL = "TM-271"
     

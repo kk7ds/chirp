@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, icx8x_ll, errors
+from chirp import chirp_common, icf, icx8x_ll, errors, directory
 
 def isUHF(pipe):
     md = icf.get_model_data(pipe)
@@ -24,6 +24,7 @@ def isUHF(pipe):
 
     return uhf
 
+@directory.register
 class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "IC-V82/U82"

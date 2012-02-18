@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import ft817, chirp_common, errors
+from chirp import ft817, chirp_common, errors, directory
 from chirp import bitwise
 
 mem_format = """
@@ -102,6 +102,7 @@ struct {
 
 
 
+@directory.register
 class FT857Radio(ft817.FT817Radio):
     MODEL = "FT-857"
 
@@ -181,6 +182,7 @@ SPECIAL_60M = {
     "M-605" : -5,
     }
 
+@directory.register
 class FT857_US_Radio(FT857Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
     # so we have to distinguish sub models

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util, memmap, errors
+from chirp import chirp_common, yaesu_clone, util, memmap, errors, directory
 from chirp import bitwise
 import time, os
 
@@ -186,6 +186,7 @@ struct {
 } sixtymeterchannels[5];
 """
 
+@directory.register
 class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     MODEL = "FT-817"
@@ -387,6 +388,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     def match_model(cls, filedata):
         return len(filedata) == cls._memsize
 
+@directory.register
 class FT817NDRadio(FT817Radio):
     MODEL = "FT-817ND (Intl versions)"
 
@@ -403,6 +405,7 @@ SPECIAL_60M = {
     "M-605" : -5,
     }
 
+@directory.register
 class FT817ND_US_Radio(FT817Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
     # so we have to distinguish sub models

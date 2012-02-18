@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, errors, util
+from chirp import chirp_common, errors, util, directory
 from chirp import bitwise, memmap
 import time, struct
 
@@ -160,6 +160,7 @@ EXCH_R = "R\x00\x00\x00\x00"
 EXCH_W = "W\x00\x00\x00\x00"
 
 
+@directory.register
 class THD72Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"

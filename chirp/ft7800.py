@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-from chirp import chirp_common, yaesu_clone, memmap
+from chirp import chirp_common, yaesu_clone, memmap, directory
 from chirp import bitwise, util, errors
 
 ACK = chr(0x06)
@@ -370,6 +370,7 @@ class FT7800BankModel(chirp_common.BankModel):
                 banks.append(bank)
         return banks
 
+@directory.register
 class FT7800Radio(FTx800Radio):
     MODEL = "FT-7800"
 
@@ -428,6 +429,7 @@ struct {
 u8 checksum;
 """
 
+@directory.register
 class FT8800Radio(FTx800Radio):
     MODEL = "FT-8800"
 
@@ -539,6 +541,7 @@ struct {
 u8 checksum;
 """
 
+@directory.register
 class FT8900Radio(FT8800Radio):
     MODEL = "FT-8900"
 

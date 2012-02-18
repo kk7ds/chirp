@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util
+from chirp import chirp_common, yaesu_clone, util, directory
 from chirp import bitwise
 
 mem_format = """
@@ -158,6 +158,7 @@ class VX7BankModel(chirp_common.BankModel):
                     banks.append(bank)
         return banks
 
+@directory.register
 class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
     VENDOR = "Yaesu"

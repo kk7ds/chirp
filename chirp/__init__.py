@@ -14,3 +14,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 CHIRP_VERSION="0.1.13dev"
+
+import os
+import sys
+from glob import glob
+
+module_dir = os.path.dirname(sys.modules["chirp"].__file__)
+__all__ = []
+for i in glob(os.path.join(module_dir, "*.py")):
+    name = os.path.basename(i)[:-3]
+    if not name.startswith("__"):
+        __all__.append(name)

@@ -16,7 +16,7 @@
 import time
 import threading
 
-from chirp import chirp_common, errors, memmap, ic9x_ll, util, icf
+from chirp import chirp_common, errors, memmap, ic9x_ll, util, icf, directory
 
 IC9xA_SPECIAL = {}
 IC9xA_SPECIAL_REV = {}
@@ -70,6 +70,7 @@ class IC9xBank(icf.IcomBank):
         banks[self.index] = name
         self._model._radio._ic9x_set_banks(banks)
 
+@directory.register
 class IC9xRadio(icf.IcomLiveRadio):
     MODEL = "IC-91/92AD"
 

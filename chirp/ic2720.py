@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, util
+from chirp import chirp_common, icf, util, directory
 from chirp import bitwise
 
 mem_format = """
@@ -67,6 +67,7 @@ POWER_LEVELS_UHF = [chirp_common.PowerLevel("High", watts=35),
                     chirp_common.PowerLevel("Low", watts=5),
                     chirp_common.PowerLevel("Mid", watts=15)]
 
+@directory.register
 class IC2720Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-2720H"

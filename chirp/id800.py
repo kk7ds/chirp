@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors
+from chirp import chirp_common, icf, errors, directory
 from chirp import bitwise
 
 mem_format = """
@@ -104,6 +104,7 @@ for i in range(0, 5):
 ALPHA_CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 NUMERIC_CHARSET = "0123456789+-=*/()|"
 
+@directory.register
 class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "ID-800H"

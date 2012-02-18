@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util
+from chirp import chirp_common, icf, errors, util, directory
 from chirp import bitwise
 from chirp.memmap import MemoryMap
 
@@ -79,6 +79,7 @@ class ICT70Bank(icf.IcomBank):
         _bank = self._model._radio._memobj.bank_names[self.index]
         _bank.name = name.ljust(8)[:8]
 
+@directory.register
 class ICT70Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-T70"

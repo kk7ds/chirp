@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util
+from chirp import chirp_common, yaesu_clone, util, directory
 from chirp import bitwise
 
 mem_format = """
@@ -60,6 +60,7 @@ STEPS.remove(30.0)
 STEPS.append(100.0)
 STEPS.append(9.0)
 
+@directory.register
 class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util
+from chirp import chirp_common, icf, errors, util, directory
 from chirp import bitwise;
 
 mem_format = """
@@ -93,6 +93,7 @@ class IC2820Bank(icf.IcomBank):
         _banks = self._model._radio._memobj.bank_names
         _banks[self.index].name = str(name).ljust(8)[:8]
 
+@directory.register
 class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "IC-2820H"

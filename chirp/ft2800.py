@@ -17,7 +17,7 @@ import time
 import struct
 import os
 
-from chirp import util, memmap, chirp_common, bitwise
+from chirp import util, memmap, chirp_common, bitwise, directory
 from chirp.yaesu_clone import YaesuCloneModeRadio
 
 DEBUG = os.getenv("CHIRP_DEBUG") and True or False
@@ -162,6 +162,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=65),
                 ]
 CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + "()+-=*/???|_"
 
+@directory.register
 class FT2800Radio(YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-2800M"

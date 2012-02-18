@@ -23,6 +23,7 @@ from serial import Serial
 sys.path.insert(0, "../")
 
 from chirp import CHIRP_VERSION
+from chirp import *
 from chirp import chirp_common, directory, generic_csv, import_logic
 from chirp import errors
 

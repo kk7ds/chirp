@@ -16,11 +16,12 @@
 import os
 import csv
 
-from chirp import chirp_common, errors
+from chirp import chirp_common, errors, directory
 
 class OmittedHeaderError(Exception):
     pass
 
+@directory.register
 class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Generic"
     MODEL = "CSV"

@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-from chirp import chirp_common, yaesu_clone, memmap, bitwise
+from chirp import chirp_common, yaesu_clone, memmap, bitwise, directory
 
 ACK = "\x06"
 
@@ -131,6 +131,7 @@ STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "P", "S"]
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
 
+@directory.register
 class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"

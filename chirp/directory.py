@@ -16,92 +16,32 @@
 import os
 import tempfile
 
-from chirp import id800, id880, ic2820, ic2200, ic9x, icx8x, ic2100, ic2720
-from chirp import icq7, icomciv, idrp, icf, ic9x_icf, icw32, ict70
-from chirp import vx3, vx5, vx6, vx7, vx8, ft2800, ft7800, ft50, ft60, ft817, ft857
-from chirp import kenwood_live, tmv71, thd72
-from chirp import alinco
-from chirp import wouxun
-from chirp import xml, chirp_common, generic_csv, util, rfinder, errors
+from chirp import icf
+from chirp import chirp_common, util, rfinder, errors
 
-DRV_TO_RADIO = {
-    # Virtual/Generic
-    "csv"            : generic_csv.CSVRadio,
-    "xml"            : xml.XMLRadio,
+def radio_class_id(cls):
+    ident = "%s_%s" % (cls.VENDOR, cls.MODEL)
+    if cls.VARIANT:
+        ident += "_%s" % cls.VARIANT
+    ident = ident.replace("/", "_")
+    ident = ident.replace(" ", "_")
+    ident = ident.replace("(", "")
+    ident = ident.replace(")", "")
+    return ident
 
-    # Icom
-    "ic2720"         : ic2720.IC2720Radio,
-    "ic2820"         : ic2820.IC2820Radio,
-    "ic2200"         : ic2200.IC2200Radio,
-    "ic2100"         : ic2100.IC2100Radio,
-    "ic9x"           : ic9x.IC9xRadio,
-    "id800"          : id800.ID800v2Radio,
-    "id880"          : id880.ID880Radio,
-    "icx8x"          : icx8x.ICx8xRadio,
-    "idrpx000v"      : idrp.IDRPx000V,
-    "icq7"           : icq7.ICQ7Radio,
-    "icw32"          : icw32.ICW32ARadio,
-    "ict70"          : ict70.ICT70Radio,
-    "icom7200"       : icomciv.Icom7200Radio,
-    "ic9xicf"        : ic9x_icf.IC9xICFRadio,
+def register(cls):
+    global DRV_TO_RADIO
+    ident = radio_class_id(cls)
+    if ident in DRV_TO_RADIO.keys():
+        raise Exception("Duplicate radio driver id `%s'" % ident)
+    DRV_TO_RADIO[ident] = cls
+    RADIO_TO_DRV[cls] = ident
+    print "Registered %s = %s" % (ident, cls.__name__)
 
-    # Yaesu
-    "vx3"            : vx3.VX3Radio,
-    "vx5"            : vx5.VX5Radio,
-    "vx6"            : vx6.VX6Radio,
-    "vx7"            : vx7.VX7Radio,
-    "vx8"            : vx8.VX8Radio,
-    "vx8d"           : vx8.VX8DRadio,
-    "ft2800"         : ft2800.FT2800Radio,
-    "ft7800"         : ft7800.FT7800Radio,
-    "ft8800"         : ft7800.FT8800Radio,
-    "ft8900"         : ft7800.FT8900Radio,
-    #"ft50"           : ft50.FT50Radio,
-    "ft60"           : ft60.FT60Radio,
-    "ft817"          : ft817.FT817Radio,
-    "ft817nd"        : ft817.FT817NDRadio,
-    "ft817nd-us"     : ft817.FT817ND_US_Radio,
-    "ft857"          : ft857.FT857Radio,
-    "ft857-us"          : ft857.FT857_US_Radio,
+    return cls
 
-    # Kenwood
-    "thd7"           : kenwood_live.THD7Radio,
-    "thd7g"          : kenwood_live.THD7GRadio,
-    "thd72"          : thd72.THD72Radio,
-    "tm271"          : kenwood_live.TM271Radio,
-    "tmd700"         : kenwood_live.TMD700Radio,
-    "tmd710"         : kenwood_live.TMD710Radio,
-    "tmv7"           : kenwood_live.TMV7RadioSub,
-    "thk2"           : kenwood_live.THK2Radio,
-    "thf6"           : kenwood_live.THF6ARadio,
-    "thf7"           : kenwood_live.THF7ERadio,
-    "v71a"           : kenwood_live.TMV71Radio,
-
-    # Jetstream
-    "jt220m"         : alinco.JT220MRadio,
-
-    # Alinco
-    "dr03"           : alinco.DR03Radio,
-    "dr06"           : alinco.DR06Radio,
-    "dr135"          : alinco.DR135Radio,
-    "dr235"          : alinco.DR235Radio,
-    "dr435"          : alinco.DR435Radio,
-    "dj596"          : alinco.DJ596Radio,
-
-    # Wouxun
-    "kguvd1p"        : wouxun.KGUVD1PRadio,
-
-    # Puxing
-    "px777"          : wouxun.Puxing777Radio,
-    "px2r"           : wouxun.Puxing2RRadio,
-   
-    # Baofeng
-    "uv3r"	     : wouxun.UV3RRadio,
-}
-
+DRV_TO_RADIO = {}
 RADIO_TO_DRV = {}
-for __key, __val in DRV_TO_RADIO.items():
-    RADIO_TO_DRV[__val] = __key
 
 def get_radio(driver):
     if DRV_TO_RADIO.has_key(driver):
@@ -146,13 +86,13 @@ def get_radio_by_image(image_file):
         return rf
     
     if image_file.lower().endswith(".chirp"):
-        return xml.XMLRadio(image_file)
+        return get_radio("Generic_XML")(image_file)
 
     if image_file.lower().endswith(".csv"):
-        return generic_csv.CSVRadio(image_file)
+        return get_radio("Generic_CSV")(image_file)
 
     if icf.is_9x_icf(image_file):
-        return ic9x_icf.IC9xICFRadio(image_file)
+        return get_radio("Icom_IC91_92AD_ICF")(image_file)
 
     if icf.is_icf_file(image_file):
         tempf = tempfile.mktemp()

@@ -13,8 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, ft50_ll
+from chirp import chirp_common, yaesu_clone, ft50_ll, directory
 
+# Not working, don't register
+#@directory.register
 class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"

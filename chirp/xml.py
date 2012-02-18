@@ -16,7 +16,7 @@
 import os
 import libxml2
 
-from chirp import chirp_common, errors, xml_ll, platform
+from chirp import chirp_common, errors, xml_ll, platform, directory
 
 def validate_doc(doc):
     basepath = platform.get_platform().executable_path()
@@ -61,6 +61,7 @@ def default_banks():
 
     return banks
 
+@directory.register
 class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Generic"
     MODEL = "XML"

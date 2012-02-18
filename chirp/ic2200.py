@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, util
+from chirp import chirp_common, icf, util, directory
 from chirp import bitwise
 
 mem_format = """
@@ -83,6 +83,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=65),
                 chirp_common.PowerLevel("MidLow", watts=10),
                 chirp_common.PowerLevel("Low", watts=5)]
 
+@directory.register
 class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "IC-2200H"

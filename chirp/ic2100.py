@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, util
+from chirp import chirp_common, icf, util, directory
 from chirp import bitwise, memmap
 
 mem_format = """
@@ -82,6 +82,7 @@ TMODES = ["", "Tone", "", "TSQL"]
 DUPLEX = ["", "", "+", "-"]
 STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 
+@directory.register
 class IC2100Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-2100H"

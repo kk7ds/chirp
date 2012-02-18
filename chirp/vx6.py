@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone
+from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 
 # flags.{even|odd}_pskip: These are actually "preferential *scan* channels".
@@ -108,6 +108,7 @@ POWER_LEVELS_220 = [chirp_common.PowerLevel("Hi", watts=1.50),
                 chirp_common.PowerLevel("L2", watts=0.50),
                 chirp_common.PowerLevel("L1", watts=0.20)]
 
+@directory.register
 class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 19200
     VENDOR = "Yaesu"

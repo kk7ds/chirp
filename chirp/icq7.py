@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util
+from chirp import chirp_common, icf, errors, util, directory
 from chirp import bitwise
 from chirp.memmap import MemoryMap
 from chirp.chirp_common import to_GHz, from_GHz
@@ -47,6 +47,7 @@ DUPLEX = ["", "", "-", "+"]
 MODES  = ["FM", "WFM", "AM"]
 STEPS =  [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
+@directory.register
 class ICQ7Radio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-Q7A"

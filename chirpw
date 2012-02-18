@@ -98,6 +98,7 @@ else:
     # Python >=2.6, use normal gettext behavior
     lang.install()
 
+from chirp import *
 from chirpui import mainapp, config
 
 a = mainapp.ChirpMain()

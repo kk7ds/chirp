@@ -1,6 +1,6 @@
 
 import struct
-from chirp import chirp_common, icf, util, errors, bitwise, ic9x_ll
+from chirp import chirp_common, icf, util, errors, bitwise, ic9x_ll, directory
 from chirp.memmap import MemoryMap
 
 DEBUG = True
@@ -164,6 +164,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         f = self._recv_frame()
         print "Result:\n%s" % util.hexprint(f.get_data())
 
+@directory.register
 class Icom7200Radio(IcomCIVRadio):
     MODEL = "7200"
     _model = "\x76"

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf
+from chirp import chirp_common, icf, directory
 from chirp import bitwise
 
 mem_format = """
@@ -141,6 +141,7 @@ class ID880Bank(icf.IcomBank):
         _bank = self._model._radio._memobj.bank_names[self.index]
         _bank.name = name.ljust(6)[:6]
 
+@directory.register
 class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Icom"
     MODEL = "ID-880H"
@@ -364,8 +365,11 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return calls
         
+# This radio isn't really supported yet and detects as a conflict with
+# the ID-880. So, don't register right now
+#@directory.register
 class ID80Radio(ID880Radio):
-    MODEL = "ID-880H"
+    MODEL = "ID-80H"
 
     _model = "\x31\x55\x00\x01"
     

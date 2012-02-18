@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util
+from chirp import chirp_common, icf, errors, util, directory
 from chirp import bitwise
 
 mem_format = """
@@ -61,6 +61,7 @@ struct {
 DUPLEX = ["", "", "-", "+"]
 TONE = ["", "", "Tone", "TSQL"]
 
+@directory.register
 class ICW32ARadio(icf.IcomCloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-W32A"

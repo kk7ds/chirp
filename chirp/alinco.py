@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, bitwise, memmap, errors
+from chirp import chirp_common, bitwise, memmap, errors, directory
 
 import time
 
@@ -288,6 +288,7 @@ class DRx35Radio(AlincoStyleRadio):
 
         _mem.name = self._set_name(mem, _mem)
 
+@directory.register
 class DR03Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR03T"
@@ -301,6 +302,7 @@ class DR03Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x28)
 
+@directory.register
 class DR06Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR06T"
@@ -314,6 +316,7 @@ class DR06Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x50)
             
+@directory.register
 class DR135Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR135T"
@@ -327,6 +330,7 @@ class DR135Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x01) and filedata[0x65] == chr(0x44)
 
+@directory.register
 class DR235Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR235T"
@@ -340,6 +344,7 @@ class DR235Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x02) and filedata[0x65] == chr(0x22)
 
+@directory.register
 class DR435Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR435T"
@@ -366,6 +371,7 @@ DJ596_TONES.remove(206.5)
 DJ596_TONES.remove(229.1)
 DJ596_TONES.remove(254.1)
 
+@directory.register
 class DJ596Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DJ596"
@@ -382,6 +388,7 @@ class DJ596Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x45) and filedata[0x65] == chr(0x01)
 
+@directory.register
 class JT220MRadio(DRx35Radio):
     VENDOR = "Jetstream"
     MODEL = "JT220M"
