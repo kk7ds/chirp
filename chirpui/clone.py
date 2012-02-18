@@ -84,7 +84,7 @@ class CloneSettingsDialog(gtk.Dialog):
         if last_vendor not in vendors.keys():
             last_vendor = vendors.keys()[0]
 
-        v = miscwidgets.make_choice(vendors.keys(), False, last_vendor)
+        v = miscwidgets.make_choice(sorted(vendors.keys()), False, last_vendor)
 
         def _changed(box, vendors, model):
             models = vendors[box.get_active_text()]
@@ -92,7 +92,7 @@ class CloneSettingsDialog(gtk.Dialog):
             added_models = []
 
             model.get_model().clear()
-            for rclass in models:
+            for rclass in sorted(models, key=lambda c: c.__name__):
                 if rclass.MODEL not in added_models:
                     model.append_text(rclass.MODEL)
                     added_models.append(rclass.MODEL)
