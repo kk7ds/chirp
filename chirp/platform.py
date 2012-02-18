@@ -314,7 +314,6 @@ class Win32Platform(Platform):
                 win32file.CloseHandle(port)
                 port = None
             except Exception, e:
-                print "%s: %s" % (portname, e)
                 pass
 
         return ports
