@@ -662,7 +662,8 @@ class Puxing2RRadio(KGUVD1PRadio):
 
     @classmethod
     def match_model(cls, filedata):
-        return len(filedata) == cls._memsize
+        return (len(filedata) == cls._memsize) and \
+            filedata[-16:] != "IcomCloneFormat3"
 
     def sync_in(self):
         self._mmap = puxing_2r_download(self)
