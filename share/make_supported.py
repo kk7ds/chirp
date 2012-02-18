@@ -6,7 +6,10 @@ import serial
 sys.path.insert(0, ".")
 sys.path.insert(0, "..")
 
-from chirp import directory, chirp_common
+tmp = sys.stdout
+sys.stdout = sys.stderr
+from chirp import *
+sys.stdout = tmp
 
 RF = chirp_common.RadioFeatures()
 KEYS = [x for x in sorted(RF.__dict__.keys()) \
@@ -103,7 +106,7 @@ models = {
     "z_Other" : [],
 }
 
-exclude = [directory.DRV_TO_RADIO["icom7200"]]
+exclude = [directory.DRV_TO_RADIO["Icom_7200"]]
 
 for radio in directory.DRV_TO_RADIO.values():
     if radio in exclude:
