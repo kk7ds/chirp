@@ -1,4342 +1,1050 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>CHIRP - it.po - Redmine</title>
-<meta name="description" content="Redmine" />
-<meta name="keywords" content="issue,bug,tracker" />
-<meta name="csrf-param" content="authenticity_token"/>
-<meta name="csrf-token" content="rT6Sp1Uwg9g/AhmPgXNlhVv/Mk1I98ntyZm8NyC8V6g="/>
-<link rel='shortcut icon' href='/favicon.ico?1310384844' />
-<link href="/stylesheets/application.css?1310384844" media="all" rel="stylesheet" type="text/css" />
-
-<script src="/javascripts/prototype.js?1310384844" type="text/javascript"></script>
-<script src="/javascripts/effects.js?1310384844" type="text/javascript"></script>
-<script src="/javascripts/dragdrop.js?1310384844" type="text/javascript"></script>
-<script src="/javascripts/controls.js?1310384844" type="text/javascript"></script>
-<script src="/javascripts/application.js?1310384844" type="text/javascript"></script>
-<script type="text/javascript">
-//<![CDATA[
-Event.observe(window, 'load', function(){ new WarnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
-//]]>
-</script>
-
-<!--[if IE 6]>
-    <style type="text/css">
-      * html body{ width: expression( document.documentElement.clientWidth < 900 ? '900px' : '100%' ); }
-      body {behavior: url(/stylesheets/csshover.htc?1310384844);}
-    </style>
-<![endif]-->
-
-<!-- page specific tags -->
-    <link href="/stylesheets/scm.css?1310384844" media="screen" rel="stylesheet" type="text/css" /></head>
-<body class="controller-attachments action-show">
-<div id="wrapper">
-<div id="wrapper2">
-<div id="top-menu">
-    <div id="account">
-        <ul><li><a href="/my/account" class="my-account">My account</a></li>
-<li><a href="/logout" class="logout">Sign out</a></li>
-<li><a href="/contact" class="contact">Contact me</a></li></ul>    </div>
-    <div id="loggedas">Logged in as <a href="/users/3">kk7ds</a></div>
-    <ul><li><a href="/" class="home">Home</a></li>
-<li><a href="/my/page" class="my-page">My page</a></li>
-<li><a href="/projects" class="projects">Projects</a></li>
-<li><a href="/admin" class="administration">Administration</a></li>
-<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
-      
-<div id="header">
-    
-    <div id="quick-search">
-        <form action="/search/index/chirp" method="get">
-        
-        <a href="/search/index/chirp" accesskey="4">Search</a>:
-        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
-        </form>
-        <select onchange="if (this.value != '') { window.location = this.value; }"><option value=''>Jump to a project...</option><option value="" disabled="disabled">---</option><option selected="selected" value="/projects/chirp?jump=attachments">CHIRP</option></select>
-    </div>
-    
-    
-    <!--<div style="margin-left: auto; margin-right: auto;"><img src="/chirp_logo.png" height="40"/></div>-->
-
-    <h1>CHIRP</h1>
-    
-    
-    <div id="main-menu">
-        <ul><li><a href="/projects/chirp" class="overview">Overview</a></li>
-<li><a href="/dan_links/download/chirp" class="download">Download</a></li>
-<li><a href="/projects/chirp/activity" class="activity">Activity</a></li>
-<li><a href="/projects/chirp/roadmap" class="roadmap">Roadmap</a></li>
-<li><a href="/projects/chirp/issues" class="issues">Issues</a></li>
-<li><a href="/projects/chirp/issues/new" accesskey="7" class="new-issue">New issue</a></li>
-<li><a href="/projects/chirp/news" class="news">News</a></li>
-<li><a href="/projects/chirp/wiki" class="wiki">Wiki</a></li>
-<li><a href="/projects/chirp/repository" class="repository">Repository</a></li>
-<li><a href="/projects/chirp/settings" class="settings">Settings</a></li></ul>
-    </div>
-    
-</div>
-
-<div class="nosidebar" id="main">
-    <div id="sidebar">        
-        
-        
-    </div>
-    
-    <div id="content">
-				
-        <h2>it.po</h2>
-
-<div class="attachments">
-<p>
-   <span class="author">Fabio Rusconi IZ2QDH, 02/16/2012 01:15 pm</span></p>
-<p><a href="/attachments/download/49/it.po">Download</a>   <span class="size">(25.8 kB)</span></p>
-
-</div>
-&nbsp;
-<div class="autoscroll">
-<table class="filecontent syntaxhl">
-<tbody>
-
-
-<tr><th class="line-num" id="L1"><a href="#L1">1</a></th><td class="line-code"><pre># English translations for CHIRP package.
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L2"><a href="#L2">2</a></th><td class="line-code"><pre># Copyright (C) 2011 Dan Smith &lt;dsmith@danplanet.com&gt;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L3"><a href="#L3">3</a></th><td class="line-code"><pre># This file is distributed under the same license as the CHIRP package.
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L4"><a href="#L4">4</a></th><td class="line-code"><pre># Dan Smith &lt;dan@theine&gt;, 2011.
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L5"><a href="#L5">5</a></th><td class="line-code"><pre>#
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L6"><a href="#L6">6</a></th><td class="line-code"><pre>msgid &quot;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L7"><a href="#L7">7</a></th><td class="line-code"><pre>msgstr &quot;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L8"><a href="#L8">8</a></th><td class="line-code"><pre>&quot;Project-Id-Version: CHIRP\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L9"><a href="#L9">9</a></th><td class="line-code"><pre>&quot;Report-Msgid-Bugs-To: \n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L10"><a href="#L10">10</a></th><td class="line-code"><pre>&quot;POT-Creation-Date: 2012-02-16 12:06-0800\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L11"><a href="#L11">11</a></th><td class="line-code"><pre>&quot;PO-Revision-Date: 2012-02-16 22:14+0100\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L12"><a href="#L12">12</a></th><td class="line-code"><pre>&quot;Last-Translator: Fabio Rusconi &lt;iz2qdh@gmail.com&gt;\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L13"><a href="#L13">13</a></th><td class="line-code"><pre>&quot;Language-Team: English\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L14"><a href="#L14">14</a></th><td class="line-code"><pre>&quot;Language: en_US\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L15"><a href="#L15">15</a></th><td class="line-code"><pre>&quot;MIME-Version: 1.0\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L16"><a href="#L16">16</a></th><td class="line-code"><pre>&quot;Content-Type: text/plain; charset=ISO-8859-1\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L17"><a href="#L17">17</a></th><td class="line-code"><pre>&quot;Content-Transfer-Encoding: 8bit\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L18"><a href="#L18">18</a></th><td class="line-code"><pre>&quot;Plural-Forms: nplurals=2; plural=(n != 1);\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L19"><a href="#L19">19</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L20"><a href="#L20">20</a></th><td class="line-code"><pre>#: ../chirpui/common.py:204
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L21"><a href="#L21">21</a></th><td class="line-code"><pre>msgid &quot;Completed&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L22"><a href="#L22">22</a></th><td class="line-code"><pre>msgstr &quot;Completato&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L23"><a href="#L23">23</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L24"><a href="#L24">24</a></th><td class="line-code"><pre>#: ../chirpui/common.py:205
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L25"><a href="#L25">25</a></th><td class="line-code"><pre>msgid &quot;idle&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L26"><a href="#L26">26</a></th><td class="line-code"><pre>msgstr &quot;pronto&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L27"><a href="#L27">27</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L28"><a href="#L28">28</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:52
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L29"><a href="#L29">29</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L30"><a href="#L30">30</a></th><td class="line-code"><pre>msgid &quot;Retrieving bank information&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L31"><a href="#L31">31</a></th><td class="line-code"><pre>msgstr &quot;Acquisizione lista memorie&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L32"><a href="#L32">32</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L33"><a href="#L33">33</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:75
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L34"><a href="#L34">34</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L35"><a href="#L35">35</a></th><td class="line-code"><pre>msgid &quot;Setting name on bank&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L36"><a href="#L36">36</a></th><td class="line-code"><pre>msgstr &quot;Scrittura Back List&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L37"><a href="#L37">37</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L38"><a href="#L38">38</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:85
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L39"><a href="#L39">39</a></th><td class="line-code"><pre>msgid &quot;Bank&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L40"><a href="#L40">40</a></th><td class="line-code"><pre>msgstr &quot;Bank&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L41"><a href="#L41">41</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L42"><a href="#L42">42</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:86
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L43"><a href="#L43">43</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:240
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L44"><a href="#L44">44</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:536
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L45"><a href="#L45">45</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:65
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L46"><a href="#L46">46</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:85
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L47"><a href="#L47">47</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:247
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L48"><a href="#L48">48</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:872
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L49"><a href="#L49">49</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:926
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L50"><a href="#L50">50</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1063
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L51"><a href="#L51">51</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1065
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L52"><a href="#L52">52</a></th><td class="line-code"><pre>msgid &quot;Name&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L53"><a href="#L53">53</a></th><td class="line-code"><pre>msgstr &quot;Nome&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L54"><a href="#L54">54</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L55"><a href="#L55">55</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:185
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L56"><a href="#L56">56</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L57"><a href="#L57">57</a></th><td class="line-code"><pre>msgid &quot;Updating bank index for memory {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L58"><a href="#L58">58</a></th><td class="line-code"><pre>msgstr &quot;Lettura memoria Raw {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L59"><a href="#L59">59</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L60"><a href="#L60">60</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:194
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L61"><a href="#L61">61</a></th><td class="line-code"><pre>msgid &quot;Updating bank information for memory {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L62"><a href="#L62">62</a></th><td class="line-code"><pre>msgstr &quot;Aggiornamento informazioni Bank per la memoria {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L63"><a href="#L63">63</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L64"><a href="#L64">64</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:200
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L65"><a href="#L65">65</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:229
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L66"><a href="#L66">66</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L67"><a href="#L67">67</a></th><td class="line-code"><pre>msgid &quot;Getting memory {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L68"><a href="#L68">68</a></th><td class="line-code"><pre>msgstr &quot;Lettura memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L69"><a href="#L69">69</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L70"><a href="#L70">70</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:214
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L71"><a href="#L71">71</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L72"><a href="#L72">72</a></th><td class="line-code"><pre>msgid &quot;Setting index for memory {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L73"><a href="#L73">73</a></th><td class="line-code"><pre>msgstr &quot;Scrittura memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L74"><a href="#L74">74</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L75"><a href="#L75">75</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:223
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L76"><a href="#L76">76</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L77"><a href="#L77">77</a></th><td class="line-code"><pre>msgid &quot;Getting bank for memory {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L78"><a href="#L78">78</a></th><td class="line-code"><pre>msgstr &quot;Lettura memoria Raw {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L79"><a href="#L79">79</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L80"><a href="#L80">80</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:238
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L81"><a href="#L81">81</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:63
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L82"><a href="#L82">82</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:172
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L83"><a href="#L83">83</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:246
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L84"><a href="#L84">84</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:315
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L85"><a href="#L85">85</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:335
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L86"><a href="#L86">86</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:349
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L87"><a href="#L87">87</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:423
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L88"><a href="#L88">88</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:435
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L89"><a href="#L89">89</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:459
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L90"><a href="#L90">90</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:461
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L91"><a href="#L91">91</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:534
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L92"><a href="#L92">92</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:548
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L93"><a href="#L93">93</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:550
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L94"><a href="#L94">94</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:591
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L95"><a href="#L95">95</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:593
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L96"><a href="#L96">96</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:621
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L97"><a href="#L97">97</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:822
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L98"><a href="#L98">98</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:870
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L99"><a href="#L99">99</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:895
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L100"><a href="#L100">100</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:907
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L101"><a href="#L101">101</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:924
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L102"><a href="#L102">102</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1230
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L103"><a href="#L103">103</a></th><td class="line-code"><pre>msgid &quot;Loc&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L104"><a href="#L104">104</a></th><td class="line-code"><pre>msgstr &quot;Loc&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L105"><a href="#L105">105</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L106"><a href="#L106">106</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:239
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L107"><a href="#L107">107</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:537
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L108"><a href="#L108">108</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:64
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L109"><a href="#L109">109</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:86
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L110"><a href="#L110">110</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:187
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L111"><a href="#L111">111</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:248
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L112"><a href="#L112">112</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:271
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L113"><a href="#L113">113</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:296
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L114"><a href="#L114">114</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:304
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L115"><a href="#L115">115</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:873
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L116"><a href="#L116">116</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:923
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L117"><a href="#L117">117</a></th><td class="line-code"><pre>msgid &quot;Frequency&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L118"><a href="#L118">118</a></th><td class="line-code"><pre>msgstr &quot;Frequenza&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L119"><a href="#L119">119</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L120"><a href="#L120">120</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:241
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L121"><a href="#L121">121</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L122"><a href="#L122">122</a></th><td class="line-code"><pre>msgid &quot;Index&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L123"><a href="#L123">123</a></th><td class="line-code"><pre>msgstr &quot;Indice Bank&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L124"><a href="#L124">124</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L125"><a href="#L125">125</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:302
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L126"><a href="#L126">126</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L127"><a href="#L127">127</a></th><td class="line-code"><pre>msgid &quot;Getting bank information for memory {num}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L128"><a href="#L128">128</a></th><td class="line-code"><pre>msgstr &quot;Lettura memoria Raw {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L129"><a href="#L129">129</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L130"><a href="#L130">130</a></th><td class="line-code"><pre>#: ../chirpui/bankedit.py:323
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L131"><a href="#L131">131</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L132"><a href="#L132">132</a></th><td class="line-code"><pre>msgid &quot;Getting bank information&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L133"><a href="#L133">133</a></th><td class="line-code"><pre>msgstr &quot;Lettura Bank List&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L134"><a href="#L134">134</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L135"><a href="#L135">135</a></th><td class="line-code"><pre>#: ../chirpui/inputdialog.py:81
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L136"><a href="#L136">136</a></th><td class="line-code"><pre>msgid &quot;An error has occurred&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L137"><a href="#L137">137</a></th><td class="line-code"><pre>msgstr &quot;Si  verificato un errore&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L138"><a href="#L138">138</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L139"><a href="#L139">139</a></th><td class="line-code"><pre>#: ../chirpui/inputdialog.py:130
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L140"><a href="#L140">140</a></th><td class="line-code"><pre>msgid &quot;Overwrite&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L141"><a href="#L141">141</a></th><td class="line-code"><pre>msgstr &quot;Sovrascrivere&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L142"><a href="#L142">142</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L143"><a href="#L143">143</a></th><td class="line-code"><pre>#: ../chirpui/inputdialog.py:133
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L144"><a href="#L144">144</a></th><td class="line-code"><pre>msgid &quot;File Exists&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L145"><a href="#L145">145</a></th><td class="line-code"><pre>msgstr &quot;File gi esistente&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L146"><a href="#L146">146</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L147"><a href="#L147">147</a></th><td class="line-code"><pre>#: ../chirpui/inputdialog.py:136
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L148"><a href="#L148">148</a></th><td class="line-code"><pre>msgid &quot;The file {name} already exists. Do you want to overwrite it?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L149"><a href="#L149">149</a></th><td class="line-code"><pre>msgstr &quot;Il file {name} esiste gi. Vuoi sovrascriverlo?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L150"><a href="#L150">150</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L151"><a href="#L151">151</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:90
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L152"><a href="#L152">152</a></th><td class="line-code"><pre>msgid &quot;Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L153"><a href="#L153">153</a></th><td class="line-code"><pre>msgstr &quot;La memoria {number}  gi stata importata. Scegliere un altro valore per 'Nuova posizione' prima di selezionare 'Importa'&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L154"><a href="#L154">154</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L155"><a href="#L155">155</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:121
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L156"><a href="#L156">156</a></th><td class="line-code"><pre>msgid &quot;Invalid value. Must be an integer.&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L157"><a href="#L157">157</a></th><td class="line-code"><pre>msgstr &quot;Valore non valido. Deve essere un numero intero.&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L158"><a href="#L158">158</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L159"><a href="#L159">159</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:130
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L160"><a href="#L160">160</a></th><td class="line-code"><pre>msgid &quot;Location {number} is already being imported&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L161"><a href="#L161">161</a></th><td class="line-code"><pre>msgstr &quot;La memoria {number}  gi stata importata&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L162"><a href="#L162">162</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L163"><a href="#L163">163</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:182
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L164"><a href="#L164">164</a></th><td class="line-code"><pre>msgid &quot;Updating URCALL list&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L165"><a href="#L165">165</a></th><td class="line-code"><pre>msgstr &quot;Aggiorno la lista URCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L166"><a href="#L166">166</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L167"><a href="#L167">167</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:187
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L168"><a href="#L168">168</a></th><td class="line-code"><pre>msgid &quot;Updating RPTCALL list&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L169"><a href="#L169">169</a></th><td class="line-code"><pre>msgstr &quot;Aggriorno la lista RPTCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L170"><a href="#L170">170</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L171"><a href="#L171">171</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:256
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L172"><a href="#L172">172</a></th><td class="line-code"><pre>msgid &quot;Setting memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L173"><a href="#L173">173</a></th><td class="line-code"><pre>msgstr &quot;Scrittura memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L174"><a href="#L174">174</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L175"><a href="#L175">175</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:260
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L176"><a href="#L176">176</a></th><td class="line-code"><pre>msgid &quot;Importing bank information&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L177"><a href="#L177">177</a></th><td class="line-code"><pre>msgstr &quot;Importazione informazioni Bank&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L178"><a href="#L178">178</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L179"><a href="#L179">179</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:264
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L180"><a href="#L180">180</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L181"><a href="#L181">181</a></th><td class="line-code"><pre>msgid &quot;Error importing memories:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L182"><a href="#L182">182</a></th><td class="line-code"><pre>msgstr &quot;Error reporting is enabled&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L183"><a href="#L183">183</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L184"><a href="#L184">184</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:376
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L185"><a href="#L185">185</a></th><td class="line-code"><pre>msgid &quot;All&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L186"><a href="#L186">186</a></th><td class="line-code"><pre>msgstr &quot;Tutte&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L187"><a href="#L187">187</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L188"><a href="#L188">188</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:382
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L189"><a href="#L189">189</a></th><td class="line-code"><pre>msgid &quot;None&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L190"><a href="#L190">190</a></th><td class="line-code"><pre>msgstr &quot;Nessuna&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L191"><a href="#L191">191</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L192"><a href="#L192">192</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:388
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L193"><a href="#L193">193</a></th><td class="line-code"><pre>msgid &quot;Inverse&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L194"><a href="#L194">194</a></th><td class="line-code"><pre>msgstr &quot;Inverti&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L195"><a href="#L195">195</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L196"><a href="#L196">196</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:394
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L197"><a href="#L197">197</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L198"><a href="#L198">198</a></th><td class="line-code"><pre>msgid &quot;Select&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L199"><a href="#L199">199</a></th><td class="line-code"><pre>msgstr &quot;Select Columns&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L200"><a href="#L200">200</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L201"><a href="#L201">201</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:416
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L202"><a href="#L202">202</a></th><td class="line-code"><pre>msgid &quot;Auto&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L203"><a href="#L203">203</a></th><td class="line-code"><pre>msgstr &quot;Auto&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L204"><a href="#L204">204</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L205"><a href="#L205">205</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:422
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L206"><a href="#L206">206</a></th><td class="line-code"><pre>msgid &quot;Reverse&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L207"><a href="#L207">207</a></th><td class="line-code"><pre>msgstr &quot;Rovescia&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L208"><a href="#L208">208</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L209"><a href="#L209">209</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:428
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L210"><a href="#L210">210</a></th><td class="line-code"><pre>msgid &quot;Adjust New Location&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L211"><a href="#L211">211</a></th><td class="line-code"><pre>msgstr &quot;Seleziona nuova posizione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L212"><a href="#L212">212</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L213"><a href="#L213">213</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:438
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L214"><a href="#L214">214</a></th><td class="line-code"><pre>msgid &quot;Confirm overwrites&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L215"><a href="#L215">215</a></th><td class="line-code"><pre>msgstr &quot;Conferma sovrascrittura&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L216"><a href="#L216">216</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L217"><a href="#L217">217</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:444
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L218"><a href="#L218">218</a></th><td class="line-code"><pre>msgid &quot;Options&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L219"><a href="#L219">219</a></th><td class="line-code"><pre>msgstr &quot;Opzioni&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L220"><a href="#L220">220</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L221"><a href="#L221">221</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:495
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L222"><a href="#L222">222</a></th><td class="line-code"><pre>msgid &quot;Cannot be imported because&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L223"><a href="#L223">223</a></th><td class="line-code"><pre>msgstr &quot;Non pu essere importato perch&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L224"><a href="#L224">224</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L225"><a href="#L225">225</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:513
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L226"><a href="#L226">226</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L227"><a href="#L227">227</a></th><td class="line-code"><pre>msgid &quot;Import From File&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L228"><a href="#L228">228</a></th><td class="line-code"><pre>msgstr &quot;Import from RFinder&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L229"><a href="#L229">229</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L230"><a href="#L230">230</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:514
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L231"><a href="#L231">231</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1196
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L232"><a href="#L232">232</a></th><td class="line-code"><pre>msgid &quot;Import&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L233"><a href="#L233">233</a></th><td class="line-code"><pre>msgstr &quot;Importa&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L234"><a href="#L234">234</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L235"><a href="#L235">235</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:534
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L236"><a href="#L236">236</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L237"><a href="#L237">237</a></th><td class="line-code"><pre>msgid &quot;To&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L238"><a href="#L238">238</a></th><td class="line-code"><pre>msgstr &quot;Tono&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L239"><a href="#L239">239</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L240"><a href="#L240">240</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:535
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L241"><a href="#L241">241</a></th><td class="line-code"><pre>msgid &quot;From&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L242"><a href="#L242">242</a></th><td class="line-code"><pre>msgstr &quot;Da&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L243"><a href="#L243">243</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L244"><a href="#L244">244</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:538
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L245"><a href="#L245">245</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:78
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L246"><a href="#L246">246</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:99
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L247"><a href="#L247">247</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:886
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L248"><a href="#L248">248</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:940
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L249"><a href="#L249">249</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1068
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L250"><a href="#L250">250</a></th><td class="line-code"><pre>msgid &quot;Comment&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L251"><a href="#L251">251</a></th><td class="line-code"><pre>msgstr &quot;Commento&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L252"><a href="#L252">252</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L253"><a href="#L253">253</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:542
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L254"><a href="#L254">254</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L255"><a href="#L255">255</a></th><td class="line-code"><pre>msgid &quot;Location memory will be imported into&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L256"><a href="#L256">256</a></th><td class="line-code"><pre>msgstr &quot;La memoria {number}  gi stata importata&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L257"><a href="#L257">257</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L258"><a href="#L258">258</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:543
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L259"><a href="#L259">259</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L260"><a href="#L260">260</a></th><td class="line-code"><pre>msgid &quot;Location of memory in the file being imported&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L261"><a href="#L261">261</a></th><td class="line-code"><pre>msgstr &quot;La memoria {number}  gi stata importata&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L262"><a href="#L262">262</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L263"><a href="#L263">263</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:566
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L264"><a href="#L264">264</a></th><td class="line-code"><pre>msgid &quot;Preparing memory list...&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L265"><a href="#L265">265</a></th><td class="line-code"><pre>msgstr &quot;Preparazione lista memorie...&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L266"><a href="#L266">266</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L267"><a href="#L267">267</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:575
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L268"><a href="#L268">268</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L269"><a href="#L269">269</a></th><td class="line-code"><pre>msgid &quot;Export To File&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L270"><a href="#L270">270</a></th><td class="line-code"><pre>msgstr &quot;Import from RFinder&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L271"><a href="#L271">271</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L272"><a href="#L272">272</a></th><td class="line-code"><pre>#: ../chirpui/importdialog.py:576
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L273"><a href="#L273">273</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1197
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L274"><a href="#L274">274</a></th><td class="line-code"><pre>msgid &quot;Export&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L275"><a href="#L275">275</a></th><td class="line-code"><pre>msgstr &quot;Esporta&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L276"><a href="#L276">276</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L277"><a href="#L277">277</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:269
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L278"><a href="#L278">278</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:483
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L279"><a href="#L279">279</a></th><td class="line-code"><pre>msgid &quot;Untitled&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L280"><a href="#L280">280</a></th><td class="line-code"><pre>msgstr &quot;Senza nome&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L281"><a href="#L281">281</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L282"><a href="#L282">282</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:316
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L283"><a href="#L283">283</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:715
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L284"><a href="#L284">284</a></th><td class="line-code"><pre>msgid &quot;CHIRP Radio Images&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L285"><a href="#L285">285</a></th><td class="line-code"><pre>msgstr &quot;CHIRP Radio Images&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L286"><a href="#L286">286</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L287"><a href="#L287">287</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:317
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L288"><a href="#L288">288</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:714
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L289"><a href="#L289">289</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:880
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L290"><a href="#L290">290</a></th><td class="line-code"><pre>msgid &quot;CHIRP Files&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L291"><a href="#L291">291</a></th><td class="line-code"><pre>msgstr &quot;CHIRP Files&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L292"><a href="#L292">292</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L293"><a href="#L293">293</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:318
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L294"><a href="#L294">294</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:716
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L295"><a href="#L295">295</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:879
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L296"><a href="#L296">296</a></th><td class="line-code"><pre>msgid &quot;CSV Files&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L297"><a href="#L297">297</a></th><td class="line-code"><pre>msgstr &quot;Files CSV&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L298"><a href="#L298">298</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L299"><a href="#L299">299</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:319
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L300"><a href="#L300">300</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:717
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L301"><a href="#L301">301</a></th><td class="line-code"><pre>msgid &quot;ICF Files&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L302"><a href="#L302">302</a></th><td class="line-code"><pre>msgstr &quot;Files ICF&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L303"><a href="#L303">303</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L304"><a href="#L304">304</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:320
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L305"><a href="#L305">305</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:718
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L306"><a href="#L306">306</a></th><td class="line-code"><pre>msgid &quot;VX7 Commander Files&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L307"><a href="#L307">307</a></th><td class="line-code"><pre>msgstr &quot;Files VX7 Commander&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L308"><a href="#L308">308</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L309"><a href="#L309">309</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:330
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L310"><a href="#L310">310</a></th><td class="line-code"><pre>msgid &quot;ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L311"><a href="#L311">311</a></th><td class="line-code"><pre>msgstr &quot;I files ICF non possono essere modificati, solo visualizzati o importati in un altro file. Aprire in sola lettura?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L312"><a href="#L312">312</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L313"><a href="#L313">313</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:373
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L314"><a href="#L314">314</a></th><td class="line-code"><pre>msgid &quot;There was an error opening {fname}: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L315"><a href="#L315">315</a></th><td class="line-code"><pre>msgstr &quot;Si  verificato un errore nell'apertura del file {fname}: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L316"><a href="#L316">316</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L317"><a href="#L317">317</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:388
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L318"><a href="#L318">318</a></th><td class="line-code"><pre>msgid &quot;{num} errors during open:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L319"><a href="#L319">319</a></th><td class="line-code"><pre>msgstr &quot;{num} errori durante l'apertura:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L320"><a href="#L320">320</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L321"><a href="#L321">321</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:394
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L322"><a href="#L322">322</a></th><td class="line-code"><pre>msgid &quot;Note:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L323"><a href="#L323">323</a></th><td class="line-code"><pre>msgstr &quot;Note:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L324"><a href="#L324">324</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L325"><a href="#L325">325</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:395
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L326"><a href="#L326">326</a></th><td class="line-code"><pre>msgid &quot;The {vendor} {model} operates in &lt;b&gt;live mode&lt;/b&gt;. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the &lt;u&gt;Save&lt;/u&gt; or &lt;u&gt;Upload&lt;/u&gt; operations. If you wish to edit the contents offline, please &lt;u&gt;Export&lt;/u&gt; to a CSV file, using the &lt;b&gt;File menu&lt;/b&gt;.&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L327"><a href="#L327">327</a></th><td class="line-code"><pre>msgstr &quot;La radio {vendor} {model} opera in &lt;b&gt;live mode&lt;/b&gt;. Significa che i cambiamenti che apporti alle memorie verranno subito caricati in radio. A causa di ci, non potrai usare i comandi &lt;u&gt;Salva&lt;/u&gt; o &lt;u&gt;Carica memorie nella Radio&lt;/u&gt;. Se vuoi modificare i contenuti senza caricarli, per favore &lt;u&gt;Esporta&lt;/u&gt; in un file CSV usando il menu &lt;b&gt;File&lt;/b&gt;.&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L328"><a href="#L328">328</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L329"><a href="#L329">329</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:404
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L330"><a href="#L330">330</a></th><td class="line-code"><pre>msgid &quot;Don't show this again&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L331"><a href="#L331">331</a></th><td class="line-code"><pre>msgstr &quot;Non mostrarlo pi&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L332"><a href="#L332">332</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L333"><a href="#L333">333</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:448
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L334"><a href="#L334">334</a></th><td class="line-code"><pre>msgid &quot;{vendor} {model} image file&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L335"><a href="#L335">335</a></th><td class="line-code"><pre>msgstr &quot;{vendor} {model} file immagine&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L336"><a href="#L336">336</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L337"><a href="#L337">337</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:456
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L338"><a href="#L338">338</a></th><td class="line-code"><pre>msgid &quot;VX7 Commander&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L339"><a href="#L339">339</a></th><td class="line-code"><pre>msgstr &quot;VX7 Commander&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L340"><a href="#L340">340</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L341"><a href="#L341">341</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:518
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L342"><a href="#L342">342</a></th><td class="line-code"><pre>msgid &quot;Open recent file {name}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L343"><a href="#L343">343</a></th><td class="line-code"><pre>msgstr &quot;Apri file recente {name}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L344"><a href="#L344">344</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L345"><a href="#L345">345</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:579
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L346"><a href="#L346">346</a></th><td class="line-code"><pre>msgid &quot;Import stock configuration {name}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L347"><a href="#L347">347</a></th><td class="line-code"><pre>msgstr &quot;Importa configurazione di fabbrica {name}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L348"><a href="#L348">348</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L349"><a href="#L349">349</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:595
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L350"><a href="#L350">350</a></th><td class="line-code"><pre>msgid &quot;Open stock configuration {name}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L351"><a href="#L351">351</a></th><td class="line-code"><pre>msgstr &quot;Apri configurazione di fabbrica {name}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L352"><a href="#L352">352</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L353"><a href="#L353">353</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:681
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L354"><a href="#L354">354</a></th><td class="line-code"><pre>msgid &quot;Discard Changes?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L355"><a href="#L355">355</a></th><td class="line-code"><pre>msgstr &quot;Cestinare le modifiche?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L356"><a href="#L356">356</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L357"><a href="#L357">357</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:686
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L358"><a href="#L358">358</a></th><td class="line-code"><pre>msgid &quot;File is modified, save changes before closing?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L359"><a href="#L359">359</a></th><td class="line-code"><pre>msgstr &quot;Il file  stato modificato, salvare i cambiamenti prima di chiudere?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L360"><a href="#L360">360</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L361"><a href="#L361">361</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:923
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L362"><a href="#L362">362</a></th><td class="line-code"><pre>msgid &quot;With significant contributions by:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L363"><a href="#L363">363</a></th><td class="line-code"><pre>msgstr &quot;Con il contributo di:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L364"><a href="#L364">364</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L365"><a href="#L365">365</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:940
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L366"><a href="#L366">366</a></th><td class="line-code"><pre>msgid &quot;Select Columns&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L367"><a href="#L367">367</a></th><td class="line-code"><pre>msgstr &quot;Seleziona colonne&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L368"><a href="#L368">368</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L369"><a href="#L369">369</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:955
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L370"><a href="#L370">370</a></th><td class="line-code"><pre>msgid &quot;Visible columns for {radio}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L371"><a href="#L371">371</a></th><td class="line-code"><pre>msgstr &quot;Colonne visibili per {radio}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L372"><a href="#L372">372</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L373"><a href="#L373">373</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1012
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L374"><a href="#L374">374</a></th><td class="line-code"><pre>msgid &quot;Reporting is disabled&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L375"><a href="#L375">375</a></th><td class="line-code"><pre>msgstr &quot;Reporting disabilitato&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L376"><a href="#L376">376</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L377"><a href="#L377">377</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1013
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L378"><a href="#L378">378</a></th><td class="line-code"><pre>msgid &quot;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L379"><a href="#L379">379</a></th><td class="line-code"><pre>&quot;The reporting feature of CHIRP is designed to help &lt;u&gt;improve quality&lt;/u&gt; by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but &lt;u&gt;please consider leaving this feature enabled to help make CHIRP better!&lt;/u&gt;\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L380"><a href="#L380">380</a></th><td class="line-code"><pre>&quot;\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L381"><a href="#L381">381</a></th><td class="line-code"><pre>&quot;&lt;b&gt;Are you sure you want to disable this feature?&lt;/b&gt;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L382"><a href="#L382">382</a></th><td class="line-code"><pre>msgstr &quot;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L383"><a href="#L383">383</a></th><td class="line-code"><pre>&quot;La funzione reporting di CHIRP  progettata per &lt;u&gt;migliorare la qualit&lt;/u&gt; consentendo agli autori di focalizzare l'attenzione sui driver delle radio pi usate e sugli errori pi frequenti. I report non contengono dati personali e sono usati solo per scopi statistici dagli autori. Sappiamo che la provacy  molto importante ma &lt;u&gt;per favore valuta se lasciare attiva questa opzione per aiutare a remdere CHIRP ancora migliore!&lt;/u&gt;\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L384"><a href="#L384">384</a></th><td class="line-code"><pre>&quot;\n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L385"><a href="#L385">385</a></th><td class="line-code"><pre>&quot;&lt;b&gt;Sicuro di disabilitare questa opzione?&lt;/b&gt;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L386"><a href="#L386">386</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L387"><a href="#L387">387</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1045
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L388"><a href="#L388">388</a></th><td class="line-code"><pre>msgid &quot;Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L389"><a href="#L389">389</a></th><td class="line-code"><pre>msgstr &quot;Scegli una lingua o usa il comando Auto per usare la lingua del sistema. Le modifiche avranno effetto se riavvii l'applicazione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L390"><a href="#L390">390</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L391"><a href="#L391">391</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1169
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L392"><a href="#L392">392</a></th><td class="line-code"><pre>msgid &quot;_File&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L393"><a href="#L393">393</a></th><td class="line-code"><pre>msgstr &quot;_File&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L394"><a href="#L394">394</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L395"><a href="#L395">395</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1172
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L396"><a href="#L396">396</a></th><td class="line-code"><pre>msgid &quot;Open stock config&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L397"><a href="#L397">397</a></th><td class="line-code"><pre>msgstr &quot;Apri configurazione di fabbrica&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L398"><a href="#L398">398</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L399"><a href="#L399">399</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1173
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L400"><a href="#L400">400</a></th><td class="line-code"><pre>msgid &quot;_Recent&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L401"><a href="#L401">401</a></th><td class="line-code"><pre>msgstr &quot;_Recent&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L402"><a href="#L402">402</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L403"><a href="#L403">403</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1178
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L404"><a href="#L404">404</a></th><td class="line-code"><pre>msgid &quot;_Edit&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L405"><a href="#L405">405</a></th><td class="line-code"><pre>msgstr &quot;_Modifica&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L406"><a href="#L406">406</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L407"><a href="#L407">407</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1179
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L408"><a href="#L408">408</a></th><td class="line-code"><pre>msgid &quot;_Cut&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L409"><a href="#L409">409</a></th><td class="line-code"><pre>msgstr &quot;_Taglia&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L410"><a href="#L410">410</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L411"><a href="#L411">411</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1180
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L412"><a href="#L412">412</a></th><td class="line-code"><pre>msgid &quot;_Copy&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L413"><a href="#L413">413</a></th><td class="line-code"><pre>msgstr &quot;_Copia&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L414"><a href="#L414">414</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L415"><a href="#L415">415</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1181
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L416"><a href="#L416">416</a></th><td class="line-code"><pre>msgid &quot;_Paste&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L417"><a href="#L417">417</a></th><td class="line-code"><pre>msgstr &quot;_Incolla&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L418"><a href="#L418">418</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L419"><a href="#L419">419</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1182
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L420"><a href="#L420">420</a></th><td class="line-code"><pre>msgid &quot;_Delete&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L421"><a href="#L421">421</a></th><td class="line-code"><pre>msgstr &quot;_Elimina&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L422"><a href="#L422">422</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L423"><a href="#L423">423</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1183
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L424"><a href="#L424">424</a></th><td class="line-code"><pre>msgid &quot;Move _Up&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L425"><a href="#L425">425</a></th><td class="line-code"><pre>msgstr &quot;Sposta _Su&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L426"><a href="#L426">426</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L427"><a href="#L427">427</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1184
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L428"><a href="#L428">428</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L429"><a href="#L429">429</a></th><td class="line-code"><pre>msgid &quot;Move Dow_n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L430"><a href="#L430">430</a></th><td class="line-code"><pre>msgstr &quot;Sposta _Giu&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L431"><a href="#L431">431</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L432"><a href="#L432">432</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1185
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L433"><a href="#L433">433</a></th><td class="line-code"><pre>msgid &quot;E_xchange&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L434"><a href="#L434">434</a></th><td class="line-code"><pre>msgstr &quot;Scambia&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L435"><a href="#L435">435</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L436"><a href="#L436">436</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1186
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L437"><a href="#L437">437</a></th><td class="line-code"><pre>msgid &quot;_View&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L438"><a href="#L438">438</a></th><td class="line-code"><pre>msgstr &quot;_Vista&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L439"><a href="#L439">439</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L440"><a href="#L440">440</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1187
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L441"><a href="#L441">441</a></th><td class="line-code"><pre>msgid &quot;Columns&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L442"><a href="#L442">442</a></th><td class="line-code"><pre>msgstr &quot;Colonne&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L443"><a href="#L443">443</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L444"><a href="#L444">444</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1188
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L445"><a href="#L445">445</a></th><td class="line-code"><pre>msgid &quot;Developer&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L446"><a href="#L446">446</a></th><td class="line-code"><pre>msgstr &quot;Sviluppatore&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L447"><a href="#L447">447</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L448"><a href="#L448">448</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1189
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L449"><a href="#L449">449</a></th><td class="line-code"><pre>msgid &quot;Show raw memory&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L450"><a href="#L450">450</a></th><td class="line-code"><pre>msgstr &quot;Mostra memorie Raw&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L451"><a href="#L451">451</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L452"><a href="#L452">452</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1190
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L453"><a href="#L453">453</a></th><td class="line-code"><pre>msgid &quot;Diff raw memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L454"><a href="#L454">454</a></th><td class="line-code"><pre>msgstr &quot;Diff memorie Raw&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L455"><a href="#L455">455</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L456"><a href="#L456">456</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1191
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L457"><a href="#L457">457</a></th><td class="line-code"><pre>msgid &quot;Diff tabs&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L458"><a href="#L458">458</a></th><td class="line-code"><pre>msgstr &quot;Diff tabs&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L459"><a href="#L459">459</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L460"><a href="#L460">460</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1192
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L461"><a href="#L461">461</a></th><td class="line-code"><pre>msgid &quot;Change language&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L462"><a href="#L462">462</a></th><td class="line-code"><pre>msgstr &quot;Cambia lingua&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L463"><a href="#L463">463</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L464"><a href="#L464">464</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1193
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L465"><a href="#L465">465</a></th><td class="line-code"><pre>msgid &quot;_Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L466"><a href="#L466">466</a></th><td class="line-code"><pre>msgstr &quot;_Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L467"><a href="#L467">467</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L468"><a href="#L468">468</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1194
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L469"><a href="#L469">469</a></th><td class="line-code"><pre>msgid &quot;Download From Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L470"><a href="#L470">470</a></th><td class="line-code"><pre>msgstr &quot;Scarica memorie dalla Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L471"><a href="#L471">471</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L472"><a href="#L472">472</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1195
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L473"><a href="#L473">473</a></th><td class="line-code"><pre>msgid &quot;Upload To Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L474"><a href="#L474">474</a></th><td class="line-code"><pre>msgstr &quot;Carica memorie nella Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L475"><a href="#L475">475</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L476"><a href="#L476">476</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1198
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L477"><a href="#L477">477</a></th><td class="line-code"><pre>msgid &quot;Import from RFinder&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L478"><a href="#L478">478</a></th><td class="line-code"><pre>msgstr &quot;Importa da RFinder&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L479"><a href="#L479">479</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L480"><a href="#L480">480</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1199
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L481"><a href="#L481">481</a></th><td class="line-code"><pre>msgid &quot;CHIRP Native File&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L482"><a href="#L482">482</a></th><td class="line-code"><pre>msgstr &quot;File nativo CHIRP&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L483"><a href="#L483">483</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L484"><a href="#L484">484</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1200
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L485"><a href="#L485">485</a></th><td class="line-code"><pre>msgid &quot;CSV File&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L486"><a href="#L486">486</a></th><td class="line-code"><pre>msgstr &quot;File CSV&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L487"><a href="#L487">487</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L488"><a href="#L488">488</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1201
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L489"><a href="#L489">489</a></th><td class="line-code"><pre>msgid &quot;Import from RepeaterBook&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L490"><a href="#L490">490</a></th><td class="line-code"><pre>msgstr &quot;Importa da RepeaterBook&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L491"><a href="#L491">491</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L492"><a href="#L492">492</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1202
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L493"><a href="#L493">493</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L494"><a href="#L494">494</a></th><td class="line-code"><pre>msgid &quot;Import from stock config&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L495"><a href="#L495">495</a></th><td class="line-code"><pre>msgstr &quot;Importa da RepeaterBook&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L496"><a href="#L496">496</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L497"><a href="#L497">497</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1204
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L498"><a href="#L498">498</a></th><td class="line-code"><pre>msgid &quot;Help&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L499"><a href="#L499">499</a></th><td class="line-code"><pre>msgstr &quot;Aiuto&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L500"><a href="#L500">500</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L501"><a href="#L501">501</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1215
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L502"><a href="#L502">502</a></th><td class="line-code"><pre>msgid &quot;Report statistics&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L503"><a href="#L503">503</a></th><td class="line-code"><pre>msgstr &quot;Report statistiche&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L504"><a href="#L504">504</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L505"><a href="#L505">505</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1216
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L506"><a href="#L506">506</a></th><td class="line-code"><pre>msgid &quot;Hide Unused Fields&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L507"><a href="#L507">507</a></th><td class="line-code"><pre>msgstr &quot;Nascondi memorie vuote&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L508"><a href="#L508">508</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L509"><a href="#L509">509</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1217
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L510"><a href="#L510">510</a></th><td class="line-code"><pre>msgid &quot;Automatic Repeater Offset&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L511"><a href="#L511">511</a></th><td class="line-code"><pre>msgstr &quot;Offset ripetitore automatico&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L512"><a href="#L512">512</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L513"><a href="#L513">513</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1218
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L514"><a href="#L514">514</a></th><td class="line-code"><pre>msgid &quot;Enable Developer Functions&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L515"><a href="#L515">515</a></th><td class="line-code"><pre>msgstr &quot;Abilita funzioni Sviluppatore&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L516"><a href="#L516">516</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L517"><a href="#L517">517</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1352
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L518"><a href="#L518">518</a></th><td class="line-code"><pre>msgid &quot;Error reporting is enabled&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L519"><a href="#L519">519</a></th><td class="line-code"><pre>msgstr &quot;Report errori abilitato&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L520"><a href="#L520">520</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L521"><a href="#L521">521</a></th><td class="line-code"><pre>#: ../chirpui/mainapp.py:1355
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L522"><a href="#L522">522</a></th><td class="line-code"><pre>msgid &quot;If you wish to disable this feature you may do so in the &lt;u&gt;Help&lt;/u&gt; menu&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L523"><a href="#L523">523</a></th><td class="line-code"><pre>msgstr &quot;Se vuoi disabilitare la funzione puoi farlo dal menu &lt;u&gt;Help&lt;/u&gt;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L524"><a href="#L524">524</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L525"><a href="#L525">525</a></th><td class="line-code"><pre>#: ../chirpui/cloneprog.py:43
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L526"><a href="#L526">526</a></th><td class="line-code"><pre>msgid &quot;Clone Progress&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L527"><a href="#L527">527</a></th><td class="line-code"><pre>msgstr &quot;Progressione Programmazione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L528"><a href="#L528">528</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L529"><a href="#L529">529</a></th><td class="line-code"><pre>#: ../chirpui/cloneprog.py:46
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L530"><a href="#L530">530</a></th><td class="line-code"><pre>msgid &quot;Cloning&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L531"><a href="#L531">531</a></th><td class="line-code"><pre>msgstr &quot;Programmazione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L532"><a href="#L532">532</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L533"><a href="#L533">533</a></th><td class="line-code"><pre>#: ../chirpui/cloneprog.py:55
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L534"><a href="#L534">534</a></th><td class="line-code"><pre>msgid &quot;Cancel&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L535"><a href="#L535">535</a></th><td class="line-code"><pre>msgstr &quot;Annulla&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L536"><a href="#L536">536</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L537"><a href="#L537">537</a></th><td class="line-code"><pre>#: ../chirpui/shiftdialog.py:27
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L538"><a href="#L538">538</a></th><td class="line-code"><pre>msgid &quot;Shift&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L539"><a href="#L539">539</a></th><td class="line-code"><pre>msgstr &quot;Shift&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L540"><a href="#L540">540</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L541"><a href="#L541">541</a></th><td class="line-code"><pre>#: ../chirpui/shiftdialog.py:63
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L542"><a href="#L542">542</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L543"><a href="#L543">543</a></th><td class="line-code"><pre>msgid &quot;Moving {src} to {dst}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L544"><a href="#L544">544</a></th><td class="line-code"><pre>msgstr &quot;Spostamento&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L545"><a href="#L545">545</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L546"><a href="#L546">546</a></th><td class="line-code"><pre>#: ../chirpui/shiftdialog.py:80
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L547"><a href="#L547">547</a></th><td class="line-code"><pre>msgid &quot;Looking for a free spot ({number})&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L548"><a href="#L548">548</a></th><td class="line-code"><pre>msgstr &quot;Ricerca di uno spot libero ({number})&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L549"><a href="#L549">549</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L550"><a href="#L550">550</a></th><td class="line-code"><pre>#: ../chirpui/shiftdialog.py:135
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L551"><a href="#L551">551</a></th><td class="line-code"><pre>msgid &quot;Moved {count} memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L552"><a href="#L552">552</a></th><td class="line-code"><pre>msgstr &quot;Spostate {count} memorie&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L553"><a href="#L553">553</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L554"><a href="#L554">554</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:35
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L555"><a href="#L555">555</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L556"><a href="#L556">556</a></th><td class="line-code"><pre>msgid &quot;{vendor} {model} on {port}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L557"><a href="#L557">557</a></th><td class="line-code"><pre>msgstr &quot;{vendor} {model} image file&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L558"><a href="#L558">558</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L559"><a href="#L559">559</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:100
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L560"><a href="#L560">560</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:162
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L561"><a href="#L561">561</a></th><td class="line-code"><pre>msgid &quot;Detect&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L562"><a href="#L562">562</a></th><td class="line-code"><pre>msgstr &quot;Trova&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L563"><a href="#L563">563</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L564"><a href="#L564">564</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:123
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L565"><a href="#L565">565</a></th><td class="line-code"><pre>msgid &quot;Port&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L566"><a href="#L566">566</a></th><td class="line-code"><pre>msgstr &quot;Porta&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L567"><a href="#L567">567</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L568"><a href="#L568">568</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:124
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L569"><a href="#L569">569</a></th><td class="line-code"><pre>msgid &quot;Vendor&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L570"><a href="#L570">570</a></th><td class="line-code"><pre>msgstr &quot;Produttore&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L571"><a href="#L571">571</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L572"><a href="#L572">572</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:125
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L573"><a href="#L573">573</a></th><td class="line-code"><pre>msgid &quot;Model&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L574"><a href="#L574">574</a></th><td class="line-code"><pre>msgstr &quot;Modello&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L575"><a href="#L575">575</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L576"><a href="#L576">576</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:138
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L577"><a href="#L577">577</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L578"><a href="#L578">578</a></th><td class="line-code"><pre>msgid &quot;Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L579"><a href="#L579">579</a></th><td class="line-code"><pre>msgstr &quot;_Radio&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L580"><a href="#L580">580</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L581"><a href="#L581">581</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:166
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L582"><a href="#L582">582</a></th><td class="line-code"><pre>msgid &quot;Unable to detect radio on {port}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L583"><a href="#L583">583</a></th><td class="line-code"><pre>msgstr &quot;Impossibile dialogare con la radio sulla porta {port}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L584"><a href="#L584">584</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L585"><a href="#L585">585</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:178
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L586"><a href="#L586">586</a></th><td class="line-code"><pre>msgid &quot;Internal error: Unable to upload to {model}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L587"><a href="#L587">587</a></th><td class="line-code"><pre>msgstr &quot;Errore interno: Impossibile programmare su {model}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L588"><a href="#L588">588</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L589"><a href="#L589">589</a></th><td class="line-code"><pre>#: ../chirpui/clone.py:226
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L590"><a href="#L590">590</a></th><td class="line-code"><pre>msgid &quot;Clone failed: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L591"><a href="#L591">591</a></th><td class="line-code"><pre>msgstr &quot;Lettura/scrittura fallita: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L592"><a href="#L592">592</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L593"><a href="#L593">593</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:40
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L594"><a href="#L594">594</a></th><td class="line-code"><pre>msgid &quot;Callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L595"><a href="#L595">595</a></th><td class="line-code"><pre>msgstr &quot;Callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L596"><a href="#L596">596</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L597"><a href="#L597">597</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:124
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L598"><a href="#L598">598</a></th><td class="line-code"><pre>msgid &quot;Your callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L599"><a href="#L599">599</a></th><td class="line-code"><pre>msgstr &quot;Tuo Callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L600"><a href="#L600">600</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L601"><a href="#L601">601</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:132
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L602"><a href="#L602">602</a></th><td class="line-code"><pre>msgid &quot;Repeater callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L603"><a href="#L603">603</a></th><td class="line-code"><pre>msgstr &quot;Callsign ripetitore&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L604"><a href="#L604">604</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L605"><a href="#L605">605</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:140
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L606"><a href="#L606">606</a></th><td class="line-code"><pre>msgid &quot;My callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L607"><a href="#L607">607</a></th><td class="line-code"><pre>msgstr &quot;Mio Callsign&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L608"><a href="#L608">608</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L609"><a href="#L609">609</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:170
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L610"><a href="#L610">610</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1365
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L611"><a href="#L611">611</a></th><td class="line-code"><pre>msgid &quot;Downloading URCALL list&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L612"><a href="#L612">612</a></th><td class="line-code"><pre>msgstr &quot;Download lista URCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L613"><a href="#L613">613</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L614"><a href="#L614">614</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:174
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L615"><a href="#L615">615</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1377
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L616"><a href="#L616">616</a></th><td class="line-code"><pre>msgid &quot;Downloading RPTCALL list&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L617"><a href="#L617">617</a></th><td class="line-code"><pre>msgstr &quot;Download lista RPTCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L618"><a href="#L618">618</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L619"><a href="#L619">619</a></th><td class="line-code"><pre>#: ../chirpui/dstaredit.py:178
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L620"><a href="#L620">620</a></th><td class="line-code"><pre>msgid &quot;Downloading MYCALL list&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L621"><a href="#L621">621</a></th><td class="line-code"><pre>msgstr &quot;Download lista MYCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L622"><a href="#L622">622</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L623"><a href="#L623">623</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:87
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L624"><a href="#L624">624</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L625"><a href="#L625">625</a></th><td class="line-code"><pre>msgid &quot;Memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L626"><a href="#L626">626</a></th><td class="line-code"><pre>msgstr &quot;Diff raw memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L627"><a href="#L627">627</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L628"><a href="#L628">628</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:92
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L629"><a href="#L629">629</a></th><td class="line-code"><pre>msgid &quot;D-STAR&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L630"><a href="#L630">630</a></th><td class="line-code"><pre>msgstr &quot;D-STAR&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L631"><a href="#L631">631</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L632"><a href="#L632">632</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:98
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L633"><a href="#L633">633</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L634"><a href="#L634">634</a></th><td class="line-code"><pre>msgid &quot;Bank Names&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L635"><a href="#L635">635</a></th><td class="line-code"><pre>msgstr &quot;Banchi&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L636"><a href="#L636">636</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L637"><a href="#L637">637</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:104
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L638"><a href="#L638">638</a></th><td class="line-code"><pre>msgid &quot;Banks&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L639"><a href="#L639">639</a></th><td class="line-code"><pre>msgstr &quot;Banchi&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L640"><a href="#L640">640</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L641"><a href="#L641">641</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:222
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L642"><a href="#L642">642</a></th><td class="line-code"><pre>msgid &quot;The {vendor} {model} has multiple independent sub-devices&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L643"><a href="#L643">643</a></th><td class="line-code"><pre>msgstr &quot;La radio {vendor} {model} ha sub-devices multipli indipendenti&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L644"><a href="#L644">644</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L645"><a href="#L645">645</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:225
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L646"><a href="#L646">646</a></th><td class="line-code"><pre>msgid &quot;Choose one to import from:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L647"><a href="#L647">647</a></th><td class="line-code"><pre>msgstr &quot;Scegliere memorie da importare da:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L648"><a href="#L648">648</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L649"><a href="#L649">649</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:230
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L650"><a href="#L650">650</a></th><td class="line-code"><pre>msgid &quot;Cancelled&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L651"><a href="#L651">651</a></th><td class="line-code"><pre>msgstr &quot;Annullato&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L652"><a href="#L652">652</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L653"><a href="#L653">653</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:235
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L654"><a href="#L654">654</a></th><td class="line-code"><pre>msgid &quot;Internal Error&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L655"><a href="#L655">655</a></th><td class="line-code"><pre>msgstr &quot;Errore interno&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L656"><a href="#L656">656</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L657"><a href="#L657">657</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:248
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L658"><a href="#L658">658</a></th><td class="line-code"><pre>msgid &quot;There were errors while opening {file}. The affected memories will not be importable!&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L659"><a href="#L659">659</a></th><td class="line-code"><pre>msgstr &quot;C' stato un errore nell'apertura di {file}. Alcune memorie non potranno essere importate!&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L660"><a href="#L660">660</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L661"><a href="#L661">661</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:260
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L662"><a href="#L662">662</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L663"><a href="#L663">663</a></th><td class="line-code"><pre>msgid &quot;There was an error during import: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L664"><a href="#L664">664</a></th><td class="line-code"><pre>msgstr &quot;There was an error opening {fname}: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L665"><a href="#L665">665</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L666"><a href="#L666">666</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:270
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L667"><a href="#L667">667</a></th><td class="line-code"><pre>msgid &quot;Unsupported file type&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L668"><a href="#L668">668</a></th><td class="line-code"><pre>msgstr &quot;Tipo file non supportato&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L669"><a href="#L669">669</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L670"><a href="#L670">670</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:286
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L671"><a href="#L671">671</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:301
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L672"><a href="#L672">672</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L673"><a href="#L673">673</a></th><td class="line-code"><pre>msgid &quot;There was an error during export: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L674"><a href="#L674">674</a></th><td class="line-code"><pre>msgstr &quot;There was an error opening {fname}: {error}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L675"><a href="#L675">675</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L676"><a href="#L676">676</a></th><td class="line-code"><pre>#: ../chirpui/editorset.py:313
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L677"><a href="#L677">677</a></th><td class="line-code"><pre>msgid &quot;Priming memory&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L678"><a href="#L678">678</a></th><td class="line-code"><pre>msgstr &quot;Preparazione memorie&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L679"><a href="#L679">679</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L680"><a href="#L680">680</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:52
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L681"><a href="#L681">681</a></th><td class="line-code"><pre>msgid &quot;Invalid value for this field&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L682"><a href="#L682">682</a></th><td class="line-code"><pre>msgstr &quot;Valore non valido per questo campo&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L683"><a href="#L683">683</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L684"><a href="#L684">684</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:66
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L685"><a href="#L685">685</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:97
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L686"><a href="#L686">686</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:111
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L687"><a href="#L687">687</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:204
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L688"><a href="#L688">688</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:312
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L689"><a href="#L689">689</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:874
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L690"><a href="#L690">690</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:931
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L691"><a href="#L691">691</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1069
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L692"><a href="#L692">692</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1133
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L693"><a href="#L693">693</a></th><td class="line-code"><pre>msgid &quot;Tone Mode&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L694"><a href="#L694">694</a></th><td class="line-code"><pre>msgstr &quot;Mod. Tono&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L695"><a href="#L695">695</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L696"><a href="#L696">696</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:67
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L697"><a href="#L697">697</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:87
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L698"><a href="#L698">698</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:103
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L699"><a href="#L699">699</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:214
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L700"><a href="#L700">700</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:218
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L701"><a href="#L701">701</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:220
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L702"><a href="#L702">702</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:310
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L703"><a href="#L703">703</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:875
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L704"><a href="#L704">704</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:928
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L705"><a href="#L705">705</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1070
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L706"><a href="#L706">706</a></th><td class="line-code"><pre>msgid &quot;Tone&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L707"><a href="#L707">707</a></th><td class="line-code"><pre>msgstr &quot;Tono&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L708"><a href="#L708">708</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L709"><a href="#L709">709</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:68
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L710"><a href="#L710">710</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:88
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L711"><a href="#L711">711</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:104
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L712"><a href="#L712">712</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:210
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L713"><a href="#L713">713</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:218
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L714"><a href="#L714">714</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:221
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L715"><a href="#L715">715</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:310
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L716"><a href="#L716">716</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:876
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L717"><a href="#L717">717</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:929
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L718"><a href="#L718">718</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1066
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L719"><a href="#L719">719</a></th><td class="line-code"><pre>msgid &quot;ToneSql&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L720"><a href="#L720">720</a></th><td class="line-code"><pre>msgstr &quot;Tono Sql&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L721"><a href="#L721">721</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L722"><a href="#L722">722</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:69
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L723"><a href="#L723">723</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:89
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L724"><a href="#L724">724</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:105
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L725"><a href="#L725">725</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:211
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L726"><a href="#L726">726</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:215
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L727"><a href="#L727">727</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:222
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L728"><a href="#L728">728</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:306
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L729"><a href="#L729">729</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:877
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L730"><a href="#L730">730</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:930
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L731"><a href="#L731">731</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1059
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L732"><a href="#L732">732</a></th><td class="line-code"><pre>msgid &quot;DTCS Code&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L733"><a href="#L733">733</a></th><td class="line-code"><pre>msgstr &quot;Cod. DTCS&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L734"><a href="#L734">734</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L735"><a href="#L735">735</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:70
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L736"><a href="#L736">736</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:90
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L737"><a href="#L737">737</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:106
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L738"><a href="#L738">738</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:212
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L739"><a href="#L739">739</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:216
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L740"><a href="#L740">740</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:223
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L741"><a href="#L741">741</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:878
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L742"><a href="#L742">742</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:933
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L743"><a href="#L743">743</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1060
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L744"><a href="#L744">744</a></th><td class="line-code"><pre>msgid &quot;DTCS Pol&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L745"><a href="#L745">745</a></th><td class="line-code"><pre>msgstr &quot;DTCS Pol&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L746"><a href="#L746">746</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L747"><a href="#L747">747</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:71
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L748"><a href="#L748">748</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:91
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L749"><a href="#L749">749</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:112
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L750"><a href="#L750">750</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:879
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L751"><a href="#L751">751</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:932
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L752"><a href="#L752">752</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1067
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L753"><a href="#L753">753</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1134
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L754"><a href="#L754">754</a></th><td class="line-code"><pre>msgid &quot;Cross Mode&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L755"><a href="#L755">755</a></th><td class="line-code"><pre>msgstr &quot;Modalit Cross-Repeater&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L756"><a href="#L756">756</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L757"><a href="#L757">757</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:72
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L758"><a href="#L758">758</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:92
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L759"><a href="#L759">759</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:109
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L760"><a href="#L760">760</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:137
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L761"><a href="#L761">761</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:205
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L762"><a href="#L762">762</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:249
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L763"><a href="#L763">763</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:312
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L764"><a href="#L764">764</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:880
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L765"><a href="#L765">765</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:934
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L766"><a href="#L766">766</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1071
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L767"><a href="#L767">767</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1144
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L768"><a href="#L768">768</a></th><td class="line-code"><pre>msgid &quot;Duplex&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L769"><a href="#L769">769</a></th><td class="line-code"><pre>msgstr &quot;Duplex&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L770"><a href="#L770">770</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L771"><a href="#L771">771</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:73
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L772"><a href="#L772">772</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:93
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L773"><a href="#L773">773</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:135
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L774"><a href="#L774">774</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:198
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L775"><a href="#L775">775</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:226
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L776"><a href="#L776">776</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:250
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L777"><a href="#L777">777</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:308
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L778"><a href="#L778">778</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:881
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L779"><a href="#L779">779</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:935
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L780"><a href="#L780">780</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1062
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L781"><a href="#L781">781</a></th><td class="line-code"><pre>msgid &quot;Offset&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L782"><a href="#L782">782</a></th><td class="line-code"><pre>msgstr &quot;Offset&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L783"><a href="#L783">783</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L784"><a href="#L784">784</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:74
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L785"><a href="#L785">785</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:94
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L786"><a href="#L786">786</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:107
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L787"><a href="#L787">787</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:882
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L788"><a href="#L788">788</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:936
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L789"><a href="#L789">789</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1061
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L790"><a href="#L790">790</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1132
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L791"><a href="#L791">791</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1289
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L792"><a href="#L792">792</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1307
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L793"><a href="#L793">793</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1317
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L794"><a href="#L794">794</a></th><td class="line-code"><pre>msgid &quot;Mode&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L795"><a href="#L795">795</a></th><td class="line-code"><pre>msgstr &quot;Modalit&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L796"><a href="#L796">796</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L797"><a href="#L797">797</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:75
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L798"><a href="#L798">798</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:95
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L799"><a href="#L799">799</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:108
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L800"><a href="#L800">800</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:296
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L801"><a href="#L801">801</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:883
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L802"><a href="#L802">802</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:937
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L803"><a href="#L803">803</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1073
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L804"><a href="#L804">804</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1136
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L805"><a href="#L805">805</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1140
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L806"><a href="#L806">806</a></th><td class="line-code"><pre>msgid &quot;Power&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L807"><a href="#L807">807</a></th><td class="line-code"><pre>msgstr &quot;Potenza&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L808"><a href="#L808">808</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L809"><a href="#L809">809</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:76
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L810"><a href="#L810">810</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:96
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L811"><a href="#L811">811</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:110
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L812"><a href="#L812">812</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:140
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L813"><a href="#L813">813</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:143
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L814"><a href="#L814">814</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:884
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L815"><a href="#L815">815</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:938
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L816"><a href="#L816">816</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1064
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L817"><a href="#L817">817</a></th><td class="line-code"><pre>msgid &quot;Tune Step&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L818"><a href="#L818">818</a></th><td class="line-code"><pre>msgstr &quot;Passo Sintonizzazione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L819"><a href="#L819">819</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L820"><a href="#L820">820</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:77
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L821"><a href="#L821">821</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:98
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L822"><a href="#L822">822</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:885
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L823"><a href="#L823">823</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:939
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L824"><a href="#L824">824</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1072
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L825"><a href="#L825">825</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1135
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L826"><a href="#L826">826</a></th><td class="line-code"><pre>msgid &quot;Skip&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L827"><a href="#L827">827</a></th><td class="line-code"><pre>msgstr &quot;Salta&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L828"><a href="#L828">828</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L829"><a href="#L829">829</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:175
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L830"><a href="#L830">830</a></th><td class="line-code"><pre>msgid &quot;Erasing memory {loc}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L831"><a href="#L831">831</a></th><td class="line-code"><pre>msgstr &quot;Cancellazione memoria {loc}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L832"><a href="#L832">832</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L833"><a href="#L833">833</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:236
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L834"><a href="#L834">834</a></th><td class="line-code"><pre>msgid &quot;Unable to make changes to this model&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L835"><a href="#L835">835</a></th><td class="line-code"><pre>msgstr &quot;Impossibile cambiarlo per questo modello&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L836"><a href="#L836">836</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L837"><a href="#L837">837</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:241
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L838"><a href="#L838">838</a></th><td class="line-code"><pre>msgid &quot;Editing new item, taking defaults&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L839"><a href="#L839">839</a></th><td class="line-code"><pre>msgstr &quot;Modifica nuovo oggetto, dati default&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L840"><a href="#L840">840</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L841"><a href="#L841">841</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:257
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L842"><a href="#L842">842</a></th><td class="line-code"><pre>msgid &quot;Bad value for {col}: {val}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L843"><a href="#L843">843</a></th><td class="line-code"><pre>msgstr &quot;Valore errato per {col}: {val}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L844"><a href="#L844">844</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L845"><a href="#L845">845</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:281
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L846"><a href="#L846">846</a></th><td class="line-code"><pre>msgid &quot;Error setting memory&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L847"><a href="#L847">847</a></th><td class="line-code"><pre>msgstr &quot;Errore di scrittura memoria&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L848"><a href="#L848">848</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L849"><a href="#L849">849</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:289
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L850"><a href="#L850">850</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:356
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L851"><a href="#L851">851</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1272
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L852"><a href="#L852">852</a></th><td class="line-code"><pre>msgid &quot;Writing memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L853"><a href="#L853">853</a></th><td class="line-code"><pre>msgstr &quot;Scrittura memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L854"><a href="#L854">854</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L855"><a href="#L855">855</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:361
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L856"><a href="#L856">856</a></th><td class="line-code"><pre>msgid &quot;This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L857"><a href="#L857">857</a></th><td class="line-code"><pre>msgstr &quot;Questa operazione consiste nello spostare tutti i canali sottostanti finch non viene trovato uno spazio libero. Ci metter MOLTO tempo. Sicuro di volerlo fare?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L858"><a href="#L858">858</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L859"><a href="#L859">859</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:387
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L860"><a href="#L860">860</a></th><td class="line-code"><pre>msgid &quot;Adding memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L861"><a href="#L861">861</a></th><td class="line-code"><pre>msgstr &quot;Aggiunta memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L862"><a href="#L862">862</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L863"><a href="#L863">863</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:400
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L864"><a href="#L864">864</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:913
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L865"><a href="#L865">865</a></th><td class="line-code"><pre>msgid &quot;Erasing memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L866"><a href="#L866">866</a></th><td class="line-code"><pre>msgstr &quot;Cancellata memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L867"><a href="#L867">867</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L868"><a href="#L868">868</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:409
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L869"><a href="#L869">869</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:518
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L870"><a href="#L870">870</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:564
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L871"><a href="#L871">871</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:569
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L872"><a href="#L872">872</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:856
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L873"><a href="#L873">873</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1166
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L874"><a href="#L874">874</a></th><td class="line-code"><pre>msgid &quot;Getting memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L875"><a href="#L875">875</a></th><td class="line-code"><pre>msgstr &quot;Lettura memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L876"><a href="#L876">876</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L877"><a href="#L877">877</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:497
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L878"><a href="#L878">878</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:508
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L879"><a href="#L879">879</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:556
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L880"><a href="#L880">880</a></th><td class="line-code"><pre>msgid &quot;Moving memory from {old} to {new}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L881"><a href="#L881">881</a></th><td class="line-code"><pre>msgstr &quot;Spostamento memoria da {old} a {new}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L882"><a href="#L882">882</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L883"><a href="#L883">883</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:578
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L884"><a href="#L884">884</a></th><td class="line-code"><pre>msgid &quot;Raw memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L885"><a href="#L885">885</a></th><td class="line-code"><pre>msgstr &quot;Memoria Raw {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L886"><a href="#L886">886</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L887"><a href="#L887">887</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:582
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L888"><a href="#L888">888</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:610
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L889"><a href="#L889">889</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:615
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L890"><a href="#L890">890</a></th><td class="line-code"><pre>msgid &quot;Getting raw memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L891"><a href="#L891">891</a></th><td class="line-code"><pre>msgstr &quot;Lettura memoria Raw {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L892"><a href="#L892">892</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L893"><a href="#L893">893</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:587
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L894"><a href="#L894">894</a></th><td class="line-code"><pre>msgid &quot;You can only diff two memories!&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L895"><a href="#L895">895</a></th><td class="line-code"><pre>msgstr &quot;Puoi \&quot;diff\&quot; solo due memorie!&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L896"><a href="#L896">896</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L897"><a href="#L897">897</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:598
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L898"><a href="#L898">898</a></th><td class="line-code"><pre>msgid &quot;Memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L899"><a href="#L899">899</a></th><td class="line-code"><pre>msgstr &quot;Memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L900"><a href="#L900">900</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L901"><a href="#L901">901</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:604
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L902"><a href="#L902">902</a></th><td class="line-code"><pre>msgid &quot;Diff of {a} and {b}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L903"><a href="#L903">903</a></th><td class="line-code"><pre>msgstr &quot;Diff {a} e {b}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L904"><a href="#L904">904</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L905"><a href="#L905">905</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:628
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L906"><a href="#L906">906</a></th><td class="line-code"><pre>msgid &quot;Memories must be contiguous&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L907"><a href="#L907">907</a></th><td class="line-code"><pre>msgstr &quot;Le memorie devono essere contigue&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L908"><a href="#L908">908</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L909"><a href="#L909">909</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:700
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L910"><a href="#L910">910</a></th><td class="line-code"><pre>msgid &quot;Insert row above&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L911"><a href="#L911">911</a></th><td class="line-code"><pre>msgstr &quot;Inserisci riga sopra&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L912"><a href="#L912">912</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L913"><a href="#L913">913</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:701
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L914"><a href="#L914">914</a></th><td class="line-code"><pre>msgid &quot;Insert row below&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L915"><a href="#L915">915</a></th><td class="line-code"><pre>msgstr &quot;Inserisci riga sotto&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L916"><a href="#L916">916</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L917"><a href="#L917">917</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:702
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L918"><a href="#L918">918</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L919"><a href="#L919">919</a></th><td class="line-code"><pre>msgid &quot;Delete&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L920"><a href="#L920">920</a></th><td class="line-code"><pre>msgstr &quot;_Delete&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L921"><a href="#L921">921</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L922"><a href="#L922">922</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:702
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L923"><a href="#L923">923</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L924"><a href="#L924">924</a></th><td class="line-code"><pre>msgid &quot;Delete all&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L925"><a href="#L925">925</a></th><td class="line-code"><pre>msgstr &quot;_Delete&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L926"><a href="#L926">926</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L927"><a href="#L927">927</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:703
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L928"><a href="#L928">928</a></th><td class="line-code"><pre>msgid &quot;Delete (and shift up)&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L929"><a href="#L929">929</a></th><td class="line-code"><pre>msgstr &quot;Elimina (e sposta sopra)&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L930"><a href="#L930">930</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L931"><a href="#L931">931</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:704
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L932"><a href="#L932">932</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L933"><a href="#L933">933</a></th><td class="line-code"><pre>msgid &quot;Move up&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L934"><a href="#L934">934</a></th><td class="line-code"><pre>msgstr &quot;Move _Up&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L935"><a href="#L935">935</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L936"><a href="#L936">936</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:705
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L937"><a href="#L937">937</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L938"><a href="#L938">938</a></th><td class="line-code"><pre>msgid &quot;Move down&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L939"><a href="#L939">939</a></th><td class="line-code"><pre>msgstr &quot;Move D_n&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L940"><a href="#L940">940</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L941"><a href="#L941">941</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:706
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L942"><a href="#L942">942</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L943"><a href="#L943">943</a></th><td class="line-code"><pre>msgid &quot;Exchange memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L944"><a href="#L944">944</a></th><td class="line-code"><pre>msgstr &quot;E_xchange&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L945"><a href="#L945">945</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L946"><a href="#L946">946</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:707
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L947"><a href="#L947">947</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L948"><a href="#L948">948</a></th><td class="line-code"><pre>msgid &quot;Cut&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L949"><a href="#L949">949</a></th><td class="line-code"><pre>msgstr &quot;_Cut&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L950"><a href="#L950">950</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L951"><a href="#L951">951</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:708
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L952"><a href="#L952">952</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L953"><a href="#L953">953</a></th><td class="line-code"><pre>msgid &quot;Copy&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L954"><a href="#L954">954</a></th><td class="line-code"><pre>msgstr &quot;_Copy&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L955"><a href="#L955">955</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L956"><a href="#L956">956</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:709
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L957"><a href="#L957">957</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L958"><a href="#L958">958</a></th><td class="line-code"><pre>msgid &quot;Paste&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L959"><a href="#L959">959</a></th><td class="line-code"><pre>msgstr &quot;_Paste&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L960"><a href="#L960">960</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L961"><a href="#L961">961</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:710
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L962"><a href="#L962">962</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L963"><a href="#L963">963</a></th><td class="line-code"><pre>msgid &quot;Show Raw Memory&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L964"><a href="#L964">964</a></th><td class="line-code"><pre>msgstr &quot;Show raw memory&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L965"><a href="#L965">965</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L966"><a href="#L966">966</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:711
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L967"><a href="#L967">967</a></th><td class="line-code"><pre>#, fuzzy
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L968"><a href="#L968">968</a></th><td class="line-code"><pre>msgid &quot;Diff Raw Memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L969"><a href="#L969">969</a></th><td class="line-code"><pre>msgstr &quot;Diff raw memories&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L970"><a href="#L970">970</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L971"><a href="#L971">971</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:835
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L972"><a href="#L972">972</a></th><td class="line-code"><pre>msgid &quot;Internal Error: Column {name} not found&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L973"><a href="#L973">973</a></th><td class="line-code"><pre>msgstr &quot;Errore interno: Colonna {name} non trovata&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L974"><a href="#L974">974</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L975"><a href="#L975">975</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:863
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L976"><a href="#L976">976</a></th><td class="line-code"><pre>msgid &quot;Getting channel {chan}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L977"><a href="#L977">977</a></th><td class="line-code"><pre>msgstr &quot;Lettura canale {chan}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L978"><a href="#L978">978</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L979"><a href="#L979">979</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:952
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L980"><a href="#L980">980</a></th><td class="line-code"><pre>msgid &quot;Internal Error: Invalid limit {number&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L981"><a href="#L981">981</a></th><td class="line-code"><pre>msgstr &quot;Errore Interno: Limite non valido {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L982"><a href="#L982">982</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L983"><a href="#L983">983</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:962
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L984"><a href="#L984">984</a></th><td class="line-code"><pre>msgid &quot;Memory range:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L985"><a href="#L985">985</a></th><td class="line-code"><pre>msgstr &quot;Range Memorie:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L986"><a href="#L986">986</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L987"><a href="#L987">987</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:989
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L988"><a href="#L988">988</a></th><td class="line-code"><pre>msgid &quot;Go&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L989"><a href="#L989">989</a></th><td class="line-code"><pre>msgstr &quot;Vai&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L990"><a href="#L990">990</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L991"><a href="#L991">991</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1012
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L992"><a href="#L992">992</a></th><td class="line-code"><pre>msgid &quot;Special Channels&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L993"><a href="#L993">993</a></th><td class="line-code"><pre>msgstr &quot;Canali Speciali&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L994"><a href="#L994">994</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L995"><a href="#L995">995</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1019
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L996"><a href="#L996">996</a></th><td class="line-code"><pre>msgid &quot;Show Empty&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L997"><a href="#L997">997</a></th><td class="line-code"><pre>msgstr &quot;Mostra memorie vuote&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L998"><a href="#L998">998</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L999"><a href="#L999">999</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1198
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1000"><a href="#L1000">1000</a></th><td class="line-code"><pre>msgid &quot;Cutting memory {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1001"><a href="#L1001">1001</a></th><td class="line-code"><pre>msgstr &quot;Taglia memoria {number}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1002"><a href="#L1002">1002</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1003"><a href="#L1003">1003</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1232
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1004"><a href="#L1004">1004</a></th><td class="line-code"><pre>msgid &quot;Overwrite?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1005"><a href="#L1005">1005</a></th><td class="line-code"><pre>msgstr &quot;Sovrascrivere?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1006"><a href="#L1006">1006</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1007"><a href="#L1007">1007</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1237
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1008"><a href="#L1008">1008</a></th><td class="line-code"><pre>msgid &quot;Overwrite location {number}?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1009"><a href="#L1009">1009</a></th><td class="line-code"><pre>msgstr &quot;Sovrascrivere posizione {number}?&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1010"><a href="#L1010">1010</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1011"><a href="#L1011">1011</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1254
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1012"><a href="#L1012">1012</a></th><td class="line-code"><pre>msgid &quot;Incompatible Memory&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1013"><a href="#L1013">1013</a></th><td class="line-code"><pre>msgstr &quot;Memoria incompatibile&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1014"><a href="#L1014">1014</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1015"><a href="#L1015">1015</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1257
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1016"><a href="#L1016">1016</a></th><td class="line-code"><pre>msgid &quot;Pasted memory {number} is not compatible with this radio because:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1017"><a href="#L1017">1017</a></th><td class="line-code"><pre>msgstr &quot;La memoria incollata {number} non  compatibile con questa radio perch:&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1018"><a href="#L1018">1018</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1019"><a href="#L1019">1019</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1309
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1020"><a href="#L1020">1020</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1324
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1021"><a href="#L1021">1021</a></th><td class="line-code"><pre>msgid &quot;URCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1022"><a href="#L1022">1022</a></th><td class="line-code"><pre>msgstr &quot;URCALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1023"><a href="#L1023">1023</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1024"><a href="#L1024">1024</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1309
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1025"><a href="#L1025">1025</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1325
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1026"><a href="#L1026">1026</a></th><td class="line-code"><pre>msgid &quot;RPT1CALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1027"><a href="#L1027">1027</a></th><td class="line-code"><pre>msgstr &quot;RPT1CALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1028"><a href="#L1028">1028</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1029"><a href="#L1029">1029</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1309
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1030"><a href="#L1030">1030</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1326
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1031"><a href="#L1031">1031</a></th><td class="line-code"><pre>msgid &quot;RPT2CALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1032"><a href="#L1032">1032</a></th><td class="line-code"><pre>msgstr &quot;RPT2CALL&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1033"><a href="#L1033">1033</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1034"><a href="#L1034">1034</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1310
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1035"><a href="#L1035">1035</a></th><td class="line-code"><pre>#: ../chirpui/memedit.py:1327
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1036"><a href="#L1036">1036</a></th><td class="line-code"><pre>msgid &quot;Digital Code&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1037"><a href="#L1037">1037</a></th><td class="line-code"><pre>msgstr &quot;Digital Code&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1038"><a href="#L1038">1038</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1039"><a href="#L1039">1039</a></th><td class="line-code"><pre>#~ msgid &quot;Unsuppported by destination radio: {msgs}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1040"><a href="#L1040">1040</a></th><td class="line-code"><pre>#~ msgstr &quot;Non supportato da radio destinataria: {msgs}&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1041"><a href="#L1041">1041</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1042"><a href="#L1042">1042</a></th><td class="line-code"><pre>#~ msgid &quot;New location&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1043"><a href="#L1043">1043</a></th><td class="line-code"><pre>#~ msgstr &quot;Nuova posizione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1044"><a href="#L1044">1044</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1045"><a href="#L1045">1045</a></th><td class="line-code"><pre>#~ msgid &quot;Location&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1046"><a href="#L1046">1046</a></th><td class="line-code"><pre>#~ msgstr &quot;Posizione&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1047"><a href="#L1047">1047</a></th><td class="line-code"><pre>
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1048"><a href="#L1048">1048</a></th><td class="line-code"><pre>#~ msgid &quot;%i errors during open, check the debug log for details&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1049"><a href="#L1049">1049</a></th><td class="line-code"><pre>#~ msgstr &quot;&quot;
-</pre></td></tr>
-
-
-<tr><th class="line-num" id="L1050"><a href="#L1050">1050</a></th><td class="line-code"><pre>#~ &quot;%i errori durante l'apertura, controllare il debug log per i dettagli&quot;
-</pre></td></tr>
-
-
-</tbody>
-</table>
-</div>
-
-
-
-
-
-        
-				<div style="clear:both;"></div>
-    </div>
-</div>
-
-<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
-	
-<div id="footer">
-  <div class="bgl"><div class="bgr">
-    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2011 Jean-Philippe Lang
-  </div></div>
-</div>
-</div>
-</div>
-
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-10362902-3']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
-</body>
-</html>
+# English translations for CHIRP package.
+# Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
+# This file is distributed under the same license as the CHIRP package.
+# Dan Smith <dan@theine>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-16 12:06-0800\n"
+"PO-Revision-Date: 2012-02-16 22:14+0100\n"
+"Last-Translator: Fabio Rusconi <iz2qdh@gmail.com>\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../chirpui/common.py:204
+msgid "Completed"
+msgstr "Completato"
+
+#: ../chirpui/common.py:205
+msgid "idle"
+msgstr "pronto"
+
+#: ../chirpui/bankedit.py:52
+#, fuzzy
+msgid "Retrieving bank information"
+msgstr "Acquisizione lista memorie"
+
+#: ../chirpui/bankedit.py:75
+#, fuzzy
+msgid "Setting name on bank"
+msgstr "Scrittura Back List"
+
+#: ../chirpui/bankedit.py:85
+msgid "Bank"
+msgstr "Bank"
+
+#: ../chirpui/bankedit.py:86
+#: ../chirpui/bankedit.py:240
+#: ../chirpui/importdialog.py:536
+#: ../chirpui/memedit.py:65
+#: ../chirpui/memedit.py:85
+#: ../chirpui/memedit.py:247
+#: ../chirpui/memedit.py:872
+#: ../chirpui/memedit.py:926
+#: ../chirpui/memedit.py:1063
+#: ../chirpui/memedit.py:1065
+msgid "Name"
+msgstr "Nome"
+
+#: ../chirpui/bankedit.py:185
+#, fuzzy
+msgid "Updating bank index for memory {num}"
+msgstr "Lettura memoria Raw {number}"
+
+#: ../chirpui/bankedit.py:194
+msgid "Updating bank information for memory {num}"
+msgstr "Aggiornamento informazioni Bank per la memoria {num}"
+
+#: ../chirpui/bankedit.py:200
+#: ../chirpui/bankedit.py:229
+#, fuzzy
+msgid "Getting memory {num}"
+msgstr "Lettura memoria {number}"
+
+#: ../chirpui/bankedit.py:214
+#, fuzzy
+msgid "Setting index for memory {num}"
+msgstr "Scrittura memoria {number}"
+
+#: ../chirpui/bankedit.py:223
+#, fuzzy
+msgid "Getting bank for memory {num}"
+msgstr "Lettura memoria Raw {number}"
+
+#: ../chirpui/bankedit.py:238
+#: ../chirpui/memedit.py:63
+#: ../chirpui/memedit.py:172
+#: ../chirpui/memedit.py:246
+#: ../chirpui/memedit.py:315
+#: ../chirpui/memedit.py:335
+#: ../chirpui/memedit.py:349
+#: ../chirpui/memedit.py:423
+#: ../chirpui/memedit.py:435
+#: ../chirpui/memedit.py:459
+#: ../chirpui/memedit.py:461
+#: ../chirpui/memedit.py:534
+#: ../chirpui/memedit.py:548
+#: ../chirpui/memedit.py:550
+#: ../chirpui/memedit.py:591
+#: ../chirpui/memedit.py:593
+#: ../chirpui/memedit.py:621
+#: ../chirpui/memedit.py:822
+#: ../chirpui/memedit.py:870
+#: ../chirpui/memedit.py:895
+#: ../chirpui/memedit.py:907
+#: ../chirpui/memedit.py:924
+#: ../chirpui/memedit.py:1230
+msgid "Loc"
+msgstr "Loc"
+
+#: ../chirpui/bankedit.py:239
+#: ../chirpui/importdialog.py:537
+#: ../chirpui/memedit.py:64
+#: ../chirpui/memedit.py:86
+#: ../chirpui/memedit.py:187
+#: ../chirpui/memedit.py:248
+#: ../chirpui/memedit.py:271
+#: ../chirpui/memedit.py:296
+#: ../chirpui/memedit.py:304
+#: ../chirpui/memedit.py:873
+#: ../chirpui/memedit.py:923
+msgid "Frequency"
+msgstr "Frequenza"
+
+#: ../chirpui/bankedit.py:241
+#, fuzzy
+msgid "Index"
+msgstr "Indice Bank"
+
+#: ../chirpui/bankedit.py:302
+#, fuzzy
+msgid "Getting bank information for memory {num}"
+msgstr "Lettura memoria Raw {number}"
+
+#: ../chirpui/bankedit.py:323
+#, fuzzy
+msgid "Getting bank information"
+msgstr "Lettura Bank List"
+
+#: ../chirpui/inputdialog.py:81
+msgid "An error has occurred"
+msgstr "Si è verificato un errore"
+
+#: ../chirpui/inputdialog.py:130
+msgid "Overwrite"
+msgstr "Sovrascrivere"
+
+#: ../chirpui/inputdialog.py:133
+msgid "File Exists"
+msgstr "File già esistente"
+
+#: ../chirpui/inputdialog.py:136
+msgid "The file {name} already exists. Do you want to overwrite it?"
+msgstr "Il file {name} esiste già. Vuoi sovrascriverlo?"
+
+#: ../chirpui/importdialog.py:90
+msgid "Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'"
+msgstr "La memoria {number} è già stata importata. Scegliere un altro valore per 'Nuova posizione' prima di selezionare 'Importa'"
+
+#: ../chirpui/importdialog.py:121
+msgid "Invalid value. Must be an integer."
+msgstr "Valore non valido. Deve essere un numero intero."
+
+#: ../chirpui/importdialog.py:130
+msgid "Location {number} is already being imported"
+msgstr "La memoria {number} è già stata importata"
+
+#: ../chirpui/importdialog.py:182
+msgid "Updating URCALL list"
+msgstr "Aggiorno la lista URCALL"
+
+#: ../chirpui/importdialog.py:187
+msgid "Updating RPTCALL list"
+msgstr "Aggriorno la lista RPTCALL"
+
+#: ../chirpui/importdialog.py:256
+msgid "Setting memory {number}"
+msgstr "Scrittura memoria {number}"
+
+#: ../chirpui/importdialog.py:260
+msgid "Importing bank information"
+msgstr "Importazione informazioni Bank"
+
+#: ../chirpui/importdialog.py:264
+#, fuzzy
+msgid "Error importing memories:"
+msgstr "Error reporting is enabled"
+
+#: ../chirpui/importdialog.py:376
+msgid "All"
+msgstr "Tutte"
+
+#: ../chirpui/importdialog.py:382
+msgid "None"
+msgstr "Nessuna"
+
+#: ../chirpui/importdialog.py:388
+msgid "Inverse"
+msgstr "Inverti"
+
+#: ../chirpui/importdialog.py:394
+#, fuzzy
+msgid "Select"
+msgstr "Select Columns"
+
+#: ../chirpui/importdialog.py:416
+msgid "Auto"
+msgstr "Auto"
+
+#: ../chirpui/importdialog.py:422
+msgid "Reverse"
+msgstr "Rovescia"
+
+#: ../chirpui/importdialog.py:428
+msgid "Adjust New Location"
+msgstr "Seleziona nuova posizione"
+
+#: ../chirpui/importdialog.py:438
+msgid "Confirm overwrites"
+msgstr "Conferma sovrascrittura"
+
+#: ../chirpui/importdialog.py:444
+msgid "Options"
+msgstr "Opzioni"
+
+#: ../chirpui/importdialog.py:495
+msgid "Cannot be imported because"
+msgstr "Non può essere importato perchè"
+
+#: ../chirpui/importdialog.py:513
+#, fuzzy
+msgid "Import From File"
+msgstr "Import from RFinder"
+
+#: ../chirpui/importdialog.py:514
+#: ../chirpui/mainapp.py:1196
+msgid "Import"
+msgstr "Importa"
+
+#: ../chirpui/importdialog.py:534
+#, fuzzy
+msgid "To"
+msgstr "Tono"
+
+#: ../chirpui/importdialog.py:535
+msgid "From"
+msgstr "Da"
+
+#: ../chirpui/importdialog.py:538
+#: ../chirpui/memedit.py:78
+#: ../chirpui/memedit.py:99
+#: ../chirpui/memedit.py:886
+#: ../chirpui/memedit.py:940
+#: ../chirpui/memedit.py:1068
+msgid "Comment"
+msgstr "Commento"
+
+#: ../chirpui/importdialog.py:542
+#, fuzzy
+msgid "Location memory will be imported into"
+msgstr "La memoria {number} è già stata importata"
+
+#: ../chirpui/importdialog.py:543
+#, fuzzy
+msgid "Location of memory in the file being imported"
+msgstr "La memoria {number} è già stata importata"
+
+#: ../chirpui/importdialog.py:566
+msgid "Preparing memory list..."
+msgstr "Preparazione lista memorie..."
+
+#: ../chirpui/importdialog.py:575
+#, fuzzy
+msgid "Export To File"
+msgstr "Import from RFinder"
+
+#: ../chirpui/importdialog.py:576
+#: ../chirpui/mainapp.py:1197
+msgid "Export"
+msgstr "Esporta"
+
+#: ../chirpui/mainapp.py:269
+#: ../chirpui/mainapp.py:483
+msgid "Untitled"
+msgstr "Senza nome"
+
+#: ../chirpui/mainapp.py:316
+#: ../chirpui/mainapp.py:715
+msgid "CHIRP Radio Images"
+msgstr "CHIRP Radio Images"
+
+#: ../chirpui/mainapp.py:317
+#: ../chirpui/mainapp.py:714
+#: ../chirpui/mainapp.py:880
+msgid "CHIRP Files"
+msgstr "CHIRP Files"
+
+#: ../chirpui/mainapp.py:318
+#: ../chirpui/mainapp.py:716
+#: ../chirpui/mainapp.py:879
+msgid "CSV Files"
+msgstr "Files CSV"
+
+#: ../chirpui/mainapp.py:319
+#: ../chirpui/mainapp.py:717
+msgid "ICF Files"
+msgstr "Files ICF"
+
+#: ../chirpui/mainapp.py:320
+#: ../chirpui/mainapp.py:718
+msgid "VX7 Commander Files"
+msgstr "Files VX7 Commander"
+
+#: ../chirpui/mainapp.py:330
+msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+msgstr "I files ICF non possono essere modificati, solo visualizzati o importati in un altro file. Aprire in sola lettura?"
+
+#: ../chirpui/mainapp.py:373
+msgid "There was an error opening {fname}: {error}"
+msgstr "Si è verificato un errore nell'apertura del file {fname}: {error}"
+
+#: ../chirpui/mainapp.py:388
+msgid "{num} errors during open:"
+msgstr "{num} errori durante l'apertura:"
+
+#: ../chirpui/mainapp.py:394
+msgid "Note:"
+msgstr "Note:"
+
+#: ../chirpui/mainapp.py:395
+msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+msgstr "La radio {vendor} {model} opera in <b>live mode</b>. Significa che i cambiamenti che apporti alle memorie verranno subito caricati in radio. A causa di ciò, non potrai usare i comandi <u>Salva</u> o <u>Carica memorie nella Radio</u>. Se vuoi modificare i contenuti senza caricarli, per favore <u>Esporta</u> in un file CSV usando il menu <b>File</b>."
+
+#: ../chirpui/mainapp.py:404
+msgid "Don't show this again"
+msgstr "Non mostrarlo più"
+
+#: ../chirpui/mainapp.py:448
+msgid "{vendor} {model} image file"
+msgstr "{vendor} {model} file immagine"
+
+#: ../chirpui/mainapp.py:456
+msgid "VX7 Commander"
+msgstr "VX7 Commander"
+
+#: ../chirpui/mainapp.py:518
+msgid "Open recent file {name}"
+msgstr "Apri file recente {name}"
+
+#: ../chirpui/mainapp.py:579
+msgid "Import stock configuration {name}"
+msgstr "Importa configurazione di fabbrica {name}"
+
+#: ../chirpui/mainapp.py:595
+msgid "Open stock configuration {name}"
+msgstr "Apri configurazione di fabbrica {name}"
+
+#: ../chirpui/mainapp.py:681
+msgid "Discard Changes?"
+msgstr "Cestinare le modifiche?"
+
+#: ../chirpui/mainapp.py:686
+msgid "File is modified, save changes before closing?"
+msgstr "Il file è stato modificato, salvare i cambiamenti prima di chiudere?"
+
+#: ../chirpui/mainapp.py:923
+msgid "With significant contributions by:"
+msgstr "Con il contributo di:"
+
+#: ../chirpui/mainapp.py:940
+msgid "Select Columns"
+msgstr "Seleziona colonne"
+
+#: ../chirpui/mainapp.py:955
+msgid "Visible columns for {radio}"
+msgstr "Colonne visibili per {radio}"
+
+#: ../chirpui/mainapp.py:1012
+msgid "Reporting is disabled"
+msgstr "Reporting disabilitato"
+
+#: ../chirpui/mainapp.py:1013
+msgid ""
+"The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
+"\n"
+"<b>Are you sure you want to disable this feature?</b>"
+msgstr ""
+"La funzione reporting di CHIRP è progettata per <u>migliorare la qualità</u> consentendo agli autori di focalizzare l'attenzione sui driver delle radio più usate e sugli errori più frequenti. I report non contengono dati personali e sono usati solo per scopi statistici dagli autori. Sappiamo che la provacy è molto importante ma <u>per favore valuta se lasciare attiva questa opzione per aiutare a remdere CHIRP ancora migliore!</u>\n"
+"\n"
+"<b>Sicuro di disabilitare questa opzione?</b>"
+
+#: ../chirpui/mainapp.py:1045
+msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
+msgstr "Scegli una lingua o usa il comando Auto per usare la lingua del sistema. Le modifiche avranno effetto se riavvii l'applicazione"
+
+#: ../chirpui/mainapp.py:1169
+msgid "_File"
+msgstr "_File"
+
+#: ../chirpui/mainapp.py:1172
+msgid "Open stock config"
+msgstr "Apri configurazione di fabbrica"
+
+#: ../chirpui/mainapp.py:1173
+msgid "_Recent"
+msgstr "_Recent"
+
+#: ../chirpui/mainapp.py:1178
+msgid "_Edit"
+msgstr "_Modifica"
+
+#: ../chirpui/mainapp.py:1179
+msgid "_Cut"
+msgstr "_Taglia"
+
+#: ../chirpui/mainapp.py:1180
+msgid "_Copy"
+msgstr "_Copia"
+
+#: ../chirpui/mainapp.py:1181
+msgid "_Paste"
+msgstr "_Incolla"
+
+#: ../chirpui/mainapp.py:1182
+msgid "_Delete"
+msgstr "_Elimina"
+
+#: ../chirpui/mainapp.py:1183
+msgid "Move _Up"
+msgstr "Sposta _Su"
+
+#: ../chirpui/mainapp.py:1184
+#, fuzzy
+msgid "Move Dow_n"
+msgstr "Sposta _Giu"
+
+#: ../chirpui/mainapp.py:1185
+msgid "E_xchange"
+msgstr "Scambia"
+
+#: ../chirpui/mainapp.py:1186
+msgid "_View"
+msgstr "_Vista"
+
+#: ../chirpui/mainapp.py:1187
+msgid "Columns"
+msgstr "Colonne"
+
+#: ../chirpui/mainapp.py:1188
+msgid "Developer"
+msgstr "Sviluppatore"
+
+#: ../chirpui/mainapp.py:1189
+msgid "Show raw memory"
+msgstr "Mostra memorie Raw"
+
+#: ../chirpui/mainapp.py:1190
+msgid "Diff raw memories"
+msgstr "Diff memorie Raw"
+
+#: ../chirpui/mainapp.py:1191
+msgid "Diff tabs"
+msgstr "Diff tabs"
+
+#: ../chirpui/mainapp.py:1192
+msgid "Change language"
+msgstr "Cambia lingua"
+
+#: ../chirpui/mainapp.py:1193
+msgid "_Radio"
+msgstr "_Radio"
+
+#: ../chirpui/mainapp.py:1194
+msgid "Download From Radio"
+msgstr "Scarica memorie dalla Radio"
+
+#: ../chirpui/mainapp.py:1195
+msgid "Upload To Radio"
+msgstr "Carica memorie nella Radio"
+
+#: ../chirpui/mainapp.py:1198
+msgid "Import from RFinder"
+msgstr "Importa da RFinder"
+
+#: ../chirpui/mainapp.py:1199
+msgid "CHIRP Native File"
+msgstr "File nativo CHIRP"
+
+#: ../chirpui/mainapp.py:1200
+msgid "CSV File"
+msgstr "File CSV"
+
+#: ../chirpui/mainapp.py:1201
+msgid "Import from RepeaterBook"
+msgstr "Importa da RepeaterBook"
+
+#: ../chirpui/mainapp.py:1202
+#, fuzzy
+msgid "Import from stock config"
+msgstr "Importa da RepeaterBook"
+
+#: ../chirpui/mainapp.py:1204
+msgid "Help"
+msgstr "Aiuto"
+
+#: ../chirpui/mainapp.py:1215
+msgid "Report statistics"
+msgstr "Report statistiche"
+
+#: ../chirpui/mainapp.py:1216
+msgid "Hide Unused Fields"
+msgstr "Nascondi memorie vuote"
+
+#: ../chirpui/mainapp.py:1217
+msgid "Automatic Repeater Offset"
+msgstr "Offset ripetitore automatico"
+
+#: ../chirpui/mainapp.py:1218
+msgid "Enable Developer Functions"
+msgstr "Abilita funzioni Sviluppatore"
+
+#: ../chirpui/mainapp.py:1352
+msgid "Error reporting is enabled"
+msgstr "Report errori abilitato"
+
+#: ../chirpui/mainapp.py:1355
+msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgstr "Se vuoi disabilitare la funzione puoi farlo dal menu <u>Help</u>"
+
+#: ../chirpui/cloneprog.py:43
+msgid "Clone Progress"
+msgstr "Progressione Programmazione"
+
+#: ../chirpui/cloneprog.py:46
+msgid "Cloning"
+msgstr "Programmazione"
+
+#: ../chirpui/cloneprog.py:55
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../chirpui/shiftdialog.py:27
+msgid "Shift"
+msgstr "Shift"
+
+#: ../chirpui/shiftdialog.py:63
+#, fuzzy
+msgid "Moving {src} to {dst}"
+msgstr "Spostamento"
+
+#: ../chirpui/shiftdialog.py:80
+msgid "Looking for a free spot ({number})"
+msgstr "Ricerca di uno spot libero ({number})"
+
+#: ../chirpui/shiftdialog.py:135
+msgid "Moved {count} memories"
+msgstr "Spostate {count} memorie"
+
+#: ../chirpui/clone.py:35
+#, fuzzy
+msgid "{vendor} {model} on {port}"
+msgstr "{vendor} {model} image file"
+
+#: ../chirpui/clone.py:100
+#: ../chirpui/clone.py:162
+msgid "Detect"
+msgstr "Trova"
+
+#: ../chirpui/clone.py:123
+msgid "Port"
+msgstr "Porta"
+
+#: ../chirpui/clone.py:124
+msgid "Vendor"
+msgstr "Produttore"
+
+#: ../chirpui/clone.py:125
+msgid "Model"
+msgstr "Modello"
+
+#: ../chirpui/clone.py:138
+#, fuzzy
+msgid "Radio"
+msgstr "_Radio"
+
+#: ../chirpui/clone.py:166
+msgid "Unable to detect radio on {port}"
+msgstr "Impossibile dialogare con la radio sulla porta {port}"
+
+#: ../chirpui/clone.py:178
+msgid "Internal error: Unable to upload to {model}"
+msgstr "Errore interno: Impossibile programmare su {model}"
+
+#: ../chirpui/clone.py:226
+msgid "Clone failed: {error}"
+msgstr "Lettura/scrittura fallita: {error}"
+
+#: ../chirpui/dstaredit.py:40
+msgid "Callsign"
+msgstr "Callsign"
+
+#: ../chirpui/dstaredit.py:124
+msgid "Your callsign"
+msgstr "Tuo Callsign"
+
+#: ../chirpui/dstaredit.py:132
+msgid "Repeater callsign"
+msgstr "Callsign ripetitore"
+
+#: ../chirpui/dstaredit.py:140
+msgid "My callsign"
+msgstr "Mio Callsign"
+
+#: ../chirpui/dstaredit.py:170
+#: ../chirpui/memedit.py:1365
+msgid "Downloading URCALL list"
+msgstr "Download lista URCALL"
+
+#: ../chirpui/dstaredit.py:174
+#: ../chirpui/memedit.py:1377
+msgid "Downloading RPTCALL list"
+msgstr "Download lista RPTCALL"
+
+#: ../chirpui/dstaredit.py:178
+msgid "Downloading MYCALL list"
+msgstr "Download lista MYCALL"
+
+#: ../chirpui/editorset.py:87
+#, fuzzy
+msgid "Memories"
+msgstr "Diff raw memories"
+
+#: ../chirpui/editorset.py:92
+msgid "D-STAR"
+msgstr "D-STAR"
+
+#: ../chirpui/editorset.py:98
+#, fuzzy
+msgid "Bank Names"
+msgstr "Banchi"
+
+#: ../chirpui/editorset.py:104
+msgid "Banks"
+msgstr "Banchi"
+
+#: ../chirpui/editorset.py:222
+msgid "The {vendor} {model} has multiple independent sub-devices"
+msgstr "La radio {vendor} {model} ha sub-devices multipli indipendenti"
+
+#: ../chirpui/editorset.py:225
+msgid "Choose one to import from:"
+msgstr "Scegliere memorie da importare da:"
+
+#: ../chirpui/editorset.py:230
+msgid "Cancelled"
+msgstr "Annullato"
+
+#: ../chirpui/editorset.py:235
+msgid "Internal Error"
+msgstr "Errore interno"
+
+#: ../chirpui/editorset.py:248
+msgid "There were errors while opening {file}. The affected memories will not be importable!"
+msgstr "C'è stato un errore nell'apertura di {file}. Alcune memorie non potranno essere importate!"
+
+#: ../chirpui/editorset.py:260
+#, fuzzy
+msgid "There was an error during import: {error}"
+msgstr "There was an error opening {fname}: {error}"
+
+#: ../chirpui/editorset.py:270
+msgid "Unsupported file type"
+msgstr "Tipo file non supportato"
+
+#: ../chirpui/editorset.py:286
+#: ../chirpui/editorset.py:301
+#, fuzzy
+msgid "There was an error during export: {error}"
+msgstr "There was an error opening {fname}: {error}"
+
+#: ../chirpui/editorset.py:313
+msgid "Priming memory"
+msgstr "Preparazione memorie"
+
+#: ../chirpui/memedit.py:52
+msgid "Invalid value for this field"
+msgstr "Valore non valido per questo campo"
+
+#: ../chirpui/memedit.py:66
+#: ../chirpui/memedit.py:97
+#: ../chirpui/memedit.py:111
+#: ../chirpui/memedit.py:204
+#: ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:874
+#: ../chirpui/memedit.py:931
+#: ../chirpui/memedit.py:1069
+#: ../chirpui/memedit.py:1133
+msgid "Tone Mode"
+msgstr "Mod. Tono"
+
+#: ../chirpui/memedit.py:67
+#: ../chirpui/memedit.py:87
+#: ../chirpui/memedit.py:103
+#: ../chirpui/memedit.py:214
+#: ../chirpui/memedit.py:218
+#: ../chirpui/memedit.py:220
+#: ../chirpui/memedit.py:310
+#: ../chirpui/memedit.py:875
+#: ../chirpui/memedit.py:928
+#: ../chirpui/memedit.py:1070
+msgid "Tone"
+msgstr "Tono"
+
+#: ../chirpui/memedit.py:68
+#: ../chirpui/memedit.py:88
+#: ../chirpui/memedit.py:104
+#: ../chirpui/memedit.py:210
+#: ../chirpui/memedit.py:218
+#: ../chirpui/memedit.py:221
+#: ../chirpui/memedit.py:310
+#: ../chirpui/memedit.py:876
+#: ../chirpui/memedit.py:929
+#: ../chirpui/memedit.py:1066
+msgid "ToneSql"
+msgstr "Tono Sql"
+
+#: ../chirpui/memedit.py:69
+#: ../chirpui/memedit.py:89
+#: ../chirpui/memedit.py:105
+#: ../chirpui/memedit.py:211
+#: ../chirpui/memedit.py:215
+#: ../chirpui/memedit.py:222
+#: ../chirpui/memedit.py:306
+#: ../chirpui/memedit.py:877
+#: ../chirpui/memedit.py:930
+#: ../chirpui/memedit.py:1059
+msgid "DTCS Code"
+msgstr "Cod. DTCS"
+
+#: ../chirpui/memedit.py:70
+#: ../chirpui/memedit.py:90
+#: ../chirpui/memedit.py:106
+#: ../chirpui/memedit.py:212
+#: ../chirpui/memedit.py:216
+#: ../chirpui/memedit.py:223
+#: ../chirpui/memedit.py:878
+#: ../chirpui/memedit.py:933
+#: ../chirpui/memedit.py:1060
+msgid "DTCS Pol"
+msgstr "DTCS Pol"
+
+#: ../chirpui/memedit.py:71
+#: ../chirpui/memedit.py:91
+#: ../chirpui/memedit.py:112
+#: ../chirpui/memedit.py:879
+#: ../chirpui/memedit.py:932
+#: ../chirpui/memedit.py:1067
+#: ../chirpui/memedit.py:1134
+msgid "Cross Mode"
+msgstr "Modalità Cross-Repeater"
+
+#: ../chirpui/memedit.py:72
+#: ../chirpui/memedit.py:92
+#: ../chirpui/memedit.py:109
+#: ../chirpui/memedit.py:137
+#: ../chirpui/memedit.py:205
+#: ../chirpui/memedit.py:249
+#: ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:880
+#: ../chirpui/memedit.py:934
+#: ../chirpui/memedit.py:1071
+#: ../chirpui/memedit.py:1144
+msgid "Duplex"
+msgstr "Duplex"
+
+#: ../chirpui/memedit.py:73
+#: ../chirpui/memedit.py:93
+#: ../chirpui/memedit.py:135
+#: ../chirpui/memedit.py:198
+#: ../chirpui/memedit.py:226
+#: ../chirpui/memedit.py:250
+#: ../chirpui/memedit.py:308
+#: ../chirpui/memedit.py:881
+#: ../chirpui/memedit.py:935
+#: ../chirpui/memedit.py:1062
+msgid "Offset"
+msgstr "Offset"
+
+#: ../chirpui/memedit.py:74
+#: ../chirpui/memedit.py:94
+#: ../chirpui/memedit.py:107
+#: ../chirpui/memedit.py:882
+#: ../chirpui/memedit.py:936
+#: ../chirpui/memedit.py:1061
+#: ../chirpui/memedit.py:1132
+#: ../chirpui/memedit.py:1289
+#: ../chirpui/memedit.py:1307
+#: ../chirpui/memedit.py:1317
+msgid "Mode"
+msgstr "Modalità"
+
+#: ../chirpui/memedit.py:75
+#: ../chirpui/memedit.py:95
+#: ../chirpui/memedit.py:108
+#: ../chirpui/memedit.py:296
+#: ../chirpui/memedit.py:883
+#: ../chirpui/memedit.py:937
+#: ../chirpui/memedit.py:1073
+#: ../chirpui/memedit.py:1136
+#: ../chirpui/memedit.py:1140
+msgid "Power"
+msgstr "Potenza"
+
+#: ../chirpui/memedit.py:76
+#: ../chirpui/memedit.py:96
+#: ../chirpui/memedit.py:110
+#: ../chirpui/memedit.py:140
+#: ../chirpui/memedit.py:143
+#: ../chirpui/memedit.py:884
+#: ../chirpui/memedit.py:938
+#: ../chirpui/memedit.py:1064
+msgid "Tune Step"
+msgstr "Passo Sintonizzazione"
+
+#: ../chirpui/memedit.py:77
+#: ../chirpui/memedit.py:98
+#: ../chirpui/memedit.py:885
+#: ../chirpui/memedit.py:939
+#: ../chirpui/memedit.py:1072
+#: ../chirpui/memedit.py:1135
+msgid "Skip"
+msgstr "Salta"
+
+#: ../chirpui/memedit.py:175
+msgid "Erasing memory {loc}"
+msgstr "Cancellazione memoria {loc}"
+
+#: ../chirpui/memedit.py:236
+msgid "Unable to make changes to this model"
+msgstr "Impossibile cambiarlo per questo modello"
+
+#: ../chirpui/memedit.py:241
+msgid "Editing new item, taking defaults"
+msgstr "Modifica nuovo oggetto, dati default"
+
+#: ../chirpui/memedit.py:257
+msgid "Bad value for {col}: {val}"
+msgstr "Valore errato per {col}: {val}"
+
+#: ../chirpui/memedit.py:281
+msgid "Error setting memory"
+msgstr "Errore di scrittura memoria"
+
+#: ../chirpui/memedit.py:289
+#: ../chirpui/memedit.py:356
+#: ../chirpui/memedit.py:1272
+msgid "Writing memory {number}"
+msgstr "Scrittura memoria {number}"
+
+#: ../chirpui/memedit.py:361
+msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
+msgstr "Questa operazione consiste nello spostare tutti i canali sottostanti finchè non viene trovato uno spazio libero. Ci metterà MOLTO tempo. Sicuro di volerlo fare?"
+
+#: ../chirpui/memedit.py:387
+msgid "Adding memory {number}"
+msgstr "Aggiunta memoria {number}"
+
+#: ../chirpui/memedit.py:400
+#: ../chirpui/memedit.py:913
+msgid "Erasing memory {number}"
+msgstr "Cancellata memoria {number}"
+
+#: ../chirpui/memedit.py:409
+#: ../chirpui/memedit.py:518
+#: ../chirpui/memedit.py:564
+#: ../chirpui/memedit.py:569
+#: ../chirpui/memedit.py:856
+#: ../chirpui/memedit.py:1166
+msgid "Getting memory {number}"
+msgstr "Lettura memoria {number}"
+
+#: ../chirpui/memedit.py:497
+#: ../chirpui/memedit.py:508
+#: ../chirpui/memedit.py:556
+msgid "Moving memory from {old} to {new}"
+msgstr "Spostamento memoria da {old} a {new}"
+
+#: ../chirpui/memedit.py:578
+msgid "Raw memory {number}"
+msgstr "Memoria Raw {number}"
+
+#: ../chirpui/memedit.py:582
+#: ../chirpui/memedit.py:610
+#: ../chirpui/memedit.py:615
+msgid "Getting raw memory {number}"
+msgstr "Lettura memoria Raw {number}"
+
+#: ../chirpui/memedit.py:587
+msgid "You can only diff two memories!"
+msgstr "Puoi \"diff\" solo due memorie!"
+
+#: ../chirpui/memedit.py:598
+msgid "Memory {number}"
+msgstr "Memoria {number}"
+
+#: ../chirpui/memedit.py:604
+msgid "Diff of {a} and {b}"
+msgstr "Diff {a} e {b}"
+
+#: ../chirpui/memedit.py:628
+msgid "Memories must be contiguous"
+msgstr "Le memorie devono essere contigue"
+
+#: ../chirpui/memedit.py:700
+msgid "Insert row above"
+msgstr "Inserisci riga sopra"
+
+#: ../chirpui/memedit.py:701
+msgid "Insert row below"
+msgstr "Inserisci riga sotto"
+
+#: ../chirpui/memedit.py:702
+#, fuzzy
+msgid "Delete"
+msgstr "_Delete"
+
+#: ../chirpui/memedit.py:702
+#, fuzzy
+msgid "Delete all"
+msgstr "_Delete"
+
+#: ../chirpui/memedit.py:703
+msgid "Delete (and shift up)"
+msgstr "Elimina (e sposta sopra)"
+
+#: ../chirpui/memedit.py:704
+#, fuzzy
+msgid "Move up"
+msgstr "Move _Up"
+
+#: ../chirpui/memedit.py:705
+#, fuzzy
+msgid "Move down"
+msgstr "Move D_n"
+
+#: ../chirpui/memedit.py:706
+#, fuzzy
+msgid "Exchange memories"
+msgstr "E_xchange"
+
+#: ../chirpui/memedit.py:707
+#, fuzzy
+msgid "Cut"
+msgstr "_Cut"
+
+#: ../chirpui/memedit.py:708
+#, fuzzy
+msgid "Copy"
+msgstr "_Copy"
+
+#: ../chirpui/memedit.py:709
+#, fuzzy
+msgid "Paste"
+msgstr "_Paste"
+
+#: ../chirpui/memedit.py:710
+#, fuzzy
+msgid "Show Raw Memory"
+msgstr "Show raw memory"
+
+#: ../chirpui/memedit.py:711
+#, fuzzy
+msgid "Diff Raw Memories"
+msgstr "Diff raw memories"
+
+#: ../chirpui/memedit.py:835
+msgid "Internal Error: Column {name} not found"
+msgstr "Errore interno: Colonna {name} non trovata"
+
+#: ../chirpui/memedit.py:863
+msgid "Getting channel {chan}"
+msgstr "Lettura canale {chan}"
+
+#: ../chirpui/memedit.py:952
+msgid "Internal Error: Invalid limit {number"
+msgstr "Errore Interno: Limite non valido {number}"
+
+#: ../chirpui/memedit.py:962
+msgid "Memory range:"
+msgstr "Range Memorie:"
+
+#: ../chirpui/memedit.py:989
+msgid "Go"
+msgstr "Vai"
+
+#: ../chirpui/memedit.py:1012
+msgid "Special Channels"
+msgstr "Canali Speciali"
+
+#: ../chirpui/memedit.py:1019
+msgid "Show Empty"
+msgstr "Mostra memorie vuote"
+
+#: ../chirpui/memedit.py:1198
+msgid "Cutting memory {number}"
+msgstr "Taglia memoria {number}"
+
+#: ../chirpui/memedit.py:1232
+msgid "Overwrite?"
+msgstr "Sovrascrivere?"
+
+#: ../chirpui/memedit.py:1237
+msgid "Overwrite location {number}?"
+msgstr "Sovrascrivere posizione {number}?"
+
+#: ../chirpui/memedit.py:1254
+msgid "Incompatible Memory"
+msgstr "Memoria incompatibile"
+
+#: ../chirpui/memedit.py:1257
+msgid "Pasted memory {number} is not compatible with this radio because:"
+msgstr "La memoria incollata {number} non è compatibile con questa radio perchè:"
+
+#: ../chirpui/memedit.py:1309
+#: ../chirpui/memedit.py:1324
+msgid "URCALL"
+msgstr "URCALL"
+
+#: ../chirpui/memedit.py:1309
+#: ../chirpui/memedit.py:1325
+msgid "RPT1CALL"
+msgstr "RPT1CALL"
+
+#: ../chirpui/memedit.py:1309
+#: ../chirpui/memedit.py:1326
+msgid "RPT2CALL"
+msgstr "RPT2CALL"
+
+#: ../chirpui/memedit.py:1310
+#: ../chirpui/memedit.py:1327
+msgid "Digital Code"
+msgstr "Digital Code"
+
+#~ msgid "Unsuppported by destination radio: {msgs}"
+#~ msgstr "Non supportato da radio destinataria: {msgs}"
+
+#~ msgid "New location"
+#~ msgstr "Nuova posizione"
+
+#~ msgid "Location"
+#~ msgstr "Posizione"
+
+#~ msgid "%i errors during open, check the debug log for details"
+#~ msgstr ""
+#~ "%i errori durante l'apertura, controllare il debug log per i dettagli"
