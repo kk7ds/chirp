@@ -3,6 +3,18 @@ import sys
 import os
 
 from chirp import CHIRP_VERSION
+from chirp import *
+import chirp
+
+def staticify_chirp_module():
+    import chirp
+
+    init = file("chirp/__init__.py", "w")
+    print >>init, "CHIRP_VERSION = \"%s\"" % CHIRP_VERSION
+    print >>init, "__all__ = %s\n" % str(chirp.__all__)
+    init.close()
+
+    print "Set chirp.py::__all__ = %s" % str(chirp.__all__)
 
 def win32_build():
     from distutils.core import setup
@@ -23,6 +35,7 @@ def win32_build():
         # no build path setup, no worries.
         pass
 
+    staticify_chirp_module()
 
     opts = {
         "py2exe" : {
@@ -34,6 +47,11 @@ def win32_build():
             #        "packages" : ""
             }
         }
+
+    mods = []
+    for mod in chirp.__all__:
+        mods.append("chirp.%s" % mod)
+    opts["py2exe"]["includes"] += ("," + ",".join(mods))
 
     setup(
         windows=[{'script'        : "chirpw",

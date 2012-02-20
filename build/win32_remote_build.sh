@@ -44,8 +44,8 @@ cleanup () {
 
 sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
 
-tmp1=$(temp_dir build)
-tmp2=$(temp_dir output)
+tmp1=$(temp_dir chirp_build)
+tmp2=$(temp_dir chirp_output)
 copy_source $tmp1
 do_build $tmp1 $tmp2 $*
 grab_builds $tmp2
