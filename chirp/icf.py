@@ -207,6 +207,19 @@ def process_data_frame(frame, mmap):
     mmap[saddr] = data
     return saddr, saddr + bytes
 
+def start_hispeed_clone(radio, cmd):
+    buf = ("\xFE" * 20) + "\xEE\xEF\xE8" + radio._model + "\x00\x00\x02\x01\xFD"
+    radio.pipe.write(buf)
+    radio.pipe.flush()
+    radio.pipe.read()
+
+    print "Switching to 38400 baud"
+    radio.pipe.setBaudrate(38400)
+
+    buf = ("\xFE" * 14) + "\xEE\xEF" + chr(cmd) + radio._model[:3] + "\x00\xFD"
+    radio.pipe.write(buf)
+    radio.pipe.flush()
+
 def clone_from_radio(radio):
     md = get_model_data(radio.pipe)
 
@@ -215,7 +228,12 @@ def clone_from_radio(radio):
         print "Supp model: %s" % util.hexprint(radio.get_model())
         raise errors.RadioError("I can't talk to this model")
 
-    send_clone_frame(radio.pipe, CMD_CLONE_OUT, radio.get_model(), raw=True)
+    if radio.is_hispeed():
+        start_hispeed_clone(radio, CMD_CLONE_OUT)
+    else:
+        send_clone_frame(radio.pipe, CMD_CLONE_OUT, radio.get_model(), raw=True)
+
+    print "Sent clone frame"
 
     stream = RadioStream(radio.pipe)
 
@@ -295,7 +313,10 @@ def clone_to_radio(radio):
 
     stream = RadioStream(radio.pipe)
 
-    send_clone_frame(radio.pipe, CMD_CLONE_IN, radio.get_model(), raw=True)
+    if radio.is_hispeed():
+        start_hispeed_clone(radio, CMD_CLONE_IN)
+    else:
+        send_clone_frame(radio.pipe, CMD_CLONE_IN, radio.get_model(), raw=True)
 
     frames = []
 
@@ -466,6 +487,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _num_banks = 10              # Most simple Icoms have 10 banks, A-J
     _bank_index_bounds = (0, 99)
     _bank_class = IcomBank
+    _can_hispeed = False
+
+    def is_hispeed(self):
+        return self._can_hispeed
 
     def get_model(self):
         return self._model

@@ -110,6 +110,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     _num_banks = 26
     _bank_class = IC2820Bank
+    _can_hispeed = True
 
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 61)

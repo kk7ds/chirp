@@ -156,6 +156,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     _num_banks = 26
     _bank_class = ID880Bank
+    _can_hispeed = True
 
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 60)
