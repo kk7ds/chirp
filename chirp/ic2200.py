@@ -91,6 +91,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _model = "\x26\x98\x00\x01"
     _memsize = 6848
     _endframe = "Icom Inc\x2eD8"
+    _can_hispeed = True
 
     _memories = []
 

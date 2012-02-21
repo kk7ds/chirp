@@ -209,14 +209,17 @@ def process_data_frame(frame, mmap):
 
 def start_hispeed_clone(radio, cmd):
     buf = ("\xFE" * 20) + "\xEE\xEF\xE8" + radio._model + "\x00\x00\x02\x01\xFD"
+    print "Starting HiSpeed:\n%s" % util.hexprint(buf)
     radio.pipe.write(buf)
     radio.pipe.flush()
-    radio.pipe.read()
+    r = radio.pipe.read(128)
+    print "Response:\n%s" % util.hexprint(r)
 
     print "Switching to 38400 baud"
     radio.pipe.setBaudrate(38400)
 
     buf = ("\xFE" * 14) + "\xEE\xEF" + chr(cmd) + radio._model[:3] + "\x00\xFD"
+    print "Starting HiSpeed Clone:\n%s" % util.hexprint(buf)
     radio.pipe.write(buf)
     radio.pipe.flush()
 

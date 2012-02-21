@@ -113,6 +113,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _model = "\x27\x88\x02\x00"
     _memsize = 14528
     _endframe = "Icom Inc\x2eCB"
+    _can_hispeed = True
 
     _memories = []
 
