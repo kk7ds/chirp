@@ -91,7 +91,7 @@ class RadioStream:
                 frame, rest = parse_frame_generic(self.data)
                 if not frame:
                     break
-                elif frame.src == 0xEE:
+                elif frame.src == 0xEE and frame.dst == 0xEF:
                     # PC echo, ignore
                     pass
                 else:
@@ -179,32 +179,36 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
 
     return frame
 
-def process_data_frame(frame, mmap):
-
-    data = frame.payload
-
-    bytes = int(data[4:6], 16)
-    fdata = data[6:6+(bytes * 2)]
-    saddr = int(data[0:4], 16)
-    #eaddr = saddr + bytes
-    #try:
-    #    checksum = data[6+(bytes * 2)]
-    #except IndexError:
-    #    print "%i Frame data:\n%s" % (bytes, util.hexprint(data))
-    #    raise errors.InvalidDataError("Short frame")
-
+def process_bcd(bcddata):
     data = ""
     i = 0
-    while i < range(len(fdata)) and i+1 < len(fdata):
+    while i < range(len(bcddata)) and i+1 < len(bcddata):
         try:
-            val = int("%s%s" % (fdata[i], fdata[i+1]), 16)
+            val = int("%s%s" % (bcddata[i], bcddata[i+1]), 16)
             i += 2
             data += struct.pack("B", val)
         except ValueError, e:
             print "Failed to parse byte: %s" % e
             break
 
-    mmap[saddr] = data
+    return data
+
+def process_data_frame(frame, mmap):
+    _data = process_bcd(frame.payload)
+    if len(mmap) >= 0x10000:
+        saddr, = struct.unpack(">I", _data[0:4])
+        bytes, = struct.unpack("B", _data[4])
+        data = _data[5:5+bytes]
+    else:
+        saddr, = struct.unpack(">H", _data[0:2])
+        bytes, = struct.unpack("B", _data[2])
+        data = _data[3:3+bytes]
+
+    try:
+        mmap[saddr] = data
+    except IndexError:
+        print "Error trying to set %i bytes at %05x (max %05x)" %\
+            (bytes, saddr, len(mmap))
     return saddr, saddr + bytes
 
 def start_hispeed_clone(radio, cmd):
@@ -285,7 +289,11 @@ def send_mem_chunk(radio, start, stop, bs=32):
         else:
             size = stop - i
 
-        chunk = struct.pack(">HB", i, size) + mmap[i:i+size]
+        if radio._memsize >= 0x10000:
+            chunk = struct.pack(">IB", i, size)
+        else:
+            chunk = struct.pack(">HB", i, size)
+        chunk += mmap[i:i+size]
 
         send_clone_frame(radio.pipe,
                          CMD_CLONE_DAT,
@@ -355,15 +363,24 @@ def convert_data_line(line):
     if line.startswith("#"):
         return ""
 
-    pos = int(line[0:4], 16)
-    len = int(line[4:6], 16)
-    dat = line[6:]
+    line = line.strip()
+
+    if len(line) == 38:
+        # Small memory (< 0x10000)
+        pos = int(line[0:4], 16)
+        size = int(line[4:6], 16)
+        data = line[6:]
+    else:
+        # Large memory (>= 0x10000)
+        pos = int(line[0:8], 16)
+        size = int(line[8:10], 16)
+        data = line[10:]
 
     _mmap = ""
     i = 0
-    while i < (len * 2):
+    while i < (size * 2):
         try:
-            val = int("%s%s" % (dat[i], dat[i+1]), 16)
+            val = int("%s%s" % (data[i], data[i+1]), 16)
             i += 2
             _mmap += struct.pack("B", val)
         except ValueError, e:
