@@ -302,7 +302,7 @@ class TestCaseBruteForce(TestCase):
         if not rf.has_dtcs_polarity:
             return
 
-        for pol in ["NN", "RN", "NR", "RR"]:
+        for pol in rf.valid_dtcs_pols:
             m.dtcs_polarity = pol
             self.set_and_compare(m)
 

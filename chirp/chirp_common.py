@@ -616,6 +616,7 @@ class RadioFeatures:
         "valid_characters"    : "",
         "valid_name_length"   : 0,
         "valid_cross_modes"   : [],
+        "valid_dtcs_pols"     : [],
 
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
@@ -722,6 +723,8 @@ class RadioFeatures:
                   "alphanumeric tag")
         self.init("valid_cross_modes", list(CROSS_MODES),
                   "Supported tone cross modes")
+        self.init("valid_dtcs_pols", ["NN", "RN", "NR", "RR"],
+                  "Supported DTCS polarities")
 
         self.init("has_sub_devices", False,
                   "Indicates that the radio behaves as two semi-independent " +
@@ -843,6 +846,11 @@ class Radio:
                 if rf.valid_cross_modes and mem.cross_mode not in rf.valid_cross_modes:
                     msg = ValidationError("Cross tone mode %s not supported" % mem.cross_mode)
                     msgs.append(msg)
+
+        if rf.has_dtcs_polarity and mem.dtcs_polarity not in rf.valid_dtcs_pols:
+            msg = ValidationError("DTCS Polarity %s not supported" % \
+                                      mem.dtcs_polarity)
+            msgs.append(msg)
 
         if rf.valid_duplexes and mem.duplex not in rf.valid_duplexes:
             msg = ValidationError("Duplex %s not supported" % mem.duplex)

@@ -1135,6 +1135,7 @@ class MemoryEditor(common.Editor):
         self.choices[_("Skip")] = self._features["valid_skips"]
         self.choices[_("Power")] = [str(x) for x in
                                     self._features["valid_power_levels"]]
+        self.choices[_("DTCS Pol")] = self._features["valid_dtcs_pols"]
 
         if self._features["valid_power_levels"]:
             self.defaults[_("Power")] = self._features["valid_power_levels"][0]
