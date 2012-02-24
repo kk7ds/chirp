@@ -293,7 +293,7 @@ class MemoryEditor(common.Editor):
 
         self.maybe_hide_cols(iter)
 
-        persist_defaults = [_("Power"), _("Frequency")]
+        persist_defaults = [_("Power"), _("Frequency"), _("Mode")]
         if cap in persist_defaults:
             self.defaults[cap] = new
 
@@ -1144,6 +1144,9 @@ class MemoryEditor(common.Editor):
             # We need a new list, so .remove() won't work for us
             self.choices[_("Duplex")] = [x for x in self.choices[_("Duplex")]
                                       if x != "split"]
+
+        if self.defaults[_("Mode")] not in self._features.valid_modes:
+            self.defaults[_("Mode")] = self._features.valid_modes[0]
 
         vbox = gtk.VBox(False, 2)
         vbox.pack_start(self.make_controls(min, max), 0, 0, 0)
