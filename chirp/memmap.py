@@ -74,6 +74,9 @@ class MemoryMap:
         self.set(pos, value)
 
     def __str__(self):
+        return self.get_packed()
+
+    def __repr__(self):
         return self.printable(printit=False)
 
     def truncate(self, size):
