@@ -12,6 +12,27 @@ lbcd freq[5];
 u8   unknown2:5,
      mode:3;
 """
+mem_vfo_format = """
+u8   vfo;
+bbcd number[2];
+u8   unknown1;
+lbcd freq[5];
+u8   unknown2:5,
+     mode:3;
+u8   unknown1;
+u8   unknown2:2,
+     duplex:2,
+     unknown3:1,
+     tmode:3;
+u8   unknown4;
+bbcd rtone[2];
+u8   unknown5;
+bbcd ctone[2];
+u8   unknown6[2];
+bbcd dtcs;
+u8   unknown[17];
+char name[9];
+"""
 
 class Frame:
     _cmd = 0x00
@@ -30,26 +51,28 @@ class Frame:
     def set_data(self, data):
         self._data = data
 
-    def send(self, src, dst, serial):
+    def send(self, src, dst, serial, willecho=True):
         raw = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
-        raw += self._data + chr(0xFD)
+        raw += str(self._data) + chr(0xFD)
 
         if DEBUG:
-            print "%02x -> %02x:\n%s" % (src, dst, util.hexprint(raw))
+            print "%02x -> %02x (%i):\n%s" % (src, dst,
+                                              len(raw), util.hexprint(raw))
 
         serial.write(raw)
-        echo = serial.read(len(raw))
-        if echo != raw and echo:
-            print "Echo differed"
-            print util.hexprint(raw)
-            print util.hexprint(echo)
+        if willecho:
+            echo = serial.read(len(raw))
+            if echo != raw and echo:
+                print "Echo differed (%i/%i)" % (len(raw), len(echo))
+                print util.hexprint(raw)
+                print util.hexprint(echo)
 
     def read(self, serial):
         data = ""
         while not data.endswith(chr(0xFD)):
             c = serial.read(1)
             if not c:
-                print "In buffer:\n%s" % util.hexprint(data)
+                print "Read %i bytes total" % len(data)
                 raise errors.RadioError("Timeout")
             data += c
 
@@ -78,12 +101,31 @@ class MemFrame(Frame):
     def make_empty(self):
         self._data = struct.pack(">HB", int("%04i" % self._loc, 16), 0xFF)
 
+    def is_empty(self):
+        return len(self._data) < 5
+
+    def get_obj(self):
+        return bitwise.parse(mem_format, self._data)
+
+    def initialize(self):
+        self._data = MemoryMap("".join(["\x00"] * (self.get_obj().size() / 8)))
+
+class MultiVFOMemFrame(MemFrame):
+    def set_location(self, loc, vfo=1):
+        self._loc = loc
+        self._data = struct.pack(">BH", vfo, int("%04i" % loc, 16))
+
+    def get_obj(self):
+        self._data = MemoryMap(str(self._data)) # Make sure we're assignable
+        return bitwise.parse(mem_vfo_format, self._data)
+
 class IcomCIVRadio(icf.IcomLiveRadio):
     BAUD_RATE = 19200
     MODEL = "CIV Radio"
 
     def _send_frame(self, frame):
-        return frame.send(0x76, 0xE0, self.pipe)
+        return frame.send(ord(self._model), 0xE0, self.pipe,
+                          willecho=self._willecho)
 
     def _recv_frame(self, frame=None):
         if not frame:
@@ -94,21 +136,35 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     def _initialize(self):
         pass
 
+    def _detect_echo(self):
+        echo_test = "\xfe\xfe\xe0\xe0\xfa\xfd"
+        self.pipe.write(echo_test)
+        r = self.pipe.read(6)
+        print "Echo:\n%s" % util.hexprint(r)
+        return r == echo_test
+
     def __init__(self, *args, **kwargs):
         icf.IcomLiveRadio.__init__(self, *args, **kwargs)
 
+        self._classes = {
+            "mem" : MemFrame,
+            }
+
+        self._willecho = self._detect_echo()
+        print "Interface echo: %s" % self._willecho
+
         self.pipe.setTimeout(1)
 
-        f = Frame()
-        f.set_command(0x19, 0x00)
-        self._send_frame(f)
-
-        res = f.read(self.pipe)
-        if res:
-            print "Result: %x->%x (%i)" % (res[0], res[1], len(f.get_data()))
-            print util.hexprint(f.get_data())
-
-        self._id = f.get_data()[0]
+        #f = Frame()
+        #f.set_command(0x19, 0x00)
+        #self._send_frame(f)
+        #
+        #res = f.read(self.pipe)
+        #if res:
+        #    print "Result: %x->%x (%i)" % (res[0], res[1], len(f.get_data()))
+        #    print util.hexprint(f.get_data())
+        #
+        #self._id = f.get_data()[0]
         self._rf = chirp_common.RadioFeatures()
 
         self._initialize()
@@ -116,16 +172,23 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     def get_features(self):
         return self._rf
 
+    def _get_template_memory(self):
+        f = self._classes["mem"]()
+        f.set_location(102)
+        self._send_frame(f)
+        f.read(self.pipe)
+        return f
+
     def get_raw_memory(self, number):
-        f = MemFrame()
+        f = self._classes["mem"]()
         f.set_location(number)
         self._send_frame(f)
         f.read(self.pipe)
-        return f.get_data()
+        return repr(f.get_obj())
 
     def get_memory(self, number):
         print "Getting %i" % number
-        f = MemFrame()
+        f = self._classes["mem"]()
         f.set_location(number)
         self._send_frame(f)
 
@@ -133,32 +196,58 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         mem.number = number
 
         f = self._recv_frame(f)
-        if f.get_data() and f.get_data()[2] == "\xFF":
+        if len(f.get_data()) == 0:
+            raise errors.RadioError("Radio reported error")
+        if f.get_data() and f.get_data()[-1] == "\xFF":
             mem.empty = True
             return mem
 
-        memobj = bitwise.parse(mem_format, f.get_data())
+        memobj = f.get_obj()
+        print repr(memobj)
 
-        mem.freq = int(memobj.freq) / 1000000.0
+        mem.freq = int(memobj.freq)
         mem.mode = self._rf.valid_modes[memobj.mode]
+
+        if self._rf.has_name:
+            mem.name = str(memobj.name).rstrip()
+
+        if self._rf.valid_tmodes:
+            mem.tmode = self._rf.valid_tmodes[memobj.tmode]
+
+        if self._rf.has_dtcs:
+            # FIXME
+            mem.dtcs = bitwise.bcd_to_int([memobj.dtcs])
+
+        if "Tone" in self._rf.valid_tmodes:
+            mem.rtone = int(memobj.rtone) / 10.0
+
+        if "TSQL" in self._rf.valid_tmodes and self._rf.has_ctone:
+            mem.ctone = int(memobj.ctone) / 10.0
+
+        if self._rf.valid_duplexes:
+            mem.duplex = self._rf.valid_duplexes[memobj.duplex]
 
         return mem
 
     def set_memory(self, mem):
-        f = MemFrame()
+        f = self._get_template_memory()
         if mem.empty:
             f.set_location(mem.number)
             f.make_empty()
             self._send_frame(f)
             return
 
-        data = MemoryMap(self.get_raw_memory(mem.number))
+        #f.set_data(MemoryMap(self.get_raw_memory(mem.number)))
+        #f.initialize()
 
-        memobj = bitwise.parse(mem_format, data)
+        memobj = f.get_obj()
         memobj.number = mem.number
-        memobj.freq = int(mem.freq * 1000000)
+        memobj.freq = int(mem.freq)
+        memobj.mode = self._rf.valid_modes.index(mem.mode)
+        if self._rf.has_name:
+            memobj.name = mem.name.ljust(9)[:9]
 
-        f.set_data(data.get_packed())
+        print repr(memobj)
         self._send_frame(f)
 
         f = self._recv_frame()
@@ -184,8 +273,33 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.valid_skips = []
         self._rf.memory_bounds = (1, 200)
 
+@directory.register
+class Icom7000Radio(IcomCIVRadio):
+    MODEL = "7000"
+    _model = "\x70"
+
+    def _initialize(self):
+        self._classes["mem"] = MultiVFOMemFrame
+        self._rf.has_bank = False
+        self._rf.has_dtcs_polarity = True
+        self._rf.has_dtcs = True
+        self._rf.has_ctone = True
+        self._rf.has_offset = False
+        self._rf.has_name = True
+        self._rf.has_tuning_step = False
+        self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY", "FM"]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        self._rf.valid_duplexes = ["", "-", "+"]
+        self._rf.valid_bands = [(30000, 199999999), (400000000, 470000000)]
+        self._rf.valid_tuning_steps = []
+        self._rf.valid_skips = []
+        self._rf.valid_name_length = 9
+        self._rf.valid_characters = chirp_common.CHARSET_ASCII
+        self._rf.memory_bounds = (1, 99)
+
 CIV_MODELS = {
     (0x76, 0xE0) : Icom7200Radio,
+    (0x70, 0xE0) : Icom7000Radio,
 }
 
 def probe_model(s):
