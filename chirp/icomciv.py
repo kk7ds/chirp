@@ -105,6 +105,7 @@ class MemFrame(Frame):
         return len(self._data) < 5
 
     def get_obj(self):
+        self._data = MemoryMap(str(self._data)) # Make sure we're assignable
         return bitwise.parse(mem_format, self._data)
 
     def initialize(self):
@@ -174,7 +175,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
     def _get_template_memory(self):
         f = self._classes["mem"]()
-        f.set_location(102)
+        f.set_location(self._template)
         self._send_frame(f)
         f.read(self.pipe)
         return f
@@ -257,6 +258,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 class Icom7200Radio(IcomCIVRadio):
     MODEL = "7200"
     _model = "\x76"
+    _template = 201
 
     def _initialize(self):
         self._rf.has_bank = False
@@ -268,7 +270,7 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY"]
         self._rf.valid_tmodes = []
         self._rf.valid_duplexes = []
-        self._rf.valid_bands = [(1.8, 59.0)]
+        self._rf.valid_bands = [(1800000, 59000000)]
         self._rf.valid_tuning_steps = []
         self._rf.valid_skips = []
         self._rf.memory_bounds = (1, 200)
@@ -277,6 +279,7 @@ class Icom7200Radio(IcomCIVRadio):
 class Icom7000Radio(IcomCIVRadio):
     MODEL = "7000"
     _model = "\x70"
+    _template = 102
 
     def _initialize(self):
         self._classes["mem"] = MultiVFOMemFrame
