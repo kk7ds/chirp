@@ -538,7 +538,7 @@ class TMD710Radio(KenwoodLiveRadio):
         rf.valid_duplexes = D710_DUPLEX
         rf.valid_tuning_steps = D710_STEPS
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
-        rf.valid_name_length = 7
+        rf.valid_name_length = 8
         rf.memory_bounds = (0, 999)
         return rf
 
