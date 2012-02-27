@@ -19,7 +19,7 @@ build_locale() {
 
 build_win32() {
 	echo Building Win32 executable...
-	/cygdrive/c/Python27/python.exe setup.py py2exe
+	/cygdrive/c/Python26/python.exe setup.py py2exe
 	if [ $? -ne 0 ]; then
 		echo "Build failed"
 		exit

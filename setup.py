@@ -39,7 +39,7 @@ def win32_build():
 
     opts = {
         "py2exe" : {
-            "includes" : "pango,atk,gobject,cairo,pangocairo,win32gui,win32com,win32com.shell,email.iterators,email.generator,gio",
+            "includes" : "pango,atk,gobject,cairo,pangocairo,win32gui,win32com,win32com.shell,email.iterators,email.generator",
 
             "compressed" : 1,
             "optimize" : 2,
