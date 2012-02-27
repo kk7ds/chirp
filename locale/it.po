@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-16 12:06-0800\n"
-"PO-Revision-Date: 2012-02-16 22:14+0100\n"
+"PO-Revision-Date: 2012-02-27 09:12+0100\n"
 "Last-Translator: Fabio Rusconi <iz2qdh@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -398,7 +398,7 @@ msgstr "Apri configurazione di fabbrica"
 
 #: ../chirpui/mainapp.py:1173
 msgid "_Recent"
-msgstr "_Recent"
+msgstr "_Recenti"
 
 #: ../chirpui/mainapp.py:1178
 msgid "_Edit"
