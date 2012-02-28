@@ -7,6 +7,8 @@ ZIP=${OUTPUT}chirp-$VERSION-win32.zip
 IST=${OUTPUT}chirp-$VERSION-installer.exe
 LOG=d-rats_build.log
 
+PYTHON=Python27
+
 export GTK_BASEPATH='C:\GTK'
 export PATH=$PATH:/cygdrive/c/GTK/bin
 
@@ -19,7 +21,7 @@ build_locale() {
 
 build_win32() {
 	echo Building Win32 executable...
-	/cygdrive/c/Python26/python.exe setup.py py2exe
+	/cygdrive/c/$PYTHON/python.exe setup.py py2exe
 	if [ $? -ne 0 ]; then
 		echo "Build failed"
 		exit
@@ -28,7 +30,17 @@ build_win32() {
 
 copy_lib() {
 	echo Copying GTK lib, etc, share...
-	cp -r /cygdrive/c/GTK/{lib,etc,share} dist
+	
+	if [ -d /cygdrive/c/$PYTHON/Lib/site-packages/gtk-2.0/runtime ]; then
+	    runtime=/cygdrive/c/Python27/Lib/site-packages/gtk-2.0/runtime
+	else
+	    runtime=/cygdrive/c/GTK
+	fi
+
+	exclude="--exclude=share/locale --exclude=share/*doc --exclude=share/icons"
+	dirs="share lib etc"
+
+	(cd $runtime && tar cf - $exclude $dirs) | (cd dist && tar xvf -)
 }
 
 copy_data() {

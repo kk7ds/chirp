@@ -49,4 +49,4 @@ tmp2=$(temp_dir chirp_output)
 copy_source $tmp1
 do_build $tmp1 $tmp2 $*
 grab_builds $tmp2
-cleanup $tmp1
+#cleanup $tmp1
