@@ -204,22 +204,18 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             f = (f - 8000000000) + 5000
 
         if f > 4000000000:
-            f -= 4000000000
-            for i in range(0, 3):
-                f += 2500
-                if chirp_common.required_step(f) == 12.5:
-                    break
+            f = (f - 4000000000) + 2500
 
         return f
 
     def _set_mem_freq(self, mem, _mem):
-        f = mem.freq
-        if ((f / 1000) % 10) == 5:
-            f += 8000000000
-        elif chirp_common.is_fractional_step(mem.freq):
-            f += 4000000000
+        _mem.freq = mem.freq / 10000
 
-        return int(f / 10000)
+        if (mem.freq % 1000) == 500:
+            _mem.freq[0].set_bits(0x40)  # +2500Hz
+
+        if (mem.freq % 10000) >= 5000:
+            _mem.freq[0].set_bits(0x80)  # +5000Hz
 
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
@@ -303,7 +299,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return
 
-        _mem.freq = self._set_mem_freq(mem, _mem)
+        self._set_mem_freq(mem, _mem)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.mode_am = mem.mode == "AM" and 1 or 0
