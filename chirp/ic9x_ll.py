@@ -393,6 +393,8 @@ class IC92MemoryFrame(IC92Frame):
             return ""
 
     def _encode_bank(self, mem):
+        if not hasattr(mem, "_bank"):
+            return
         if mem._bank is None:
             self[24] = 0
         else:

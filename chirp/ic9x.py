@@ -214,6 +214,7 @@ class IC9xRadio(icf.IcomLiveRadio):
                 ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
             else:
                 ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+            memory = ic9x_ll.get_memory(self.pipe, self.vfo, memory.number)
         except:
             self._lock.release()
             raise
