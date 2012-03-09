@@ -87,12 +87,13 @@ def get_memory(doc, number):
     else:
         mem.skip = skip
 
-    bank_id = _get("/bank/@bankId")
-    if bank_id:
-        mem.bank = int(bank_id)
-        bank_index = _get("/bank/@bankIndex")
-        if bank_index:
-            mem.bank_index = int(bank_index)
+    #FIXME: bank support in .chirp files needs to be re-written
+    #bank_id = _get("/bank/@bankId")
+    #if bank_id:
+    #    mem.bank = int(bank_id)
+    #    bank_index = _get("/bank/@bankIndex")
+    #    if bank_index:
+    #        mem.bank_index = int(bank_index)
 
     return mem
 
@@ -171,11 +172,12 @@ def set_memory(doc, mem):
         skip = memnode.newChild(None, "skip", None)
         skip.addContent(mem.skip)
 
-    if mem.bank is not None:
-        bank = memnode.newChild(None, "bank", None)
-        bank.newProp("bankId", str(int(mem.bank)))
-        if mem.bank_index >= 0:
-            bank.newProp("bankIndex", str(int(mem.bank_index)))
+    #FIXME: .chirp bank support needs to be redone
+    #if mem.bank is not None:
+    #    bank = memnode.newChild(None, "bank", None)
+    #    bank.newProp("bankId", str(int(mem.bank)))
+    #    if mem.bank_index >= 0:
+    #        bank.newProp("bankIndex", str(int(mem.bank_index)))
 
     if isinstance(mem, chirp_common.DVMemory):
         dv = memnode.newChild(None, "dv", None)
