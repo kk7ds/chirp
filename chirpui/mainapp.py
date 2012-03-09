@@ -925,7 +925,9 @@ If you think that it is valid, you can select a radio model below to force an op
                        "Rick WZ3RO",
                        "Vernon N7OH"
                        ))
-        d.set_translator_credits("Polish: Grzegorz SQ2RBY")
+        d.set_translator_credits("Polish: Grzegorz SQ2RBY" +
+                                 os.linesep +
+                                 "Italian: Fabio IZ2QDH")
         d.set_comments(verinfo)
         
         d.run()
