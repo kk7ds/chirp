@@ -22,8 +22,8 @@ struct {
   u8 zeros:4,
      pskip: 1,
      skip: 1,
-     used: 1,
-     unknown: 1;
+     visible: 1,
+     used: 1;
 } flag[220];
 
 #seekto 0x0269;
@@ -103,7 +103,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if not _flg.used:
+        if not _flg.used or not _flg.visible:
             mem.empty = True
             return mem
 
@@ -128,6 +128,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         _flg = self._memobj.flag[mem.number-1]
         
         _flg.used = not mem.empty
+        _flg.visible = not mem.empty
         if mem.empty:
             return
 
