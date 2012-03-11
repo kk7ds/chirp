@@ -1,4 +1,5 @@
 # Copyright 2011 Dan Smith <dsmith@danplanet.com>
+# Copyright 2012 Tom Hayward <tom@tomh.us>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -149,6 +150,9 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
 
         _flg.skip = mem.skip == "S"
         _flg.pskip = mem.skip == "P"
+
+    def filter_name(self, name):
+        return chirp_common.name8(name)
 
     @classmethod
     def match_model(cls, filedata):
