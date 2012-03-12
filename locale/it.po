@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-16 12:06-0800\n"
-"PO-Revision-Date: 2012-02-27 09:12+0100\n"
+"PO-Revision-Date: 2012-03-10 18:11+0100\n"
 "Last-Translator: Fabio Rusconi <iz2qdh@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -26,14 +26,12 @@ msgid "idle"
 msgstr "pronto"
 
 #: ../chirpui/bankedit.py:52
-#, fuzzy
 msgid "Retrieving bank information"
 msgstr "Acquisizione lista memorie"
 
 #: ../chirpui/bankedit.py:75
-#, fuzzy
 msgid "Setting name on bank"
-msgstr "Scrittura Back List"
+msgstr "Scrittura nome bank"
 
 #: ../chirpui/bankedit.py:85
 msgid "Bank"
@@ -53,9 +51,8 @@ msgid "Name"
 msgstr "Nome"
 
 #: ../chirpui/bankedit.py:185
-#, fuzzy
 msgid "Updating bank index for memory {num}"
-msgstr "Lettura memoria Raw {number}"
+msgstr "Aggiornamento indice bank per memoria {num}"
 
 #: ../chirpui/bankedit.py:194
 msgid "Updating bank information for memory {num}"
@@ -63,19 +60,16 @@ msgstr "Aggiornamento informazioni Bank per la memoria {num}"
 
 #: ../chirpui/bankedit.py:200
 #: ../chirpui/bankedit.py:229
-#, fuzzy
 msgid "Getting memory {num}"
 msgstr "Lettura memoria {number}"
 
 #: ../chirpui/bankedit.py:214
-#, fuzzy
 msgid "Setting index for memory {num}"
-msgstr "Scrittura memoria {number}"
+msgstr "Scrittura indice per la memoria {num}"
 
 #: ../chirpui/bankedit.py:223
-#, fuzzy
 msgid "Getting bank for memory {num}"
-msgstr "Lettura memoria Raw {number}"
+msgstr "Acquisizione bank per la memoria {num}"
 
 #: ../chirpui/bankedit.py:238
 #: ../chirpui/memedit.py:63
@@ -118,17 +112,14 @@ msgid "Frequency"
 msgstr "Frequenza"
 
 #: ../chirpui/bankedit.py:241
-#, fuzzy
 msgid "Index"
 msgstr "Indice Bank"
 
 #: ../chirpui/bankedit.py:302
-#, fuzzy
 msgid "Getting bank information for memory {num}"
-msgstr "Lettura memoria Raw {number}"
+msgstr "Lettura informazioni Bank della memoria {num}"
 
 #: ../chirpui/bankedit.py:323
-#, fuzzy
 msgid "Getting bank information"
 msgstr "Lettura Bank List"
 
@@ -177,9 +168,8 @@ msgid "Importing bank information"
 msgstr "Importazione informazioni Bank"
 
 #: ../chirpui/importdialog.py:264
-#, fuzzy
 msgid "Error importing memories:"
-msgstr "Error reporting is enabled"
+msgstr "Errore di importazione delle memorie:"
 
 #: ../chirpui/importdialog.py:376
 msgid "All"
@@ -194,9 +184,8 @@ msgid "Inverse"
 msgstr "Inverti"
 
 #: ../chirpui/importdialog.py:394
-#, fuzzy
 msgid "Select"
-msgstr "Select Columns"
+msgstr "Seleziona"
 
 #: ../chirpui/importdialog.py:416
 msgid "Auto"
@@ -223,9 +212,8 @@ msgid "Cannot be imported because"
 msgstr "Non può essere importato perchè"
 
 #: ../chirpui/importdialog.py:513
-#, fuzzy
 msgid "Import From File"
-msgstr "Import from RFinder"
+msgstr "Importa da file"
 
 #: ../chirpui/importdialog.py:514
 #: ../chirpui/mainapp.py:1196
@@ -233,9 +221,8 @@ msgid "Import"
 msgstr "Importa"
 
 #: ../chirpui/importdialog.py:534
-#, fuzzy
 msgid "To"
-msgstr "Tono"
+msgstr "A"
 
 #: ../chirpui/importdialog.py:535
 msgid "From"
@@ -251,23 +238,20 @@ msgid "Comment"
 msgstr "Commento"
 
 #: ../chirpui/importdialog.py:542
-#, fuzzy
 msgid "Location memory will be imported into"
-msgstr "La memoria {number} è già stata importata"
+msgstr "Le memorie verranno importate"
 
 #: ../chirpui/importdialog.py:543
-#, fuzzy
 msgid "Location of memory in the file being imported"
-msgstr "La memoria {number} è già stata importata"
+msgstr "Le memorie selezionate saranno importate"
 
 #: ../chirpui/importdialog.py:566
 msgid "Preparing memory list..."
 msgstr "Preparazione lista memorie..."
 
 #: ../chirpui/importdialog.py:575
-#, fuzzy
 msgid "Export To File"
-msgstr "Import from RFinder"
+msgstr "Esporta in un file"
 
 #: ../chirpui/importdialog.py:576
 #: ../chirpui/mainapp.py:1197
@@ -344,11 +328,11 @@ msgstr "Apri file recente {name}"
 
 #: ../chirpui/mainapp.py:579
 msgid "Import stock configuration {name}"
-msgstr "Importa configurazione di fabbrica {name}"
+msgstr "Importa configurazione stock {name}"
 
 #: ../chirpui/mainapp.py:595
 msgid "Open stock configuration {name}"
-msgstr "Apri configurazione di fabbrica {name}"
+msgstr "Apri configurazione stock {name}"
 
 #: ../chirpui/mainapp.py:681
 msgid "Discard Changes?"
@@ -425,9 +409,8 @@ msgid "Move _Up"
 msgstr "Sposta _Su"
 
 #: ../chirpui/mainapp.py:1184
-#, fuzzy
 msgid "Move Dow_n"
-msgstr "Sposta _Giu"
+msgstr "Sposta Giu"
 
 #: ../chirpui/mainapp.py:1185
 msgid "E_xchange"
@@ -490,9 +473,8 @@ msgid "Import from RepeaterBook"
 msgstr "Importa da RepeaterBook"
 
 #: ../chirpui/mainapp.py:1202
-#, fuzzy
 msgid "Import from stock config"
-msgstr "Importa da RepeaterBook"
+msgstr "Importa da configurazione stock"
 
 #: ../chirpui/mainapp.py:1204
 msgid "Help"
@@ -539,9 +521,8 @@ msgid "Shift"
 msgstr "Shift"
 
 #: ../chirpui/shiftdialog.py:63
-#, fuzzy
 msgid "Moving {src} to {dst}"
-msgstr "Spostamento"
+msgstr "Spostamento da {src} a {dst}"
 
 #: ../chirpui/shiftdialog.py:80
 msgid "Looking for a free spot ({number})"
@@ -552,9 +533,8 @@ msgid "Moved {count} memories"
 msgstr "Spostate {count} memorie"
 
 #: ../chirpui/clone.py:35
-#, fuzzy
 msgid "{vendor} {model} on {port}"
-msgstr "{vendor} {model} image file"
+msgstr "{vendor} {model} collegato a {port}"
 
 #: ../chirpui/clone.py:100
 #: ../chirpui/clone.py:162
@@ -574,9 +554,8 @@ msgid "Model"
 msgstr "Modello"
 
 #: ../chirpui/clone.py:138
-#, fuzzy
 msgid "Radio"
-msgstr "_Radio"
+msgstr "Radio"
 
 #: ../chirpui/clone.py:166
 msgid "Unable to detect radio on {port}"
@@ -621,18 +600,16 @@ msgid "Downloading MYCALL list"
 msgstr "Download lista MYCALL"
 
 #: ../chirpui/editorset.py:87
-#, fuzzy
 msgid "Memories"
-msgstr "Diff raw memories"
+msgstr "Memorie"
 
 #: ../chirpui/editorset.py:92
 msgid "D-STAR"
 msgstr "D-STAR"
 
 #: ../chirpui/editorset.py:98
-#, fuzzy
 msgid "Bank Names"
-msgstr "Banchi"
+msgstr "Nome Bank"
 
 #: ../chirpui/editorset.py:104
 msgid "Banks"
@@ -659,9 +636,8 @@ msgid "There were errors while opening {file}. The affected memories will not be
 msgstr "C'è stato un errore nell'apertura di {file}. Alcune memorie non potranno essere importate!"
 
 #: ../chirpui/editorset.py:260
-#, fuzzy
 msgid "There was an error during import: {error}"
-msgstr "There was an error opening {fname}: {error}"
+msgstr "Si è verificato un errore importando {fname}: {error}"
 
 #: ../chirpui/editorset.py:270
 msgid "Unsupported file type"
@@ -669,9 +645,8 @@ msgstr "Tipo file non supportato"
 
 #: ../chirpui/editorset.py:286
 #: ../chirpui/editorset.py:301
-#, fuzzy
 msgid "There was an error during export: {error}"
-msgstr "There was an error opening {fname}: {error}"
+msgstr "Si è verificato un errore all'apertura di {fname}: {error}"
 
 #: ../chirpui/editorset.py:313
 msgid "Priming memory"
@@ -915,58 +890,48 @@ msgid "Insert row below"
 msgstr "Inserisci riga sotto"
 
 #: ../chirpui/memedit.py:702
-#, fuzzy
 msgid "Delete"
-msgstr "_Delete"
+msgstr "Elimina"
 
 #: ../chirpui/memedit.py:702
-#, fuzzy
 msgid "Delete all"
-msgstr "_Delete"
+msgstr "Elimina tutto"
 
 #: ../chirpui/memedit.py:703
 msgid "Delete (and shift up)"
 msgstr "Elimina (e sposta sopra)"
 
 #: ../chirpui/memedit.py:704
-#, fuzzy
 msgid "Move up"
-msgstr "Move _Up"
+msgstr "Sposta su"
 
 #: ../chirpui/memedit.py:705
-#, fuzzy
 msgid "Move down"
-msgstr "Move D_n"
+msgstr "Sposta giu"
 
 #: ../chirpui/memedit.py:706
-#, fuzzy
 msgid "Exchange memories"
-msgstr "E_xchange"
+msgstr "Scambia"
 
 #: ../chirpui/memedit.py:707
-#, fuzzy
 msgid "Cut"
-msgstr "_Cut"
+msgstr "Taglia"
 
 #: ../chirpui/memedit.py:708
-#, fuzzy
 msgid "Copy"
-msgstr "_Copy"
+msgstr "Copia"
 
 #: ../chirpui/memedit.py:709
-#, fuzzy
 msgid "Paste"
-msgstr "_Paste"
+msgstr "Incolla"
 
 #: ../chirpui/memedit.py:710
-#, fuzzy
 msgid "Show Raw Memory"
-msgstr "Show raw memory"
+msgstr "Mostra memorie grezze"
 
 #: ../chirpui/memedit.py:711
-#, fuzzy
 msgid "Diff Raw Memories"
-msgstr "Diff raw memories"
+msgstr "Diff memorie grezze"
 
 #: ../chirpui/memedit.py:835
 msgid "Internal Error: Column {name} not found"
