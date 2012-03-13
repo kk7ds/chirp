@@ -113,8 +113,10 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
 
         if self.pipe:
             self.pipe.setTimeout(0.1)
-            self.__id = get_id(self.pipe)
-            print "Talking to a %s" % self.__id
+            radio_id = get_id(self.pipe)
+            if radio_id != self.MODEL:
+                raise Exception("Radio reports %s (not %s)" % (radio_id,
+                                                               self.MODEL))
 
             command(self.pipe, "AI", "0")
 
