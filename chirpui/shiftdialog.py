@@ -100,10 +100,7 @@ class ShiftDialog(gtk.Dialog):
             ret = self._shift_memories(1, mems)
             if ret:
                 # Clear the hole we made
-                m = chirp_common.Memory()
-                m.number = start
-                m.empty = True
-                self.rthread.radio.set_memory(m)
+                self.rthread.radio.erase_memory(start)
             return ret
         else:
             print "No memory list?"

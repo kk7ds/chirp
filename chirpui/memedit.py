@@ -380,11 +380,8 @@ class MemoryEditor(common.Editor):
         else:
             sd.insert(pos)
             sd.destroy()
-            mem = chirp_common.Memory()
-            mem.number = pos
-            mem.empty = True
-            job = common.RadioJob(lambda x: self.prefill(), "set_memory", mem)
-            job.set_desc(_("Adding memory {number}").format(number=mem.number))
+            job = common.RadioJob(lambda x: self.prefill(), "erase_memory", pos)
+            job.set_desc(_("Adding memory {number}").format(number=pos))
             self.rthread.submit(job)
 
         return True # We changed memories
@@ -1198,7 +1195,8 @@ class MemoryEditor(common.Editor):
         if cut:
             for iter, mem in maybe_cut:
                 mem.empty = True
-                job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
+                job = common.RadioJob(self._set_memory_cb,
+                                      "erase_memory", mem.number)
                 job.set_desc(_("Cutting memory {number}").format(number=mem.number))
                 self.rthread.submit(job)
 
