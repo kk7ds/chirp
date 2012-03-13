@@ -71,8 +71,7 @@ class CloneSettingsDialog(gtk.Dialog):
             if not vendors.has_key(rclass.VENDOR):
                 vendors[rclass.VENDOR] = []
 
-            if rclass.VENDOR not in detect.DETECT_FUNCTIONS:
-                vendors[rclass.VENDOR].append(rclass)
+            vendors[rclass.VENDOR].append(rclass)
 
         self.__vendors = vendors
 
@@ -96,8 +95,10 @@ class CloneSettingsDialog(gtk.Dialog):
                 if rclass.MODEL not in added_models:
                     model.append_text(rclass.MODEL)
                     added_models.append(rclass.MODEL)
-            if not models:
-                model.append_text(_("Detect"))
+
+            if box.get_active_text() in detect.DETECT_FUNCTIONS:
+                model.insert_text(0, _("Detect"))
+                added_models.insert(0, _("Detect"))
 
             model_names = [x.MODEL for x in models]
             if conf.get("last_model") in model_names:
@@ -182,7 +183,7 @@ class CloneSettingsDialog(gtk.Dialog):
         conf = config.get("state")
         conf.set("last_port", cs.port)
         conf.set("last_vendor", cs.radio_class.VENDOR)
-        conf.set("last_model", cs.radio_class.MODEL)
+        conf.set("last_model", model)
 
         return cs
 
