@@ -20,6 +20,7 @@ import pango
 import threading
 import time
 import os
+import traceback
 
 from chirp import errors
 from chirpui import reporting
@@ -63,6 +64,7 @@ class RadioJob:
         self.kwargs = kwargs
         self.desc = "Working"
         self.target = None
+        self.tb = traceback.format_stack()
 
     def __str__(self):
         return "RadioJob(%s,%s,%s)" % (self.func, self.args, self.kwargs)
@@ -91,6 +93,7 @@ class RadioJob:
             log_exception()
             print "Job Args:   %s" % str(self.args)
             print "Job KWArgs: %s" % str(self.kwargs)
+            print "Job Called from:%s%s" % (os.linesep, "".join(self.tb[:-1]))
             result = e
 
         if self.cb:
