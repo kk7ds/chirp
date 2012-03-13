@@ -40,9 +40,9 @@ struct {
      mode:2;
   char name[8];
   bbcd offset[3];
-  u8 power:2,
+  u8 unknown6:2,
      tmode:2,
-     unknown6:2,
+     power:2,
      duplex:2;
   u8 unknown7:2,
      tone:6;
@@ -60,6 +60,11 @@ STEPS.remove(6.25)
 STEPS.remove(30.0)
 STEPS.append(100.0)
 STEPS.append(9.0)
+
+POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
+                chirp_common.PowerLevel("L3", watts=2.50),
+                chirp_common.PowerLevel("L2", watts=1.00),
+                chirp_common.PowerLevel("L1", watts=0.05)]
 
 @directory.register
 class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -88,6 +93,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
                           ( 47000000, 729000000),
                           (800000000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_power_levels = POWER_LEVELS
         rf.valid_name_length = 8
         return rf
 
@@ -116,6 +122,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.mode = "NFM"
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.offset = int(_mem.offset) * 1000
+        mem.power = POWER_LEVELS[3 - _mem.power]
         mem.tmode = TMODES[_mem.tmode]
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
@@ -144,6 +151,10 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.half_deviation = 0
         _mem.tuning_step = STEPS.index(mem.tuning_step)
         _mem.offset = int(mem.offset / 1000)
+        if mem.power:
+            _mem.power = 3 - POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
