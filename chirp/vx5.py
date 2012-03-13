@@ -101,7 +101,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        return repr(self._memobj.memory[number-1])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
