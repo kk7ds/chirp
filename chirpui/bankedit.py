@@ -137,9 +137,9 @@ class BankMembershipEditor(common.Editor):
         ncols = len(self._cols) + len(self.banks)
         while iter:
             vals = self._store.get(iter, *tuple([n for n in range(0, ncols)]))
-            loc = vals[0]
-            index = vals[3]
-            banks = vals[4:]
+            loc = vals[self.C_LOC]
+            index = vals[self.C_INDEX]
+            banks = vals[self.C_BANKS:]
             if True in banks and banks.index(True) == bank:
                 indexes.append(index)
             iter = self._store.iter_next(iter)
@@ -154,9 +154,12 @@ class BankMembershipEditor(common.Editor):
         return 0 # If the bank is full, just wrap around!
 
     def _toggled_cb(self, rend, path, colnum):
+        if not rend.get_sensitive():
+            return
+
         # The bank index is the column number, minus the 3 label columns
         bank, name = self.banks[colnum - len(self._cols)]
-        loc, = self._store.get(self._store.get_iter(path), 0)
+        loc, = self._store.get(self._store.get_iter(path), self.C_LOC)
 
         if rend.get_active():
             # Changing from True to False
@@ -201,7 +204,7 @@ class BankMembershipEditor(common.Editor):
         self.rthread.submit(job)
 
     def _index_edited_cb(self, rend, path, new):
-        loc, = self._store.get(self._store.get_iter(path), 0)
+        loc, = self._store.get(self._store.get_iter(path), self.C_LOC)
         
         def refresh_memory(*args):
             self.refresh_memory(loc)
@@ -234,12 +237,23 @@ class BankMembershipEditor(common.Editor):
         self.rthread = rthread
         self._rf = rthread.radio.get_features()
 
-        self._cols = [
+        self._view_cols = [
             (_("Loc"),       TYPE_INT,     gtk.CellRendererText, ),
             (_("Frequency"), TYPE_STRING,  gtk.CellRendererText, ),
             (_("Name"),      TYPE_STRING,  gtk.CellRendererText, ),
             (_("Index"),     TYPE_INT,     gtk.CellRendererText, ),
             ]
+
+        self._cols = [
+            ("_filled",      TYPE_BOOLEAN, None,                 ),
+            ] + self._view_cols
+
+        self.C_FILLED = 0
+        self.C_LOC    = 1
+        self.C_FREQ   = 2
+        self.C_NAME   = 3
+        self.C_INDEX  = 4
+        self.C_BANKS  = 5 # and beyond
         
         cols = list(self._cols)
 
@@ -254,13 +268,18 @@ class BankMembershipEditor(common.Editor):
 
         colnum = 0
         for label, dtype, rtype in cols:
+            if not rtype:
+                colnum += 1
+                continue
             rend = rtype()
             if dtype == TYPE_BOOLEAN:
                 rend.set_property("activatable", True)
                 rend.connect("toggled", self._toggled_cb, colnum)
-                col = gtk.TreeViewColumn(label, rend, active=colnum)
+                col = gtk.TreeViewColumn(label, rend, active=colnum,
+                                         sensitive=self.C_FILLED)
             else:
-                col = gtk.TreeViewColumn(label, rend, text=colnum)
+                col = gtk.TreeViewColumn(label, rend, text=colnum,
+                                         sensitive=self.C_FILLED)
 
             self._view.append_column(col)
             if colnum == 2:
@@ -278,7 +297,12 @@ class BankMembershipEditor(common.Editor):
 
         for i in range(*self._rf.memory_bounds):
             iter = self._store.append()
-            self._store.set(iter, 0, i, 1, 0, 2, "", 3, 0)
+            self._store.set(iter,
+                            self.C_FILLED, False,
+                            self.C_LOC, i,
+                            self.C_FREQ, 0,
+                            self.C_NAME, "",
+                            self.C_INDEX, 0)
 
         self.root = sw
         self._loaded = False
@@ -286,11 +310,12 @@ class BankMembershipEditor(common.Editor):
     def refresh_memory(self, number):
         def got_mem(memory, banks, indexes):
             iter = self._store.get_iter(self._number_to_path(memory.number))
-            row = [0, memory.number,
-                   1, chirp_common.format_freq(memory.freq),
-                   2, memory.name,
+            row = [self.C_FILLED, not memory.empty,
+                   self.C_LOC, memory.number,
+                   self.C_FREQ, chirp_common.format_freq(memory.freq),
+                   self.C_NAME, memory.name,
                    # Hack for only one index right now
-                   3, indexes and indexes[0] or 0,
+                   self.C_INDEX, indexes and indexes[0] or 0,
                    ]
             for i in range(0, len(self.banks)):
                 row.append(i + len(self._cols))
@@ -309,8 +334,9 @@ class BankMembershipEditor(common.Editor):
 
     def refresh_banks(self, and_memories=False):
         def got_banks():
-            for i in range(0, len(self.banks)):
-                col = self._view.get_column(i + len(self._cols))
+            for i in range(len(self._cols) - len(self._view_cols),
+                           len(self.banks)):
+                col = self._view.get_column(i + len(self._view_cols))
                 bank, name = self.banks[i]
                 if name:
                     col.set_title(name)
