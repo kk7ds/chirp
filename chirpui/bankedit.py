@@ -184,6 +184,7 @@ class BankMembershipEditor(common.Editor):
                                           err=str(result)),
                                   parent=self.editorset.parent_window)
                 return
+            self.emit("changed")
             # Step 3: Set the memory's bank index (maybe)
             if not self._rf.has_bank_index or index is None:
                 return do_refresh_memory()
@@ -216,6 +217,7 @@ class BankMembershipEditor(common.Editor):
             self.refresh_memory(loc)
 
         def set_index(banks, memory):
+            self.emit("changed")
             # Step 2: Set the index
             job = common.RadioJob(refresh_memory, "set_memory_index",
                                   memory, banks[0], int(new))
