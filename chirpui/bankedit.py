@@ -291,9 +291,9 @@ class BankMembershipEditor(common.Editor):
                                          sensitive=self.C_FILLED)
 
             self._view.append_column(col)
-            if colnum == 2:
+            if colnum == self.C_NAME:
                 col.set_visible(self._rf.has_name)
-            elif colnum == 3:
+            elif colnum == self.C_INDEX:
                 rend.set_property("editable", True)
                 rend.connect("edited", self._index_edited_cb)
                 col.set_visible(self._rf.has_bank_index)
