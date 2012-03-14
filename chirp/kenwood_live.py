@@ -612,6 +612,63 @@ class TMD710Radio(KenwoodLiveRadio):
         return spec
 
 @directory.register
+class THD72Radio(TMD710Radio):
+    MODEL = "TH-D72"
+    HARDWARE_FLOW = True
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+
+        mem.number = int(spec[0])
+        mem.freq = int(spec[1])
+        mem.tuning_step = D710_STEPS[int(spec[2], 16)]
+        mem.duplex = D710_DUPLEX[int(spec[3])]
+        # Reverse
+        if int(spec[5]):
+            mem.tmode = "Tone"
+        elif int(spec[6]):
+            mem.tmode = "TSQL"
+        elif int(spec[7]):
+            mem.tmode = "DTCS"
+        mem.rtone = chirp_common.TONES[int(spec[9])]
+        mem.ctone = chirp_common.TONES[int(spec[10])]
+        mem.dtcs = chirp_common.DTCS_CODES[int(spec[11])]
+        mem.offset = int(spec[13])
+        mem.mode = D710_MODES[int(spec[14])]
+        # TX Frequency
+        if int(spec[15]):
+            mem.duplex = "split"
+            mem.offset = int(spec[15])
+        # Lockout
+        mem.skip = D710_SKIP[int(spec[17])] # Memory Lockout
+
+        return mem
+
+    def _make_mem_spec(self, mem):
+        print "Index %i for step %.2f" % (chirp_common.TUNING_STEPS.index(mem.tuning_step), mem.tuning_step)
+        spec = ( \
+            "%010i" % mem.freq,
+            "%X" % D710_STEPS.index(mem.tuning_step),
+            "%i" % (0 if mem.duplex == "split" else D710_DUPLEX.index(mem.duplex)),
+            "0", # Reverse
+            "%i" % (mem.tmode == "Tone" and 1 or 0),
+            "%i" % (mem.tmode == "TSQL" and 1 or 0),
+            "%i" % (mem.tmode == "DTCS" and 1 or 0),
+            "0",
+            "%02i" % (chirp_common.TONES.index(mem.rtone)),
+            "%02i" % (chirp_common.TONES.index(mem.ctone)),
+            "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
+            "0",
+            "%08i" % (0 if mem.duplex == "split" else mem.offset), # Offset
+            "%i" % D710_MODES.index(mem.mode),
+            "%010i" % (mem.offset if mem.duplex == "split" else 0), # TX Frequency
+            "0", # Unknown
+            "%i" % D710_SKIP.index(mem.skip), # Memory Lockout
+            )
+
+        return spec
+
+@directory.register
 class TMV71Radio(TMD710Radio):
 	MODEL = "TM-V71"	
 

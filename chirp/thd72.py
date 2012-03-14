@@ -160,7 +160,9 @@ EXCH_R = "R\x00\x00\x00\x00"
 EXCH_W = "W\x00\x00\x00\x00"
 
 
-@directory.register
+# Uploads result in "MCP Error" and garbage data in memory
+# Clone driver disabled in favor of error-checking live driver.
+#@directory.register
 class THD72Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
