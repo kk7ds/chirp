@@ -132,6 +132,9 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     def _cmd_set_memory_name(self, number, name):
         return "MNA", "%i,%03i,%s" % (self._vfo, number, name)
 
+    def get_raw_memory(self, number):
+        return command(self.pipe, *self._cmd_get_memory(number))
+
     def get_memory(self, number):
         if number < 0 or number > self._upper:
             raise errors.InvalidMemoryLocation( \
@@ -235,7 +238,7 @@ class THD7Radio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
             "%09i" % mem.offset,
             "%i" % rev(MODES, mem.mode),
-            "0")
+            "%i" % ((mem.skip == "S") and 1 or 0))
 
         return spec
 
@@ -258,6 +261,7 @@ class THD7Radio(KenwoodLiveRadio):
         else:
             mem.offset = 0
         mem.mode = MODES[int(spec[14])]
+        mem.skip = int(spec[15]) and "S" or ""
 
         return mem
 
@@ -297,7 +301,7 @@ class TMD700Radio(KenwoodLiveRadio):
             "%02i" % (chirp_common.TONES.index(mem.ctone) + 1),
             "%09i" % mem.offset,
             "%i" % rev(MODES, mem.mode),
-            "0")
+            "%i" % ((mem.skip == "S") and 1 or 0))
 
         return spec
 
@@ -320,6 +324,7 @@ class TMD700Radio(KenwoodLiveRadio):
         else:
             mem.offset = 0
         mem.mode = MODES[int(spec[14])]
+        mem.skip = int(spec[15]) and "S" or ""
 
         return mem
 
