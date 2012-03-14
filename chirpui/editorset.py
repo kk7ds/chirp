@@ -79,7 +79,7 @@ class EditorSet(gtk.VBox):
 
         if rf.has_bank:
             self.editors["bank_members"] = \
-                bankedit.BankMembershipEditor(self.rthread)
+                bankedit.BankMembershipEditor(self.rthread, self)
         
         if rf.has_bank_names:
             self.editors["bank_names"] = bankedit.BankNameEditor(self.rthread)

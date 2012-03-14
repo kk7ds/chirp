@@ -177,7 +177,13 @@ class BankMembershipEditor(common.Editor):
             # Step 2: Update our notion of the memory's bank information
             self.refresh_memory(loc)
 
-        def do_bank_index(_null, memory):
+        def do_bank_index(result, memory):
+            if isinstance(result, Exception):
+                common.show_error("Failed to add {mem} to bank: {err}"
+                                  .format(mem=memory.number,
+                                          err=str(result)),
+                                  parent=self.editorset.parent_window)
+                return
             # Step 3: Set the memory's bank index (maybe)
             if not self._rf.has_bank_index or index is None:
                 return do_refresh_memory()
@@ -232,9 +238,10 @@ class BankMembershipEditor(common.Editor):
         job.set_desc(_("Getting memory {num}").format(num=loc))
         self.rthread.submit(job)
             
-    def __init__(self, rthread):
+    def __init__(self, rthread, editorset):
         common.Editor.__init__(self)
         self.rthread = rthread
+        self.editorset = editorset
         self._rf = rthread.radio.get_features()
 
         self._view_cols = [
