@@ -383,9 +383,7 @@ class FT7800Radio(FTx800Radio):
 
     def set_memory(self, memory):
         if memory.empty:
-            model = self.get_bank_model()
-            for bank in model.get_memory_banks(memory):
-                model.remove_memory_from_bank(memory, bank)
+            self._wipe_memory_banks(memory)
         FTx800Radio.set_memory(self, memory)
 
 class FT7900Radio(FT7800Radio):

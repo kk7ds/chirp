@@ -237,11 +237,17 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.set_raw("\x00" * (mem.size() / 8))
         mem.unknown1 = 0x05
 
+    def _debank(self, mem):
+        bm = self.get_bank_model()
+        for bank in bm.get_memory_banks(mem):
+            bm.remove_memory_from_bank(mem, bank)
+
     def set_memory(self, mem):
         flag = self._memobj.flag[mem.number-1]
         was_empty = flag.flag == 0
         if mem.empty:
             flag.flag = 0
+            self._wipe_memory_banks(mem)
             return
 
         if mem.freq < 30000000 or \
