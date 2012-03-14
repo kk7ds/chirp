@@ -104,6 +104,7 @@ class EditorSet(gtk.VBox):
             lab = gtk.Label(_("Banks"))
             self.tabs.append_page(self.editors["bank_members"].root, lab)
             self.editors["bank_members"].root.show()
+            self.editors["bank_members"].connect("changed", self.banks_changed)
 
         self.pack_start(self.tabs)
         self.tabs.show()
