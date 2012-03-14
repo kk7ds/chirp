@@ -258,6 +258,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
         if not was_valid:
             self._wipe_memory(_mem)
+            self._wipe_memory_banks(mem)
 
         _mem.freq = mem.freq / 1000
         _mem.offset = mem.offset / 1000

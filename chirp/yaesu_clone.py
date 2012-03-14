@@ -186,6 +186,13 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     def match_model(cls, filedata):
         return filedata[:5] == cls._model
 
+    def _wipe_memory_banks(self, mem):
+        """Remove @mem from all the banks it is currently in"""
+        bm = self.get_bank_model()
+        for bank in bm.get_memory_banks(mem):
+            bm.remove_memory_from_bank(mem, bank)
+
+
 if __name__ == "__main__":
     import sys, serial
     s = serial.Serial(port=sys.argv[1], baudrate=19200, timeout=5)
