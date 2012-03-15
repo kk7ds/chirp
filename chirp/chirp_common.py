@@ -760,6 +760,7 @@ class ValidationError(ValidationMessage):
 
 class Radio:
     BAUD_RATE = 9600
+    HARDWARE_FLOW = False
     VENDOR = "Unknown"
     MODEL = "Unknown"
     VARIANT = ""
