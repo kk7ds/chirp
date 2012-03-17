@@ -15,6 +15,7 @@
 
 import urllib
 import hashlib
+import re
 
 from math import pi,cos,acos,sin,atan2
 
@@ -155,19 +156,58 @@ class RFinderParser:
         self.__lat = lat
         self.__lon = lon
 
-    def fetch_data(self, lat, lon, email, passwd):
+    # This returns something like:
+    # www.rfinder.net/query.php, rfindern_user, rfinder
+    def auth(self, email, passwd):
         args = {
-            "lat"   : "%7.5f" % lat,
-            "lon"   : "%8.5f" % lon,
             "email" : urllib.quote_plus(email),
             "pass"  : hashlib.md5(passwd).hexdigest(),
+            }
+
+        url = "http://sync.rfinder.net/radio/repeaters.nsf/" + \
+            "auth_user?openagent&%s" \
+            % "&".join(["%s=%s" % (k,v) for k,v in args.items()])
+
+        print "Requesting super-secret authentication: %s" % url
+
+        f = urllib.urlopen(url)
+        data = f.read()
+        f.close()
+
+        match = re.match("^/#SERVERMSG#/(.*)/#ENDMSG#/", data)
+        if match:
+            raise Exception(match.groups()[0])
+
+        url, user, pw = data.strip().split("|", 3)
+            
+        return url, user, pw
+
+    # For, uh, testing
+    def test_auth(self):
+        return "www.rfinder.net/query.php", "rfindern_user", "rfinder"
+    
+    def fetch_data(self, url, user, pw, lat, lon, radius):
+        super_secret_agent_007_key = "w2cyk" # Bob's callsign (secret)
+        args = {
+            "user"  : user,
+            "pass"  : pw + super_secret_agent_007_key,
+            "lat"   : "%7.5f" % lat,
+            "lon"   : "%8.5f" % lon,
+            "radius": "%i" % radius,
             "vers"  : "CH%s" % CHIRP_VERSION,
             }
 
-        url = "http://sync.rfinder.net/radio/repeaters.nsf/getlocal?openagent&%s"\
-            % "&".join(["%s=%s" % (k,v) for k,v in args.items()])
+        _url = "https://%s?%s" % (\
+            url,
+            "&".join(["%s=%s" % (k,v) for k,v in args.items()]))
 
-        f = urllib.urlopen(url)
+        # This looks like:
+        # https://www.rfinder.net/query.php?vers=CH0.2.0&
+        #   lon=-122.91000&radius=25&lat=45.52000&
+        #   user=rfindern_user&pass=rfinderw2cyk
+        print "Super-secret query URL: %s" % _url    
+
+        f = urllib.urlopen(_url)
         data = f.read()
         f.close()
 
@@ -180,7 +220,10 @@ class RFinderParser:
 
         vals = {}
         for i in range(0, len(SCHEMA)):
-            vals[SCHEMA[i]] = _vals[i]
+            try:
+                vals[SCHEMA[i]] = _vals[i]
+            except IndexError:
+                print "No such vals %s" % SCHEMA[i]
         self.__cheat = vals
 
         mem.name = vals["TRUSTEE"]
@@ -225,11 +268,12 @@ class RFinderParser:
                 number += 1
                 self.__memories.append(mem)
             except Exception, e:
-                #import traceback, sys
-                #traceback.print_exc(file=sys.stdout)
-                print "Error in record %s:" % self.__cheat["DOC_ID"]
+                import traceback, sys
+                traceback.print_exc(file=sys.stdout)
+                print "Error in received data, cannot continue"
                 print e
                 print self.__cheat
+                print line
                 print "\n\n"
 
     def get_memories(self):
@@ -257,10 +301,15 @@ class RFinderRadio(chirp_common.Radio):
 
     def do_fetch(self):
         self._rfp = RFinderParser(self._lat, self._lon)
-        self._rfp.parse_data(self._rfp.fetch_data(self._lat,
+
+        url, user, pw = self._rfp.auth(self._call, self._email)
+        # If you need to test rfinder, comment out above and uncomment below:
+        #url, user, pw = self._rfp.test_auth()
+
+        self._rfp.parse_data(self._rfp.fetch_data(url, user, pw,
+                                                  self._lat,
                                                   self._lon,
-                                                  self._call,
-                                                  self._email))
+                                                  25))
         
     def get_features(self):
         if not self._rfp:
