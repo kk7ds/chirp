@@ -54,6 +54,7 @@ if manual_language and manual_language != "Auto":
     lang_codes = { "English" : "en_US",
                    "Polish"  : "pl",
                    "Italian" : "it",
+                   "Dutch"   : "nl",
                    }
     try:
         langs = [lang_codes[manual_language]]
