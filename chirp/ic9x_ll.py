@@ -15,29 +15,17 @@
 
 import struct
 
-from chirp import chirp_common, util, errors
+from chirp import chirp_common, util, errors, bitwise
 from chirp.memmap import MemoryMap
 
-TUNING_STEPS = {
-    0 : 5.0,
-    1 : 6.25,
-    2 : 8.33,
-    3 : 9.0,
-    4 : 10.0,
-    5 : 12.5,
-    6 : 15,
-    7 : 20,
-    8 : 25,
-    9 : 30,
-    10: 50,
-    11: 100,
-    12: 125,
-    13: 200
-    }
+TUNING_STEPS = [
+    5.0, 6.25, 8.33,  9.0, 10.0, 12.5, 15, 20, 25, 30, 50, 100, 125, 200
+    ]
 
-TUNING_STEPS_REV = {}
-for __idx, __val in TUNING_STEPS.items():
-    TUNING_STEPS_REV[__val] = __idx
+MODES = ["FM", "NFM", "WFM", "AM", "DV"]
+DUPLEX = ["", "-", "+"]
+TMODES = ["", "Tone", "TSQL", "TSQL", "DTCS", "DTCS"]
+DTCS_POL = ["NN", "NR", "RN", "RR"]
 
 MEM_LEN = 34
 DV_MEM_LEN = 60
@@ -240,6 +228,38 @@ class IC92MyCallsignFrame(IC92CallsignFrame):
     command = 8 # My
     width = 12 # 4 bytes for /STID
 
+memory_frame_format = """
+struct {
+  u8 vfo;
+  bbcd number[2];
+  lbcd freq[5];
+  lbcd offset[3];
+  u8 unknown8[2];
+  bbcd rtone[2];
+  bbcd ctone[2];
+  bbcd dtcs[2];
+  u8 unknown9[2];
+  u8 unknown2:1,
+     mode:3,
+     tuning_step:4;
+  u8 unknown1:3,
+     tmode: 3,
+     duplex: 2;
+  u8 unknown5:4,
+     dtcs_polarity:2,
+     pskip:1,
+     skip:1;
+  char bank;
+  lbcd bank_index[1];
+  char name[8];
+  u8 unknown10;
+  u8 digital_code;
+  char rpt2call[8];
+  char rpt1call[8];
+  char urcall[8];
+} mem[1];
+"""
+
 class IC92MemoryFrame(IC92Frame):
     def __init__(self):
         IC92Frame.__init__(self, 0, DV_MEM_LEN)
@@ -272,236 +292,77 @@ class IC92MemoryFrame(IC92Frame):
     def get_iscall(self):
         return ord(self[0]) == 2
 
-    def _encode_duptone(self, mem):
-        duptone = ord(self[22]) & 0xE0
-
-        if mem.duplex == "-":
-            duptone |= duptone | 0x01
-        elif mem.duplex == "+":
-            duptone |= duptone | 0x02
-
-        if mem.tmode == "Tone":
-            duptone |= 0x04
-        elif mem.tmode == "TSQL":
-            duptone |= 0x0C
-        elif mem.tmode == "DTCS":
-            duptone |= 0x14
-
-        self[22] = duptone
-
-    def _decode_duptone(self):
-        duptone = ord(self[22])
-
-        if duptone & 0x01:
-            duplex = "-"
-        elif duptone & 0x02:
-            duplex = "+"
-        else:
-            duplex = ""
-
-        if (duptone & 0x0C) == 0x0C:
-            tmode = "TSQL"
-        elif (duptone & 0x14) == 0x14:
-            tmode = "DTCS"
-        elif (duptone & 0x04) == 0x04:
-            tmode = "Tone"
-        else:
-            tmode = ""
-
-        return duplex, tmode
-
-    def _encode_mode(self, mem):
-        mode = ord(self[21]) & 0x0F
-
-        if mem.mode == "FM":
-            pass
-        elif mem.mode == "NFM":
-            mode |= 0x10
-        elif mem.mode == "WFM":
-            mode |= 0x20
-        elif mem.mode == "AM":
-            mode |= 0x30
-        elif mem.mode == "DV":
-            mode |= 0x40
-        else:
-            raise errors.InvalidDataError("Unsupported mode %s" % mem.mode)
-
-        self[21] = mode
-
-    def _decode_mode(self):
-        mode = ord(self[21])
-
-        if (mode & 0x30) == 0x30:
-            return "AM"
-        elif (mode & 0x10) == 0x10:
-            return "NFM"
-        elif (mode & 0x20) == 0x20:
-            return "WFM"
-        elif (mode & 0x40) == 0x40:
-            return "DV"
-        else:
-            return "FM"
-
-    def _encode_dtcs_polarity(self, mem):
-        pol = ord(self[23]) & 0xF3
-        if mem.dtcs_polarity[0] == "R":
-            pol |= 0x80
-        if mem.dtcs_polarity[1] == "R":
-            pol |= 0x40
-        self[23] = pol
-
-    def _decode_dtcs_polarity(self):
-        pol = ord(self[23])
-
-        pstr = ""
-        if pol & 0x80:
-            pstr += "R"
-        else:
-            pstr += "N"
-        if pol & 0x40:
-            pstr += "R"
-        else:
-            pstr += "N"
-
-        return pstr
-
-    def _encode_tuning_step(self, mem):
-        ts = ord(self[21]) & 0xF0
-        ts |= TUNING_STEPS_REV[mem.tuning_step]
-        self[21] = ts
-
-    def _decode_tuning_step(self):
-        ts = ord(self[21]) & 0x0F
-        return TUNING_STEPS[ts]
-
-    def _encode_skip(self, mem):
-        skip = ord(self[23]) & 0xFC
-        if mem.skip == "S":
-            skip |= 0x01
-        elif mem.skip == "P":
-            skip |= 0x02
-        self[23] = skip
-
-    def _decode_skip(self):
-        skip = ord(self[23])
-
-        if skip & 0x01:
-            return "S"
-        elif skip & 0x02:
-            return "P"
-        else:
-            return ""
-
-    def _encode_bank(self, mem):
-        if not hasattr(mem, "_bank"):
-            return
-        if mem._bank is None:
-            self[24] = 0
-        else:
-            self[24] = chr(mem._bank + ord("A"))
-
-        if mem._bank_index == -1:
-            self[25] = util.bcd_encode(0)
-        else:
-            self[25] = util.bcd_encode(mem._bank_index)
-
-    def _decode_bank(self):
-        if ord(self[24]) == 0 or self.get_iscall():
-            bank = None
-            index = -1
-        else:
-            bank = ord(self[24]) - ord("A")
-            index = int("%02x" % ord(self[25]))
-
-        return bank, index
-
-    def _encode_calls(self, mem):
-        if isinstance(mem, chirp_common.DVMemory):
-            uc = mem.dv_urcall
-            r1 = mem.dv_rpt1call
-            r2 = mem.dv_rpt2call
-        else:
-            uc = r1 = r2 = (" " * 8)
-
-        self[36] = r2.ljust(8)
-        self[44] = r1.ljust(8)
-        self[52] = uc.ljust(8)
-
-    def _decode_calls(self):
-        return self[52:60].rstrip(), self[44:52].rstrip(),self[36:44].rstrip()
-
-    def _decode_digital_code(self):
-        return int("%02x" % ord(self[35]))
-
-    def _encode_digital_code(self, mem):
-        self[35] = util.bcd_encode(mem.dv_code)
-
-    def _decode_freq(self):
-        return int("%02x%02x%02x%02x%02x" % (ord(self[7]),
-                                             ord(self[6]),
-                                             ord(self[5]),
-                                             ord(self[4]),
-                                             ord(self[3])))
-
     def set_memory(self, mem):
         if mem.number < 0:
             self.set_iscall(True)
             mem.number = abs(mem.number) - 1
             print "Memory is %i (call %s)" % (mem.number, self.get_iscall())
 
-        self[1] = struct.pack(">H", int("%i" % mem.number, 16))
+        _mem = bitwise.parse(memory_frame_format, self).mem
 
-        self[3] = util.bcd_encode(mem.freq,
-                                  bigendian=False,
-                                  width=10)
-        self[8] = util.bcd_encode(mem.offset,
-                                  bigendian=False,
-                                  width=6)
-        self[13] = util.bcd_encode(int(mem.rtone * 10))
-        self[15] = util.bcd_encode(int(mem.ctone * 10))
-        self[17] = util.bcd_encode(int(mem.dtcs), width=4)
-        self._encode_mode(mem)
-        self._encode_tuning_step(mem)
-        self._encode_duptone(mem)
-        self._encode_dtcs_polarity(mem)
-        self._encode_skip(mem)
-        self._encode_bank(mem)
+        _mem.number = mem.number
+
+        _mem.freq = mem.freq
+        _mem.offset = mem.offset
+        _mem.rtone = int(mem.rtone * 10)
+        _mem.ctone = int(mem.ctone * 10)
+        _mem.dtcs = int(mem.dtcs)
+        _mem.mode = MODES.index(mem.mode)
+        _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
+        _mem.duplex = DUPLEX.index(mem.duplex)
+        _mem.tmode = TMODES.index(mem.tmode)
+        _mem.dtcs_polarity = DTCS_POL.index(mem.dtcs_polarity)
+        #_mem.bank = mem._bank
+        #_mem._bank_index = mem._bank_index
+        _mem.skip = mem.skip == "S"
+        _mem.pskip = mem.skip == "P"
+
+        _mem.name = mem.name.ljust(8)[:8]
+
         if mem.mode == "DV":
-            self._encode_calls(mem)
-            self._encode_digital_code(mem)
-
-        self[26] = mem.name[:8].ljust(8)
+            _mem.urcall = mem.dv_urcall.upper().ljust(8)[:8]
+            _mem.rpt1call = mem.dv_rpt1call.upper().ljust(8)[:8]
+            _mem.rpt2call = mem.dv_rpt2call.upper().ljust(8)[:8]
+            _mem.digital_code = mem.dv_code
 
     def get_memory(self):
-        if self._decode_mode() == "DV":
+        _mem = bitwise.parse(memory_frame_format, self).mem
+
+        if MODES[_mem.mode] == "DV":
             mem = IC9xDVMemory()
         else:
             mem = IC9xMemory()
 
-        mem.number = int("%02x" % struct.unpack(">H", self[1:3])[0])
-
+        mem.number = int(_mem.number)
         if self.get_iscall():
             mem.number = -1 - mem.number
 
-        mem.freq = self._decode_freq()
-        mem.offset = int("%02x%02x%02x%02x" % (ord(self[11]), ord(self[10]),
-                                               ord(self[9]),  ord(self[8])))
-        mem.rtone = int("%02x%02x" % (ord(self[13]), ord(self[14]))) / 10.0
-        mem.ctone = int("%02x%02x" % (ord(self[15]), ord(self[16]))) / 10.0
-        mem.dtcs = int("%02x%02x"  % (ord(self[17]), ord(self[18])))
-        mem.mode = self._decode_mode()
-        mem.tuning_step = self._decode_tuning_step()
-        mem.duplex, mem.tmode = self._decode_duptone()
-        mem.dtcs_polarity = self._decode_dtcs_polarity()
-        mem.skip = self._decode_skip()
-        mem._bank, mem._bank_index = self._decode_bank()
+        mem.freq = int(_mem.freq)
+        mem.offset = int(_mem.offset)
+        mem.rtone = int(_mem.rtone) / 10.0
+        mem.ctone = int(_mem.ctone) / 10.0
+        mem.dtcs = int(_mem.dtcs)
+        mem.mode = MODES[int(_mem.mode)]
+        mem.tuning_step = TUNING_STEPS[int(_mem.tuning_step)]
+        mem.duplex = DUPLEX[int(_mem.duplex)]
+        mem.tmode = TMODES[int(_mem.tmode)]
+        mem.dtcs_polarity = DTCS_POL[int(_mem.dtcs_polarity)]
+        #mem._bank = _mem.bank
+        #mem._bank_index = int(_mem.bank_index)
+        if _mem.skip:
+            mem.skip = "S"
+        elif _mem.pskip:
+            mem.skip = "P"
+        else:
+            mem.skip = ""
+
+        mem.name = str(_mem.name).rstrip()
 
         if mem.mode == "DV":
-            mem.dv_urcall, mem.dv_rpt1call, mem.dv_rpt2call = \
-                self._decode_calls()
-            mem.dv_code = self._decode_digital_code()
-
-        mem.name = self[26:34].rstrip()
+            mem.dv_urcall = str(_mem.urcall).rstrip()
+            mem.dv_rpt1call = str(_mem.rpt1call).rstrip()
+            mem.dv_rpt2call = str(_mem.rpt2call).rstrip()
+            mem.dv_code = int(_mem.digital_code)
 
         return mem
 
