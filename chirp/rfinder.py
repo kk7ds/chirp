@@ -156,56 +156,22 @@ class RFinderParser:
         self.__lat = lat
         self.__lon = lon
 
-    # This returns something like:
-    # www.rfinder.net/query.php, rfindern_user, rfinder
-    def auth(self, email, passwd):
+    def fetch_data(self, user, pw, lat, lon, radius):
+        print user
+        print pw
         args = {
-            "email" : urllib.quote_plus(email),
-            "pass"  : hashlib.md5(passwd).hexdigest(),
-            }
-
-        url = "http://sync.rfinder.net/radio/repeaters.nsf/" + \
-            "auth_user?openagent&%s" \
-            % "&".join(["%s=%s" % (k,v) for k,v in args.items()])
-
-        print "Requesting super-secret authentication: %s" % url
-
-        f = urllib.urlopen(url)
-        data = f.read()
-        f.close()
-
-        match = re.match("^/#SERVERMSG#/(.*)/#ENDMSG#/", data)
-        if match:
-            raise Exception(match.groups()[0])
-
-        url, user, pw = data.strip().split("|", 3)
-            
-        return url, user, pw
-
-    # For, uh, testing
-    def test_auth(self):
-        return "www.rfinder.net/query.php", "rfindern_user", "rfinder"
-    
-    def fetch_data(self, url, user, pw, lat, lon, radius):
-        super_secret_agent_007_key = "w2cyk" # Bob's callsign (secret)
-        args = {
-            "user"  : user,
-            "pass"  : pw + super_secret_agent_007_key,
+            "email"  : urllib.quote_plus(user),
+            "pass"  : hashlib.md5(pw).hexdigest(),
             "lat"   : "%7.5f" % lat,
             "lon"   : "%8.5f" % lon,
             "radius": "%i" % radius,
             "vers"  : "CH%s" % CHIRP_VERSION,
             }
 
-        _url = "https://%s?%s" % (\
-            url,
+        _url = "https://www.rfinder.net/query.php?%s" % (\
             "&".join(["%s=%s" % (k,v) for k,v in args.items()]))
 
-        # This looks like:
-        # https://www.rfinder.net/query.php?vers=CH0.2.0&
-        #   lon=-122.91000&radius=25&lat=45.52000&
-        #   user=rfindern_user&pass=rfinderw2cyk
-        print "Super-secret query URL: %s" % _url    
+        print "Query URL: %s" % _url    
 
         f = urllib.urlopen(_url)
         data = f.read()
@@ -288,25 +254,22 @@ class RFinderRadio(chirp_common.Radio):
        
         self._lat = 0
         self._lon = 0
-        self._call = ""
-        self._email = ""
+        self._user = ""
+        self._pass = ""
  
         self._rfp = None
 
-    def set_params(self, lat, lon, call, email):
+    def set_params(self, lat, lon, email, password):
         self._lat = lat
         self._lon = lon
-        self._call = call
-        self._email = email
+        self._user = email
+        self._pass = password
 
     def do_fetch(self):
         self._rfp = RFinderParser(self._lat, self._lon)
 
-        url, user, pw = self._rfp.auth(self._call, self._email)
-        # If you need to test rfinder, comment out above and uncomment below:
-        #url, user, pw = self._rfp.test_auth()
-
-        self._rfp.parse_data(self._rfp.fetch_data(url, user, pw,
+        self._rfp.parse_data(self._rfp.fetch_data(self._user,
+                                                  self._pass,
                                                   self._lat,
                                                   self._lon,
                                                   25))
