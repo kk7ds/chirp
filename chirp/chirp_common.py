@@ -268,6 +268,10 @@ class Memory:
 
         return m
 
+    def clone(self, source):
+        for k, v in source.__dict__.items():
+            self.__dict__[k] = v
+
     CSV_FORMAT = ["Location", "Name", "Frequency",
                   "Duplex", "Offset", "Tone",
                   "rToneFreq", "cToneFreq", "DtcsCode",
