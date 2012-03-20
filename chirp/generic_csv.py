@@ -187,7 +187,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         if filename:
             self._filename = filename
 
-        f = file(self._filename, "w")
+        f = file(self._filename, "wb")
         writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
         writer.writerow(chirp_common.Memory.CSV_FORMAT)
 

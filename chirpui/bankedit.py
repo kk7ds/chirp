@@ -343,7 +343,7 @@ class BankMembershipEditor(common.Editor):
 
     def refresh_banks(self, and_memories=False):
         def got_banks():
-            for i in range(len(self._cols) - len(self._view_cols),
+            for i in range(len(self._cols) - len(self._view_cols) - 1,
                            len(self.banks)):
                 col = self._view.get_column(i + len(self._view_cols))
                 bank, name = self.banks[i]
