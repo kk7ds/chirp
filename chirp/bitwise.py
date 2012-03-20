@@ -407,6 +407,12 @@ class ul32DataElement(u32DataElement):
 class charDataElement(DataElement):
     _size = 1
 
+    def __str__(self):
+        return str(self.get_value())
+
+    def __int__(self):
+        return ord(self.get_value())
+
     def _get_value(self, data):
         return data
 
@@ -414,6 +420,10 @@ class charDataElement(DataElement):
         self._data[self._offset] = value
 
 class bcdDataElement(DataElement):
+    def __int__(self):
+        tens, ones = self.get_value()
+        return (tens * 10) + ones
+
     def set_bits(self, mask):
         self._data[self._offset] = ord(self._data[self._offset]) | mask
 
