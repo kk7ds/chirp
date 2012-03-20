@@ -17,6 +17,7 @@ import time
 import threading
 
 from chirp import chirp_common, errors, memmap, ic9x_ll, util, icf, directory
+from chirp import bitwise
 
 IC9xA_SPECIAL = {}
 IC9xA_SPECIAL_REV = {}
@@ -183,7 +184,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         self._lock.release()
 
-        return memmap.MemoryMap(mframe.get_payload())
+        return repr(bitwise.parse(ic9x_ll.memory_frame_format, mframe))
 
     def get_memories(self, lo=0, hi=None):
         if hi is None:
@@ -206,7 +207,25 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         return memories
         
-    def set_memory(self, memory):
+    def set_memory(self, _memory):
+        # Make sure we mirror the DV-ness of the new memory we're
+        # setting, and that we capture the Bank value of any currently
+        # stored memory (unless the special type is provided) and
+        # communicate that to the low-level routines with the special
+        # subclass
+        if isinstance(_memory, ic9x_ll.IC9xMemory) or \
+                 isinstance(_memory, ic9x_ll.IC9xDVMemory):
+            memory = _memory
+        else:
+            if isinstance(_memory, chirp_common.DVMemory):
+                memory = ic9x_ll.IC9xDVMemory()
+                memory.clone(self.get_memory(_memory.number))
+            else:
+                memory = ic9x_ll.IC9xMemory()
+                memory.clone(self.get_memory(_memory.number))
+
+            memory.clone(_memory)
+
         self._lock.acquire()
         self._maybe_send_magic()
         try:

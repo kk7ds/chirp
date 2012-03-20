@@ -312,8 +312,11 @@ class IC92MemoryFrame(IC92Frame):
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.dtcs_polarity = DTCS_POL.index(mem.dtcs_polarity)
-        #_mem.bank = mem._bank
-        #_mem._bank_index = mem._bank_index
+
+        if mem._bank is not None:
+            _mem.bank = chr(ord("A") + mem._bank)
+            _mem.bank_index = mem._bank_index
+
         _mem.skip = mem.skip == "S"
         _mem.pskip = mem.skip == "P"
 
@@ -347,8 +350,11 @@ class IC92MemoryFrame(IC92Frame):
         mem.duplex = DUPLEX[int(_mem.duplex)]
         mem.tmode = TMODES[int(_mem.tmode)]
         mem.dtcs_polarity = DTCS_POL[int(_mem.dtcs_polarity)]
-        #mem._bank = _mem.bank
-        #mem._bank_index = int(_mem.bank_index)
+
+        if int(_mem.bank) != 0:
+            mem._bank = ord(str(_mem.bank)) - ord("A")
+            mem._bank_index = int(_mem.bank_index)
+
         if _mem.skip:
             mem.skip = "S"
         elif _mem.pskip:
