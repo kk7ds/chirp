@@ -612,6 +612,9 @@ class TestCaseDetect(TestCase):
         return "Detect"
 
     def run(self):
+        if isinstance(self._wrapper._dst, chirp_common.LiveRadio):
+            raise TestSkippedError("This is a live radio")
+
         filename = self._wrapper._filename
 
         try:
