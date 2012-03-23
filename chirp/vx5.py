@@ -36,12 +36,11 @@ struct {
   u8 unknown4:4,
      tuning_step:4;
   bbcd freq[3];
-  u8 unknown5:6,
+  u8 icon:6,
      mode:2;
   char name[8];
   bbcd offset[3];
-  u8 unknown6:2,
-     tmode:2,
+  u8 tmode:4,
      power:2,
      duplex:2;
   u8 unknown7:2,
@@ -123,7 +122,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.offset = int(_mem.offset) * 1000
         mem.power = POWER_LEVELS[3 - _mem.power]
-        mem.tmode = TMODES[_mem.tmode]
+        mem.tmode = TMODES[_mem.tmode & 0x3] # masked so bad mems can be read
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
 
@@ -135,6 +134,17 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem = self._memobj.memory[mem.number-1]
         _flg = self._memobj.flag[mem.number-1]
         
+        # initialize new channel to safe defaults
+        if not mem.empty and not _flg.used:
+            _mem.unknown1 = 0x00
+            _mem.unknown2 = 0x00
+            _mem.unknown3 = 0x00
+            _mem.unknown4 = 0x00
+            _mem.icon = 12 # file cabinet icon
+            _mem.unknown7 = 0x00
+            _mem.unknown8 = 0x00
+            _mem.unknown9 = 0x00
+            
         _flg.used = not mem.empty
         _flg.visible = not mem.empty
         if mem.empty:
