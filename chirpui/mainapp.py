@@ -34,7 +34,7 @@ except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
 from chirp import platform, xml, generic_csv, directory, util
-from chirp import ic9x, kenwood_live, idrp, vx7
+from chirp import ic9x, kenwood_live, idrp, vx7, vx5
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting
@@ -316,7 +316,9 @@ If you think that it is valid, you can select a radio model below to force an op
             types = [(_("CHIRP Radio Images") + " (*.img)", "*.img"),
                      (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                      (_("CSV Files") + " (*.csv)", "*.csv"),
+                     (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
                      (_("ICF Files") + " (*.icf)", "*.icf"),
+                     (_("VX5 Commander Files") + " (*.vx5)", "*.vx5"),
                      (_("VX7 Commander Files") + " (*.vx7)", "*.vx7"),
                      ]
             fname = platform.get_platform().gui_open_file(types=types)
@@ -454,6 +456,9 @@ If you think that it is valid, you can select a radio model below to force an op
 
         if isinstance(eset.radio, vx7.VX7Radio):
             types += [(_("VX7 Commander") + " (*.vx7)", "vx7")]
+        elif isinstance(eset.radio, vx5.VX5Radio):
+            types += [(_("EVE") + " (*.eve)", "eve")]
+            types += [(_("VX5 Commander") + " (*.vx5)", "vx5")]
 
         while True:
             fname = platform.get_platform().gui_save_file(types=types)
@@ -716,7 +721,9 @@ If you think that it is valid, you can select a radio model below to force an op
         types = [(_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                  (_("CHIRP Radio Images") + " (*.img)", "*.img"),
                  (_("CSV Files") + " (*.csv)", "*.csv"),
+                 (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
                  (_("ICF Files") + " (*.icf)", "*.icf"),
+                 (_("VX5 Commander Files") + " (*.vx5)", "*.vx5"),
                  (_("VX7 Commander Files") + " (*.vx7)", "*.vx7")]
         filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
