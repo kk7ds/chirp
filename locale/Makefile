@@ -8,8 +8,9 @@ XGT_OPTS=--copyright-holder=$(COPY) --package-name=$(PKG)
 all: $(MOFILES)
 
 clean:
-	rm -f $(MOFILES) *~
-	for mo in $(MOFILES); do rmdir -p `dirname $$mo`; done
+	rm -f $(MOFILES) *~ *.orig
+	rm -f `find . -name '*.mo'`
+	rmdir `find * -depth -type d`
 
 chirpui.pot:
 	/usr/bin/find ../chirpui -name '*.py' > .files

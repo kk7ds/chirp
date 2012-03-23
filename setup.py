@@ -86,10 +86,12 @@ def default_build():
     from distutils.core import setup
     from glob import glob
 
+    os.system("make -C locale clean all")
+
     desktop_files = glob("share/*.desktop")
     #form_files = glob("forms/*.x?l")
     image_files = glob("images/*")
-    _locale_files = glob("locale/*/LC_MESSAGES/D-RATS.mo")
+    _locale_files = glob("locale/*/LC_MESSAGES/CHIRP.mo")
     stock_configs = glob("stock_configs/*")
 
     locale_files = []
