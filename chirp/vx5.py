@@ -85,7 +85,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_duplexes = DUPLEX
         rf.memory_bounds = (1, 220)
         rf.valid_bands = [(   500000,  16000000),
-                          ( 47000000, 729000000),
+                          ( 48000000, 729000000),
                           (800000000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_name_length = 8
