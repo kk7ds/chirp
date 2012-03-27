@@ -685,7 +685,7 @@ If you think that it is valid, you can select a radio model below to force an op
             return False
 
         if eset.is_modified():
-            dlg = miscwidgets.YesNoDialog(title=_("Discard Changes?"),
+            dlg = miscwidgets.YesNoDialog(title=_("Save Changes?"),
                                           parent=self,
                                           buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
                                                    gtk.STOCK_NO, gtk.RESPONSE_NO,
