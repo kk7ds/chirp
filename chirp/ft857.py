@@ -17,14 +17,7 @@
 from chirp import ft817, chirp_common, errors, directory
 from chirp import bitwise
 
-mem_format = """
-#seekto 0x4a9;
-u8 visible[25];
-
-#seekto 0x4c4;
-u8 filled[25];
-
-#seekto 0x4df;
+mem_struct = """
 struct {
   u8   tag_on_off:1,
        tag_default:1,
@@ -60,52 +53,58 @@ struct {
   u32 freq;
   u32 offset;
   u8   name[8];
-} memory[200];
+}
+"""
+
+# there is a bug in bitwise_grammar that prevent the definition of single structures
+# qmb should be only one mem_struct followed by
+#""" + mem_struct + """ mtqmb;
+# but both qmb and qmb[1] raise an exception so I had to define it as qmb[2]
+
+mem_format = """
+#seekto 0x54;
+""" + mem_struct + """ vfoa[16];
+""" + mem_struct + """ vfob[16];
+""" + mem_struct + """ home[4];
+""" + mem_struct + """ qmb[2];
+""" + mem_struct + """ mtune;
+
+#seekto 0x4a9;
+u8 visible[25];
+u16 pmsvisible;
+
+#seekto 0x4c4;
+u8 filled[25];
+u16 pmsfilled;
+
+#seekto 0x4df;
+""" + mem_struct + """ memory[200];
+""" + mem_struct + """ pms[10];
 
 #seekto 0x1CAD;
-struct {
-  u8   tag_on_off:1,
-       tag_default:1,
-       unknown1:3,
-       mode:3;
-  u8   duplex:2,
-       is_duplex:1,
-       is_cwdig_narrow:1,
-       is_fm_narrow:1,
-       freq_range:3;
-  u8   skip:1,
-       unknokwn1_1:1,
-       ipo:1,
-       att:1,
-       unknown2:4;
-  u8   ssb_step:2,
-       am_step:3,
-       fm_step:3;
-  u8   unknown3:3,
-       is_split_tone:1,
-       tmode:4;
-  u8   unknown4:2,
-       tx_mode:3,
-       tx_freq_range:3;
-  u8   unknown5:2,
-       tone:6;
-  u8   unknown6:8;
-  u8   unknown7:1,
-       dcs:7;
-  u8   unknown8:8;
-  ul16 rit;
-  u32 freq;
-  u32 offset;
-  u8   name[8];
-} sixtymeterchannels[5];
+""" + mem_struct + """ sixtymeterchannels[5];
 
 """
 
+
+SPECIAL_PMS = {          # WARNING Index are hard wired in memory management code !!!
+    "PMS-1L" : -47,
+    "PMS-1U" : -46,
+    "PMS-2L" : -45,
+    "PMS-2U" : -44,
+    "PMS-3L" : -43,
+    "PMS-3U" : -42,
+    "PMS-4L" : -41,
+    "PMS-4U" : -40,
+    "PMS-5L" : -39,
+    "PMS-5U" : -38,
+}
 
 
 @directory.register
 class FT857Radio(ft817.FT817Radio):
     MODEL = "FT-857"
+    _model = ""
 
     TMODES = {
         0x04 : "Tone",
@@ -138,11 +137,54 @@ class FT857Radio(ft817.FT817Radio):
         "Off->DCS"   : 0x02,
     }
 
-    _model = ""
     _memsize = 7341
     # block 9 (140 Bytes long) is to be repeted 40 times 
-    # should be 42 times but this way I cam use original 817 functions
+    # should be 42 times but this way I can use original 817 functions
     _block_lengths = [ 2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140, 38, 176]
+
+    SPECIAL_MEMORIES = {        # WARNING Index are hard wired in memory management code !!!
+        "VFOa-1.8M" : -37,
+        "VFOa-3.5M" : -36,
+        "VFOa-5M" : -35,
+        "VFOa-7M" : -34,
+        "VFOa-10M" : -33,
+        "VFOa-14M" : -32,
+        "VFOa-18M" : -31,
+        "VFOa-21M" : -30,
+        "VFOa-24M" : -29,
+        "VFOa-28M" : -28,
+        "VFOa-50M" : -27,
+        "VFOa-FM" : -26,
+        "VFOa-AIR" : -25,
+        "VFOa-144" : -24,
+        "VFOa-430" : -23,
+        "VFOa-HF" : -22,
+        "VFOb-1.8M" : -21,
+        "VFOb-3.5M" : -20,
+        "VFOb-5M" : -19,
+        "VFOb-7M" : -18,
+        "VFOb-10M" : -17,
+        "VFOb-14M" : -16,
+        "VFOb-18M" : -15,
+        "VFOb-21M" : -14,
+        "VFOb-24M" : -13,
+        "VFOb-28M" : -12,
+        "VFOb-50M" : -11,
+        "VFOb-FM" : -10,
+        "VFOb-AIR" : -9,
+        "VFOb-144M" : -8,
+        "VFOb-430M" : -7,
+        "VFOb-HF" : -6,
+        "HOME HF" : -5,
+        "HOME 50M" : -4,
+        "HOME 144M" : -3,
+        "HOME 430M" : -2,
+        "QMB" : -1,
+    }
+    FIRST_VFOB_INDEX = -6
+    LAST_VFOB_INDEX = -21
+    FIRST_VFOA_INDEX = -22
+    LAST_VFOA_INDEX = -37
 
     def get_features(self):
         rf = ft817.FT817Radio.get_features(self)
@@ -177,13 +219,64 @@ class FT857Radio(ft817.FT817Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
-SPECIAL_60M = {
-    "M-601" : -1,
-    "M-602" : -2,
-    "M-603" : -3,
-    "M-604" : -4,
-    "M-605" : -5,
-    }
+    def get_special_locations(self):
+        lista = SPECIAL_PMS.keys()
+        lista.extend(self.SPECIAL_MEMORIES)
+        return lista
+
+    def _get_special_pms(self, number):
+        mem = chirp_common.Memory()
+        mem.number = SPECIAL_PMS[number]
+        mem.extd_number = number
+
+	bitindex = -38 - mem.number
+        used = ((self._memobj.pmsvisible & self._memobj.pmsfilled) >> bitindex) & 0x01
+	print "mem.number %i bitindex %i pmsvisible %i pmsfilled %i used %i" % (mem.number, bitindex, self._memobj.pmsvisible, self._memobj.pmsfilled, used)
+        if not used:
+            mem.empty = True
+            return mem
+
+        _mem = self._memobj.pms[47 + mem.number]
+
+        mem = self._get_memory(mem, _mem)
+
+        mem.immutable = ["number", "skip", "rtone", "ctone",
+                         "extd_number", "dtcs", "tmode", "cross_mode",
+                         "dtcs_polarity", "power", "duplex", "offset",
+                         "comment", "empty"]
+
+        return mem
+
+    def _set_special_pms(self, mem):
+        cur_mem = self._get_special(mem.extd_number)
+
+	bitindex = -38 - mem.number
+	if mem.empty:
+            self._memobj.pmsvisible &= ~ (1 << bitindex)
+            self._memobj.pmsfilled = self._memobj.pmsvisible
+            return
+        self._memobj.pmsvisible |=  1 << bitindex
+        self._memobj.pmsfilled = self._memobj.pmsvisible
+        
+        for key in cur_mem.immutable:
+            if cur_mem.__dict__[key] != mem.__dict__[key]:
+                raise errors.RadioError("Editing field `%s' " % key +
+                                        "is not supported on PMS channels")
+
+        _mem = self._memobj.pms[47 + mem.number]
+        self._set_memory(mem, _mem)
+
+    def get_memory(self, number):
+        if number in SPECIAL_PMS.keys():
+            return self._get_special_pms(number)
+        else:
+            return ft817.FT817Radio.get_memory(self, number)
+
+    def set_memory(self, memory):
+        if memory.extd_number in SPECIAL_PMS.keys():
+            return self._set_special_pms(memory)
+        else:
+            return ft817.FT817Radio.set_memory(self, memory)
 
 @directory.register
 class FT857_US_Radio(FT857Radio):
@@ -194,30 +287,43 @@ class FT857_US_Radio(FT857Radio):
     _model = ""
     _memsize = 7481
     # block 9 (140 Bytes long) is to be repeted 40 times 
-    # should be 42 times but this way I cam use original 817 functions
+    # should be 42 times but this way I can use original 817 functions
     _block_lengths = [ 2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140, 38, 176, 140]
 
 
+    SPECIAL_60M = {
+        "M-601" : -52,
+        "M-602" : -51,
+        "M-603" : -50,
+        "M-604" : -49,
+        "M-605" : -48,
+        }
+    LAST_SPECIAL60M_INDEX = -52
+    
     def get_special_locations(self):
-        return SPECIAL_60M.keys()
+        lista = self.SPECIAL_60M.keys()
+        lista.extend(FT857Radio.get_special_locations(self))
+        return lista
 
-    def _get_special(self, number):
+    # this is identical to the one in FT817ND_US_Radio but we inherit from 857
+    def _get_special_60M(self, number):
         mem = chirp_common.Memory()
-        mem.number = SPECIAL_60M[number]
+        mem.number = self.SPECIAL_60M[number]
         mem.extd_number = number
 
-        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+        _mem = self._memobj.sixtymeterchannels[-self.LAST_SPECIAL60M_INDEX + mem.number]
 
-        self._get_memory(mem, _mem)
+        mem = self._get_memory(mem, _mem)
 
         mem.immutable = ["number", "skip", "rtone", "ctone",
                          "extd_number", "name", "dtcs", "tmode", "cross_mode",
                          "dtcs_polarity", "power", "duplex", "offset",
-                         "tuning_step", "comment", "empty"]
+                         "comment", "empty"]
 
         return mem
 
-    def _set_special(self, mem):
+    # this is identical to the one in FT817ND_US_Radio but we inherit from 857
+    def _set_special_60M(self, mem):
         cur_mem = self._get_special(mem.extd_number)
 
         for key in cur_mem.immutable:
@@ -228,17 +334,17 @@ class FT857_US_Radio(FT857Radio):
         if mem.mode not in ["USB", "LSB", "CW", "CWR", "NCW", "NCWR", "DIG"]:
             raise errors.RadioError(_("Mode {mode} is not valid "
                                       "in 60m channels").format(mode=mem.mode))
-        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+        _mem = self._memobj.sixtymeterchannels[-self.LAST_SPECIAL60M_INDEX + mem.number]
         self._set_memory(mem, _mem)
 
     def get_memory(self, number):
-        if isinstance(number, str):
-            return self._get_special(number)
+        if number in self.SPECIAL_60M.keys():
+            return self._get_special_60M(number)
         else:
             return FT857Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.number < 0:
-            return self._set_special(memory)
+        if memory.extd_number in self.SPECIAL_60M.keys():
+            return self._set_special_60M(memory)
         else:
             return FT857Radio.set_memory(self, memory)

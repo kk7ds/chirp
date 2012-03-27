@@ -110,7 +110,54 @@ def clone_out(radio):
 
     print "Clone completed in %i seconds" % (time.time() - start)
 
+mem_struct = """
+struct {
+  u8   tag_on_off:1,
+       tag_default:1,
+       unknown1:3,
+       mode:3;
+  u8   duplex:2,
+       is_duplex:1,
+       is_cwdig_narrow:1,
+       is_fm_narrow:1,
+       freq_range:3;
+  u8   skip:1,
+       unknown2:1,
+       ipo:1,
+       att:1,
+       unknown3:4;
+  u8   ssb_step:2,
+       am_step:3,
+       fm_step:3;
+  u8   unknown4:6,
+       tmode:2;
+  u8   unknown5:2,
+       tx_mode:3,
+       tx_freq_range:3;
+  u8   unknown6:2,
+       tone:6;
+  u8   unknown7:1,
+       dcs:7;
+  ul16 rit;
+  u32 freq;
+  u32 offset;
+  u8   name[8];
+}
+"""
+
+# there is a bug in bitwise_grammar that prevent the definition of single structures
+# qmb should be only one mem_struct followed by
+#""" + mem_struct + """ mtqmb;
+# but both qmb and qmb[1] raise an exception so I had to define it as qmb[2]
+
 mem_format = """
+#seekto 0x2a;
+""" + mem_struct + """ vfoa[15];
+""" + mem_struct + """ vfob[15];
+""" + mem_struct + """ home[4];
+""" + mem_struct + """ qmb[2];
+""" + mem_struct + """ mtune;
+
 #seekto 0x3fd;
 u8 visible[25];
 
@@ -118,78 +165,17 @@ u8 visible[25];
 u8 filled[25];
 
 #seekto 0x431;
-struct {
-  u8   tag_on_off:1,
-       tag_default:1,
-       unknown1:3,
-       mode:3;
-  u8   duplex:2,
-       is_duplex:1,
-       is_cwdig_narrow:1,
-       is_fm_narrow:1,
-       freq_range:3;
-  u8   skip:1,
-       unknown2:1,
-       ipo:1,
-       att:1,
-       unknown3:4;
-  u8   ssb_step:2,
-       am_step:3,
-       fm_step:3;
-  u8   unknown4:6,
-       tmode:2;
-  u8   unknown5:2,
-       tx_mode:3,
-       tx_freq_range:3;
-  u8   unknown6:2,
-       tone:6;
-  u8   unknown7:1,
-       dcs:7;
-  ul16 rit;
-  u32 freq;
-  u32 offset;
-  u8   name[8];
-} memory[200];
+""" + mem_struct + """ memory[200];
 
 #seekto 0x1979;
-struct {
-  u8   tag_on_off:1,
-       tag_default:1,
-       unknown1:3,
-       mode:3;
-  u8   duplex:2,
-       is_duplex:1,
-       is_cwdig_narrow:1,
-       is_fm_narrow:1,
-       freq_range:3;
-  u8   skip:1,
-       unknown2:1,
-       ipo:1,
-       att:1,
-       unknown3:4;
-  u8   ssb_step:2,
-       am_step:3,
-       fm_step:3;
-  u8   unknown4:6,
-       tmode:2;
-  u8   unknown5:2,
-       tx_mode:3,
-       tx_freq_range:3;
-  u8   unknown6:2,
-       tone:6;
-  u8   unknown7:1,
-       dcs:7;
-  ul16 rit;
-  u32 freq;
-  u32 offset;
-  u8   name[8];
-} sixtymeterchannels[5];
+""" + mem_struct + """ sixtymeterchannels[5];
 """
 
 @directory.register
 class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     MODEL = "FT-817"
+    _model = ""
 
     DUPLEX = ["", "-", "+", "split"]
     MODES  = ["LSB", "USB", "CW", "CWR", "AM", "FM", "DIG", "PKT", "NCW", "NCWR", "NFM"]   # narrow modes has to be at end
@@ -199,7 +185,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     STEPSSSB = [1.0, 2.5, 5.0]
     VALID_BANDS = [(100000,33000000), (33000000,56000000), (76000000,108000000), (108000000,137000000), (137000000,154000000), (420000000,470000000)] # warning ranges has to be in this exact order
 
-
     CHARSET = [chr(x) for x in range(0, 256)]
 
     POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),       # not used in memory
@@ -207,11 +192,51 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                     chirp_common.PowerLevel("L2", watts=1.00),
                     chirp_common.PowerLevel("L1", watts=0.5)]
 
-    _model = ""
     _memsize = 6509
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 118]
 
+    SPECIAL_MEMORIES = {        # WARNING Index are hard wired in memory management code !!!
+        "VFOa-1.8M" : -35,
+        "VFOa-3.5M" : -34,
+        "VFOa-7M" : -33,
+        "VFOa-10M" : -32,
+        "VFOa-14M" : -31,
+        "VFOa-18M" : -30,
+        "VFOa-21M" : -29,
+        "VFOa-24M" : -28,
+        "VFOa-28M" : -27,
+        "VFOa-50M" : -26,
+        "VFOa-FM" : -25,
+        "VFOa-AIR" : -24,
+        "VFOa-144" : -23,
+        "VFOa-430" : -22,
+        "VFOa-HF" : -21,
+        "VFOb-1.8M" : -20,
+        "VFOb-3.5M" : -19,
+        "VFOb-7M" : -18,
+        "VFOb-10M" : -17,
+        "VFOb-14M" : -16,
+        "VFOb-18M" : -15,
+        "VFOb-21M" : -14,
+        "VFOb-24M" : -13,
+        "VFOb-28M" : -12,
+        "VFOb-50M" : -11,
+        "VFOb-FM" : -10,
+        "VFOb-AIR" : -9,
+        "VFOb-144M" : -8,
+        "VFOb-430M" : -7,
+        "VFOb-HF" : -6,
+        "HOME HF" : -5,
+        "HOME 50M" : -4,
+        "HOME 144M" : -3,
+        "HOME 430M" : -2,
+        "QMB" : -1,
+    }
+    FIRST_VFOB_INDEX = -6
+    LAST_VFOB_INDEX = -20
+    FIRST_VFOA_INDEX = -21
+    LAST_VFOA_INDEX = -35
 
     def sync_in(self):
         self._mmap = clone_in(self)
@@ -254,7 +279,81 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_tmode(self, mem, _mem):
         mem.tmode = self.TMODES[_mem.tmode]
 
+    def set_duplex(self, mem, _mem):
+        _mem.duplex = self.DUPLEX.index(mem.duplex)
+        _mem.is_duplex = mem.duplex != ""
+
+    def set_tmode(self, mem, _mem):
+        _mem.tmode = self.TMODES.index(mem.tmode)
+
     def get_memory(self, number):
+        if isinstance(number, str):
+            return self._get_special(number)
+        else:
+            return self._get_normal(number)
+
+    def set_memory(self, memory):
+        if memory.number < 0:
+            return self._set_special(memory)
+        else:
+            return self._set_normal(memory)
+
+    def get_special_locations(self):
+        return self.SPECIAL_MEMORIES.keys()
+
+    def _get_special(self, number):
+        mem = chirp_common.Memory()
+        mem.number = self.SPECIAL_MEMORIES[number]
+        mem.extd_number = number
+
+        if mem.number in range(self.FIRST_VFOA_INDEX, self.LAST_VFOA_INDEX -1, -1):
+            _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
+            immutable = ["number", "skip", "rtone", "ctone", "extd_number", "name",
+                         "dtcs_polarity", "power", "comment"]
+        elif mem.number in range(self.FIRST_VFOB_INDEX, self.LAST_VFOB_INDEX -1, -1):
+            _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + mem.number]
+            immutable = ["number", "skip", "rtone", "ctone", "extd_number", "name",
+                         "dtcs_polarity", "power", "comment"]
+        elif mem.number in range(-2, -6, -1):
+            _mem = self._memobj.home[5 + mem.number]
+            immutable = ["number", "skip", "rtone", "ctone", "extd_number",
+                         "dtcs_polarity", "power", "comment"]
+        elif mem.number == -1:
+            _mem = self._memobj.qmb[0]
+            immutable = ["number", "skip", "rtone", "ctone", "extd_number", "name",
+                         "dtcs_polarity", "power", "comment"]
+	else:
+            raise Exception("Sorry, special memory index %i unknown you hit a bug!!" % mem.number)
+
+        mem = self._get_memory(mem, _mem)
+	mem.immutable = immutable
+
+        return mem
+
+    def _set_special(self, mem):
+        cur_mem = self._get_special(mem.extd_number)
+
+        for key in cur_mem.immutable:
+            if cur_mem.__dict__[key] != mem.__dict__[key]:
+                raise errors.RadioError("Editing field `%s' " % key +
+                                        "is not supported on this chanel")
+
+        # TODO add frequency range check for vfo and home memories
+
+        if mem.number in range(self.FIRST_VFOA_INDEX, self.LAST_VFOA_INDEX -1, -1):
+            _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
+        elif mem.number in range(self.FIRST_VFOB_INDEX, self.LAST_VFOB_INDEX -1, -1):
+            _mem = self._memobj.vfob[self.LAST_VFOB_INDEX + mem.number]
+        elif mem.number in range(-2, -6, -1):
+            _mem = self._memobj.home[5 + mem.number]
+        elif mem.number == -1:
+            _mem = self._memobj.qmb[0]
+	else:
+            raise Exception("Sorry, special memory index %i unknown you hit a bug!!" % mem.number)
+
+        self._set_memory(mem, _mem)
+
+    def _get_normal(self, number):
         _mem = self._memobj.memory[number-1]
         used = (self._memobj.visible[(number-1)/8] >> (number-1)%8) & 0x01
 
@@ -265,6 +364,21 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             return mem
 
         return self._get_memory(mem, _mem)
+
+    def _set_normal(self, mem):
+        _mem = self._memobj.memory[mem.number-1]
+        if mem.empty:
+            if mem.number == 1:
+                # as Dan says "yaesus are not good about that :("
+		# if you ulpoad an empty image you can brick your radio
+                raise Exception("Sorry, can't delete first memory") 
+            self._memobj.visible[(mem.number-1)/8] &= ~ (1 << (mem.number-1)%8)
+            self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
+            return
+        
+        self._memobj.visible[(mem.number-1)/8] |= 1 << (mem.number-1)%8
+        self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
+        self._set_memory(mem, _mem)
 
     def _get_memory(self, mem, _mem):
         mem.freq = int(_mem.freq) * 10
@@ -281,8 +395,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             if _mem.is_cwdig_narrow == 1:
                 mem.mode = "N" + mem.mode
             mem.tuning_step = self.STEPSSSB[_mem.ssb_step]
-        else:   # TODO more investigation needed on steps for other modes 
-            mem.tuning_step = self.STEPSSSB[_mem.ssb_step]
+        else:
+            try:
+                mem.tuning_step = self.STEPSSSB[_mem.ssb_step]
+            except IndexError:
+                pass
         mem.skip = _mem.skip and "S" or ""
         self.get_tmode(mem, _mem)
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
@@ -299,30 +416,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return mem
 
-    def set_duplex(self, mem, _mem):
-        _mem.duplex = self.DUPLEX.index(mem.duplex)
-        _mem.is_duplex = mem.duplex != ""
-
-    def set_tmode(self, mem, _mem):
-        _mem.tmode = self.TMODES.index(mem.tmode)
-
-    def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number-1]
-        if mem.empty:
-            if mem.number == 1:
-                # as Dan says "yaesus are not good about that :("
-		# if you ulpoad an empty image you can brick your radio
-                raise Exception("Sorry, can't delete first memory") 
-            self._memobj.visible[(mem.number-1)/8] &= ~ (1 << (mem.number-1)%8)
-            self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
-            return
-        
-        self._set_memory(mem, _mem)
-
     def _set_memory(self, mem, _mem):
-        self._memobj.visible[(mem.number-1)/8] |= 1 << (mem.number-1)%8
-        self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
-
         if len(mem.name) > 0:     # not supported in chirp
                                   # so I make label visible if have one
             _mem.tag_on_off = 1
@@ -397,14 +491,6 @@ class FT817NDRadio(FT817Radio):
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130]
 
-SPECIAL_60M = {
-    "M-601" : -1,
-    "M-602" : -2,
-    "M-603" : -3,
-    "M-604" : -4,
-    "M-605" : -5,
-    }
-
 @directory.register
 class FT817ND_US_Radio(FT817Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
@@ -416,15 +502,26 @@ class FT817ND_US_Radio(FT817Radio):
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130, 130]
 
-    def get_special_locations(self):
-        return SPECIAL_60M.keys()
+    SPECIAL_60M = {
+        "M-601" : -40,
+        "M-602" : -39,
+        "M-603" : -38,
+        "M-604" : -37,
+        "M-605" : -36,
+        }
+    LAST_SPECIAL60M_INDEX = -40
 
-    def _get_special(self, number):
+    def get_special_locations(self):
+        lista = self.SPECIAL_60M.keys()
+        lista.extend(FT817Radio.get_special_locations(self))
+        return lista
+
+    def _get_special_60M(self, number):
         mem = chirp_common.Memory()
-        mem.number = SPECIAL_60M[number]
+        mem.number = self.SPECIAL_60M[number]
         mem.extd_number = number
 
-        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+        _mem = self._memobj.sixtymeterchannels[-self.LAST_SPECIAL60M_INDEX + mem.number]
 
         mem = self._get_memory(mem, _mem)
 
@@ -435,7 +532,7 @@ class FT817ND_US_Radio(FT817Radio):
 
         return mem
 
-    def _set_special(self, mem):
+    def _set_special_60M(self, mem):
         cur_mem = self._get_special(mem.extd_number)
 
         for key in cur_mem.immutable:
@@ -446,17 +543,17 @@ class FT817ND_US_Radio(FT817Radio):
         if mem.mode not in ["USB", "LSB", "CW", "CWR", "NCW", "NCWR", "DIG"]:
             raise errors.RadioError(_("Mode {mode} is not valid "
                                       "in 60m channels").format(mode=mem.mode))
-        _mem = self._memobj.sixtymeterchannels[abs(mem.number)-1]
+        _mem = self._memobj.sixtymeterchannels[-self.LAST_SPECIAL60M_INDEX + mem.number]
         self._set_memory(mem, _mem)
 
     def get_memory(self, number):
-        if isinstance(number, str):
-            return self._get_special(number)
+        if number in self.SPECIAL_60M.keys():
+            return self._get_special_60M(number)
         else:
             return FT817Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.number < 0:
-            return self._set_special(memory)
+        if memory.extd_number in self.SPECIAL_60M.keys():
+            return self._set_special_60M(memory)
         else:
             return FT817Radio.set_memory(self, memory)
