@@ -49,7 +49,8 @@ struct {
   u8   unknown4:2,
        tx_mode:3,
        tx_freq_range:3;
-  u8   unknown5:2,
+  u8   unknown5:1,
+       unknown_flag:1,
        tone:6;
   u8   unknown6:8;
   u8   unknown7:1,
@@ -164,6 +165,8 @@ class FT857Radio(ft817.FT817Radio):
             mem.cross_mode = self.CROSS_MODES[int(_mem.tmode)]
 
     def set_tmode(self, mem, _mem):
+	_mem.unknown_flag = 0	# have to put this bit to 0 otherwise we get strange display in tone frequency (menu 83)
+				# see bug #88
         if mem.tmode != "Cross":
             _mem.is_split_tone = 0
             _mem.tmode = self.TMODES_REV[mem.tmode]
