@@ -43,63 +43,6 @@ CONF = config.get()
 
 KEEP_RECENT = 8
 
-FIPS_CODES = {
-    "Alaska"               : 2,
-    "Alabama"              : 1,
-    "Arkansas"             : 5,
-    "Arizona"              : 4,
-    "California"           : 6,
-    "Colorado"             : 8,
-    "Connecticut"          : 9,
-    "District of Columbia" : 11,
-    "Delaware"             : 10,
-    "Florida"              : 12,
-    "Georgia"              : 13,
-    "Guam"                 : 66,
-    "Hawaii"               : 15,
-    "Iowa"                 : 19,
-    "Idaho"                : 16,
-    "Illinois"             : 17,
-    "Indiana"              : 18,
-    "Kansas"               : 20,
-    "Kentucky"             : 21,
-    "Louisiana"            : 22,
-    "Massachusetts"        : 25,
-    "Maryland"             : 24,
-    "Maine"                : 23,
-    "Michigan"             : 26,
-    "Minnesota"            : 27,
-    "Missouri"             : 29,
-    "Mississippi"          : 28,
-    "Montana"              : 30,
-    "North Carolina"       : 37,
-    "North Dakota"         : 38,
-    "Nebraska"             : 31,
-    "New Hampshire"        : 33,
-    "New Jersey"           : 34,
-    "New Mexico"           : 35,
-    "Nevada"               : 32,
-    "New York"             : 36,
-    "Ohio"                 : 39,
-    "Oklahoma"             : 40,
-    "Oregon"               : 41,
-    "Pennsylvania"         : 32,
-    "Puerto Rico"          : 72,
-    "Rhode Island"         : 44,
-    "South Carolina"       : 45,
-    "South Dakota"         : 46,
-    "Tennessee"            : 47,
-    "Texas"                : 48,
-    "Utah"                 : 49,
-    "Virginia"             : 51,
-    "Virgin Islands"       : 78,
-    "Vermont"              : 50,
-    "Washington"           : 53,
-    "Wisconsin"            : 55,
-    "West Virginia"        : 54,
-    "Wyoming"              : 56,
-}
-
 RB_BANDS = {
     "--All--"                 : 0,
     "10 meters (29MHz)"       : 29,
@@ -750,13 +693,13 @@ If you think that it is valid, you can select a radio model below to force an op
         default_band = "--All--"
         try:
             code = int(CONF.get("state", "repeaterbook"))
-            for k,v in FIPS_CODES.items():
+            for k,v in fips.FIPS_STATES.items():
                 if code == v:
                     default_state = k
                     break
 
             code = CONF.get("county", "repeaterbook")
-            for k,v in fips.FIPS_COUNTIES[FIPS_CODES[default_state]].items():
+            for k,v in fips.FIPS_COUNTIES[fips.FIPS_STATES[default_state]].items():
                 if code == v:
                     default_county = k
                     break
@@ -769,14 +712,14 @@ If you think that it is valid, you can select a radio model below to force an op
         except:
             pass
 
-        state = miscwidgets.make_choice(sorted(FIPS_CODES.keys()),
+        state = miscwidgets.make_choice(sorted(fips.FIPS_STATES.keys()),
                                         False, default_state)
-        county = miscwidgets.make_choice(sorted(fips.FIPS_COUNTIES[FIPS_CODES[state.get_active_text()]].keys()),
+        county = miscwidgets.make_choice(sorted(fips.FIPS_COUNTIES[fips.FIPS_STATES[default_state]].keys()),
                                         False, default_county)
         band = miscwidgets.make_choice(sorted(RB_BANDS.keys(), key=key_bands),
                                        False, default_band)
         def _changed(box, county):
-            state = FIPS_CODES[box.get_active_text()]
+            state = fips.FIPS_STATES[box.get_active_text()]
             county.get_model().clear()
             for fips_county in sorted(fips.FIPS_COUNTIES[state].keys()):
                 county.append_text(fips_county)
@@ -793,7 +736,7 @@ If you think that it is valid, you can select a radio model below to force an op
         if r != gtk.RESPONSE_OK:
             return False
 
-        code = FIPS_CODES[state.get_active_text()]
+        code = fips.FIPS_STATES[state.get_active_text()]
         county_id = fips.FIPS_COUNTIES[code][county.get_active_text()]
         freq = RB_BANDS[band.get_active_text()]
         CONF.set("state", str(code), "repeaterbook")
