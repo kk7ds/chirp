@@ -37,7 +37,7 @@ from chirp import platform, xml, generic_csv, directory, util
 from chirp import ic9x, kenwood_live, idrp, vx7, vx5
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
-from chirpui import editorset, clone, miscwidgets, config, reporting
+from chirpui import editorset, clone, miscwidgets, config, reporting, fips
 
 CONF = config.get()
 
@@ -746,12 +746,19 @@ If you think that it is valid, you can select a radio model below to force an op
             CONF.set_bool("has_seen_credit", True, "repeaterbook")
 
         default_state = "Oregon"
+        default_county = "--All--"
         default_band = "--All--"
         try:
             code = int(CONF.get("state", "repeaterbook"))
             for k,v in FIPS_CODES.items():
                 if code == v:
                     default_state = k
+                    break
+
+            code = CONF.get("county", "repeaterbook")
+            for k,v in fips.FIPS_COUNTIES[FIPS_CODES[default_state]].items():
+                if code == v:
+                    default_county = k
                     break
 
             code = int(CONF.get("band", "repeaterbook"))
@@ -764,10 +771,21 @@ If you think that it is valid, you can select a radio model below to force an op
 
         state = miscwidgets.make_choice(sorted(FIPS_CODES.keys()),
                                         False, default_state)
+        county = miscwidgets.make_choice(sorted(fips.FIPS_COUNTIES[FIPS_CODES[state.get_active_text()]].keys()),
+                                        False, default_county)
         band = miscwidgets.make_choice(sorted(RB_BANDS.keys(), key=key_bands),
                                        False, default_band)
+        def _changed(box, county):
+            state = FIPS_CODES[box.get_active_text()]
+            county.get_model().clear()
+            for fips_county in sorted(fips.FIPS_COUNTIES[state].keys()):
+                county.append_text(fips_county)
+            county.set_active(0)
+        state.connect("changed", _changed, county)
+        
         d = inputdialog.FieldDialog(title="RepeaterBook Query", parent=self)
         d.add_field("State", state)
+        d.add_field("County", county)
         d.add_field("Band", band)
 
         r = d.run()
@@ -776,8 +794,10 @@ If you think that it is valid, you can select a radio model below to force an op
             return False
 
         code = FIPS_CODES[state.get_active_text()]
+        county_id = fips.FIPS_COUNTIES[code][county.get_active_text()]
         freq = RB_BANDS[band.get_active_text()]
         CONF.set("state", str(code), "repeaterbook")
+        CONF.set("county", str(county_id), "repeaterbook")
         CONF.set("band", str(freq), "repeaterbook")
 
         return True
@@ -794,14 +814,19 @@ If you think that it is valid, you can select a radio model below to force an op
             code = 41 # Oregon default
 
         try:
+            county = CONF.get("county", "repeaterbook")
+        except:
+            county = '%' # --All-- default
+
+        try:
             band = int(CONF.get("band", "repeaterbook"))
         except:
             band = 14 # 2m default
 
         query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
             "func=default&state_id=%02i&band=%s&freq=%%&band6=%%&loc=%%" + \
-            "&county_id=%%&status_id=%%&features=%%&coverage=%%&use=%%"
-        query = query % (code, band and band or "%%")
+            "&county_id=%s&status_id=%%&features=%%&coverage=%%&use=%%"
+        query = query % (code, band and band or "%%", county and county or "%%")
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
