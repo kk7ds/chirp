@@ -109,7 +109,9 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if not _flg.used or not _flg.visible:
+        if not _flg.visible:
+            mem.empty = True
+        if not _flg.used:
             mem.empty = True
             return mem
 
@@ -136,6 +138,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         
         # initialize new channel to safe defaults
         if not mem.empty and not _flg.used:
+            _flg.used = True
             _mem.unknown1 = 0x00
             _mem.unknown2 = 0x00
             _mem.unknown3 = 0x00
@@ -145,7 +148,9 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.unknown8 = 0x00
             _mem.unknown9 = 0x00
             
-        _flg.used = not mem.empty
+        if mem.empty and _flg.used and not _flg.visible:
+            _flg.used = False
+            return
         _flg.visible = not mem.empty
         if mem.empty:
             return

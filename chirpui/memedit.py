@@ -237,7 +237,8 @@ class MemoryEditor(common.Editor):
             return
 
         iter = self.store.get_iter(path)
-        if not self.store.get(iter, self.col("_filled"))[0]:
+        if not self.store.get(iter, self.col("_filled"))[0] \
+        and self.store.get(iter, self.col(_("Frequency")))[0] == 0:
             print _("Editing new item, taking defaults")
             self.insert_new(iter)
 
