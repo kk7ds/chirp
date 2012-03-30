@@ -786,10 +786,17 @@ If you think that it is valid, you can select a radio model below to force an op
             self.window.set_cursor(None)
             return
 
+        class RBRadio(chirp_common.Radio):
+            VENDOR = "RepeaterBook"
+            MODEL = ""
+            def __init__(self, *args):
+                pass
+
+        reporting.report_model_usage(RBRadio(), "import", True)
+
         self.window.set_cursor(None)
         eset = self.get_current_editorset()
         count = eset.do_import(filename)
-        reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
     def do_rfinder_prompt(self):
         fields = {"1Email"    : (gtk.Entry(),
@@ -848,7 +855,6 @@ If you think that it is valid, you can select a radio model below to force an op
 
         eset = self.get_current_editorset()
         count = eset.do_import("rfinder://%s/%s/%f/%f" % (email, passwd, lat, lon))
-        reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
         self.window.set_cursor(None)
 
