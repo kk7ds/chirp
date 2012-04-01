@@ -166,14 +166,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
         rf.valid_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         rf.valid_name_length = 6
         rf.valid_duplexes = ["", "+", "-", "split"]
-        rf.has_ctone = False
+        rf.has_ctone = True
+        rf.has_cross = True
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.memory_bounds = (1, 128)
@@ -182,6 +183,49 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
+
+    def get_tone(self, _mem, mem):
+        def get_dcs(val):
+            code = int("%03o" % (val & 0x07FF))
+            pol = (val & 0x8000) and "R" or "N"
+            return code, pol
+            
+        if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2800:
+            tcode, tpol = get_dcs(_mem.tx_tone)
+            mem.dtcs = tcode
+            txmode = "DTCS"
+        elif _mem.tx_tone != 0xFFFF:
+            mem.rtone = _mem.tx_tone / 10.0
+            txmode = "Tone"
+        else:
+            txmode = ""
+
+        if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2800:
+            rcode, rpol = get_dcs(_mem.rx_tone)
+            mem.dtcs = rcode
+            rxmode = "DTCS"
+        elif _mem.rx_tone != 0xFFFF:
+            mem.ctone = _mem.rx_tone / 10.0
+            rxmode = "Tone"
+        else:
+            rxmode = ""
+
+        if txmode == "Tone" and not rxmode:
+            mem.tmode = "Tone"
+        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
+            mem.tmode = "TSQL"
+        elif txmode == rxmode and txmode == "DTCS":
+            mem.tmode = "DTCS"
+        elif rxmode or txmode:
+            mem.tmode = "Cross"
+            mem.cross_mode = "%s->%s" % (txmode, rxmode)
+
+        if mem.tmode == "DTCS":
+            mem.dtcs_polarity = "%s%s" % (tpol, rpol)
+
+        if DEBUG:
+            print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
+                                                 rxmode, _mem.rx_tone)
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -214,22 +258,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         if not _mem.iswide:
             mem.mode = "NFM"
 
-        def get_dcs(val):
-            code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x8000) and "R" or "N"
-            return code, pol
-            
-        if _mem.tx_tone == 0xFFFF or _mem.tx_tone == 0x0000:
-            pass # No tone
-        elif _mem.tx_tone > 0x2800 and _mem.rx_tone > 0x2800:
-            tcode, tpol = get_dcs(_mem.tx_tone)
-            rcode, rpol = get_dcs(_mem.rx_tone)
-            mem.dtcs = tcode
-            mem.tmode = "DTCS"
-            mem.dtcs_polarity = "%s%s" % (tpol, rpol)
-        else:
-            mem.rtone = _mem.tx_tone / 10.0
-            mem.tmode = _mem.tx_tone == _mem.rx_tone and "TSQL" or "Tone"
+        self.get_tone(_mem, mem)
 
         mem.power = POWER_LEVELS[not _mem.power_high]
 
@@ -242,6 +271,41 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
     def wipe_memory(self, _mem, byte):
         _mem.set_raw(byte * (_mem.size() / 8))
+
+    def set_tone(self, mem, _mem):
+        def set_dcs(code, pol):
+            val = int("%i" % code, 8) + 0x2800
+            if pol == "R":
+                val += 0xA000
+            return val
+
+        if mem.tmode == "Cross":
+            tx_mode, rx_mode = mem.cross_mode.split("->")
+        elif mem.tmode == "Tone":
+            tx_mode = mem.tmode
+            rx_mode = None
+        else:
+            tx_mode = rx_mode = mem.tmode
+
+
+        if tx_mode == "DTCS":
+            _mem.tx_tone = set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+        elif tx_mode:
+            _mem.tx_tone = tx_mode == "Tone" and \
+                int(mem.rtone * 10) or int(mem.ctone * 10)
+        else:
+            _mem.tx_tone = 0xFFFF
+
+        if rx_mode == "DTCS":
+            _mem.rx_tone = set_dcs(mem.dtcs, mem.dtcs_polarity[1])
+        elif rx_mode:
+            _mem.rx_tone = int(mem.ctone * 10)
+        else:
+            _mem.rx_tone = 0xFFFF
+
+        if DEBUG:
+            print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
+                                                 rx_mode, _mem.rx_tone)
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
@@ -267,21 +331,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
-        def set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2800
-            if pol == "R":
-                val += 0xA000
-            return val
-
-        if mem.tmode == "DTCS":
-            _mem.tx_tone = set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            _mem.rx_tone = set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode:
-            _mem.tx_tone = int(mem.rtone * 10)
-            _mem.rx_tone = mem.tmode == "TSQL" and _mem.tx_tone or 0xFFFF
-        else:
-            _mem.rx_tone = 0xFFFF
-            _mem.tx_tone = 0xFFFF
+        self.set_tone(mem, _mem)
 
         if mem.power:
             _mem.power_high = not POWER_LEVELS.index(mem.power)
