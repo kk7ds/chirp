@@ -311,6 +311,10 @@ class TestCaseBruteForce(TestCase):
             return
 
         m.tmode = "Cross"
+        # No fair asking a radio to detect two identical tones as Cross instead
+        # of TSQL
+        m.rtone = 100.0
+        m.ctone = 107.2
         for cross_mode in rf.valid_cross_modes:
             m.cross_mode = cross_mode
             self.set_and_compare(m)
