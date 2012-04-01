@@ -122,19 +122,19 @@ class FT857Radio(ft817.FT817Radio):
     }
 
     CROSS_MODES = {
-        0x08 : "DCS->Off",
-        0x06 : "Tone->DCS",
-        0x09 : "DCS->CTCSS",
-        0x01 : "Off->Tone",
-        0x02 : "Off->DCS",
+        0x08 : "DTCS->",
+        0x06 : "Tone->DTCS",
+        0x09 : "DTCS->Tone",
+        0x01 : "->Tone",
+        0x02 : "->DTCS",
     }
 
     CROSS_MODES_REV = {
-        "DCS->Off"   : 0x08,
-        "Tone->DCS"  : 0x06,
-        "DCS->CTCSS" : 0x09,
-        "Off->Tone"  : 0x01,
-        "Off->DCS"   : 0x02,
+        "DTCS->"   : 0x08,
+        "Tone->DTCS"  : 0x06,
+        "DTCS->Tone" : 0x09,
+        "->Tone"  : 0x01,
+        "->DTCS"   : 0x02,
     }
 
     _memsize = 7341
