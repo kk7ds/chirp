@@ -52,12 +52,12 @@ DTCS_CODES = [
 DTCS_EXTRA_CODES = [ 17, ]
 
 CROSS_MODES = [
-    "DCS->Off",
-    "Tone->DCS",
-    "DCS->CTCSS",
-    "Tone->CTCSS",
-    "Off->Tone",
-    "Off->DCS",
+    "Tone->Tone",
+    "Tone->DTCS",
+    "DTCS->Tone",
+    "DTCS->",
+    "->Tone",
+    "->DTCS",
 ]
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR"]
@@ -204,7 +204,7 @@ class Memory:
     ctone = 88.5
     dtcs = 23
     tmode = ""
-    cross_mode = "DCS->Off"
+    cross_mode = "Tone->Tone"
     dtcs_polarity = "NN"
     skip = ""
     power = None
@@ -229,7 +229,7 @@ class Memory:
         self.ctone = 88.5                 
         self.dtcs = 23                    
         self.tmode = ""                   
-        self.cross_mode = "DCS->Off"      
+        self.cross_mode = "Tone->Tone"      
         self.dtcs_polarity = "NN"         
         self.skip = ""                    
         self.power = None                 

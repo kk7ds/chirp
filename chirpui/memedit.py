@@ -88,7 +88,7 @@ class MemoryEditor(common.Editor):
         _("ToneSql")   : 88.5,
         _("DTCS Code") : 23,
         _("DTCS Pol")  : "NN",
-        _("Cross Mode"): "DCS->Off",
+        _("Cross Mode"): "Tone->Tone",
         _("Duplex")    : "",
         _("Offset")    : 0,
         _("Mode")      : "FM",
