@@ -62,7 +62,7 @@ def do_upload(radio):
         serial.write(radio._mmap[i])
 
 # Uncomment this to actually register this radio in CHIRP
-@directory.register
+# @directory.register
 class TemplateRadio(chirp_common.CloneModeRadio):
     VENDOR = "Acme"    # Replace this with your vendor
     MODEL = "Template" # Replace this with your model
