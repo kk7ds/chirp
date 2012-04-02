@@ -932,20 +932,41 @@ class UV3RRadio(KGUVD1PRadio):
             mem.mode = "NFM"
 
         dtcspol = (int(_mem.dtcsinvt) << 1) + _mem.dtcsinvr
+        mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
 
-        if _mem.txtone == 0 or _mem.txtone == 0xFF:
-            mem.tmode = ""
+        if _mem.txtone in [0, 0xFF]:
+            txmode = ""
         elif _mem.txtone < 0x33:
             mem.rtone = chirp_common.TONES[_mem.txtone - 1]
-            mem.tmode = _mem.txtone == _mem.rxtone and "TSQL" or "Tone"
+            txmode = "Tone"
         elif _mem.txtone >= 0x33:
-            mem.dtcs = chirp_common.DTCS_CODES[_mem.txtone - 0x33]
+            tcode = chirp_common.DTCS_CODES[_mem.txtone - 0x33]
+            mem.dtcs = tcode
+            txmode = "DTCS"
+        else:
+            print "Bug: tx_mode is %02x" % _mem.txtone
+
+        if _mem.rxtone in [0, 0xFF]:
+            rxmode = ""
+        elif _mem.rxtone < 0x33:
+            mem.ctone = chirp_common.TONES[_mem.rxtone - 1]
+            rxmode = "Tone"
+        elif _mem.rxtone >= 0x33:
+            rcode = chirp_common.DTCS_CODES[_mem.rxtone - 0x33]
+            mem.dtcs = rcode
+            rxmode = "DTCS"
+        else:
+            print "Bug: rx_mode is %02x" % _mem.rxtone
+
+        if txmode == "Tone" and not rxmode:
+            mem.tmode = "Tone"
+        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
+            mem.tmode = "TSQL"
+        elif txmode == rxmode and txmode == "DTCS":
             mem.tmode = "DTCS"
-            mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
-        elif _mem.rxtone >= 0x33 and _mem.rxtone != 0xFF:
-            mem.dtcs = chirp_common.DTCS_CODES[_mem.rxtone - 0x33]
-            mem.tmode = "DTCS"
-            mem.dtcs_polarity = UV3R_DTCS_POL[dtcspol]
+        elif rxmode or txmode:
+            mem.tmode = "Cross"
+            mem.cross_mode = "%s->%s" % (txmode, rxmode)
 
         return mem
 
@@ -969,11 +990,12 @@ class UV3RRadio(KGUVD1PRadio):
         _mem.ishighpower = mem.power == UV3R_POWER_LEVELS[0]
         _mem.iswide = mem.mode == "FM"
 
+        _mem.dtcsinvt = mem.dtcs_polarity[0] == "R"
+        _mem.dtcsinvr = mem.dtcs_polarity[1] == "R"
+
         if mem.tmode == "DTCS":
             _mem.rxtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 0x33
             _mem.txtone = _mem.rxtone
-            _mem.dtcsinvt = mem.dtcs_polarity[0] == "R"
-            _mem.dtcsinvr = mem.dtcs_polarity[1] == "R"
         elif mem.tmode:
             _mem.txtone = chirp_common.TONES.index(mem.rtone) + 1
             _mem.rxtone = mem.tmode == "TSQL" and _mem.txtone or 0
