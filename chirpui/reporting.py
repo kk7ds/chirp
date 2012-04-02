@@ -36,6 +36,7 @@ ENABLED = True
 DEBUG = os.getenv("CHIRP_DEBUG") == "y"
 THREAD_SEM = threading.Semaphore(10) # Maximum number of outstanding threads
 LAST = 0
+LAST_TYPE = None
 
 try:
     # Don't let failure to import any of these modules cause trouble
@@ -94,6 +95,19 @@ def _report_exception(stack):
     # If the server returns zero, it wants us to shut up
     return id != 0
 
+def _report_misc_error(module, data):
+    global ENABLED
+
+    debug("Reporting misc error with %s" % module)
+
+    proxy = xmlrpclib.ServerProxy(REPORT_URL)
+    id = proxy.report_misc_error(CHIRP_VERSION,
+                                 platform.get_platform().os_version_string(),
+                                 module, data)
+
+    # If the server returns zero, it wants us to shut up
+    return id != 0
+
 class ReportThread(threading.Thread):
     def __init__(self, func, *args):
         threading.Thread.__init__(self)
@@ -123,6 +137,7 @@ class ReportThread(threading.Thread):
 
 def dispatch_thread(func, *args):
     global LAST
+    global LAST_TYPE
 
     # If reporting is disabled or failing, bail
     if not should_report():
@@ -131,10 +146,12 @@ def dispatch_thread(func, *args):
 
     # If the time between now and the last report is less than 5 seconds, bail
     delta = time.time() - LAST
-    LAST = time.time()
-    if delta < 5:
+    if delta < 5 and func == LAST_TYPE:
         debug("Throttling...")
         return
+
+    LAST = time.time()
+    LAST_TYPE = func
 
     # If there are already too many threads running, bail
     if not THREAD_SEM.acquire(False):
@@ -149,3 +166,6 @@ def report_model_usage(model, direction, success):
 
 def report_exception(stack):
     dispatch_thread(_report_exception, stack)
+
+def report_misc_error(module, data):
+    dispatch_thread(_report_misc_error, module, data)

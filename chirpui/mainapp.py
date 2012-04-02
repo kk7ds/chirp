@@ -786,6 +786,18 @@ If you think that it is valid, you can select a radio model below to force an op
             self.window.set_cursor(None)
             return
 
+        try:
+            # Validate CSV
+            from chirp import generic_csv
+            r = generic_csv.CSVRadio(filename)
+            if r.errors:
+                reporting.report_misc_error("repeaterbook",
+                                            ("query=%s\n" % query) +
+                                            ("\n") +
+                                            ("\n".join(r.errors)))
+        except Exception, e:
+            common.log_exception()
+
         class RBRadio(chirp_common.Radio):
             VENDOR = "RepeaterBook"
             MODEL = ""
