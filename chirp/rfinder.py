@@ -177,6 +177,10 @@ class RFinderParser:
         data = f.read()
         f.close()
 
+        match = re.match("^/#SERVERMSG#/(.*)/#ENDMSG#/", data)
+        if match:
+            raise Exception(match.groups()[0])
+
         return data
 
     def parse_line(self, line):
