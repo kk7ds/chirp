@@ -891,7 +891,7 @@ class UV3RRadio(KGUVD1PRadio):
         rf.valid_bands = [(136000000, 174000000), (400000000, 470000000)]
         rf.valid_skips = []
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.has_ctone = False
+        rf.has_ctone = True
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.has_name = False
