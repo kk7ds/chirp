@@ -18,6 +18,7 @@ import tempfile
 import urllib
 from glob import glob
 import shutil
+import time
 
 import gtk
 import gobject
@@ -1305,6 +1306,33 @@ If you think that it is valid, you can select a radio model below to force an op
         else:
             print "Icon %s not found" % path
 
+    def _updates(self, version):
+        if not version:
+            return
+
+        if version == CHIRP_VERSION:
+            return
+
+        print "Server reports version %s is available" % version
+
+        # Report new updates every seven days
+        intv = 3600 * 24 * 7
+
+        if CONF.is_defined("last_update_check", "state") and \
+             (time.time() - CONF.get_int("last_update_check", "state")) < intv:
+            return
+
+        CONF.set_int("last_update_check", int(time.time()), "state")
+        d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=self,
+                              type=gtk.MESSAGE_INFO)
+        d.set_property("text",
+                       _("A new version of CHIRP is available: " +
+                         "{ver}. ".format(ver=version) +
+                         "It is recommended that you upgrade, so " +
+                         "go to http://chirp.danplanet.com soon!"))
+        d.run()
+        d.destroy()
+
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
@@ -1373,3 +1401,9 @@ If you think that it is valid, you can select a radio model below to force an op
         self.update_recent_files()
         self.update_stock_configs()
         self.setup_extra_hotkeys()
+
+        def updates_callback(ver):
+            gobject.idle_add(self._updates, ver)
+
+        if not CONF.get_bool("skip_update_check", "state"):
+            reporting.check_for_updates(updates_callback)
