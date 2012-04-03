@@ -108,6 +108,16 @@ def _report_misc_error(module, data):
     # If the server returns zero, it wants us to shut up
     return id != 0
 
+def _check_for_updates(callback):
+    debug("Checking for updates")
+    proxy = xmlrpclib.ServerProxy(REPORT_URL)
+    ver = proxy.check_for_updates(CHIRP_VERSION,
+                                  platform.get_platform().os_version_string())
+
+    debug("Server reports version %s is latest" % ver)
+    callback(ver)
+    return True
+
 class ReportThread(threading.Thread):
     def __init__(self, func, *args):
         threading.Thread.__init__(self)
@@ -169,3 +179,7 @@ def report_exception(stack):
 
 def report_misc_error(module, data):
     dispatch_thread(_report_misc_error, module, data)
+
+# Calls callback with the latest version
+def check_for_updates(callback):
+    dispatch_thread(_check_for_updates, callback)
