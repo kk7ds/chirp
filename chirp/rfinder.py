@@ -203,7 +203,7 @@ class RFinderParser:
         if vals["OFFSETFREQ"]:
             mem.offset = chirp_common.parse_freq(vals["OFFSETFREQ"])
 
-        if vals["PL"] and vals["PL"] != "0":
+        if vals["PL"] and float(vals["PL"]) != 0:
             mem.rtone = float(vals["PL"])
             mem.tmode = "Tone"
         elif vals["DCS"] and vals["DCS"] != "0":
