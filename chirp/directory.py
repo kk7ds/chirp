@@ -85,15 +85,18 @@ def get_radio_by_image(image_file):
         rf.set_params(float(lat), float(lon), email, passwd)
         return rf
     
-    if icf.is_icf_file(image_file):
+    if os.path.exists(image_file) and icf.is_icf_file(image_file):
         tempf = tempfile.mktemp()
         icf_to_image(image_file, tempf)
         print "Auto-converted %s -> %s" % (image_file, tempf)
         image_file = tempf
 
-    f = file(image_file, "rb")
-    filedata = f.read()
-    f.close()
+    if os.path.exists(image_file):
+        f = file(image_file, "rb")
+        filedata = f.read()
+        f.close()
+    else:
+        filedata = ""
 
     for radio in DRV_TO_RADIO.values():
         if not issubclass(radio, chirp_common.CloneModeRadio):
