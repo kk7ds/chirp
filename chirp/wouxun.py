@@ -885,13 +885,16 @@ class UV3RRadio(KGUVD1PRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = UV3R_POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (400000000, 470000000)]
         rf.valid_skips = []
         rf.valid_duplexes = ["", "-", "+", "split"]
+        rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
+                                "->Tone", "->DTCS"]
         rf.has_ctone = True
+        rf.has_cross = True
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.has_name = False
@@ -970,6 +973,18 @@ class UV3RRadio(KGUVD1PRadio):
 
         return mem
 
+    def _set_tone(self, _mem, which, value, mode):
+        if mode == "Tone":
+            val = chirp_common.TONES.index(value) + 1
+        elif mode == "DTCS":
+            val = chirp_common.DTCS_CODES.index(value) + 0x33
+        elif mode == "":
+            val = 0
+        else:
+            raise errors.RadioError("Internal error: tmode %s" % mode)
+
+        setattr(_mem, which, val)
+
     def _set_memory(self, mem, _mem):
         if mem.empty:
             _mem.set_raw("\xff" * 16)
@@ -993,15 +1008,31 @@ class UV3RRadio(KGUVD1PRadio):
         _mem.dtcsinvt = mem.dtcs_polarity[0] == "R"
         _mem.dtcsinvr = mem.dtcs_polarity[1] == "R"
 
+        rxtone = txtone = 0
+        rxmode = txmode = ""
+
         if mem.tmode == "DTCS":
-            _mem.rxtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 0x33
-            _mem.txtone = _mem.rxtone
-        elif mem.tmode:
-            _mem.txtone = chirp_common.TONES.index(mem.rtone) + 1
-            _mem.rxtone = mem.tmode == "TSQL" and _mem.txtone or 0
-        else:
-            _mem.txtone = 0
-            _mem.rxtone = 0
+            rxmode = txmode = "DTCS"
+            rxtone = txtone = mem.dtcs
+        elif mem.tmode and mem.tmode != "Cross":
+            rxtone = txtone = mem.tmode == "Tone" and mem.rtone or mem.ctone
+            txmode = "Tone"
+            rxmode = mem.tmode == "TSQL" and "Tone" or ""
+        elif mem.tmode == "Cross":
+            txmode, rxmode = mem.cross_mode.split("->", 1)
+
+            if txmode == "DTCS":
+                txtone = mem.dtcs
+            elif txmode == "Tone":
+                txtone = mem.rtone
+
+            if rxmode == "DTCS":
+                rxtone = mem.dtcs
+            elif rxmode == "Tone":
+                rxtone = mem.ctone
+
+        self._set_tone(_mem, "txtone", txtone, txmode)
+        self._set_tone(_mem, "rxtone", rxtone, rxmode)
 
     def set_memory(self, mem):
         _tmem = self._memobj.tx_memory[mem.number - 1]
