@@ -114,6 +114,8 @@ class RadioStream:
 
             if not nolimit and len(self.data) > 128 and "\xFD" in self.data:
                 break # Give us a chance to do some status
+            if len(data) > 1024:
+                break # Avoid an endless loop of chewing garbage
 
         if not self.data:
             return []
@@ -227,7 +229,7 @@ def start_hispeed_clone(radio, cmd):
     radio.pipe.write(buf)
     radio.pipe.flush()
 
-def clone_from_radio(radio):
+def _clone_from_radio(radio):
     md = get_model_data(radio.pipe)
 
     if md[0:4] != radio.get_model():
@@ -276,6 +278,12 @@ def clone_from_radio(radio):
 
     return mmap
 
+def clone_from_radio(radio):
+    try:
+        return _clone_from_radio(radio)
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with the radio: %s" % e)
+
 def send_mem_chunk(radio, start, stop, bs=32):
     mmap = radio.get_mmap()
 
@@ -306,7 +314,7 @@ def send_mem_chunk(radio, start, stop, bs=32):
 
     return True
 
-def clone_to_radio(radio):
+def _clone_to_radio(radio):
     global save_pipe
 
     # Uncomment to save out a capture of what we actually write to the radio
@@ -349,6 +357,12 @@ def clone_to_radio(radio):
         raise errors.RadioError("Did not get clone result from radio")
 
     return result.payload[0] == '\x00'
+
+def clone_to_radio(radio):
+    try:
+        return _clone_to_radio(radio)
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 def convert_model(mod_str):
     data = ""

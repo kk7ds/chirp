@@ -16,9 +16,12 @@
 from chirp import chirp_common, icf, icx8x_ll, errors, directory
 
 def isUHF(pipe):
-    md = icf.get_model_data(pipe)
-    val = ord(md[20])
-    uhf = val & 0x10
+    try:
+        md = icf.get_model_data(pipe)
+        val = ord(md[20])
+        uhf = val & 0x10
+    except:
+        raise errors.RadioError("Unable to probe radio band")
 
     print "Radio is a %s82" % (uhf and "U" or "V")
 
