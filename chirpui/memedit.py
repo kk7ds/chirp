@@ -834,6 +834,7 @@ class MemoryEditor(common.Editor):
 
     def prefill(self):
         self.store.clear()
+        self._rows_in_store = 0
 
         lo = int(self.lo_limit_adj.get_value())
         hi = int(self.hi_limit_adj.get_value())
@@ -897,6 +898,7 @@ class MemoryEditor(common.Editor):
             iter = self.store.iter_next(iter)
 
         iter = self.store.append()
+        self._rows_in_store += 1
         self._set_memory(iter, memory)
 
     def clear_memory(self, number):
@@ -1226,6 +1228,14 @@ class MemoryEditor(common.Editor):
             mem_list = pickle.loads(text)
         except Exception:
             print "Paste failed to unpickle"
+            return
+
+        if (paths[0][0] + len(mem_list)) > self._rows_in_store:
+            common.show_error(_("Unable to paste {src} memories into "
+                                "{dst} rows. Increase the memory bounds "
+                                "or show empty memories.").format(\
+                    src=len(mem_list),
+                    dst=(self._rows_in_store - paths[0][0])))
             return
 
         for mem in pickle.loads(text):
