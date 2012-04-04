@@ -35,7 +35,12 @@ struct {
 
 #seekto 0x2C4A;
 struct {
-  u8 flag;
+  u8 nosubvfo:1,
+     unknown:3,
+     pskip:1,
+     skip:1,
+     used:1,
+     valid:1;
 } flag[900];
 
 #seekto 0x328A;
@@ -207,12 +212,14 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0xFEC9) ]
 
     def get_memory(self, number):
-        flag = self._memobj.flag[number-1].flag
+        flag = self._memobj.flag[number-1]
         _mem = self._memobj.memory[number-1]
 
         mem = chirp_common.Memory()
         mem.number = number
-        if (flag & 0x03) != 0x03:
+        if not flag.used:
+            mem.empty = True
+        if not flag.valid:
             mem.empty = True
             return mem
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
@@ -224,7 +231,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.power = POWER_LEVELS[3 - _mem.power]
-        mem.skip = SKIPS[((flag & 0x0C) >> 2)]
+        mem.skip = flag.pskip and "P" or flag.skip and "S" or ""
 
         for i in str(_mem.label):
             if i == "\xFF":
@@ -243,23 +250,26 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             bm.remove_memory_from_bank(mem, bank)
 
     def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number-1]
         flag = self._memobj.flag[mem.number-1]
-        was_empty = flag.flag == 0
+
+        if not mem.empty and not flag.valid:
+            self._wipe_memory(_mem)
+
+        if mem.empty and flag.valid and not flag.used:
+            flag.valid = False
+            return
+        flag.used = not mem.empty
+
         if mem.empty:
-            flag.flag = 0
-            self._wipe_memory_banks(mem)
             return
 
         if mem.freq < 30000000 or \
                 (mem.freq > 88000000 and mem.freq < 108000000) or \
                 mem.freq > 580000000:
-            flag.flag = 0x83 # Masked from VFO B
+            flag.nosubvfo = True  # Masked from VFO B
         else:
-            flag.flag = 0x03 # Available in both VFOs
-
-        _mem = self._memobj.memory[mem.number-1]
-        if was_empty:
-            self._wipe_memory(_mem)
+            flag.nosubvfo = False # Available in both VFOs
 
         _mem.freq = int(mem.freq / 1000)
         _mem.offset = int(mem.offset / 1000)
@@ -280,8 +290,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.charsetbits[0] = 0x00
         _mem.charsetbits[1] = 0x00
 
-        skipbits = SKIPS.index(mem.skip) << 2
-        flag.flag |= skipbits
+        flag.skip = mem.skip == "S"
+        flag.pskip = mem.skip == "P"
 
     def get_bank_model(self):
         return VX8BankModel(self)

@@ -204,13 +204,16 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag = self._memobj.flags[(number-1)/2]
 
         nibble = ((number-1) % 2) and "even" or "odd"
-        used = _flag["%s_masked" % nibble] and _flag["%s_valid" % nibble]
+        used = _flag["%s_masked" % nibble]
+        valid = _flag["%s_valid" % nibble]
         pskip = _flag["%s_pskip" % nibble]
         skip = _flag["%s_skip" % nibble]
 
         mem = chirp_common.Memory()
         mem.number = number
         if not used:
+            mem.empty = True
+        if not valid:
             mem.empty = True
             mem.power = POWER_LEVELS[0]
             return mem
@@ -249,16 +252,20 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
         nibble = ((mem.number-1) % 2) and "even" or "odd"
         
-        was_valid = int(_flag["%s_valid" % nibble])
+        valid = _flag["%s_valid" % nibble]
+        used = _flag["%s_masked" % nibble]
 
-        _flag["%s_masked" % nibble] = not mem.empty
-        _flag["%s_valid" % nibble] = not mem.empty
-        if mem.empty:
-            return
-
-        if not was_valid:
+        if not mem.empty and not valid:
             self._wipe_memory(_mem)
             self._wipe_memory_banks(mem)
+
+        if mem.empty and valid and not used:
+            _flag["%s_valid" % nibble] = False
+            return
+        _flag["%s_masked" % nibble] = not mem.empty
+
+        if mem.empty:
+            return
 
         _mem.freq = mem.freq / 1000
         _mem.offset = mem.offset / 1000

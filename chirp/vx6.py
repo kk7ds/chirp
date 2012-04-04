@@ -148,13 +148,17 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _flg = self._memobj.flags[(number-1)/2]
 
         nibble = ((number-1) % 2) and "even" or "odd"
-        used = _flg["%s_masked" % nibble] and _flg["%s_valid" % nibble]
+        used = _flg["%s_masked" % nibble]
+        valid = _flg["%s_valid" % nibble]
         pskip = _flg["%s_pskip" % nibble]
         skip = _flg["%s_skip" % nibble]
 
         mem = chirp_common.Memory()
         mem.number = number
+
         if not used:
+            mem.empty = True
+        if not valid:
             mem.empty = True
             mem.power = POWER_LEVELS[0]
             return mem
@@ -189,11 +193,14 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag = self._memobj.flags[(mem.number-1)/2]
 
         nibble = ((mem.number-1) % 2) and "even" or "odd"
-        
-        was_valid = int(_flag["%s_valid" % nibble])
+        used = _flag["%s_masked" % nibble]
+        valid = _flag["%s_valid" % nibble]
 
+        if mem.empty and valid and not used:
+            _flag["%s_valid" % nibble] = False
+            return
         _flag["%s_masked" % nibble] = not mem.empty
-        _flag["%s_valid" % nibble] = not mem.empty
+
         if mem.empty:
             return
 
