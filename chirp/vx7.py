@@ -290,7 +290,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         return msgs
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize
 
     def get_bank_model(self):

@@ -184,7 +184,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         return [ICW32ARadioVHF(self._mmap), ICW32ARadioUHF(self._mmap)]
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         if not len(filedata) == cls._memsize:
             return False
         return filedata[-16:] == "IcomCloneFormat3"

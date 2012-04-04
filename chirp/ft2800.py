@@ -265,5 +265,5 @@ class FT2800Radio(YaesuCloneModeRadio):
         _nam.name = mem.name.ljust(6)[:6]
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize

@@ -968,7 +968,7 @@ class CloneModeRadio(Radio):
         return self._mmap
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         """Given contents of a stored file (@filedata), return True if 
         this radio driver handles the represented model"""
 

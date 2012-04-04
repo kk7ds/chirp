@@ -183,7 +183,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
         clone_out(self)
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         return filedata[:5] == cls._model
 
     def _wipe_memory_banks(self, mem):

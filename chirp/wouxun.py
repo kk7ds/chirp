@@ -349,7 +349,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                 raise Exception("Character `%s' not supported")
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and filedata[0x60:0x64] != "2009":
             return True
@@ -496,7 +496,7 @@ class Puxing777Radio(KGUVD1PRadio):
         self._memobj = bitwise.parse(puxing_mem_format, self._mmap)
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         if len(filedata) > 0x080B and \
                 ord(filedata[0x080B]) != PUXING_MODELS[777]:
             return False
@@ -711,7 +711,7 @@ class Puxing2RRadio(KGUVD1PRadio):
         return rf
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         return (len(filedata) == cls._memsize) and \
             filedata[-16:] != "IcomCloneFormat3"
 
@@ -1042,7 +1042,7 @@ class UV3RRadio(KGUVD1PRadio):
         self._set_memory(mem, _rmem)
 
     @classmethod
-    def match_model(cls, filedata):
+    def match_model(cls, filedata, filename):
         return len(filedata) == 3648
 
     def get_raw_memory(self, number):
