@@ -24,7 +24,7 @@ sys.path.insert(0, "../")
 
 from chirp import CHIRP_VERSION
 from chirp import *
-from chirp import chirp_common, directory, generic_csv, import_logic
+from chirp import chirp_common, directory, generic_csv, import_logic, memmap
 from chirp import errors
 
 TESTS = {}
@@ -636,22 +636,128 @@ class TestCaseDetect(TestCase):
 
 TESTS["Detect"] = TestCaseDetect
 
+class TestCaseClone(TestCase):
+    class SerialNone:
+        def read(self, size):
+            return ""
+        def write(self, data):
+            pass
+        def setTimeout(self, timeout):
+            pass
+        def setParity(self, parity):
+            pass
+        def __str__(self):
+            return self.__class__.__name__.replace("Serial","")
+
+    class SerialError(SerialNone):
+        def read(self, size):
+            raise Exception("Foo")
+        def write(self, data):
+            raise Exception("Bar")
+
+    class SerialGarbage(SerialNone):
+        def read(self, size):
+            buf = ""
+            for i in range(0, size):
+                buf += chr(i % 256)
+            return buf
+
+    class SerialShortGarbage(SerialNone):
+        def read(self, size):
+            return "\x00" * (size - 1)
+
+    def __str__(self):
+        return "Clone"
+
+    def _run(self, serial):
+        error = None
+        live = isinstance(self._wrapper._dst, chirp_common.LiveRadio)
+        try:
+            radio = self._wrapper._dst.__class__(serial)
+        except Exception, e:
+            error = e
+
+        radio.status_fn = lambda s: True
+
+        if not live:
+            if error is not None:
+                raise TestFailedError("Clone radio tried to read from " +
+                                      "serial on init")
+        else:
+            if not isinstance(error, errors.RadioError):
+                raise TestFailedError("Live radio didn't notice serial " +
+                                      "was dead on init")
+            return [] # Nothing more to test on an error'd live radio
+
+        error = None
+        try:
+            radio.sync_in()
+        except Exception, e:
+            error = e
+
+        if error is None:
+            raise TestFailedError("Radio did not raise exception " +
+                                  "with %s data" % serial,
+                                  "On sync_in()")
+        elif not isinstance(error, errors.RadioError):
+            raise TestFailedError("Radio did not raise RadioError " +
+                                  "with %s data" % serial,
+                                  "sync_in() Got: %s (%s)\n%s" % (\
+                    error.__class__.__name__, error, get_tb()))
+
+        radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
+
+        error = None
+        try:
+            radio.sync_out()
+        except Exception, e:
+            error = e
+
+        if error is None:
+            raise TestFailedError("Radio did not raise exception " +
+                                  "with %s data" % serial,
+                                  "On sync_out()")
+        elif not isinstance(error, errors.RadioError):
+            raise TestFailedError("Radio did not raise RadioError " + 
+                                  "with %s data" % serial,
+                                  "sync_out(): Got: %s (%s)" % (\
+                    error.__class__.__name__, error))
+
+        return []
+
+    def run(self):
+        self._run(self.SerialError())
+        self._run(self.SerialNone())
+        self._run(self.SerialGarbage())
+        self._run(self.SerialShortGarbage())
+        return []
+
+TESTS["Clone"] = TestCaseClone
+
 class TestOutput:
+    def __init__(self, output=None):
+        if not output:
+            output = sys.stdout
+        self._out = output
     def prepare(self):
         pass
 
     def cleanup(self):
         pass
 
+    def _print(self, string):
+        print >>self._out, string
+
     def report(self, rclass, tc, msg, e):
-        print "%9s %-13s %-10s %s %s" % (rclass.VENDOR,
-                                           ("%s %s" % (rclass.MODEL,
-                                                       rclass.VARIANT)),
-                                           tc,
-                                           msg, e)
+        self._print("%9s %-13s %-10s %s %s" % (rclass.VENDOR,
+                                               ("%s %s" % (rclass.MODEL,
+                                                           rclass.VARIANT)),
+                                               tc,
+                                               msg, e))
 
 class TestOutputANSI(TestOutput):
-    def __init__(self):
+    def __init__(self, output=None):
+        TestOutput.__init__(self, output)
         self.__counts = {
             "PASSED"  : 0,
             "FAILED"  : 0,
@@ -679,11 +785,11 @@ class TestOutputANSI(TestOutput):
         TestOutput.report(self, rclass, tc, msg, e)
 
     def cleanup(self):
-        print "-" * 70
-        print "Results:"
-        print "  %-7s: %i" % ("TOTAL", self.__total)
+        self._print("-" * 70)
+        self._print("Results:")
+        self._print("  %-7s: %i" % ("TOTAL", self.__total))
         for t,c in self.__counts.items():
-            print "  %-7s: %i" % (t, c)
+            self._print("  %-7s: %i" % (t, c))
 
 class TestOutputHTML(TestOutput):
     def __init__(self, filename):
@@ -787,10 +893,11 @@ class TestRunner:
         if os.path.exists(fn):
             os.remove(fn)
 
-    def _run_one(self, tw, rclass):
+    def _run_one(self, rclass, parm):
         nfailed = 0
         for tcclass in self._test_list:
             nprinted = 0
+            tw = TestWrapper(rclass,parm)
             tc = tcclass(tw)
 
             self.nuke_log(rclass, tc)
@@ -843,7 +950,7 @@ class TestRunner:
                 failed += self.run_rclass_image(dev.__class__, image)
             return failed
         else:
-            return self._run_one(tw, rclass)
+            return self._run_one(rclass, image)
 
     def run_list(self, run_list):
         failed = 0
@@ -869,12 +976,10 @@ class TestRunner:
             devices = tw.do("get_sub_devices")
             failed = 0
             for device in devices:
-                tw = TestWrapper(device.__class__, pipe)
-                failed += self._run_one(tw, device.__class__)
+                failed += self._run_one(device.__class__, pipe)
             return failed
         else:
-            tw = TestWrapper(rclass, pipe)
-            return self._run_one(tw, rclass)
+            return self._run_one(rclass, pipe)
 
 if __name__ == "__main__":
     import sys
@@ -904,7 +1009,9 @@ Available tests:
     if options.html:
         test_out = TestOutputHTML(options.html)
     else:
-        test_out = TestOutputANSI()        
+        stdout = sys.stdout
+        sys.stdout = file("logs/verbose", "w")
+        test_out = TestOutputANSI(stdout)
 
     test_out.prepare()
 
