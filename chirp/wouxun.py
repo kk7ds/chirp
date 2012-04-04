@@ -122,14 +122,24 @@ def do_upload(radio, start, end, blocksize):
             radio.status_fn(s)
 
 def wouxun_download(radio):
-    wouxun_identify(radio)
-    wouxun_start_transfer(radio)
-    return do_download(radio, 0x0000, 0x2000, 0x0040)
+    try:
+        wouxun_identify(radio)
+        wouxun_start_transfer(radio)
+        return do_download(radio, 0x0000, 0x2000, 0x0040)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def wouxun_upload(radio):
-    wouxun_identify(radio)
-    wouxun_start_transfer(radio)
-    return do_upload(radio, 0x0000, 0x2000, 0x0010)
+    try:
+        wouxun_identify(radio)
+        wouxun_start_transfer(radio)
+        return do_upload(radio, 0x0000, 0x2000, 0x0010)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
     list("?+ ")
@@ -385,12 +395,22 @@ def puxing_prep(radio):
     raise e
 
 def puxing_download(radio):
-    puxing_prep(radio)
-    return do_download(radio, 0x0000, 0x0C60, 0x0008)
+    try:
+        puxing_prep(radio)
+        return do_download(radio, 0x0000, 0x0C60, 0x0008)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def puxing_upload(radio):
-    puxing_prep(radio)
-    return do_upload(radio, 0x0000, 0x0C40, 0x0008)
+    try:
+        puxing_prep(radio)
+        return do_upload(radio, 0x0000, 0x0C40, 0x0008)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 puxing_mem_format = """
 #seekto 0x0000;
@@ -657,12 +677,22 @@ def puxing_2r_prep(radio):
     print "Radio ident: %s (%i)" % (repr(ident), len(ident))
 
 def puxing_2r_download(radio):
-    puxing_2r_prep(radio)
-    return do_download(radio, 0x0000, 0x0FE0, 0x0010)
+    try:
+        puxing_2r_prep(radio)
+        return do_download(radio, 0x0000, 0x0FE0, 0x0010)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def puxing_2r_upload(radio):
-    puxing_2r_prep(radio)
-    return do_upload(radio, 0x0000, 0x0FE0, 0x0010)
+    try:
+        puxing_2r_prep(radio)
+        return do_upload(radio, 0x0000, 0x0FE0, 0x0010)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 puxing_2r_mem_format = """
 #seekto 0x0010;
@@ -824,12 +854,22 @@ def uv3r_prep(radio):
     raise e
 
 def uv3r_download(radio):
-    uv3r_prep(radio)
-    return do_download(radio, 0x0000, 0x0E40, 0x0010)
+    try:
+        uv3r_prep(radio)
+        return do_download(radio, 0x0000, 0x0E40, 0x0010)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def uv3r_upload(radio):
-    uv3r_prep(radio)
-    return do_upload(radio, 0x0000, 0x0E40, 0x0010)
+    try:
+        uv3r_prep(radio)
+        return do_upload(radio, 0x0000, 0x0E40, 0x0010)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 uv3r_mem_format = """
 #seekto 0x0010;
