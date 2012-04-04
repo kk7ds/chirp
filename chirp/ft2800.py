@@ -17,7 +17,7 @@ import time
 import struct
 import os
 
-from chirp import util, memmap, chirp_common, bitwise, directory
+from chirp import util, memmap, chirp_common, bitwise, directory, errors
 from chirp.yaesu_clone import YaesuCloneModeRadio
 
 DEBUG = os.getenv("CHIRP_DEBUG") and True or False
@@ -86,7 +86,7 @@ def download(radio):
     return memmap.MemoryMap(data)
 
 def upload(radio):
-    while True:
+    for i in range(0, 10):
         data = radio.pipe.read(256)
         if not data:
             break
@@ -195,7 +195,12 @@ class FT2800Radio(YaesuCloneModeRadio):
     def sync_in(self):
         self.pipe.setParity("E")
         start = time.time()
-        self._mmap = download(self)
+        try:
+            self._mmap = download(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         print "Downloaded in %.2f sec" % (time.time() - start)
         self.process_mmap()
 
@@ -203,7 +208,12 @@ class FT2800Radio(YaesuCloneModeRadio):
         self.pipe.setTimeout(1)
         self.pipe.setParity("E")
         start = time.time()
-        upload(self)
+        try:
+            upload(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         print "Uploaded in %.2f sec" % (time.time() - start)
 
     def process_mmap(self):

@@ -239,11 +239,21 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     LAST_VFOA_INDEX = -35
 
     def sync_in(self):
-        self._mmap = clone_in(self)
+        try:
+            self._mmap = clone_in(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
     def sync_out(self):
-        clone_out(self)
+        try:
+            clone_out(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)

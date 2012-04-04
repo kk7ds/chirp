@@ -15,12 +15,15 @@
 
 import time
 from chirp import chirp_common, yaesu_clone, memmap, bitwise, directory
+from chirp import errors
 
 ACK = "\x06"
 
 def send(pipe, data):
     pipe.write(data)
-    pipe.read(len(data))
+    echo = pipe.read(len(data))
+    if echo != data:
+        raise errors.RadioError("Error reading echo (Bad cable?)")
 
 def download(radio):
     data = ""
@@ -161,12 +164,22 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x6FC7) ]
 
     def sync_in(self):
-        self._mmap = download(self)
+        try:
+            self._mmap = download(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
     def sync_out(self):
         self.update_checksums()
-        upload(self)
+        try:
+            upload(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)

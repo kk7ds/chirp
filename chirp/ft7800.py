@@ -94,7 +94,9 @@ def send(s, data):
     for i in data:
         s.write(i)
         time.sleep(0.002)
-    s.read(len(data))
+    echo = s.read(len(data))
+    if echo != data:
+        raise errors.RadioError("Error reading echo (Bad cable?)")
 
 def download(radio):
     data = ""
@@ -178,7 +180,12 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def sync_in(self):
         t = time.time()
-        self._mmap = download(self)
+        try:
+            self._mmap = download(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         print "Download finished in %i seconds" % (time.time() - t)
         self.check_checksums()
         self.process_mmap()
@@ -189,7 +196,12 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     def sync_out(self):
         self.update_checksums()
         t = time.time()
-        upload(self)
+        try:
+            upload(self)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         print "Upload finished in %i seconds" % (time.time() - t)
 
     def get_raw_memory(self, number):
