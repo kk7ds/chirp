@@ -239,3 +239,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
         return ",".join(chirp_common.Memory.CSV_FORMAT) + \
             os.linesep + \
             ",".join(self.memories[number].to_csv())
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return filename.lower().endswith(".csv")
