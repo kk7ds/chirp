@@ -749,9 +749,9 @@ class TestOutput:
         print >>self._out, string
 
     def report(self, rclass, tc, msg, e):
+        name = ("%s %s" % (rclass.MODEL, rclass.VARIANT))[:13]
         self._print("%9s %-13s %-10s %s %s" % (rclass.VENDOR,
-                                               ("%s %s" % (rclass.MODEL,
-                                                           rclass.VARIANT)),
+                                               name,
                                                tc,
                                                msg, e))
 
@@ -953,8 +953,10 @@ class TestRunner:
             return self._run_one(rclass, image)
 
     def run_list(self, run_list):
+        def _key(pair):
+            return pair[0].VENDOR + pair[0].MODEL + pair[0].VARIANT
         failed = 0
-        for rclass, image in sorted(run_list):
+        for rclass, image in sorted(run_list, key=_key):
             failed += self.run_rclass_image(rclass, image)
         return failed
 
