@@ -63,7 +63,9 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
 
     def _send(self, data):
         self.pipe.write(data)
-        self.pipe.read(len(data))
+        echo = self.pipe.read(len(data))
+        if echo != data:
+            raise errors.RadioError("Error reading echo (Bad cable?)")
 
     def _download_chunk(self, addr):
         if addr % 16:
@@ -149,11 +151,21 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
         self._memobj = bitwise.parse(DRx35_mem_format, self._mmap)
 
     def sync_in(self):
-        self._mmap = self._download(self._memsize)
+        try:
+            self._mmap = self._download(self._memsize)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
     def sync_out(self):
-        self._upload(self._memsize)
+        try:
+            self._upload(self._memsize)
+        except errors.RadioError:
+            raise
+        except Exception, e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
