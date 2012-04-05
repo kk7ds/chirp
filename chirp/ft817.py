@@ -366,10 +366,13 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     def _get_normal(self, number):
         _mem = self._memobj.memory[number-1]
         used = (self._memobj.visible[(number-1)/8] >> (number-1)%8) & 0x01
+        valid = (self._memobj.filled[(number-1)/8] >> (number-1)%8) & 0x01
 
         mem = chirp_common.Memory()
         mem.number = number
         if not used:
+            mem.empty = True
+        if not valid:
             mem.empty = True
             return mem
 
@@ -377,13 +380,17 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _set_normal(self, mem):
         _mem = self._memobj.memory[mem.number-1]
+        wasused = (self._memobj.visible[(mem.number-1)/8] >> (mem.number-1)%8) & 0x01
+        wasvalid = (self._memobj.filled[(mem.number-1)/8] >> (mem.number-1)%8) & 0x01
+
         if mem.empty:
             if mem.number == 1:
                 # as Dan says "yaesus are not good about that :("
 		# if you ulpoad an empty image you can brick your radio
                 raise Exception("Sorry, can't delete first memory") 
+            if wasvalid and not wasused:
+                self._memobj.filled[(mem.number-1)/8] &= ~ (1 << (mem.number-1)%8)
             self._memobj.visible[(mem.number-1)/8] &= ~ (1 << (mem.number-1)%8)
-            self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
             return
         
         self._memobj.visible[(mem.number-1)/8] |= 1 << (mem.number-1)%8
