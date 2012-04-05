@@ -242,4 +242,4 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filename.lower().endswith(".csv")
+        return filename.lower().endswith("." + cls.FILE_EXTENSION)
