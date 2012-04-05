@@ -145,7 +145,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS"]
         rf.valid_power_levels = UV5R_POWER_LEVELS
         rf.valid_modes = ["FM", "NFM"]
-        rf.valid_bands = [(136000000, 174000000), (420000000, 450000000)]
+        rf.valid_bands = [(136000000, 174000000), (400000000, 480000000)]
         rf.memory_bounds = (0, 127)
         return rf
 
