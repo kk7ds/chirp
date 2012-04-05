@@ -166,7 +166,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
 
-            self.__grow(mem.number)
+            self._grow(mem.number)
             self.memories[mem.number] = mem
             good += 1
 
@@ -212,7 +212,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         except:
             raise errors.InvalidMemoryLocation("No such memory %s" % number)
 
-    def __grow(self, target):
+    def _grow(self, target):
         delta = target - len(self.memories)
         if delta < 0:
             return
@@ -226,7 +226,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             self.memories.append(m)
 
     def set_memory(self, newmem):
-        self.__grow(newmem.number)
+        self._grow(newmem.number)
         self.memories[newmem.number] = newmem
 
     def erase_memory(self, number):
