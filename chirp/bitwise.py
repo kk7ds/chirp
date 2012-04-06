@@ -213,11 +213,11 @@ class arrayDataElement(DataElement):
 
     def set_value(self, value):
         if isinstance(self.__items[0], bbcdDataElement):
-            self.__set_value_bbcd(value)
+            self.__set_value_bbcd(int(value))
         elif isinstance(self.__items[0], lbcdDataElement):
-            self.__set_value_lbcd(value)
+            self.__set_value_lbcd(int(value))
         elif isinstance(self.__items[0], charDataElement):
-            self.__set_value_char(value)
+            self.__set_value_char(str(value))
         elif len(value) != len(self.__items):
             raise ValueError("Array cardinality mismatch")
         else:
@@ -365,7 +365,7 @@ class u8DataElement(intDataElement):
         return ord(data)
 
     def set_value(self, value):
-        self._data[self._offset] = (value & 0xFF)
+        self._data[self._offset] = (int(value) & 0xFF)
 
 class u16DataElement(intDataElement):
     _size = 2
@@ -376,7 +376,7 @@ class u16DataElement(intDataElement):
 
     def set_value(self, value):
         self._data[self._offset] = struct.pack(self._endianess + "H",
-                                               value & 0xFFFF)
+                                               int(value) & 0xFFFF)
 
 class ul16DataElement(u16DataElement):
     _endianess = "<"
@@ -388,7 +388,8 @@ class u24DataElement(intDataElement):
         return struct.unpack(">I", "\x00" + data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(">I", value & 0xFFFFFFFF)[1:]
+        self._data[self._offset] = struct.pack(">I",
+                                               int(value) & 0xFFFFFFFF)[1:]
 
 class u32DataElement(intDataElement):
     _size = 4
@@ -399,7 +400,7 @@ class u32DataElement(intDataElement):
 
     def set_value(self, value):
         self._data[self._offset] = struct.pack(self._endianess + "I",
-                                               value & 0xFFFFFFFF)
+                                               int(value) & 0xFFFFFFFF)
 
 class ul32DataElement(u32DataElement):
     _endianess = "<"
@@ -417,7 +418,7 @@ class charDataElement(DataElement):
         return data
 
     def set_value(self, value):
-        self._data[self._offset] = value
+        self._data[self._offset] = str(value)
 
 class bcdDataElement(DataElement):
     def __int__(self):
@@ -425,10 +426,10 @@ class bcdDataElement(DataElement):
         return (tens * 10) + ones
 
     def set_bits(self, mask):
-        self._data[self._offset] = ord(self._data[self._offset]) | mask
+        self._data[self._offset] = ord(self._data[self._offset]) | int(mask)
 
     def clr_bits(self, mask):
-        self._data[self._offset] = ord(self._data[self._offset]) & ~mask
+        self._data[self._offset] = ord(self._data[self._offset]) & ~int(mask)
 
 class lbcdDataElement(bcdDataElement):
     _size = 1
@@ -484,7 +485,7 @@ class bitDataElement(intDataElement):
         #print "mask: %04x" % mask
         #print "valu: %04x" % value
 
-        value = ((value << (self._shift-self._nbits)) & mask) | data
+        value = ((int(value) << (self._shift-self._nbits)) & mask) | data
         self._subgen(self._data, self._offset).set_value(value)
         
     def size(self):

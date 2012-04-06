@@ -778,6 +778,12 @@ class Radio:
     def get_features(self):
         return RadioFeatures()
 
+    def get_settings(self):
+        return None
+
+    def set_settings(self, settings):
+        raise Exception("Not implemented")
+
     def _get_name_raw(*args):
         cls = args[-1]
         return "%s %s" % (cls.VENDOR, cls.MODEL)
