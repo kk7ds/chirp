@@ -175,7 +175,7 @@ if __name__ == "__main__":
                 print "Must specify a radio model"
                 sys.exit(1)
 	else:
-	    rclass = RADIOS[options.radio]
+	    rclass = directory.get_radio(options.radio)
 
 	if options.serial == "mmap":
 	    if options.mmap:
