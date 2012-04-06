@@ -904,27 +904,9 @@ class Radio:
 
         return msgs
 
-class CloneModeRadio(Radio):
-    """A clone-mode radio does a full memory dump in and out and we store
-    an image of the radio into an image file"""
-
-    _memsize = 0
-
+class FileBackedRadio(Radio):
+    """A file-backed radio stores its data in a file"""
     FILE_EXTENSION = "img"
-
-    def __init__(self, pipe):
-        self.errors = []
-        self._mmap = None
-
-        if isinstance(pipe, str):
-            self.pipe = None
-            self.load_mmap(pipe)
-        elif isinstance(pipe, memmap.MemoryMap):
-            self.pipe = None
-            self._mmap = pipe
-            self.process_mmap()
-        else:
-            Radio.__init__(self, pipe)
 
     def save(self, filename):
         self.save_mmap(filename)
@@ -953,19 +935,11 @@ class CloneModeRadio(Radio):
         except IOError,e:
             raise Exception("File Access Error")
 
-    def sync_in(self):
-        "Initiate a radio-to-PC clone operation"
-        pass
-
-    def sync_out(self):
-        "Initiate a PC-to-radio clone operation"
-        pass
+    def get_mmap(self):
+        return self._mmap
 
     def get_memsize(self):
         return self._memsize
-
-    def get_mmap(self):
-        return self._mmap
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -978,6 +952,35 @@ class CloneModeRadio(Radio):
         # make this determination to avoid model conflicts with
         # memories of the same size.
         return len(filedata) == cls._memsize
+
+
+class CloneModeRadio(FileBackedRadio):
+    """A clone-mode radio does a full memory dump in and out and we store
+    an image of the radio into an image file"""
+
+    _memsize = 0
+
+    def __init__(self, pipe):
+        self.errors = []
+        self._mmap = None
+
+        if isinstance(pipe, str):
+            self.pipe = None
+            self.load_mmap(pipe)
+        elif isinstance(pipe, memmap.MemoryMap):
+            self.pipe = None
+            self._mmap = pipe
+            self.process_mmap()
+        else:
+            Radio.__init__(self, pipe)
+
+    def sync_in(self):
+        "Initiate a radio-to-PC clone operation"
+        pass
+
+    def sync_out(self):
+        "Initiate a PC-to-radio clone operation"
+        pass
 
 class LiveRadio(Radio):
     pass

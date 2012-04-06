@@ -65,7 +65,8 @@ class CloneSettingsDialog(gtk.Dialog):
     def __make_vendor(self, model):
         vendors = {}
         for rclass in sorted(directory.DRV_TO_RADIO.values()):
-            if rclass.VENDOR == "Generic":
+            if not issubclass(rclass, chirp_common.CloneModeRadio) and \
+                    not issubclass(rclass, chirp_common.LiveRadio):
                 continue
 
             if not vendors.has_key(rclass.VENDOR):

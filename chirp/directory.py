@@ -99,7 +99,7 @@ def get_radio_by_image(image_file):
         filedata = ""
 
     for radio in DRV_TO_RADIO.values():
-        if not issubclass(radio, chirp_common.CloneModeRadio):
+        if not issubclass(radio, chirp_common.FileBackedRadio):
             continue
         if radio.match_model(filedata, image_file):
             return radio(image_file)

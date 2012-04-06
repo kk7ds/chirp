@@ -62,7 +62,7 @@ def default_banks():
     return banks
 
 @directory.register
-class XMLRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
+class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Generic"
     MODEL = "XML"
     FILE_EXTENSION = "chirp"

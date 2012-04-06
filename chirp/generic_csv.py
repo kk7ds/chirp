@@ -22,7 +22,7 @@ class OmittedHeaderError(Exception):
     pass
 
 @directory.register
-class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
+class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     VENDOR = "Generic"
     MODEL = "CSV"
     FILE_EXTENSION = "csv"
@@ -57,7 +57,7 @@ class CSVRadio(chirp_common.CloneModeRadio, chirp_common.IcomDstarSupport):
             self.memories.append(m)
 
     def __init__(self, pipe):
-        chirp_common.CloneModeRadio.__init__(self, None)
+        chirp_common.FileBackedRadio.__init__(self, None)
 
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
