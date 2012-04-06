@@ -134,6 +134,10 @@ class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     def erase_memory(self, number):
         xml_ll.del_memory(self.doc, number)
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return filename.lower().endswith("." + cls.FILE_EXTENSION)
+
 if __name__ == "__main__":
     r = XMLRadio("testmem.chirp")
 
