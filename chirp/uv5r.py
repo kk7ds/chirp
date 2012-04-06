@@ -52,6 +52,7 @@ def do_status(radio, block):
 
 def do_ident(radio):
     serial = radio.pipe
+    serial.setTimeout(1)
 
     serial.write("\x50\xBB\xFF\x01\x25\x98\x4D")
     ack = serial.read(1)
