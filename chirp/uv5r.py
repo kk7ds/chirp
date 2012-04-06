@@ -202,7 +202,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         dtcs_pol = ["N", "N"]
 
-        if _mem.txtone == 0:
+        if _mem.txtone in [0, 0xFFFF]:
             txmode = ""
         elif _mem.txtone >= 0x0258:
             txmode = "Tone"
@@ -218,7 +218,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         else:
             print "Bug: txtone is %04x" % _mem.txtone
 
-        if _mem.rxtone == 0:
+        if _mem.rxtone in [0, 0xFFFF]:
             rxmode = ""
         elif _mem.rxtone >= 0x0258:
             rxmode = "Tone"
