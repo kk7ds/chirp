@@ -595,8 +595,10 @@ class THF6ARadio(KenwoodLiveRadio):
     def _make_mem_spec(self, mem):
         if mem.duplex in " +-":
             duplex = rev(THF6A_DUPLEX, mem.duplex)
+            offset = mem.offset
         elif mem.duplex == "split":
             duplex = 0
+            offset = 0
         else:
             print "Bug: unsupported duplex `%s'" % mem.duplex
         spec = ( \
@@ -610,7 +612,7 @@ class THF6ARadio(KenwoodLiveRadio):
             "%02i" % (self._kenwood_valid_tones.index(mem.rtone)),
             "%02i" % (self._kenwood_valid_tones.index(mem.ctone)),
             "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
-            "%09i" % mem.offset,
+            "%09i" % offset,
             "%i" % (THF6_MODES.index(mem.mode)),
             "%i" % (mem.skip == "S"))
 
