@@ -89,6 +89,9 @@ class ShiftDialog(gtk.Dialog):
             mems.append(mem)
             pos += 1
 
+        if pos > ulimit:
+            raise errors.InvalidMemoryLocation(_("No space to insert a row"))
+
         print "Found a hole: %i" % pos
 
         return mems
@@ -126,7 +129,12 @@ class ShiftDialog(gtk.Dialog):
         self.status("Waiting for radio to become available", 0)
         self.rthread.lock()
 
-        count = func(newhole)
+        try:
+            count = func(newhole)
+        except errors.InvalidMemoryLocation, e:
+            self.status(str(e), 0)
+            self.finished()
+            return
 
         self.rthread.unlock()
         self.status(_("Moved {count} memories").format(count=count), 1)
