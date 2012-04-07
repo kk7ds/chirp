@@ -68,7 +68,7 @@ class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     FILE_EXTENSION = "chirp"
 
     def __init__(self, pipe):
-        chirp_common.CloneModeRadio.__init__(self, None)
+        chirp_common.FileBackedRadio.__init__(self, None)
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
             self.doc = libxml2.parseFile(self._filename)
