@@ -317,4 +317,4 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
-        _mem.lowpower = mem.power == UV5R_POWER_LEVELS[0]
+        _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
