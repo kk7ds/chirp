@@ -152,7 +152,11 @@ class EditorSet(gtk.VBox):
             self.filename = fname
 
         self.rthread.lock()
-        self.radio.save(fname)
+        try:
+            self.radio.save(fname)
+        except:
+            self.rthread.unlock()
+            raise
         self.rthread.unlock()
 
         self.modified = False
