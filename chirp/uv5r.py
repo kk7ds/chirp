@@ -140,11 +140,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rf.has_bank = False
         rf.has_cross = True
         rf.has_tuning_step = False
+        rf.can_odd_split = True
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS"]
         rf.valid_power_levels = UV5R_POWER_LEVELS
+        rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_bands = [(136000000, 174000000), (400000000, 480000000)]
         rf.memory_bounds = (0, 127)
