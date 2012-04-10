@@ -608,6 +608,7 @@ class RadioFeatures:
         "has_infinite_number" : BOOLEAN,
         "has_nostep_tuning"   : BOOLEAN,
         "has_comment"         : BOOLEAN,
+        "has_settings"        : BOOLEAN,
 
         # Attributes
         "valid_modes"         : [],
@@ -705,6 +706,8 @@ class RadioFeatures:
         self.init("has_comment", False,
                   "Indicates that the radio supports storing a comment " +
                   "with each memory")
+        self.init("has_settings", False,
+                  "Indicates that the radio supports general settings")
 
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")
@@ -909,6 +912,22 @@ class Radio:
                     break
 
         return msgs
+
+    def get_settings(self):
+        """Returns a RadioSettingGroup containing one or more
+        RadioSettingGroup or RadioSetting objects. These represent general
+        setting knobs and dials that can be adjusted on the radio. If this
+        function is implemented, the has_settings RadioFeatures flag should
+        be True and set_settings() must be implemented as well."""
+        pass
+
+    def set_settings(self, settings):
+        """Accepts the top-level RadioSettingGroup returned from get_settings()
+        and adjusts the values in the radio accordingly. This function expects
+        the entire RadioSettingGroup hierarchy returned from get_settings().
+        If this function is implemented, the has_settings RadioFeatures flag
+        should be True and get_settings() must be implemented as well."""
+        pass
 
 class FileBackedRadio(Radio):
     """A file-backed radio stores its data in a file"""
