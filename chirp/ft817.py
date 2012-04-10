@@ -501,7 +501,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
 @directory.register
 class FT817NDRadio(FT817Radio):
-    MODEL = "FT-817ND (Intl versions)"
+    MODEL = "FT-817ND"
 
     _model = ""
     _memsize = 6521
@@ -512,7 +512,7 @@ class FT817NDRadio(FT817Radio):
 class FT817ND_US_Radio(FT817Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
     # so we have to distinguish sub models
-    MODEL = "FT-817ND (US Version)"
+    MODEL = "FT-817ND (US)"
 
     _model = ""
     _memsize = 6651

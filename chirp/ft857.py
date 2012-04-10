@@ -103,7 +103,7 @@ SPECIAL_PMS = {          # WARNING Index are hard wired in memory management cod
 
 @directory.register
 class FT857Radio(ft817.FT817Radio):
-    MODEL = "FT-857"
+    MODEL = "FT-857/897"
     _model = ""
 
     TMODES = {
@@ -282,7 +282,7 @@ class FT857Radio(ft817.FT817Radio):
 class FT857_US_Radio(FT857Radio):
     # seems that radios configured for 5MHz operations send one paket more than others
     # so we have to distinguish sub models
-    MODEL = "FT-857 (US Version)"
+    MODEL = "FT-857/897 (US)"
 
     _model = ""
     _memsize = 7481
