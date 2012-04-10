@@ -17,7 +17,7 @@ import gtk
 import gobject
 import pango
 
-from chirp import errors, chirp_common, xml, import_logic
+from chirp import errors, chirp_common, generic_xml, import_logic
 from chirpui import common
 
 class WaitWindow(gtk.Window):
@@ -225,7 +225,7 @@ class ImportDialog(gtk.Dialog):
             print "One or more of the radios doesn't support banks"
             return
 
-        if not isinstance(self.dst_radio, xml.XMLRadio) and \
+        if not isinstance(self.dst_radio, generic_xml.XMLRadio) and \
                 len(dst_banks) != len(src_banks):
             print "Source and destination radios have a different number of banks"
         else:

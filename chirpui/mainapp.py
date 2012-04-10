@@ -34,7 +34,7 @@ try:
 except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
-from chirp import platform, xml, generic_csv, directory, util
+from chirp import platform, generic_xml, generic_csv, directory, util
 from chirp import ic9x, kenwood_live, idrp, vx7, vx5
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf

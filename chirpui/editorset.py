@@ -17,7 +17,7 @@ import os
 import gtk
 import gobject
 
-from chirp import chirp_common, directory, generic_csv, xml
+from chirp import chirp_common, directory, generic_csv, generic_xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 from chirpui import inputdialog, reporting, settingsedit
 
@@ -279,7 +279,7 @@ class EditorSet(gtk.VBox):
             if filen.lower().endswith(".csv"):
                 dst_radio = generic_csv.CSVRadio(filen)
             elif filen.lower().endswith(".chirp"):
-                dst_radio = xml.XMLRadio(filen)
+                dst_radio = generic_xml.XMLRadio(filen)
             else:
                 raise Exception(_("Unsupported file type"))
         except Exception, e:
