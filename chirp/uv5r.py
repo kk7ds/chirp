@@ -38,7 +38,7 @@ struct {
 #seekto 0x1000;
 struct {
   u8 unknown1[8];
-  char name[6];
+  char name[7];
   u8 unknown2[2];
 } names[128];
 """
@@ -141,6 +141,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.has_tuning_step = False
         rf.can_odd_split = True
+        rf.valid_name_length = 7
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
@@ -277,7 +278,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         else:
             _mem.txfreq = mem.freq / 10
 
-        for i in range(0, 6):
+        for i in range(0, 7):
             try:
                 _nam.name[i] = mem.name[i]
             except IndexError:
