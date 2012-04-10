@@ -78,7 +78,7 @@ struct {
 struct {
   u8 unknown1[8];
   char name[7];
-  u8 unknown2[2];
+  u8 unknown2;
 } names[128];
 """
 
