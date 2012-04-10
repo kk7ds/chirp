@@ -15,8 +15,9 @@
 
 import struct
 
-from chirp import chirp_common, errors, util, directory, memmap
+from chirp import chirp_common, errors, util, directory, memmap, settings
 from chirp import bitwise
+from chirp.settings import *
 
 mem_format = """
 #seekto 0x0008;
@@ -35,6 +36,44 @@ struct {
      unknown5:2;
 } memory[128];
 
+#seekto 0x0E28;
+struct {
+  u8 squelch;
+  u8 step;
+  u8 unknown1;
+  u8 save;
+  u8 vox;
+  u8 unknown2;
+  u8 abr;
+  u8 tdr;
+  u8 beep;
+  u8 timeout;
+  u8 unknown3[4];
+  u8 voice;
+  u8 unknown4;
+  u8 dtmfst;
+  u8 unknown5;
+  u8 screv;
+  u8 pttid;
+  u8 pttlt;
+  u8 mdfa;
+  u8 mdfb;
+  u8 bcl;
+  u8 autolk;
+  u8 sftd;
+  u8 unknown6[3];
+  u8 wtled;
+  u8 rxled;
+  u8 txled;
+  u8 almod;
+  u8 tdrab;
+  u8 ste;
+  u8 rpste;
+  u8 rptrl;
+  u8 ponmsg;
+  u8 roger;
+} settings[2];
+
 #seekto 0x1000;
 struct {
   u8 unknown1[8];
@@ -42,6 +81,24 @@ struct {
   u8 unknown2[2];
 } names[128];
 """
+
+STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
+step_list = [str(x) for x in STEPS]
+timeout_list = ["%s sec" % x for x in range(15, 615, 15)]
+resume_list = ["TO", "CO", "SE"]
+mode_list = ["Channel", "Name", "Frequency"]
+color_list = ["Off", "Blue", "Orange", "Purple"]
+
+SETTING_LISTS = {
+    "step" : step_list,
+    "timeout" : timeout_list,
+    "screv" : resume_list,
+    "mdfa" : mode_list,
+    "mdfb" : mode_list,
+    "wtled" : color_list,
+    "rxled" : color_list,
+    "txled" : color_list,
+}
 
 def do_status(radio, block):
     s = chirp_common.Status()
@@ -137,6 +194,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_bank = False
         rf.has_cross = True
         rf.has_tuning_step = False
@@ -155,6 +213,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
+        print self.get_settings()
 
     def sync_in(self):
         try:
@@ -321,3 +380,102 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
         _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
+
+    def get_settings(self):
+        _settings = self._memobj.settings[0]
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        advanced = RadioSettingGroup("advanced", "Advanced Settings")
+        group = RadioSettingGroup("top", "All Settings", basic, advanced)
+
+        s = RadioSetting("squelch", "Carrier Squelch Level",
+                         RadioSettingValueInteger(0, 9, _settings.squelch))
+        basic.append(s)
+
+        s = RadioSetting("step", "Tuning Step",
+                         RadioSettingValueList(step_list,
+                                               step_list[_settings.step]))
+        advanced.append(s)
+
+        s = RadioSetting("save", "Battery Saver",
+                         RadioSettingValueInteger(0, 4, _settings.save))
+        basic.append(s)
+
+        s = RadioSetting("vox", "VOX Sensitivity",
+                         RadioSettingValueInteger(0, 10, _settings.vox))
+        advanced.append(s)
+
+        s = RadioSetting("abr", "Backlight Timeout",
+                         RadioSettingValueInteger(0, 5, _settings.abr))
+        basic.append(s)
+
+        s = RadioSetting("tdr", "Dual Watch",
+                         RadioSettingValueBoolean(_settings.tdr))
+        advanced.append(s)
+
+        s = RadioSetting("beep", "Beep",
+                         RadioSettingValueBoolean(_settings.beep))
+        basic.append(s)
+
+        s = RadioSetting("timeout", "Timeout Timer",
+                         RadioSettingValueList(timeout_list,
+                                               timeout_list[_settings.tdr]))
+        basic.append(s)
+
+        s = RadioSetting("voice", "Voice",
+                         RadioSettingValueBoolean(_settings.voice))
+        advanced.append(s)
+        
+        s = RadioSetting("screv", "Scan Resume",
+                         RadioSettingValueList(resume_list,
+                                               resume_list[_settings.screv]))
+        advanced.append(s)
+
+        s = RadioSetting("mdfa", "Display Mode (A)",
+                         RadioSettingValueList(mode_list,
+                                               mode_list[_settings.mdfa]))
+        basic.append(s)
+
+        s = RadioSetting("mdfb", "Display Mode (B)",
+                         RadioSettingValueList(mode_list,
+                                               mode_list[_settings.mdfb]))
+        basic.append(s)
+
+        s = RadioSetting("bcl", "Busy Channel Lockout",
+                         RadioSettingValueBoolean(_settings.bcl))
+        advanced.append(s)
+
+        s = RadioSetting("autolk", "Automatic Key Lock",
+                         RadioSettingValueBoolean(_settings.autolk))
+        advanced.append(s)
+
+        s = RadioSetting("wtled", "Standby LED Color",
+                         RadioSettingValueList(color_list,
+                                               color_list[_settings.wtled]))
+        basic.append(s)
+
+        s = RadioSetting("rxled", "RX LED Color",
+                         RadioSettingValueList(color_list,
+                                               color_list[_settings.rxled]))
+        basic.append(s)
+
+        s = RadioSetting("txled", "TX LED Color",
+                         RadioSettingValueList(color_list,
+                                               color_list[_settings.txled]))
+        basic.append(s)
+
+        return group
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings[0]
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+
+            if element.get_name() in SETTING_LISTS.keys():
+                value = SETTING_LISTS[element.get_name()].index(str(element.value))
+            try:
+                setattr(_settings, element.get_name(), element.value)
+            except Exception, e:
+                print element.get_name()
+                raise
