@@ -60,7 +60,7 @@ CROSS_MODES = [
     "->DTCS",
 ]
 
-MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR"]
+MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR", "P25"]
 
 STD_6M_OFFSETS = [
     (51620000, 51980000, -500000),

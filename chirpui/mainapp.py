@@ -1,4 +1,5 @@
 # Copyright 2008 Dan Smith <dsmith@danplanet.com>
+# Copyright 2012 Tom Hayward <tom@tomh.us>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -96,7 +97,7 @@ class ChirpMain(gtk.Window):
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
         for i in ["export", "import", "close", "columns", "rbook", "rfinder",
-                  "stock", "move_up", "move_dn", "exchange",
+                  "stock", "move_up", "move_dn", "exchange", "radioreference",
                   "cut", "copy", "paste", "delete", "viewdeveloper"]:
             set_action_sensitive(i, eset is not None)
 
@@ -872,6 +873,60 @@ If you think that it is valid, you can select a radio model below to force an op
 
         self.window.set_cursor(None)
 
+    def do_radioreference_prompt(self):
+        fields = {"1Username"    : (gtk.Entry(), lambda x: x),
+                  "2Password"    : (gtk.Entry(), lambda x: x),
+                  "3Zipcode"     : (gtk.Entry(), lambda x: x),
+                  }
+
+        d = inputdialog.FieldDialog(title="RadioReference.com Query", parent=self)
+        for k in sorted(fields.keys()):
+            d.add_field(k[1:], fields[k][0])
+            fields[k][0].set_text(CONF.get(k[1:], "radioreference") or "")
+            fields[k][0].set_visibility(k != "2Password")
+
+        while d.run() == gtk.RESPONSE_OK:
+            valid = True
+            for k in sorted(fields.keys()):
+                widget, validator = fields[k]
+                try:
+                    if validator(widget.get_text()):
+                        CONF.set(k[1:], widget.get_text(), "radioreference")
+                        continue
+                except Exception:
+                    pass
+                common.show_error("Invalid value for %s" % k[1:])
+                valid = False
+                break
+
+            if valid:
+                d.destroy()
+                return True
+
+        d.destroy()
+        return False
+
+    def do_radioreference(self):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_radioreference_prompt():
+            self.window.set_cursor(None)
+            return
+
+        username = CONF.get("Username", "radioreference")
+        passwd = CONF.get("Password", "radioreference")
+        zipcode = CONF.get("Zipcode", "radioreference")
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        eset = self.get_current_editorset()
+        count = eset.do_import("radioreference://%s/%s/%s" % (zipcode, username, passwd))
+
+        self.window.set_cursor(None)
+
     def do_export(self):
         types = [(_("CSV Files") + " (*.csv)", "csv"),
                  (_("CHIRP Files") + " (*.chirp)", "chirp"),
@@ -1079,6 +1134,8 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_import()
         elif action == "rfinder":
             self.do_rfinder()
+        elif action == "radioreference":
+            self.do_radioreference()
         elif action == "export":
             self.do_export()
         elif action == "rbook":
@@ -1151,6 +1208,7 @@ If you think that it is valid, you can select a radio model below to force an op
     <menu action="radio" name="radio">
       <menuitem action="download"/>
       <menuitem action="upload"/>
+      <menuitem action="radioreference"/>
       <menuitem action="rbook"/>
       <menuitem action="rfinder"/>
       <menu action="stock" name="stock"/>
@@ -1197,6 +1255,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('upload', None, _("Upload To Radio"), "<Alt>u", None, self.mh),
             ('import', None, _("Import"), "<Alt>i", None, self.mh),
             ('export', None, _("Export"), "<Alt>x", None, self.mh),
+            ('radioreference', None, _("Import from RadioReference.com"), None, None, self.mh),
             ('rfinder', None, _("Import from RFinder"), None, None, self.mh),
             ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),

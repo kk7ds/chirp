@@ -1,4 +1,5 @@
 # Copyright 2010 Dan Smith <dsmith@danplanet.com>
+# Copyright 2012 Tom Hayward <tom@tomh.us>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +18,7 @@ import os
 import tempfile
 
 from chirp import icf
-from chirp import chirp_common, util, rfinder, errors
+from chirp import chirp_common, util, rfinder, radioreference, errors
 
 def radio_class_id(cls):
     ident = "%s_%s" % (cls.VENDOR, cls.MODEL)
@@ -79,6 +80,12 @@ def icf_to_image(icf_file, img_file):
         raise Exception("Unsupported model")
 
 def get_radio_by_image(image_file):
+    if image_file.startswith("radioreference://"):
+        method, _, zipcode, username, password = image_file.split("/", 4)
+        rr = radioreference.RadioReferenceRadio(None)
+        rr.set_params(zipcode, username, password)
+        return rr
+    
     if image_file.startswith("rfinder://"):
         method, _, email, passwd, lat, lon = image_file.split("/")
         rf = rfinder.RFinderRadio(None)
