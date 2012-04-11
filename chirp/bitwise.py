@@ -654,7 +654,7 @@ class Processor:
             name = deftype[1][0][1]
             count = int(deftype[1][1][1])
         elif deftype[0] == "symbol":
-            name = deftype[0][1]
+            name = deftype[1]
             count = 1
 
         result = arrayDataElement(self._offset)
@@ -720,7 +720,7 @@ struct {
      lowbit:1;
   char string[3];
   bbcd fourdigits[2];
-} mystruct[1];
+} mystruct;
 """
     data = "\x7F\x81abc\x12\x34"
     tree = parse(defn, data)
