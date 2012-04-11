@@ -110,8 +110,8 @@ def clone_out(radio):
 
     print "Clone completed in %i seconds" % (time.time() - start)
 
-mem_struct = """
-struct {
+mem_format = """
+struct mem_struct {
   u8   tag_on_off:1,
        tag_default:1,
        unknown1:3,
@@ -142,33 +142,26 @@ struct {
   u32 freq;
   u32 offset;
   u8   name[8];
-}
-"""
+};
 
-# there is a bug in bitwise_grammar that prevent the definition of single structures
-# qmb should be only one mem_struct followed by
-#""" + mem_struct + """ mtqmb;
-# but both qmb and qmb[1] raise an exception so I had to define it as qmb[2]
+#seekto 0x2A;
+struct mem_struct vfoa[15];
+struct mem_struct vfob[15];
+struct mem_struct home[4];
+struct mem_struct qmb[2];
+struct mem_struct mtune;
 
-mem_format = """
-#seekto 0x2a;
-""" + mem_struct + """ vfoa[15];
-""" + mem_struct + """ vfob[15];
-""" + mem_struct + """ home[4];
-""" + mem_struct + """ qmb[2];
-""" + mem_struct + """ mtune;
-
-#seekto 0x3fd;
+#seekto 0x3FD;
 u8 visible[25];
 
 #seekto 0x417;
 u8 filled[25];
 
 #seekto 0x431;
-""" + mem_struct + """ memory[200];
+struct mem_struct memory[200];
 
 #seekto 0x1979;
-""" + mem_struct + """ sixtymeterchannels[5];
+struct mem_struct sixtymeterchannels[5];
 """
 
 @directory.register
