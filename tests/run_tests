@@ -217,7 +217,7 @@ class TestCaseCopyAll(TestCase):
 
             try:
                 dst_mem = import_logic.import_mem(self._wrapper.get_radio(),
-                                                  self._src,
+                                                  src_rf,
                                                   src_mem,
                                                   overrides={"number":dst_number})
                 import_logic.import_bank(self._wrapper.get_radio(),

@@ -236,6 +236,8 @@ class ImportDialog(gtk.Dialog):
         error_messages = {}
         import_list = self.get_import_list()
 
+        src_features = self.src_radio.get_features()
+
         for old, new in import_list:
             i += 1
             print "%sing %i -> %i" % (self.ACTION, old, new)
@@ -244,7 +246,7 @@ class ImportDialog(gtk.Dialog):
 
             try:
                 mem = import_logic.import_mem(self.dst_radio,
-                                              self.src_radio,
+                                              src_features,
                                               src,
                                               {"number" : new})
             except import_logic.ImportError, e:
