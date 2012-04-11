@@ -33,7 +33,7 @@ import pickle
 import os
 
 from chirpui import common, shiftdialog, miscwidgets, config
-from chirp import chirp_common, errors, directory
+from chirp import chirp_common, errors, directory, import_logic
 
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]    
@@ -1204,7 +1204,7 @@ class MemoryEditor(common.Editor):
 
                 self._set_memory(iter, mem)
 
-        result = pickle.dumps(selection)
+        result = pickle.dumps((self._features, selection))
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.set_text(result)
 
@@ -1224,7 +1224,7 @@ class MemoryEditor(common.Editor):
         always = False
 
         try:
-            mem_list = pickle.loads(text)
+            src_features, mem_list = pickle.loads(text)
         except Exception:
             print "Paste failed to unpickle"
             return
@@ -1237,7 +1237,7 @@ class MemoryEditor(common.Editor):
                     dst=(self._rows_in_store - paths[0][0])))
             return
 
-        for mem in pickle.loads(text):
+        for mem in mem_list:
             loc, filled = store.get(iter,
                                     self.col(_("Loc")), self.col("_filled"))
             if filled and not always:
@@ -1262,7 +1262,9 @@ class MemoryEditor(common.Editor):
             src_number = mem.number
             mem.number = loc
             msgs = self.rthread.radio.validate_memory(mem)
-            if msgs:
+            errs = [x for x in msgs if isinstance(x,
+                                                  chirp_common.ValidationError)]
+            if errs:
                 d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
                                             buttons=(gtk.STOCK_OK, 1,
                                                      gtk.STOCK_CANCEL, 2))
@@ -1276,6 +1278,10 @@ class MemoryEditor(common.Editor):
                 else:
                     iter = store.iter_next(iter)
                     continue
+
+            mem = import_logic.import_mem(self.rthread.radio,
+                                          src_features,
+                                          mem)
 
             self._set_memory(iter, mem)
             iter = store.iter_next(iter)
