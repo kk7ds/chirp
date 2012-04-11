@@ -64,8 +64,14 @@ def _block_inner():
 def _block():
     return "{", _block_inner, "}"
 
+def struct_defn():
+    return symbol, _block
+
+def struct_decl():
+    return [symbol, _block], [array, symbol]
+
 def struct():
-    return keyword("struct"), _block, [array, symbol], ";"
+    return keyword("struct"), [struct_defn, struct_decl], ";"
 
 def _language():
     return _block_inner

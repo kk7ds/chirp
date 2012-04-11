@@ -590,6 +590,7 @@ class Processor:
         self._data = data
         self._offset = offset
         self._obj = None
+        self._user_types = {}
 
     def do_symbol(self, symdef, gen):
         name = symdef[1]
@@ -647,8 +648,11 @@ class Processor:
             else:
                 self._generators[name] = res
 
-    def parse_struct(self, struct):
+    def parse_struct_decl(self, struct):
         block = struct[:-1]
+        if block[0][0] == "symbol":
+            # This is a pre-defined struct
+            block = self._user_types[block[0][1]]
         deftype = struct[-1]
         if deftype[0] == "array":
             name = deftype[1][0][1]
@@ -671,6 +675,19 @@ class Processor:
             self._generators[name] = result[0]
         else:
             self._generators[name] = result
+
+    def parse_struct_defn(self, struct):
+        name = struct[0][1]
+        block = struct[1:]
+        self._user_types[name] = block
+
+    def parse_struct(self, struct):
+        if struct[0][0] == "struct_defn":
+            return self.parse_struct_defn(struct[0][1])
+        elif struct [0][0] == "struct_decl":
+            return self.parse_struct_decl(struct[0][1])
+        else:
+            raise Exception("Internal error: What is `%s'?" % struct[0][0])
 
     def parse_directive(self, directive):
         name = directive[0][0]
@@ -713,6 +730,8 @@ def parse(spec, data, offset=0):
 
 if __name__ == "__main__":
     defn = """
+struct mytype { u8 foo; };
+struct mytype bar;
 struct {
   u8 foo;
   u8 highbit:1,
@@ -722,8 +741,10 @@ struct {
   bbcd fourdigits[2];
 } mystruct;
 """
-    data = "\x7F\x81abc\x12\x34"
+    data = "\xab\x7F\x81abc\x12\x34"
     tree = parse(defn, data)
+
+    print repr(tree)
 
     print "Foo %i" % tree.mystruct.foo
     print "Highbit: %i SixZeros: %i: Lowbit: %i" % (tree.mystruct.highbit,
