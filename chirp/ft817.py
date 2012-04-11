@@ -148,7 +148,8 @@ struct mem_struct {
 struct mem_struct vfoa[15];
 struct mem_struct vfob[15];
 struct mem_struct home[4];
-struct mem_struct qmb[2];
+struct mem_struct qmb;
+struct mem_struct mtqmb;
 struct mem_struct mtune;
 
 #seekto 0x3FD;
@@ -322,7 +323,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             immutable = ["number", "skip", "rtone", "ctone", "extd_number",
                          "dtcs_polarity", "power", "comment"]
         elif mem.number == -1:
-            _mem = self._memobj.qmb[0]
+            _mem = self._memobj.qmb
             immutable = ["number", "skip", "rtone", "ctone", "extd_number", "name",
                          "dtcs_polarity", "power", "comment"]
 	else:
@@ -350,7 +351,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         elif mem.number in range(-2, -6, -1):
             _mem = self._memobj.home[5 + mem.number]
         elif mem.number == -1:
-            _mem = self._memobj.qmb[0]
+            _mem = self._memobj.qmb
 	else:
             raise Exception("Sorry, special memory index %i unknown you hit a bug!!" % mem.number)
 

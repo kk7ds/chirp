@@ -59,7 +59,8 @@ struct mem_struct{
 struct mem_struct vfoa[16];
 struct mem_struct vfob[16];
 struct mem_struct home[4];
-struct mem_struct qmb[2];
+struct mem_struct qmb;
+struct mem_struct mtqmb;
 struct mem_struct mtune;
 
 #seekto 0x4a9;
