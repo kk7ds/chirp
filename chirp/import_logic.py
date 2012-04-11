@@ -59,10 +59,10 @@ def ensure_has_calls(radio, memory):
         radio.set_repeater_cal_list(rlist)
 
 # Filter the name according to the destination's rules
-def _import_name(dst_radio, src_radio, mem):
+def _import_name(dst_radio, srcrf, mem):
     mem.name = dst_radio.filter_name(mem.name)
 
-def _import_power(dst_radio, src_radio, mem):
+def _import_power(dst_radio, srcrf, mem):
     levels = dst_radio.get_features().valid_power_levels
     if not levels:
         mem.power = None
@@ -82,8 +82,7 @@ def _import_power(dst_radio, src_radio, mem):
     deltas = [abs(mem.power - power) for power in levels]
     mem.power = levels[deltas.index(min(deltas))]
 
-def _import_tone(dst_radio, src_radio, mem):
-    srcrf = src_radio.get_features()
+def _import_tone(dst_radio, srcrf, mem):
     dstrf = dst_radio.get_features()
 
     # Some radios keep separate tones for Tone and TSQL modes (rtone and
@@ -101,7 +100,7 @@ def _import_tone(dst_radio, src_radio, mem):
         if mem.tmode == "TSQL":
             mem.ctone = mem.rtone
 
-def import_mem(dst_radio, src_radio, src_mem, overrides={}):
+def import_mem(dst_radio, src_features, src_mem, overrides={}):
     dst_rf = dst_radio.get_features()
 
     if isinstance(src_mem, chirp_common.DVMemory):
@@ -118,7 +117,7 @@ def import_mem(dst_radio, src_radio, src_mem, overrides={}):
                ]
 
     for helper in helpers:
-        helper(dst_radio, src_radio, dst_mem)
+        helper(dst_radio, src_features, dst_mem)
 
     for k, v in overrides.items():
         dst_mem.__dict__[k] = v
