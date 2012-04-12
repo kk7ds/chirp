@@ -251,6 +251,25 @@ class EditorSet(gtk.VBox):
     def do_import(self, filen):
         try:
             src_radio = directory.get_radio_by_image(filen)
+        except Exception, e:
+            common.show_error(e)
+            return
+
+        if isinstance(src_radio, chirp_common.NetworkSourceRadio):
+            ww = importdialog.WaitWindow("Querying...", self.parent_window)
+            ww.show()
+            def status(status):
+                ww.set(float(status.cur) / float(status.max))
+            try:
+                src_radio.status_fn = status
+                src_radio.do_fetch()
+            except Exception, e:
+                common.show_error(e)
+                ww.hide()
+                return
+            ww.hide()
+
+        try:
             if src_radio.get_features().has_sub_devices:
                 src_radio = self.choose_sub_device(src_radio)
         except Exception, e:

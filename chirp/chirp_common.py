@@ -1010,6 +1010,10 @@ class CloneModeRadio(FileBackedRadio):
 class LiveRadio(Radio):
     pass
 
+class NetworkSourceRadio(Radio):
+    def do_fetch(self):
+        pass
+
 class IcomDstarSupport:
     MYCALL_LIMIT = (1, 1)
     URCALL_LIMIT = (1, 1)
