@@ -30,7 +30,7 @@ MODES = {
     "P25"   : "P25",
 }
 
-class RadioReferenceRadio(chirp_common.Radio):
+class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
     VENDOR = "Radio Reference LLC"
     MODEL = "RadioReference.com"
 
@@ -61,20 +61,34 @@ class RadioReferenceRadio(chirp_common.Radio):
 
         zipcode = self._client.service.getZipcodeInfo(self._zip, self._auth)
         county = self._client.service.getCountyInfo(zipcode.ctid, self._auth)
+
+        status = chirp_common.Status()
+        status.max = 0
+        for cat in county.cats:
+            status.max += len(cat.subcats)
+        status.max += len(county.agencyList)
+
         for cat in county.cats:
             print "Fetching category:", cat.cName
             for subcat in cat.subcats:
                 print "\t", subcat.scName
                 result = self._client.service.getSubcatFreqs(subcat.scid, self._auth)
                 self._freqs += result
+                status.cur += 1
+                self.status_fn(status)
+        status.max -= len(county.agencyList)
         for agency in county.agencyList:
             agency = self._client.service.getAgencyInfo(agency.aid, self._auth)
+            for cat in agency.cats:
+                status.max += len(cat.subcats)
             for cat in agency.cats:
                 print "Fetching category:", cat.cName
                 for subcat in cat.subcats:
                     print "\t", subcat.scName
                     result = self._client.service.getSubcatFreqs(subcat.scid, self._auth)
                     self._freqs += result
+                    status.cur += 1
+                    self.status_fn(status)
 
     def get_features(self):
         if not self._freqs:
