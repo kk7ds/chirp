@@ -669,6 +669,7 @@ If you think that it is valid, you can select a radio model below to force an op
                  (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
                  (_("ICF Files") + " (*.icf)", "*.icf"),
                  (_("Kenwood HMK Files") + " (*.hmk)", "*.hmk"),
+                 (_("Travel Plus Files") + " (*.tpe)", "*.tpe"),
                  (_("VX5 Commander Files") + " (*.vx5)", "*.vx5"),
                  (_("VX7 Commander Files") + " (*.vx7)", "*.vx7")]
         filen = platform.get_platform().gui_open_file(types=types)
