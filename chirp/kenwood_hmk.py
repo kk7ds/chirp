@@ -1,5 +1,5 @@
 # Copyright 2008 Dan Smith <dsmith@danplanet.com>
-# Copyright 2012 Tom Haywward <tom@tomh.us>
+# Copyright 2012 Tom Hayward <tom@tomh.us>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
