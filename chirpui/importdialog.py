@@ -483,7 +483,8 @@ class ImportDialog(gtk.Dialog):
     def populate_list(self):
         start, end = self.src_radio.get_features().memory_bounds
         for i in range(start, end+1):
-            self.ww.set(float(i) / end)
+            if i % (end/50) == 0:
+                self.ww.set(float(i) / end)
             try:
                 mem = self.src_radio.get_memory(i)
             except errors.InvalidMemoryLocation, e:
@@ -491,6 +492,7 @@ class ImportDialog(gtk.Dialog):
             if mem.empty:
                 continue
 
+            self.ww.set(float(i) / end)
             msgs = self.dst_radio.validate_memory(mem)
             errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
             if errs:
