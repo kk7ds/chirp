@@ -143,6 +143,7 @@ class FT857Radio(ft817.FT817Radio):
     # block 9 (140 Bytes long) is to be repeted 40 times 
     # should be 42 times but this way I cam use original 817 functions
     _block_lengths = [ 2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140, 38, 176]
+    VALID_BANDS = [(100000,33000000), (33000000,56000000), (76000000,108000000), (108000000,137000000), (137000000,164000000), (420000000,470000000)] # warning ranges has to be in this exact order
 
     def get_features(self):
         rf = ft817.FT817Radio.get_features(self)
