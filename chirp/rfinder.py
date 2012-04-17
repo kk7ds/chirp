@@ -249,7 +249,7 @@ class RFinderParser:
     def get_memories(self):
         return self.__memories
 
-class RFinderRadio(chirp_common.Radio):
+class RFinderRadio(chirp_common.NetworkSourceRadio):
     VENDOR = "ITWeRKS"
     MODEL = "RFinder"
 
@@ -284,6 +284,7 @@ class RFinderRadio(chirp_common.Radio):
 
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, len(self._rfp.get_memories()))
+        rf.has_bank = False
         return rf
 
     def get_memory(self, number):
