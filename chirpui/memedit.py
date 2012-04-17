@@ -950,7 +950,7 @@ class MemoryEditor(common.Editor):
     def _limit_key(self, which):
         if which not in ["lo", "hi"]:
             raise Exception(_("Internal Error: Invalid limit {number").format(number=which))
-        return "%s_%s" % (directory.get_driver(self.rthread.radio.__class__),
+        return "%s_%s" % (directory.radio_class_id(self.rthread.radio.__class__),
                           which)
 
     def _store_limit(self, sb, which):
@@ -1040,6 +1040,9 @@ class MemoryEditor(common.Editor):
     def set_read_only(self, read_only):
         self.read_only = read_only
 
+    def get_read_only(self):
+        return self.read_only
+
     def set_hide_unused(self, hide_unused):
         self.hide_unused = hide_unused
         self.prefill()
@@ -1088,7 +1091,7 @@ class MemoryEditor(common.Editor):
 
     def set_columns_visible(self):
         unsupported = self.get_unsupported_columns()
-        driver = directory.get_driver(self.rthread.radio.__class__)
+        driver = directory.radio_class_id(self.rthread.radio.__class__)
         user_visible = self._config.get(driver, "memedit_columns")
         if user_visible:
             user_visible = user_visible.split(",")
