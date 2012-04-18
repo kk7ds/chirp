@@ -544,7 +544,7 @@ class FT817ND_US_Radio(FT817Radio):
         return mem
 
     def _set_special_60M(self, mem):
-        cur_mem = self._get_special(mem.extd_number)
+        cur_mem = self._get_special_60M(mem.extd_number)
 
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
