@@ -319,7 +319,7 @@ class FT857_US_Radio(FT857Radio):
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
     def _set_special_60M(self, mem):
-        cur_mem = self._get_special(mem.extd_number)
+        cur_mem = self._get_special_60M(mem.extd_number)
 
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
