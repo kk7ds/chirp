@@ -198,7 +198,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
 
     def _parse_split_spec(self, mem, spec):
         mem.duplex = "split"
-        mem.offset = int(spec[3])
+        mem.offset = int(spec[2])
 
     def _make_split_spec(self, mem):
         return ("%011i" % mem.offset, "0")
