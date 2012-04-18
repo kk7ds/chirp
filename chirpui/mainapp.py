@@ -87,8 +87,13 @@ class ChirpMain(gtk.Window):
 
         if not eset or isinstance(eset.radio, chirp_common.LiveRadio):
             mmap_sens = False
+        elif isinstance(eset.radio, chirp_common.NetworkSourceRadio):
+            mmap_sens = False
         else:
             mmap_sens = True
+
+        for i in ["import", "importsrc", "stock"]:
+            set_action_sensitive(i, eset is not None and not eset.get_read_only())
 
         for i in ["save", "saveas", "upload"]:
             set_action_sensitive(i, mmap_sens)
@@ -96,8 +101,8 @@ class ChirpMain(gtk.Window):
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not mmap_sens)
         
-        for i in ["export", "import", "close", "columns", "rbook", "rfinder",
-                  "stock", "move_up", "move_dn", "exchange", "radioreference",
+        for i in ["export", "close", "columns", "irbook", "irfinder",
+                  "move_up", "move_dn", "exchange", "iradioreference",
                   "cut", "copy", "paste", "delete", "viewdeveloper"]:
             set_action_sensitive(i, eset is not None)
 
@@ -355,7 +360,7 @@ If you think that it is valid, you can select a radio model below to force an op
         CONF.set_bool("live_mode", again.get_active(), "noconfirm")
         d.destroy()
 
-    def do_open_live(self, radio, tempname=None):
+    def do_open_live(self, radio, tempname=None, read_only=False):
         if radio.get_features().has_sub_devices:
             devices = radio.get_sub_devices()
         else:
@@ -366,6 +371,7 @@ If you think that it is valid, you can select a radio model below to force an op
             eset = editorset.EditorSet(device, self, tempname=tempname)
             eset.connect("want-close", self.do_close)
             eset.connect("status", self.ev_status)
+            eset.set_read_only(read_only)
             eset.show()
 
             tab = self.tabs.append_page(eset, eset.get_tab_label())
@@ -749,7 +755,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
         return True
 
-    def do_repeaterbook(self):
+    def do_repeaterbook(self, do_import):
         self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         if not self.do_repeaterbook_prompt():
             self.window.set_cursor(None)
@@ -790,29 +796,30 @@ If you think that it is valid, you can select a radio model below to force an op
             self.window.set_cursor(None)
             return
 
+        class RBRadio(generic_csv.CSVRadio,
+                      chirp_common.NetworkSourceRadio):
+            VENDOR = "RepeaterBook"
+            MODEL = ""
+
         try:
             # Validate CSV
-            from chirp import generic_csv
-            r = generic_csv.CSVRadio(filename)
-            if r.errors:
+            radio = RBRadio(filename)
+            if radio.errors:
                 reporting.report_misc_error("repeaterbook",
                                             ("query=%s\n" % query) +
                                             ("\n") +
-                                            ("\n".join(r.errors)))
+                                            ("\n".join(radio.errors)))
         except Exception, e:
             common.log_exception()
 
-        class RBRadio(chirp_common.Radio):
-            VENDOR = "RepeaterBook"
-            MODEL = ""
-            def __init__(self, *args):
-                pass
-
-        reporting.report_model_usage(RBRadio(), "import", True)
+        reporting.report_model_usage(radio, "import", True)
 
         self.window.set_cursor(None)
-        eset = self.get_current_editorset()
-        count = eset.do_import(filename)
+        if do_import:
+            eset = self.get_current_editorset()
+            count = eset.do_import(filename)
+        else:
+            self.do_open_live(radio, read_only=True)
 
     def do_rfinder_prompt(self):
         fields = {"1Email"    : (gtk.Entry(),
@@ -852,7 +859,7 @@ If you think that it is valid, you can select a radio model below to force an op
         d.destroy()
         return False
 
-    def do_rfinder(self):
+    def do_rfinder(self, do_import):
         self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         if not self.do_rfinder_prompt():
             self.window.set_cursor(None)
@@ -869,8 +876,14 @@ If you think that it is valid, you can select a radio model below to force an op
         while gtk.events_pending():
             gtk.main_iteration(False)
 
-        eset = self.get_current_editorset()
-        count = eset.do_import("rfinder://%s/%s/%f/%f" % (email, passwd, lat, lon))
+        if do_import:
+            eset = self.get_current_editorset()
+            count = eset.do_import("rfinder://%s/%s/%f/%f" % (email, passwd, lat, lon))
+        else:
+            from chirp import rfinder
+            radio = rfinder.RFinderRadio(None)
+            radio.set_params(lat, lon, email, passwd)
+            self.do_open_live(radio, read_only=True)
 
         self.window.set_cursor(None)
 
@@ -907,7 +920,7 @@ If you think that it is valid, you can select a radio model below to force an op
         d.destroy()
         return False
 
-    def do_radioreference(self):
+    def do_radioreference(self, do_import):
         self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         if not self.do_radioreference_prompt():
             self.window.set_cursor(None)
@@ -923,8 +936,17 @@ If you think that it is valid, you can select a radio model below to force an op
         while gtk.events_pending():
             gtk.main_iteration(False)
 
-        eset = self.get_current_editorset()
-        count = eset.do_import("radioreference://%s/%s/%s" % (zipcode, username, passwd))
+        if do_import:
+            eset = self.get_current_editorset()
+            count = eset.do_import("radioreference://%s/%s/%s" % (zipcode, username, passwd))
+        else:
+            try:
+                from chirp import radioreference
+                radio = radioreference.RadioReferenceRadio(None)
+                radio.set_params(zipcode, username, passwd)
+                self.do_open_live(radio, read_only=True)
+            except errors.RadioError, e:
+                common.show_error(e)
 
         self.window.set_cursor(None)
 
@@ -1133,14 +1155,14 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_close()
         elif action == "import":
             self.do_import()
-        elif action == "rfinder":
-            self.do_rfinder()
-        elif action == "radioreference":
-            self.do_radioreference()
+        elif action in ["qrfinder", "irfinder"]:
+            self.do_rfinder(action[0] == "i")
+        elif action in ["qradioreference", "iradioreference"]:
+            self.do_radioreference(action[0] == "i")
         elif action == "export":
             self.do_export()
-        elif action == "rbook":
-            self.do_repeaterbook()
+        elif action in ["qrbook", "irbook"]:
+            self.do_repeaterbook(action[0] == "i")
         elif action == "about":
             self.do_about()
         elif action == "columns":
@@ -1209,9 +1231,16 @@ If you think that it is valid, you can select a radio model below to force an op
     <menu action="radio" name="radio">
       <menuitem action="download"/>
       <menuitem action="upload"/>
-      <menuitem action="radioreference"/>
-      <menuitem action="rbook"/>
-      <menuitem action="rfinder"/>
+      <menu action="importsrc" name="importsrc">
+        <menuitem action="iradioreference"/>
+        <menuitem action="irbook"/>
+        <menuitem action="irfinder"/>
+      </menu>
+      <menu action="querysrc" name="querysrc">
+        <menuitem action="qradioreference"/>
+        <menuitem action="qrbook"/>
+        <menuitem action="qrfinder"/>
+      </menu>
       <menu action="stock" name="stock"/>
       <separator/>
       <menuitem action="autorpt"/>
@@ -1256,11 +1285,16 @@ If you think that it is valid, you can select a radio model below to force an op
             ('upload', None, _("Upload To Radio"), "<Alt>u", None, self.mh),
             ('import', None, _("Import"), "<Alt>i", None, self.mh),
             ('export', None, _("Export"), "<Alt>x", None, self.mh),
-            ('radioreference', None, _("Import from RadioReference.com"), None, None, self.mh),
-            ('rfinder', None, _("Import from RFinder"), None, None, self.mh),
+            ('importsrc', None, _("Import from data source"), None, None, self.mh),
+            ('iradioreference', None, _("RadioReference.com"), None, None, self.mh),
+            ('irfinder', None, _("RFinder"), None, None, self.mh),
+            ('irbook', None, _("RepeaterBook"), None, None, self.mh),
+            ('querysrc', None, _("Query data source"), None, None, self.mh),
+            ('qradioreference', None, _("RadioReference.com"), None, None, self.mh),
+            ('qrfinder', None, _("RFinder"), None, None, self.mh),
+            ('qrbook', None, _("RepeaterBook"), None, None, self.mh),
             ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
-            ('rbook', None, _("Import from RepeaterBook"), None, None, self.mh),
             ('stock', None, _("Import from stock config"), None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
