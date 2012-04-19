@@ -490,7 +490,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 
-	lo, hi = self.VALID_BANDS[3]    # this is fm broadcasting
+	lo, hi = self.VALID_BANDS[2]    # this is fm broadcasting
 	if mem.freq >= lo and mem.freq <= hi:
             if mem.mode != "FM":
                 msgs.append(chirp_common.ValidationError("Only FM is supported in this band"))
