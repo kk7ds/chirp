@@ -151,6 +151,27 @@ def upload(radio):
                 s.msg = "Cloning to radio"
                 radio.status_fn(s)
 
+def get_freq(rawfreq):
+    # Ugh.  The 0x80 and 0x40 indicate values to add to get the
+    # real frequency.  Gross.
+    if rawfreq > 8000000000:
+        rawfreq = (rawfreq - 8000000000) + 5000
+
+    if rawfreq > 4000000000:
+        rawfreq = (rawfreq - 4000000000) + 2500
+
+    return rawfreq
+
+def set_freq(freq, obj, field):
+    obj[field] = freq / 10000
+    if (freq % 1000) == 500:
+        obj[field][0].set_bits(0x40)
+
+    if (freq % 10000) >= 5000:
+        obj[field][0].set_bits(0x80)
+        
+    return freq
+
 class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
@@ -195,37 +216,15 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
 
-    def _get_mem_freq(self, mem, _mem):
-        f = mem.freq
-        # Ugh.  The 0x80 and 0x40 indicate values to add to get the
-        # real frequency.  Gross.
-
-        if f > 8000000000:
-            f = (f - 8000000000) + 5000
-
-        if f > 4000000000:
-            f = (f - 4000000000) + 2500
-
-        return f
-
-    def _set_mem_freq(self, mem, _mem):
-        _mem.freq = mem.freq / 10000
-
-        if (mem.freq % 1000) == 500:
-            _mem.freq[0].set_bits(0x40)  # +2500Hz
-
-        if (mem.freq % 10000) >= 5000:
-            _mem.freq[0].set_bits(0x80)  # +5000Hz
-
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            return int(_mem.split) * 10000
+            return get_freq(int(_mem.split) * 10000)
         else:
             return (_mem.offset * 5) * 10000
 
     def _set_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            _mem.split = int(mem.offset / 10000)
+            set_freq(mem.offset, _mem, "split")
         else:
             _mem.offset = (int(mem.offset / 10000) / 5)
 
@@ -270,9 +269,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return mem
 
-        mem.freq = int(_mem.freq) * 10000
-        mem.freq = self._get_mem_freq(mem, _mem)
-
+        mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
         mem.mode = _mem.mode_am and "AM" or "FM"
@@ -299,7 +296,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return
 
-        self._set_mem_freq(mem, _mem)
+        set_freq(mem.freq, _mem, "freq")
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.mode_am = mem.mode == "AM" and 1 or 0
@@ -456,7 +453,7 @@ class FT8800Radio(FTx800Radio):
 
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            return int(_mem.split) * 10000
+            return get_freq(int(_mem.split) * 10000)
 
         # The offset is packed into the upper two bits of the last four
         # bytes of the name (?!)
@@ -469,7 +466,7 @@ class FT8800Radio(FTx800Radio):
 
     def _set_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
-            _mem.split = int(mem.offset / 10000)
+            set_freq(mem.offset, _mem, "split")
             return
 
         val = int(mem.offset / 10000) / 5
