@@ -1428,6 +1428,28 @@ If you think that it is valid, you can select a radio model below to force an op
         d.run()
         d.destroy()
 
+    def _init_macos(self, menu_bar):
+        try:
+            import gtk_osxapplication
+            macapp = gtk_osxapplication.OSXApplication()
+        except ImportError, e:
+            print "No MacOS support: %s" % e
+            return
+        
+        menu_bar.hide()
+        macapp.set_menu_bar(menu_bar)
+
+        quititem = self.menu_uim.get_widget("/MenuBar/file/quit")
+        quititem.hide()
+
+        aboutitem = self.menu_uim.get_widget("/MenuBar/help/about")
+        macapp.insert_app_menu_item(aboutitem, 0)
+
+        macapp.set_use_quartz_accelerators(False)
+        macapp.ready()
+
+        print "Initialized MacOS support"
+
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
@@ -1435,25 +1457,18 @@ If you think that it is valid, you can select a radio model below to force an op
         if d and os.path.isdir(d):
             platform.get_platform().set_last_dir(d)
 
-        if os.name != "nt":
-            # Windows gets the icon from the exe
-            self._set_icon()
-
         vbox = gtk.VBox(False, 2)
 
         self._recent = []
 
         self.menu_ag = None
         mbar = self.make_menubar()
-        try:
-            import gtkmacintegration
-            mbar.hide()
-            gtkmacintegration.gtk_mac_menu_set_menu_bar(mbar)
-            gtkmacintegration.gtk_mac_menu_set_global_key_handler_enabled(False)
-            print "Enabled OSX menubar integration"
-        except ImportError:
-            pass
-        
+
+        if os.name != "nt":
+            self._set_icon() # Windows gets the icon from the exe
+            if os.uname()[0] == "Darwin":
+                self._init_macos(mbar)
+
         vbox.pack_start(mbar, 0, 0, 0)
 
         self.tabs = None
