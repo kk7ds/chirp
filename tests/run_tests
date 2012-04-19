@@ -374,6 +374,13 @@ class TestCaseBruteForce(TestCase):
         self.do_skip(clean_mem(), rf)
         self.do_mode(clean_mem(), rf)
 
+        if 12.5 in rf.valid_tuning_steps and \
+                "split" in rf.valid_duplexes:
+            m = clean_mem()
+            m.offset = 151137500
+            m.duplex = "split"
+            self.set_and_compare(m)
+
         return []
 TESTS["BruteForce"] = TestCaseBruteForce
 
