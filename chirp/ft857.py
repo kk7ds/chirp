@@ -82,20 +82,6 @@ struct mem_struct sixtymeterchannels[5];
 """
 
 
-SPECIAL_PMS = {          # WARNING Index are hard wired in memory management code !!!
-    "PMS-1L" : -47,
-    "PMS-1U" : -46,
-    "PMS-2L" : -45,
-    "PMS-2U" : -44,
-    "PMS-3L" : -43,
-    "PMS-3U" : -42,
-    "PMS-4L" : -41,
-    "PMS-4U" : -40,
-    "PMS-5L" : -39,
-    "PMS-5U" : -38,
-}
-
-
 @directory.register
 class FT857Radio(ft817.FT817Radio):
     MODEL = "FT-857/897"
@@ -182,6 +168,24 @@ class FT857Radio(ft817.FT817Radio):
     FIRST_VFOA_INDEX = -22
     LAST_VFOA_INDEX = -37
 
+    SPECIAL_PMS = {          # WARNING Index are hard wired in memory management code !!!
+        "PMS-1L" : -47,
+        "PMS-1U" : -46,
+        "PMS-2L" : -45,
+        "PMS-2U" : -44,
+        "PMS-3L" : -43,
+        "PMS-3U" : -42,
+        "PMS-4L" : -41,
+        "PMS-4U" : -40,
+        "PMS-5L" : -39,
+        "PMS-5U" : -38,
+    }
+
+    SPECIAL_MEMORIES = dict(ft817.FT817Radio.SPECIAL_MEMORIES)
+    SPECIAL_MEMORIES.update(SPECIAL_PMS)
+
+    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(), SPECIAL_MEMORIES.keys()))
+
     def get_features(self):
         rf = ft817.FT817Radio.get_features(self)
         rf.has_cross = True
@@ -215,21 +219,19 @@ class FT857Radio(ft817.FT817Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
-    def get_special_locations(self):
-        lista = SPECIAL_PMS.keys()
-        lista.extend(self.SPECIAL_MEMORIES)
-        return lista
-
     def _get_special_pms(self, number):
         mem = chirp_common.Memory()
-        mem.number = SPECIAL_PMS[number]
+        mem.number = self.SPECIAL_PMS[number]
         mem.extd_number = number
 
 	bitindex = -38 - mem.number
-        used = ((self._memobj.pmsvisible & self._memobj.pmsfilled) >> bitindex) & 0x01
+        used = (self._memobj.pmsvisible >> bitindex) & 0x01
+        valid = (self._memobj.pmsfilled >> bitindex) & 0x01
         if os.getenv("CHIRP_DEBUG"):
-	    print "mem.number %i bitindex %i pmsvisible %i pmsfilled %i used %i" % (mem.number, bitindex, self._memobj.pmsvisible, self._memobj.pmsfilled, used)
+	    print "mem.number %i bitindex %i pmsvisible %i pmsfilled %i used %i filled %i" % (mem.number, bitindex, self._memobj.pmsvisible, self._memobj.pmsfilled, used, valid)
         if not used:
+            mem.empty = True
+        if not valid:
             mem.empty = True
             return mem
 
@@ -240,20 +242,25 @@ class FT857Radio(ft817.FT817Radio):
         mem.immutable = ["number", "skip", "rtone", "ctone",
                          "extd_number", "dtcs", "tmode", "cross_mode",
                          "dtcs_polarity", "power", "duplex", "offset",
-                         "comment", "empty"]
+                         "comment"]
 
         return mem
 
     def _set_special_pms(self, mem):
-        cur_mem = self._get_special_pms(mem.extd_number)
+        cur_mem = self._get_special_pms(self.SPECIAL_MEMORIES_REV[mem.number])
 
 	bitindex = -38 - mem.number
-	if mem.empty:
+        wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
+        wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
+
+        if mem.empty:
+            if wasvalid and not wasused:
+                self._memobj.pmsfilled &= ~ (1 << bitindex)
             self._memobj.pmsvisible &= ~ (1 << bitindex)
-            self._memobj.pmsfilled = self._memobj.pmsvisible
             return
+
         self._memobj.pmsvisible |=  1 << bitindex
-        self._memobj.pmsfilled = self._memobj.pmsvisible
+        self._memobj.pmsfilled |=  1 << bitindex
         
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
@@ -264,13 +271,16 @@ class FT857Radio(ft817.FT817Radio):
         self._set_memory(mem, _mem)
 
     def get_memory(self, number):
-        if number in SPECIAL_PMS.keys():
+        if number in self.SPECIAL_PMS.keys():
             return self._get_special_pms(number)
+        elif number < 0 and self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_PMS.keys():
+            # I can't stop delete operation from loosing extd_number but I know how to get it back
+            return self._get_special_pms(self.SPECIAL_MEMORIES_REV[number])
         else:
             return ft817.FT817Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.extd_number in SPECIAL_PMS.keys():
+        if memory.number in self.SPECIAL_PMS.values():
             return self._set_special_pms(memory)
         else:
             return ft817.FT817Radio.set_memory(self, memory)
@@ -297,10 +307,10 @@ class FT857_US_Radio(FT857Radio):
         }
     LAST_SPECIAL60M_INDEX = -52
     
-    def get_special_locations(self):
-        lista = self.SPECIAL_60M.keys()
-        lista.extend(FT857Radio.get_special_locations(self))
-        return lista
+    SPECIAL_MEMORIES = dict(FT857Radio.SPECIAL_MEMORIES)
+    SPECIAL_MEMORIES.update(SPECIAL_60M)
+
+    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(), SPECIAL_MEMORIES.keys()))
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
     def _get_special_60M(self, number):
@@ -321,7 +331,11 @@ class FT857_US_Radio(FT857Radio):
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
     def _set_special_60M(self, mem):
-        cur_mem = self._get_special_60M(mem.extd_number)
+        if mem.empty:
+            # can't delete 60M memories!
+            raise Exception("Sorry, 60M memory can't be deleted")
+
+        cur_mem = self._get_special_60M(self.SPECIAL_MEMORIES_REV[mem.number])
 
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
@@ -337,11 +351,14 @@ class FT857_US_Radio(FT857Radio):
     def get_memory(self, number):
         if number in self.SPECIAL_60M.keys():
             return self._get_special_60M(number)
+        elif number < 0 and self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
+            # I can't stop delete operation from loosing extd_number but I know how to get it back
+            return self._get_special_60M(self.SPECIAL_MEMORIES_REV[number])
         else:
             return FT857Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.extd_number in self.SPECIAL_60M.keys():
+        if memory.number in self.SPECIAL_60M.values():
             return self._set_special_60M(memory)
         else:
             return FT857Radio.set_memory(self, memory)

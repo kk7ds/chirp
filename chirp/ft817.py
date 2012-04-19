@@ -232,6 +232,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     FIRST_VFOA_INDEX = -21
     LAST_VFOA_INDEX = -35
 
+    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(), SPECIAL_MEMORIES.keys()))
+
     def sync_in(self):
         try:
             self._mmap = clone_in(self)
@@ -293,6 +295,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_memory(self, number):
         if isinstance(number, str):
             return self._get_special(number)
+        elif number < 0:
+            # I can't stop delete operation from loosing extd_number but I know how to get it back
+            return self._get_special(self.SPECIAL_MEMORIES_REV[number])
         else:
             return self._get_normal(number)
 
@@ -335,15 +340,18 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def _set_special(self, mem):
-        cur_mem = self._get_special(mem.extd_number)
+        if mem.empty:
+            # can't delete special memories!
+            raise Exception("Sorry, special memory can't be deleted")
+
+        cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number])
 
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
                 raise errors.RadioError("Editing field `%s' " % key +
-                                        "is not supported on this chanel")
+                                        "is not supported on this channel")
 
         # TODO add frequency range check for vfo and home memories
-
         if mem.number in range(self.FIRST_VFOA_INDEX, self.LAST_VFOA_INDEX -1, -1):
             _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
         elif mem.number in range(self.FIRST_VFOB_INDEX, self.LAST_VFOB_INDEX -1, -1):
@@ -388,7 +396,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             return
         
         self._memobj.visible[(mem.number-1)/8] |= 1 << (mem.number-1)%8
-        self._memobj.filled[(mem.number-1)/8] = self._memobj.visible[(mem.number-1)/8]
+        self._memobj.filled[(mem.number-1)/8] |= 1 << (mem.number-1)%8
         self._set_memory(mem, _mem)
 
     def _get_memory(self, mem, _mem):
@@ -522,10 +530,10 @@ class FT817ND_US_Radio(FT817Radio):
         }
     LAST_SPECIAL60M_INDEX = -40
 
-    def get_special_locations(self):
-        lista = self.SPECIAL_60M.keys()
-        lista.extend(FT817Radio.get_special_locations(self))
-        return lista
+    SPECIAL_MEMORIES = dict(FT817Radio.SPECIAL_MEMORIES)
+    SPECIAL_MEMORIES.update(SPECIAL_60M)
+
+    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(), SPECIAL_MEMORIES.keys()))
 
     def _get_special_60M(self, number):
         mem = chirp_common.Memory()
@@ -544,7 +552,11 @@ class FT817ND_US_Radio(FT817Radio):
         return mem
 
     def _set_special_60M(self, mem):
-        cur_mem = self._get_special_60M(mem.extd_number)
+        if mem.empty:
+            # can't delete 60M memories!
+            raise Exception("Sorry, 60M memory can't be deleted")
+
+        cur_mem = self._get_special_60M(self.SPECIAL_MEMORIES_REV[mem.number])
 
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
@@ -560,11 +572,14 @@ class FT817ND_US_Radio(FT817Radio):
     def get_memory(self, number):
         if number in self.SPECIAL_60M.keys():
             return self._get_special_60M(number)
+        elif number < 0 and self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
+            # I can't stop delete operation from loosing extd_number but I know how to get it back
+            return self._get_special_60M(self.SPECIAL_MEMORIES_REV[number])
         else:
             return FT817Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.extd_number in self.SPECIAL_60M.keys():
+        if memory.number in self.SPECIAL_60M.values():
             return self._set_special_60M(memory)
         else:
             return FT817Radio.set_memory(self, memory)
