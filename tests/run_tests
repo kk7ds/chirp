@@ -1001,6 +1001,8 @@ if __name__ == "__main__":
                   help="Driver to test (omit for all)")
     op.add_option("-t", "--test", dest="test", default=None,
                   help="Test to run (omit for all)")
+    op.add_option("-e", "--exclude", dest="exclude", default=None,
+                  help="Test to exclude")
     op.add_option("",   "--html", dest="html", default=None,
                   help="Output to HTML file")
     op.add_option("-l", "--live", dest="live", default=None,
@@ -1023,6 +1025,9 @@ Available tests:
         test_out = TestOutputANSI(stdout)
 
     test_out.prepare()
+
+    if options.exclude:
+        del TESTS[options.exclude]
 
     if options.test:
         tr = TestRunner("images", [TESTS[options.test]], test_out)
