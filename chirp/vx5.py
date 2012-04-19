@@ -116,6 +116,8 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.mode = "NFM"
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.offset = int(_mem.offset) * 1000
+        if mem.duplex == "split":
+            mem.offset = chirp_common.fix_rounded_step(mem.offset)
         mem.tmode = TMODES[_mem.tmode]
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]

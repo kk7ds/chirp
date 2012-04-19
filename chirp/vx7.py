@@ -220,6 +220,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
+        if mem.duplex == "split":
+            mem.offset = chirp_common.fix_rounded_step(mem.offset)
         mem.mode = MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
