@@ -587,6 +587,5 @@ class FT8900Radio(FT8800Radio):
         else:
             _mem.sub_used = 1
 
-        if mem.mode[0] == "N": # is it narrow?
-            _mem.is_fm_narrow = 1
+        _mem.is_fm_narrow = mem.mode[0] == "N"
 
