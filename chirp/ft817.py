@@ -347,7 +347,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.number in range(self.FIRST_VFOA_INDEX, self.LAST_VFOA_INDEX -1, -1):
             _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
         elif mem.number in range(self.FIRST_VFOB_INDEX, self.LAST_VFOB_INDEX -1, -1):
-            _mem = self._memobj.vfob[self.LAST_VFOB_INDEX + mem.number]
+            _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + mem.number]
         elif mem.number in range(-2, -6, -1):
             _mem = self._memobj.home[5 + mem.number]
         elif mem.number == -1:
