@@ -233,8 +233,8 @@ struct {
   u8 vfo;
   bbcd number[2];
   lbcd freq[5];
-  lbcd offset[3];
-  u8 unknown8[2];
+  lbcd offset[4];
+  u8 unknown8;
   bbcd rtone[2];
   bbcd ctone[2];
   bbcd dtcs[2];
