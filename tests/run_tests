@@ -258,6 +258,12 @@ class TestCaseBruteForce(TestCase):
         self._wrapper.do("set_memory", m)
         ret_m = self._wrapper.do("get_memory", m.number)
 
+        # Damned Baofeng radios don't seem to properly store
+        # shift and direction, so be gracious here
+        if m.duplex == "split" and ret_m.duplex in ["-", "+"]:
+            ret_m.offset = ret_m.freq + (ret_m.offset * int(ret_m.duplex + "1"))
+            ret_m.duplex = "split"
+
         self.compare_mem(m, ret_m)
 
     def do_tone(self, m, rf):
