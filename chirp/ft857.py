@@ -16,6 +16,7 @@
 
 from chirp import ft817, chirp_common, errors, directory
 from chirp import bitwise
+import os
 
 mem_format = """
 struct mem_struct{
@@ -226,7 +227,8 @@ class FT857Radio(ft817.FT817Radio):
 
 	bitindex = -38 - mem.number
         used = ((self._memobj.pmsvisible & self._memobj.pmsfilled) >> bitindex) & 0x01
-	print "mem.number %i bitindex %i pmsvisible %i pmsfilled %i used %i" % (mem.number, bitindex, self._memobj.pmsvisible, self._memobj.pmsfilled, used)
+        if os.getenv("CHIRP_DEBUG"):
+	    print "mem.number %i bitindex %i pmsvisible %i pmsfilled %i used %i" % (mem.number, bitindex, self._memobj.pmsvisible, self._memobj.pmsfilled, used)
         if not used:
             mem.empty = True
             return mem
