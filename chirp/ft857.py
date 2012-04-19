@@ -243,7 +243,7 @@ class FT857Radio(ft817.FT817Radio):
         return mem
 
     def _set_special_pms(self, mem):
-        cur_mem = self._get_special(mem.extd_number)
+        cur_mem = self._get_special_pms(mem.extd_number)
 
 	bitindex = -38 - mem.number
 	if mem.empty:
