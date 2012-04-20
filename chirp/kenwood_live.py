@@ -701,7 +701,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_duplexes = THF6A_DUPLEX.values()
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
-        rf.valid_name_length = 7
+        rf.valid_name_length = 8
         rf.memory_bounds = (0, self._upper)
         return rf
 
