@@ -1,15 +1,15 @@
 #!/bin/bash
 
-LOCATION=$(dirname ${BASH_SOURCE})
+LOCATION=$(dirname "${BASH_SOURCE}")
 
 PYTHON=/opt/kk7ds//Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
 
 if [ -x $PYTHON ]; then
-    ln -s $PYTHON ${LOCATION}/../CHIRP
+    ln -s $PYTHON "${LOCATION}/../CHIRP"
     PYTHON=${LOCATION}/../CHIRP
     export PYTHONPATH="/opt/kk7ds//Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/"
 else
     PYTHON=/opt/kk7ds/bin/python2.7
 fi
 
-exec $PYTHON ${LOCATION}/../Resources/chirp/chirpw
+exec "$PYTHON" "${LOCATION}/../Resources/chirp/chirpw"
