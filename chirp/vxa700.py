@@ -138,7 +138,10 @@ struct memory_struct memory[100];
 """
 
 CHARSET = "".join(["%i" % i for i in range(0, 10)]) + \
-    "".join([chr(ord("A") + i) for i in range(0, 26)]) 
+    "".join([chr(ord("A") + i) for i in range(0, 26)]) + \
+    "".join([chr(ord("a") + i) for i in range(0,26)]) + \
+    "., :;!\"#$%&'()*+-/=<>?@[?]^_`{|}????~??????????????????????????"
+            
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", ""]
 POWER = [chirp_common.PowerLevel("Low1", watts=0.050),
@@ -234,7 +237,8 @@ class VXA700Radio(chirp_common.CloneModeRadio):
                 mem.name += CHARSET[char]
             except IndexError:
                 break
-        
+        mem.name = mem.name.rstrip()
+
         return mem
 
     def _wipe_memory(self, _mem):
