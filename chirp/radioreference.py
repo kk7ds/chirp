@@ -97,6 +97,8 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, len(self._freqs)-1)
         rf.has_bank = False
+        rf.has_ctone = False
+        rf.valid_tmodes = ["", "TSQL", "DTCS"]
         return rf
 
     def get_raw_memory(self, number):

@@ -286,6 +286,9 @@ class RFinderRadio(chirp_common.NetworkSourceRadio):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, len(self._rfp.get_memories()))
         rf.has_bank = False
+        rf.has_ctone = False
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = ["", "FM", "NFM", "AM", "NAM", "DV"]
         return rf
 
     def get_memory(self, number):
