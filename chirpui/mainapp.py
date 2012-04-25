@@ -822,19 +822,23 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_open_live(radio, read_only=True)
 
     def do_rfinder_prompt(self):
-        fields = {"1Email"    : (gtk.Entry(),
-                                lambda x: "@" in x),
-                  "2Password" : (gtk.Entry(),
-                                lambda x: x),
-                  "3Latitude" : (gtk.Entry(),
-                                lambda x: float(x) < 90 and float(x) > -90),
-                  "4Longitude": (gtk.Entry(),
-                                lambda x: float(x) < 180 and float(x) > -180),
+        fields = {"1Email"    :      (gtk.Entry(),
+                                      lambda x: "@" in x),
+                  "2Password" :      (gtk.Entry(),
+                                      lambda x: x),
+                  "3Latitude" :      (gtk.Entry(),
+                                      lambda x: float(x) < 90 and \
+                                          float(x) > -90),
+                  "4Longitude":      (gtk.Entry(),
+                                      lambda x: float(x) < 180 and \
+                                          float(x) > -180),
+                  "5Range_in_Miles": (gtk.Entry(),
+                                      lambda x: int(x) > 0 and int(x) < 5000),
                   }
 
         d = inputdialog.FieldDialog(title="RFinder Login", parent=self)
         for k in sorted(fields.keys()):
-            d.add_field(k[1:], fields[k][0])
+            d.add_field(k[1:].replace("_", " "), fields[k][0])
             fields[k][0].set_text(CONF.get(k[1:], "rfinder") or "")
             fields[k][0].set_visibility(k != "2Password")
 
@@ -869,6 +873,7 @@ If you think that it is valid, you can select a radio model below to force an op
         lon = CONF.get_float("Longitude", "rfinder")
         passwd = CONF.get("Password", "rfinder")
         email = CONF.get("Email", "rfinder")
+        miles = CONF.get_int("Range_in_Miles", "rfinder")
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
@@ -878,11 +883,11 @@ If you think that it is valid, you can select a radio model below to force an op
 
         if do_import:
             eset = self.get_current_editorset()
-            count = eset.do_import("rfinder://%s/%s/%f/%f" % (email, passwd, lat, lon))
+            count = eset.do_import("rfinder://%s/%s/%f/%f/%i" % (email, passwd, lat, lon, miles))
         else:
             from chirp import rfinder
             radio = rfinder.RFinderRadio(None)
-            radio.set_params(lat, lon, email, passwd)
+            radio.set_params(lat, lon, miles, email, passwd)
             self.do_open_live(radio, read_only=True)
 
         self.window.set_cursor(None)

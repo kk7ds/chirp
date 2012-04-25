@@ -87,9 +87,9 @@ def get_radio_by_image(image_file):
         return rr
     
     if image_file.startswith("rfinder://"):
-        method, _, email, passwd, lat, lon = image_file.split("/")
+        method, _, email, passwd, lat, lon, miles = image_file.split("/")
         rf = rfinder.RFinderRadio(None)
-        rf.set_params(float(lat), float(lon), email, passwd)
+        rf.set_params(float(lat), float(lon), int(miles), email, passwd)
         return rf
     
     if os.path.exists(image_file) and icf.is_icf_file(image_file):
