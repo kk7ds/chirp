@@ -113,27 +113,35 @@ class ImportDialog(gtk.Dialog):
 
     def _edited(self, rend, path, new, col):
         iter = self.__store.get_iter(path)
-        nloc, = self.__store.get(iter, self.col_nloc)
+        
+        if col == self.col_nloc:
+            nloc, = self.__store.get(iter, self.col_nloc)
 
-        try:
-            val = int(new)
-        except ValueError:
-            common.show_error(_("Invalid value. Must be an integer."))
+            try:
+                val = int(new)
+            except ValueError:
+                common.show_error(_("Invalid value. Must be an integer."))
+                return
+
+            if val == nloc:
+                return
+
+            if self._check_for_dupe(val):
+                d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+                d.set_property("text",
+                               _("Location {number} is already being "
+                                 "imported").format(number=val))
+                d.run()
+                d.destroy()
+                return
+
+            self.record_use_of(val)
+
+        elif col == self.col_name or col == self.col_comm:
+            val = str(new)
+
+        else:
             return
-
-        if val == nloc:
-            return
-
-        if self._check_for_dupe(val):
-            d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
-            d.set_property("text",
-                           _("Location {number} is already being "
-                             "imported").format(number=val))
-            d.run()
-            d.destroy()
-            return
-
-        self.record_use_of(val)
 
         self.__store.set(iter, col, val)
 
@@ -141,12 +149,14 @@ class ImportDialog(gtk.Dialog):
         import_list = []
         iter = self.__store.get_iter_first()
         while iter:
-            old, new, enb = self.__store.get(iter,
+            old, new, name, comm, enb = self.__store.get(iter,
                                              self.col_oloc,
                                              self.col_nloc,
+                                             self.col_name,
+                                             self.col_comm,
                                              self.col_import)
             if enb:
-                import_list.append((old, new))
+                import_list.append((old, new, name, comm))
             iter = self.__store.iter_next(iter)
 
         return import_list
@@ -238,7 +248,7 @@ class ImportDialog(gtk.Dialog):
 
         src_features = self.src_radio.get_features()
 
-        for old, new in import_list:
+        for old, new, name, comm in import_list:
             i += 1
             print "%sing %i -> %i" % (self.ACTION, old, new)
 
@@ -248,7 +258,9 @@ class ImportDialog(gtk.Dialog):
                 mem = import_logic.import_mem(self.dst_radio,
                                               src_features,
                                               src,
-                                              {"number" : new})
+                                              {"number" : new,
+                                               "name"   : name,
+                                               "comment": comm})
             except import_logic.ImportError, e:
                 print e
                 error_messages[new] = str(e)
@@ -271,7 +283,7 @@ class ImportDialog(gtk.Dialog):
         return i
 
     def make_view(self):
-        editable = [self.col_nloc]
+        editable = [self.col_nloc, self.col_name, self.col_comm]
 
         self.__store = gtk.ListStore(gobject.TYPE_BOOLEAN, # Import
                                      gobject.TYPE_INT,     # Source loc
