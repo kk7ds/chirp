@@ -66,11 +66,11 @@ struct mem_struct mtune;
 
 #seekto 0x4a9;
 u8 visible[25];
-u16 pmsvisible;
+ul16 pmsvisible;
 
 #seekto 0x4c4;
 u8 filled[25];
-u16 pmsfilled;
+ul16 pmsfilled;
 
 #seekto 0x4df;
 struct mem_struct memory[200];
@@ -224,7 +224,7 @@ class FT857Radio(ft817.FT817Radio):
         mem.number = self.SPECIAL_PMS[number]
         mem.extd_number = number
 
-	bitindex = -38 - mem.number
+	bitindex = 47 + mem.number
         used = (self._memobj.pmsvisible >> bitindex) & 0x01
         valid = (self._memobj.pmsfilled >> bitindex) & 0x01
         if os.getenv("CHIRP_DEBUG"):
@@ -249,7 +249,7 @@ class FT857Radio(ft817.FT817Radio):
     def _set_special_pms(self, mem):
         cur_mem = self._get_special_pms(self.SPECIAL_MEMORIES_REV[mem.number])
 
-	bitindex = -38 - mem.number
+	bitindex = 47 + mem.number
         wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
         wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
 
