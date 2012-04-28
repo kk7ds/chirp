@@ -14,73 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""FT857 - FT857/US management module"""
+
 from chirp import ft817, chirp_common, errors, directory
-from chirp import bitwise
 import os
-
-MEM_FORMAT = """
-struct mem_struct{
-  u8   tag_on_off:1,
-       tag_default:1,
-       unknown1:3,
-       mode:3;
-  u8   duplex:2,
-       is_duplex:1,
-       is_cwdig_narrow:1,
-       is_fm_narrow:1,
-       freq_range:3;
-  u8   skip:1,
-       unknokwn1_1:1,
-       ipo:1,
-       att:1,
-       unknown2:4;
-  u8   ssb_step:2,
-       am_step:3,
-       fm_step:3;
-  u8   unknown3:3,
-       is_split_tone:1,
-       tmode:4;
-  u8   unknown4:2,
-       tx_mode:3,
-       tx_freq_range:3;
-  u8   unknown5:1,
-       unknown_flag:1,
-       tone:6;
-  u8   unknown6:8;
-  u8   unknown7:1,
-       dcs:7;
-  u8   unknown8:8;
-  ul16 rit;
-  u32 freq;
-  u32 offset;
-  u8   name[8];
-};
-
-#seekto 0x54;
-struct mem_struct vfoa[16];
-struct mem_struct vfob[16];
-struct mem_struct home[4];
-struct mem_struct qmb;
-struct mem_struct mtqmb;
-struct mem_struct mtune;
-
-#seekto 0x4a9;
-u8 visible[25];
-ul16 pmsvisible;
-
-#seekto 0x4c4;
-u8 filled[25];
-ul16 pmsfilled;
-
-#seekto 0x4df;
-struct mem_struct memory[200];
-struct mem_struct pms[10];
-
-#seekto 0x1CAD;
-struct mem_struct sixtymeterchannels[5];
-
-"""
-
 
 @directory.register
 class FT857Radio(ft817.FT817Radio):
@@ -128,6 +65,69 @@ class FT857Radio(ft817.FT817Radio):
     VALID_BANDS = [(100000, 33000000), (33000000, 56000000),
                    (76000000, 108000000), (108000000, 137000000),
                    (137000000, 164000000), (420000000, 470000000)]
+
+    MEM_FORMAT = """
+        struct mem_struct{
+        u8   tag_on_off:1,
+            tag_default:1,
+            unknown1:3,
+            mode:3;
+        u8   duplex:2,
+            is_duplex:1,
+            is_cwdig_narrow:1,
+            is_fm_narrow:1,
+            freq_range:3;
+        u8   skip:1,
+            unknokwn1_1:1,
+            ipo:1,
+            att:1,
+            unknown2:4;
+        u8   ssb_step:2,
+            am_step:3,
+            fm_step:3;
+        u8   unknown3:3,
+            is_split_tone:1,
+            tmode:4;
+        u8   unknown4:2,
+            tx_mode:3,
+            tx_freq_range:3;
+        u8   unknown5:1,
+            unknown_flag:1,
+            tone:6;
+        u8   unknown6:8;
+        u8   unknown7:1,
+            dcs:7;
+        u8   unknown8:8;
+        ul16 rit;
+        u32 freq;
+        u32 offset;
+        u8   name[8];
+        };
+        
+        #seekto 0x54;
+        struct mem_struct vfoa[16];
+        struct mem_struct vfob[16];
+        struct mem_struct home[4];
+        struct mem_struct qmb;
+        struct mem_struct mtqmb;
+        struct mem_struct mtune;
+        
+        #seekto 0x4a9;
+        u8 visible[25];
+        ul16 pmsvisible;
+        
+        #seekto 0x4c4;
+        u8 filled[25];
+        ul16 pmsfilled;
+        
+        #seekto 0x4df;
+        struct mem_struct memory[200];
+        struct mem_struct pms[10];
+        
+        #seekto 0x1CAD;
+        struct mem_struct sixtymeterchannels[5];
+    
+    """
 
     # WARNING Index are hard wired in memory management code !!!
     SPECIAL_MEMORIES = {
@@ -208,7 +208,7 @@ class FT857Radio(ft817.FT817Radio):
         mem.duplex = self.DUPLEX[_mem.duplex]
 
     def _get_tmode(self, mem, _mem):
-	# I do not use is_split_tone here because the radio sometimes set it
+        # I do not use is_split_tone here because the radio sometimes set it
         # also for standard tone mode
         try:
             mem.tmode = self.TMODES[int(_mem.tmode)]
@@ -227,9 +227,6 @@ class FT857Radio(ft817.FT817Radio):
             _mem.tmode = self.CROSS_MODES_REV[mem.cross_mode]
             _mem.is_split_tone = 1
 
-    def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
     def _get_special_pms(self, number):
         mem = chirp_common.Memory()
         mem.number = self.SPECIAL_PMS[number]
@@ -243,9 +240,10 @@ class FT857Radio(ft817.FT817Radio):
                 (mem.number,
                  bitindex,
                  self._memobj.pmsvisible),
-            print "pmsfilled %i used %i filled %i" % (self._memobj.pmsfilled,
-                                                      used,
-                                                      valid)
+            print "pmsfilled %i used %i filled %i" % \
+                (self._memobj.pmsfilled,
+                 used,
+                 valid)
         if not used:
             mem.empty = True
         if not valid:
@@ -272,12 +270,17 @@ class FT857Radio(ft817.FT817Radio):
 
         if mem.empty:
             if wasvalid and not wasused:
-                self._memobj.pmsfilled &= ~ (1 << bitindex)
-            self._memobj.pmsvisible &= ~ (1 << bitindex)
+                # pylint get confused by &= operator
+                self._memobj.pmsfilled = self._memobj.pmsfilled & \
+                    ~ (1 << bitindex)
+            # pylint get confused by &= operator
+            self._memobj.pmsvisible = self._memobj.pmsvisible & \
+                ~ (1 << bitindex)
             return
 
-        self._memobj.pmsvisible |=  1 << bitindex
-        self._memobj.pmsfilled |=  1 << bitindex
+        # pylint get confused by |= operator
+        self._memobj.pmsvisible = self._memobj.pmsvisible | 1 << bitindex
+        self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
         
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
@@ -305,7 +308,7 @@ class FT857Radio(ft817.FT817Radio):
             return ft817.FT817Radio.set_memory(self, memory)
 
 @directory.register
-class FT857_US_Radio(FT857Radio):
+class FT857USRadio(FT857Radio):
     """Yaesu FT857/897 (US version)"""
     # seems that radios configured for 5MHz operations send one paket more
     # than others so we have to distinguish sub models
@@ -334,7 +337,7 @@ class FT857_US_Radio(FT857Radio):
                                     SPECIAL_MEMORIES.keys()))
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
-    def _get_special_60M(self, number):
+    def _get_special_60m(self, number):
         mem = chirp_common.Memory()
         mem.number = self.SPECIAL_60M[number]
         mem.extd_number = number
@@ -352,12 +355,12 @@ class FT857_US_Radio(FT857Radio):
         return mem
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
-    def _set_special_60M(self, mem):
+    def _set_special_60m(self, mem):
         if mem.empty:
             # can't delete 60M memories!
             raise Exception("Sorry, 60M memory can't be deleted")
 
-        cur_mem = self._get_special_60M(self.SPECIAL_MEMORIES_REV[mem.number])
+        cur_mem = self._get_special_60m(self.SPECIAL_MEMORIES_REV[mem.number])
 
         for key in cur_mem.immutable:
             if cur_mem.__dict__[key] != mem.__dict__[key]:
@@ -373,17 +376,17 @@ class FT857_US_Radio(FT857Radio):
 
     def get_memory(self, number):
         if number in self.SPECIAL_60M.keys():
-            return self._get_special_60M(number)
+            return self._get_special_60m(number)
         elif number < 0 and \
                 self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
             # I can't stop delete operation from loosing extd_number but
             # I know how to get it back
-            return self._get_special_60M(self.SPECIAL_MEMORIES_REV[number])
+            return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
         else:
             return FT857Radio.get_memory(self, number)
 
     def set_memory(self, memory):
         if memory.number in self.SPECIAL_60M.values():
-            return self._set_special_60M(memory)
+            return self._set_special_60m(memory)
         else:
             return FT857Radio.set_memory(self, memory)
