@@ -99,12 +99,15 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         
         #seekto 0x3FD;
         u8 visible[25];
+        u8 pmsvisible;
         
         #seekto 0x417;
         u8 filled[25];
+        u8 pmsfilled;
         
         #seekto 0x431;
         struct mem_struct memory[200];
+        struct mem_struct pms[2];
         
         #seekto 0x1979;
         struct mem_struct sixtymeterchannels[5];
@@ -153,8 +156,17 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     FIRST_VFOA_INDEX = -21
     LAST_VFOA_INDEX = -35
 
+    SPECIAL_PMS = {
+        "PMS-L" : -37,
+        "PMS-U" : -36,
+    }
+    LAST_PMS_INDEX = -37
+
+    SPECIAL_MEMORIES.update(SPECIAL_PMS)
+    
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
                                     SPECIAL_MEMORIES.keys()))
+
     def _read(self, block, blocknum):
         for _i in range(0, 60):
             data = self.pipe.read(block+2)
@@ -352,6 +364,19 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = self._memobj.qmb
             immutable = ["number", "skip", "rtone", "ctone", "extd_number",
                          "name", "dtcs_polarity", "power", "comment"]
+        elif mem.number in self.SPECIAL_PMS.values():
+            bitindex = -self.LAST_PMS_INDEX + mem.number
+            used = (self._memobj.pmsvisible >> bitindex) & 0x01
+            valid = (self._memobj.pmsfilled >> bitindex) & 0x01
+            if not used:
+                mem.empty = True
+            if not valid:
+                mem.empty = True
+                return mem
+            _mem = self._memobj.pms[-self.LAST_PMS_INDEX + mem.number]
+            immutable = ["number", "skip", "rtone", "ctone", "extd_number", 
+                         "dtcs", "tmode", "cross_mode", "dtcs_polarity", 
+                         "power", "duplex", "offset", "comment"]
         else:
             raise Exception("Sorry, special memory index %i " % mem.number +
                             "unknown you hit a bug!!")
@@ -362,16 +387,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def _set_special(self, mem):
-        if mem.empty:
+        if mem.empty and not mem.number in self.SPECIAL_PMS.values():
             # can't delete special memories!
             raise Exception("Sorry, special memory can't be deleted")
 
         cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number])
-
-        for key in cur_mem.immutable:
-            if cur_mem.__dict__[key] != mem.__dict__[key]:
-                raise errors.RadioError("Editing field `%s' " % key +
-                                        "is not supported on this channel")
 
         # TODO add frequency range check for vfo and home memories
         if mem.number in range(self.FIRST_VFOA_INDEX,
@@ -386,9 +406,33 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = self._memobj.home[5 + mem.number]
         elif mem.number == -1:
             _mem = self._memobj.qmb
+        elif mem.number in self.SPECIAL_PMS.values():
+            # this case has to be last because 817 pms keys overlap with
+            # 857 derived class other special memories
+            bitindex = -self.LAST_PMS_INDEX + mem.number
+            wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
+            wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
+            if mem.empty:
+                if wasvalid and not wasused:
+                    # pylint get confused by &= operator
+                    self._memobj.pmsfilled = self._memobj.pmsfilled & \
+                        ~ (1 << bitindex)
+                # pylint get confused by &= operator
+                self._memobj.pmsvisible = self._memobj.pmsvisible & \
+                    ~ (1 << bitindex)
+                return
+            # pylint get confused by |= operator
+            self._memobj.pmsvisible = self._memobj.pmsvisible | 1 << bitindex
+            self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
+            _mem = self._memobj.pms[-self.LAST_PMS_INDEX + mem.number]
         else:
             raise Exception("Sorry, special memory index %i " % mem.number +
                             "unknown you hit a bug!!")
+
+        for key in cur_mem.immutable:
+            if cur_mem.__dict__[key] != mem.__dict__[key]:
+                raise errors.RadioError("Editing field `%s' " % key +
+                                        "is not supported on this channel")
 
         self._set_memory(mem, _mem)
 
@@ -559,13 +603,13 @@ class FT817NDUSRadio(FT817Radio):
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130, 130]
 
     SPECIAL_60M = {
-        "M-601" : -40,
-        "M-602" : -39,
-        "M-603" : -38,
-        "M-604" : -37,
-        "M-605" : -36,
+        "M-601" : -42,
+        "M-602" : -41,
+        "M-603" : -40,
+        "M-604" : -39,
+        "M-605" : -38,
         }
-    LAST_SPECIAL60M_INDEX = -40
+    LAST_SPECIAL60M_INDEX = -42
 
     SPECIAL_MEMORIES = dict(FT817Radio.SPECIAL_MEMORIES)
     SPECIAL_MEMORIES.update(SPECIAL_60M)

@@ -17,7 +17,6 @@
 """FT857 - FT857/US management module"""
 
 from chirp import ft817, chirp_common, errors, directory
-import os
 
 @directory.register
 class FT857Radio(ft817.FT817Radio):
@@ -164,7 +163,6 @@ class FT857Radio(ft817.FT817Radio):
     FIRST_VFOA_INDEX = -22
     LAST_VFOA_INDEX = -37
 
-    # WARNING Index are hard wired in memory management code !!!
     SPECIAL_PMS = {
         "PMS-1L" : -47,
         "PMS-1U" : -46,
@@ -177,8 +175,8 @@ class FT857Radio(ft817.FT817Radio):
         "PMS-5L" : -39,
         "PMS-5U" : -38,
     }
+    LAST_PMS_INDEX = -47
 
-    SPECIAL_MEMORIES = dict(SPECIAL_MEMORIES)
     SPECIAL_MEMORIES.update(SPECIAL_PMS)
 
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
@@ -225,86 +223,6 @@ class FT857Radio(ft817.FT817Radio):
         _mem.txtone = chirp_common.TONES.index(mem.ctone)
         # dunno if ther's the same problem here but to be safe ...
         _mem.unknown_txtoneflag = 0
-
-    def _get_special_pms(self, number):
-        mem = chirp_common.Memory()
-        mem.number = self.SPECIAL_PMS[number]
-        mem.extd_number = number
-
-        bitindex = 47 + mem.number
-        used = (self._memobj.pmsvisible >> bitindex) & 0x01
-        valid = (self._memobj.pmsfilled >> bitindex) & 0x01
-        if os.getenv("CHIRP_DEBUG"):
-            print "mem.number %i bitindex %i pmsvisible %i" % \
-                (mem.number,
-                 bitindex,
-                 self._memobj.pmsvisible),
-            print "pmsfilled %i used %i filled %i" % \
-                (self._memobj.pmsfilled,
-                 used,
-                 valid)
-        if not used:
-            mem.empty = True
-        if not valid:
-            mem.empty = True
-            return mem
-
-        _mem = self._memobj.pms[47 + mem.number]
-
-        mem = self._get_memory(mem, _mem)
-
-        mem.immutable = ["number", "skip", "rtone", "ctone",
-                         "extd_number", "dtcs", "tmode", "cross_mode",
-                         "dtcs_polarity", "power", "duplex", "offset",
-                         "comment"]
-
-        return mem
-
-    def _set_special_pms(self, mem):
-        cur_mem = self._get_special_pms(self.SPECIAL_MEMORIES_REV[mem.number])
-
-        bitindex = 47 + mem.number
-        wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
-        wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
-
-        if mem.empty:
-            if wasvalid and not wasused:
-                # pylint get confused by &= operator
-                self._memobj.pmsfilled = self._memobj.pmsfilled & \
-                    ~ (1 << bitindex)
-            # pylint get confused by &= operator
-            self._memobj.pmsvisible = self._memobj.pmsvisible & \
-                ~ (1 << bitindex)
-            return
-
-        # pylint get confused by |= operator
-        self._memobj.pmsvisible = self._memobj.pmsvisible | 1 << bitindex
-        self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
-        
-        for key in cur_mem.immutable:
-            if cur_mem.__dict__[key] != mem.__dict__[key]:
-                raise errors.RadioError("Editing field `%s' " % key +
-                                        "is not supported on PMS channels")
-
-        _mem = self._memobj.pms[47 + mem.number]
-        self._set_memory(mem, _mem)
-
-    def get_memory(self, number):
-        if number in self.SPECIAL_PMS.keys():
-            return self._get_special_pms(number)
-        elif number < 0 and \
-                self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_PMS.keys():
-            # I can't stop delete operation from loosing extd_number but
-            # I know how to get it back
-            return self._get_special_pms(self.SPECIAL_MEMORIES_REV[number])
-        else:
-            return ft817.FT817Radio.get_memory(self, number)
-
-    def set_memory(self, memory):
-        if memory.number in self.SPECIAL_PMS.values():
-            return self._set_special_pms(memory)
-        else:
-            return ft817.FT817Radio.set_memory(self, memory)
 
 @directory.register
 class FT857USRadio(FT857Radio):
