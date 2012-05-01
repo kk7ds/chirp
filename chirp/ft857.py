@@ -32,29 +32,17 @@ class FT857Radio(ft817.FT817Radio):
         0xff : "Cross",
         0x00 : "",
     }
-    TMODES_REV = {
-        ""      : 0x00,
-        "Cross" : 0xff,
-        "DTCS"  : 0x0a,
-        "TSQL"  : 0x05,
-        "Tone"  : 0x04,
-    }
+    TMODES_REV = dict(zip(TMODES.values(), TMODES.keys()))
 
     CROSS_MODES = {
+        0x05 : "Tone->Tone",
         0x08 : "DTCS->",
         0x06 : "Tone->DTCS",
         0x09 : "DTCS->Tone",
         0x01 : "->Tone",
         0x02 : "->DTCS",
     }
-
-    CROSS_MODES_REV = {
-        "DTCS->"   : 0x08,
-        "Tone->DTCS"  : 0x06,
-        "DTCS->Tone" : 0x09,
-        "->Tone"  : 0x01,
-        "->DTCS"   : 0x02,
-    }
+    CROSS_MODES_REV = dict(zip(CROSS_MODES.values(), CROSS_MODES.keys()))
 
     _memsize = 7341
     # block 9 (140 Bytes long) is to be repeted 40 times 
@@ -92,9 +80,11 @@ class FT857Radio(ft817.FT817Radio):
             tx_mode:3,
             tx_freq_range:3;
         u8   unknown5:1,
-            unknown_flag:1,
+            unknown_toneflag:1,
             tone:6;
-        u8   unknown6:8;
+        u8   unknown6:1,
+            unknown_txtoneflag:1,
+            txtone:6;
         u8   unknown7:1,
             dcs:7;
         u8   unknown8:8;
@@ -197,6 +187,7 @@ class FT857Radio(ft817.FT817Radio):
     def get_features(self):
         rf = ft817.FT817Radio.get_features(self)
         rf.has_cross = True
+        rf.has_ctone = True
         rf.valid_tmodes = self.TMODES_REV.keys()
         rf.valid_cross_modes = self.CROSS_MODES_REV.keys()
         return rf
@@ -208,24 +199,27 @@ class FT857Radio(ft817.FT817Radio):
         mem.duplex = self.DUPLEX[_mem.duplex]
 
     def _get_tmode(self, mem, _mem):
-        # I do not use is_split_tone here because the radio sometimes set it
-        # also for standard tone mode
-        try:
+        if not _mem.is_split_tone:
             mem.tmode = self.TMODES[int(_mem.tmode)]
-        except KeyError:
+        else:
             mem.tmode = "Cross"
             mem.cross_mode = self.CROSS_MODES[int(_mem.tmode)]
+        mem.ctone = chirp_common.TONES[_mem.txtone]
 
     def _set_tmode(self, mem, _mem):
         # have to put this bit to 0 otherwise we get strange display in tone
         # frequency (menu 83). See bug #88
-        _mem.unknown_flag = 0
+        _mem.unknown_toneflag = 0
         if mem.tmode != "Cross":
             _mem.is_split_tone = 0
             _mem.tmode = self.TMODES_REV[mem.tmode]
         else:
             _mem.tmode = self.CROSS_MODES_REV[mem.cross_mode]
             _mem.is_split_tone = 1
+        # should be safe to put this also when it's not needed
+        _mem.txtone = chirp_common.TONES.index(mem.ctone)
+        # dunno if ther's the same problem here but to be safe ...
+        _mem.unknown_txtoneflag = 0
 
     def _get_special_pms(self, number):
         mem = chirp_common.Memory()

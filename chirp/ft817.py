@@ -452,7 +452,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 pass
         mem.skip = _mem.skip and "S" or ""
         self._get_tmode(mem, _mem)
-        mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+        mem.rtone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
 
         if _mem.tag_on_off == 1:
