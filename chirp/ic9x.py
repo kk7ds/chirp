@@ -16,13 +16,11 @@
 import time
 import threading
 
-from chirp import chirp_common, errors, memmap, ic9x_ll, util, icf, directory
+from chirp import chirp_common, errors, ic9x_ll, icf, util, directory
 from chirp import bitwise
 
-IC9xA_SPECIAL = {}
-IC9xA_SPECIAL_REV = {}
-IC9xB_SPECIAL = {}
-IC9xB_SPECIAL_REV = {}
+IC9XA_SPECIAL = {}
+IC9XB_SPECIAL = {}
 
 for i in range(0, 25):
     idA = "%iA" % i
@@ -30,30 +28,18 @@ for i in range(0, 25):
     Anum = 800 + i * 2
     Bnum = 400 + i * 2
 
-    IC9xA_SPECIAL[idA] = Anum
-    IC9xA_SPECIAL[idB] = Bnum
-    IC9xA_SPECIAL_REV[Anum] = idA
-    IC9xA_SPECIAL_REV[Bnum] = idB
+    IC9XA_SPECIAL[idA] = Anum
+    IC9XA_SPECIAL[idB] = Bnum
 
-    IC9xB_SPECIAL[idA] = Bnum
-    IC9xB_SPECIAL[idB] = Bnum + 1
-    IC9xB_SPECIAL_REV[Bnum] = idA
-    IC9xB_SPECIAL_REV[Bnum+1] = idB
+    IC9XB_SPECIAL[idA] = Bnum
+    IC9XB_SPECIAL[idB] = Bnum + 1
 
-IC9xA_SPECIAL["C0"] = IC9xB_SPECIAL["C0"] = -1
-IC9xA_SPECIAL["C1"] = IC9xB_SPECIAL["C1"] = -2
+IC9XA_SPECIAL["C0"] = IC9XB_SPECIAL["C0"] = -1
+IC9XA_SPECIAL["C1"] = IC9XB_SPECIAL["C1"] = -2
 
-IC9xA_SPECIAL_REV[-1] = IC9xB_SPECIAL_REV[-1] = "C0"
-IC9xA_SPECIAL_REV[-2] = IC9xB_SPECIAL_REV[-2] = "C1"
-
-IC9x_SPECIAL = {
-    1 : IC9xA_SPECIAL,
-    2 : IC9xB_SPECIAL,
-}
-
-IC9x_SPECIAL_REV = {
-    1 : IC9xA_SPECIAL_REV,
-    2 : IC9xB_SPECIAL_REV,
+IC9X_SPECIAL = {
+    1 : IC9XA_SPECIAL,
+    2 : IC9XB_SPECIAL,
 }
 
 CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -61,7 +47,8 @@ CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
 
 LOCK = threading.Lock()
 
-class IC9xBank(icf.IcomBank):
+class IC9xBank(icf.IcomNamedBank):
+    """Icom 9x Bank"""
     def get_name(self):
         banks = self._model._radio._ic9x_get_banks()
         return banks[self.index]
@@ -73,6 +60,7 @@ class IC9xBank(icf.IcomBank):
 
 @directory.register
 class IC9xRadio(icf.IcomLiveRadio):
+    """Base class for Icom IC-9x radios"""
     MODEL = "IC-91/92AD"
 
     _model = "ic9x" # Fake model info for detect.py
@@ -102,7 +90,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         self.set_memory(mem)
 
     def __init__(self, *args, **kwargs):
-        chirp_common.LiveRadio.__init__(self, *args, **kwargs)
+        icf.IcomLiveRadio.__init__(self, *args, **kwargs)
 
         if self.pipe:
             self.pipe.setTimeout(0.1)
@@ -119,35 +107,22 @@ class IC9xRadio(icf.IcomLiveRadio):
             ic9x_ll.send_magic(self.pipe)
         self.__last = time.time()
 
-    def get_available_bank_index(self, bank):
-        indexes = []
-        for mem in self.__memcache.values():
-            if mem.bank == bank and mem.bank_index >= 0:
-                indexes.append(mem.bank_index)
-
-        print "Index list for %i: %s" % (bank, indexes)
-
-        for i in range(0, 99):
-            if i not in indexes:
-                return i
-
-        raise errors.RadioError("Out of slots in this bank")
-
     def get_special_locations(self):
-        return sorted(IC9x_SPECIAL[self.vfo].keys())
+        return sorted(IC9X_SPECIAL[self.vfo].keys())
     
     def get_memory(self, number):
         if isinstance(number, str):
             try:
-                number = IC9x_SPECIAL[self.vfo][number]
+                number = IC9X_SPECIAL[self.vfo][number]
             except KeyError:
-                raise InvalidMemoryLocation("Unknown channel %s" % number)
+                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
+                                                       number)
 
         if number < -2 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
         if self.__memcache.has_key(number):
-                return self.__memcache[number]
+            return self.__memcache[number]
 
         self._lock.acquire()
         try:
@@ -165,7 +140,8 @@ class IC9xRadio(icf.IcomLiveRadio):
         self._lock.release()
 
         if number > self._upper or number < 0:
-            mem.extd_number = IC9x_SPECIAL_REV[self.vfo][number]
+            mem.extd_number = util.get_dict_rev(IC9X_SPECIAL,
+                                                [self.vfo][number])
             mem.immutable = ["number", "skip", "bank", "bank_index",
                              "extd_number"]
 
@@ -184,7 +160,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         self._lock.release()
 
-        return repr(bitwise.parse(ic9x_ll.memory_frame_format, mframe))
+        return repr(bitwise.parse(ic9x_ll.MEMORY_FRAME_FORMAT, mframe))
 
     def get_memories(self, lo=0, hi=None):
         if hi is None:
@@ -192,7 +168,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         memories = []
 
-        for i in range(lo, hi+1):
+        for i in range(lo, hi + 1):
             try:
                 print "Getting %i" % i
                 mem = self.get_memory(i)
@@ -244,7 +220,8 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def _ic9x_get_banks(self):
         if len(self.__bankcache.keys()) == 26:
-            return [self.__bankcache[k] for k in sorted(self.__bankcache.keys())]
+            return [self.__bankcache[k] for k in
+                    sorted(self.__bankcache.keys())]
 
         self._lock.acquire()
         try:
@@ -302,6 +279,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         return rf
 
 class IC9xRadioA(IC9xRadio):
+    """IC9x Band A subdevice"""
     VARIANT = "Band A"
     vfo = 1
     _upper = 849
@@ -323,6 +301,7 @@ class IC9xRadioA(IC9xRadio):
         return rf
 
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
+    """IC9x Band B subdevice"""
     VARIANT = "Band B"
     vfo = 2
     _upper = 399
@@ -362,7 +341,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
         calls = []
 
         self._maybe_send_magic()
-        for i in range(ulimit-1):
+        for i in range(ulimit - 1):
             call = ic9x_ll.get_call(self.pipe, cstype, i+1)
             calls.append(call)
 
@@ -426,15 +405,13 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
                                              self.RPTCALL_LIMIT[1],
                                              calls)
 
-if __name__ == "__main__":
-    def test():
-        import serial
-        import util
-        r = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
-                                     baudrate=38400, timeout=0.1))
-        print r.get_urcall_list()
-        #r.set_urcall_list(["K7TAY", "FOOBAR"])
-        print "-- FOO --"
-        r.set_urcall_list(["K7TAY", "FOOBAR", "BAZ"])
+def _test():
+    import serial
+    ser = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
+                                   baudrate=38400, timeout=0.1))
+    print ser.get_urcall_list()
+    print "-- FOO --"
+    ser.set_urcall_list(["K7TAY", "FOOBAR", "BAZ"])
 
-    test()
+if __name__ == "__main__":
+    _test()

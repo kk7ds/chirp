@@ -13,12 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util, directory
+from chirp import chirp_common, icf, directory
 from chirp import bitwise
-from chirp.memmap import MemoryMap
 from chirp.chirp_common import to_GHz, from_GHz
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   bbcd freq[3];
   u8  fractional:1,
@@ -49,6 +48,7 @@ STEPS =  [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
 @directory.register
 class ICQ7Radio(icf.IcomCloneModeRadio):
+    """Icom IC-Q7A"""
     VENDOR = "Icom"
     MODEL = "IC-Q7A"
 
@@ -76,7 +76,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])

@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-import struct
 import os
 
 from chirp import util, memmap, chirp_common, bitwise, directory, errors
@@ -23,7 +22,7 @@ from chirp.yaesu_clone import YaesuCloneModeRadio
 DEBUG = os.getenv("CHIRP_DEBUG") and True or False
 
 CHUNK_SIZE = 16
-def send(s, data):
+def _send(s, data):
     for i in range(0, len(data), CHUNK_SIZE):
         chunk = data[i:i+CHUNK_SIZE]
         s.write(chunk)
@@ -35,9 +34,9 @@ IDBLOCK = "\x0c\x01\x41\x33\x35\x02\x00\xb8"
 TRAILER = "\x0c\x02\x41\x33\x35\x00\x00\xb7"
 ACK = "\x0C\x06\x00"
 
-def download(radio):
+def _download(radio):
     data = ""
-    for i in range(0, 10):
+    for _i in range(0, 10):
         data = radio.pipe.read(8)
         if data == IDBLOCK:
             break
@@ -48,7 +47,7 @@ def download(radio):
     if len(data) != 8:
         raise Exception("Failed to read header")
 
-    send(radio.pipe, ACK)
+    _send(radio.pipe, ACK)
 
     data = ""
 
@@ -72,7 +71,7 @@ def download(radio):
 
             data += chunk[5:-1]
 
-        send(radio.pipe, ACK)
+        _send(radio.pipe, ACK)
         if radio.status_fn:
             status = chirp_common.Status()
             status.max = radio._block_sizes[1]
@@ -85,14 +84,14 @@ def download(radio):
 
     return memmap.MemoryMap(data)
 
-def upload(radio):
-    for i in range(0, 10):
+def _upload(radio):
+    for _i in range(0, 10):
         data = radio.pipe.read(256)
         if not data:
             break
         print "What is this garbage?\n%s" % util.hexprint(data)
 
-    send(radio.pipe, IDBLOCK)
+    _send(radio.pipe, IDBLOCK)
     time.sleep(1)
     ack = radio.pipe.read(300)
     if DEBUG:
@@ -101,9 +100,9 @@ def upload(radio):
         raise Exception("Radio did not ack ID")
 
     block = 0
-    while block < (radio._memsize / 32):
+    while block < (radio.get_memsize() / 32):
         data = "\x0C\x03\x00\x00" + chr(block)
-        data += radio._mmap[block*32:(block+1)*32]
+        data += radio.get_mmap()[block*32:(block+1)*32]
         cs = 0
         for byte in data:
             cs += ord(byte)
@@ -112,7 +111,7 @@ def upload(radio):
         if DEBUG:
             print "Writing block %i:\n%s" % (block, util.hexprint(data))
 
-        send(radio.pipe, data)
+        _send(radio.pipe, data)
         time.sleep(0.1)
         ack = radio.pipe.read(3)
         if ack != ACK:
@@ -126,9 +125,9 @@ def upload(radio):
             radio.status_fn(status)
         block += 1
 
-    send(radio.pipe, TRAILER)
+    _send(radio.pipe, TRAILER)
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   bbcd freq[4];
   u8 unknown1[4];
@@ -164,6 +163,7 @@ CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + "()+-=*/???|_"
 
 @directory.register
 class FT2800Radio(YaesuCloneModeRadio):
+    """Yaesu FT-2800"""
     VENDOR = "Yaesu"
     MODEL = "FT-2800M"
 
@@ -196,7 +196,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         self.pipe.setParity("E")
         start = time.time()
         try:
-            self._mmap = download(self)
+            self._mmap = _download(self)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -209,7 +209,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         self.pipe.setParity("E")
         start = time.time()
         try:
-            upload(self)
+            _upload(self)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -217,7 +217,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         print "Uploaded in %.2f sec" % (time.time() - start)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])

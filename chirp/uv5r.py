@@ -15,11 +15,13 @@
 
 import struct
 
-from chirp import chirp_common, errors, util, directory, memmap, settings
+from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
-from chirp.settings import *
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueInteger, RadioSettingValueList, \
+    RadioSettingValueList, RadioSettingValueBoolean
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x0008;
 struct {
   lbcd rxfreq[4];
@@ -83,31 +85,31 @@ struct {
 """
 
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
-step_list = [str(x) for x in STEPS]
-timeout_list = ["%s sec" % x for x in range(15, 615, 15)]
-resume_list = ["TO", "CO", "SE"]
-mode_list = ["Channel", "Name", "Frequency"]
-color_list = ["Off", "Blue", "Orange", "Purple"]
+STEP_LIST = [str(x) for x in STEPS]
+TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
+RESUME_LIST = ["TO", "CO", "SE"]
+MODE_LIST = ["Channel", "Name", "Frequency"]
+COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
 
 SETTING_LISTS = {
-    "step" : step_list,
-    "timeout" : timeout_list,
-    "screv" : resume_list,
-    "mdfa" : mode_list,
-    "mdfb" : mode_list,
-    "wtled" : color_list,
-    "rxled" : color_list,
-    "txled" : color_list,
+    "step" : STEP_LIST,
+    "timeout" : TIMEOUT_LIST,
+    "screv" : RESUME_LIST,
+    "mdfa" : MODE_LIST,
+    "mdfb" : MODE_LIST,
+    "wtled" : COLOR_LIST,
+    "rxled" : COLOR_LIST,
+    "txled" : COLOR_LIST,
 }
 
-def do_status(radio, block):
-    s = chirp_common.Status()
-    s.msg = "Cloning"
-    s.cur = block
-    s.max = radio._memsize
-    radio.status_fn(s)
+def _do_status(radio, block):
+    status = chirp_common.Status()
+    status.msg = "Cloning"
+    status.cur = block
+    status.max = radio.get_memsize()
+    radio.status_fn(status)
 
-def do_ident(radio):
+def _do_ident(radio):
     serial = radio.pipe
     serial.setTimeout(1)
 
@@ -130,12 +132,12 @@ def do_ident(radio):
 
     return ident
 
-def do_download(radio):
+def _do_download(radio):
     serial = radio.pipe
 
-    data = do_ident(radio)
+    data = _do_ident(radio)
 
-    for i in range(0, radio._memsize - 0x08, 0x40):
+    for i in range(0, radio.get_memsize() - 0x08, 0x40):
         msg = struct.pack(">BHB", ord("S"), i, 0x40)
         serial.write(msg)
 
@@ -162,23 +164,23 @@ def do_download(radio):
         if ack != "\x06":
             raise errors.RadioError("Radio refused to send block 0x%04x" % i)
 
-        do_status(radio, i)
+        _do_status(radio, i)
 
     return memmap.MemoryMap(data)
 
-def do_upload(radio):
+def _do_upload(radio):
     serial = radio.pipe
 
-    do_ident(radio)
+    _do_ident(radio)
 
-    for i in range(0x08, radio._memsize, 0x10):
+    for i in range(0x08, radio.get_memsize(), 0x10):
         msg = struct.pack(">BHB", ord("X"), i - 0x08, 0x10)
-        serial.write(msg + radio._mmap[i:i+0x10])
+        serial.write(msg + radio.get_mmap()[i:i+0x10])
 
         ack = serial.read(1)
         if ack != "\x06":
             raise errors.RadioError("Radio refused to accept block 0x%04x" % i)
-        do_status(radio, i)
+        _do_status(radio, i)
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
@@ -186,6 +188,7 @@ UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
 # Uncomment this to actually register this radio in CHIRP
 @directory.register
 class BaofengUV5R(chirp_common.CloneModeRadio):
+    """Baofeng UV-5R"""
     VENDOR = "Baofeng"
     MODEL = "UV-5R"
     BAUD_RATE = 9600
@@ -212,12 +215,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
         print self.get_settings()
 
     def sync_in(self):
         try:
-            self._mmap = do_download(self)
+            self._mmap = _do_download(self)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -226,7 +229,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         try:
-            do_upload(self)
+            _do_upload(self)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -387,81 +390,81 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
         group = RadioSettingGroup("top", "All Settings", basic, advanced)
 
-        s = RadioSetting("squelch", "Carrier Squelch Level",
-                         RadioSettingValueInteger(0, 9, _settings.squelch))
-        basic.append(s)
+        rs = RadioSetting("squelch", "Carrier Squelch Level",
+                          RadioSettingValueInteger(0, 9, _settings.squelch))
+        basic.append(rs)
 
-        s = RadioSetting("step", "Tuning Step",
-                         RadioSettingValueList(step_list,
-                                               step_list[_settings.step]))
-        advanced.append(s)
+        rs = RadioSetting("step", "Tuning Step",
+                          RadioSettingValueList(STEP_LIST,
+                                                STEP_LIST[_settings.step]))
+        advanced.append(rs)
 
-        s = RadioSetting("save", "Battery Saver",
-                         RadioSettingValueInteger(0, 4, _settings.save))
-        basic.append(s)
+        rs = RadioSetting("save", "Battery Saver",
+                          RadioSettingValueInteger(0, 4, _settings.save))
+        basic.append(rs)
 
-        s = RadioSetting("vox", "VOX Sensitivity",
-                         RadioSettingValueInteger(0, 10, _settings.vox))
-        advanced.append(s)
+        rs = RadioSetting("vox", "VOX Sensitivity",
+                          RadioSettingValueInteger(0, 10, _settings.vox))
+        advanced.append(rs)
 
-        s = RadioSetting("abr", "Backlight Timeout",
-                         RadioSettingValueInteger(0, 5, _settings.abr))
-        basic.append(s)
+        rs = RadioSetting("abr", "Backlight Timeout",
+                          RadioSettingValueInteger(0, 5, _settings.abr))
+        basic.append(rs)
 
-        s = RadioSetting("tdr", "Dual Watch",
-                         RadioSettingValueBoolean(_settings.tdr))
-        advanced.append(s)
+        rs = RadioSetting("tdr", "Dual Watch",
+                          RadioSettingValueBoolean(_settings.tdr))
+        advanced.append(rs)
 
-        s = RadioSetting("beep", "Beep",
-                         RadioSettingValueBoolean(_settings.beep))
-        basic.append(s)
+        rs = RadioSetting("beep", "Beep",
+                          RadioSettingValueBoolean(_settings.beep))
+        basic.append(rs)
 
-        s = RadioSetting("timeout", "Timeout Timer",
-                         RadioSettingValueList(timeout_list,
-                                               timeout_list[_settings.tdr]))
-        basic.append(s)
+        rs = RadioSetting("timeout", "Timeout Timer",
+                          RadioSettingValueList(TIMEOUT_LIST,
+                                                TIMEOUT_LIST[_settings.tdr]))
+        basic.append(rs)
 
-        s = RadioSetting("voice", "Voice",
-                         RadioSettingValueBoolean(_settings.voice))
-        advanced.append(s)
+        rs = RadioSetting("voice", "Voice",
+                          RadioSettingValueBoolean(_settings.voice))
+        advanced.append(rs)
         
-        s = RadioSetting("screv", "Scan Resume",
-                         RadioSettingValueList(resume_list,
-                                               resume_list[_settings.screv]))
-        advanced.append(s)
+        rs = RadioSetting("screv", "Scan Resume",
+                          RadioSettingValueList(RESUME_LIST,
+                                                RESUME_LIST[_settings.screv]))
+        advanced.append(rs)
 
-        s = RadioSetting("mdfa", "Display Mode (A)",
-                         RadioSettingValueList(mode_list,
-                                               mode_list[_settings.mdfa]))
-        basic.append(s)
+        rs = RadioSetting("mdfa", "Display Mode (A)",
+                          RadioSettingValueList(MODE_LIST,
+                                                MODE_LIST[_settings.mdfa]))
+        basic.append(rs)
 
-        s = RadioSetting("mdfb", "Display Mode (B)",
-                         RadioSettingValueList(mode_list,
-                                               mode_list[_settings.mdfb]))
-        basic.append(s)
+        rs = RadioSetting("mdfb", "Display Mode (B)",
+                          RadioSettingValueList(MODE_LIST,
+                                                MODE_LIST[_settings.mdfb]))
+        basic.append(rs)
 
-        s = RadioSetting("bcl", "Busy Channel Lockout",
-                         RadioSettingValueBoolean(_settings.bcl))
-        advanced.append(s)
+        rs = RadioSetting("bcl", "Busy Channel Lockout",
+                          RadioSettingValueBoolean(_settings.bcl))
+        advanced.append(rs)
 
-        s = RadioSetting("autolk", "Automatic Key Lock",
-                         RadioSettingValueBoolean(_settings.autolk))
-        advanced.append(s)
+        rs = RadioSetting("autolk", "Automatic Key Lock",
+                          RadioSettingValueBoolean(_settings.autolk))
+        advanced.append(rs)
 
-        s = RadioSetting("wtled", "Standby LED Color",
-                         RadioSettingValueList(color_list,
-                                               color_list[_settings.wtled]))
-        basic.append(s)
+        rs = RadioSetting("wtled", "Standby LED Color",
+                          RadioSettingValueList(COLOR_LIST,
+                                                COLOR_LIST[_settings.wtled]))
+        basic.append(rs)
 
-        s = RadioSetting("rxled", "RX LED Color",
-                         RadioSettingValueList(color_list,
-                                               color_list[_settings.rxled]))
-        basic.append(s)
+        rs = RadioSetting("rxled", "RX LED Color",
+                          RadioSettingValueList(COLOR_LIST,
+                                                COLOR_LIST[_settings.rxled]))
+        basic.append(rs)
 
-        s = RadioSetting("txled", "TX LED Color",
-                         RadioSettingValueList(color_list,
-                                               color_list[_settings.txled]))
-        basic.append(s)
+        rs = RadioSetting("txled", "TX LED Color",
+                          RadioSettingValueList(COLOR_LIST,
+                                                COLOR_LIST[_settings.txled]))
+        basic.append(rs)
 
         return group
 
@@ -471,9 +474,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
                 continue
-
-            if element.get_name() in SETTING_LISTS.keys():
-                value = SETTING_LISTS[element.get_name()].index(str(element.value))
             try:
                 setattr(_settings, element.get_name(), element.value)
             except Exception, e:

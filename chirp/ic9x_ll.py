@@ -32,11 +32,13 @@ DV_MEM_LEN = 60
 
 # Dirty hack until I clean up this IC9x mess
 class IC9xMemory(chirp_common.Memory):
+    """A dirty hack to stash bank information in a memory"""
     _bank = None
     _bank_index = 0
     def __init__(self):
         chirp_common.Memory.__init__(self)
 class IC9xDVMemory(chirp_common.DVMemory):
+    """See above dirty hack"""
     _bank = None
     _bank_index = 0
     def __init__(self):
@@ -89,32 +91,34 @@ def ic9x_send(pipe, buf):
 
     return _ic9x_parse_frames(data)
 
-class IcomFrame:
-    pass
-
-class IC92Frame(IcomFrame):
+class IC92Frame:
+    """IC9x frame base class"""
     def get_vfo(self):
+        """Return the vfo number"""
         return ord(self._map[0])
 
     def set_vfo(self, vfo):
+        """Set the vfo number"""
         self._map[0] = chr(vfo)
 
     def from_raw(self, data):
+        """Construct the frame from raw data"""
         self._map = MemoryMap(data)
 
-        #self._map.printable()
-
     def from_frame(self, frame):
-        self._map = frame._map
+        """Construct the frame by copying another frame"""
+        self._map = MemoryMap(frame.get_raw())
 
     def __init__(self, subcmd=0, flen=0, cmd=0x1A):
         self._map = MemoryMap("\x00" * (4 + flen))
         self._map[0] = "\x01\x80" + chr(cmd) + chr(subcmd)
 
     def get_payload(self):
+        """Return the entire payload (sans header)"""
         return self._map[4:]
 
     def get_raw(self):
+        """Return the raw version of the frame"""
         return self._map.get_packed()
 
     def __str__(self):
@@ -126,6 +130,7 @@ class IC92Frame(IcomFrame):
         return string
 
     def send(self, pipe, verbose=False):
+        """Send the frame to the radio via @pipe"""
         if verbose:
             print "Sending:\n%s" % util.hexprint(self.get_raw())
 
@@ -146,10 +151,11 @@ class IC92Frame(IcomFrame):
         return self._map[start+4:end+4]
     
 class IC92GetBankFrame(IC92Frame):
+    """A frame for requesting bank information"""
     def __init__(self):
         IC92Frame.__init__(self, 0x09)
 
-    def send(self, pipe):
+    def send(self, pipe, verbose=False):
         rframes = ic9x_send(pipe, self.get_raw())
 
         if len(rframes) == 0:
@@ -158,27 +164,30 @@ class IC92GetBankFrame(IC92Frame):
         return rframes
 
 class IC92BankFrame(IC92Frame):
+    """A frame for bank information"""
     def __init__(self):
         # 1 byte for identifier
         # 8 bytes for name
         IC92Frame.__init__(self, 0x0B, 9)
 
-    def __str__(self):
-        return "Bank %s: %s" % (self._data[2], self._data[3:])
-
     def get_name(self):
+        """Return the bank name"""
         return self[1:]
 
     def get_identifier(self):
+        """Return the letter for the bank (A-Z)"""
         return self[0]
 
     def set_name(self, name):
+        """Set the bank name"""
         self[1] = name[:8].ljust(8)
 
     def set_identifier(self, ident):
+        """Set the letter for the bank (A-Z)"""
         self[0] = ident[0]
 
 class IC92MemClearFrame(IC92Frame):
+    """A frame for clearing (erasing) a memory"""
     def __init__(self, loc):
         # 2 bytes for location
         # 1 byte for 0xFF
@@ -187,24 +196,27 @@ class IC92MemClearFrame(IC92Frame):
         self[0] = struct.pack(">BHB", 1, int("%i" % loc, 16), 0xFF)
 
 class IC92MemGetFrame(IC92Frame):
-    def __init__(self, loc, call=False):
+    """A frame for requesting a memory"""
+    def __init__(self, loc, iscall=False):
         # 2 bytes for location
         IC92Frame.__init__(self, 0x00, 3)
 
-        if call:
-            c = 2
+        if iscall:
+            call = 2
         else:
-            c = 1
+            call = 1
 
-        self[0] = struct.pack(">BH", c, int("%i" % loc, 16))
+        self[0] = struct.pack(">BH", call, int("%i" % loc, 16))
 
 class IC92GetCallsignFrame(IC92Frame):
-    def __init__(self, type, number):
-        IC92Frame.__init__(self, type, 1, 0x1D)
+    """A frame for getting callsign information"""
+    def __init__(self, calltype, number):
+        IC92Frame.__init__(self, calltype, 1, 0x1D)
 
         self[0] = chr(number)
 
 class IC92CallsignFrame(IC92Frame):
+    """A frame to communicate callsign information"""
     command = 0 # Invalid
     width = 8
 
@@ -216,19 +228,23 @@ class IC92CallsignFrame(IC92Frame):
         self[0] = chr(number) + callsign[:self.width].ljust(self.width)
 
     def get_callsign(self):
+        """Return the actual callsign"""
         return self[1:self.width+1].rstrip()
 
 class IC92YourCallsignFrame(IC92CallsignFrame):
+    """URCALL frame"""
     command = 6 # Your
 
 class IC92RepeaterCallsignFrame(IC92CallsignFrame):
+    """RPTCALL frame"""
     command = 7 # Repeater
 
 class IC92MyCallsignFrame(IC92CallsignFrame):
+    """MYCALL frame"""
     command = 8 # My
     width = 12 # 4 bytes for /STID
 
-memory_frame_format = """
+MEMORY_FRAME_FORMAT = """
 struct {
   u8 vfo;
   bbcd number[2];
@@ -261,6 +277,7 @@ struct {
 """
 
 class IC92MemoryFrame(IC92Frame):
+    """A frame for communicating memory information"""
     def __init__(self):
         IC92Frame.__init__(self, 0, DV_MEM_LEN)
 
@@ -284,21 +301,24 @@ class IC92MemoryFrame(IC92Frame):
             self._map.truncate(MEM_LEN + 4)
 
     def set_iscall(self, iscall):
+        """This frame refers to a call channel if @iscall is True"""
         if iscall:
             self[0] = 2
         else:
             self[0] = 1
 
     def get_iscall(self):
+        """Return True if this frame refers to a call channel"""
         return ord(self[0]) == 2
 
     def set_memory(self, mem):
+        """Take Memory object @mem and configure the frame accordingly"""
         if mem.number < 0:
             self.set_iscall(True)
             mem.number = abs(mem.number) - 1
             print "Memory is %i (call %s)" % (mem.number, self.get_iscall())
 
-        _mem = bitwise.parse(memory_frame_format, self).mem
+        _mem = bitwise.parse(MEMORY_FRAME_FORMAT, self).mem
 
         _mem.number = mem.number
 
@@ -329,7 +349,8 @@ class IC92MemoryFrame(IC92Frame):
             _mem.digital_code = mem.dv_code
 
     def get_memory(self):
-        _mem = bitwise.parse(memory_frame_format, self).mem
+        """Return a Memory object based on the contents of the frame"""
+        _mem = bitwise.parse(MEMORY_FRAME_FORMAT, self).mem
 
         if MODES[_mem.mode] == "DV":
             mem = IC9xDVMemory()
@@ -372,74 +393,55 @@ class IC92MemoryFrame(IC92Frame):
 
         return mem
 
-def print_frames(frames):
-    count = 0
-    for i in frames:
-        print "Frame %i:" % count
-        print i
-        count += 1
-
 def _send_magic_4800(pipe):
     cmd = "\x01\x80\x19"
     magic = ("\xFE" * 25) + cmd
-    for i in [0,1]:
-        r = ic9x_send(pipe, magic)
-        if r:
-            return r[0].get_raw()[0] == "\x80"
-    return r and r[0].get_raw()[:3] == rsp
+    for _i in [0, 1]:
+        resp = ic9x_send(pipe, magic)
+        if resp:
+            return resp[0].get_raw()[0] == "\x80"
+    return True
 
 def _send_magic_38400(pipe):
     cmd = "\x01\x80\x19"
-    rsp = "\x80\x01\x19"
+    #rsp = "\x80\x01\x19"
     magic = ("\xFE" * 400) + cmd
-    for i in [0,1]:
-        r = ic9x_send(pipe, magic)
-        if r:
-            return r[0].get_raw()[0] == "\x80"
+    for _i in [0, 1]:
+        resp = ic9x_send(pipe, magic)
+        if resp:
+            return resp[0].get_raw()[0] == "\x80"
     return False
 
 def send_magic(pipe):
+    """Send the magic incantation to wake up an ic9x radio"""
     if pipe.getBaudrate() == 38400:
-        r = _send_magic_38400(pipe)
-        if r:
+        resp = _send_magic_38400(pipe)
+        if resp:
             return
         print "Switching from 38400 to 4800"
         pipe.setBaudrate(4800)
-        r = _send_magic_4800(pipe)
+        resp = _send_magic_4800(pipe)
         pipe.setBaudrate(38400)
-        if r:
+        if resp:
             return
         raise errors.RadioError("Radio not responding")
     elif pipe.getBaudrate() == 4800:
-        r = _send_magic_4800(pipe)
-        if r:
+        resp = _send_magic_4800(pipe)
+        if resp:
             return
         print "Switching from 4800 to 38400"
         pipe.setBaudrate(38400)
-        r = _send_magic_38400(pipe)
-        if r:
+        resp = _send_magic_38400(pipe)
+        if resp:
             return
         pipe.setBaudrate(4800)
         raise errors.RadioError("Radio not responding")
     else:
-        raise errors.InvalidDataError("Radio in unknown state (%i)" % r.getBaudrate())    
-
-def print_banks(pipe):
-    frames = send(pipe, "\x01\x80\x1a\x09") # Banks
-
-    print "A Banks:"
-    for i in range(180, 180+26):
-        bf = IC92BankFrame()
-        bf.from_frame(frames[i])
-        print str(bf)
-
-    print "B Banks:"
-    for i in range(237, 237+26):
-        bf = IC92BankFrame()
-        bf.from_frame(frames[i])
-        print str(bf)
+        raise errors.InvalidDataError("Radio in unknown state (%i)" % \
+                                          pipe.getBaudrate())    
 
 def get_memory_frame(pipe, vfo, number):
+    """Get the memory frame for @vfo and @number via @pipe"""
     if number < 0:
         number = abs(number + 1)
         call = True
@@ -452,6 +454,7 @@ def get_memory_frame(pipe, vfo, number):
     return frame.send(pipe)
 
 def get_memory(pipe, vfo, number):
+    """Get a memory object for @vfo and @number via @pipe"""
     rframe = get_memory_frame(pipe, vfo, number)
 
     if len(rframe.get_payload()) < 1:
@@ -466,6 +469,7 @@ def get_memory(pipe, vfo, number):
     return mf.get_memory()
 
 def set_memory(pipe, vfo, memory):
+    """Set memory @memory on @vfo via @pipe"""
     frame = IC92MemoryFrame()
     frame.set_memory(memory)
     frame.set_vfo(vfo)
@@ -480,6 +484,7 @@ def set_memory(pipe, vfo, memory):
                                           util.hexprint(rframe.get_payload()))
 
 def erase_memory(pipe, vfo, number):
+    """Erase memory @number on @vfo via @pipe"""
     frame = IC92MemClearFrame(number)
     frame.set_vfo(vfo)
 
@@ -488,6 +493,7 @@ def erase_memory(pipe, vfo, number):
         raise errors.InvalidDataError("Radio reported error")
 
 def get_banks(pipe, vfo):
+    """Get banks for @vfo via @pipe"""
     frame = IC92GetBankFrame()
     frame.set_vfo(vfo)
 
@@ -509,6 +515,7 @@ def get_banks(pipe, vfo):
     return banks
 
 def set_banks(pipe, vfo, banks):
+    """Set banks for @vfo via @pipe"""
     for i in range(0, 26):
         bframe = IC92BankFrame()
         bframe.set_vfo(vfo)
@@ -520,6 +527,7 @@ def set_banks(pipe, vfo, banks):
             raise errors.InvalidDataError("Radio reported error")
 
 def get_call(pipe, cstype, number):
+    """Get @cstype callsign @number via @pipe"""
     cframe = IC92GetCallsignFrame(cstype.command, number)
     cframe.set_vfo(2)
     rframe = cframe.send(pipe)
@@ -530,28 +538,10 @@ def get_call(pipe, cstype, number):
     return cframe.get_callsign()
 
 def set_call(pipe, cstype, number, call):
+    """Set @cstype @call at position @number via @pipe"""
     cframe = cstype(number, call)
     cframe.set_vfo(2)
     rframe = cframe.send(pipe)
 
     if rframe.get_payload() != "\xfb":
         raise errors.RadioError("Radio reported error")
-
-def print_memory(pipe, vfo, number):
-    if vfo not in [1, 2]:
-        raise errors.InvalidValueError("VFO must be 1 or 2")
-
-    if number < 0 or number > 399:
-        raise errors.InvalidValueError("Number must be between 0 and 399")
-
-    mf = get_memory(pipe, vfo, number)
-
-    print "Memory %i from VFO %i: %s" % (number, vfo, str(mf))
-
-if __name__ == "__main__":
-    print util.hexprint(util.bcd_encode(1072))
-    print util.hexprint(util.bcd_encode(146900000, False))
-    print util.hexprint(util.bcd_encode(25, width=4))
-    print util.hexprint(util.bcd_encode(5000000, False, 6))
-    print util.hexprint(util.bcd_encode(600000, False, 6))
-    

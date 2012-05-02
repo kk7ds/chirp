@@ -18,10 +18,10 @@ CMD_ACK = 0x06
 from chirp import chirp_common, util, memmap, errors
 import time, os
 
-def safe_read(pipe, count, times=60):
+def _safe_read(pipe, count):
     buf = ""
     first = True
-    for i in range(0, 60):
+    for _i in range(0, 60):
         buf += pipe.read(count - len(buf))
         #print "safe_read: %i/%i\n" % (len(buf), count)
         if buf:
@@ -34,17 +34,15 @@ def safe_read(pipe, count, times=60):
     print util.hexprint(buf)
     return buf
 
-def chunk_read(pipe, count, status_fn):
+def _chunk_read(pipe, count, status_fn):
     block = 32
     data = ""
-    first = True
-    for i in range(0, count, block):
+    for _i in range(0, count, block):
         data += pipe.read(block)
         if data:
             if data[0] == chr(CMD_ACK):
                 data = data[1:] # Chew an echo'd ack if using a 2-pin cable
                 #print "Chewed an ack"
-            first = False
         status = chirp_common.Status()
         status.msg = "Cloning from radio"
         status.max = count
@@ -54,7 +52,7 @@ def chunk_read(pipe, count, status_fn):
             print "Read %i/%i" % (len(data), count)
     return data        
 
-def _clone_in(radio):
+def __clone_in(radio):
     pipe = radio.pipe
 
     start = time.time()
@@ -64,28 +62,28 @@ def _clone_in(radio):
     for block in radio._block_lengths:
         blocks += 1
         if blocks == len(radio._block_lengths):
-            chunk = chunk_read(pipe, block, radio.status_fn)
+            chunk = _chunk_read(pipe, block, radio.status_fn)
         else:
-            chunk = safe_read(pipe, block)
+            chunk = _safe_read(pipe, block)
             pipe.write(chr(CMD_ACK))
         if not chunk:
             raise errors.RadioError("No response from radio")
         data += chunk
 
-    if len(data) != radio._memsize:
+    if len(data) != radio.get_memsize():
         raise errors.RadioError("Received incomplete image from radio")
 
     print "Clone completed in %i seconds" % (time.time() - start)
 
     return memmap.MemoryMap(data)
 
-def clone_in(radio):
+def _clone_in(radio):
     try:
-        return _clone_in(radio)
+        return __clone_in(radio)
     except Exception, e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
-def chunk_write(pipe, data, status_fn, block):
+def _chunk_write(pipe, data, status_fn, block):
     delay = 0.03
     count = 0
     for i in range(0, len(data), block):
@@ -101,15 +99,15 @@ def chunk_write(pipe, data, status_fn, block):
         status.cur = count
         status_fn(status)
         
-def _clone_out(radio):
+def __clone_out(radio):
     pipe = radio.pipe
-    l = radio._block_lengths
+    block_lengths = radio._block_lengths
     total_written = 0
 
-    def status():
+    def _status():
         status = chirp_common.Status()
         status.msg = "Cloning to radio"
-        status.max = l[0] + l[1] + l[2]
+        status.max = block_lengths[0] + block_lengths[1] + block_lengths[2]
         status.cur = total_written
         radio.status_fn(status)
 
@@ -121,28 +119,29 @@ def _clone_out(radio):
         blocks += 1
         if blocks != len(radio._block_lengths):
             #print "Sending %i-%i" % (pos, pos+block)
-            pipe.write(radio._mmap[pos:pos+block])
+            pipe.write(radio.get_mmap()[pos:pos+block])
             buf = pipe.read(1)
             if buf and buf[0] != chr(CMD_ACK):
                 buf = pipe.read(block)
             if not buf or buf[-1] != chr(CMD_ACK):
                 raise Exception("Radio did not ack block %i" % blocks)
         else:
-            chunk_write(pipe, radio._mmap[pos:],
-                        radio.status_fn, radio._block_size)
+            _chunk_write(pipe, radio.get_mmap()[pos:],
+                         radio.status_fn, radio._block_size)
         pos += block
 
     pipe.read(pos) # Chew the echo if using a 2-pin cable
 
     print "Clone completed in %i seconds" % (time.time() - start)
 
-def clone_out(radio):
+def _clone_out(radio):
     try:
-        return _clone_out(radio)
+        return __clone_out(radio)
     except Exception, e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 class YaesuChecksum:
+    """A Yaesu Checksum Object"""
     def __init__(self, start, stop, address=None):
         self._start = start
         self._stop = stop
@@ -156,12 +155,14 @@ class YaesuChecksum:
         return ord(mmap[self._address])
 
     def get_calculated(self, mmap):
+        """Return the calculated value of the checksum"""
         cs = 0
         for i in range(self._start, self._stop+1):
             cs += ord(mmap[i])
         return cs % 256
 
     def update(self, mmap):
+        """Update the checksum with the data in @mmap"""
         mmap[self._address] = self.get_calculated(mmap)
 
     def __str__(self):
@@ -170,6 +171,7 @@ class YaesuChecksum:
                                       self._address)
 
 class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
+    """Base class for all Yaesu clone-mode radios"""
     _block_lengths = [8, 65536]
     _block_size = 8
 
@@ -181,10 +183,12 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
         return []
 
     def update_checksums(self):
+        """Update the radio's checksums from the current memory map"""
         for checksum in self._checksums():
             checksum.update(self._mmap)
 
     def check_checksums(self):
+        """Validate the checksums stored in the memory map"""
         for checksum in self._checksums():
             if checksum.get_existing(self._mmap) != \
                     checksum.get_calculated(self._mmap):
@@ -192,13 +196,13 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
             print "Checksum %s: OK" % checksum
 
     def sync_in(self):
-        self._mmap = clone_in(self)
+        self._mmap = _clone_in(self)
         self.check_checksums()
         self.process_mmap()
 
     def sync_out(self):
         self.update_checksums()
-        clone_out(self)
+        _clone_out(self)
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -209,24 +213,3 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
         bm = self.get_bank_model()
         for bank in bm.get_memory_banks(mem):
             bm.remove_memory_from_bank(mem, bank)
-
-
-if __name__ == "__main__":
-    import sys, serial
-    s = serial.Serial(port=sys.argv[1], baudrate=19200, timeout=5)
-
-    d = s.read(20)
-    print util.hexprint(d)
-
-    s.write(chr(0x06))
-
-    d = ""
-    while True:
-        c = s.read(32)
-        if not c:
-            break
-        d += c
-
-    print len(d)
-
-    

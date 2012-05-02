@@ -17,9 +17,7 @@ SEPCHAR = ","
     
 #print "Using separation character of '%s'" % SEPCHAR
 
-import threading
 import math
-from decimal import Decimal
 
 from chirp import errors, memmap
 
@@ -60,7 +58,8 @@ CROSS_MODES = [
     "->DTCS",
 ]
 
-MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY", "DIG", "PKT", "NCW", "NCWR", "CWR", "P25"]
+MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
+         "DIG", "PKT", "NCW", "NCWR", "CWR", "P25"]
 
 STD_6M_OFFSETS = [
     (51620000, 51980000, -500000),
@@ -108,6 +107,7 @@ BAND_TO_MHZ = {
 
 # NB: This only works for some bands, throws an Exception otherwise
 def freq_to_band(freq):
+    """Returns the band (in cm) for a given frequency"""
     for band, (lo, hi) in BAND_TO_MHZ.items():
         if int(freq) > lo and int(freq) < hi:
             return band
@@ -138,12 +138,15 @@ CHARSET_ALPHANUMERIC = \
 CHARSET_ASCII = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
 
 def watts_to_dBm(watts):
+    """Converts @watts in watts to dBm"""
     return int(10 * math.log10(int(watts * 1000)))
 
 def dBm_to_watts(dBm):
+    """Converts @dBm from dBm to watts"""
     return int(math.pow(10, (dBm - 30) / 10))
 
 class PowerLevel:
+    """Represents a power level supported by a radio"""
     def __init__(self, label, watts=0, dBm=0):
         if watts:
             dBm = watts_to_dBm(watts)
@@ -180,6 +183,7 @@ class PowerLevel:
         return "%s (%i dBm)" % (self._label, self._power)
 
 def parse_freq(freqstr):
+    """Parse a frequency string and return the value in integral Hz"""
     if "." in freqstr:
         MHz, kHz = freqstr.split(".")
     else:
@@ -192,9 +196,12 @@ def parse_freq(freqstr):
     return int(("%s%-6s" % (MHz, kHz)).replace(" ", "0"))
 
 def format_freq(freq):
+    """Format a frequency given in Hz as a string"""
+
     return "%i.%06i" % (freq / 1000000, freq % 1000000)
 
 class Memory:
+    """Base class for a single radio memory"""
     freq = 0
     number = 0
     extd_number = ""
@@ -262,13 +269,15 @@ class Memory:
         return "Memory[%i]" % self.number
 
     def dupe(self):
-        m = self.__class__()
+        """Return a deep copy of @self"""
+        mem = self.__class__()
         for k, v in self.__dict__.items():
-            m.__dict__[k] = v
+            mem.__dict__[k] = v
 
-        return m
+        return mem
 
     def clone(self, source):
+        """Absorb all of the properties of @source"""
         for k, v in source.__dict__.items():
             self.__dict__[k] = v
 
@@ -294,9 +303,11 @@ class Memory:
         self.__dict__[name] = val
 
     def format_freq(self):
+        """Return a properly-formatted string of this memory's frequency"""
         return format_freq(self.freq)
 
     def parse_freq(self, freqstr):
+        """Set the frequency from a string"""
         self.freq = parse_freq(freqstr)
         return self.freq
 
@@ -321,7 +332,7 @@ class Memory:
         else:
             dup = self.duplex
 
-        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [TS=%.2f]"% \
+        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [%.2f]"% \
             (self.number,
              format_freq(self.freq),
              dup,
@@ -338,6 +349,7 @@ class Memory:
              self.tuning_step)
 
     def to_csv(self):
+        """Return a CSV representation of this memory"""
         return [
             "%i"   % self.number,
             "%s"   % self.name,
@@ -355,18 +367,16 @@ class Memory:
             "%s"   % self.comment,
             "", "", "", ""]
 
-    class Callable:
-        def __init__(self, target):
-            self.__call__ = target
-
-    def _from_csv(_line):
+    @classmethod
+    def _from_csv(cls, _line):
         line = _line.strip()
         if line.startswith("Location"):
             raise errors.InvalidMemoryLocation("Non-CSV line")
 
         vals = line.split(SEPCHAR)
         if len(vals) < 11:
-            raise errors.InvalidDataError("CSV format error (14 columns expected)")
+            raise errors.InvalidDataError("CSV format error " +
+                                          "(14 columns expected)")
 
         if vals[10] == "DV":
             mem = DVMemory()
@@ -376,9 +386,8 @@ class Memory:
         mem.really_from_csv(vals)
         return mem
 
-    from_csv = Callable(_from_csv)
-
     def really_from_csv(self, vals):
+        """Careful parsing of split-out @vals"""
         try:
             self.number = int(vals[0])
         except:
@@ -450,6 +459,7 @@ class Memory:
         return True
 
 class DVMemory(Memory):
+    """A Memory with D-STAR attributes"""
     dv_urcall = "CQCQCQ"
     dv_rpt1call = ""
     dv_rpt2call = ""
@@ -493,10 +503,11 @@ class DVMemory(Memory):
         self.dv_rpt2call = vals[17].rstrip()[:8]
         try:
             self.dv_code = int(vals[18].strip())
-        except:
+        except Exception:
             self.dv_code = 0
 
 class Bank:
+    """Base class for a radio's Bank"""
     def __init__(self, model, index, name):
         self._model = model
         self._index = index
@@ -520,6 +531,7 @@ class Bank:
         return self.get_index() == other.get_index()
 
 class NamedBank(Bank):
+    """A bank that can have a name"""
     def set_name(self, name):
         """Changes the user-adjustable bank name"""
         self._name = name
@@ -556,6 +568,7 @@ class BankModel:
         raise Exception("Not implemented")
 
 class BankIndexInterface:
+    """Interface for banks with index capabilities"""
     def get_index_bounds(self):
         """Returns a tuple (lo,hi) of the minimum and maximum bank indices"""
         raise Exception("Not implemented")
@@ -579,18 +592,16 @@ class MTOBankModel(BankModel):
     pass
 
 def console_status(status):
+    """Write a status object to the console"""
     import sys
 
     sys.stderr.write("\r%s" % status)
     
 
-class Callable:
-    def __init__(self, target):
-        self.__call__ = target
-
 BOOLEAN = [True, False]
 
 class RadioFeatures:
+    """Radio Feature Flags"""
     _valid_map = {
         # General
         "has_bank_index"      : BOOLEAN,
@@ -602,7 +613,6 @@ class RadioFeatures:
         "has_bank"            : BOOLEAN,
         "has_bank_names"      : BOOLEAN,
         "has_tuning_step"     : BOOLEAN,
-        "has_name"            : BOOLEAN,
         "has_ctone"           : BOOLEAN,
         "has_cross"           : BOOLEAN,
         "has_infinite_number" : BOOLEAN,
@@ -663,11 +673,17 @@ class RadioFeatures:
                                                                         name))
         self.__dict__[name] = val
 
+    def __getattr__(self, name):
+        raise AttributeError("pylint is confused by RadioFeatures")
+
     def init(self, attribute, default, doc=None):
+        """Initialize a feature flag @attribute with default value @default,
+        and documentation string @doc"""
         self.__setattr__(attribute, default)
         self.__docs[attribute] = doc
 
     def get_doc(self, attribute):
+        """Return the description of @attribute"""
         return self.__docs[attribute]
 
     def __init__(self):
@@ -751,70 +767,79 @@ class RadioFeatures:
                   "callsign at the beginning of the master URCALL list")
 
     def is_a_feature(self, name):
+        """Returns True if @name is a valid feature flag name"""
         return name in self._valid_map.keys()
 
     def __getitem__(self, name):
         return self.__dict__[name]
 
 class ValidationMessage(str):
+    """Base class for Validation Errors and Warnings"""
     pass
 
 class ValidationWarning(ValidationMessage):
+    """A non-fatal warning during memory validation"""
     pass
 
 class ValidationError(ValidationMessage):
+    """A fatal error during memory validation"""
     pass
 
 class Radio:
+    """Base class for all Radio drivers"""
     BAUD_RATE = 9600
     HARDWARE_FLOW = False
     VENDOR = "Unknown"
     MODEL = "Unknown"
     VARIANT = ""
 
-    status_fn = lambda x, y: console_status(y)
+    def status_fn(self, status):
+        """Deliver @status to the UI"""
+        console_status(status)
 
     def __init__(self, pipe):
         self.errors = []
         self.pipe = pipe
 
     def get_features(self):
+        """Return a RadioFeatures object for this radio"""
         return RadioFeatures()
 
     def get_settings(self):
+        """Return a RadioSettingsGroup object for this radio"""
         return None
 
     def set_settings(self, settings):
+        """Sets the settings contained in the @settings object that has
+        been queried with get_settings() and modified"""
         raise Exception("Not implemented")
 
-    def _get_name_raw(*args):
-        cls = args[-1]
+    @classmethod
+    def get_name(cls):
+        """Return a printable name for this radio"""
         return "%s %s" % (cls.VENDOR, cls.MODEL)
 
-    def get_name(self):
-        return self._get_name_raw(self.__class__)
-
-    _get_name = Callable(_get_name_raw)
-
     def set_pipe(self, pipe):
+        """Set the serial object to be used for communications"""
         self.pipe = pipe
 
     def get_memory(self, number):
+        """Return a Memory object for the memory at location @number"""
         pass
 
     def erase_memory(self, number):
-        m = Memory()
-        m.number = number
-        m.empty = True
-        self.set_memory(m)
+        """Erase memory at location @number"""
+        mem = Memory()
+        mem.number = number
+        mem.empty = True
+        self.set_memory(mem)
 
     def get_memories(self, lo=None, hi=None):
+        """Get all the memories between @lo and @hi"""
         pass
 
     def set_memory(self, memory):
-        pass
-
-    def set_memories(self, memories):
+        """Set the memory object @memory"""
         pass
 
     def get_bank_model(self):
@@ -822,22 +847,30 @@ class Radio:
         return None
 
     def get_raw_memory(self, number):
+        """Return a raw string describing the memory at @number"""
         pass
 
     def get_special_locations(self):
+        """Return a list of special memory location names"""
         return []
 
     def filter_name(self, name):
+        """Filter @name to just the length and characters supported"""
         rf = self.get_features()
         if rf.valid_characters == rf.valid_characters.upper():
             # Radio only supports uppercase, so help out here
             name = name.upper()
-        return "".join([x for x in name[:rf.valid_name_length] if x in rf.valid_characters])
+        return "".join([x for x in name[:rf.valid_name_length] 
+                        if x in rf.valid_characters])
 
     def get_sub_devices(self):
+        """Return a list of sub-device Radio objects, if
+        RadioFeatures.has_sub_devices is True"""
         return []
 
     def validate_memory(self, mem):
+        """Return a list of warnings and errors that will be encoundered
+        if trying to set @mem on the current radio"""
         msgs = []
         rf = self.get_features()
 
@@ -857,8 +890,10 @@ class Radio:
             msgs.append(msg)
         else:
             if mem.tmode == "Cross":
-                if rf.valid_cross_modes and mem.cross_mode not in rf.valid_cross_modes:
-                    msg = ValidationError("Cross tone mode %s not supported" % mem.cross_mode)
+                if rf.valid_cross_modes and \
+                        mem.cross_mode not in rf.valid_cross_modes:
+                    msg = ValidationError("Cross tone mode %s not supported" % \
+                                              mem.cross_mode)
                     msgs.append(msg)
 
         if rf.has_dtcs_polarity and mem.dtcs_polarity not in rf.valid_dtcs_pols:
@@ -933,16 +968,24 @@ class FileBackedRadio(Radio):
     """A file-backed radio stores its data in a file"""
     FILE_EXTENSION = "img"
 
+    def __init__(self, *args, **kwargs):
+        Radio.__init__(self, *args, **kwargs)
+        self._memobj = None
+        
     def save(self, filename):
+        """Save the radio's memory map to @filename"""
         self.save_mmap(filename)
 
     def load(self, filename):
+        """Load the radio's memory map object from @filename"""
         self.load_mmap(filename)
 
     def process_mmap(self):
+        """Process a newly-loaded or downloaded memory map"""
         pass
 
     def load_mmap(self, filename):
+        """Load the radio's memory map from @filename"""
         mapfile = file(filename, "rb")
         self._mmap = memmap.MemoryMap(mapfile.read())
         mapfile.close()
@@ -957,26 +1000,13 @@ class FileBackedRadio(Radio):
             mapfile = file(filename, "wb")
             mapfile.write(self._mmap.get_packed())
             mapfile.close()
-        except IOError,e:
+        except IOError:
             raise Exception("File Access Error")
 
     def get_mmap(self):
+        """Return the radio's memory map object"""
         return self._mmap
 
-    def get_memsize(self):
-        return self._memsize
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        """Given contents of a stored file (@filedata), return True if 
-        this radio driver handles the represented model"""
-
-        # Unless the radio driver does something smarter, claim
-        # support if the data is the same size as our memory.
-        # Ideally, each radio would perform an intelligent analysis to
-        # make this determination to avoid model conflicts with
-        # memories of the same size.
-        return len(filedata) == cls._memsize
 
 
 class CloneModeRadio(FileBackedRadio):
@@ -997,7 +1027,23 @@ class CloneModeRadio(FileBackedRadio):
             self._mmap = pipe
             self.process_mmap()
         else:
-            Radio.__init__(self, pipe)
+            FileBackedRadio.__init__(self, pipe)
+
+    def get_memsize(self):
+        """Return the radio's memory size"""
+        return self._memsize
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        """Given contents of a stored file (@filedata), return True if 
+        this radio driver handles the represented model"""
+
+        # Unless the radio driver does something smarter, claim
+        # support if the data is the same size as our memory.
+        # Ideally, each radio would perform an intelligent analysis to
+        # make this determination to avoid model conflicts with
+        # memories of the same size.
+        return len(filedata) == cls._memsize
 
     def sync_in(self):
         "Initiate a radio-to-PC clone operation"
@@ -1008,36 +1054,47 @@ class CloneModeRadio(FileBackedRadio):
         pass
 
 class LiveRadio(Radio):
+    """Base class for all Live-Mode radios"""
     pass
 
 class NetworkSourceRadio(Radio):
+    """Base class for all radios based on a network source"""
     def do_fetch(self):
+        """Fetch the source data from the network"""
         pass
 
 class IcomDstarSupport:
+    """Base interface for radios supporting Icom's D-STAR technology"""
     MYCALL_LIMIT = (1, 1)
     URCALL_LIMIT = (1, 1)
     RPTCALL_LIMIT = (1, 1)
     
     def get_urcall_list(self):
+        """Return a list of URCALL callsigns"""
         return []
 
     def get_repeater_call_list(self):
+        """Return a list of RPTCALL callsigns"""
         return []
 
     def get_mycall_list(self):
+        """Return a list of MYCALL callsigns"""
         return []
 
     def set_urcall_list(self, calls):
+        """Set the URCALL callsign list"""
         pass
 
     def set_repeater_call_list(self, calls):
+        """Set the RPTCALL callsign list"""
         pass
 
     def set_mycall_list(self, calls):
+        """Set the MYCALL callsign list"""
         pass
 
 class Status:
+    """Clone status object for conveying clone progress to the UI"""
     name = "Job"
     msg = "Unknown"
     max = 100
@@ -1055,21 +1112,27 @@ class Status:
         return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
 
 def is_fractional_step(freq):
+    """Returns True if @freq requires a 12.5kHz or 6.25kHz step"""
     return not is_5_0(freq) and (is_12_5(freq) or is_6_25(freq))
 
 def is_5_0(freq):
+    """Returns True if @freq is reachable by a 5kHz step"""
     return (freq % 5000) == 0
 
 def is_12_5(freq):
+    """Returns True if @freq is reachable by a 12.5kHz step"""
     return (freq % 12500) == 0
 
 def is_6_25(freq):
+    """Returns True if @freq is reachable by a 6.25kHz step"""
     return (freq % 6250) == 0
 
 def is_2_5(freq):
+    """Returns True if @freq is reachable by a 2.5kHz step"""
     return (freq % 2500) == 0
 
 def required_step(freq):
+    """Returns the simplest tuning step that is required to reach @freq"""
     if is_5_0(freq):
         return 5.0
     elif is_12_5(freq):
@@ -1080,10 +1143,13 @@ def required_step(freq):
         return 2.5
     else:
         raise errors.InvalidDataError("Unable to calculate the required " +
-                                      "tuning step for %i.%5i" % (freq / 1000000,
-                                                                  freq % 1000000))
+                                      "tuning step for %i.%5i" % \
+                                          (freq / 1000000,
+                                           freq % 1000000))
 
 def fix_rounded_step(freq):
+    """Some radios imply the last bit of 12.5kHz and 6.25kHz step
+    frequencies. Take the base @freq and return the corrected one"""
     try:
         required_step(freq)
         return freq
@@ -1112,57 +1178,43 @@ def fix_rounded_step(freq):
                                       format_freq(freq))
 
 def _name(name, len, just_upper):
+    """Justify @name to @len, optionally converting to all uppercase"""
     if just_upper:
         name = name.upper()
     return name.ljust(len)[:len]
 
 def name6(name, just_upper=True):
+    """6-char name"""
     return _name(name, 6, just_upper)
 
 def name8(name, just_upper=False):
+    """8-char name"""
     return _name(name, 8, just_upper)
 
 def name16(name, just_upper=False):
+    """16-char name"""
     return _name(name, 16, just_upper)
 
-class KillableThread(threading.Thread):
-    def __tid(self):
-        if not self.isAlive():
-            raise threading.ThreadError("Not running")
-
-        for tid, thread in threading._active.items():
-            if thread == self:
-                return tid
-
-        raise threading.ThreadError("I don't know my own TID")
-
-    def kill(self, exception):
-        import ctypes
-        import inspect
-
-        if not inspect.isclass(exception):
-            raise Exception("Parameter is not an Exception")
-
-        ctype = ctypes.py_object(exception)
-        ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(self.__tid(), ctype)
-        if ret != 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(self.__tid(), 0)
-            raise Exception("Failed to signal thread!")
-
 def to_GHz(val):
+    """Convert @val in GHz to Hz"""
     return val * 1000000000
 
 def to_MHz(val):
+    """Convert @val in MHz to Hz"""
     return val * 1000000
 
 def to_kHz(val):
+    """Convert @val in kHz to Hz"""
     return val * 1000
 
 def from_GHz(val):
+    """Convert @val in Hz to GHz"""
     return val / 100000000
 
 def from_MHz(val):
+    """Convert @val in Hz to MHz"""
     return val / 100000
 
 def from_kHz(val):
+    """Convert @val in Hz to kHz"""
     return val / 100

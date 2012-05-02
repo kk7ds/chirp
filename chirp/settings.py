@@ -16,25 +16,31 @@
 from chirp import chirp_common
 
 class InvalidValueError(Exception):
+    """An invalid value was specified for a given setting"""
     pass
 
 class InternalError(Exception):
+    """A driver provided an invalid settings object structure"""
     pass
 
 class RadioSettingValue:
+    """Base class for a single radio setting"""
     def __init__(self):
         self._current = None
         self._has_changed = False
 
     def changed(self):
+        """Returns True if the setting has been changed since init"""
         return self._has_changed
 
     def set_value(self, value):
+        """Sets the current value, triggers changed"""
         if self._current != None and value != self._current:
             self._has_changed = True
         self._current = value
 
     def get_value(self):
+        """Gets the current value"""
         return self._current
 
     def __trunc__(self):
@@ -44,10 +50,11 @@ class RadioSettingValue:
         return str(self.get_value())
 
 class RadioSettingValueInteger(RadioSettingValue):
-    def __init__(self, min, max, current, step=1):
+    """An integer setting"""
+    def __init__(self, minval, maxval, current, step=1):
         RadioSettingValue.__init__(self)
-        self._min = min
-        self._max = max
+        self._min = minval
+        self._max = maxval
         self._step = step
         self.set_value(current)
 
@@ -63,15 +70,19 @@ class RadioSettingValueInteger(RadioSettingValue):
         RadioSettingValue.set_value(self, value)
 
     def get_min(self):
+        """Returns the minimum allowed value"""
         return self._min
 
     def get_max(self):
+        """Returns the maximum allowed value"""
         return self._max
 
     def get_step(self):
+        """Returns the step increment"""
         return self._step
 
 class RadioSettingValueBoolean(RadioSettingValue):
+    """A boolean setting"""
     def __init__(self, current):
         RadioSettingValue.__init__(self)
         self.set_value(current)
@@ -83,6 +94,7 @@ class RadioSettingValueBoolean(RadioSettingValue):
         return str(bool(self.get_value()))
 
 class RadioSettingValueList(RadioSettingValue):
+    """A list-of-strings setting"""
     def __init__(self, options, current):
         RadioSettingValue.__init__(self)
         self._options = options
@@ -94,12 +106,14 @@ class RadioSettingValueList(RadioSettingValue):
         RadioSettingValue.set_value(self, value)
 
     def get_options(self):
+        """Returns the list of valid option values"""
         return self._options
 
     def __trunc__(self):
         return self._options.index(self._current)
 
 class RadioSettingValueString(RadioSettingValue):
+    """A string setting"""
     def __init__(self, minlength, maxlength, current,
                  autopad=True):
         RadioSettingValue.__init__(self)
@@ -110,6 +124,7 @@ class RadioSettingValueString(RadioSettingValue):
         self.set_value(current)
 
     def set_charset(self, charset):
+        """Sets the set of allowed characters"""
         self._charset = charset
 
     def set_value(self, value):
@@ -128,6 +143,7 @@ class RadioSettingValueString(RadioSettingValue):
         return self._current.rstrip()
 
 class RadioSettingGroup(object):
+    """A group of settings"""
     def _validate(self, element):
         # RadioSettingGroup can only contain RadioSettingGroup objects
         if not isinstance(element, RadioSettingGroup):
@@ -146,37 +162,43 @@ class RadioSettingGroup(object):
             self.append(element)
 
     def get_name(self):
+        """Returns the group name"""
         return self._name
 
     def get_shortname(self):
+        """Returns the short group identifier"""
         return self._shortname
 
     def set_doc(self, doc):
+        """Sets the docstring for the group"""
         self.__doc__ = doc
 
     def __str__(self):
-        s = "{Settings Group %s:\n" % self._name
+        string = "{Settings Group %s:\n" % self._name
         for element in self._elements.values():
-            s += str(element) + "\n"
-        s += "}"
-        return s
+            string += str(element) + "\n"
+        string += "}"
+        return string
 
     # Kinda list interface
 
     def append(self, element):
+        """Adds an element to the group"""
         self[element.get_name()] = element
 
     def __iter__(self):
         class RSGIterator:
+            """Iterator for a RadioSettingsGroup"""
             def __init__(self, rsg):
                 self.__rsg = rsg
                 self.__i = 0
             def __iter__(self):
                 return self
             def next(self):
-                if self.__i >= len(self.__rsg._element_order):
+                """Next Iterator Interface"""
+                if self.__i >= len(self.__rsg.keys()):
                     raise StopIteration()
-                e =  self.__rsg._elements[self.__rsg._element_order[self.__i]]
+                e =  self.__rsg[self.__rsg.keys()[self.__i]]
                 self.__i += 1
                 return e
         return RSGIterator(self)
@@ -196,21 +218,26 @@ class RadioSettingGroup(object):
         self._element_order.append(name)
 
     def items(self):
+        """Returns a key=>value set of elements, like a dict"""
         return [(name, self._elements[name]) for name in self._element_order]
 
     def keys(self):
+        """Returns a list of string element names"""
         return self._element_order
 
     def values(self):
-        return [self.elements[name] for name in self._element_order]
+        """Returns the list of elements"""
+        return [self._elements[name] for name in self._element_order]
 
 class RadioSetting(RadioSettingGroup):
+    """A single setting, which could be an array of items like a group"""
     def _validate(self, value):
         # RadioSetting can only contain RadioSettingValue objects
         if not isinstance(value, RadioSettingValue):
             raise InternalError("Incorrect type")
 
     def changed(self):
+        """Returns True if any of the elements in the group have been changed"""
         for element in self._elements.values():
             if element.changed():
                 return True

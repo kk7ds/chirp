@@ -13,16 +13,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
 import serial
 
 from chirp import chirp_common, errors
-from chirp.memmap import MemoryMap
 from chirp import util
 
 DEBUG_IDRP = False
 
 def parse_frames(buf):
+    """Parse frames from the radio"""
     frames = []
 
     while "\xfe\xfe" in buf:
@@ -38,8 +37,9 @@ def parse_frames(buf):
 
     return frames
 
-def send(pipe, buffer):
-    pipe.write("\xfe\xfe%s\xfd" % buffer)
+def send(pipe, buf):
+    """Send data in @buf to @pipe"""
+    pipe.write("\xfe\xfe%s\xfd" % buf)
     pipe.flush()
 
     data = ""
@@ -55,15 +55,18 @@ def send(pipe, buffer):
     return parse_frames(data)
 
 def send_magic(pipe):
+    """Send the magic wakeup call to @pipe"""
     send(pipe, ("\xfe" * 15) + "\x01\x7f\x19")
 
 def drain(pipe):
+    """Chew up any data waiting on @pipe"""
     while True:
         buf = pipe.read(4096)
         if not buf:
             break
 
 def set_freq(pipe, freq):
+    """Set the frequency of the radio on @pipe to @freq"""
     freqbcd = util.bcd_encode(freq, bigendian=False, width=9)
     buf = "\x01\x7f\x05" + freqbcd
 
@@ -78,6 +81,7 @@ def set_freq(pipe, freq):
     raise errors.InvalidDataError("Repeater reported error")
     
 def get_freq(pipe):
+    """Get the frequency of the radio attached to @pipe"""
     buf = "\x01\x7f\x1a\x09"
 
     drain(pipe)
@@ -103,10 +107,8 @@ RP_IMMUTABLE = ["number", "skip", "bank", "extd_number", "name", "rtone",
                 "ctone", "dtcs", "tmode", "dtcs_polarity", "skip", "duplex",
                 "offset", "mode", "tuning_step", "bank_index"]
 
-class IcomRepeater(chirp_common.LiveRadio):
-    pass
-
-class IDRPx000V(IcomRepeater):
+class IDRPx000V(chirp_common.LiveRadio):
+    """Icom IDRP-*"""
     BAUD_RATE = 19200
     VENDOR = "Icom"
     MODEL = "ID-2000V/4000V/2D/2V"
@@ -154,7 +156,11 @@ class IDRPx000V(IcomRepeater):
 
         set_freq(self.pipe, mem.freq)
 
-if __name__ == "__main__":
-    pipe = serial.Serial(port="/dev/icom", baudrate=19200, timeout=0.5)
+def do_test():
+    """Get the frequency of /dev/icom"""
+    ser = serial.Serial(port="/dev/icom", baudrate=19200, timeout=0.5)
     #set_freq(pipe, 439.920)
-    get_freq(pipe)
+    get_freq(ser)
+
+if __name__ == "__main__":
+    do_test()

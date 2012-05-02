@@ -14,19 +14,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class InvalidDataError(Exception):
+    """The radio driver encountered some invalid data"""
     pass
 
 class InvalidValueError(Exception):
+    """An invalid value for a given parameter was used"""
     pass
 
 class InvalidMemoryLocation(Exception):
+    """The requested memory location does not exist"""
     pass
 
 class RadioError(Exception):
+    """An error occurred while talking to the radio"""
     pass
 
 class UnsupportedToneError(Exception):
+    """The radio does not support the specified tone value"""
     pass
 
 class ImageDetectFailed(Exception):
+    """The driver for the supplied image could not be determined"""
     pass

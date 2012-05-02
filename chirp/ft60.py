@@ -19,13 +19,13 @@ from chirp import errors
 
 ACK = "\x06"
 
-def send(pipe, data):
+def _send(pipe, data):
     pipe.write(data)
     echo = pipe.read(len(data))
     if echo != data:
         raise errors.RadioError("Error reading echo (Bad cable?)")
 
-def download(radio):
+def _download(radio):
     data = ""
     for i in range(0, 10):
         chunk = radio.pipe.read(8)
@@ -40,12 +40,12 @@ def download(radio):
     if not data:
         raise Exception("Radio is not responding")
 
-    send(radio.pipe, ACK)
+    _send(radio.pipe, ACK)
 
     for i in range(0, 448):
         chunk = radio.pipe.read(64)
         data += chunk
-        send(radio.pipe, ACK)
+        _send(radio.pipe, ACK)
         if len(chunk) == 1 and i == 447:
             break
         elif len(chunk) != 64:
@@ -53,14 +53,14 @@ def download(radio):
         if radio.status_fn:
             status = chirp_common.Status()
             status.cur = i * 64
-            status.max = radio._memsize
+            status.max = radio.get_memsize()
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
     return memmap.MemoryMap(data)
 
-def upload(radio):
-    send(radio.pipe, radio._mmap[0:8])
+def _upload(radio):
+    _send(radio.pipe, radio.get_mmap()[0:8])
 
     ack = radio.pipe.read(1)
     if ack != ACK:
@@ -68,7 +68,7 @@ def upload(radio):
 
     for i in range(0, 448):
         offset = 8 + (i * 64)
-        send(radio.pipe, radio._mmap[offset:offset+64])
+        _send(radio.pipe, radio.get_mmap()[offset:offset+64])
         ack = radio.pipe.read(1)
         if ack != ACK:
             raise Exception("Radio did not ack block %i" % i)
@@ -76,11 +76,11 @@ def upload(radio):
         if radio.status_fn:
             status = chirp_common.Status()
             status.cur = offset+64
-            status.max = radio._memsize
+            status.max = radio.get_memsize()
             status.msg = "Cloning to radio"
             radio.status_fn(status)            
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x0238;
 struct {
   u8 used:1,
@@ -136,6 +136,7 @@ CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
 
 @directory.register
 class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu FT-60"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODEL = "FT-60"
@@ -158,6 +159,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_ctone = False
         rf.has_bank = False
         rf.has_dtcs_polarity = False
+
         return rf
 
     def _checksums(self):
@@ -165,7 +167,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def sync_in(self):
         try:
-            self._mmap = download(self)
+            self._mmap = _download(self)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -175,14 +177,14 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
     def sync_out(self):
         self.update_checksums()
         try:
-            upload(self)
+            _upload(self)
         except errors.RadioError:
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number]) + \

@@ -13,12 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import csv
-
+import UserDict
 from chirp import chirp_common, directory, generic_csv
 
-class TpeMap:
+class TpeMap(UserDict.UserDict):
     """Pretend we're a dict"""
     def items(self):
         return [
@@ -27,13 +25,20 @@ class TpeMap:
             ("Call Sign"       , (str, "name")),
             ("Output Frequency", (chirp_common.parse_freq, "freq")),
             ("Input Frequency" , (str, "duplex")),
-            ("CTCSS Tones"     , (lambda v: "Tone" if float(v) in chirp_common.TONES else "", "tmode")),
-            ("CTCSS Tones"     , (lambda v: float(v) if float(v) in chirp_common.TONES else 88.5, "rtone")),
-            ("CTCSS Tones"     , (lambda v: float(v) if float(v) in chirp_common.TONES else 88.5, "ctone")),
+            ("CTCSS Tones"     , (lambda v: "Tone" 
+                                  if float(v) in chirp_common.TONES
+                                  else "", "tmode")),
+            ("CTCSS Tones"     , (lambda v: float(v)
+                                  if float(v) in chirp_common.TONES
+                                  else 88.5, "rtone")),
+            ("CTCSS Tones"     , (lambda v: float(v)
+                                  if float(v) in chirp_common.TONES
+                                  else 88.5, "ctone")),
         ]
 
 @directory.register
 class TpeRadio(generic_csv.CSVRadio):
+    """Generic ARRL Travel Plus"""
     VENDOR = "ARRL"
     MODEL = "Travel Plus"
     FILE_EXTENSION = "tpe"

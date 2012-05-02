@@ -13,10 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util, directory
+from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x0611;
 u8 checksum1;
 
@@ -96,6 +96,7 @@ POWER_LEVELS_220 = [chirp_common.PowerLevel("L2", watts=0.30),
                     chirp_common.PowerLevel("L1", watts=0.05)]
 
 class VX7BankModel(chirp_common.BankModel):
+    """A VX-7 Bank model"""
     def get_num_banks(self):
         return 9
 
@@ -130,8 +131,8 @@ class VX7BankModel(chirp_common.BankModel):
                 remaining_members += 1
 
         if not found:
-            raise Exception(_("Memory {num} not in "
-                              "bank {bank}").format(num=memory.number,
+            raise Exception("Memory {num} not in " +
+                            "bank {bank}".format(num=memory.number,
                                                     bank=bank))
         if not remaining_members:
             _bank_used.in_use = 0xFFFF
@@ -154,12 +155,19 @@ class VX7BankModel(chirp_common.BankModel):
     def get_memory_banks(self, memory):
         banks = []
         for bank in self.get_banks():
-            if memory.number in [x.number for x in self.get_bank_memories(bank)]:
-                    banks.append(bank)
+            if memory.number in [x.number for x in
+                                 self.get_bank_memories(bank)]:
+                banks.append(bank)
         return banks
+
+def _wipe_memory(mem):
+    mem.set_raw("\x00" * (mem.size() / 8))
+    mem.unknown1 = 0x05
+    mem.ones = 0x03
 
 @directory.register
 class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu VX-7"""
     BAUD_RATE = 19200
     VENDOR = "Yaesu"
     MODEL = "VX-7"
@@ -176,7 +184,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
                  ]
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -243,11 +251,6 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return mem
 
-    def _wipe_memory(self, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
-        mem.unknown1 = 0x05
-        mem.ones = 0x03
-
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
         _flag = self._memobj.flags[(mem.number-1)/2]
@@ -258,7 +261,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         used = _flag["%s_masked" % nibble]
 
         if not mem.empty and not valid:
-            self._wipe_memory(_mem)
+            _wipe_memory(_mem)
             self._wipe_memory_banks(mem)
 
         if mem.empty and valid and not used:
@@ -294,7 +297,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.freq >= 222000000 and mem.freq <= 225000000:
             if mem.power not in POWER_LEVELS_220:
                 msgs.append(chirp_common.ValidationError(\
-                        "Power level %s not supported on 220MHz band" % mem.power))
+                        "Power level %s not supported on 220MHz band" % \
+                            mem.power))
 
         return msgs
 

@@ -16,7 +16,7 @@
 from chirp import chirp_common, icf, errors, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x0020;
 struct {
   u24 freq;
@@ -104,8 +104,50 @@ for i in range(0, 5):
 ALPHA_CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 NUMERIC_CHARSET = "0123456789+-=*/()|"
 
+def get_name(_mem):
+    """Decode the name from @_mem"""
+    def _get_char(val):
+        if val == 0:
+            return " "
+        elif val & 0x20:
+            return ALPHA_CHARSET[val & 0x1F]
+        else:
+            return NUMERIC_CHARSET[val & 0x0F]
+
+    name_bytes = [_mem.name1, _mem.name2, _mem.name3,
+                  _mem.name4, _mem.name5, _mem.name6]
+    name = ""
+    for val in name_bytes:
+        name += _get_char(val)
+
+    return name.rstrip()
+
+def set_name(_mem, name):
+    """Encode @name in @_mem"""
+    def _get_index(char):
+        if char == " ":
+            return 0
+        elif char.isalpha():
+            return ALPHA_CHARSET.index(char) | 0x20
+        else:
+            return NUMERIC_CHARSET.index(char) | 0x10
+
+    name = name.ljust(6)[:6]
+
+    _mem.usealpha = bool(name.strip())
+
+    # The element override calling convention makes this harder to automate.
+    # It's just six, so do it manually
+    _mem.name1 = _get_index(name[0])
+    _mem.name2 = _get_index(name[1])
+    _mem.name3 = _get_index(name[2])
+    _mem.name4 = _get_index(name[3])
+    _mem.name5 = _get_index(name[4])
+    _mem.name6 = _get_index(name[5])
+
 @directory.register
 class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    """Icom ID800"""
     VENDOR = "Icom"
     MODEL = "ID-800H"
     VARIANT = "v2"
@@ -186,49 +228,10 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_special_locations(self):
         return sorted(ID800_SPECIAL.keys())
-
-    def _get_name(self, _mem):
-        def get_char(val):
-            if val == 0:
-                return " "
-            elif val & 0x20:
-                return ALPHA_CHARSET[val & 0x1F]
-            else:
-                return NUMERIC_CHARSET[val & 0x0F]
-
-        name_bytes = [_mem.name1, _mem.name2, _mem.name3,
-                      _mem.name4, _mem.name5, _mem.name6]
-        name = ""
-        for val in name_bytes:
-            name += get_char(val)
-
-        return name.rstrip()
-
-    def _set_name(self, _mem, name):
-        def get_index(char):
-            if char == " ":
-                return 0
-            elif char.isalpha():
-                return ALPHA_CHARSET.index(char) | 0x20
-            else:
-                return NUMERIC_CHARSET.index(char) | 0x10
-
-        name = name.ljust(6)[:6]
-
-        _mem.usealpha = bool(name.strip())
-
-        # The element override calling convention makes this harder to automate.
-        # It's just six, so do it manually
-        _mem.name1 = get_index(name[0])
-        _mem.name2 = get_index(name[1])
-        _mem.name3 = get_index(name[2])
-        _mem.name4 = get_index(name[3])
-        _mem.name5 = get_index(name[4])
-        _mem.name6 = get_index(name[5])
 
     def get_memory(self, number):
         if isinstance(number, str):
@@ -268,7 +271,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.dtcs_polarity = DTCS_POL[_mem.dtcs_polarity]
         mem.tuning_step = STEPS[_mem.tuning_step]
-        mem.name = self._get_name(_mem)
+        mem.name = get_name(_mem)
 
         mem.skip = _flg.pskip and "P" or _flg.skip and "S" or ""
 
@@ -295,7 +298,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCS_POL.index(mem.dtcs_polarity)
         _mem.tuning_step = STEPS.index(mem.tuning_step)
-        self._set_name(_mem, mem.name)
+        set_name(_mem, mem.name)
 
         _flg.pskip = mem.skip == "P"
         _flg.skip = mem.skip == "S"

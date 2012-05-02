@@ -23,7 +23,7 @@ if os.getenv("CHIRP_DEBUG"):
 else:
     DEBUG = False
 
-wouxun_mem_format = """
+WOUXUN_MEM_FORMAT = """
 #seekto 0x0010;
 struct {
   lbcd rx_freq[4];
@@ -50,22 +50,24 @@ struct {
 """
 
 def wouxun_identify(radio):
-    for i in range(0, 5):
+    """Do the original wouxun identification dance"""
+    for _i in range(0, 5):
         radio.pipe.write("HiWOUXUN\x02")
-        r = radio.pipe.read(9)
-        if len(r) != 9:
+        resp = radio.pipe.read(9)
+        if len(resp) != 9:
             print "Retrying identification..."
             time.sleep(1)
             continue
-        if r[2:8] != radio._model:
+        if resp[2:8] != radio._model:
             raise Exception("I can't talk to this model")
         return
-    if len(r) == 0:
+    if len(resp) == 0:
         raise Exception("Radio not responding")
     else:
         raise Exception("Unable to identify radio")
 
 def wouxun_start_transfer(radio):
+    """Tell the radio to go into transfer mode"""
     radio.pipe.write("\x02\x06")
     time.sleep(0.05)
     ack = radio.pipe.read(1)
@@ -73,6 +75,7 @@ def wouxun_start_transfer(radio):
         raise Exception("Radio refused transfer mode")    
 
 def do_download(radio, start, end, blocksize):
+    """Initiate a download of @radio between @start and @end"""
     image = ""
     for i in range(start, end, blocksize):
         cmd = struct.pack(">cHb", "R", i, blocksize)
@@ -80,30 +83,32 @@ def do_download(radio, start, end, blocksize):
             print util.hexprint(cmd)
         radio.pipe.write(cmd)
         length = len(cmd) + blocksize
-        r = radio.pipe.read(length)
-        if len(r) != (len(cmd) + blocksize):
-            print util.hexprint(r)
-            raise Exception("Failed to read full block (%i!=%i)" % (len(r),
-                                                                    len(cmd)+blocksize))
+        resp = radio.pipe.read(length)
+        if len(resp) != (len(cmd) + blocksize):
+            print util.hexprint(resp)
+            raise Exception("Failed to read full block (%i!=%i)" % \
+                                (len(resp),
+                                 len(cmd) + blocksize))
         
         radio.pipe.write("\x06")
         radio.pipe.read(1)
-        image += r[4:]
+        image += resp[4:]
 
         if radio.status_fn:
-            s = chirp_common.Status()           
-            s.cur = i
-            s.max = end
-            s.msg = "Cloning from radio"
-            radio.status_fn(s)
+            status = chirp_common.Status()           
+            status.cur = i
+            status.max = end
+            status.msg = "Cloning from radio"
+            radio.status_fn(status)
     
     return memmap.MemoryMap(image)
 
 def do_upload(radio, start, end, blocksize):
+    """Initiate an upload of @radio between @start and @end"""
     ptr = start
     for i in range(start, end, blocksize):
         cmd = struct.pack(">cHb", "W", i, blocksize)
-        chunk = radio._mmap[ptr:ptr+blocksize]
+        chunk = radio.get_mmap()[ptr:ptr+blocksize]
         ptr += blocksize
         radio.pipe.write(cmd + chunk)
         if DEBUG:
@@ -115,13 +120,14 @@ def do_upload(radio, start, end, blocksize):
         #radio.pipe.write(ack)
 
         if radio.status_fn:
-            s = chirp_common.Status()
-            s.cur = i
-            s.max = end
-            s.msg = "Cloning to radio"
-            radio.status_fn(s)
+            status = chirp_common.Status()
+            status.cur = i
+            status.max = end
+            status.msg = "Cloning to radio"
+            radio.status_fn(status)
 
 def wouxun_download(radio):
+    """Talk to an original wouxun and do a download"""
     try:
         wouxun_identify(radio)
         wouxun_start_transfer(radio)
@@ -132,6 +138,7 @@ def wouxun_download(radio):
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def wouxun_upload(radio):
+    """Talk to an original wouxun and do an upload"""
     try:
         wouxun_identify(radio)
         wouxun_start_transfer(radio)
@@ -147,8 +154,12 @@ CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                 chirp_common.PowerLevel("Low", watts=1.00)]
 
+def wipe_memory(_mem, byte):
+    _mem.set_raw(byte * (_mem.size() / 8))
+
 @directory.register
 class KGUVD1PRadio(chirp_common.CloneModeRadio):
+    """Wouxun KG-UVD1P,UV2,UV3"""
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
     _model = "KG669V"
@@ -172,7 +183,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             # format, padding 16 bytes of 0xFF in front.
             self._mmap = memmap.MemoryMap(("\xFF" * 16) + \
                                               self._mmap.get_packed()[8:8184])
-        self._memobj = bitwise.parse(wouxun_mem_format, self._mmap)
+        self._memobj = bitwise.parse(WOUXUN_MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -194,14 +205,14 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    def get_tone(self, _mem, mem):
-        def get_dcs(val):
+    def _get_tone(self, _mem, mem):
+        def _get_dcs(val):
             code = int("%03o" % (val & 0x07FF))
             pol = (val & 0x8000) and "R" or "N"
             return code, pol
             
         if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2800:
-            tcode, tpol = get_dcs(_mem.tx_tone)
+            tcode, tpol = _get_dcs(_mem.tx_tone)
             mem.dtcs = tcode
             txmode = "DTCS"
         elif _mem.tx_tone != 0xFFFF:
@@ -211,7 +222,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             txmode = ""
 
         if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2800:
-            rcode, rpol = get_dcs(_mem.rx_tone)
+            rcode, rpol = _get_dcs(_mem.rx_tone)
             mem.dtcs = rcode
             rxmode = "DTCS"
         elif _mem.rx_tone != 0xFFFF:
@@ -268,7 +279,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         if not _mem.iswide:
             mem.mode = "NFM"
 
-        self.get_tone(_mem, mem)
+        self._get_tone(_mem, mem)
 
         mem.power = POWER_LEVELS[not _mem.power_high]
 
@@ -279,11 +290,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
         return mem
 
-    def wipe_memory(self, _mem, byte):
-        _mem.set_raw(byte * (_mem.size() / 8))
-
-    def set_tone(self, mem, _mem):
-        def set_dcs(code, pol):
+    def _set_tone(self, mem, _mem):
+        def _set_dcs(code, pol):
             val = int("%i" % code, 8) + 0x2800
             if pol == "R":
                 val += 0xA000
@@ -299,7 +307,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
 
         if tx_mode == "DTCS":
-            _mem.tx_tone = set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+            _mem.tx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
         elif tx_mode:
             _mem.tx_tone = tx_mode == "Tone" and \
                 int(mem.rtone * 10) or int(mem.ctone * 10)
@@ -307,7 +315,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             _mem.tx_tone = 0xFFFF
 
         if rx_mode == "DTCS":
-            _mem.rx_tone = set_dcs(mem.dtcs, mem.dtcs_polarity[1])
+            _mem.rx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
         elif rx_mode:
             _mem.rx_tone = int(mem.ctone * 10)
         else:
@@ -322,11 +330,11 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            self.wipe_memory(_mem, "\xFF")
+            wipe_memory(_mem, "\xFF")
             return
 
         if _mem.get_raw() == ("\xFF" * 16):
-            self.wipe_memory(_mem, "\x00")
+            wipe_memory(_mem, "\x00")
 
         _mem.rx_freq = int(mem.freq / 10)
         if mem.duplex == "split":
@@ -341,7 +349,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
-        self.set_tone(mem, _mem)
+        self._set_tone(mem, _mem)
 
         if mem.power:
             _mem.power_high = not POWER_LEVELS.index(mem.power)
@@ -386,7 +394,8 @@ def _puxing_prep(radio):
         raise Exception("Radio did not ACK ident")
 
 def puxing_prep(radio):
-    for i in range(0, 10):
+    """Do the Puxing PX-777 identification dance"""
+    for _i in range(0, 10):
         try:
             return _puxing_prep(radio)
         except Exception, e:
@@ -395,6 +404,7 @@ def puxing_prep(radio):
     raise e
 
 def puxing_download(radio):
+    """Talk to a Puxing PX-777 and do a download"""
     try:
         puxing_prep(radio)
         return do_download(radio, 0x0000, 0x0C60, 0x0008)
@@ -404,6 +414,7 @@ def puxing_download(radio):
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def puxing_upload(radio):
+    """Talk to a Puxing PX-777 and do an upload"""
     try:
         puxing_prep(radio)
         return do_upload(radio, 0x0000, 0x0C40, 0x0008)
@@ -412,7 +423,7 @@ def puxing_upload(radio):
     except Exception, e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
-puxing_mem_format = """
+PUXING_MEM_FORMAT = """
 #seekto 0x0000;
 struct {
   lbcd rx_freq[4];
@@ -477,6 +488,7 @@ PUXING_777_BANDS = [
 
 @directory.register
 class Puxing777Radio(KGUVD1PRadio):
+    """Puxing PX-777"""
     VENDOR = "Puxing"
     MODEL = "PX-777"
 
@@ -513,7 +525,7 @@ class Puxing777Radio(KGUVD1PRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(puxing_mem_format, self._mmap)
+        self._memobj = bitwise.parse(PUXING_MEM_FORMAT, self._mmap)
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -526,16 +538,16 @@ class Puxing777Radio(KGUVD1PRadio):
         _mem = self._memobj.memory[number - 1]
         _nam = self._memobj.names[number - 1]
 
-        def is_empty():
-            for i in range(0,4):
+        def _is_empty():
+            for i in range(0, 4):
                 if _mem.rx_freq[i].get_raw() != "\xFF":
                     return False
             return True
 
-        def is_no_tone(field):
+        def _is_no_tone(field):
             return field[0].get_raw() == "\xFF"
 
-        def get_dtcs(value):
+        def _get_dtcs(value):
             # Upper nibble 0x80 -> DCS, 0xC0 -> Inv. DCS
             if value > 12000:
                 return "R", value - 12000
@@ -544,19 +556,19 @@ class Puxing777Radio(KGUVD1PRadio):
             else:
                 raise Exception("Unable to convert DCS value")
 
-        def do_dtcs(mem, txfield, rxfield):
+        def _do_dtcs(mem, txfield, rxfield):
             if int(txfield) < 8000 or int(rxfield) < 8000:
                 raise Exception("Split tone not supported")
 
             if txfield[0].get_raw() == "\xFF":
                 tp, tx = "N", None
             else:
-                tp, tx = get_dtcs(int(txfield))
+                tp, tx = _get_dtcs(int(txfield))
             
             if rxfield[0].get_raw() == "\xFF":
                 rp, rx = "N", None
             else:
-                rp, rx = get_dtcs(int(rxfield))
+                rp, rx = _get_dtcs(int(rxfield))
 
             if not rx:
                 rx = tx
@@ -572,7 +584,7 @@ class Puxing777Radio(KGUVD1PRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if is_empty():
+        if _is_empty():
             mem.empty = True
             return mem
 
@@ -588,15 +600,15 @@ class Puxing777Radio(KGUVD1PRadio):
         if not _mem.iswide:
             mem.mode = "NFM"
 
-        if is_no_tone(_mem.tx_tone):
+        if _is_no_tone(_mem.tx_tone):
             pass # No tone
         elif int(_mem.tx_tone) > 8000 or \
-                (not is_no_tone(_mem.rx_tone) and int(_mem.rx_tone) > 8000):
+                (not _is_no_tone(_mem.rx_tone) and int(_mem.rx_tone) > 8000):
             mem.tmode = "DTCS"
-            do_dtcs(mem, _mem.tx_tone, _mem.rx_tone)
+            _do_dtcs(mem, _mem.tx_tone, _mem.rx_tone)
         else:
             mem.rtone = int(_mem.tx_tone) / 10.0
-            mem.tmode = is_no_tone(_mem.rx_tone) and "Tone" or "TSQL"
+            mem.tmode = _is_no_tone(_mem.rx_tone) and "Tone" or "TSQL"
 
         mem.power = POWER_LEVELS[not _mem.power_high]
 
@@ -612,7 +624,7 @@ class Puxing777Radio(KGUVD1PRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            self.wipe_memory(_mem, "\xFF")
+            wipe_memory(_mem, "\xFF")
             return
 
         _mem.rx_freq = mem.freq / 10
@@ -666,6 +678,7 @@ class Puxing777Radio(KGUVD1PRadio):
                 raise Exception("Character `%s' not supported")
 
 def puxing_2r_prep(radio):
+    """Do the Puxing 2R identification dance"""
     radio.pipe.setTimeout(0.2)
     radio.pipe.write("PROGRAM\x02")
     ack = radio.pipe.read(1)
@@ -677,6 +690,7 @@ def puxing_2r_prep(radio):
     print "Radio ident: %s (%i)" % (repr(ident), len(ident))
 
 def puxing_2r_download(radio):
+    """Talk to a Puxing 2R and do a download"""
     try:
         puxing_2r_prep(radio)
         return do_download(radio, 0x0000, 0x0FE0, 0x0010)
@@ -686,6 +700,7 @@ def puxing_2r_download(radio):
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def puxing_2r_upload(radio):
+    """Talk to a Puxing 2R and do an upload"""
     try:
         puxing_2r_prep(radio)
         return do_upload(radio, 0x0000, 0x0FE0, 0x0010)
@@ -694,7 +709,7 @@ def puxing_2r_upload(radio):
     except Exception, e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
-puxing_2r_mem_format = """
+PUXING_2R_MEM_FORMAT = """
 #seekto 0x0010;
 struct {
   lbcd freq[4];
@@ -719,6 +734,7 @@ PX2R_CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ +"
 
 @directory.register
 class Puxing2RRadio(KGUVD1PRadio):
+    """Puxing PX-2R"""
     VENDOR = "Puxing"
     MODEL = "PX-2R"
     _memsize = 0x0FE0
@@ -753,7 +769,7 @@ class Puxing2RRadio(KGUVD1PRadio):
         puxing_2r_upload(self)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(puxing_2r_mem_format, self._mmap)
+        self._memobj = bitwise.parse(PUXING_2R_MEM_FORMAT, self._mmap)
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -780,16 +796,17 @@ class Puxing2RRadio(KGUVD1PRadio):
             mem.rtone = chirp_common.TONES[_mem.tx_tone - 1]
             mem.tmode = _mem.rx_tone and "TSQL" or "Tone"
 
-        c = 0
+        count = 0
         for i in _mem.name:
             if i == 0xFF:
                 break
             try:
                 mem.name += PX2R_CHARSET[i]
-            except:
-                print "Unknown name char %i: 0x%02x (mem %i)" % (c, i, number)
+            except Exception:
+                print "Unknown name char %i: 0x%02x (mem %i)" % (count,
+                                                                 i, number)
                 mem.name += " "
-            c += 1
+            count += 1
         mem.name = mem.name.rstrip()
 
         return mem
@@ -845,7 +862,8 @@ def _uv3r_prep(radio):
         raise errors.RadioError("Radio did not ACK ident")
 
 def uv3r_prep(radio):
-    for i in range(0, 10):
+    """Do the UV3R identification dance"""
+    for _i in range(0, 10):
         try:
             return _uv3r_prep(radio)
         except errors.RadioError, e:
@@ -854,6 +872,7 @@ def uv3r_prep(radio):
     raise e
 
 def uv3r_download(radio):
+    """Talk to a UV3R and do a download"""
     try:
         uv3r_prep(radio)
         return do_download(radio, 0x0000, 0x0E40, 0x0010)
@@ -863,6 +882,7 @@ def uv3r_download(radio):
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 def uv3r_upload(radio):
+    """Talk to a UV3R and do an upload"""
     try:
         uv3r_prep(radio)
         return do_upload(radio, 0x0000, 0x0E40, 0x0010)
@@ -871,7 +891,7 @@ def uv3r_upload(radio):
     except Exception, e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
-uv3r_mem_format = """
+UV3R_MEM_FORMAT = """
 #seekto 0x0010;
 struct {
   lbcd rx_freq[4];
@@ -920,6 +940,7 @@ UV3R_DTCS_POL = ["NN", "NR", "RN", "RR"]
 
 @directory.register
 class UV3RRadio(KGUVD1PRadio):
+    """Baofeng UV-3R"""
     VENDOR = "Baofeng"
     MODEL = "UV-3R"
 
@@ -950,7 +971,7 @@ class UV3RRadio(KGUVD1PRadio):
         uv3r_upload(self)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(uv3r_mem_format, self._mmap)
+        self._memobj = bitwise.parse(UV3R_MEM_FORMAT, self._mmap)
 
     def get_memory(self, number):
         _mem = self._memobj.rx_memory[number - 1]
@@ -962,7 +983,7 @@ class UV3RRadio(KGUVD1PRadio):
             return mem
 
         mem.freq = int(_mem.rx_freq) * 10
-        mem.offset = int(_mem.offset) * 10;
+        mem.offset = int(_mem.offset) * 10
         mem.duplex = UV3R_DUPLEX[_mem.duplex]
         if mem.offset > 60000000:
             if mem.duplex == "+":

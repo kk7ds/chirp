@@ -15,7 +15,7 @@
 
 from chirp import chirp_common, icf, icx8x_ll, errors, directory
 
-def isUHF(pipe):
+def _isuhf(pipe):
     try:
         md = icf.get_model_data(pipe)
         val = ord(md[20])
@@ -29,6 +29,7 @@ def isUHF(pipe):
 
 @directory.register
 class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    """Icom IC-V/U82"""
     VENDOR = "Icom"
     MODEL = "IC-V82/U82"
 
@@ -69,7 +70,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_duplexes = ["", "-", "+"]
         rf.valid_tuning_steps = [x for x in chirp_common.TUNING_STEPS
                                  if x != 6.25]
-        if self.isUHF:
+        if self._isuhf:
             rf.valid_bands = [(420000000, 470000000)]
         else:
             rf.valid_bands = [(118000000, 176000000)]
@@ -78,12 +79,12 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def _get_type(self):
-        flag = (isUHF(self.pipe) != 0)
+        flag = (_isuhf(self.pipe) != 0)
 
-        if self.isUHF is not None and (self.isUHF != flag):
+        if self._isuhf is not None and (self._isuhf != flag):
             raise errors.RadioError("VHF/UHF model mismatch")
 
-        self.isUHF = flag
+        self._isuhf = flag
 
         return flag
 
@@ -95,15 +96,15 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         # file, look for the flag.  If we're syncing from serial, set
         # that flag.
         if isinstance(pipe, str):
-            self.isUHF = (ord(self._mmap[0x1930]) != 0)
+            self._isuhf = (ord(self._mmap[0x1930]) != 0)
             #print "Found %s image" % (self.isUHF and "UHF" or "VHF")
         else:
-            self.isUHF = None
+            self._isuhf = None
 
     def sync_in(self):
         self._get_type()
         icf.IcomCloneModeRadio.sync_in(self)
-        self._mmap[0x1930] = self.isUHF and 1 or 0
+        self._mmap[0x1930] = self._isuhf and 1 or 0
 
     def sync_out(self):
         self._get_type()
@@ -116,7 +117,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if not self._mmap:
             self.sync_in()
 
-        if self.isUHF:
+        if self._isuhf:
             base = 400
         else:
             base = 0
@@ -134,7 +135,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if not self._mmap:
             self.sync_in()
 
-        if self.isUHF:
+        if self._isuhf:
             base = 400
         else:
             base = 0

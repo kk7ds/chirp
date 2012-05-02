@@ -24,6 +24,7 @@ class MemoryMap:
         self._data = list(data)
 
     def printable(self, start=None, end=None, printit=True):
+        """Return a printable representation of the memory map"""
         if not start:
             start = 0
 
@@ -38,12 +39,14 @@ class MemoryMap:
         return string
 
     def get(self, start, length=1):
+        """Return a chunk of memory of @length bytes from @start"""
         if start == -1:
             return "".join(self._data[start:])
         else:
             return "".join(self._data[start:start+length])
 
     def set(self, pos, value):
+        """Set a chunk of memory at @pos to @value"""
         if isinstance(value, int):
             self._data[pos] = chr(value)
         elif isinstance(value, str):
@@ -55,6 +58,7 @@ class MemoryMap:
                                  type(value).__name__)
 
     def get_packed(self):
+        """Return the entire memory map as raw data"""
         return "".join(self._data)
 
     def __len__(self):
@@ -80,4 +84,5 @@ class MemoryMap:
         return self.printable(printit=False)
 
     def truncate(self, size):
+        """Truncate the memory map to @size"""
         self._data = self._data[:size]

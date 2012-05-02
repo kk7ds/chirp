@@ -13,10 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, util, directory
+from chirp import chirp_common, icf, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 struct {
     u32 freq;
     u32 offset;
@@ -69,6 +69,7 @@ POWER_LEVELS_UHF = [chirp_common.PowerLevel("High", watts=35),
 
 @directory.register
 class IC2720Radio(icf.IcomCloneModeRadio):
+    """Icom IC-2720"""
     VENDOR = "Icom"
     MODEL = "IC-2720H"
     
@@ -113,7 +114,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])

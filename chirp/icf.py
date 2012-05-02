@@ -13,21 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import struct
 import re
 
 from chirp import chirp_common, errors, util, memmap
-from chirp import ic9x_ll # for magic; may need to move later
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN  = 0xE3
 CMD_CLONE_DAT = 0xE4
-CMD_CLONE_END = 0xE5
+CMD_CLONE_END = 0xE5 
 
-save_pipe = None
+SAVE_PIPE = None
 
 class IcfFrame:
+    """A single ICF communication frame"""
     src = 0
     dst = 0
     cmd = 0
@@ -53,6 +52,7 @@ class IcfFrame:
         pass
 
 def parse_frame_generic(data):
+    """Parse an ICF frame of unknown type from the beginning of @data"""
     frame = IcfFrame()
 
     frame.src = ord(data[2])
@@ -69,6 +69,7 @@ def parse_frame_generic(data):
     return frame, data[end+1:]
 
 class RadioStream:
+    """A class to make reading a stream of IcfFrames easier"""
     def __init__(self, pipe):
         self.pipe = pipe
         self.data = ""
@@ -105,6 +106,7 @@ class RadioStream:
         return frames
 
     def get_frames(self, nolimit=False):
+        """Read any pending frames from the stream"""
         while True:
             _data = self.pipe.read(64)
             if not _data:
@@ -114,7 +116,7 @@ class RadioStream:
 
             if not nolimit and len(self.data) > 128 and "\xFD" in self.data:
                 break # Give us a chance to do some status
-            if len(data) > 1024:
+            if len(self.data) > 1024:
                 break # Avoid an endless loop of chewing garbage
 
         if not self.data:
@@ -122,8 +124,9 @@ class RadioStream:
 
         return self._process_frames()
 
-def get_model_data(pipe, model="\x00\x00\x00\x00"):
-    send_clone_frame(pipe, 0xe0, model, raw=True)
+def get_model_data(pipe, mdata="\x00\x00\x00\x00"):
+    """Query the radio connected to @pipe for its model data"""
+    send_clone_frame(pipe, 0xe0, mdata, raw=True)
     
     stream = RadioStream(pipe)
     frames = stream.get_frames()
@@ -134,7 +137,10 @@ def get_model_data(pipe, model="\x00\x00\x00\x00"):
     return frames[0].payload
 
 def get_clone_resp(pipe, length=None):
+    """Read the response to a clone frame"""
     def exit_criteria(buf, length):
+        """Stop reading a clone response if we have enough data or encounter
+        the end of a frame"""
         if length is None:
             return buf.endswith("\xfd")
         else:
@@ -147,6 +153,8 @@ def get_clone_resp(pipe, length=None):
     return resp
 
 def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
+    """Send a clone frame with @cmd and @data to the radio attached
+    to @pipe"""
     cs = 0
 
     if raw:
@@ -166,9 +174,9 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
 
     frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
 
-    if save_pipe:
+    if SAVE_PIPE:
         print "Saving data..."
-        save_pipe.write(frame)
+        SAVE_PIPE.write(frame)
 
     #print "Sending:\n%s" % util.hexprint(frame)
     #print "Sending:\n%s" % util.hexprint(hed[6:])
@@ -182,6 +190,7 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
     return frame
 
 def process_bcd(bcddata):
+    """Convert BCD-encoded data to raw"""
     data = ""
     i = 0
     while i < range(len(bcddata)) and i+1 < len(bcddata):
@@ -195,36 +204,45 @@ def process_bcd(bcddata):
 
     return data
 
-def process_data_frame(frame, mmap):
+def process_data_frame(frame, _mmap):
+    """Process a data frame, adding the payload to @_mmap"""
     _data = process_bcd(frame.payload)
-    if len(mmap) >= 0x10000:
+    if len(_mmap) >= 0x10000:
         saddr, = struct.unpack(">I", _data[0:4])
-        bytes, = struct.unpack("B", _data[4])
-        data = _data[5:5+bytes]
+        length, = struct.unpack("B", _data[4])
+        data = _data[5:5+length]
     else:
         saddr, = struct.unpack(">H", _data[0:2])
-        bytes, = struct.unpack("B", _data[2])
-        data = _data[3:3+bytes]
+        length, = struct.unpack("B", _data[2])
+        data = _data[3:3+length]
 
     try:
-        mmap[saddr] = data
+        _mmap[saddr] = data
     except IndexError:
-        print "Error trying to set %i bytes at %05x (max %05x)" %\
-            (bytes, saddr, len(mmap))
-    return saddr, saddr + bytes
+        print "Error trying to set %i bytes at %05x (max %05x)" % \
+            (bytes, saddr, len(_mmap))
+    return saddr, saddr + length
 
 def start_hispeed_clone(radio, cmd):
-    buf = ("\xFE" * 20) + "\xEE\xEF\xE8" + radio._model + "\x00\x00\x02\x01\xFD"
+    """Send the magic incantation to the radio to go fast"""
+    buf = ("\xFE" * 20) + \
+        "\xEE\xEF\xE8" + \
+        radio.get_model() + \
+        "\x00\x00\x02\x01\xFD"
     print "Starting HiSpeed:\n%s" % util.hexprint(buf)
     radio.pipe.write(buf)
     radio.pipe.flush()
-    r = radio.pipe.read(128)
-    print "Response:\n%s" % util.hexprint(r)
+    resp = radio.pipe.read(128)
+    print "Response:\n%s" % util.hexprint(resp)
 
     print "Switching to 38400 baud"
     radio.pipe.setBaudrate(38400)
 
-    buf = ("\xFE" * 14) + "\xEE\xEF" + chr(cmd) + radio._model[:3] + "\x00\xFD"
+    buf = ("\xFE" * 14) + \
+        "\xEE\xEF" + \
+        chr(cmd) + \
+        radio.get_model()[:3] + \
+        "\x00\xFD"
     print "Starting HiSpeed Clone:\n%s" % util.hexprint(buf)
     radio.pipe.write(buf)
     radio.pipe.flush()
@@ -247,7 +265,7 @@ def _clone_from_radio(radio):
     stream = RadioStream(radio.pipe)
 
     addr = 0
-    mmap = memmap.MemoryMap(chr(0x00) * radio._memsize)
+    _mmap = memmap.MemoryMap(chr(0x00) * radio.get_memsize())
     last_size = 0
     while True:
         frames = stream.get_frames()
@@ -256,7 +274,7 @@ def _clone_from_radio(radio):
 
         for frame in frames:
             if frame.cmd == CMD_CLONE_DAT:
-                src, dst = process_data_frame(frame, mmap)
+                src, dst = process_data_frame(frame, _mmap)
                 if last_size != (dst - src):
                     print "ICF Size change from %i to %i at %04x" % (last_size,
                                                                      dst - src,
@@ -276,16 +294,18 @@ def _clone_from_radio(radio):
             status.cur = addr
             radio.status_fn(status)
 
-    return mmap
+    return _mmap
 
 def clone_from_radio(radio):
+    """Do a full clone out of the radio's memory"""
     try:
         return _clone_from_radio(radio)
     except Exception, e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 def send_mem_chunk(radio, start, stop, bs=32):
-    mmap = radio.get_mmap()
+    """Send a single chunk of the radio's memory from @start-@stop"""
+    _mmap = radio.get_mmap()
 
     status = chirp_common.Status()
     status.msg = "Cloning to radio"
@@ -297,11 +317,11 @@ def send_mem_chunk(radio, start, stop, bs=32):
         else:
             size = stop - i
 
-        if radio._memsize >= 0x10000:
+        if radio.get_memsize() >= 0x10000:
             chunk = struct.pack(">IB", i, size)
         else:
             chunk = struct.pack(">HB", i, size)
-        chunk += mmap[i:i+size]
+        chunk += _mmap[i:i+size]
 
         send_clone_frame(radio.pipe,
                          CMD_CLONE_DAT,
@@ -315,10 +335,10 @@ def send_mem_chunk(radio, start, stop, bs=32):
     return True
 
 def _clone_to_radio(radio):
-    global save_pipe
+    global SAVE_PIPE
 
     # Uncomment to save out a capture of what we actually write to the radio
-    # save_pipe = file("pipe_capture.log", "w", 0)
+    # SAVE_PIPE = file("pipe_capture.log", "w", 0)
 
     md = get_model_data(radio.pipe)
 
@@ -347,9 +367,9 @@ def _clone_to_radio(radio):
     send_clone_frame(radio.pipe, CMD_CLONE_END, radio.get_endframe(), raw=True)
     frames += stream.get_frames(True)
 
-    if save_pipe:
-        save_pipe.close()
-        save_pipe = None
+    if SAVE_PIPE:
+        SAVE_PIPE.close()
+        SAVE_PIPE = None
 
     try:
         result = frames[-1]
@@ -359,21 +379,24 @@ def _clone_to_radio(radio):
     return result.payload[0] == '\x00'
 
 def clone_to_radio(radio):
+    """Initiate a full memory clone out to @radio"""
     try:
         return _clone_to_radio(radio)
     except Exception, e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 def convert_model(mod_str):
+    """Convert an ICF-style model string into what we get from the radio"""
     data = ""
     for i in range(0, len(mod_str), 2):
-        hex = mod_str[i:i+2]
-        val = int(hex, 16)
-        data += chr(val)
+        hexval = mod_str[i:i+2]
+        intval = int(hexval, 16)
+        data += chr(intval)
 
     return data
 
 def convert_data_line(line):
+    """Convert an ICF data line to raw memory format"""
     if line.startswith("#"):
         return ""
 
@@ -381,12 +404,10 @@ def convert_data_line(line):
 
     if len(line) == 38:
         # Small memory (< 0x10000)
-        pos = int(line[0:4], 16)
         size = int(line[4:6], 16)
         data = line[6:]
     else:
         # Large memory (>= 0x10000)
-        pos = int(line[0:8], 16)
         size = int(line[8:10], 16)
         data = line[10:]
 
@@ -404,6 +425,7 @@ def convert_data_line(line):
     return _mmap
 
 def read_file(filename):
+    """Read an ICF file and return the model string and memory data"""
     f = file(filename)
 
     mod_str = f.readline()
@@ -419,6 +441,7 @@ def read_file(filename):
     return model, memmap.MemoryMap(_mmap)
 
 def is_9x_icf(filename):
+    """Returns True if @filename is an IC9x ICF file"""
     f = file(filename)
     mdata = f.read(8)
     f.close()
@@ -426,6 +449,7 @@ def is_9x_icf(filename):
     return mdata in ["30660000", "28880000"]
 
 def is_icf_file(filename):
+    """Returns True if @filename is an ICF file"""
     f = file(filename)
     data = f.readline()
     data += f.readline()
@@ -436,9 +460,16 @@ def is_icf_file(filename):
     return bool(re.match("^[0-9]{8}#", data))
 
 class IcomBank(chirp_common.Bank):
+    """A bank that works for all Icom radios"""
     # Integral index of the bank (not to be confused with per-memory
     # bank indexes
     index = 0
+
+class IcomNamedBank(IcomBank):
+    """A bank with an adjustable name"""
+    def set_name(self, name):
+        """Set the name of the bank"""
+        pass
 
 class IcomBankModel(chirp_common.BankModel):
     """Icom radios all have pretty much the same simple bank model. This
@@ -483,6 +514,7 @@ class IcomBankModel(chirp_common.BankModel):
             return [self.get_banks()[index]]
     
 class IcomIndexedBankModel(IcomBankModel, chirp_common.BankIndexInterface):
+    """Generic bank model for Icom radios with indexed banks"""
     def get_index_bounds(self):
         return self._radio._bank_index_bounds
 
@@ -512,6 +544,7 @@ class IcomIndexedBankModel(IcomBankModel, chirp_common.BankIndexInterface):
         
 
 class IcomCloneModeRadio(chirp_common.CloneModeRadio):
+    """Base class for Icom clone-mode radios"""
     VENDOR = "Icom"
     BAUDRATE = 9600
 
@@ -523,17 +556,25 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _bank_class = IcomBank
     _can_hispeed = False
 
-    def is_hispeed(self):
-        return self._can_hispeed
+    @classmethod
+    def is_hispeed(cls):
+        """Returns True if the radio supports hispeed cloning"""
+        return cls._can_hispeed
 
-    def get_model(self):
-        return self._model
+    @classmethod
+    def get_model(cls):
+        """Returns the Icom model data for this radio"""
+        return cls._model
 
-    def get_endframe(self):
-        return self._endframe
+    @classmethod
+    def get_endframe(cls):
+        """Returns the magic clone end frame for this radio"""
+        return cls._endframe
 
-    def get_ranges(self):
-        return self._ranges
+    @classmethod
+    def get_ranges(cls):
+        """Returns the ranges this radio likes to have in a clone"""
+        return cls._ranges
 
     def sync_in(self):
         self._mmap = clone_from_radio(self)
@@ -563,6 +604,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         raise Exception("Not implemented")
 
 class IcomLiveRadio(chirp_common.LiveRadio):
+    """Base class for an Icom Live-mode radio"""
     VENDOR = "Icom"
     BAUD_RATE = 38400
 
@@ -579,14 +621,3 @@ class IcomLiveRadio(chirp_common.LiveRadio):
                 return IcomBankModel(self)
         else:
             return None
-
-if __name__ == "__main__":
-    import sys
-
-    model, mmap = read_file(sys.argv[1])
-
-    print util.hexprint(model)
-
-    f = file("out.img", "w")
-    f.write(mmap.get_packed())
-    f.close()

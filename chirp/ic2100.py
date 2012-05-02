@@ -16,7 +16,7 @@
 from chirp import chirp_common, icf, util, directory
 from chirp import bitwise, memmap
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   bbcd  freq[2];
   u8    freq_10khz:4,
@@ -82,8 +82,73 @@ TMODES = ["", "Tone", "", "TSQL"]
 DUPLEX = ["", "", "+", "-"]
 STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 
+def _get_special():
+    special = { "C": 506 }
+    for i in range(0, 3):
+        ida = "%iA" % (i + 1)
+        idb = "%iB" % (i + 1)
+        num = 500 + (i * 2)
+        special[ida] = num
+        special[idb] = num + 1
+
+    return special
+
+def _get_freq(mem):
+    freq = (int(mem.freq) * 100000) + \
+        (mem.freq_10khz * 10000) + \
+        (mem.freq_1khz * 1000)
+
+    if mem.is_12_5:
+        if chirp_common.is_12_5(freq):
+            pass
+        elif mem.freq_1khz == 2:
+            freq += 500
+        elif mem.freq_1khz == 5:
+            freq += 2500
+        elif mem.freq_1khz == 7:
+            freq += 500
+        else:
+            raise Exception("Unable to resolve 12.5kHz: %i" % freq)
+
+    return freq
+
+def _set_freq(mem, freq):
+    mem.freq = freq / 100000
+    mem.freq_10khz = (freq / 10000) % 10
+    khz = (freq / 1000) % 10
+    mem.freq_1khz = khz
+    mem.is_12_5 = chirp_common.is_12_5(freq)
+
+def _get_offset(mem):
+    raw = memmap.MemoryMap(mem.get_raw())
+    if ord(raw[5]) & 0x0A:
+        raw[5] = ord(raw[5]) & 0xF0
+        mem.set_raw(raw.get_packed())
+        offset = int(mem.offset) * 1000 + 5000
+        raw[5] = ord(raw[5]) | 0x0A
+        mem.set_raw(raw.get_packed())
+        return offset
+    else:
+        return int(mem.offset) * 1000
+
+def _set_offset(mem, offset):
+    if (offset % 10) == 5000:
+        extra = 0x0A
+        offset -= 5000
+    else:
+        extra = 0x00
+
+    mem.offset = offset / 1000
+    raw = memmap.MemoryMap(mem.get_raw())
+    raw[5] = ord(raw[5]) | extra
+    mem.set_raw(raw.get_packed())
+
+def _wipe_memory(mem, char):
+    mem.set_raw(char * (mem.size() / 8))
+
 @directory.register
 class IC2100Radio(icf.IcomCloneModeRadio):
+    """Icom IC-2100"""
     VENDOR = "Icom"
     MODEL = "IC-2100H"
 
@@ -110,81 +175,20 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
-
-    def _get_special(self):
-        special = { "C": 506 }
-        for i in range(0, 3):
-            idA = "%iA" % (i+1)
-            idB = "%iB" % (i+1)
-            num = 500 + (i * 2)
-            special[idA] = num
-            special[idB] = num + 1
-
-        return special
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_special_locations(self):
-        return sorted(self._get_special().keys())
-
-    def __get_freq(self, mem):
-        freq = (int(mem.freq) * 100000) + \
-            (mem.freq_10khz * 10000) + \
-            (mem.freq_1khz * 1000)
-
-        if mem.is_12_5:
-            if chirp_common.is_12_5(freq):
-                pass
-            elif mem.freq_1khz == 2:
-                freq += 500
-            elif mem.freq_1khz == 5:
-                freq += 2500
-            elif mem.freq_1khz == 7:
-                freq += 500
-            else:
-                raise Exception("Unable to resolve 12.5kHz: %i" % freq)
-
-        return freq
-
-    def __set_freq(self, mem, freq):
-        mem.freq = freq / 100000
-        mem.freq_10khz = (freq / 10000) % 10
-        khz = (freq / 1000) % 10
-        mem.freq_1khz = khz
-        mem.is_12_5 = chirp_common.is_12_5(freq)
-
-    def __get_offset(self, mem):
-        raw = memmap.MemoryMap(mem.get_raw())
-        if ord(raw[5]) & 0x0A:
-            raw[5] = ord(raw[5]) & 0xF0
-            mem.set_raw(raw.get_packed())
-            offset = int(mem.offset) * 1000 + 5000
-            raw[5] = ord(raw[5]) | 0x0A
-            mem.set_raw(raw.get_packed())
-            return offset
-        else:
-            return int(mem.offset) * 1000
-
-    def __set_offset(self, mem, offset):
-        if (offset % 10) == 5000:
-            extra = 0x0A
-            offset -= 5000
-        else:
-            extra = 0x00
-
-        mem.offset = offset / 1000
-        raw = memmap.MemoryMap(mem.get_raw())
-        raw[5] = ord(raw[5]) | extra
-        mem.set_raw(raw.get_packed())
+        return sorted(_get_special().keys())
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
 
         if isinstance(number, str):
             if number == "C":
-                number = self._get_special()[number]
+                number = _get_special()[number]
                 _mem = self._memobj.call[0]
             else:
-                number = self._get_special()[number]
+                number = _get_special()[number]
                 _mem = self._memobj.special[number - 500]
             empty = False
         else:
@@ -202,15 +206,15 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         if number <= 100:
             mem.skip = isskip and "S" or ""
         else:
-            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.extd_number = util.get_dict_rev(_get_special(), number)
             mem.immutable = ["number", "skip", "extd_number"]
 
         if empty:
             mem.empty = True
             return mem
 
-        mem.freq = self.__get_freq(_mem)
-        mem.offset = self.__get_offset(_mem)
+        mem.freq = _get_freq(_mem)
+        mem.offset = _get_offset(_mem)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -218,14 +222,11 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         
         return mem
 
-    def _wipe_memory(self, mem, char):
-        mem.set_raw(char * (mem.size() / 8))
-
     def set_memory(self, mem):
         if mem.number == "C":
             _mem = self._memobj.call[0]
         elif isinstance(mem.number, str):
-            _mem = self._memobj.special[self._get_special[number] - 500]
+            _mem = self._memobj.special[_get_special[mem.number] - 500]
         else:
             number = mem.number - 1
             _mem = self._memobj.memory[number]
@@ -242,8 +243,8 @@ class IC2100Radio(icf.IcomCloneModeRadio):
                 _skp &= ~mask
             _mem.name = mem.name.ljust(6)
 
-        self.__set_freq(_mem, mem.freq)
-        self.__set_offset(_mem, mem.offset)
+        _set_freq(_mem, mem.freq)
+        _set_offset(_mem, mem.offset)
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)

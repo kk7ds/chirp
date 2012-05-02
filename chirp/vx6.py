@@ -27,14 +27,15 @@ from chirp import bitwise
 #   cpu_shifted:  CPU freq has been shifted (to move a birdie out of channel)
 #   power:        0-3: ["L1", "L2", "L3", "Hi"]
 #   pager:        Set if this is a paging memory
-#   tmodes:       0-7: ["", "Tone", "TSQL", "DTCS", "Rv Tn", "D Code", "T DCS", "D Tone"]
+#   tmodes:       0-7: ["", "Tone", "TSQL", "DTCS", "Rv Tn", "D Code",
+#                       "T DCS", "D Tone"]
 #                      Rv Tn: Reverse CTCSS - mutes receiver on tone
 #                      The final 3 are for split:
 #                      D Code: DCS Encode only
 #                      T DCS:  Encodes tone, decodes DCS code
 #                      D Tone: Encodes DCS code, decodes tone
 # }
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x018A;
 u16 bank_sizes[24];
 
@@ -110,6 +111,7 @@ POWER_LEVELS_220 = [chirp_common.PowerLevel("Hi", watts=1.50),
 
 @directory.register
 class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu VX-6"""
     BAUD_RATE = 19200
     VENDOR = "Yaesu"
     MODEL = "VX-6"
@@ -123,7 +125,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -225,35 +227,35 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
 
-        _mem.name == ("\xFF" * 6)
+        _mem.name = [0xFF] * 6
         for i in range(0, 6):
             _mem.name[i] = CHARSET.index(mem.name.ljust(6)[i])
 
         if mem.name.strip():
             _mem.name[0] |= 0x80
 
-    def get_banks(self):
-        _banks = self._memobj.bank_names
-
-        banks = []
-        for bank in _banks:
-            name = ""
-            for i in bank.name:
-                name += CHARSET[i & 0x7F]
-            banks.append(name.rstrip())
-
-        return banks
-
-    # Return channels for a bank. Bank given as number
-    def get_bank_channels(self, bank):
-        nchannels = 0
-        size = self._memobj.bank_sizes[bank]
-        if size <= 198:
-            nchannels = 1 + size/2
-        _channels = self._memobj.bank_channels[bank]
-        channels = []
-        for i in range(0, nchannels):
-            channels.append(int(_channels.channel[i]))
-
-        return channels
+#    def get_banks(self):
+#        _banks = self._memobj.bank_names
+#
+#        banks = []
+#        for bank in _banks:
+#            name = ""
+#            for i in bank.name:
+#                name += CHARSET[i & 0x7F]
+#            banks.append(name.rstrip())
+#
+#        return banks
+#
+#    # Return channels for a bank. Bank given as number
+#    def get_bank_channels(self, bank):
+#        nchannels = 0
+#        size = self._memobj.bank_sizes[bank]
+#        if size <= 198:
+#            nchannels = 1 + size/2
+#        _channels = self._memobj.bank_channels[bank]
+#        channels = []
+#        for i in range(0, nchannels):
+#            channels.append(int(_channels.channel[i]))
+#
+#        return channels
 

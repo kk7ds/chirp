@@ -13,10 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util, directory
+from chirp import chirp_common, icf, util, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x%x;
 struct {
   bbcd freq[3];
@@ -61,8 +61,16 @@ struct {
 DUPLEX = ["", "", "-", "+"]
 TONE = ["", "", "Tone", "TSQL"]
 
+def _get_special():
+    special = {}
+    for i in range(0, 5):
+        special["M%iA" % (i+1)] = 100 + i*2
+        special["M%iB" % (i+1)] = 100 + i*2 + 1
+    return special            
+
 @directory.register
 class ICW32ARadio(icf.IcomCloneModeRadio):
+    """Icom IC-W32A"""
     VENDOR = "Icom"
     MODEL = "IC-W32A"
 
@@ -97,26 +105,18 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         return rf
 
     def process_mmap(self):
-        format = mem_format % self._mem_positions
-        self._memobj = bitwise.parse(format, self._mmap)
+        fmt = MEM_FORMAT % self._mem_positions
+        self._memobj = bitwise.parse(fmt, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
-    def _get_special(self):
-        special = {}
-        for i in range(0, 5):
-            special["M%iA" % (i+1)] = 100 + i*2
-            special["M%iB" % (i+1)] = 100 + i*2 + 1
-
-        return special            
-
     def get_special_locations(self):
-        return sorted(self._get_special().keys())
+        return sorted(_get_special().keys())
 
     def get_memory(self, number):
         if isinstance(number, str):
-            number = self._get_special()[number]
+            number = _get_special()[number]
 
         _mem = self._memobj.memory[number]
         _flg = self._memobj.flag[number]
@@ -129,7 +129,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
             mem.skip = _flg.skip and "S" or ""
         else:
             # Special memories
-            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.extd_number = util.get_dict_rev(_get_special(), number)
 
         if _flg.empty:
             mem.empty = True
@@ -190,11 +190,13 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         return filedata[-16:] == "IcomCloneFormat3"
 
 class ICW32ARadioVHF(ICW32ARadio):
+    """ICW32 VHF subdevice"""
     VARIANT = "VHF"
     _limits = (118000000, 174000000)
     _mem_positions = (0x0000, 0x0DC0)
 
 class ICW32ARadioUHF(ICW32ARadio):
+    """ICW32 UHF subdevice"""
     VARIANT = "UHF"
     _limits = (400000000, 470000000)
     _mem_positions = (0x06E0, 0x0E2E)

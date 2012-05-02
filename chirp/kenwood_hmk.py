@@ -14,16 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import csv
 
 from chirp import chirp_common, errors, directory, generic_csv
 
 class OmittedHeaderError(Exception):
+    """An internal exception to indicate that a header was omitted"""
     pass
 
 @directory.register
 class HMKRadio(generic_csv.CSVRadio):
+    """Kenwood HMK format"""
     VENDOR = "Kenwood"
     MODEL = "HMK"
     FILE_EXTENSION = "hmk"

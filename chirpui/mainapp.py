@@ -887,7 +887,7 @@ If you think that it is valid, you can select a radio model below to force an op
         else:
             from chirp import rfinder
             radio = rfinder.RFinderRadio(None)
-            radio.set_params(lat, lon, miles, email, passwd)
+            radio.set_params((lat, lon), miles, email, passwd)
             self.do_open_live(radio, read_only=True)
 
         self.window.set_cursor(None)

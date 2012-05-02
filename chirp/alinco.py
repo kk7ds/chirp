@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, bitwise, memmap, errors, directory
+from chirp import chirp_common, bitwise, memmap, errors, directory, util
 
 import time
 
-DRx35_mem_format = """
+DRX35_MEM_FORMAT = """
 #seekto 0x0120;
 u8 used_flags[25];
 
@@ -59,7 +59,9 @@ RLENGTH = 2 + 5 + 32 + 2
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0]
 
 class AlincoStyleRadio(chirp_common.CloneModeRadio):
+    """Base class for all known Alinco radios"""
     _memsize = 0
+    _model = "NONE"
 
     def _send(self, data):
         self.pipe.write(data)
@@ -96,20 +98,19 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             time.sleep(0.1)
 
             if self.status_fn:
-                s = chirp_common.Status()
-                s.cur = addr + 16
-                s.max = self._memsize
-                s.msg = "Downloading from radio"
-                self.status_fn(s)
+                status = chirp_common.Status()
+                status.cur = addr + 16
+                status.max = self._memsize
+                status.msg = "Downloading from radio"
+                self.status_fn(status)
 
         self._send("AL~E\r\n")
-        r = self.pipe.read(20)
-        #print r
+        self.pipe.read(20)
 
         return memmap.MemoryMap(data)
 
     def _identify(self):
-        for i in range(0, 3):
+        for _i in range(0, 3):
             self._send("%s\r\n" % self._model)
             resp = self.pipe.read(6)
             if resp.strip() == "OK":
@@ -137,18 +138,18 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             time.sleep(0.1)
 
             if self.status_fn:
-                s = chirp_common.Status()
-                s.cur = addr + 16
-                s.max = self._memsize
-                s.msg = "Uploading to radio"
-                self.status_fn(s)
+                status = chirp_common.Status()
+                status.cur = addr + 16
+                status.max = self._memsize
+                status.msg = "Uploading to radio"
+                self.status_fn(status)
 
         self._send("AL~E\r\n")
-        r = self.pipe.read(20)
+        self.pipe.read(20)
         #print r
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(DRx35_mem_format, self._mmap)
+        self._memobj = bitwise.parse(DRX35_MEM_FORMAT, self._mmap)
 
     def sync_in(self):
         try:
@@ -183,31 +184,32 @@ CHARSET = (["\x00"] * 0x30) + \
     [chr(x + ord("A")) for x in range(0, 26)] + [" "] + \
     list("\x00" * 128)
 
+def _get_name(_mem):
+    name = ""
+    for i in _mem.name:
+        if not i:
+            break
+        name += CHARSET[i]
+    return name
+
+def _set_name(mem, _mem):
+    name = [0x00] * 7
+    j = 0
+    for i in range(0, 7):
+        try:
+            name[j] = CHARSET.index(mem.name[i])
+            j += 1
+        except IndexError:
+            pass
+        except ValueError:
+            pass
+    return name
+
 class DRx35Radio(AlincoStyleRadio):
+    """Base class for the DR-x35 radios"""
     _range = [(118000000, 155000000)]
     _power_levels = []
     _valid_tones = list(chirp_common.TONES)
-
-    def _get_name(self, mem, _mem):
-        name = ""
-        for i in _mem.name:
-            if not i:
-                break
-            name += CHARSET[i]
-        return name
-
-    def _set_name(self, mem, _mem):
-        name = [0x00] * 7
-        j = 0
-        for i in range(0, 7):
-            try:
-                name[j] = CHARSET.index(mem.name[i])
-                j += 1
-            except IndexError:
-                pass
-            except ValueError:
-                pass
-        return name
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -254,7 +256,7 @@ class DRx35Radio(AlincoStyleRadio):
         if _skp & bit:
             mem.skip = "S"
 
-        mem.name = self._get_name(mem, _mem).rstrip()
+        mem.name = _get_name(_mem).rstrip()
 
         return mem
 
@@ -298,10 +300,11 @@ class DRx35Radio(AlincoStyleRadio):
         else:
             _skp &= ~bit
 
-        _mem.name = self._set_name(mem, _mem)
+        _mem.name = _set_name(mem, _mem)
 
 @directory.register
 class DR03Radio(DRx35Radio):
+    """Alinco DR03"""
     VENDOR = "Alinco"
     MODEL = "DR03T"
 
@@ -316,6 +319,7 @@ class DR03Radio(DRx35Radio):
 
 @directory.register
 class DR06Radio(DRx35Radio):
+    """Alinco DR06"""
     VENDOR = "Alinco"
     MODEL = "DR06T"
 
@@ -330,6 +334,7 @@ class DR06Radio(DRx35Radio):
             
 @directory.register
 class DR135Radio(DRx35Radio):
+    """Alinco DR135"""
     VENDOR = "Alinco"
     MODEL = "DR135T"
 
@@ -344,6 +349,7 @@ class DR135Radio(DRx35Radio):
 
 @directory.register
 class DR235Radio(DRx35Radio):
+    """Alinco DR235"""
     VENDOR = "Alinco"
     MODEL = "DR235T"
 
@@ -358,6 +364,7 @@ class DR235Radio(DRx35Radio):
 
 @directory.register
 class DR435Radio(DRx35Radio):
+    """Alinco DR435"""
     VENDOR = "Alinco"
     MODEL = "DR435T"
 
@@ -385,6 +392,7 @@ DJ596_TONES.remove(254.1)
 
 @directory.register
 class DJ596Radio(DRx35Radio):
+    """Alinco DJ596"""
     VENDOR = "Alinco"
     MODEL = "DJ596"
 
@@ -402,6 +410,7 @@ class DJ596Radio(DRx35Radio):
 
 @directory.register
 class JT220MRadio(DRx35Radio):
+    """Jetstream JT220"""
     VENDOR = "Jetstream"
     MODEL = "JT220M"
 

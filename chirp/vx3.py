@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util, directory
+from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 
 #interesting offsets which may be checksums needed later
@@ -23,7 +23,7 @@ from chirp import bitwise
 #0x0409 checksum2?
 #0x04C9 checksum2a?
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x7F4A;
 u8 checksum;
 
@@ -93,6 +93,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=1.50),
                 chirp_common.PowerLevel("Low", watts=0.10)]
 
 class VX3Bank(chirp_common.NamedBank):
+    """A VX3 Bank"""
     def get_name(self):
         _bank = self._model._radio._memobj.bank_names[self.index]
         name = ""
@@ -108,6 +109,7 @@ class VX3Bank(chirp_common.NamedBank):
         _bank.name = [CHARSET.index(x) for x in name.ljust(6)[:6]]
 
 class VX3BankModel(chirp_common.BankModel):
+    """A VX-3 bank model"""
     def get_num_banks(self):
         return 24
 
@@ -121,8 +123,18 @@ class VX3BankModel(chirp_common.BankModel):
             banks.append(bank)
         return banks
 
+def _wipe_memory(mem):
+    mem.set_raw("\x00" * (mem.size() / 8))
+    #the following settings are set to match the defaults
+    #on the radio, some of these fields are unknown
+    mem.name = [0xFF for _i in range(0, 6)]
+    mem.unknown5 = 0x0D #not sure what this is
+    mem.unknown7 = 0x01 #this likely is part of autostep
+    mem.automode = 0x01 #autoselect mode
+
 @directory.register
 class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu VX-3"""
     BAUD_RATE = 19200
     VENDOR = "Yaesu"
     MODEL = "VX-3"
@@ -139,7 +151,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -169,7 +181,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
         nibble = ((number-1) % 2) and "even" or "odd"
         used = _flag["%s_masked" % nibble]
-        valid =_flag["%s_valid" % nibble]
+        valid = _flag["%s_valid" % nibble]
         pskip = _flag["%s_pskip" % nibble]
         skip = _flag["%s_skip" % nibble]
 
@@ -203,16 +215,6 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.name = mem.name.rstrip()
         return mem
 
-    def _wipe_memory(self, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
-        #the following settings are set to match the defaults
-        #on the radio, some of these fields are unknown
-        mem.name = [0xFF for i in range(0, 6)]
-        mem.unknown5 = 0x0D #not sure what this is
-        mem.unknown7 = 0x01 #this likely is part of autostep
-        mem.automode = 0x01 #autoselect mode
-
-
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
         _flag = self._memobj.flags[(mem.number-1)/2]
@@ -223,7 +225,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         valid = _flag["%s_valid" % nibble]
 
         if not mem.empty and not valid:
-            self._wipe_memory(_mem)
+            _wipe_memory(_mem)
 
         if mem.empty and valid and not used:
             _flag["%s_valid" % nibble] = False
@@ -251,7 +253,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
         for i in range(0, 6):
             _mem.name[i] = CHARSET.index(mem.name.ljust(6)[i])
-        if mem.name.strip(): _mem.name[0] |= 0x80
+        if mem.name.strip():
+            _mem.name[0] |= 0x80
       
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)

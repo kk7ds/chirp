@@ -191,7 +191,7 @@ class CloneSettingsDialog(gtk.Dialog):
 class CloneCancelledException(Exception):
     pass
 
-class CloneThread(chirp_common.KillableThread):
+class CloneThread(threading.Thread):
     def __status(self, status):
         gobject.idle_add(self.__progw.status, status)
 

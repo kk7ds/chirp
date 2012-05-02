@@ -13,12 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import errors
 import re
 
-from chirp import chirp_common
+from chirp import chirp_common, errors
 
 def get_memory(doc, number):
+    """Extract a Memory object from @doc"""
     ctx = doc.xpathNewContext()
 
     base = "//radio/memories/memory[@location=%i]" % number
@@ -98,6 +98,7 @@ def get_memory(doc, number):
     return mem
 
 def set_memory(doc, mem):
+    """Set @mem in @doc"""
     ctx = doc.xpathNewContext()
 
     base = "//radio/memories/memory[@location=%i]" % mem.number
@@ -105,7 +106,7 @@ def set_memory(doc, mem):
     fields = ctx.xpathEval(base)
     if len(fields) > 1:
         raise errors.RadioError("%i memories claiming to be %i" % (len(fields),
-                                                                   number))
+                                                                   mem.number))
     elif len(fields) == 1:
         fields[0].unlinkNode()
 
@@ -197,6 +198,7 @@ def set_memory(doc, mem):
         dc.addContent(str(mem.dv_code))
 
 def del_memory(doc, number):
+    """Remove memory @number from @doc"""
     path = "//radio/memories/memory[@location=%i]" % number
     ctx = doc.xpathNewContext()
     fields = ctx.xpathEval(path)
@@ -206,11 +208,12 @@ def del_memory(doc, number):
     
 def _get_bank(node):
     bank = chirp_common.Bank(node.prop("label"))
-    id = int(node.prop("id"))
+    ident = int(node.prop("id"))
 
-    return id, bank
+    return ident, bank
 
 def get_banks(doc):
+    """Return a list of banks from @doc"""
     path = "//radio/banks/bank"
     ctx = doc.xpathNewContext()
     fields = ctx.xpathEval(path)
@@ -219,14 +222,15 @@ def get_banks(doc):
     for field in fields:
         banks.append(_get_bank(field))
 
-    def cmp(x, y):
-        return x[0] - y[0]
+    def _cmp(itema, itemb):
+        return itema[0] - itemb[0]
 
-    banks.sort(cmp=cmp)
+    banks.sort(cmp=_cmp)
 
     return [x[1] for x in banks]
 
 def set_banks(doc, banklist):
+    """Set the list of banks in @doc"""
     path = "//radio/banks/bank"
     ctx = doc.xpathNewContext()
     fields = ctx.xpathEval(path)

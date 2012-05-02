@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util, directory
+from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x012A;
 struct {
   u8 zeros:4,
@@ -67,6 +67,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
 
 @directory.register
 class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu VX-5"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODEL = "VX-5"
@@ -97,7 +98,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])

@@ -19,21 +19,21 @@ from chirp import bitwise
 import time
 import struct
 
-def debug(string):
+def _debug(string):
     pass
     print string
 
-def send(radio, data):
-    debug("Sending %s" % repr(data))
+def _send(radio, data):
+    _debug("Sending %s" % repr(data))
     radio.pipe.write(data)
     radio.pipe.flush()
     echo = radio.pipe.read(len(data))
     if len(echo) != len(data):
         raise errors.RadioError("Invalid echo")
 
-def spoonfeed(radio, data):
-    count = 0
-    debug("Writing %i:\n%s" % (len(data), util.hexprint(data)))
+def _spoonfeed(radio, data):
+    #count = 0
+    _debug("Writing %i:\n%s" % (len(data), util.hexprint(data)))
     for byte in data:
         radio.pipe.write(byte)
         radio.pipe.flush()
@@ -45,12 +45,12 @@ def spoonfeed(radio, data):
         if echo != byte:
             print "%02x != %02x" % (ord(echo), ord(byte))
             raise errors.RadioError("No echo?")
-        count += 1
+        #count += 1
 
-def download(radio):
+def _download(radio):
     count = 0
     data = ""
-    while len(data) < radio._memsize:
+    while len(data) < radio.get_memsize():
         count += 1
         chunk = radio.pipe.read(133)
         if len(chunk) == 0 and len(data) == 0 and count < 30:
@@ -58,10 +58,9 @@ def download(radio):
         if len(chunk) != 132:
             raise errors.RadioError("Got short block (length %i)" % len(chunk))
 
-        flag, length, block = struct.unpack("BBB", chunk[:3])
         checksum = ord(chunk[-1])
-
-        flag, length, block, _data, checksum = struct.unpack("BBB128sB", chunk)
+        _flag, _length, _block, _data, checksum = \
+            struct.unpack("BBB128sB", chunk)
 
         cs = 0
         for byte in chunk[:-1]:
@@ -70,32 +69,31 @@ def download(radio):
             raise errors.RadioError("Invalid checksum at 0x%02x" % len(data))
 
         data += _data
-        send(radio, "\x06")
+        _send(radio, "\x06")
 
         if radio.status_fn:
             status = chirp_common.Status()
             status.msg = "Cloning from radio"
             status.cur = len(data)
-            status.max = radio._memsize
+            status.max = radio.get_memsize()
             radio.status_fn(status)
 
     return memmap.MemoryMap(data)
 
-def upload(radio):
-    for i in range(0, radio._memsize, 128):
-        chunk = radio._mmap[i:i+128]
+def _upload(radio):
+    for i in range(0, radio.get_memsize(), 128):
+        chunk = radio.get_mmap()[i:i+128]
         cs = 0x20 + 130 + (i / 128)
         for byte in chunk:
             cs += ord(byte)
-        spoonfeed(radio,
-                  struct.pack("BBB128sB",
-                              0x20,
-                              130,
-                              i / 128,
-                              chunk,
-                              cs % 256))
+        _spoonfeed(radio,
+                   struct.pack("BBB128sB",
+                               0x20,
+                               130,
+                               i / 128,
+                               chunk,
+                               cs % 256))
         radio.pipe.write("")
-        start = time.time()
         # This is really unreliable for some reason, so just
         # blindly proceed
         # ack = radio.pipe.read(1)
@@ -109,10 +107,10 @@ def upload(radio):
             status = chirp_common.Status()
             status.msg = "Cloning to radio"
             status.cur = i
-            status.max = radio._memsize
+            status.max = radio.get_memsize()
             radio.status_fn(status)
 
-mem_format = """
+MEM_FORMAT = """
 struct memory_struct {
   u8 unknown1;
   u8 unknown2:2,
@@ -158,19 +156,24 @@ POWER = [chirp_common.PowerLevel("Low1", watts=0.050),
          chirp_common.PowerLevel("Low3", watts=2.500),
          chirp_common.PowerLevel("High", watts=5.000)]
 
+def _wipe_memory(_mem):
+    _mem.set_raw("\x00" * (_mem.size() / 8))
+
 @directory.register
 class VXA700Radio(chirp_common.CloneModeRadio):
+    """Vertex Standard VXA-700"""
     VENDOR = "Vertex Standard"
     MODEL = "VXA-700"
     _memsize = 4096
 
     def sync_in(self):
         try:
-            self._mmap = download(self)
+            self._mmap = _download(self)
         except errors.RadioError:
             raise
         except Exception, e:
-            raise errors.RadioError("Failed to communicate with the radio: %s" % e)
+            raise errors.RadioError("Failed to communicate " +
+                                    "with the radio: %s" % e)
         self.process_mmap()
 
     def sync_out(self):
@@ -180,14 +183,15 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         #            0x02 <- air band only
         try:
             self.pipe.setTimeout(2)
-            upload(self)
+            _upload(self)
         except errors.RadioError:
             raise
         except Exception, e:
-            raise errors.RadioError("Failed to communicate with the radio: %s" % e)
+            raise errors.RadioError("Failed to communicate " +
+                                    "with the radio: %s" % e)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -203,7 +207,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         rf.valid_tuning_steps = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
         rf.valid_modes = ["AM", "FM"]
         rf.valid_power_levels = POWER
-        rf.memory_bounds = (1,100)
+        rf.memory_bounds = (1, 100)
         return rf
 
     def _get_mem(self, number):
@@ -215,8 +219,8 @@ class VXA700Radio(chirp_common.CloneModeRadio):
 
     def get_memory(self, number):
         _mem = self._get_mem(number)
-        byte = (number - 1) / 8;
-        bit = 1 << ((number - 1) % 8);
+        byte = (number - 1) / 8
+        bit = 1 << ((number - 1) % 8)
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -251,13 +255,10 @@ class VXA700Radio(chirp_common.CloneModeRadio):
 
         return mem
 
-    def _wipe_memory(self, _mem):
-        _mem.set_raw("\x00" * (_mem.size() / 8))
-
     def set_memory(self, mem):
         _mem = self._get_mem(mem.number)
-        byte = (mem.number - 1) / 8;
-        bit = 1 << ((mem.number - 1) % 8);
+        byte = (mem.number - 1) / 8
+        bit = 1 << ((mem.number - 1) % 8)
 
         if mem.empty and self._memobj.invisible_bits[byte] & bit:
             self._memobj.invalid_bits[byte] |= bit
@@ -267,7 +268,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
             return
 
         if self._memobj.invalid_bits[byte] & bit:
-            self._wipe_memory(_mem)
+            _wipe_memory(_mem)
 
         self._memobj.invisible_bits[byte] &= ~bit
         self._memobj.invalid_bits[byte] &= ~bit
@@ -293,7 +294,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         _mem.skip = mem.skip == "S"
         try:
             _mem.power = POWER.index(mem.power)
-        except:
+        except ValueError:
             _mem.power = 3 # High
 
         for i in range(0, 8):

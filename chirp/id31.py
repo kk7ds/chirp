@@ -15,7 +15,7 @@
 
 from chirp import directory, icf, bitwise, chirp_common
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   u24 freq;
   u16 offset;
@@ -111,7 +111,6 @@ def _decode_call(_call):
 
 def _encode_call(call):
     _call = [0x00] * 7
-    mask = 0
     for i in range(0, 7):
         val = ord(call[i]) << (i + 1)
         if i > 0:
@@ -121,7 +120,32 @@ def _encode_call(call):
         
     return _call
 
+def _get_freq(_mem):
+    freq = int(_mem.freq)
+    offs = int(_mem.offset)
+
+    if freq & 0x00200000:
+        mult = 6250
+    else:
+        mult = 5000
+
+    freq &= 0x0003FFFF
+
+    return (freq * mult), (offs * mult)
+
+def _set_freq(_mem, freq, offset):
+    if chirp_common.is_fractional_step(freq):
+        mult = 6250
+        flag = 0x00200000
+    else:
+        mult = 5000
+        flag = 0x00000000
+
+    _mem.freq = (freq / mult) | flag
+    _mem.offset = (offset / mult)
+
 class ID31Bank(icf.IcomBank):
+    """A ID-31 Bank"""
     def get_name(self):
         _banks = self._model._radio._memobj.bank_names
         return str(_banks[self.index].name).rstrip()
@@ -132,6 +156,7 @@ class ID31Bank(icf.IcomBank):
 
 @directory.register
 class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    """Icom ID-31"""
     MODEL = "ID-31A"
 
     _memsize = 0x15500
@@ -179,34 +204,10 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-
-    def _get_freq(self, _mem):
-        freq = int(_mem.freq)
-        offs = int(_mem.offset)
-
-        if freq & 0x00200000:
-            mult = 6250
-        else:
-            mult = 5000
-
-        freq &= 0x0003FFFF
-
-        return (freq * mult), (offs * mult)
-
-    def _set_freq(self, _mem, freq, offset):
-        if chirp_common.is_fractional_step(freq):
-            mult = 6250
-            flag = 0x00200000
-        else:
-            mult = 5000
-            flag = 0x00000000
-
-        _mem.freq = (freq / mult) | flag
-        _mem.offset = (offset / mult)
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
@@ -226,7 +227,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.empty = True
             return mem
 
-        mem.freq, mem.offset = self._get_freq(_mem)
+        mem.freq, mem.offset = _get_freq(_mem)
         mem.name = str(_mem.name).rstrip()
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
@@ -261,7 +262,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         bit = (1 << (memory.number % 8))
 
-        self._set_freq(_mem, memory.freq, memory.offset)
+        _set_freq(_mem, memory.freq, memory.offset)
         _mem.name = memory.name.ljust(12)[:12]
         _mem.rtone = chirp_common.TONES.index(memory.rtone)
         _mem.ctone = chirp_common.TONES.index(memory.ctone)
@@ -308,10 +309,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_repeater_call_list(self):
         calls = []
-        i = 0
         for rptcall in self._memobj.rptcall:
             call = _decode_call(rptcall.call)
-            i += 1
             if call.rstrip() and not call == "CALLSIGN":
                 calls.append(call)
         for repeater in self._memobj.repeaters:

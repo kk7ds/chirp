@@ -21,6 +21,7 @@ from chirp import icf
 from chirp import chirp_common, util, rfinder, radioreference, errors
 
 def radio_class_id(cls):
+    """Return a unique identification string for @cls"""
     ident = "%s_%s" % (cls.VENDOR, cls.MODEL)
     if cls.VARIANT:
         ident += "_%s" % cls.VARIANT
@@ -31,6 +32,7 @@ def radio_class_id(cls):
     return ident
 
 def register(cls):
+    """Register radio @cls with the directory"""
     global DRV_TO_RADIO
     ident = radio_class_id(cls)
     if ident in DRV_TO_RADIO.keys():
@@ -45,20 +47,24 @@ DRV_TO_RADIO = {}
 RADIO_TO_DRV = {}
 
 def get_radio(driver):
+    """Get radio driver class by identification string"""
     if DRV_TO_RADIO.has_key(driver):
         return DRV_TO_RADIO[driver]
     else:
         raise Exception("Unknown radio type `%s'" % driver)
 
-def get_driver(radio):
-    if RADIO_TO_DRV.has_key(radio):
-        return RADIO_TO_DRV[radio]
-    elif RADIO_TO_DRV.has_key(radio.__bases__[0]):
-        return RADIO_TO_DRV[radio.__bases__[0]]
+def get_driver(rclass):
+    """Get the identification string for a given class"""
+    if RADIO_TO_DRV.has_key(rclass):
+        return RADIO_TO_DRV[rclass]
+    elif RADIO_TO_DRV.has_key(rclass.__bases__[0]):
+        return RADIO_TO_DRV[rclass.__bases__[0]]
     else:
-        raise Exception("Unknown radio type `%s'" % radio)
+        raise Exception("Unknown radio type `%s'" % rclass)
 
 def icf_to_image(icf_file, img_file):
+    # FIXME: Why is this here?
+    """Convert an ICF file to a .img file"""
     mdata, mmap = icf.read_file(icf_file)
     img_data = None
 
@@ -80,16 +86,17 @@ def icf_to_image(icf_file, img_file):
         raise Exception("Unsupported model")
 
 def get_radio_by_image(image_file):
+    """Attempt to get the radio class that owns @image_file"""
     if image_file.startswith("radioreference://"):
-        method, _, zipcode, username, password = image_file.split("/", 4)
+        _, _, zipcode, username, password = image_file.split("/", 4)
         rr = radioreference.RadioReferenceRadio(None)
         rr.set_params(zipcode, username, password)
         return rr
     
     if image_file.startswith("rfinder://"):
-        method, _, email, passwd, lat, lon, miles = image_file.split("/")
+        _, _, email, passwd, lat, lon, miles = image_file.split("/")
         rf = rfinder.RFinderRadio(None)
-        rf.set_params(float(lat), float(lon), int(miles), email, passwd)
+        rf.set_params((float(lat), float(lon)), int(miles), email, passwd)
         return rf
     
     if os.path.exists(image_file) and icf.is_icf_file(image_file):
@@ -105,27 +112,9 @@ def get_radio_by_image(image_file):
     else:
         filedata = ""
 
-    for radio in DRV_TO_RADIO.values():
-        if not issubclass(radio, chirp_common.FileBackedRadio):
+    for rclass in DRV_TO_RADIO.values():
+        if not issubclass(rclass, chirp_common.FileBackedRadio):
             continue
-        if radio.match_model(filedata, image_file):
-            return radio(image_file)
+        if rclass.match_model(filedata, image_file):
+            return rclass(image_file)
     raise errors.ImageDetectFailed("Unknown file format")
-
-def get_radio_name(driver):
-    cls = DRV_TO_RADIO[driver]
-    return cls._get_name(cls)
-
-if __name__ == "__main__":
-    vendors = {
-        "Icom" : {},
-        "Yaesu" : {},
-        "Kenwood" : {},
-        }
-
-    for radio in DRV_TO_RADIO.values():
-        vendors[radio.VENDOR][radio.MODEL]
-        print "%s %s:" % (radio.VENDOR, radio.MODEL)
-        if radio.VARIANT:
-            print "  Variant: %s" % radio.VARIANT
-        print "  Baudrate: %i" % radio.BAUD_RATE

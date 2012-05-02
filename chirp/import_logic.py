@@ -16,12 +16,15 @@
 from chirp import chirp_common, errors
 
 class ImportError(Exception):
+    """An import error"""
     pass
 
 class DestNotCompatible(ImportError):
+    """Memory is not compatible with the destination radio"""
     pass
 
 def ensure_has_calls(radio, memory):
+    """Make sure @radio has the necessary D-STAR callsigns for @memory"""
     ulist_changed = rlist_changed = False
 
     ulist = radio.get_urcall_list()
@@ -59,10 +62,10 @@ def ensure_has_calls(radio, memory):
         radio.set_repeater_cal_list(rlist)
 
 # Filter the name according to the destination's rules
-def _import_name(dst_radio, srcrf, mem):
+def _import_name(dst_radio, _srcrf, mem):
     mem.name = dst_radio.filter_name(mem.name)
 
-def _import_power(dst_radio, srcrf, mem):
+def _import_power(dst_radio, _srcrf, mem):
     levels = dst_radio.get_features().valid_power_levels
     if not levels:
         mem.power = None
@@ -101,6 +104,8 @@ def _import_tone(dst_radio, srcrf, mem):
             mem.ctone = mem.rtone
 
 def import_mem(dst_radio, src_features, src_mem, overrides={}):
+    """Perform import logic to create a destination memory from
+    src_mem that will be compatible with @dst_radio"""
     dst_rf = dst_radio.get_features()
 
     if isinstance(src_mem, chirp_common.DVMemory):
@@ -123,10 +128,10 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
         dst_mem.__dict__[k] = v
 
     msgs = dst_radio.validate_memory(dst_mem)
-    errors = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
-    if errors:
+    errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
+    if errs:
         raise DestNotCompatible("Unable to create import memory: %s" %\
-                                    ", ".join(errors))
+                                    ", ".join(errs))
 
     return dst_mem
         

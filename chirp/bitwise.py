@@ -136,6 +136,10 @@ class DataElement:
     def set_raw(self, data):
         self._data[self._offset] = data[:self._size]
 
+    def __getattr__(self, name):
+        raise AttributeError("Unknown attribute %s in %s" % (name,
+                                                             self.__class__))
+
     def __repr__(self):
         return "(%s:%i bytes @ %04x)" % (self.__class__.__name__,
                                          self._size,
@@ -542,7 +546,10 @@ class structDataElement(DataElement):
             self._keys.append(key)
 
     def __getattr__(self, name):
-        return self._generators[name]
+        try:
+            return self._generators[name]
+        except KeyError:
+            raise AttributeError("No attribute %s in struct" % name)
 
     def __setattr__(self, name, value):
         if not self.__dict__.has_key("_structDataElement__init"):

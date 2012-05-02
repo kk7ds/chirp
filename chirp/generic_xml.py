@@ -19,6 +19,7 @@ import libxml2
 from chirp import chirp_common, errors, xml_ll, platform, directory
 
 def validate_doc(doc):
+    """Validate the document"""
     basepath = platform.get_platform().executable_path()
     path = os.path.abspath(os.path.join(basepath, "chirp.xsd"))
     if not os.path.exists(path):
@@ -37,16 +38,16 @@ def validate_doc(doc):
     errs = []
     warnings = []
 
-    def err(msg, arg=None):
+    def _err(msg, *_args):
         errs.append("ERROR: %s" % msg)
 
-    def wrn(msg, arg=None):
+    def _wrn(msg, *_args):
         print "WARNING: %s" % msg
         warnings.append("WARNING: %s" % msg)
 
-    validCtx = schema.schemaNewValidCtxt()
-    validCtx.setValidityErrorHandler(err, wrn)
-    err = validCtx.schemaValidateDoc(doc)
+    validctx = schema.schemaNewValidCtxt()
+    validctx.setValidityErrorHandler(_err, _wrn)
+    err = validctx.schemaValidateDoc(doc)
     print os.linesep.join(warnings)
     if err:
         print "---DOC---\n%s\n------" % doc.serialize(format=1)
@@ -54,6 +55,7 @@ def validate_doc(doc):
         raise errors.RadioError("Schema error")
 
 def default_banks():
+    """Return an empty set of banks"""
     banks = []
 
     for i in range(0, 26):
@@ -63,6 +65,7 @@ def default_banks():
 
 @directory.register
 class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
+    """Generic XML driver"""
     VENDOR = "Generic"
     MODEL = "XML"
     FILE_EXTENSION = "chirp"
@@ -135,18 +138,6 @@ class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         xml_ll.del_memory(self.doc, number)
 
     @classmethod
-    def match_model(cls, filedata, filename):
+    def match_model(cls, _filedata, filename):
+        """Match this driver if the extension matches"""
         return filename.lower().endswith("." + cls.FILE_EXTENSION)
-
-if __name__ == "__main__":
-    r = XMLRadio("testmem.chirp")
-
-    print r.get_memory(3)
-
-    m = chirp_common.Memory()
-    m.name = "TestMem2"
-    m.freq = 123.456
-    m.number = 10
-
-    #r.set_memory(m)
-    #r.erase_memory(10)

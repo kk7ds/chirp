@@ -15,11 +15,11 @@
 
 import time
 from chirp import chirp_common, yaesu_clone, memmap, directory
-from chirp import bitwise, util, errors
+from chirp import bitwise, errors
 
 ACK = chr(0x06)
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x04C8;
 struct {
   u8 used:1,
@@ -89,16 +89,15 @@ POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
                     chirp_common.PowerLevel("Mid2", watts=10),
                     chirp_common.PowerLevel("Low", watts=5)]
 
-def send(s, data):
-
+def _send(ser, data):
     for i in data:
-        s.write(i)
+        ser.write(i)
         time.sleep(0.002)
-    echo = s.read(len(data))
+    echo = ser.read(len(data))
     if echo != data:
         raise errors.RadioError("Error reading echo (Bad cable?)")
 
-def download(radio):
+def _download(radio):
     data = ""
 
     chunk = ""
@@ -111,49 +110,49 @@ def download(radio):
         raise Exception("Failed to read header (%i)" % len(chunk))
     data += chunk
 
-    send(radio.pipe, ACK)
+    _send(radio.pipe, ACK)
 
     for i in range(0, radio._block_lengths[1], 64):
         chunk = radio.pipe.read(64)
         data += chunk
         if len(chunk) != 64:
             break
-            raise Exception("No block at %i" % i)
         time.sleep(0.01)
-        send(radio.pipe, ACK)
+        _send(radio.pipe, ACK)
         if radio.status_fn:
             status = chirp_common.Status()
-            status.max = radio._memsize
+            status.max = radio.get_memsize()
             status.cur = i+len(chunk)
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
     data += radio.pipe.read(1)
-    send(radio.pipe, ACK)
+    _send(radio.pipe, ACK)
 
     return memmap.MemoryMap(data)
 
-def upload(radio):
+def _upload(radio):
     cur = 0
     for block in radio._block_lengths:
-        for i in range(0, block, 64):
+        for _i in range(0, block, 64):
             length = min(64, block)
             #print "i=%i length=%i range: %i-%i" % (i, length,
             #                                       cur, cur+length)
-            send(radio.pipe, radio._mmap[cur:cur+length])
+            _send(radio.pipe, radio.get_mmap()[cur:cur+length])
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
             cur += length
             time.sleep(0.05)
 
             if radio.status_fn:
-                s = chirp_common.Status()
-                s.cur = cur
-                s.max = radio._memsize
-                s.msg = "Cloning to radio"
-                radio.status_fn(s)
+                status = chirp_common.Status()
+                status.cur = cur
+                status.max = radio.get_memsize()
+                status.msg = "Cloning to radio"
+                radio.status_fn(status)
 
 def get_freq(rawfreq):
+    """Decode a frequency that may include a fractional step flag"""
     # Ugh.  The 0x80 and 0x40 indicate values to add to get the
     # real frequency.  Gross.
     if rawfreq > 8000000000:
@@ -165,6 +164,7 @@ def get_freq(rawfreq):
     return rawfreq
 
 def set_freq(freq, obj, field):
+    """Encode a frequency with any necessary fractional step flags"""
     obj[field] = freq / 10000
     if (freq % 1000) == 500:
         obj[field][0].set_bits(0x40)
@@ -175,6 +175,7 @@ def set_freq(freq, obj, field):
     return freq
 
 class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Base class for FT-7800,7900,8800,8900 radios"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
 
@@ -200,30 +201,30 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7B47) ]
 
     def sync_in(self):
-        t = time.time()
+        start = time.time()
         try:
-            self._mmap = download(self)
+            self._mmap = _download(self)
         except errors.RadioError:
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        print "Download finished in %i seconds" % (time.time() - t)
+        print "Download finished in %i seconds" % (time.time() - start)
         self.check_checksums()
         self.process_mmap()
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def sync_out(self):
         self.update_checksums()
-        t = time.time()
+        start = time.time()
         try:
-            upload(self)
+            _upload(self)
         except errors.RadioError:
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        print "Upload finished in %i seconds" % (time.time() - t)
+        print "Upload finished in %i seconds" % (time.time() - start)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
@@ -330,6 +331,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         self._set_mem_skip(mem, _mem)
 
 class FT7800BankModel(chirp_common.BankModel):
+    """Yaesu FT-7800/7900 bank model"""
     def get_num_banks(self):
         return 20
 
@@ -353,8 +355,8 @@ class FT7800BankModel(chirp_common.BankModel):
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
         if not (_bitmap.bitmap[index / 32] & (1 << ishft)):
-            raise Exception(_("Memory {num} is "
-                              "not in bank {bank}").format(num=memory.number,
+            raise Exception("Memory {num} is " +
+                            "not in bank {bank}".format(num=memory.number,
                                                            bank=bank))
         _bitmap.bitmap[index / 32] &= ~(1 << ishft)
 
@@ -377,6 +379,7 @@ class FT7800BankModel(chirp_common.BankModel):
 
 @directory.register
 class FT7800Radio(FTx800Radio):
+    """Yaesu FT-7800"""
     MODEL = "FT-7800"
 
     _model = "AH016"
@@ -396,9 +399,10 @@ class FT7800Radio(FTx800Radio):
         FTx800Radio.set_memory(self, memory)
 
 class FT7900Radio(FT7800Radio):
+    """Yaesu FT-7900"""
     MODEL = "FT-7900"
 
-mem_format_8800 = """
+MEM_FORMAT_8800 = """
 #seekto %s;
 struct {
   u8 used:1,
@@ -434,6 +438,7 @@ u8 checksum;
 
 @directory.register
 class FT8800Radio(FTx800Radio):
+    """Base class for Yaesu FT-8800"""
     MODEL = "FT-8800"
 
     _model = "AH018"
@@ -460,7 +465,7 @@ class FT8800Radio(FTx800Radio):
         if not self._memstart:
             return
 
-        self._memobj = bitwise.parse(mem_format_8800 % self._memstart,
+        self._memobj = bitwise.parse(MEM_FORMAT_8800 % self._memstart,
                                      self._mmap)
 
     def _get_mem_offset(self, mem, _mem):
@@ -502,14 +507,16 @@ class FT8800Radio(FTx800Radio):
         _mem.nameused = bool(mem.name.rstrip())
 
 class FT8800RadioLeft(FT8800Radio):
+    """Yaesu FT-8800 Left VFO subdevice"""
     VARIANT = "Left"
     _memstart = "0x0948"
 
 class FT8800RadioRight(FT8800Radio):
+    """Yaesu FT-8800 Right VFO subdevice"""
     VARIANT = "Right"
     _memstart = "0x2948"
 
-mem_format_8900 = """
+MEM_FORMAT_8900 = """
 #seekto 0x0708;
 struct {
   u8 used:1,
@@ -546,6 +553,7 @@ u8 checksum;
 
 @directory.register
 class FT8900Radio(FT8800Radio):
+    """Yaesu FT-8900"""
     MODEL = "FT-8900"
 
     _model = "AH008"
@@ -553,7 +561,7 @@ class FT8900Radio(FT8800Radio):
     _block_lengths = [8, 14784, 1]
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format_8900, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT_8900, self._mmap)
 
     def get_features(self):
         rf = FT8800Radio.get_features(self)
@@ -595,7 +603,7 @@ class FT8900Radio(FT8800Radio):
         # the memory should show up on the sub (right) band
         _mem = self._memobj.memory[mem.number - 1]
         if mem.freq < 108000000 or mem.freq > 480000000:
-            _mem.sub_used = 0;
+            _mem.sub_used = 0
         else:
             _mem.sub_used = 1
 

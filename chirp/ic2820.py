@@ -13,10 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, errors, util, directory
-from chirp import bitwise;
+from chirp import chirp_common, icf, util, directory
+from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   u32  freq;
   u32  offset;
@@ -84,7 +84,8 @@ DTCSP  = ["NN", "NR", "RN", "RR"]
 
 MEM_LOC_SIZE = 48
 
-class IC2820Bank(icf.IcomBank):
+class IC2820Bank(icf.IcomNamedBank):
+    """An IC2820 bank"""
     def get_name(self):
         _banks = self._model._radio._memobj.bank_names
         return str(_banks[self.index].name).rstrip()
@@ -93,8 +94,30 @@ class IC2820Bank(icf.IcomBank):
         _banks = self._model._radio._memobj.bank_names
         _banks[self.index].name = str(name).ljust(8)[:8]
 
+def _get_special():
+    special = {"C0" : 500 + 20,
+               "C1" : 500 + 21}
+
+    for i in range(0, 10):
+        ida = "%iA" % i
+        idb = "%iB" % i
+        special[ida] = 500 + i * 2
+        special[idb] = 500 + i * 2 + 1
+
+    return special
+
+def _resolve_memory_number(number):
+    if isinstance(number, str):
+        return _get_special()[number]
+    else:
+        return number
+
+def _wipe_memory(mem, char):
+    mem.set_raw(char * (mem.size() / 8))
+
 @directory.register
 class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    """Icom IC-2820"""
     VENDOR = "Icom"
     MODEL = "IC-2820H"
 
@@ -156,32 +179,14 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_name_length = 8
         return rf
 
-    def _get_special(self):
-        special = {"C0" : 500 + 20,
-                   "C1" : 500 + 21}
-
-        for i in range(0, 10):
-            idA = "%iA" % i
-            idB = "%iB" % i
-            special[idA] = 500 + i * 2
-            special[idB] = 500 + i * 2 + 1
-
-        return special
-
     def get_special_locations(self):
-        return sorted(self._get_special().keys())
+        return sorted(_get_special().keys())
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
-
-    def _resolve_memory_number(self, number):
-        if isinstance(number, str):
-            return self._get_special()[number]
-        else:
-            return number
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_memory(self, number):
-        number = self._resolve_memory_number(number)
+        number = _resolve_memory_number(number)
 
         bitpos = (1 << (number % 8))
         bytepos = number / 8
@@ -208,7 +213,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             elif _pskip & bitpos:
                 mem.skip = "P"
         else:
-            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.extd_number = util.get_dict_rev(_get_special(), number)
             mem.immutable = ["number", "skip", "bank", "bank_index",
                              "extd_number"]
 
@@ -233,9 +238,6 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return mem
 
-    def _wipe_memory(self, mem, char):
-        mem.set_raw(char * (mem.size() / 8))
-
     def set_memory(self, mem):
         bitpos = (1 << (mem.number % 8))
         bytepos = mem.number / 8
@@ -259,13 +261,13 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if mem.empty:
             _used |= bitpos
-            self._wipe_memory(_mem, "\xFF")
+            _wipe_memory(_mem, "\xFF")
             self._set_bank(mem.number, None)
             return
 
         _used &= ~bitpos
         if was_empty:
-            self._wipe_memory(_mem, "\x00")
+            _wipe_memory(_mem, "\x00")
 
         _mem.freq = mem.freq
         _mem.offset = mem.offset

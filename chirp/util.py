@@ -16,6 +16,7 @@
 import struct
 
 def hexprint(data):
+    """Return a hexdump-like encoding of @data"""
     line_sz = 8
 
     lines = len(data) / line_sz
@@ -52,10 +53,8 @@ def hexprint(data):
 
     return out
 
-def write_in_place(mem, start, data):
-    return mem[:start] + data + mem[start+len(data):]
-
 def bcd_encode(val, bigendian=True, width=None):
+    """This is really old and shouldn't be used anymore"""
     digits = []
     while val != 0:
         digits.append(val % 10)
@@ -78,8 +77,9 @@ def bcd_encode(val, bigendian=True, width=None):
     
     return result
 
-def get_dict_rev(dict, key):
+def get_dict_rev(thedict, value):
+    """Return the first matching key for a given @value in @dict"""
     _dict = {}
-    for k,v in dict.items():
+    for k, v in thedict.items():
         _dict[v] = k
-    return _dict[key]
+    return _dict[value]

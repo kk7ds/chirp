@@ -13,47 +13,35 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#
-# Copyright 2008 Dan Smith <dsmith@danplanet.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import os
 import sys
 import glob
 from subprocess import Popen
 
-def find_me():
+def _find_me():
     return sys.modules["chirp.platform"].__file__
 
 class Platform:
-    # pylint: disable-msg=R0201
+    """Base class for platform-specific functions"""
 
     def __init__(self, basepath):
         self._base = basepath
         self._last_dir = self.default_dir()
 
     def get_last_dir(self):
+        """Return the last directory used"""
         return self._last_dir
 
     def set_last_dir(self, last_dir):
+        """Set the last directory used"""
         self._last_dir = last_dir
 
     def config_dir(self):
+        """Return the preferred configuration file directory"""
         return self._base
 
     def log_dir(self):
+        """Return the preferred log file directory"""
         logdir = os.path.join(self.config_dir(), "logs")
         if not os.path.isdir(logdir):
             os.mkdir(logdir)
@@ -61,29 +49,37 @@ class Platform:
         return logdir
 
     def filter_filename(self, filename):
+        """Filter @filename for platform-forbidden characters"""
         return filename
 
     def log_file(self, filename):
+        """Return the full path to a log file with @filename"""
         filename = self.filter_filename(filename + ".txt").replace(" ", "_")
         return os.path.join(self.log_dir(), filename)
 
     def config_file(self, filename):
+        """Return the full path to a config file with @filename"""
         return os.path.join(self.config_dir(),
                             self.filter_filename(filename))
 
     def open_text_file(self, path):
+        """Spawn the necessary program to open a text file at @path"""
         raise NotImplementedError("The base class can't do that")
 
     def open_html_file(self, path):
+        """Spawn the necessary program to open an HTML file at @path"""
         raise NotImplementedError("The base class can't do that")
 
     def list_serial_ports(self):
+        """Return a list of valid serial ports"""
         return []
 
     def default_dir(self):
+        """Return the default directory for this platform"""
         return "."
 
     def gui_open_file(self, start_dir=None, types=[]):
+        """Prompt the user to pick a file to open"""
         import gtk
 
         if not start_dir:
@@ -114,6 +110,7 @@ class Platform:
             return None
 
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
+        """Prompt the user to pick a filename to save"""
         import gtk
 
         if not start_dir:
@@ -154,6 +151,7 @@ class Platform:
             return None
 
     def gui_select_dir(self, start_dir=None):
+        """Prompt the user to pick a directory"""
         import gtk
 
         if not start_dir:
@@ -178,9 +176,11 @@ class Platform:
             return None
 
     def os_version_string(self):
+        """Return a string that describes the OS/platform version"""
         return "Unknown Operating System"
 
     def executable_path(self):
+        """Return a full path to the program executable"""
         def we_are_frozen():
             return hasattr(sys, "frozen")
 
@@ -190,7 +190,8 @@ class Platform:
                                            sys.getfilesystemencoding()))
         else:
             # UNIX: Find the parent directory of this module
-            return os.path.dirname(os.path.abspath(os.path.join(find_me(), "..")))
+            return os.path.dirname(os.path.abspath(os.path.join(_find_me(),
+                                                                "..")))
 
 def _unix_editor():
     macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
@@ -201,6 +202,7 @@ def _unix_editor():
         return "gedit"
 
 class UnixPlatform(Platform):
+    """A platform module suitable for UNIX systems"""
     def __init__(self, basepath):
         if not basepath:
             basepath = os.path.abspath(os.path.join(self.default_dir(),
@@ -214,7 +216,7 @@ class UnixPlatform(Platform):
 	# This is a hack that needs to be properly fixed by importing the
 	# latest changes to this module from d-rats.  In the interest of
 	# time, however, I'll throw it here
-	if sys.platform == "darwin":
+        if sys.platform == "darwin":
             if not os.environ.has_key("DISPLAY"):
                 print "Forcing DISPLAY for MacOS"
                 os.environ["DISPLAY"] = ":0"
@@ -252,7 +254,6 @@ class UnixPlatform(Platform):
                       glob.glob("/dev/tty.KeySerial*"))
 
     def os_version_string(self):
-        # pylint: disable-msg=W0703
         try:
             issue = file("/etc/issue.net", "r")
             ver = issue.read().strip().replace("\r", "").replace("\n", "")[:64]
@@ -264,6 +265,7 @@ class UnixPlatform(Platform):
         return ver
 
 class Win32Platform(Platform):
+    """A platform module suitable for Windows systems"""
     def __init__(self, basepath=None):
         if not basepath:
             appdata = os.getenv("APPDATA")
@@ -319,7 +321,6 @@ class Win32Platform(Platform):
         return ports
 
     def gui_open_file(self, start_dir=None, types=[]):
-        # pylint: disable-msg=W0703,W0613
         import win32gui
 
         typestrs = ""
@@ -337,11 +338,10 @@ class Win32Platform(Platform):
         return str(fname)
 
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
-        # pylint: disable-msg=W0703,W0613
         import win32gui
         import win32api
         
-        (pform, _, build, _, _) = win32api.GetVersionEx()
+        (pform, _, _, _, _) = win32api.GetVersionEx()
 
         typestrs = ""
         custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
@@ -358,10 +358,10 @@ class Win32Platform(Platform):
 
         def_ext = "*.%s" % types[0][1]
         try:
-            fname, filter, _ = win32gui.GetSaveFileNameW(File=default_name,
-                                                         CustomFilter=custom,
-                                                         DefExt=def_ext,
-                                                         Filter=typestrs)
+            fname, _, _ = win32gui.GetSaveFileNameW(File=default_name,
+                                                    CustomFilter=custom,
+                                                    DefExt=def_ext,
+                                                    Filter=typestrs)
         except Exception, e:
             print "Failed to get filename: %s" % e
             return None
@@ -369,7 +369,6 @@ class Win32Platform(Platform):
         return str(fname)
 
     def gui_select_dir(self, start_dir=None):
-        # pylint: disable-msg=W0703,W0613
         from win32com.shell import shell
 
         try:
@@ -401,8 +400,7 @@ def _get_platform(basepath):
 
 PLATFORM = None
 def get_platform(basepath=None):
-    #pylint: disable-msg=W0602
-
+    """Return the platform singleton"""
     global PLATFORM
 
     if not PLATFORM:
@@ -410,19 +408,19 @@ def get_platform(basepath=None):
 
     return PLATFORM
 
+def _do_test():
+    __pform = get_platform()
+
+    print "Config dir: %s" % __pform.config_dir()
+    print "Default dir: %s" % __pform.default_dir()
+    print "Log file (foo): %s" % __pform.log_file("foo")
+    print "Serial ports: %s" % __pform.list_serial_ports()
+    print "OS Version: %s" % __pform.os_version_string()
+    #__pform.open_text_file("d-rats.py")
+
+    #print "Open file: %s" % __pform.gui_open_file()
+    #print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
+    print "Open folder: %s" % __pform.gui_select_dir("/tmp")
+
 if __name__ == "__main__":
-    def do_test():
-        __pform = get_platform()
-
-        print "Config dir: %s" % __pform.config_dir()
-        print "Default dir: %s" % __pform.default_dir()
-        print "Log file (foo): %s" % __pform.log_file("foo")
-        print "Serial ports: %s" % __pform.list_serial_ports()
-        print "OS Version: %s" % __pform.os_version_string()
-        #__pform.open_text_file("d-rats.py")
-
-        #print "Open file: %s" % __pform.gui_open_file()
-        #print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
-        print "Open folder: %s" % __pform.gui_select_dir("/tmp")
-
-    do_test()
+    _do_test()

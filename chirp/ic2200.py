@@ -16,7 +16,7 @@
 from chirp import chirp_common, icf, util, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   ul16  freq;
   ul16  offset;
@@ -83,8 +83,23 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=65),
                 chirp_common.PowerLevel("MidLow", watts=10),
                 chirp_common.PowerLevel("Low", watts=5)]
 
+def _get_special():
+    special = { "C" : 206 }
+    for i in range(0, 3):
+        ida = "%iA" % (i+1)
+        idb = "%iB" % (i+1)
+        num = 200 + i * 2
+        special[ida] = num
+        special[idb] = num + 1
+
+    return special
+
+def _wipe_memory(mem, char):
+    mem.set_raw(char * (mem.size() / 8))
+
 @directory.register
 class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    """Icom IC-2200"""
     VENDOR = "Icom"
     MODEL = "IC-2200H"
 
@@ -145,25 +160,14 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
-
-    def _get_special(self):
-        special = { "C" : 206 }
-        for i in range(0, 3):
-            idA = "%iA" % (i+1)
-            idB = "%iB" % (i+1)
-            num = 200 + i * 2
-            special[idA] = num
-            special[idB] = num + 1
-
-        return special
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_special_locations(self):
-        return sorted(self._get_special().keys())
+        return sorted(_get_special().keys())
 
     def get_memory(self, number):
         if isinstance(number, str):
-            number = self._get_special()[number]
+            number = _get_special()[number]
 
         _mem = self._memobj.memory[number]
         _flag = self._memobj.flags[number]
@@ -183,7 +187,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if number < 200:
             mem.skip = _flag.skip and "S" or ""
         else:
-            mem.extd_number = util.get_dict_rev(self._get_special(), number)
+            mem.extd_number = util.get_dict_rev(_get_special(), number)
             mem.immutable = ["number", "skip", "bank", "bank_index",
                              "extd_number"]
 
@@ -214,12 +218,9 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return [m for m in self._memories if m.number >= lo and m.number <= hi]
 
-    def _wipe_memory(self, mem, char):
-        mem.set_raw(char * (mem.size() / 8))
-
     def set_memory(self, mem):
         if isinstance(mem.number, str):
-            number = self._get_special()[mem.number]
+            number = _get_special()[mem.number]
         else:
             number = mem.number
 
@@ -230,11 +231,11 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         _flag.empty = mem.empty
         if mem.empty:
-            self._wipe_memory(_mem, "\xFF")
+            _wipe_memory(_mem, "\xFF")
             return
 
         if was_empty:
-            self._wipe_memory(_mem, "\x00")
+            _wipe_memory(_mem, "\x00")
 
         _mem.unknown8 = 0
         _mem.is_625 = chirp_common.is_fractional_step(mem.freq)

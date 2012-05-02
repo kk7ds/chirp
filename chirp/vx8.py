@@ -16,7 +16,7 @@
 from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x54a;
 struct {
     u16 in_use;
@@ -88,6 +88,8 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
 class VX8Bank(chirp_common.NamedBank):
+    """A VX-8 bank"""
+
     def get_name(self):
         _bank = self._model._radio._memobj.bank_info[self.index]
         _bank_used = self._model._radio._memobj.bank_used[self.index]
@@ -104,6 +106,7 @@ class VX8Bank(chirp_common.NamedBank):
         _bank.name = [CHARSET.index(x) for x in name.ljust(16)[:16]]
 
 class VX8BankModel(chirp_common.BankModel):
+    """A VX-8 bank model"""
     def get_num_banks(self):
         return 24
 
@@ -172,8 +175,13 @@ class VX8BankModel(chirp_common.BankModel):
 
         return banks
 
+def _wipe_memory(mem):
+    mem.set_raw("\x00" * (mem.size() / 8))
+    mem.unknown1 = 0x05
+
 @directory.register
 class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu VX-8"""
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
     MODEL = "VX-8"
@@ -185,7 +193,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_size = 32
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -242,10 +250,6 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return mem
 
-    def _wipe_memory(self, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
-        mem.unknown1 = 0x05
-
     def _debank(self, mem):
         bm = self.get_bank_model()
         for bank in bm.get_memory_banks(mem):
@@ -256,7 +260,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         flag = self._memobj.flag[mem.number-1]
 
         if not mem.empty and not flag.valid:
-            self._wipe_memory(_mem)
+            _wipe_memory(_mem)
 
         if mem.empty and flag.valid and not flag.used:
             flag.valid = False
@@ -300,5 +304,6 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
 @directory.register
 class VX8DRadio(VX8Radio):
+    """Yaesu VX-8DR"""
     _model = "AH29D"
     VARIANT = "DR"

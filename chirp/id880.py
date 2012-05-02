@@ -16,7 +16,7 @@
 from chirp import chirp_common, icf, directory
 from chirp import bitwise
 
-mem_format = """
+MEM_FORMAT = """
 struct {
   u24  freq;
   u16  offset;
@@ -86,12 +86,13 @@ STEPS  = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
           100.0, 125.0, 200.0]
 
 def decode_call(sevenbytes):
+    """Decode a callsign from a packed region @sevenbytes"""
     if len(sevenbytes) != 7:
         raise Exception("%i (!=7) bytes to decode_call" % len(sevenbytes))
 
     i = 0
     rem = 0
-    str = ""
+    call = ""
     for byte in [ord(x) for x in sevenbytes]:
         i += 1
 
@@ -100,7 +101,7 @@ def decode_call(sevenbytes):
         code = (byte >> i) | rem      # Code gets the upper bits of remainder
                                       # plus all but the i lower bits of this
                                       # byte
-        str += chr(code)
+        call += chr(code)
 
         rem = (byte & mask) << 7 - i  # Remainder for next time are the masked
                                       # bits, moved to the high places for the
@@ -108,14 +109,13 @@ def decode_call(sevenbytes):
 
     # After seven trips gathering overflow bits, we chould have seven
     # left, which is the final character
-    str += chr(rem)
+    call += chr(rem)
 
-    return str.rstrip()
+    return call.rstrip()
 
 def encode_call(call):
+    """Encode @call into a 7-byte region"""
     call = call.ljust(8)
-    val = 0
-    
     buf = []
     
     for i in range(0, 8):
@@ -132,7 +132,33 @@ def encode_call(call):
 
     return "".join([chr(x) for x in buf[:7]])
 
-class ID880Bank(icf.IcomBank):
+def _get_freq(_mem):
+    val = int(_mem.freq)
+
+    if val & 0x00200000:
+        mult = 6250
+    else:
+        mult = 5000
+
+    val &= 0x0003FFFF
+
+    return (val * mult)
+
+def _set_freq(_mem, freq):
+    if chirp_common.is_fractional_step(freq):
+        mult = 6250
+        flag = 0x00200000
+    else:
+        mult = 5000
+        flag = 0x00000000
+
+    _mem.freq = (freq / mult) | flag
+
+def _wipe_memory(mem, char):
+    mem.set_raw(char * (mem.size() / 8))
+
+class ID880Bank(icf.IcomNamedBank):
+    """ID880 Bank"""
     def get_name(self):
         _bank = self._model._radio._memobj.bank_names[self.index]
         return str(_bank.name).rstrip()
@@ -143,6 +169,7 @@ class ID880Bank(icf.IcomBank):
 
 @directory.register
 class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    """Icom ID880"""
     VENDOR = "Icom"
     MODEL = "ID-880H"
 
@@ -185,7 +212,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _bank.index = index
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -207,28 +234,6 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-
-    def _get_freq(self, _mem):
-        val = int(_mem.freq)
-
-        if val & 0x00200000:
-            mult = 6250
-        else:
-            mult = 5000
-
-        val &= 0x0003FFFF
-
-        return (val * mult)
-
-    def _set_freq(self, _mem, freq):
-        if chirp_common.is_fractional_step(freq):
-            mult = 6250
-            flag = 0x00200000
-        else:
-            mult = 5000
-            flag = 0x00000000
-
-        _mem.freq = (freq / mult) | flag
 
     def get_memory(self, number):
         bytepos = number / 8
@@ -263,7 +268,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.empty = True
             return mem
 
-        mem.freq = self._get_freq(_mem)
+        mem.freq = _get_freq(_mem)
         mem.offset = (_mem.offset * 5) * 1000
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
@@ -280,9 +285,6 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         return mem
 
-    def _wipe_memory(self, mem, char):
-        mem.set_raw(char * (mem.size() / 8))
-
     def set_memory(self, mem):
         bitpos = (1 << (mem.number % 8))
         bytepos = mem.number / 8
@@ -295,16 +297,16 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if mem.empty:
             _used |= bitpos
-            self._wipe_memory(_mem, "\xFF")
+            _wipe_memory(_mem, "\xFF")
             self._set_bank(mem.number, None)
             return
 
         _used &= ~bitpos
 
         if was_empty:
-            self._wipe_memory(_mem, "\x00")
+            _wipe_memory(_mem, "\x00")
 
-        self._set_freq(_mem, mem.freq)
+        _set_freq(_mem, mem.freq)
         _mem.offset = int((mem.offset / 1000) / 5)
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
@@ -359,7 +361,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _calls = self._memobj.rptcall
         calls = ["*NOTUSE*"]
 
-        for i in range(*self.RPTCALL_LIMIT):
+        for _i in range(*self.RPTCALL_LIMIT):
             # FIXME: Not sure where the repeater list actually is
             calls.append("UNSUPRTD")
             continue
@@ -370,6 +372,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 # the ID-880. So, don't register right now
 #@directory.register
 class ID80Radio(ID880Radio):
+    """Icom ID80"""
     MODEL = "ID-80H"
 
     _model = "\x31\x55\x00\x01"

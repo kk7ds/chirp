@@ -1,18 +1,18 @@
 
 import struct
-from chirp import chirp_common, icf, util, errors, bitwise, ic9x_ll, directory
+from chirp import chirp_common, icf, util, errors, bitwise, directory
 from chirp.memmap import MemoryMap
 
 DEBUG = True
 
-mem_format = """
+MEM_FORMAT = """
 bbcd number[2];
 u8   unknown1;
 lbcd freq[5];
 u8   unknown2:5,
      mode:3;
 """
-mem_vfo_format = """
+MEM_VFO_FORMAT = """
 u8   vfo;
 bbcd number[2];
 u8   unknown1;
@@ -35,6 +35,7 @@ char name[9];
 """
 
 class Frame:
+    """Base class for an ICF frame"""
     _cmd = 0x00
     _sub = 0x00
 
@@ -42,16 +43,20 @@ class Frame:
         self._data = ""
 
     def set_command(self, cmd, sub):
+        """Set the command number (and optional subcommand)"""
         self._cmd = cmd
         self._sub = sub
 
     def get_data(self):
+        """Return the data payload"""
         return self._data
 
     def set_data(self, data):
+        """Set the data payload"""
         self._data = data
 
     def send(self, src, dst, serial, willecho=True):
+        """Send the frame over @serial, using @src and @dst addresses"""
         raw = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
         raw += str(self._data) + chr(0xFD)
 
@@ -68,13 +73,14 @@ class Frame:
                 print util.hexprint(echo)
 
     def read(self, serial):
+        """Read the frame from @serial"""
         data = ""
         while not data.endswith(chr(0xFD)):
-            c = serial.read(1)
-            if not c:
+            char = serial.read(1)
+            if not char:
                 print "Read %i bytes total" % len(data)
                 raise errors.RadioError("Timeout")
-            data += c
+            data += char
 
         if data == chr(0xFD):
             raise errors.RadioError("Radio reported error")
@@ -90,39 +96,49 @@ class Frame:
         return src, dst
 
 class MemFrame(Frame):
+    """A memory frame"""
     _cmd = 0x1A
     _sub = 0x00
     _loc = 0
 
     def set_location(self, loc):
+        """Set the memory location number"""
         self._loc = loc
         self._data = struct.pack(">H", int("%04i" % loc, 16))
 
     def make_empty(self):
+        """Mark as empty so the radio will erase the memory"""
         self._data = struct.pack(">HB", int("%04i" % self._loc, 16), 0xFF)
 
     def is_empty(self):
+        """Return True if memory is marked as empty"""
         return len(self._data) < 5
 
     def get_obj(self):
+        """Return a bitwise parsed object"""
         self._data = MemoryMap(str(self._data)) # Make sure we're assignable
-        return bitwise.parse(mem_format, self._data)
+        return bitwise.parse(MEM_FORMAT, self._data)
 
     def initialize(self):
+        """Initialize to sane values"""
         self._data = MemoryMap("".join(["\x00"] * (self.get_obj().size() / 8)))
 
 class MultiVFOMemFrame(MemFrame):
+    """A memory frame for radios with multiple VFOs"""
     def set_location(self, loc, vfo=1):
         self._loc = loc
         self._data = struct.pack(">BH", vfo, int("%04i" % loc, 16))
 
     def get_obj(self):
         self._data = MemoryMap(str(self._data)) # Make sure we're assignable
-        return bitwise.parse(mem_vfo_format, self._data)
+        return bitwise.parse(MEM_VFO_FORMAT, self._data)
 
 class IcomCIVRadio(icf.IcomLiveRadio):
+    """Base class for ICOM CIV-based radios"""
     BAUD_RATE = 19200
     MODEL = "CIV Radio"
+    _model = "\x00"
+    _template = 0
 
     def _send_frame(self, frame):
         return frame.send(ord(self._model), 0xE0, self.pipe,
@@ -140,9 +156,9 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     def _detect_echo(self):
         echo_test = "\xfe\xfe\xe0\xe0\xfa\xfd"
         self.pipe.write(echo_test)
-        r = self.pipe.read(6)
-        print "Echo:\n%s" % util.hexprint(r)
-        return r == echo_test
+        resp = self.pipe.read(6)
+        print "Echo:\n%s" % util.hexprint(resp)
+        return resp == echo_test
 
     def __init__(self, *args, **kwargs):
         icf.IcomLiveRadio.__init__(self, *args, **kwargs)
@@ -256,6 +272,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
 @directory.register
 class Icom7200Radio(IcomCIVRadio):
+    """Icom IC-7200"""
     MODEL = "7200"
     _model = "\x76"
     _template = 201
@@ -277,6 +294,7 @@ class Icom7200Radio(IcomCIVRadio):
 
 @directory.register
 class Icom7000Radio(IcomCIVRadio):
+    """Icom IC-7000"""
     MODEL = "7000"
     _model = "\x70"
     _template = 102
@@ -305,14 +323,15 @@ CIV_MODELS = {
     (0x70, 0xE0) : Icom7000Radio,
 }
 
-def probe_model(s):
+def probe_model(ser):
+    """Probe the radio attatched to @ser for its model"""
     f = Frame()
     f.set_command(0x19, 0x00)
 
     for model, controller in CIV_MODELS.keys():
-        f.send(model, controller, s)
+        f.send(model, controller, ser)
         try:
-            f.read(s)
+            f.read(ser)
         except errors.RadioError:
             continue
 

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, icf, ic9x_icf_ll, util, directory
+from chirp import chirp_common, icf, ic9x_icf_ll, util, directory, errors
 
 @directory.register
 class IC9xICFRadio(chirp_common.CloneModeRadio):
@@ -45,7 +45,7 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
         return ic9x_icf_ll.get_memory(self._mmap, number)
 
     def load_mmap(self, filename):
-        mdata, self._mmap = icf.read_file(filename)
+        _mdata, self._mmap = icf.read_file(filename)
 
     def get_sub_devices(self):
         return [IC9xICFRadioA(self._mmap),

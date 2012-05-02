@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, CHIRP_VERSION, errors
+from chirp import chirp_common, errors
 try:
     from suds.client import Client
     HAVE_SUDS = True
@@ -31,6 +31,7 @@ MODES = {
 }
 
 class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
+    """RadioReference.com data source"""
     VENDOR = "Radio Reference LLC"
     MODEL = "RadioReference.com"
 
@@ -38,7 +39,7 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
     APPKEY = "46785108"
 
     def __init__(self, *args, **kwargs):
-        chirp_common.Radio.__init__(self, *args, **kwargs)
+        chirp_common.NetworkSourceRadio.__init__(self, *args, **kwargs)
 
         if not HAVE_SUDS:
             raise errors.RadioError(
@@ -49,9 +50,11 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
         self._client = Client(self.URL)
         self._freqs = None
         self._modes = None
+        self._zip = None
 
-    def set_params(self, zip, username, password):
-        self._zip = zip
+    def set_params(self, zipcode, username, password):
+        """Set the parameters to be used for a query"""
+        self._zip = zipcode
         self._auth["username"] = username
         self._auth["password"] = password
 
@@ -72,7 +75,8 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
             print "Fetching category:", cat.cName
             for subcat in cat.subcats:
                 print "\t", subcat.scName
-                result = self._client.service.getSubcatFreqs(subcat.scid, self._auth)
+                result = self._client.service.getSubcatFreqs(subcat.scid,
+                                                             self._auth)
                 self._freqs += result
                 status.cur += 1
                 self.status_fn(status)
@@ -85,7 +89,8 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
                 print "Fetching category:", cat.cName
                 for subcat in cat.subcats:
                     print "\t", subcat.scName
-                    result = self._client.service.getSubcatFreqs(subcat.scid, self._auth)
+                    result = self._client.service.getSubcatFreqs(subcat.scid,
+                                                                 self._auth)
                     self._freqs += result
                     status.cur += 1
                     self.status_fn(status)
@@ -126,7 +131,7 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
             else:
                 try:
                     tone, tmode = freq.tone.split(" ")
-                except:
+                except Exception:
                     tone, tmode = None, None
                 if tmode == "PL":
                     mem.tmode = "TSQL"
@@ -164,7 +169,9 @@ def main():
     """
     import sys
     rrr = RadioReferenceRadio(None)
-    rrr.set_params(zip=sys.argv[1], username=sys.argv[2], password=sys.argv[3])
+    rrr.set_params(zipcode=sys.argv[1],
+                   username=sys.argv[2],
+                   password=sys.argv[3])
     rrr.do_fetch()
     print rrr.get_raw_memory(0)
     print rrr.get_memory(0)

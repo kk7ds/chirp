@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, util, directory, memmap
+from chirp import chirp_common, directory, memmap
 from chirp import bitwise
 
 # Here is where we define the memory map for the radio. Since
@@ -24,7 +24,7 @@ from chirp import bitwise
 # With some very basic settings, a 32-bit unsigned integer for the
 # frequency (in Hertz) and an eight-character alpha tag
 #
-mem_format = """
+MEM_FORMAT = """
 #seekto 0x0000;
 struct {
   u32 freq;
@@ -33,6 +33,7 @@ struct {
 """
 
 def do_download(radio):
+    """This is your download function"""
     # NOTE: Remove this in your real implementation!
     return memmap.MemoryMap("\x00" * 1000)
 
@@ -43,12 +44,13 @@ def do_download(radio):
     # from the serial port. Do that one byte at a time and
     # store them in the memory map
     data = ""
-    for i in range(0, 1000):
+    for _i in range(0, 1000):
         data = serial.read(1)
 
     return memmap.MemoryMap(data)
 
 def do_upload(radio):
+    """This is your upload function"""
     # NOTE: Remove this in your real implementation!
     raise Exception("This template driver does not really work!")
 
@@ -59,11 +61,12 @@ def do_upload(radio):
     # to the serial port. Do that one byte at a time, reading
     # from our memory map
     for i in range(0, 1000):
-        serial.write(radio._mmap[i])
+        serial.write(radio.get_mmap()[i])
 
 # Uncomment this to actually register this radio in CHIRP
 # @directory.register
 class TemplateRadio(chirp_common.CloneModeRadio):
+    """Acme Template"""
     VENDOR = "Acme"    # Replace this with your vendor
     MODEL = "Template" # Replace this with your model
     BAUD_RATE = 9600   # Replace this with your baud rate
@@ -82,7 +85,7 @@ class TemplateRadio(chirp_common.CloneModeRadio):
     # Do a download of the radio from the serial port
     def sync_in(self):
         self._mmap = do_download(self)
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     # Do an upload of the radio to the serial port
     def sync_out(self):

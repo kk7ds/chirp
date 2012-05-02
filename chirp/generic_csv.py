@@ -19,10 +19,29 @@ import csv
 from chirp import chirp_common, errors, directory
 
 class OmittedHeaderError(Exception):
+    """Internal exception to signal that a column has been omitted"""
     pass
+
+def get_datum_by_header(headers, data, header):
+    """Return the column corresponding to @headers[@header] from @data"""
+    if header not in headers:
+        raise OmittedHeaderError("Header %s not provided" % header)
+
+    try:
+        return data[headers.index(header)]
+    except IndexError:
+        raise OmittedHeaderError("Header %s not provided on this line" % \
+                                     header)
+
+def write_memory(writer, mem):
+    """Write @mem using @writer if not empty"""
+    if mem.empty:
+        return
+    writer.writerow(mem.to_csv())
 
 @directory.register
 class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
+    """A driver for Generic CSV files"""
     VENDOR = "Generic"
     MODEL = "CSV"
     FILE_EXTENSION = "csv"
@@ -51,13 +70,14 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         self.errors = []
         self.memories = []
         for i in range(0, 1000):
-            m = chirp_common.Memory()
-            m.number = i
-            m.empty = True
-            self.memories.append(m)
+            mem = chirp_common.Memory()
+            mem.number = i
+            mem.empty = True
+            self.memories.append(mem)
 
     def __init__(self, pipe):
         chirp_common.FileBackedRadio.__init__(self, None)
+        self.memories = []
 
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
@@ -86,34 +106,17 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
 
         return rf
 
-    def _parse_quoted_line(self, line):
-        line = line.replace("\n", "")
-        line = line.replace("\r", "")
-        line = line.replace('"', "")
-
-        return line.split(",")
-
-    def _get_datum_by_header(self, headers, data, header):
-        if header not in headers:
-            raise OmittedHeaderError("Header %s not provided" % header)
-
-        try:
-            return data[headers.index(header)]
-        except IndexError:
-            raise OmittedHeaderError("Header %s not provided on this line" %\
-                                     header)
-
     def _parse_csv_data_line(self, headers, line):
         mem = chirp_common.Memory()
         try:
-            if self._get_datum_by_header(headers, line, "Mode") == "DV":
+            if get_datum_by_header(headers, line, "Mode") == "DV":
                 mem = chirp_common.DVMemory()
         except OmittedHeaderError:
             pass
 
         for header, (typ, attr) in self.ATTR_MAP.items():
             try:
-                val = self._get_datum_by_header(headers, line, header)
+                val = get_datum_by_header(headers, line, header)
                 if not val and typ == int:
                     val = None
                 else:
@@ -174,12 +177,6 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             print self.errors
             raise errors.InvalidDataError("No channels found")
 
-    def save_memory(self, writer, mem):
-        if mem.empty:
-            return
-        
-        writer.writerow(mem.to_csv())
-
     def save(self, filename=None):
         if filename is None and self._filename is None:
             raise errors.RadioError("Need a location to save to")
@@ -192,7 +189,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         writer.writerow(chirp_common.Memory.CSV_FORMAT)
 
         for mem in self.memories:
-            self.save_memory(writer, mem)
+            write_memory(writer, mem)
 
         f.close()
 
@@ -220,20 +217,20 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         delta += 1
         
         for i in range(len(self.memories), len(self.memories) + delta + 1):
-            m = chirp_common.Memory()
-            m.empty = True
-            m.number = i
-            self.memories.append(m)
+            mem = chirp_common.Memory()
+            mem.empty = True
+            mem.number = i
+            self.memories.append(mem)
 
     def set_memory(self, newmem):
         self._grow(newmem.number)
         self.memories[newmem.number] = newmem
 
     def erase_memory(self, number):
-        m = chirp_common.Memory()
-        m.number = number
-        m.empty = True
-        self.memories[number] = m
+        mem = chirp_common.Memory()
+        mem.number = number
+        mem.empty = True
+        self.memories[number] = mem
 
     def get_raw_memory(self, number):
         return ",".join(chirp_common.Memory.CSV_FORMAT) + \
@@ -241,5 +238,6 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             ",".join(self.memories[number].to_csv())
 
     @classmethod
-    def match_model(cls, filedata, filename):
+    def match_model(cls, _filedata, filename):
+        """Match files ending in .CSV"""
         return filename.lower().endswith("." + cls.FILE_EXTENSION)
