@@ -204,7 +204,12 @@ class FT857Radio(ft817.FT817Radio):
         else:
             mem.tmode = "Cross"
             mem.cross_mode = self.CROSS_MODES[int(_mem.tmode)]
-        mem.ctone = chirp_common.TONES[_mem.txtone]
+        # don't want to fail for this
+        try:
+            mem.ctone = chirp_common.TONES[_mem.txtone]
+        except IndexError:
+            mem.ctone = chirp_common.TONES[0]
+
 
     def _set_tmode(self, mem, _mem):
         # have to put this bit to 0 otherwise we get strange display in tone
