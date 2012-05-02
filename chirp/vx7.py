@@ -272,6 +272,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return
 
+        _flag["%s_valid" % nibble] = True
+
         _mem.freq = mem.freq / 1000
         _mem.offset = mem.offset / 1000
         _mem.tone = chirp_common.TONES.index(mem.rtone)
