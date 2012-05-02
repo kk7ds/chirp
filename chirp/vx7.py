@@ -66,7 +66,8 @@ struct {
        tone:6;
   u8   zeros4:1,
        dcs:7;
-  u8   zeros5:6,
+  u8   zeros5:5,
+       is_split_tone:1,
        tmode:2;
   u8   charset;
 } memory[450];
@@ -74,7 +75,8 @@ struct {
 
 DUPLEX = ["", "-", "+", "split"]
 MODES  = ["FM", "AM", "WFM", "FM"] # last is auto
-TMODES = ["", "Tone", "TSQL", "DTCS"]
+TMODES = ["", "Tone", "TSQL", "DTCS", "Cross"]
+CROSS_MODES = ["DTCS->", "Tone->DTCS", "DTCS->Tone"]
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(6.25)
 STEPS.remove(30.0)
@@ -202,6 +204,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.memory_bounds = (1, 450)
         rf.can_odd_split = True
         rf.has_ctone = False
+        rf.has_cross = True
+        rf.valid_cross_modes = list(CROSS_MODES)
         return rf
 
     def get_raw_memory(self, number):
@@ -229,7 +233,12 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
         mem.offset = int(_mem.offset) * 1000
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
-        mem.tmode = TMODES[_mem.tmode]
+        if not _mem.is_split_tone:
+            mem.tmode = TMODES[_mem.tmode]
+            mem.cross_mode = CROSS_MODES[0]
+        else:
+            mem.tmode = "Cross"
+            mem.cross_mode = CROSS_MODES[int(_mem.tmode)]
         mem.duplex = DUPLEX[_mem.duplex]
         if mem.duplex == "split":
             mem.offset = chirp_common.fix_rounded_step(mem.offset)
@@ -277,7 +286,12 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.freq = mem.freq / 1000
         _mem.offset = mem.offset / 1000
         _mem.tone = chirp_common.TONES.index(mem.rtone)
-        _mem.tmode = TMODES.index(mem.tmode)
+        if mem.tmode != "Cross":
+            _mem.is_split_tone = 0
+            _mem.tmode = TMODES.index(mem.tmode)
+        else:
+            _mem.is_split_tone = 1
+            _mem.tmode = CROSS_MODES.index(mem.cross_mode)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
