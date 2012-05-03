@@ -168,6 +168,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
 
     def sync_in(self):
         try:
+            self.pipe.setTimeout(2)
             self._mmap = _download(self)
         except errors.RadioError:
             raise
