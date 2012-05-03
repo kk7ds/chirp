@@ -511,7 +511,7 @@ class Puxing777Radio(KGUVD1PRadio):
         rf.has_bank = False
         rf.memory_bounds = (1, 128)
 
-        if not hasattr(self, "_memobj"):
+        if not hasattr(self, "_memobj") or self._memobj is None:
             limit_idx = 1
         else:
             limit_idx = self._memobj.model.limits - 0xEE
