@@ -1091,7 +1091,7 @@ def do_test():
         def read(self, count):
             """Read"""
             if self.buf[:2] == "ID":
-                return "ID %s\r" % TestClass.MODEL
+                return "ID %s\r" % tc.MODEL
             return self.buf
         def setTimeout(self, foo):
             """Set Timeout"""

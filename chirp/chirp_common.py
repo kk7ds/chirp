@@ -185,15 +185,15 @@ class PowerLevel:
 def parse_freq(freqstr):
     """Parse a frequency string and return the value in integral Hz"""
     if "." in freqstr:
-        MHz, kHz = freqstr.split(".")
+        mhz, khz = freqstr.split(".")
     else:
-        MHz = freqstr
-        kHz = 0
-    if not MHz.isdigit() and kHz.isdigit():
+        mhz = freqstr
+        khz = "0"
+    if not mhz.isdigit() and khz.isdigit():
         raise ValueError("Invalid value")
 
     # Make kHz exactly six decimal places
-    return int(("%s%-6s" % (MHz, kHz)).replace(" ", "0"))
+    return int(("%s%-6s" % (mhz, khz)).replace(" ", "0"))
 
 def format_freq(freq):
     """Format a frequency given in Hz as a string"""
@@ -804,15 +804,6 @@ class Radio:
     def get_features(self):
         """Return a RadioFeatures object for this radio"""
         return RadioFeatures()
-
-    def get_settings(self):
-        """Return a RadioSettingsGroup object for this radio"""
-        return None
-
-    def set_settings(self, settings):
-        """Sets the settings contained in the @settings object that has
-        been queried with get_settings() and modified"""
-        raise Exception("Not implemented")
 
     @classmethod
     def get_name(cls):

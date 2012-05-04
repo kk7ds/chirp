@@ -53,6 +53,10 @@ import os
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
 
+class ParseError(Exception):
+    """Indicates an error parsing a definition"""
+    pass
+
 def format_binary(nbits, value, pad=8):
     s = ""
     for i in range(0, nbits):
@@ -461,7 +465,7 @@ class bbcdDataElement(bcdDataElement):
 class bitDataElement(intDataElement):
     _nbits = 0
     _shift = 0
-    _subgen = None
+    _subgen = u8DataElement # Default to a byte
 
     def __repr__(self):
         fmt = "0x%%0%iX (%%sb)" % (self._size * 2)

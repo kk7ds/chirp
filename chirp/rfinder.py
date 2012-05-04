@@ -169,7 +169,7 @@ class RFinderParser:
         print pw
         args = {
             "email"  : urllib.quote_plus(user),
-            "pass"  : hashlib.md5(pw).hexdigest(),
+            "pass"  : hashlib.new("md5", pw).hexdigest(),
             "lat"   : "%7.5f" % coords[0],
             "lon"   : "%8.5f" % coords[1],
             "radius": "%i" % radius,

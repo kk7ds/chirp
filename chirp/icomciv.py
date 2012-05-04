@@ -95,6 +95,9 @@ class Frame:
 
         return src, dst
 
+    def get_obj(self):
+        raise errors.RadioError("Generic frame has no structure")
+
 class MemFrame(Frame):
     """A memory frame"""
     _cmd = 0x1A
