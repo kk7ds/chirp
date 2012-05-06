@@ -210,9 +210,6 @@ class FT857Radio(ft817.FT817Radio):
 
 
     def _set_tmode(self, mem, _mem):
-        # have to put this bit to 0 otherwise we get strange display in tone
-        # frequency (menu 83). See bug #88
-        _mem.unknown_toneflag = 0
         if mem.tmode != "Cross":
             _mem.is_split_tone = 0
             _mem.tmode = self.TMODES_REV[mem.tmode]

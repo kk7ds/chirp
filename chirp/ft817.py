@@ -79,7 +79,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         u8   unknown5:2,
             tx_mode:3,
             tx_freq_range:3;
-        u8   unknown6:2,
+        u8   unknown6:1,
+            unknown_toneflag:1,
             tone:6;
         u8   unknown7:1,
             dcs:7;
@@ -557,6 +558,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.fm_step = self.STEPSFM.index(mem.tuning_step)
         except ValueError:
             pass
+        # have to put this bit to 0 otherwise we get strange display in tone
+        # frequency (menu 83). See bug #88 and #163
+        _mem.unknown_toneflag = 0
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.rit = 0	# not supported in chirp
