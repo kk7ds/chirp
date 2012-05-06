@@ -262,7 +262,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         for char in _nam.name:
             if str(char) == "\xFF":
-                break
+                char = " " # The UV-5R software may have 0xFF mid-name
             mem.name += str(char)
         mem.name = mem.name.rstrip()
 
