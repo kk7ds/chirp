@@ -293,6 +293,11 @@ class BankMembershipEditor(common.Editor):
             self._view.append_column(col)
             if colnum == self.C_NAME:
                 col.set_visible(self._rf.has_name)
+                col.set_expand(True)
+            elif colnum == self.C_FREQ:
+                # If the radio does not support name, then use the freq
+                # column for expansion
+                col.set_expand(not self._rf.has_name)
             elif colnum == self.C_INDEX:
                 rend.set_property("editable", True)
                 rend.connect("edited", self._index_edited_cb)
