@@ -200,6 +200,9 @@ def format_freq(freq):
 
     return "%i.%06i" % (freq / 1000000, freq % 1000000)
 
+class ImmutableValueError(ValueError):
+    pass
+
 class Memory:
     """Base class for a single radio memory"""
     freq = 0
@@ -297,7 +300,8 @@ class Memory:
             raise ValueError("No such attribute `%s'" % name)
 
         if name in self.immutable:
-            raise ValueError("Field %s is not mutable on this memory" % name)
+            raise ImmutableValueError("Field %s is not " % name +
+                                      "mutable on this memory")
 
         if self._valid_map.has_key(name) and val not in self._valid_map[name]:
             raise ValueError("`%s' is not in valid list: %s" % (\

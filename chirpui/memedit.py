@@ -32,7 +32,7 @@ import gobject
 import pickle
 import os
 
-from chirpui import common, shiftdialog, miscwidgets, config
+from chirpui import common, shiftdialog, miscwidgets, config, memdetail
 from chirp import chirp_common, errors, directory, import_logic
 
 def handle_toggle(_, path, store, col):
@@ -612,6 +612,18 @@ class MemoryEditor(common.Editor):
         job.set_desc(_("Getting raw memory {number}").format(number=loc_b))
         self.rthread.submit(job)
 
+    def edit_memory(self, memory):
+        dlg = memdetail.MemoryDetailEditor(self._features, memory)
+        r = dlg.run()
+        if r == gtk.RESPONSE_OK:
+            self.need_refresh = True
+            mem = dlg.get_memory()
+            job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
+            job.set_desc(_("Writing memory {number}").format(number=mem.number))
+            self.rthread.submit(job)
+            self.emit("changed")
+        dlg.destroy()
+
     def mh(self, _action, store, paths):
         action = _action.get_name()
         iter = store.get_iter(paths[0])
@@ -648,6 +660,9 @@ class MemoryEditor(common.Editor):
             self._show_raw(cur_pos)
         elif action == "devdiffraw":
             self._diff_raw(paths)
+        elif action == "edit":
+            job = common.RadioJob(self.edit_memory, "get_memory", cur_pos)
+            self.rthread.submit(job)
 
         if changed:
             self.emit("changed")
@@ -671,7 +686,8 @@ class MemoryEditor(common.Editor):
 
         menu_xml = """
 <ui>
-  <popup name="Menu">
+  <popup name="Menu"> 
+    <menuitem action="edit"/>
     <menuitem action="insert_prev"/>
     <menuitem action="insert_next"/>
     <menuitem action="delete"/>
@@ -694,6 +710,7 @@ class MemoryEditor(common.Editor):
         istwo = len(paths) == 2
 
         actions = [
+            ("edit", _("Edit")),
             ("insert_prev", _("Insert row above")),
             ("insert_next", _("Insert row below")),
             ("delete", issingle and _("Delete") or _("Delete all")),
