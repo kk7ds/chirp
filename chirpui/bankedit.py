@@ -291,18 +291,17 @@ class BankMembershipEditor(common.Editor):
                                          sensitive=self.C_FILLED)
 
             self._view.append_column(col)
+            col.set_resizable(True)
             if colnum == self.C_NAME:
                 col.set_visible(self._rf.has_name)
-                col.set_expand(True)
-            elif colnum == self.C_FREQ:
-                # If the radio does not support name, then use the freq
-                # column for expansion
-                col.set_expand(not self._rf.has_name)
             elif colnum == self.C_INDEX:
                 rend.set_property("editable", True)
                 rend.connect("edited", self._index_edited_cb)
                 col.set_visible(self._rf.has_bank_index)
             colnum += 1
+
+        # A non-rendered column to absorb extra space in the row
+        self._view.append_column(gtk.TreeViewColumn())
 
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
