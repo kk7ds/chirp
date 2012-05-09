@@ -632,6 +632,7 @@ class RadioFeatures:
         "valid_name_length"   : 0,
         "valid_cross_modes"   : [],
         "valid_dtcs_pols"     : [],
+        "valid_special_chans" : [],
 
         "has_sub_devices"     : BOOLEAN,
         "memory_bounds"       : (0, 0),
@@ -748,6 +749,8 @@ class RadioFeatures:
                   "Supported tone cross modes")
         self.init("valid_dtcs_pols", ["NN", "RN", "NR", "RR"],
                   "Supported DTCS polarities")
+        self.init("valid_special_chans", [],
+                  "Supported special channel names")
 
         self.init("has_sub_devices", False,
                   "Indicates that the radio behaves as two semi-independent " +
@@ -781,7 +784,7 @@ class RadioFeatures:
         lo, hi = self.memory_bounds
         if not self.has_infinite_number and \
                 (mem.number < lo or mem.number > hi) and \
-                mem.extd_number not in self.get_special_locations():
+                mem.extd_number not in self.valid_special_chans:
             msg = ValidationWarning("Location %i is out of range" % mem.number)
             msgs.append(msg)
 
@@ -921,10 +924,6 @@ class Radio:
     def get_raw_memory(self, number):
         """Return a raw string describing the memory at @number"""
         pass
-
-    def get_special_locations(self):
-        """Return a list of special memory location names"""
-        return []
 
     def filter_name(self, name):
         """Filter @name to just the length and characters supported"""

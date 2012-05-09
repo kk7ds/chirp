@@ -76,6 +76,8 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             rf.valid_bands = [(118000000, 176000000)]
         rf.valid_skips = ["", "S"]
         rf.valid_name_length = 5
+        rf.valid_special_chans = sorted(icx8x_ll.ICx8x_SPECIAL.keys())
+
         return rf
 
     def _get_type(self):
@@ -109,9 +111,6 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def sync_out(self):
         self._get_type()
         icf.IcomCloneModeRadio.sync_out(self)
-
-    def get_special_locations(self):
-        return sorted(icx8x_ll.ICx8x_SPECIAL.keys())
 
     def get_memory(self, number):
         if not self._mmap:

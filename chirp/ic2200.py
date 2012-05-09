@@ -156,14 +156,12 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_bands = [(118000000, 174000000)]
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_special_chans = sorted(_get_special().keys())
 
         return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    def get_special_locations(self):
-        return sorted(_get_special().keys())
 
     def get_memory(self, number):
         if isinstance(number, str):

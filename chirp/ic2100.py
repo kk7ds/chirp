@@ -172,13 +172,11 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_bands = [(118000000, 174000000)]
         rf.valid_skips = ["", "S"]
+        rf.valid_special_chans = sorted(_get_special().keys())
         return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    def get_special_locations(self):
-        return sorted(_get_special().keys())
 
     def get_memory(self, number):
         mem = chirp_common.Memory()

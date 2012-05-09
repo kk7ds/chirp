@@ -297,6 +297,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_characters = "".join(self.CHARSET)
         rf.valid_name_length = 8
+        rf.valid_special_chans = sorted(self.SPECIAL_MEMORIES.keys())
         rf.memory_bounds = (1, 200)
         rf.can_odd_split = True
         rf.has_ctone = False
@@ -336,9 +337,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             return self._set_special(memory)
         else:
             return self._set_normal(memory)
-
-    def get_special_locations(self):
-        return self.SPECIAL_MEMORIES.keys()
 
     def _get_special(self, number):
         mem = chirp_common.Memory()

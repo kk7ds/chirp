@@ -107,9 +107,6 @@ class IC9xRadio(icf.IcomLiveRadio):
             ic9x_ll.send_magic(self.pipe)
         self.__last = time.time()
 
-    def get_special_locations(self):
-        return sorted(IC9X_SPECIAL[self.vfo].keys())
-    
     def get_memory(self, number):
         if isinstance(number, str):
             try:
@@ -276,6 +273,8 @@ class IC9xRadio(icf.IcomLiveRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_sub_devices = True
+        IC9X_SPECIAL[self.vfo].keys()
+    
         return rf
 
 class IC9xRadioA(IC9xRadio):

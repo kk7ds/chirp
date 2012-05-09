@@ -224,14 +224,12 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                           (810000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_name_length = 6
+        rf.valid_special_chans = sorted(ID800_SPECIAL.keys())
         rf.memory_bounds = (1, 499)
         return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    def get_special_locations(self):
-        return sorted(ID800_SPECIAL.keys())
 
     def get_memory(self, number):
         if isinstance(number, str):

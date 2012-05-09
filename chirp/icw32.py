@@ -93,7 +93,8 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
             rf.valid_modes = ["FM"]
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_name_length = 8
-
+        rf.valid_special_chans = sorted(_get_special().keys())
+    
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_ctone = True
         rf.has_dtcs = False
@@ -110,9 +111,6 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-
-    def get_special_locations(self):
-        return sorted(_get_special().keys())
 
     def get_memory(self, number):
         if isinstance(number, str):

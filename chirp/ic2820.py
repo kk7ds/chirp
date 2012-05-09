@@ -177,10 +177,9 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_skips = ["", "S", "P"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
-        return rf
+        rf.valid_special_chans = sorted(_get_special().keys())
 
-    def get_special_locations(self):
-        return sorted(_get_special().keys())
+        return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)

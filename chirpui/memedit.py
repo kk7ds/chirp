@@ -856,7 +856,7 @@ class MemoryEditor(common.Editor):
             self.rthread.submit(job, 2)
 
         if self.show_special:
-            for i in self.rthread.radio.get_special_locations():
+            for i in self._features.valid_special_chans:
                 job = common.RadioJob(handler, "get_memory", i)
                 job.set_desc(_("Getting channel {chan}").format(chan=i))
                 job.set_cb_args(i)
