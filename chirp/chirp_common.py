@@ -226,6 +226,10 @@ class Memory:
 
     immutable = []
 
+    # A RadioSettingsGroup of additional settings supported by the radio,
+    # or an empty list if none
+    extra = []
+
     def __init__(self):
         self.freq = 0
         self.number = 0                   
