@@ -38,6 +38,7 @@ IC9XA_SPECIAL["C0"] = IC9XB_SPECIAL["C0"] = -1
 IC9XA_SPECIAL["C1"] = IC9XB_SPECIAL["C1"] = -2
 
 IC9X_SPECIAL = {
+    0 : {},
     1 : IC9XA_SPECIAL,
     2 : IC9XB_SPECIAL,
 }
@@ -273,7 +274,7 @@ class IC9xRadio(icf.IcomLiveRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_sub_devices = True
-        IC9X_SPECIAL[self.vfo].keys()
+        rf.valid_special_chans = IC9X_SPECIAL[self.vfo].keys()
     
         return rf
 
