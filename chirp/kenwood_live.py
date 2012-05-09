@@ -15,6 +15,7 @@
 
 import threading
 import os
+import sys
 import time
 
 NOCACHE = os.environ.has_key("CHIRP_NOCACHE")
@@ -615,7 +616,7 @@ class TMD710Radio(KenwoodLiveRadio):
 @directory.register
 class THD72Radio(TMD710Radio):
     MODEL = "TH-D72"
-    HARDWARE_FLOW = True
+    HARDWARE_FLOW = sys.platform == "darwin" # only OS X driver needs hw flow
 
     def _parse_mem_spec(self, spec):
         mem = chirp_common.Memory()
