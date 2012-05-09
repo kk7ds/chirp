@@ -1,0 +1,16 @@
+Chirp is a free, open-source, multiplatform tool for programming your 
+amateur radio. It supports a large number of manufacturers and models, 
+as well as provides a way to interface with multiple data sources and 
+formats.
+
+Complete documentation may be found at the Chirp website at 
+http://chirp.danplanet.com/projects/chirp
+
+For a list of radios supported by Chirp, type the following command:
+
+  python share/make_supported.py > radios.html
+
+This will generate an HTML file containing a rundown of all the 
+currently supported radios and a matrix of what features are supported 
+for which radio.
+
