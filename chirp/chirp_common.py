@@ -773,6 +773,87 @@ class RadioFeatures:
     def __getitem__(self, name):
         return self.__dict__[name]
 
+    def validate_memory(self, mem):
+        """Return a list of warnings and errors that will be encoundered
+        if trying to set @mem on the current radio"""
+        msgs = []
+
+        lo, hi = self.memory_bounds
+        if not self.has_infinite_number and \
+                (mem.number < lo or mem.number > hi) and \
+                mem.extd_number not in self.get_special_locations():
+            msg = ValidationWarning("Location %i is out of range" % mem.number)
+            msgs.append(msg)
+
+        if self.valid_modes and mem.mode not in self.valid_modes:
+            msg = ValidationError("Mode %s not supported" % mem.mode)
+            msgs.append(msg)
+
+        if self.valid_tmodes and mem.tmode not in self.valid_tmodes:
+            msg = ValidationError("Tone mode %s not supported" % mem.tmode)
+            msgs.append(msg)
+        else:
+            if mem.tmode == "Cross":
+                if self.valid_cross_modes and \
+                        mem.cross_mode not in self.valid_cross_modes:
+                    msg = ValidationError("Cross tone mode %s not supported" % \
+                                              mem.cross_mode)
+                    msgs.append(msg)
+
+        if self.has_dtcs_polarity and \
+                mem.dtcs_polarity not in self.valid_dtcs_pols:
+            msg = ValidationError("DTCS Polarity %s not supported" % \
+                                      mem.dtcs_polarity)
+            msgs.append(msg)
+
+        if self.valid_duplexes and mem.duplex not in self.valid_duplexes:
+            msg = ValidationError("Duplex %s not supported" % mem.duplex)
+            msgs.append(msg)
+
+        ts = mem.tuning_step
+        if self.valid_tuning_steps and ts not in self.valid_tuning_steps and \
+                not self.has_nostep_tuning:
+            msg = ValidationError("Tuning step %.2f not supported" % ts)
+            msgs.append(msg)
+
+        if self.valid_bands:
+            valid = False
+            for lo, hi in self.valid_bands:
+                if mem.freq > lo and mem.freq < hi:
+                    valid = True
+                    break
+            if not valid:
+                msg = ValidationError(
+                    ("Frequency {freq} is out "
+                     "of supported range").format(freq=format_freq(mem.freq)))
+                msgs.append(msg)
+
+        if mem.power and \
+                self.valid_power_levels and \
+                mem.power not in self.valid_power_levels:
+            msg = ValidationWarning("Power level %s not supported" % mem.power)
+            msgs.append(msg)
+
+        if self.valid_tuning_steps and not self.has_nostep_tuning:
+            try:
+                step = required_step(mem.freq)
+                if step not in self.valid_tuning_steps:
+                    msg = ValidationError("Frequency requires %.2fkHz step" %\
+                                              required_step(mem.freq))
+                    msgs.append(msg)
+            except errors.InvalidDataError, e:
+                msgs.append(str(e))
+
+        if self.valid_characters:
+            for char in mem.name:
+                if char not in self.valid_characters:
+                    msgs.append(ValidationWarning("Name character " +
+                                                  "`%s'" % char +
+                                                  " not supported"))
+                    break
+
+        return msgs
+
 class ValidationMessage(str):
     """Base class for Validation Errors and Warnings"""
     pass
@@ -862,82 +943,8 @@ class Radio:
     def validate_memory(self, mem):
         """Return a list of warnings and errors that will be encoundered
         if trying to set @mem on the current radio"""
-        msgs = []
         rf = self.get_features()
-
-        lo, hi = rf.memory_bounds
-        if not rf.has_infinite_number and \
-                (mem.number < lo or mem.number > hi) and \
-                mem.extd_number not in self.get_special_locations():
-            msg = ValidationWarning("Location %i is out of range" % mem.number)
-            msgs.append(msg)
-
-        if rf.valid_modes and mem.mode not in rf.valid_modes:
-            msg = ValidationError("Mode %s not supported" % mem.mode)
-            msgs.append(msg)
-
-        if rf.valid_tmodes and mem.tmode not in rf.valid_tmodes:
-            msg = ValidationError("Tone mode %s not supported" % mem.tmode)
-            msgs.append(msg)
-        else:
-            if mem.tmode == "Cross":
-                if rf.valid_cross_modes and \
-                        mem.cross_mode not in rf.valid_cross_modes:
-                    msg = ValidationError("Cross tone mode %s not supported" % \
-                                              mem.cross_mode)
-                    msgs.append(msg)
-
-        if rf.has_dtcs_polarity and mem.dtcs_polarity not in rf.valid_dtcs_pols:
-            msg = ValidationError("DTCS Polarity %s not supported" % \
-                                      mem.dtcs_polarity)
-            msgs.append(msg)
-
-        if rf.valid_duplexes and mem.duplex not in rf.valid_duplexes:
-            msg = ValidationError("Duplex %s not supported" % mem.duplex)
-            msgs.append(msg)
-
-        ts = mem.tuning_step
-        if rf.valid_tuning_steps and ts not in rf.valid_tuning_steps and \
-                not rf.has_nostep_tuning:
-            msg = ValidationError("Tuning step %.2f not supported" % ts)
-            msgs.append(msg)
-
-        if rf.valid_bands:
-            valid = False
-            for lo, hi in rf.valid_bands:
-                if mem.freq > lo and mem.freq < hi:
-                    valid = True
-                    break
-            if not valid:
-                msg = ValidationError(
-                    ("Frequency {freq} is out "
-                     "of supported range").format(freq=format_freq(mem.freq)))
-                msgs.append(msg)
-
-        if mem.power and \
-                rf.valid_power_levels and \
-                mem.power not in rf.valid_power_levels:
-            msg = ValidationWarning("Power level %s not supported" % mem.power)
-            msgs.append(msg)
-
-        if rf.valid_tuning_steps and not rf.has_nostep_tuning:
-            try:
-                step = required_step(mem.freq)
-                if step not in rf.valid_tuning_steps:
-                    msg = ValidationError("Frequency requires %.2fkHz step" %\
-                                              required_step(mem.freq))
-                    msgs.append(msg)
-            except errors.InvalidDataError, e:
-                msgs.append(str(e))
-
-        if rf.valid_characters:
-            for char in mem.name:
-                if char not in rf.valid_characters:
-                    msgs.append(ValidationWarning(("Name character `%s'" % char) +
-                                                  " not supported"))
-                    break
-
-        return msgs
+        return rf.validate_memory(mem)
 
     def get_settings(self):
         """Returns a RadioSettingGroup containing one or more
