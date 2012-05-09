@@ -18,6 +18,8 @@
 
 from chirp import chirp_common, yaesu_clone, util, memmap, errors, directory
 from chirp import bitwise
+from chirp.settings import RadioSettingGroup, RadioSetting
+from chirp.settings import RadioSettingValueBoolean
 import time, os
 
 CMD_ACK = 0x06
@@ -507,6 +509,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             mem.name = ""
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+        ipo = RadioSetting("IPO", "ipo",
+                           RadioSettingValueBoolean(bool(_mem.ipo)))
+        ipo.set_doc("Bypass preamp")
+        mem.extra.append(ipo)
+
         return mem
 
     def _set_memory(self, mem, _mem):
@@ -567,6 +575,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         for i in range(0, 8):
             _mem.name[i] = self.CHARSET.index(mem.name.ljust(8)[i])
         
+        for setting in mem.extra:
+            setattr(_mem, setting.get_shortname(), setting.value)
+
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 
