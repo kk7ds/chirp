@@ -1,0 +1,45 @@
+This file describes the installation of Chirp without package management 
+on Linux and other Unix-like operating systems.  This sort of thing may 
+be your only choice because 1) a package has not yet been made for your 
+OS or distribution, 2) the packaged version is obsolete, or 3) you want 
+to try a daily build.
+
+
+For Debian, Ubuntu, and related systems, the following packages are required:
+python
+python-gtk2
+python-libxml2
+python-libxslt1
+python-serial
+python-suds (optional)
+python-support
+
+For Redhat, Fedora, CentOS and related systems, the following packages 
+are required: (This list is incomplete.  Please submit corrections.)
+python
+pygtk2
+libxml2-python
+python-libxslt
+
+
+Once these packages are installed, you can run Chirp directly from the 
+distribution directory by typing "./chirpw".  If you want to install it 
+properly, type this:
+
+  sudo python setup.py install --record files.txt
+
+This will install the package and create a list of files that were 
+added to your system.  If you want to deinstall Chirp, type this: 
+
+  sudo xargs -0 rm -rf < files.txt
+
+This will cause rm(1) to take its list of arguments from the file named 
+"files.txt" and remove those files from the system.  If you forgot to 
+create "files.txt", you can simply reinstall the way it is shown here 
+and continue on your way.
+
+Note: This will not uninstall directories created by the installation of 
+Chirp.  Presence of these empty directories shouldn't be a problem, but 
+if they are, it's easy to go through the files.txt file, identify them, 
+and remove them.
+
