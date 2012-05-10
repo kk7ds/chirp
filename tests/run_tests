@@ -172,6 +172,8 @@ class TestCase:
                 continue
             elif k == "offset" and not a.duplex:
                 continue
+            elif k == "cross_mode" and a.tmode != "Cross":
+                continue
 
             try:
                 if b.__dict__[k] != v:
