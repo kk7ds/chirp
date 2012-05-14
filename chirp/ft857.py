@@ -34,12 +34,13 @@ class FT857Radio(ft817.FT817Radio):
     TMODES_REV = dict(zip(TMODES.values(), TMODES.keys()))
 
     CROSS_MODES = {
-        0x05 : "Tone->Tone",
-        0x08 : "DTCS->",
-        0x06 : "Tone->DTCS",
-        0x09 : "DTCS->Tone",
         0x01 : "->Tone",
         0x02 : "->DTCS",
+        # 0x04 : "Tone->", not supported bi chirp UI
+        0x05 : "Tone->Tone",
+        0x06 : "Tone->DTCS",
+        0x08 : "DTCS->",
+        0x09 : "DTCS->Tone",
     }
     CROSS_MODES_REV = dict(zip(CROSS_MODES.values(), CROSS_MODES.keys()))
 
@@ -82,11 +83,12 @@ class FT857Radio(ft817.FT817Radio):
             unknown_toneflag:1,
             tone:6;
         u8   unknown6:1,
-            unknown_txtoneflag:1,
-            txtone:6;
+            unknown_rxtoneflag:1,
+            rxtone:6;
         u8   unknown7:1,
             dcs:7;
-        u8   unknown8:8;
+        u8   unknown8:1,
+            rxdcs:7;
         ul16 rit;
         u32 freq;
         u32 offset;
@@ -202,11 +204,28 @@ class FT857Radio(ft817.FT817Radio):
         else:
             mem.tmode = "Cross"
             mem.cross_mode = self.CROSS_MODES[int(_mem.tmode)]
-        # don't want to fail for this
-        try:
-            mem.ctone = chirp_common.TONES[_mem.txtone]
-        except IndexError:
-            mem.ctone = chirp_common.TONES[0]
+
+        if mem.tmode == "Tone":
+             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+        elif mem.tmode == "TSQL":
+             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+        elif mem.tmode == "DTCS":
+             mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
+        elif mem.tmode == "Cross":
+            mem.ctone = chirp_common.TONES[_mem.rxtone]
+            # don't want to fail for this
+            try:
+                mem.rtone = chirp_common.TONES[_mem.tone]
+            except IndexError:
+                mem.rtone = chirp_common.TONES[0]
+            if mem.cross_mode == "DTCS->":
+                mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
+            elif mem.cross_mode == "Tone->DTCS":
+                mem.dtcs = chirp_common.DTCS_CODES[_mem.rxdcs]
+            elif mem.cross_mode == "DTCS->Tone":
+                mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
+            elif mem.cross_mode == "->DTCS":
+                mem.dtcs = chirp_common.DTCS_CODES[_mem.rxdcs]
 
 
     def _set_tmode(self, mem, _mem):
@@ -216,10 +235,22 @@ class FT857Radio(ft817.FT817Radio):
         else:
             _mem.tmode = self.CROSS_MODES_REV[mem.cross_mode]
             _mem.is_split_tone = 1
-        # should be safe to put this also when it's not needed
-        _mem.txtone = chirp_common.TONES.index(mem.ctone)
-        # dunno if ther's the same problem here but to be safe ...
-        _mem.unknown_txtoneflag = 0
+
+        if mem.tmode == "Tone":
+            _mem.tone = _mem.rxtone = chirp_common.TONES.index(mem.rtone)
+        elif mem.tmode == "TSQL":
+            _mem.tone = _mem.rxtone = chirp_common.TONES.index(mem.ctone)
+        elif mem.tmode == "DTCS":
+            _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        elif mem.tmode == "Cross":
+            _mem.tone = chirp_common.TONES.index(mem.rtone)
+            _mem.rxtone = chirp_common.TONES.index(mem.ctone)
+            _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        # have to put this bit to 0 otherwise we get strange display in tone
+        # frequency (menu 83). See bug #88 and #163
+        _mem.unknown_toneflag = 0
+        # dunno if there's the same problem here but to be safe ...
+        _mem.unknown_rxtoneflag = 0
 
 @directory.register
 class FT857USRadio(FT857Radio):

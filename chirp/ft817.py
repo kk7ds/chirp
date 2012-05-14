@@ -316,6 +316,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _get_tmode(self, mem, _mem):
         mem.tmode = self.TMODES[_mem.tmode]
+        mem.rtone = chirp_common.TONES[_mem.tone]
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
 
     def _set_duplex(self, mem, _mem):
         _mem.duplex = self.DUPLEX.index(mem.duplex)
@@ -323,6 +325,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _set_tmode(self, mem, _mem):
         _mem.tmode = self.TMODES.index(mem.tmode)
+        # have to put this bit to 0 otherwise we get strange display in tone
+        # frequency (menu 83). See bug #88 and #163
+        _mem.unknown_toneflag = 0
+        _mem.tone = chirp_common.TONES.index(mem.rtone)
+        _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
 
     def get_memory(self, number):
         if isinstance(number, str):
@@ -497,8 +504,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 pass
         mem.skip = _mem.skip and "S" or ""
         self._get_tmode(mem, _mem)
-        mem.rtone = chirp_common.TONES[_mem.tone]
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
 
         if _mem.tag_on_off == 1:
             for i in _mem.name:
@@ -564,11 +569,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.fm_step = self.STEPSFM.index(mem.tuning_step)
         except ValueError:
             pass
-        # have to put this bit to 0 otherwise we get strange display in tone
-        # frequency (menu 83). See bug #88 and #163
-        _mem.unknown_toneflag = 0
-        _mem.tone = chirp_common.TONES.index(mem.rtone)
-        _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.rit = 0	# not supported in chirp
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 10
