@@ -328,3 +328,9 @@ class EditorSet(gtk.VBox):
 
     def prepare_close(self):
         self.editors["memedit"].prepare_close()
+
+    def get_current_editor(self):
+        for e in self.editors.values():
+            if e and self.tabs.page_num(e.root) == self.tabs.get_current_page():
+                return e
+        raise Exception("No editor selected?")

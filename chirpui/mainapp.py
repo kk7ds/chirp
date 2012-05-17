@@ -1018,15 +1018,15 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_copy(self, cut):
         eset = self.get_current_editorset()
-        eset.editors["memedit"].copy_selection(cut)
+        eset.get_current_editor().copy_selection(cut)
 
     def do_paste(self):
         eset = self.get_current_editorset()
-        eset.editors["memedit"].paste_selection()
+        eset.get_current_editor().paste_selection()
 
     def do_delete(self):
         eset = self.get_current_editorset()
-        eset.editors["memedit"].copy_selection(True)
+        eset.get_current_editor().copy_selection(True)
 
     def do_toggle_report(self, action):
         if not action.get_active():
@@ -1121,7 +1121,7 @@ If you think that it is valid, you can select a radio model below to force an op
         elif action in ["cut", "copy", "paste", "delete",
                         "move_up", "move_dn", "exchange",
                         "devshowraw", "devdiffraw"]:
-            self.get_current_editorset().editors["memedit"].hotkey(_action)
+            self.get_current_editorset().get_current_editor().hotkey(_action)
         elif action == "devdifftab":
             self.do_diff_radio()
         elif action == "language":
