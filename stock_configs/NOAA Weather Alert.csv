@@ -1,0 +1,8 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
+1,NOAA1,162.4,,0,,88.5,88.5,23,NN,FM,5,,,,,
+2,NOAA2,162.425,,0,,88.5,88.5,23,NN,FM,5,,,,,
+3,NOAA3,162.45,,0,,88.5,88.5,23,NN,FM,5,,,,,
+4,NOAA4,162.475,,0,,88.5,88.5,23,NN,FM,5,,,,,
+5,NOAA5,162.5,,0,,88.5,88.5,23,NN,FM,5,,,,,
+6,NOAA6,162.525,,0,,88.5,88.5,23,NN,FM,5,,,,,
+7,NOAA7,162.55,,0,,88.5,88.5,23,NN,FM,5,,,,,
