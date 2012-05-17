@@ -47,6 +47,15 @@ class Editor(gobject.GObject):
     def unfocus(self):
         self._focused = False
 
+    def copy_selection(self, cut=False):
+        pass
+
+    def paste_selection(self):
+        pass
+
+    def hotkey(self, action):
+        pass
+
 gobject.type_register(Editor)
 
 def DBG(*args):
