@@ -21,7 +21,9 @@
 #  u16  foo;     /* Unsigned 16-bit value                   */
 #  ul16 foo;     /* Unsigned 16-bit value (LE)              */
 #  u24  foo;     /* Unsigned 24-bit value                   */
+#  ul24 foo;     /* Unsigned 24-bit value (LE)              */
 #  u32  foo;     /* Unsigned 32-bit value                   */
+#  ul32 foo;     /* Unsigned 32-bit value (LE)              */
 #  char foo;     /* Character (single-byte                  */
 #  lbcd foo;     /* BCD-encoded byte (LE)                   */
 #  bbcd foo;     /* BCD-encoded byte (BE)                   */
@@ -399,6 +401,9 @@ class u24DataElement(intDataElement):
         self._data[self._offset] = struct.pack(">I",
                                                int(value) & 0xFFFFFFFF)[1:]
 
+class ul24DataElement(u24DataElement):
+    _endianess = "<"
+
 class u32DataElement(intDataElement):
     _size = 4
     _endianess = ">"
@@ -590,6 +595,7 @@ class Processor:
         "u16"  : u16DataElement,
         "ul16" : ul16DataElement,
         "u24"  : u24DataElement,
+        "ul24" : ul24DataElement,
         "u32"  : u32DataElement,
         "ul32" : ul32DataElement,
         "char" : charDataElement,
