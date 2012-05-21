@@ -393,13 +393,22 @@ class ul16DataElement(u16DataElement):
 
 class u24DataElement(intDataElement):
     _size = 3
+    _endianess = ">"
 
     def _get_value(self, data):
-        return struct.unpack(">I", "\x00" + data)[0]
+        pre = self._endianess == ">" and "\x00" or ""
+        post = self._endianess == "<" and "\x00" or ""
+        return struct.unpack(self._endianess + "I", pre+data+post)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack(">I",
-                                               int(value) & 0xFFFFFFFF)[1:]
+        if self._endianess == "<":
+            start = 0
+            end = 3
+        else:
+            start = 1
+            end = 4
+        self._data[self._offset] = struct.pack(self._endianess + "I",
+                                               int(value) & 0xFFFFFFFF)[start:end]
 
 class ul24DataElement(u24DataElement):
     _endianess = "<"
