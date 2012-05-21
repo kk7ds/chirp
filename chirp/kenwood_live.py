@@ -286,7 +286,7 @@ class TMD700Radio(KenwoodLiveRadio):
         rf.valid_modes = ["FM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
-        rf.valid_name_length = 7
+        rf.valid_name_length = 8
         rf.memory_bounds = (1, self._upper)
         return rf
 
