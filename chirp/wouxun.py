@@ -423,6 +423,13 @@ def puxing_upload(radio):
     except Exception, e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
+PUXING_CHARSET = list("0123456789") + \
+    [chr(x + ord("A")) for x in range(0, 26)] + \
+    list("-                       ")
+
+for i in range(0, len(PUXING_CHARSET)):
+    print "%i: %s" % (i, PUXING_CHARSET)
+
 PUXING_MEM_FORMAT = """
 #seekto 0x0000;
 struct {
@@ -527,6 +534,10 @@ class Puxing777Radio(KGUVD1PRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(PUXING_MEM_FORMAT, self._mmap)
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1]) + "\r\n" + \
+            repr(self._memobj.names[number - 1])
+
     @classmethod
     def match_model(cls, filedata, filename):
         if len(filedata) > 0x080B and \
@@ -615,7 +626,7 @@ class Puxing777Radio(KGUVD1PRadio):
         for i in _nam.name:
             if i == 0xFF:
                 break
-            mem.name += CHARSET[i]
+            mem.name += PUXING_CHARSET[i]
 
         return mem
 
@@ -673,7 +684,7 @@ class Puxing777Radio(KGUVD1PRadio):
         _nam.name = [0xFF] * 6
         for i in range(0, len(mem.name)):
             try:
-                _nam.name[i] = CHARSET.index(mem.name[i])
+                _nam.name[i] = PUXING_CHARSET.index(mem.name[i])
             except IndexError:
                 raise Exception("Character `%s' not supported")
 
