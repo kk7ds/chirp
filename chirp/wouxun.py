@@ -1144,7 +1144,10 @@ struct memory {
 };
 
 #seekto 0x0010;
-struct memory memory[100];
+struct memory memory[128];
+
+#seekto 0x0870;
+u8 emptyflags[16];
 """
 
 THUV3R_DUPLEX = ["", "+", "-"]
@@ -1164,7 +1167,7 @@ class TYTUV3RRadio(KGUVD1PRadio):
         rf.has_bank = False
         rf.has_tuning_step = False
         rf.has_cross = True
-        rf.memory_bounds = (1,100)
+        rf.memory_bounds = (1, 128)
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone",
                                 "Tone->DTCS", "DTCS->Tone",
@@ -1279,7 +1282,13 @@ class TYTUV3RRadio(KGUVD1PRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.freq == 0x1FFFF:
+        bit = 1 << ((number - 1) % 8)
+        byte = (number - 1) / 8
+
+        print "%i bit=%i byte=%i flag=%02x" % (number, bit, byte,
+                                               self._memobj.emptyflags[byte])
+
+        if self._memobj.emptyflags[byte] & bit:
             mem.empty = True
             return mem
 
@@ -1301,9 +1310,15 @@ class TYTUV3RRadio(KGUVD1PRadio):
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
+        bit = 1 << ((mem.number - 1) % 8)
+        byte = (mem.number - 1) / 8
+
         if mem.empty:
+            self._memobj.emptyflags[byte] |= bit
             _mem.set_raw("\xFF" * 16)
             return
+
+        self._memobj.emptyflags[byte] &= ~bit
 
         print "Freq %i: %s" % (mem.freq,
                                chirp_common.is_fractional_step(mem.freq))
