@@ -33,6 +33,26 @@ bbcd dtcs;
 u8   unknown[17];
 char name[9];
 """
+mem_duptone_format = """
+bbcd number[2];
+u8   unknown1;
+lbcd freq[5];
+u8   unknown2:5,
+     mode:3;
+u8   unknown1;
+u8   unknown2:2,
+     duplex:2,
+     unknown3:1,
+     tmode:3;
+u8   unknown4;
+bbcd rtone[2];
+u8   unknown5;
+bbcd ctone[2];
+u8   unknown6[2];
+bbcd dtcs;
+u8   unknown[11];
+char name[9];
+"""
 
 class Frame:
     """Base class for an ICF frame"""
@@ -135,6 +155,11 @@ class MultiVFOMemFrame(MemFrame):
     def get_obj(self):
         self._data = MemoryMap(str(self._data)) # Make sure we're assignable
         return bitwise.parse(MEM_VFO_FORMAT, self._data)
+
+class DupToneMemFrame(MemFrame):
+    def get_obj(self):
+        self._data = MemoryMap(str(self._data))
+        return bitwise.parse(mem_duptone_format, self._data)
 
 class IcomCIVRadio(icf.IcomLiveRadio):
     """Base class for ICOM CIV-based radios"""
@@ -267,6 +292,16 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         if self._rf.has_name:
             memobj.name = mem.name.ljust(9)[:9]
 
+        if self._rf.valid_tmodes:
+            memobj.tmode = self._rf.valid_tmodes.index(mem.tmode)
+
+        if self._rf.valid_duplexes:
+            memobj.duplex = self._rf.valid_duplexes.index(mem.duplex)
+
+        if self._rf.has_ctone:
+            memobj.ctone = int(mem.ctone * 10)
+            memobj.rtone = int(mem.rtone * 10)
+
         print repr(memobj)
         self._send_frame(f)
 
@@ -321,9 +356,37 @@ class Icom7000Radio(IcomCIVRadio):
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
         self._rf.memory_bounds = (1, 99)
 
+@directory.register
+class Icom746Radio(IcomCIVRadio):
+    """Icom IC-746"""
+    MODEL = "746"
+    BAUD_RATE = 9600
+    _model = "\x56"
+    _template = 102
+
+    def _initialize(self):
+        self._classes["mem"] = DupToneMemFrame
+        self._rf.has_bank = False
+        self._rf.has_dtcs_polarity = False
+        self._rf.has_dtcs = False
+        self._rf.has_ctone = True
+        self._rf.has_offset = False
+        self._rf.has_name = True
+        self._rf.has_tuning_step = False
+        self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY", "FM"]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL"]
+        self._rf.valid_duplexes = ["", "-", "+"]
+        self._rf.valid_bands = [(30000, 199999999)]
+        self._rf.valid_tuning_steps = []
+        self._rf.valid_skips = []
+        self._rf.valid_name_length = 9
+        self._rf.valid_characters = chirp_common.CHARSET_ASCII
+        self._rf.memory_bounds = (1, 99)
+
 CIV_MODELS = {
     (0x76, 0xE0) : Icom7200Radio,
     (0x70, 0xE0) : Icom7000Radio,
+    (0x46, 0xE0) : Icom746Radio,
 }
 
 def probe_model(ser):
