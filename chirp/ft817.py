@@ -519,6 +519,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                            RadioSettingValueBoolean(bool(_mem.ipo)))
         ipo.set_doc("Bypass preamp")
         mem.extra.append(ipo)
+        
+        att = RadioSetting("ATT", "att",
+                           RadioSettingValueBoolean(bool(_mem.att)))
+        att.set_doc("10dB front end attenuator")
+        mem.extra.append(att)
 
         return mem
 
@@ -554,8 +559,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 i += 1
             _mem.tx_freq_range = i
         _mem.skip = mem.skip == "S"
-        _mem.ipo = 0	# not supported in chirp
-        _mem.att = 0    # not supported in chirp
         self._set_tmode(mem, _mem)
         try:
             _mem.ssb_step = self.STEPSSSB.index(mem.tuning_step)
