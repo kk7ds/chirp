@@ -866,7 +866,7 @@ class Radio:
         if rf.valid_bands:
             valid = False
             for lo, hi in rf.valid_bands:
-                if mem.freq > lo and mem.freq < hi:
+                if lo <= mem.freq < hi:
                     valid = True
                     break
             if not valid:
