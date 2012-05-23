@@ -427,9 +427,6 @@ PUXING_CHARSET = list("0123456789") + \
     [chr(x + ord("A")) for x in range(0, 26)] + \
     list("-                       ")
 
-for i in range(0, len(PUXING_CHARSET)):
-    print "%i: %s" % (i, PUXING_CHARSET)
-
 PUXING_MEM_FORMAT = """
 #seekto 0x0000;
 struct {
@@ -1298,9 +1295,6 @@ class TYTUV3RRadio(KGUVD1PRadio):
         bit = 1 << ((number - 1) % 8)
         byte = (number - 1) / 8
 
-        print "%i bit=%i byte=%i flag=%02x" % (number, bit, byte,
-                                               self._memobj.emptyflags[byte])
-
         if self._memobj.emptyflags[byte] & bit:
             mem.empty = True
             return mem
@@ -1335,8 +1329,6 @@ class TYTUV3RRadio(KGUVD1PRadio):
 
         self._memobj.emptyflags[byte] &= ~bit
 
-        print "Freq %i: %s" % (mem.freq,
-                               chirp_common.is_fractional_step(mem.freq))
         if chirp_common.is_fractional_step(mem.freq):
             mult = 6250
             _mem.is625 = True
