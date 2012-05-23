@@ -56,6 +56,7 @@ CROSS_MODES = [
     "DTCS->",
     "->Tone",
     "->DTCS",
+    "DTCS->DTCS",
 ]
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
@@ -213,6 +214,7 @@ class Memory:
     rtone = 88.5
     ctone = 88.5
     dtcs = 23
+    rx_dtcs = 23
     tmode = ""
     cross_mode = "Tone->Tone"
     dtcs_polarity = "NN"
@@ -242,6 +244,7 @@ class Memory:
         self.rtone = 88.5                 
         self.ctone = 88.5                 
         self.dtcs = 23                    
+        self.rx_dtcs = 23                    
         self.tmode = ""                   
         self.cross_mode = "Tone->Tone"      
         self.dtcs_polarity = "NN"         
@@ -262,6 +265,7 @@ class Memory:
         "rtone"         : TONES,
         "ctone"         : TONES,
         "dtcs"          : DTCS_CODES + DTCS_EXTRA_CODES,
+        "rx_dtcs"       : DTCS_CODES + DTCS_EXTRA_CODES,
         "tmode"         : TONE_MODES,
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
         "cross_mode"    : CROSS_MODES,
@@ -444,6 +448,13 @@ class Memory:
         if self.dtcs not in DTCS_CODES:
             raise errors.InvalidDataError("DTCS code is not valid")
 
+        try:
+            self.rx_dtcs = int(vals[8], 10)
+        except:
+            raise errors.InvalidDataError("DTCS Rx code is not a valid number")
+        if self.rx_dtcs not in DTCS_CODES:
+            raise errors.InvalidDataError("DTCS Rx code is not valid")
+
         if vals[9] in ["NN", "NR", "RN", "RR"]:
             self.dtcs_polarity = vals[9]
         else:
@@ -614,6 +625,7 @@ class RadioFeatures:
         # General
         "has_bank_index"      : BOOLEAN,
         "has_dtcs"            : BOOLEAN,
+        "has_rx_dtcs"         : BOOLEAN,
         "has_dtcs_polarity"   : BOOLEAN,
         "has_mode"            : BOOLEAN,
         "has_offset"          : BOOLEAN,
@@ -702,6 +714,8 @@ class RadioFeatures:
                   "an order other than in main memory")
         self.init("has_dtcs", True,
                   "Indicates that DTCS tone mode is available")
+        self.init("has_rx_dtcs", False,
+                  "Indicates that radio can use two different DTCS codes for rx and tx")
         self.init("has_dtcs_polarity", True,
                   "Indicates that the DTCS polarity can be changed")
         self.init("has_mode", True,

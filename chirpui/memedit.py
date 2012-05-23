@@ -60,56 +60,59 @@ def iter_prev(store, iter):
 
 class MemoryEditor(common.Editor):
     cols = [
-        (_("Loc")       , TYPE_INT,     gtk.CellRendererText,  ),
-        (_("Frequency") , TYPE_INT64,   gtk.CellRendererText,  ),
-        (_("Name")      , TYPE_STRING,  gtk.CellRendererText,  ), 
-        (_("Tone Mode") , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Tone")      , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        (_("ToneSql")   , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        (_("DTCS Code") , TYPE_INT,     gtk.CellRendererCombo, ),
-        (_("DTCS Pol")  , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Cross Mode"), TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Duplex")    , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Offset")    , TYPE_INT64,   gtk.CellRendererText,  ),
-        (_("Mode")      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Power")     , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Tune Step") , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        (_("Skip")      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Comment")   , TYPE_STRING,  gtk.CellRendererText,  ),
-        ("_filled"      , TYPE_BOOLEAN, None,                  ),
-        ("_hide_cols"   , TYPE_PYOBJECT,None,                  ),
-        ("_extd"        , TYPE_STRING,  None,                  ),
+        (_("Loc")           , TYPE_INT,     gtk.CellRendererText,  ),
+        (_("Frequency")     , TYPE_INT64,   gtk.CellRendererText,  ),
+        (_("Name")          , TYPE_STRING,  gtk.CellRendererText,  ), 
+        (_("Tone Mode")     , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Tone")          , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        (_("ToneSql")       , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        (_("DTCS Code")     , TYPE_INT,     gtk.CellRendererCombo, ),
+        (_("DTCS Rx Code")  , TYPE_INT,     gtk.CellRendererCombo, ),
+        (_("DTCS Pol")      , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Cross Mode")    , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Duplex")        , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Offset")        , TYPE_INT64,   gtk.CellRendererText,  ),
+        (_("Mode")          , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Power")         , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Tune Step")     , TYPE_FLOAT,   gtk.CellRendererCombo, ),
+        (_("Skip")          , TYPE_STRING,  gtk.CellRendererCombo, ),
+        (_("Comment")       , TYPE_STRING,  gtk.CellRendererText,  ),
+        ("_filled"          , TYPE_BOOLEAN, None,                  ),
+        ("_hide_cols"       , TYPE_PYOBJECT,None,                  ),
+        ("_extd"            , TYPE_STRING,  None,                  ),
         ]
 
     defaults = {
-        _("Name")      : "",
-        _("Frequency") : 146010000,
-        _("Tone")      : 88.5,
-        _("ToneSql")   : 88.5,
-        _("DTCS Code") : 23,
-        _("DTCS Pol")  : "NN",
-        _("Cross Mode"): "Tone->Tone",
-        _("Duplex")    : "",
-        _("Offset")    : 0,
-        _("Mode")      : "FM",
-        _("Power")     : "",
-        _("Tune Step") : 5.0,
-        _("Tone Mode") : "",
-        _("Skip")      : "",
-        _("Comment")   : "",
+        _("Name")          : "",
+        _("Frequency")     : 146010000,
+        _("Tone")          : 88.5,
+        _("ToneSql")       : 88.5,
+        _("DTCS Code")     : 23,
+        _("DTCS Rx Code")  : 23,
+        _("DTCS Pol")      : "NN",
+        _("Cross Mode")    : "Tone->Tone",
+        _("Duplex")        : "",
+        _("Offset")        : 0,
+        _("Mode")          : "FM",
+        _("Power")         : "",
+        _("Tune Step")     : 5.0,
+        _("Tone Mode")     : "",
+        _("Skip")          : "",
+        _("Comment")       : "",
         }
 
     choices = {
-        _("Tone") : chirp_common.TONES,
-        _("ToneSql") : chirp_common.TONES,
-        _("DTCS Code") : chirp_common.DTCS_CODES,
-        _("DTCS Pol") : ["NN", "NR", "RN", "RR"],
-        _("Mode") : chirp_common.MODES,
-        _("Power") : [],
-        _("Duplex") : ["", "-", "+", "split"],
-        _("Tune Step") : chirp_common.TUNING_STEPS,
-        _("Tone Mode") : ["", "Tone", "TSQL", "DTCS"],
-        _("Cross Mode") : chirp_common.CROSS_MODES,
+        _("Tone")          : chirp_common.TONES,
+        _("ToneSql")       : chirp_common.TONES,
+        _("DTCS Code")     : chirp_common.DTCS_CODES,
+        _("DTCS Rx Code")  : chirp_common.DTCS_CODES,
+        _("DTCS Pol")      : ["NN", "NR", "RN", "RR"],
+        _("Mode")          : chirp_common.MODES,
+        _("Power")         : [],
+        _("Duplex")        : ["", "-", "+", "split"],
+        _("Tune Step")     : chirp_common.TUNING_STEPS,
+        _("Tone Mode")     : ["", "Tone", "TSQL", "DTCS"],
+        _("Cross Mode")    : chirp_common.CROSS_MODES,
         }
     
     def ed_name(self, _, __, new, ___):
@@ -206,19 +209,24 @@ class MemoryEditor(common.Editor):
         if tmode == "Tone":
             hide += [self.col(_("ToneSql")),
                      self.col(_("DTCS Code")),
+                     self.col(_("DTCS Rx Code")),
                      self.col(_("DTCS Pol"))]
         elif tmode == "TSQL":
             if self._features.has_ctone:
                 hide += [self.col(_("Tone"))]
 
             hide += [self.col(_("DTCS Code")),
+                     self.col(_("DTCS Rx Code")),
                      self.col(_("DTCS Pol"))]
         elif tmode == "DTCS":
-            hide += [self.col(_("Tone")), self.col(_("ToneSql"))]
+            hide += [self.col(_("Tone")),
+                     self.col(_("DTCS Rx Code")),
+                     self.col(_("ToneSql"))]
         elif tmode == "" or tmode == "(None)":
             hide += [self.col(_("Tone")),
                      self.col(_("ToneSql")),
                      self.col(_("DTCS Code")),
+                     self.col(_("DTCS Rx Code")),
                      self.col(_("DTCS Pol"))]
 
         if duplex == "" or duplex == "(None)":
@@ -303,7 +311,7 @@ class MemoryEditor(common.Editor):
 
         if colnum == self.col(_("Frequency")):
             val = chirp_common.format_freq(val)
-        elif colnum == self.col(_("DTCS Code")):
+        elif colnum in [self.col(_("DTCS Code")), self.col(_("DTCS Rx Code"))]:
             val = "%03i" % int(val)
         elif colnum == self.col(_("Offset")):
             val = chirp_common.format_freq(val)
@@ -890,6 +898,7 @@ class MemoryEditor(common.Editor):
                        self.col(_("Tone")), memory.rtone,
                        self.col(_("ToneSql")), memory.ctone,
                        self.col(_("DTCS Code")), memory.dtcs,
+                       self.col(_("DTCS Rx Code")), memory.rx_dtcs,
                        self.col(_("DTCS Pol")), memory.dtcs_polarity,
                        self.col(_("Cross Mode")), memory.cross_mode,
                        self.col(_("Duplex")), memory.duplex,
@@ -944,6 +953,7 @@ class MemoryEditor(common.Editor):
         mem.rtone = vals[self.col(_("Tone"))]
         mem.ctone = vals[self.col(_("ToneSql"))]
         mem.dtcs = vals[self.col(_("DTCS Code"))]
+        mem.rx_dtcs = vals[self.col(_("DTCS Rx Code"))]
         mem.tmode = vals[self.col(_("Tone Mode"))]
         mem.cross_mode = vals[self.col(_("Cross Mode"))]
         mem.dtcs_polarity = vals[self.col(_("DTCS Pol"))]
@@ -1076,6 +1086,7 @@ class MemoryEditor(common.Editor):
     def get_unsupported_columns(self):
         maybe_hide = [
             ("has_dtcs", _("DTCS Code")),
+            ("has_rx_dtcs", _("DTCS Rx Code")),
             ("has_dtcs_polarity", _("DTCS Pol")),
             ("has_mode", _("Mode")),
             ("has_offset", _("Offset")),
