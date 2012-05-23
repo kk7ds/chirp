@@ -1159,6 +1159,7 @@ struct memory memory[128];
 
 #seekto 0x0870;
 u8 emptyflags[16];
+u8 skipflags[16];
 """
 
 THUV3R_DUPLEX = ["", "+", "-"]
@@ -1190,6 +1191,7 @@ class TYTUV3RRadio(KGUVD1PRadio):
         rf.valid_bands = [(136000000, 470000000)]
         rf.valid_tuning_steps = [5.0, 6.25, 10.0, 12.5, 25.0, 37.50,
                                  50.0, 100.0]
+        rf.valid_skips = ["", "S"]
         return rf
 
     def sync_in(self):
@@ -1309,6 +1311,8 @@ class TYTUV3RRadio(KGUVD1PRadio):
         mem.duplex = THUV3R_DUPLEX[_mem.duplex]
         mem.mode = _mem.iswide and "FM" or "NFM"
         self._decode_tone(mem, _mem)
+        mem.skip = (self._memobj.skipflags[byte] & bit) and "S" or ""
+
         for char in _mem.name:
             try:
                 c = THUV3R_CHARSET[char]
@@ -1344,6 +1348,12 @@ class TYTUV3RRadio(KGUVD1PRadio):
         _mem.duplex = THUV3R_DUPLEX.index(mem.duplex)
         _mem.iswide = mem.mode == "FM"
         self._encode_tone(mem, _mem)
+
+        if mem.skip:
+            self._memobj.skipflags[byte] |= bit
+        else:
+            self._memobj.skipflags[byte] &= ~bit
+
         name = []
         for char in mem.name.ljust(6):
             try:
