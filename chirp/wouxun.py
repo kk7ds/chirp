@@ -25,6 +25,11 @@ else:
     DEBUG = False
 
 WOUXUN_MEM_FORMAT = """
+struct settings {
+  u8 unknown_flag1:7,
+     menu_available:1;
+};
+
 #seekto 0x0010;
 struct {
   lbcd rx_freq[4];
@@ -40,36 +45,45 @@ struct {
      iswide:1,
      _2_unknown_2:4;
   u8 unknown[2];
-} memory[128];
+} memory[199];
 
 #seekto 0x0E5C;
-u8 unknown_flag1:7,
-   menu_available:1;
+struct settings v1settings;
+
+#seekto 0x0F5C;
+struct settings v6settings;
 
 #seekto 0x1008;
 struct {
   u8 unknown[8];
   u8 name[6];
   u8 pad[2];
-} names[128];
+} names[199];
 """
 
-def wouxun_identify(radio):
+def _wouxun_identify(radio, string):
     """Do the original wouxun identification dance"""
     for _i in range(0, 5):
-        radio.pipe.write("HiWOUXUN\x02")
+        radio.pipe.write(string)
         resp = radio.pipe.read(9)
         if len(resp) != 9:
+            print "Got:\n%s" % util.hexprint(r)
             print "Retrying identification..."
             time.sleep(1)
             continue
         if resp[2:8] != radio._model:
-            raise Exception("I can't talk to this model")
+            raise Exception("I can't talk to this model (%s)" % util.hexprint(resp))
         return
     if len(resp) == 0:
         raise Exception("Radio not responding")
     else:
         raise Exception("Unable to identify radio")
+
+def wouxun_identify(radio):
+    return _wouxun_identify(radio, "HiWOUXUN\x02")
+
+def wouxun6_identify(radio):
+    return _wouxun_identify(radio, "HiWXUVD1\x02")
 
 def wouxun_start_transfer(radio):
     """Tell the radio to go into transfer mode"""
@@ -153,6 +167,28 @@ def wouxun_upload(radio):
     except Exception, e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
+def wouxun6_download(radio):
+    """Talk to an original wouxun and do a download"""
+    try:
+        wouxun6_identify(radio)
+        wouxun_start_transfer(radio)
+        return do_download(radio, 0x0000, 0x2000, 0x0040)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
+
+def wouxun6_upload(radio):
+    """Talk to an original wouxun and do an upload"""
+    try:
+        wouxun6_identify(radio)
+        wouxun_start_transfer(radio)
+        return do_upload(radio, 0x0000, 0x2000, 0x0010)
+    except errors.RadioError:
+        raise
+    except Exception, e:
+        raise errors.RadioError("Failed to communicate with radio: %s" % e)
+
 CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
     list("?+ ")
 
@@ -212,7 +248,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         group = RadioSettingGroup("top", "All Settings")
 
         rs = RadioSetting("menu_available", "Menu Available",
-                          RadioSettingValueBoolean(self._memobj.menu_available))
+                          RadioSettingValueBoolean(self._memobj.v1settings.menu_available))
         group.append(rs)
 
         return group
@@ -223,7 +259,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                 self.set_settings(element)
                 continue
             try:
-                setattr(self._memobj, element.get_name(), element.value)
+                setattr(self._memobj.v1settings, element.get_name(), element.value)
             except Exception, e:
                 print element.get_name()
                 raise
@@ -397,13 +433,78 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         # New-style image (CHIRP 0.1.12)
-        if len(filedata) == 8192 and filedata[0x60:0x64] != "2009":
+        if len(filedata) == 8192 and \
+                filedata[0x60:0x64] != "2009" and \
+                filedata[0xf00:0xf05] != "KGUV6":
+                    # TODO Must find an == test to avoid
+                    # collision with future supported radios
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
                 filedata[0:4] == "\x01\x00\x00\x00":
             return True
         return False
+
+@directory.register
+class KGUV6DRadio(KGUVD1PRadio):
+    MODEL = "KG-UV6D"
+
+    def get_features(self):
+        rf = KGUVD1PRadio.get_features(self)
+        rf.valid_bands = [(136000000, 175000000), (350000000, 471000000)]
+        rf.memory_bounds = (1, 199)
+        return rf
+
+    def get_settings(self):
+        group = RadioSettingGroup("top", "All Settings")
+
+        rs = RadioSetting("menu_available", "Menu Available",
+                          RadioSettingValueBoolean(self._memobj.v6settings.menu_available))
+        group.append(rs)
+
+        return group
+
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            try:
+                setattr(self._memobj.v6settings, element.get_name(), element.value)
+            except Exception, e:
+                print element.get_name()
+                raise
+
+    def sync_in(self):
+        self._mmap = wouxun6_download(self)
+        self.process_mmap()
+
+    def sync_out(self):
+        wouxun6_upload(self)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if len(filedata) == 8192 and \
+                filedata[0xf00:0xf06] == "KGUV6D":
+            return True
+        return False
+
+@directory.register
+class KGUV6XRadio(KGUV6DRadio):
+    MODEL = "KG-UV6X"
+
+    def get_features(self):
+        rf = KGUV6DRadio.get_features(self)
+        rf.valid_bands = [(136000000, 175000000), (370000000, 513000000)]
+        return rf
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if len(filedata) == 8192 and \
+                filedata[0xf00:0xf06] == "KGUV6X":
+            return True
+        return False
+
 
 def _puxing_prep(radio):
     radio.pipe.write("\x02PROGRA")
