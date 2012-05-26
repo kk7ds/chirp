@@ -243,6 +243,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        rf.valid_cross_modes = [
+                        "Tone->Tone",
+                        "Tone->DTCS",
+                        "DTCS->Tone",
+                        "DTCS->",
+                        "->Tone",
+                        "->DTCS",
+                        "DTCS->DTCS",
+                    ]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
@@ -250,6 +259,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_name_length = 6
         rf.valid_duplexes = ["", "+", "-", "split"]
         rf.has_ctone = True
+        rf.has_rx_dtcs = True
         rf.has_cross = True
         rf.has_tuning_step = False
         rf.has_bank = False
@@ -301,7 +311,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
         if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2800:
             rcode, rpol = _get_dcs(_mem.rx_tone)
-            mem.dtcs = rcode
+            mem.rx_dtcs = rcode
             rxmode = "DTCS"
         elif _mem.rx_tone != 0xFFFF:
             mem.ctone = _mem.rx_tone / 10.0
@@ -313,7 +323,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             mem.tmode = "Tone"
         elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
             mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS":
+        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
             mem.tmode = "DTCS"
         elif rxmode or txmode:
             mem.tmode = "Cross"
@@ -385,7 +395,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
 
         if tx_mode == "DTCS":
-            _mem.tx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+            _mem.tx_tone = mem.tmode != "DTCS" and \
+                _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
         elif tx_mode:
             _mem.tx_tone = tx_mode == "Tone" and \
                 int(mem.rtone * 10) or int(mem.ctone * 10)
@@ -393,7 +404,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
             _mem.tx_tone = 0xFFFF
 
         if rx_mode == "DTCS":
-            _mem.rx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
+            _mem.rx_tone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
         elif rx_mode:
             _mem.rx_tone = int(mem.ctone * 10)
         else:
