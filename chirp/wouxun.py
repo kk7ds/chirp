@@ -17,6 +17,7 @@ import struct
 import time
 import os
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
+from chirp.settings import RadioSetting, RadioSettingGroup, RadioSettingValueBoolean
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -40,6 +41,10 @@ struct {
      _2_unknown_2:4;
   u8 unknown[2];
 } memory[128];
+
+#seekto 0x0E5C;
+u8 unknown_flag1:7,
+   menu_available:1;
 
 #seekto 0x1008;
 struct {
@@ -198,9 +203,32 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.has_tuning_step = False
         rf.has_bank = False
+        rf.has_settings = True
         rf.memory_bounds = (1, 128)
         rf.can_odd_split = True
         return rf
+
+    def get_settings(self):
+        group = RadioSettingGroup("top", "All Settings")
+
+        rs = RadioSetting("menu_available", "Menu Available",
+                          RadioSettingValueBoolean(self._memobj.menu_available))
+        group.append(rs)
+
+        return group
+
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            try:
+                setattr(self._memobj, element.get_name(), element.value)
+            except Exception, e:
+                print element.get_name()
+                raise
+
+
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
