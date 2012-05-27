@@ -495,7 +495,7 @@ class KGUV6XRadio(KGUV6DRadio):
 
     def get_features(self):
         rf = KGUV6DRadio.get_features(self)
-        rf.valid_bands = [(136000000, 175000000), (370000000, 513000000)]
+        rf.valid_bands = [(136000000, 175000000), (375000000, 512000000)]
         return rf
 
     @classmethod
