@@ -17,7 +17,8 @@ import struct
 import time
 import os
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
-from chirp.settings import RadioSetting, RadioSettingGroup, RadioSettingValueBoolean
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+                RadioSettingValueBoolean, RadioSettingValueList
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -25,11 +26,6 @@ else:
     DEBUG = False
 
 WOUXUN_MEM_FORMAT = """
-struct settings {
-  u8 unknown_flag1:7,
-     menu_available:1;
-};
-
 #seekto 0x0010;
 struct {
   lbcd rx_freq[4];
@@ -48,10 +44,28 @@ struct {
 } memory[199];
 
 #seekto 0x0E5C;
-struct settings v1settings;
+struct {
+  u8 unknown_flag1:7,
+     menu_available:1;
+} v1settings;
 
-#seekto 0x0F5C;
-struct settings v6settings;
+#seekto 0x0F00;
+struct {
+  u8 unknown1[44];
+  u8 unknown_flag1:6,
+     voice:2;
+  u8 unknown_flag2:7,
+     beep:1;
+  u8 unknown2[12];
+  u8 unknown_flag3:6,
+     ponmsg:2;
+  u8 unknown3[3];
+  u8 unknown_flag4:7,
+     sos_ch:1;
+  u8 unknown4[29];
+  u8 unknown_flag5:7,
+     menu_available:1;
+} v6settings;
 
 #seekto 0x1008;
 struct {
@@ -461,6 +475,25 @@ class KGUV6DRadio(KGUVD1PRadio):
         rs = RadioSetting("menu_available", "Menu Available",
                           RadioSettingValueBoolean(self._memobj.v6settings.menu_available))
         group.append(rs)
+        rs = RadioSetting("beep", "Beep",
+                          RadioSettingValueBoolean(self._memobj.v6settings.beep))
+        group.append(rs)
+        options = ["Off", "Welcome", "V bat"]
+        rs = RadioSetting("ponmsg", "PONMSG",
+                          RadioSettingValueList(options,
+                                            options[self._memobj.v6settings.ponmsg]))
+        group.append(rs)
+        options = ["Off", "Chinese", "English"]
+        rs = RadioSetting("voice", "Voice",
+                          RadioSettingValueList(options,
+                                            options[self._memobj.v6settings.voice]))
+        group.append(rs)
+        options = ["CH A", "CH B"]
+        rs = RadioSetting("sos_ch", "SOS CH",
+                          RadioSettingValueList(options,
+                                            options[self._memobj.v6settings.sos_ch]))
+        group.append(rs)
+
 
         return group
 
