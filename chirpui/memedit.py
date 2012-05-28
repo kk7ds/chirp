@@ -221,8 +221,10 @@ class MemoryEditor(common.Editor):
                      self.col(_("DTCS Rx Code")),
                      self.col(_("DTCS Pol"))]
         elif tmode == "DTCS":
+            if self._features.has_rx_dtcs:
+                hide += [self.col(_("DTCS Code"))]
+
             hide += [self.col(_("Tone")),
-                     self.col(_("DTCS Rx Code")),
                      self.col(_("ToneSql"))]
         elif tmode == "" or tmode == "(None)":
             hide += [self.col(_("Tone")),
