@@ -103,6 +103,24 @@ def _import_tone(dst_radio, srcrf, mem):
         if mem.tmode == "TSQL":
             mem.ctone = mem.rtone
 
+def _import_dtcs(dst_radio, srcrf, mem):
+    dstrf = dst_radio.get_features()
+
+    # Some radios keep separate DTCS codes for tx and rx
+    # If we're importing to or from radios with differing models,
+    # do the conversion here.
+
+    if srcrf.has_rx_dtcs and not dstrf.has_rx_dtcs:
+        # If copying from a radio with separate codes to a radio
+        # without, and the tmode is DTCS, then use the rx_dtcs value
+        if mem.tmode == "DTCS":
+            mem.dtcs = mem.rx_dtcs
+    elif not srcrf.has_rx_dtcs and dstrf.has_rx_dtcs:
+        # If copying from a radio without separate codes to a radio
+        # with it, set the dest rx_dtcs to the src dtcs
+        if mem.tmode == "DTCS":
+            mem.rx_dtcs = mem.dtcs
+
 def import_mem(dst_radio, src_features, src_mem, overrides={}):
     """Perform import logic to create a destination memory from
     src_mem that will be compatible with @dst_radio"""
@@ -119,6 +137,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
     helpers = [_import_name,
                _import_power,
                _import_tone,
+               _import_dtcs,
                ]
 
     for helper in helpers:
