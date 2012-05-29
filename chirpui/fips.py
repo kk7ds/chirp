@@ -54,7 +54,7 @@ FIPS_STATES = {
     "Ohio"                 : 39,
     "Oklahoma"             : 40,
     "Oregon"               : 41,
-    "Pennsylvania"         : 32,
+    "Pennsylvania"         : 42,
     "Puerto Rico"          : 72,
     "Rhode Island"         : 44,
     "South Carolina"       : 45,
