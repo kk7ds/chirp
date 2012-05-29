@@ -255,7 +255,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
-        rf.valid_characters = CHARSET
+        rf.valid_characters = "".join(CHARSET)
         rf.valid_name_length = 6
         rf.valid_duplexes = ["", "+", "-", "split"]
         rf.has_ctone = True
