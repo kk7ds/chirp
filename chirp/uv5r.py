@@ -185,6 +185,8 @@ def _do_upload(radio):
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
 
+UV5R_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+
 # Uncomment this to actually register this radio in CHIRP
 @directory.register
 class BaofengUV5R(chirp_common.CloneModeRadio):
@@ -280,7 +282,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 dtcs_pol[0] = "R"
             else:
                 index = _mem.txtone - 1
-            mem.dtcs = chirp_common.DTCS_CODES[index]
+            mem.dtcs = UV5R_DTCS[index]
         else:
             print "Bug: txtone is %04x" % _mem.txtone
 
@@ -296,7 +298,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 dtcs_pol[1] = "R"
             else:
                 index = _mem.rxtone - 1
-            mem.dtcs = chirp_common.DTCS_CODES[index]
+            mem.dtcs = UV5R_DTCS[index]
         else:
             print "Bug: rxtone is %04x" % _mem.rxtone
 
@@ -355,20 +357,20 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             _mem.rxtone = int(mem.ctone * 10)
         elif mem.tmode == "DTCS":
             rxmode = txmode = "DTCS"
-            _mem.txtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 1
-            _mem.rxtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 1
+            _mem.txtone = UV5R_DTCS.index(mem.dtcs) + 1
+            _mem.rxtone = UV5R_DTCS.index(mem.dtcs) + 1
         elif mem.tmode == "Cross":
             txmode, rxmode = mem.cross_mode.split("->", 1)
             if txmode == "Tone":
                 _mem.txtone = int(mem.rtone * 10)
             elif txmode == "DTCS":
-                _mem.txtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 1
+                _mem.txtone = UV5R_DTCS.index(mem.dtcs) + 1
             else:
                 _mem.txtone = 0
             if rxmode == "Tone":
                 _mem.rxtone = int(mem.ctone * 10)
             elif rxmode == "DTCS":
-                _mem.rxtone = chirp_common.DTCS_CODES.index(mem.dtcs) + 1
+                _mem.rxtone = UV5R_DTCS.index(mem.dtcs) + 1
             else:
                 _mem.rxtone = 0
         else:

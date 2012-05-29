@@ -104,8 +104,10 @@ class MemoryEditor(common.Editor):
     choices = {
         _("Tone")          : chirp_common.TONES,
         _("ToneSql")       : chirp_common.TONES,
-        _("DTCS Code")     : chirp_common.DTCS_CODES,
-        _("DTCS Rx Code")  : chirp_common.DTCS_CODES,
+        _("DTCS Code")     : sorted(chirp_common.DTCS_CODES +
+                                    chirp_common.DTCS_EXTRA_CODES),
+        _("DTCS Rx Code")  : sorted(chirp_common.DTCS_CODES +
+                                    chirp_common.DTCS_EXTRA_CODES),
         _("DTCS Pol")      : ["NN", "NR", "RN", "RR"],
         _("Mode")          : chirp_common.MODES,
         _("Power")         : [],

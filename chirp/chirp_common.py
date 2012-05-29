@@ -47,7 +47,7 @@ DTCS_CODES = [
      ]
 
 # Some radios have some strange codes
-DTCS_EXTRA_CODES = [ 17, ]
+DTCS_EXTRA_CODES = [ 17, 645 ]
 
 CROSS_MODES = [
     "Tone->Tone",
