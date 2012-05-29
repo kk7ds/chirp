@@ -204,7 +204,7 @@ def wouxun6_upload(radio):
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
-    list("?+ ")
+    list("?+-")
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                 chirp_common.PowerLevel("Low", watts=1.00)]
@@ -255,7 +255,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_bands = [(136000000, 174000000), (216000000, 520000000)]
-        rf.valid_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        rf.valid_characters = CHARSET
         rf.valid_name_length = 6
         rf.valid_duplexes = ["", "+", "-", "split"]
         rf.has_ctone = True
