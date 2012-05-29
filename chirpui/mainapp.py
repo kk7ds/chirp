@@ -702,7 +702,10 @@ If you think that it is valid, you can select a radio model below to force an op
         default_county = "--All--"
         default_band = "--All--"
         try:
-            code = int(CONF.get("state", "repeaterbook"))
+            try:
+                code = int(CONF.get("state", "repeaterbook"))
+            except:
+                code = CONF.get("state", "repeaterbook")
             for k,v in fips.FIPS_STATES.items():
                 if code == v:
                     default_state = k
@@ -762,9 +765,12 @@ If you think that it is valid, you can select a radio model below to force an op
             return
 
         try:
-            code = int(CONF.get("state", "repeaterbook"))
+            code = "%02i" % int(CONF.get("state", "repeaterbook"))
         except:
-            code = 41 # Oregon default
+            try:
+                code = CONF.get("state", "repeaterbook")
+            except:
+                code = '41' # Oregon default
 
         try:
             county = CONF.get("county", "repeaterbook")
@@ -777,7 +783,7 @@ If you think that it is valid, you can select a radio model below to force an op
             band = 14 # 2m default
 
         query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
-            "func=default&state_id=%02i&band=%s&freq=%%&band6=%%&loc=%%" + \
+            "func=default&state_id=%s&band=%s&freq=%%&band6=%%&loc=%%" + \
             "&county_id=%s&status_id=%%&features=%%&coverage=%%&use=%%"
         query = query % (code, band and band or "%%", county and county or "%%")
 

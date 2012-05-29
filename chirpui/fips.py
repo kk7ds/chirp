@@ -69,6 +69,19 @@ FIPS_STATES = {
     "Wisconsin"            : 55,
     "West Virginia"        : 54,
     "Wyoming"              : 56,
+    "Alberta"              : "CA01",
+    "British Columbia"     : "CA02",
+    "Manitoba"             : "CA03",
+    "New Brunswick"        : "CA04",
+    "Newfoundland and Labrador": "CA05",
+    "Northwest Territories": "CA13",
+    "Nova Scotia"          : "CA07",
+    "Nunavut"              : "CA14",
+    "Ontario"              : "CA08",
+    "Prince Edward Island" : "CA09",
+    "Quebec"               : "CA10",
+    "Saskatchewan"         : "CA11",
+    "Yukon"                : "CA12",
 }
 
 FIPS_COUNTIES = {
@@ -6558,7 +6571,20 @@ FIPS_COUNTIES = {
           'Vieques Municipio, PR': '147',
           'Villalba Municipio, PR': '149',
           'Yabucoa Municipio, PR': '151',
-          'Yauco Municipio, PR': '153'}
+          'Yauco Municipio, PR': '153'},
+  "CA01": { '--All--': '%', },
+  "CA02": { '--All--': '%', },
+  "CA03": { '--All--': '%', },
+  "CA04": { '--All--': '%', },
+  "CA05": { '--All--': '%', },
+  "CA13": { '--All--': '%', },
+  "CA07": { '--All--': '%', },
+  "CA14": { '--All--': '%', },
+  "CA08": { '--All--': '%', },
+  "CA09": { '--All--': '%', },
+  "CA10": { '--All--': '%', },
+  "CA11": { '--All--': '%', },
+  "CA12": { '--All--': '%', },
 }
 
 
