@@ -81,7 +81,7 @@ def _wouxun_identify(radio, string):
         radio.pipe.write(string)
         resp = radio.pipe.read(9)
         if len(resp) != 9:
-            print "Got:\n%s" % util.hexprint(r)
+            print "Got:\n%s" % util.hexprint(resp)
             print "Retrying identification..."
             time.sleep(1)
             continue
