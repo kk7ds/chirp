@@ -79,7 +79,7 @@ class SettingsEditor(common.Editor):
             index = value.get_options().index(current)
             widget.set_active(index)
         elif isinstance(value, settings.RadioSettingValueString):
-            widget.set_text(str(value))
+            widget.set_text(str(value).rstrip())
         else:
             print "Unsupported widget type %s for %s" % (value.__class__,
                                                          element.get_name())

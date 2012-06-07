@@ -140,7 +140,7 @@ class RadioSettingValueString(RadioSettingValue):
         RadioSettingValue.set_value(self, value)
 
     def __str__(self):
-        return self._current.rstrip()
+        return self._current
 
 class RadioSettingGroup(object):
     """A group of settings"""
