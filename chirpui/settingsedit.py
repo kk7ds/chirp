@@ -62,37 +62,37 @@ class SettingsEditor(common.Editor):
         job.set_desc("Setting radio settings")
         self._rthread.submit(job)
 
-    def _load_setting(self, element, widget):
-        if isinstance(element.value, settings.RadioSettingValueInteger):
+    def _load_setting(self, value, widget):
+        if isinstance(value, settings.RadioSettingValueInteger):
             adj = widget.get_adjustment()
-            adj.configure(element.value.get_value(),
-                          element.value.get_min(), element.value.get_max(),
-                          element.value.get_step(), 1, 0)
-        elif isinstance(element.value, settings.RadioSettingValueBoolean):
-            widget.set_active(element.value.get_value())
-        elif isinstance(element.value, settings.RadioSettingValueList):
+            adj.configure(value.get_value(),
+                          value.get_min(), value.get_max(),
+                          value.get_step(), 1, 0)
+        elif isinstance(value, settings.RadioSettingValueBoolean):
+            widget.set_active(value.get_value())
+        elif isinstance(value, settings.RadioSettingValueList):
             model = widget.get_model()
             model.clear()
-            for option in element.value.get_options():
+            for option in value.get_options():
                 widget.append_text(option)
-            current = element.value.get_value()
-            index = element.value.get_options().index(current)
+            current = value.get_value()
+            index = value.get_options().index(current)
             widget.set_active(index)
-        elif isinstance(element.value, settings.RadioSettingValueString):
-            widget.set_text(str(element.value))
+        elif isinstance(value, settings.RadioSettingValueString):
+            widget.set_text(str(value))
         else:
             print "Unsupported widget type %s for %s" % (value.__class__,
                                                          element.get_name())
             
-    def _save_setting(self, widget, element):
-        if isinstance(element.value, settings.RadioSettingValueInteger):
-            element.value.set_value(widget.get_adjustment().get_value())
-        elif isinstance(element.value, settings.RadioSettingValueBoolean):
-            element.value.set_value(widget.get_active())
-        elif isinstance(element.value, settings.RadioSettingValueList):
-            element.value.set_value(widget.get_active_text())
-        elif isinstance(element.value, settings.RadioSettingValueString):
-            element.value.set_value(widget.get_text())
+    def _save_setting(self, widget, value):
+        if isinstance(value, settings.RadioSettingValueInteger):
+            value.set_value(widget.get_adjustment().get_value())
+        elif isinstance(value, settings.RadioSettingValueBoolean):
+            value.set_value(widget.get_active())
+        elif isinstance(value, settings.RadioSettingValueList):
+            value.set_value(widget.get_active_text())
+        elif isinstance(value, settings.RadioSettingValueString):
+            value.set_value(widget.get_text())
         else:
             print "Unsupported widget type %s for %s" % (\
                 element.value.__class__,
@@ -118,26 +118,45 @@ class SettingsEditor(common.Editor):
             label.show()
             pack(label, 0)
 
-            if isinstance(element.value, settings.RadioSettingValueInteger):
-                widget = gtk.SpinButton()
-                signal = "value-changed"
-            elif isinstance(element.value, settings.RadioSettingValueBoolean):
-                widget = gtk.CheckButton(_("Enabled"))
-                signal = "toggled"
-            elif isinstance(element.value, settings.RadioSettingValueList):
-                widget = miscwidgets.make_choice([], editable=False)
-                signal = "changed"
-            elif isinstance(element.value, settings.RadioSettingValueString):
-                widget = gtk.Entry()
-                signal = "changed"
+            if isinstance(element.value, list) and \
+                    isinstance(element.value[0],
+                               settings.RadioSettingValueInteger):
+                arraybox = gtk.HBox(3, True)
             else:
-                print "Unsupported widget type: %s" % value.__class__
+                arraybox = gtk.VBox(3, True)
+            pack(arraybox, 1)
+            arraybox.show()
 
-            self._load_setting(element, widget)
-            widget.connect(signal, self._save_setting, element)
+            widgets = []
+            for index in element.keys():
+                value = element[index]
+                if isinstance(value, settings.RadioSettingValueInteger):
+                    widget = gtk.SpinButton()
+                    print "Digits: %i" % widget.get_digits()
+                    signal = "value-changed"
+                elif isinstance(value, settings.RadioSettingValueBoolean):
+                    widget = gtk.CheckButton(_("Enabled"))
+                    signal = "toggled"
+                elif isinstance(value, settings.RadioSettingValueList):
+                    widget = miscwidgets.make_choice([], editable=False)
+                    signal = "changed"
+                elif isinstance(value, settings.RadioSettingValueString):
+                    widget = gtk.Entry()
+                    signal = "changed"
+                else:
+                    print "Unsupported widget type: %s" % value.__class__
 
-            widget.show()
-            pack(widget, 1)
+                # Make sure the widget gets left-aligned to match up
+                # with its label
+                lalign = gtk.Alignment(0, 0, 0, 0)
+                lalign.add(widget)
+                lalign.show()
+
+                arraybox.pack_start(lalign, 1, 1, 1)
+                widget.show()
+                self._load_setting(value, widget)
+                widget.connect(signal, self._save_setting, value)
+
             self._index += 1
 
     def _build_tree(self, group, parent):
