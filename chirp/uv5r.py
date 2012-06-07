@@ -19,7 +19,8 @@ from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueList, RadioSettingValueBoolean
+    RadioSettingValueList, RadioSettingValueBoolean, \
+    RadioSettingValueString
 
 MEM_FORMAT = """
 #seekto 0x0008;
@@ -87,7 +88,16 @@ struct {
   char name[7];
   u8 unknown2;
 } names[128];
+
+#seekto 0x1828;
+struct {
+  char line1[7];
+  char line2[7];
+} poweron_msg;
+
 """
+
+# 0x1EC0 - 0x2000
 
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
@@ -137,55 +147,73 @@ def _do_ident(radio):
 
     return ident
 
-def _do_download(radio):
-    serial = radio.pipe
+def _read_block(radio, start, size):
+    msg = struct.pack(">BHB", ord("S"), start, size)
+    radio.pipe.write(msg)
 
+    answer = radio.pipe.read(4)
+    if len(answer) != 4:
+        raise errors.RadioError("Radio refused to send block 0x%04x" % start)
+
+    cmd, addr, length = struct.unpack(">BHB", answer)
+    if cmd != ord("X") or addr != start or length != size:
+        print "Invalid answer for block 0x%04x:" % start
+        print "CMD: %s  ADDR: %04x  SIZE: %02x" % (cmd, addr, length)
+        raise errors.RadioError("Unknown response from radio")
+
+    chunk = radio.pipe.read(0x40)
+    if not chunk:
+        raise errors.RadioError("Radio did not send block 0x%04x" % start)
+    elif len(chunk) != size:
+        print "Chunk length was 0x%04i" % len(chunk)
+        raise errors.RadioError("Radio sent incomplete block 0x%04x" % start)
+    
+    radio.pipe.write("\x06")
+
+    ack = radio.pipe.read(1)
+    if ack != "\x06":
+        raise errors.RadioError("Radio refused to send block 0x%04x" % start)
+    
+    return chunk
+
+def _do_download(radio):
     data = _do_ident(radio)
 
-    for i in range(0, radio.get_memsize() - 0x08, 0x40):
-        msg = struct.pack(">BHB", ord("S"), i, 0x40)
-        serial.write(msg)
-
-        answer = serial.read(4)
-        if len(answer) != 4:
-            raise errors.RadioError("Radio refused to send block 0x%04x" % i)
-
-        cmd, addr, size = struct.unpack(">BHB", answer)
-        if cmd != ord("X") or addr != i or size != 0x40:
-            print "Invalid answer for block 0x%04x:" % i
-            print "CMD: %s  ADDR: %04x  SIZE: %02x" % (cmd, addr, size)
-            raise errors.RadioError("Unknown response from radio")
-
-        chunk = serial.read(0x40)
-        if not chunk:
-            raise errors.RadioError("Radio did not send block 0x%04x" % i)
-        elif len(chunk) != 0x40:
-            print "Chunk length was 0x%04i" % len(chunk)
-            raise errors.RadioError("Radio sent incomplete block 0x%04x" % i)
-        data += chunk
-        serial.write("\x06")
-
-        ack = serial.read(1)
-        if ack != "\x06":
-            raise errors.RadioError("Radio refused to send block 0x%04x" % i)
-
+    # Main block
+    for i in range(0, 0x1808, 0x40):
+        data += _read_block(radio, i, 0x40)
         _do_status(radio, i)
+
+    # Auxiliary block starts at 0x1ECO (?)
+    for i in range(0x1EC0, 0x2000, 0x40):
+        data += _read_block(radio, i, 0x40)
 
     return memmap.MemoryMap(data)
 
-def _do_upload(radio):
-    serial = radio.pipe
+def _send_block(radio, addr, data):
+    msg = struct.pack(">BHB", ord("X"), addr, len(data))
+    radio.pipe.write(msg + data)
 
+    ack = radio.pipe.read(1)
+    if ack != "\x06":
+        raise errors.RadioError("Radio refused to accept block 0x%04x" % addr)
+    
+def _do_upload(radio):
     _do_ident(radio)
 
-    for i in range(0x08, radio.get_memsize(), 0x10):
-        msg = struct.pack(">BHB", ord("X"), i - 0x08, 0x10)
-        serial.write(msg + radio.get_mmap()[i:i+0x10])
-
-        ack = serial.read(1)
-        if ack != "\x06":
-            raise errors.RadioError("Radio refused to accept block 0x%04x" % i)
+    # Main block
+    for i in range(0x08, 0x1808, 0x10):
+        _send_block(radio, i - 0x08, radio.get_mmap()[i:i+0x10])
         _do_status(radio, i)
+
+    if len(radio.get_mmap().get_packed()) == 0x1808:
+        print "Old image, not writing aux block"
+        return # Old image, no aux block
+
+    # Auxiliary block at radio address 0x1EC0, our offset 0x1808
+    for i in range(0x1EC0, 0x2000, 0x10):
+        addr = 0x1808 + (i - 0x1EC0)
+        _send_block(radio, i, radio.get_mmap()[addr:addr+0x10])
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
@@ -220,6 +248,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rf.valid_bands = [(136000000, 174000000), (400000000, 512000000)]
         rf.memory_bounds = (0, 127)
         return rf
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return len(filedata) in [0x1808, 0x1948]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -482,6 +514,21 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                           RadioSettingValueInteger(0, 9, _ani[4]))
         advanced.append(rs)
 
+        if len(self._mmap.get_packed()) == 0x1808:
+            # Old image, without aux block
+            return group
+
+        other = RadioSettingGroup("other", "Other Settings")
+        group.append(other)
+
+        _msg = self._memobj.poweron_msg
+        rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
+                          RadioSettingValueString(0, 7, str(_msg.line1)))
+        other.append(rs)
+        rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
+                          RadioSettingValueString(0, 7, str(_msg.line2)))
+        other.append(rs)
+
         return group
 
     def set_settings(self, settings):
@@ -497,6 +544,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 else:
                     obj = _settings
                     setting = element.get_name()
+                print "Setting %s = %s" % (setting, element.value)
                 setattr(obj, setting, element.value)
             except Exception, e:
                 print element.get_name()
