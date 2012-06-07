@@ -255,8 +255,7 @@ class RadioSetting(RadioSettingGroup):
             if len(self) == 1:
                 return self._elements[self._element_order[0]]
             else:
-                print self._elements
-                raise InternalError("Setting %s is not a scalar" % self._name)
+                return self._elements.values()
         else:
             return self.__dict__[name]
 
@@ -279,7 +278,7 @@ class RadioSetting(RadioSettingGroup):
     def __getitem__(self, name):
         if not isinstance(name, int):
             raise IndexError("Index `%s' is not an integer" % name)
-        return self._elements[name].get_value()
+        return self._elements[name]
 
     def __setitem__(self, name, value):
         if not isinstance(name, int):
