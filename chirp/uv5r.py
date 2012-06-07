@@ -38,6 +38,11 @@ struct {
      unknown5:2;
 } memory[128];
 
+#seekto 0x0CB2;
+struct {
+  u8 code[5];
+} ani;
+
 #seekto 0x0E28;
 struct {
   u8 squelch;
@@ -468,6 +473,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                                                 COLOR_LIST[_settings.txled]))
         basic.append(rs)
 
+        _ani = self._memobj.ani.code
+        rs = RadioSetting("ani.code", "ANI Code",
+                          RadioSettingValueInteger(0, 9, _ani[0]),
+                          RadioSettingValueInteger(0, 9, _ani[1]),
+                          RadioSettingValueInteger(0, 9, _ani[2]),
+                          RadioSettingValueInteger(0, 9, _ani[3]),
+                          RadioSettingValueInteger(0, 9, _ani[4]))
+        advanced.append(rs)
+
         return group
 
     def set_settings(self, settings):
@@ -477,7 +491,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 self.set_settings(element)
                 continue
             try:
-                setattr(_settings, element.get_name(), element.value)
+                if "." in element.get_name():
+                    objname, setting = element.get_name().split(".", 1)
+                    obj = getattr(self._memobj, objname)
+                else:
+                    obj = _settings
+                    setting = element.get_name()
+                setattr(obj, setting, element.value)
             except Exception, e:
                 print element.get_name()
                 raise
