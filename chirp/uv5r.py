@@ -521,12 +521,21 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         other = RadioSettingGroup("other", "Other Settings")
         group.append(other)
 
+        def _filter(name):
+            filtered = ""
+            for char in str(name):
+                if char in chirp_common.CHARSET_ASCII:
+                    filtered += char
+                else:
+                    filtered += " "
+            return filtered
+
         _msg = self._memobj.poweron_msg
         rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
-                          RadioSettingValueString(0, 7, str(_msg.line1)))
+                          RadioSettingValueString(0, 7, _filter(_msg.line1)))
         other.append(rs)
         rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
-                          RadioSettingValueString(0, 7, str(_msg.line2)))
+                          RadioSettingValueString(0, 7, _filter(_msg.line2)))
         other.append(rs)
 
         return group
