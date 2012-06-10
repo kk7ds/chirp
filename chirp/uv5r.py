@@ -180,7 +180,7 @@ def _do_download(radio):
     data = _do_ident(radio)
 
     # Main block
-    for i in range(0, 0x1808, 0x40):
+    for i in range(0, 0x1800, 0x40):
         data += _read_block(radio, i, 0x40)
         _do_status(radio, i)
 
