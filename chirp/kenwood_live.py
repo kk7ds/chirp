@@ -529,12 +529,22 @@ D710_DUPLEX = ["", "+", "-", "split"]
 D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
 D710_STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+D710_TONES = list(chirp_common.TONES)
+D710_TONES.remove(159.8)
+D710_TONES.remove(165.5)
+D710_TONES.remove(171.3)
+D710_TONES.remove(177.3)
+D710_TONES.remove(183.5)
+D710_TONES.remove(189.9)
+D710_TONES.remove(196.6)
+D710_TONES.remove(199.5)
 
 @directory.register
 class TMD710Radio(KenwoodLiveRadio):
     MODEL = "TM-D710"
     
     _upper = 999
+    _kenwood_valid_tones = list(D710_TONES)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
