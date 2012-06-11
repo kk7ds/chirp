@@ -1126,8 +1126,9 @@ If you think that it is valid, you can select a radio model below to force an op
         conf = config.get()
         conf.set_bool("developer", action.get_active(), "state")
 
-        devaction = self.menu_ag.get_action("viewdeveloper")
-        devaction.set_visible(action.get_active())
+        for name in ["viewdeveloper", "loadmod"]:
+            devaction = self.menu_ag.get_action(name)
+            devaction.set_visible(action.get_active())
 
     def do_change_language(self):
         langs = ["Auto", "English", "Polish", "Italian", "Dutch"]
@@ -1144,6 +1145,20 @@ If you think that it is valid, you can select a radio model below to force an op
             conf = config.get()
             conf.set("language", d.choice.get_active_text(), "state")
         d.destroy()
+
+    def load_module(self):
+        types = [(_("Python Modules") + "*.py", "*.py")]
+        filen = platform.get_platform().gui_open_file(types=types)
+        if not filen:
+            return
+
+        try:
+            module = file(filen)
+            code = module.read()
+            module.close()
+            exec(code)
+        except Exception, e:
+            common.show_error("Unable to load module: %s" % e)
 
     def mh(self, _action, *args):
         action = _action.get_name()
@@ -1196,6 +1211,8 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_diff_radio()
         elif action == "language":
             self.do_change_language()
+        elif action == "loadmod":
+            self.load_module()
         else:
             return
 
@@ -1212,6 +1229,7 @@ If you think that it is valid, you can select a radio model below to force an op
       <menu action="recent" name="recent"/>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
+      <menuitem action="loadmod"/>
       <separator/>
       <menuitem action="import"/>
       <menuitem action="export"/>
@@ -1274,6 +1292,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('recent', None, _("_Recent"), None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
+            ('loadmod', None, _("Load Module"), None, None, self.mh),
             ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
             ('quit', gtk.STOCK_QUIT, None, None, None, self.mh),
             ('edit', None, _("_Edit"), None, None, self.mh),
