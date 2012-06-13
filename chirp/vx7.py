@@ -95,6 +95,9 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
 POWER_LEVELS_220 = [chirp_common.PowerLevel("L2", watts=0.30),
                     chirp_common.PowerLevel("L1", watts=0.05)]
 
+def _is220(freq):
+    return freq >= 222000000 and freq <= 225000000
+
 class VX7BankModel(chirp_common.BankModel):
     def get_num_banks(self):
         return 9
@@ -270,8 +273,14 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
+
+        if _is220(mem.freq):
+            levels = POWER_LEVELS_220
+        else:
+            levels = POWER_LEVELS
+
         if mem.power:
-            _mem.power = 3 - POWER_LEVELS.index(mem.power)
+            _mem.power = levels.index(mem.power)
         else:
             _mem.power = 0
 
@@ -284,7 +293,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 
-        if mem.freq >= 222000000 and mem.freq <= 225000000:
+        if _is220(mem.freq):
             if str(mem.power) not in ["L1", "L2"]:
                 msgs.append(chirp_common.ValidationError(\
                         "Power level %s not supported on 220MHz band" % mem.power))
