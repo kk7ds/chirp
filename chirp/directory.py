@@ -31,12 +31,25 @@ def radio_class_id(cls):
     ident = ident.replace(")", "")
     return ident
 
+ALLOW_DUPS = False
+def enable_reregistrations():
+    """Set the global flag ALLOW_DUPS=True, which will enable a driver
+    to re-register for a slot in the directory without triggering an
+    exception"""
+    global ALLOW_DUPS
+    if not ALLOW_DUPS:
+        print "NOTE: driver re-registration enabled"
+    ALLOW_DUPS = True
+
 def register(cls):
     """Register radio @cls with the directory"""
     global DRV_TO_RADIO
     ident = radio_class_id(cls)
     if ident in DRV_TO_RADIO.keys():
-        raise Exception("Duplicate radio driver id `%s'" % ident)
+        if ALLOW_DUPS:
+            print "Replacing existing driver id `%s'" % ident
+        else:
+            raise Exception("Duplicate radio driver id `%s'" % ident)
     DRV_TO_RADIO[ident] = cls
     RADIO_TO_DRV[cls] = ident
     print "Registered %s = %s" % (ident, cls.__name__)

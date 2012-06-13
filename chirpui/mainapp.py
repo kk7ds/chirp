@@ -1152,6 +1152,11 @@ If you think that it is valid, you can select a radio model below to force an op
         if not filen:
             return
 
+        # We're in development mode, so we need to tell the directory to
+        # allow a loaded module to override an existing driver, against
+        # its normal better judgement
+        directory.enable_reregistrations()
+
         try:
             module = file(filen)
             code = module.read()
