@@ -65,9 +65,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
 
     def _send(self, data):
         self.pipe.write(data)
-        echo = self.pipe.read(len(data))
-        if echo != data:
-            raise errors.RadioError("Error reading echo (Bad cable?)")
+        self.pipe.read(len(data))
 
     def _download_chunk(self, addr):
         if addr % 16:
