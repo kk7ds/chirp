@@ -367,13 +367,27 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             continue
 
         return calls
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This is a horrid hack, given that people can change the GPS-A
+        # destination, but it should suffice in most cases until we get
+        # a rich container file format
+        return len(filedata) == cls._memsize and "API880," in filedata
         
 # This radio isn't really supported yet and detects as a conflict with
 # the ID-880. So, don't register right now
-#@directory.register
+@directory.register
 class ID80Radio(ID880Radio):
     """Icom ID80"""
     MODEL = "ID-80H"
 
     _model = "\x31\x55\x00\x01"
     
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This is a horrid hack, given that people can change the GPS-A
+        # destination, but it should suffice in most cases until we get
+        # a rich container file format
+        return len(filedata) == cls._memsize and "API80," in filedata
+        
