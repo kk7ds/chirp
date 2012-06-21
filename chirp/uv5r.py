@@ -277,6 +277,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -289,8 +295,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             return mem
 
         mem.freq = int(_mem.rxfreq) * 10
+
+        is_txinh = self._is_txinh(_mem)
+        mem.extra = RadioSettingGroup("extra", "Extra Settings")
+        txinh = RadioSetting("txinh", "TX Inhibit",
+                             RadioSettingValueBoolean(is_txinh))
+        mem.extra.append(txinh)
         
-        if int(_mem.rxfreq) == int(_mem.txfreq):
+        if is_txinh:
+            mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
         elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
             mem.duplex = "split"
@@ -370,7 +384,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         _mem.set_raw("\x00" * 16)
 
         _mem.rxfreq = mem.freq / 10
-        if mem.duplex == "split":
+
+        if mem.extra and mem.extra["txinh"].value:
+            for i in range(0, 4):
+                _mem.txfreq[i].set_raw("\xFF")
+            print repr(_mem.txfreq)
+        elif mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
             _mem.txfreq = (mem.freq + mem.offset) / 10
