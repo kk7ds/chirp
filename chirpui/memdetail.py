@@ -198,7 +198,7 @@ class MemoryDetailEditor(gtk.Dialog):
                           settings.RadioSettingValueBoolean):
                 editor = BooleanEditor(self._features, self._memory,
                                        _err, name)
-                self._add(tab, row, name, editor, setting.get_name())
+                self._add(tab, row, name, editor, setting.get_shortname())
                 self._set_doc(name, setting.__doc__)
             row += 1    
             self._order.append(name)
