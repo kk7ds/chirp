@@ -479,7 +479,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("timeout", "Timeout Timer",
                           RadioSettingValueList(TIMEOUT_LIST,
-                                                TIMEOUT_LIST[_settings.tdr]))
+                                                TIMEOUT_LIST[_settings.timeout]))
         basic.append(rs)
 
         rs = RadioSetting("voice", "Voice",
