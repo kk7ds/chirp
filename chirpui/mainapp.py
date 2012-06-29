@@ -1313,7 +1313,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
             ('devshowraw', None, _('Show raw memory'), "<Control><Shift>r", None, self.mh),
             ('devdiffraw', None, _("Diff raw memories"), "<Control><Shift>d", None, self.mh),
-            ('devdifftab', None, _("Diff tabs"), None, None, self.mh),
+            ('devdifftab', None, _("Diff tabs"), "<Control><Shift>t", None, self.mh),
             ('language', None, _("Change language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
             ('download', None, _("Download From Radio"), "<Alt>d", None, self.mh),
