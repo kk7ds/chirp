@@ -200,7 +200,13 @@ class MemoryDetailEditor(gtk.Dialog):
                                        _err, name)
                 self._add(tab, row, name, editor, setting.get_shortname())
                 self._set_doc(name, setting.__doc__)
-            row += 1    
+            elif isinstance(setting.value,
+                            settings.RadioSettingValueList):
+                editor = ChoiceEditor(self._features, self._memory,
+                                      _err, name, setting.value.get_options())
+                self._add(tab, row, name, editor, setting.get_shortname())
+                self._set_doc(name, setting.__doc__)
+            row += 1
             self._order.append(name)
 
     def __init__(self, features, memory, parent=None):
