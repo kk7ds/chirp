@@ -453,6 +453,18 @@ class bcdDataElement(DataElement):
     def clr_bits(self, mask):
         self._data[self._offset] = ord(self._data[self._offset]) & ~int(mask)
 
+    def get_bits(self, mask):
+        return ord(self._data[self._offset]) & int(mask)
+
+    def set_raw(self, data):
+        if isinstance(data, int):
+            self._data[self._offset] = data & 0xFF
+        elif isinstance(data, str):
+            self._data[self._offset] = data[0]
+        else:
+            raise TypeError("Unable to set bcdDataElement from type %s" %
+                            type(data))
+
 class lbcdDataElement(bcdDataElement):
     _size = 1
 
