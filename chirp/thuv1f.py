@@ -153,6 +153,10 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_name_length = 7
+        rf.valid_cross_modes = ["Tone->Tone", "DTCS->DTCS",
+                                "Tone->DTCS", "DTCS->Tone",
+                                "->Tone", "->DTCS", "DTCS->"]
+                                
         return rf
 
     def sync_in(self):
