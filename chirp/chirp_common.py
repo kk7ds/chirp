@@ -1237,3 +1237,84 @@ def from_MHz(val):
 def from_kHz(val):
     """Convert @val in Hz to kHz"""
     return val / 100
+
+def split_tone_decode(mem, txtone, rxtone):
+    """
+    Set tone mode and values on @mem based on txtone and rxtone specs like:
+    None, None, None
+    "Tone", 123.0, None
+    "DTCS", 23, "N"
+    """
+    txmode, txval, txpol = txtone
+    rxmode, rxval, rxpol = rxtone
+
+    mem.dtcs_polarity = "%s%s" % (txpol or "N", rxpol or "N")
+
+    if not txmode and not rxmode:
+        # No tone
+        return
+
+    if txmode == "Tone" and not rxmode:
+        mem.tmode = "Tone"
+        mem.rtone = txval
+        return
+
+    if txmode == rxmode == "Tone" and txval == rxval:
+        # TX and RX same tone -> TSQL
+        mem.tmode = "TSQL"
+        mem.ctone = txval
+        return
+
+    if txmode == rxmode == "DTCS" and txval == rxval:
+        mem.tmode = "DTCS"
+        mem.dtcs = txval
+        return
+
+    mem.tmode = "Cross"
+    mem.cross_mode = "%s->%s" % (txmode or "", rxmode or "")
+
+    if txmode == "Tone":
+        mem.rtone = txval
+    elif txmode == "DTCS":
+        mem.dtcs = txval
+
+    if rxmode == "Tone":
+        mem.ctone = rxval
+    elif rxmode == "DTCS":
+        mem.rx_dtcs = rxval
+
+def split_tone_encode(mem):
+    """
+    Returns TX, RX tone specs based on @mem like:
+    None, None, None
+    "Tone", 123.0, None
+    "DTCS", 23, "N"
+    """
+
+    txmode = txval = None
+    txpol = mem.dtcs_polarity[0]
+    rxmode = rxval = None
+    rxpol = mem.dtcs_polarity[1]
+    
+    if mem.tmode == "Tone":
+        txmode = "Tone"
+        txval = mem.rtone
+    elif mem.tmode == "TSQL":
+        txmode = rxmode = "Tone"
+        txval = rxval = mem.ctone
+    elif mem.tmode == "DTCS":
+        txmode = rxmode = "DTCS"
+        txval = rxval = mem.dtcs
+    elif mem.tmode == "Cross":
+        txmode, rxmode = mem.cross_mode.split("->", 1)
+        if txmode == "Tone":
+            txval = mem.rtone
+        elif txmode == "DTCS":
+            txval = mem.dtcs
+        if rxmode == "Tone":
+            rxval = mem.ctone
+        elif rxmode == "DTCS":
+            rxval = mem.rx_dtcs
+
+    return ((txmode, txval, txpol),
+            (rxmode, rxval, rxpol))
