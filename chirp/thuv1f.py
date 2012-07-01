@@ -116,10 +116,10 @@ struct name {
 };
 
 #seekto 0x0020;
-struct mem memory[20];
+struct mem memory[128];
 
 #seekto 0x08D0;
-struct name names[20];
+struct name names[128];
 
 """
 
@@ -139,7 +139,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (1, 20)
+        rf.memory_bounds = (1, 128)
         rf.has_bank = False
         rf.has_ctone = True
         rf.has_tuning_step = False
