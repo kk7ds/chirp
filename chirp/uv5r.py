@@ -95,6 +95,18 @@ struct {
   char line2[7];
 } poweron_msg;
 
+#seekto 0x1910;
+struct limit {
+  u8 unknown1[3];
+  bbcd lower[2];
+  bbcd upper[2];
+  u8 unknown2;
+  u8 unknown3[8];
+};
+
+struct limit vhf_limit;
+struct limit uhf_limit;
+
 """
 
 # 0x1EC0 - 0x2000
@@ -555,6 +567,27 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         other.append(rs)
         rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
                           RadioSettingValueString(0, 7, _filter(_msg.line2)))
+        other.append(rs)
+
+        vhf_limit = self._memobj.vhf_limit
+        rs = RadioSetting("vhf_limit.lower", "VHF Lower Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000,
+                                                   vhf_limit.lower))
+        other.append(rs)
+
+        rs = RadioSetting("vhf_limit.upper", "VHF Upper Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000,
+                                                   vhf_limit.upper))
+
+        uhf_limit = self._memobj.uhf_limit
+        other.append(rs)
+        rs = RadioSetting("uhf_limit.lower", "UHF Lower Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000,
+                                                   uhf_limit.lower))
+        other.append(rs)
+        rs = RadioSetting("uhf_limit.upper", "UHF Upper Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000,
+                                                   uhf_limit.upper))
         other.append(rs)
 
         return group
