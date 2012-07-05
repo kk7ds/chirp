@@ -78,10 +78,8 @@ struct {
      tmode:3;
   u8 name[6];
   bbcd offset[3];
-  u8 unknown3:2,
-     tone:6;
-  u8 unknown4:1,
-     dcs:7;
+  u8 tone;
+  u8 dcs;
   u8 unknown5;
 } memory[900];
 """
@@ -167,13 +165,13 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
         mem.offset = int(_mem.offset) * 1000
-        mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+        mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone & 0x3f]
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = MODES[_mem.mode]
         if mem.mode == "FM" and _mem.half_deviation:
             mem.mode = "NFM"
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs & 0x7f]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
         
@@ -197,6 +195,16 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         nibble = ((mem.number-1) % 2) and "even" or "odd"
         used = _flag["%s_masked" % nibble]
         valid = _flag["%s_valid" % nibble]
+
+        # initialize new channel to safe defaults
+        if not mem.empty and not used:
+            _mem.unknown11 = 0
+            _mem.step_changed = 0
+            _mem.cpu_shifted = 0
+            _mem.unknown12 = 0
+            _mem.unknown2 = 0
+            _mem.pager = 0
+            _mem.unknown5 = 0
 
         if mem.empty and valid and not used:
             _flag["%s_valid" % nibble] = False
