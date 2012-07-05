@@ -36,7 +36,7 @@ except ImportError,e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
 from chirp import platform, generic_xml, generic_csv, directory, util
-from chirp import ic9x, kenwood_live, idrp, vx7, vx5
+from chirp import ic9x, kenwood_live, idrp, vx7, vx5, vx6
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting, fips
@@ -269,6 +269,7 @@ If you think that it is valid, you can select a radio model below to force an op
                      (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
                      (_("ICF Files") + " (*.icf)", "*.icf"),
                      (_("VX5 Commander Files") + " (*.vx5)", "*.vx5"),
+                     (_("VX6 Commander Files") + " (*.vx6)", "*.vx6"),
                      (_("VX7 Commander Files") + " (*.vx7)", "*.vx7"),
                      ]
             fname = platform.get_platform().gui_open_file(types=types)
@@ -407,6 +408,8 @@ If you think that it is valid, you can select a radio model below to force an op
 
         if isinstance(eset.radio, vx7.VX7Radio):
             types += [(_("VX7 Commander") + " (*.vx7)", "vx7")]
+        elif isinstance(eset.radio, vx6.VX6Radio):
+            types += [(_("VX6 Commander") + " (*.vx6)", "vx6")]
         elif isinstance(eset.radio, vx5.VX5Radio):
             types += [(_("EVE") + " (*.eve)", "eve")]
             types += [(_("VX5 Commander") + " (*.vx5)", "vx5")]
@@ -677,6 +680,7 @@ If you think that it is valid, you can select a radio model below to force an op
                  (_("Kenwood HMK Files") + " (*.hmk)", "*.hmk"),
                  (_("Travel Plus Files") + " (*.tpe)", "*.tpe"),
                  (_("VX5 Commander Files") + " (*.vx5)", "*.vx5"),
+                 (_("VX6 Commander Files") + " (*.vx6)", "*.vx6"),
                  (_("VX7 Commander Files") + " (*.vx7)", "*.vx7")]
         filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
