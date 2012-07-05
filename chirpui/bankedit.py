@@ -154,8 +154,14 @@ class BankMembershipEditor(common.Editor):
         return 0 # If the bank is full, just wrap around!
 
     def _toggled_cb(self, rend, path, colnum):
-        if not rend.get_sensitive():
-            return
+        try:
+            if not rend.get_sensitive():
+                return
+        except AttributeError:
+            # support PyGTK < 2.22
+            iter = self._store.get_iter(path)
+            if not self._store.get(iter, self.C_FILLED)[0]:
+                return
 
         # The bank index is the column number, minus the 3 label columns
         bank, name = self.banks[colnum - len(self._cols)]
