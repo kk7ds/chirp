@@ -111,7 +111,7 @@ class MemoryEditor(common.Editor):
         _("DTCS Pol")      : ["NN", "NR", "RN", "RR"],
         _("Mode")          : chirp_common.MODES,
         _("Power")         : [],
-        _("Duplex")        : ["", "-", "+", "split"],
+        _("Duplex")        : ["", "-", "+", "split", "off"],
         _("Tune Step")     : chirp_common.TUNING_STEPS,
         _("Tone Mode")     : ["", "Tone", "TSQL", "DTCS"],
         _("Cross Mode")    : chirp_common.CROSS_MODES,
@@ -1174,10 +1174,7 @@ class MemoryEditor(common.Editor):
         if self._features["valid_power_levels"]:
             self.defaults[_("Power")] = self._features["valid_power_levels"][0]
 
-        if not self._features["can_odd_split"]:
-            # We need a new list, so .remove() won't work for us
-            self.choices[_("Duplex")] = [x for x in self.choices[_("Duplex")]
-                                      if x != "split"]
+        self.choices[_("Duplex")] = list(self._features.valid_duplexes)
 
         if self.defaults[_("Mode")] not in self._features.valid_modes:
             self.defaults[_("Mode")] = self._features.valid_modes[0]
