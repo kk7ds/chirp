@@ -270,7 +270,7 @@ class Memory:
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
         "cross_mode"    : CROSS_MODES,
         "mode"          : MODES,
-        "duplex"        : ["", "+", "-", "split"],
+        "duplex"        : ["", "+", "-", "split", "off"],
         "skip"          : SKIP_VALUES,
         "empty"         : [True, False],
         "dv_code"       : [x for x in range(0, 100)],
