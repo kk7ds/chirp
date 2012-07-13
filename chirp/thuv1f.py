@@ -59,6 +59,9 @@ def uvf1_download(radio):
         status.max = 0x1000
         status.msg = "Cloning from radio"
         radio.status_fn(status)
+
+    radio.pipe.write("\x45")
+
     return memmap.MemoryMap(data)
 
 def uvf1_upload(radio):
@@ -118,10 +121,47 @@ struct name {
 #seekto 0x0020;
 struct mem memory[128];
 
+#seekto 0x0840;
+struct {
+  u8 scans:2,
+     autolk:1,
+     unknown1:5;
+  u8 light:2,
+     unknown6:2,
+     disnm:1,
+     voice:1,
+     beep:1,
+     rxsave:1;
+  u8 led:2,
+     unknown5:3,
+     ani:1,
+     roger:1,
+     dw:1;
+  u8 opnmsg:2,
+     unknown4:1,
+     dwait:1,
+     unknown9:4;
+  u8 squelch;
+  u8 unknown2:4,
+     tot:4;
+  u8 unknown3:4,
+     vox_level:4;
+  u8 pad[10];
+  char ponmsg[6];
+} settings;
+
 #seekto 0x08D0;
 struct name names[128];
 
 """
+
+LED_LIST = ["Off", "On", "Auto"]
+LIGHT_LIST = ["Purple", "Orange", "Blue"]
+VOX_LIST = ["1", "2", "3", "4", "5", "6", "7", "8"]
+TOT_LIST = ["Off", "30s", "60s", "90s", "120s", "150s", "180s", "210s",
+            "240s", "270s"]
+SCANS_LIST = ["Time", "Carry", "Seek"]
+OPNMSG_LIST = ["Off", "DC", "Message"]
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Low", watts=1),
@@ -145,6 +185,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         rf.has_tuning_step = False
         rf.has_cross = True
         rf.has_rx_dtcs = True
+        rf.has_settings = True
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
@@ -318,3 +359,97 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
         for element in mem.extra:
             setattr(_mem, element.get_name(), element.value)
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+
+        group = RadioSettingGroup("top", "All Settings")
+
+        group.append(
+            RadioSetting("led", "LED Mode",
+                         RadioSettingValueList(LED_LIST,
+                                               LED_LIST[_settings.led])))
+        group.append(
+            RadioSetting("light", "Light Color",
+                         RadioSettingValueList(LIGHT_LIST,
+                                               LIGHT_LIST[_settings.light])))
+
+        group.append(
+            RadioSetting("squelch", "Squelch Level",
+                          RadioSettingValueInteger(0, 9, _settings.squelch)))
+
+        group.append(
+            RadioSetting("vox_level", "VOX Level",
+                         RadioSettingValueList(VOX_LIST,
+                                               VOX_LIST[_settings.vox_level])))
+
+        group.append(
+            RadioSetting("beep", "Beep",
+                         RadioSettingValueBoolean(_settings.beep)))
+
+        group.append(
+            RadioSetting("ani", "ANI",
+                         RadioSettingValueBoolean(_settings.ani)))
+
+        group.append(
+            RadioSetting("dwait", "D.WAIT",
+                         RadioSettingValueBoolean(_settings.dwait)))
+
+        group.append(
+            RadioSetting("tot", "Timeout Timer",
+                         RadioSettingValueList(TOT_LIST,
+                                               TOT_LIST[_settings.tot])))
+
+        group.append(
+            RadioSetting("roger", "Roger Beep",
+                         RadioSettingValueBoolean(_settings.roger)))
+
+        group.append(
+            RadioSetting("dw", "Dual Watch",
+                         RadioSettingValueBoolean(_settings.dw)))
+
+        group.append(
+            RadioSetting("rxsave", "RX Save",
+                         RadioSettingValueBoolean(_settings.rxsave)))
+
+        group.append(
+            RadioSetting("scans", "Scans",
+                         RadioSettingValueList(SCANS_LIST,
+                                               SCANS_LIST[_settings.scans])))
+
+        group.append(
+            RadioSetting("autolk", "Auto Lock",
+                         RadioSettingValueBoolean(_settings.autolk)))
+
+        group.append(
+            RadioSetting("voice", "Voice",
+                         RadioSettingValueBoolean(_settings.voice)))
+
+        group.append(
+            RadioSetting("opnmsg", "Opening Message",
+                         RadioSettingValueList(OPNMSG_LIST,
+                                               OPNMSG_LIST[_settings.opnmsg])))
+
+        group.append(
+            RadioSetting("disnm", "Display Name",
+                         RadioSettingValueBoolean(_settings.disnm)))
+
+        def _filter(name):
+            print repr(str(name))
+            return str(name).rstrip("\xFF").rstrip()
+
+        group.append(
+            RadioSetting("ponmsg", "Power-On Message",
+                         RadioSettingValueString(0, 7,
+                                                 _filter(_settings.ponmsg))))
+        
+        return group
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            setattr(_settings, element.get_name(), element.value)
