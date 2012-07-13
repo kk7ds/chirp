@@ -187,7 +187,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_settings = True
         rf.can_odd_split = True
-        rf.valid_duplexes = ["", "-", "+", "split"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
         rf.valid_bands = [(136000000, 174000000),
@@ -265,6 +265,12 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.tx_freq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
         mem = chirp_common.Memory()
@@ -276,7 +282,10 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         mem.freq = int(_mem.rx_freq) * 10
 
         txfreq = int(_mem.tx_freq) * 10
-        if txfreq == mem.freq:
+        if self._is_txinh(_mem):
+            mem.duplex = "off"
+            mem.offset = 0
+        elif txfreq == mem.freq:
             mem.duplex = ""
         elif abs(txfreq - mem.freq) > 70000000:
             mem.duplex = "split"
@@ -336,7 +345,10 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             _mem.set_raw("\x00" * 16)
 
         _mem.rx_freq = mem.freq / 10
-        if mem.duplex == "split":
+        if mem.duplex == "off":
+            for i in range(0, 4):
+                _mem.tx_freq[i].set_raw("\xFF")
+        elif mem.duplex == "split":
             _mem.tx_freq = mem.offset / 10
         elif mem.duplex == "-":
             _mem.tx_freq = (mem.freq - mem.offset) / 10
