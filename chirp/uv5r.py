@@ -255,7 +255,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS"]
         rf.valid_power_levels = UV5R_POWER_LEVELS
-        rf.valid_duplexes = ["", "-", "+", "split"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_bands = [(136000000, 174000000), (400000000, 512000000)]
         rf.memory_bounds = (0, 127)
@@ -308,16 +308,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        is_txinh = self._is_txinh(_mem)
-        mem.extra = RadioSettingGroup("extra", "Extra Settings")
-        txinh = RadioSetting("txinh", "TX Inhibit",
-                             RadioSettingValueBoolean(is_txinh))
-        mem.extra.append(txinh)
-        
-        if is_txinh:
+        if self._is_txinh(_mem):
+            mem.duplex = "off"
             mem.offset = 0
         elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
+            mem.offset = 0
         elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
             mem.duplex = "split"
             mem.offset = int(_mem.txfreq) * 10
@@ -397,10 +393,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         _mem.rxfreq = mem.freq / 10
 
-        if mem.extra and mem.extra["txinh"].value:
+        if mem.duplex == "off":
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw("\xFF")
-            print repr(_mem.txfreq)
         elif mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
