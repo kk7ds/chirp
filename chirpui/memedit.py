@@ -630,6 +630,7 @@ class MemoryEditor(common.Editor):
         if r == gtk.RESPONSE_OK:
             self.need_refresh = True
             mem = dlg.get_memory()
+            mem.name = self.rthread.radio.filter_name(mem.name)
             job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
             job.set_desc(_("Writing memory {number}").format(number=mem.number))
             self.rthread.submit(job)
