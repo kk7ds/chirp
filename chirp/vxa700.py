@@ -275,7 +275,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         self._memobj.invalid_bits[byte] &= ~bit
 
         _mem.unknown2 = 0x02 # Channels don't display without this
-        _mem.unknown7 = 0x0F # some bit in this field is related to
+        _mem.unknown7 = 0x01 # some bit in this field is related to
         _mem.unknown8 = 0xFF # being able to transmit
 
         if chirp_common.required_step(mem.freq) == 12.5:
