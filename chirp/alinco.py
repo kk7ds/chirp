@@ -58,14 +58,35 @@ RLENGTH = 2 + 5 + 32 + 2
 
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0]
 
+def isascii(data):
+    for byte in data:
+        if (ord(byte) < ord(" ") or ord(byte) > ord("~")) and \
+                byte not in "\r\n":
+            return False
+    return True
+
+def tohex(data):
+    if isascii(data):
+        return repr(data)
+    string = ""
+    for byte in data:
+        string += "%02X" % ord(byte)
+    return string
+
 class AlincoStyleRadio(chirp_common.CloneModeRadio):
     """Base class for all known Alinco radios"""
     _memsize = 0
     _model = "NONE"
 
     def _send(self, data):
+        print "PC->R: (%2i) %s" % (len(data), tohex(data))
         self.pipe.write(data)
         self.pipe.read(len(data))
+
+    def _read(self, length):
+        data = self.pipe.read(length)
+        print "R->PC: (%2i) %s" % (len(data), tohex(data))
+        return data
 
     def _download_chunk(self, addr):
         if addr % 16:
@@ -74,7 +95,11 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
         cmd = "AL~F%04XR\r\n" % addr
         self._send(cmd)
 
-        resp = self.pipe.read(RLENGTH).strip()
+        resp = self._read(RLENGTH).strip()
+        if len(resp) == 0:
+            raise errors.RadioError("No response from radio")
+        if ":" not in resp:
+            raise errors.RadioError("Unexpected response from radio")
         addr, _data = resp.split(":", 1)
         data = ""
         for i in range(0, len(_data), 2):
@@ -103,14 +128,14 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
                 self.status_fn(status)
 
         self._send("AL~E\r\n")
-        self.pipe.read(20)
+        self._read(20)
 
         return memmap.MemoryMap(data)
 
     def _identify(self):
         for _i in range(0, 3):
             self._send("%s\r\n" % self._model)
-            resp = self.pipe.read(6)
+            resp = self._read(6)
             if resp.strip() == "OK":
                 return True
             time.sleep(1)
@@ -143,8 +168,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
                 self.status_fn(status)
 
         self._send("AL~E\r\n")
-        self.pipe.read(20)
-        #print r
+        self.pipe._read(20)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(DRX35_MEM_FORMAT, self._mmap)
