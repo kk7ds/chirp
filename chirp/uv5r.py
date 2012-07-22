@@ -232,6 +232,9 @@ UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
 
 UV5R_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
+UV5R_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
+    "!@#$%^&*()+-=[]:\";'<>?,./"
+
 # Uncomment this to actually register this radio in CHIRP
 @directory.register
 class BaofengUV5R(chirp_common.CloneModeRadio):
@@ -250,6 +253,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_name_length = 7
+        rf.valid_characters = UV5R_CHARSET
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
