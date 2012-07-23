@@ -1165,8 +1165,12 @@ If you think that it is valid, you can select a radio model below to force an op
             module = file(filen)
             code = module.read()
             module.close()
-            exec(code)
+            pyc = compile(code, filen, 'exec')
+            # See this for why:
+            # http://stackoverflow.com/questions/2904274/globals-and-locals-in-python-exec
+            exec(pyc, globals(), globals())
         except Exception, e:
+            common.log_exception()
             common.show_error("Unable to load module: %s" % e)
 
     def mh(self, _action, *args):
