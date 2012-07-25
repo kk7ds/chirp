@@ -56,8 +56,10 @@ class CloneSettingsDialog(gtk.Dialog):
                 port = conf.get("last_port")
             elif ports:
                 port = ports[0]
+            if not port in ports:
+                ports.append(port)
 
-        return miscwidgets.make_choice(ports, True, port)
+        return miscwidgets.make_choice(sorted(ports), True, port)
 
     def __make_model(self):
         return miscwidgets.make_choice([], False)
