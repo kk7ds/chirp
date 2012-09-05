@@ -262,6 +262,13 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         bit = (1 << (memory.number % 8))
 
+        if memory.empty:
+            _usd |= bit
+            self._set_bank(memory.number, None)
+            return
+
+        _usd &= ~bit
+
         _set_freq(_mem, memory.freq, memory.offset)
         _mem.name = memory.name.ljust(12)[:12]
         _mem.rtone = chirp_common.TONES.index(memory.rtone)
