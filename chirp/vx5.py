@@ -89,6 +89,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
                           (800000000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_name_length = 8
+        rf.valid_characters = chirp_common.CHARSET_ASCII
         return rf
 
     def process_mmap(self):
