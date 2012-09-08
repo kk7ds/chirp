@@ -202,7 +202,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                           (894000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_name_length = 8
-        rf.valid_characters = CHARSET_UPPER_NUMERIC + "!\"#$%&'()*+,-./:;<=>?@[\]^"
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + \
+                              "!\"#$%&'()*+,-./:;<=>?@[\]^"
         rf.memory_bounds = (0, 999)
         return rf
 
