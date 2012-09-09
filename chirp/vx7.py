@@ -90,12 +90,13 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     list(".,:;!\"#$%&'()*+-.=<>?@[?]^_\\{|}") + \
     list("\x00" * 100)
 
-POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
-                chirp_common.PowerLevel("L3", watts=2.50),
+POWER_LEVELS = [chirp_common.PowerLevel("L1", watts=0.05),
                 chirp_common.PowerLevel("L2", watts=1.00),
-                chirp_common.PowerLevel("L1", watts=0.05)]
-POWER_LEVELS_220 = [chirp_common.PowerLevel("L2", watts=0.30),
-                    chirp_common.PowerLevel("L1", watts=0.05)]
+                chirp_common.PowerLevel("L3", watts=2.50),
+                chirp_common.PowerLevel("Hi", watts=5.00)
+                ]
+POWER_LEVELS_220 = [chirp_common.PowerLevel("L1", watts=0.05),
+                    chirp_common.PowerLevel("L2", watts=0.30)]
 
 def _is220(freq):
     return freq >= 222000000 and freq <= 225000000
@@ -250,10 +251,11 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
 
-        if mem.freq > 220000000 and mem.freq < 225000000:
-            mem.power = POWER_LEVELS_220[1 - _mem.power]
+        if _is220(mem.freq):
+            levels = POWER_LEVELS_220
         else:
-            mem.power = POWER_LEVELS[3 - _mem.power]
+            levels = POWER_LEVELS
+        mem.power = levels[_mem.power]
 
         for i in _mem.name:
             if i == "\xFF":
