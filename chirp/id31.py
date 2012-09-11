@@ -32,9 +32,7 @@ struct {
   u8 tmode:4,
      duplex:2,
      dtcs_polarity:2;
-  u8 unknown3;
-  u8 unknow10[3];
-  char name[12];
+  char name[16];
   u8 unknow13;
   u8 urcall[7];
   u8 rpt1call[7];
@@ -201,6 +199,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tuning_steps = sorted(list(TUNING_STEPS))
         rf.valid_modes = ["FM", "NFM", "DV"]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_name_length = 16
         return rf
 
     def process_mmap(self):
@@ -270,7 +270,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _usd &= ~bit
 
         _set_freq(_mem, memory.freq, memory.offset)
-        _mem.name = memory.name.ljust(12)[:12]
+        _mem.name = memory.name.ljust(16)[:16]
         _mem.rtone = chirp_common.TONES.index(memory.rtone)
         _mem.ctone = chirp_common.TONES.index(memory.ctone)
         _mem.tmode = TMODES.index(memory.tmode)
