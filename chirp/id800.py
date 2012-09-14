@@ -215,6 +215,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_implicit_calls = True
+        rf.has_settings = True
         rf.has_bank = True
         rf.valid_modes = list(MODES)
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]

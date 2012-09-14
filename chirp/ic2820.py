@@ -165,6 +165,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_bank_index = True
         rf.has_bank_names = True
         rf.requires_call_lists = False

@@ -157,6 +157,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_special_chans = sorted(_get_special().keys())
+        rf.has_settings = True
 
         return rf
 

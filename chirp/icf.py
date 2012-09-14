@@ -17,6 +17,8 @@ import struct
 import re
 
 from chirp import chirp_common, errors, util, memmap
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueBoolean
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN  = 0xE3
@@ -603,6 +605,12 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         no bank if None"""
         raise Exception("Not implemented")
 
+    def get_settings(self):
+        return make_speed_switch_setting(self)
+
+    def set_settings(self, settings):
+        return honor_speed_switch_setting(self, settings)
+
 class IcomLiveRadio(chirp_common.LiveRadio):
     """Base class for an Icom Live-mode radio"""
     VENDOR = "Icom"
@@ -621,3 +629,20 @@ class IcomLiveRadio(chirp_common.LiveRadio):
                 return IcomBankModel(self)
         else:
             return None
+
+def make_speed_switch_setting(radio):
+    if not radio.__class__._can_hispeed:
+        return []
+    drvopts = RadioSettingGroup("drvopts", "Driver Options")
+    rs = RadioSetting("drv_clone_speed", "Use Hi-Speed Clone",
+                      RadioSettingValueBoolean(radio._can_hispeed))
+    drvopts.append(rs)
+    return drvopts
+
+def honor_speed_switch_setting(radio, settings):
+    for element in settings:
+        if element.get_name() == "drvopts":
+            return honor_speed_switch_setting(radio, settings)
+        if element.get_name() == "drv_clone_speed":
+            radio.__class__._can_hispeed = element.value.get_value()
+            return

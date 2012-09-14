@@ -217,6 +217,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.requires_call_lists = False
+        rf.has_settings = True
         rf.has_bank = True
         rf.has_bank_index = True
         rf.has_bank_names = True

@@ -192,6 +192,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 499)
         rf.valid_bands = [(400000000, 479000000)]
+        rf.has_settings = True
         rf.has_ctone = True
         rf.has_bank_index = True
         rf.has_bank_names = True
