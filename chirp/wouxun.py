@@ -376,6 +376,12 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                 break
             mem.name += CHARSET[i]
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+        bcl = RadioSetting("BCL", "bcl",
+                           RadioSettingValueBoolean(bool(_mem.bcl)))
+        bcl.set_doc("Busy Channel Lockout")
+        mem.extra.append(bcl)
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -445,15 +451,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         else:
             _mem.power_high = True
 
-        # Default to disabling the busy channel lockout
-        _mem.bcl = 0
-
         _nam.name = [0xFF] * 6
         for i in range(0, len(mem.name)):
             try:
                 _nam.name[i] = CHARSET.index(mem.name[i])
             except IndexError:
                 raise Exception("Character `%s' not supported")
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_shortname(), setting.value)
 
     @classmethod
     def match_model(cls, filedata, filename):
