@@ -55,6 +55,7 @@ if manual_language and manual_language != "Auto":
                    "Polish"  : "pl",
                    "Italian" : "it",
                    "Dutch"   : "nl",
+                   "German"  : "de",
                    }
     try:
         langs = [lang_codes[manual_language]]
