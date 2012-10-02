@@ -237,13 +237,23 @@ UV5R_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
 
 # Uncomment this to actually register this radio in CHIRP
 @directory.register
-class BaofengUV5R(chirp_common.CloneModeRadio):
+class BaofengUV5R(chirp_common.CloneModeRadio,
+                  chirp_common.ExperimentalRadio):
     """Baofeng UV-5R"""
     VENDOR = "Baofeng"
     MODEL = "UV-5R"
     BAUD_RATE = 9600
 
     _memsize = 0x1808
+
+    @classmethod
+    def get_experimental_warning(cls):
+        return ('Due to the fact that the manufacturer continues to '
+                'release new versions of the firmware with obscure and '
+                'hard-to-track changes, this driver may not work with '
+                'your device. Thus far and to the best knowledge of the '
+                'author, no UV-5R radios have been harmed by using CHIRP. '
+                'However, proceed at your own risk!')
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

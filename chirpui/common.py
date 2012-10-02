@@ -279,25 +279,63 @@ def combo_select(box, value):
 
     return False
 
-def show_error_text(msg, text, parent=None):
-    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent,
-                          type=gtk.MESSAGE_ERROR)
-    d.set_property("text", msg)
-
+def _add_text(d, text):
     v = gtk.TextView()
     v.get_buffer().set_text(text)
+    v.set_editable(False)
+    v.set_cursor_visible(False)
     v.show()
     sw = gtk.ScrolledWindow()
     sw.add(v)
     sw.show()
     d.vbox.pack_start(sw, 1,1,1)
+    return v
 
+def show_error_text(msg, text, parent=None):
+    d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent,
+                          type=gtk.MESSAGE_ERROR)
+    d.set_property("text", msg)
+
+    _add_text(d, text)
     if not parent:
         d.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 
     d.set_size_request(600, 400)
     d.run()
     d.destroy()
+
+def show_warning(msg, text,
+                 parent=None, buttons=None, title="Warning",
+                 can_squelch=False):
+    if buttons is None:
+        buttons = gtk.BUTTONS_OK
+    d = gtk.MessageDialog(buttons=buttons,
+                          parent=parent,
+                          type=gtk.MESSAGE_WARNING)
+    d.set_title(title)
+    d.set_property("text", msg)
+    l = gtk.Label(_("Details") + ":")
+    l.show()
+    d.vbox.pack_start(l, 0, 0, 0)
+    l = gtk.Label(_("Proceed?"))
+    l.show()
+    d.get_action_area().pack_start(l, 0, 0, 0)
+    d.get_action_area().reorder_child(l, 0)
+    textview = _add_text(d, text)
+    textview.set_wrap_mode(gtk.WRAP_WORD)
+    if not parent:
+        d.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+    if can_squelch:
+        cb = gtk.CheckButton(_("Do not show this next time"))
+        cb.show()
+        d.vbox.pack_start(cb, 0, 0, 0)
+
+    d.set_size_request(600, 400)
+    r = d.run()
+    d.destroy()
+    if can_squelch:
+        return r, cb.get_active()
+    return r
 
 def simple_diff(a, b):
     lines_a = a.split(os.linesep)

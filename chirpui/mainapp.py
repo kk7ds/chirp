@@ -567,6 +567,24 @@ If you think that it is valid, you can select a radio model below to force an op
             _do_import_action(config)
             _do_open_action(config)
 
+    def _confirm_experimental(self, rclass):
+        sql_key = "warn_experimental_%s" % directory.radio_class_id(rclass)
+        if CONF.is_defined(sql_key, "state") and \
+                not CONF.get_bool(sql_key, "state"):
+            return True
+
+        title = _("Proceed with experimental driver?")
+        text = rclass.get_experimental_warning()
+        msg = _("This radio's driver is experimental. "
+                "Do you want to proceed?")
+        resp, squelch = common.show_warning(msg, text,
+                                            title=title,
+                                            buttons=gtk.BUTTONS_YES_NO,
+                                            can_squelch=True)
+        if resp == gtk.RESPONSE_YES:
+            CONF.set_bool(sql_key, not squelch, "state")
+        return resp == gtk.RESPONSE_YES
+
     def do_download(self, port=None, rtype=None):
         d = clone.CloneSettingsDialog(parent=self)
         settings = d.run()
@@ -574,14 +592,20 @@ If you think that it is valid, you can select a radio model below to force an op
         if not settings:
             return
 
-        print "User selected %s %s on port %s" % (settings.radio_class.VENDOR,
-                                                  settings.radio_class.MODEL,
+        rclass = settings.radio_class
+        if issubclass(rclass, chirp_common.ExperimentalRadio) and \
+                not self._confirm_experimental(rclass):
+            # User does not want to proceed with experimental driver
+            return
+
+        print "User selected %s %s on port %s" % (rclass.VENDOR,
+                                                  rclass.MODEL,
                                                   settings.port)
 
         try:
             ser = serial.Serial(port=settings.port,
-                                baudrate=settings.radio_class.BAUD_RATE,
-                                rtscts=settings.radio_class.HARDWARE_FLOW,
+                                baudrate=rclass.BAUD_RATE,
+                                rtscts=rclass.HARDWARE_FLOW,
                                 timeout=0.25)
             ser.flushInput()
         except serial.SerialException, e:
@@ -610,6 +634,11 @@ If you think that it is valid, you can select a radio model below to force an op
         settings = d.run()
         d.destroy()
         if not settings:
+            return
+
+        if isinstance(radio, chirp_common.ExperimentalRadio) and \
+                not self._confirm_experimental(radio.__class__):
+            # User does not want to proceed with experimental driver
             return
 
         try:

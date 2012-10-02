@@ -1112,6 +1112,13 @@ class IcomDstarSupport:
         """Set the MYCALL callsign list"""
         pass
 
+class ExperimentalRadio:
+    """Interface for experimental radios"""
+    @classmethod
+    def get_experimental_warning(cls):
+        return ("This radio's driver is marked as experimental and may " +
+                "be unstable or unsafe to use.")
+
 class Status:
     """Clone status object for conveying clone progress to the UI"""
     name = "Job"
