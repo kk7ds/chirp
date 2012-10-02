@@ -151,6 +151,14 @@ def _do_ident(radio):
     ident = serial.read(8)
 
     print "Ident:\n%s" % util.hexprint(ident)
+    if ident[1:4] != "BFB":
+        raise errors.RadioError("Radio reported unknown vendor")
+    try:
+        ver = int(ident[4:7])
+        if ver >= 291:
+            raise errors.RadioError("Radio version %i not supported" % ver)
+    except ValueError:
+        raise errors.RadioError("Radio reported invalid version string")
 
     serial.write("\x06")
     ack = serial.read(1)
