@@ -149,10 +149,10 @@ def validate_291(ident):
     if ident[4:7] != "\x30\x04\x50":
         raise errors.RadioError("Radio version not supported")
 
-UV5R_MODEL_ORIG = (('BFB',),
+UV5R_MODEL_ORIG = (lambda x: x == 'BFB',
                    "\x50\xBB\xFF\x01\x25\x98\x4D",
                    validate_orig)
-UV5R_MODEL_291 =  (('DH\x04', '\x00\x04\x79'),
+UV5R_MODEL_291 =  (lambda x: "\x04" in x,
                    "\x50\xBB\xFF\x20\x12\x07\x25",
                    validate_291)
 IDENTS = [UV5R_MODEL_ORIG,
@@ -162,12 +162,12 @@ IDENTS = [UV5R_MODEL_ORIG,
 def _ident_from_image(radio):
     vendor = radio.get_mmap()[1:4]
     ident = radio.get_mmap()[0:8]
-    for vendors, magic, validate in IDENTS:
-        if vendor not in vendors:
+    for vendorfn, magic, validate in IDENTS:
+        if not vendorfn(vendor):
             continue
         try:
             validate(ident)
-            return vendors, magic, validate
+            return vendorfn, magic, validate
         except errors.RadioError:
             pass
     raise errors.RadioError("This image is from an unsupported radio model")
@@ -176,7 +176,7 @@ def _do_ident(radio, model):
     serial = radio.pipe
     serial.setTimeout(1)
 
-    vendors, magic, validate = model
+    vendor, magic, validate = model
 
     print "Sending Magic: %s" % util.hexprint(magic)
     serial.write(magic)
@@ -191,7 +191,7 @@ def _do_ident(radio, model):
     ident = serial.read(8)
 
     print "Ident:\n%s" % util.hexprint(ident)
-    if ident[1:4] not in vendors:
+    if not vendor(ident[1:4]):
         print "Vendor is %s, expected %s" % (repr(ident[1:4]), vendors)
         raise errors.RadioError("Radio reported unknown vendor")
     else:
@@ -319,7 +319,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        #rf.has_settings = True
+        rf.has_settings = True
         rf.has_bank = False
         rf.has_cross = True
         rf.has_tuning_step = False
@@ -526,7 +526,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.wide = mem.mode == "FM"
         _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
 
-    def _get_settings(self):
+    def get_settings(self):
+        if _ident_from_image(self) != UV5R_MODEL_ORIG:
+            return []
+
         _settings = self._memobj.settings[0]
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
