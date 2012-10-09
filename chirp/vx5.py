@@ -119,7 +119,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
         mem.duplex = DUPLEX[_mem.duplex]
-        mem.name = str(_mem.name).rstrip()
+        mem.name = self.filter_name(str(_mem.name).rstrip())
         mem.mode = MODES[_mem.mode]
         if mem.mode == "FM" and _mem.half_deviation:
             mem.mode = "NFM"
@@ -180,9 +180,6 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
 
         _flg.skip = mem.skip == "S"
         _flg.pskip = mem.skip == "P"
-
-    def filter_name(self, name):
-        return chirp_common.name8(name)
 
     @classmethod
     def match_model(cls, filedata, filename):
