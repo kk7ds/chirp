@@ -23,8 +23,8 @@ MEM_FORMAT = """
 #seekto 0x04C8;
 struct {
   u8 used:1,
-     unknown1:2,
-     mode_am:1,
+     unknown1:1,
+     mode:2,
      unknown2:1,
      duplex:3;
   bbcd freq[3];
@@ -68,6 +68,7 @@ struct {
 u8 checksum;
 """
 
+MODES = ["FM", "AM", "NFM"]
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "", "-", "+", "split"]
 STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
@@ -185,7 +186,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
-        rf.valid_modes = ["FM", "AM"]
+        rf.valid_modes = MODES
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tuning_steps = STEPS
@@ -285,7 +286,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
-        mem.mode = _mem.mode_am and "AM" or "FM"
+        mem.mode = MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         if self.get_features().has_tuning_step:
             mem.tuning_step = STEPS[_mem.tune_step]
@@ -312,7 +313,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         set_freq(mem.freq, _mem, "freq")
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.mode_am = mem.mode == "AM" and 1 or 0
+        _mem.mode = MODES.index(mem.mode)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         if self.get_features().has_tuning_step:
             _mem.tune_step = STEPS.index(mem.tuning_step)
@@ -406,8 +407,8 @@ MEM_FORMAT_8800 = """
 #seekto %s;
 struct {
   u8 used:1,
-     unknown1:2,
-     mode_am:1,
+     unknown1:1,
+     mode:2,
      unknown2:1,
      duplex:3;
   bbcd freq[3];
@@ -525,8 +526,7 @@ struct {
      unknown2:1,
      duplex:3;
   bbcd freq[3];
-  u8 mode_am:1,
-     is_fm_narrow:1,
+  u8 mode:2,
      nameused:1,
      unknown4:1,
      power:2,
@@ -566,7 +566,7 @@ class FT8900Radio(FT8800Radio):
     def get_features(self):
         rf = FT8800Radio.get_features(self)
         rf.has_sub_devices = False
-        rf.valid_modes = ["FM", "NFM", "AM"]
+        rf.valid_modes = MODES
         rf.valid_bands = [( 28000000,  29700000),
                           ( 50000000,  54000000),
                           (108000000, 180000000),
@@ -590,9 +590,6 @@ class FT8900Radio(FT8800Radio):
         mem = FT8800Radio.get_memory(self, number)
 
         _mem = self._memobj.memory[number - 1]
-        if mem.mode == "FM":
-            if _mem.is_fm_narrow == 1:
-                mem.mode = "NFM"
 
         return mem
 
@@ -606,6 +603,4 @@ class FT8900Radio(FT8800Radio):
             _mem.sub_used = 0
         else:
             _mem.sub_used = 1
-
-        _mem.is_fm_narrow = mem.mode[0] == "N"
 
