@@ -466,9 +466,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and \
                 filedata[0x60:0x64] != "2009" and \
-                filedata[0xf00:0xf05] != "KGUV6":
-                    # TODO Must find an == test to avoid
-                    # collision with future supported radios
+                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff": # that area is (seems to be) unused
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
@@ -478,7 +476,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
 @directory.register
 class KGUV6DRadio(KGUVD1PRadio):
-    MODEL = "KG-UV6D"
+    MODEL = "KG-UV6"
 
     def get_features(self):
         rf = KGUVD1PRadio.get_features(self)
@@ -535,26 +533,9 @@ class KGUV6DRadio(KGUVD1PRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         if len(filedata) == 8192 and \
-                filedata[0xf00:0xf06] == "KGUV6D":
+                filedata[0x1f77:0x1f7d] == "WELCOM":
             return True
         return False
-
-@directory.register
-class KGUV6XRadio(KGUV6DRadio):
-    MODEL = "KG-UV6X"
-
-    def get_features(self):
-        rf = KGUV6DRadio.get_features(self)
-        rf.valid_bands = [(136000000, 175000000), (375000000, 512000000)]
-        return rf
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        if len(filedata) == 8192 and \
-                filedata[0xf00:0xf06] == "KGUV6X":
-            return True
-        return False
-
 
 def _puxing_prep(radio):
     radio.pipe.write("\x02PROGRA")
