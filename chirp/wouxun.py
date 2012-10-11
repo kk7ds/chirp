@@ -18,7 +18,8 @@ import time
 import os
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-                RadioSettingValueBoolean, RadioSettingValueList
+                RadioSettingValueBoolean, RadioSettingValueList, \
+                RadioSettingValueInteger
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -27,6 +28,31 @@ else:
 
 def wipe_memory(_mem, byte):
     _mem.set_raw(byte * (_mem.size() / 8))
+    
+FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
+ 
+# writing bad frequency ranges on the radio can brick it
+# the encode function here has not been tested 
+# it has been included for documentation purpouse only as I never call it
+# you have been warned, use at your own risk   
+def encode_freq(freq):
+    enc = 0
+    div = 1000
+    for i in range(0, 4):
+        enc <<= 8
+        enc |= FREQ_ENCODE_TABLE[ (freq/div) % 10 ]
+        div /= 10
+    return enc
+
+def decode_freq(bytes):
+    freq = 0
+    shift = 12
+    for i in range(0, 4):
+        freq *= 10
+        freq += FREQ_ENCODE_TABLE.index( (bytes>>shift) & 0xf )
+        shift -= 4
+        # print "bytes %04x freq %d shift %d" % (bytes, freq, shift)
+    return freq
 
 @directory.register
 class KGUVD1PRadio(chirp_common.CloneModeRadio):
@@ -61,6 +87,18 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
              _2_unknown_2:4;
           u8 unknown[2];
         } memory[199];
+        
+        #seekto 0x0970;
+        struct {
+            u16 vhf_rx_start;
+            u16 vhf_rx_stop;
+            u16 uhf_rx_start;
+            u16 uhf_rx_stop;
+            u16 vhf_tx_start;
+            u16 vhf_tx_stop;
+            u16 uhf_tx_start;
+            u16 uhf_tx_stop;
+        } freq_ranges;
 
         #seekto 0x0E5C;
         struct {
@@ -227,19 +265,55 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         return rf
 
     def get_settings(self):
-        group = RadioSettingGroup("top", "All Settings")
+        freqranges = RadioSettingGroup("freqranges", "Freq ranges (read only)")
+        top = RadioSettingGroup("top", "All Settings", freqranges)
 
         rs = RadioSetting("menu_available", "Menu Available",
                           RadioSettingValueBoolean(self._memobj.settings.menu_available))
-        group.append(rs)
+        top.append(rs)
 
-        return group
+        rs = RadioSetting("vhf_rx_start", "vhf rx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_start", "uhf rx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_start", "vhf tx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_stop", "vhf tx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_tx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_start", "uhf tx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_tx_stop)))
+        freqranges.append(rs)
+
+        return top
 
     def set_settings(self, settings):
         for element in settings:
             if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
+                if element.get_shortname() != "freqranges" :
+                    # frequency ranges are read only
+                    self.set_settings(element)
+                    continue
             try:
                 setattr(self._memobj.settings, element.get_name(), element.value)
             except Exception, e:
@@ -474,6 +548,18 @@ class KGUV6DRadio(KGUVD1PRadio):
              menu_available:1;
         } settings;
 
+        #seekto 0x0ff0;
+        struct {
+            u16 vhf_rx_start;
+            u16 vhf_rx_stop;
+            u16 uhf_rx_start;
+            u16 uhf_rx_stop;
+            u16 vhf_tx_start;
+            u16 vhf_tx_stop;
+            u16 uhf_tx_start;
+            u16 uhf_tx_stop;
+        } freq_ranges;
+
         #seekto 0x1008;
         struct {
           u8 unknown[8];
@@ -490,32 +576,65 @@ class KGUV6DRadio(KGUVD1PRadio):
         return rf
 
     def get_settings(self):
-        group = RadioSettingGroup("top", "All Settings")
+        freqranges = RadioSettingGroup("freqranges", "Freq ranges (read only)")
+        top = RadioSettingGroup("top", "All Settings", freqranges)
 
         rs = RadioSetting("menu_available", "Menu Available",
                           RadioSettingValueBoolean(self._memobj.settings.menu_available))
-        group.append(rs)
+        top.append(rs)
         rs = RadioSetting("beep", "Beep",
                           RadioSettingValueBoolean(self._memobj.settings.beep))
-        group.append(rs)
+        top.append(rs)
         options = ["Off", "Welcome", "V bat"]
         rs = RadioSetting("ponmsg", "PONMSG",
                           RadioSettingValueList(options,
                                             options[self._memobj.settings.ponmsg]))
-        group.append(rs)
+        top.append(rs)
         options = ["Off", "Chinese", "English"]
         rs = RadioSetting("voice", "Voice",
                           RadioSettingValueList(options,
                                             options[self._memobj.settings.voice]))
-        group.append(rs)
+        top.append(rs)
         options = ["CH A", "CH B"]
         rs = RadioSetting("sos_ch", "SOS CH",
                           RadioSettingValueList(options,
                                             options[self._memobj.settings.sos_ch]))
-        group.append(rs)
+        top.append(rs)
 
+        rs = RadioSetting("vhf_rx_start", "vhf rx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_start", "uhf rx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_start", "vhf tx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_stop", "vhf_tx_stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.vhf_tx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_start", "uhf tx start",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
+                          RadioSettingValueInteger(0, 700, 
+                                decode_freq(self._memobj.freq_ranges.uhf_tx_stop)))
+        freqranges.append(rs)
 
-        return group
+        return top
 
     def set_settings(self, settings):
         for element in settings:
