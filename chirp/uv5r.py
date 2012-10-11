@@ -152,7 +152,7 @@ def validate_291(ident):
 UV5R_MODEL_ORIG = (lambda x: x == 'BFB',
                    "\x50\xBB\xFF\x01\x25\x98\x4D",
                    validate_orig)
-UV5R_MODEL_291 =  (lambda x: "\x04" in x,
+UV5R_MODEL_291 =  (lambda x: True,
                    "\x50\xBB\xFF\x20\x12\x07\x25",
                    validate_291)
 IDENTS = [UV5R_MODEL_ORIG,
