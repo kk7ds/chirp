@@ -13,12 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
+"""Baofeng UV3r radio management module"""
+
 import time
 import os
-from chirp import util, chirp_common, bitwise, memmap, errors, directory
-from chirp.settings import RadioSetting, RadioSettingGroup, \
-                RadioSettingValueBoolean, RadioSettingValueList
+from chirp import util, chirp_common, bitwise, errors, directory
+from chirp.wouxun_common import do_download, do_upload
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True

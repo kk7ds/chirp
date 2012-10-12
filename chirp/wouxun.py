@@ -13,22 +13,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
+"""Wouxun radios management module"""
+
 import time
 import os
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger
+from chirp.wouxun_common import wipe_memory, do_download, do_upload
 
-if os.getenv("CHIRP_DEBUG"):
-    DEBUG = True
-else:
-    DEBUG = False
-
-def wipe_memory(_mem, byte):
-    _mem.set_raw(byte * (_mem.size() / 8))
-    
 FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
  
 # writing bad frequency ranges on the radio can brick it
@@ -36,6 +30,7 @@ FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
 # it has been included for documentation purpouse only as I never call it
 # you have been warned, use at your own risk   
 def encode_freq(freq):
+    """Convert frequency (4 decimal digits) to wouxun format (2 bytes)"""
     enc = 0
     div = 1000
     for i in range(0, 4):
@@ -45,6 +40,7 @@ def encode_freq(freq):
     return enc
 
 def decode_freq(data):
+    """Convert from wouxun format (2 bytes) to frequency (4 decimal digits)"""
     freq = 0
     shift = 12
     for i in range(0, 4):
@@ -127,7 +123,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                 time.sleep(1)
                 continue
             if resp[2:8] != self._model:
-                raise Exception("I can't talk to this model (%s)" % util.hexprint(resp))
+                raise Exception("I can't talk to this model (%s)" % 
+                    util.hexprint(resp))
             return
         if len(resp) == 0:
             raise Exception("Radio not responding")
@@ -141,65 +138,12 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         ack = self.pipe.read(1)
         if ack != "\x06":
             raise Exception("Radio refused transfer mode")    
-
-    def _do_download(self, start, end, blocksize):
-        """Initiate a download of @radio between @start and @end"""
-        image = ""
-        for i in range(start, end, blocksize):
-            cmd = struct.pack(">cHb", "R", i, blocksize)
-            if DEBUG:
-                print util.hexprint(cmd)
-            self.pipe.write(cmd)
-            length = len(cmd) + blocksize
-            resp = self.pipe.read(length)
-            if len(resp) != (len(cmd) + blocksize):
-                print util.hexprint(resp)
-                raise Exception("Failed to read full block (%i!=%i)" % \
-                                    (len(resp),
-                                     len(cmd) + blocksize))
-            
-            self.pipe.write("\x06")
-            self.pipe.read(1)
-            image += resp[4:]
-
-            if self.status_fn:
-                status = chirp_common.Status()           
-                status.cur = i
-                status.max = end
-                status.msg = "Cloning from radio"
-                self.status_fn(status)
-        
-        return memmap.MemoryMap(image)
-
-    def _do_upload(self, start, end, blocksize):
-        """Initiate an upload of @radio between @start and @end"""
-        ptr = start
-        for i in range(start, end, blocksize):
-            cmd = struct.pack(">cHb", "W", i, blocksize)
-            chunk = self.get_mmap()[ptr:ptr+blocksize]
-            ptr += blocksize
-            self.pipe.write(cmd + chunk)
-            if DEBUG:
-                print util.hexprint(cmd + chunk)
-
-            ack = self.pipe.read(1)
-            if not ack == "\x06":
-                raise Exception("Radio did not ack block %i" % ptr)
-            #radio.pipe.write(ack)
-
-            if self.status_fn:
-                status = chirp_common.Status()
-                status.cur = i
-                status.max = end
-                status.msg = "Cloning to radio"
-                self.status_fn(status)
-
     def _download(self):
         """Talk to an original wouxun and do a download"""
         try:
             self._identify()
             self._start_transfer()
-            return self._do_download(0x0000, 0x2000, 0x0040)
+            return do_download(self, 0x0000, 0x2000, 0x0040)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -210,7 +154,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         try:
             self._identify()
             self._start_transfer()
-            return self._do_upload(0x0000, 0x2000, 0x0010)
+            return do_upload(self, 0x0000, 0x2000, 0x0010)
         except errors.RadioError:
             raise
         except Exception, e:
@@ -271,47 +215,57 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         top = RadioSettingGroup("top", "All Settings", freqranges)
 
         rs = RadioSetting("menu_available", "Menu Available",
-                          RadioSettingValueBoolean(self._memobj.settings.menu_available))
+                          RadioSettingValueBoolean(
+                            self._memobj.settings.menu_available))
         top.append(rs)
 
         rs = RadioSetting("vhf_rx_start", "vhf rx start",
                           RadioSettingValueInteger(136, 174, 
-                                decode_freq(self._memobj.freq_ranges.vhf_rx_start)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_rx_start)))
         freqranges.append(rs)
         rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
                           RadioSettingValueInteger(136, 174, 
-                                decode_freq(self._memobj.freq_ranges.vhf_rx_stop)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_rx_stop)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_rx_start", "uhf rx start",
                           RadioSettingValueInteger(216, 520, 
-                                decode_freq(self._memobj.freq_ranges.uhf_rx_start)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_rx_start)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
                           RadioSettingValueInteger(216, 520, 
-                                decode_freq(self._memobj.freq_ranges.uhf_rx_stop)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_rx_stop)))
         freqranges.append(rs)
         rs = RadioSetting("vhf_tx_start", "vhf tx start",
                           RadioSettingValueInteger(136, 174, 
-                                decode_freq(self._memobj.freq_ranges.vhf_tx_start)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_tx_start)))
         freqranges.append(rs)
         rs = RadioSetting("vhf_tx_stop", "vhf tx stop",
                           RadioSettingValueInteger(136, 174, 
-                                decode_freq(self._memobj.freq_ranges.vhf_tx_stop)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_tx_stop)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_tx_start", "uhf tx start",
                           RadioSettingValueInteger(216, 520, 
-                                decode_freq(self._memobj.freq_ranges.uhf_tx_start)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_tx_start)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
                           RadioSettingValueInteger(216, 520, 
-                                decode_freq(self._memobj.freq_ranges.uhf_tx_stop)))
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_tx_stop)))
         freqranges.append(rs)
         
         # tell the decoded ranges to UI
-        self.valid_freq = [(decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
-                        (decode_freq(self._memobj.freq_ranges.vhf_rx_stop) + 1) * 1000000), 
-                        (decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
-                         (decode_freq(self._memobj.freq_ranges.uhf_rx_stop) + 1) * 1000000)]
+        self.valid_freq = [
+            ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
+             (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000), 
+            ( decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
+             (decode_freq(self._memobj.freq_ranges.uhf_rx_stop)+1) * 1000000)]
 
         return top
 
@@ -323,7 +277,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                     self.set_settings(element)
                     continue
             try:
-                setattr(self._memobj.settings, element.get_name(), element.value)
+                setattr(self._memobj.settings,
+                        element.get_name(),
+                        element.value)
             except Exception, e:
                 print element.get_name()
                 raise
@@ -372,7 +328,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         if mem.tmode == "DTCS":
             mem.dtcs_polarity = "%s%s" % (tpol, rpol)
 
-        if DEBUG:
+        if os.getenv("CHIRP_DEBUG"):
             print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
                                                  rxmode, _mem.rx_tone)
 
@@ -442,7 +398,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
         if tx_mode == "DTCS":
             _mem.tx_tone = mem.tmode != "DTCS" and \
-                _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
+                _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or \
+                _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
         elif tx_mode:
             _mem.tx_tone = tx_mode == "Tone" and \
                 int(mem.rtone * 10) or int(mem.ctone * 10)
@@ -456,7 +413,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         else:
             _mem.rx_tone = 0xFFFF
 
-        if DEBUG:
+        if os.getenv("CHIRP_DEBUG"):
             print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
                                                  rx_mode, _mem.rx_tone)
 
@@ -506,7 +463,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and \
                 filedata[0x60:0x64] != "2009" and \
-                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff": # that area is (seems to be) unused
+                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff": 
+                # that area is (seems to be) unused
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
@@ -516,6 +474,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
 
 @directory.register
 class KGUV6DRadio(KGUVD1PRadio):
+    """Wouxun KG-UV6 (D and X variants)"""
     MODEL = "KG-UV6"
     
     _querymodel = "HiWXUVD1\x02"
@@ -592,17 +551,17 @@ class KGUV6DRadio(KGUVD1PRadio):
         options = ["Off", "Welcome", "V bat"]
         rs = RadioSetting("ponmsg", "PONMSG",
                           RadioSettingValueList(options,
-                                            options[self._memobj.settings.ponmsg]))
+                                        options[self._memobj.settings.ponmsg]))
         top.append(rs)
         options = ["Off", "Chinese", "English"]
         rs = RadioSetting("voice", "Voice",
                           RadioSettingValueList(options,
-                                            options[self._memobj.settings.voice]))
+                                        options[self._memobj.settings.voice]))
         top.append(rs)
         options = ["CH A", "CH B"]
         rs = RadioSetting("sos_ch", "SOS CH",
                           RadioSettingValueList(options,
-                                            options[self._memobj.settings.sos_ch]))
+                                        options[self._memobj.settings.sos_ch]))
         top.append(rs)
 
         return top

@@ -13,12 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
-import time
+"""TYT uv3r radio management module"""
+
 import os
-from chirp import util, chirp_common, bitwise, memmap, errors, directory
-from chirp.settings import RadioSetting, RadioSettingGroup, \
-                RadioSettingValueBoolean, RadioSettingValueList
+from chirp import chirp_common, bitwise, errors, directory
+from chirp.wouxun_common import do_download, do_upload
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -207,7 +206,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
 
         mult = _mem.is625 and 6250 or 5000
         mem.freq = _mem.freq * mult
-        mem.offset = _mem.offset * 5000;
+        mem.offset = _mem.offset * 5000
         mem.duplex = THUV3R_DUPLEX[_mem.duplex]
         mem.mode = _mem.iswide and "FM" or "NFM"
         self._decode_tone(mem, _mem)
