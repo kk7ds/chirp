@@ -463,8 +463,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and \
                 filedata[0x60:0x64] != "2009" and \
-                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff": 
-                # that area is (seems to be) unused
+                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
+                filedata[0x0d70:0x0d80] == "\xff\xff\xff\xff\xff\xff\xff\xff" \
+                                           "\xff\xff\xff\xff\xff\xff\xff\xff": 
+                # those areas are (seems to be) unused
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
@@ -572,3 +574,123 @@ class KGUV6DRadio(KGUVD1PRadio):
                 filedata[0x1f77:0x1f7d] == "WELCOM":
             return True
         return False
+
+@directory.register
+class KG816Radio(KGUVD1PRadio,
+        chirp_common.ExperimentalRadio):
+    """Wouxun KG816"""
+    MODEL = "KG816"
+
+    _MEM_FORMAT = """
+        #seekto 0x0010;
+        struct {
+          lbcd rx_freq[4];
+          lbcd tx_freq[4];
+          ul16 rx_tone;
+          ul16 tx_tone;
+          u8 _3_unknown_1:4,
+             bcl:1,
+             _3_unknown_2:3;
+          u8 splitdup:1,
+             skip:1,
+             power_high:1,
+             iswide:1,
+             _2_unknown_2:4;
+          u8 unknown[2];
+        } memory[199];
+        
+        #seekto 0x0d70;
+        struct {
+            u16 vhf_rx_start;
+            u16 vhf_rx_stop;
+            u16 uhf_rx_start;
+            u16 uhf_rx_stop;
+            u16 vhf_tx_start;
+            u16 vhf_tx_stop;
+            u16 uhf_tx_start;
+            u16 uhf_tx_stop;
+        } freq_ranges;
+
+        #seekto 0x1008;
+        struct {
+          u8 unknown[8];
+          u8 name[6];
+          u8 pad[2];
+        } names[199];
+    """
+
+    @classmethod
+    def get_experimental_warning(cls):
+        return ('We have not that much information on this model '
+                'up to now we only know it has the same memory '
+                'organization of KGUVD1 but uses 199 memories. '
+                'it has been reported to work but '
+                'proceed at your own risk!')
+    
+    def get_features(self):
+        rf = KGUVD1PRadio.get_features(self)
+        rf.memory_bounds = (1, 199) # this is the only known difference
+        return rf
+
+    def get_settings(self):
+        freqranges = RadioSettingGroup("freqranges", "Freq ranges (read only)")
+        top = RadioSettingGroup("top", "All Settings", freqranges)
+
+        rs = RadioSetting("vhf_rx_start", "vhf rx start",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_start", "uhf rx start",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_start", "vhf tx start",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_stop", "vhf tx stop",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_tx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_start", "uhf tx start",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
+                          RadioSettingValueInteger(136, 520, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_tx_stop)))
+        freqranges.append(rs)
+        
+        # tell the decoded ranges to UI
+        self.valid_freq = [
+            ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
+             (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000)]
+
+        return top
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if len(filedata) == 8192 and \
+                filedata[0x60:0x64] != "2009" and \
+                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
+                filedata[0x0d70:0x0d80] != "\xff\xff\xff\xff\xff\xff\xff\xff" \
+                                           "\xff\xff\xff\xff\xff\xff\xff\xff": 
+            return True
+        return False
+
