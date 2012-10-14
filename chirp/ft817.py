@@ -474,9 +474,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             if wasvalid and not wasused:
                 self._memobj.filled[(mem.number-1) / 8] &= \
                     ~(1 << (mem.number - 1) % 8)
+                _mem.set_raw("\xFF" * (_mem.size() / 8)) # clean up
             self._memobj.visible[(mem.number-1) / 8] &= \
                 ~(1 << (mem.number - 1) % 8)
             return
+        if not wasvalid:
+            _mem.set_raw("\x00" * (_mem.size() / 8)) # clean up
         
         self._memobj.visible[(mem.number - 1) / 8] |= 1 << (mem.number - 1) % 8
         self._memobj.filled[(mem.number - 1) / 8] |= 1 << (mem.number - 1) % 8
