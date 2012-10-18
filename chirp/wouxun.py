@@ -34,7 +34,7 @@ def encode_freq(freq):
     enc = 0
     div = 1000
     for i in range(0, 4):
-        enc <<= 8
+        enc <<= 4
         enc |= FREQ_ENCODE_TABLE[ (freq/div) % 10 ]
         div /= 10
     return enc
@@ -219,42 +219,42 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                             self._memobj.settings.menu_available))
         top.append(rs)
 
-        rs = RadioSetting("vhf_rx_start", "vhf rx start",
+        rs = RadioSetting("vhf_rx_start", "VHF RX Lower Limit (MHz)",
                           RadioSettingValueInteger(136, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_rx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
+        rs = RadioSetting("vhf_rx_stop", "VHF RX Upper Limit (MHz)",
                           RadioSettingValueInteger(136, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_rx_stop)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_rx_start", "uhf rx start",
+        rs = RadioSetting("uhf_rx_start", "UHF RX Lower Limit (MHz)",
                           RadioSettingValueInteger(216, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_rx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
+        rs = RadioSetting("uhf_rx_stop", "UHF RX Upper Limit (MHz)",
                           RadioSettingValueInteger(216, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_rx_stop)))
         freqranges.append(rs)
-        rs = RadioSetting("vhf_tx_start", "vhf tx start",
+        rs = RadioSetting("vhf_tx_start", "VHF TX Lower Limit (MHz)",
                           RadioSettingValueInteger(136, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_tx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("vhf_tx_stop", "vhf tx stop",
+        rs = RadioSetting("vhf_tx_stop", "VHF TX Upper Limit (MHz)",
                           RadioSettingValueInteger(136, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_tx_stop)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_tx_start", "uhf tx start",
+        rs = RadioSetting("uhf_tx_start", "UHF TX Lower Limit (MHz)",
                           RadioSettingValueInteger(216, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_tx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
+        rs = RadioSetting("uhf_tx_stop", "UHF TX Upper Limit (MHz)",
                           RadioSettingValueInteger(216, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_tx_stop)))
@@ -272,7 +272,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
     def set_settings(self, settings):
         for element in settings:
             if not isinstance(element, RadioSetting):
-                if element.get_shortname() != "freqranges" :
+                if element.get_name() != "freqranges" :
                     # frequency ranges are read only
                     self.set_settings(element)
             else:
