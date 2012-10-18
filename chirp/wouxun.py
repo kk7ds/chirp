@@ -275,14 +275,14 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                 if element.get_shortname() != "freqranges" :
                     # frequency ranges are read only
                     self.set_settings(element)
-                    continue
-            try:
-                setattr(self._memobj.settings,
-                        element.get_name(),
-                        element.value)
-            except Exception, e:
-                print element.get_name()
-                raise
+            else:
+                try:
+                    setattr(self._memobj.settings,
+                            element.get_name(),
+                            element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
 
 
 
