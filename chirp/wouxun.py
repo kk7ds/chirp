@@ -205,7 +205,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         rf.valid_bands = self.valid_freq
         rf.valid_characters = "".join(self.CHARSET)
         rf.valid_name_length = 6
-        rf.valid_duplexes = ["", "+", "-", "split"]
+        rf.valid_duplexes = ["", "+", "-", "split", "off"]
         rf.has_ctone = True
         rf.has_rx_dtcs = True
         rf.has_cross = True
@@ -347,6 +347,12 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
                                                  rxmode, _mem.rx_tone)
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.tx_freq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
         _nam = self._memobj.names[number - 1]
@@ -361,12 +367,14 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         mem.freq = int(_mem.rx_freq) * 10
         if _mem.splitdup:
             mem.duplex = "split"
+        elif self._is_txinh(_mem):
+            mem.duplex = "off"
         elif int(_mem.rx_freq) < int(_mem.tx_freq):
             mem.duplex = "+"
         elif int(_mem.rx_freq) > int(_mem.tx_freq):
             mem.duplex = "-"
 
-        if mem.duplex == "":
+        if mem.duplex == "" or mem.duplex == "off":
             mem.offset = 0
         elif mem.duplex == "split":
             mem.offset = int(_mem.tx_freq) * 10
@@ -446,6 +454,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         _mem.rx_freq = int(mem.freq / 10)
         if mem.duplex == "split":
             _mem.tx_freq = int(mem.offset / 10)
+        elif mem.duplex == "off":
+            for i in range(0, 4):
+                _mem.tx_freq[i].set_raw("\xFF")
         elif mem.duplex == "+":
             _mem.tx_freq = int(mem.freq / 10) + int(mem.offset / 10)
         elif mem.duplex == "-":
