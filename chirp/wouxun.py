@@ -211,7 +211,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         return rf
 
     def get_settings(self):
-        freqranges = RadioSettingGroup("freqranges", "Freq ranges (read only)")
+        freqranges = RadioSettingGroup("freqranges", "Freq ranges")
         top = RadioSettingGroup("top", "All Settings", freqranges)
 
         rs = RadioSetting("menu_available", "Menu Available",
@@ -273,8 +273,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
         for element in settings:
             if not isinstance(element, RadioSetting):
                 if element.get_name() != "freqranges" :
-                    # frequency ranges are read only
                     self.set_settings(element)
+                else:
+                    self._set_freq_settings(element)
             else:
                 try:
                     setattr(self._memobj.settings,
@@ -284,7 +285,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
                     print element.get_name()
                     raise
 
-
+    def _set_freq_settings(self, settings):
+        for element in settings:
+            try:
+                setattr(self._memobj.freq_ranges,
+                        element.get_name(),
+                        encode_freq(int(element.value)))
+            except Exception, e:
+                print element.get_name()
+                raise
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
