@@ -229,11 +229,24 @@ def _set_name(mem, _mem):
             pass
     return name
 
+ALINCO_TONES = list(chirp_common.TONES)
+ALINCO_TONES.remove(159.8)
+ALINCO_TONES.remove(165.5)
+ALINCO_TONES.remove(171.3)
+ALINCO_TONES.remove(177.3)
+ALINCO_TONES.remove(183.5)
+ALINCO_TONES.remove(189.9)
+ALINCO_TONES.remove(196.6)
+ALINCO_TONES.remove(199.5)
+ALINCO_TONES.remove(206.5)
+ALINCO_TONES.remove(229.1)
+ALINCO_TONES.remove(254.1)
+
 class DRx35Radio(AlincoStyleRadio):
     """Base class for the DR-x35 radios"""
     _range = [(118000000, 155000000)]
     _power_levels = []
-    _valid_tones = list(chirp_common.TONES)
+    _valid_tones = ALINCO_TONES
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -401,19 +414,6 @@ class DR435Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x04) and filedata[0x65] == chr(0x00)
 
-DJ596_TONES = list(chirp_common.TONES)
-DJ596_TONES.remove(159.8)
-DJ596_TONES.remove(165.5)
-DJ596_TONES.remove(171.3)
-DJ596_TONES.remove(177.3)
-DJ596_TONES.remove(183.5)
-DJ596_TONES.remove(189.9)
-DJ596_TONES.remove(196.6)
-DJ596_TONES.remove(199.5)
-DJ596_TONES.remove(206.5)
-DJ596_TONES.remove(229.1)
-DJ596_TONES.remove(254.1)
-
 @directory.register
 class DJ596Radio(DRx35Radio):
     """Alinco DJ596"""
@@ -425,7 +425,6 @@ class DJ596Radio(DRx35Radio):
     _range = [(136000000, 174000000), (400000000, 511000000)]
     _power_levels = [chirp_common.PowerLevel("Low", watts=1.00),
                      chirp_common.PowerLevel("High", watts=5.00)]
-    _valid_tones = DJ596_TONES
 
     @classmethod
     def match_model(cls, filedata, filename):
