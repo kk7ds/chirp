@@ -522,26 +522,110 @@ class KGUV6DRadio(KGUVD1PRadio):
              power_high:1,
              iswide:1,
              _2_unknown_2:4;
-          u8 unknown[2];
+          u8 pad[2];
         } memory[199];
 
         #seekto 0x0F00;
         struct {
-          u8 unknown1[44];
-          u8 unknown_flag1:6,
+          u8 welcome1[6];
+          u8 welcome2[6];
+          u8 single_band[6];
+        } strings;
+
+        #seekto 0x0F20;
+        struct {
+          u8 unknown_flag_01:6,
+             vfo_b_ch_disp:2;
+          u8 unknown_flag_02:5,
+             vfo_a_fr_step:3;
+          u8 unknown_flag_03:4,
+             vfo_a_squelch:4;
+          u8 unknown_flag_04:7,
+             power_save:1;
+          u8 unknown_flag_05:5,
+             pf2_function:3;
+          u8 unknown_flag_06:6,
+             roger_beep:2;
+          u8 unknown_flag_07:2,
+             transmit_time_out:6;
+          u8 unknown_flag_08:4,
+             vox:4;
+          u8 unknown_1[4];
+          u8 unknown_flag_09:6,
              voice:2;
-          u8 unknown_flag2:7,
+          u8 unknown_flag_10:7,
              beep:1;
-          u8 unknown2[12];
-          u8 unknown_flag3:6,
+          u8 unknown_flag_11:7,
+             ani_id_enable:1;
+          u8 unknown_2[2];
+          u8 unknown_flag_12:5,
+             vfo_b_fr_step:3;
+          u8 unknown_3[1];
+          u8 unknown_flag_13:3,
+             ani_id_tx_delay:5;
+          u8 unknown_4[1];
+          u8 unknown_flag_14:6,
+             ani_id_sidetone:2;
+          u8 unknown_flag_15:4,
+             tx_time_out_alert:4;
+          u8 unknown_flag_16:6,
+             vfo_a_ch_disp:2;
+          u8 unknown_flag_15:6,
+             scan_mode:2;
+          u8 unknown_flag_16:7,
+             kbd_lock:1;
+          u8 unknown_flag_17:6,
              ponmsg:2;
-          u8 unknown3[3];
-          u8 unknown_flag4:7,
+          u8 unknown_flag_18:5,
+             pf1_function:3;
+          u8 unknown_5[1];
+          u8 unknown_flag_19:7,
+             auto_backlight:1;
+          u8 unknown_flag_20:7,
              sos_ch:1;
-          u8 unknown4[29];
-          u8 unknown_flag5:7,
+          u8 unknown_6[2];
+          u8 unknown_flag_21:7,
+             auto_lock_kbd:1;
+          u8 unknown_flag_22:4,
+             vfo_b_squelch:4;
+          u8 unknown_7[1];
+          u8 unknown_flag_23:7,
+             stopwatch:1;
+          u8 vfo_a_cur_chan;
+          u8 unknown_flag_24:7,
+             dual_band_receive:1;
+          u8 current_vfo:1,
+             unknown_flag_24:7;
+          u8 unknown_8[2];
+          u8 mode_password[6];
+          u8 reset_password[6];
+          u8 ani_id_content[6];
+          u8 unknown_flag_25:7,
              menu_available:1;
+          u8 unknown_9[1];
+          u8 priority_chan;
+          u8 vfo_8_cur_chan;
         } settings;
+
+        #seekto 0x0f60;
+        struct {
+          lbcd rx_freq[4];
+          lbcd tx_freq[4];
+          ul16 rx_tone;
+          ul16 tx_tone;
+          u8 _3_unknown_3:4,
+             bcl:1,
+             _3_unknown_4:3;
+          u8 splitdup:1,
+             _2_unknown_3:1,
+             power_high:1,
+             iswide:1,
+             _2_unknown_4:4;
+          u8 pad[2];
+        } vfo_settings[2];
+	
+        #seekto 0x0f80;
+        u16 fm_presets_0[9];
 
         #seekto 0x0ff0;
         struct {
@@ -560,6 +644,17 @@ class KGUV6DRadio(KGUVD1PRadio):
           u8 name[6];
           u8 pad[10];
         } names[199];
+
+        #seekto 0x1f60;
+        struct {
+            u8 unknown_flag_26:6,
+               tx_offset_dir:2;
+            u8 tx_offset[6];
+            u8 pad[9];
+        } vfo_offset[2];
+
+        #seekto 0x1f80;
+        u16 fm_presets_1[9];
     """
 
 
@@ -636,12 +731,12 @@ class KG816Radio(KGUVD1PRadio,
             u16 uhf_tx_stop;
         } freq_ranges;
 
-        #seekto 0x1008;
+        #seekto 0x1010;
         struct {
-          u8 unknown[8];
-          u8 name[6];
-          u8 pad[2];
+		u8 name[6];
+		u8 pad[10];
         } names[199];
+	
     """
 
     @classmethod
