@@ -555,11 +555,10 @@ class KGUV6DRadio(KGUVD1PRadio):
             u16 uhf_tx_stop;
         } freq_ranges;
 
-        #seekto 0x1008;
+        #seekto 0x1010;
         struct {
-          u8 unknown[8];
           u8 name[6];
-          u8 pad[2];
+          u8 pad[10];
         } names[199];
     """
 
