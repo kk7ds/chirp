@@ -25,10 +25,6 @@ from chirp.wouxun_common import wipe_memory, do_download, do_upload
 
 FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
  
-# writing bad frequency ranges on the radio can brick it
-# the encode function here has not been tested 
-# it has been included for documentation purpouse only as I never call it
-# you have been warned, use at your own risk   
 def encode_freq(freq):
     """Convert frequency (4 decimal digits) to wouxun format (2 bytes)"""
     enc = 0
@@ -51,7 +47,8 @@ def decode_freq(data):
     return freq
 
 @directory.register
-class KGUVD1PRadio(chirp_common.CloneModeRadio):
+class KGUVD1PRadio(chirp_common.CloneModeRadio,
+        chirp_common.ExperimentalRadio):
     """Wouxun KG-UVD1P,UV2,UV3"""
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
@@ -111,6 +108,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio):
           u8 pad[2];
         } names[199];
     """
+
+    @classmethod
+    def get_experimental_warning(cls):
+        return ('This version of the Wouxun driver allows you to modify the '
+                'frequency range settings of your radio. This has been tested '
+                'and reports from other users indicate that it is a safe '
+                'thing to do. However, modifications to this value may have '
+                'unintended consequences, including damage to your device. '
+                'You have been warned. Proceed at your own risk!')
 
     def _identify(self):
         """Do the original wouxun identification dance"""
