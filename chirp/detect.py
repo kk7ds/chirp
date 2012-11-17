@@ -22,7 +22,7 @@ def _icom_model_data_to_rclass(md):
     for _rtype, rclass in directory.DRV_TO_RADIO.items():
         if rclass.VENDOR != "Icom":
             continue
-        if not rclass.get_model():
+        if not hasattr(rclass, 'get_model') or not rclass.get_model():
             continue
         if rclass.get_model()[:4] == md[:4]:
             return rclass

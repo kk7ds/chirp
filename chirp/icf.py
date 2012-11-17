@@ -286,7 +286,8 @@ def _clone_from_radio(radio):
                     print "ICF GAP %04x - %04x" % (addr, src)
                 addr = dst
             elif frame.cmd == CMD_CLONE_END:
-                print "End frame:\n%s" % util.hexprint(frame.payload)
+                print "End frame (%i):\n%s" % (len(frame.payload),
+                                               util.hexprint(frame.payload))
                 print "Last addr: %04x" % addr
 
         if radio.status_fn:
