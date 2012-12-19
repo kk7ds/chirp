@@ -674,6 +674,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                    vhf_limit.upper))
         other.append(rs)
 
+        rs = RadioSetting("%s.vhf.enable" % limit, "VHF TX Enabled",
+                          RadioSettingValueBoolean(vhf_limit.enable))
+        other.append(rs)
+
         uhf_limit = getattr(self._memobj, limit).uhf
         rs = RadioSetting("%s.uhf.lower" % limit, "UHF Lower Limit (MHz)",
                           RadioSettingValueInteger(1, 1000,
@@ -682,6 +686,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("%s.uhf.upper" % limit, "UHF Upper Limit (MHz)",
                           RadioSettingValueInteger(1, 1000,
                                                    uhf_limit.upper))
+        other.append(rs)
+        rs = RadioSetting("%s.uhf.enable" % limit, "UHF TX Enabled",
+                          RadioSettingValueBoolean(uhf_limit.enable))
         other.append(rs)
 
         return group
