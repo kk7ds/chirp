@@ -202,7 +202,7 @@ def _do_ident(radio, model):
 
     print "Ident:\n%s" % util.hexprint(ident)
     if not vendor(ident[1:4]):
-        print "Vendor is %s, expected %s" % (repr(ident[1:4]), vendors)
+        print "Vendor is %s, unmatched" % repr(ident[1:4])
         raise errors.RadioError("Radio reported unknown vendor")
     else:
         print "Vendor is %s (OK)" % repr(ident[1:4])
