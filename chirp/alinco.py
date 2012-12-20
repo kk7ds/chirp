@@ -23,7 +23,8 @@ u8 used_flags[25];
 
 #seekto 0x0200;
 struct {
-  u8 unknown1:2,
+  u8 new_used:1,
+     unknown1:1,
      isnarrow:1,
      unknown9:1,
      ishigh:1,
@@ -42,12 +43,18 @@ struct {
   u8 dtcs_tx;
   u8 dtcs_rx;
   u8 name[7];
-  u8 unknown8[9];
+  u8 unknown8[2];
+  u8 unknown9:6,
+     power:2;
+  u8 unknownA[6];
 } memory[100];
 
 #seekto 0x0130;
 u8 skips[25];
 """
+
+# 0000 0111
+# 0000 0010
 
 # Response length is:
 # 1. \r\n
@@ -211,7 +218,7 @@ CHARSET = (["\x00"] * 0x30) + \
 def _get_name(_mem):
     name = ""
     for i in _mem.name:
-        if not i:
+        if i in [0x00, 0xFF]:
             break
         name += CHARSET[i]
     return name
@@ -263,6 +270,29 @@ class DRx35Radio(AlincoStyleRadio):
         rf.valid_power_levels = self._power_levels
         return rf
 
+    def _get_used(self, number):
+        _usd = self._memobj.used_flags[number / 8]
+        bit = (0x80 >> (number % 8))
+        return _usd & bit
+
+    def _set_used(self, number, is_used):
+        _usd = self._memobj.used_flags[number / 8]
+        bit = (0x80 >> (number % 8))
+        if is_used:
+            _usd |= bit
+        else:
+            _usd &= ~bit
+
+    def _get_power(self, _mem):
+        if self._power_levels:
+            return self._power_levels[_mem.ishigh]
+        return None
+
+    def _set_power(self, _mem, mem):
+        if self._power_levels:
+            _mem.ishigh = mem.power is None or \
+                mem.power == self._power_levels[1]
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _skp = self._memobj.skips[number / 8]
@@ -271,7 +301,7 @@ class DRx35Radio(AlincoStyleRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
-        if not _usd & bit and self.MODEL != "JT220M":
+        if not self._get_used(number) and self.MODEL != "JT220M":
             mem.empty = True
             return mem
 
@@ -287,8 +317,7 @@ class DRx35Radio(AlincoStyleRadio):
         if _mem.isnarrow:
             mem.mode = "NFM"
 
-        if self._power_levels:
-            mem.power = self._power_levels[_mem.ishigh]
+        mem.power = self._get_power(_mem)
 
         if _skp & bit:
             mem.skip = "S"
@@ -303,11 +332,9 @@ class DRx35Radio(AlincoStyleRadio):
         _usd = self._memobj.used_flags[mem.number / 8]
         bit = (0x80 >> (mem.number % 8))
 
+        self._set_used(mem.number, not mem.empty)
         if mem.empty:
-            _usd &= ~bit
             return
-        else:
-            _usd |= bit
 
         _mem.freq = mem.freq / 100
 
@@ -328,9 +355,7 @@ class DRx35Radio(AlincoStyleRadio):
         _mem.step = STEPS.index(mem.tuning_step)
 
         _mem.isnarrow = mem.mode == "NFM"
-        if self._power_levels:
-            _mem.ishigh = mem.power is None or \
-                mem.power == self._power_levels[1]
+        self._set_power(_mem, mem)
 
         if mem.skip:
             _skp |= bit
@@ -445,3 +470,59 @@ class JT220MRadio(DRx35Radio):
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
             filedata[0x60:0x64] == "2009"
+
+@directory.register
+class DJ175Radio(DRx35Radio):
+    """Alinco DJ175"""
+    VENDOR = "Alinco"
+    MODEL = "DJ175"
+
+    _model = "DJ175"
+    _memsize = 6896
+    _range = [(136000000, 174000000), (400000000, 511000000)]
+    _power_levels = [
+        chirp_common.PowerLevel("Low", watts=0.50),
+        chirp_common.PowerLevel("Mid", watts=2.00),
+        chirp_common.PowerLevel("High", watts=5.00),
+        ]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return len(filedata) == cls._memsize
+
+    def _get_used(self, number):
+        return self._memobj.memory[number].new_used
+
+    def _set_used(self, number, is_used):
+        self._memobj.memory[number].new_used = is_used
+
+    def _get_power(self, _mem):
+        return self._power_levels[_mem.power]
+
+    def _set_power(self, _mem, mem):
+        if mem.power in self._power_levels:
+            _mem.power = self._power_levels.index(mem.power)
+
+    def _download_chunk(self, addr):
+        if addr % 16:
+            raise Exception("Addr 0x%04x not on 16-byte boundary" % addr)
+
+        cmd = "AL~F%04XR\r\n" % addr
+        self._send(cmd)
+
+        _data = self._read(34).strip()
+        if len(_data) == 0:
+            raise errors.RadioError("No response from radio")
+
+        data = ""
+        for i in range(0, len(_data), 2):
+            data += chr(int(_data[i:i+2], 16))
+
+        if len(data) != 16:
+            print "Response was:"
+            print "|%s|"
+            print "Which I converted to:"
+            print util.hexprint(data)
+            raise Exception("Radio returned less than 16 bytes")
+
+        return data
