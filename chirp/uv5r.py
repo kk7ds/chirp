@@ -182,6 +182,9 @@ def _ident_from_image(radio):
             pass
     raise errors.RadioError("This image is from an unsupported radio model")
 
+def _firmware_version_from_image(radio):
+    return radio.get_mmap()[0x1838:0x1848]
+
 def _do_ident(radio, model):
     serial = radio.pipe
     serial.setTimeout(1)
@@ -247,20 +250,28 @@ def _read_block(radio, start, size):
     
     return chunk
 
-def _do_download(radio):
+def _get_radio_firmware_version(radio):
+    block1 = _read_block(radio, 0x1EC0, 0x40)
+    block2 = _read_block(radio, 0x1F00, 0x40)
+    block = block1 + block2
+    return block[48:64]
 
+def _ident_radio(radio):
     for ident in [UV5R_MODEL_ORIG, UV5R_MODEL_291]:
         error = None
         try:
             data = _do_ident(radio, ident)
-            break
+            return data
         except errors.RadioError, e:
             print e
             error = e
             time.sleep(2)
-
     if error:
         raise error
+    raise errors.RadioError("Radio did not respond")
+
+def _do_download(radio):
+    data = _ident_radio(radio)
 
     # Main block
     for i in range(0, 0x1800, 0x40):
@@ -282,9 +293,17 @@ def _send_block(radio, addr, data):
         raise errors.RadioError("Radio refused to accept block 0x%04x" % addr)
     
 def _do_upload(radio):
-    ident = _ident_from_image(radio)
-    _do_ident(radio, ident)
+    _ident_radio(radio)
 
+    image_version = _firmware_version_from_image(radio)
+    radio_version = _get_radio_firmware_version(radio)
+
+    if image_version != radio_version:
+        print "Image is %s" % repr(image_version)
+        print "Radio is %s" % repr(radio_version)
+        raise errors.RadioError(("Incompatible firmware version %s "
+                                 "(expected %s)") % (
+                radio_version[7:13], image_version[7:13]))
     # Main block
     for i in range(0x08, 0x1808, 0x10):
         _send_block(radio, i - 0x08, radio.get_mmap()[i:i+0x10])
@@ -537,7 +556,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
 
     def _is_orig(self):
-        return _ident_from_image(self) == UV5R_MODEL_ORIG
+        version_tag = _firmware_version_from_image(self)
+        try:
+            if 'BFB' in version_tag:
+                idx = version_tag.index("BFB") + 3
+                version = int(version_tag[idx:idx+3])
+                return version < 291
+        except:
+            pass
+        raise errors.RadioError("Unable to parse version string %s" %
+                                version_tag)
 
     def get_settings(self):
         _settings = self._memobj.settings[0]
