@@ -29,6 +29,8 @@ from chirp import errors
 
 TESTS = {}
 
+time.sleep = lambda s: None
+
 class TestError(Exception):
     def get_detail(self):
         return str(self)
