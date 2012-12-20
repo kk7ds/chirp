@@ -445,9 +445,13 @@ If you think that it is valid, you can select a radio model below to force an op
             d.run()
             d.destroy()
 
-    def cb_cloneout(self, radio, fn, emsg= None):
+    def cb_cloneout(self, radio, emsg= None):
         radio.pipe.close()
         reporting.report_model_usage(radio, "upload", True)
+        if emsg:
+            d = inputdialog.ExceptionDialog(emsg)
+            d.run()
+            d.destroy()
 
     def _get_recent_list(self):
         recent = []
