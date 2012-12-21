@@ -297,13 +297,13 @@ def _do_upload(radio):
 
     image_version = _firmware_version_from_image(radio)
     radio_version = _get_radio_firmware_version(radio)
+    print "Image is %s" % repr(image_version)
+    print "Radio is %s" % repr(radio_version)
 
-    if image_version != radio_version:
-        print "Image is %s" % repr(image_version)
-        print "Radio is %s" % repr(radio_version)
-        raise errors.RadioError(("Incompatible firmware version %s "
-                                 "(expected %s)") % (
-                radio_version[7:13], image_version[7:13]))
+    if "Ver  BFB" not in radio_version:
+        raise errors.RadioError("Unsupported firmware version: `%s'" %
+                                radio_version)
+
     # Main block
     for i in range(0x08, 0x1808, 0x10):
         _send_block(radio, i - 0x08, radio.get_mmap()[i:i+0x10])
@@ -312,6 +312,12 @@ def _do_upload(radio):
     if len(radio.get_mmap().get_packed()) == 0x1808:
         print "Old image, not writing aux block"
         return # Old image, no aux block
+
+    if image_version != radio_version:
+        raise errors.RadioError("Upload finished, but the 'Other Settings' "
+                                "could not be sent because the firmware "
+                                "version of the image does not match that "
+                                "of the radio")
 
     # Auxiliary block at radio address 0x1EC0, our offset 0x1808
     for i in range(0x1EC0, 0x2000, 0x10):
@@ -389,7 +395,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         except errors.RadioError:
             raise
         except Exception, e:
-            raise
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def get_raw_memory(self, number):
