@@ -75,6 +75,7 @@ struct {
   u8 rxled;
   u8 txled;
   u8 almod;
+  u8 band;
   u8 tdrab;
   u8 ste;
   u8 rpste;
@@ -89,6 +90,12 @@ struct {
   char name[7];
   u8 unknown2;
 } names[128];
+
+#seekto 0x1818;
+struct {
+  char line1[7];
+  char line2[7];
+} sixpoweron_msg;
 
 #seekto 0x1828;
 struct {
@@ -125,19 +132,23 @@ struct {
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
 TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
+DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
 RESUME_LIST = ["TO", "CO", "SE"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
 COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
+PONMSG_LIST = ["Full", "Message"]
 
 SETTING_LISTS = {
     "step" : STEP_LIST,
     "timeout" : TIMEOUT_LIST,
+    "dtmfst" : DTMFST_LIST,
     "screv" : RESUME_LIST,
     "mdfa" : MODE_LIST,
     "mdfb" : MODE_LIST,
     "wtled" : COLOR_LIST,
     "rxled" : COLOR_LIST,
     "txled" : COLOR_LIST,
+    "ponmsg" : PONMSG_LIST,
 }
 
 def _do_status(radio, block):
@@ -587,6 +598,11 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 STEP_LIST[_settings.step]))
         advanced.append(rs)
 
+        rs = RadioSetting("dtmfst", "DTMF Sidetone",
+                          RadioSettingValueList(DTMFST_LIST,
+                                                DTMFST_LIST[_settings.dtmfst]))
+        advanced.append(rs)
+
         rs = RadioSetting("save", "Battery Saver",
                           RadioSettingValueInteger(0, 4, _settings.save))
         basic.append(rs)
@@ -683,12 +699,25 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     filtered += " "
             return filtered
 
+        _msg = self._memobj.sixpoweron_msg
+        rs = RadioSetting("sixpoweron_msg.line1", "6+Power-On Message 1",
+                          RadioSettingValueString(0, 7, _filter(_msg.line1)))
+        other.append(rs)
+        rs = RadioSetting("sixpoweron_msg.line2", "6+Power-On Message 2",
+                          RadioSettingValueString(0, 7, _filter(_msg.line2)))
+        other.append(rs)
+
         _msg = self._memobj.poweron_msg
         rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
                           RadioSettingValueString(0, 7, _filter(_msg.line1)))
         other.append(rs)
         rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
                           RadioSettingValueString(0, 7, _filter(_msg.line2)))
+        other.append(rs)
+
+        rs = RadioSetting("ponmsg", "Power-On Message",
+                          RadioSettingValueList(PONMSG_LIST,
+                                                PONMSG_LIST[_settings.ponmsg]))
         other.append(rs)
 
         if self._is_orig():
