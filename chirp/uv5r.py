@@ -596,7 +596,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         advanced.append(rs)
 
         rs = RadioSetting("abr", "Backlight Timeout",
-                          RadioSettingValueInteger(0, 10, _settings.abr))
+                          RadioSettingValueInteger(0, 24, _settings.abr))
         basic.append(rs)
 
         rs = RadioSetting("tdr", "Dual Watch",
