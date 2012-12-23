@@ -97,7 +97,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
 
         rf.valid_modes = list(chirp_common.MODES)
         rf.valid_tmodes = list(chirp_common.TONE_MODES)
-        rf.valid_duplexes = ["", "-", "+", "split"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(1, 10000000000)]
         rf.valid_skips = ["", "S"]
