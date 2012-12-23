@@ -34,7 +34,7 @@ struct {
   u16  dtcs:7,
        mode:3,
        unknown4:6;
-  u8   unknwon5:1,
+  u8   unknown5:1,
        digital_code:7;
   u8   unknown6:2,
        dtcs_polarity:2,
