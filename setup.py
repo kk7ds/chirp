@@ -54,6 +54,7 @@ def win32_build():
     opts["py2exe"]["includes"] += ("," + ",".join(mods))
 
     setup(
+        zipfile=None,
         windows=[{'script'        : "chirpw",
                   'icon_resources': [(0x0004, 'share/chirp.ico')],
 		 }],
