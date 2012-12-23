@@ -170,37 +170,19 @@ def validate_291(ident):
     if ident[4:7] != "\x30\x04\x50":
         raise errors.RadioError("Radio version not supported")
 
-UV5R_MODEL_ORIG = (lambda x: x == 'BFB',
-                   "\x50\xBB\xFF\x01\x25\x98\x4D",
-                   validate_orig)
-UV5R_MODEL_291 =  (lambda x: "\x04" in x,
-                   "\x50\xBB\xFF\x20\x12\x07\x25",
-                   lambda x: True)
+UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
+UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
+
 IDENTS = [UV5R_MODEL_ORIG,
           UV5R_MODEL_291,
           ]
 
-def _ident_from_image(radio):
-    vendor = radio.get_mmap()[1:4]
-    ident = radio.get_mmap()[0:8]
-    for vendorfn, magic, validate in IDENTS:
-        if not vendorfn(vendor):
-            continue
-        try:
-            validate(ident)
-            return vendorfn, magic, validate
-        except errors.RadioError:
-            pass
-    raise errors.RadioError("This image is from an unsupported radio model")
-
 def _firmware_version_from_image(radio):
     return radio.get_mmap()[0x1838:0x1848]
 
-def _do_ident(radio, model):
+def _do_ident(radio, magic):
     serial = radio.pipe
     serial.setTimeout(1)
-
-    vendor, magic, validate = model
 
     print "Sending Magic: %s" % util.hexprint(magic)
     serial.write(magic)
@@ -215,15 +197,6 @@ def _do_ident(radio, model):
     ident = serial.read(8)
 
     print "Ident:\n%s" % util.hexprint(ident)
-    if not vendor(ident[1:4]):
-        print "Vendor is %s, unmatched" % repr(ident[1:4])
-        raise errors.RadioError("Radio reported unknown vendor")
-    else:
-        print "Vendor is %s (OK)" % repr(ident[1:4])
-
-    validate(ident)
-
-    print "Version is %s (OK)" % repr(ident[4:7])
 
     serial.write("\x06")
     ack = serial.read(1)
@@ -268,10 +241,10 @@ def _get_radio_firmware_version(radio):
     return block[48:64]
 
 def _ident_radio(radio):
-    for ident in [UV5R_MODEL_ORIG, UV5R_MODEL_291]:
+    for magic in IDENTS:
         error = None
         try:
-            data = _do_ident(radio, ident)
+            data = _do_ident(radio, magic)
             return data
         except errors.RadioError, e:
             print e
