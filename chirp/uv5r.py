@@ -556,6 +556,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         raise errors.RadioError("Unable to parse version string %s" %
                                 version_tag)
 
+    def _my_version(self):
+        version_tag = _firmware_version_from_image(self)
+        if 'BFB' in version_tag:
+            idx = version_tag.index("BFB") + 3
+            return int(version_tag[idx:idx+3])
+        raise Exception("Unrecognized firmware version string")
+
     def get_settings(self):
         _settings = self._memobj.settings[0]
         basic = RadioSettingGroup("basic", "Basic Settings")
@@ -566,9 +573,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(0, 9, _settings.squelch))
         basic.append(rs)
 
+        tuning_steps = list(STEP_LIST) # Make a copy of the main list
+        if self._my_version() >= 291:  # update list for BFB291 and newer
+            tuning_steps.insert(5, "20.0")
+            tuning_steps.append("50.0")
+
         rs = RadioSetting("step", "Tuning Step",
-                          RadioSettingValueList(STEP_LIST,
-                                                STEP_LIST[_settings.step]))
+                          RadioSettingValueList(tuning_steps,
+                                                tuning_steps[_settings.step]))
         advanced.append(rs)
 
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
