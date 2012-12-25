@@ -65,7 +65,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [( 30000000,  823995000),
+        rf.valid_bands = [(  1000000,  823995000),
                           (849000000,  868995000),
                           (894000000, 1309995000)]
         rf.valid_skips = ["", "S", "P"]
@@ -95,15 +95,24 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         if _mem.fractional:
             mem.freq = chirp_common.fix_rounded_step(mem.freq)
         mem.offset = int(_mem.offset) * 1000
-        mem.rtone = chirp_common.TONES[_mem.rtone]
-        mem.ctone = chirp_common.TONES[_mem.ctone]
+        try:
+            mem.rtone = chirp_common.TONES[_mem.rtone]
+        except IndexError:
+            mem.rtone = 88.5
+        try:
+            mem.ctone = chirp_common.TONES[_mem.ctone]
+        except IndexError:
+            mem.ctone = 88.5
         try:
             mem.tuning_step = STEPS[_mem.tune_step]
         except IndexError:
             print "Invalid tune step index %i" % _mem.tune_step
         mem.tmode = TMODES[_flag.tmode]
         mem.duplex = DUPLEX[_flag.duplex]
-        mem.mode = MODES[_flag.mode]
+        if mem.freq < 30000000:
+            mem.mode = "AM"
+        else:
+            mem.mode = MODES[_flag.mode]
         if _flag.pskip:
             mem.skip = "P"
         elif _flag.skip:
@@ -118,6 +127,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         if mem.empty:
             self._memobj.flags_whole[mem.number] = 0xFF
             return
+            
+        _mem.set_raw("\x00" * 8)    
 
         if mem.freq > to_GHz(1):
             _mem.freq = (mem.freq / 1000) - to_GHz(1)
