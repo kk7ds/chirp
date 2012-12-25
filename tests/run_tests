@@ -376,6 +376,12 @@ class TestCaseBruteForce(TestCase):
             l[0] = call
             self._wrapper.do("set_repeater_call_list", l)
 
+        def freq_is_ok(freq):
+            for lo, hi in rf.valid_bands:
+                if freq > lo and freq < hi:
+                    return True
+            return False
+
         for mode in rf.valid_modes:
             if mode not in chirp_common.MODES:
                 continue
@@ -387,6 +393,11 @@ class TestCaseBruteForce(TestCase):
                 ensure_urcall(m.dv_urcall)
                 ensure_rptcall(m.dv_rpt1call)
                 ensure_rptcall(m.dv_rpt2call)
+            if mode == "FM" and freq_is_ok(m.freq + 100000000):
+                # Some radios don't support FM below approximately 30MHz,
+                # so jump up by 100MHz, if they support that
+                m.freq += 100000000
+
             m.mode = mode
             self.set_and_compare(m)
 
@@ -399,6 +410,8 @@ class TestCaseBruteForce(TestCase):
                 m.freq = rf.valid_bands[0][0] + 100000
             else:
                 m.freq = 146.52
+            if m.freq < 30000000 and "AM" in rf.valid_modes:
+                m.mode = "AM"
             return m
 
         self.do_tone(clean_mem(), rf)
@@ -422,51 +435,53 @@ class TestCaseEdges(TestCase):
     def __str__(self):
         return "Edges"
 
-    def do_longname(self, rf, loc):
+    def _mem(self, rf):
         m = chirp_common.Memory()
-        m.number = loc
-
+        m.number = rf.memory_bounds[0]
         m.freq = rf.valid_bands[0][0] + 1000000
+        if m.freq < 30000000 and "AM" in rf.valid_modes:
+            m.mode = "AM"
+        return m
+
+    def do_longname(self, rf):
+        m = self._mem(rf)
         m.name = ("X" * 256) # Should be longer than any radio can handle
         m.name = self._wrapper.do("filter_name", m.name)
 
         self._wrapper.do("set_memory", m)
-        n = self._wrapper.do("get_memory", loc)
+        n = self._wrapper.do("get_memory", m.number)
 
         self.compare_mem(m, n)
 
-    def do_badname(self, rf, loc):
-        m = chirp_common.Memory()
-        m.number = loc
+    def do_badname(self, rf):
+        m = self._mem(rf)
         m.freq = rf.valid_bands[0][0] + 1000000
 
         ascii = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
         for i in range(0, len(ascii), 4):
             m.name = self._wrapper.do("filter_name", ascii[i:i+4])
             self._wrapper.do("set_memory", m)
-            n = self._wrapper.do("get_memory", loc)
+            n = self._wrapper.do("get_memory", m.number)
             self.compare_mem(m, n)
 
-    def do_bandedges(self, rf, loc):
-        m = chirp_common.Memory()
-        m.number = loc
+    def do_bandedges(self, rf):
+        m = self._mem(rf)
 
         for limits in rf.valid_bands:
             for freq in limits:
                 m.freq = freq
                 self._wrapper.do("set_memory", m)
-                n = self._wrapper.do("get_memory", loc)
+                n = self._wrapper.do("get_memory", m.number)
                 self.compare_mem(m, n)
 
-    def do_oddsteps(self, rf, loc):
+    def do_oddsteps(self, rf):
         odd_steps = {
             145 : [145.85625, 145.86250],
             445 : [445.85625, 445.86250],
             862 : [862.73125, 862.73750],
             }
 
-        m = chirp_common.Memory()
-        m.number = loc
+        m = self._mem(rf)
 
         for low, high in rf.valid_bands:
             for band, totest in odd_steps.items():
@@ -479,7 +494,7 @@ class TestCaseEdges(TestCase):
 
                     m.freq = testfreq
                     self._wrapper.do("set_memory", m)
-                    n = self._wrapper.do("get_memory", loc)
+                    n = self._wrapper.do("get_memory", m.number)
                     self.compare_mem(m, n)
         
 
@@ -489,12 +504,10 @@ class TestCaseEdges(TestCase):
         if not rf.valid_bands:
             raise TestFailedError("Radio does not provide valid bands!")
 
-        loc = rf.memory_bounds[0]
-
-        self.do_longname(rf, loc)
-        self.do_bandedges(rf, loc)
-        self.do_oddsteps(rf, loc)
-        self.do_badname(rf, loc)
+        self.do_longname(rf)
+        self.do_bandedges(rf)
+        self.do_oddsteps(rf)
+        self.do_badname(rf)
 
         return []
 TESTS["Edges"] = TestCaseEdges
