@@ -85,21 +85,28 @@ class ChirpMain(gtk.Window):
         else:
             eset = self.get_current_editorset()
 
+        upload_sens = bool(eset and
+                           isinstance(eset.radio, chirp_common.CloneModeRadio))
+
         if not eset or isinstance(eset.radio, chirp_common.LiveRadio):
-            mmap_sens = False
+            save_sens = False
         elif isinstance(eset.radio, chirp_common.NetworkSourceRadio):
-            mmap_sens = False
+            save_sens = False
         else:
-            mmap_sens = True
+            save_sens = True
 
         for i in ["import", "importsrc", "stock"]:
-            set_action_sensitive(i, eset is not None and not eset.get_read_only())
+            set_action_sensitive(i,
+                                 eset is not None and not eset.get_read_only())
 
-        for i in ["save", "saveas", "upload"]:
-            set_action_sensitive(i, mmap_sens)
+        for i in ["save", "saveas"]:
+            set_action_sensitive(i, save_sens)
+
+        for i in ["upload"]:
+            set_action_sensitive(i, upload_sens)
 
         for i in ["cancelq"]:
-            set_action_sensitive(i, eset is not None and not mmap_sens)
+            set_action_sensitive(i, eset is not None and not save_sens)
         
         for i in ["export", "close", "columns", "irbook", "irfinder",
                   "move_up", "move_dn", "exchange", "iradioreference",
