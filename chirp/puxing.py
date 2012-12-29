@@ -204,7 +204,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
             return True
 
         def _is_no_tone(field):
-            return field[0].get_raw() == "\xFF"
+            return field.get_raw() in ["\x00\x00", "\xFF\xFF"]
 
         def _get_dtcs(value):
             # Upper nibble 0x80 -> DCS, 0xC0 -> Inv. DCS
