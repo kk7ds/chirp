@@ -174,6 +174,9 @@ class arrayDataElement(DataElement):
     def get_value(self):
         return list(self.__items)
 
+    def get_raw(self):
+        return "".join([item.get_raw() for item in self.__items])
+
     def __setitem__(self, index, val):
         self.__items[index].set_value(val)
 
