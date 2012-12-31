@@ -14,6 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp import chirp_common, bitwise, memmap, errors, directory, util
+from chirp.settings import RadioSettingGroup, RadioSetting
+from chirp.settings import RadioSettingValueBoolean
 
 import time
 
@@ -26,7 +28,7 @@ struct {
   u8 new_used:1,
      unknown1:1,
      isnarrow:1,
-     unknown9:1,
+     isdigital:1,
      ishigh:1,
      unknown2:3;
   u8 unknown3:6,
@@ -293,6 +295,17 @@ class DRx35Radio(AlincoStyleRadio):
             _mem.ishigh = mem.power is None or \
                 mem.power == self._power_levels[1]
 
+    def _get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "extra")
+        dig = RadioSetting("isdigital", "Digital",
+                           RadioSettingValueBoolean(bool(_mem.isdigital)))
+        dig.set_doc("Digital/Packet mode enabled")
+        mem.extra.append(dig)
+
+    def _set_extra(self, _mem, mem):
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _skp = self._memobj.skips[number / 8]
@@ -324,6 +337,8 @@ class DRx35Radio(AlincoStyleRadio):
 
         mem.name = _get_name(_mem).rstrip()
 
+        self._get_extra(_mem, mem)
+
         return mem
 
     def set_memory(self, mem):
@@ -331,6 +346,10 @@ class DRx35Radio(AlincoStyleRadio):
         _skp = self._memobj.skips[mem.number / 8]
         _usd = self._memobj.used_flags[mem.number / 8]
         bit = (0x80 >> (mem.number % 8))
+
+        if self._get_used(mem.number) and not mem.empty:
+            # Initialize the memory
+            _mem.set_raw("\x00" * 32)
 
         self._set_used(mem.number, not mem.empty)
         if mem.empty:
@@ -363,6 +382,8 @@ class DRx35Radio(AlincoStyleRadio):
             _skp &= ~bit
 
         _mem.name = _set_name(mem, _mem)
+
+        self._set_extra(_mem, mem)
 
 @directory.register
 class DR03Radio(DRx35Radio):
