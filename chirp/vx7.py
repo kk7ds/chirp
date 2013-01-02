@@ -74,7 +74,7 @@ struct {
 """
 
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM", "FM"] # last is auto
+MODES  = ["FM", "AM", "WFM", "Auto"]
 TMODES = ["", "Tone", "TSQL", "DTCS", "Cross"]
 CROSS_MODES = ["DTCS->", "Tone->DTCS", "DTCS->Tone"]
 STEPS = list(chirp_common.TUNING_STEPS)
