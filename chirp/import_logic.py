@@ -157,6 +157,9 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
 
     dst_mem = src_mem.dupe()
 
+    for k, v in overrides.items():
+        dst_mem.__dict__[k] = v
+
     helpers = [_import_name,
                _import_power,
                _import_tone,
@@ -166,9 +169,6 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
 
     for helper in helpers:
         helper(dst_radio, src_features, dst_mem)
-
-    for k, v in overrides.items():
-        dst_mem.__dict__[k] = v
 
     msgs = dst_radio.validate_memory(dst_mem)
     errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
