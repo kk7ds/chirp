@@ -84,6 +84,17 @@ struct {
   u8 roger;
 } settings[2];
 
+#seekto 0x0E52;
+struct {
+  u8 disp_ab:1,
+     unknown1:2,
+     fmradio:1,
+     alarm:1,
+     unknown2:1,
+     reset:1,
+     menu:1;
+} extra;
+
 #seekto 0x1000;
 struct {
   u8 unknown1[8];
@@ -645,6 +656,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("autolk", "Automatic Key Lock",
                           RadioSettingValueBoolean(_settings.autolk))
+        advanced.append(rs)
+
+        rs = RadioSetting("extra.fmradio", "Broadcast FM Radio",
+                          RadioSettingValueBoolean(self._memobj.extra.fmradio))
         advanced.append(rs)
 
         rs = RadioSetting("wtled", "Standby LED Color",
