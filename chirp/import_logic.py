@@ -121,6 +121,29 @@ def _import_dtcs(dst_radio, srcrf, mem):
         if mem.tmode == "DTCS":
             mem.rx_dtcs = mem.dtcs
 
+def _guess_mode_by_frequency(freq):
+    ranges = [
+        (0, 135, "AM"),
+        (136, 9999, "FM"),
+        ]
+
+    for lo, hi, mode in ranges:
+        if freq > lo and freq <= hi:
+            return mode
+
+    # If we don't know, assume FM
+    return "FM"
+
+def _import_mode(dst_radio, srcrf, mem):
+    dstrf = dst_radio.get_features()
+
+    # Some radios support an "Auto" mode. If we're importing from one
+    # that does to one that does not, guess at the proper mode based on the
+    # frequency
+
+    if mem.mode == "Auto" and mem.mode not in dstrf.valid_modes:
+        mem.mode = _guess_mode_by_frequency(mem.freq)
+
 def import_mem(dst_radio, src_features, src_mem, overrides={}):
     """Perform import logic to create a destination memory from
     src_mem that will be compatible with @dst_radio"""
@@ -138,6 +161,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
                _import_power,
                _import_tone,
                _import_dtcs,
+               _import_mode,
                ]
 
     for helper in helpers:

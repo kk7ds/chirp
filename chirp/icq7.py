@@ -43,7 +43,7 @@ u8 flags_whole[200];
 
 TMODES = ["", "", "Tone", "TSQL", "TSQL"] # last one is pocket beep
 DUPLEX = ["", "", "-", "+"]
-MODES  = ["FM", "WFM", "AM"]
+MODES  = ["FM", "WFM", "AM", "Auto"]
 STEPS =  [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
 @directory.register
@@ -79,7 +79,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        return (repr(self._memobj.memory[number]) +
+                repr(self._memobj.flags[number]))
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]

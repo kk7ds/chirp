@@ -60,7 +60,7 @@ CROSS_MODES = [
 ]
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
-         "DIG", "PKT", "NCW", "NCWR", "CWR", "P25"]
+         "DIG", "PKT", "NCW", "NCWR", "CWR", "P25", "Auto"]
 
 STD_6M_OFFSETS = [
     (51620000, 51980000, -500000),
@@ -810,7 +810,9 @@ class RadioFeatures:
             msg = ValidationWarning("Location %i is out of range" % mem.number)
             msgs.append(msg)
 
-        if self.valid_modes and mem.mode not in self.valid_modes:
+        if (self.valid_modes and
+            mem.mode not in self.valid_modes and
+            mem.mode != "Auto"):
             msg = ValidationError("Mode %s not supported" % mem.mode)
             msgs.append(msg)
 
