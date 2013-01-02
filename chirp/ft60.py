@@ -80,6 +80,29 @@ def _upload(radio):
             status.msg = "Cloning to radio"
             radio.status_fn(status)            
 
+def _decode_freq(freqraw):
+    freq = int(freqraw) * 10000
+    if freq > 8000000000:
+        freq = (freq - 8000000000) + 5000
+
+    if freq > 4000000000:
+        freq -= 4000000000
+        for i in range(0, 3):
+            freq += 2500
+            if chirp_common.required_step(freq) == 12.5:
+                break
+
+    return freq
+
+def _encode_freq(freq):
+    freqraw = freq / 10000
+    if ((freq / 1000) % 10) == 5:
+        freqraw += 800000
+    if chirp_common.is_fractional_step(freq):
+        freqraw += 400000
+    return freqraw
+
+
 MEM_FORMAT = """
 #seekto 0x0238;
 struct {
@@ -87,14 +110,13 @@ struct {
      unknown1:1,
      isnarrow:1,
      isam:1,
-     unknown1_1:2,
-     duplex:2;
+     duplex:4;
   bbcd freq[3];
   u8 unknown2:1,
      step:3, 
      unknown2_1:1,
      tmode:3;
-  u8 unknown3[3];
+  bbcd tx_freq[3];
   u8 power:2,
      tone:6;
   u8 unknown4:1,
@@ -125,7 +147,7 @@ struct {
 u8 checksum;
 """
 
-DUPLEX = ["", "", "-", "+"]
+DUPLEX = ["", "", "-", "+", "split"]
 TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
                 chirp_common.PowerLevel("Mid", watts=2.5),
@@ -205,20 +227,12 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.freq) * 10000
-        if mem.freq > 8000000000:
-            mem.freq = (mem.freq - 8000000000) + 5000
-
-        if mem.freq > 4000000000:
-            mem.freq -= 4000000000
-            for i in range(0, 3):
-                mem.freq += 2500
-                if chirp_common.required_step(mem.freq) == 12.5:
-                    break
-        
+        mem.freq = _decode_freq(_mem.freq)
         mem.offset = int(_mem.offset) * 50000
 
         mem.duplex = DUPLEX[_mem.duplex]
+        if mem.duplex == "split":
+            mem.offset = _decode_freq(_mem.tx_freq)
         mem.tmode = TMODES[_mem.tmode]
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
@@ -253,12 +267,13 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.used = 1
             print "Wiped"
 
-        _mem.freq = mem.freq / 10000
-        if ((mem.freq / 1000) % 10) == 5:
-            _mem.freq[0].set_bits(0x80)
-        if chirp_common.is_fractional_step(mem.freq):
-            _mem.freq[0].set_bits(0x40)
-        _mem.offset = mem.offset / 50000
+        _mem.freq = _encode_freq(mem.freq)
+        if mem.duplex == "split":
+            _mem.tx_freq = _encode_freq(mem.offset)
+            _mem.offset = 0
+        else:
+            _mem.tx_freq = 0
+            _mem.offset = mem.offset / 50000
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
