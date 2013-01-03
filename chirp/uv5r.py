@@ -147,6 +147,7 @@ DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
 RESUME_LIST = ["TO", "CO", "SE"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
 COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
+ALMOD_LIST = ["Site", "Tone", "Code"]
 TDRAB_LIST = ["Off", "A", "B"]
 PONMSG_LIST = ["Full", "Message"]
 
@@ -160,6 +161,7 @@ SETTING_LISTS = {
     "wtled" : COLOR_LIST,
     "rxled" : COLOR_LIST,
     "txled" : COLOR_LIST,
+    "almod" : ALMOD_LIST,
     "tdrab" : TDRAB_LIST,
     "ponmsg" : PONMSG_LIST,
 }
@@ -620,6 +622,11 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("tdrab", "Dual Watch Priority",
                           RadioSettingValueList(TDRAB_LIST,
                                                 TDRAB_LIST[_settings.tdrab]))
+        advanced.append(rs)
+
+        rs = RadioSetting("almod", "Alarm Mode",
+                          RadioSettingValueList(ALMOD_LIST,
+                                                ALMOD_LIST[_settings.almod]))
         advanced.append(rs)
 
         rs = RadioSetting("beep", "Beep",
