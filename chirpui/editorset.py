@@ -318,7 +318,7 @@ class EditorSet(gtk.VBox):
             common.log_exception()
             common.show_error(_("There was an error during "
                                 "export: {error}").format(error=e),
-                              self)
+                              self.parent_window)
             return
 
         if count <= 0:
