@@ -684,6 +684,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 COLOR_LIST[_settings.txled]))
         basic.append(rs)
 
+        rs = RadioSetting("roger", "Roger Beep",
+                          RadioSettingValueBoolean(_settings.roger))
+        basic.append(rs)
+
         try:
             _ani = self._memobj.ani.code
             rs = RadioSetting("ani.code", "ANI Code",
