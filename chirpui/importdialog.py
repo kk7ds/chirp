@@ -525,6 +525,18 @@ class ImportDialog(gtk.Dialog):
                 mem = self.src_radio.get_memory(i)
             except errors.InvalidMemoryLocation, e:
                 continue
+            except Exception, e:
+                self.__store.append(row=(False,
+                                         i,
+                                         i,
+                                         "ERROR",
+                                         chirp_common.format_freq(0),
+                                         "",
+                                         False,
+                                         str(e),
+                                         ))
+                self.record_use_of(i)
+                continue
             if mem.empty:
                 continue
 
