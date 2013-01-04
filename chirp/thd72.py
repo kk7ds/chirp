@@ -15,7 +15,7 @@
 
 from chirp import chirp_common, errors, util, directory
 from chirp import bitwise, memmap
-import time, struct
+import time, struct, sys
 
 DEBUG = True
 
@@ -162,11 +162,12 @@ EXCH_W = "W\x00\x00\x00\x00"
 
 # Uploads result in "MCP Error" and garbage data in memory
 # Clone driver disabled in favor of error-checking live driver.
-#@directory.register
+@directory.register
 class THD72Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
-    MODEL = "TH-D72"
+    MODEL = "TH-D72 (clone mode)"
+    HARDWARE_FLOW = sys.platform == "darwin"  # only OS X driver needs hw flow
 
     mem_upper_limit = 1022
     _memsize = 65536

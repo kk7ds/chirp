@@ -891,7 +891,7 @@ class TMD710Radio(KenwoodLiveRadio):
 @directory.register
 class THD72Radio(TMD710Radio):
     """Kenwood TH-D72"""
-    MODEL = "TH-D72"
+    MODEL = "TH-D72 (live mode)"
     HARDWARE_FLOW = sys.platform == "darwin" # only OS X driver needs hw flow
 
     def _parse_mem_spec(self, spec):
