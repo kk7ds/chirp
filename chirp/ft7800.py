@@ -363,7 +363,8 @@ class FT7800BankModel(chirp_common.BankModel):
 
     def get_bank_memories(self, bank):
         memories = []
-        for i in range(0, 1000):
+        upper = self._radio.get_features().memory_bounds[1]
+        for i in range(0, upper):
             _bitmap = self._radio._memobj.bank_channels[bank.index].bitmap[i/32]
             ishft = 31 - (i % 32)
             if _bitmap & (1 << ishft):
@@ -404,7 +405,7 @@ class FT7900Radio(FT7800Radio):
     MODEL = "FT-7900"
 
 MEM_FORMAT_8800 = """
-#seekto %s;
+#seekto 0x%X;
 struct {
   u8 used:1,
      unknown1:1,
@@ -433,6 +434,12 @@ struct {
      skip3:2;
 } flags[250];
 
+#seekto 0x%X;
+struct {
+   u32 bitmap[32];
+} bank_channels[20];
+
+
 #seekto 0x7B48;
 u8 checksum;
 """
@@ -448,16 +455,20 @@ class FT8800Radio(FTx800Radio):
     _block_lengths = [8, 22208, 1]
     _block_size = 64
 
-    _memstart = ""
+    _memstart = 0x0000
 
     def get_features(self):
         rf = FTx800Radio.get_features(self)
         rf.has_sub_devices = self.VARIANT == ""
+        rf.has_bank = True
         rf.memory_bounds = (1, 499)
         return rf
 
     def get_sub_devices(self):
         return [FT8800RadioLeft(self._mmap), FT8800RadioRight(self._mmap)]
+
+    def get_bank_model(self):
+        return FT7800BankModel(self)
 
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x56C7) ]
@@ -466,7 +477,8 @@ class FT8800Radio(FTx800Radio):
         if not self._memstart:
             return
 
-        self._memobj = bitwise.parse(MEM_FORMAT_8800 % self._memstart,
+        self._memobj = bitwise.parse(MEM_FORMAT_8800 % (self._memstart,
+                                                        self._bankstart),
                                      self._mmap)
 
     def _get_mem_offset(self, mem, _mem):
@@ -510,12 +522,15 @@ class FT8800Radio(FTx800Radio):
 class FT8800RadioLeft(FT8800Radio):
     """Yaesu FT-8800 Left VFO subdevice"""
     VARIANT = "Left"
-    _memstart = "0x0948"
+    _memstart = 0x0948
+    _bankstart = 0x4BC8
+
 
 class FT8800RadioRight(FT8800Radio):
     """Yaesu FT-8800 Right VFO subdevice"""
     VARIANT = "Right"
-    _memstart = "0x2948"
+    _memstart = 0x2948
+    _bankstart = 0x4BC8
 
 MEM_FORMAT_8900 = """
 #seekto 0x0708;
@@ -566,6 +581,7 @@ class FT8900Radio(FT8800Radio):
     def get_features(self):
         rf = FT8800Radio.get_features(self)
         rf.has_sub_devices = False
+        rf.has_bank = False
         rf.valid_modes = MODES
         rf.valid_bands = [( 28000000,  29700000),
                           ( 50000000,  54000000),
