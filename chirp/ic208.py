@@ -17,7 +17,7 @@ from chirp import chirp_common, icf, errors, directory
 from chirp import bitwise
 
 MEM_FORMAT = """
-struct {
+struct memory {
   u24 freq;
   u16 offset;  
   u8  power:2,
@@ -44,16 +44,19 @@ struct {
       name4:6,
       name5:6,
       name6:6;
-} memory[500];
+};
 
-#seekto 0x1FE0;
+struct memory memory[510];
+
 struct {
   u8 unknown1:1,
      empty:1,
      pskip:1,
      skip:1,
      bank:4;
-} flags[500];
+} flags[512];
+
+struct memory call[2];
 
 """
 
@@ -67,23 +70,10 @@ POWER = [chirp_common.PowerLevel("High", watts=50),
          chirp_common.PowerLevel("Mid", watts=15),
          ]
 
-IC208_SPECIAL = {
-    "C2" : 510,
-    "C1" : 511,
-    }
-IC208_SPECIAL_REV = {
-    510 : "C2",
-    511 : "C1",
-    }
-
-for i in range(0, 5):
-    idA = "%iA" % (i + 1)
-    idB = "%iB" % (i + 1)
-    num = 500 + i * 2
-    IC208_SPECIAL[idA] = num
-    IC208_SPECIAL[idB] = num + 1
-    IC208_SPECIAL_REV[num] = idA
-    IC208_SPECIAL_REV[num+1] = idB
+IC208_SPECIAL = []
+for i in range(1, 6):
+    IC208_SPECIAL.append("%iA" % i)
+    IC208_SPECIAL.append("%iB" % i)
 
 ALPHA_CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 NUMERIC_CHARSET = "0123456789+-=*/()|"
@@ -146,7 +136,7 @@ class IC208Radio(icf.IcomCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (1, 100)
+        rf.memory_bounds = (1, 500)
         rf.has_bank = True
         rf.valid_tuning_steps = list(STEPS)
         rf.valid_tmodes = list(TMODES)
@@ -157,11 +147,12 @@ class IC208Radio(icf.IcomCloneModeRadio):
         rf.valid_bands = [(118000000, 173995000),
                           (230000000, 549995000),
                           (810000000, 999990000)]
+        rf.valid_special_chans = ["C1", "C2"] + sorted(IC208_SPECIAL)
         return rf
 
     def get_raw_memory(self, number):
-        return (repr(self._memobj.memory[number - 1]) +
-                repr(self._memobj.flags[number - 1]))
+        _mem, _flg, index = self._get_memory(number)
+        return repr(_mem) + repr(_flg)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -181,11 +172,39 @@ class IC208Radio(icf.IcomCloneModeRadio):
         else:
             _flg.bank = bank
 
+    def _get_memory(self, number):
+        if isinstance(number, str):
+            if "A" in number or "B" in number:
+                index = 501 + IC208_SPECIAL.index(number)
+                _mem = self._memobj.memory[index - 1]
+                _flg = self._memobj.flags[index - 1]
+            else:
+                index = int(number[1]) - 1
+                _mem = self._memobj.call[index]
+                _flg = self._memobj.flags[510 + index]
+                index = index + -10
+        elif number <= 0:
+            index = 10 - abs(number)
+            _mem = self._memobj.call[index]
+            _flg = self._memobj.flags[index + 510]
+        else:
+            index = number
+            _mem = self._memobj.memory[number - 1]
+            _flg = self._memobj.flags[number - 1]
+
+        return _mem, _flg, index
+
+
     def get_memory(self, number):
-        _mem = self._memobj.memory[number - 1]
-        _flg = self._memobj.flags[number - 1]
+        _mem, _flg, index = self._get_memory(number)
+
         mem = chirp_common.Memory()
-        mem.number = number
+        mem.number = index
+        if isinstance(number, str):
+            mem.extd_number = number
+        else:
+            mem.skip = _flg.pskip and "P" or _flg.skip and "S" or ""
+
         if _flg.empty:
             mem.empty = True
             return mem
@@ -204,13 +223,11 @@ class IC208Radio(icf.IcomCloneModeRadio):
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.name = get_name(_mem)
         mem.power = POWER[_mem.power]
-        mem.skip = _flg.pskip and "P" or _flg.skip and "S" or ""
 
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number - 1]
-        _flg = self._memobj.flags[mem.number - 1]
+        _mem, _flg, index = self._get_memory(mem.number)
 
         if mem.empty:
             _flg.empty = True
@@ -238,6 +255,7 @@ class IC208Radio(icf.IcomCloneModeRadio):
             _mem.power = POWER.index(mem.power)
         except Exception:
             pass
-        _flg.skip = mem.skip == "S"
-        _flg.pskip = mem.skip == "P"
+        if not isinstance(mem.number, str):
+            _flg.skip = mem.skip == "S"
+            _flg.pskip = mem.skip == "P"
 
