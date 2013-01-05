@@ -681,6 +681,11 @@ class MemoryEditor(common.Editor):
             self.emit("changed")
 
     def hotkey(self, action):
+        if self._in_editing:
+            # Don't forward potentially-dangerous hotkeys to the menu
+            # handler if we're editing a cell right now
+            return
+
         self.emit("usermsg", "")
         (store, paths) = self.view.get_selection().get_selected_rows()
         if len(paths) == 0:
@@ -776,6 +781,12 @@ class MemoryEditor(common.Editor):
         column = self.view.get_column(col)
         column.set_visible(visible)
     
+    def cell_editing_started(self, rend, event, path):
+        self._in_editing = True
+
+    def cell_editing_stopped(self, *args):
+        self._in_editing = False
+
     def make_editor(self):
         types = tuple([x[1] for x in self.cols])
         self.store = gtk.ListStore(*types)
@@ -811,6 +822,10 @@ class MemoryEditor(common.Editor):
             if not _rend:
                 continue
             rend = _rend()
+            rend.connect('editing-started', self.cell_editing_started)
+            rend.connect('editing-canceled', self.cell_editing_stopped)
+            rend.connect('edited', self.cell_editing_stopped)
+
             if _type == TYPE_BOOLEAN:
                 #rend.set_property("activatable", True)
                 #rend.connect("toggled", handle_toggle, self.store, i)
@@ -1154,6 +1169,7 @@ class MemoryEditor(common.Editor):
         self.read_only = False
 
         self.need_refresh = False
+        self._in_editing = False
 
         self.lo_limit_adj = self.hi_limit_adj = None
         self.store = self.view = None
