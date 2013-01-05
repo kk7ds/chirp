@@ -255,7 +255,12 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
             levels = POWER_LEVELS_220
         else:
             levels = POWER_LEVELS
-        mem.power = levels[_mem.power]
+        try:
+            mem.power = levels[_mem.power]
+        except IndexError:
+            print "Radio reported invalid power level %s (in %s)" % (
+                _mem.power, levels)
+            mem.power = levels[0]
 
         for i in _mem.name:
             if i == "\xFF":
