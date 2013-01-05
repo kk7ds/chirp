@@ -816,6 +816,9 @@ class MemoryEditor(common.Editor):
 
         non_editable = ["Loc"]
 
+        unsupported_cols = self.get_unsupported_columns()
+        visible_cols = self.get_columns_visible()
+
         cols = {}
         i = 0
         for _cap, _type, _rend in self.cols:
@@ -854,7 +857,9 @@ class MemoryEditor(common.Editor):
             col.set_sort_column_id(i)
             col.set_resizable(True)
             col.set_min_width(1)
-            col.set_visible(not _cap.startswith("_"))
+            col.set_visible(not _cap.startswith("_") and
+                            _cap in visible_cols and
+                            not _cap in unsupported_cols)
             cols[_cap] = col
             i += 1
 
@@ -1136,7 +1141,7 @@ class MemoryEditor(common.Editor):
 
         return unsupported
 
-    def set_columns_visible(self):
+    def get_columns_visible(self):
         unsupported = self.get_unsupported_columns()
         driver = directory.radio_class_id(self.rthread.radio.__class__)
         user_visible = self._config.get(driver, "memedit_columns")
@@ -1145,13 +1150,7 @@ class MemoryEditor(common.Editor):
         else:
             # No setting for this radio, so assume all
             user_visible = [x[0] for x in self.cols if x not in unsupported]
-
-        for colname in [colspec[0] for colspec in self.cols]:
-            if colname.startswith("_"):
-                continue
-            bi = self.view.get_column(self.col(colname))
-            bi.set_visible(colname not in unsupported and \
-                               colname in user_visible)
+        return user_visible
 
     def __init__(self, rthread):
         common.Editor.__init__(self)
@@ -1206,8 +1205,6 @@ class MemoryEditor(common.Editor):
         self.choices["Mode"] = self._features.valid_modes
 
         self.root = vbox
-
-        self.set_columns_visible()
 
         self.prefill()
 
