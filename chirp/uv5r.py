@@ -150,6 +150,10 @@ COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
 ALMOD_LIST = ["Site", "Tone", "Code"]
 TDRAB_LIST = ["Off", "A", "B"]
 PONMSG_LIST = ["Full", "Message"]
+RPSTE_LIST = ["%s" % x for x in range(1, 11, 1)]
+RPSTE_LIST.insert(0, "OFF")
+STEDELAY_LIST = ["%s ms" % x for x in range(100, 1100, 100)]
+STEDELAY_LIST.insert(0, "OFF")
 
 SETTING_LISTS = {
     "step" : STEP_LIST,
@@ -164,6 +168,8 @@ SETTING_LISTS = {
     "almod" : ALMOD_LIST,
     "tdrab" : TDRAB_LIST,
     "ponmsg" : PONMSG_LIST,
+    "rpste" : RPSTE_LIST,
+    "stedelay" : STEDELAY_LIST,
 }
 
 def _do_status(radio, block):
@@ -699,7 +705,21 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             advanced.append(rs)
         except Exception:
             print ("Your ANI code is not five digits, which is not currently"
-                   " supported in CHIRP.")            
+                   " supported in CHIRP.")
+
+        rs = RadioSetting("ste", "Squelch Tail Eliminate (HT to HT)",
+                          RadioSettingValueBoolean(_settings.ste))
+        advanced.append(rs)
+
+        rs = RadioSetting("rpste", "Squelch Tail Eliminate (repeater)",
+                          RadioSettingValueList(RPSTE_LIST,
+                                                RPSTE_LIST[_settings.rpste]))
+        advanced.append(rs)
+
+        rs = RadioSetting("rptrl", "STE Repeater Delay",
+                          RadioSettingValueList(STEDELAY_LIST,
+                                                STEDELAY_LIST[_settings.rptrl]))
+        advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
             # Old image, without aux block
