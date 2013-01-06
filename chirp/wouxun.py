@@ -672,7 +672,61 @@ class KGUV6DRadio(KGUVD1PRadio):
         return rf
 
     def get_settings(self):
-        top = KGUVD1PRadio.get_settings(self)
+        freqranges = RadioSettingGroup("freqranges", "Freq ranges")
+        top = RadioSettingGroup("top", "All Settings", freqranges)
+
+        rs = RadioSetting("menu_available", "Menu Available",
+                          RadioSettingValueBoolean(
+                            self._memobj.settings.menu_available))
+        top.append(rs)
+
+        rs = RadioSetting("vhf_rx_start", "VHF RX Lower Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_rx_stop", "VHF RX Upper Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_start", "UHF RX Lower Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_rx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_rx_stop", "UHF RX Upper Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_rx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_start", "VHF TX Lower Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("vhf_tx_stop", "VHF TX Upper Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.vhf_tx_stop)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_start", "UHF TX Lower Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_tx_start)))
+        freqranges.append(rs)
+        rs = RadioSetting("uhf_tx_stop", "UHF TX Upper Limit (MHz)",
+                          RadioSettingValueInteger(1, 1000, 
+                                decode_freq(
+                                    self._memobj.freq_ranges.uhf_tx_stop)))
+        freqranges.append(rs)
+        
+        # tell the decoded ranges to UI
+        self.valid_freq = [
+            ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
+             (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000), 
+            ( decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
+             (decode_freq(self._memobj.freq_ranges.uhf_rx_stop)+1) * 1000000)]
 
         def _filter(name):
             filtered = ""
