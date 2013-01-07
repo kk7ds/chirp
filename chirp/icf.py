@@ -15,6 +15,7 @@
 
 import struct
 import re
+import time
 
 from chirp import chirp_common, errors, util, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -368,15 +369,20 @@ def _clone_to_radio(radio):
         frames += stream.get_frames()
 
     send_clone_frame(radio.pipe, CMD_CLONE_END, radio.get_endframe(), raw=True)
-    frames += stream.get_frames(True)
 
     if SAVE_PIPE:
         SAVE_PIPE.close()
         SAVE_PIPE = None
 
-    try:
-        result = frames[-1]
-    except IndexError:
+    for i in range(0, 10):
+        try:
+            frames += stream.get_frames(True)
+            result = frames[-1]
+        except IndexError:
+            print "Waiting for clone result..."
+            time.sleep(0.5)
+
+    if len(frames) == 0:
         raise errors.RadioError("Did not get clone result from radio")
 
     return result.payload[0] == '\x00'
