@@ -177,6 +177,8 @@ class THD72Radio(chirp_common.CloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 1031)
+        rf.valid_bands = [(118000000, 174000000),
+                          (320000000, 524000000)]
         rf.has_cross = True
         rf.can_odd_split = True
         rf.has_dtcs_polarity = False
@@ -198,7 +200,10 @@ class THD72Radio(chirp_common.CloneModeRadio):
     def _detect_baud(self):
         for baud in [9600, 19200, 38400, 57600]:
             self.pipe.setBaudrate(baud)
-            self.pipe.write("\r\r")
+            try:
+                self.pipe.write("\r\r")
+            except:
+                break
             self.pipe.read(32)
             try:
                 id = self.get_id()

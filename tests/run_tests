@@ -696,6 +696,8 @@ class TestCaseClone(TestCase):
             return ""
         def write(self, data):
             pass
+        def setBaudrate(self, rate):
+            pass
         def setTimeout(self, timeout):
             pass
         def setParity(self, parity):
