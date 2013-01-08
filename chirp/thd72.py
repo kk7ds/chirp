@@ -232,7 +232,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
             name = str(self._memobj.wx_name[number].name) + '\xff'
         else:
             return ''
-        return name[:name.index('\xff')]
+        return name[:name.index('\xff')].rstrip()
 
     def set_channel_name(self, number, name):
         name = name[:8] + '\xff'*8
