@@ -51,13 +51,15 @@ conf = config.get()
 manual_language = conf.get("language", "state")
 langs = []
 if manual_language and manual_language != "Auto":
-    lang_codes = { "English" : "en_US",
-                   "Polish"  : "pl",
-                   "Italian" : "it",
-                   "Dutch"   : "nl",
-                   "German"  : "de",
+    lang_codes = { "English"   : "en_US",
+                   "Polish"    : "pl",
+                   "Italian"   : "it",
+                   "Dutch"     : "nl",
+                   "German"    : "de",
+                   "Hungarian" : "hu",
                    }
     try:
+        print lang_codes[manual_language]
         langs = [lang_codes[manual_language]]
     except KeyError:
         print "Unsupported language `%s'" % manual_language

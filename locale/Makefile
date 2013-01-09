@@ -1,4 +1,4 @@
-LOCALES = en_US pl it nl de
+LOCALES = en_US pl it nl de hu
 MOFILES = $(patsubst %,%/LC_MESSAGES/CHIRP.mo,$(LOCALES))
 
 COPY="Dan Smith <dsmith@danplanet.com>"

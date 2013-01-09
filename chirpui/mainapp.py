@@ -1177,7 +1177,8 @@ If you think that it is valid, you can select a radio model below to force an op
             devaction.set_visible(action.get_active())
 
     def do_change_language(self):
-        langs = ["Auto", "English", "Polish", "Italian", "Dutch", "German"]
+        langs = ["Auto", "English", "Polish", "Italian", "Dutch", "German",
+                 "Hungarian"]
         d = inputdialog.ChoiceDialog(langs, parent=self,
                                      title="Choose Language")
         d.label.set_text(_("Choose a language or Auto to use the "
