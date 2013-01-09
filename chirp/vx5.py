@@ -18,6 +18,19 @@ from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 
 MEM_FORMAT = """
+#seekto 0x002A;
+struct {
+  u8 current_member;
+} bank_used[5];
+
+#seekto 0x0032;
+struct {
+  struct {
+    u8 status;
+    u8 channel;
+  } members[24];
+} bank_groups[5];
+
 #seekto 0x012A;
 struct {
   u8 zeros:4,
@@ -49,6 +62,9 @@ struct {
      dtcs:7;
   u8 unknown9;
 } memory[220];
+
+#seekto 0x1D03;
+u8 current_bank;
 """
 
 TMODES = ["", "Tone", "TSQL", "DTCS"]
@@ -64,6 +80,75 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
+
+class VX5BankModel(chirp_common.BankModel):
+    def get_num_banks(self):
+        return 5
+
+    def get_banks(self):
+        banks = []
+        for i in range(0, self.get_num_banks()):
+            bank = chirp_common.Bank(self, "%i" % (i+1), "MG%i" % (i+1))
+            bank.index = i
+            banks.append(bank)
+        return banks
+
+    def add_memory_to_bank(self, memory, bank):
+        _members = self._radio._memobj.bank_groups[bank.index].members
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        for i in range(0, len(_members)):
+            if _members[i].status == 0xFF:
+                #print "empty found, inserting %d at %d" % (memory.number, i)
+                if self._radio._memobj.current_bank == 0xFF:
+                    self._radio._memobj.current_bank = bank.index
+                _members[i].status = 0x00
+                _members[i].channel = memory.number - 1
+                _bank_used.current_member = i
+                return True
+        raise Exception(_("{bank} is full").format(bank=bank))
+
+    def remove_memory_from_bank(self, memory, bank):
+        _members = self._radio._memobj.bank_groups[bank.index].members
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+
+        found = False
+        remaining_members = 0
+        for i in range(0, len(_members)):
+            if _members[i].status == 0x00:
+                if _members[i].channel == (memory.number - 1):
+                    _members[i].status = 0xFF
+                    found = True
+                else:
+                    remaining_members += 1
+
+        if not found:
+            raise Exception(_("Memory {num} not in "
+                              "bank {bank}").format(num=memory.number,
+                                                    bank=bank))
+        if not remaining_members:
+            _bank_used.current_member = 0xFF
+
+    def get_bank_memories(self, bank):
+        memories = []
+
+        _members = self._radio._memobj.bank_groups[bank.index].members
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+
+        if _bank_used.current_member == 0xFF:
+            return memories
+
+        for member in _members:
+            if member.status == 0xFF:
+                continue
+            memories.append(self._radio.get_memory(member.channel+1))
+        return memories
+
+    def get_memory_banks(self, memory):
+        banks = []
+        for bank in self.get_banks():
+            if memory.number in [x.number for x in self.get_bank_memories(bank)]:
+                    banks.append(bank)
+        return banks
 
 @directory.register
 class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -82,7 +167,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank = False
+        rf.has_bank = True
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
         rf.valid_modes = MODES + ["NFM"]
@@ -157,6 +242,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             return
         _flg.visible = not mem.empty
         if mem.empty:
+            self._wipe_memory_banks(mem)
             return
 
         _mem.freq = int(mem.freq / 1000)
@@ -184,3 +270,6 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize
+
+    def get_bank_model(self):
+        return VX5BankModel(self)
