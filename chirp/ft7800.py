@@ -17,6 +17,8 @@ import time
 from chirp import chirp_common, yaesu_clone, memmap, directory
 from chirp import bitwise, errors
 
+from collections import defaultdict
+
 ACK = chr(0x06)
 
 MEM_FORMAT = """
@@ -333,6 +335,20 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
 
 class FT7800BankModel(chirp_common.BankModel):
     """Yaesu FT-7800/7900 bank model"""
+    def __init__(self, radio):
+        chirp_common.BankModel.__init__(self, radio)
+        self.__b2m_cache = defaultdict(list)
+        self.__m2b_cache = defaultdict(list)
+
+    def __precache(self):
+        if self.__b2m_cache:
+            return
+
+        for bank in self.get_banks():
+            self.__b2m_cache[bank.index] = self._get_bank_memories(bank)
+            for memnum in self.__b2m_cache[bank.index]:
+                self.__m2b_cache[memnum].append(bank.index)
+
     def get_num_banks(self):
         return 20
 
@@ -346,12 +362,18 @@ class FT7800BankModel(chirp_common.BankModel):
         return banks
 
     def add_memory_to_bank(self, memory, bank):
+        self.__precache()
+
         index = memory.number - 1
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
         _bitmap.bitmap[index / 32] |= (1 << ishft)
+        self.__m2b_cache[memory.number].append(bank.index)
+        self.__b2m_cache[bank.index].append(memory.number)
 
     def remove_memory_from_bank(self, memory, bank):
+        self.__precache()
+
         index = memory.number - 1
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
@@ -360,24 +382,30 @@ class FT7800BankModel(chirp_common.BankModel):
                             "not in bank {bank}".format(num=memory.number,
                                                            bank=bank))
         _bitmap.bitmap[index / 32] &= ~(1 << ishft)
+        self.__b2m_cache[bank.index].remove(memory.number)
+        self.__m2b_cache[memory.number].remove(bank.index)
 
-    def get_bank_memories(self, bank):
+    def _get_bank_memories(self, bank):
         memories = []
         upper = self._radio.get_features().memory_bounds[1]
         for i in range(0, upper):
             _bitmap = self._radio._memobj.bank_channels[bank.index].bitmap[i/32]
             ishft = 31 - (i % 32)
             if _bitmap & (1 << ishft):
-                memories.append(self._radio.get_memory(i + 1))
+                memories.append(i + 1)
         return memories
 
+    def get_bank_memories(self, bank):
+        self.__precache()
+
+        return [self._radio.get_memory(n)
+                for n in self.__b2m_cache[bank.index]]
+
     def get_memory_banks(self, memory):
-        banks = []
-        for bank in self.get_banks():
-            if memory.number in \
-                    [x.number for x in self.get_bank_memories(bank)]:
-                banks.append(bank)
-        return banks
+        self.__precache()
+
+        _banks = self.get_banks()
+        return [_banks[b] for b in self.__m2b_cache[memory.number]]
 
 @directory.register
 class FT7800Radio(FTx800Radio):
@@ -465,7 +493,7 @@ class FT8800Radio(FTx800Radio):
         rf = FTx800Radio.get_features(self)
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_bank = True
-        rf.memory_bounds = (1, 499)
+        rf.memory_bounds = (1, 500)
         return rf
 
     def get_sub_devices(self):
