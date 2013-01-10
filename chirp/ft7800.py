@@ -338,8 +338,8 @@ class FT7800BankModel(chirp_common.BankModel):
 
     def get_banks(self):
         banks = []
-        for i in range(0, 20):
-            bank = chirp_common.Bank(self, "%i" % i, "BANK-%i" % i)
+        for i in range(0, self.get_num_banks()):
+            bank = chirp_common.Bank(self, "%i" % i, "BANK-%i" % (i + 1))
             bank.index = i
             banks.append(bank)
 
@@ -436,13 +436,17 @@ struct {
 
 #seekto 0x%X;
 struct {
-   u32 bitmap[32];
-} bank_channels[20];
+   u32 bitmap[16];
+} bank_channels[10];
 
 
 #seekto 0x7B48;
 u8 checksum;
 """
+
+class FT8800BankModel(FT7800BankModel):
+    def get_num_banks(self):
+        return 10
 
 @directory.register
 class FT8800Radio(FTx800Radio):
@@ -468,7 +472,7 @@ class FT8800Radio(FTx800Radio):
         return [FT8800RadioLeft(self._mmap), FT8800RadioRight(self._mmap)]
 
     def get_bank_model(self):
-        return FT7800BankModel(self)
+        return FT8800BankModel(self)
 
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x56C7) ]
