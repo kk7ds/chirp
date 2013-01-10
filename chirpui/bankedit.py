@@ -15,6 +15,7 @@
 
 import gtk
 import gobject
+import time
 
 from gobject import TYPE_INT, TYPE_STRING, TYPE_BOOLEAN
 
@@ -22,15 +23,15 @@ from chirp import chirp_common
 from chirpui import common, miscwidgets
 
 class BankNamesJob(common.RadioJob):
-    def __init__(self, editor, cb):
+    def __init__(self, bm, editor, cb):
         common.RadioJob.__init__(self, cb, None)
+        self.__bm = bm
         self.__editor = editor
 
     def execute(self, radio):
         self.__editor.banks = []
 
-        bm = radio.get_bank_model()
-        banks = bm.get_banks()
+        banks = self.__bm.get_banks()
         for bank in banks:
             self.__editor.banks.append((bank, bank.get_name()))
 
@@ -48,7 +49,7 @@ class BankNameEditor(common.Editor):
 
             self.listw.connect("item-set", self.bank_changed)
 
-        job = BankNamesJob(self, got_banks)
+        job = BankNamesJob(self._bm, self, got_banks)
         job.set_desc(_("Retrieving bank information"))
         self.rthread.submit(job)
 
@@ -108,8 +109,9 @@ class BankNameEditor(common.Editor):
         self._loaded = True
 
 class MemoryBanksJob(common.RadioJob):
-    def __init__(self, cb, number):
+    def __init__(self, bm, cb, number):
         common.RadioJob.__init__(self, cb, None)
+        self.__bm = bm
         self.__number = number
 
     def execute(self, radio):
@@ -118,12 +120,11 @@ class MemoryBanksJob(common.RadioJob):
             banks = []
             indexes = []
         else:
-            bm = radio.get_bank_model()
-            banks = bm.get_memory_banks(mem)
+            banks = self.__bm.get_memory_banks(mem)
             indexes = []
-            if isinstance(bm, chirp_common.BankIndexInterface):
+            if isinstance(self.__bm, chirp_common.BankIndexInterface):
                 for bank in banks:
-                    indexes.append(bm.get_memory_index(mem, bank))
+                    indexes.append(self.__bm.get_memory_index(mem, bank))
         self.cb(mem, banks, indexes, *self.cb_args)
             
 class BankMembershipEditor(common.Editor):
@@ -144,7 +145,7 @@ class BankMembershipEditor(common.Editor):
                 indexes.append(index)
             iter = self._store.iter_next(iter)
 
-        index_bounds = self.rthread.radio.get_bank_model().get_index_bounds()
+        index_bounds = self._bm.get_index_bounds()
         num_indexes = index_bounds[1] - index_bounds[0]
         indexes.sort()
         for i in range(0, num_indexes):
@@ -197,7 +198,7 @@ class BankMembershipEditor(common.Editor):
 
             job = common.RadioJob(do_refresh_memory,
                                   "set_memory_index", memory, bank, index)
-            job.set_target(self.rthread.radio.get_bank_model())
+            job.set_target(self._bm)
             job.set_desc(_("Updating bank index "
                            "for memory {num}").format(num=memory.number))
             self.rthread.submit(job)
@@ -205,7 +206,7 @@ class BankMembershipEditor(common.Editor):
         def do_bank_adjustment(memory):
             # Step 1: Do the bank add/remove
             job = common.RadioJob(do_bank_index, fn, memory, bank)
-            job.set_target(self.rthread.radio.get_bank_model())
+            job.set_target(self._bm)
             job.set_cb_args(memory)
             job.set_desc(_("Updating bank information "
                            "for memory {num}").format(num=memory.number))
@@ -227,7 +228,7 @@ class BankMembershipEditor(common.Editor):
             # Step 2: Set the index
             job = common.RadioJob(refresh_memory, "set_memory_index",
                                   memory, banks[0], int(new))
-            job.set_target(self.rthread.radio.get_bank_model())
+            job.set_target(self._bm)
             job.set_desc(_("Setting index "
                            "for memory {num}").format(num=memory.number))
             self.rthread.submit(job)
@@ -236,7 +237,7 @@ class BankMembershipEditor(common.Editor):
             # Step 1: Get the first/only bank
             job = common.RadioJob(set_index, "get_memory_banks", memory)
             job.set_cb_args(memory)
-            job.set_target(self.rthread.radio.get_bank_model())
+            job.set_target(self._bm)
             job.set_desc(_("Getting bank for "
                            "memory {num}").format(num=memory.number))
             self.rthread.submit(job)
@@ -251,6 +252,7 @@ class BankMembershipEditor(common.Editor):
         self.rthread = rthread
         self.editorset = editorset
         self._rf = rthread.radio.get_features()
+        self._bm = rthread.radio.get_bank_model()
 
         self._view_cols = [
             (_("Loc"),       TYPE_INT,     gtk.CellRendererText, ),
@@ -274,7 +276,7 @@ class BankMembershipEditor(common.Editor):
 
         self._index_cache = []
 
-        for i in range(0, self.rthread.radio.get_bank_model().get_num_banks()):
+        for i in range(0, self._bm.get_num_banks()):
             label = "Bank %i" % (i+1)
             cols.append((label, TYPE_BOOLEAN, gtk.CellRendererToggle))
 
@@ -341,8 +343,10 @@ class BankMembershipEditor(common.Editor):
                 row.append(self.banks[i][0] in banks)
                 
             self._store.set(iter, *tuple(row))
+            if memory.number == self._rf.memory_bounds[1] - 1:
+                print "Got all bank info in %s" % (time.time() - self._start)
 
-        job = MemoryBanksJob(got_mem, number)
+        job = MemoryBanksJob(self._bm, got_mem, number)
         job.set_desc(_("Getting bank information "
                        "for memory {num}").format(num=number))
         self.rthread.submit(job)
@@ -364,7 +368,7 @@ class BankMembershipEditor(common.Editor):
             if and_memories:
                 self.refresh_all_memories()
 
-        job = BankNamesJob(self, got_banks)
+        job = BankNamesJob(self._bm, self, got_banks)
         job.set_desc(_("Getting bank information"))
         self.rthread.submit(job)
 
@@ -373,6 +377,7 @@ class BankMembershipEditor(common.Editor):
         if self._loaded:
             return
 
+        self._start = time.time()
         self.refresh_banks(True)
 
         self._loaded = True
