@@ -362,6 +362,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.has_settings = True
         rf.has_bank = False
         rf.has_cross = True
+        rf.has_rx_dtcs = True
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_name_length = 7
@@ -369,7 +370,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
-                                "->Tone", "->DTCS", "DTCS->"]
+                                "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = UV5R_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
@@ -473,7 +474,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 dtcs_pol[1] = "R"
             else:
                 index = _mem.rxtone - 1
-            mem.dtcs = UV5R_DTCS[index]
+            mem.rx_dtcs = UV5R_DTCS[index]
         else:
             print "Bug: rxtone is %04x" % _mem.rxtone
 
@@ -481,7 +482,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             mem.tmode = "Tone"
         elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
             mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS":
+        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
             mem.tmode = "DTCS"
         elif rxmode or txmode:
             mem.tmode = "Cross"
@@ -549,7 +550,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             if rxmode == "Tone":
                 _mem.rxtone = int(mem.ctone * 10)
             elif rxmode == "DTCS":
-                _mem.rxtone = UV5R_DTCS.index(mem.dtcs) + 1
+                _mem.rxtone = UV5R_DTCS.index(mem.rx_dtcs) + 1
             else:
                 _mem.rxtone = 0
         else:
