@@ -188,11 +188,7 @@ class TestCase:
                         ):
                 continue
             elif k == "rx_dtcs" and (not rf.has_rx_dtcs or
-                        not (
-                            a.tmode == "DTCS" or
-                            (a.tmode == "Cross" and rx_mode == "DTCS")
-                        )
-                    ):
+                        not (a.tmode == "Cross" and rx_mode == "DTCS")):
                 continue
             elif k == "offset" and not a.duplex:
                 continue
