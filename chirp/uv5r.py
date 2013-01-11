@@ -143,6 +143,7 @@ struct {
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
 TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
+VOICE_LIST = ["Off", "English", "Chinese"]
 DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
 RESUME_LIST = ["TO", "CO", "SE"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
@@ -158,6 +159,7 @@ STEDELAY_LIST.insert(0, "OFF")
 SETTING_LISTS = {
     "step" : STEP_LIST,
     "timeout" : TIMEOUT_LIST,
+    "voice" : VOICE_LIST,
     "dtmfst" : DTMFST_LIST,
     "screv" : RESUME_LIST,
     "mdfa" : MODE_LIST,
@@ -645,10 +647,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 TIMEOUT_LIST[_settings.timeout]))
         basic.append(rs)
 
-        rs = RadioSetting("voice", "Voice",
-                          RadioSettingValueBoolean(_settings.voice))
-        advanced.append(rs)
-        
+        if self._my_version() >= 251:
+            rs = RadioSetting("voice", "Voice",
+                              RadioSettingValueList(VOICE_LIST,
+                                                    VOICE_LIST[_settings.voice]))
+            advanced.append(rs)
+        else:
+            rs = RadioSetting("voice", "Voice",
+                              RadioSettingValueBoolean(_settings.voice))
+            advanced.append(rs)
+
         rs = RadioSetting("screv", "Scan Resume",
                           RadioSettingValueList(RESUME_LIST,
                                                 RESUME_LIST[_settings.screv]))
