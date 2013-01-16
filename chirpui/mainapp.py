@@ -859,6 +859,10 @@ If you think that it is valid, you can select a radio model below to force an op
                                             ("query=%s\n" % query) +
                                             ("\n") +
                                             ("\n".join(radio.errors)))
+        except errors.InvalidDataError, e:
+            common.show_error(str(e))
+            self.window.set_cursor(None)
+            return
         except Exception, e:
             common.log_exception()
 
