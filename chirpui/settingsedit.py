@@ -44,7 +44,12 @@ class SettingsEditor(common.Editor):
         self._table = gtk.Table(20, 3)
         self._table.set_col_spacings(10)
         self._table.show()
-        self.root.pack_start(self._table, 1, 1, 1)
+
+        sw = gtk.ScrolledWindow()
+        sw.add_with_viewport(self._table)
+        sw.show()
+
+        self.root.pack_start(sw, 1, 1, 1)
 
         self._index = 0
 
