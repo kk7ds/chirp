@@ -193,6 +193,7 @@ class FT857Radio(ft817.FT817Radio):
         rf.has_rx_dtcs = True
         rf.valid_tmodes = self.TMODES_REV.keys()
         rf.valid_cross_modes = self.CROSS_MODES_REV.keys()
+        rf.has_settings = False # not implemented yet
         return rf
 
     def _get_duplex(self, mem, _mem):
