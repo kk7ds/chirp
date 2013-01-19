@@ -106,6 +106,44 @@ struct {
      mrchb:7;
 } wmchannel;
 
+#seekto 0x0F10;
+struct {
+  u8 freq[8];
+  u8 unknown1;
+  u8 offset[4];
+  u8 unknown2;
+  ul16 rxtone;
+  ul16 txtone;
+  u8 band;
+  u8 unknown3;
+  u8 scode;
+  u8 unknown4;
+  u8 step:4,
+     unknown:4;
+  u8 txpower:1,
+     widenarr:1,
+     unknown5:6;
+} vfoa;
+
+#seekto 0x0F30;
+struct {
+  u8 freq[8];
+  u8 unknown1;
+  u8 offset[4];
+  u8 unknown2;
+  ul16 rxtone;
+  ul16 txtone;
+  u8 band;
+  u8 unknown3;
+  u8 scode;
+  u8 unknown4;
+  u8 step:4,
+     unknown:4;
+  u8 txpower:1,
+     widenarr:1,
+     unknown5:6;
+} vfob;
+
 #seekto 0x1000;
 struct {
   u8 unknown1[8];
@@ -153,6 +191,8 @@ struct {
 
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
+STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+STEP291_LIST = [str(x) for x in STEPS]
 TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
 VOICE_LIST = ["Off", "English", "Chinese"]
 DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
@@ -166,9 +206,11 @@ RPSTE_LIST = ["%s" % x for x in range(1, 11, 1)]
 RPSTE_LIST.insert(0, "OFF")
 STEDELAY_LIST = ["%s ms" % x for x in range(100, 1100, 100)]
 STEDELAY_LIST.insert(0, "OFF")
+SCODE_LIST = ["%s" % x for x in range(1, 16)]
 
 SETTING_LISTS = {
     "step" : STEP_LIST,
+    "step291" : STEP291_LIST,
     "timeout" : TIMEOUT_LIST,
     "voice" : VOICE_LIST,
     "dtmfst" : DTMFST_LIST,
@@ -183,6 +225,7 @@ SETTING_LISTS = {
     "ponmsg" : PONMSG_LIST,
     "rpste" : RPSTE_LIST,
     "stedelay" : STEDELAY_LIST,
+    "scode" : SCODE_LIST,
 }
 
 def _do_status(radio, block):
@@ -608,16 +651,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(0, 9, _settings.squelch))
         basic.append(rs)
 
-        tuning_steps = list(STEP_LIST) # Make a copy of the main list
-        if self._my_version() >= 291:  # update list for BFB291 and newer
-            tuning_steps.insert(5, "20.0")
-            tuning_steps.append("50.0")
-
-        rs = RadioSetting("step", "Tuning Step",
-                          RadioSettingValueList(tuning_steps,
-                                                tuning_steps[_settings.step]))
-        advanced.append(rs)
-
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
                           RadioSettingValueList(DTMFST_LIST,
                                                 DTMFST_LIST[_settings.dtmfst]))
@@ -847,6 +880,69 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
                           RadioSettingValueInteger(0, 127, _mrcnb))
         workmode.append(rs)
+
+        options = ["VHF", "UHF"]
+        rs = RadioSetting("vfoa.band", "VFO A Band",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfoa.band]))
+        workmode.append(rs)
+
+        rs = RadioSetting("vfob.band", "VFO B Band",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfob.band]))
+        workmode.append(rs)
+
+        options = ["High", "Low"]
+        rs = RadioSetting("vfoa.txpower", "VFO A Power",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfoa.txpower]))
+        workmode.append(rs)
+
+        rs = RadioSetting("vfob.txpower", "VFO B Power",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfob.txpower]))
+        workmode.append(rs)
+
+        options = ["Wide", "Narrow"]
+        rs = RadioSetting("vfoa.widenarr", "VFO A Bandwidth",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfoa.widenarr]))
+        workmode.append(rs)
+
+        rs = RadioSetting("vfob.widenarr", "VFO B Bandwidth",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfob.widenarr]))
+        workmode.append(rs)
+
+        options = ["%s" % x for x in range(1, 16)]
+        rs = RadioSetting("vfoa.scode", "VFO A PTT-ID",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfoa.scode]))
+        workmode.append(rs)
+
+        rs = RadioSetting("vfob.scode", "VFO B PTT-ID",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfob.scode]))
+        workmode.append(rs)
+
+        if self._my_version() >= 291:
+            rs = RadioSetting("vfoa.step", "VFO A Tuning Step",
+                              RadioSettingValueList(STEP291_LIST,
+                                                    STEP291_LIST[self._memobj.vfoa.step]))
+            workmode.append(rs)
+            rs = RadioSetting("vfob.step", "VFO B Tuning Step",
+                              RadioSettingValueList(STEP291_LIST,
+                                                    STEP291_LIST[self._memobj.vfob.step]))
+            workmode.append(rs)
+        else:
+            rs = RadioSetting("vfoa.step", "VFO A Tuning Step",
+                              RadioSettingValueList(STEP_LIST,
+                                                    STEP_LIST[self._memobj.vfoa.step]))
+            workmode.append(rs)
+            rs = RadioSetting("vfob.step", "VFO B Tuning Step",
+                              RadioSettingValueList(STEP_LIST,
+                                                    STEP_LIST[self._memobj.vfob.step]))
+            workmode.append(rs)
 
         return group
 
