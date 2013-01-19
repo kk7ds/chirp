@@ -730,6 +730,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 STEDELAY_LIST[_settings.rptrl]))
         advanced.append(rs)
 
+        rs = RadioSetting("extra.reset", "RESET Menu",
+                          RadioSettingValueBoolean(self._memobj.extra.reset))
+        advanced.append(rs)
+
+        rs = RadioSetting("extra.menu", "All Menus",
+                          RadioSettingValueBoolean(self._memobj.extra.menu))
+        advanced.append(rs)
+
         if len(self._mmap.get_packed()) == 0x1808:
             # Old image, without aux block
             return group
