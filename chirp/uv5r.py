@@ -86,14 +86,25 @@ struct {
 
 #seekto 0x0E52;
 struct {
-  u8 disp_ab:1,
+  u8 displayab:1,
      unknown1:2,
      fmradio:1,
      alarm:1,
      unknown2:1,
      reset:1,
      menu:1;
+  u8 unknown3;
+  u8 workmode;
+  u8 keylock;
 } extra;
+
+#seekto 0x0E7E;
+struct {
+  u8 unused1:1,
+     mrcha:7;
+  u8 unused2:1,
+     mrchb:7;
+} wmchannel;
 
 #seekto 0x1000;
 struct {
@@ -807,6 +818,35 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("%s.uhf.enable" % limit, "UHF TX Enabled",
                           RadioSettingValueBoolean(uhf_limit.enable))
         other.append(rs)
+
+        workmode = RadioSettingGroup("workmode", "Work Mode Settings")
+        group.append(workmode)
+
+        options = ["A", "B"]
+        rs = RadioSetting("extra.displayab", "Display",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.extra.displayab]))
+        workmode.append(rs)
+
+        options = ["Frequency", "Channel"]
+        rs = RadioSetting("extra.workmode", "VFO/MR Mode",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.extra.workmode]))
+        workmode.append(rs)
+
+        rs = RadioSetting("extra.keylock", "Keypad Lock",
+                          RadioSettingValueBoolean(self._memobj.extra.keylock))
+        workmode.append(rs)
+
+        _mrcna = self._memobj.wmchannel.mrcha
+        rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
+                          RadioSettingValueInteger(0, 127, _mrcna))
+        workmode.append(rs)
+
+        _mrcnb = self._memobj.wmchannel.mrchb
+        rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
+                          RadioSettingValueInteger(0, 127, _mrcnb))
+        workmode.append(rs)
 
         return group
 
