@@ -20,7 +20,7 @@ from chirp import chirp_common, yaesu_clone, util, memmap, errors, directory
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean
+    RadioSettingValueBoolean, RadioSettingValueString
 import time, os
 
 CMD_ACK = 0x06
@@ -198,10 +198,18 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         #seekto 0x431;
         struct mem_struct memory[200];
         struct mem_struct pms[2];
-        
+
+        #seekto 0x18cf;
+        u8 callsign[7];
+
         #seekto 0x1979;
         struct mem_struct sixtymeterchannels[5];
     """
+    _CALLSIGN_CHARSET = [chr(x) for x in range(ord("0"), ord("9")+1) +
+                                        range(ord("A"), ord("Z")+1) + 
+                                        [ord(" ")]]
+    _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
+                                    range(0,len(_CALLSIGN_CHARSET))))
 
     # WARNING Index are hard wired in memory management code !!!
     SPECIAL_MEMORIES = {
@@ -917,6 +925,13 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                                         options[_settings.uhf_antenna]))
         antenna.append(rs)
 
+        s = RadioSettingValueString(0, 7, 
+                            ''.join([self._CALLSIGN_CHARSET[x] for x in 
+                                        self._memobj.callsign]))
+        s.set_charset(self._CALLSIGN_CHARSET)
+        rs = RadioSetting("callsign", "Callsign", s)
+        cw.append(rs)
+
         return top
 
     def set_settings(self, settings):
@@ -936,9 +951,14 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                     obj = _settings
                     setting = element.get_name()
                 if os.getenv("CHIRP_DEBUG"):
-	                print "Setting %s(%s) <= %s" % (setting, getattr(obj, setting), element.value)
+	                print "Setting %s(%s) <= %s" % (setting, 
+                                    getattr(obj, setting), element.value)
                 if setting == "contrast":
                     setattr(obj, setting, int(element.value)+1)
+                elif setting == "callsign":
+                    self._memobj.callsign = \
+                        [self._CALLSIGN_CHARSET_REV[x] for x in 
+                                                        str(element.value)]
                 else:
                     setattr(obj, setting, element.value)
             except Exception, e:
