@@ -440,7 +440,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-        print self.get_settings()
 
     def sync_in(self):
         try:
@@ -641,7 +640,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             return int(version_tag[idx:idx+3])
         raise Exception("Unrecognized firmware version string")
 
-    def get_settings(self):
+    def _get_settings(self):
         _settings = self._memobj.settings[0]
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
@@ -945,6 +944,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             workmode.append(rs)
 
         return group
+
+    def get_settings(self):
+        try:
+            return self._get_settings()
+        except:
+            import traceback
+            print "Failed to parse settings:"
+            traceback.print_exc()
+            return None
 
     def set_settings(self, settings):
         _settings = self._memobj.settings[0]
