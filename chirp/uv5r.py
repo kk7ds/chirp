@@ -114,12 +114,14 @@ struct {
   u8 unknown2;
   ul16 rxtone;
   ul16 txtone;
-  u8 band;
+  u8 unused1:7,
+     band:1;
   u8 unknown3;
-  u8 scode;
+  u8 unused2:4,
+     scode:4;
   u8 unknown4;
-  u8 step:4,
-     unknown:4;
+  u8 unused3:5,
+     step:3;
   u8 txpower:1,
      widenarr:1,
      unknown5:6;
@@ -133,12 +135,14 @@ struct {
   u8 unknown2;
   ul16 rxtone;
   ul16 txtone;
-  u8 band;
+  u8 unused1:7,
+     band:1;
   u8 unknown3;
-  u8 scode;
+  u8 unused2:4,
+     scode:4;
   u8 unknown4;
-  u8 step:4,
-     unknown:4;
+  u8 unused3:5,
+     step:3;
   u8 txpower:1,
      widenarr:1,
      unknown5:6;
