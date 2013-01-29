@@ -365,7 +365,7 @@ def _do_upload(radio):
     print "Image is %s" % repr(image_version)
     print "Radio is %s" % repr(radio_version)
 
-    if "Ver  BFB" not in radio_version:
+    if "BFB" not in radio_version:
         raise errors.RadioError("Unsupported firmware version: `%s'" %
                                 radio_version)
 
