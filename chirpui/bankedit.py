@@ -81,6 +81,7 @@ class BankNameEditor(common.Editor):
     def __init__(self, rthread):
         common.Editor.__init__(self)
         self.rthread = rthread
+        self._bm = rthread.radio.get_bank_model()
 
         types = [(gobject.TYPE_STRING, "key"),
                  (gobject.TYPE_STRING, _("Bank")),
