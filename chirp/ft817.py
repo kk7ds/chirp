@@ -93,8 +93,15 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             u8  name[8];
         };
         
-        #seekto 0x5;
+        #seekto 0x4;
         struct {
+            u8  fst:1,
+                lock:1,
+                nb:1,
+                pbt:1,
+                unknownb:1,
+                dsp:1,
+                agc:2;
             u8  vox:1,
                 vlt:1,
                 bk:1,
@@ -700,11 +707,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         basic = RadioSettingGroup("basic", "Basic")
         cw = RadioSettingGroup("cw", "CW")
         packet = RadioSettingGroup("packet", "Digital & packet")
-        panel = RadioSettingGroup("panel", "Panel")
+        panel = RadioSettingGroup("panel", "Panel settings")
         extended = RadioSettingGroup("extended", "Extended")
         antenna = RadioSettingGroup("antenna", "Antenna selection")
+        panelcontr = RadioSettingGroup("panelcontr", "Panel controls")
         top = RadioSettingGroup("top", "All Settings", basic, cw, packet,
-                                panel, extended, antenna)
+                                panelcontr, panel, extended, antenna)
 
         rs = RadioSetting("ars_144", "144 ARS",
                           RadioSettingValueBoolean(_settings.ars_144))
@@ -931,6 +939,56 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         s.set_charset(self._CALLSIGN_CHARSET)
         rs = RadioSetting("callsign", "Callsign", s)
         cw.append(rs)
+
+        rs = RadioSetting("spl", "Split",
+                          RadioSettingValueBoolean(_settings.spl))
+        panelcontr.append(rs)
+        options = ["None", "Up", "Down"]
+        rs = RadioSetting("scn_mode", "Scan mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.scn_mode]))
+        panelcontr.append(rs)
+        rs = RadioSetting("pri", "Priority",
+                          RadioSettingValueBoolean(_settings.pri))
+        panelcontr.append(rs)
+        rs = RadioSetting("dw", "Dual watch",
+                          RadioSettingValueBoolean(_settings.dw))
+        panelcontr.append(rs)
+        rs = RadioSetting("art", "Auto-range transponder",
+                          RadioSettingValueBoolean(_settings.art))
+        panelcontr.append(rs)
+        rs = RadioSetting("nb", "Noise blanker",
+                          RadioSettingValueBoolean(_settings.nb))
+        panelcontr.append(rs)
+        options = ["Auto", "Fast", "Slow", "Off"]
+        rs = RadioSetting("agc", "AGC",
+                          RadioSettingValueList(options,
+                                        options[_settings.agc]))
+        panelcontr.append(rs)
+        options = ["PWR", "ALC", "SWR", "MOD"]
+        rs = RadioSetting("pwr_meter_mode", "Power meter mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.pwr_meter_mode]))
+        panelcontr.append(rs)
+        rs = RadioSetting("vox", "Vox",
+                          RadioSettingValueBoolean(_settings.vox))
+        panelcontr.append(rs)
+        rs = RadioSetting("bk", "Semi break-in",
+                          RadioSettingValueBoolean(_settings.bk))
+        cw.append(rs)
+        rs = RadioSetting("kyr", "Keyer",
+                          RadioSettingValueBoolean(_settings.kyr))
+        cw.append(rs)
+        options = ["enabled", "disabled"]
+        rs = RadioSetting("fst", "Fast",
+                          RadioSettingValueList(options,
+                                        options[_settings.fst]))
+        panelcontr.append(rs)
+        options = ["enabled", "disabled"]
+        rs = RadioSetting("lock", "Lock",
+                          RadioSettingValueList(options,
+                                        options[_settings.lock]))
+        panelcontr.append(rs)
 
         return top
 
