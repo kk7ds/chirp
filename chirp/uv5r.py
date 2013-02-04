@@ -120,8 +120,9 @@ struct {
   u8 unused2:4,
      scode:4;
   u8 unknown4;
-  u8 unused3:5,
-     step:3;
+  u8 unused3:1
+     step:3,
+     unused4:4;
   u8 txpower:1,
      widenarr:1,
      unknown5:6;
@@ -141,8 +142,9 @@ struct {
   u8 unused2:4,
      scode:4;
   u8 unknown4;
-  u8 unused3:5,
-     step:3;
+  u8 unused3:1
+     step:3,
+     unused4:4;
   u8 txpower:1,
      widenarr:1,
      unknown5:6;
