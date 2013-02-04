@@ -4,3 +4,4 @@
 .*\.rej$
 dist
 build/bdist
+tests/logs/
