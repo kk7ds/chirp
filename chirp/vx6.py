@@ -131,6 +131,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_dtcs_polarity = False
         rf.valid_modes = ["FM", "WFM", "AM", "NFM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_duplexes = DUPLEX
         rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 900)
         rf.valid_bands = [(500000, 998990000)]
@@ -164,7 +165,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
             return mem
 
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
-        mem.offset = int(_mem.offset) * 1000
+        mem.offset = chirp_common.fix_rounded_step(int(_mem.offset) * 1000)
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone & 0x3f]
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
