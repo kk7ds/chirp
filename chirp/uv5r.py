@@ -30,14 +30,18 @@ struct {
   lbcd txfreq[4];
   ul16 rxtone;
   ul16 txtone;
-  u8 unknown1[2];
+  u8 unused1:4,
+     scode:4;
+  u8 unknown1[1];
   u8 unknown2:7,
      lowpower:1;
   u8 unknown3:1,
      wide:1,
-     unknown4:3,
+     unknown4:2,
+     bcl:1,
      scan:1,
-     unknown5:2;
+     pttideot:1,
+     pttidbot:1;
 } memory[128];
 
 #seekto 0x0CB2;
@@ -557,6 +561,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         mem.power = UV5R_POWER_LEVELS[_mem.lowpower]
         mem.mode = _mem.wide and "FM" or "NFM"
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        rs = RadioSetting("bcl", "bcl",
+                          RadioSettingValueBoolean(_mem.bcl))
+        mem.extra.append(rs)
+
         return mem
 
     def set_memory(self, mem):
@@ -626,6 +636,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
         _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_shortname(), setting.value)
 
     def _is_orig(self):
         version_tag = _firmware_version_from_image(self)
