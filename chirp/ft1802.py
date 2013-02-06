@@ -93,6 +93,7 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
 
         rf.memory_bounds = (0, 199)
 
+        rf.can_odd_split = True
         rf.has_ctone = False
         rf.has_tuning_step = True
         rf.has_dtcs_polarity = False # in radio settings, not per memory

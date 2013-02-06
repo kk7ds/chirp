@@ -178,6 +178,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_name_length = 6
         rf.valid_modes = ["FM", "NFM", "AM"]
         rf.valid_bands = [(108000000, 520000000), (700000000, 999990000)]
+        rf.can_odd_split = True
         rf.has_ctone = False
         rf.has_bank = False
         rf.has_dtcs_polarity = False

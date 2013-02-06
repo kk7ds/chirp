@@ -167,6 +167,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.can_odd_split = True
         rf.has_bank = True
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
