@@ -161,6 +161,7 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
                 mem.name += CHARSET[0x80 ^ int(i)]
             else:
                 mem.name += CHARSET[i]
+        mem.name = mem.name.rstrip()
         mem.mode = _mem.narrow and "NFM" or "FM"
         mem.skip = pskip and "P" or skip and "S" or ""
         mem.power = POWER_LEVELS[_mem.power]
@@ -223,7 +224,7 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.name[0] += 0x80 # show name instead of frequency
 
         _mem.narrow = MODES.index(mem.mode)
-        _mem.power = POWER_LEVELS.index(mem.power)
+        _mem.power = 3 if mem.power is None else POWER_LEVELS.index(mem.power)
 
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
