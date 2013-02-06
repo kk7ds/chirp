@@ -541,7 +541,13 @@ class ImportDialog(gtk.Dialog):
                 continue
 
             self.ww.set(float(i) / end)
-            msgs = self.dst_radio.validate_memory(mem)
+            try:
+                msgs = self.dst_radio.validate_memory(
+                        import_logic.import_mem(self.dst_radio,
+                                                self.src_radio.get_features(),
+                                                mem))
+            except import_logic.DestNotCompatible:
+                msgs = self.dst_radio.validate_memory(mem)
             errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
             if errs:
                 msg = _("Cannot be imported because") + ":\r\n"
