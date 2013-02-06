@@ -35,8 +35,7 @@ struct {
      lowpower:1;
   u8 unknown3:1,
      wide:1,
-     unknown4:2,
-     bcl:1,
+     unknown4:3,
      scan:1,
      unknown5:2;
 } memory[128];
@@ -558,12 +557,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         mem.power = UV5R_POWER_LEVELS[_mem.lowpower]
         mem.mode = _mem.wide and "FM" or "NFM"
 
-        mem.extra = RadioSettingGroup("Extra", "extra")
-        bcl = RadioSetting("bcl", "BCL",
-                           RadioSettingValueBoolean(bool(_mem.bcl)))
-        bcl.set_doc("Busy Channel Lockout")
-        mem.extra.append(bcl)
-
         return mem
 
     def set_memory(self, mem):
@@ -633,9 +626,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
         _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
-
-        for setting in mem.extra:
-            setattr(_mem, setting.get_shortname(), setting.value)
 
     def _is_orig(self):
         version_tag = _firmware_version_from_image(self)
