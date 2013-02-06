@@ -1307,27 +1307,29 @@ class MemoryEditor(common.Editor):
 
             src_number = mem.number
             mem.number = loc
-            msgs = self.rthread.radio.validate_memory(mem)
-            errs = [x for x in msgs if isinstance(x,
-                                                  chirp_common.ValidationError)]
-            if errs:
-                d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
-                                            buttons=(gtk.STOCK_OK, 1,
-                                                     gtk.STOCK_CANCEL, 2))
-                d.set_text(_("Pasted memory {number} is not compatible with "
-                             "this radio because:").format(number=src_number) +\
-                               os.linesep + os.linesep.join(msgs))
-                r = d.run()
-                d.destroy()
-                if r == 2:
-                    break
-                else:
-                    iter = store.iter_next(iter)
-                    continue
-
-            mem = import_logic.import_mem(self.rthread.radio,
-                                          src_features,
-                                          mem)
+            
+            try:
+                mem = import_logic.import_mem(self.rthread.radio,
+                                              src_features,
+                                              mem)
+            except import_logic.DestNotCompatible:
+                msgs = self.rthread.radio.validate_memory(mem)
+                errs = [x for x in msgs if isinstance(x,
+                                                      chirp_common.ValidationError)]
+                if errs:
+                    d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
+                                                buttons=(gtk.STOCK_OK, 1,
+                                                         gtk.STOCK_CANCEL, 2))
+                    d.set_text(_("Pasted memory {number} is not compatible with "
+                                 "this radio because:").format(number=src_number) +\
+                                   os.linesep + os.linesep.join(msgs))
+                    r = d.run()
+                    d.destroy()
+                    if r == 2:
+                        break
+                    else:
+                        iter = store.iter_next(iter)
+                        continue
 
             self._set_memory(iter, mem)
             iter = store.iter_next(iter)
