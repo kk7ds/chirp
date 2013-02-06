@@ -353,8 +353,14 @@ class TestCaseBruteForce(TestCase):
         for duplex in rf.valid_duplexes:
             if duplex not in ["", "-", "+", "split"]:
                 continue
+            if duplex == "split" and not rf.can_odd_split:
+                raise TestFailedError("Forgot to set rf.can_odd_split!")
             m.duplex = duplex
             self.set_and_compare(m)
+        
+        if rf.can_odd_split and "split" not in rf.valid_duplexes:
+            raise TestFailedError("Paste error: rf.can_odd_split defined, but "
+                                  "split duplex not supported.")
 
     def do_skip(self, m, rf):
         for skip in rf.valid_skips:
