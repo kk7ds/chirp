@@ -109,6 +109,10 @@ class ChoiceEditor(ValueEditor):
     def changed(self, _widget):
         self.update()
 
+class IntChoiceEditor(ChoiceEditor):
+    def _get_value(self):
+        return int(self._widget.get_active_text())
+
 class FloatChoiceEditor(ChoiceEditor):
     def _get_value(self):
         return float(self._widget.get_active_text())
@@ -229,7 +233,8 @@ class MemoryDetailEditor(gtk.Dialog):
             "tmode" : (_("Tone Mode"), ChoiceEditor, features.valid_tmodes),
             "rtone" : (_("Tone"), FloatChoiceEditor, chirp_common.TONES),
             "ctone" : (_("ToneSql"), FloatChoiceEditor, chirp_common.TONES),
-            "dtcs"  : (_("DTCS Code"), ChoiceEditor, chirp_common.DTCS_CODES),
+            "dtcs"  : (_("DTCS Code"), IntChoiceEditor,
+                                       chirp_common.DTCS_CODES),
             "dtcs_polarity" : (_("DTCS Pol"), ChoiceEditor, POL),
             "cross_mode" : (_("Cross mode"),
                             ChoiceEditor,
