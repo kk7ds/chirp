@@ -266,7 +266,7 @@ struct {
      pskip:1,
      skip:1;
   char bank;
-  lbcd bank_index[1];
+  bbcd bank_index[1];
   char name[8];
   u8 unknown10;
   u8 digital_code;
