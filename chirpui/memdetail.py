@@ -253,6 +253,12 @@ class MemoryDetailEditor(gtk.Dialog):
                        "dtcs", "dtcs_polarity", "duplex", "offset",
                        "mode", "tuning_step", "skip", "comment"]
 
+        if self._features.has_rx_dtcs:
+            self._elements['rx_dtcs'] = (_("RX DTCS Code"),
+                                         IntChoiceEditor,
+                                         chirp_common.DTCS_CODES)
+            self._order.insert(self._order.index("dtcs") + 1, "rx_dtcs")
+
         self._make_ui()
         self.set_default_size(400, -1)
 
