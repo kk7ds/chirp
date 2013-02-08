@@ -178,15 +178,17 @@ class EditorSet(gtk.VBox):
         memedit.set_urcall_list(dstared.editor_ucall.get_callsigns())
         memedit.set_repeater_list(dstared.editor_rcall.get_callsigns())
         memedit.prefill()
-        self.modified = True
-        self.update_tab()
+        if not isinstance(self.radio, chirp_common.LiveRadio):
+            self.modified = True
+            self.update_tab()
 
     def banks_changed(self, *args):
         print "Banks changed"
         if self.editors["bank_members"]:
             self.editors["bank_members"].banks_changed()
-        self.modified = True
-        self.update_tab()
+        if not isinstance(self.radio, chirp_common.LiveRadio):
+            self.modified = True
+            self.update_tab()
 
     def editor_changed(self, *args):
         if not isinstance(self.radio, chirp_common.LiveRadio):
