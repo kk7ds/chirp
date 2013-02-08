@@ -109,6 +109,18 @@ class ChoiceEditor(ValueEditor):
     def changed(self, _widget):
         self.update()
 
+class PowerChoiceEditor(ChoiceEditor):
+    def _init(self, data):
+        self._choices = data
+        ChoiceEditor._init(self, data)
+
+    def _get_value(self):
+        choice = self._widget.get_active_text()
+        for level in self._choices:
+            if str(level) == choice:
+                return level
+        raise Exception("Internal error: power level went missing")
+
 class IntChoiceEditor(ChoiceEditor):
     def _get_value(self):
         return int(self._widget.get_active_text())
@@ -242,7 +254,6 @@ class MemoryDetailEditor(gtk.Dialog):
             "duplex" : (_("Duplex"), ChoiceEditor, features.valid_duplexes),
             "offset" : (_("Offset"), OffsetEditor, None),
             "mode" : (_("Mode"), ChoiceEditor, features.valid_modes),
-            # Power
             "tuning_step" : (_("Tune Step"),
                              FloatChoiceEditor,
                              features.valid_tuning_steps),
@@ -258,6 +269,12 @@ class MemoryDetailEditor(gtk.Dialog):
                                          IntChoiceEditor,
                                          chirp_common.DTCS_CODES)
             self._order.insert(self._order.index("dtcs") + 1, "rx_dtcs")
+
+        if self._features.valid_power_levels:
+            self._elements["power"] = (_("Power"),
+                                       PowerChoiceEditor,
+                                       features.valid_power_levels)
+            self._order.insert(self._order.index("skip"), "power")
 
         self._make_ui()
         self.set_default_size(400, -1)
