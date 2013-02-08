@@ -144,6 +144,34 @@ def _import_mode(dst_radio, srcrf, mem):
     if mem.mode == "Auto" and mem.mode not in dstrf.valid_modes:
         mem.mode = _guess_mode_by_frequency(mem.freq)
 
+def _make_offset_with_split(rxfreq, txfreq):
+    offset = txfreq - rxfreq
+    
+    if offset == 0:
+        return "", offset
+    elif offset > 0:
+        return "+", offset
+    elif offset < 0:
+        return "-", offset * -1
+
+def _import_duplex(dst_radio, srcrf, mem):
+    dstrf = dst_radio.get_features()
+
+    # If a radio does not support odd split, we can use an equivalent offset
+    if mem.duplex == "split" and mem.duplex not in dstrf.valid_duplexes:
+        mem.duplex, mem.offset = _make_offset_with_split(mem.freq, mem.offset)
+        
+        # Enforce maximum offset
+        ranges = [
+            (        0,  500000000,  7000000),
+            (500000000, 3000000000, 50000000),
+        ]
+        for lo, hi, limit in ranges:
+            if lo < mem.freq <= hi:
+                if abs(mem.offset) > limit:
+                    raise DestNotCompatible("Unable to create import memory: "
+                                            "offset is abnormally large.")
+
 def import_mem(dst_radio, src_features, src_mem, overrides={}):
     """Perform import logic to create a destination memory from
     src_mem that will be compatible with @dst_radio"""
@@ -165,6 +193,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
                _import_tone,
                _import_dtcs,
                _import_mode,
+               _import_duplex,
                ]
 
     for helper in helpers:
