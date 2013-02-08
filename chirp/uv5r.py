@@ -638,7 +638,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
 
         for setting in mem.extra:
-            setattr(_mem, setting.get_shortname(), setting.value)
+            setattr(_mem, setting.get_name(), setting.value)
 
     def _is_orig(self):
         version_tag = _firmware_version_from_image(self)
