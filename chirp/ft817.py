@@ -620,13 +620,13 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             mem.name = ""
 
-        mem.extra = RadioSettingGroup("Extra", "extra")
-        ipo = RadioSetting("IPO", "ipo",
+        mem.extra = RadioSettingGroup("extra", "Extra")
+        ipo = RadioSetting("ipo", "IPO",
                            RadioSettingValueBoolean(bool(_mem.ipo)))
         ipo.set_doc("Bypass preamp")
         mem.extra.append(ipo)
         
-        att = RadioSetting("ATT", "att",
+        att = RadioSetting("att", "ATT",
                            RadioSettingValueBoolean(bool(_mem.att)))
         att.set_doc("10dB front end attenuator")
         mem.extra.append(att)
@@ -685,7 +685,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.name[i] = self.CHARSET.index(mem.name.ljust(8)[i])
         
         for setting in mem.extra:
-            setattr(_mem, setting.get_shortname(), setting.value)
+            setattr(_mem, setting.get_name(), setting.value)
 
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)

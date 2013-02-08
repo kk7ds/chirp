@@ -563,7 +563,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
-        rs = RadioSetting("bcl", "bcl",
+        rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueBoolean(_mem.bcl))
         mem.extra.append(rs)
 

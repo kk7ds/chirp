@@ -403,8 +403,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 break
             mem.name += self.CHARSET[i]
 
-        mem.extra = RadioSettingGroup("Extra", "extra")
-        bcl = RadioSetting("BCL", "bcl",
+        mem.extra = RadioSettingGroup("extra", "Extra")
+        bcl = RadioSetting("bcl", "BCL",
                            RadioSettingValueBoolean(bool(_mem.bcl)))
         bcl.set_doc("Busy Channel Lockout")
         mem.extra.append(bcl)
@@ -490,7 +490,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 raise Exception("Character `%s' not supported")
 
         for setting in mem.extra:
-            setattr(_mem, setting.get_shortname(), setting.value)
+            setattr(_mem, setting.get_name(), setting.value)
 
     @classmethod
     def match_model(cls, filedata, filename):

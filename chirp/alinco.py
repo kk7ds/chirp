@@ -296,7 +296,7 @@ class DRx35Radio(AlincoStyleRadio):
                 mem.power == self._power_levels[1]
 
     def _get_extra(self, _mem, mem):
-        mem.extra = RadioSettingGroup("Extra", "extra")
+        mem.extra = RadioSettingGroup("extra", "Extra")
         dig = RadioSetting("isdigital", "Digital",
                            RadioSettingValueBoolean(bool(_mem.isdigital)))
         dig.set_doc("Digital/Packet mode enabled")
