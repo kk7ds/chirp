@@ -163,7 +163,7 @@ def _import_duplex(dst_radio, srcrf, mem):
         
         # Enforce maximum offset
         ranges = [
-            (        0,  500000000,  7000000),
+            (        0,  500000000, 15000000),
             (500000000, 3000000000, 50000000),
         ]
         for lo, hi, limit in ranges:
