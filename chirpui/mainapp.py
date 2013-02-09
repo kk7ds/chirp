@@ -718,6 +718,7 @@ If you think that it is valid, you can select a radio model below to force an op
                  (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
                  (_("ICF Files") + " (*.icf)", "*.icf"),
                  (_("Kenwood HMK Files") + " (*.hmk)", "*.hmk"),
+                 (_("Kenwood ITM Files") + " (*.itm)", "*.itm"),
                  (_("Travel Plus Files") + " (*.tpe)", "*.tpe"),
                  (_("VX5 Commander Files") + " (*.vx5)", "*.vx5"),
                  (_("VX6 Commander Files") + " (*.vx6)", "*.vx6"),
