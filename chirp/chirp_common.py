@@ -185,6 +185,13 @@ class PowerLevel:
 
 def parse_freq(freqstr):
     """Parse a frequency string and return the value in integral Hz"""
+    if freqstr == " ":
+        return 0
+    elif freqstr.endswith(" MHz"):
+        return parse_freq(freqstr.split(" ")[0])
+    elif freqstr.endswith(" kHz"):
+        return int(freqstr.split(" ")[0]) * 1000
+
     if "." in freqstr:
         mhz, khz = freqstr.split(".")
     else:
