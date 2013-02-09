@@ -40,8 +40,7 @@ struct {
      unknown4:2,
      bcl:1,
      scan:1,
-     pttideot:1,
-     pttidbot:1;
+     pttid:2;
 } memory[128];
 
 #seekto 0x0CB2;
@@ -565,6 +564,18 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueBoolean(_mem.bcl))
+        mem.extra.append(rs)
+
+        options = ["Off", "BOT", "EOT", "Both"]
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueList(options,
+                                                options[_mem.pttid]))
+        mem.extra.append(rs)
+
+        options = ["%s" % x for x in range(1, 16)]
+        rs = RadioSetting("scode", "PTT ID Code",
+                          RadioSettingValueList(options,
+                                                options[_mem.scode]))
         mem.extra.append(rs)
 
         return mem
