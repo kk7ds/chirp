@@ -106,6 +106,19 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
 
         return rf
 
+    def _clean(self, headers, line, mem):
+        """Runs post-processing functions on new mem objects.
+
+        This is useful for parsing other CSV dialects when multiple columns
+        convert to a single Chirp column."""
+
+        for attr in dir(mem):
+            fname = "_clean_%s" % attr
+            if hasattr(self, fname):
+                mem = getattr(self, fname)(headers, line, mem)
+        
+        return mem
+
     def _parse_csv_data_line(self, headers, line):
         mem = chirp_common.Memory()
         try:
@@ -114,7 +127,11 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         except OmittedHeaderError:
             pass
 
-        for header, (typ, attr) in self.ATTR_MAP.items():
+        for header in headers:
+            try:
+                typ, attr = self.ATTR_MAP[header]
+            except KeyError:
+                continue
             try:
                 val = get_datum_by_header(headers, line, header)
                 if not val and typ == int:
@@ -128,7 +145,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             except Exception, e:
                 raise Exception("[%s] %s" % (attr, e))
 
-        return mem
+        return self._clean(headers, line, mem)
 
     def load(self, filename=None):
         if filename is None and self._filename is None:
