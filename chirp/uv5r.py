@@ -43,6 +43,12 @@ struct {
      pttid:2;
 } memory[128];
 
+#seekto 0x0B08;
+struct {
+  u8 code[5];
+  u8 unused[11];
+} pttid[15];
+
 #seekto 0x0CB2;
 struct {
   u8 code[5];
@@ -983,6 +989,26 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                     STEP_LIST[self._memobj.vfob.step]))
             workmode.append(rs)
 
+        dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
+        group.append(dtmf)
+
+        for i in range(0, 15):
+            _codeobj = self._memobj.pttid[i].code
+            _code = "".join(["%x" % x for x in _codeobj if int(x) != 0xFF])
+            val = RadioSettingValueString(0, 5, _code, False)
+            val.set_charset("0123456789")
+            rs = RadioSetting("pttid/%i.code" % i, "PTT ID Code %i" % (i + 1), val)
+            def apply_code(setting, obj):
+                code = []
+                for j in range(0, 5):
+                    try:
+                        code.append(int(str(setting.value)[j]))
+                    except IndexError:
+                        code.append(0xFF)
+                obj.code = code
+            rs.set_apply_callback(apply_code, self._memobj.pttid[i])
+            dtmf.append(rs)
+
         return group
 
     def get_settings(self):
@@ -1001,17 +1027,28 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 self.set_settings(element)
                 continue
             try:
-                if "." in element.get_name():
-                    bits = element.get_name().split(".")
+                name = element.get_name()
+                if "." in name:
+                    bits = name.split(".")
                     obj = self._memobj
                     for bit in bits[:-1]:
-                        obj = getattr(obj, bit)
+                        if "/" in bit:
+                            bit, index = bit.split("/", 1)
+                            index = int(index)
+                            obj = getattr(obj, bit)[index]
+                        else:
+                            obj = getattr(obj, bit)
                     setting = bits[-1]
                 else:
                     obj = _settings
                     setting = element.get_name()
-                print "Setting %s = %s" % (setting, element.value)
-                setattr(obj, setting, element.value)
+
+                if element.has_apply_callback():
+                    print "Using apply callback"
+                    element.run_apply_callback()
+                else:
+                    print "Setting %s = %s" % (setting, element.value)
+                    setattr(obj, setting, element.value)
             except Exception, e:
                 print element.get_name()
                 raise
