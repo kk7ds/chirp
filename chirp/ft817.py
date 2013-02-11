@@ -1115,7 +1115,7 @@ class FT817NDUSRadio(FT817Radio):
 
     def get_settings(self):
         top = FT817Radio.get_settings(self)
-        basic = getattr(top, "basic")
+        basic = top["basic"]
         rs = RadioSetting("emergency", "Emergency",
                           RadioSettingValueBoolean(self._memobj.settings.emergency))
         basic.append(rs)
