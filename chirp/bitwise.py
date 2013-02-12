@@ -760,7 +760,7 @@ class Processor:
 
     def parse(self, lang):
         self._generators = structDataElement(self._data, self._offset)
-        self.parse_block(lang[0])
+        self.parse_block(lang)
         return self._generators
 
 
