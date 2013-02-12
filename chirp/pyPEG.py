@@ -1,14 +1,16 @@
-# YPL parser 0.45
+# YPL parser 1.5
 
 # written by VB.
 
 import re
+import sys, codecs
+import exceptions
 
-class keyword(str): pass
-class code(str): pass
+class keyword(unicode): pass
+class code(unicode): pass
 class ignore(object):
-    def __init__(self, regex_text):
-        self.regex = re.compile(regex_text)
+    def __init__(self, regex_text, *args):
+        self.regex = re.compile(regex_text, *args)
 
 class _and(object):
     def __init__(self, something):
@@ -16,18 +18,44 @@ class _and(object):
 
 class _not(_and): pass
 
-class Name(str):
+class Name(unicode):
     def __init__(self, *args):
         self.line = 0
-        self.file = ""
+        self.file = u""
 
-word_regex = re.compile(r"\w+")
-rest_regex = re.compile(r".*")
-ignoring = ignore("")
+class Symbol(list):
+    def __init__(self, name, what):
+        self.__name__ = name
+        self.append(name)
+        self.what = what
+        self.append(what)
+    def __call__(self):
+        return self.what
+    def __unicode__(self):
+        return u'Symbol(' + repr(self.__name__) + ', ' + repr(self.what) + u')'
+    def __repr__(self):
+        return unicode(self)
 
-def skip(skipper, text, pattern, skipWS, skipComments):
+word_regex = re.compile(ur"\w+")
+rest_regex = re.compile(ur".*")
+
+print_trace = False
+
+def u(text):
+    if isinstance(text, exceptions.BaseException):
+        text = text.args[0]
+    if type(text) is unicode:
+        return text
+    if isinstance(text, str):
+        if sys.stdin.encoding:
+            return codecs.decode(text, sys.stdin.encoding)
+        else:
+            return codecs.decode(text, "utf-8")
+    return unicode(text)
+
+def skip(skipper, text, skipWS, skipComments):
     if skipWS:
-        t = text.strip()
+        t = text.lstrip()
     else:
         t = text
     if skipComments:
@@ -35,21 +63,22 @@ def skip(skipper, text, pattern, skipWS, skipComments):
             while True:
                 skip, t = skipper.parseLine(t, skipComments, [], skipWS, None)
                 if skipWS:
-                    t = t.strip()
+                    t = t.lstrip()
         except: pass
     return t
 
 class parser(object):
-    def __init__(self, another = False):
+    def __init__(self, another = False, p = False):
         self.restlen = -1 
         if not(another):
-            self.skipper = parser(True)
+            self.skipper = parser(True, p)
+            self.skipper.packrat = p
         else:
             self.skipper = self
         self.lines = None
         self.textlen = 0
         self.memory = {}
-        self.packrat = False
+        self.packrat = p
 
     # parseLine():
     #   textline:       text to parse
@@ -69,100 +98,111 @@ class parser(object):
         name = None
         _textline = textline
         _pattern = pattern
-        _packrat = self.packrat
-        _memory = self.memory
 
         def R(result, text):
+            if __debug__:
+                if print_trace:
+                    try:
+                        if _pattern.__name__ != "comment":
+                            sys.stderr.write(u"match: " + _pattern.__name__ + u"\n")
+                    except: pass
+
             if self.restlen == -1:
                 self.restlen = len(text)
             else:
                 self.restlen = min(self.restlen, len(text))
             res = resultSoFar
             if name and result:
-                res.append((name, result))
+                name.line = self.lineNo()
+                res.append(Symbol(name, result))
             elif name:
-                res.append((name, []))
+                name.line = self.lineNo()
+                res.append(Symbol(name, []))
             elif result:
                 if type(result) is type([]):
                     res.extend(result)
                 else:
                     res.extend([result])
-            if _packrat:
-                if name:
-                    _memory[(len(_textline), id(_pattern))] = (res, text)
+            if self.packrat:
+                self.memory[(len(_textline), id(_pattern))] = (res, text)
             return res, text
 
         def syntaxError():
-            if _packrat:
-                if name:
-                    _memory[(len(_textline), id(_pattern))] = False
+            if self.packrat:
+                self.memory[(len(_textline), id(_pattern))] = False
             raise SyntaxError()
 
-        if type(pattern) is type(lambda x: 0):
-            if _packrat:
-                try:
-                    result = _memory[(len(_textline), id(_pattern))]
-                    if result:
-                        return result
-                    else:
-                        raise SyntaxError()
-                except: pass
+        if self.packrat:
+            try:
+                result = self.memory[(len(textline), id(pattern))]
+                if result:
+                    return result
+                else:
+                    raise SyntaxError()
+            except: pass
+
+        if callable(pattern):
+            if __debug__:
+                if print_trace:
+                    try:
+                        if pattern.__name__ != "comment":
+                            sys.stderr.write(u"testing with " + pattern.__name__ + u": " + textline[:40] + u"\n")
+                    except: pass
 
             if pattern.__name__[0] != "_":
                 name = Name(pattern.__name__)
-                name.line = self.lineNo()
 
             pattern = pattern()
-            if type(pattern) is type(lambda x: 0):
+            if callable(pattern):
                 pattern = (pattern,)
 
-        text = skip(self.skipper, textline, pattern, skipWS, skipComments)
+        text = skip(self.skipper, textline, skipWS, skipComments)
 
         pattern_type = type(pattern)
 
-        if pattern_type is type(""):
+        if pattern_type is str or pattern_type is unicode:
             if text[:len(pattern)] == pattern:
-                text = skip(self.skipper, text[len(pattern):], pattern, skipWS, skipComments)
+                text = skip(self.skipper, text[len(pattern):], skipWS, skipComments)
                 return R(None, text)
             else:
                 syntaxError()
 
-        elif pattern_type is type(keyword("")):
+        elif pattern_type is keyword:
             m = word_regex.match(text)
             if m:
                 if m.group(0) == pattern:
-                    text = skip(self.skipper, text[len(pattern):], pattern, skipWS, skipComments)
+                    text = skip(self.skipper, text[len(pattern):], skipWS, skipComments)
                     return R(None, text)
                 else:
                     syntaxError()
             else:
                 syntaxError()
 
-        elif pattern_type is type(_not("")):
+        elif pattern_type is _not:
             try:
                 r, t = self.parseLine(text, pattern.obj, [], skipWS, skipComments)
             except:
                 return resultSoFar, textline
             syntaxError()
 
-        elif pattern_type is type(_and("")):
+        elif pattern_type is _and:
             r, t = self.parseLine(text, pattern.obj, [], skipWS, skipComments)
             return resultSoFar, textline
 
-        elif pattern_type is type(word_regex) or pattern_type is type(ignoring):
-            if pattern_type is type(ignoring):
+        elif pattern_type is type(word_regex) or pattern_type is ignore:
+            if pattern_type is ignore:
                 pattern = pattern.regex
             m = pattern.match(text)
             if m:
-                text = skip(self.skipper, text[len(m.group(0)):], pattern, skipWS, skipComments)
-                if pattern_type is type(ignoring):
+                text = skip(self.skipper, text[len(m.group(0)):], skipWS, skipComments)
+                if pattern_type is ignore:
                     return R(None, text)
                 else:
                     return R(m.group(0), text)
             else:
                 syntaxError()
 
-        elif pattern_type is type((None,)):
+        elif pattern_type is tuple:
             result = []
             n = 1
             for p in pattern:
@@ -194,7 +234,7 @@ class parser(object):
                     n = 1
             return R(result, text)
 
-        elif pattern_type is type([]):
+        elif pattern_type is list:
             result = []
             found = False
             for p in pattern:
@@ -211,42 +251,41 @@ class parser(object):
                 syntaxError()
 
         else:
-            raise SyntaxError("illegal type in grammar: " + str(pattern_type))
+            raise SyntaxError(u"illegal type in grammar: " + u(pattern_type))
 
     def lineNo(self):
-        if not(self.lines): return ""
-        if self.restlen == -1: return ""
+        if not(self.lines): return u""
+        if self.restlen == -1: return u""
         parsed = self.textlen - self.restlen
 
         left, right = 0, len(self.lines)
 
         while True:
-            mid = (right + left) / 2
+            mid = int((right + left) / 2)
             if self.lines[mid][0] <= parsed:
                 try:
                     if self.lines[mid + 1][0] >= parsed:
                         try:
-                            return self.lines[mid + 1][1] + ":" + str(self.lines[mid + 1][2])
+                            return u(self.lines[mid + 1][1]) + u":" + u(self.lines[mid + 1][2])
                         except:
-                            return ""
+                            return u""
                     else:
                         left = mid + 1
                 except:
                     try:
-                        return self.lines[mid + 1][1] + ":" + str(self.lines[mid + 1][2])
+                        return u(self.lines[mid + 1][1]) + u":" + u(self.lines[mid + 1][2])
                     except:
-                        return ""
+                        return u""
             else:
                 right = mid - 1
             if left > right:
-                return ""
+                return u""
 
 # plain module API
 
 def parseLine(textline, pattern, resultSoFar = [], skipWS = True, skipComments = None, packrat = False):
-    p = parser()
-    p.packrat = packrat
-    text = skip(p.skipper, textline, pattern, skipWS, skipComments)
+    p = parser(p=packrat)
+    text = skip(p.skipper, textline, skipWS, skipComments)
     ast, text = p.parseLine(text, pattern, resultSoFar, skipWS, skipComments)
     return ast, text
 
@@ -266,28 +305,28 @@ def parseLine(textline, pattern, resultSoFar = [], skipWS = True, skipComments =
 def parse(language, lineSource, skipWS = True, skipComments = None, packrat = False, lineCount = True):
     lines, lineNo = [], 0
 
-    while type(language) is type(lambda x: 0):
+    while callable(language):
         language = language()
 
-    orig, ld = "", 0
+    orig, ld = u"", 0
     for line in lineSource:
         if lineSource.isfirstline():
             ld = 1
         else:
             ld += 1
         lines.append((len(orig), lineSource.filename(), lineSource.lineno() - 1))
-        orig += line
+        orig += u(line)
+
     textlen = len(orig)
 
     try:
-        p = parser()
-        p.packrat = packrat
+        p = parser(p=packrat)
         p.textlen = len(orig)
         if lineCount:
             p.lines = lines
         else:
             p.line = None
-        text = skip(p.skipper, orig, language, skipWS, skipComments)
+        text = skip(p.skipper, orig, skipWS, skipComments)
         result, text = p.parseLine(text, language, [], skipWS, skipComments)
         if text:
             raise SyntaxError()
@@ -295,7 +334,7 @@ def parse(language, lineSource, skipWS = True, skipComments = None, packrat = Fa
     except SyntaxError, msg:
         parsed = textlen - p.restlen
         textlen = 0
-        nn, lineNo, file = 0, 0, ""
+        nn, lineNo, file = 0, 0, u""
         for n, ld, l in lines:
             if n >= parsed:
                 break
@@ -307,6 +346,6 @@ def parse(language, lineSource, skipWS = True, skipComments = None, packrat = Fa
         lineNo += 1
         nn -= 1
         lineCont = orig.splitlines()[nn]
-        raise SyntaxError("syntax error in " + file + ":" + str(l) + ": " + lineCont)
+        raise SyntaxError(u"syntax error in " + u(file) + u":" + u(lineNo) + u": " + lineCont)
 
     return result
