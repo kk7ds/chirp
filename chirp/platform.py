@@ -326,7 +326,15 @@ class Win32Platform(Platform):
         os.system("explorer %s" % path)
     
     def list_serial_ports(self):
-        return [port for port, name, url in comports()]
+        def cmp(a, b):
+            try:
+                return int(a[3:]) - int(b[3:])
+            except:
+                return 0
+
+        ports = [port for port, name, url in comports()]
+        ports.sort(cmp=cmp)
+        return ports
 
     def gui_open_file(self, start_dir=None, types=[]):
         import win32gui
