@@ -757,6 +757,12 @@ class MemoryEditor(common.Editor):
                 a.set_sensitive(istwo)
             ag.add_action(a)
 
+        if issingle:
+            iter = store.get_iter(paths[0])
+            cur_pos, = store.get(iter, self.col(_("Loc")))
+            if cur_pos == self._features.memory_bounds[1]:
+                ag.get_action("delete_s").set_sensitive(False)
+
         uim = gtk.UIManager()
         uim.insert_action_group(ag, 0)
         uim.add_ui_from_string(menu_xml)
