@@ -38,7 +38,7 @@ class Win32PlatformTest(base.BaseTest):
         self._test_init()
 
         fake_comports = []
-        numbers = [1, 12, 7, 3, 123]
+        numbers = [1, 11, 2, 12, 7, 3, 123]
         for i in numbers:
             fake_comports.append(("COM%i" % i, None, None))
 
