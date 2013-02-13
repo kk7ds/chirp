@@ -17,16 +17,10 @@ import unittest
 import mox
 import os
 
+from tests.unit import base
 from chirp import platform
 
-class Win32PlatformTest(unittest.TestCase):
-    def setUp(self):
-        self.mox = mox.Mox()
-
-    def tearDown(self):
-        self.mox.UnsetStubs()
-        self.mox.VerifyAll()
-
+class Win32PlatformTest(base.BaseTest):
     def _test_init(self):
         self.mox.StubOutWithMock(platform, 'comports')
         self.mox.StubOutWithMock(os, 'mkdir')
