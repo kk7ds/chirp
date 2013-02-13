@@ -70,7 +70,7 @@ class ShiftDialog(gtk.Dialog):
 
         return int(count)
 
-    def _get_mems_until_hole(self, start):
+    def _get_mems_until_hole(self, start, endokay=False):
         mems = []
 
         llimit, ulimit = self.rthread.radio.get_features().memory_bounds
@@ -89,7 +89,7 @@ class ShiftDialog(gtk.Dialog):
             mems.append(mem)
             pos += 1
 
-        if pos > ulimit:
+        if pos > ulimit and not endokay:
             raise errors.InvalidMemoryLocation(_("No space to insert a row"))
 
         print "Found a hole: %i" % pos
@@ -110,7 +110,8 @@ class ShiftDialog(gtk.Dialog):
             return 0
 
     def _delete_hole(self, start):
-        mems = self._get_mems_until_hole(start+1)
+        mems = self._get_mems_until_hole(start+1, endokay=True)
+            
         if mems:
             count = self._shift_memories(-1, mems)
             self.rthread.radio.erase_memory(count+start)
