@@ -258,13 +258,13 @@ def validate_291(ident):
 
 UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
+UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
 
-IDENTS = [UV5R_MODEL_ORIG,
-          UV5R_MODEL_291,
-          ]
+def _firmware_version_from_data(data):
+    return data[0x1838:0x1848]
 
 def _firmware_version_from_image(radio):
-    return radio.get_mmap()[0x1838:0x1848]
+    return _firmware_version_from_data(radio.get_mmap())
 
 def _do_ident(radio, magic):
     serial = radio.pipe
@@ -327,7 +327,7 @@ def _get_radio_firmware_version(radio):
     return block[48:64]
 
 def _ident_radio(radio):
-    for magic in IDENTS:
+    for magic in radio._idents:
         error = None
         try:
             data = _do_ident(radio, magic)
@@ -370,7 +370,7 @@ def _do_upload(radio):
     print "Image is %s" % repr(image_version)
     print "Radio is %s" % repr(radio_version)
 
-    if "BFB" not in radio_version:
+    if "BFB" not in radio_version and "USA" not in radio_version:
         raise errors.RadioError("Unsupported firmware version: `%s'" %
                                 radio_version)
 
@@ -412,6 +412,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     BAUD_RATE = 9600
 
     _memsize = 0x1808
+    _basetype = "BFB"
+    _idents = [UV5R_MODEL_ORIG,
+               UV5R_MODEL_291,
+               ]
 
     @classmethod
     def get_experimental_warning(cls):
@@ -445,7 +449,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return len(filedata) in [0x1808, 0x1948]
+        return (len(filedata) in [0x1808, 0x1948] and
+                cls._basetype in _firmware_version_from_data(filedata))
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -658,6 +663,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 idx = version_tag.index("BFB") + 3
                 version = int(version_tag[idx:idx+3])
                 return version < 291
+            if 'USA' in version_tag:
+                return False
         except:
             pass
         raise errors.RadioError("Unable to parse version string %s" %
@@ -667,6 +674,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         version_tag = _firmware_version_from_image(self)
         if 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
+            return int(version_tag[idx:idx+3])
+        elif 'USA' in version_tag:
+            idx = version_tag.index("USA") + 3
             return int(version_tag[idx:idx+3])
         raise Exception("Unrecognized firmware version string")
 
@@ -1005,3 +1015,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             except Exception, e:
                 print element.get_name()
                 raise
+
+@directory.register
+class BaofengF11Radio(BaofengUV5R):
+    VENDOR = "Baofeng"
+    MODEL = "F-11"
+    _basetype = "USA"
+    _idents = [UV5R_MODEL_F11]

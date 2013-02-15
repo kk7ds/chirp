@@ -31,7 +31,8 @@ import time
 
 from chirp import CHIRP_VERSION, platform
 
-REPORT_URL = "http://chirp.danplanet.com/report/report.php?do_report"
+#REPORT_URL = "http://chirp.danplanet.com/report/report.php?do_report"
+REPORT_URL = "http://localhost:8000/report.php"
 ENABLED = True
 DEBUG = os.getenv("CHIRP_DEBUG") == "y"
 THREAD_SEM = threading.Semaphore(10) # Maximum number of outstanding threads
@@ -93,6 +94,7 @@ def _report_exception(stack):
                                 stack)
 
     # If the server returns zero, it wants us to shut up
+    print "Got id: %i" % id
     return id != 0
 
 def _report_misc_error(module, data):
