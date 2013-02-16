@@ -58,6 +58,15 @@ struct {
   u8 ssid;
 } aprs_my_callsign;
 
+#seekto 0x0480;
+struct mem left_memory_zero;
+#seekto 0x04A0;
+struct lab left_label_zero;
+#seekto 0x04C0;
+struct mem right_memory_zero;
+#seekto 0x04E0;
+struct lab right_label_zero;
+
 #seekto 0x0800;
 struct mem left_memory[500];
 
@@ -74,7 +83,8 @@ TMODES = ["", "Tone", "TSQL", "", "DTCS", "", ""]
 MODES = ["FM", "AM", "NFM", "", "WFM"]
 DUPLEXES = ["", "-", "+"]
 CHARSET = ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
-           '                                                                ')
+           '````````````````````````````````````                            ')
+
 SKIPS = ["", "S", "P"]
 
 def aprs_call_to_str(_call):
@@ -196,7 +206,9 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_modes = [x for x in MODES if x]
         rf.valid_duplexes = DUPLEXES
         rf.valid_skips = SKIPS
-        rf.memory_bounds = (1, 500)
+        rf.valid_name_length = 8
+        rf.valid_characters = CHARSET
+        rf.memory_bounds = (0, 500)
         rf.valid_bands = [(  500000,    1800000),
                           (76000000,  250000000),
                           (30000000, 1000000000)]
@@ -226,17 +238,28 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
-        return (repr(self._memory_obj()[number - 1]) + 
-                repr(self._label_obj()[number - 1]))
+        if number == 0:
+            suffix = "_zero"
+            fn = lambda o: o
+        else:
+            suffix = ""
+            fn = lambda o: o[number - 1]
+        return (repr(fn(self._memory_obj(suffix))) + 
+                repr(fn(self._label_obj(suffix))))
 
-    def _memory_obj(self):
-        return getattr(self._memobj, "%s_memory" % self._vfo)
+    def _memory_obj(self, suffix=""):
+        return getattr(self._memobj, "%s_memory%s" % (self._vfo, suffix))
 
-    def _label_obj(self):
-        return getattr(self._memobj, "%s_label" % self._vfo)
+    def _label_obj(self, suffix=""):
+        return getattr(self._memobj, "%s_label%s" % (self._vfo, suffix))
 
     def get_memory(self, number):
-        _mem = self._memory_obj()[number - 1]
+        if number == 0:
+            _mem = self._memory_obj("_zero")
+            _lab = self._label_obj("_zero")
+        else:
+            _mem = self._memory_obj()[number - 1]
+            _lab = self._label_obj()[number - 1]
         mem = chirp_common.Memory()
         mem.number = number
 
@@ -253,7 +276,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.mode = MODES[_mem.mode]
         mem.skip = SKIPS[_mem.skip]
 
-        for char in self._label_obj()[number - 1].string:
+        for char in _lab.string:
             if char == 0xCA:
                 break
             try:
@@ -265,7 +288,12 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memory_obj()[mem.number - 1]
+        if mem.number == 0:
+            _mem = self._memory_obj("_zero")
+            _lab = self._label_obj("_zero")
+        else:
+            _mem = self._memory_obj()[mem.number - 1]
+            _lab = self._label_obj()[mem.number - 1]
         _mem.used = not mem.empty
         if mem.empty:
             return
@@ -284,7 +312,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
                 char = CHARSET.index(mem.name[i])
             except IndexError:
                 char = 0xCA
-            self._label_obj()[mem.number - 1].string[i] = char
+            _lab.string[i] = char
         _mem.showalpha = mem.name.strip() != ""
 
     @classmethod
