@@ -39,7 +39,7 @@ struct {
      scan:1
      unknown2:4;
   u8 unknown3[2];
-} memory[4];
+} memory[8];
 
 #seekto 0x0310;
 struct {
@@ -59,7 +59,7 @@ def make_frame(cmd, addr, length, data=""):
     return struct.pack(">BHB", ord(cmd), addr, length) + data
 
 def send(radio, frame):
-    print "%04i P>R: %s" % (len(frame), util.hexprint(frame))
+    #print "%04i P>R: %s" % (len(frame), util.hexprint(frame))
     radio.pipe.write(frame)
 
 def recv(radio, readdata=True):
@@ -67,7 +67,7 @@ def recv(radio, readdata=True):
     cmd, addr, length = struct.unpack(">BHB", hdr)
     if readdata:
         data = radio.pipe.read(length)
-        print "     P<R: %s" % util.hexprint(hdr + data)
+        #print "     P<R: %s" % util.hexprint(hdr + data)
         if len(data) != length:
             raise errors.RadioError("Radio sent %i bytes (expected %i)" % (
                     len(data), length))
@@ -83,8 +83,10 @@ def do_ident(radio):
         raise errors.RadioError("Radio refused program mode")
     radio.pipe.write("\x02")
     ident = radio.pipe.read(8)
-    print "Radio ident:"
-    print util.hexprint(ident)
+    if ident[1:5] != radio.MODEL.split("-")[1]:
+        raise errors.RadioError("Incorrect model: TK-%s, expected %s" % (
+                ident[1:5], radio.MODEL))
+    print "Model: %s" % util.hexprint(ident)
     radio.pipe.write("\x06")
     ack = radio.pipe.read(1)
 
@@ -138,11 +140,10 @@ def do_upload(radio):
 
     radio.pipe.write("\x45")
 
-@directory.register
-class KenwoodTK8102(chirp_common.CloneModeRadio):
-    """Kenwood TK-8102"""
+class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
+    """Kenwood TK-x102"""
     VENDOR = "Kenwood"
-    MODEL = "TK-8102"
+    MODEL = "TK-x102"
     BAUD_RATE = 9600
 
     _memsize = 0x410
@@ -159,14 +160,15 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
         rf.valid_modes = MODES
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_skips = ["", "S"]
-        rf.valid_bands = [(400000000, 500000000)]
-        rf.memory_bounds = (1, 4)
+        rf.valid_bands = [self._range]
+        rf.memory_bounds = (1, self._upper)
         return rf
 
     def sync_in(self):
         try:
             self._mmap = do_download(self)
         except errors.RadioError:
+            self.pipe.write("\x45")
             raise
         except Exception, e:
             raise errors.RadioError("Failed to download from radio: %s" % e)
@@ -179,6 +181,7 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
         try:
             do_upload(self)
         except errors.RadioError:
+            self.pipe.write("\x45")
             raise
         except Exception, e:
             raise errors.RadioError("Failed to upload to radio: %s" % e)
@@ -334,7 +337,6 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
         _mem.scan = mem.skip != "S"
 
         for setting in mem.extra:
-            print "Setting %s=%s" % (setting.get_name(), setting.value)
             if setting.get_name == "signaling":
                 if setting.value == "DTMF":
                     _mem.signaling = 0x03
@@ -380,7 +382,6 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
             else:
                 obj = _settings
                 setting = element.get_name()
-            print "Setting %s = %s" % (setting, element.value)
 
             if "line" in setting:
                 value = str(element.value).ljust(32, "\xFF")
@@ -388,3 +389,34 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
                 value = element.value
             setattr(obj, setting, value)
             
+    @classmethod
+    def match_model(cls, filedata, filename):
+        model = filedata[0x03D1:0x03D5]
+        print model
+        return model == cls.MODEL.split("-")[1]
+
+
+@directory.register
+class KenwoodTK7102Radio(KenwoodTKx102Radio):
+    MODEL = "TK-7102"
+    _range = (136000000, 174000000)
+    _upper = 4
+
+@directory.register
+class KenwoodTK8102Radio(KenwoodTKx102Radio):
+    MODEL = "TK-8102"
+    _range = (400000000, 500000000)
+    _upper = 4
+
+@directory.register
+class KenwoodTK7108Radio(KenwoodTKx102Radio):
+    MODEL = "TK-7108"
+    _range = (136000000, 174000000)
+    _upper = 8
+
+@directory.register
+class KenwoodTK8108Radio(KenwoodTKx102Radio):
+    MODEL = "TK-8108"
+    _range = (400000000, 500000000)
+    _upper = 8
+
