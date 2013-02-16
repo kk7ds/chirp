@@ -20,6 +20,7 @@ from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
+from chirp.settings import RadioSettingValueString
 
 MEM_FORMAT = """
 #seekto 0x0030;
@@ -39,6 +40,13 @@ struct {
      unknown2:4;
   u8 unknown3[2];
 } memory[4];
+
+#seekto 0x0310;
+struct {
+  char line1[32];
+  char line2[32];
+} messages;
+
 """
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
@@ -141,6 +149,7 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_cross = True
         rf.has_bank = False
         rf.has_tuning_step = False
@@ -333,3 +342,49 @@ class KenwoodTK8102(chirp_common.CloneModeRadio):
                     _mem.signaling = 0x00
             else:
                 setattr(_mem, setting.get_name(), setting.value)
+
+    def get_settings(self):
+        _mem = self._memobj
+        top = RadioSettingGroup("all", "All Settings")
+
+        def _f(val):
+            string = ""
+            for char in str(val):
+                if char == "\xFF":
+                    break
+                string += char
+            return string
+
+        line1 = RadioSetting("messages.line1", "Message Line 1",
+                             RadioSettingValueString(0, 32,
+                                                     _f(_mem.messages.line1),
+                                                     autopad=False))
+        top.append(line1)
+
+        line2 = RadioSetting("messages.line2", "Message Line 2",
+                             RadioSettingValueString(0, 32,
+                                                     _f(_mem.messages.line2),
+                                                     autopad=False))
+        top.append(line2)
+
+        return top
+
+    def set_settings(self, settings):
+        for element in settings:
+            if "." in element.get_name():
+                bits = element.get_name().split(".")
+                obj = self._memobj
+                for bit in bits[:-1]:
+                    obj = getattr(obj, bit)
+                setting = bits[-1]
+            else:
+                obj = _settings
+                setting = element.get_name()
+            print "Setting %s = %s" % (setting, element.value)
+
+            if "line" in setting:
+                value = str(element.value).ljust(32, "\xFF")
+            else:
+                value = element.value
+            setattr(obj, setting, value)
+            
