@@ -20,8 +20,7 @@ from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString
 
 MEM_FORMAT = """
 #seekto 0x0008;
