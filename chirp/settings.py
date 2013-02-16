@@ -28,16 +28,20 @@ class RadioSettingValue:
     def __init__(self):
         self._current = None
         self._has_changed = False
+        self._validate_callback = lambda x: x
 
     def changed(self):
         """Returns True if the setting has been changed since init"""
         return self._has_changed
 
+    def set_validate_callback(self, callback):
+        self._validate_callback = callback
+
     def set_value(self, value):
         """Sets the current value, triggers changed"""
         if self._current != None and value != self._current:
             self._has_changed = True
-        self._current = value
+        self._current = self._validate_callback(value)
 
     def get_value(self):
         """Gets the current value"""
@@ -80,6 +84,45 @@ class RadioSettingValueInteger(RadioSettingValue):
     def get_step(self):
         """Returns the step increment"""
         return self._step
+
+class RadioSettingValueFloat(RadioSettingValue):
+    """A floating-point setting"""
+    def __init__(self, minval, maxval, current, resolution=0.001, precision=4):
+        RadioSettingValue.__init__(self)
+        self._min = minval
+        self._max = maxval
+        self._res = resolution
+        self._pre = precision
+        self.set_value(current)
+
+    def format(self, value=None):
+        """Formats the value into a string"""
+        if value is None:
+            value = self._current
+        fmt_string = "%%.%if" % self._pre
+        print fmt_string
+        return fmt_string % value
+
+    def set_value(self, value):
+        try:
+            value = float(value)
+        except:
+            raise InvalidValueError("A floating point value is required")
+        if value > self._max or value < self._min:
+            raise InvalidValueError("Value %s not in range %s-%s" % (
+                    self.format(value),
+                    self.format(self._min), self.format(self._max)))
+        
+        # FIXME: honor resolution
+
+        RadioSettingValue.set_value(self, value)
+
+    def get_min(self):
+        """Returns the minimum allowed value"""
+        return self._min
+
+    def get_max(self):
+        """Returns the maximum allowed value"""
 
 class RadioSettingValueBoolean(RadioSettingValue):
     """A boolean setting"""
@@ -231,6 +274,19 @@ class RadioSettingGroup(object):
 
 class RadioSetting(RadioSettingGroup):
     """A single setting, which could be an array of items like a group"""
+    def __init__(self, *args):
+        super(RadioSetting, self).__init__(*args)
+        self._apply_callback = None
+
+    def set_apply_callback(self, callback, *args):
+        self._apply_callback = lambda: callback(self, *args)
+
+    def has_apply_callback(self):
+        return self._apply_callback is not None
+
+    def run_apply_callback(self):
+        return self._apply_callback()
+
     def _validate(self, value):
         # RadioSetting can only contain RadioSettingValue objects
         if not isinstance(value, RadioSettingValue):

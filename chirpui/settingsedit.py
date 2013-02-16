@@ -63,7 +63,12 @@ class SettingsEditor(common.Editor):
         if self._top_setting_group is None:
             return
 
-        job = common.RadioJob(None, "set_settings", self._top_setting_group)
+        def setting_cb(result):
+            if isinstance(result, Exception):
+                common.show_error(_("Error in setting value: %s") % result)
+
+        job = common.RadioJob(setting_cb, "set_settings",
+                              self._top_setting_group)
         job.set_desc("Setting radio settings")
         self._rthread.submit(job)
 
@@ -73,6 +78,8 @@ class SettingsEditor(common.Editor):
             adj.configure(value.get_value(),
                           value.get_min(), value.get_max(),
                           value.get_step(), 1, 0)
+        elif isinstance(value, settings.RadioSettingValueFloat):
+            widget.set_text(value.format())
         elif isinstance(value, settings.RadioSettingValueBoolean):
             widget.set_active(value.get_value())
         elif isinstance(value, settings.RadioSettingValueList):
@@ -89,9 +96,11 @@ class SettingsEditor(common.Editor):
             print "Unsupported widget type %s for %s" % (value.__class__,
                                                          element.get_name())
             
-    def _save_setting(self, widget, value):
+    def _do_save_setting(self, widget, value):
         if isinstance(value, settings.RadioSettingValueInteger):
             value.set_value(widget.get_adjustment().get_value())
+        elif isinstance(value, settings.RadioSettingValueFloat):
+            value.set_value(widget.get_text())
         elif isinstance(value, settings.RadioSettingValueBoolean):
             value.set_value(widget.get_active())
         elif isinstance(value, settings.RadioSettingValueList):
@@ -104,6 +113,12 @@ class SettingsEditor(common.Editor):
                 element.get_name())
 
         self._save_settings()
+
+    def _save_setting(self, widget, value):
+        try:
+            self._do_save_setting(widget, value)
+        except settings.InvalidValueError, e:
+            common.show_error(_("Invalid setting value: %s") % e)
 
     def _build_ui_group(self, group):
         def pack(widget, pos):
@@ -139,6 +154,9 @@ class SettingsEditor(common.Editor):
                     widget = gtk.SpinButton()
                     print "Digits: %i" % widget.get_digits()
                     signal = "value-changed"
+                elif isinstance(value, settings.RadioSettingValueFloat):
+                    widget = gtk.Entry()
+                    signal = "focus-out-event"
                 elif isinstance(value, settings.RadioSettingValueBoolean):
                     widget = gtk.CheckButton(_("Enabled"))
                     signal = "toggled"
@@ -160,7 +178,11 @@ class SettingsEditor(common.Editor):
                 arraybox.pack_start(lalign, 1, 1, 1)
                 widget.show()
                 self._load_setting(value, widget)
-                widget.connect(signal, self._save_setting, value)
+                if signal == "focus-out-event":
+                    widget.connect(signal, lambda w, e, v:
+                                       self._save_setting(w, v), value)
+                else:
+                    widget.connect(signal, self._save_setting, value)
 
             self._index += 1
 
