@@ -26,7 +26,8 @@ from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 mem_format = """
 struct mem {
   u8 used:1,
-     unknown1:7;
+     skip:2,
+     unknown1:5;
   u8 unknown2:1,
      mode:3,
      unknown8:2,
@@ -74,6 +75,8 @@ MODES = ["FM", "AM", "NFM", "", "WFM"]
 DUPLEXES = ["", "-", "+"]
 CHARSET = ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
            '                                                                ')
+SKIPS = ["", "S", "P"]
+
 def aprs_call_to_str(_call):
     call = ""
     for i in str(_call):
@@ -192,6 +195,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = [""] + [x for x in TMODES if x]
         rf.valid_modes = [x for x in MODES if x]
         rf.valid_duplexes = DUPLEXES
+        rf.valid_skips = SKIPS
         rf.memory_bounds = (1, 500)
         rf.valid_bands = [(  500000,    1800000),
                           (76000000,  250000000),
@@ -247,6 +251,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.offset = int(_mem.offset) * 50000
         mem.mode = MODES[_mem.mode]
+        mem.skip = SKIPS[_mem.skip]
 
         for char in self._label_obj()[number - 1].string:
             if char == 0xCA:
@@ -272,6 +277,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.duplex = DUPLEXES.index(mem.duplex) + 1
         _mem.offset = mem.offset / 50000
         _mem.mode = MODES.index(mem.mode)
+        _mem.skip = SKIPS.index(mem.skip)
 
         for i in range(0, 8):
             try:
