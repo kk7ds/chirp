@@ -695,11 +695,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(0, 9, _settings.squelch))
         basic.append(rs)
 
-        rs = RadioSetting("dtmfst", "DTMF Sidetone",
-                          RadioSettingValueList(DTMFST_LIST,
-                                                DTMFST_LIST[_settings.dtmfst]))
-        advanced.append(rs)
-
         rs = RadioSetting("save", "Battery Saver",
                           RadioSettingValueInteger(0, 4, _settings.save))
         basic.append(rs)
@@ -790,19 +785,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("roger", "Roger Beep",
                           RadioSettingValueBoolean(_settings.roger))
         basic.append(rs)
-
-        try:
-            _ani = self._memobj.ani.code
-            rs = RadioSetting("ani.code", "ANI Code",
-                              RadioSettingValueInteger(0, 9, _ani[0]),
-                              RadioSettingValueInteger(0, 9, _ani[1]),
-                              RadioSettingValueInteger(0, 9, _ani[2]),
-                              RadioSettingValueInteger(0, 9, _ani[3]),
-                              RadioSettingValueInteger(0, 9, _ani[4]))
-            advanced.append(rs)
-        except Exception:
-            print ("Your ANI code is not five digits, which is not currently"
-                   " supported in CHIRP.")
 
         rs = RadioSetting("ste", "Squelch Tail Eliminate (HT to HT)",
                           RadioSettingValueBoolean(_settings.ste))
@@ -1007,6 +989,27 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 obj.code = code
             rs.set_apply_callback(apply_code, self._memobj.pttid[i])
             dtmf.append(rs)
+
+        _codeobj = self._memobj.ani.code
+        _code = "".join(["%x" % x for x in _codeobj if int(x) != 0xFF])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset("0123456789")
+        rs = RadioSetting("ani.code", "ANI Code", val)
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 5):
+                try:
+                    code.append(int(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.code = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmf.append(rs)
+
+        rs = RadioSetting("dtmfst", "DTMF Sidetone",
+                          RadioSettingValueList(DTMFST_LIST,
+                                                DTMFST_LIST[_settings.dtmfst]))
+        dtmf.append(rs)
 
         return group
 
