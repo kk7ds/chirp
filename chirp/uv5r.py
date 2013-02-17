@@ -53,6 +53,9 @@ struct {
   u8 code[5];
   u8 unused1:6,
      aniid:2;
+  u8 unknown[2];
+  u8 dtmfon;
+  u8 dtmfoff;
 } ani;
 
 #seekto 0x0E28;
@@ -223,6 +226,7 @@ RPSTE_LIST.insert(0, "OFF")
 STEDELAY_LIST = ["%s ms" % x for x in range(100, 1100, 100)]
 STEDELAY_LIST.insert(0, "OFF")
 SCODE_LIST = ["%s" % x for x in range(1, 16)]
+DTMFSPEED_LIST = ["%s ms" % x for x in range(50, 2010, 10)]
 
 SETTING_LISTS = {
     "step" : STEP_LIST,
@@ -242,6 +246,7 @@ SETTING_LISTS = {
     "rpste" : RPSTE_LIST,
     "stedelay" : STEDELAY_LIST,
     "scode" : SCODE_LIST,
+    "dtmfspeed" : DTMFSPEED_LIST,
 }
 
 def _do_status(radio, block):
@@ -1017,6 +1022,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
                           RadioSettingValueList(DTMFST_LIST,
                                                 DTMFST_LIST[_settings.dtmfst]))
+        dtmf.append(rs)
+
+        rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
+                          RadioSettingValueList(DTMFSPEED_LIST,
+                                                DTMFSPEED_LIST[self._memobj.ani.dtmfon]))
+        dtmf.append(rs)
+
+        rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
+                          RadioSettingValueList(DTMFSPEED_LIST,
+                                                DTMFSPEED_LIST[self._memobj.ani.dtmfoff]))
         dtmf.append(rs)
 
         return group
