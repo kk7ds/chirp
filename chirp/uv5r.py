@@ -51,6 +51,8 @@ struct {
 #seekto 0x0CB2;
 struct {
   u8 code[5];
+  u8 unused1:6,
+     aniid:2;
 } ani;
 
 #seekto 0x0E28;
@@ -1004,6 +1006,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     code.append(0xFF)
             obj.code = code
         rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmf.append(rs)
+
+        options = ["Off", "BOT", "EOT", "Both"]
+        rs = RadioSetting("ani.aniid", "ANI ID",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.ani.aniid]))
         dtmf.append(rs)
 
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
