@@ -227,7 +227,7 @@ class MemoryEditor(common.Editor):
             _cm(*tuple([x for x in chirp_common.CROSS_MODES
                         if x.startswith("DTCS->")]))
         elif col == self.col(_("DTCS Rx Code")):
-            _tm("DTCS", "Cross")
+            _tm("Cross")
             _cm(*tuple([x for x in chirp_common.CROSS_MODES
                         if x.endswith("->DTCS")]))
         elif col == self.col(_("DTCS Pol")):
