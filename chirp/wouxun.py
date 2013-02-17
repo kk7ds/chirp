@@ -894,8 +894,8 @@ class KGUV6DRadio(KGUVD1PRadio):
 @directory.register
 class KG816Radio(KGUVD1PRadio,
         chirp_common.ExperimentalRadio):
-    """Wouxun KG816"""
-    MODEL = "KG816"
+    """Wouxun KG-816"""
+    MODEL = "KG-816"
 
     _MEM_FORMAT = """
         #seekto 0x0010;
