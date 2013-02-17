@@ -953,42 +953,42 @@ class KG816Radio(KGUVD1PRadio,
         top = RadioSettingGroup("top", "All Settings", freqranges)
 
         rs = RadioSetting("vhf_rx_start", "vhf rx start",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_rx_start)))
         freqranges.append(rs)
         rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_rx_stop)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_rx_start", "uhf rx start",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_rx_start)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_rx_stop)))
         freqranges.append(rs)
         rs = RadioSetting("vhf_tx_start", "vhf tx start",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_tx_start)))
         freqranges.append(rs)
         rs = RadioSetting("vhf_tx_stop", "vhf tx stop",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_tx_stop)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_tx_start", "uhf tx start",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_tx_start)))
         freqranges.append(rs)
         rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
-                          RadioSettingValueInteger(136, 520, 
+                          RadioSettingValueInteger(66, 520,
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_tx_stop)))
         freqranges.append(rs)
@@ -1010,3 +1010,8 @@ class KG816Radio(KGUVD1PRadio,
             return True
         return False
 
+
+@directory.register
+class KG818Radio(KG816Radio):
+    """Wouxun KG-818"""
+    MODEL = "KG-818"
