@@ -1173,6 +1173,9 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_toggle_autorpt(self, action):
         CONF.set_bool("autorpt", action.get_active(), "memedit")
 
+    def do_toggle_no_smart_tmode(self, action):
+        CONF.set_bool("no_smart_tmode", not action.get_active(), "memedit")
+
     def do_toggle_developer(self, action):
         conf = config.get()
         conf.set_bool("developer", action.get_active(), "state")
@@ -1262,6 +1265,8 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_toggle_report(_action)
         elif action == "autorpt":
             self.do_toggle_autorpt(_action)
+        elif action == "no_smart_tmode":
+            self.do_toggle_no_smart_tmode(_action)
         elif action == "developer":
             self.do_toggle_developer(_action)
         elif action in ["cut", "copy", "paste", "delete",
@@ -1311,6 +1316,7 @@ If you think that it is valid, you can select a radio model below to force an op
     <menu action="view">
       <menuitem action="columns"/>
       <menuitem action="hide_unused"/>
+      <menuitem action="no_smart_tmode"/>
       <menu action="viewdeveloper">
         <menuitem action="devshowraw"/>
         <menuitem action="devdiffraw"/>
@@ -1397,10 +1403,12 @@ If you think that it is valid, you can select a radio model below to force an op
         hu = conf.get_bool("hide_unused", "memedit")
         ro = conf.get_bool("autorpt", "memedit")
         dv = conf.get_bool("developer", "state")
+        st = not conf.get_bool("no_smart_tmode", "memedit")
 
         toggles = [\
             ('report', None, _("Report statistics"), None, None, self.mh, re),
             ('hide_unused', None, _("Hide Unused Fields"), None, None, self.mh, hu),
+            ('no_smart_tmode', None, _("Smart Tone Modes"), None, None, self.mh, st),
             ('autorpt', None, _("Automatic Repeater Offset"), None, None, self.mh, ro),
             ('developer', None, _("Enable Developer Functions"), None, None, self.mh, dv),
             ]

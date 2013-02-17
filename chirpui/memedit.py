@@ -201,6 +201,52 @@ class MemoryEditor(common.Editor):
 
         return new
 
+    def ed_tone_field(self, _foo, path, new, col):
+        if self._config.get_bool("no_smart_tmode"):
+            return
+
+        iter = self.store.get_iter(path)
+
+        # Python scoping hurts us here, so store this as a list
+        # that we can modify, instead of helpful variables :(
+        modes = list(self.store.get(iter,
+                                    self.col(_("Tone Mode")),
+                                    self.col(_("Cross Mode"))))
+
+        def _tm(*tmodes):
+            if modes[0] not in tmodes:
+                modes[0] = tmodes[0]
+                self.store.set(iter, self.col(_("Tone Mode")), modes[0])
+        def _cm(*cmodes):
+            if modes[0] == "Cross" and modes[1] not in cmodes:
+                modes[1] = cmodes[0]
+                self.store.set(iter, self.col(_("Cross Mode")), modes[1])
+
+        if col == self.col(_("DTCS Code")):
+            _tm("DTCS", "Cross")
+            _cm(*tuple([x for x in chirp_common.CROSS_MODES
+                        if x.startswith("DTCS->")]))
+        elif col == self.col(_("DTCS Rx Code")):
+            _tm("DTCS", "Cross")
+            _cm(*tuple([x for x in chirp_common.CROSS_MODES
+                        if x.endswith("->DTCS")]))
+        elif col == self.col(_("DTCS Pol")):
+            _tm("DTCS", "Cross")
+            _cm(*tuple([x for x in chirp_common.CROSS_MODES
+                        if "DTCS" in x]))
+        elif col == self.col(_("Tone")):
+            _tm("Tone", "Cross")
+            _cm(*tuple([x for x in chirp_common.CROSS_MODES
+                        if x.startswith("Tone->")]))
+        elif col == self.col(_("ToneSql")):
+            _tm("TSQL", "Cross")
+            _cm(*tuple([x for x in chirp_common.CROSS_MODES
+                        if x.endswith("->Tone")]))
+        elif col == self.col(_("Cross Mode")):
+            _tm("Cross")
+
+        return new
+
     def _get_cols_to_hide(self, iter):
         tmode, duplex = self.store.get(iter,
                                        self.col(_("Tone Mode")),
@@ -260,6 +306,12 @@ class MemoryEditor(common.Editor):
             _("Frequency") : self.ed_freq,
             _("Duplex") : self.ed_duplex,
             _("Offset") : self.ed_offset,
+            _("Tone") : self.ed_tone_field,
+            _("ToneSql"): self.ed_tone_field,
+            _("DTCS Code"): self.ed_tone_field,
+            _("DTCS Rx Code"): self.ed_tone_field,
+            _("DTCS Pol"): self.ed_tone_field,
+            _("Cross Mode"): self.ed_tone_field,
             }
 
         if funcs.has_key(cap):

@@ -51,11 +51,11 @@ DTCS_EXTRA_CODES = [ 17, 645 ]
 
 CROSS_MODES = [
     "Tone->Tone",
+    "DTCS->",
+    "->DTCS",
     "Tone->DTCS",
     "DTCS->Tone",
-    "DTCS->",
     "->Tone",
-    "->DTCS",
     "DTCS->DTCS",
 ]
 
