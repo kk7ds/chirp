@@ -11,6 +11,8 @@ class TestEdits(base.BaseTest):
                                  ini_tmode='', ini_cmode='',
                                  exp_tmode=None, exp_cmode=None):
         editor = self.mox.CreateMock(memedit.MemoryEditor)
+        editor._config = self.mox.CreateMockAnything()
+        editor._config.get_bool("no_smart_tmode").AndReturn(False)
         editor.col = lambda x: x
         editor.store = self.mox.CreateMockAnything()
         editor.store.get_iter('path').AndReturn('iter')
