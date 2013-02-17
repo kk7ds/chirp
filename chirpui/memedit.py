@@ -202,39 +202,55 @@ class MemoryEditor(common.Editor):
         return new
 
     def _get_cols_to_hide(self, iter):
-        tmode, duplex = self.store.get(iter,
-                                       self.col(_("Tone Mode")),
-                                       self.col(_("Duplex")))
+        tmode, duplex, cmode = self.store.get(iter,
+                                              self.col(_("Tone Mode")),
+                                              self.col(_("Duplex")),
+                                              self.col(_("Cross Mode")))
 
         hide = []
+        txmode, rxmode = cmode.split("->")
 
         if tmode == "Tone":
             hide += [self.col(_("ToneSql")),
                      self.col(_("DTCS Code")),
                      self.col(_("DTCS Rx Code")),
-                     self.col(_("DTCS Pol"))]
+                     self.col(_("DTCS Pol")),
+                     self.col(_("Cross Mode"))]
         elif tmode == "TSQL":
             if self._features.has_ctone:
                 hide += [self.col(_("Tone"))]
 
             hide += [self.col(_("DTCS Code")),
                      self.col(_("DTCS Rx Code")),
-                     self.col(_("DTCS Pol"))]
+                     self.col(_("DTCS Pol")),
+                     self.col(_("Cross Mode"))]
         elif tmode == "DTCS":
-            if self._features.has_rx_dtcs:
-                hide += [self.col(_("DTCS Code"))]
-
             hide += [self.col(_("Tone")),
-                     self.col(_("ToneSql"))]
+                     self.col(_("ToneSql")),
+                     self.col(_("Cross Mode")),
+                     self.col(_("DTCS Rx Code"))]
         elif tmode == "" or tmode == "(None)":
             hide += [self.col(_("Tone")),
                      self.col(_("ToneSql")),
                      self.col(_("DTCS Code")),
                      self.col(_("DTCS Rx Code")),
-                     self.col(_("DTCS Pol"))]
+                     self.col(_("DTCS Pol")),
+                     self.col(_("Cross Mode"))]
+        elif tmode == "Cross":
+            if txmode != "Tone":
+                hide += [self.col(_("Tone"))]
+            if txmode != "DTCS":
+                hide += [self.col(_("DTCS Code"))]
+            if rxmode != "Tone":
+                hide += [self.col(_("ToneSql"))]
+            if rxmode != "DTCS":
+                hide += [self.col(_("DTCS Rx Code"))]
+            if "DTCS" not in cmode:
+                hide += [self.col(_("DTCS Pol"))]
 
         if duplex == "" or duplex == "(None)":
             hide += [self.col(_("Offset"))]
+
 
         return hide
 
