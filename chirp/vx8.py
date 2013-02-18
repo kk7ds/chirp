@@ -266,6 +266,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             flag.valid = False
             return
         flag.used = not mem.empty
+        flag.valid = flag.used
 
         if mem.empty:
             return
