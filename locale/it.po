@@ -486,7 +486,7 @@ msgstr "Report statistiche"
 
 #: ../chirpui/mainapp.py:1216
 msgid "Hide Unused Fields"
-msgstr "Nascondi memorie vuote"
+msgstr "Nascondi campi non utilizzati"
 
 #: ../chirpui/mainapp.py:1217
 msgid "Automatic Repeater Offset"
@@ -727,7 +727,7 @@ msgstr "DTCS Pol"
 #: ../chirpui/memedit.py:1067
 #: ../chirpui/memedit.py:1134
 msgid "Cross Mode"
-msgstr "Modalità Cross-Repeater"
+msgstr "Modo Cross-Tone"
 
 #: ../chirpui/memedit.py:72
 #: ../chirpui/memedit.py:92
@@ -867,7 +867,7 @@ msgstr "Lettura memoria Raw {number}"
 
 #: ../chirpui/memedit.py:587
 msgid "You can only diff two memories!"
-msgstr "Puoi \"diff\" solo due memorie!"
+msgstr "Puoi confrontare solo due memorie!"
 
 #: ../chirpui/memedit.py:598
 msgid "Memory {number}"
@@ -931,7 +931,7 @@ msgstr "Mostra memorie grezze"
 
 #: ../chirpui/memedit.py:711
 msgid "Diff Raw Memories"
-msgstr "Diff memorie grezze"
+msgstr "Confronta memorie grezze"
 
 #: ../chirpui/memedit.py:835
 msgid "Internal Error: Column {name} not found"
