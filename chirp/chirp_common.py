@@ -185,7 +185,8 @@ class PowerLevel:
 
 def parse_freq(freqstr):
     """Parse a frequency string and return the value in integral Hz"""
-    if freqstr == " ":
+    freqstr = freqstr.strip()
+    if freqstr == "":
         return 0
     elif freqstr.endswith(" MHz"):
         return parse_freq(freqstr.split(" ")[0])
@@ -194,14 +195,16 @@ def parse_freq(freqstr):
 
     if "." in freqstr:
         mhz, khz = freqstr.split(".")
+        khz = khz.ljust(6, "0")
+        if len(khz) > 6:
+            raise ValueError("Invalid kHz value: %s", khz)
+        mhz = int(mhz) * 1000000
+        khz = int(khz)
     else:
-        mhz = freqstr
-        khz = "0"
-    if not mhz.isdigit() and khz.isdigit():
-        raise ValueError("Invalid value")
+        mhz = int(freqstr) * 1000000
+        khz = 0
 
-    # Make kHz exactly six decimal places
-    return int(("%s%-6s" % (mhz, khz)).replace(" ", "0"))
+    return mhz + khz
 
 def format_freq(freq):
     """Format a frequency given in Hz as a string"""
