@@ -20,7 +20,8 @@ from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    InvalidValueError
 
 MEM_FORMAT = """
 #seekto 0x0008;
@@ -914,15 +915,37 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(0, 127, _mrcnb))
         workmode.append(rs)
 
-        options = ["VHF", "UHF"]
-        rs = RadioSetting("vfoa.band", "VFO A Band",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfoa.band]))
+        def convert_bytes_to_freq(bytes):
+           real_freq = 0
+           for byte in bytes:
+               real_freq = (real_freq * 10) + byte
+           return chirp_common.format_freq(real_freq * 10)
+
+        def my_validate(value):
+            value = chirp_common.parse_freq(value)
+            if 17400000 <= value and value < 40000000:
+                raise InvalidValueError("Can't be between 174.00000-400.00000")
+            return chirp_common.format_freq(value)
+
+        def apply_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            obj.band = value >= 40000000
+            for i in range(7, -1, -1):
+                obj.freq[i] = value % 10
+                value /= 10
+
+        val1a = RadioSettingValueString(0, 10,
+            convert_bytes_to_freq(self._memobj.vfoa.freq))
+        val1a.set_validate_callback(my_validate)
+        rs = RadioSetting("vfoa.freq", "VFO A Frequency", val1a)
+        rs.set_apply_callback(apply_freq, self._memobj.vfoa)
         workmode.append(rs)
 
-        rs = RadioSetting("vfob.band", "VFO B Band",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfob.band]))
+        val1b = RadioSettingValueString(0, 10,
+            convert_bytes_to_freq(self._memobj.vfob.freq))
+        val1b.set_validate_callback(my_validate)
+        rs = RadioSetting("vfob.freq", "VFO B Frequency", val1b)
+        rs.set_apply_callback(apply_freq, self._memobj.vfob)
         workmode.append(rs)
 
         options = ["High", "Low"]
