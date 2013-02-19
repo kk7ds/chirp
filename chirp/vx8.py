@@ -22,6 +22,50 @@ struct {
     u16 in_use;
 } bank_used[24];
 
+#seekto 0x64a;
+struct {
+  u8 unknown0[4];
+  u8 frequency_band;
+  u8 unknown1:6,
+     manual_or_mr:2;
+  u8 unknown2:7,
+     mr_banks:1;
+  u8 unknown3;
+  u16 mr_index;
+  u16 bank_index;
+  u16 bank_enable;
+  u8 unknown4[5];
+  u8 unknown5:6,
+     power:2;
+  u8 unknown6:4,
+     tune_step:4;
+  u8 unknown7:6,
+     duplex:2;
+  u8 unknown8:6,
+     tone_mode:2;
+  u8 unknown9:2,
+     tone:6;
+  u8 unknown10;
+  u8 unknown11:6,
+     mode:2;
+  bbcd freq0[4];
+  bbcd offset_freq[4];
+  u8 unknown12[2];
+  char label[16];
+  u8 unknown13[6];
+  bbcd band_lower[4];
+  bbcd band_upper[4];
+  bbcd rx_freq[4];
+  u8 unknown14[22];
+  bbcd freq1[4];
+  u8 unknown15[11];
+  u8 unknown16:3,
+     volume:5;
+  u8 unknown17[18];
+  u8 active_menu_item;
+  u8 checksum;
+} vfo_info[6];
+
 #seekto 0x135A;
 struct {
   u8 unknown[2];
@@ -123,6 +167,52 @@ class VX8BankModel(chirp_common.BankModel):
 
         return banks
 
+    def update_vfo(self):
+        chosen_bank = [None, None]
+        chosen_mr = [None, None]
+
+        flags = self._radio._memobj.flag
+
+        # Find a suitable bank and MR for VFO A and B.
+        for bank in self.get_banks():
+            bank_used = self._radio._memobj.bank_used[bank.index]
+            if bank_used != 0xFFFF:
+                members = self._radio._memobj.bank_members[bank.index]
+                for i in range(0, 100):
+                    if members.channel[i] != 0xFFFF:
+                        chosen_bank[0] = bank.index
+                        chosen_mr[0] = members.channel[i]
+                        if not flags[members.channel[i]].nosubvfo:
+                            chosen_bank[1] = bank.index
+                            chosen_mr[1] = members.channel[i]
+                            break
+            if chosen_bank[1]:
+                break
+
+        for vfo_index in (0, 1):
+          # 3 VFO info structs are stored as 3 pairs of (master, backup)
+          vfo = self._radio._memobj.vfo_info[vfo_index * 2]
+          vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
+
+          if vfo.checksum != vfo_bak.checksum:
+              print "Warning: VFO settings are inconsistent with backup"
+          else:
+              if ((chosen_bank[vfo_index] is None) and
+                  (vfo.bank_index != 0xFFFF)):
+                  print "Disabling banks for VFO %d" % vfo_index
+                  vfo.bank_index = 0xFFFF
+                  vfo.mr_index = 0xFFFF
+                  vfo.bank_enable = 0xFFFF
+              elif ((chosen_bank[vfo_index] is not None) and
+                  (vfo.bank_index == 0xFFFF)):
+                  print "Enabling banks for VFO %d" % vfo_index
+                  vfo.bank_index = chosen_bank[vfo_index]
+                  vfo.mr_index = chosen_mr[vfo_index]
+                  vfo.bank_enable = 0x0000
+              vfo_bak.bank_index = vfo.bank_index
+              vfo_bak.mr_index = vfo.mr_index
+              vfo_bak.bank_enable = vfo.bank_enable
+
     def add_memory_to_bank(self, memory, bank):
         _members = self._radio._memobj.bank_members[bank.index]
         _bank_used = self._radio._memobj.bank_used[bank.index]
@@ -131,6 +221,8 @@ class VX8BankModel(chirp_common.BankModel):
                 _members.channel[i] = memory.number - 1
                 _bank_used.in_use = 0x06
                 break
+
+        self.update_vfo()
 
     def remove_memory_from_bank(self, memory, bank):
         _members = self._radio._memobj.bank_members[bank.index]
@@ -151,6 +243,8 @@ class VX8BankModel(chirp_common.BankModel):
 
         if not remaining_members:
             _bank_used.in_use = 0xFFFF
+
+        self.update_vfo()
 
     def get_bank_memories(self, bank):
         memories = []
@@ -217,7 +311,11 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x0000, 0xFEC9) ]
+        return [ yaesu_clone.YaesuChecksum(0x064A, 0x06C8),
+                 yaesu_clone.YaesuChecksum(0x06CA, 0x0748),
+                 yaesu_clone.YaesuChecksum(0x074A, 0x07C8),
+                 yaesu_clone.YaesuChecksum(0x07CA, 0x0848),
+                 yaesu_clone.YaesuChecksum(0x0000, 0xFEC9) ]
 
     def get_memory(self, number):
         flag = self._memobj.flag[number-1]
