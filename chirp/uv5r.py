@@ -968,14 +968,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
            return chirp_common.format_freq(real_offset * 10000)
 
         def apply_offset(setting, obj):
-            print setting.value
             value = chirp_common.parse_freq(str(setting.value)) / 10000
-            print value
-            print obj
             for i in range(3, -1, -1):
                 obj.offset[i] = value % 10
                 value /= 10
-            print "Applied %s:\n%s" % (setting.value, obj)
 
         val1a = RadioSettingValueString(0, 10,
             convert_bytes_to_offset(self._memobj.vfoa.offset))
