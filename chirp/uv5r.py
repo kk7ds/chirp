@@ -131,7 +131,8 @@ struct {
   u8 unused1:7,
      band:1;
   u8 unknown3;
-  u8 unused2:4,
+  u8 unused2:2,
+     sftd:2,
      scode:4;
   u8 unknown4;
   u8 unused3:1
@@ -153,7 +154,8 @@ struct {
   u8 unused1:7,
      band:1;
   u8 unknown3;
-  u8 unused2:4,
+  u8 unused2:2,
+     sftd:2,
      scode:4;
   u8 unknown4;
   u8 unused3:1
@@ -946,6 +948,45 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfob.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, self._memobj.vfob)
+        workmode.append(rs)
+
+        options = ["Off", "+", "-"]
+        rs = RadioSetting("vfoa.sftd", "VFO A Shift",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfoa.sftd]))
+        workmode.append(rs)
+
+        rs = RadioSetting("vfob.sftd", "VFO B Shift",
+                          RadioSettingValueList(options,
+                                                options[self._memobj.vfob.sftd]))
+        workmode.append(rs)
+
+        def convert_bytes_to_offset(bytes):
+           real_offset = 0
+           for byte in bytes:
+               real_offset = (real_offset * 10) + byte
+           return chirp_common.format_freq(real_offset * 10000)
+
+        def apply_offset(setting, obj):
+            print setting.value
+            value = chirp_common.parse_freq(str(setting.value)) / 10000
+            print value
+            print obj
+            for i in range(3, -1, -1):
+                obj.offset[i] = value % 10
+                value /= 10
+            print "Applied %s:\n%s" % (setting.value, obj)
+
+        val1a = RadioSettingValueString(0, 10,
+            convert_bytes_to_offset(self._memobj.vfoa.offset))
+        rs = RadioSetting("vfoa.offset", "VFO A Offset (0.00-69.95)", val1a)
+        rs.set_apply_callback(apply_offset, self._memobj.vfoa)
+        workmode.append(rs)
+
+        val1b = RadioSettingValueString(0, 10,
+            convert_bytes_to_offset(self._memobj.vfob.offset))
+        rs = RadioSetting("vfob.offset", "VFO B Offset (0.00-69.95)", val1b)
+        rs.set_apply_callback(apply_offset, self._memobj.vfob)
         workmode.append(rs)
 
         options = ["High", "Low"]
