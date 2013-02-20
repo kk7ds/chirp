@@ -37,7 +37,8 @@ def ensure_has_calls(radio, memory):
                 ulist_changed = True
                 break
         if not ulist_changed:
-            raise ImportError("No room to add callsign %s" % memory.dv_urcall)
+            raise errors.RadioError("No room to add callsign %s" %
+                                    memory.dv_urcall)
 
     rlist_add = []
     if memory.dv_rpt1call and memory.dv_rpt1call not in rlist:
@@ -59,7 +60,7 @@ def ensure_has_calls(radio, memory):
     if ulist_changed:
         radio.set_urcall_list(ulist)
     if rlist_changed:
-        radio.set_repeater_cal_list(rlist)
+        radio.set_repeater_call_list(rlist)
 
 # Filter the name according to the destination's rules
 def _import_name(dst_radio, _srcrf, mem):
@@ -123,8 +124,8 @@ def _import_dtcs(dst_radio, srcrf, mem):
 
 def _guess_mode_by_frequency(freq):
     ranges = [
-        (0, 135, "AM"),
-        (136, 9999, "FM"),
+        (0, 136000000, "AM"),
+        (136000000, 9999000000, "FM"),
         ]
 
     for lo, hi, mode in ranges:
@@ -142,7 +143,10 @@ def _import_mode(dst_radio, srcrf, mem):
     # frequency
 
     if mem.mode == "Auto" and mem.mode not in dstrf.valid_modes:
-        mem.mode = _guess_mode_by_frequency(mem.freq)
+        mode = _guess_mode_by_frequency(mem.freq)
+        if mode not in dstrf.valid_modes:
+            raise DestNotCompatible("Destination does not support %s" % mode)
+        mem.mode = mode
 
 def _make_offset_with_split(rxfreq, txfreq):
     offset = txfreq - rxfreq
