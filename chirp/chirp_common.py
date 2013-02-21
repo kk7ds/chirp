@@ -1310,10 +1310,10 @@ def split_tone_encode(mem):
     "DTCS", 23, "N"
     """
 
-    txmode = txval = None
-    txpol = mem.dtcs_polarity[0]
-    rxmode = rxval = None
-    rxpol = mem.dtcs_polarity[1]
+    txmode = ''
+    rxmode = ''
+    txval = None
+    rxval = None
     
     if mem.tmode == "Tone":
         txmode = "Tone"
@@ -1334,6 +1334,15 @@ def split_tone_encode(mem):
             rxval = mem.ctone
         elif rxmode == "DTCS":
             rxval = mem.rx_dtcs
+
+    if txmode == "DTCS":
+        txpol = mem.dtcs_polarity[0]
+    else:
+        txpol = None
+    if rxmode == "DTCS":
+        rxpol = mem.dtcs_polarity[1]
+    else:
+        rxpol = None
 
     return ((txmode, txval, txpol),
             (rxmode, rxval, rxpol))
