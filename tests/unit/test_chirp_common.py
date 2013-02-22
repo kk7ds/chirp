@@ -17,6 +17,10 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(chirp_common.parse_freq("1.000000"), 1000000)
         self.assertEqual(chirp_common.parse_freq("1.1"), 1100000)
         self.assertEqual(chirp_common.parse_freq("1.100"), 1100000)
+        self.assertEqual(chirp_common.parse_freq("0.6"), 600000)
+        self.assertEqual(chirp_common.parse_freq("0.600"), 600000)
+        self.assertEqual(chirp_common.parse_freq("0.060"), 60000)
+        self.assertEqual(chirp_common.parse_freq(".6"), 600000)
 
     def test_parse_freq_whitespace(self):
         self.assertEqual(chirp_common.parse_freq("1  "), 1000000)

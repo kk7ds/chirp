@@ -195,6 +195,8 @@ def parse_freq(freqstr):
 
     if "." in freqstr:
         mhz, khz = freqstr.split(".")
+        if mhz == "":
+            mhz = 0
         khz = khz.ljust(6, "0")
         if len(khz) > 6:
             raise ValueError("Invalid kHz value: %s", khz)
