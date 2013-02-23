@@ -32,6 +32,8 @@ TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
           ]          
 
+TONES_EXTRA = [62.5]
+
 # 104 DTCS Codes
 DTCS_CODES = [
      23,  25,  26,  31,  32,  36,  43,  47,  51,  53,  54,
@@ -278,8 +280,8 @@ class Memory:
         self.immutable = []
 
     _valid_map = {
-        "rtone"         : TONES,
-        "ctone"         : TONES,
+        "rtone"         : TONES + TONES_EXTRA,
+        "ctone"         : TONES + TONES_EXTRA,
         "dtcs"          : ALL_DTCS_CODES,
         "rx_dtcs"       : ALL_DTCS_CODES,
         "tmode"         : TONE_MODES,
