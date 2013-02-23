@@ -57,7 +57,7 @@ if manual_language and manual_language != "Auto":
                    "Dutch"     : "nl",
                    "German"    : "de",
                    "Hungarian" : "hu",
-                   "Russian"   : "ru_Ru",
+                   "Russian"   : "ru",
                    }
     try:
         print lang_codes[manual_language]
