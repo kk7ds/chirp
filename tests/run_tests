@@ -44,6 +44,7 @@ class TestCrashError(TestError):
         self.__tb = tb
         self.__exc = exc
         self.__args = args
+        self.__mytb = "".join(traceback.format_stack())
 
     def __str__(self):
         return str(self.__exc)
@@ -51,7 +52,9 @@ class TestCrashError(TestError):
     def get_detail(self):
         return str(self.__exc) + os.linesep + \
             ("Args were: %s" % self.__args) + os.linesep + \
-            self.__tb
+            self.__tb + os.linesep + \
+            "Called from:" + os.linesep + self.__mytb
+            
 
     def get_original_exception(self):
         return self.__exc
