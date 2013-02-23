@@ -26,8 +26,12 @@ from chirp import util
 mem_format = """
 #seekto 0x0100;
 struct {
-  u8 even:4,
-     odd:4;
+  u8 even_unknown:2,
+     even_pskip:1,
+     even_skip:1,
+     odd_unknown:2,
+     odd_pskip:1,
+     odd_skip:1;
 } flags[379];
 
 struct memory {
@@ -62,6 +66,51 @@ struct memory {
 #seekto 0x2000;
 struct memory memory[758];
 """
+
+class FlagObj(object):
+    def __init__(self, flagobj, which):
+        self._flagobj = flagobj
+        self._which = which
+
+    def _get(self, flag):
+        return getattr(self._flagobj, "%s_%s" % (self._which, flag))
+
+    def _set(self, flag, value):
+        return setattr(self._flagobj, "%s_%s" % (self._which, flag), value)
+
+    def get_skip(self):
+        return self._get("skip")
+
+    def set_skip(self, value):
+        self._set("skip", value)
+
+    skip = property(get_skip, set_skip)
+
+    def get_pskip(self):
+        return self._get("pskip")
+
+    def set_pskip(self, value):
+        self._set("pskip", value)
+
+    pskip = property(get_pskip, set_pskip)
+
+    def set(self):
+        self._set("unknown", 3)
+        self._set("skip", 1)
+        self._set("pskip", 1)
+
+    def clear(self):
+        self._set("unknown", 0)
+        self._set("skip", 0)
+        self._set("pskip", 0)
+
+    def get(self):
+        return (self._get("unknown") << 2 |
+                self._get("skip") << 1 |
+                self._get("pskip"))
+
+    def __repr__(self):
+        return repr(self._flagobj)
 
 def _is_loc_used(memobj, loc):
     return memobj.flags[loc / 2].get_raw() != "\xFF"
@@ -207,6 +256,7 @@ def _upload(radio):
 TONES = [62.5] + list(chirp_common.TONES)
 TMODES = ['', 'Tone', 'DTCS']
 DUPLEXES = ['', '-', '+']
+MODES = ["FM", "FM", "NFM"]
 
 @directory.register
 class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
@@ -231,13 +281,15 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.has_cross = True
         rf.has_tuning_step = False
         rf.has_rx_dtcs = True
-        rf.valid_skips = [] # FIXME
-        rf.valid_modes = ["FM", "AM"]
+        rf.valid_skips = ["", "S", "P"]
+        rf.valid_modes = ["FM", "NFM", "AM"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone',
                                 '->Tone', '->DTCS', 'Tone->Tone']
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = [(136000000, 500000000)]
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC
+        rf.valid_name_length = 7
         rf.memory_bounds = (1, 758)
         return rf
 
@@ -254,7 +306,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     def _get_memobjs(self, number):
         number -= 1
         _mem = self._memobj.memory[number]
-        _flg = getattr(self._memobj.flags[number / 2],
+        _flg = FlagObj(self._memobj.flags[number / 2],
                        number % 2 and "even" or "odd")
         return _mem, _flg
 
@@ -278,15 +330,15 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
 
-        if int(_flg) == 0x0F:
+        if _flg.get() == 0x0F:
             mem.empty = True
             return mem
 
         mem.freq = int(_mem.freq) * 100
         mem.offset = int(_mem.offset) * 100
         mem.name = str(_mem.name).rstrip()
-        mem.mode = _mem.is_am and "AM" or "FM"
         mem.duplex = DUPLEXES[_mem.duplex]
+        mem.mode = _mem.is_am and "AM" or MODES[_mem.channel_width]
 
         rxtone = txtone = None
         rxmode = TMODES[_mem.rxtmode]
@@ -309,20 +361,27 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                                        (txmode, txtone, txpol),
                                        (rxmode, rxtone, rxpol))
 
+        mem.skip = _flg.get_skip() and "S" or _flg.get_pskip() and "P" or ""
+
         return mem
 
     def set_memory(self, mem):
         _mem, _flg = self._get_memobjs(mem.number)
         if mem.empty:
-            _flg.set_value(0x0F)
+            _flg.set()
             return
-        _flg.set_value(0x00)
+        _flg.clear()
 
         _mem.freq = mem.freq / 100
         _mem.offset = mem.offset / 100
         _mem.name = mem.name.ljust(7)
         _mem.is_am = mem.mode == "AM"
         _mem.duplex = DUPLEXES.index(mem.duplex)
+
+        try:
+            _mem.channel_width = MODES.index(mem.mode)
+        except ValueError:
+            _mem.channel_width = 0
 
         ((txmode, txtone, txpol),
          (rxmode, rxtone, rxpol)) = chirp_common.split_tone_encode(mem)
@@ -342,6 +401,9 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
         _mem.txinv = txpol == "R"
         _mem.rxinv = rxpol == "R"
+
+        _flg.set_skip(mem.skip == "S")
+        _flg.set_pskip(mem.skip == "P")
 
     @classmethod
     def match_model(cls, filedata, filename):
