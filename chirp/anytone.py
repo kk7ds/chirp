@@ -63,15 +63,17 @@ struct memory {
 struct memory memory[758];
 """
 
-def _max_relevant_addr(data):
-    obj = bitwise.parse(mem_format, data)
-    for i in range(757 / 2, -1, -1):
-        flag = obj.flags[i]
-        if flag.get_raw() != "\xff":
-            return (32 * (i + 1) * 2) + 0x2000
-    # No memories
-    return 0x2000
-        
+def _is_loc_used(memobj, loc):
+    return memobj.flags[loc / 2].get_raw() != "\xFF"
+
+def _addr_to_loc(addr):
+    return (addr - 0x2000) / 32
+
+def _should_send_addr(memobj, addr):
+    if addr < 0x2000 or addr >= 0x7EC0:
+        return True
+    else:
+        return _is_loc_used(memobj, _addr_to_loc(addr))
 
 def _debug(string):
     if "CHIRP_DEBUG" in os.environ:
@@ -111,7 +113,7 @@ def _finish(radio):
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
     if result != "\x06":
-        print "Got:\n%s" % utils.hexprint(result)
+        print "Got:\n%s" % util.hexprint(result)
         raise errors.RadioError("Radio did not finish cleanly")
 
 def _checksum(data):
@@ -158,10 +160,15 @@ def _send(radio, cmd, addr, length, data=None):
 def _download(radio):
     _ident(radio)
 
+    memobj = None
+
     data = ""
     for start, end in radio._ranges:
         for addr in range(start, end, 0x10):
-            block = _send(radio, 'R', addr, 0x10)
+            if memobj is not None and not _should_send_addr(memobj, addr):
+                block = "\xFF" * 0x10
+            else:
+                block = _send(radio, 'R', addr, 0x10)
             data += block
 
             status = chirp_common.Status()
@@ -170,6 +177,9 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
+            if addr == 0x19F0:
+                memobj = bitwise.parse(mem_format, data)
+
     _finish(radio)
 
     return memmap.MemoryMap(data)
@@ -177,12 +187,11 @@ def _download(radio):
 def _upload(radio):
     _ident(radio)
 
-    # FIXME
-    # last_mem_addr = _max_relevant_addr(radio._mmap)
-
     for start, end in radio._ranges:
         for addr in range(start, end, 0x10):
-            if addr <= 0x0100:
+            if addr < 0x0100:
+                continue
+            if not _should_send_addr(radio._memobj, addr):
                 continue
             block = radio._mmap[addr:addr + 0x10]
             _send(radio, 'W', addr, len(block), block)
