@@ -784,7 +784,7 @@ If you think that it is valid, you can select a radio model below to force an op
             county.set_active(0)
         state.connect("changed", _changed, county)
         
-        d = inputdialog.FieldDialog(title="RepeaterBook Query", parent=self)
+        d = inputdialog.FieldDialog(title=_("RepeaterBook Query"), parent=self)
         d.add_field("State", state)
         d.add_field("County", county)
         d.add_field("Band", band)
@@ -843,7 +843,7 @@ If you think that it is valid, you can select a radio model below to force an op
         if not os.path.exists(filename):
             print "Failed, headers were:"
             print str(headers)
-            common.show_error("RepeaterBook query failed")
+            common.show_error(_("RepeaterBook query failed"))
             self.window.set_cursor(None)
             return
 
@@ -953,7 +953,8 @@ If you think that it is valid, you can select a radio model below to force an op
                   "3Zipcode"     : (gtk.Entry(), lambda x: x),
                   }
 
-        d = inputdialog.FieldDialog(title="RadioReference.com Query", parent=self)
+        d = inputdialog.FieldDialog(title=_("RadioReference.com Query"),
+                                    parent=self)
         for k in sorted(fields.keys()):
             d.add_field(k[1:], fields[k][0])
             fields[k][0].set_text(CONF.get(k[1:], "radioreference") or "")

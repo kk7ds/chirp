@@ -15,14 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
+from chirp import elib_intl
 from chirp import platform, CHIRP_VERSION
 from chirpui import config
 
 # Hack to setup environment
 platform.get_platform()
 
-import gtk
 import sys
 import os
 import locale
@@ -73,11 +74,17 @@ else:
     except:
         pass
 
+if os.name == "nt":
+    elib_intl._putenv("LANG", langs[0])
+else:
+    os.putenv("LANG", langs[0])
 path = "locale"
 gettext.bindtextdomain("CHIRP", localepath)
 gettext.textdomain("CHIRP")
 lang = gettext.translation("CHIRP", localepath, languages=langs,
                            fallback=True)
+
+import gtk
 
 # Python <2.6 does not have str.format(), which chirp uses to make translation
 # strings nicer. So, instead of installing the gettext standard "_()" function,
