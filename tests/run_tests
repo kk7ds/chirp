@@ -326,7 +326,7 @@ class TestCaseBruteForce(TestCase):
             return
 
         m.tmode = "DTCS"
-        for code in chirp_common.DTCS_CODES:
+        for code in rf.valid_dtcs_codes:
             m.dtcs = code
             self.set_and_compare(m)
 

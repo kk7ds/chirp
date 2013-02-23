@@ -46,8 +46,12 @@ DTCS_CODES = [
     731, 732, 734, 743, 754,
      ]
 
-# Some radios have some strange codes
-DTCS_EXTRA_CODES = [ 17, 645 ]
+# 512 Possible DTCS Codes
+ALL_DTCS_CODES = []
+for a in range(0, 8):
+    for b in range(0, 8):
+        for c in range(0, 8):
+            ALL_DTCS_CODES.append((a * 100) + (b * 10) + c)
 
 CROSS_MODES = [
     "Tone->Tone",
@@ -276,8 +280,8 @@ class Memory:
     _valid_map = {
         "rtone"         : TONES,
         "ctone"         : TONES,
-        "dtcs"          : DTCS_CODES + DTCS_EXTRA_CODES,
-        "rx_dtcs"       : DTCS_CODES + DTCS_EXTRA_CODES,
+        "dtcs"          : ALL_DTCS_CODES,
+        "rx_dtcs"       : ALL_DTCS_CODES,
         "tmode"         : TONE_MODES,
         "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
         "cross_mode"    : CROSS_MODES,
@@ -664,6 +668,7 @@ class RadioFeatures:
         "valid_name_length"   : 0,
         "valid_cross_modes"   : [],
         "valid_dtcs_pols"     : [],
+        "valid_dtcs_codes"    : [],
         "valid_special_chans" : [],
 
         "has_sub_devices"     : BOOLEAN,
@@ -783,6 +788,8 @@ class RadioFeatures:
                   "Supported tone cross modes")
         self.init("valid_dtcs_pols", ["NN", "RN", "NR", "RR"],
                   "Supported DTCS polarities")
+        self.init("valid_dtcs_codes", list(DTCS_CODES),
+                  "Supported DTCS codes")
         self.init("valid_special_chans", [],
                   "Supported special channel names")
 
@@ -845,6 +852,13 @@ class RadioFeatures:
                                       mem.dtcs_polarity)
             msgs.append(msg)
 
+        if self.valid_dtcs_codes and \
+                mem.dtcs not in self.valid_dtcs_codes:
+            msg = ValidationError("DTCS Code %03i not supported" % mem.dtcs)
+        if self.valid_dtcs_codes and \
+                mem.rx_dtcs not in self.valid_dtcs_codes:
+            msg = ValidationError("DTCS Code %03i not supported" % mem.rx_dtcs)
+            
         if self.valid_duplexes and mem.duplex not in self.valid_duplexes:
             msg = ValidationError("Duplex %s not supported" % mem.duplex)
             msgs.append(msg)
