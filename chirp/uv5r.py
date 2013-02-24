@@ -49,8 +49,24 @@ struct {
   u8 unused[11];
 } pttid[15];
 
-#seekto 0x0CB2;
+#seekto 0x0C88;
 struct {
+  u8 code222[3];
+  u8 unused222[2];
+  u8 code333[3];
+  u8 unused333[2];
+  u8 alarmcode[3];
+  u8 unused119[2];
+  u8 unknown1;
+  u8 code555[3];
+  u8 unused555[2];
+  u8 code666[3];
+  u8 unused666[2];
+  u8 code777[3];
+  u8 unused777[2];
+  u8 unknown2;
+  u8 code60606[5];
+  u8 code70707[5];
   u8 code[5];
   u8 unused1:6,
      aniid:2;
@@ -1077,6 +1093,22 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rs = RadioSetting("ani.aniid", "ANI ID",
                           RadioSettingValueList(options,
                                                 options[self._memobj.ani.aniid]))
+        dtmf.append(rs)
+
+        _codeobj = self._memobj.ani.alarmcode
+        _code = "".join(["%x" % x for x in _codeobj if int(x) != 0xFF])
+        val = RadioSettingValueString(0, 3, _code, False)
+        val.set_charset("0123456789")
+        rs = RadioSetting("ani.alarmcode", "Alarm Code", val)
+        def apply_code(setting, obj):
+            alarmcode = []
+            for j in range(0, 3):
+                try:
+                    alarmcode.append(int(str(setting.value)[j]))
+                except IndexError:
+                    alarmcode.append(0xFF)
+            obj.alarmcode = alarmcode
+        rs.set_apply_callback(apply_code, self._memobj.ani)
         dtmf.append(rs)
 
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
