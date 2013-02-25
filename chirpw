@@ -74,10 +74,13 @@ else:
     except:
         pass
 
-if os.name == "nt":
-    elib_intl._putenv("LANG", langs[0])
-else:
-    os.putenv("LANG", langs[0])
+try:
+    if os.name == "nt":
+        elib_intl._putenv("LANG", langs[0])
+    else:
+        os.putenv("LANG", langs[0])
+except IndexError:
+    pass
 path = "locale"
 gettext.bindtextdomain("CHIRP", localepath)
 gettext.textdomain("CHIRP")
