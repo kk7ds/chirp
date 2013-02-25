@@ -22,9 +22,7 @@ struct {
   u16 rtone:6,
       ctone:6,
       unknown2:1,
-      is_dv:1,
-      unknown2_0:1,
-      is_narrow:1;
+      mode:3;
   u8 dtcs;
   u8 tune_step:4,
      unknown5:4;
@@ -166,6 +164,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     _ranges = [(0x00000, 0x15500, 32)]
 
+    MODES = {0: "FM", 1: "NFM", 5: "DV"}
+
     def _get_bank(self, loc):
         _bank = self._memobj.banks[loc]
         if _bank.bank == 0xFF:
@@ -198,7 +198,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_names = True
         rf.valid_tmodes = list(TMODES)
         rf.valid_tuning_steps = sorted(list(TUNING_STEPS))
-        rf.valid_modes = ["FM", "NFM", "DV"]
+        rf.valid_modes = self.MODES.values()
         rf.valid_skips = ["", "S", "P"]
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 16
@@ -218,7 +218,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         bit = (1 << (number % 8))
 
-        if _mem.is_dv:
+        if self.MODES[int(_mem.mode)] == "DV":
             mem = chirp_common.DVMemory()
         else:
             mem = chirp_common.Memory()
@@ -237,16 +237,12 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.dtcs_polarity = DTCS_POLARITY[_mem.dtcs_polarity]
         mem.tuning_step = TUNING_STEPS[_mem.tune_step]
+        mem.mode = self.MODES[int(_mem.mode)]
 
-        if _mem.is_dv:
-            mem.mode = "DV"
+        if mem.mode == "DV":
             mem.dv_urcall = _decode_call(_mem.urcall).rstrip()
             mem.dv_rpt1call = _decode_call(_mem.rpt1call).rstrip()
             mem.dv_rpt2call = _decode_call(_mem.rpt2call).rstrip()
-        elif _mem.is_narrow:
-            mem.mode = "NFM"
-        else:
-            mem.mode = "FM"
 
         if _psk & bit:
             mem.skip = "P"
@@ -279,9 +275,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(memory.dtcs)
         _mem.dtcs_polarity = DTCS_POLARITY.index(memory.dtcs_polarity)
         _mem.tune_step = TUNING_STEPS.index(memory.tuning_step)
-        
-        _mem.is_narrow = memory.mode in ["NFM", "DV"]
-        _mem.is_dv = memory.mode == "DV"
+        _mem.mode = next(i for i, mode in self.MODES.items() \
+                            if mode == memory.mode)
 
         if isinstance(memory, chirp_common.DVMemory):
             _mem.urcall = _encode_call(memory.dv_urcall.ljust(8))
