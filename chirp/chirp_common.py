@@ -921,7 +921,7 @@ class ValidationError(ValidationMessage):
     """A fatal error during memory validation"""
     pass
 
-class Radio:
+class Radio(object):
     """Base class for all Radio drivers"""
     BAUD_RATE = 9600
     HARDWARE_FLOW = False
