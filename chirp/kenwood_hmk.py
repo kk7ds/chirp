@@ -120,3 +120,8 @@ class HMKRadio(generic_csv.CSVRadio):
         if not good:
             print self.errors
             raise errors.InvalidDataError("No channels found")
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        """Match files ending in .hmk"""
+        return filename.lower().endswith("." + cls.FILE_EXTENSION)
