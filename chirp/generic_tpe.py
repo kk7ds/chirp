@@ -44,3 +44,7 @@ class TpeRadio(generic_csv.CSVRadio):
     FILE_EXTENSION = "tpe"
 
     ATTR_MAP = TpeMap()
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return filename.lower().endswith("." + cls.FILE_EXTENSION)
