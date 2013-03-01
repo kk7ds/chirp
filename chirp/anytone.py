@@ -15,6 +15,7 @@
 
 import os
 import struct
+import time
 
 from chirp import bitwise
 from chirp import chirp_common
@@ -23,7 +24,7 @@ from chirp import errors
 from chirp import memmap
 from chirp import util
 
-mem_format = """
+_mem_format = """
 #seekto 0x0100;
 struct {
   u8 even_unknown:2,
@@ -33,7 +34,9 @@ struct {
      odd_pskip:1,
      odd_skip:1;
 } flags[379];
+"""
 
+mem_format = _mem_format + """
 struct memory {
   bbcd freq[4];
   bbcd offset[4];
@@ -125,7 +128,7 @@ def _should_send_addr(memobj, addr):
         return _is_loc_used(memobj, _addr_to_loc(addr))
 
 def _debug(string):
-    if "CHIRP_DEBUG" in os.environ:
+    if "CHIRP_DEBUG" in os.environ or True:
         print string
 
 def _echo_write(radio, data):
@@ -138,10 +141,17 @@ def _echo_write(radio, data):
 
 def _read(radio, length):
     try:
-        return radio.pipe.read(length)
+        data = radio.pipe.read(length)
     except Exception, e:
         print "Error reading from radio: %s" % e
         raise errors.RadioError("Unable to read from radio")
+
+    if len(data) != length:
+        print "Short read from radio (%i, expected %i)" % (len(data),
+                                                           length)
+        print util.hexprint(data)
+        raise errors.RadioError("Short read from radio")
+    return data
 
 def _ident(radio):
     radio.pipe.setTimeout(1)
@@ -185,7 +195,7 @@ def _send(radio, cmd, addr, length, data=None):
             print "Ack was: %s" % repr(result)
             raise errors.RadioError("Radio did not accept block at %04x" % addr)
         return
-    result = radio.pipe.read(length + 6)
+    result = _read(radio, length + 6)
     _debug("Got:\n%s" % util.hexprint(result))
     header = result[0:4]
     data = result[4:-2]
@@ -227,7 +237,7 @@ def _download(radio):
             radio.status_fn(status)
 
             if addr == 0x19F0:
-                memobj = bitwise.parse(mem_format, data)
+                memobj = bitwise.parse(_mem_format, data)
 
     _finish(radio)
 
