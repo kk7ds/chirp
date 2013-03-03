@@ -876,6 +876,87 @@ If you think that it is valid, you can select a radio model below to force an op
         else:
             self.do_open_live(radio, read_only=True)
 
+    def do_przemienniki_prompt(self):
+        d = inputdialog.FieldDialog(title='przemienniki.net query',
+                                    parent=self)
+        fields = {
+            "Country":
+                (miscwidgets.make_choice(['by', 'cz', 'de', 'lt', 'pl',
+                                          'sk', 'uk'], False),
+                 lambda x: str(x.get_active_text())),
+            "Band":
+                (miscwidgets.make_choice(['10m', '4m', '6m', '2m', '70cm',
+                                          '23cm', '13cm', '3cm'], False, '2m'),
+                 lambda x: str(x.get_active_text())),
+            "Mode":
+                (miscwidgets.make_choice(['fm', 'dv'], False),
+                 lambda x: str(x.get_active_text())),
+            "Only Working":
+                (miscwidgets.make_choice(['', 'yes'], False),
+                 lambda x: str(x.get_active_text())),
+            "Latitude": (gtk.Entry(), lambda x: float(x.get_text())),
+            "Longitude": (gtk.Entry(), lambda x: float(x.get_text())),
+            "Range": (gtk.Entry(), lambda x: int(x.get_text())),
+            }
+        for name in sorted(fields.keys()):
+            value, fn = fields[name]
+            d.add_field(name, value)
+        while d.run() == gtk.RESPONSE_OK:
+            query = "http://przemienniki.net/export/chirp.csv?"
+            args = []
+            for name, (value, fn) in fields.items():
+                if isinstance(value, gtk.Entry):
+                    contents = value.get_text()
+                else:
+                    contents = value.get_active_text()
+                if contents:
+                    try:
+                        _value = fn(value)
+                    except ValueError:
+                        common.show_error(_("Invalid value for %s") % name)
+                        query = None
+                        continue
+
+                    args.append("=".join((name.replace(" ", "").lower(),
+                                          contents)))
+            query += "&".join(args)
+            print query
+            d.destroy()
+            return query
+
+        d.destroy()
+        return query
+
+    def do_przemienniki(self, do_import):
+        url = self.do_przemienniki_prompt()
+        if not url:
+            return
+
+        fn = tempfile.mktemp(".csv")
+        filename, headers = urllib.urlretrieve(url, fn)
+        if not os.path.exists(filename):
+            print "Failed, headers were:"
+            print str(headers)
+            common.show_error(_("Query failed"))
+            return
+
+        class PRRadio(generic_csv.CSVRadio,
+                      chirp_common.NetworkSourceRadio):
+            VENDOR = "przemienniki.net"
+            MODEL = ""
+
+        try:
+            radio = PRRadio(filename)
+        except Exception, e:
+            common.show_error(str(e))
+            return
+
+        if do_import:
+            eset = self.get_current_editorset()
+            count = eset.do_import(filename)
+        else:
+            self.do_open_live(radio, read_only=True)
+
     def do_rfinder_prompt(self):
         fields = {"1Email"    :      (gtk.Entry(),
                                       lambda x: "@" in x),
@@ -1254,6 +1335,8 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_export()
         elif action in ["qrbook", "irbook"]:
             self.do_repeaterbook(action[0] == "i")
+        elif action in ["qpr", "ipr"]:
+            self.do_przemienniki(action[0] == "i")
         elif action == "about":
             self.do_about()
         elif action == "columns":
@@ -1331,11 +1414,13 @@ If you think that it is valid, you can select a radio model below to force an op
       <menu action="importsrc" name="importsrc">
         <menuitem action="iradioreference"/>
         <menuitem action="irbook"/>
+        <menuitem action="ipr"/>
         <menuitem action="irfinder"/>
       </menu>
       <menu action="querysrc" name="querysrc">
         <menuitem action="qradioreference"/>
         <menuitem action="qrbook"/>
+        <menuitem action="qpr"/>
         <menuitem action="qrfinder"/>
       </menu>
       <menu action="stock" name="stock"/>
@@ -1387,9 +1472,11 @@ If you think that it is valid, you can select a radio model below to force an op
             ('iradioreference', None, _("RadioReference.com"), None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
+            ('ipr', None, _("przemienniki.net"), None, None, self.mh),
             ('querysrc', None, _("Query data source"), None, None, self.mh),
             ('qradioreference', None, _("RadioReference.com"), None, None, self.mh),
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
+            ('qpr', None, _("przemienniki.net"), None, None, self.mh),
             ('qrbook', None, _("RepeaterBook"), None, None, self.mh),
             ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
