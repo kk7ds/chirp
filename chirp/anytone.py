@@ -381,6 +381,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             _flg.set()
             return
         _flg.clear()
+        _mem.set_raw("\x00" * 32)
 
         _mem.freq = mem.freq / 100
         _mem.offset = mem.offset / 100
