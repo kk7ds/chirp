@@ -1128,7 +1128,11 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_hide_unused(self, action):
         eset = self.get_current_editorset()
-        eset.editors["memedit"].set_hide_unused(action.get_active())
+        if eset is None:
+            conf = config.get("memedit")
+            conf.set_bool("hide_unused", action.get_active())
+        else:
+            eset.editors["memedit"].set_hide_unused(action.get_active())
 
     def do_clearq(self):
         eset = self.get_current_editorset()
