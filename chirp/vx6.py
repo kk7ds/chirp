@@ -141,7 +141,8 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number-1])
+        return repr(self._memobj.memory[number-1]) + \
+            repr(self._memobj.flags[(number-1)/2])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -197,7 +198,8 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         valid = _flag["%s_valid" % nibble]
 
         # initialize new channel to safe defaults
-        if not mem.empty and not used:
+        if not mem.empty and not valid:
+            _flag["%s_valid" % nibble] = True
             _mem.unknown11 = 0
             _mem.step_changed = 0
             _mem.cpu_shifted = 0
