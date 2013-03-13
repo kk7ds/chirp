@@ -123,7 +123,7 @@ class MemoryEditor(common.Editor):
 
     def ed_freq(self, _foo, path, new, colnum):
         iter = self.store.get_iter(path)
-        prev, = self.store.get(iter, colnum)
+        was_filled, prev = self.store.get(iter, self.col("_filled"), colnum)
 
         def set_offset(path, offset):
             if offset > 0:
@@ -154,7 +154,9 @@ class MemoryEditor(common.Editor):
         if not self._features.has_nostep_tuning:
             set_ts(chirp_common.required_step(new))
 
-        if new and self._config.get_bool("autorpt") and new != prev:
+        is_changed = new != prev if was_filled else True
+        autorpt_enabled = self._config.get_bool("autorpt")
+        if new is not None and is_changed and autorpt_enabled:
             try:
                 band = chirp_common.freq_to_band(new)
                 set_offset(path, 0)
