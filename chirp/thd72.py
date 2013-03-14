@@ -66,8 +66,7 @@ struct {
 struct {
   u8 disabled:7,
      unknown0:1;
-  u8 unknown1:7,
-     skip:1;
+  u8 skip;
 } flag[1032];
 
 #seekto 0x1500;
