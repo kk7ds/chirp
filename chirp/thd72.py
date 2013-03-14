@@ -243,6 +243,10 @@ class THD72Radio(chirp_common.CloneModeRadio):
             self._memobj.wx_name[number].name = name[:8]
             self.add_dirty_block(self._memobj.wx_name[number])
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number]) + \
+            repr(self._memobj.flag[(number)])
+
     def get_memory(self, number):
         if isinstance(number, str):
             try:
