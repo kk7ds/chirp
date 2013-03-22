@@ -732,20 +732,14 @@ class Processor:
 
     def parse_directive(self, directive):
         name = directive[0][0]
+        value = directive[0][1][0][1]
         if name == "seekto":
-            offset = directive[0][1][0][1]
-            if offset.startswith("0x"):
-                offset = int(offset[2:], 16)
-            else:
-                offset = int(offset)
             #print "NOTICE: Setting offset to %i (0x%X)" % (offset, offset)
-            self._offset = offset
+            self._offset = int(value, 0)
         elif name == "seek":
-            offset = int(directive[0][1][0][1])
-            self._offset += offset
+            self._offset += int(value, 0)
         elif name == "printoffset":
-            string = directive[0][1][0][1]
-            print "%s: %i (0x%08X)" % (string[1:-1], self._offset, self._offset)
+            print "%s: %i (0x%08X)" % (value[1:-1], self._offset, self._offset)
 
     def parse_block(self, lang):
         for t, d in lang:
