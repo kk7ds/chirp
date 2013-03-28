@@ -661,6 +661,16 @@ class Processor:
 
         return bytes
 
+    def do_bitarray(self, i, count):
+        if count % 8 != 0:
+            raise ValueError("bit array must be divisible by 8.")
+
+        class bitDE(bitDataElement):
+            _nbits = 1
+            _shift = 8 - i % 8
+
+        return bitDE(self._data, self._offset)
+
     def parse_defn(self, defn):
         dtype = defn[0]
 
@@ -680,9 +690,13 @@ class Processor:
             res = arrayDataElement(self._offset)
             size = 0
             for i in range(0, count):
-                gen = self._types[dtype](self._data, self._offset)
+                if dtype == "bit":
+                    gen = self.do_bitarray(i, count)
+                    self._offset += int((i+1) % 8 == 0)
+                else:
+                    gen = self._types[dtype](self._data, self._offset)
+                    self._offset += (gen.size() / 8)
                 res.append(gen)
-                self._offset += (gen.size() / 8)
 
             if count == 1:
                 self._generators[name] = res[0]

@@ -92,6 +92,16 @@ class TestBitfieldTypes(BaseTest):
     def test_bitfield_ul24(self):
         self._test_bitfield_24("l", "\xC2\x40\x00")
 
+class TestBitType(BaseTest):
+    def test_bit_array(self):
+        defn = "bit foo[24];"
+        obj = bitwise.parse(defn, "\x00\x80\x01")
+        for i, v in [(0, False), (8, True), (23, True)]:
+            self.assertEqual(bool(obj.foo[i]), v)
+
+    def test_bit_array_fail(self):
+        self.assertRaises(ValueError, bitwise.parse, "bit foo[23];", "000")
+
 class TestBitwiseBCDTypes(BaseTest):
     def _test_def(self, definition, name, data, value):
         obj = bitwise.parse(definition, data)

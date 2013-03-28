@@ -16,7 +16,7 @@
 import re
 from chirp.pyPEG import keyword, parse as pypeg_parse
 
-TYPES = ["u8", "u16", "ul16", "u24", "ul24", "u32", "ul32", "char",
+TYPES = ["bit", "u8", "u16", "ul16", "u24", "ul24", "u32", "ul32", "char",
          "lbcd", "bbcd"]
 DIRECTIVES = ["seekto", "seek", "printoffset"]
 
