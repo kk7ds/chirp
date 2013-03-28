@@ -194,16 +194,14 @@ class arrayDataElement(DataElement):
             return str(self.__items)
 
     def __int__(self):
-        if isinstance(self.__items[0], bbcdDataElement):
+        if isinstance(self.__items[0], bcdDataElement):
             val = 0
-            for i in self.__items:
+            if isinstance(self.__items[0], bbcdDataElement):
+                items = self.__items
+            else:
+                items = reversed(self.__items)
+            for i in items:
                 tens, ones = i.get_value()
-                val = (val * 100) + (tens * 10) + ones
-            return val
-        elif isinstance(self.__items[0], lbcdDataElement):
-            val = 0
-            for i in reversed(self.__items):
-                ones, tens = i.get_value()
                 val = (val * 100) + (tens * 10) + ones
             return val
         else:
@@ -472,30 +470,19 @@ class bcdDataElement(DataElement):
             raise TypeError("Unable to set bcdDataElement from type %s" %
                             type(data))
 
-class lbcdDataElement(bcdDataElement):
-    _size = 1
-
-    def _get_value(self, data):
-        a = (ord(data) & 0xF0) >> 4
-        b = ord(data) & 0x0F
-        return (b, a)
-
     def set_value(self, value):
-        value = int("%02i" % value, 16)
-        a = (value & 0xF0) >> 4
-        b = (value & 0x0F)
-        self._data[self._offset] = (b << 4) | a
-
-class bbcdDataElement(bcdDataElement):
-    _size = 1
+        self._data[self._offset] = int("%02i" % value, 16)
 
     def _get_value(self, data):
         a = (ord(data) & 0xF0) >> 4
         b = ord(data) & 0x0F
         return (a, b)
 
-    def set_value(self, value):
-        self._data[self._offset] = int("%02i" % value, 16)
+class lbcdDataElement(bcdDataElement):
+    _size = 1
+
+class bbcdDataElement(bcdDataElement):
+    _size = 1
 
 class bitDataElement(intDataElement):
     _nbits = 0

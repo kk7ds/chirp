@@ -147,21 +147,17 @@ class TestBitwiseBCDTypes(BaseTest):
         self.assertEqual(data.get_packed(), ("\x00" * len(_data)))
         setattr(obj, name, 42)
         if definition.startswith("b"):
-            expected = "\x00\x42"
+            expected = (len(_data) == 2 and "\x00" or "") + "\x42"
         else:
-            expected = "\x00\x24"
+            expected = "\x42" + (len(_data) == 2 and "\x00" or "")
         raw = data.get_packed()
-        if len(_data) == 1:
-            raw = "\x00" + raw
-        elif definition.startswith("l"):
-            expected = "".join(reversed(expected))
         self.assertEqual(raw, expected)
 
     def test_bbcd(self):
         self._test_def("bbcd foo;", "foo", "\x12", 12)
 
     def test_lbcd(self):
-        self._test_def("lbcd foo;", "foo", "\x12", 21)
+        self._test_def("lbcd foo;", "foo", "\x12", 12)
 
     def test_bbcd_array(self):
         self._test_def("bbcd foo[2];", "foo", "\x12\x34", 1234)

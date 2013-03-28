@@ -77,7 +77,7 @@ class ICT70Bank(icf.IcomBank):
 
     def set_name(self, name):
         _bank = self._model._radio._memobj.bank_names[self.index]
-        _bank.name = name.ljust(8)[:8]
+        _bank.name = name.ljust(6)[:6]
 
 @directory.register
 class ICT70Radio(icf.IcomCloneModeRadio):
