@@ -17,6 +17,7 @@
 #
 # Example definitions:
 #
+#  bit  foo[8];  /* Eight single bit values                 */
 #  u8   foo;     /* Unsigned 8-bit value                    */
 #  u16  foo;     /* Unsigned 16-bit value                   */
 #  ul16 foo;     /* Unsigned 16-bit value (LE)              */
@@ -221,6 +222,9 @@ class arrayDataElement(DataElement):
             i.set_value(twodigits)
 
     def __set_value_char(self, value):
+        if len(value) != len(self.__items):
+            raise ValueError("String expects exactly %i characters" %
+                             len(self.__items))
         for i in range(0, len(self.__items)):
             self.__items[i].set_value(value[i])
 
@@ -478,7 +482,9 @@ class lbcdDataElement(bcdDataElement):
 
     def set_value(self, value):
         value = int("%02i" % value, 16)
-        self._data[self._offset] = value
+        a = (value & 0xF0) >> 4
+        b = (value & 0x0F)
+        self._data[self._offset] = (b << 4) | a
 
 class bbcdDataElement(bcdDataElement):
     _size = 1
