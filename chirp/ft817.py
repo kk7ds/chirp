@@ -718,10 +718,10 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                           RadioSettingValueBoolean(_settings.ars_144))
         basic.append(rs)
         rs = RadioSetting("ars_430", "430 ARS",
-                          RadioSettingValueBoolean(_settings.ars_144))
+                          RadioSettingValueBoolean(_settings.ars_430))
         basic.append(rs)
         rs = RadioSetting("pkt9600_mic", "Paket 9600 mic level",
-                          RadioSettingValueInteger(0, 100, _settings.am_mic))
+                          RadioSettingValueInteger(0, 100, _settings.pkt9600_mic))
         packet.append(rs)
         options = ["enable", "disable"]
         rs = RadioSetting("disable_amfm_dial", "AM&FM Dial",
