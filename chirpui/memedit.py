@@ -1074,7 +1074,7 @@ class MemoryEditor(common.Editor):
 
     def _limit_key(self, which):
         if which not in ["lo", "hi"]:
-            raise Exception(_("Internal Error: Invalid limit {number").format(number=which))
+            raise Exception(_("Internal Error: Invalid limit {number}").format(number=which))
         return "%s_%s" % (directory.radio_class_id(self.rthread.radio.__class__),
                           which)
 

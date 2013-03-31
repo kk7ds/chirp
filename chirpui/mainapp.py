@@ -1149,7 +1149,13 @@ If you think that it is valid, you can select a radio model below to force an op
                                  os.linesep +
                                  "Dutch: Michael PD4MT" +
                                  os.linesep +
-                                 "German: Benjamin HB9EUK")
+                                 "German: Benjamin HB9EUK" +
+                                 os.linesep +
+                                 "Hungarian: Attila HA7JA" +
+                                 os.linesep +
+                                 "Russian: Dmitry Slukin" +
+                                 os.linesep +
+                                 "Portuguese (BR): Crezivando PP7CJ")
         d.set_comments(verinfo)
         
         d.run()
@@ -1272,7 +1278,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_change_language(self):
         langs = ["Auto", "English", "Polish", "Italian", "Dutch", "German",
-                 "Hungarian", "Russian"]
+                 "Hungarian", "Russian", "Portuguese (BR)"]
         d = inputdialog.ChoiceDialog(langs, parent=self,
                                      title="Choose Language")
         d.label.set_text(_("Choose a language or Auto to use the "
