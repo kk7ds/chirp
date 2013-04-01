@@ -485,10 +485,10 @@ class IcomBankModel(chirp_common.BankModel):
     central implementation can, with a few icom-specific radio interfaces
     serve most/all of them"""
 
-    def get_num_banks(self):
+    def get_num_mappings(self):
         return self._radio._num_banks
 
-    def get_banks(self):
+    def get_mappings(self):
         banks = []
         
         for i in range(0, self._radio._num_banks):
@@ -498,31 +498,32 @@ class IcomBankModel(chirp_common.BankModel):
             banks.append(bank)
         return banks
 
-    def add_memory_to_bank(self, memory, bank):
+    def add_memory_to_mapping(self, memory, bank):
         self._radio._set_bank(memory.number, bank.index)
 
-    def remove_memory_from_bank(self, memory, bank):
+    def remove_memory_from_mapping(self, memory, bank):
         if self._radio._get_bank(memory.number) != bank.index:
             raise Exception("Memory %i not in bank %s. Cannot remove." % \
                                 (memory.number, bank))
 
         self._radio._set_bank(memory.number, None)
 
-    def get_bank_memories(self, bank):
+    def get_mapping_memories(self, bank):
         memories = []
         for i in range(*self._radio.get_features().memory_bounds):
             if self._radio._get_bank(i) == bank.index:
                 memories.append(self._radio.get_memory(i))
         return memories
 
-    def get_memory_banks(self, memory):
+    def get_memory_mappings(self, memory):
         index = self._radio._get_bank(memory.number)
         if index is None:
             return []
         else:
-            return [self.get_banks()[index]]
+            return [self.get_mappings()[index]]
     
-class IcomIndexedBankModel(IcomBankModel, chirp_common.BankIndexInterface):
+class IcomIndexedBankModel(IcomBankModel,
+                           chirp_common.MappingModelIndexInterface):
     """Generic bank model for Icom radios with indexed banks"""
     def get_index_bounds(self):
         return self._radio._bank_index_bounds
@@ -531,7 +532,7 @@ class IcomIndexedBankModel(IcomBankModel, chirp_common.BankIndexInterface):
         return self._radio._get_bank_index(memory.number)
 
     def set_memory_index(self, memory, bank, index):
-        if bank not in self.get_memory_banks(memory):
+        if bank not in self.get_memory_mappings(memory):
             raise Exception("Memory %i is not in bank %s" % (memory.number,
                                                              bank))
 
@@ -539,7 +540,7 @@ class IcomIndexedBankModel(IcomBankModel, chirp_common.BankIndexInterface):
             raise Exception("Invalid index")
         self._radio._set_bank_index(memory.number, index)
 
-    def get_next_bank_index(self, bank):
+    def get_next_mapping_index(self, bank):
         indexes = []
         for i in range(*self._radio.get_features().memory_bounds):
             if self._radio._get_bank(i) == bank.index:

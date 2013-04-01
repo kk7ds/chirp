@@ -82,18 +82,18 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
 class VX5BankModel(chirp_common.BankModel):
-    def get_num_banks(self):
+    def get_num_mappings(self):
         return 5
 
-    def get_banks(self):
+    def get_mappings(self):
         banks = []
-        for i in range(0, self.get_num_banks()):
+        for i in range(0, self.get_num_mappings()):
             bank = chirp_common.Bank(self, "%i" % (i+1), "MG%i" % (i+1))
             bank.index = i
             banks.append(bank)
         return banks
 
-    def add_memory_to_bank(self, memory, bank):
+    def add_memory_to_mapping(self, memory, bank):
         _members = self._radio._memobj.bank_groups[bank.index].members
         _bank_used = self._radio._memobj.bank_used[bank.index]
         for i in range(0, len(_members)):
@@ -107,7 +107,7 @@ class VX5BankModel(chirp_common.BankModel):
                 return True
         raise Exception(_("{bank} is full").format(bank=bank))
 
-    def remove_memory_from_bank(self, memory, bank):
+    def remove_memory_from_mapping(self, memory, bank):
         _members = self._radio._memobj.bank_groups[bank.index].members
         _bank_used = self._radio._memobj.bank_used[bank.index]
 
@@ -128,7 +128,7 @@ class VX5BankModel(chirp_common.BankModel):
         if not remaining_members:
             _bank_used.current_member = 0xFF
 
-    def get_bank_memories(self, bank):
+    def get_mapping_memories(self, bank):
         memories = []
 
         _members = self._radio._memobj.bank_groups[bank.index].members
@@ -143,10 +143,11 @@ class VX5BankModel(chirp_common.BankModel):
             memories.append(self._radio.get_memory(member.channel+1))
         return memories
 
-    def get_memory_banks(self, memory):
+    def get_memory_mappings(self, memory):
         banks = []
-        for bank in self.get_banks():
-            if memory.number in [x.number for x in self.get_bank_memories(bank)]:
+        for bank in self.get_mappings():
+            if memory.number in [x.number for x in
+                                 self.get_mapping_memories(bank)]:
                     banks.append(bank)
         return banks
 

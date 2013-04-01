@@ -336,7 +336,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
 class FT7800BankModel(chirp_common.BankModel):
     """Yaesu FT-7800/7900 bank model"""
     def __init__(self, radio):
-        chirp_common.BankModel.__init__(self, radio)
+        super(FT7800BankModel, self).__init__(radio)
         self.__b2m_cache = defaultdict(list)
         self.__m2b_cache = defaultdict(list)
 
@@ -344,24 +344,24 @@ class FT7800BankModel(chirp_common.BankModel):
         if self.__b2m_cache:
             return
 
-        for bank in self.get_banks():
+        for bank in self.get_mappings():
             self.__b2m_cache[bank.index] = self._get_bank_memories(bank)
             for memnum in self.__b2m_cache[bank.index]:
                 self.__m2b_cache[memnum].append(bank.index)
 
-    def get_num_banks(self):
+    def get_num_mappings(self):
         return 20
 
-    def get_banks(self):
+    def get_mappings(self):
         banks = []
-        for i in range(0, self.get_num_banks()):
+        for i in range(0, self.get_num_mappings()):
             bank = chirp_common.Bank(self, "%i" % i, "BANK-%i" % (i + 1))
             bank.index = i
             banks.append(bank)
 
         return banks
 
-    def add_memory_to_bank(self, memory, bank):
+    def add_memory_to_mapping(self, memory, bank):
         self.__precache()
 
         index = memory.number - 1
@@ -371,7 +371,7 @@ class FT7800BankModel(chirp_common.BankModel):
         self.__m2b_cache[memory.number].append(bank.index)
         self.__b2m_cache[bank.index].append(memory.number)
 
-    def remove_memory_from_bank(self, memory, bank):
+    def remove_memory_from_mapping(self, memory, bank):
         self.__precache()
 
         index = memory.number - 1
@@ -395,16 +395,16 @@ class FT7800BankModel(chirp_common.BankModel):
                 memories.append(i + 1)
         return memories
 
-    def get_bank_memories(self, bank):
+    def get_mapping_memories(self, bank):
         self.__precache()
 
         return [self._radio.get_memory(n)
                 for n in self.__b2m_cache[bank.index]]
 
-    def get_memory_banks(self, memory):
+    def get_memory_mappings(self, memory):
         self.__precache()
 
-        _banks = self.get_banks()
+        _banks = self.get_mappings()
         return [_banks[b] for b in self.__m2b_cache[memory.number]]
 
 @directory.register
@@ -473,7 +473,7 @@ u8 checksum;
 """
 
 class FT8800BankModel(FT7800BankModel):
-    def get_num_banks(self):
+    def get_num_mappings(self):
         return 10
 
 @directory.register

@@ -151,10 +151,10 @@ class VX8Bank(chirp_common.NamedBank):
 
 class VX8BankModel(chirp_common.BankModel):
     """A VX-8 bank model"""
-    def get_num_banks(self):
+    def get_num_mappings(self):
         return 24
 
-    def get_banks(self):
+    def get_mappings(self):
         banks = []
         _banks = self._radio._memobj.bank_info
 
@@ -174,7 +174,7 @@ class VX8BankModel(chirp_common.BankModel):
         flags = self._radio._memobj.flag
 
         # Find a suitable bank and MR for VFO A and B.
-        for bank in self.get_banks():
+        for bank in self.get_mappings():
             bank_used = self._radio._memobj.bank_used[bank.index]
             if bank_used != 0xFFFF:
                 members = self._radio._memobj.bank_members[bank.index]
@@ -213,7 +213,7 @@ class VX8BankModel(chirp_common.BankModel):
               vfo_bak.mr_index = vfo.mr_index
               vfo_bak.bank_enable = vfo.bank_enable
 
-    def add_memory_to_bank(self, memory, bank):
+    def add_memory_to_mapping(self, memory, bank):
         _members = self._radio._memobj.bank_members[bank.index]
         _bank_used = self._radio._memobj.bank_used[bank.index]
         for i in range(0, 100):
@@ -224,7 +224,7 @@ class VX8BankModel(chirp_common.BankModel):
 
         self.update_vfo()
 
-    def remove_memory_from_bank(self, memory, bank):
+    def remove_memory_from_mapping(self, memory, bank):
         _members = self._radio._memobj.bank_members[bank.index]
         _bank_used = self._radio._memobj.bank_used[bank.index]
 
@@ -246,7 +246,7 @@ class VX8BankModel(chirp_common.BankModel):
 
         self.update_vfo()
 
-    def get_bank_memories(self, bank):
+    def get_mapping_memories(self, bank):
         memories = []
         _members = self._radio._memobj.bank_members[bank.index]
         _bank_used = self._radio._memobj.bank_used[bank.index]
@@ -260,11 +260,11 @@ class VX8BankModel(chirp_common.BankModel):
 
         return memories
 
-    def get_memory_banks(self, memory):
+    def get_memory_mappings(self, memory):
         banks = []
-        for bank in self.get_banks():
+        for bank in self.get_mappings():
             if memory.number in \
-                    [x.number for x in self.get_bank_memories(bank)]:
+                    [x.number for x in self.get_mapping_memories(bank)]:
                 banks.append(bank)
 
         return banks

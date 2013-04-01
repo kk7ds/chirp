@@ -543,8 +543,8 @@ class DVMemory(Memory):
         except Exception:
             self.dv_code = 0
 
-class Bank:
-    """Base class for a radio's Bank"""
+class MemoryMapping(object):
+    """Base class for a memory mapping"""
     def __init__(self, model, index, name):
         self._model = model
         self._index = index
@@ -554,18 +554,57 @@ class Bank:
         return self.get_name()
 
     def __repr__(self):
-        return "Bank-%s" % self._index
+        return "%s-%s" % (self.__class__.__name__, self._index)
 
     def get_name(self):
-        """Returns the static or user-adjustable bank name"""
+        """Returns the mapping name"""
         return self._name
 
     def get_index(self):
-        """Returns the immutable bank index (string or int)"""
+        """Returns the immutable index (string or int)"""
         return self._index
 
     def __eq__(self, other):
         return self.get_index() == other.get_index()
+
+class MappingModel(object):
+    """Base class for a memory mapping model"""
+
+    def __init__(self, radio, name):
+        self._radio = radio
+        self._name = name
+
+    def get_name(self):
+        return self._name
+
+    def get_num_mappings(self):
+        """Returns the number of mappings in the model (should be
+        callable without consulting the radio"""
+        raise NotImplementedError()
+
+    def get_mappings(self):
+        """Return a list of mappings"""
+        raise NotImplementedError()
+
+    def add_memory_to_mapping(self, memory, mapping):
+        """Add @memory to @mapping."""
+        raise NotImplementedError()
+
+    def remove_memory_from_mapping(self, memory, mapping):
+        """Remove @memory from @mapping.
+        Shall raise exception if @memory is not in @bank"""
+        raise NotImplementedError()
+
+    def get_mapping_memories(self, mapping):
+        """Return a list of memories in @mapping"""
+        raise NotImplementedError()
+
+    def get_memory_mappings(self, memory):
+        """Return a list of mappings that @memory is in"""
+        raise NotImplementedError()
+
+class Bank(MemoryMapping):
+    """Base class for a radio's Bank"""
 
 class NamedBank(Bank):
     """A bank that can have a name"""
@@ -573,56 +612,29 @@ class NamedBank(Bank):
         """Changes the user-adjustable bank name"""
         self._name = name
 
-class BankModel:
+class BankModel(MappingModel):
     """A bank model where one memory is in zero or one banks at any point"""
-    def __init__(self, radio):
-        self._radio = radio
+    def __init__(self, radio, name='Banks'):
+        super(BankModel, self).__init__(radio, name)
 
-    def get_num_banks(self):
-        """Returns the number of banks (should be callable without
-        consulting the radio"""
-        raise Exception("Not implemented")
-
-    def get_banks(self):
-        """Return a list of banks"""
-        raise Exception("Not implemented")
-
-    def add_memory_to_bank(self, memory, bank):
-        """Add @memory to @bank."""
-        raise Exception("Not implemented")
-
-    def remove_memory_from_bank(self, memory, bank):
-        """Remove @memory from @bank.
-        Shall raise exception if @memory is not in @bank."""
-        raise Exception("Not implemented")
-
-    def get_bank_memories(self, bank):
-        """Return a list of memories in @bank"""
-        raise Exception("Not implemented")
-
-    def get_memory_banks(self, memory):
-        """Returns a list of the banks that @memory is in"""
-        raise Exception("Not implemented")
-
-class BankIndexInterface:
-    """Interface for banks with index capabilities"""
+class MappingModelIndexInterface:
+    """Interface for mappings with index capabilities"""
     def get_index_bounds(self):
-        """Returns a tuple (lo,hi) of the minimum and maximum bank indices"""
-        raise Exception("Not implemented")
+        """Returns a tuple (lo,hi) of the min and max mapping indices"""
+        raise NotImplementedError()
 
-    def get_memory_index(self, memory, bank):
-        """Returns the index of @memory in @bank"""
-        raise Exception("Not implemented")
+    def get_memory_index(self, memory, mapping):
+        """Returns the index of @memory in @mapping"""
+        raise NotImplementedError()
 
-    def set_memory_index(self, memory, bank, index):
-        """Sets the index of @memory in @bank to @index"""
-        raise Exception("Not implemented")
+    def set_memory_index(self, memory, mapping, index):
+        """Sets the index of @memory in @mapping to @index"""
+        raise NotImplementedError()
 
-    def get_next_bank_index(self, bank):
-        """Returns the next available bank index in @bank, or raises
+    def get_next_mapping_index(self, mapping):
+        """Returns the next available mapping index in @mapping, or raises
         Exception if full"""
-        raise Exception("Not implemented")
-
+        raise NotImplementedError()
 
 class MTOBankModel(BankModel):
     """A bank model where one memory can be in multiple banks at once """

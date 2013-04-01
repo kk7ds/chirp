@@ -110,10 +110,10 @@ class VX3Bank(chirp_common.NamedBank):
 
 class VX3BankModel(chirp_common.BankModel):
     """A VX-3 bank model"""
-    def get_num_banks(self):
+    def get_num_mappings(self):
         return 24
 
-    def get_banks(self):
+    def get_mappings(self):
         _banks = self._radio._memobj.bank_names
 
         banks = []

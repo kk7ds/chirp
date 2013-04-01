@@ -22,68 +22,70 @@ from gobject import TYPE_INT, TYPE_STRING, TYPE_BOOLEAN
 from chirp import chirp_common
 from chirpui import common, miscwidgets
 
-class BankNamesJob(common.RadioJob):
-    def __init__(self, bm, editor, cb):
+class MappingNamesJob(common.RadioJob):
+    def __init__(self, model, editor, cb):
         common.RadioJob.__init__(self, cb, None)
-        self.__bm = bm
+        self.__model = model
         self.__editor = editor
 
     def execute(self, radio):
-        self.__editor.banks = []
+        self.__editor.mappings = []
 
-        banks = self.__bm.get_banks()
-        for bank in banks:
-            self.__editor.banks.append((bank, bank.get_name()))
+        mappings = self.__model.get_mappings()
+        for mapping in mappings:
+            self.__editor.mappings.append((mapping, mapping.get_name()))
 
         gobject.idle_add(self.cb, *self.cb_args)
 
-class BankNameEditor(common.Editor):
+class MappingNameEditor(common.Editor):
+    TYPE = _("Mapping")
+
     def refresh(self):
-        def got_banks():
+        def got_mappings():
             self._keys = []
-            for bank, name in self.banks:
-                self._keys.append(bank.get_index())
-                self.listw.set_item(bank.get_index(),
-                                    bank.get_index(),
+            for mapping, name in self.mappings:
+                self._keys.append(mapping.get_index())
+                self.listw.set_item(mapping.get_index(),
+                                    mapping.get_index(),
                                     name)
 
-            self.listw.connect("item-set", self.bank_changed)
+            self.listw.connect("item-set", self.mapping_changed)
 
-        job = BankNamesJob(self._bm, self, got_banks)
-        job.set_desc(_("Retrieving bank information"))
+        job = MappingNamesJob(self._model, self, got_mappings)
+        job.set_desc(_("Retrieving %s information") % self.TYPE)
         self.rthread.submit(job)
 
-    def get_bank_list(self):
-        banks = []
+    def get_mapping_list(self):
+        mappings = []
         keys = self.listw.get_keys()
         for key in keys:
-            banks.append(self.listw.get_item(key)[2])
+            mappings.append(self.listw.get_item(key)[2])
 
-        return banks
-    
-    def bank_changed(self, listw, key):
+        return mappings
+
+    def mapping_changed(self, listw, key):
         def cb(*args):
             self.emit("changed")
 
         name = self.listw.get_item(key)[2]
-        bank, oldname = self.banks[self._keys.index(key)]
+        mapping, oldname = self.mappings[self._keys.index(key)]
 
         def trigger_changed(*args):
             self.emit("changed")
 
         job = common.RadioJob(trigger_changed, "set_name", name)
-        job.set_target(bank)
-        job.set_desc(_("Setting name on bank"))
+        job.set_target(mapping)
+        job.set_desc(_("Setting name on %s") % self.TYPE.lower())
         self.rthread.submit(job)
 
         return True
 
-    def __init__(self, rthread):
-        super(BankNameEditor, self).__init__(rthread)
-        self._bm = rthread.radio.get_bank_model()
+    def __init__(self, rthread, model):
+        super(MappingNameEditor, self).__init__(rthread)
+        self._model = model
 
         types = [(gobject.TYPE_STRING, "key"),
-                 (gobject.TYPE_STRING, _("Bank")),
+                 (gobject.TYPE_STRING, self.TYPE),
                  (gobject.TYPE_STRING, _("Name"))]
 
         self.listw = miscwidgets.KeyedListWidget(types)
@@ -92,7 +94,7 @@ class BankNameEditor(common.Editor):
         self.listw.set_sort_column(1, -1)
         self.listw.show()
 
-        self.banks = []
+        self.mappings = []
 
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -108,51 +110,61 @@ class BankNameEditor(common.Editor):
         self.refresh()
         self._loaded = True
 
-class MemoryBanksJob(common.RadioJob):
-    def __init__(self, bm, cb, number):
+class BankNameEditor(MappingNameEditor):
+    TYPE = _("Bank")
+
+    def __init__(self, rthread):
+        model = rthread.radio.get_bank_model()
+        super(BankNameEditor, self).__init__(rthread, model)
+
+class MemoryMappingsJob(common.RadioJob):
+    def __init__(self, model, cb, number):
         common.RadioJob.__init__(self, cb, None)
-        self.__bm = bm
+        self.__model = model
         self.__number = number
 
     def execute(self, radio):
         mem = radio.get_memory(self.__number)
         if mem.empty:
-            banks = []
+            mappings = []
             indexes = []
         else:
-            banks = self.__bm.get_memory_banks(mem)
+            mappings = self.__model.get_memory_mappings(mem)
             indexes = []
-            if isinstance(self.__bm, chirp_common.BankIndexInterface):
-                for bank in banks:
-                    indexes.append(self.__bm.get_memory_index(mem, bank))
-        self.cb(mem, banks, indexes, *self.cb_args)
+            if isinstance(self.__model,
+                          chirp_common.MappingModelIndexInterface):
+                for mapping in mappings:
+                    indexes.append(self.__model.get_memory_index(mem, mapping))
+        self.cb(mem, mappings, indexes, *self.cb_args)
             
-class BankMembershipEditor(common.Editor):
+class MappingMembershipEditor(common.Editor):
+    TYPE = _("Mapping")
+
     def _number_to_path(self, number):
         return (number - self._rf.memory_bounds[0],)
 
-    def _get_next_bank_index(self, bank):
-        # NB: Only works for one-to-one bank models right now!
+    def _get_next_mapping_index(self, mapping):
+        # NB: Only works for one-to-one models right now!
         iter = self._store.get_iter_first()
         indexes = []
-        ncols = len(self._cols) + len(self.banks)
+        ncols = len(self._cols) + len(self.mappings)
         while iter:
             vals = self._store.get(iter, *tuple([n for n in range(0, ncols)]))
             loc = vals[self.C_LOC]
             index = vals[self.C_INDEX]
-            banks = vals[self.C_BANKS:]
-            if True in banks and banks.index(True) == bank:
+            mappings = vals[self.C_MAPPINGS:]
+            if True in mappings and mappings.index(True) == mapping:
                 indexes.append(index)
             iter = self._store.iter_next(iter)
 
-        index_bounds = self._bm.get_index_bounds()
+        index_bounds = self._model.get_index_bounds()
         num_indexes = index_bounds[1] - index_bounds[0]
         indexes.sort()
         for i in range(0, num_indexes):
             if i not in indexes:
                 return i + index_bounds[0] # In case not zero-origin index
 
-        return 0 # If the bank is full, just wrap around!
+        return 0 # If the mapping is full, just wrap around!
 
     def _toggled_cb(self, rend, path, colnum):
         try:
@@ -164,56 +176,60 @@ class BankMembershipEditor(common.Editor):
             if not self._store.get(iter, self.C_FILLED)[0]:
                 return
 
-        # The bank index is the column number, minus the 3 label columns
-        bank, name = self.banks[colnum - len(self._cols)]
+        # The mapping index is the column number, minus the 3 label columns
+        mapping, name = self.mappings[colnum - len(self._cols)]
         loc, = self._store.get(self._store.get_iter(path), self.C_LOC)
+
+        is_indexed = isinstance(self._model,
+                                chirp_common.MappingModelIndexInterface)
 
         if rend.get_active():
             # Changing from True to False
-            fn = "remove_memory_from_bank"
+            fn = "remove_memory_from_mapping"
             index = None
         else:
             # Changing from False to True
-            fn = "add_memory_to_bank"
-            if self._rf.has_bank_index:
-                index = self._get_next_bank_index(colnum - len(self._cols))
+            fn = "add_memory_to_mapping"
+            if is_indexed:
+                index = self._get_next_mapping_index(colnum - len(self._cols))
             else:
                 index = None
 
         def do_refresh_memory(*args):
-            # Step 2: Update our notion of the memory's bank information
+            # Step 2: Update our notion of the memory's mapping information
             self.refresh_memory(loc)
 
-        def do_bank_index(result, memory):
+        def do_mapping_index(result, memory):
             if isinstance(result, Exception):
-                common.show_error("Failed to add {mem} to bank: {err}"
+                common.show_error("Failed to add {mem} to mapping: {err}"
                                   .format(mem=memory.number,
                                           err=str(result)),
                                   parent=self.editorset.parent_window)
                 return
             self.emit("changed")
-            # Step 3: Set the memory's bank index (maybe)
-            if not self._rf.has_bank_index or index is None:
+            # Step 3: Set the memory's mapping index (maybe)
+            if not is_indexed or index is None:
                 return do_refresh_memory()
 
             job = common.RadioJob(do_refresh_memory,
-                                  "set_memory_index", memory, bank, index)
-            job.set_target(self._bm)
-            job.set_desc(_("Updating bank index "
-                           "for memory {num}").format(num=memory.number))
+                                  "set_memory_index", memory, mapping, index)
+            job.set_target(self._model)
+            job.set_desc(_("Updating {type} index "
+                           "for memory {num}").format(type=self.TYPE,
+                                                      num=memory.number))
             self.rthread.submit(job)
 
-        def do_bank_adjustment(memory):
-            # Step 1: Do the bank add/remove
-            job = common.RadioJob(do_bank_index, fn, memory, bank)
-            job.set_target(self._bm)
+        def do_mapping_adjustment(memory):
+            # Step 1: Do the mapping add/remove
+            job = common.RadioJob(do_mapping_index, fn, memory, mapping)
+            job.set_target(self._model)
             job.set_cb_args(memory)
-            job.set_desc(_("Updating bank information "
+            job.set_desc(_("Updating mapping information "
                            "for memory {num}").format(num=memory.number))
             self.rthread.submit(job)
 
         # Step 0: Fetch the memory
-        job = common.RadioJob(do_bank_adjustment, "get_memory", loc)
+        job = common.RadioJob(do_mapping_adjustment, "get_memory", loc)
         job.set_desc(_("Getting memory {num}").format(num=loc))
         self.rthread.submit(job)
 
@@ -223,36 +239,37 @@ class BankMembershipEditor(common.Editor):
         def refresh_memory(*args):
             self.refresh_memory(loc)
 
-        def set_index(banks, memory):
+        def set_index(mappings, memory):
             self.emit("changed")
             # Step 2: Set the index
             job = common.RadioJob(refresh_memory, "set_memory_index",
-                                  memory, banks[0], int(new))
-            job.set_target(self._bm)
+                                  memory, mappings[0], int(new))
+            job.set_target(self._model)
             job.set_desc(_("Setting index "
                            "for memory {num}").format(num=memory.number))
             self.rthread.submit(job)
 
-        def get_bank(memory):
-            # Step 1: Get the first/only bank
-            job = common.RadioJob(set_index, "get_memory_banks", memory)
+        def get_mapping(memory):
+            # Step 1: Get the first/only mapping
+            job = common.RadioJob(set_index, "get_memory_mappings", memory)
             job.set_cb_args(memory)
-            job.set_target(self._bm)
-            job.set_desc(_("Getting bank for "
-                           "memory {num}").format(num=memory.number))
+            job.set_target(self._model)
+            job.set_desc(_("Getting {type} for "
+                           "memory {num}").format(type=self.TYPE,
+                                                  num=memory.number))
             self.rthread.submit(job)
 
         # Step 0: Get the memory
-        job = common.RadioJob(get_bank, "get_memory", loc)
+        job = common.RadioJob(get_mapping, "get_memory", loc)
         job.set_desc(_("Getting memory {num}").format(num=loc))
         self.rthread.submit(job)
             
-    def __init__(self, rthread, editorset):
-        super(BankMembershipEditor, self).__init__(rthread)
+    def __init__(self, rthread, editorset, model):
+        super(MappingMembershipEditor, self).__init__(rthread)
 
         self.editorset = editorset
         self._rf = rthread.radio.get_features()
-        self._bm = rthread.radio.get_bank_model()
+        self._model = model
 
         self._view_cols = [
             (_("Loc"),       TYPE_INT,     gtk.CellRendererText, ),
@@ -270,18 +287,21 @@ class BankMembershipEditor(common.Editor):
         self.C_FREQ   = 2
         self.C_NAME   = 3
         self.C_INDEX  = 4
-        self.C_BANKS  = 5 # and beyond
+        self.C_MAPPINGS  = 5 # and beyond
         
         cols = list(self._cols)
 
         self._index_cache = []
 
-        for i in range(0, self._bm.get_num_banks()):
-            label = "Bank %i" % (i+1)
+        for i in range(0, self._model.get_num_mappings()):
+            label = "%s %i" % (self.TYPE, (i+1))
             cols.append((label, TYPE_BOOLEAN, gtk.CellRendererToggle))
 
         self._store = gtk.ListStore(*tuple([y for x,y,z in cols]))
         self._view = gtk.TreeView(self._store)
+
+        is_indexed = isinstance(self._model,
+                                chirp_common.MappingModelIndexInterface)
 
         colnum = 0
         for label, dtype, rtype in cols:
@@ -305,7 +325,7 @@ class BankMembershipEditor(common.Editor):
             elif colnum == self.C_INDEX:
                 rend.set_property("editable", True)
                 rend.connect("edited", self._index_edited_cb)
-                col.set_visible(self._rf.has_bank_index)
+                col.set_visible(is_indexed)
             colnum += 1
 
         # A non-rendered column to absorb extra space in the row
@@ -329,7 +349,7 @@ class BankMembershipEditor(common.Editor):
         self._loaded = False
 
     def refresh_memory(self, number):
-        def got_mem(memory, banks, indexes):
+        def got_mem(memory, mappings, indexes):
             iter = self._store.get_iter(self._number_to_path(memory.number))
             row = [self.C_FILLED, not memory.empty,
                    self.C_LOC, memory.number,
@@ -338,29 +358,30 @@ class BankMembershipEditor(common.Editor):
                    # Hack for only one index right now
                    self.C_INDEX, indexes and indexes[0] or 0,
                    ]
-            for i in range(0, len(self.banks)):
+            for i in range(0, len(self.mappings)):
                 row.append(i + len(self._cols))
-                row.append(self.banks[i][0] in banks)
+                row.append(self.mappings[i][0] in mappings)
                 
             self._store.set(iter, *tuple(row))
             if memory.number == self._rf.memory_bounds[1] - 1:
-                print "Got all bank info in %s" % (time.time() - self._start)
+                print "Got all %s info in %s" % (self.TYPE,
+                                                 (time.time() - self._start))
 
-        job = MemoryBanksJob(self._bm, got_mem, number)
-        job.set_desc(_("Getting bank information "
-                       "for memory {num}").format(num=number))
+        job = MemoryMappingsJob(self._model, got_mem, number)
+        job.set_desc(_("Getting {type} information "
+                       "for memory {num}").format(type=self.TYPE, num=number))
         self.rthread.submit(job)
 
     def refresh_all_memories(self):
         for i in range(*self._rf.memory_bounds):
             self.refresh_memory(i)
 
-    def refresh_banks(self, and_memories=False):
-        def got_banks():
+    def refresh_mappings(self, and_memories=False):
+        def got_mappings():
             for i in range(len(self._cols) - len(self._view_cols) - 1,
-                           len(self.banks)):
+                           len(self.mappings)):
                 col = self._view.get_column(i + len(self._view_cols))
-                bank, name = self.banks[i]
+                mapping, name = self.mappings[i]
                 if name:
                     col.set_title(name)
                 else:
@@ -368,8 +389,8 @@ class BankMembershipEditor(common.Editor):
             if and_memories:
                 self.refresh_all_memories()
 
-        job = BankNamesJob(self._bm, self, got_banks)
-        job.set_desc(_("Getting bank information"))
+        job = MappingNamesJob(self._model, self, got_mappings)
+        job.set_desc(_("Getting %s information") % self.TYPE)
         self.rthread.submit(job)
 
     def focus(self):
@@ -378,7 +399,7 @@ class BankMembershipEditor(common.Editor):
             return
 
         self._start = time.time()
-        self.refresh_banks(True)
+        self.refresh_mappings(True)
 
         self._loaded = True
 
@@ -387,5 +408,15 @@ class BankMembershipEditor(common.Editor):
         if self.is_focused():
             self.refresh_all_memories()
 
+    def mappings_changed(self):
+        self.refresh_mappings()
+
+class BankMembershipEditor(MappingMembershipEditor):
+    TYPE = _("Bank")
+
+    def __init__(self, rthread, editorset):
+        model = rthread.radio.get_bank_model()
+        super(BankMembershipEditor, self).__init__(rthread, editorset, model)
+
     def banks_changed(self):
-        self.refresh_banks()
+        self.mappings_changed()

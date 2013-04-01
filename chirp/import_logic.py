@@ -219,27 +219,27 @@ def import_bank(dst_radio, src_radio, dst_mem, src_mem):
     if not dst_bm:
         return
 
-    dst_banks = dst_bm.get_banks()
+    dst_banks = dst_bm.get_mappings()
 
     src_bm = src_radio.get_bank_model()
     if not src_bm:
         return
 
-    src_banks = src_bm.get_banks()
-    src_mem_banks = src_bm.get_memory_banks(src_mem)
+    src_banks = src_bm.get_mappings()
+    src_mem_banks = src_bm.get_memory_mappings(src_mem)
     src_indexes = [src_banks.index(b) for b in src_mem_banks]
 
-    for bank in dst_bm.get_memory_banks(dst_mem):
-        dst_bm.remove_memory_from_bank(dst_mem, bank)
+    for bank in dst_bm.get_memory_mappings(dst_mem):
+        dst_bm.remove_memory_from_mapping(dst_mem, bank)
 
     for index in src_indexes:
         try:
             bank = dst_banks[index]
             print "Adding memory to bank %s" % bank
-            dst_bm.add_memory_to_bank(dst_mem, bank)
-            if isinstance(dst_bm, chirp_common.BankIndexInterface):
+            dst_bm.add_memory_to_mapping(dst_mem, bank)
+            if isinstance(dst_bm, chirp_common.MappingModelIndexInterface):
                 dst_bm.set_memory_index(dst_mem, bank,
-                                        dst_bm.get_next_bank_index(bank))
+                                        dst_bm.get_next_mapping_index(bank))
 
         except IndexError:
             pass
