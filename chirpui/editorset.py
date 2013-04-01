@@ -35,6 +35,53 @@ class EditorSet(gtk.VBox):
                              (gobject.TYPE_STRING,)),
         }
 
+    def _make_device_editors(self, device, devrthread, index):
+        key = "memedit%i" % index
+        if isinstance(device, chirp_common.IcomDstarSupport):
+            self.editors[key] = memedit.DstarMemoryEditor(devrthread)
+        else:
+            self.editors[key] = memedit.MemoryEditor(devrthread)
+
+        self.editors[key].connect("usermsg",
+                                  lambda e, m: self.emit("usermsg", m))
+        self.editors[key].connect("changed", self.editor_changed)
+
+        if self.rf.has_sub_devices:
+            label = (_("Memories (%(variant)s)") % 
+                     dict(variant=device.VARIANT))
+            rf = device.get_features()
+        else:
+            label = _("Memories")
+            rf = self.rf
+        lab = gtk.Label(label)
+        memedit_tab = self.tabs.append_page(self.editors[key].root, lab)
+        self.editors[key].root.show()
+
+        if rf.has_bank:
+            key = "bank_members%i" % index
+            self.editors[key] = bankedit.BankMembershipEditor(devrthread, self)
+            if self.rf.has_sub_devices:
+                label = _("Banks (%(variant)s)") % dict(variant=device.VARIANT)
+            else:
+                label = _("Banks")
+            lab = gtk.Label(label)
+            self.tabs.append_page(self.editors[key].root, lab)
+            self.editors[key].root.show()
+            self.editors[key].connect("changed", self.banks_changed)
+
+        if rf.has_bank_names:
+            key = "bank_names%i" % index
+            self.editors[key] = bankedit.BankNameEditor(devrthread)
+            if self.rf.has_sub_devices:
+                label = (_("Bank Names (%(variant)s)") %
+                         dict(variant=device.VARIANT))
+            else:
+                label = _("Bank Names")
+            lab = gtk.Label(label)
+            self.tabs.append_page(self.editors[key].root, lab)
+            self.editors[key].root.show()
+            self.editors[key].connect("changed", self.banks_changed)
+
     def __init__(self, source, parent_window=None, filename=None, tempname=None):
         gtk.VBox.__init__(self, True, 0)
 
@@ -49,77 +96,54 @@ class EditorSet(gtk.VBox):
         else:
             raise Exception("Unknown source type")
 
-        self.rthread = common.RadioThread(self.radio)
-        self.rthread.setDaemon(True)
-        self.rthread.start()
+        rthread = common.RadioThread(self.radio)
+        rthread.setDaemon(True)
+        rthread.start()
 
-        self.rthread.connect("status", lambda e, m: self.emit("status", m))
+        rthread.connect("status", lambda e, m: self.emit("status", m))
 
         self.tabs = gtk.Notebook()
         self.tabs.connect("switch-page", self.tab_selected)
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
         self.editors = {
-            "memedit"      : None,
             "dstar"        : None,
-            "bank_names"   : None,
-            "bank_members" : None,
             "settings"     : None,
             }
 
-        if isinstance(self.radio, chirp_common.IcomDstarSupport):
-            self.editors["memedit"] = memedit.DstarMemoryEditor(self.rthread)
-            self.editors["dstar"] = dstaredit.DStarEditor(self.rthread)
+        self.rf = self.radio.get_features()
+        if self.rf.has_sub_devices:
+            devices = self.radio.get_sub_devices()
         else:
-            self.editors["memedit"] = memedit.MemoryEditor(self.rthread)
+            devices = [self.radio]
 
-        self.editors["memedit"].connect("usermsg",
-                                        lambda e, m: self.emit("usermsg", m))
+        index = 0
+        for device in devices:
+            devrthread = common.RadioThread(device, rthread)
+            devrthread.setDaemon(True)
+            devrthread.start()
+            self._make_device_editors(device, devrthread, index)
+            index += 1
 
-        rf = self.radio.get_features()
+        if isinstance(self.radio, chirp_common.IcomDstarSupport):
+            self.editors["dstar"] = dstaredit.DStarEditor(rthread)
 
-        if rf.has_bank:
-            self.editors["bank_members"] = \
-                bankedit.BankMembershipEditor(self.rthread, self)
-        
-        if rf.has_bank_names:
-            self.editors["bank_names"] = bankedit.BankNameEditor(self.rthread)
-
-        if rf.has_settings:
-            self.editors["settings"] = settingsedit.SettingsEditor(self.rthread)
-
-        lab = gtk.Label(_("Memories"))
-        self.tabs.append_page(self.editors["memedit"].root, lab)
-        self.editors["memedit"].root.show()
+        if self.rf.has_settings:
+            self.editors["settings"] = settingsedit.SettingsEditor(rthread)
 
         if self.editors["dstar"]:
-            lab = gtk.Label(_("D-STAR"))
-            self.tabs.append_page(self.editors["dstar"].root, lab)
+            self.tabs.append_page(self.editors["dstar"].root,
+                                  gtk.Label(_("D-STAR")))
             self.editors["dstar"].root.show()
             self.editors["dstar"].connect("changed", self.dstar_changed)
 
-        if self.editors["bank_names"]:
-            lab = gtk.Label(_("Bank Names"))
-            self.tabs.append_page(self.editors["bank_names"].root, lab)
-            self.editors["bank_names"].root.show()
-            self.editors["bank_names"].connect("changed", self.banks_changed)
-
-        if self.editors["bank_members"]:
-            lab = gtk.Label(_("Banks"))
-            self.tabs.append_page(self.editors["bank_members"].root, lab)
-            self.editors["bank_members"].root.show()
-            self.editors["bank_members"].connect("changed", self.banks_changed)
-
         if self.editors["settings"]:
-            lab = gtk.Label(_("Settings"))
-            self.tabs.append_page(self.editors["settings"].root, lab)
+            self.tabs.append_page(self.editors["settings"].root,
+                                  gtk.Label(_("Settings")))
             self.editors["settings"].root.show()
 
         self.pack_start(self.tabs)
         self.tabs.show()
-
-        # pylint: disable-msg=E1101
-        self.editors["memedit"].connect("changed", self.editor_changed)
 
         self.label = self.text_label = None
         self.make_label()
@@ -173,19 +197,21 @@ class EditorSet(gtk.VBox):
 
     def dstar_changed(self, *args):
         print "D-STAR editor changed"
-        memedit = self.editors["memedit"]
         dstared = self.editors["dstar"]
-        memedit.set_urcall_list(dstared.editor_ucall.get_callsigns())
-        memedit.set_repeater_list(dstared.editor_rcall.get_callsigns())
-        memedit.prefill()
+        for editor in self.editors.values():
+            if isinstance(editor, memedit.MemoryEditor):
+                editor.set_urcall_list(dstared.editor_ucall.get_callsigns())
+                editor.set_repeater_list(dstared.editor_rcall.get_callsigns())
+                editor.prefill()
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
 
     def banks_changed(self, *args):
         print "Banks changed"
-        if self.editors["bank_members"]:
-            self.editors["bank_members"].banks_changed()
+        for editor in self.editors.values():
+            if isinstance(editor, bankedit.BankMembershipEditor):
+                editor.banks_changed()
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
@@ -194,8 +220,9 @@ class EditorSet(gtk.VBox):
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
-        if self.editors["bank_members"]:
-            self.editors["bank_members"].memories_changed()
+        for editor in self.editors.values():
+            if isinstance(editor, bankedit.BankMembershipEditor):
+                editor.memories_changed()
 
     def get_tab_label(self):
         return self.label
@@ -226,7 +253,8 @@ class EditorSet(gtk.VBox):
 
         if count > 0:
             self.editor_changed()
-            gobject.idle_add(self.editors["memedit"].prefill)
+            current_editor = self.get_current_editor()
+            gobject.idle_add(current_editor.prefill)
 
         return count
 
@@ -251,6 +279,13 @@ class EditorSet(gtk.VBox):
         raise Exception(_("Internal Error"))
 
     def do_import(self, filen):
+        current_editor = self.get_current_editor()
+        if not isinstance(current_editor, memedit.MemoryEditor):
+            # FIXME: We need a nice message to let the user know that they
+            # need to select the appropriate memory editor tab before doing
+            # and import so that we know which thread and editor to import
+            # into and refresh. This will do for the moment.
+            common.show_error("Memory editor must be selected before import")
         try:
             src_radio = directory.get_radio_by_image(filen)
         except Exception, e:
@@ -338,11 +373,13 @@ class EditorSet(gtk.VBox):
                               self)
             
     def prime(self):
+        # NOTE: this is only called to prime new CSV files, so assume
+        # only one memory editor for now
         mem = chirp_common.Memory()
         mem.freq = 146010000
 
         def cb(*args):
-            gobject.idle_add(self.editors["memedit"].prefill)
+            gobject.idle_add(self.editors["memedit0"].prefill)
 
         job = common.RadioJob(cb, "set_memory", mem)
         job.set_desc(_("Priming memory"))
@@ -358,16 +395,25 @@ class EditorSet(gtk.VBox):
                 v.unfocus()
 
     def set_read_only(self, read_only=True):
-        self.editors["memedit"].set_read_only(read_only)
-    
+        for editor in self.editors.values():
+            editor and editor.set_read_only(read_only)
+
     def get_read_only(self):
-        return self.editors["memedit"].get_read_only()
+        return self.editors["memedit0"].get_read_only()
 
     def prepare_close(self):
-        self.editors["memedit"].prepare_close()
+        for editor in self.editors.values():
+            editor and editor.prepare_close()
 
     def get_current_editor(self):
-        for e in self.editors.values():
+        for lab, e in self.editors.items():
             if e and self.tabs.page_num(e.root) == self.tabs.get_current_page():
                 return e
         raise Exception("No editor selected?")
+
+    @property
+    def rthread(self):
+        """Magic rthread property to return the rthread of the currently-
+        selected editor"""
+        e = self.get_current_editor()
+        return e.rthread

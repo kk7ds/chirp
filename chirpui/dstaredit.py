@@ -179,8 +179,7 @@ class DStarEditor(common.Editor):
         self.rthread.submit(job)
 
     def __init__(self, rthread):
-        common.Editor.__init__(self)
-        self.rthread = rthread
+        super(DStarEditor, self).__init__(rthread)
 
         self.loaded = False
 

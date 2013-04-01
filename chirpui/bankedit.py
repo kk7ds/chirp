@@ -79,8 +79,7 @@ class BankNameEditor(common.Editor):
         return True
 
     def __init__(self, rthread):
-        common.Editor.__init__(self)
-        self.rthread = rthread
+        super(BankNameEditor, self).__init__(rthread)
         self._bm = rthread.radio.get_bank_model()
 
         types = [(gobject.TYPE_STRING, "key"),
@@ -249,8 +248,8 @@ class BankMembershipEditor(common.Editor):
         self.rthread.submit(job)
             
     def __init__(self, rthread, editorset):
-        common.Editor.__init__(self)
-        self.rthread = rthread
+        super(BankMembershipEditor, self).__init__(rthread)
+
         self.editorset = editorset
         self._rf = rthread.radio.get_features()
         self._bm = rthread.radio.get_bank_model()

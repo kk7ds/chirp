@@ -34,9 +34,11 @@ class Editor(gobject.GObject):
 
     root = None
 
-    def __init__(self):
+    def __init__(self, rthread):
         gobject.GObject.__init__(self)
+        self.read_only = False
         self._focused = False
+        self.rthread = rthread
 
     def is_focused(self):
         return self._focused
@@ -54,6 +56,15 @@ class Editor(gobject.GObject):
         pass
 
     def hotkey(self, action):
+        pass
+
+    def set_read_only(self, read_only):
+        self.read_only = read_only
+
+    def get_read_only(self):
+        return self.read_only
+
+    def prepare_close(self):
         pass
 
 gobject.type_register(Editor)
@@ -128,15 +139,25 @@ class RadioThread(threading.Thread, gobject.GObject):
                     (gobject.TYPE_STRING,)),
         }
 
-    def __init__(self, radio):
+    def __init__(self, radio, parent=None):
         threading.Thread.__init__(self)
         gobject.GObject.__init__(self)
         self.__queue = {}
+        if parent:
+            self.__runlock = parent._get_run_lock()
+            self.status = lambda msg: parent.status(msg)
+        else:
+            self.__runlock = threading.Lock()
+            self.status = self._status
+
         self.__counter = threading.Semaphore(0)
-        self.__enabled = True
         self.__lock = threading.Lock()
-        self.__runlock = threading.Lock()
+
+        self.__enabled = True
         self.radio = radio
+
+    def _get_run_lock(self):
+        return self.__runlock
 
     def _qlock(self):
         self.__lock.acquire()
@@ -196,7 +217,7 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.__counter.release()
         self.__enabled = False
     
-    def status(self, msg):
+    def _status(self, msg):
         jobs = 0
         for i in dict(self.__queue):
                 jobs += len(self.__queue[i])
@@ -224,14 +245,14 @@ class RadioThread(threading.Thread, gobject.GObject):
                     DBG("Running job at priority %i" % i)
                     break
             self._qunlock()
-            
+
             if job:
                 self.lock()
                 self.status(job.desc)
                 job.execute(self.radio)
                 last_job_desc = job.desc
                 self.unlock()
-   
+
         print "RadioThread exiting"
 
 def log_exception():

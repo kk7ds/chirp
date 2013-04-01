@@ -1162,12 +1162,6 @@ class MemoryEditor(common.Editor):
         self.prefill()
         self._config.set_bool("hide_empty", not show)
 
-    def set_read_only(self, read_only):
-        self.read_only = read_only
-
-    def get_read_only(self):
-        return self.read_only
-
     def set_hide_unused(self, hide_unused):
         self.hide_unused = hide_unused
         self.prefill()
@@ -1227,8 +1221,7 @@ class MemoryEditor(common.Editor):
         return user_visible
 
     def __init__(self, rthread):
-        common.Editor.__init__(self)
-        self.rthread = rthread
+        super(MemoryEditor, self).__init__(rthread)
 
         self.defaults = dict(self.defaults)
 

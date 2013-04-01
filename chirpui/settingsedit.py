@@ -26,8 +26,7 @@ class RadioSettingProxy(settings.RadioSetting):
 
 class SettingsEditor(common.Editor):
     def __init__(self, rthread):
-        common.Editor.__init__(self)
-        self._rthread = rthread
+        super(SettingsEditor, self).__init__(rthread)
 
         self.root = gtk.HBox(False, 10)
         self._store = gtk.TreeStore(gobject.TYPE_STRING,
@@ -57,7 +56,7 @@ class SettingsEditor(common.Editor):
 
         job = common.RadioJob(self._build_ui, "get_settings")
         job.set_desc("Getting radio settings")
-        self._rthread.submit(job)
+        self.rthread.submit(job)
 
     def _save_settings(self):
         if self._top_setting_group is None:
@@ -70,7 +69,7 @@ class SettingsEditor(common.Editor):
         job = common.RadioJob(setting_cb, "set_settings",
                               self._top_setting_group)
         job.set_desc("Setting radio settings")
-        self._rthread.submit(job)
+        self.rthread.submit(job)
 
     def _load_setting(self, value, widget):
         if isinstance(value, settings.RadioSettingValueInteger):

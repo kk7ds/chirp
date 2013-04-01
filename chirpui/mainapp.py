@@ -300,8 +300,6 @@ If you think that it is valid, you can select a radio model below to force an op
             # We have to actually instantiate the IC9xICFRadio to get its
             # sub-devices
             radio = ic9x_icf.IC9xICFRadio(fname)
-            devices = radio.get_sub_devices()
-            del radio
         else:
             try:
                 radio = directory.get_radio_by_image(fname)
@@ -315,39 +313,30 @@ If you think that it is valid, you can select a radio model below to force an op
                 common.show_error(os.path.basename(fname) + ": " + str(e))
                 return
 
-            if radio.get_features().has_sub_devices:
-                devices = radio.get_sub_devices()
-            else:
-                devices = [radio]
-
-        prio = len(devices)
         first_tab = False
-        for device in devices:
-            try:
-                eset = editorset.EditorSet(device, self,
-                                           filename=fname,
-                                           tempname=tempname)
-            except Exception, e:
-                common.log_exception()
-                common.show_error(
-                    _("There was an error opening {fname}: {error}").format(
-                        fname=fname,
-                        error=error))
-                return
-    
-            eset.set_read_only(read_only)
-            self._connect_editorset(eset)
-            eset.show()
-            tab = self.tabs.append_page(eset, eset.get_tab_label())
-            if first_tab:
-                self.tabs.set_current_page(tab)
-                first_tab = False
+        try:
+            eset = editorset.EditorSet(radio, self,
+                                       filename=fname,
+                                       tempname=tempname)
+        except Exception, e:
+            common.log_exception()
+            common.show_error(
+                _("There was an error opening {fname}: {error}").format(
+                    fname=fname,
+                    error=e))
+            return
 
-            if hasattr(eset.rthread.radio, "errors") and \
-                    eset.rthread.radio.errors:
-                msg = _("{num} errors during open:").format(num=len(eset.rthread.radio.errors))
-                common.show_error_text(msg,
-                                       "\r\n".join(eset.rthread.radio.errors))
+        eset.set_read_only(read_only)
+        self._connect_editorset(eset)
+        eset.show()
+        self.tabs.append_page(eset, eset.get_tab_label())
+
+        if hasattr(eset.rthread.radio, "errors") and \
+                eset.rthread.radio.errors:
+            msg = _("{num} errors during open:").format(
+                num=len(eset.rthread.radio.errors))
+            common.show_error_text(msg,
+                                   "\r\n".join(eset.rthread.radio.errors))
 
     def do_live_warning(self, radio):
         d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
@@ -369,23 +358,12 @@ If you think that it is valid, you can select a radio model below to force an op
         d.destroy()
 
     def do_open_live(self, radio, tempname=None, read_only=False):
-        if radio.get_features().has_sub_devices:
-            devices = radio.get_sub_devices()
-        else:
-            devices = [radio]
-        
-        first_tab = True
-        for device in devices:
-            eset = editorset.EditorSet(device, self, tempname=tempname)
-            eset.connect("want-close", self.do_close)
-            eset.connect("status", self.ev_status)
-            eset.set_read_only(read_only)
-            eset.show()
-
-            tab = self.tabs.append_page(eset, eset.get_tab_label())
-            if first_tab:
-                self.tabs.set_current_page(tab)
-                first_tab = False
+        eset = editorset.EditorSet(radio, self, tempname=tempname)
+        eset.connect("want-close", self.do_close)
+        eset.connect("status", self.ev_status)
+        eset.set_read_only(read_only)
+        eset.show()
+        self.tabs.append_page(eset, eset.get_tab_label())
 
         if isinstance(radio, chirp_common.LiveRadio):
             reporting.report_model_usage(radio, "live", True)
