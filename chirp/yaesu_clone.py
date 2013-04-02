@@ -211,5 +211,5 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     def _wipe_memory_banks(self, mem):
         """Remove @mem from all the banks it is currently in"""
         bm = self.get_bank_model()
-        for bank in bm.get_memory_banks(mem):
-            bm.remove_memory_from_bank(mem, bank)
+        for bank in bm.get_memory_mappings(mem):
+            bm.remove_memory_from_mapping(mem, bank)

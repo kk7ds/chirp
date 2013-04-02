@@ -117,7 +117,7 @@ class VX3BankModel(chirp_common.BankModel):
         _banks = self._radio._memobj.bank_names
 
         banks = []
-        for i in range(0, self.get_num_banks()):
+        for i in range(0, self.get_num_mappings()):
             bank = VX3Bank(self, "%i" % i, "Bank-%i" % i)
             bank.index = i
             banks.append(bank)

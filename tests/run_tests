@@ -523,7 +523,7 @@ class TestCaseBanks(TestCase):
 
     def _do_bank_names(self, rf, testname):
         bm = self._wrapper.do("get_bank_model")
-        banks = bm.get_banks()
+        banks = bm.get_mappings()
 
         for bank in banks:
             name = bank.get_name()
@@ -537,7 +537,7 @@ class TestCaseBanks(TestCase):
                 else:
                     raise e
 
-        return banks, bm.get_banks()
+        return banks, bm.get_mappings()
 
     def do_bank_names(self, rf):
         banks, newbanks = self._do_bank_names(rf, "T")
@@ -584,40 +584,40 @@ class TestCaseBanks(TestCase):
 
         model = self._wrapper.do("get_bank_model")
 
-        mem_banks = model.get_memory_banks(mem)
+        mem_banks = model.get_memory_mappings(mem)
         if len(mem_banks) != 0:
             raise TestFailedError("Freshly-created memory has banks and " +\
                                   "should not",
                                   "Banks: %s" % str(mem_banks))
 
-        banks = model.get_banks()
+        banks = model.get_mappings()
 
         def verify(bank):
-            if bank not in model.get_memory_banks(mem):
+            if bank not in model.get_memory_mappings(mem):
                 return "Memory does not claim bank"
 
-            if loc not in [x.number for x in model.get_bank_memories(bank)]:
+            if loc not in [x.number for x in model.get_mapping_memories(bank)]:
                 return "Bank does not claim memory"
 
             return None
 
-        model.add_memory_to_bank(mem, banks[0])
+        model.add_memory_to_mapping(mem, banks[0])
         reason = verify(banks[0])
         if reason is not None:
             raise TestFailedError("Setting memory bank does not persist",
                                   "%s\nMemory banks:%s\nBank memories:%s" %\
                                       (reason,
-                                       model.get_memory_banks(mem),
-                                       model.get_bank_memories(banks[0])))
+                                       model.get_memory_mappings(mem),
+                                       model.get_mapping_memories(banks[0])))
 
-        model.remove_memory_from_bank(mem, banks[0])
+        model.remove_memory_from_mapping(mem, banks[0])
         reason = verify(banks[0])
         if reason is None:
             raise TestFailedError("Memory remains in bank after remove",
                                   reason)
 
         try:
-            model.remove_memory_from_bank(mem, banks[0])
+            model.remove_memory_from_mapping(mem, banks[0])
             did_error = False
         except Exception:
             did_error = True
@@ -638,16 +638,16 @@ class TestCaseBanks(TestCase):
         self._wrapper.do("set_memory", mem)
 
         model = self._wrapper.do("get_bank_model")
-        banks = model.get_banks()
+        banks = model.get_mappings()
         index_bounds = model.get_index_bounds()
 
-        model.add_memory_to_bank(mem, banks[0])
+        model.add_memory_to_mapping(mem, banks[0])
         for i in range(0, *index_bounds):
             model.set_memory_index(mem, banks[0], i)
             if model.get_memory_index(mem, banks[0]) != i:
                 raise TestFailedError("Bank index not persisted")
 
-        suggested_index = model.get_next_bank_index(banks[0])
+        suggested_index = model.get_next_mapping_index(banks[0])
         if suggested_index  not in range(*index_bounds):
             raise TestFailedError("Suggested bank index not in valid range",
                                   "Got %i, range is %s" % (suggested_index,
