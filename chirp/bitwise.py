@@ -250,6 +250,12 @@ class arrayDataElement(DataElement):
     def __iter__(self):
         return iter(self.__items)
 
+    def items(self):
+        index = 0
+        for item in self.__items:
+            yield (str(index), item)
+            index += 1
+
     def size(self):
         size = 0
         for i in self.__items:
@@ -604,6 +610,14 @@ class structDataElement(DataElement):
         if len(buffer) != (self.size() / 8):
             raise ValueError("Struct size mismatch during set_raw()")
         self._data[self._offset] = buffer
+
+    def __iter__(self):
+        for item in self._generators.values():
+            yield item
+
+    def items(self):
+        for key in self._keys:
+            yield key, self._generators[key]
 
 class Processor:
 

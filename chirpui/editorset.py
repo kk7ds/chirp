@@ -19,7 +19,7 @@ import gobject
 
 from chirp import chirp_common, directory, generic_csv, generic_xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
-from chirpui import inputdialog, reporting, settingsedit
+from chirpui import inputdialog, reporting, settingsedit, radiobrowser, config
 
 class EditorSet(gtk.VBox):
     __gsignals__ = {
@@ -143,6 +143,15 @@ class EditorSet(gtk.VBox):
             editor.root.show()
             editor.connect("changed", self.editor_changed)
             self.editors["settings"] = editor
+
+        conf = config.get()
+        if (hasattr(self.rthread.radio, '_memobj') and
+            conf.get_bool("developer", "state")):
+            editor = radiobrowser.RadioBrowser(self.rthread)
+            lab = gtk.Label(_("Browser"))
+            self.tabs.append_page(editor.root, lab)
+            editor.connect("changed", self.editor_changed)
+            self.editors["browser"] = editor
 
         self.pack_start(self.tabs)
         self.tabs.show()

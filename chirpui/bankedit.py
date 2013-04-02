@@ -109,6 +109,11 @@ class MappingNameEditor(common.Editor):
         self.refresh()
         self._loaded = True
 
+    def other_editor_changed(self, target_editor):
+        self._loaded = False
+        if self.is_focused():
+            self.refresh_all_memories()
+
     def mappings_changed(self):
         pass
 
