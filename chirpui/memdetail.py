@@ -179,8 +179,12 @@ class MemoryDetailEditor(gtk.Dialog):
         self._tips.set_tip(editor.get_widget(), doc)
 
     def _make_ui(self):
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        sw.show()
         tab = gtk.Table(len(self._order), 3, False)
-        self.vbox.pack_start(tab, 1, 1, 1)
+        sw.add_with_viewport(tab)
+        self.vbox.pack_start(sw, 1, 1, 1)
         tab.show()
 
         row = 0
@@ -233,6 +237,7 @@ class MemoryDetailEditor(gtk.Dialog):
                             parent=parent,
                             buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                                      gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        self.set_size_request(-1, 500)
         self._tips = gtk.Tooltips()
 
         self._features = features
