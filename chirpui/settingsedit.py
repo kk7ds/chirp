@@ -27,7 +27,7 @@ class RadioSettingProxy(settings.RadioSetting):
 class SettingsEditor(common.Editor):
     def __init__(self, rthread):
         super(SettingsEditor, self).__init__(rthread)
-
+        self._changed = False
         self.root = gtk.HBox(False, 10)
         self._store = gtk.TreeStore(gobject.TYPE_STRING,
                                     gobject.TYPE_PYOBJECT)
@@ -65,6 +65,9 @@ class SettingsEditor(common.Editor):
         def setting_cb(result):
             if isinstance(result, Exception):
                 common.show_error(_("Error in setting value: %s") % result)
+            elif self._changed:
+                self.emit("changed")
+                self._changed = False
 
         job = common.RadioJob(setting_cb, "set_settings",
                               self._top_setting_group)
@@ -111,6 +114,7 @@ class SettingsEditor(common.Editor):
                 element.value.__class__,
                 element.get_name())
 
+        self._changed = True
         self._save_settings()
 
     def _save_setting(self, widget, value):

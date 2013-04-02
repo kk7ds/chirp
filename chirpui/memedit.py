@@ -1413,7 +1413,9 @@ class MemoryEditor(common.Editor):
         cols = self.view.get_columns()
         self._config.set("column_order_%s" % self.__class__.__name__,
                          ",".join([x.get_title() for x in cols]))
-            
+
+    def other_editor_changed(self, target_editor):
+        self.need_refresh = True
 
 class DstarMemoryEditor(MemoryEditor):
     def _get_cols_to_hide(self, iter):

@@ -67,6 +67,9 @@ class Editor(gobject.GObject):
     def prepare_close(self):
         pass
 
+    def other_editor_changed(self, editor):
+        pass
+
 gobject.type_register(Editor)
 
 def DBG(*args):
@@ -410,3 +413,8 @@ def show_diff_blob(title, result):
     d.run()
     d.destroy()
 
+def unpluralize(string):
+    if string.endswith("s"):
+        return string[:-1]
+    else:
+        return string

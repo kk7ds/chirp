@@ -35,16 +35,45 @@ class EditorSet(gtk.VBox):
                              (gobject.TYPE_STRING,)),
         }
 
-    def _make_device_editors(self, device, devrthread, index):
-        key = "memedit%i" % index
-        if isinstance(device, chirp_common.IcomDstarSupport):
-            self.editors[key] = memedit.DstarMemoryEditor(devrthread)
-        else:
-            self.editors[key] = memedit.MemoryEditor(devrthread)
+    def _make_device_mapping_editors(self, device, devrthread, index):
+        sub_index = 0
+        memory_editor = self.editors["memedit%i" % index]
+        mappings = device.get_mapping_models()
+        for mapping_model in mappings:
+            members = bankedit.MappingMembershipEditor(devrthread, self,
+                                                       mapping_model)
+            label = mapping_model.get_name()
+            if self.rf.has_sub_devices:
+                label += "(%s)" % device.VARIANT
+            lab = gtk.Label(label)
+            self.tabs.append_page(members.root, lab)
+            self.editors["mapping_members%i%i" % (index, sub_index)] = members
 
-        self.editors[key].connect("usermsg",
-                                  lambda e, m: self.emit("usermsg", m))
-        self.editors[key].connect("changed", self.editor_changed)
+            basename = common.unpluralize(mapping_model.get_name())
+            names = bankedit.MappingNameEditor(devrthread, mapping_model)
+            label = "%s Names" % basename
+            if self.rf.has_sub_devices:
+                label += " (%s)" % device.VARIANT
+            lab = gtk.Label(label)
+            self.tabs.append_page(names.root, lab)
+            self.editors["mapping_names%i%i" % (index, sub_index)] = names
+
+            members.root.show()
+            members.connect("changed", self.editor_changed)
+            if hasattr(mapping_model.get_mappings()[0], "set_name"):
+                names.root.show()
+                members.connect("changed", lambda x: names.mappings_changed())
+                names.connect("changed", lambda x: members.mappings_changed())
+                names.connect("changed", self.editor_changed)
+
+    def _make_device_editors(self, device, devrthread, index):
+        if isinstance(device, chirp_common.IcomDstarSupport):
+            memories = memedit.DstarMemoryEditor(devrthread)
+        else:
+            memories = memedit.MemoryEditor(devrthread)
+
+        memories.connect("usermsg", lambda e, m: self.emit("usermsg", m))
+        memories.connect("changed", self.editor_changed)
 
         if self.rf.has_sub_devices:
             label = (_("Memories (%(variant)s)") % 
@@ -54,33 +83,19 @@ class EditorSet(gtk.VBox):
             label = _("Memories")
             rf = self.rf
         lab = gtk.Label(label)
-        memedit_tab = self.tabs.append_page(self.editors[key].root, lab)
-        self.editors[key].root.show()
+        self.tabs.append_page(memories.root, lab)
+        memories.root.show()
+        self.editors["memedit%i" % index] = memories
 
-        if rf.has_bank:
-            key = "bank_members%i" % index
-            self.editors[key] = bankedit.BankMembershipEditor(devrthread, self)
-            if self.rf.has_sub_devices:
-                label = _("Banks (%(variant)s)") % dict(variant=device.VARIANT)
-            else:
-                label = _("Banks")
-            lab = gtk.Label(label)
-            self.tabs.append_page(self.editors[key].root, lab)
-            self.editors[key].root.show()
-            self.editors[key].connect("changed", self.banks_changed)
+        self._make_device_mapping_editors(device, devrthread, index)
 
-        if rf.has_bank_names:
-            key = "bank_names%i" % index
-            self.editors[key] = bankedit.BankNameEditor(devrthread)
-            if self.rf.has_sub_devices:
-                label = (_("Bank Names (%(variant)s)") %
-                         dict(variant=device.VARIANT))
-            else:
-                label = _("Bank Names")
-            lab = gtk.Label(label)
-            self.tabs.append_page(self.editors[key].root, lab)
-            self.editors[key].root.show()
-            self.editors[key].connect("changed", self.banks_changed)
+        if isinstance(device, chirp_common.IcomDstarSupport):
+            editor = dstaredit.DStarEditor(devrthread)
+            self.tabs.append_page(editor.root, gtk.Label(_("D-STAR")))
+            editor.root.show()
+            editor.connect("changed", self.dstar_changed, memories)
+            editor.connect("changed", self.editor_changed)
+            self.editors["dstar"] = editor
 
     def __init__(self, source, parent_window=None, filename=None, tempname=None):
         gtk.VBox.__init__(self, True, 0)
@@ -106,10 +121,7 @@ class EditorSet(gtk.VBox):
         self.tabs.connect("switch-page", self.tab_selected)
         self.tabs.set_tab_pos(gtk.POS_LEFT)
 
-        self.editors = {
-            "dstar"        : None,
-            "settings"     : None,
-            }
+        self.editors = {}
 
         self.rf = self.radio.get_features()
         if self.rf.has_sub_devices:
@@ -125,22 +137,12 @@ class EditorSet(gtk.VBox):
             self._make_device_editors(device, devrthread, index)
             index += 1
 
-        if isinstance(self.radio, chirp_common.IcomDstarSupport):
-            self.editors["dstar"] = dstaredit.DStarEditor(rthread)
-
         if self.rf.has_settings:
-            self.editors["settings"] = settingsedit.SettingsEditor(rthread)
-
-        if self.editors["dstar"]:
-            self.tabs.append_page(self.editors["dstar"].root,
-                                  gtk.Label(_("D-STAR")))
-            self.editors["dstar"].root.show()
-            self.editors["dstar"].connect("changed", self.dstar_changed)
-
-        if self.editors["settings"]:
-            self.tabs.append_page(self.editors["settings"].root,
-                                  gtk.Label(_("Settings")))
-            self.editors["settings"].root.show()
+            editor = settingsedit.SettingsEditor(rthread)
+            self.tabs.append_page(editor.root, gtk.Label(_("Settings")))
+            editor.root.show()
+            editor.connect("changed", self.editor_changed)
+            self.editors["settings"] = editor
 
         self.pack_start(self.tabs)
         self.tabs.show()
@@ -195,34 +197,19 @@ class EditorSet(gtk.VBox):
         self.modified = False
         self.update_tab()
 
-    def dstar_changed(self, *args):
-        print "D-STAR editor changed"
-        dstared = self.editors["dstar"]
-        for editor in self.editors.values():
-            if isinstance(editor, memedit.MemoryEditor):
-                editor.set_urcall_list(dstared.editor_ucall.get_callsigns())
-                editor.set_repeater_list(dstared.editor_rcall.get_callsigns())
-                editor.prefill()
-        if not isinstance(self.radio, chirp_common.LiveRadio):
-            self.modified = True
-            self.update_tab()
+    def dstar_changed(self, dstared, memedit):
+        memedit.set_urcall_list(dstared.editor_ucall.get_callsigns())
+        memedit.set_repeater_list(dstared.editor_rcall.get_callsigns())
+        memedit.prefill()
 
-    def banks_changed(self, *args):
-        print "Banks changed"
-        for editor in self.editors.values():
-            if isinstance(editor, bankedit.BankMembershipEditor):
-                editor.banks_changed()
-        if not isinstance(self.radio, chirp_common.LiveRadio):
-            self.modified = True
-            self.update_tab()
-
-    def editor_changed(self, *args):
+    def editor_changed(self, target_editor):
+        print "%s changed" % target_editor
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
         for editor in self.editors.values():
-            if isinstance(editor, bankedit.BankMembershipEditor):
-                editor.memories_changed()
+            if editor != target_editor:
+                editor.other_editor_changed(target_editor)
 
     def get_tab_label(self):
         return self.label

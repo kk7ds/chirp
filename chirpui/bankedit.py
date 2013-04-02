@@ -38,8 +38,6 @@ class MappingNamesJob(common.RadioJob):
         gobject.idle_add(self.cb, *self.cb_args)
 
 class MappingNameEditor(common.Editor):
-    TYPE = _("Mapping")
-
     def refresh(self):
         def got_mappings():
             self._keys = []
@@ -52,7 +50,7 @@ class MappingNameEditor(common.Editor):
             self.listw.connect("item-set", self.mapping_changed)
 
         job = MappingNamesJob(self._model, self, got_mappings)
-        job.set_desc(_("Retrieving %s information") % self.TYPE)
+        job.set_desc(_("Retrieving %s information") % self._type)
         self.rthread.submit(job)
 
     def get_mapping_list(self):
@@ -75,7 +73,7 @@ class MappingNameEditor(common.Editor):
 
         job = common.RadioJob(trigger_changed, "set_name", name)
         job.set_target(mapping)
-        job.set_desc(_("Setting name on %s") % self.TYPE.lower())
+        job.set_desc(_("Setting name on %s") % self._type.lower())
         self.rthread.submit(job)
 
         return True
@@ -83,9 +81,10 @@ class MappingNameEditor(common.Editor):
     def __init__(self, rthread, model):
         super(MappingNameEditor, self).__init__(rthread)
         self._model = model
+        self._type = common.unpluralize(model.get_name())
 
         types = [(gobject.TYPE_STRING, "key"),
-                 (gobject.TYPE_STRING, self.TYPE),
+                 (gobject.TYPE_STRING, self._type),
                  (gobject.TYPE_STRING, _("Name"))]
 
         self.listw = miscwidgets.KeyedListWidget(types)
@@ -110,12 +109,8 @@ class MappingNameEditor(common.Editor):
         self.refresh()
         self._loaded = True
 
-class BankNameEditor(MappingNameEditor):
-    TYPE = _("Bank")
-
-    def __init__(self, rthread):
-        model = rthread.radio.get_bank_model()
-        super(BankNameEditor, self).__init__(rthread, model)
+    def mappings_changed(self):
+        pass
 
 class MemoryMappingsJob(common.RadioJob):
     def __init__(self, model, cb, number):
@@ -136,10 +131,8 @@ class MemoryMappingsJob(common.RadioJob):
                 for mapping in mappings:
                     indexes.append(self.__model.get_memory_index(mem, mapping))
         self.cb(mem, mappings, indexes, *self.cb_args)
-            
-class MappingMembershipEditor(common.Editor):
-    TYPE = _("Mapping")
 
+class MappingMembershipEditor(common.Editor):
     def _number_to_path(self, number):
         return (number - self._rf.memory_bounds[0],)
 
@@ -215,7 +208,7 @@ class MappingMembershipEditor(common.Editor):
                                   "set_memory_index", memory, mapping, index)
             job.set_target(self._model)
             job.set_desc(_("Updating {type} index "
-                           "for memory {num}").format(type=self.TYPE,
+                           "for memory {num}").format(type=self._type,
                                                       num=memory.number))
             self.rthread.submit(job)
 
@@ -255,7 +248,7 @@ class MappingMembershipEditor(common.Editor):
             job.set_cb_args(memory)
             job.set_target(self._model)
             job.set_desc(_("Getting {type} for "
-                           "memory {num}").format(type=self.TYPE,
+                           "memory {num}").format(type=self._type,
                                                   num=memory.number))
             self.rthread.submit(job)
 
@@ -270,6 +263,7 @@ class MappingMembershipEditor(common.Editor):
         self.editorset = editorset
         self._rf = rthread.radio.get_features()
         self._model = model
+        self._type = common.unpluralize(model.get_name())
 
         self._view_cols = [
             (_("Loc"),       TYPE_INT,     gtk.CellRendererText, ),
@@ -294,7 +288,7 @@ class MappingMembershipEditor(common.Editor):
         self._index_cache = []
 
         for i in range(0, self._model.get_num_mappings()):
-            label = "%s %i" % (self.TYPE, (i+1))
+            label = "%s %i" % (self._type, (i+1))
             cols.append((label, TYPE_BOOLEAN, gtk.CellRendererToggle))
 
         self._store = gtk.ListStore(*tuple([y for x,y,z in cols]))
@@ -364,12 +358,12 @@ class MappingMembershipEditor(common.Editor):
                 
             self._store.set(iter, *tuple(row))
             if memory.number == self._rf.memory_bounds[1] - 1:
-                print "Got all %s info in %s" % (self.TYPE,
+                print "Got all %s info in %s" % (self._type,
                                                  (time.time() - self._start))
 
         job = MemoryMappingsJob(self._model, got_mem, number)
         job.set_desc(_("Getting {type} information "
-                       "for memory {num}").format(type=self.TYPE, num=number))
+                       "for memory {num}").format(type=self._type, num=number))
         self.rthread.submit(job)
 
     def refresh_all_memories(self):
@@ -390,7 +384,7 @@ class MappingMembershipEditor(common.Editor):
                 self.refresh_all_memories()
 
         job = MappingNamesJob(self._model, self, got_mappings)
-        job.set_desc(_("Getting %s information") % self.TYPE)
+        job.set_desc(_("Getting %s information") % self._type)
         self.rthread.submit(job)
 
     def focus(self):
@@ -403,20 +397,10 @@ class MappingMembershipEditor(common.Editor):
 
         self._loaded = True
 
-    def memories_changed(self):
+    def other_editor_changed(self, target_editor):
         self._loaded = False
         if self.is_focused():
             self.refresh_all_memories()
 
     def mappings_changed(self):
         self.refresh_mappings()
-
-class BankMembershipEditor(MappingMembershipEditor):
-    TYPE = _("Bank")
-
-    def __init__(self, rthread, editorset):
-        model = rthread.radio.get_bank_model()
-        super(BankMembershipEditor, self).__init__(rthread, editorset, model)
-
-    def banks_changed(self):
-        self.mappings_changed()
