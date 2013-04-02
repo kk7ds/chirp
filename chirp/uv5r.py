@@ -1055,18 +1055,19 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
         group.append(dtmf)
+        dtmfchars = "0123456789 *#ABCD"
 
         for i in range(0, 15):
             _codeobj = self._memobj.pttid[i].code
-            _code = "".join(["%x" % x for x in _codeobj if int(x) != 0xFF])
+            _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
             val = RadioSettingValueString(0, 5, _code, False)
-            val.set_charset("0123456789")
+            val.set_charset(dtmfchars)
             rs = RadioSetting("pttid/%i.code" % i, "PTT ID Code %i" % (i + 1), val)
             def apply_code(setting, obj):
                 code = []
                 for j in range(0, 5):
                     try:
-                        code.append(int(str(setting.value)[j]))
+                        code.append(dtmfchars.index(str(setting.value)[j]))
                     except IndexError:
                         code.append(0xFF)
                 obj.code = code
@@ -1074,15 +1075,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             dtmf.append(rs)
 
         _codeobj = self._memobj.ani.code
-        _code = "".join(["%x" % x for x in _codeobj if int(x) != 0xFF])
+        _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
         val = RadioSettingValueString(0, 5, _code, False)
-        val.set_charset("0123456789")
+        val.set_charset(dtmfchars)
         rs = RadioSetting("ani.code", "ANI Code", val)
         def apply_code(setting, obj):
             code = []
             for j in range(0, 5):
                 try:
-                    code.append(int(str(setting.value)[j]))
+                    code.append(dtmfchars.index(str(setting.value)[j]))
                 except IndexError:
                     code.append(0xFF)
             obj.code = code
@@ -1096,15 +1097,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         dtmf.append(rs)
 
         _codeobj = self._memobj.ani.alarmcode
-        _code = "".join(["%x" % x for x in _codeobj if int(x) != 0xFF])
+        _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
         val = RadioSettingValueString(0, 3, _code, False)
-        val.set_charset("0123456789")
+        val.set_charset(dtmfchars)
         rs = RadioSetting("ani.alarmcode", "Alarm Code", val)
         def apply_code(setting, obj):
             alarmcode = []
             for j in range(0, 3):
                 try:
-                    alarmcode.append(int(str(setting.value)[j]))
+                    alarmcode.append(dtmfchars.index(str(setting.value)[j]))
                 except IndexError:
                     alarmcode.append(0xFF)
             obj.alarmcode = alarmcode
