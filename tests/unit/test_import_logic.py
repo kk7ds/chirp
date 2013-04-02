@@ -347,8 +347,8 @@ class ImportFieldTests(base.BaseTest):
                      chirp_common.Bank(src_bm, 3, '3'),
                      ]
 
-        self.mox.StubOutWithMock(dst_radio, 'get_bank_model')
-        self.mox.StubOutWithMock(src_radio, 'get_bank_model')
+        self.mox.StubOutWithMock(dst_radio, 'get_mapping_models')
+        self.mox.StubOutWithMock(src_radio, 'get_mapping_models')
         self.mox.StubOutWithMock(dst_bm, 'get_mappings')
         self.mox.StubOutWithMock(src_bm, 'get_mappings')
         self.mox.StubOutWithMock(dst_bm, 'get_memory_mappings')
@@ -356,9 +356,9 @@ class ImportFieldTests(base.BaseTest):
         self.mox.StubOutWithMock(dst_bm, 'remove_memory_from_mapping')
         self.mox.StubOutWithMock(dst_bm, 'add_memory_to_mapping')
 
-        dst_radio.get_bank_model().AndReturn(dst_bm)
+        dst_radio.get_mapping_models().AndReturn([dst_bm])
         dst_bm.get_mappings().AndReturn(dst_banks)
-        src_radio.get_bank_model().AndReturn(src_bm)
+        src_radio.get_mapping_models().AndReturn([src_bm])
         src_bm.get_mappings().AndReturn(src_banks)
         src_bm.get_memory_mappings(src_mem).AndReturn([src_banks[0]])
         dst_bm.get_memory_mappings(dst_mem).AndReturn([dst_banks[1]])

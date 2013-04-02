@@ -210,18 +210,24 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
                                     ", ".join(errs))
 
     return dst_mem
-        
+
+def _get_bank_model(radio):
+    for model in radio.get_mapping_models():
+        if isinstance(model, chirp_common.BankModel):
+            return model
+    return None
+
 def import_bank(dst_radio, src_radio, dst_mem, src_mem):
     """Attempt to set the same banks for @mem(by index) in @dst_radio that
     it has in @src_radio"""
 
-    dst_bm = dst_radio.get_bank_model()
+    dst_bm = _get_bank_model(dst_radio)
     if not dst_bm:
         return
 
     dst_banks = dst_bm.get_mappings()
 
-    src_bm = src_radio.get_bank_model()
+    src_bm = _get_bank_model(src_radio)
     if not src_bm:
         return
 
@@ -243,5 +249,3 @@ def import_bank(dst_radio, src_radio, dst_mem, src_mem):
 
         except IndexError:
             pass
-
-    

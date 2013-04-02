@@ -981,9 +981,14 @@ class Radio(object):
         """Set the memory object @memory"""
         pass
 
-    def get_bank_model(self):
-        """Returns either a BankModel or None if not supported"""
-        return None
+    def get_mapping_models(self):
+        """Returns a list of MappingModel objects (or an empty list)"""
+        if hasattr(self, "get_bank_model"):
+            # FIXME: Backwards compatibility for old bank models
+            bank_model = self.get_bank_model()
+            if bank_model:
+                return [bank_model]
+        return []
 
     def get_raw_memory(self, number):
         """Return a raw string describing the memory at @number"""
