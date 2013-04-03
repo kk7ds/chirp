@@ -692,23 +692,57 @@ class MemoryEditor(common.Editor):
         job.set_desc(_("Getting raw memory {number}").format(number=loc_b))
         self.rthread.submit(job)
 
-    def edit_memory(self, memory):
-        dlg = memdetail.MemoryDetailEditor(self._features, memory)
+    def _copy_field(self, src_memory, dst_memory, field):
+        if field.startswith("extra_"):
+            field = field.split("_", 1)[1]
+            value = src_memory.extra[field].value.get_value()
+            dst_memory.extra[field].value = value
+        else:
+            setattr(dst_memory, field, getattr(src_memory, field))
+
+    def _apply_multiple(self, src_memory, fields, locations):
+        for location in locations:
+            def apply_and_set(memory):
+                for field in fields:
+                    self._copy_field(src_memory, memory, field)
+                    cb = (memory.number == locations[-1]
+                          and self._set_memory_cb or None)
+                    job = common.RadioJob(cb, "set_memory", memory)
+                    job.set_desc(_("Writing memory {number}").format(
+                            number=memory.number))
+                    self.rthread.submit(job)
+            job = common.RadioJob(apply_and_set, "get_memory", location)
+            job.set_desc(_("Getting original memory {number}").format(
+                    number=location))
+            self.rthread.submit(job)
+
+    def edit_memory(self, memory, locations):
+        if len(locations) > 1:
+            dlg = memdetail.MultiMemoryDetailEditor(self._features, memory)
+        else:
+            dlg = memdetail.MemoryDetailEditor(self._features, memory)
         r = dlg.run()
         if r == gtk.RESPONSE_OK:
             self.need_refresh = True
             mem = dlg.get_memory()
-            mem.name = self.rthread.radio.filter_name(mem.name)
-            job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
-            job.set_desc(_("Writing memory {number}").format(number=mem.number))
-            self.rthread.submit(job)
-            self.emit("changed")
+            if len(locations) > 1:
+                self._apply_multiple(memory, dlg.get_fields(), locations)
+            else:
+                mem.name = self.rthread.radio.filter_name(mem.name)
+                job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
+                job.set_desc(_("Writing memory {number}").format(
+                        number=mem.number))
+                self.rthread.submit(job)
         dlg.destroy()
 
     def mh(self, _action, store, paths):
         action = _action.get_name()
-        iter = store.get_iter(paths[0])
-        cur_pos, = store.get(iter, self.col(_("Loc")))
+        selected = []
+        for path in paths:
+            iter = store.get_iter(path)
+            loc, = store.get(iter, self.col(_("Loc")))
+            selected.append(loc)
+        cur_pos = selected[0]
 
         require_contiguous = ["delete_s", "move_up", "move_dn"]
         if action in require_contiguous:
@@ -743,6 +777,7 @@ class MemoryEditor(common.Editor):
             self._diff_raw(paths)
         elif action == "edit":
             job = common.RadioJob(self.edit_memory, "get_memory", cur_pos)
+            job.set_cb_args(selected)
             self.rthread.submit(job)
 
         if changed:

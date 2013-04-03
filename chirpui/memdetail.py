@@ -34,6 +34,9 @@ class ValueEditor:
     def _init(self, data):
         """Type-specific initialization"""
 
+    def set_sensitive(self, sensitive):
+        self._widget.set_sensitive(sensitive)
+
     def get_widget(self):
         """Returns the widget associated with this editor"""
         return self._widget
@@ -157,21 +160,24 @@ class OffsetEditor(FreqEditor):
 class MemoryDetailEditor(gtk.Dialog):
     """Detail editor for a memory"""
 
-    def _add(self, tab, row, name, editor, labeltxt):
+    def _add(self, tab, row, name, editor, labeltxt, colindex=0):
         label = gtk.Label(labeltxt)
         img = gtk.Image()
 
         label.show()
-        tab.attach(label, 0, 1, row, row+1)
+        tab.attach(label, colindex, colindex + 1, row, row + 1)
+        colindex += 1
 
         editor.get_widget().show()
-        tab.attach(editor.get_widget(), 1, 2, row, row+1)
+        tab.attach(editor.get_widget(), colindex, colindex + 1, row, row + 1)
+        colindex += 1
 
         img.set_size_request(15, -1)
         img.show()
-        tab.attach(img, 2, 3, row, row+1)
+        tab.attach(img, colindex, colindex + 1, row, row + 1)
 
         self._editors[name] = label, editor, img
+        return label, editor, img
 
     def _set_doc(self, name, doc):
         label, editor, _img = self._editors[name]
@@ -229,10 +235,13 @@ class MemoryDetailEditor(gtk.Dialog):
             row += 1
             self._order.append(name)
 
+    def _title(self):
+        return _("Edit Memory #{num}").format(num=self._memory.number)
+
     def __init__(self, features, memory, parent=None):
+        self._memory = memory
         gtk.Dialog.__init__(self,
-                            title=_("Edit Memory"
-                                    "#{num}").format(num=memory.number),
+                            title=self._title(),
                             flags=gtk.DIALOG_MODAL,
                             parent=parent,
                             buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -241,7 +250,6 @@ class MemoryDetailEditor(gtk.Dialog):
         self._tips = gtk.Tooltips()
 
         self._features = features
-        self._memory = memory
 
         self._editors = {}
         self._elements = {
@@ -327,3 +335,34 @@ class MemoryDetailEditor(gtk.Dialog):
     def get_memory(self):
         self._memory.empty = False
         return self._memory
+
+class MultiMemoryDetailEditor(MemoryDetailEditor):
+    def _title(self):
+        return _("Edit Multiple Memories")
+
+    def __init__(self, features, memory, parent=None):
+        self._selections = dict()
+        super(MultiMemoryDetailEditor, self).__init__(features, memory, parent)
+
+    def _toggle_selector(self, selector, *widgets):
+        for widget in widgets:
+            widget.set_sensitive(selector.get_active())
+
+    def _add(self, tab, row, name, editor, labeltxt):
+        label, editor, img = super(MultiMemoryDetailEditor, self)._add(
+            tab, row, name, editor, labeltxt, 1)
+
+        selector = gtk.CheckButton()
+        tab.attach(selector, 0, 1, row, row + 1)
+        selector.show()
+        self._toggle_selector(selector, label, editor, img)
+        selector.connect("toggled", self._toggle_selector, label, editor, img)
+        self._selections[name] = selector
+        self._tips.set_tip(
+            selector,
+            _("Check this to change the {name} value").format(
+                name=labeltxt))
+
+
+    def get_fields(self):
+        return [k for k, v in self._selections.items() if v.get_active()]
