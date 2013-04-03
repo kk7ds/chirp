@@ -1628,6 +1628,19 @@ If you think that it is valid, you can select a radio model below to force an op
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
+        def expose(window, event):
+            allocation = window.get_allocation()
+            CONF.set_int("window_w", allocation.width, "state")
+            CONF.set_int("window_h", allocation.height, "state")
+        self.connect("expose_event", expose)
+
+        def state_change(window, event):
+            CONF.set_bool(
+                "window_maximized",
+                event.new_window_state == gtk.gdk.WINDOW_STATE_MAXIMIZED,
+                "state")
+        self.connect("window-state-event", state_change)
+
         d = CONF.get("last_dir", "state")
         if d and os.path.isdir(d):
             platform.get_platform().set_last_dir(d)
@@ -1660,7 +1673,16 @@ If you think that it is valid, you can select a radio model below to force an op
 
         self.add(vbox)
 
-        self.set_default_size(800, 600)
+        try:
+            width = CONF.get_int("window_w", "state")
+            height = CONF.get_int("window_h", "state")
+        except Exception:
+            width = 800
+            height = 600
+
+        self.set_default_size(width, height)
+        if CONF.get_bool("window_maximized", "state"):
+            self.maximize()
         self.set_title("CHIRP")
 
         self.connect("delete_event", self.ev_delete)
