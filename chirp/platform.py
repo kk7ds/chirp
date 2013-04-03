@@ -16,6 +16,7 @@
 import os
 import sys
 import glob
+import re
 from subprocess import Popen
 
 try:
@@ -50,6 +51,11 @@ except:
     
 def _find_me():
     return sys.modules["chirp.platform"].__file__
+
+def natural_sorted(l):
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    natural_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key=natural_key)
 
 class Platform:
     """Base class for platform-specific functions"""
@@ -277,12 +283,13 @@ class UnixPlatform(Platform):
         os.system("firefox '%s'" % path)
 
     def list_serial_ports(self):
-        return sorted(glob.glob("/dev/ttyS*") +
-                      glob.glob("/dev/ttyUSB*") +
-                      glob.glob("/dev/ttyAMA*") +
-                      glob.glob("/dev/cu.*") +
-                      glob.glob("/dev/term/*") +
-                      glob.glob("/dev/tty.KeySerial*"))
+        ports = ["/dev/ttyS*",
+                 "/dev/ttyUSB*",
+                 "/dev/ttyAMA*",
+                 "/dev/cu.*",
+                 "/dev/term/*",
+                 "/dev/tty.KeySerial*"]
+        return natural_sorted(sum([glob.glob(x) for x in ports], []))
 
     def os_version_string(self):
         try:
@@ -327,15 +334,7 @@ class Win32Platform(Platform):
         os.system("explorer %s" % path)
     
     def list_serial_ports(self):
-        def cmp(a, b):
-            try:
-                return int(a[3:]) - int(b[3:])
-            except:
-                return 0
-
-        ports = [port for port, name, url in comports()]
-        ports.sort(cmp=cmp)
-        return ports
+        return natural_sorted([port for port, name, url in comports()])
 
     def gui_open_file(self, start_dir=None, types=[]):
         import win32gui
