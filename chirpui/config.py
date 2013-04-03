@@ -54,6 +54,12 @@ class ChirpConfig:
     def is_defined(self, key, section):
         return self.__config.has_option(section, key)
 
+    def remove_option(self, section, key):
+        self.__config.remove_option(section, key)
+
+        if not self.__config.items(section):
+            self.__config.remove_section(section)
+
 class ChirpConfigProxy:
     def __init__(self, config, section="global"):
         self._config = config
@@ -97,6 +103,9 @@ class ChirpConfigProxy:
 
     def is_defined(self, key, section=None):
         return self._config.is_defined(key, section or self._section)
+
+    def remove_option(self, key, section):
+        self._config.remove_option(section, key)
 
 _CONFIG = None
 def get(section="global"):

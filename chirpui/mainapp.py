@@ -40,6 +40,7 @@ from chirp import ic9x, kenwood_live, idrp, vx7, vx5, vx6
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
 from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting, fips
+from chirpui import bandplans
 
 CONF = config.get()
 
@@ -1240,9 +1241,6 @@ If you think that it is valid, you can select a radio model below to force an op
         conf = config.get()
         conf.set_bool("no_report", not action.get_active())
 
-    def do_toggle_autorpt(self, action):
-        CONF.set_bool("autorpt", action.get_active(), "memedit")
-
     def do_toggle_no_smart_tmode(self, action):
         CONF.set_bool("no_smart_tmode", not action.get_active(), "memedit")
 
@@ -1335,8 +1333,10 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_clearq()
         elif action == "report":
             self.do_toggle_report(_action)
-        elif action == "autorpt":
-            self.do_toggle_autorpt(_action)
+        elif action == "channel_defaults":
+            # The memedit thread also has an instance of bandplans.
+            bp = bandplans.BandPlans(CONF)
+            bp.select_bandplan(self)
         elif action == "no_smart_tmode":
             self.do_toggle_no_smart_tmode(_action)
         elif action == "developer":
@@ -1413,7 +1413,7 @@ If you think that it is valid, you can select a radio model below to force an op
       </menu>
       <menu action="stock" name="stock"/>
       <separator/>
-      <menuitem action="autorpt"/>
+      <menuitem action="channel_defaults"/>
       <separator/>
       <menuitem action="cancelq"/>
     </menu>
@@ -1469,6 +1469,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
             ('stock', None, _("Import from stock config"), None, None, self.mh),
+            ('channel_defaults', None, _("Channel defaults"), None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
@@ -1477,7 +1478,6 @@ If you think that it is valid, you can select a radio model below to force an op
         conf = config.get()
         re = not conf.get_bool("no_report");
         hu = conf.get_bool("hide_unused", "memedit")
-        ro = conf.get_bool("autorpt", "memedit")
         dv = conf.get_bool("developer", "state")
         st = not conf.get_bool("no_smart_tmode", "memedit")
 
@@ -1485,7 +1485,6 @@ If you think that it is valid, you can select a radio model below to force an op
             ('report', None, _("Report statistics"), None, None, self.mh, re),
             ('hide_unused', None, _("Hide Unused Fields"), None, None, self.mh, hu),
             ('no_smart_tmode', None, _("Smart Tone Modes"), None, None, self.mh, st),
-            ('autorpt', None, _("Automatic Repeater Offset"), None, None, self.mh, ro),
             ('developer', None, _("Enable Developer Functions"), None, None, self.mh, dv),
             ]
 
@@ -1700,10 +1699,6 @@ If you think that it is valid, you can select a radio model below to force an op
             d.run()
             d.destroy()
         CONF.set_bool("warned_about_reporting", True)
-
-        if not CONF.is_defined("autorpt", "memedit"):
-            print "autorpt not set et"
-            CONF.set_bool("autorpt", True, "memedit")
 
         self.update_recent_files()
         self.update_stock_configs()

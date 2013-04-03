@@ -33,6 +33,7 @@ import pickle
 import os
 
 from chirpui import common, shiftdialog, miscwidgets, config, memdetail
+from chirpui import bandplans
 from chirp import chirp_common, errors, directory, import_logic
 
 def handle_toggle(_, path, store, col):
@@ -125,7 +126,7 @@ class MemoryEditor(common.Editor):
         iter = self.store.get_iter(path)
         was_filled, prev = self.store.get(iter, self.col("_filled"), colnum)
 
-        def set_offset(path, offset):
+        def set_offset(offset):
             if offset > 0:
                 dup = "+"
             elif offset == 0:
@@ -134,16 +135,36 @@ class MemoryEditor(common.Editor):
                 dup = "-"
                 offset *= -1
 
+            if not dup in self.choices[_("Duplex")]:
+                print "Duplex %s not supported by this radio" % dup
+                return
+
             if offset:
                 self.store.set(iter, self.col(_("Offset")), offset)
 
             self.store.set(iter, self.col(_("Duplex")), dup)
 
         def set_ts(ts):
-            self.store.set(iter, self.col(_("Tune Step")), ts)
+            if ts in self.choices[_("Tune Step")]:
+                self.store.set(iter, self.col(_("Tune Step")), ts)
+            else:
+                print "Tune step %s not supported by this radio" % ts
 
         def get_ts(path):
             return self.store.get(iter, self.col(_("Tune Step")))[0]
+
+        def set_mode(mode):
+            if mode in self.choices[_("Mode")]:
+                self.store.set(iter, self.col(_("Mode")), mode)
+            else:
+                print "Mode %s not supported by this radio (%s)" % (
+                    mode, self.choices[_("Mode")])
+
+        def set_tone(tone):
+            if tone in self.choices[_("Tone")]:
+                self.store.set(iter, self.col(_("Tone")), tone)
+            else:
+                print "Tone %s not supported by this radio" % tone
 
         try:
             new = chirp_common.parse_freq(new)
@@ -155,17 +176,15 @@ class MemoryEditor(common.Editor):
             set_ts(chirp_common.required_step(new))
 
         is_changed = new != prev if was_filled else True
-        autorpt_enabled = self._config.get_bool("autorpt")
-        if new is not None and is_changed and autorpt_enabled:
-            try:
-                band = chirp_common.freq_to_band(new)
-                set_offset(path, 0)
-                for lo, hi, offset in chirp_common.STD_OFFSETS[band]:
-                    if new > lo and new < hi:
-                        set_offset(path, offset)
-                        break
-            except Exception, e:
-                pass
+        if new is not None and is_changed:
+            defaults = self.bandplans.get_defaults_for_frequency(new)
+            set_offset(defaults.offset or 0)
+            if defaults.step_khz:
+                set_ts(defaults.step_khz)
+            if defaults.mode:
+                set_mode(defaults.mode)
+            if defaults.tones:
+                set_tone(defaults.tones[0])
 
         return new
 
@@ -192,11 +211,8 @@ class MemoryEditor(common.Editor):
             # RX frequency as the default TX frequency
             self.store.set(iter, self.col("Offset"), freq)
         else:
-            band = int(freq / 100000000)
-            if chirp_common.STD_OFFSETS.has_key(band):
-                offset = chirp_common.STD_OFFSETS[band][0][2]
-            else:
-                offset = 0
+            defaults = self.bandplans.get_defaults_for_frequency(freq)
+            offset = defaults.offset or 0
             self.store.set(iter, self.col(_("Offset")), abs(offset))
 
         return new
@@ -1261,6 +1277,8 @@ class MemoryEditor(common.Editor):
         self.defaults = dict(self.defaults)
 
         self._config = config.get("memedit")
+
+        self.bandplans = bandplans.BandPlans(config.get())
 
         self.allowed_bands = [144, 440]
         self.count = 100
