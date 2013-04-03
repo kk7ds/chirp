@@ -279,6 +279,7 @@ class UnixPlatform(Platform):
     def list_serial_ports(self):
         return sorted(glob.glob("/dev/ttyS*") +
                       glob.glob("/dev/ttyUSB*") +
+                      glob.glob("/dev/ttyAMA*") +
                       glob.glob("/dev/cu.*") +
                       glob.glob("/dev/term/*") +
                       glob.glob("/dev/tty.KeySerial*"))
