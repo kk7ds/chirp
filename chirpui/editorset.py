@@ -211,7 +211,7 @@ class EditorSet(gtk.VBox):
         memedit.set_repeater_list(dstared.editor_rcall.get_callsigns())
         memedit.prefill()
 
-    def editor_changed(self, target_editor):
+    def editor_changed(self, target_editor=None):
         print "%s changed" % target_editor
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
