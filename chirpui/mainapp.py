@@ -1113,14 +1113,13 @@ If you think that it is valid, you can select a radio model below to force an op
 
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)
-        d.set_copyright("Copyright 2012 Dan Smith (KK7DS)")
+        d.set_copyright("Copyright 2013 Dan Smith (KK7DS)")
         d.set_website("http://chirp.danplanet.com")
-        d.set_authors(("Dan Smith <dsmith@danplanet.com>",
-                       _("With significant contributions by:"),
-                       "Marco IZ3GME",
-                       "Rick WZ3RO",
+        d.set_authors(("Dan Smith KK7DS <dsmith@danplanet.com>",
+                       _("With significant contributions from:"),
                        "Tom KD7LXL",
-                       "Vernon N7OH"
+                       "Marco IZ3GME",
+                       "Jim KC9HI"
                        ))
         d.set_translator_credits("Polish: Grzegorz SQ2RBY" +
                                  os.linesep +
