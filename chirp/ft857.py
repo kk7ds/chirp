@@ -17,6 +17,10 @@
 """FT857 - FT857/US management module"""
 
 from chirp import ft817, chirp_common, errors, directory
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueInteger, RadioSettingValueList, \
+    RadioSettingValueBoolean, RadioSettingValueString
+import os
 
 @directory.register
 class FT857Radio(ft817.FT817Radio):
@@ -97,6 +101,148 @@ class FT857Radio(ft817.FT817Radio):
         u8   name[8];
         };
         
+        #seekto 0x5;
+        struct {
+            u8  unknown1:4,
+                cw_speed_unit:1,
+                cw_key_rev:1,
+                unknown2:2;
+            u8  unknown3[2];
+            u8  disp_mode:2,
+                unknown4:2,
+                disp_contrast:4;
+            u8  unknown5:4,
+                clar_dial_sel:2,
+                beep_tone:2;
+            u8  arts_beep:2,
+                dial_step:1,
+                arts_id:1,
+                unknown6:1,
+                pkt_rate:1,
+                unknown7:2;
+            u8  unknown8:2,
+                lock_mode:2,
+                unknown9:1,
+                cw_pitch:3;
+            u8  sql_rf_gain:1,
+                ars_144:1,
+                ars_430:1,
+                cw_weight:5;
+            u8  cw_delay;
+            u8  cw_delay_hi:1
+                cw_sidetone:7;
+            u8  unknown10:2,
+                cw_speed:6;
+            u8  disable_amfm_dial:1,
+                vox_gain:7;
+            u8  cat_rate:2,
+                emergency:1,
+                vox_delay:5;
+            u8  dig_mode:3,
+                mem_group:1,
+                unknown11:1,
+                apo_time:3;
+            u8  dcs_inv:2,
+                unknown12:1,
+                tot_time:5;
+            u8  mic_scan:1,
+                ssb_mic:7;
+            u8  cw_paddle:1,
+                am_mic:7;
+            u8  unknown13:1,
+                fm_mic:7;
+            u8  unknown14:1,
+                dig_mic:7;
+            u8  extended_menu:1,
+                pkt1200:7;
+            u8  unknown15:1,
+                pkt9600:7;
+            ul16 dig_shift;
+            ul16 dig_disp;
+            u8  r_lsb_car;
+            u8  r_usb_car;
+            u8  t_lsb_car;
+            u8  t_usb_car;
+            u8  unknown16:1,
+                menu_item:7;
+            u8  unknown17[5];
+            u8  unknown18:1,
+                mtr_peak_hold:1,
+                mic_sel:2,
+                cat_lin_tun:2,
+                unknown19:1,
+                split_tone:1;
+            u8  unknown20:1,
+                beep_vol:7;
+            u8  unknown21:1,
+                dig_vox:7;
+            u8  ext_menu:1,
+                home_vfo:1,
+                scan_mode:2,
+                scan_resume:4;
+            u8  cw_auto_mode:1,
+                cw_training:2,
+                cw_qsk:3,
+                cw_bfo:2;
+            u8  dsp_nr:4,
+                dsp_bpf:2,
+                dsp_mic_eq:2;
+            u8  unknown22:3,
+                dsp_lpf:5;
+            u8  mtr_atx_sel:3,
+                unknown23:1,
+                dsp_hpf:4;
+            u8  unknown24:2,
+                disp_intensity:2,
+                unknown25:1,
+                disp_color:3;
+            u8  unknown26:1,
+                disp_color_vfo:1,
+                disp_color_mtr:1,
+                disp_color_mode:1,
+                disp_color_memgrp:1,
+                unknown27:1,
+                disp_color_band:1,
+                disp_color_arts:1;
+            u8  unknown28:3,
+                disp_color_fix:5;
+            u8  unknown29:1,
+                nb_level:7;
+            u8  unknown30:1,
+                proc_level:7;
+            u8  unknown31:1,
+                rf_power_hf:7;
+            u8  unknown32:2,
+                tuner_atas:3,
+                mem_vfo_dial_mode:3;
+            u8  pg_a;
+            u8  pg_b;
+            u8  pg_c;
+            u8  pg_acc;
+            u8  pg_p1;
+            u8  pg_p2;
+            u8  unknown33:3,
+                xvtr_sel:2,
+                unknown33_1:2,
+                op_filter1:1;
+            u8  unknown34:6,
+                tx_if_filter:2;
+            u8  unknown35:3,
+                xvtr_a_negative:1,
+                xvtr_b_negative:1,
+                mtr_arx_sel:3;
+            u8  beacon_time;
+            u8  unknown36[2];
+            u8  dig_vox_enable:1,
+                unknown37:7;
+            u8  unknown39:1,
+                rf_power_6m:7;
+            u8  unknown40:1,
+                rf_power_vhf:7;
+            u8  unknown41:1,
+                rf_power_uhf:7;
+        } settings;
+
         #seekto 0x54;
         struct mem_struct vfoa[16];
         struct mem_struct vfob[16];
@@ -117,10 +263,24 @@ class FT857Radio(ft817.FT817Radio):
         struct mem_struct memory[200];
         struct mem_struct pms[10];
         
+        #seekto 0x1bf3;
+        u8 arts_idw[10];
+        u8 beacon_text1[40];
+        u8 beacon_text2[40];
+        u8 beacon_text3[40];
+
         #seekto 0x1CAD;
         struct mem_struct sixtymeterchannels[5];
     
     """
+
+    _CALLSIGN_CHARSET = [chr(x) for x in range(ord("0"), ord("9")+1) +
+                           range(ord("A"), ord("Z")+1)] + [" ", "/"]
+    _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
+                                    range(0,len(_CALLSIGN_CHARSET))))
+    _BEACON_CHARSET =  _CALLSIGN_CHARSET + ["+", "."]
+    _BEACON_CHARSET_REV = dict(zip(_BEACON_CHARSET,
+                                    range(0,len(_BEACON_CHARSET))))
 
     # WARNING Index are hard wired in memory management code !!!
     SPECIAL_MEMORIES = {
@@ -186,6 +346,55 @@ class FT857Radio(ft817.FT817Radio):
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
                                     SPECIAL_MEMORIES.keys()))
 
+    FILTERS  = [ "CFIL", "FIL1", "FIL2" ]
+    PROGRAMMABLEOPTIONS = [
+        "MFa:A/B",              "MFa:A=B",          "MFa:SPL",
+        "MFb:MW",               "MFb:SKIP/MCLR",    "MFb:TAG",
+        "MFc:STO",              "MFc:RCL",          "MFc:PROC",
+        "MFd:RPT",              "MFd:REV",          "MFd:VOX",
+        "MFe:TON/ENC",          "MFe:TON/DEC",      "MFe:TDCH",   
+        "MFf:ARTS",             "MFf:SRCH",         "MFf:PMS",
+        "MFg:SCN",              "MFg:PRI",          "MFg:DW",     
+        "MFh:SCOP",             "MFh:WID",          "MFh:STEP",
+        "MFi:MTR",              "MFi:SWR",          "MFi:DISP",   
+        "MFj:SPOT",             "MFj:BK",           "MFj:KYR",
+        "MFk:TUNE",             "MFk:DOWN",         "MFk:UP",     
+        "MFl:NB",               "MFl:AGC",          "MFl:AGC SEL",
+        "MFm:IPO",              "MFm:ATT",          "MFm:NAR",    
+        "MFn:CFIL",             "MFn:FIL1",         "MFn:FIL2",
+        "MFo:PLY1",             "MFo:PLY2",         "MFo:PLY3",   
+        "MFp:DNR",              "MFp:DNF",          "MFp:DBF",
+        "01:EXT MENU",          "02:144MHz ARS",    "03:430MHz ARS",     
+        "04:AM&FM DIAL",        "05:AM MIC GAIN",   "06:AM STEP",        
+        "07:APO TIME",          "08:ARTS BEEP",     "09:ARTS ID",          
+        "10:ARTS IDW",          "11:BEACON TEXT",   "12:BEACON TIME",
+        "13:BEEP TONE",         "14:BEEP VOL",      "15:CAR LSB R",     
+        "16:CAR LSB T",         "17:CAR USB R",     "18:CAR USB T",
+        "19:CAT RATE",          "20:CAT/LIN/TUN",   "21:CLAR DIAL SEL",
+        "22:CW AUTO MODE",      "23:CW BFO",        "24:CW DELAY",
+        "25:CW KEY REV",        "26:CW PADDLE",     "27:CW PITCH",      
+        "28:CW QSK",            "29:CW SIDE TONE",  "30:CW SPEED",
+        "31:CW TRAINING",       "32:CW WEIGHT",     "33:DCS CODE",
+        "34:DCS INV",           "35:DIAL STEP",     "36:DIG DISP",
+        "37:DIG GAIN",          "38:DIG MODE",      "39:DIG SHIFT",      
+        "40:DIG VOX",           "41:DISP COLOR",    "42:DISP CONTRAST",
+        "43:DISP INTENSITY",    "44:DISP MODE",     "45:DSP BPF WIDTH",
+        "46:DSP HPF CUTOFF",    "47:DSP LPF CUTOFF","48:DSP MIC EQ",
+        "49:DSP NR LEVEL",      "50:EMERGENCY",     "51:FM MIC GAIN",   
+        "52:FM STEP",           "53:HOME->VFO",     "54:LOCK MODE",
+        "55:MEM GROUP",         "56:MEM TAG",       "57:MEM/VFO DIAL MODE",
+        "58:MIC SCAN",          "59:MIC SEL",       "60:MTR ARX",
+        "61:MTR ATX",           "62:MTR PEAK HOLD", "63:NB LEVEL",
+        "64:OP FILTER",         "71:PKT 1200",      "72:PKT 9600",
+        "73:PKT RATE",          "74:PROC LEVEL",    "75:RF POWER SET",
+        "76:RPT SHIFT",         "77:SCAN MODE",     "78:SCAN RESUME",
+        "79:SPLIT TONE",        "80:SQL/RF GAIN",   "81:SSB MIC GAIN",
+        "82:SSB STEP",          "83:TONE FREQ",     "84:TX TIME",
+        "85:TUNER/ATAS",        "86:TX IF FILTER",  "87:VOX DELAY",
+        "88:VOX GAIN",          "89:XVTR A FREQ",   "90:XVTR B FREQ",
+        "91:XVTR SEL",
+        "MONI", "Q.SPL",  "TCALL",  "ATC",  "USER"]
+        
     def get_features(self):
         rf = ft817.FT817Radio.get_features(self)
         rf.has_cross = True
@@ -193,7 +402,6 @@ class FT857Radio(ft817.FT817Radio):
         rf.has_rx_dtcs = True
         rf.valid_tmodes = self.TMODES_REV.keys()
         rf.valid_cross_modes = self.CROSS_MODES_REV.keys()
-        rf.has_settings = False # not implemented yet
         return rf
 
     def _get_duplex(self, mem, _mem):
@@ -255,6 +463,447 @@ class FT857Radio(ft817.FT817Radio):
         _mem.unknown_toneflag = 0
         # dunno if there's the same problem here but to be safe ...
         _mem.unknown_rxtoneflag = 0
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+        basic = RadioSettingGroup("basic", "Basic")
+        cw = RadioSettingGroup("cw", "CW")
+        packet = RadioSettingGroup("packet", "Digital & packet")
+        panel = RadioSettingGroup("panel", "Panel settings")
+        extended = RadioSettingGroup("extended", "Extended")
+        antenna = RadioSettingGroup("antenna", "Antenna selection")
+        panelcontr = RadioSettingGroup("panelcontr", "Panel controls")
+        top = RadioSettingGroup("top", "All Settings", basic, cw, packet,
+                                panelcontr, panel, extended, antenna)
+
+        rs = RadioSetting("extended_menu", "Extended menu",
+                          RadioSettingValueBoolean(_settings.extended_menu))
+        extended.append(rs)
+        rs = RadioSetting("ars_144", "144MHz ARS",
+                          RadioSettingValueBoolean(_settings.ars_144))
+        basic.append(rs)
+        rs = RadioSetting("ars_430", "430MHz ARS",
+                          RadioSettingValueBoolean(_settings.ars_430))
+        basic.append(rs)
+        options = ["enable", "disable"]
+        rs = RadioSetting("disable_amfm_dial", "AM&FM Dial",
+                          RadioSettingValueList(options,
+                                        options[_settings.disable_amfm_dial]))
+        panel.append(rs)
+        rs = RadioSetting("am_mic", "AM mic gain",
+                          RadioSettingValueInteger(0, 100, _settings.am_mic))
+        basic.append(rs)
+        options = ["OFF", "1h", "2h", "3h", "4h", "5h", "6h"]
+        rs = RadioSetting("apo_time", "APO time",
+                          RadioSettingValueList(options,
+                                        options[_settings.apo_time]))
+        basic.append(rs)
+        options = ["OFF", "Range", "All"]
+        rs = RadioSetting("arts_beep", "ARTS beep",
+                          RadioSettingValueList(options,
+                                        options[_settings.arts_beep]))
+        basic.append(rs)
+        rs = RadioSetting("arts_id", "ARTS ID",
+                          RadioSettingValueBoolean(_settings.arts_id))
+        extended.append(rs)
+        s = RadioSettingValueString(0, 10, 
+                            ''.join([self._CALLSIGN_CHARSET[x] for x in 
+                                        self._memobj.arts_idw]))
+        s.set_charset(self._CALLSIGN_CHARSET)
+        rs = RadioSetting("arts_idw", "ARTS IDW", s)
+        extended.append(rs)
+        s = RadioSettingValueString(0, 40, 
+                            ''.join([self._BEACON_CHARSET[x] for x in 
+                                        self._memobj.beacon_text1]))
+        s.set_charset(self._BEACON_CHARSET)
+        rs = RadioSetting("beacon_text1", "Beacon text1", s)
+        extended.append(rs)
+        s = RadioSettingValueString(0, 40, 
+                            ''.join([self._BEACON_CHARSET[x] for x in 
+                                        self._memobj.beacon_text2]))
+        s.set_charset(self._BEACON_CHARSET)
+        rs = RadioSetting("beacon_text2", "Beacon text2", s)
+        extended.append(rs)
+        s = RadioSettingValueString(0, 40, 
+                            ''.join([self._BEACON_CHARSET[x] for x in 
+                                        self._memobj.beacon_text3]))
+        s.set_charset(self._BEACON_CHARSET)
+        rs = RadioSetting("beacon_text3", "Beacon text3", s)
+        extended.append(rs)
+        options = ["OFF"]+["%i sec" % i for i in range(1,256)]
+        rs = RadioSetting("beacon_time", "Beacon time",
+                          RadioSettingValueList(options,
+                                        options[_settings.beacon_time]))
+        extended.append(rs)
+        options = ["440Hz", "880Hz", "1760Hz"]
+        rs = RadioSetting("beep_tone", "Beep tone",
+                          RadioSettingValueList(options,
+                                        options[_settings.beep_tone]))
+        panel.append(rs)
+        rs = RadioSetting("beep_vol", "Beep volume",
+                          RadioSettingValueInteger(0, 100, _settings.beep_vol))
+        panel.append(rs)
+        rs = RadioSetting("r_lsb_car", "LSB Rx carrier point (*10 Hz)",
+                          RadioSettingValueInteger(-30, 30, _settings.r_lsb_car))
+        extended.append(rs)
+        rs = RadioSetting("r_usb_car", "USB Rx carrier point (*10 Hz)",
+                          RadioSettingValueInteger(-30, 30, _settings.r_usb_car))
+        extended.append(rs)
+        rs = RadioSetting("t_lsb_car", "LSB Tx carrier point (*10 Hz)",
+                          RadioSettingValueInteger(-30, 30, _settings.t_lsb_car))
+        extended.append(rs)
+        rs = RadioSetting("t_usb_car", "USB Tx carrier point (*10 Hz)",
+                          RadioSettingValueInteger(-30, 30, _settings.t_usb_car))
+        extended.append(rs)
+        options = ["4800", "9600", "38400"]
+        rs = RadioSetting("cat_rate", "CAT rate",
+                          RadioSettingValueList(options,
+                                        options[_settings.cat_rate]))
+        basic.append(rs)
+        options = ["CAT", "Linear", "Tuner"]
+        rs = RadioSetting("cat_lin_tun", "CAT/LIN/TUN selection",
+                          RadioSettingValueList(options,
+                                        options[_settings.cat_lin_tun]))
+        extended.append(rs)
+        options = ["MAIN", "VFO/MEM", "CLAR"]   # TODO test the 3 options on non D radio
+                                                # which have only SEL and MAIN
+        rs = RadioSetting("clar_dial_sel", "Clarifier dial selection",
+                          RadioSettingValueList(options,
+                                        options[_settings.clar_dial_sel]))
+        panel.append(rs)
+        rs = RadioSetting("cw_auto_mode", "CW Automatic mode",
+                          RadioSettingValueBoolean(_settings.cw_auto_mode))
+        cw.append(rs)
+        options = ["USB", "LSB", "AUTO"]
+        rs = RadioSetting("cw_bfo", "CW BFO",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_bfo]))
+        cw.append(rs)
+        options = ["FULL"]+["%i ms" % (i*10) for i in range(3,301)]
+        val = (_settings.cw_delay + _settings.cw_delay_hi * 256) - 2
+        rs = RadioSetting("cw_delay", "CW delay",
+                          RadioSettingValueList(options,
+                                        options[val]))
+        cw.append(rs)
+        options = ["Normal", "Reverse"]
+        rs = RadioSetting("cw_key_rev", "CW key reverse",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_key_rev]))
+        cw.append(rs)
+        rs = RadioSetting("cw_paddle", "CW paddle",
+                          RadioSettingValueBoolean(_settings.cw_paddle))
+        cw.append(rs)
+        options = ["%i Hz" % i for i in range(400,801,100)]
+        rs = RadioSetting("cw_pitch", "CW pitch",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_pitch]))
+        cw.append(rs)
+        options = ["%i ms" % i for i in range(5,31,5)]
+        rs = RadioSetting("cw_qsk", "CW QSK",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_qsk]))
+        cw.append(rs)
+        rs = RadioSetting("cw_sidetone", "CW sidetone volume",
+                          RadioSettingValueInteger(0, 100, _settings.cw_sidetone))
+        cw.append(rs)
+        options = ["%i wpm" % i for i in range(4,61)]
+        rs = RadioSetting("cw_speed", "CW speed",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_speed]))
+        cw.append(rs)
+        options = ["Numeric", "Alphabet", "AlphaNumeric"]
+        rs = RadioSetting("cw_training", "CW trainig",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_training]))
+        cw.append(rs)
+        options = ["1:%1.1f" % (i/10) for i in range(25,46,1)]
+        rs = RadioSetting("cw_weight", "CW weight",
+                          RadioSettingValueList(options,
+                                        options[_settings.cw_weight]))
+        cw.append(rs)
+        options = ["Tn-Rn", "Tn-Riv", "Tiv-Rn", "Tiv-Riv"]
+        rs = RadioSetting("dcs_inv", "DCS inv",
+                          RadioSettingValueList(options,
+                                        options[_settings.dcs_inv]))
+        extended.append(rs)
+        options = ["Fine", "Coarse"]
+        rs = RadioSetting("dial_step", "Dial step",
+                          RadioSettingValueList(options,
+                                        options[_settings.dial_step]))
+        panel.append(rs)
+        rs = RadioSetting("dig_disp", "Dig disp (*10 Hz)",
+                          RadioSettingValueInteger(-300, 300, _settings.dig_disp))
+        packet.append(rs)
+        rs = RadioSetting("dig_mic", "Dig gain",
+                          RadioSettingValueInteger(0, 100, _settings.dig_mic))
+        packet.append(rs)
+        options = ["RTTYL", "RTTYU", "PSK31-L", "PSK31-U", "USER-L", "USER-U"]
+        rs = RadioSetting("dig_mode", "Dig mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.dig_mode]))
+        packet.append(rs)
+        rs = RadioSetting("dig_shift", "Dig shift (*10 Hz)",
+                          RadioSettingValueInteger(-300, 300, _settings.dig_shift))
+        packet.append(rs)
+        rs = RadioSetting("dig_vox", "Dig vox",
+                          RadioSettingValueInteger(0, 100, _settings.dig_vox))
+        packet.append(rs)
+        options = ["ARTS", "BAND", "FIX", "MEMGRP", "MODE", "MTR", "VFO"]
+        rs = RadioSetting("disp_color", "Display color mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.disp_color]))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_arts", "Display color ARTS set",
+                          RadioSettingValueInteger(0, 1,_settings.disp_color_arts))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_band", "Display color band set",
+                          RadioSettingValueInteger(0, 1,_settings.disp_color_band))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_memgrp", "Display color memory group set",
+                          RadioSettingValueInteger(0, 1,_settings.disp_color_memgrp))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_mode", "Display color mode set",
+                          RadioSettingValueInteger(0, 1,_settings.disp_color_mode))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_mtr", "Display color meter set",
+                          RadioSettingValueInteger(0, 1,_settings.disp_color_mtr))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_vfo", "Display color VFO set",
+                          RadioSettingValueInteger(0, 1,_settings.disp_color_vfo))
+        panel.append(rs)
+        rs = RadioSetting("disp_color_fix", "Display color fix set",
+                          RadioSettingValueInteger(1, 32,_settings.disp_color_fix-1)) 
+        panel.append(rs)
+        rs = RadioSetting("disp_contrast", "Contrast",
+                          RadioSettingValueInteger(3, 15,_settings.disp_contrast+2))
+        panel.append(rs)
+        rs = RadioSetting("disp_intensity", "Intensity",
+                          RadioSettingValueInteger(1, 3,_settings.disp_intensity))
+        panel.append(rs)
+        options = ["OFF", "Auto1", "Auto2", "ON"]
+        rs = RadioSetting("disp_mode", "Display backlight mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.disp_mode]))
+        panel.append(rs)
+        options = ["60Hz", "120Hz", "240Hz"]
+        rs = RadioSetting("dsp_bpf", "Dsp band pass filter",
+                          RadioSettingValueList(options,
+                                        options[_settings.dsp_bpf]))
+        cw.append(rs)
+        options = ["100Hz", "160Hz", "220Hz", "280Hz", "340Hz", "400Hz", "460Hz", "520Hz",
+            "580Hz", "640Hz", "720Hz", "760Hz", "820Hz", "880Hz", "940Hz", "1000Hz"]
+        rs = RadioSetting("dsp_hpf", "Dsp hi pass filter cut off",
+                          RadioSettingValueList(options,
+                                        options[_settings.dsp_hpf]))
+        basic.append(rs)
+        options = ["1000Hz", "1160Hz", "1320Hz", "1480Hz", "1650Hz", "1800Hz", "1970Hz", "2130Hz",
+            "2290Hz", "2450Hz", "2610Hz", "2770Hz", "2940Hz", "3100Hz", "3260Hz", "3420Hz",
+            "3580Hz", "3740Hz", "3900Hz", "4060Hz", "4230Hz", "4390Hz", "4550Hz", "4710Hz",
+            "4870Hz", "5030Hz", "5190Hz", "5390Hz", "5520Hz", "5680Hz", "5840Hz", "6000Hz"]
+        rs = RadioSetting("dsp_lpf", "Dsp low pass filter cut off",
+                          RadioSettingValueList(options,
+                                        options[_settings.dsp_lpf]))
+        basic.append(rs)
+        options = ["OFF", "LPF", "HPF", "BOTH"]
+        rs = RadioSetting("dsp_mic_eq", "Dsp mic equalization",
+                          RadioSettingValueList(options,
+                                        options[_settings.dsp_mic_eq]))
+        basic.append(rs)
+        rs = RadioSetting("dsp_nr", "DSP noise reduction level",
+                          RadioSettingValueInteger(1, 16, _settings.dsp_nr+1))
+        basic.append(rs)
+        # emergency only for US model
+        rs = RadioSetting("fm_mic", "FM mic gain",
+                          RadioSettingValueInteger(0, 100, _settings.fm_mic))
+        basic.append(rs)
+        rs = RadioSetting("home_vfo", "Enable HOME to VFO moving",
+                          RadioSettingValueBoolean(_settings.home_vfo))
+        panel.append(rs)
+        options = ["Dial", "Freq", "Panel", "All"]
+        rs = RadioSetting("lock_mode", "Lock mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.lock_mode]))
+        panel.append(rs)
+        rs = RadioSetting("mem_group", "Mem group",
+                          RadioSettingValueBoolean(_settings.mem_group))
+        basic.append(rs)
+        options = ["CW SIDETONE", "CW SPEED", "MHz/MEM GRP", "MIC GAIN",
+            "NB LEVEL", "RF POWER", "STEP"]
+        rs = RadioSetting("mem_vfo_dial_mode", "Mem/VFO dial mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.mem_vfo_dial_mode]))
+        panel.append(rs)
+        rs = RadioSetting("mic_scan", "Mic scan",
+                          RadioSettingValueBoolean(_settings.mic_scan))
+        basic.append(rs)
+        options = ["NOR", "RMT", "CAT"]
+        rs = RadioSetting("mic_sel", "Mic selection",
+                          RadioSettingValueList(options,
+                                        options[_settings.mic_sel]))
+        extended.append(rs)
+        options = ["SIG", "CTR", "VLT", "N/A", "FS",  "OFF"]
+        rs = RadioSetting("mtr_arx_sel", "Meter receive selection",
+                          RadioSettingValueList(options,
+                                        options[_settings.mtr_arx_sel]))
+        extended.append(rs)
+        options = ["PWR", "ALC", "MOD", "SWR", "VLT", "N/A", "OFF"]
+        rs = RadioSetting("mtr_atx_sel", "Meter transmit selection",
+                          RadioSettingValueList(options,
+                                        options[_settings.mtr_atx_sel]))
+        extended.append(rs)
+        rs = RadioSetting("mtr_peak_hold", "Meter peak hold",
+                          RadioSettingValueBoolean(_settings.mtr_peak_hold))
+        extended.append(rs)
+        rs = RadioSetting("nb_level", "Noise blanking level",
+                          RadioSettingValueInteger(0, 100, _settings.nb_level))
+        basic.append(rs)
+        # TODO op_filter1
+        # TODO op_filter2
+        rs = RadioSetting("pg_a", "Programmable key MFq:A",
+                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
+                                        self.PROGRAMMABLEOPTIONS[_settings.pg_a]))
+        extended.append(rs)
+        rs = RadioSetting("pg_b", "Programmable key MFq:B",
+                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
+                                        self.PROGRAMMABLEOPTIONS[_settings.pg_b]))
+        extended.append(rs)
+        rs = RadioSetting("pg_c", "Programmable key MFq:C",
+                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
+                                        self.PROGRAMMABLEOPTIONS[_settings.pg_c]))
+        extended.append(rs)
+        rs = RadioSetting("pg_acc", "Programmable mic key ACC",
+                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
+                                        self.PROGRAMMABLEOPTIONS[_settings.pg_acc]))
+        extended.append(rs)
+        rs = RadioSetting("pg_p1", "Programmable mic key P1",
+                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
+                                        self.PROGRAMMABLEOPTIONS[_settings.pg_p1]))
+        extended.append(rs)
+        rs = RadioSetting("pg_p2", "Programmable mic key P2",
+                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
+                                        self.PROGRAMMABLEOPTIONS[_settings.pg_p2]))
+        extended.append(rs)
+        rs = RadioSetting("pkt1200", "Packet 1200 gain level",
+                          RadioSettingValueInteger(0, 100, _settings.pkt1200))
+        packet.append(rs)
+        rs = RadioSetting("pkt9600", "Packet 9600 gain level",
+                          RadioSettingValueInteger(0, 100, _settings.pkt9600))
+        packet.append(rs)
+        options = ["1200", "9600"]
+        rs = RadioSetting("pkt_rate", "Packet rate",
+                          RadioSettingValueList(options,
+                                        options[_settings.pkt_rate]))
+        packet.append(rs)
+        rs = RadioSetting("proc_level", "Proc level",
+                          RadioSettingValueInteger(0, 100, _settings.proc_level))
+        basic.append(rs)
+        rs = RadioSetting("rf_power_hf", "Rf power set HF",
+                          RadioSettingValueInteger(5, 100, _settings.rf_power_hf))
+        basic.append(rs)
+        rs = RadioSetting("rf_power_6m", "Rf power set 6m",
+                          RadioSettingValueInteger(5, 100, _settings.rf_power_6m))
+        basic.append(rs)
+        rs = RadioSetting("rf_power_vhf", "Rf power set VHF",
+                          RadioSettingValueInteger(5, 50, _settings.rf_power_vhf))
+        basic.append(rs)
+        rs = RadioSetting("rf_power_uhf", "Rf power set UHF",
+                          RadioSettingValueInteger(2, 20, _settings.rf_power_uhf))
+        basic.append(rs)
+        options = ["TIME", "BUSY", "STOP"]
+        rs = RadioSetting("scan_mode", "Scan mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.scan_mode]))
+        basic.append(rs)
+        rs = RadioSetting("scan_resume", "Scan resume",
+                          RadioSettingValueInteger(1, 10, _settings.scan_resume))
+        basic.append(rs)
+        rs = RadioSetting("split_tone", "Split tone enable",
+                          RadioSettingValueBoolean(_settings.split_tone))
+        extended.append(rs)
+        options = ["RF-Gain", "Squelch"]
+        rs = RadioSetting("sql_rf_gain", "Squelch/RF-Gain",
+                          RadioSettingValueList(options,
+                                        options[_settings.sql_rf_gain]))
+        panel.append(rs)
+        rs = RadioSetting("ssb_mic", "SSB Mic gain",
+                          RadioSettingValueInteger(0, 100, _settings.ssb_mic))
+        basic.append(rs)
+        options = ["Off"]+["%i" % i for i in range(1, 21)]
+        rs = RadioSetting("tot_time", "Time-out timer",
+                          RadioSettingValueList(options,
+                                        options[_settings.tot_time]))
+        basic.append(rs)
+        options = ["OFF", "ATAS(HF)", "ATAS(HF&50)", "ATAS(ALL)", "TUNER"]
+        rs = RadioSetting("tuner_atas", "Tuner/ATAS device",
+                          RadioSettingValueList(options,
+                                        options[_settings.tuner_atas]))
+        extended.append(rs)
+        rs = RadioSetting("tx_if_filter", "Transmit IF filter",
+                          RadioSettingValueList(self.FILTERS,
+                                        self.FILTERS[_settings.tx_if_filter]))
+        basic.append(rs)
+        rs = RadioSetting("vox_delay", "VOX delay (*100 ms)",
+                          RadioSettingValueInteger(1, 30, _settings.vox_delay))
+        basic.append(rs)
+        rs = RadioSetting("vox_gain", "VOX Gain",
+                          RadioSettingValueInteger(1, 100, _settings.vox_gain))
+        basic.append(rs)
+        # TODO xvtr_a_freq
+        # TODO xvtr_b_freq
+        options = ["OFF", "XVTR A", "XVTR B"]
+        rs = RadioSetting("xvtr_sel", "Transverter function selection",
+                          RadioSettingValueList(options,
+                                        options[_settings.xvtr_sel]))
+        extended.append(rs)
+        
+        return top
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            try:
+                if "." in element.get_name():
+                    bits = element.get_name().split(".")
+                    obj = self._memobj
+                    for bit in bits[:-1]:
+                        obj = getattr(obj, bit)
+                    setting = bits[-1]
+                else:
+                    obj = _settings
+                    setting = element.get_name()
+                if os.getenv("CHIRP_DEBUG"):
+	                print "Setting %s(%s) <= %s" % (setting, 
+                                    getattr(obj, setting), element.value)
+                if setting == "arts_idw":
+                    self._memobj.arts_idw = \
+                        [self._CALLSIGN_CHARSET_REV[x] for x in 
+                                                        str(element.value)]
+                elif setting in ["beacon_text1", "beacon_text2", "beacon_text3"]:
+                    setattr(self._memobj, setting,
+                        [self._BEACON_CHARSET_REV[x] for x in 
+                                                        str(element.value)])
+                elif setting == "cw_delay":
+                    val = int(element.value)+2
+                    setattr(obj, "cw_delay_hi", val/256)
+                    setattr(obj, setting, val&0xff)
+                elif setting == "dig_vox":
+                    val = int(element.value)
+                    setattr(obj, "dig_vox_enable", int(val>0))
+                    setattr(obj, setting, val)
+                elif setting == "disp_color_fix":
+                    setattr(obj, setting, int(element.value)+1)
+                elif setting == "disp_contrast":
+                    setattr(obj, setting, int(element.value)-2)
+                elif setting == "dsp_nr" :
+                    setattr(obj, setting, int(element.value)-1)
+                else:
+                    setattr(obj, setting, element.value)
+            except Exception, e:
+                print element.get_name()
+                raise
 
 @directory.register
 class FT857USRadio(FT857Radio):
@@ -339,3 +988,12 @@ class FT857USRadio(FT857Radio):
             return self._set_special_60m(memory)
         else:
             return FT857Radio.set_memory(self, memory)
+
+    def get_settings(self):
+        top = FT857Radio.get_settings(self)
+        basic = top["basic"]
+        rs = RadioSetting("emergency", "Emergency",
+                          RadioSettingValueBoolean(self._memobj.settings.emergency))
+        basic.append(rs)
+        return top
+
