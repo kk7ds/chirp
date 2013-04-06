@@ -19,36 +19,36 @@ import glob
 import re
 from subprocess import Popen
 
+def win32_comports_bruteforce():
+    import win32file
+    import win32con
+
+    ports = []
+    for i in range(1, 257):
+        portname = "COM%i" % i
+        try:
+            mode = win32con.GENERIC_READ | win32con.GENERIC_WRITE
+            port = \
+                win32file.CreateFile(portname,
+                                     mode,
+                                     win32con.FILE_SHARE_READ,
+                                     None,
+                                     win32con.OPEN_EXISTING,
+                                     0,
+                                     None)
+            ports.append((portname,"Unknown","Serial"))
+            win32file.CloseHandle(port)
+            port = None
+        except Exception, e:
+            pass
+
+    return ports
+
 try:
     from serial.tools.list_ports import comports
 except:
-    def comports():
-        import win32file
-        import win32con
+    comports = win32_comports_bruteforce
 
-        ports = []
-        for i in range(1, 257):
-            portname = "COM%i" % i
-            print "Trying %s" % portname
-            try:
-                mode = win32con.GENERIC_READ | win32con.GENERIC_WRITE
-                port = \
-                    win32file.CreateFile(portname,
-                                         mode,
-                                         win32con.FILE_SHARE_READ,
-                                         None,
-                                         win32con.OPEN_EXISTING,
-                                         0,
-                                         None)
-                ports.append((portname,"Unknown","Serial"))
-                win32file.CloseHandle(port)
-                port = None
-            except Exception, e:
-                print "Failed: %s" % e
-                pass
-
-        return ports
-    
 def _find_me():
     return sys.modules["chirp.platform"].__file__
 
@@ -332,9 +332,15 @@ class Win32Platform(Platform):
 
     def open_html_file(self, path):
         os.system("explorer %s" % path)
-    
+
     def list_serial_ports(self):
-        return natural_sorted([port for port, name, url in comports()])
+        try:
+            ports = comports()
+        except Exception, e:
+            if comports != win32_comports_bruteforce:
+                print "Failed to detect win32 serial ports: %s" % e
+                ports = win32_comports_bruteforce()
+        return natural_sorted([port for port, name, url in ports])
 
     def gui_open_file(self, start_dir=None, types=[]):
         import win32gui
