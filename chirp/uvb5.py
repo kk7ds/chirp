@@ -29,7 +29,9 @@ struct memory {
   u8 unknown3:1,
      scanadd:1,
      isnarrow:1,
-     unknown4:3,
+     unknown4:1,
+     highpower:1,
+     unknown5:1,
      duplex:2;
   u8 unknown[4];
 };
@@ -111,6 +113,8 @@ SPECIALS = {
     "VFO1": -2,
     "VFO2": -1,
     }
+POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
+                chirp_common.PowerLevel("High", watts=5)]
 
 @directory.register
 class BaofengUVB5(chirp_common.CloneModeRadio):
@@ -132,6 +136,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
                           (400000000, 520000000)]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_special_chans = SPECIALS.keys()
+        rf.valid_power_levels = POWER_LEVELS
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_tuning_step = False
@@ -219,6 +224,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = _mem.isnarrow and "NFM" or "FM"
         mem.skip = "" if _mem.scanadd else "S"
+        mem.power = POWER_LEVELS[_mem.highpower]
 
         if _nam:
             for char in _nam:
@@ -243,6 +249,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.isnarrow = mem.mode == "NFM"
         _mem.scanadd = mem.skip == ""
+        _mem.highpower = mem.power == POWER_LEVELS[1]
 
         if _nam:
             for i in range(0, 5):
