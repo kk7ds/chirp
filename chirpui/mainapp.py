@@ -130,7 +130,7 @@ class ChirpMain(gtk.Window):
         for _editortype, actions in mappings.items():
             for _action in actions:
                 action = self.menu_ag.get_action(_action)
-                action.set_sensitive(_editortype == editortype)
+                action.set_sensitive(editortype.startswith(_editortype))
 
     def _connect_editorset(self, eset):
         eset.connect("want-close", self.do_close)
@@ -1199,7 +1199,9 @@ If you think that it is valid, you can select a radio model below to force an op
             conf = config.get("memedit")
             conf.set_bool("hide_unused", action.get_active())
         else:
-            eset.editors["memedit"].set_hide_unused(action.get_active())
+            for editortype, editor in eset.editors.iteritems():
+                if "memedit" in editortype:
+                    editor.set_hide_unused(action.get_active())
 
     def do_clearq(self):
         eset = self.get_current_editorset()
