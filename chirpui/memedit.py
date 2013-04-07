@@ -1404,6 +1404,9 @@ class MemoryEditor(common.Editor):
             return
 
         for mem in mem_list:
+            if mem.empty:
+                iter = self.store.iter_next(iter)
+                continue
             loc, filled = store.get(iter,
                                     self.col(_("Loc")), self.col("_filled"))
             if filled and not always:
