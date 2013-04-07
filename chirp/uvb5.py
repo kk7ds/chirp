@@ -107,6 +107,10 @@ def do_upload(radio):
 
 DUPLEX = ["", "-", "+"]
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ_+*"
+SPECIALS = {
+    "VFO1": -2,
+    "VFO2": -1,
+    }
 
 @directory.register
 class BaofengUVB5(chirp_common.CloneModeRadio):
@@ -127,6 +131,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 520000000)]
         rf.valid_modes = ["FM", "NFM"]
+        rf.valid_special_chans = SPECIALS.keys()
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_tuning_step = False
@@ -183,11 +188,25 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         else:
             _set("tone", 0)
 
+    def _get_memobjs(self, number):
+        if isinstance(number, str):
+            return (getattr(self._memobj, number.lower()), None)
+        elif number < 0:
+            for k, v in SPECIALS.items():
+                if number == v:
+                    return (getattr(self._memobj, k.lower()), None)
+        else:
+            return (self._memobj.channels[number - 1],
+                    self._memobj.names[number - 1].name)
+
     def get_memory(self, number):
-        _mem = self._memobj.channels[number - 1]
-        _nam = self._memobj.names[number - 1].name
+        _mem, _nam = self._get_memobjs(number)
         mem = chirp_common.Memory()
-        mem.number = number
+        if isinstance(number, str):
+            mem.number = SPECIALS[number]
+            mem.extd_number = number
+        else:
+            mem.number = number
 
         mem.freq = int(_mem.freq) * 10
         mem.offset = int(_mem.offset) * 10
@@ -201,18 +220,18 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         mem.mode = _mem.isnarrow and "NFM" or "FM"
         mem.skip = "" if _mem.scanadd else "S"
 
-        for char in _nam:
-            try:
-                mem.name += CHARSET[char]
-            except IndexError:
-                break
-        mem.name = mem.name.rstrip()
+        if _nam:
+            for char in _nam:
+                try:
+                    mem.name += CHARSET[char]
+                except IndexError:
+                    break
+            mem.name = mem.name.rstrip()
 
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memobj.channels[mem.number - 1]
-        _nam = self._memobj.names[mem.number - 1].name
+        _mem, _nam = self._get_memobjs(mem.number)
 
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 10
@@ -225,11 +244,12 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         _mem.isnarrow = mem.mode == "NFM"
         _mem.scanadd = mem.skip == ""
 
-        for i in range(0, 5):
-            try:
-                _nam[i] = CHARSET.index(mem.name[i])
-            except IndexError:
-                _nam[i] = 0xFF
+        if _nam:
+            for i in range(0, 5):
+                try:
+                    _nam[i] = CHARSET.index(mem.name[i])
+                except IndexError:
+                    _nam[i] = 0xFF
 
     @classmethod
     def match_model(cls, filedata, filename):
