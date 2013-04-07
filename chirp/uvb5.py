@@ -213,6 +213,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         else:
             mem.number = number
 
+        if _mem.freq.get_raw()[0] == "\xFF":
+            mem.empty = True
+            return mem
+
         mem.freq = int(_mem.freq) * 10
         mem.offset = int(_mem.offset) * 10
 
@@ -238,6 +242,12 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
 
     def set_memory(self, mem):
         _mem, _nam = self._get_memobjs(mem.number)
+
+        if mem.empty:
+            if _nam is None:
+                raise errors.InvalidValueError("VFO channels can not be empty")
+            _mem.set_raw("\xFF" * 16)
+            return
 
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 10
