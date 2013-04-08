@@ -77,6 +77,7 @@ struct {
 #seekto 0x10F20;
 struct {
   char call[8];
+  char tag[4];
 } mycall[6];
 
 #seekto 0x10F68;
