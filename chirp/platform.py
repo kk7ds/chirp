@@ -335,7 +335,7 @@ class Win32Platform(Platform):
 
     def list_serial_ports(self):
         try:
-            ports = comports()
+            ports = list(comports())
         except Exception, e:
             if comports != win32_comports_bruteforce:
                 print "Failed to detect win32 serial ports: %s" % e
