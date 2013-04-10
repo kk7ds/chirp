@@ -219,7 +219,7 @@ class MemoryEditor(common.Editor):
 
     def ed_tone_field(self, _foo, path, new, col):
         if self._config.get_bool("no_smart_tmode"):
-            return
+            return new
 
         iter = self.store.get_iter(path)
 
