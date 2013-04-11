@@ -65,12 +65,15 @@ class ShiftDialog(gtk.Dialog):
                         count / len(memories))
 
             i.number = dst
-            self.rthread.radio.set_memory(i)
+            if i.empty:
+                self.rthread.radio.erase_memory(i.number)
+            else:
+                self.rthread.radio.set_memory(i)
             count += 1.0
 
         return int(count)
 
-    def _get_mems_until_hole(self, start, endokay=False):
+    def _get_mems_until_hole(self, start, endokay=False, all=False):
         mems = []
 
         llimit, ulimit = self.rthread.radio.get_features().memory_bounds
@@ -81,7 +84,7 @@ class ShiftDialog(gtk.Dialog):
                         number=pos), 0)
             try:
                 mem = self.rthread.radio.get_memory(pos)
-                if mem.empty:
+                if mem.empty and not all:
                     break
             except errors.InvalidMemoryLocation:
                 break
@@ -109,9 +112,8 @@ class ShiftDialog(gtk.Dialog):
             print "No memory list?"
             return 0
 
-    def _delete_hole(self, start):
-        mems = self._get_mems_until_hole(start+1, endokay=True)
-            
+    def _delete_hole(self, start, all=False):
+        mems = self._get_mems_until_hole(start+1, endokay=True, all=all)
         if mems:
             count = self._shift_memories(-1, mems)
             self.rthread.radio.erase_memory(count+start)
@@ -126,12 +128,12 @@ class ShiftDialog(gtk.Dialog):
         else:
             gobject.idle_add(self.set_response_sensitive, gtk.RESPONSE_OK, True)
 
-    def threadfn(self, newhole, func):
+    def threadfn(self, newhole, func, *args):
         self.status("Waiting for radio to become available", 0)
         self.rthread.lock()
 
         try:
-            count = func(newhole)
+            count = func(newhole, *args)
         except errors.InvalidMemoryLocation, e:
             self.status(str(e), 0)
             self.finished()
@@ -145,13 +147,13 @@ class ShiftDialog(gtk.Dialog):
     def insert(self, newhole, quiet=False):
         self.quiet = quiet
         self.thread = threading.Thread(target=self.threadfn,
-                                       args=(newhole,self._insert_hole))
+                                       args=(newhole, self._insert_hole))
         self.thread.start()
         gtk.Dialog.run(self)
 
-    def delete(self, newhole, quiet=False):
+    def delete(self, newhole, quiet=False, all=False):
         self.quiet = quiet
         self.thread = threading.Thread(target=self.threadfn,
-                                       args=(newhole,self._delete_hole))
+                                       args=(newhole, self._delete_hole, all))
         self.thread.start()
         gtk.Dialog.run(self)

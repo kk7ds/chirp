@@ -523,12 +523,12 @@ class MemoryEditor(common.Editor):
 
         return True # We changed memories
 
-    def _delete_rows_and_shift(self, paths):
+    def _delete_rows_and_shift(self, paths, all=False):
         iter = self.store.get_iter(paths[0])
         starting_loc, = self.store.get(iter, self.col(_("Loc")))
         for i in range(0, len(paths)):
             sd = shiftdialog.ShiftDialog(self.rthread)
-            sd.delete(starting_loc, quiet=True)
+            sd.delete(starting_loc, quiet=True, all=all)
             sd.destroy()
 
         self.prefill()
@@ -779,6 +779,8 @@ class MemoryEditor(common.Editor):
             changed = self._delete_rows(paths)
         elif action == "delete_s":
             changed = self._delete_rows_and_shift(paths)
+        elif action == "delete_sall":
+            changed = self._delete_rows_and_shift(paths, all=True)
         elif action in ["move_up", "move_dn"]:
             changed = self._move_up_down(paths, action)
         elif action == "exchange":
@@ -827,8 +829,11 @@ class MemoryEditor(common.Editor):
     <menuitem action="edit"/>
     <menuitem action="insert_prev"/>
     <menuitem action="insert_next"/>
-    <menuitem action="delete"/>
-    <menuitem action="delete_s"/>
+    <menu action="deletes">
+      <menuitem action="delete"/>
+      <menuitem action="delete_s"/>
+      <menuitem action="delete_sall"/>
+    </menu>
     <menuitem action="move_up"/>
     <menuitem action="move_dn"/>
     <menuitem action="exchange"/>
@@ -850,8 +855,10 @@ class MemoryEditor(common.Editor):
             ("edit", _("Edit")),
             ("insert_prev", _("Insert row above")),
             ("insert_next", _("Insert row below")),
-            ("delete", issingle and _("Delete") or _("Delete all")),
-            ("delete_s", _("Delete (and shift up)")),
+            ("deletes", _("Delete")),
+            ("delete", issingle and _("this memory") or _("these memories")),
+            ("delete_s", _("...and shift block up")),
+            ("delete_sall", _("...and shift all memories up")),
             ("move_up", _("Move up")),
             ("move_dn", _("Move down")),
             ("exchange", _("Exchange memories")),

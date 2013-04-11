@@ -50,16 +50,17 @@ class ShiftDialogTest(base.BaseTest):
         radio.get_features().memory_bounds = (0, 5)
         sd = shiftdialog.ShiftDialog(FakeRadioThread(radio))
 
-        getattr(sd, fn)(arg)
+        if isinstance(arg, tuple):
+            getattr(sd, fn)(*arg)
+        else:
+            getattr(sd, fn)(arg)
 
         self.assertEqual(expected, sorted(radio._mems.keys()))
         self.assertEqual(expected,
                          sorted([mem.number for mem in radio._mems.values()]))
-        
 
-    def _test_delete_hole(self, starting, delete, expected):
-        self._test_hole('_delete_hole', starting, delete, expected)
-
+    def _test_delete_hole(self, starting, arg, expected):
+        self._test_hole('_delete_hole', starting, arg, expected)
 
     def _test_insert_hole(self, starting, pos, expected):
         self._test_hole('_insert_hole', starting, pos, expected)
@@ -72,6 +73,16 @@ class ShiftDialogTest(base.BaseTest):
     def test_delete_hole_without_hole(self):
         self._test_delete_hole([1, 2, 3, 4, 5],
                                2,
+                               [1, 2, 3, 4])
+
+    def test_delete_hole_with_all(self):
+        self._test_delete_hole([1, 2, 3, 5],
+                               (2, True),
+                               [1, 2, 4])
+
+    def test_delete_hole_with_all_full(self):
+        self._test_delete_hole([1, 2, 3, 4, 5],
+                               (2, True),
                                [1, 2, 3, 4])
 
     def test_insert_hole_with_space(self):
