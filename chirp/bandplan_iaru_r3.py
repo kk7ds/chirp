@@ -18,7 +18,7 @@ from chirp import bandplan
 SHORTNAME = "iaru_r3"
 
 DESC = {
-  "name": "IARU Region 3",
+  "name": "IARU Region 3 (Asia Pacific)",
   "updated": "16 October 2009",
   "url": "http://www.iaru.org/uploads/1/3/0/7/13073366/r3_band_plan.pdf"
 }
