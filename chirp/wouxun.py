@@ -591,7 +591,8 @@ class KGUV6DRadio(KGUVD1PRadio):
              auto_backlight:1;
           u8 unknown_flag_20:7,
              sos_ch:1;
-          u8 unknown_6[2];
+          u8 unknown_6;
+          u8 sd_available;
           u8 unknown_flag_21:7,
              auto_lock_kbd:1;
           u8 unknown_flag_22:4,
@@ -761,8 +762,15 @@ class KGUV6DRadio(KGUVD1PRadio):
                           RadioSettingValueList(options,
                                         options[self._memobj.settings.vfo_b_ch_disp]))
         top.append(rs)
-	# TODO - vfo_a_fr_step
-	# TODO -vfo_b_fr_step:3;
+        options = ["2.5", "5.0", "6.25", "10.0", "12.5", "25.0", "50.0", "100.0"]
+        rs = RadioSetting("vfo_a_fr_step", "VFO A Frequency Step",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.vfo_a_fr_step]))
+        top.append(rs)
+        rs = RadioSetting("vfo_b_fr_step", "VFO B Frequency Step",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.vfo_b_fr_step]))
+        top.append(rs)
         rs = RadioSetting("vfo_a_squelch", "VFO A Squelch",
                           RadioSettingValueInteger(0, 9, self._memobj.settings.vfo_a_squelch))
         top.append(rs)
@@ -773,7 +781,7 @@ class KGUV6DRadio(KGUVD1PRadio):
                           RadioSettingValueInteger(1, 199, self._memobj.settings.vfo_a_cur_chan))
         top.append(rs)
         rs = RadioSetting("vfo_b_cur_chan", "VFO B current channel",
-                          RadioSettingValueInteger(0, 199, self._memobj.settings.vfo_b_cur_chan))
+                          RadioSettingValueInteger(1, 199, self._memobj.settings.vfo_b_cur_chan))
         top.append(rs)
         rs = RadioSetting("priority_chan", "Priority channel",
                           RadioSettingValueInteger(0, 199, self._memobj.settings.priority_chan))
@@ -796,7 +804,14 @@ class KGUV6DRadio(KGUVD1PRadio):
                           RadioSettingValueList(options,
                                         options[self._memobj.settings.roger_beep]))
         top.append(rs)
-        # TODO - transmit_time_out:6;
+        options = ["%s" % x for x in range(15, 615, 15)]
+        rs = RadioSetting("transmit_time_out", "TX Time-out Timer",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.transmit_time_out]))
+        top.append(rs)
+        rs = RadioSetting("tx_time_out_alert", "TX Time-out Alert",
+                          RadioSettingValueInteger(0, 10, self._memobj.settings.tx_time_out_alert))
+        top.append(rs)
         rs = RadioSetting("vox", "Vox",
                           RadioSettingValueInteger(0, 10, self._memobj.settings.vox))
         top.append(rs)
@@ -819,7 +834,6 @@ class KGUV6DRadio(KGUVD1PRadio):
                           RadioSettingValueList(options,
                                         options[self._memobj.settings.ani_id_sidetone]))
         top.append(rs)
-        # TODO tx_time_out_alert:4;
         options = ["Time", "Carrier", "Search"]
         rs = RadioSetting("scan_mode", "Scan mode",
                           RadioSettingValueList(options,
@@ -850,6 +864,13 @@ class KGUV6DRadio(KGUVD1PRadio):
                           RadioSettingValueList(options,
                                         options[self._memobj.settings.current_vfo]))
         top.append(rs)
+
+        options = ["Dual", "Single"]
+        rs = RadioSetting("sd_available", "Single/Dual Band",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.sd_available]))
+        top.append(rs)
+
         _pwd = self._memobj.settings.mode_password
         rs = RadioSetting("mode_password", "Mode password (000000 disabled)",
                   RadioSettingValueInteger(0, 9, _pwd[0]),
@@ -879,8 +900,8 @@ class KGUV6DRadio(KGUVD1PRadio):
                               RadioSettingValueInteger(0, 9, _ani[5]))
             top.append(rs)
         except Exception:
-            print ("Your ANI code is not five digits, which is not currently"
-                   " supported in CHIRP.")            
+            print ("Your ANI code is not six digits, which is not currently"
+                   " supported in CHIRP.")
 
         return top
 
