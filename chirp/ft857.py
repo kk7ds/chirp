@@ -672,7 +672,7 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueInteger(0, 1,_settings.disp_color_vfo))
         panel.append(rs)
         rs = RadioSetting("disp_color_fix", "Display color fix set",
-                          RadioSettingValueInteger(1, 32,_settings.disp_color_fix-1)) 
+                          RadioSettingValueInteger(1, 32,_settings.disp_color_fix+1)) 
         panel.append(rs)
         rs = RadioSetting("disp_contrast", "Contrast",
                           RadioSettingValueInteger(3, 15,_settings.disp_contrast+2))
@@ -893,12 +893,10 @@ class FT857Radio(ft817.FT817Radio):
                     val = int(element.value)
                     setattr(obj, "dig_vox_enable", int(val>0))
                     setattr(obj, setting, val)
-                elif setting == "disp_color_fix":
-                    setattr(obj, setting, int(element.value)+1)
+                elif setting in ["disp_color_fix", "dsp_nr"]:
+                    setattr(obj, setting, int(element.value)-1)
                 elif setting == "disp_contrast":
                     setattr(obj, setting, int(element.value)-2)
-                elif setting == "dsp_nr" :
-                    setattr(obj, setting, int(element.value)-1)
                 else:
                     setattr(obj, setting, element.value)
             except Exception, e:
