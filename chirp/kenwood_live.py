@@ -542,19 +542,6 @@ class TMD700Radio(KenwoodLiveRadio):
 
         return mem
 
-OLD_TONES = list(chirp_common.TONES)
-OLD_TONES.remove(159.8)
-OLD_TONES.remove(165.5)
-OLD_TONES.remove(171.3)
-OLD_TONES.remove(177.3)
-OLD_TONES.remove(183.5)
-OLD_TONES.remove(189.9)
-OLD_TONES.remove(196.6)
-OLD_TONES.remove(199.5)
-OLD_TONES.remove(206.5)
-OLD_TONES.remove(229.1)
-OLD_TONES.remove(254.1)
-
 @directory.register
 class TMV7Radio(KenwoodLiveRadio):
     """Kenwood TM-V7"""
@@ -562,10 +549,10 @@ class TMV7Radio(KenwoodLiveRadio):
 
     mem_upper_limit = 200 # Will be updated
 
-    _kenwood_valid_tones = list(OLD_TONES)
+    _kenwood_valid_tones = list(chirp_common.OLD_TONES)
 
     def set_memory(self, memory):
-        supported_tones = list(OLD_TONES)
+        supported_tones = list(chirp_common.OLD_TONES)
         supported_tones.remove(69.3)
         if memory.rtone not in supported_tones:
             raise errors.UnsupportedToneError("This radio does not support " +
