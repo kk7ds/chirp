@@ -216,7 +216,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tmode = TMODES[_mem.tmode & 0x3] # masked so bad mems can be read
         if mem.duplex == "split":
             mem.offset = chirp_common.fix_rounded_step(mem.offset)
-        mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+        mem.rtone = mem.ctone = chirp_common.OLD_TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
 
         mem.skip = _flg.pskip and "P" or _flg.skip and "S" or ""
@@ -263,7 +263,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             _mem.power = 0
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.tone = chirp_common.TONES.index(mem.rtone)
+        _mem.tone = chirp_common.OLD_TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
 
         _flg.skip = mem.skip == "S"
