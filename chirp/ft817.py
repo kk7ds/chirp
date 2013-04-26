@@ -459,21 +459,21 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                                self.LAST_VFOA_INDEX - 1,
                                -1):
             _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
-            immutable = ["number", "skip", "rtone", "ctone", "extd_number",
+            immutable = ["number", "skip", "extd_number",
                          "name", "dtcs_polarity", "power", "comment"]
         elif mem.number in range(self.FIRST_VFOB_INDEX,
                                  self.LAST_VFOB_INDEX - 1,
                                  -1):
             _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + mem.number]
-            immutable = ["number", "skip", "rtone", "ctone", "extd_number",
+            immutable = ["number", "skip", "extd_number",
                          "name", "dtcs_polarity", "power", "comment"]
         elif mem.number in range(-2, -6, -1):
             _mem = self._memobj.home[5 + mem.number]
-            immutable = ["number", "skip", "rtone", "ctone", "extd_number",
-                         "dtcs_polarity", "power", "comment"]
+            immutable = ["number", "skip", "extd_number",
+                         "name", "dtcs_polarity", "power", "comment"]
         elif mem.number == -1:
             _mem = self._memobj.qmb
-            immutable = ["number", "skip", "rtone", "ctone", "extd_number",
+            immutable = ["number", "skip", "extd_number",
                          "name", "dtcs_polarity", "power", "comment"]
         elif mem.number in self.SPECIAL_PMS.values():
             bitindex = -self.LAST_PMS_INDEX + mem.number
