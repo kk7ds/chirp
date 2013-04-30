@@ -15,6 +15,9 @@
 
 import struct
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+                RadioSettingValueBoolean, RadioSettingValueList, \
+                RadioSettingValueInteger, RadioSettingValueString
 
 mem_format = """
 struct memory {
@@ -29,7 +32,7 @@ struct memory {
   u8 unknown3:1,
      scanadd:1,
      isnarrow:1,
-     unknown4:1,
+     bcl:1,
      highpower:1,
      unknown5:1,
      duplex:2;
@@ -48,6 +51,37 @@ struct memory vfo2;
 struct {
   u8 name[5];
 } names[128];
+
+#seekto 0x0D30;
+struct {
+  u8 squelch;
+  u8 freqmode_ab:1,
+     save_funct:1,
+     backlight:1,
+     beep_tone:1,
+     roger:1,
+     tdr:1,
+     scantype:2;
+  u8 language:1,
+     workmode_b:1,
+     workmode_a:1,
+     workmode_fm:1,
+     voice_prompt:1,
+     fm:1,
+     pttid:2;
+  u8 timeout;
+  u8 mdf_b:2,
+     mdf_a:2,
+     unknown_1:2,
+     txtdr:2;
+  u8 sidetone;
+  u8 vox;
+} settings;
+
+#seekto 0x0D50;
+struct {
+  u8 code[6];
+} pttid;
 """
 
 def do_ident(radio):
@@ -127,6 +161,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_duplexes = DUPLEX
         rf.valid_skips = ["", "S"]
@@ -238,6 +273,12 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
                     break
             mem.name = mem.name.rstrip()
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        rs = RadioSetting("bcl", "BCL",
+                          RadioSettingValueBoolean(_mem.bcl))
+        mem.extra.append(rs)
+
         return mem
 
     def set_memory(self, mem):
@@ -267,6 +308,173 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
                     _nam[i] = CHARSET.index(mem.name[i])
                 except IndexError:
                     _nam[i] = 0xFF
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
+
+    def get_settings(self):
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        group = RadioSettingGroup("top", "All Settings", basic)
+
+        options = ["Time", "Carrier", "Search"]
+        rs = RadioSetting("scantype", "Scan Type",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.scantype]))
+        basic.append(rs)
+
+        options = ["%s min" % x for x in range(1, 8)]
+        options.insert(0, "Off")
+        rs = RadioSetting("timeout", "Time Out Timer",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.timeout]))
+        basic.append(rs)
+
+        options = ["A", "B"]
+        rs = RadioSetting("freqmode_ab", "Frequency Mode",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.freqmode_ab]))
+        basic.append(rs)
+
+        options = ["Frequency Mode", "Channel Mode"]
+        rs = RadioSetting("workmode_a", "Radio Work Mode(A)",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.workmode_a]))
+        basic.append(rs)
+
+        rs = RadioSetting("workmode_b", "Radio Work Mode(B)",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.workmode_b]))
+        basic.append(rs)
+
+        options = ["Frequency", "Name", "Channel"]
+        rs = RadioSetting("mdf_a", "Display Format(F1)",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.mdf_a]))
+        basic.append(rs)
+
+        rs = RadioSetting("mdf_b", "Display Format(F2)",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.mdf_b]))
+        basic.append(rs)
+
+        options = ["Off", "BOT", "EOT", "Both"]
+        rs = RadioSetting("pttid", "PTT-ID",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.pttid]))
+        basic.append(rs)
+
+        dtmfchars = "0123456789ABCD"
+        _codeobj = self._memobj.pttid.code
+        _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 6, _code, False)
+        val.set_charset(dtmfchars)
+        rs = RadioSetting("pttid.code", "PTT-ID Code", val)
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 6):
+                try:
+                    code.append(dtmfchars.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.code = code
+        rs.set_apply_callback(apply_code, self._memobj.pttid)
+        basic.append(rs)
+
+        rs = RadioSetting("squelch", "Squelch Level",
+                          RadioSettingValueInteger(0, 9, self._memobj.settings.squelch))
+        basic.append(rs)
+
+        rs = RadioSetting("vox", "VOX Level",
+                          RadioSettingValueInteger(0, 9, self._memobj.settings.vox))
+        basic.append(rs)
+
+        options = ["Frequency Mode", "Channel Mode"]
+        rs = RadioSetting("workmode_fm", "FM Work Mode",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.workmode_fm]))
+        basic.append(rs)
+
+        options = ["Current Frequency", "F1 Frequency", "F2 Frequency"]
+        rs = RadioSetting("txtdr", "Dual Standby TX Priority",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.txtdr]))
+        basic.append(rs)
+
+        options = ["English", "Chinese"]
+        rs = RadioSetting("language", "Language",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.language]))
+        basic.append(rs)
+
+        rs = RadioSetting("tdr", "Dual Standby",
+                          RadioSettingValueBoolean(self._memobj.settings.tdr))
+        basic.append(rs)
+
+        rs = RadioSetting("roger", "Roger Beep",
+                          RadioSettingValueBoolean(self._memobj.settings.roger))
+        basic.append(rs)
+
+        rs = RadioSetting("backlight", "Backlight",
+                          RadioSettingValueBoolean(self._memobj.settings.backlight))
+        basic.append(rs)
+
+        rs = RadioSetting("save_funct", "Save Mode",
+                          RadioSettingValueBoolean(self._memobj.settings.save_funct))
+        basic.append(rs)
+
+        rs = RadioSetting("fm", "FM Function",
+                          RadioSettingValueBoolean(self._memobj.settings.fm))
+        basic.append(rs)
+
+        options = ["Enabled", "Disabled"]
+        rs = RadioSetting("beep_tone", "Beep Prompt",
+                          RadioSettingValueList(options,
+                                        options[self._memobj.settings.beep_tone]))
+        basic.append(rs)
+
+        rs = RadioSetting("voice_prompt", "Voice Prompt",
+                          RadioSettingValueBoolean(self._memobj.settings.voice_prompt))
+        basic.append(rs)
+
+        rs = RadioSetting("sidetone", "DTMF Side Tone",
+                          RadioSettingValueBoolean(self._memobj.settings.sidetone))
+        basic.append(rs)
+
+        return group
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            try:
+                name = element.get_name()
+                if "." in name:
+                    bits = name.split(".")
+                    obj = self._memobj
+                    for bit in bits[:-1]:
+                        if "/" in bit:
+                            bit, index = bit.split("/", 1)
+                            index = int(index)
+                            obj = getattr(obj, bit)[index]
+                        else:
+                            obj = getattr(obj, bit)
+                    setting = bits[-1]
+                else:
+                    obj = _settings
+                    setting = element.get_name()
+
+                if element.has_apply_callback():
+                    print "Using apply callback"
+                    element.run_apply_callback()
+                else:
+                    print "Setting %s = %s" % (setting, element.value)
+                    setattr(obj, setting, element.value)
+            except Exception, e:
+                print element.get_name()
+                raise
+
 
     @classmethod
     def match_model(cls, filedata, filename):
