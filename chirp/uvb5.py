@@ -142,7 +142,7 @@ def do_upload(radio):
             raise errors.RadioError("Radio NAK'd block at address 0x%04x" % i)
         do_status(radio, "to", i)
 
-DUPLEX = ["", "-", "+"]
+DUPLEX = ["", "-", "+", 'off']
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ_+*"
 SPECIALS = {
     "VFO1": -2,
@@ -269,6 +269,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         mem.skip = "" if _mem.scanadd else "S"
         mem.power = POWER_LEVELS[_mem.highpower]
 
+        if mem.freq == mem.offset and mem.duplex == "-":
+           mem.duplex = "off"
+           mem.offset = 0
+
         if _nam:
             for char in _nam:
                 try:
@@ -307,13 +311,18 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
             return
 
         _mem.freq = mem.freq / 10
-        _mem.offset = mem.offset / 10
+
+        if mem.duplex == "off":
+            _mem.duplex = DUPLEX.index("-")
+            _mem.offset = _mem.freq
+        else:
+            _mem.offset = mem.offset / 10
+            _mem.duplex = DUPLEX.index(mem.duplex)
 
         tx, rx = chirp_common.split_tone_encode(mem)
         self._encode_tone(_mem, 'tx', *tx)
         self._encode_tone(_mem, 'rx', *rx)
 
-        _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.isnarrow = mem.mode == "NFM"
         _mem.scanadd = mem.skip == ""
         _mem.highpower = mem.power == POWER_LEVELS[1]
