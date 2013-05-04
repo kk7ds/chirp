@@ -201,6 +201,12 @@ struct {
   char line2[7];
 } poweron_msg;
 
+#seekto 0x1838;
+struct {
+  char line1[7];
+  char line2[7];
+} firmware_msg;
+
 struct limit {
   u8 enable;
   bbcd lower[2];
@@ -849,6 +855,17 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 else:
                     filtered += " "
             return filtered
+
+        _msg = self._memobj.firmware_msg
+        val = RadioSettingValueString(0, 7, _filter(_msg.line1))
+        val.set_mutable(False)
+        rs = RadioSetting("firmware_msg.line1", "Firmware Message 1", val)
+        other.append(rs)
+
+        val = RadioSettingValueString(0, 7, _filter(_msg.line2))
+        val.set_mutable(False)
+        rs = RadioSetting("firmware_msg.line2", "Firmware Message 2", val)
+        other.append(rs)
 
         _msg = self._memobj.sixpoweron_msg
         rs = RadioSetting("sixpoweron_msg.line1", "6+Power-On Message 1",
