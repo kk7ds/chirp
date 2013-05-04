@@ -26,15 +26,16 @@ struct memory {
   u8 unknown1:2,
      txpol:1,
      rxpol:1,
-     unknown2:4;
+     compander:1,
+     unknown2:3;
   u8 rxtone;
   u8 txtone;
-  u8 unknown3:1,
+  u8 pttid:1,
      scanadd:1,
      isnarrow:1,
      bcl:1,
      highpower:1,
-     unknown5:1,
+     revfreq:1,
      duplex:2;
   u8 unknown[4];
 };
@@ -162,7 +163,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
+        rf.has_rx_dtcs = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
+                                "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_duplexes = DUPLEX
         rf.valid_skips = ["", "S"]
         rf.valid_characters = CHARSET
@@ -277,6 +281,18 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueBoolean(_mem.bcl))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("revfreq", "Reverse Duplex",
+                          RadioSettingValueBoolean(_mem.revfreq))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueBoolean(_mem.pttid))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueBoolean(_mem.compander))
         mem.extra.append(rs)
 
         return mem
