@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, yaesu_clone, directory
+from chirp import chirp_common, yaesu_clone, directory, errors
 from chirp import bitwise
 
 MEM_FORMAT = """
@@ -263,7 +263,11 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             _mem.power = 0
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.tone = chirp_common.OLD_TONES.index(mem.rtone)
+        try:
+            _mem.tone = chirp_common.OLD_TONES.index(mem.rtone)
+        except ValueError:
+            raise errors.UnsupportedToneError(
+                ("This radio does not support tone %s" % mem.rtone))
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
 
         _flg.skip = mem.skip == "S"
