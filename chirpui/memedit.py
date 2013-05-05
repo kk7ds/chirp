@@ -310,7 +310,7 @@ class MemoryEditor(common.Editor):
             if "DTCS" not in cmode:
                 hide += [self.col(_("DTCS Pol"))]
 
-        if duplex == "" or duplex == "(None)":
+        if duplex == "" or duplex == "(None)" or duplex == "off":
             hide += [self.col(_("Offset"))]
 
 
