@@ -29,6 +29,13 @@ class RadioSettingValue:
         self._current = None
         self._has_changed = False
         self._validate_callback = lambda x: x
+        self._mutable = True
+
+    def set_mutable(self, mutable):
+        self._mutable = mutable
+
+    def get_mutable(self):
+        return self._mutable
 
     def changed(self):
         """Returns True if the setting has been changed since init"""
@@ -39,6 +46,9 @@ class RadioSettingValue:
 
     def set_value(self, value):
         """Sets the current value, triggers changed"""
+        if not self.get_mutable():
+            raise InvalidValueError("This value is not mutable")
+
         if self._current != None and value != self._current:
             self._has_changed = True
         self._current = self._validate_callback(value)

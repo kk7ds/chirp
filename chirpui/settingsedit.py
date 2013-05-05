@@ -178,6 +178,8 @@ class SettingsEditor(common.Editor):
                 lalign.add(widget)
                 lalign.show()
 
+                widget.set_sensitive(value.get_mutable())
+
                 arraybox.pack_start(lalign, 1, 1, 1)
                 widget.show()
                 self._load_setting(value, widget)
