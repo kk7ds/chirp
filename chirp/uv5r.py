@@ -421,10 +421,11 @@ def _do_upload(radio):
         return # Old image, no aux block
 
     if image_version != radio_version:
-        raise errors.RadioError("Upload finished, but the 'Other Settings' "
-                                "could not be sent because the firmware "
-                                "version of the image does not match that "
-                                "of the radio")
+        msg = ("Upload finished, but the 'Other Settings' "
+               "could not be sent because the firmware "
+               "version of the image (%s) does not match "
+               "that of the radio (%s).")
+        raise errors.RadioError(msg % (image_version, radio_version))
 
     # Auxiliary block at radio address 0x1EC0, our offset 0x1808
     for i in range(0x1EC0, 0x2000, 0x10):
