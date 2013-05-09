@@ -159,12 +159,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 pkt_mic:7;
             u8  unknown14:1,
                 pkt9600_mic:7;
-            ul16 dig_shift;
-            ul16 dig_disp;
-            u8  r_lsb_car;
-            u8  r_usb_car;
-            u8  t_lsb_car;
-            u8  t_usb_car;
+            il16 dig_shift;
+            il16 dig_disp;
+            i8  r_lsb_car;
+            i8  r_usb_car;
+            i8  t_lsb_car;
+            i8  t_usb_car;
             u8  unknown15:2,
                 menu_item:6;
             u8  unknown16:4,
