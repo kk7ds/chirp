@@ -167,15 +167,24 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, 128)
 
         if not hasattr(self, "_memobj") or self._memobj is None:
-            limit_idx = 1
-        else:
-            limit_idx = self._memobj.model.limits - 0xEE
-        try:
-            rf.valid_bands = [PUXING_777_BANDS[limit_idx]]
-        except IndexError:
-            print "Invalid band index %i (0x%02x)" % \
-                (limit_idx, self._memobj.model.limits)
             rf.valid_bands = [PUXING_777_BANDS[1]]
+        elif self._memobj.model.model == PUXING_MODELS[777]:
+            limit_idx = self._memobj.model.limits - 0xEE
+            try:
+                rf.valid_bands = [PUXING_777_BANDS[limit_idx]]
+            except IndexError:
+                print "Invalid band index %i (0x%02x)" % \
+                    (limit_idx, self._memobj.model.limits)
+                rf.valid_bands = [PUXING_777_BANDS[1]]
+        elif self._memobj.model.model == PUXING_MODELS[328]:
+            # There are PX-777 that says to be model 328 ...
+            # for them we only know this freq limits till now
+            if self._memobj.model.limits == 0xEE:
+                rf.valid_bands = [PUXING_777_BANDS[1]]
+            else:
+                raise Exception("Unsupported band limits 0x%02x for PX-777" % \
+                    (self._memobj.model.limits) +
+                    " submodel 328 - PLEASE REPORT THIS ERROR TO DEVELOPERS!!")
 
         return rf
 
@@ -188,10 +197,13 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        if len(filedata) > 0x080B and \
-                ord(filedata[0x080B]) != PUXING_MODELS[777]:
-            return False
-        return len(filedata) == 3168
+        # There are PX-777 that says to be model 328 ...
+        return len(filedata) == 3168 and (
+                ord(filedata[0x080B]) == PUXING_MODELS[777] or (
+                    ord(filedata[0x080B]) == PUXING_MODELS[328] and
+                        ord(filedata[0x080A]) == 0xEE
+                    )
+                )
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
