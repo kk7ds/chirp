@@ -25,6 +25,13 @@
 #  ul24 foo;     /* Unsigned 24-bit value (LE)              */
 #  u32  foo;     /* Unsigned 32-bit value                   */
 #  ul32 foo;     /* Unsigned 32-bit value (LE)              */
+#  i8   foo;     /* Signed 8-bit value                      */
+#  i16  foo;     /* Signed 16-bit value                     */
+#  il16 foo;     /* Signed 16-bit value (LE)                */
+#  i24  foo;     /* Signed 24-bit value                     */
+#  il24 foo;     /* Signed 24-bit value (LE)                */
+#  i32  foo;     /* Signed 32-bit value                     */
+#  il32 foo;     /* Signed 32-bit value (LE)                */
 #  char foo;     /* Character (single-byte                  */
 #  lbcd foo;     /* BCD-encoded byte (LE)                   */
 #  bbcd foo;     /* BCD-encoded byte (BE)                   */
@@ -401,7 +408,7 @@ class u16DataElement(intDataElement):
 
 class ul16DataElement(u16DataElement):
     _endianess = "<"
-
+    
 class u24DataElement(intDataElement):
     _size = 3
     _endianess = ">"
@@ -436,6 +443,65 @@ class u32DataElement(intDataElement):
                                                int(value) & 0xFFFFFFFF)
 
 class ul32DataElement(u32DataElement):
+    _endianess = "<"
+
+class i8DataElement(u8DataElement):
+    _size = 1
+
+    def _get_value(self, data):
+        return struct.unpack("b", data)[0]
+
+    def set_value(self, value):
+        self._data[self._offset] = struct.pack("b", int(value) )
+        
+class i16DataElement(intDataElement):
+    _size = 2
+    _endianess = ">"
+
+    def _get_value(self, data):
+        return struct.unpack(self._endianess + "h", data)[0]
+
+    def set_value(self, value):
+        self._data[self._offset] = struct.pack(self._endianess + "h",
+                                               int(value) )
+
+class il16DataElement(i16DataElement):
+    _endianess = "<"
+
+class i24DataElement(intDataElement):
+    _size = 3
+    _endianess = ">"
+
+    def _get_value(self, data):
+        pre = self._endianess == ">" and "\x00" or ""
+        post = self._endianess == "<" and "\x00" or ""
+        return struct.unpack(self._endianess + "i", pre+data+post)[0]
+
+    def set_value(self, value):
+        if self._endianess == "<":
+            start = 0
+            end = 3
+        else:
+            start = 1
+            end = 4
+        self._data[self._offset] = struct.pack(self._endianess + "i",
+                                               int(value) )[start:end]
+
+class il24DataElement(i24DataElement):
+    _endianess = "<"
+
+class i32DataElement(intDataElement):
+    _size = 4
+    _endianess = ">"
+
+    def _get_value(self, data):
+        return struct.unpack(self._endianess + "i", data)[0]
+
+    def set_value(self, value):
+        self._data[self._offset] = struct.pack(self._endianess + "i",
+                                               int(value) )
+
+class il32DataElement(i32DataElement):
     _endianess = "<"
 
 class charDataElement(DataElement):
@@ -629,6 +695,12 @@ class Processor:
         "ul24" : ul24DataElement,
         "u32"  : u32DataElement,
         "ul32" : ul32DataElement,
+        "i8"   : i8DataElement,
+        "i16"  : i16DataElement,
+        "il16" : il16DataElement,
+        "i24"  : i24DataElement,
+        "il24" : il24DataElement,
+        "i32"  : i32DataElement,
         "char" : charDataElement,
         "lbcd" : lbcdDataElement,
         "bbcd" : bbcdDataElement,
