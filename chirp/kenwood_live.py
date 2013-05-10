@@ -158,7 +158,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             return self.__memcache[number]
 
         result = command(self.pipe, *self._cmd_get_memory(number))
-        if result == "N":
+        if result == "N" or result == "E":
             mem = chirp_common.Memory()
             mem.number = number
             mem.empty = True
@@ -268,23 +268,8 @@ TH_D7_SETTINGS = {
               "9 digit NMEA", "6 digit Magellan", "DGPS"],
 }
 
-class KenwoodOldLiveRadio(KenwoodLiveRadio):
-    _kenwood_valid_tones = list(chirp_common.OLD_TONES)
-
-    def set_memory(self, memory):
-        supported_tones = list(chirp_common.OLD_TONES)
-        supported_tones.remove(69.3)
-        if memory.rtone not in supported_tones:
-            raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % memory.rtone)
-        if memory.ctone not in supported_tones:
-            raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % memory.ctone)
-
-        return KenwoodLiveRadio.set_memory(self, memory)
-
 @directory.register
-class THD7Radio(KenwoodOldLiveRadio):
+class THD7Radio(KenwoodLiveRadio):
     """Kenwood TH-D7"""
     MODEL = "TH-D7"
 
@@ -558,11 +543,25 @@ class TMD700Radio(KenwoodLiveRadio):
         return mem
 
 @directory.register
-class TMV7Radio(KenwoodOldLiveRadio):
+class TMV7Radio(KenwoodLiveRadio):
     """Kenwood TM-V7"""
     MODEL = "TM-V7"
 
     mem_upper_limit = 200 # Will be updated
+
+    _kenwood_valid_tones = list(chirp_common.OLD_TONES)
+
+    def set_memory(self, memory):
+        supported_tones = list(chirp_common.OLD_TONES)
+        supported_tones.remove(69.3)
+        if memory.rtone not in supported_tones:
+            raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % memory.rtone)
+        if memory.ctone not in supported_tones:
+            raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % memory.ctone)
+
+        return KenwoodLiveRadio.set_memory(self, memory)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1102,5 +1101,70 @@ def do_test():
     radio = tc(FakeSerial())
     radio.set_memory(mem)
 
+@directory.register
+class TM471Radio(THK2Radio):
+    """Kenwood TM-471"""
+    MODEL = "TM-471"
+    
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.can_odd_split = False
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_tuning_step = False
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_modes = THK2_MODES
+        rf.valid_duplexes = THK2_DUPLEX
+        rf.valid_characters = THK2_CHARS
+        rf.valid_name_length = 6
+        rf.valid_bands = [(444000000, 479990000)]
+        rf.valid_skips = ["", "S"]
+        rf.valid_tuning_steps = [5.0]
+        rf.memory_bounds = (0, 99)
+        return rf
+
+    def _cmd_get_memory(self, number):
+        return "ME", "%03i" % number
+
+    def _cmd_get_memory_name(self, number):
+        return "MN", "%03i" % number
+
+    def _cmd_set_memory(self, number, spec):
+        return "ME", "%03i,%s" % (number, spec)
+
+    def _cmd_set_memory_name(self, number, name):
+        return "MN", "%03i,%s" % (number, name)
+
+def do_test():
+    """Dev test"""
+    mem = chirp_common.Memory()
+    mem.number = 1
+    mem.freq = 440000000
+    mem.duplex = "split"
+    mem.offset = 442000000
+
+    tc = THF6ARadio
+    class FakeSerial:
+        """Faked serial line"""
+        buf = ""
+        def write(self, buf):
+            """Write"""
+            self.buf = buf
+        def read(self, count):
+            """Read"""
+            if self.buf[:2] == "ID":
+                return "ID %s\r" % tc.MODEL
+            return self.buf
+        def setTimeout(self, foo):
+            """Set Timeout"""
+            pass
+        def setBaudrate(self, foo):
+            """Set Baudrate"""
+            pass
+
+    radio = tc(FakeSerial())
+    radio.set_memory(mem)
+
 if __name__ == "__main__":
     do_test()
+
