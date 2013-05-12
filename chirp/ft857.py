@@ -60,6 +60,10 @@ class FT857Radio(ft817.FT817Radio):
                    (76000000, 108000000), (108000000, 137000000),
                    (137000000, 164000000), (420000000, 470000000)]
 
+    CHARSET = list(chirp_common.CHARSET_ASCII)
+    for i in "\\{|}":
+        CHARSET.remove(i)
+
     MEM_FORMAT = """
         struct mem_struct{
         u8   tag_on_off:1,
