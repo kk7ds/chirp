@@ -46,7 +46,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                    (76000000, 108000000), (108000000, 137000000),
                    (137000000, 154000000), (420000000, 470000000)] 
 
-    CHARSET = [chr(x) for x in range(0, 256)]
+    CHARSET = list(chirp_common.CHARSET_ASCII)
+    CHARSET.remove("\\")
 
     # Hi not used in memory
     POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
@@ -612,9 +613,15 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         if _mem.tag_on_off == 1:
             for i in _mem.name:
-                if i == "\xFF":
+                if i == 0xFF:
                     break
-                mem.name += self.CHARSET[i]
+                if chr(i) in self.CHARSET:
+                    mem.name += chr(i)
+                else:
+                    # radio have some graphical chars that are not supported
+                    # we replace those with a *
+                    print "Replacing char %x with *" % i
+                    mem.name += "*"
             mem.name = mem.name.rstrip()
         else:
             mem.name = ""
@@ -680,8 +687,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.rit = 0	# not supported in chirp
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 10
-        for i in range(0, 8):
-            _mem.name[i] = self.CHARSET.index(mem.name.ljust(8)[i])
+        for i in range(0, min(len(mem.name.rstrip()),8)):
+            _mem.name[i] = ord(mem.name[i])
+        # rfill with 0xff to mimic radio
+        # "quick&dirty" use of i from previous cicle 
+        for i in range(i+1,8):
+            _mem.name[i] = 0xff
         
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
