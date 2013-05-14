@@ -490,7 +490,7 @@ class THD7GRadio(THD7Radio):
     MODEL = "TH-D7G"
 
 @directory.register
-class TMD700Radio(KenwoodLiveRadio):
+class TMD700Radio(KenwoodOldLiveRadio):
     """Kenwood TH-D700"""
     MODEL = "TM-D700"
 
