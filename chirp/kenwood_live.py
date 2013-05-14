@@ -268,8 +268,23 @@ TH_D7_SETTINGS = {
               "9 digit NMEA", "6 digit Magellan", "DGPS"],
 }
 
+class KenwoodOldLiveRadio(KenwoodLiveRadio):
+    _kenwood_valid_tones = list(chirp_common.OLD_TONES)
+
+    def set_memory(self, memory):
+        supported_tones = list(chirp_common.OLD_TONES)
+        supported_tones.remove(69.3)
+        if memory.rtone not in supported_tones:
+            raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % memory.rtone)
+        if memory.ctone not in supported_tones:
+            raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % memory.ctone)
+
+        return KenwoodLiveRadio.set_memory(self, memory)
+
 @directory.register
-class THD7Radio(KenwoodLiveRadio):
+class THD7Radio(KenwoodOldLiveRadio):
     """Kenwood TH-D7"""
     MODEL = "TH-D7"
 
@@ -543,25 +558,11 @@ class TMD700Radio(KenwoodLiveRadio):
         return mem
 
 @directory.register
-class TMV7Radio(KenwoodLiveRadio):
+class TMV7Radio(KenwoodOldLiveRadio):
     """Kenwood TM-V7"""
     MODEL = "TM-V7"
 
     mem_upper_limit = 200 # Will be updated
-
-    _kenwood_valid_tones = list(chirp_common.OLD_TONES)
-
-    def set_memory(self, memory):
-        supported_tones = list(chirp_common.OLD_TONES)
-        supported_tones.remove(69.3)
-        if memory.rtone not in supported_tones:
-            raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % memory.rtone)
-        if memory.ctone not in supported_tones:
-            raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % memory.ctone)
-
-        return KenwoodLiveRadio.set_memory(self, memory)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
