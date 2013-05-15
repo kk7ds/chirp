@@ -151,21 +151,29 @@ class VX8Bank(chirp_common.NamedBank):
 
 class VX8BankModel(chirp_common.BankModel):
     """A VX-8 bank model"""
-    def get_num_mappings(self):
-        return 24
+    def __init__(self, radio, name='Banks'):
+        super(VX8BankModel, self).__init__(radio, name)
 
-    def get_mappings(self):
-        banks = []
         _banks = self._radio._memobj.bank_info
-
-        index = 0
-        for _bank in _banks:
+        self._bank_mappings = []
+        for index, _bank in enumerate(_banks):
             bank = VX8Bank(self, "%i" % index, "BANK-%i" % index)
             bank.index = index
-            banks.append(bank)
-            index += 1
+            self._bank_mappings.append(bank)
 
-        return banks
+    def get_num_mappings(self):
+        return len(self._bank_mappings)
+
+    def get_mappings(self):
+        return self._bank_mappings
+
+    def _channel_numbers_in_bank(self, bank):
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if _bank_used.in_use == 0xFFFF:
+            return set()
+
+        _members = self._radio._memobj.bank_members[bank.index]
+        return set([int(ch) + 1 for ch in _members.channel if ch != 0xFFFF])
 
     def update_vfo(self):
         chosen_bank = [None, None]
@@ -175,17 +183,13 @@ class VX8BankModel(chirp_common.BankModel):
 
         # Find a suitable bank and MR for VFO A and B.
         for bank in self.get_mappings():
-            bank_used = self._radio._memobj.bank_used[bank.index]
-            if bank_used != 0xFFFF:
-                members = self._radio._memobj.bank_members[bank.index]
-                for i in range(0, 100):
-                    if members.channel[i] != 0xFFFF:
-                        chosen_bank[0] = bank.index
-                        chosen_mr[0] = members.channel[i]
-                        if not flags[members.channel[i]].nosubvfo:
-                            chosen_bank[1] = bank.index
-                            chosen_mr[1] = members.channel[i]
-                            break
+            for channel in self._channel_numbers_in_bank(bank):
+                chosen_bank[0] = bank.index
+                chosen_mr[0] = channel
+                if not flags[channel].nosubvfo:
+                    chosen_bank[1] = bank.index
+                    chosen_mr[1] = channel
+                    break
             if chosen_bank[1]:
                 break
 
@@ -213,58 +217,54 @@ class VX8BankModel(chirp_common.BankModel):
               vfo_bak.mr_index = vfo.mr_index
               vfo_bak.bank_enable = vfo.bank_enable
 
-    def add_memory_to_mapping(self, memory, bank):
+    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
         _members = self._radio._memobj.bank_members[bank.index]
+        if len(channels_in_bank) > len(_members.channel):
+            raise Exception("Too many entries in bank %d" % bank.index)
+
+        empty = 0
+        for index, channel_number in enumerate(sorted(channels_in_bank)):
+            _members.channel[index] = channel_number - 1
+            empty = index + 1
+        for index in range(empty, len(_members.channel)):
+            _members.channel[index] = 0xFFFF
+
+    def add_memory_to_mapping(self, memory, bank):
+        channels_in_bank = self._channel_numbers_in_bank(bank)
+        channels_in_bank.add(memory.number)
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
         _bank_used = self._radio._memobj.bank_used[bank.index]
-        for i in range(0, 100):
-            if _members.channel[i] == 0xFFFF:
-                _members.channel[i] = memory.number - 1
-                _bank_used.in_use = 0x06
-                break
+        _bank_used.in_use = 0x06
 
         self.update_vfo()
 
     def remove_memory_from_mapping(self, memory, bank):
-        _members = self._radio._memobj.bank_members[bank.index]
-        _bank_used = self._radio._memobj.bank_used[bank.index]
-
-        remaining_members = 0
-        found = False
-        for i in range(0, len(_members.channel)):
-            if _members.channel[i] == (memory.number - 1):
-                _members.channel[i] = 0xFFFF
-                found = True
-            elif _members.channel[i] != 0xFFFF:
-                remaining_members += 1
-
-        if not found:
+        channels_in_bank = self._channel_numbers_in_bank(bank)
+        try:
+            channels_in_bank.remove(memory.number)
+        except KeyError:
             raise Exception("Memory %i is not in bank %s. Cannot remove" % \
-                                (memory.number, bank))
+                            (memory.number, bank))
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
-        if not remaining_members:
+        if not channels_in_bank:
+            _bank_used = self._radio._memobj.bank_used[bank.index]
             _bank_used.in_use = 0xFFFF
 
         self.update_vfo()
 
     def get_mapping_memories(self, bank):
         memories = []
-        _members = self._radio._memobj.bank_members[bank.index]
-        _bank_used = self._radio._memobj.bank_used[bank.index]
-
-        if _bank_used.in_use == 0xFFFF:
-            return memories
-
-        for channel in _members.channel:
-            if channel != 0xFFFF:
-                memories.append(self._radio.get_memory(int(channel)+1))
+        for channel in self._channel_numbers_in_bank(bank):
+            memories.append(self._radio.get_memory(channel))
 
         return memories
 
     def get_memory_mappings(self, memory):
         banks = []
         for bank in self.get_mappings():
-            if memory.number in \
-                    [x.number for x in self.get_mapping_memories(bank)]:
+            if memory.number in self._channel_numbers_in_bank(bank):
                 banks.append(bank)
 
         return banks
@@ -350,12 +350,14 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _debank(self, mem):
         bm = self.get_bank_model()
-        for bank in bm.get_memory_banks(mem):
-            bm.remove_memory_from_bank(mem, bank)
+        for bank in bm.get_memory_mappings(mem):
+            bm.remove_memory_from_mapping(mem, bank)
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
         flag = self._memobj.flag[mem.number-1]
+
+        self._debank(mem)
 
         if not mem.empty and not flag.valid:
             _wipe_memory(_mem)
