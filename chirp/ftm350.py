@@ -18,7 +18,6 @@ import struct
 import os
 
 from chirp import chirp_common, yaesu_clone, directory, errors, util
-from chirp import ft7800
 from chirp import bitwise, memmap
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
@@ -30,14 +29,15 @@ struct mem {
      unknown1:5;
   u8 unknown2:1,
      mode:3,
-     unknown8:2,
+     unknown8:1,
+     oddsplit:1,
      duplex:2;
   bbcd freq[3];
   u8 unknownA:1,
      tmode:3,
      unknownB:4;
-  u8 unknown3[3];
-  u8 unknown4:2,
+  bbcd split[3];
+  u8 power:2,
      tone:6;
   u8 unknownC:1,
      dtcs:7;
@@ -81,9 +81,13 @@ struct lab right_label[518];
 _TMODES = ["", "Tone", "TSQL", "-RVT", "DTCS", "-PR", "-PAG"]
 TMODES = ["", "Tone", "TSQL", "", "DTCS", "", ""]
 MODES = ["FM", "AM", "NFM", "", "WFM"]
-DUPLEXES = ["", "-", "+"]
+DUPLEXES = ["", "", "-", "+", "split"]
 CHARSET = ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
            '````````````````````````````````````                            ')
+
+POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=50),
+                chirp_common.PowerLevel("Mid", watts=20),
+                chirp_common.PowerLevel("Low", watts=5)]
 
 SKIPS = ["", "S", "P"]
 
@@ -182,6 +186,40 @@ def _clone_out(radio):
             status.msg = "Cloning to radio"
             radio.status_fn(status)
 
+def get_freq(rawfreq):
+    """Decode a frequency that may include a fractional step flag"""
+    # Ugh.  The 0x80 and 0x40 indicate values to add to get the
+    # real frequency.  Gross.
+    if rawfreq > 8000000000:
+        rawfreq = (rawfreq - 8000000000) + 5000
+
+    if rawfreq > 4000000000:
+        rawfreq = (rawfreq - 4000000000) + 2500
+
+    if rawfreq > 2000000000:
+        rawfreq = (rawfreq - 2000000000) + 1250
+
+    return rawfreq
+
+def set_freq(freq, obj, field):
+    """Encode a frequency with any necessary fractional step flags"""
+    obj[field] = freq / 10000
+    frac = freq % 10000
+
+    if frac >= 5000:
+        frac -= 5000
+        obj[field][0].set_bits(0x80)
+
+    if frac >= 2500:
+        frac -= 2500
+        obj[field][0].set_bits(0x40)
+
+    if frac >= 1250:
+        frac -= 1250
+        obj[field][0].set_bits(0x20)
+
+    return freq
+
 @directory.register
 class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FTM-350"""
@@ -209,9 +247,11 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_name_length = 8
         rf.valid_characters = CHARSET
         rf.memory_bounds = (0, 500)
+        rf.valid_power_levels = POWER_LEVELS
         rf.valid_bands = [(  500000,    1800000),
                           (76000000,  250000000),
                           (30000000, 1000000000)]
+        rf.can_odd_split = True
         return rf
 
     def get_sub_devices(self):
@@ -267,14 +307,21 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = ft7800.get_freq(int(_mem.freq) * 10000)
+        mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
-        mem.duplex = DUPLEXES[_mem.duplex - 1]
+
+        if _mem.oddsplit:
+            mem.duplex = "split"
+            mem.offset = get_freq(int(_mem.split) * 10000)
+        else: 
+            mem.duplex = DUPLEXES[_mem.duplex]
+            mem.offset = int(_mem.offset) * 50000
+
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
-        mem.offset = int(_mem.offset) * 50000
         mem.mode = MODES[_mem.mode]
         mem.skip = SKIPS[_mem.skip]
+        mem.power = POWER_LEVELS[_mem.power]
 
         for char in _lab.string:
             if char == 0xCA:
@@ -298,14 +345,26 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             return
 
-        ft7800.set_freq(mem.freq, _mem, 'freq')
+        set_freq(mem.freq, _mem, 'freq')
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.duplex = DUPLEXES.index(mem.duplex) + 1
-        _mem.offset = mem.offset / 50000
         _mem.mode = MODES.index(mem.mode)
         _mem.skip = SKIPS.index(mem.skip)
+
+        _mem.oddsplit = 0
+        _mem.duplex = 0
+        if mem.duplex == "split":
+            set_freq(mem.offset, _mem, 'split')
+            _mem.oddsplit = 1
+        else:
+            _mem.offset = mem.offset / 50000
+            _mem.duplex = DUPLEXES.index(mem.duplex)
+
+        if mem.power:
+            _mem.power = POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
 
         for i in range(0, 8):
             try:
