@@ -200,7 +200,7 @@ class RadioSettingGroup(object):
     def _validate(self, element):
         # RadioSettingGroup can only contain RadioSettingGroup objects
         if not isinstance(element, RadioSettingGroup):
-            raise InternalError("Incorrect type")
+            raise InternalError("Incorrect type %s" % type(element))
 
     def __init__(self, name, shortname, *elements):
         self._name = name           # Setting identifier
