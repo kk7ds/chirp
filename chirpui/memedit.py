@@ -465,7 +465,7 @@ class MemoryEditor(common.Editor):
         else:
             iter = store.iter_next(_iter)
 
-        pos, = store.get(iter, self.col("Loc"))
+        pos, = store.get(iter, self.col(_("Loc")))
 
         sd = shiftdialog.ShiftDialog(self.rthread)
 
