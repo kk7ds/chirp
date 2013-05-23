@@ -1165,7 +1165,7 @@ If you think that it is valid, you can select a radio model below to force an op
         vbox.pack_start(label)
 
         fields = []
-        memedit = eset.editors["memedit"]
+        memedit = eset.get_current_editor() #.editors["memedit"]
         unsupported = memedit.get_unsupported_columns()
         for colspec in memedit.cols:
             if colspec[0].startswith("_"):
