@@ -82,8 +82,9 @@ _TMODES = ["", "Tone", "TSQL", "-RVT", "DTCS", "-PR", "-PAG"]
 TMODES = ["", "Tone", "TSQL", "", "DTCS", "", ""]
 MODES = ["FM", "AM", "NFM", "", "WFM"]
 DUPLEXES = ["", "", "-", "+", "split"]
+#TODO: add japaneese characters (viewable in special menu, scroll backwards)
 CHARSET = ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
-           '````````````````````````````````````                            ')
+           '#$%&`()*+,-./:;<=>?@[\\]^_`{|}~?????? ' + '?' * 91)
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=50),
                 chirp_common.PowerLevel("Mid", watts=20),
