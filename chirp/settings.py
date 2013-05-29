@@ -211,7 +211,6 @@ class RadioSettingGroup(object):
         
         for element in elements:
             self._validate(element)
-            print "Appending element to %s" % self._name
             self.append(element)
 
     def get_name(self):
