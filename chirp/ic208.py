@@ -144,9 +144,9 @@ class IC208Radio(icf.IcomCloneModeRadio):
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_power_levels = list(POWER)
         rf.valid_skips = ["", "S", "P"]
-        rf.valid_bands = [(118000000, 173995000),
-                          (230000000, 549995000),
-                          (810000000, 999990000)]
+        rf.valid_bands = [(118000000, 174000000),
+                          (230000000, 550000000),
+                          (810000000, 999995000)]
         rf.valid_special_chans = ["C1", "C2"] + sorted(IC208_SPECIAL)
         return rf
 
