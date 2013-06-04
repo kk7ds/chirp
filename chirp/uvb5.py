@@ -83,6 +83,14 @@ struct {
 struct {
   u8 code[6];
 } pttid;
+
+#seekto 0x0F30;
+struct {
+  lbcd lower_vhf[2];
+  lbcd upper_vhf[2];
+  lbcd lower_uhf[2];
+  lbcd upper_uhf[2];
+} limits;
 """
 
 def do_ident(radio):
@@ -463,6 +471,42 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("sidetone", "DTMF Side Tone",
                           RadioSettingValueBoolean(self._memobj.settings.sidetone))
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.lower_vhf) / 10
+        rs = RadioSetting("limits.lower_vhf", "VHF Lower Limit (MHz)",
+                          RadioSettingValueInteger(136, 174, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.lower_vhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.upper_vhf) / 10
+        rs = RadioSetting("limits.upper_vhf", "VHF Upper Limit (MHz)",
+                          RadioSettingValueInteger(136, 174, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.upper_vhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.lower_uhf) / 10
+        rs = RadioSetting("limits.lower_uhf", "UHF Lower Limit (MHz)",
+                          RadioSettingValueInteger(400, 520, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.lower_uhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.upper_uhf) / 10
+        rs = RadioSetting("limits.upper_uhf", "UHF Upper Limit (MHz)",
+                          RadioSettingValueInteger(400, 520, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.upper_uhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
 
         return group
