@@ -75,18 +75,16 @@ for i in range(1, 6):
     IC208_SPECIAL.append("%iA" % i)
     IC208_SPECIAL.append("%iB" % i)
 
-ALPHA_CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-NUMERIC_CHARSET = "0123456789+-=*/()|"
+CHARSET = dict(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f], " ()*+-/") + 
+    zip(range(0x10, 0x1a), "0123456789") + 
+    [(0x1c,'|'), (0x1d,'=')] + 
+    zip(range(0x21, 0x3b), "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+CHARSET_REV = dict(zip(CHARSET.values(), CHARSET.keys()))
 
 def get_name(_mem):
     """Decode the name from @_mem"""
     def _get_char(val):
-        if val == 0:
-            return " "
-        elif val & 0x20:
-            return ALPHA_CHARSET[val & 0x1F]
-        else:
-            return NUMERIC_CHARSET[val & 0x0F]
+        return CHARSET[int(val)]
 
     name_bytes = [_mem.name1, _mem.name2, _mem.name3,
                   _mem.name4, _mem.name5, _mem.name6]
@@ -99,12 +97,7 @@ def get_name(_mem):
 def set_name(_mem, name):
     """Encode @name in @_mem"""
     def _get_index(char):
-        if char == " ":
-            return 0
-        elif char.isalpha():
-            return ALPHA_CHARSET.index(char) | 0x20
-        else:
-            return NUMERIC_CHARSET.index(char) | 0x10
+        return CHARSET_REV[char]
 
     name = name.ljust(6)[:6]
 
@@ -148,6 +141,7 @@ class IC208Radio(icf.IcomCloneModeRadio):
                           (230000000, 550000000),
                           (810000000, 999995000)]
         rf.valid_special_chans = ["C1", "C2"] + sorted(IC208_SPECIAL)
+        rf.valid_characters = "".join(CHARSET.values())
         return rf
 
     def get_raw_memory(self, number):
