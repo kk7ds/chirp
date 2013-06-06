@@ -84,7 +84,10 @@ CHARSET_REV = dict(zip(CHARSET.values(), CHARSET.keys()))
 def get_name(_mem):
     """Decode the name from @_mem"""
     def _get_char(val):
-        return CHARSET[int(val)]
+        try:
+            return CHARSET[int(val)]
+        except KeyError:
+            return "*"
 
     name_bytes = [_mem.name1, _mem.name2, _mem.name3,
                   _mem.name4, _mem.name5, _mem.name6]
@@ -97,7 +100,10 @@ def get_name(_mem):
 def set_name(_mem, name):
     """Encode @name in @_mem"""
     def _get_index(char):
-        return CHARSET_REV[char]
+        try:
+            return CHARSET_REV[char]
+        except KeyError:
+            return CHARSET_REV["*"]
 
     name = name.ljust(6)[:6]
 
