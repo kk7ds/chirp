@@ -318,6 +318,9 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
             _mem.set_raw("\xFF" * 16)
             return
 
+        if _mem.get_raw() == ("\xFF" * 16):
+            _mem.set_raw("\x00" * 13 + "\xFF" * 3)
+
         _mem.freq = mem.freq / 10
 
         if mem.duplex == "off":
