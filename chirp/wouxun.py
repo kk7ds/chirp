@@ -54,7 +54,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     MODEL = "KG-UVD1P"
     _model = "KG669V"
     
-    _querymodel = "HiWOUXUN\x02"
+    _querymodel = ("HiWOUXUN\x02", "PROGUV6X\x02")
     
     CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
         list("?+-")
@@ -117,11 +117,23 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 'thing to do. However, modifications to this value may have '
                 'unintended consequences, including damage to your device. '
                 'You have been warned. Proceed at your own risk!')
+                
+    @classmethod
+    def _get_querymodel(cls):
+        if isinstance(cls._querymodel, str):
+            while True:
+                yield cls._querymodel
+        else:
+            i = 0
+            while True:
+                yield cls._querymodel[i % len(cls._querymodel)]
+                i += 1
 
     def _identify(self):
         """Do the original wouxun identification dance"""
-        for _i in range(0, 5):
-            self.pipe.write(self._querymodel)
+        query = self._get_querymodel()
+        for _i in range(0, 10):
+            self.pipe.write(query.next())
             resp = self.pipe.read(9)
             if len(resp) != 9:
                 print "Got:\n%s" % util.hexprint(resp)
@@ -918,6 +930,8 @@ class KG816Radio(KGUVD1PRadio,
     """Wouxun KG-816"""
     MODEL = "KG-816"
 
+    _querymodel = "HiWOUXUN\x02"
+    
     _MEM_FORMAT = """
         #seekto 0x0010;
         struct {
