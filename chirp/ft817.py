@@ -687,12 +687,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.rit = 0	# not supported in chirp
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 10
-        for i in range(0, min(len(mem.name.rstrip()),8)):
-            _mem.name[i] = ord(mem.name[i])
-        # rfill with 0xff to mimic radio
-        # "quick&dirty" use of i from previous cicle 
-        for i in range(i+1,8):
-            _mem.name[i] = 0xff
+        # there are ft857D that have problems with short labels, see bug #937
+        # some of the radio fill with 0xff and some with blanks
+        # the latter is safe for all ft8x7 radio so why should i do it only for some?
+        for i in range(0, 8):
+            _mem.name[i] = ord(mem.name.ljust(8)[i])
         
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
