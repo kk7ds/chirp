@@ -1050,3 +1050,7 @@ class KG816Radio(KGUVD1PRadio,
 class KG818Radio(KG816Radio):
     """Wouxun KG-818"""
     MODEL = "KG-818"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
