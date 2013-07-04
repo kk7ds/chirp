@@ -233,6 +233,7 @@ struct {
 
 # 0x1EC0 - 0x2000
 
+vhf_220_radio = "\x02"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -296,6 +297,12 @@ def validate_291(ident):
 UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
+
+def _upper_band_from_data(data):
+    return data[0x03:0x04]
+
+def _upper_band_from_image(radio):
+    return _upper_band_from_data(radio.get_mmap())
 
 def _firmware_version_from_data(data):
     return data[0x1838:0x1848]
@@ -400,7 +407,13 @@ def _send_block(radio, addr, data):
         raise errors.RadioError("Radio refused to accept block 0x%04x" % addr)
     
 def _do_upload(radio):
-    _ident_radio(radio)
+    ident = _ident_radio(radio)
+    radio_upper_band = ident[3:4]
+    image_upper_band = _upper_band_from_image(radio)
+
+    if image_upper_band == vhf_220_radio or radio_upper_band == vhf_220_radio:
+        if image_upper_band != radio_upper_band:
+            raise errors.RadioError("Image not supported by radio")
 
     image_version = _firmware_version_from_image(radio)
     radio_version = _get_radio_firmware_version(radio)
@@ -482,6 +495,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_bands = [(136000000, 174000000), (400000000, 520000000)]
+        if self._is_orig() == False and self._my_upper_band() == vhf_220_radio:
+            rf.valid_bands = [(136000000, 174000000), (220000000, 260000000)]
         rf.memory_bounds = (0, 127)
         return rf
 
@@ -717,6 +732,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             idx = version_tag.index("USA") + 3
             return int(version_tag[idx:idx+3])
         raise Exception("Unrecognized firmware version string")
+
+    def _my_upper_band(self):
+        band_tag = _upper_band_from_image(self)
+        return band_tag
 
     def _get_settings(self):
         _settings = self._memobj.settings[0]
