@@ -90,7 +90,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_name_length = 6
         rf.valid_characters = THUV3R_CHARSET
-        rf.valid_bands = [(136000000, 470000000)]
+        rf.valid_bands = [(136000000, 520000000)]
         rf.valid_tuning_steps = [5.0, 6.25, 10.0, 12.5, 25.0, 37.50,
                                  50.0, 100.0]
         rf.valid_skips = ["", "S"]
