@@ -494,9 +494,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.valid_power_levels = UV5R_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
-        rf.valid_bands = [(136000000, 174000000), (400000000, 520000000)]
-        if self._is_orig() == False and self._my_upper_band() == vhf_220_radio:
-            rf.valid_bands = [(136000000, 174000000), (220000000, 260000000)]
+
+        normal_bands = [(136000000, 174000000), (400000000, 520000000)]
+        rax_bands = [(136000000, 174000000), (220000000, 260000000)]
+
+        if self._mmap is None:
+            rf.valid_bands = [normal_bands[0], rax_bands[1], normal_bands[1]]
+        elif not self._is_orig() and self._my_upper_hand() == vhf_220_radio:
+            rf.valid_bands = rax_bands
+        else:
+            rf.valid_bands = normal_bands
         rf.memory_bounds = (0, 127)
         return rf
 
