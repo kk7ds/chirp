@@ -500,7 +500,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         if self._mmap is None:
             rf.valid_bands = [normal_bands[0], rax_bands[1], normal_bands[1]]
-        elif not self._is_orig() and self._my_upper_hand() == vhf_220_radio:
+        elif not self._is_orig() and self._my_upper_band() == vhf_220_radio:
             rf.valid_bands = rax_bands
         else:
             rf.valid_bands = normal_bands
