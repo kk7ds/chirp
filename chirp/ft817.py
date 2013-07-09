@@ -318,6 +318,16 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
+                
+        status.msg = "Clone completed, checking for spurious bytes"
+        self.status_fn(status)
+        moredata = self.pipe.read(2)
+        if moredata:
+            raise Exception("Radio sent data after the last awaited block, "
+                        "this happens when the selected model is a non-US "
+                        "but the radio is a US one. "
+                        "Please choose the correct model and try again.")
+            
     
         print "Clone completed in %i seconds" % (time.time() - start)
     
