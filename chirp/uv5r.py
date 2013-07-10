@@ -112,6 +112,7 @@ struct {
   u8 rptrl;
   u8 ponmsg;
   u8 roger;
+  u8 rogerrx;
 } settings[2];
 
 #seekto 0x0E52;
@@ -245,7 +246,7 @@ RESUME_LIST = ["TO", "CO", "SE"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
 COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
 ALMOD_LIST = ["Site", "Tone", "Code"]
-TDRAB_LIST = ["Off", "A", "B"]
+TDRAB_LIST = ROGERRX_LIST = ["Off", "A", "B"]
 PONMSG_LIST = ["Full", "Message"]
 RPSTE_LIST = ["%s" % x for x in range(1, 11, 1)]
 RPSTE_LIST.insert(0, "OFF")
@@ -268,6 +269,7 @@ SETTING_LISTS = {
     "txled" : COLOR_LIST,
     "almod" : ALMOD_LIST,
     "tdrab" : TDRAB_LIST,
+    "rogerrx" : ROGERRX_LIST,
     "ponmsg" : PONMSG_LIST,
     "rpste" : RPSTE_LIST,
     "stedelay" : STEDELAY_LIST,
@@ -297,6 +299,7 @@ def validate_291(ident):
 UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
+UV82_MODEL =     "\x50\xBB\xFF\x20\x13\x01\x05"
 
 def _upper_band_from_data(data):
     return data[0x03:0x04]
@@ -420,7 +423,7 @@ def _do_upload(radio):
     print "Image is %s" % repr(image_version)
     print "Radio is %s" % repr(radio_version)
 
-    if "BFB" not in radio_version and "USA" not in radio_version:
+    if "BFB" not in radio_version and "BF82" not in radio_version and "USA" not in radio_version:
         raise errors.RadioError("Unsupported firmware version: `%s'" %
                                 radio_version)
 
@@ -723,6 +726,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 idx = version_tag.index("BFB") + 3
                 version = int(version_tag[idx:idx+3])
                 return version < 291
+            if 'BF82' in version_tag:
+                return False
             if 'USA' in version_tag:
                 return False
         except:
@@ -735,6 +740,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
             return int(version_tag[idx:idx+3])
+        elif 'BF' in version_tag:
+            idx = version_tag.index("BF") + 2
+            return int(version_tag[idx:idx+4])
         elif 'USA' in version_tag:
             idx = version_tag.index("USA") + 3
             return int(version_tag[idx:idx+3])
@@ -789,14 +797,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 TIMEOUT_LIST[_settings.timeout]))
         basic.append(rs)
 
-        if self._my_version() >= 251:
+        if self._is_orig() and self._my_version() < 251:
             rs = RadioSetting("voice", "Voice",
-                              RadioSettingValueList(VOICE_LIST,
-                                                    VOICE_LIST[_settings.voice]))
+                              RadioSettingValueBoolean(_settings.voice))
             advanced.append(rs)
         else:
             rs = RadioSetting("voice", "Voice",
-                              RadioSettingValueBoolean(_settings.voice))
+                              RadioSettingValueList(VOICE_LIST,
+                                                    VOICE_LIST[_settings.voice]))
             advanced.append(rs)
 
         rs = RadioSetting("screv", "Scan Resume",
@@ -841,9 +849,18 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 COLOR_LIST[_settings.txled]))
         basic.append(rs)
 
-        rs = RadioSetting("roger", "Roger Beep",
-                          RadioSettingValueBoolean(_settings.roger))
-        basic.append(rs)
+        if self._my_version() < 8215:
+            rs = RadioSetting("roger", "Roger Beep",
+                              RadioSettingValueBoolean(_settings.roger))
+            basic.append(rs)
+        else:
+            rs = RadioSetting("roger", "Roger Beep (TX)",
+                              RadioSettingValueBoolean(_settings.roger))
+            basic.append(rs)
+            rs = RadioSetting("rogerrx", "Roger Beep (RX)",
+                              RadioSettingValueList(ROGERRX_LIST,
+                                                    ROGERRX_LIST[_settings.rogerrx]))
+            basic.append(rs)
 
         rs = RadioSetting("ste", "Squelch Tail Eliminate (HT to HT)",
                           RadioSettingValueBoolean(_settings.ste))
@@ -1078,7 +1095,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 options[self._memobj.vfob.scode]))
         workmode.append(rs)
 
-        if self._my_version() >= 291:
+        if not self._is_orig():
             rs = RadioSetting("vfoa.step", "VFO A Tuning Step",
                               RadioSettingValueList(STEP291_LIST,
                                                     STEP291_LIST[self._memobj.vfoa.step]))
@@ -1221,3 +1238,9 @@ class BaofengF11Radio(BaofengUV5R):
     MODEL = "F-11"
     _basetype = "USA"
     _idents = [UV5R_MODEL_F11]
+
+@directory.register
+class BaofengUV82Radio(BaofengUV5R):
+    MODEL = "UV-82"
+    _basetype = "BF82"
+    _idents = [UV82_MODEL]
