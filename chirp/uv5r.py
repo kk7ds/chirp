@@ -124,7 +124,7 @@ struct {
      unknown2:1,
      reset:1,
      menu:1;
-  u8 unknown3;
+  u8 vfomrlock;
   u8 workmode;
   u8 keylock;
 } extra;
@@ -882,6 +882,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("extra.menu", "All Menus",
                           RadioSettingValueBoolean(self._memobj.extra.menu))
+        advanced.append(rs)
+
+        rs = RadioSetting("extra.vfomrlock", "VFO/MR Button (F-11 only)",
+                          RadioSettingValueBoolean(self._memobj.extra.vfomrlock))
         advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
