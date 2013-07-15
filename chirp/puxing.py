@@ -287,6 +287,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
             if i == 0xFF:
                 break
             mem.name += PUXING_CHARSET[i]
+        mem.name = mem.name.rstrip()
 
         return mem
 
