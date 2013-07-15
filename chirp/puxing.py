@@ -159,7 +159,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = POWER_LEVELS
-        rf.valid_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        rf.valid_characters = ''.join(set(PUXING_CHARSET))
         rf.valid_name_length = 6
         rf.has_ctone = False
         rf.has_tuning_step = False
