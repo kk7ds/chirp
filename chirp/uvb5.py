@@ -151,7 +151,7 @@ def do_upload(radio):
         do_status(radio, "to", i)
 
 DUPLEX = ["", "-", "+", 'off']
-CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ_+*"
+CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ/_+*"
 SPECIALS = {
     "VFO1": -2,
     "VFO2": -1,
