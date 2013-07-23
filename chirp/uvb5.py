@@ -48,6 +48,11 @@ struct memory channels[99];
 #seekto 0x0850;
 struct memory vfo2;
 
+#seekto 0x09D0;
+struct {
+  u16 freq;
+} broadcastfm[16];
+
 #seekto 0x0A30;
 struct {
   u8 name[5];
@@ -511,6 +516,29 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
             obj.upper_uhf = value
         rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
+
+        bcastfm = RadioSettingGroup("bcastfm", "FM Radio Presets")
+        group.append(bcastfm)
+
+        def convert_bytes_to_freq(bytes):
+            real_freq = int(bytes) + 650
+            if real_freq > 1080:
+                real_freq = 0
+            return chirp_common.format_freq(real_freq * 100000)
+
+        def apply_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 100000
+            if value < 650 or value > 1080:
+                value = 65535 + 650
+            obj.freq = value - 650
+
+        for i in range(0, 16):
+            _freq = RadioSettingValueString(0, 10,
+               convert_bytes_to_freq(self._memobj.broadcastfm[i].freq))
+            rs = RadioSetting("broadcastfm/%i.freq" % i,
+                              "Channel %i (65.0-108.0)" % (i + 1), _freq)
+            rs.set_apply_callback(apply_freq, self._memobj.broadcastfm[i])
+            bcastfm.append(rs)
 
         return group
 
