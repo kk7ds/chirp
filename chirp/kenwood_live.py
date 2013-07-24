@@ -672,6 +672,7 @@ class TMG707Radio(TMV7Radio):
                           (430000000, 450000000)]
         return rf
 
+THG71_STEPS = [ 5, 6.25, 10, 12.5, 15, 20, 25, 30, 50, 100 ]
 @directory.register
 class THG71Radio(TMV7Radio):
     """Kenwood TH-G71"""
@@ -679,10 +680,9 @@ class THG71Radio(TMV7Radio):
 
     def get_features(self):
         rf = TMV7Radio.get_features(self)
-        rf.has_mode = True
-        rf.valid_modes = [ "FM", "AM" ]
-        #rf.has_tuning_step = True
-        rf.valid_name_length = 7
+        rf.has_tuning_step = True
+        rf.valid_tuning_steps = list(THG71_STEPS)
+        rf.valid_name_length = 6
         rf.has_sub_devices = False
         rf.valid_bands = [(118000000, 174000000),
                           (320000000, 470000000),
@@ -692,7 +692,7 @@ class THG71Radio(TMV7Radio):
     def _make_mem_spec(self, mem):
         spec = ( \
             "%011i" % mem.freq,
-            "%X" % STEPS.index(mem.tuning_step),
+            "%X" % THG71_STEPS.index(mem.tuning_step),
             "%i" % util.get_dict_rev(DUPLEX, mem.duplex),
             "0",
             "%i" % (mem.tmode == "Tone"),
@@ -709,7 +709,7 @@ class THG71Radio(TMV7Radio):
         mem = chirp_common.Memory()
         mem.number = int(spec[2])
         mem.freq = int(spec[3])
-        mem.tuning_step = STEPS[int(spec[4], 16)]
+        mem.tuning_step = THG71_STEPS[int(spec[4], 16)]
         mem.duplex = DUPLEX[int(spec[5])]
         if int(spec[7]):
             mem.tmode = "Tone"
