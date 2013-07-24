@@ -672,6 +672,58 @@ class TMG707Radio(TMV7Radio):
                           (430000000, 450000000)]
         return rf
 
+@directory.register
+class THG71Radio(TMV7Radio):
+    """Kenwood TH-G71"""
+    MODEL = "TH-G71"
+
+    def get_features(self):
+        rf = TMV7Radio.get_features(self)
+        rf.has_mode = True
+        rf.valid_modes = [ "FM", "AM" ]
+        #rf.has_tuning_step = True
+        rf.valid_name_length = 7
+        rf.has_sub_devices = False
+        rf.valid_bands = [(118000000, 174000000),
+                          (320000000, 470000000),
+						  (800000000, 945000000)]		
+        return rf
+
+    def _make_mem_spec(self, mem):
+        spec = ( \
+            "%011i" % mem.freq,
+            "%X" % STEPS.index(mem.tuning_step),
+            "%i" % util.get_dict_rev(DUPLEX, mem.duplex),
+            "0",
+            "%i" % (mem.tmode == "Tone"),
+            "%i" % (mem.tmode == "TSQL"),
+            "0",
+            "%02i" % (self._kenwood_valid_tones.index(mem.rtone) + 1),
+            "000",
+            "%02i" % (self._kenwood_valid_tones.index(mem.ctone) + 1),
+            "%09i" % mem.offset,
+            "%i" % ((mem.skip == "S") and 1 or 0))
+        return spec
+
+    def _parse_mem_spec(self, spec):
+        mem = chirp_common.Memory()
+        mem.number = int(spec[2])
+        mem.freq = int(spec[3])
+        mem.tuning_step = STEPS[int(spec[4], 16)]
+        mem.duplex = DUPLEX[int(spec[5])]
+        if int(spec[7]):
+            mem.tmode = "Tone"
+        elif int(spec[8]):
+            mem.tmode = "TSQL"
+        mem.rtone = self._kenwood_valid_tones[int(spec[10]) - 1]
+        mem.ctone = self._kenwood_valid_tones[int(spec[12]) - 1]
+        if spec[13]:
+            mem.offset = int(spec[13])
+        else:
+            mem.offset = 0
+        return mem
+
+		
 THF6A_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
                100.0]
 
