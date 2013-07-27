@@ -107,7 +107,7 @@ def do_ident(radio):
     radio.pipe.write("\x02")
     ident = radio.pipe.read(8)
     print util.hexprint(ident)
-    if ident != "HKT511\x00\x04":
+    if not ident.startswith('HKT511'):
         raise errors.RadioError("Unsupported model")
     radio.pipe.write("\x06")
     ack = radio.pipe.read(1)
@@ -134,8 +134,9 @@ def do_download(radio):
             print util.hexprint(result)
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
         radio.pipe.write("\x06")
-        ecks = radio.pipe.read(1)
-        if ecks != "x":
+        ack = radio.pipe.read(1)
+        if ack not in ('\x74', '\x78', '\x1f'):
+            print util.hexprint(ack)
             raise errors.RadioError("Unexpected response")
         data += result[4:]
         do_status(radio, "from", i)
