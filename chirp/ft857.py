@@ -247,7 +247,11 @@ class FT857Radio(ft817.FT817Radio):
             u8  beacon_time;
             u8  unknown36[2];
             u8  dig_vox_enable:1,
-                unknown37:7;
+                unknown37:2,
+                scope_peakhold:1,
+                scope_width:2,
+                proc:1,
+                unknown38:1;
             u8  unknown39:1,
                 rf_power_6m:7;
             u8  unknown40:1,
@@ -902,6 +906,17 @@ class FT857Radio(ft817.FT817Radio):
         rs = RadioSetting("lock", "Lock",
                           RadioSettingValueList(options,
                                         options[_settings.lock]))
+        panelcontr.append(rs)
+        rs = RadioSetting("scope_peakhold", "Scope max hold",
+                          RadioSettingValueBoolean(_settings.scope_peakhold))
+        panelcontr.append(rs)
+        options = ["21", "31", "127"]
+        rs = RadioSetting("scope_width", "Scope width (channels)",
+                          RadioSettingValueList(options,
+                                        options[_settings.scope_width]))
+        panelcontr.append(rs)
+        rs = RadioSetting("proc", "Speech processor",
+                          RadioSettingValueBoolean(_settings.proc))
         panelcontr.append(rs)
         
         return top
