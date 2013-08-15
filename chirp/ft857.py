@@ -484,10 +484,9 @@ class FT857Radio(ft817.FT817Radio):
         packet = RadioSettingGroup("packet", "Digital & packet")
         panel = RadioSettingGroup("panel", "Panel settings")
         extended = RadioSettingGroup("extended", "Extended")
-        antenna = RadioSettingGroup("antenna", "Antenna selection")
         panelcontr = RadioSettingGroup("panelcontr", "Panel controls")
         top = RadioSettingGroup("top", "All Settings", basic, cw, packet,
-                                panelcontr, panel, extended, antenna)
+                                panelcontr, panel, extended)
 
         rs = RadioSetting("extended_menu", "Extended menu",
                           RadioSettingValueBoolean(_settings.extended_menu))
