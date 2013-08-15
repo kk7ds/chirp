@@ -105,12 +105,21 @@ class FT857Radio(ft817.FT817Radio):
         u8   name[8];
         };
         
-        #seekto 0x5;
+        #seekto 0x4;
         struct {
-            u8  unknown1:4,
+            u8  fst:1,
+                lock:1,
+                nb:1,
+                unknown1:2,
+                disp:1,
+                agc:2;
+            u8  vox:1,
+                unknown2:1,
+                bk:1,
+                kyr:1,
                 cw_speed_unit:1,
                 cw_key_rev:1,
-                unknown2:2;
+                pwr_meter_mode:2;
             u8  unknown3[2];
             u8  disp_mode:2,
                 unknown4:2,
@@ -859,6 +868,42 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueList(options,
                                         options[_settings.xvtr_sel]))
         extended.append(rs)
+        
+        rs = RadioSetting("disp", "Display large",
+                          RadioSettingValueBoolean(_settings.disp))
+        panel.append(rs)
+        rs = RadioSetting("nb", "Noise blanker",
+                          RadioSettingValueBoolean(_settings.nb))
+        panelcontr.append(rs)
+        options = ["Auto", "Fast", "Slow", "Off"]
+        rs = RadioSetting("agc", "AGC",
+                          RadioSettingValueList(options,
+                                        options[_settings.agc]))
+        panelcontr.append(rs)
+        options = ["PWR", "ALC", "SWR", "MOD"]
+        rs = RadioSetting("pwr_meter_mode", "Power meter mode",
+                          RadioSettingValueList(options,
+                                        options[_settings.pwr_meter_mode]))
+        panelcontr.append(rs)
+        rs = RadioSetting("vox", "Vox",
+                          RadioSettingValueBoolean(_settings.vox))
+        panelcontr.append(rs)
+        rs = RadioSetting("bk", "Semi break-in",
+                          RadioSettingValueBoolean(_settings.bk))
+        cw.append(rs)
+        rs = RadioSetting("kyr", "Keyer",
+                          RadioSettingValueBoolean(_settings.kyr))
+        cw.append(rs)
+        options = ["enabled", "disabled"]
+        rs = RadioSetting("fst", "Fast",
+                          RadioSettingValueList(options,
+                                        options[_settings.fst]))
+        panelcontr.append(rs)
+        options = ["enabled", "disabled"]
+        rs = RadioSetting("lock", "Lock",
+                          RadioSettingValueList(options,
+                                        options[_settings.lock]))
+        panelcontr.append(rs)
         
         return top
 
