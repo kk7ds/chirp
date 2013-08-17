@@ -423,7 +423,7 @@ def _do_upload(radio):
     print "Image is %s" % repr(image_version)
     print "Radio is %s" % repr(radio_version)
 
-    if "BFB" not in radio_version and "BF82" not in radio_version and "USA" not in radio_version:
+    if "BFB" not in radio_version and "82" not in radio_version and "USA" not in radio_version:
         raise errors.RadioError("Unsupported firmware version: `%s'" %
                                 radio_version)
 
@@ -728,6 +728,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 return version < 291
             if 'BF82' in version_tag:
                 return False
+            if 'B82' in version_tag:
+                return False
             if 'USA' in version_tag:
                 return False
         except:
@@ -740,9 +742,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
             return int(version_tag[idx:idx+3])
-        elif 'BF' in version_tag:
-            idx = version_tag.index("BF") + 2
+        elif 'BF82' in version_tag:
+            idx = version_tag.index("BF82") + 2
             return int(version_tag[idx:idx+4])
+        elif 'B82S' in version_tag:
+            idx = version_tag.index("B82S") + 4
+            return int(version_tag[idx:idx+2]) + 8200
         elif 'USA' in version_tag:
             idx = version_tag.index("USA") + 3
             return int(version_tag[idx:idx+3])
@@ -1246,5 +1251,5 @@ class BaofengF11Radio(BaofengUV5R):
 @directory.register
 class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
-    _basetype = "BF82"
+    _basetype = "82"
     _idents = [UV82_MODEL]
