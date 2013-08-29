@@ -525,7 +525,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     """Wouxun KG-UV6 (D and X variants)"""
     MODEL = "KG-UV6"
     
-    _querymodel = "HiWXUVD1\x02"
+    _querymodel = ("HiWXUVD1\x02", "HiKGUVD1\x02")
     
     _MEM_FORMAT = """
         #seekto 0x0010;
