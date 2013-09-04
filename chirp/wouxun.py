@@ -20,7 +20,8 @@ import os
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
-                RadioSettingValueInteger, RadioSettingValueString
+                RadioSettingValueInteger, RadioSettingValueString, \
+                RadioSettingValueFloat
 from chirp.wouxun_common import wipe_memory, do_download, do_upload
 
 FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
@@ -686,7 +687,8 @@ class KGUV6DRadio(KGUVD1PRadio):
 
     def get_settings(self):
         freqranges = RadioSettingGroup("freqranges", "Freq ranges")
-        top = RadioSettingGroup("top", "All Settings", freqranges)
+        fm_preset = RadioSettingGroup("fm_preset", "FM Presets")
+        top = RadioSettingGroup("top", "All Settings", freqranges, fm_preset)
 
         rs = RadioSetting("menu_available", "Menu Available",
                           RadioSettingValueBoolean(
@@ -914,8 +916,75 @@ class KGUV6DRadio(KGUVD1PRadio):
         except Exception:
             print ("Your ANI code is not six digits, which is not currently"
                    " supported in CHIRP.")
+                   
+        for i in range(0, 9):
+            if self._memobj.fm_presets_0[i] != 0xFFFF:
+                rs = RadioSetting("fm_presets_0_%1i" % i, "Bank 0 Location %i" % i,
+                              RadioSettingValueBoolean(True),
+                              RadioSettingValueFloat(76, 108, self._memobj.fm_presets_0[i]/10.0+76, 0.1, 1))
+            else:
+                rs = RadioSetting("fm_presets_0_%1i" % i, "Bank 0 Location %i" % i,
+                              RadioSettingValueBoolean(False),
+                              RadioSettingValueFloat(76, 108, 76, 0.1, 1))
+            fm_preset.append(rs)
+        for i in range(0, 9):
+            if self._memobj.fm_presets_1[i] != 0xFFFF:
+                rs = RadioSetting("fm_presets_1_%1i" % i, "Bank 1 Location %i" % i,
+                              RadioSettingValueBoolean(True),
+                              RadioSettingValueFloat(76, 108, self._memobj.fm_presets_1[i]/10.0+76, 0.1, 1))
+            else:
+                rs = RadioSetting("fm_presets_1_%1i" % i, "Bank 1 Location %i" % i,
+                              RadioSettingValueBoolean(False),
+                              RadioSettingValueFloat(76, 108, 76, 0.1, 1))
+            fm_preset.append(rs)
 
         return top
+
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                if element.get_name() == "freqranges" :
+                    self._set_freq_settings(element)
+                elif element.get_name() == "fm_preset" :
+                    self._set_fm_preset(element)
+                else:
+                    self.set_settings(element)
+            else:
+                try:
+                    if "." in element.get_name():
+                        bits = element.get_name().split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = self._memobj.settings
+                        setting = element.get_name()
+                    print "Setting %s = %s" % (setting, element.value)
+                    setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
+
+    def _set_fm_preset(self, settings):
+        obj = self._memobj
+        for element in settings:
+            try:
+                (bank, index) = (int(a) for a in element.get_name().split("_")[-2:])
+                val = element.value
+                if val[0].get_value():
+                    value = int(val[1].get_value()*10-760)
+                else:
+                    value = 0xffff
+                print "Setting fm_presets_%1i[%1i] = %s" % (bank, index, value)
+                if bank == 0:
+                    setting = self._memobj.fm_presets_0
+                else:
+                    setting = self._memobj.fm_presets_1
+                setting[index] = value
+            except Exception, e:
+                print element.get_name()
+                raise
 
     @classmethod
     def match_model(cls, filedata, filename):
