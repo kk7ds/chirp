@@ -646,7 +646,7 @@ class KGUV6DRadio(KGUVD1PRadio):
           u8 pad[2];
         } vfo_settings[2];
 	
-        #seekto 0x0f80;
+        #seekto 0x0f82;
         u16 fm_presets_0[9];
 
         #seekto 0x0ff0;
@@ -675,7 +675,7 @@ class KGUV6DRadio(KGUVD1PRadio):
             u8 pad[9];
         } vfo_offset[2];
 
-        #seekto 0x1f80;
+        #seekto 0x1f82;
         u16 fm_presets_1[9];
     """
 
@@ -919,23 +919,25 @@ class KGUV6DRadio(KGUVD1PRadio):
                    
         for i in range(0, 9):
             if self._memobj.fm_presets_0[i] != 0xFFFF:
-                rs = RadioSetting("fm_presets_0_%1i" % i, "Bank 0 Location %i" % i,
-                              RadioSettingValueBoolean(True),
-                              RadioSettingValueFloat(76, 108, self._memobj.fm_presets_0[i]/10.0+76, 0.1, 1))
+                used = True
+                preset = self._memobj.fm_presets_0[i]/10.0+76
             else:
-                rs = RadioSetting("fm_presets_0_%1i" % i, "Bank 0 Location %i" % i,
-                              RadioSettingValueBoolean(False),
-                              RadioSettingValueFloat(76, 108, 76, 0.1, 1))
+                used = False
+                preset = 76
+            rs = RadioSetting("fm_presets_0_%1i" % i, "Team 1 Location %i" % (i+1),
+                          RadioSettingValueBoolean(used),
+                          RadioSettingValueFloat(76, 108, preset, 0.1, 1))
             fm_preset.append(rs)
         for i in range(0, 9):
             if self._memobj.fm_presets_1[i] != 0xFFFF:
-                rs = RadioSetting("fm_presets_1_%1i" % i, "Bank 1 Location %i" % i,
-                              RadioSettingValueBoolean(True),
-                              RadioSettingValueFloat(76, 108, self._memobj.fm_presets_1[i]/10.0+76, 0.1, 1))
+                used = True
+                preset = self._memobj.fm_presets_1[i]/10.0+76
             else:
-                rs = RadioSetting("fm_presets_1_%1i" % i, "Bank 1 Location %i" % i,
-                              RadioSettingValueBoolean(False),
-                              RadioSettingValueFloat(76, 108, 76, 0.1, 1))
+                used = False
+                preset = 76
+            rs = RadioSetting("fm_presets_1_%1i" % i, "Team 2 Location %i" % (i+1),
+                          RadioSettingValueBoolean(used),
+                          RadioSettingValueFloat(76, 108, preset, 0.1, 1))
             fm_preset.append(rs)
 
         return top
