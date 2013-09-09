@@ -254,9 +254,12 @@ class H777Radio(chirp_common.CloneModeRadio):
 
         return rf
 
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+
     def sync_in(self):
         self._mmap = do_download(self)
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self.process_mmap()
 
     def sync_out(self):
         do_upload(self)
