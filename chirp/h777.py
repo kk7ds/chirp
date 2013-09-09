@@ -18,6 +18,7 @@ import time
 import os
 import struct
 import sys
+import unittest
 
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise
@@ -235,15 +236,10 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.has_settings = True
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
         rf.valid_skips = ["", "S"]
-        # TODO: Support CTCSS and DCS.
-        # rf.valid_tmodes = ["", "TSQL", "DTCS"]
-        # rf.has_ctone = True
-        # rf.has_cross = True
-        # rf.has_rx_dtcs = True
-        rf.valid_tmodes = [""]
-        rf.has_ctone = False
-        rf.has_cross = False
-        rf.has_rx_dtcs = False
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        rf.has_rx_dtcs = True
+        rf.has_ctone = True
+        rf.has_cross = True
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.has_name = False
@@ -266,6 +262,30 @@ class H777Radio(chirp_common.CloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
+
+    def _decode_tone(self, val):
+        val = int(val)
+        if val == 16665:
+            return '', None, None
+        elif val >= 12000:
+            return 'DTCS', val - 12000, 'R'
+        elif val >= 8000:
+            return 'DTCS', val - 8000, 'N'
+        else:
+            return 'Tone', val / 10.0, None
+
+    def _encode_tone(self, memval, mode, value, pol):
+        if mode == '':
+            memval[0].set_raw(0xFF)
+            memval[1].set_raw(0xFF)
+        elif mode == 'Tone':
+            memval.set_value(int(value * 10))
+        elif mode == 'DTCS':
+            flag = 0x80 if pol == 'N' else 0xC0
+            memval.set_value(value)
+            memval[1].set_bits(flag)
+        else:
+            raise Exception("Internal error: invalid mode `%s'" % mode)
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -299,26 +319,9 @@ class H777Radio(chirp_common.CloneModeRadio):
         if not _mem.scanadd:
             mem.skip = "S"
 
-        # Decode CTCSS/DCS, if used.
-
-        if _mem.rxtone.get_raw() == "\xFF\xFF":
-            mem.tmode = ""
-        else:
-            if ord(_mem.rxtone[1].get_raw()) & 0x80:
-                # TODO: Make DCS work.
-                raise Exception("Sorry, DCS isn't supported yet.")
-                mem.tmode = "DTCS"
-                mem.rx_dtcs = int(_mem.rxtone.get_raw() & 0x0FFF)
-                mem.dtcs = int(_mem.txtone.get_raw() & 0x0FFF)
-
-                if ord(_mem.rxtone[1].get_raw()) & 0x40:
-                    mem.dtsc_polarity = "R"
-                else:
-                    print("DCS N")
-            else:
-                mem.tmode = "TSQL"
-                mem.rtone = int(_mem.rxtone) / 10.0
-                mem.ctone = int(_mem.txtone) / 10.0
+        txtone = self._decode_tone(_mem.txtone)
+        rxtone = self._decode_tone(_mem.rxtone)
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
         # TODO: Set beatshift and bcl.
 
@@ -347,6 +350,10 @@ class H777Radio(chirp_common.CloneModeRadio):
             _mem.txfreq = mem.freq / 10
 
             # TODO: Support empty TX frequency
+
+        txtone, rxtone = chirp_common.split_tone_encode(mem)
+        self._encode_tone(_mem.txtone, *txtone)
+        self._encode_tone(_mem.rxtone, *rxtone)
 
         _mem.wide = mem.mode != 0
         _mem.lowpower = mem.power == 1
@@ -432,3 +439,49 @@ class H777Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         return basic
+
+class H777TestCase(unittest.TestCase):
+    def setUp(self):
+        self.driver = H777Radio(None)
+        self.testdata = bitwise.parse("lbcd foo[2];",
+                                      memmap.MemoryMap("\x00\x00"))
+
+    def test_decode_tone_dtcs_normal(self):
+        mode, value, pol = self.driver._decode_tone(8023)
+        self.assertEqual('DTCS', mode)
+        self.assertEqual(23, value)
+        self.assertEqual('N', pol)
+
+    def test_decode_tone_dtcs_rev(self):
+        mode, value, pol = self.driver._decode_tone(12023)
+        self.assertEqual('DTCS', mode)
+        self.assertEqual(23, value)
+        self.assertEqual('R', pol)
+
+    def test_decode_tone_tone(self):
+        mode, value, pol = self.driver._decode_tone(885)
+        self.assertEqual('Tone', mode)
+        self.assertEqual(88.5, value)
+        self.assertEqual(None, pol)
+
+    def test_decode_tone_none(self):
+        mode, value, pol = self.driver._decode_tone(16665)
+        self.assertEqual('', mode)
+        self.assertEqual(None, value)
+        self.assertEqual(None, pol)
+
+    def test_encode_tone_dtcs_normal(self):
+        self.driver._encode_tone(self.testdata.foo, 'DTCS', 23, 'N')
+        self.assertEqual(8023, int(self.testdata.foo))
+
+    def test_encode_tone_dtcs_rev(self):
+        self.driver._encode_tone(self.testdata.foo, 'DTCS', 23, 'R')
+        self.assertEqual(12023, int(self.testdata.foo))
+
+    def test_encode_tone(self):
+        self.driver._encode_tone(self.testdata.foo, 'Tone', 88.5, 'N')
+        self.assertEqual(885, int(self.testdata.foo))
+
+    def test_encode_tone_none(self):
+        self.driver._encode_tone(self.testdata.foo, '', 67.0, 'N')
+        self.assertEqual(16665, int(self.testdata.foo))
