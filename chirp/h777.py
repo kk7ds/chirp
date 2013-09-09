@@ -265,7 +265,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         do_upload(self)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        return repr(self._memobj.memory[number - 1])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
