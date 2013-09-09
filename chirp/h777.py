@@ -218,14 +218,7 @@ def do_upload(radio):
 
     _h777_exit_programming_mode(radio)
 
-def maybe_register(cls):
-    if DEBUG:
-        return directory.register(cls)
-    else:
-        return cls
-
-#@directory.register
-@maybe_register
+@directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
     # VENDOR = "Heng Shun Tong (恒顺通)"
