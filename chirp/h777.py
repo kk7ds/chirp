@@ -38,9 +38,9 @@ struct {
     u8 unknown3:1,
        unknown2:1,
        unknown1:1,
-       scanadd:1,
-       lowpower:1,
-       wide:1,
+       skip:1,
+       highpower:1,
+       narrow:1,
        beatshift:1,
        bcl:1;
     u8 unknown4[3];
@@ -76,8 +76,8 @@ UPLOAD_BLOCKS = [range(0x0000, 0x0110, 8),
                  range(0x0380, 0x03e0, 8)]
 
 # TODO: Is it 1 watt?
-H777_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
-                     chirp_common.PowerLevel("Low", watts=1.00)]
+H777_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                     chirp_common.PowerLevel("High", watts=5.00)]
 VOICE_LIST = ["English", "Chinese"]
 SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
 TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
@@ -245,8 +245,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.has_name = False
         rf.memory_bounds = (1, 16)
         rf.valid_bands = [(400000000, 470000000)]
-        rf.valid_power_levels = [chirp_common.PowerLevel("High", watts=5.00),
-                                 chirp_common.PowerLevel("Low", watts=1.0)]
+        rf.valid_power_levels = H777_POWER_LEVELS
 
         return rf
 
@@ -298,12 +297,12 @@ class H777Radio(chirp_common.CloneModeRadio):
         # We'll consider any blank (i.e. 0MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
+            return mem
 
         if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
-
-        # TODO: Support empty TX frequency
+            return mem
 
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
@@ -312,18 +311,22 @@ class H777Radio(chirp_common.CloneModeRadio):
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
-        mem.mode = not _mem.wide and "FM" or "NFM"
-        mem.power = H777_POWER_LEVELS[not _mem.lowpower]
-        # TODO: Invert lowpower flag?
+        mem.mode = not _mem.narrow and "FM" or "NFM"
+        mem.power = H777_POWER_LEVELS[_mem.highpower]
 
-        if not _mem.scanadd:
-            mem.skip = "S"
+        mem.skip = _mem.skip and "S" or ""
 
         txtone = self._decode_tone(_mem.txtone)
         rxtone = self._decode_tone(_mem.rxtone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        # TODO: Set beatshift and bcl.
+        mem.extra = RadioSettingGroup("Extra", "extra")
+        rs = RadioSetting("bcl", "Busy Channel Lockout",
+                          RadioSettingValueBoolean(not _mem.bcl))
+        mem.extra.append(rs)
+        rs = RadioSetting("beatshift", "Beat Shift",
+                          RadioSettingValueBoolean(not _mem.beatshift))
+        mem.extra.append(rs)
 
         return mem
 
@@ -349,16 +352,17 @@ class H777Radio(chirp_common.CloneModeRadio):
         else:
             _mem.txfreq = mem.freq / 10
 
-            # TODO: Support empty TX frequency
-
         txtone, rxtone = chirp_common.split_tone_encode(mem)
         self._encode_tone(_mem.txtone, *txtone)
         self._encode_tone(_mem.rxtone, *rxtone)
 
-        _mem.wide = mem.mode != 0
-        _mem.lowpower = mem.power == 1
-        _mem.scanadd = mem.skip != "S"
-        # TODO: Set beatshift and bcl.
+        _mem.narrow = 'N' in mem.mode
+        _mem.highpower = mem.power == H777_POWER_LEVELS[1]
+        _mem.skip = mem.skip == "S"
+
+        for setting in mem.extra:
+            # NOTE: Only two settings right now, both are inverted
+            setattr(_mem, setting.get_name(), not setting.value)
 
     def get_settings(self):
         _settings = self._memobj.settings
