@@ -17,11 +17,10 @@
 import time
 import os
 import struct
-import sys
 import unittest
 
 from chirp import chirp_common, directory, memmap
-from chirp import bitwise
+from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean
@@ -89,34 +88,47 @@ SETTING_LISTS = {
     "voice" : VOICE_LIST,
     }
 
-def debug_print_hex(hexstr):
-    for a in range(0, len(hexstr)):
-        sys.stdout.write("%02x " % (ord(hexstr[a])))
-
 def _h777_enter_programming_mode(radio):
     serial = radio.pipe
 
-    serial.write("\x02")
-    time.sleep(0.1)
-    serial.write("PROGRAM")
-    if serial.read(1) != CMD_ACK:
-        raise Exception("Didn't get a response from the radio. "
-                        "Is it turned on and plugged in firmly?")
+    try:
+        serial.write("\x02")
+        time.sleep(0.1)
+        serial.write("PROGRAM")
+        ack = serial.read(1)
+    except:
+        raise errors.RadioError("Error communicating with radio")
 
-    serial.write("\x02")
-    ident = serial.read(8)
+    if not ack:
+        raise errors.RadioError("No response from radio")
+    elif ack != CMD_ACK:
+        raise errors.RadioError("Radio refused to enter programming mode")
+
+    try:
+        serial.write("\x02")
+        ident = serial.read(8)
+    except:
+        raise errors.RadioError("Error communicating with radio")
+
     if not ident.startswith("P3107"):
-        raise Exception("Invalid response. "
-                        "Is this really the correct model of radio?")
+        print util.hexprint(ident)
+        raise errors.RadioError("Radio returned unknown identification string")
 
-    serial.write(CMD_ACK)
-    if serial.read(1) != CMD_ACK:
-        raise Exception("Invalid response. "
-                        "Is this really the correct model of radio?")
+    try:
+        serial.write(CMD_ACK)
+        ack = serial.read(1)
+    except:
+        raise errors.RadioError("Error communicating with radio")
+
+    if ack != CMD_ACK:
+        raise errors.RadioError("Radio refused to enter programming mode")
 
 def _h777_exit_programming_mode(radio):
     serial = radio.pipe
-    serial.write("E")
+    try:
+        serial.write("E")
+    except:
+        raise errors.RadioError("Radio refused to exit programming mode")
 
 def _h777_read_block(radio, block_addr, block_size):
     serial = radio.pipe
@@ -126,15 +138,20 @@ def _h777_read_block(radio, block_addr, block_size):
     if DEBUG:
         print("Reading block %04x..." % (block_addr))
 
-    serial.write(cmd)
-    response = serial.read(4 + BLOCK_SIZE)
-    if response[:4] != expectedresponse:
-        raise Exception("Error reading block %04x." % (block_addr))
+    try:
+        serial.write(cmd)
+        response = serial.read(4 + BLOCK_SIZE)
+        if response[:4] != expectedresponse:
+            raise Exception("Error reading block %04x." % (block_addr))
 
-    block_data = response[4:]
+        block_data = response[4:]
 
-    serial.write(CMD_ACK)
-    if serial.read(1) != CMD_ACK:
+        serial.write(CMD_ACK)
+        ack = serial.read(1)
+    except:
+        raise errors.RadioError("Failed to read block at %04x" % block_addr)
+
+    if ack != CMD_ACK:
         raise Exception("No ACK reading block %04x." % (block_addr))
 
     return block_data
@@ -147,13 +164,15 @@ def _h777_write_block(radio, block_addr, block_size):
 
     if DEBUG:
         print("Writing Data:")
-        debug_print_hex(cmd + data)
-        print("")
+        print util.hexprint(cmd + data)
 
-    serial.write(cmd + data)
-
-    if serial.read(1) != CMD_ACK:
-        raise Exception("No ACK")
+    try:
+        serial.write(cmd + data)
+        if serial.read(1) != CMD_ACK:
+            raise Exception("No ACK")
+    except:
+        raise errors.RadioError("Failed to send block "
+                                "to radio at %04x" % block_addr)
 
 def do_download(radio):
     print "download"
@@ -175,9 +194,8 @@ def do_download(radio):
         data += block
 
         if DEBUG:
-            sys.stdout.write("%04x: " % (addr))
-            debug_print_hex(block)
-            print("")
+            print "Address: %04x" % addr
+            print util.hexprint(block)
 
     _h777_exit_programming_mode(radio)
 
@@ -210,8 +228,10 @@ def maybe_register(cls):
 @maybe_register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
-    VENDOR = "Heng Shun Tong (恒顺通)"
-    MODEL = "H-777"
+    # VENDOR = "Heng Shun Tong (恒顺通)"
+    # MODEL = "H-777"
+    VENDOR = "Baofeng"
+    MODEL = "BF-888"
     BAUD_RATE = 9600
 
     # This code currently requires that ranges start at 0x0000
