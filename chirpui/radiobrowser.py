@@ -234,7 +234,8 @@ class RadioBrowser(common.Editor):
         elif isinstance(obj, bitwise.arrayDataElement):
             i = 0
             for item in obj:
-                self._fill("%s[%i]" % (name, i), item, iter)
+                if isinstance(obj[0], bitwise.structDataElement):
+                    self._fill("%s[%i]" % (name, i), item, iter)
                 i += 1
 
     def _tree_click(self, view, event):
