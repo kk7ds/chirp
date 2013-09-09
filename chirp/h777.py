@@ -163,31 +163,20 @@ def do_download(radio):
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
 
-    block_count = 0
-    for start_addr, end_addr in radio._ranges:
-        # TODO: Count how many block we are going to attempt to read.
-        # This could be done better. :)
-        for block_addr in range(start_addr, end_addr, BLOCK_SIZE):
-            block_count += 1
-
     status.cur = 0
-    status.max = block_count
+    status.max = radio._memsize
 
-    for start_addr, end_addr in radio._ranges:
+    for addr in range(0, radio._memsize, BLOCK_SIZE):
+        status.cur = addr + BLOCK_SIZE
+        radio.status_fn(status)
+
+        block = _h777_read_block(radio, addr, BLOCK_SIZE)
+        data += block
+
         if DEBUG:
-            print("Reading Data:")
-
-        for block_addr in range(start_addr, end_addr, BLOCK_SIZE):
-            status.cur += 1
-            radio.status_fn(status)
-
-            block = _h777_read_block(radio, block_addr, BLOCK_SIZE)
-            data += block
-
-            if DEBUG:
-                sys.stdout.write("%04x: " % (block_addr))
-                debug_print_hex(block)
-                print("")
+            sys.stdout.write("%04x: " % (addr))
+            debug_print_hex(block)
+            print("")
 
     _h777_exit_programming_mode(radio)
 
@@ -199,18 +188,14 @@ def do_upload(radio):
 
     _h777_enter_programming_mode(radio)
 
-    block_count = 0
-    for a in UPLOAD_BLOCKS:
-        block_count += len(a)
-
     status.cur = 0
-    status.max = block_count
+    status.max = radio._memsize
 
-    for a in UPLOAD_BLOCKS:
-        for b in a:
-            status.cur += 1
+    for start_addr, end_addr in radio._ranges:
+        for addr in range(start_addr, end_addr, BLOCK_SIZE):
+            status.cur = addr + BLOCK_SIZE
             radio.status_fn(status)
-            _h777_write_block(radio, b, BLOCK_SIZE)
+            _h777_write_block(radio, addr, BLOCK_SIZE)
 
     _h777_exit_programming_mode(radio)
 
@@ -239,8 +224,11 @@ class H777Radio(chirp_common.CloneModeRadio):
     # Memory starts looping at 0x1000... But not every 0x1000.
 
     _ranges = [
-        (0x0000, 0x03E0)
+        (0x0000, 0x0110),
+        (0x02B0, 0x02C0),
+        (0x0380, 0x03E0),
         ]
+    _memsize = 0x03E0
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
