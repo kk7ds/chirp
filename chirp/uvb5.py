@@ -96,6 +96,64 @@ struct {
   lbcd lower_uhf[2];
   lbcd upper_uhf[2];
 } limits;
+
+#seekto 0x0FF0;
+struct {
+  u8 vhfsquelch0;
+  u8 vhfsquelch1;
+  u8 vhfsquelch2;
+  u8 vhfsquelch3;
+  u8 vhfsquelch4;
+  u8 vhfsquelch5;
+  u8 vhfsquelch6;
+  u8 vhfsquelch7;
+  u8 vhfsquelch8;
+  u8 vhfsquelch9;
+  u8 unknown1[6];
+  u8 uhfsquelch0;
+  u8 uhfsquelch1;
+  u8 uhfsquelch2;
+  u8 uhfsquelch3;
+  u8 uhfsquelch4;
+  u8 uhfsquelch5;
+  u8 uhfsquelch6;
+  u8 uhfsquelch7;
+  u8 uhfsquelch8;
+  u8 uhfsquelch9;
+  u8 unknown2[6];
+  u8 vhfhipwr0;
+  u8 vhfhipwr1;
+  u8 vhfhipwr2;
+  u8 vhfhipwr3;
+  u8 vhfhipwr4;
+  u8 vhfhipwr5;
+  u8 vhfhipwr6;
+  u8 vhfhipwr7;
+  u8 vhflopwr0;
+  u8 vhflopwr1;
+  u8 vhflopwr2;
+  u8 vhflopwr3;
+  u8 vhflopwr4;
+  u8 vhflopwr5;
+  u8 vhflopwr6;
+  u8 vhflopwr7;
+  u8 uhfhipwr0;
+  u8 uhfhipwr1;
+  u8 uhfhipwr2;
+  u8 uhfhipwr3;
+  u8 uhfhipwr4;
+  u8 uhfhipwr5;
+  u8 uhfhipwr6;
+  u8 uhfhipwr7;
+  u8 uhflopwr0;
+  u8 uhflopwr1;
+  u8 uhflopwr2;
+  u8 uhflopwr3;
+  u8 uhflopwr4;
+  u8 uhflopwr5;
+  u8 uhflopwr6;
+  u8 uhflopwr7;
+} test;
 """
 
 def do_ident(radio):
@@ -541,6 +599,45 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
                               "Channel %i (65.0-108.0)" % (i + 1), _freq)
             rs.set_apply_callback(apply_freq, self._memobj.broadcastfm[i])
             bcastfm.append(rs)
+
+        testmode = RadioSettingGroup("testmode", "Test Mode Settings")
+        group.append(testmode)
+
+        vhfdata = ["136-139", "140-144", "145-149", "150-154",
+                   "155-159", "160-164", "165-169", "170-174"]
+        uhfdata = ["400-409", "410-419", "420-429", "430-439",
+                   "440-449", "450-459", "460-469", "470-479"]
+        powernamedata = ["Hi", "Lo"]
+        powerkeydata = ["hipwr", "lopwr"]
+
+        for power in range (0, 2):
+            for index in range(0, 8):
+                key = "test.vhf%s%i" % (powerkeydata[power], index)
+                name = "%s Mhz %s Power" % (vhfdata[index],
+                                            powernamedata[power])
+                rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
+                        getattr(self._memobj.test, "vhf%s%i"
+                                % (powerkeydata[power], index))))
+                testmode.append(rs)
+
+        for power in range (0, 2):
+            for index in range(0, 8):
+                key = "test.uhf%s%i" % (powerkeydata[power], index)
+                name = "%s Mhz %s Power" % (uhfdata[index],
+                                            powernamedata[power])
+                rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
+                        getattr(self._memobj.test, "uhf%s%i"
+                                % (powerkeydata[power], index))))
+                testmode.append(rs)
+
+        for band in ["vhf", "uhf"]:
+            for index in range(0, 10):
+                key = "test.%ssquelch%i" % (band, index)
+                name = "%s Squelch %i" % (band.upper(), index)
+                rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
+                        getattr(self._memobj.test, "%ssquelch%i" 
+                                % (band, index))))
+                testmode.append(rs)
 
         return group
 
