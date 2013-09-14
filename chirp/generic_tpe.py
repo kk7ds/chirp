@@ -16,25 +16,6 @@
 import UserDict
 from chirp import chirp_common, directory, generic_csv
 
-class TpeMap(UserDict.UserDict):
-    """Pretend we're a dict"""
-    def items(self):
-        return [
-            ("Sequence Number" , (int, "number")),
-            ("Location"        , (str, "comment")),
-            ("Call Sign"       , (str, "name")),
-            ("Output Frequency", (chirp_common.parse_freq, "freq")),
-            ("Input Frequency" , (str, "duplex")),
-            ("CTCSS Tones"     , (lambda v: "Tone" 
-                                  if float(v) in chirp_common.TONES
-                                  else "", "tmode")),
-            ("CTCSS Tones"     , (lambda v: float(v)
-                                  if float(v) in chirp_common.TONES
-                                  else 88.5, "rtone")),
-            ("CTCSS Tones"     , (lambda v: float(v)
-                                  if float(v) in chirp_common.TONES
-                                  else 88.5, "ctone")),
-        ]
 
 @directory.register
 class TpeRadio(generic_csv.CSVRadio):
@@ -43,7 +24,32 @@ class TpeRadio(generic_csv.CSVRadio):
     MODEL = "Travel Plus"
     FILE_EXTENSION = "tpe"
 
-    ATTR_MAP = TpeMap()
+    ATTR_MAP = {
+        "Sequence Number" : (int, "number"),
+        "Location"        : (str, "comment"),
+        "Call Sign"       : (str, "name"),
+        "Output Frequency": (chirp_common.parse_freq, "freq"),
+        "Input Frequency" : (str, "duplex"),
+        "CTCSS Tones"     : (lambda v: float(v)
+                              if v and float(v) in chirp_common.TONES
+                              else 88.5, "rtone"),
+        "Repeater Notes":   (str, "comment"),
+    }
+
+    def _clean_tmode(self, headers, line, mem):
+        try:
+            val = generic_csv.get_datum_by_header(headers, line, "CTCSS Tones")
+            if val and float(val) in chirp_common.TONES:
+                mem.tmode = "Tone"
+        except generic_csv.OmittedHeaderError:
+            pass
+
+        return mem
+
+    def _clean_ctone(self, headers, line, mem):
+        # TPE only stores a single tone value
+        mem.ctone = mem.rtone
+        return mem
 
     @classmethod
     def match_model(cls, filedata, filename):
