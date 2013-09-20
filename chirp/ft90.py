@@ -1,5 +1,5 @@
 # Copyright 2011 Dan Smith <dsmith@danplanet.com>
-# Copyright 2013 Jens Jensen <kd4tjx@yahoo.com>
+# Copyright 2013 Jens Jensen AF5MI <kd4tjx@yahoo.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,9 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp import chirp_common, bitwise, memmap, directory, errors, util, yaesu_clone
-import time, os, traceback, string
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueInteger, RadioSettingValueList, \
+    RadioSettingValueBoolean, RadioSettingValueString
+import time, os, traceback, string, re
 
-CHIRP_DEBUG=False
+if os.getenv("CHIRP_DEBUG"):
+    CHIRP_DEBUG = True
+else:
+    CHIRP_DEBUG=False
+
 CMD_ACK = chr(0x06)
 
 FT90_STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
@@ -28,7 +35,10 @@ for tone in [ 165.5, 171.3, 177.3 ]:
     FT90_TONES.remove(tone)
 FT90_POWER_LEVELS = ["Hi", "Mid1", "Mid2", "Low"]
 FT90_DUPLEX = ["", "-", "+", "split"]
-FT90_CWID_CHARS = list(string.digits) + list(string.uppercase)
+FT90_CWID_CHARS = list(string.digits) + list(string.uppercase) + list(" ")
+FT90_DTMF_CHARS = list("0123456789ABCD*#")
+FT90_SPECIAL = [ "vfo_vhf", "home_vhf", "vfo_uhf", "home_uhf", \
+        "pms_1L", "pms_1U", "pms_2L", "pms_2U"]
 
 @directory.register
 class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -52,22 +62,23 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 		u8	dtmf6_len;
 		u8	dtmf7_len;
 		u8	dtmf8_len;
-		bbcd dtmf1[8];
-		bbcd dtmf2[8];
-		bbcd dtmf3[8];
-		bbcd dtmf4[8];			
-		bbcd dtmf5[8];
-		bbcd dtmf6[8];
-		bbcd dtmf7[8];	
-		bbcd dtmf8[8];
+        u8  dtmf1[8];
+        u8  dtmf2[8];
+        u8  dtmf3[8];
+        u8  dtmf4[8];
+        u8  dtmf5[8];
+        u8  dtmf6[8];
+        u8  dtmf7[8];
+        u8  dtmf8[8];
 		char cwid[7];
 		u8 	unk1;
-		u8 	unk2:2,
+        u8  scan1:2,
 			beep:1,
-			unk3:1,
-			rfsqlvl:4;
-		u8	cwid_en:1,
-			unk4:3,
+            unk3:3,
+            rfsqlvl:2;
+        u8  unk4:2,
+            scan2:1,
+            cwid_en:1,
 			txnarrow:1,
 			dtmfspeed:1,
 			pttlock:2;
@@ -77,17 +88,26 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 		u8	dimmer:3,
 			unk6:1,
 			lcdcontrast:4;
-		u8	tot;
+        u8  dcsmode:2,
+            unk16:2,
+            tot:4;
+        u8  unk14;
 		u8	unk8:1,
 			ars:1,
 			lock:1,
 			txpwrsave:1,
 			apo:4;
-		u8	key_rt;
-		u8	key_lt;
-		u8	key_p1;
-		u8	key_p2;
-		u8	key_acc;
+        u8  unk15;
+        u8  unk9:4,
+            key_lt:4;
+        u8  unk10:4,
+            key_rt:4;
+        u8  unk11:4,
+            key_p1:4;
+        u8  unk12:4,
+            key_p2:4;
+        u8  unk13:4,
+            key_acc:4;
 		char	demomsg1[32];
 		char	demomsg2[32];
 		
@@ -121,10 +141,19 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
     };
 
 	#seekto 0x86;
-	struct mem_struct vfo_v;
-	struct mem_struct call_v;
-	struct mem_struct vfo_u;
-	struct mem_struct call_u;
+    struct mem_struct vfo_vhf;
+    struct mem_struct home_vhf;
+    struct mem_struct vfo_uhf;
+    struct mem_struct home_uhf;
+    
+    #seekto 0x101;
+    struct {
+        u8  pms_2U_enable:1,
+            pms_2L_enable:1,
+            pms_1U_enable:1,
+            pms_1L_enable:1,
+            unknown6:4;
+    } pms_settings;
 	
 	#seekto 0x102;
     struct mem_struct memory[180];
@@ -142,6 +171,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_ctone = False
         rf.has_bank = False
         rf.has_dtcs_polarity = False
@@ -154,6 +184,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_name_length = 7
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_skips = ["", "S"]
+        rf.valid_special_chans = FT90_SPECIAL
         rf.memory_bounds = (1, 180)
         rf.valid_bands = [(100000000, 230000000), 
             (300000000, 530000000), (810000000, 999975000)]
@@ -240,7 +271,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
                 blocknumbyte = chr(blocknum)
                 payloadbytes = self.get_mmap()[pos:pos+blocksize]
                 checksumbyte = chr(checksum.get_calculated(self.get_mmap()))
-                if os.getenv("CHIRP_DEBUG") or CHIRP_DEBUG:
+                if CHIRP_DEBUG:
                     print "Block %i - will send from %i to %i byte " % \
                         (blocknum, pos, pos + blocksize)
                     print util.hexprint(blocknumbyte)
@@ -251,13 +282,13 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
                 self.pipe.write(payloadbytes)
                 self.pipe.write(checksumbyte)
                 tmp = self.pipe.read(blocksize+2)  #chew echo
-                if os.getenv("CHIRP_DEBUG") or CHIRP_DEBUG:                
+                if CHIRP_DEBUG:
                     print "bytes echoed: "
                     print util.hexprint(tmp)
                 # radio is slow to write/ack:
                 time.sleep(0.9) 
                 buf = self.pipe.read(1)
-                if os.getenv("CHIRP_DEBUG") or CHIRP_DEBUG:                
+                if CHIRP_DEBUG:
                     print "ack recd:"
                     print util.hexprint(buf)
                 if buf != CMD_ACK:
@@ -292,10 +323,16 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         self._memobj = bitwise.parse(self.mem_format, self._mmap)
 
     def get_memory(self, number):
-        _mem = self._memobj.memory[number-1]
-
         mem = chirp_common.Memory()
-        mem.number = number
+        if isinstance(number, str):
+            # special channel
+            _mem = getattr(self._memobj, number)
+            mem.number = - len(FT90_SPECIAL) + FT90_SPECIAL.index(number)
+            mem.extd_number = number
+        else:
+            # regular memory
+            _mem = self._memobj.memory[number-1]
+            mem.number = number
         mem.freq = _mem.rxfreq * 10      
         mem.offset = _mem.txfreqoffset * 10
         if not _mem.tmode < len(FT90_TMODES):
@@ -307,19 +344,29 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.duplex = FT90_DUPLEX[_mem.shift]
         mem.power = FT90_POWER_LEVELS[_mem.power]
         # radio has a known bug with 5khz step and squelch
-        if _mem.step == 0:
+        if _mem.step == 0 or _mem.step > len(FT90_STEPS)-1:
             _mem.step = 2
         mem.tuning_step = FT90_STEPS[_mem.step]
         mem.skip = _mem.skip and "S" or ""
-        mem.name = _mem.name
+        if not all(char in chirp_common.CHARSET_ASCII for char in str(_mem.name)):
+            # dont display blank/junk name
+            mem.name = ""
+        else:
+            mem.name = _mem.name
         return mem
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
     
     def set_memory(self, mem):
-
-        _mem = self._memobj.memory[mem.number - 1]
+        if mem.number < 0:      # special channels
+            _mem = getattr(self._memobj, mem.extd_number)
+            if re.match('^pms', mem.extd_number):
+                # enable pms_XY channel flag
+                _pms_settings = self._memobj.pms_settings
+                setattr(_pms_settings, mem.extd_number + "_enable", True)
+        else:
+            _mem = self._memobj.memory[mem.number - 1]
         _mem.skip = mem.skip == "S"
         # radio has a known bug with 5khz step and dead squelch
         if not mem.tuning_step or mem.tuning_step == FT90_STEPS[0]:
@@ -354,6 +401,201 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.power = FT90_POWER_LEVELS.index(mem.power)
         else:
             _mem.power = 3  # default to low power
-        _mem.name = mem.name.ljust(7)
+        if (len(mem.name) == 0):
+            _mem.name = bytearray.fromhex("80ffffffffffff")
+            _mem.showname = 0
+        else:
+            _mem.name = str(mem.name).ljust(7)
+            _mem.showname = 1
+            _mem.UseDefaultName = 0
  
+    def _decode_cwid(self, cwidarr):
+        cwid = ""
+        if CHIRP_DEBUG:
+            print "@ +_decode_cwid:"
+        for byte in cwidarr.get_value():
+            char = int(byte)
+            if CHIRP_DEBUG:
+                print char
+            # bitwise wraps in quotes! get rid of those
+            if char < len(FT90_CWID_CHARS):
+                cwid += FT90_CWID_CHARS[char]
+        return cwid
+
+    def _encode_cwid(self, cwidarr):
+        cwid = ""
+        if CHIRP_DEBUG:
+            print "@ _encode_cwid:"
+        for char in cwidarr.get_value():
+            cwid += chr(FT90_CWID_CHARS.index(char))
+        if CHIRP_DEBUG:
+            print cwid
+        return cwid
+    
+    def _bbcd2dtmf(self, bcdarr, strlen = 16):
+        # doing bbcd, but with support for ABCD*#
+        if CHIRP_DEBUG:
+            print bcdarr.get_value()
+        string = ''.join("%02X" % b for b in bcdarr)
+        if CHIRP_DEBUG:
+            print "@_bbcd2dtmf, received: %s" % string
+        string = string.replace('E','*').replace('F','#')
+        if strlen <= 16:
+            string = string[:strlen]
+        return string
+    
+    def _dtmf2bbcd(self, dtmf):
+        dtmfstr = dtmf.get_value()
+        dtmfstr = dtmfstr.replace('*', 'E').replace('#', 'F')
+        dtmfstr = str.ljust(dtmfstr.strip(), 16, "0" )
+        bcdarr = list(bytearray.fromhex(dtmfstr))
+        if CHIRP_DEBUG:
+            print "@_dtmf2bbcd, sending: %s" % bcdarr
+        return bcdarr
+    
+    def get_settings(self):
+        _settings = self._memobj.settings
+        basic = RadioSettingGroup("basic", "Basic")
+        autodial = RadioSettingGroup("autodial", "AutoDial")
+        keymaps = RadioSettingGroup("keymaps", "KeyMaps")
+        top = RadioSettingGroup("top", "All Settings", basic, keymaps, autodial)
+        
+        rs = RadioSetting("beep", "Beep",
+                          RadioSettingValueBoolean(_settings.beep))
+        basic.append(rs)
+        rs = RadioSetting("lock", "Lock",
+                          RadioSettingValueBoolean(_settings.lock))
+        basic.append(rs)
+        rs = RadioSetting("ars", "Auto Repeater Shift",
+                        RadioSettingValueBoolean(_settings.ars))
+        basic.append(rs)
+        rs = RadioSetting("txpwrsave", "TX Power Save",
+                          RadioSettingValueBoolean(_settings.txpwrsave))
+        basic.append(rs)
+        rs = RadioSetting("txnarrow", "TX Narrow",
+                          RadioSettingValueBoolean(_settings.txnarrow))
+        basic.append(rs)
+        options = ["Off", "S-3", "S-5", "S-Full"]
+        rs = RadioSetting("rfsqlvl", "RF Squelch Level",
+                          RadioSettingValueList(options,
+                                        options[_settings.rfsqlvl]))
+        basic.append(rs)
+        options = ["Off", "Band A", "Band B", "Both"]
+        rs = RadioSetting("pttlock", "PTT Lock",
+                          RadioSettingValueList(options,
+                                        options[_settings.pttlock]))
+        basic.append(rs)
+        
+        rs = RadioSetting("cwid_en", "CWID Enable",
+                          RadioSettingValueBoolean(_settings.cwid_en))
+        basic.append(rs)
+        
+        cwid = RadioSettingValueString(0, 7, self._decode_cwid(_settings.cwid))
+        cwid.set_charset(FT90_CWID_CHARS)
+        rs = RadioSetting("cwid", "CWID", cwid)
+        basic.append(rs)
+        
+        options = ["OFF"] + map(str, range(1, 12+1))
+        rs = RadioSetting("apo", "APO time (hrs)",
+                          RadioSettingValueList(options,
+                                        options[_settings.apo]))
+        basic.append(rs)
+        
+        options = ["Off"] + map(str, range(1, 60+1))
+        rs = RadioSetting("tot", "Time Out Timer (mins)",
+                        RadioSettingValueList(options,options[_settings.tot]))
+        basic.append(rs)
+        
+        options = ["off", "Auto/TX", "Auto", "TX"]
+        rs = RadioSetting("fancontrol", "Fan Control",
+                        RadioSettingValueList(options,options[_settings.fancontrol]))
+        basic.append(rs)
+        
+        keyopts = ["Scan Up", "Scan Down", "Repeater", "Reverse", "Tone Burst",
+                        "Tx Power", "Home Ch", "VFO/MR", "Tone", "Priority"]
+        rs = RadioSetting("key_lt", "Left Key",
+                    RadioSettingValueList(keyopts,keyopts[_settings.key_lt]))
+        keymaps.append(rs)
+        rs = RadioSetting("key_rt", "Right Key",
+                    RadioSettingValueList(keyopts,keyopts[_settings.key_rt]))
+        keymaps.append(rs)
+        rs = RadioSetting("key_p1", "P1 Key",
+                    RadioSettingValueList(keyopts,keyopts[_settings.key_p1]))
+        keymaps.append(rs)
+        rs = RadioSetting("key_p2", "P2 Key",
+                    RadioSettingValueList(keyopts,keyopts[_settings.key_p2]))
+        keymaps.append(rs)
+        rs = RadioSetting("key_acc", "ACC Key",
+                    RadioSettingValueList(keyopts,keyopts[_settings.key_acc]))
+        keymaps.append(rs)
+        
+        options = map(str, range(0,12+1))
+        rs = RadioSetting("lcdcontrast", "LCD Contrast",
+                        RadioSettingValueList(options,options[_settings.lcdcontrast]))
+        basic.append(rs)
+        
+        options = ["off", "d4", "d3", "d2", "d1"]
+        rs = RadioSetting("dimmer", "Dimmer",
+                        RadioSettingValueList(options,options[_settings.dimmer]))
+        basic.append(rs)
+        
+        options = ["TRX Normal", "RX Reverse", "TX Reverse", "TRX Reverse"]
+        rs = RadioSetting("dcsmode", "DCS Mode",
+                        RadioSettingValueList(options,options[_settings.dcsmode]))
+        basic.append(rs)
+        
+        options = ["50 ms", "100 ms"]
+        rs = RadioSetting("dtmfspeed", "DTMF Speed",
+                        RadioSettingValueList(options,options[_settings.dtmfspeed]))
+        autodial.append(rs)
+        
+        options = ["50 ms", "250 ms", "450 ms", "750 ms", "1 sec"]
+        rs = RadioSetting("dtmftxdelay", "DTMF TX Delay",
+                        RadioSettingValueList(options,options[_settings.dtmftxdelay]))
+        autodial.append(rs)
+        
+        options = map(str,range(1,8+1))
+        rs = RadioSetting("dtmf_active", "DTMF Active",
+                RadioSettingValueList(options,options[_settings.dtmf_active]))
+        autodial.append(rs)
+        
+        # setup 8 dtmf autodial entries
+        for i in map(str, range(1,9)):
+            objname = "dtmf" + i
+            dtmfsetting = getattr(_settings, objname)
+            dtmflen = getattr(_settings, objname + "_len")
+            dtmfstr = self._bbcd2dtmf(dtmfsetting, dtmflen)
+            dtmf = RadioSettingValueString(0, 16, dtmfstr)
+            dtmf.set_charset(FT90_DTMF_CHARS + list(" "))
+            rs = RadioSetting(objname, objname.upper(), dtmf)
+            autodial.append(rs)
+        
+        return top
+    
+    def set_settings(self, uisettings):
+        _settings = self._memobj.settings
+        for element in uisettings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            if not element.changed():
+                continue
+            try:
+                setting = element.get_name()
+                oldval = getattr(_settings, setting)
+                newval = element.value
+                if setting == "cwid":
+                    newval = self._encode_cwid(newval)
+                if re.match('dtmf\d', setting):
+                    # set dtmf length field and then get bcd dtmf
+                    dtmfstrlen = len(str(newval).strip())
+                    setattr(_settings, setting + "_len", dtmfstrlen)
+                    newval = self._dtmf2bbcd(newval)
+                if CHIRP_DEBUG:
+                    print "Setting %s(%s) <= %s" % (setting,
+                                    oldval, newval)
+                setattr(_settings, setting, newval)
+            except Exception, e:
+                print element.get_name()
+                raise
 
