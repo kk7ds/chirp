@@ -66,8 +66,30 @@ struct memory {
   char name[7];
   u8 unknownZ[2];
 };
+
+#seekto 0x0030;
+struct {
+	char serial[16];
+} serial_no;
+
+#seekto 0x0050;
+struct {
+	char date[16];
+} version;
+
+#seekto 0x03e0;
+struct {
+  char welcome1[8];
+} poweron_msg;
+
+#seekto 0x0540;
+struct memory memblk1[12];
+
 #seekto 0x2000;
 struct memory memory[758];
+
+#seekto 0x7ec0;
+struct memory memblk2[10];
 """
 
 class FlagObj(object):
@@ -153,6 +175,8 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
+valid_model = ['QX588UV', 'HR-2040']
+
 def _ident(radio):
     radio.pipe.setTimeout(1)
     _echo_write(radio, "PROGRAM")
@@ -163,7 +187,7 @@ def _ident(radio):
     _echo_write(radio, "\x02")
     response = radio.pipe.read(16)
     _debug(util.hexprint(response))
-    if response[1:8] != "QX588UV":
+    if response[1:8] not in valid_model:
         print "Response was:\n%s" % util.hexprint(response)
         raise errors.RadioError("Unsupported model")
 
@@ -416,6 +440,27 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         _flg.set_skip(mem.skip == "S")
         _flg.set_pskip(mem.skip == "P")
 
+# since both the AnyTone 5888UV and the Intek HR-2040 place the same ident
+# (QX588UV) in the image, we need to check which of them it actually is.
+# The Intek has HR-2040-XXXXXXXX (Serial No.) at offset 0x30:0x3f,
+# so this may be the best method of determining the actual model.
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata[0x21:0x28] == "QX588UV"
+		if filedata[0x30:0x37] == "HR-2040":
+			return False
+		return filedata[0x21:0x28] == "QX588UV"
+
+@directory.register
+class IntekHR2040Radio(AnyTone5888UVRadio):
+    """Intek HR-2040"""
+    VENDOR = "Intek"
+    MODEL = "HR-2040"
+
+    @classmethod
+    def get_experimental_warning(cls):
+        return "Experimental - Based on the AnyTone 5888UV code"
+
+# Use the first part of the radio serial No. for Ident (HR-2040-XXXXXXXX) at offset 0x30:0x37
+    @classmethod
+    def match_model(cls, filedata, filename):
+       return filedata[0x30:0x37] == "HR-2040"
