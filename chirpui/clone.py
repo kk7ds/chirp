@@ -120,7 +120,7 @@ class CloneSettingsDialog(gtk.Dialog):
         self.__table.set_col_spacings(10)
         self.__row = 0
 
-        self.__port = self.__make_port(settings and settings.port or None)
+        self.__port = self.__make_port(settings and settings.port or ["No port detected"])
         self.__modl = self.__make_model()
         self.__vend = self.__make_vendor(self.__modl)
 
