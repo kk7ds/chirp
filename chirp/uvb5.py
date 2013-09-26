@@ -214,7 +214,7 @@ def do_upload(radio):
             raise errors.RadioError("Radio NAK'd block at address 0x%04x" % i)
         do_status(radio, "to", i)
 
-DUPLEX = ["", "-", "+", 'off']
+DUPLEX = ["", "-", "+", 'off', "split"]
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ/_+*"
 SPECIALS = {
     "VFO1": -2,
@@ -391,6 +391,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         if mem.duplex == "off":
             _mem.duplex = DUPLEX.index("-")
             _mem.offset = _mem.freq
+        elif mem.duplex == "split":
+            diff = mem.offset - mem.freq 
+            _mem.duplex = DUPLEX.index("-") if diff < 0 else DUPLEX.index("+")
+            _mem.offset = abs(diff) / 10
         else:
             _mem.offset = mem.offset / 10
             _mem.duplex = DUPLEX.index(mem.duplex)
@@ -412,6 +416,15 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
+
+    def validate_memory(self, mem):
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        if mem.duplex == "split" and abs(mem.freq - mem.offset)>69995000:
+            msgs.append(chirp_common.ValidationError(
+                    "Max split is 69.995MHz"))
+        return msgs
+
 
     def get_settings(self):
         basic = RadioSettingGroup("basic", "Basic Settings")
