@@ -120,7 +120,8 @@ class MemoryEditor(common.Editor):
         return self.rthread.radio.filter_name(new)
 
     def ed_offset(self, _, path, new, __):
-        return chirp_common.parse_freq(new)
+        new = chirp_common.parse_freq(new)
+        return abs(new)
 
     def ed_freq(self, _foo, path, new, colnum):
         iter = self.store.get_iter(path)
