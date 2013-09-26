@@ -375,7 +375,7 @@ class MemoryEditor(common.Editor):
 
         msgs = self.rthread.radio.validate_memory(mem)
         if msgs:
-            common.show_error(_("Error setting memory") + \
+            common.show_error(_("Error setting memory") + ": " + \
                                   "\r\n\r\n".join(msgs))
             self.prefill()
             return
