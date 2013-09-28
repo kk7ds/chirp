@@ -358,6 +358,8 @@ class TestCaseBruteForce(TestCase):
                 continue
             if duplex == "split" and not rf.can_odd_split:
                 raise TestFailedError("Forgot to set rf.can_odd_split!")
+            if duplex == "split":
+                m.offset = rf.valid_bands[0][1] - 100000
             m.duplex = duplex
             self.set_and_compare(m)
         
@@ -414,7 +416,7 @@ class TestCaseBruteForce(TestCase):
             if rf.valid_bands:
                 m.freq = rf.valid_bands[0][0] + 100000
             else:
-                m.freq = 146.52
+                m.freq = 146520000
             if m.freq < 30000000 and "AM" in rf.valid_modes:
                 m.mode = "AM"
             return m
@@ -429,7 +431,10 @@ class TestCaseBruteForce(TestCase):
         if 12.5 in rf.valid_tuning_steps and \
                 "split" in rf.valid_duplexes:
             m = clean_mem()
-            m.offset = 151137500
+            if rf.valid_bands:
+                m.offset = rf.valid_bands[0][1] - 12500
+            else:
+                m.offset = 151137500
             m.duplex = "split"
             self.set_and_compare(m)
 
