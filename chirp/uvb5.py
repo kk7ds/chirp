@@ -241,6 +241,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_duplexes = DUPLEX
+        rf.can_odd_split = True
         rf.valid_skips = ["", "S"]
         rf.valid_characters = CHARSET
         rf.valid_name_length = 5
