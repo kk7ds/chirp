@@ -420,7 +420,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
     def validate_memory(self, mem):
         msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
 
-        if mem.duplex == "split" and abs(mem.freq - mem.offset)>69995000:
+        if (mem.duplex == "split" and abs(mem.freq - mem.offset) > 69995000) or \
+                (mem.duplex in ["+", "-"] and mem.offset > 69995000) :
             msgs.append(chirp_common.ValidationError(
                     "Max split is 69.995MHz"))
         return msgs
