@@ -17,7 +17,8 @@ import struct
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
-                RadioSettingValueInteger, RadioSettingValueString
+                RadioSettingValueInteger, RadioSettingValueString, \
+                RadioSettingValueFloat
 
 mem_format = """
 struct memory {
@@ -49,9 +50,7 @@ struct memory channels[99];
 struct memory vfo2;
 
 #seekto 0x09D0;
-struct {
-  u16 freq;
-} broadcastfm[16];
+u16 fm_presets[16];
 
 #seekto 0x0A30;
 struct {
@@ -592,28 +591,20 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
 
-        bcastfm = RadioSettingGroup("bcastfm", "FM Radio Presets")
-        group.append(bcastfm)
-
-        def convert_bytes_to_freq(bytes):
-            real_freq = int(bytes) + 650
-            if real_freq > 1080:
-                real_freq = 0
-            return chirp_common.format_freq(real_freq * 100000)
-
-        def apply_freq(setting, obj):
-            value = chirp_common.parse_freq(str(setting.value)) / 100000
-            if value < 650 or value > 1080:
-                value = 65535 + 650
-            obj.freq = value - 650
+        fm_preset = RadioSettingGroup("fm_preset", "FM Radio Presets")
+        group.append(fm_preset)
 
         for i in range(0, 16):
-            _freq = RadioSettingValueString(0, 10,
-               convert_bytes_to_freq(self._memobj.broadcastfm[i].freq))
-            rs = RadioSetting("broadcastfm/%i.freq" % i,
-                              "Channel %i (65.0-108.0)" % (i + 1), _freq)
-            rs.set_apply_callback(apply_freq, self._memobj.broadcastfm[i])
-            bcastfm.append(rs)
+            if self._memobj.fm_presets[i] != 0xFFFF:
+                used = True
+                preset = self._memobj.fm_presets[i] / 10.0 + 65
+            else:
+                used = False
+                preset = 65
+            rs = RadioSetting("fm_presets_%1i" % i, "FM Preset %i" % (i + 1),
+                          RadioSettingValueBoolean(used),
+                          RadioSettingValueFloat(65, 108, preset, 0.1, 1))
+            fm_preset.append(rs)
 
         testmode = RadioSettingGroup("testmode", "Test Mode Settings")
         group.append(testmode)
@@ -660,31 +651,51 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         _settings = self._memobj.settings
         for element in settings:
             if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
-            try:
-                name = element.get_name()
-                if "." in name:
-                    bits = name.split(".")
-                    obj = self._memobj
-                    for bit in bits[:-1]:
-                        if "/" in bit:
-                            bit, index = bit.split("/", 1)
-                            index = int(index)
-                            obj = getattr(obj, bit)[index]
-                        else:
-                            obj = getattr(obj, bit)
-                    setting = bits[-1]
+                if element.get_name() == "fm_preset" :
+                    self._set_fm_preset(element)
                 else:
-                    obj = _settings
-                    setting = element.get_name()
+                    self.set_settings(element)
+                    continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
 
-                if element.has_apply_callback():
-                    print "Using apply callback"
-                    element.run_apply_callback()
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
+
+    def _set_fm_preset(self, settings):
+        for element in settings:
+            try:
+                index = (int(element.get_name().split("_")[-1]))
+                val = element.value
+                if val[0].get_value():
+                    value = int(val[1].get_value() * 10 - 650)
                 else:
-                    print "Setting %s = %s" % (setting, element.value)
-                    setattr(obj, setting, element.value)
+                    value = 0xffff
+                print "Setting fm_presets[%1i] = %s" % (index, value)
+                setting = self._memobj.fm_presets
+                setting[index] = value
             except Exception, e:
                 print element.get_name()
                 raise
