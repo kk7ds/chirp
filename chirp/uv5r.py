@@ -21,7 +21,7 @@ from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    InvalidValueError
+    RadioSettingValueFloat, InvalidValueError
 
 MEM_FORMAT = """
 #seekto 0x0008;
@@ -182,6 +182,9 @@ struct {
      widenarr:1,
      unknown5:6;
 } vfob;
+
+#seekto 0x0F56;
+u16 fm_presets;
 
 #seekto 0x1000;
 struct {
@@ -1123,6 +1126,17 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                     STEP_LIST[self._memobj.vfob.step]))
             workmode.append(rs)
 
+        fm_preset = RadioSettingGroup("fm_preset", "FM Radio Preset")
+        group.append(fm_preset)
+
+        if self._memobj.fm_presets <= 116.1 * 10 - 650:
+            preset = self._memobj.fm_presets / 10.0 + 65
+        else:
+            preset = 76.0
+        rs = RadioSetting("fm_presets", "FM Preset(MHz)",
+                      RadioSettingValueFloat(65, 116.1, preset, 0.1, 1))
+        fm_preset.append(rs)
+
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
         group.append(dtmf)
         dtmfchars = "0123456789 *#ABCD"
@@ -1212,31 +1226,46 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _settings = self._memobj.settings[0]
         for element in settings:
             if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
-            try:
-                name = element.get_name()
-                if "." in name:
-                    bits = name.split(".")
-                    obj = self._memobj
-                    for bit in bits[:-1]:
-                        if "/" in bit:
-                            bit, index = bit.split("/", 1)
-                            index = int(index)
-                            obj = getattr(obj, bit)[index]
-                        else:
-                            obj = getattr(obj, bit)
-                    setting = bits[-1]
+                if element.get_name() == "fm_preset" :
+                    self._set_fm_preset(element)
                 else:
-                    obj = _settings
-                    setting = element.get_name()
+                    self.set_settings(element)
+                    continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
 
-                if element.has_apply_callback():
-                    print "Using apply callback"
-                    element.run_apply_callback()
-                else:
-                    print "Setting %s = %s" % (setting, element.value)
-                    setattr(obj, setting, element.value)
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
+
+    def _set_fm_preset(self, settings):
+        for element in settings:
+            try:
+                val = element.value
+                value = int(val.get_value() * 10 - 650)
+                print "Setting fm_presets = %s" % (value)
+                self._memobj.fm_presets = value
             except Exception, e:
                 print element.get_name()
                 raise
