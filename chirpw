@@ -103,7 +103,13 @@ class CompatStr(str):
         return base
 
 pyver = sys.version.split()[0]
-vmaj, vmin, vrel = pyver.split(".", 3)
+
+try :
+    vmaj, vmin, vrel = pyver.split(".", 3)
+except :
+    vmaj, vmin = pyver.split(".", 2)
+    vrel = 0
+
 if int(vmaj) < 2 or int(vmin) < 6:
     # Python <2.6, emulate str.format()
     import __builtin__
