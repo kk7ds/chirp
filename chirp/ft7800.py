@@ -181,6 +181,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     """Base class for FT-7800,7900,8800,8900 radios"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
+    MODES = list(MODES)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -288,7 +289,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.tmode = TMODES[_mem.tmode]
-        mem.mode = MODES[_mem.mode]
+        mem.mode = self.MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         if self.get_features().has_tuning_step:
             mem.tuning_step = STEPS[_mem.tune_step]
@@ -315,7 +316,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         set_freq(mem.freq, _mem, "freq")
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.mode = MODES.index(mem.mode)
+        _mem.mode = self.MODES.index(mem.mode)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         if self.get_features().has_tuning_step:
             _mem.tune_step = STEPS.index(mem.tuning_step)
@@ -607,6 +608,8 @@ class FT8900Radio(FT8800Radio):
     _memsize = 14793
     _block_lengths = [8, 14784, 1]
 
+    MODES = ["FM", "NFM", "AM"]
+
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_8900, self._mmap)
 
@@ -614,7 +617,7 @@ class FT8900Radio(FT8800Radio):
         rf = FT8800Radio.get_features(self)
         rf.has_sub_devices = False
         rf.has_bank = False
-        rf.valid_modes = MODES
+        rf.valid_modes = self.MODES
         rf.valid_bands = [( 28000000,  29700000),
                           ( 50000000,  54000000),
                           (108000000, 180000000),
