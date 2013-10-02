@@ -56,6 +56,8 @@ class CloneSettingsDialog(gtk.Dialog):
                 port = conf.get("last_port")
             elif ports:
                 port = ports[0]
+            else:
+                port = ""
             if not port in ports:
                 ports.insert(0, port)
 
@@ -120,7 +122,7 @@ class CloneSettingsDialog(gtk.Dialog):
         self.__table.set_col_spacings(10)
         self.__row = 0
 
-        self.__port = self.__make_port(settings and settings.port or ["No port detected"])
+        self.__port = self.__make_port(settings and settings.port or None)
         self.__modl = self.__make_model()
         self.__vend = self.__make_vendor(self.__modl)
 
