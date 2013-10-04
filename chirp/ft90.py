@@ -108,8 +108,8 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             key_p2:4;
         u8  unk13:4,
             key_acc:4;
-		char	demomsg1[32];
-		char	demomsg2[32];
+		u8	demomsg1[32];
+		u8	demomsg2[32];
 		
 	} settings;
 	
@@ -145,6 +145,9 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
     struct mem_struct home_vhf;
     struct mem_struct vfo_uhf;
     struct mem_struct home_uhf;
+
+    #seekto 0xEB;
+    u8 chan_enable[23];    
     
     #seekto 0x101;
     struct {
@@ -321,7 +324,28 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(self.mem_format, self._mmap)
+    
+    def _get_chan_enable(self, number):
+        number = number - 1
+        bytepos = number // 8
+        bitpos = number  % 8
+        chan_enable = self._memobj.chan_enable[bytepos]
+        if chan_enable & ( 1 << bitpos ):
+            return True
+        else:
+            return False
 
+    def _set_chan_enable(self, number, enable):
+        number = number - 1
+        bytepos = number // 8
+        bitpos = number  % 8
+        chan_enable = self._memobj.chan_enable[bytepos]
+        if enable:
+            chan_enable = chan_enable | ( 1 << bitpos )  # enable
+        else:
+            chan_enable = chan_enable & ~ ( 1 << bitpos )  # disable            
+        self._memobj.chan_enable[bytepos] = chan_enable
+        
     def get_memory(self, number):
         mem = chirp_common.Memory()
         if isinstance(number, str):
@@ -333,6 +357,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             # regular memory
             _mem = self._memobj.memory[number-1]
             mem.number = number
+            mem.empty = not self._get_chan_enable(number)
         mem.freq = _mem.rxfreq * 10      
         mem.offset = _mem.txfreqoffset * 10
         if not _mem.tmode < len(FT90_TMODES):
@@ -367,6 +392,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
                 setattr(_pms_settings, mem.extd_number + "_enable", True)
         else:
             _mem = self._memobj.memory[mem.number - 1]
+            self._set_chan_enable( mem.number, not mem.empty )
         _mem.skip = mem.skip == "S"
         # radio has a known bug with 5khz step and dead squelch
         if not mem.tuning_step or mem.tuning_step == FT90_STEPS[0]:
@@ -408,7 +434,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.name = str(mem.name).ljust(7)
             _mem.showname = 1
             _mem.UseDefaultName = 0
- 
+
     def _decode_cwid(self, cwidarr):
         cwid = ""
         if CHIRP_DEBUG:
