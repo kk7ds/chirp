@@ -227,3 +227,12 @@ class TestBitwiseSeek(BaseTest):
 class TestBitwiseErrors(BaseTest):
     def test_missing_semicolon(self):
         self.assertRaises(SyntaxError, bitwise.parse, "u8 foo", "")
+
+class TestBitwiseComments(BaseTest):
+    def test_comment_inline_cppstyle(self):
+        obj = bitwise.parse('u8 foo; // test', '\x10')
+        self.assertEqual(16, obj.foo)
+
+    def test_comment_cppstyle(self):
+        obj = bitwise.parse('// Test this\nu8 foo;', '\x10')
+        self.assertEqual(16, obj.foo)

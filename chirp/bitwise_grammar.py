@@ -80,6 +80,10 @@ def _language():
 
 def parse(data):
     lines = data.split("\n")
+    for index, line in enumerate(lines):
+        if '//' in line:
+            lines[index] = line[:line.index('//')]
+
     class FakeFileInput:
         """Simulate line-by-line file reading from @data"""
         line = -1
