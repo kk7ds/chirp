@@ -57,7 +57,7 @@ class ICT7HRadio(icf.IcomCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (0, 59)
+        rf.memory_bounds = (1, 60)
         rf.valid_modes = list(MODES)
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
@@ -79,8 +79,8 @@ class ICT7HRadio(icf.IcomCloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def get_memory(self, number):
-        _mem = self._memobj.memory[number]
-        _flag = self._memobj.flags[number]
+        _mem = self._memobj.memory[number - 1]
+        _flag = self._memobj.flags[number - 1]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -103,8 +103,8 @@ class ICT7HRadio(icf.IcomCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number]
-        _flag = self._memobj.flags[mem.number]
+        _mem = self._memobj.memory[mem.number - 1]
+        _flag = self._memobj.flags[mem.number - 1]
 
         _mem.freq = int(mem.freq / 100000)
         topfreq = int(mem.freq / 100000) * 100000
