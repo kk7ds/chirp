@@ -111,13 +111,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     """
 
     @classmethod
-    def get_experimental_warning(cls):
-        return ('This version of the Wouxun driver allows you to modify the '
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = ('This version of the Wouxun driver allows you to modify the '
                 'frequency range settings of your radio. This has been tested '
                 'and reports from other users indicate that it is a safe '
                 'thing to do. However, modifications to this value may have '
                 'unintended consequences, including damage to your device. '
                 'You have been warned. Proceed at your own risk!')
+        return rp
                 
     @classmethod
     def _get_querymodel(cls):
