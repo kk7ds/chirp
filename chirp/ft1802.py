@@ -26,6 +26,7 @@
 from chirp import chirp_common, bitwise, directory, yaesu_clone
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean
+from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x06ea;
@@ -87,6 +88,21 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
     _model = "AH023"
     _block_lengths = [10, 8001]
     _memsize = 8011
+
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic jack.
+            3. Press and hold in the [LOW(A/N)] key while turning the radio on.
+            4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic jack.
+            3. Press and hold in the [LOW(A/N)] key while turning the radio on.
+            4. Press the [D/MR(MW)] key ("--WAIT--" will appear on the LCD)."""))
+        return rp
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
