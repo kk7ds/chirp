@@ -564,7 +564,7 @@ If you think that it is valid, you can select a radio model below to force an op
             return True
 
         title = _("Proceed with experimental driver?")
-        text = rclass.get_experimental_warning()
+        text = rclass.get_prompts().experimental
         msg = _("This radio's driver is experimental. "
                 "Do you want to proceed?")
         resp, squelch = common.show_warning(msg, text,
@@ -574,6 +574,26 @@ If you think that it is valid, you can select a radio model below to force an op
         if resp == gtk.RESPONSE_YES:
             CONF.set_bool(sql_key, not squelch, "state")
         return resp == gtk.RESPONSE_YES
+
+    def _show_instructions(self, radio, message):
+        if message is None:
+            return
+
+        if CONF.get_bool("clone_instructions", "noconfirm"):
+            return
+
+        d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+        d.set_markup("<big><b>" + _("{name} Instructions").format(
+                     name=radio.get_name()) + "</b></big>")
+        msg = _("{instructions}").format(instructions=message)
+        d.format_secondary_markup(msg)
+
+        again = gtk.CheckButton(_("Don't show instructions for any radio again"))
+        again.show()
+        d.vbox.pack_start(again, 0, 0, 0)
+        d.run()
+        d.destroy()
+        CONF.set_bool("clone_instructions", again.get_active(), "noconfirm")
 
     def do_download(self, port=None, rtype=None):
         d = clone.CloneSettingsDialog(parent=self)
@@ -587,6 +607,8 @@ If you think that it is valid, you can select a radio model below to force an op
                 not self._confirm_experimental(rclass):
             # User does not want to proceed with experimental driver
             return
+
+        self._show_instructions(rclass, rclass.get_prompts().pre_download)
 
         print "User selected %s %s on port %s" % (rclass.VENDOR,
                                                   rclass.MODEL,
@@ -630,6 +652,8 @@ If you think that it is valid, you can select a radio model below to force an op
                 not self._confirm_experimental(radio.__class__):
             # User does not want to proceed with experimental driver
             return
+
+        self._show_instructions(radio, radio.get_prompts().pre_upload)
 
         try:
             ser = serial.Serial(port=settings.port,
