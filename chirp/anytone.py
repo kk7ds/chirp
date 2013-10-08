@@ -306,8 +306,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         ]
 
     @classmethod
-    def get_experimental_warning(cls):
-        return "FOO"
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = "FOO"
+        return rp
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
