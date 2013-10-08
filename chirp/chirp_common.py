@@ -643,7 +643,14 @@ def console_status(status):
     import sys
 
     sys.stderr.write("\r%s" % status)
-    
+
+
+class RadioPrompts:
+    """Radio prompt strings"""
+    experimental = None
+    pre_download = None
+    pre_upload = None
+
 
 BOOLEAN = [True, False]
 
@@ -955,6 +962,11 @@ class Radio(object):
     def get_name(cls):
         """Return a printable name for this radio"""
         return "%s %s" % (cls.VENDOR, cls.MODEL)
+
+    @classmethod
+    def get_prompts(cls):
+        """Return a set of strings for use in prompts"""
+        return RadioPrompts()
 
     def set_pipe(self, pipe):
         """Set the serial object to be used for communications"""
