@@ -475,13 +475,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                ]
 
     @classmethod
-    def get_experimental_warning(cls):
-        return ('Due to the fact that the manufacturer continues to '
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = ('Due to the fact that the manufacturer continues to '
                 'release new versions of the firmware with obscure and '
                 'hard-to-track changes, this driver may not work with '
                 'your device. Thus far and to the best knowledge of the '
                 'author, no UV-5R radios have been harmed by using CHIRP. '
                 'However, proceed at your own risk!')
+        return rp
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
