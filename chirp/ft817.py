@@ -22,6 +22,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString
 import time, os
+from textwrap import dedent
 
 CMD_ACK = 0x06
 
@@ -272,6 +273,25 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
                                     SPECIAL_MEMORIES.keys()))
+                                    
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to ACC jack.
+            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
+                 turning the radio on ("CLONE MODE" will appear on the
+                 display).
+            4. <b>After clicking OK</b>, press the [A] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to ACC jack.
+            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
+                 turning the radio on ("CLONE MODE" will appear on the
+                 display).
+            4. Press the [C] key ("RX" will appear on the LCD)."""))
+        return rp
 
     def _read(self, block, blocknum):
         for _i in range(0, 60):
@@ -304,7 +324,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         data = ""
         blocks = 0
         status = chirp_common.Status()
-        status.msg = "Cloning from radio"
+        status.msg = _("Cloning from radio")
         status.max = len(self._block_lengths) + 39
         for block in self._block_lengths:
             if blocks == 8:
@@ -319,14 +339,14 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 status.cur = blocks
                 self.status_fn(status)
                 
-        status.msg = "Clone completed, checking for spurious bytes"
+        status.msg = _("Clone completed, checking for spurious bytes")
         self.status_fn(status)
         moredata = self.pipe.read(2)
         if moredata:
-            raise Exception("Radio sent data after the last awaited block, "
+            raise Exception(_("Radio sent data after the last awaited block, "
                         "this happens when the selected model is a non-US "
                         "but the radio is a US one. "
-                        "Please choose the correct model and try again.")
+                        "Please choose the correct model and try again."))
             
     
         print "Clone completed in %i seconds" % (time.time() - start)
@@ -340,7 +360,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         blocks = 0
         pos = 0
         status = chirp_common.Status()
-        status.msg = "Cloning to radio"
+        status.msg = _("Cloning to radio")
         status.max = len(self._block_lengths) + 39
         for block in self._block_lengths:
             if blocks == 8:
@@ -370,7 +390,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 if not buf or buf[0] != chr(CMD_ACK):
                     if os.getenv("CHIRP_DEBUG"):
                         print util.hexprint(buf)
-                    raise Exception("Radio did not ack block %i" % blocks)
+                    raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
                 blocks += 1
                 status.cur = blocks
