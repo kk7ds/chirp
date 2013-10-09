@@ -591,6 +591,10 @@ If you think that it is valid, you can select a radio model below to force an op
         again = gtk.CheckButton(_("Don't show instructions for any radio again"))
         again.show()
         d.vbox.pack_start(again, 0, 0, 0)
+        h_button_box=d.vbox.get_children()[2]
+        ok_button=h_button_box.get_children()[0]
+        ok_button.grab_default()
+        ok_button.grab_focus()
         d.run()
         d.destroy()
         CONF.set_bool("clone_instructions", again.get_active(), "noconfirm")
