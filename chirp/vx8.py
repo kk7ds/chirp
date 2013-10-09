@@ -21,6 +21,7 @@ from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
+from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x54a;
@@ -449,6 +450,23 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     _has_vibrate = False
     _has_af_dual = True
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to DATA jack.
+            3. Press and hold in the [FW] key while turning the radio on
+                 ("CLONE" will appear on the display).
+            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to DATA jack.
+            3. Press and hold in the [FW] key while turning the radio on
+                 ("CLONE" will appear on the display).
+            4. Press the [MODE] key ("-WAIT-" will appear on the LCD)."""))
+        return rp
+        
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
