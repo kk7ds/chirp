@@ -16,6 +16,7 @@
 import time
 from chirp import chirp_common, yaesu_clone, memmap, bitwise, directory
 from chirp import errors
+from textwrap import dedent
 
 ACK = "\x06"
 
@@ -71,7 +72,7 @@ def _upload(radio):
         _send(radio.pipe, radio.get_mmap()[offset:offset+64])
         ack = radio.pipe.read(1)
         if ack != ACK:
-            raise Exception("Radio did not ack block %i" % i)
+            raise Exception(_("Radio did not ack block %i") % i)
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -166,6 +167,27 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _memsize = 28617
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/SP jack.
+            3. Press and hold in the [MONI] switch while turning the
+                 radio on.
+            4. Rotate the DIAL job to select "F8 CLONE".
+            5. Press the [F/W] key momentarily.
+            6. <b>After clicking OK</b>, press the [PTT] switch to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/SP jack.
+            3. Press and hold in the [MONI] switch while turning the
+                 radio on.
+            4. Rotate the DIAL job to select "F8 CLONE".
+            5. Press the [F/W] key momentarily.
+            6. Press the [MONI] switch ("--RX--" will appear on the LCD)."""))
+        return rp
+        
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 999)
