@@ -16,6 +16,7 @@
 
 from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
+from textwrap import dedent
 
 #interesting offsets which may be checksums needed later
 #0x0393 checksum1?
@@ -147,6 +148,23 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     #attempts to speed it up appear unstable, more testing required
     _block_size = 8
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/SP jack.
+            3. Press and hold in the [F/W] key while turning the radio on
+                 ("CLONE" will appear on the display).
+            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/SP jack.
+            3. Press and hold in the [F/W] key while turning the radio on
+                 ("CLONE" will appear on the display).
+            4. Press the [V/M] key ("-WAIT-" will appear on the LCD)."""))
+        return rp
+        
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
 
