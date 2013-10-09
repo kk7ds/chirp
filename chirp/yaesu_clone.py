@@ -17,6 +17,7 @@ CMD_ACK = 0x06
 
 from chirp import chirp_common, util, memmap, errors
 import time, os
+from textwrap import dedent
 
 def _safe_read(pipe, count):
     buf = ""
@@ -178,6 +179,21 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     VENDOR = "Yaesu"
     _model = "ABCDE"
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect data cable.
+            3. Prepare radio for clone.
+            4. <b>After clicking OK</b>, press the key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect data cable.
+            3. Prepare radio for clone.
+            4. Press the key to receive the image."""))
+        return rp
+        
     def _checksums(self):
         """Return a list of checksum objects that need to be calculated"""
         return []
