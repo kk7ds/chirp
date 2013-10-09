@@ -16,6 +16,7 @@
 import time
 from chirp import chirp_common, yaesu_clone, memmap, directory
 from chirp import bitwise, errors
+from textwrap import dedent
 
 from collections import defaultdict
 
@@ -183,6 +184,31 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODES = list(MODES)
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to DATA jack.
+            3. Press and hold in the [MHz(PRI)] key while turning the
+                 radio on.
+            4. Rotate the DIAL job to select "F-7 CLONE".
+            5. Press and hold in the [BAND(SET)] key. The display
+                 will disappear for a moment, then the "CLONE" notation
+                 will appear.
+            6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to DATA jack.
+            3. Press and hold in the [MHz(PRI)] key while turning the
+                 radio on.
+            4. Rotate the DIAL job to select "F-7 CLONE".
+            5. Press and hold in the [BAND(SET)] key. The display
+                 will disappear for a moment, then the "CLONE" notation
+                 will appear.
+            6. Press the [LOW(ACC)] key ("--RX--" will appear on the display)."""))
+        return rp
+        
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 999)
@@ -490,6 +516,31 @@ class FT8800Radio(FTx800Radio):
 
     _memstart = 0x0000
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to DATA jack.
+            3. Press and hold in the "left" [V/M] key while turning the
+                 radio on.
+            4. Rotate the "right" DIAL knob to select "CLONE START".
+            5. Press the [SET] key. The display will disappear 
+                 for a moment, then the "CLONE" notation will appear.
+            6. <b>After clicking OK</b>, press the "left" [V/M] key to 
+                 send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to DATA jack.
+            3. Press and hold in the "left" [V/M] key while turning the
+                 radio on.
+            4. Rotate the "right" DIAL knob to select "CLONE START".
+            5. Press the [SET] key. The display will disappear 
+                 for a moment, then the "CLONE" notation will appear.
+            6. Press the "left" [LOW] key ("CLONE -RX-" will appear on 
+                 the display)."""))
+        return rp
+        
     def get_features(self):
         rf = FTx800Radio.get_features(self)
         rf.has_sub_devices = self.VARIANT == ""
