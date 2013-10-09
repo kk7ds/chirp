@@ -15,6 +15,7 @@
 
 from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
+from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x0611;
@@ -183,6 +184,23 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_lengths = [ 10, 8, 16193 ]
     _block_size = 8
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/SP jack.
+            3. Press and hold in the [MON-F] key while turning the radio on
+                 ("CLONE" will appear on the display).
+            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/SP jack.
+            3. Press and hold in the [MON-F] key while turning the radio on
+                 ("CLONE" will appear on the display).
+            4. Press the [V/M] key ("CLONE WAIT" will appear on the LCD)."""))
+        return rp
+        
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0592, 0x0610),
                  yaesu_clone.YaesuChecksum(0x0612, 0x0690),
