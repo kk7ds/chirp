@@ -308,7 +308,9 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = "FOO"
+        rp.experimental = ("The Anytone driver is currently experimental. "
+                           "There are no known issues with it, but you should "
+                           "proceed with caution.")
         return rp
 
     def get_features(self):
