@@ -33,6 +33,17 @@ struct {
   u8 name[6];
 } bank_names[24];
 
+#seekto 0x0E0A;
+struct {
+  u16 channels[100];
+} banks[24];
+
+#seekto 0x02EE;
+struct {
+    u16 in_use;
+} bank_used[24];
+
+
 #seekto 0x20CA;
 struct {
   u8 even_pskip:1,
@@ -111,17 +122,73 @@ class VX3Bank(chirp_common.NamedBank):
 
 class VX3BankModel(chirp_common.BankModel):
     """A VX-3 bank model"""
+
     def get_num_mappings(self):
-        return 24
+        return len(self.get_mappings())
 
     def get_mappings(self):
-        _banks = self._radio._memobj.bank_names
+        banks = self._radio._memobj.banks
+        bank_mappings = []
+        for index, _bank in enumerate(banks):
+            bank = VX3Bank(self, "%i" % index, "b%i" % (index + 1))
+            bank.index = index
+            bank_mappings.append(bank)
 
+        return bank_mappings
+
+    def _get_channel_numbers_in_bank(self, bank):
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if _bank_used.in_use == 0xFFFF:
+            return set()
+
+        _members = self._radio._memobj.banks[bank.index]
+        return set([int(ch) + 1 for ch in _members.channels if ch != 0xFFFF])
+
+    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
+        _members = self._radio._memobj.banks[bank.index]
+        if len(channels_in_bank) > len(_members.channels):
+            raise Exception("Too many entries in bank %d" % bank.index)
+
+        empty = 0
+        for index, channel_number in enumerate(sorted(channels_in_bank)):
+            _members.channels[index] = channel_number - 1
+            empty = index + 1
+        for index in range(empty, len(_members.channels)):
+            _members.channels[index] = 0xFFFF
+
+    def add_memory_to_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        channels_in_bank.add(memory.number)
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        _bank_used.in_use = 0x0000
+
+    def remove_memory_from_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        try:
+            channels_in_bank.remove(memory.number)
+        except KeyError:
+            raise Exception("Memory %i is not in bank %s. Cannot remove" % \
+                            (memory.number, bank))
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        if not channels_in_bank:
+            _bank_used = self._radio._memobj.bank_used[bank.index]
+            _bank_used.in_use = 0xFFFF
+
+    def get_mapping_memories(self, bank):
+        memories = []
+        for channel in self._get_channel_numbers_in_bank(bank):
+            memories.append(self._radio.get_memory(channel))
+
+        return memories
+
+    def get_memory_mappings(self, memory):
         banks = []
-        for i in range(0, self.get_num_mappings()):
-            bank = VX3Bank(self, "%i" % i, "Bank-%i" % i)
-            bank.index = i
-            banks.append(bank)
+        for bank in self.get_mappings():
+            if memory.number in self._get_channel_numbers_in_bank(bank):
+                banks.append(bank)
+
         return banks
 
 def _wipe_memory(mem):
@@ -173,7 +240,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank = False
+        rf.has_bank = True
         rf.has_bank_names = True
         rf.has_dtcs_polarity = False
         rf.valid_modes = list(set(MODES))
