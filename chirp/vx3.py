@@ -58,7 +58,10 @@ struct {
 
 #seekto 0x244A;
 struct {
-  u8   unknown1;
+  u8   unknown1a:2,
+       txnarrow:1,
+       clockshift:1,
+       unknown1b:4;
   u8   mode:2,
        duplex:2,
        tune_step:4;
@@ -77,13 +80,13 @@ struct {
   u8   unknown7:4,
        automode:1,
        unknown8:3;
-} memory[900];
+} memory[1000];
 """
 
 #fix auto mode setting and auto step setting
 
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM", "FM"] # last is auto
+MODES  = ["FM", "AM", "WFM", "Auto", "NFM"] # NFM handled specially in radio
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 
 #still need to verify 9 is correct, and add auto: look at byte 1 and 20
@@ -287,7 +290,11 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.duplex = DUPLEX[_mem.duplex]
         if mem.duplex == "split":
             mem.offset = chirp_common.fix_rounded_step(mem.offset)
-        mem.mode = MODES[_mem.mode]
+        if _mem.txnarrow and _mem.mode == MODES.index("FM"):
+            # FM narrow
+            mem.mode = "NFM"
+        else:        
+            mem.mode = MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
@@ -327,7 +334,12 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.mode = MODES.index(mem.mode)
+        if mem.mode == "NFM":
+            _mem.mode = MODES.index("FM")
+            _mem.txnarrow = True
+        else:
+            _mem.mode = MODES.index(mem.mode)
+            _mem.txnarrow = False
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
         if mem.power == POWER_LEVELS[1]: # Low
