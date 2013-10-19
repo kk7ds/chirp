@@ -54,7 +54,7 @@ struct {
      odd_skip:1,
      odd_valid:1,
      odd_masked:1;
-} flags[900];
+} flags[999];
 
 #seekto 0x244A;
 struct {
@@ -80,7 +80,7 @@ struct {
   u8   unknown7:4,
        automode:1,
        unknown8:3;
-} memory[1000];
+} memory[999];
 """
 
 #fix auto mode setting and auto step setting
@@ -116,7 +116,7 @@ class VX3Bank(chirp_common.NamedBank):
             if i == 0xFF:
                 break
             name += CHARSET[i & 0x7F]
-        return name
+        return name.rstrip()
 
     def set_name(self, name):
         name = name.upper()
@@ -255,7 +255,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_characters = "".join(CHARSET)
         rf.valid_name_length = 6
-        rf.memory_bounds = (1, 900)
+        rf.memory_bounds = (1, 999)
         rf.can_odd_split = True
         rf.has_ctone = False
         return rf
