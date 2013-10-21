@@ -38,7 +38,8 @@ struct memory {
      highpower:1,
      revfreq:1,
      duplex:2;
-  u8 unknown[4];
+  u8 step;
+  u8 unknown[3];
 };
 
 #seekto 0x0000;
@@ -214,6 +215,7 @@ def do_upload(radio):
         do_status(radio, "to", i)
 
 DUPLEX = ["", "-", "+", 'off', "split"]
+UVB5_STEPS = [5.00, 6.25, 10.0, 12.5, 20.0, 25.0]
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ/_+*"
 SPECIALS = {
     "VFO1": -2,
@@ -251,7 +253,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.has_ctone = True
         rf.has_bank = False
-        rf.has_tuning_step = False
+        rf.has_tuning_step = True
+        rf.valid_tuning_steps = UVB5_STEPS
         rf.memory_bounds = (1, 99)
         return rf
 
@@ -337,6 +340,11 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
             self._decode_tone(_mem.txtone, _mem.txpol),
             self._decode_tone(_mem.rxtone, _mem.rxpol))
 
+        if _mem.step < 0x06:
+            mem.tuning_step = UVB5_STEPS[_mem.step]
+        else:
+            _mem.step = 0x00
+            mem.tuning_step = UVB5_STEPS[0]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = _mem.isnarrow and "NFM" or "FM"
         mem.skip = "" if _mem.scanadd else "S"
@@ -403,6 +411,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
         self._encode_tone(_mem, 'tx', *tx)
         self._encode_tone(_mem, 'rx', *rx)
 
+        _mem.step = UVB5_STEPS.index(mem.tuning_step)
         _mem.isnarrow = mem.mode == "NFM"
         _mem.scanadd = mem.skip == ""
         _mem.highpower = mem.power == POWER_LEVELS[1]
