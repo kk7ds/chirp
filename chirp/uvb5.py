@@ -19,6 +19,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat
+from textwrap import dedent
 
 mem_format = """
 struct memory {
@@ -233,6 +234,25 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
 
     _memsize = 0x1000
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic/spkr connector.
+            3. Make sure connector is firmly connected.
+            4. Turn radio on.
+            5. Ensure that the radio is tuned to channel with no activity.
+            6. Click OK to download image from device."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic/spkr connector.
+            3. Make sure connector is firmly connected.
+            4. Turn radio on.
+            5. Ensure that the radio is tuned to channel with no activity.
+            6. Click OK to upload image to device."""))
+        return rp
+        
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
