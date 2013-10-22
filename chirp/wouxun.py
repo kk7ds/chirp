@@ -23,6 +23,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat
 from chirp.wouxun_common import wipe_memory, do_download, do_upload
+from textwrap import dedent
 
 FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
  
@@ -119,6 +120,20 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 'thing to do. However, modifications to this value may have '
                 'unintended consequences, including damage to your device. '
                 'You have been warned. Proceed at your own risk!')
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic/spkr connector.
+            3. Make sure connector is firmly connected.
+            4. Turn radio on.
+            5. Ensure that the radio is tuned to channel with no activity.
+            6. Click OK to download image from device."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic/spkr connector.
+            3. Make sure connector is firmly connected.
+            4. Turn radio on.
+            5. Ensure that the radio is tuned to channel with no activity.
+            6. Click OK to upload image to device."""))
         return rp
                 
     @classmethod
