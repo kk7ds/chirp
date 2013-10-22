@@ -22,6 +22,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError
+from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x0008;
@@ -483,6 +484,20 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 'your device. Thus far and to the best knowledge of the '
                 'author, no UV-5R radios have been harmed by using CHIRP. '
                 'However, proceed at your own risk!')
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic/spkr connector.
+            3. Make sure connector is firmly connected.
+            4. Turn radio on.
+            5. Ensure that the radio is tuned to channel with no activity.
+            6. Click OK to download image from device."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to mic/spkr connector.
+            3. Make sure connector is firmly connected.
+            4. Turn radio on.
+            5. Ensure that the radio is tuned to channel with no activity.
+            6. Click OK to upload image to device."""))
         return rp
 
     def get_features(self):
