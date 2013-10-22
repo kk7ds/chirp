@@ -226,7 +226,8 @@ POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 
 @directory.register
-class BaofengUVB5(chirp_common.CloneModeRadio):
+class BaofengUVB5(chirp_common.CloneModeRadio,
+        chirp_common.ExperimentalRadio):
     """Baofeng UV-B5"""
     VENDOR = "Baofeng"
     MODEL = "UV-B5"
@@ -237,6 +238,12 @@ class BaofengUVB5(chirp_common.CloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
+        rp.experimental = ('This version of the UV-B5 driver allows you to '
+                'modify the Test Mode settings of your radio. This has been '
+                'tested and reports from other users indicate that it is a '
+                'safe thing to do. However, modifications to these values may '
+                'have unintended consequences, including damage to your '
+                'device. You have been warned. Proceed at your own risk!')
         rp.pre_download = _(dedent("""\
             1. Turn radio off.
             2. Connect cable to mic/spkr connector.
