@@ -631,7 +631,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         group.append(fm_preset)
 
         for i in range(0, 16):
-            if self._memobj.fm_presets[i] != 0xFFFF:
+            if self._memobj.fm_presets[i] < 0x01AF:
                 used = True
                 preset = self._memobj.fm_presets[i] / 10.0 + 65
             else:
@@ -728,7 +728,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                 if val[0].get_value():
                     value = int(val[1].get_value() * 10 - 650)
                 else:
-                    value = 0xffff
+                    value = 0x01AF
                 print "Setting fm_presets[%1i] = %s" % (index, value)
                 setting = self._memobj.fm_presets
                 setting[index] = value
