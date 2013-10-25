@@ -156,7 +156,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             pms_1U_enable:1,
             pms_1L_enable:1,
             unknown6:4;
-    } pms_settings;
+    } special_enables;
 	
 	#seekto 0x102;
     struct mem_struct memory[180];
@@ -353,11 +353,17 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = getattr(self._memobj, number)
             mem.number = - len(FT90_SPECIAL) + FT90_SPECIAL.index(number)
             mem.extd_number = number
+            if re.match('^pms', mem.extd_number):
+                # enable pms_XY channel flag
+                _special_enables = self._memobj.special_enables
+                mem.empty = not getattr(_special_enables, mem.extd_number + "_enable")
         else:
             # regular memory
             _mem = self._memobj.memory[number-1]
             mem.number = number
             mem.empty = not self._get_chan_enable(number)
+        if mem.empty:
+            return mem  # bail out, do not parse junk
         mem.freq = _mem.rxfreq * 10      
         mem.offset = _mem.txfreqoffset * 10
         if not _mem.tmode < len(FT90_TMODES):
@@ -388,8 +394,8 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = getattr(self._memobj, mem.extd_number)
             if re.match('^pms', mem.extd_number):
                 # enable pms_XY channel flag
-                _pms_settings = self._memobj.pms_settings
-                setattr(_pms_settings, mem.extd_number + "_enable", True)
+                _special_enables = self._memobj.special_enables
+                setattr(_special_enables, mem.extd_number + "_enable", True)
         else:
             _mem = self._memobj.memory[mem.number - 1]
             self._set_chan_enable( mem.number, not mem.empty )
