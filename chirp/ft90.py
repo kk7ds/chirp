@@ -19,6 +19,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString
 import time, os, traceback, string, re
+from textwrap import dedent
 
 if os.getenv("CHIRP_DEBUG"):
     CHIRP_DEBUG = True
@@ -48,8 +49,8 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _memsize = 4063
     # block 03 (200 Bytes long) repeats 18 times; channel memories
-    _block_lengths = [ 2, 232, 24, 200, 205]
-    
+    _block_lengths = [ 2, 232, 24 ] + ([200] * 18 ) +  [205]
+
     mem_format = """
 	#seekto 0x22;	
 	struct {
@@ -167,6 +168,23 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 	struct mem_struct pms_2L;	
 	struct mem_struct pms_2U;
     """
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect mic and hold [ACC] on mic while powering on.
+                ("CLONE" will appear on the display)
+            3. Replace mic with PC programming cable.
+            4. <b>After clicking OK</b>, press the [SET] key to send image."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect mic and hold [ACC] on mic while powering on.
+                ("CLONE" will appear on the display)
+            3. Replace mic with PC programming cable.
+            4. Press the [DISP/SS] key
+                ("R" will appear on the lower left of LCD)."""))
+        return rp
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -224,25 +242,15 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         data = ""
         blocknum = 0
         status = chirp_common.Status()
-        status.msg = "Cloning from radio.\nPut radio into clone mode then\npress SET to send"
+        status.msg = "Cloning..."
         self.status_fn(status)
-        status.max = len(self._block_lengths) + 18
+        status.max = len(self._block_lengths)
         for blocksize in self._block_lengths:
-            if blocksize == 200:
-                # repeated read of 200 block same size (memory area)
-                repeat = 18
-            else:
-                repeat = 1
-            for _i in range(0, repeat): 
-                data += self._read(blocksize, blocknum)
-
-                blocknum += 1
-                status.cur = blocknum
-                self.status_fn(status)
+            data += self._read(blocksize, blocknum)
+            blocknum += 1
+            status.cur = blocknum
+            self.status_fn(status)
                 
-        status.msg = "Clone completed."
-        self.status_fn(status)
-
         print "Clone completed in %i seconds, blocks read: %i" % (time.time() - start, blocknum)
     
         return memmap.MemoryMap(data)
@@ -254,52 +262,44 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         blocknum = 0
         pos = 0
         status = chirp_common.Status()
-        status.msg = "Cloning to radio.\nPut radio into clone mode and press DISP/SS\n to start receive within 3 secs..."
+        status.msg = "Cloning to radio..."
         self.status_fn(status)
         # radio likes to have port open 
         self.pipe.open()
-        time.sleep(3)
-        status.max = len(self._block_lengths) + 18
-
+        status.max = len(self._block_lengths)
 
         for blocksize in self._block_lengths:
-            if blocksize == 200:
-                # repeat channel blocks
-                repeat = 18
-            else:
-                repeat = 1
-            for _i in range(0, repeat):
-                time.sleep(0.1)
-                checksum = yaesu_clone.YaesuChecksum(pos, pos+blocksize-1)
-                blocknumbyte = chr(blocknum)
-                payloadbytes = self.get_mmap()[pos:pos+blocksize]
-                checksumbyte = chr(checksum.get_calculated(self.get_mmap()))
-                if CHIRP_DEBUG:
-                    print "Block %i - will send from %i to %i byte " % \
-                        (blocknum, pos, pos + blocksize)
-                    print util.hexprint(blocknumbyte)
-                    print util.hexprint(payloadbytes)
-                    print util.hexprint(checksumbyte)
-                # send wrapped bytes
-                self.pipe.write(blocknumbyte)
-                self.pipe.write(payloadbytes)
-                self.pipe.write(checksumbyte)
-                tmp = self.pipe.read(blocksize+2)  #chew echo
-                if CHIRP_DEBUG:
-                    print "bytes echoed: "
-                    print util.hexprint(tmp)
-                # radio is slow to write/ack:
-                time.sleep(0.9) 
-                buf = self.pipe.read(1)
-                if CHIRP_DEBUG:
-                    print "ack recd:"
-                    print util.hexprint(buf)
-                if buf != CMD_ACK:
-                    raise Exception("Radio did not ack block %i" % blocknum)
-                pos += blocksize
-                blocknum += 1
-                status.cur = blocknum
-                self.status_fn(status)
+            time.sleep(0.1)
+            checksum = yaesu_clone.YaesuChecksum(pos, pos+blocksize-1)
+            blocknumbyte = chr(blocknum)
+            payloadbytes = self.get_mmap()[pos:pos+blocksize]
+            checksumbyte = chr(checksum.get_calculated(self.get_mmap()))
+            if CHIRP_DEBUG:
+                print "Block %i - will send from %i to %i byte " % \
+                    (blocknum, pos, pos + blocksize)
+                print util.hexprint(blocknumbyte)
+                print util.hexprint(payloadbytes)
+                print util.hexprint(checksumbyte)
+            # send wrapped bytes
+            self.pipe.write(blocknumbyte)
+            self.pipe.write(payloadbytes)
+            self.pipe.write(checksumbyte)
+            tmp = self.pipe.read(blocksize+2)  #chew echo
+            if CHIRP_DEBUG:
+                print "bytes echoed: "
+                print util.hexprint(tmp)
+            # radio is slow to write/ack:
+            time.sleep(1) 
+            buf = self.pipe.read(1)
+            if CHIRP_DEBUG:
+                print "ack recd:"
+                print util.hexprint(buf)
+            if buf != CMD_ACK:
+                raise Exception("Radio did not ack block %i" % blocknum)
+            pos += blocksize
+            blocknum += 1
+            status.cur = blocknum
+            self.status_fn(status)
     
         print "Clone completed in %i seconds" % (time.time() - start)
     
