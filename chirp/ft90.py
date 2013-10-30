@@ -264,8 +264,6 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         status = chirp_common.Status()
         status.msg = "Cloning to radio..."
         self.status_fn(status)
-        # radio likes to have port open 
-        self.pipe.open()
         status.max = len(self._block_lengths)
 
         for blocksize in self._block_lengths:

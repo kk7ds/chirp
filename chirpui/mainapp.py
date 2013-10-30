@@ -657,8 +657,6 @@ If you think that it is valid, you can select a radio model below to force an op
             # User does not want to proceed with experimental driver
             return
 
-        self._show_instructions(radio, radio.get_prompts().pre_upload)
-
         try:
             ser = serial.Serial(port=settings.port,
                                 baudrate=radio.BAUD_RATE,
@@ -670,6 +668,8 @@ If you think that it is valid, you can select a radio model below to force an op
             d.run()
             d.destroy()
             return
+
+        self._show_instructions(radio, radio.get_prompts().pre_upload)
 
         radio.set_pipe(ser)
 
