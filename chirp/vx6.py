@@ -38,7 +38,14 @@ from textwrap import dedent
 # }
 MEM_FORMAT = """
 #seekto 0x018A;
-u16 bank_sizes[24];
+struct {
+    u16 in_use;
+} bank_used[24];
+
+#seekto 0x0214;
+u16  banksoff1;
+#seekto 0x0294;
+u16  banksoff2;
 
 #seekto 0x097A;
 struct {
@@ -47,8 +54,8 @@ struct {
 
 #seekto 0x0C0A;
 struct {
-  u16 channel[100];
-} bank_channels[24];
+  u16 channels[100];
+} banks[24];
 
 #seekto 0x1ECA;
 struct {
@@ -60,7 +67,7 @@ struct {
      odd_skip:1,
      odd_valid:1,
      odd_masked:1;
-} flags[450];
+} flags[500];
 
 #seekto 0x21CA;
 struct {
@@ -82,7 +89,7 @@ struct {
   u8 tone;
   u8 dcs;
   u8 unknown5;
-} memory[900];
+} memory[999];
 """
 
 DUPLEX = ["", "-", "+", "split"]
@@ -105,6 +112,98 @@ POWER_LEVELS_220 = [chirp_common.PowerLevel("Hi", watts=1.50),
                 chirp_common.PowerLevel("L3", watts=1.00),
                 chirp_common.PowerLevel("L2", watts=0.50),
                 chirp_common.PowerLevel("L1", watts=0.20)]
+                
+class VX6Bank(chirp_common.NamedBank):
+    """A VX6 Bank"""
+    def get_name(self):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        name = ""
+        for i in _bank.name:
+            if i == 0xFF:
+                break
+            name += CHARSET[i & 0x7F]
+        return name.rstrip()
+
+    def set_name(self, name):
+        name = name.upper()
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        _bank.name = [CHARSET.index(x) for x in name.ljust(6)[:6]]
+
+class VX6BankModel(chirp_common.BankModel):
+    """A VX-6 bank model"""
+
+    def get_num_mappings(self):
+        return len(self.get_mappings())
+
+    def get_mappings(self):
+        banks = self._radio._memobj.banks
+        bank_mappings = []
+        for index, _bank in enumerate(banks):
+            bank = VX6Bank(self, "%i" % index, "b%i" % (index + 1))
+            bank.index = index
+            bank_mappings.append(bank)
+
+        return bank_mappings
+
+    def _get_channel_numbers_in_bank(self, bank):
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if _bank_used.in_use == 0xFFFF:
+            return set()
+
+        _members = self._radio._memobj.banks[bank.index]
+        return set([int(ch) + 1 for ch in _members.channels if ch != 0xFFFF])
+
+    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
+        _members = self._radio._memobj.banks[bank.index]
+        if len(channels_in_bank) > len(_members.channels):
+            raise Exception("Too many entries in bank %d" % bank.index)
+
+        empty = 0
+        for index, channel_number in enumerate(sorted(channels_in_bank)):
+            _members.channels[index] = channel_number - 1
+            empty = index + 1
+        for index in range(empty, len(_members.channels)):
+            _members.channels[index] = 0xFFFF
+
+    def add_memory_to_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        channels_in_bank.add(memory.number)
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        _bank_used.in_use = 0x0000 # enable
+
+        # also needed for unit to recognize any banks?
+        self._radio._memobj.banksoff1 = 0x0000
+        self._radio._memobj.banksoff2 = 0x0000
+        # TODO: turn back off (0xFFFF) when all banks are empty?
+        
+    def remove_memory_from_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        try:
+            channels_in_bank.remove(memory.number)
+        except KeyError:
+            raise Exception("Memory %i is not in bank %s. Cannot remove" % \
+                            (memory.number, bank))
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        if not channels_in_bank:
+            _bank_used = self._radio._memobj.bank_used[bank.index]
+            _bank_used.in_use = 0xFFFF # disable bank
+
+    def get_mapping_memories(self, bank):
+        memories = []
+        for channel in self._get_channel_numbers_in_bank(bank):
+            memories.append(self._radio.get_memory(channel))
+
+        return memories
+
+    def get_memory_mappings(self, memory):
+        banks = []
+        for bank in self.get_mappings():
+            if memory.number in self._get_channel_numbers_in_bank(bank):
+                banks.append(bank)
+
+        return banks
 
 @directory.register
 class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -143,14 +242,15 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_bank = False
+        rf.has_bank = True
+        rf.has_bank_names = True
         rf.has_dtcs_polarity = False
         rf.valid_modes = ["FM", "WFM", "AM", "NFM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = DUPLEX
         rf.valid_tuning_steps = STEPS
         rf.valid_power_levels = POWER_LEVELS
-        rf.memory_bounds = (1, 900)
+        rf.memory_bounds = (1, 999)
         rf.valid_bands = [(500000, 998990000)]
         rf.valid_characters = "".join(CHARSET)
         rf.valid_name_length = 6
@@ -262,28 +362,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.name.strip():
             _mem.name[0] |= 0x80
 
-#    def get_banks(self):
-#        _banks = self._memobj.bank_names
-#
-#        banks = []
-#        for bank in _banks:
-#            name = ""
-#            for i in bank.name:
-#                name += CHARSET[i & 0x7F]
-#            banks.append(name.rstrip())
-#
-#        return banks
-#
-#    # Return channels for a bank. Bank given as number
-#    def get_bank_channels(self, bank):
-#        nchannels = 0
-#        size = self._memobj.bank_sizes[bank]
-#        if size <= 198:
-#            nchannels = 1 + size/2
-#        _channels = self._memobj.bank_channels[bank]
-#        channels = []
-#        for i in range(0, nchannels):
-#            channels.append(int(_channels.channel[i]))
-#
-#        return channels
+    def get_bank_model(self):
+        return VX6BankModel(self)
+
 
