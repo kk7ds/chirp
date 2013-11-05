@@ -34,7 +34,16 @@ FT90_TMODES = ["", "Tone", "TSQL", "", "DTCS"] # idx 3 (Bell) not supported yet
 FT90_TONES = list(chirp_common.TONES)
 for tone in [ 165.5, 171.3, 177.3 ]:
     FT90_TONES.remove(tone)
-FT90_POWER_LEVELS = ["Hi", "Mid1", "Mid2", "Low"]
+FT90_POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
+                    chirp_common.PowerLevel("Mid1", watts=20),
+                    chirp_common.PowerLevel("Mid2", watts=10),
+                    chirp_common.PowerLevel("Low", watts=5)]
+
+FT90_POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
+                    chirp_common.PowerLevel("Mid1", watts=20),
+                    chirp_common.PowerLevel("Mid2", watts=10),
+                    chirp_common.PowerLevel("Low", watts=5)]
+
 FT90_DUPLEX = ["", "-", "+", "split"]
 FT90_CWID_CHARS = list(string.digits) + list(string.uppercase) + list(" ")
 FT90_DTMF_CHARS = list("0123456789ABCD*#")
@@ -201,7 +210,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = FT90_TMODES
         rf.valid_duplexes = FT90_DUPLEX
         rf.valid_tuning_steps = FT90_STEPS
-        rf.valid_power_levels = FT90_POWER_LEVELS
+        rf.valid_power_levels = FT90_POWER_LEVELS_VHF
         rf.valid_name_length = 7
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_skips = ["", "S"]
@@ -371,7 +380,11 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcstone]
         mem.mode = FT90_MODES[_mem.mode]
         mem.duplex = FT90_DUPLEX[_mem.shift]
-        mem.power = FT90_POWER_LEVELS[_mem.power]
+        if mem.freq / 1000000 > 300:
+            mem.power = FT90_POWER_LEVELS_UHF[_mem.power]
+        else:
+            mem.power = FT90_POWER_LEVELS_VHF[_mem.power]
+
         # radio has a known bug with 5khz step and squelch
         if _mem.step == 0 or _mem.step > len(FT90_STEPS)-1:
             _mem.step = 2
@@ -381,7 +394,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             # dont display blank/junk name
             mem.name = ""
         else:
-            mem.name = _mem.name
+            mem.name = str(_mem.name)
         return mem
 
     def get_raw_memory(self, number):
@@ -428,7 +441,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.step = FT90_STEPS.index(mem.tuning_step)
         _mem.shift = FT90_DUPLEX.index(mem.duplex)
         if mem.power:
-            _mem.power = FT90_POWER_LEVELS.index(mem.power)
+            _mem.power = FT90_POWER_LEVELS_VHF.index(mem.power)
         else:
             _mem.power = 3  # default to low power
         if (len(mem.name) == 0):
