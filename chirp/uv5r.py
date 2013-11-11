@@ -17,12 +17,17 @@ import struct
 import time
 
 from chirp import chirp_common, errors, util, directory, memmap
-from chirp import bitwise
+from chirp import bitwise, os
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError
 from textwrap import dedent
+
+if os.getenv("CHIRP_DEBUG"):
+    CHIRP_DEBUG = True
+else:
+    CHIRP_DEBUG = False
 
 MEM_FORMAT = """
 #seekto 0x0008;
@@ -31,10 +36,13 @@ struct {
   lbcd txfreq[4];
   ul16 rxtone;
   ul16 txtone;
-  u8 unused1:4,
+  u8 unused1:3,
+     isuhf:1,
      scode:4;
-  u8 unknown1[1];
-  u8 unknown2:7,
+  u8 unknown1:7,
+     txtoneicon:1;
+  u8 mailicon:3,
+     unknown2:4,
      lowpower:1;
   u8 unknown3:1,
      wide:1,
@@ -93,7 +101,8 @@ struct {
   u8 unknown4;
   u8 dtmfst;
   u8 unknown5;
-  u8 screv;
+  u8 unknown12:6,
+     screv:2;
   u8 pttid;
   u8 pttlt;
   u8 mdfa;
@@ -187,11 +196,10 @@ struct {
 #seekto 0x0F56;
 u16 fm_presets;
 
-#seekto 0x1000;
+#seekto 0x1008;
 struct {
-  u8 unknown1[8];
   char name[7];
-  u8 unknown2;
+  u8 unknown2[9];
 } names[128];
 
 #seekto 0x1818;
@@ -200,7 +208,7 @@ struct {
   char line2[7];
 } sixpoweron_msg;
 
-#seekto 0x1828;
+#seekto 0x%04X;
 struct {
   char line1[7];
   char line2[7];
@@ -234,6 +242,13 @@ struct {
   struct limit uhf;
 } limits_old;
 
+ #seekto 0x1908;
+struct {
+    struct limit vhf;
+    u8 unk11[11];
+    struct limit uhf;
+} limits_bj55;
+
 """
 
 # 0x1EC0 - 0x2000
@@ -249,7 +264,7 @@ DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
 RESUME_LIST = ["TO", "CO", "SE"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
 COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
-ALMOD_LIST = ["Site", "Tone", "Code"]
+ALMOD_LIST = ["Site", "Tone", "Code", "_unknown_"]
 TDRAB_LIST = ROGERRX_LIST = ["Off", "A", "B"]
 PONMSG_LIST = ["Full", "Message"]
 RPSTE_LIST = ["%s" % x for x in range(1, 11, 1)]
@@ -304,6 +319,7 @@ UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
 UV82_MODEL =     "\x50\xBB\xFF\x20\x13\x01\x05"
+BJUV55_MODEL   = "\x50\xBB\xDD\x55\x63\x98\x4D"
 
 def _upper_band_from_data(data):
     return data[0x03:0x04]
@@ -311,18 +327,24 @@ def _upper_band_from_data(data):
 def _upper_band_from_image(radio):
     return _upper_band_from_data(radio.get_mmap())
 
-def _firmware_version_from_data(data):
-    return data[0x1838:0x1848]
+def _firmware_version_from_data(data, version_start, version_stop):
+    version_tag = data[version_start:version_stop]
+    return version_tag
 
 def _firmware_version_from_image(radio):
-    return _firmware_version_from_data(radio.get_mmap())
+    version = _firmware_version_from_data(radio.get_mmap(), radio._fw_ver_file_start, radio._fw_ver_file_stop)
+    if CHIRP_DEBUG:
+        print "_firmware_version_from_image: " + util.hexprint(version)
+    return version
 
 def _do_ident(radio, magic):
     serial = radio.pipe
     serial.setTimeout(1)
 
     print "Sending Magic: %s" % util.hexprint(magic)
-    serial.write(magic)
+    for byte in magic:
+        serial.write(byte)
+        time.sleep(0.01)
     ack = serial.read(1)
     
     if ack != "\x06":
@@ -372,10 +394,15 @@ def _read_block(radio, start, size):
     return chunk
 
 def _get_radio_firmware_version(radio):
-    block1 = _read_block(radio, 0x1EC0, 0x40)
-    block2 = _read_block(radio, 0x1F00, 0x40)
-    block = block1 + block2
-    return block[48:64]
+    if radio.MODEL == "BJ-UV55":
+        block = _read_block(radio, 0x1FF0, 0x40)
+        version = block[0:6]
+    else:    
+        block1 = _read_block(radio, 0x1EC0, 0x40)
+        block2 = _read_block(radio, 0x1F00, 0x40)
+        block = block1 + block2
+        version = block[48:64]
+    return version
 
 def _ident_radio(radio):
     for magic in radio._idents:
@@ -395,14 +422,19 @@ def _do_download(radio):
     data = _ident_radio(radio)
 
     # Main block
+    if CHIRP_DEBUG:
+        print "downloading main block..."
     for i in range(0, 0x1800, 0x40):
         data += _read_block(radio, i, 0x40)
         _do_status(radio, i)
-
+    if CHIRP_DEBUG:
+        print "done."
+        print "downloading aux block..."
     # Auxiliary block starts at 0x1ECO (?)
     for i in range(0x1EC0, 0x2000, 0x40):
         data += _read_block(radio, i, 0x40)
-
+    if CHIRP_DEBUG:
+        print "done."
     return memmap.MemoryMap(data)
 
 def _send_block(radio, addr, data):
@@ -427,7 +459,7 @@ def _do_upload(radio):
     print "Image is %s" % repr(image_version)
     print "Radio is %s" % repr(radio_version)
 
-    if "BFB" not in radio_version and "82" not in radio_version and "USA" not in radio_version:
+    if not any(type in radio_version for type in ["BFB", "82", "USA", "BJ55"]):
         raise errors.RadioError("Unsupported firmware version: `%s'" %
                                 radio_version)
 
@@ -474,6 +506,11 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     _idents = [UV5R_MODEL_ORIG,
                UV5R_MODEL_291,
                ]
+    _mem_params = ( 0x1828 # poweron_msg offset
+                    )
+    # offset of fw version in image file
+    _fw_ver_file_start = 0x1838
+    _fw_ver_file_stop = 0x1848
 
     @classmethod
     def get_prompts(cls):
@@ -532,11 +569,19 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return (len(filedata) in [0x1808, 0x1948] and
-                cls._basetype in _firmware_version_from_data(filedata))
+        match_size = False
+        match_model = False
+        if len(filedata) in [0x1808, 0x1948]:
+            match_size = True
+        if cls._basetype in _firmware_version_from_data(filedata, cls._fw_ver_file_start, cls._fw_ver_file_stop):
+            match_model = True
+        if match_size and match_model:
+            return True
+        else:
+            return False
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
     def sync_in(self):
         try:
@@ -691,7 +736,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             _mem.txfreq = (mem.freq - mem.offset) / 10
         else:
             _mem.txfreq = mem.freq / 10
-
+        
+        if self.MODEL == "BJ-UV55":
+            if (mem.freq - mem.offset) > (400 * 1000000):
+                _mem.isuhf = True
+            else:
+                _mem.isuhf = False
         for i in range(0, 7):
             try:
                 _nam.name[i] = mem.name[i]
@@ -699,12 +749,18 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 _nam.name[i] = "\xFF"
 
         rxmode = txmode = ""
+        if self.MODEL == "BJ-UV55":
+            _mem.txtoneicon = False
         if mem.tmode == "Tone":
             _mem.txtone = int(mem.rtone * 10)
             _mem.rxtone = 0
+            if self.MODEL == "BJ-UV55":
+                _mem.txtoneicon = True
         elif mem.tmode == "TSQL":
             _mem.txtone = int(mem.ctone * 10)
             _mem.rxtone = int(mem.ctone * 10)
+            if self.MODEL == "BJ-UV55":
+                _mem.txtoneicon = True
         elif mem.tmode == "DTCS":
             rxmode = txmode = "DTCS"
             _mem.txtone = UV5R_DTCS.index(mem.dtcs) + 1
@@ -741,16 +797,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def _is_orig(self):
         version_tag = _firmware_version_from_image(self)
+        if CHIRP_DEBUG:
+            print "@_is_orig, version_tag:", util.hexprint(version_tag)
         try:
             if 'BFB' in version_tag:
                 idx = version_tag.index("BFB") + 3
                 version = int(version_tag[idx:idx+3])
                 return version < 291
-            if 'BF82' in version_tag:
-                return False
-            if 'B82' in version_tag:
-                return False
-            if 'USA' in version_tag:
+            if any(tag in version_tag for tag in ['BF82', 'B82', 'USA', 'BJ55']):
                 return False
         except:
             pass
@@ -771,6 +825,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         elif 'USA' in version_tag:
             idx = version_tag.index("USA") + 3
             return int(version_tag[idx:idx+3])
+        elif 'BJ55' in version_tag:
+            idx = version_tag.index("BJ55") + 2
+            return int(version_tag[idx:idx+2])
+
         raise Exception("Unrecognized firmware version string")
 
     def _my_upper_band(self):
@@ -963,6 +1021,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         if self._is_orig():
             limit = "limits_old"
+        elif self.MODEL == "BJ-UV55":
+            limit = "limits_bj55"
         else:
             limit = "limits_new"
 
@@ -1299,3 +1359,21 @@ class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
     _basetype = "82"
     _idents = [UV82_MODEL]
+
+@directory.register
+class BaojieBJUV55Radio(BaofengUV5R):
+    VENDOR = "Baojie"
+    MODEL = "BJ-UV55"
+    _basetype = "BJ55"
+    _idents = [ BJUV55_MODEL ]
+    _mem_params = ( 0x1928  # poweron_msg offset
+                    )
+    _fw_ver_file_start = 0x1938
+    _fw_ver_file_stop = 0x193E
+    
+    def get_features(self):
+        rf = super(BaojieBJUV55Radio, self).get_features()
+        rf.has_settings = False
+        rf.valid_name_length = 6
+        return rf
+    
