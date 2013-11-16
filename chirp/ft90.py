@@ -61,6 +61,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_lengths = [ 2, 232, 24 ] + ([200] * 18 ) +  [205]
 
     mem_format = """
+    u16 id;
 	#seekto 0x22;	
 	struct {
 		u8	dtmf_active;
@@ -118,8 +119,6 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             key_p2:4;
         u8  unk13:4,
             key_acc:4;
-		u8	demomsg1[32];
-		u8	demomsg2[32];
 		
 	} settings;
 	
@@ -176,6 +175,13 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 	struct mem_struct pms_1U;
 	struct mem_struct pms_2L;	
 	struct mem_struct pms_2U;
+	
+	#seekto 0x0F7B;
+	struct  {
+	    char	demomsg1[50];
+	    char	demomsg2[50];
+	} demomsg;
+	
     """
     @classmethod
     def get_prompts(cls):
@@ -265,7 +271,8 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         return memmap.MemoryMap(data)
     
     def _clone_out(self):
-        delay = 0.2
+        looppredelay = 0.2
+        looppostdelay = 1.5
         start = time.time()
     
         blocknum = 0
@@ -276,7 +283,6 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         status.max = len(self._block_lengths)
 
         for blocksize in self._block_lengths:
-            time.sleep(0.1)
             checksum = yaesu_clone.YaesuChecksum(pos, pos+blocksize-1)
             blocknumbyte = chr(blocknum)
             payloadbytes = self.get_mmap()[pos:pos+blocksize]
@@ -288,6 +294,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
                 print util.hexprint(payloadbytes)
                 print util.hexprint(checksumbyte)
             # send wrapped bytes
+            time.sleep(looppredelay)
             self.pipe.write(blocknumbyte)
             self.pipe.write(payloadbytes)
             self.pipe.write(checksumbyte)
@@ -296,7 +303,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
                 print "bytes echoed: "
                 print util.hexprint(tmp)
             # radio is slow to write/ack:
-            time.sleep(1) 
+            time.sleep(looppostdelay) 
             buf = self.pipe.read(1)
             if CHIRP_DEBUG:
                 print "ack recd:"
