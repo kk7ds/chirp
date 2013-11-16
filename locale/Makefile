@@ -9,8 +9,8 @@ all: $(MOFILES)
 
 clean:
 	rm -f $(MOFILES) *~ *.orig
-	rm -f `find . -name '*.mo'`
-	rmdir `find * -depth -type d`
+	find . -name '*.mo' -exec rm -f "{}" \;
+	find * -depth -type d -exec rmdir "{}" \;
 
 chirpui.pot:
 	/usr/bin/find ../chirpui -name '*.py' > .files
