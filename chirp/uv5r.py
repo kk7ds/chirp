@@ -15,9 +15,10 @@
 
 import struct
 import time
+import os
 
 from chirp import chirp_common, errors, util, directory, memmap
-from chirp import bitwise, os
+from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
