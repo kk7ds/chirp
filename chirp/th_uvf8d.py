@@ -467,7 +467,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         group = RadioSettingGroup("top", "All Settings")
 
         group.append(
-            RadioSetting("Mode", "Mode",
+            RadioSetting("mode", "Mode",
                          RadioSettingValueList(MODE_LIST,
                                                MODE_LIST[_settings.mode])))
 
