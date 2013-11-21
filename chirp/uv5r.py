@@ -1374,7 +1374,7 @@ class BaojieBJUV55Radio(BaofengUV5R):
     
     def get_features(self):
         rf = super(BaojieBJUV55Radio, self).get_features()
-        rf.has_settings = False
+        #rf.has_settings = False
         rf.valid_name_length = 6
         return rf
     
