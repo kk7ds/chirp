@@ -194,7 +194,7 @@ def do_download(radio):
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
         radio.pipe.write("\x06")
         ack = radio.pipe.read(1)
-        if ack not in ('\x74', '\x78', '\x1f'):
+        if ack not in ('\x48', '\x74', '\x78', '\x1f'):
             print util.hexprint(ack)
             raise errors.RadioError("Unexpected response")
         data += result[4:]
