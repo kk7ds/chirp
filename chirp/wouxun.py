@@ -255,43 +255,43 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                             self._memobj.settings.menu_available))
         top.append(rs)
 
-        rs = RadioSetting("vhf_rx_start", "VHF RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 174, 
+        rs = RadioSetting("vhf_rx_start", "1st band RX Lower Limit (MHz)",
+                          RadioSettingValueInteger(50, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_rx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("vhf_rx_stop", "VHF RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(136, 174, 
+        rs = RadioSetting("vhf_rx_stop", "1st band RX Upper Limit (MHz)",
+                          RadioSettingValueInteger(50, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_rx_stop)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_rx_start", "UHF RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(216, 520, 
+        rs = RadioSetting("uhf_rx_start", "2nd band RX Lower Limit (MHz)",
+                          RadioSettingValueInteger(136, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_rx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_rx_stop", "UHF RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(216, 520, 
+        rs = RadioSetting("uhf_rx_stop", "2nd band RX Upper Limit (MHz)",
+                          RadioSettingValueInteger(136, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_rx_stop)))
         freqranges.append(rs)
-        rs = RadioSetting("vhf_tx_start", "VHF TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 174, 
+        rs = RadioSetting("vhf_tx_start", "1st band TX Lower Limit (MHz)",
+                          RadioSettingValueInteger(50, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_tx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("vhf_tx_stop", "VHF TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(136, 174, 
+        rs = RadioSetting("vhf_tx_stop", "1st TX Upper Limit (MHz)",
+                          RadioSettingValueInteger(50, 174, 
                                 decode_freq(
                                     self._memobj.freq_ranges.vhf_tx_stop)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_tx_start", "UHF TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(216, 520, 
+        rs = RadioSetting("uhf_tx_start", "2st band TX Lower Limit (MHz)",
+                          RadioSettingValueInteger(136, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_tx_start)))
         freqranges.append(rs)
-        rs = RadioSetting("uhf_tx_stop", "UHF TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(216, 520, 
+        rs = RadioSetting("uhf_tx_stop", "2st band TX Upper Limit (MHz)",
+                          RadioSettingValueInteger(136, 520, 
                                 decode_freq(
                                     self._memobj.freq_ranges.uhf_tx_stop)))
         freqranges.append(rs)
