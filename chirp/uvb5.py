@@ -194,8 +194,8 @@ def do_download(radio):
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
         radio.pipe.write("\x06")
         ack = radio.pipe.read(1)
-        if ack not in ('\x48', '\x74', '\x78', '\x1f'):
-            print util.hexprint(ack)
+        if ack not in UVB5_ACKS:
+            print "ack received:", util.hexprint(ack)
             raise errors.RadioError("Unexpected response")
         data += result[4:]
         do_status(radio, "from", i)
@@ -224,6 +224,7 @@ SPECIALS = {
     }
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
+UVB5_ACKS = ['\x48', '\x74', '\x78', '\x1f', '\x29']
 
 @directory.register
 class BaofengUVB5(chirp_common.CloneModeRadio,
