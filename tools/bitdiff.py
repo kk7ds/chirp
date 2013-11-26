@@ -77,6 +77,28 @@ def compareFilesDat(args):
 	pos = length
 	print "bytes read: %02d" % pos
 
+def convertFileToBin(args):
+    f1 = open(args.file1, "r")
+    f1contents = f1.read()
+    f1.close()
+    f1strlist = f1contents.split()
+    f1intlist = map(int, f1strlist)
+    f1bytes = bytearray(f1intlist)
+    f2 = open(args.file2, "wb")
+    f2.write(f1bytes)
+    f2.close
+
+def convertFileToDat(args):
+    f1 = open(args.file1, "rb")
+    f1contents = f1.read()
+    f1.close()
+    f2 = open(args.file2, "w")
+    for i in range(0, len(f1contents)): 
+        f2.write(" %d " % (ord(f1contents[i]), ))
+        if i % 16 == 15:
+            f2.write("\r\n")
+    f2.close
+
 #
 ## main
 
@@ -85,7 +107,9 @@ ap.add_argument("file1", help="first (reference) file to parse")
 ap.add_argument("file2", help="second file to parse")
 mutexgrp1 = ap.add_mutually_exclusive_group()
 mutexgrp1.add_argument("-o", "--offset", help="offset (hex) to start comparison", default=0)
-mutexgrp1.add_argument("-d", "--dat", help="process input files from .DAT format (from 'jujumao' oem programming software for chinese radios)", action="store_true")
+mutexgrp1.add_argument("-d", "--dat", help="process input files from .DAT/.ADJ format (from 'jujumao' oem programming software for chinese radios)", action="store_true")
+mutexgrp1.add_argument("--convert2bin", help="convert file1 from .dat/.adj to binary image file2", action="store_true")
+mutexgrp1.add_argument("--convert2dat", help="convert file1 from bin to .dat/.adj file2", action="store_true")
 ap.add_argument("-w", "--watch", help="'watch' changes. runs in a loop", action="store_true")
 csvgrp = ap.add_argument_group("csv output")
 csvgrp.add_argument("-c", "--csv", help="file to append csv results. format: \
@@ -101,11 +125,15 @@ if args.setting or args.value:
     print "setting:", args.setting, "- value:", args.value
 
 while True:
-	if (args.dat):
-		compareFilesDat(args)
-	else:
+    if (args.dat):
+        compareFilesDat(args)
+    elif (args.convert2bin):
+        convertFileToBin(args)
+    elif (args.convert2dat):
+        convertFileToDat(args)    
+    else:
 		compareFiles(args)
-	if not args.watch:
-		break
-	print "------"
-	time.sleep(delay)
+    if not args.watch:
+	    break
+    print "------"
+    time.sleep(delay)
