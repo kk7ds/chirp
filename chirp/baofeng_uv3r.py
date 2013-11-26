@@ -19,6 +19,10 @@ import time
 import os
 from chirp import util, chirp_common, bitwise, errors, directory
 from chirp.wouxun_common import do_download, do_upload
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+                RadioSettingValueBoolean, RadioSettingValueList, \
+                RadioSettingValueInteger, RadioSettingValueString, \
+                RadioSettingValueFloat
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -88,6 +92,29 @@ struct {
   u8 unknown;
   lbcd tx_freq[4];
 } tx_memory[99];
+
+#seekto 0x07C2;
+struct {
+  u8 squelch;
+  u8 vox;
+  u8 timeout;
+  u8 save:1,
+     unknown_1:1,
+     dw:1,
+     ste:1,
+     beep:1,
+     unknown_2:1,
+     bclo:1,
+     ch_flag:1;
+  u8 backlight:2,
+     relaym:1,
+     scanm:1,
+     pri:1,
+     unknown_3:3;
+  u8 unknown_4[3];
+  u8 pri_ch;
+} settings;
+
 #seekto 0x0810;
 struct {
   lbcd rx_freq[4];
@@ -113,6 +140,18 @@ struct {
 } names[128];
 """
 
+STEPS = [5.0, 6.25, 10.0, 12.5, 20.0, 25.0]
+STEP_LIST = [str(x) for x in STEPS]
+BACKLIGHT_LIST = ["Off", "Key", "Continuous"]
+TIMEOUT_LIST = ["Off"] + ["%s sec" % x for x in range(30, 210, 30)]
+SCANM_LIST = ["TO", "CO"]
+PRI_CH_LIST = ["Off"] + ["%s" % x for x in range(1, 100)]
+CH_FLAG_LIST = ["Freq Mode", "Channel Mode"]
+POWER_LIST = ["Low", "High"]
+BANDWIDTH_LIST = ["Narrow", "Wide"]
+DUPLEX_LIST = ["Off", "-", "+"]
+STE_LIST = ["On", "Off"]
+
 UV3R_DUPLEX = ["", "-", "+", ""]
 UV3R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                      chirp_common.PowerLevel("Low", watts=0.50)]
@@ -126,6 +165,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = UV3R_POWER_LEVELS
@@ -281,6 +321,108 @@ class UV3RRadio(chirp_common.CloneModeRadio):
 
         self._set_memory(mem, _tmem)
         self._set_memory(mem, _rmem)
+
+    def get_settings(self):
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        group = RadioSettingGroup("top", "All Settings", basic)
+
+        rs = RadioSetting("squelch", "Squelch Level",
+                          RadioSettingValueInteger(0, 9, self._memobj.settings.squelch))
+        basic.append(rs)
+
+        rs = RadioSetting("backlight", "LCD Back Light",
+                          RadioSettingValueList(BACKLIGHT_LIST,
+                                        BACKLIGHT_LIST[self._memobj.settings.backlight]))
+        basic.append(rs)
+
+        rs = RadioSetting("beep", "Keypad Beep",
+                          RadioSettingValueBoolean(self._memobj.settings.beep))
+        basic.append(rs)
+
+        rs = RadioSetting("vox", "VOX Level (0=OFF)",
+                          RadioSettingValueInteger(0, 9, self._memobj.settings.vox))
+        basic.append(rs)
+
+        rs = RadioSetting("dw", "Dual Watch",
+                          RadioSettingValueBoolean(self._memobj.settings.dw))
+        basic.append(rs)
+
+        rs = RadioSetting("ste", "Squelch Tail Eliminate",
+                          RadioSettingValueList(STE_LIST,
+                                        STE_LIST[self._memobj.settings.ste]))
+        basic.append(rs)
+
+        rs = RadioSetting("save", "Battery Saver",
+                          RadioSettingValueBoolean(self._memobj.settings.save))
+        basic.append(rs)
+
+        rs = RadioSetting("timeout", "Time Out Timer",
+                          RadioSettingValueList(TIMEOUT_LIST,
+                                        TIMEOUT_LIST[self._memobj.settings.timeout]))
+        basic.append(rs)
+
+        rs = RadioSetting("scanm", "Scan Mode",
+                          RadioSettingValueList(SCANM_LIST,
+                                        SCANM_LIST[self._memobj.settings.scanm]))
+        basic.append(rs)
+
+        rs = RadioSetting("relaym", "Repeater Sound Response",
+                          RadioSettingValueBoolean(self._memobj.settings.relaym))
+        basic.append(rs)
+
+        rs = RadioSetting("bclo", "Busy Channel Lock Out",
+                          RadioSettingValueBoolean(self._memobj.settings.bclo))
+        basic.append(rs)
+
+        rs = RadioSetting("pri", "Priority Channel Scanning",
+                          RadioSettingValueBoolean(self._memobj.settings.pri))
+        basic.append(rs)
+
+        rs = RadioSetting("pri_ch", "Priority Channel",
+                          RadioSettingValueList(PRI_CH_LIST,
+                                        PRI_CH_LIST[self._memobj.settings.pri_ch]))
+        basic.append(rs)
+
+        rs = RadioSetting("ch_flag", "Display Mode",
+                          RadioSettingValueList(CH_FLAG_LIST,
+                                        CH_FLAG_LIST[self._memobj.settings.ch_flag]))
+        basic.append(rs)
+
+        return group
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
 
     @classmethod
     def match_model(cls, filedata, filename):
