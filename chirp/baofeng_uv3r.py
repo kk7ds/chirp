@@ -123,6 +123,9 @@ struct {
   u8 pri_ch;
 } settings;
 
+#seekto 0x07E0;
+u16 fm_presets[16];
+
 #seekto 0x0810;
 struct {
   lbcd rx_freq[4];
@@ -432,14 +435,32 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
 
+        fm_preset = RadioSettingGroup("fm_preset", "FM Radio Presets")
+        group.append(fm_preset)
+
+        for i in range(0, 16):
+            if self._memobj.fm_presets[i] < 0x01AF:
+                used = True
+                preset = self._memobj.fm_presets[i] / 10.0 + 65
+            else:
+                used = False
+                preset = 65
+            rs = RadioSetting("fm_presets_%1i" % i, "FM Preset %i" % (i + 1),
+                          RadioSettingValueBoolean(used),
+                          RadioSettingValueFloat(65, 108, preset, 0.1, 1))
+            fm_preset.append(rs)
+
         return group
 
     def set_settings(self, settings):
         _settings = self._memobj.settings
         for element in settings:
             if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
+                if element.get_name() == "fm_preset" :
+                    self._set_fm_preset(element)
+                else:
+                    self.set_settings(element)
+                    continue
             else:
                 try:
                     name = element.get_name()
@@ -467,6 +488,23 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     print element.get_name()
                     raise
+
+    def _set_fm_preset(self, settings):
+        for element in settings:
+            try:
+                index = (int(element.get_name().split("_")[-1]))
+                val = element.value
+                if val[0].get_value():
+                    value = int(val[1].get_value() * 10 - 650)
+                else:
+                    value = 0x01AF
+                print "Setting fm_presets[%1i] = %s" % (index, value)
+                setting = self._memobj.fm_presets
+                setting[index] = value
+            except Exception, e:
+                print element.get_name()
+                raise
+
 
     @classmethod
     def match_model(cls, filedata, filename):
