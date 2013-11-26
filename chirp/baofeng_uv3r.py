@@ -93,6 +93,14 @@ struct {
   lbcd tx_freq[4];
 } tx_memory[99];
 
+#seekto 0x0780;
+struct {
+  lbcd lower_vhf[2];
+  lbcd upper_vhf[2];
+  lbcd lower_uhf[2];
+  lbcd upper_uhf[2];
+} limits;
+
 #seekto 0x07C2;
 struct {
   u8 squelch;
@@ -169,7 +177,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = UV3R_POWER_LEVELS
-        rf.valid_bands = [(136000000, 174000000), (400000000, 470000000)]
+        rf.valid_bands = [(136000000, 235000000), (400000000, 529000000)]
         rf.valid_skips = []
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
@@ -386,6 +394,42 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         rs = RadioSetting("ch_flag", "Display Mode",
                           RadioSettingValueList(CH_FLAG_LIST,
                                         CH_FLAG_LIST[self._memobj.settings.ch_flag]))
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.lower_vhf) / 10
+        rs = RadioSetting("limits.lower_vhf", "VHF Lower Limit (115-239 MHz)",
+                          RadioSettingValueInteger(115, 235, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.lower_vhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.upper_vhf) / 10
+        rs = RadioSetting("limits.upper_vhf", "VHF Upper Limit (115-239 MHz)",
+                          RadioSettingValueInteger(115, 235, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.upper_vhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.lower_uhf) / 10
+        rs = RadioSetting("limits.lower_uhf", "UHF Lower Limit (200-529 MHz)",
+                          RadioSettingValueInteger(200, 529, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.lower_uhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
+        basic.append(rs)
+
+        _limit = int(self._memobj.limits.upper_uhf) / 10
+        rs = RadioSetting("limits.upper_uhf", "UHF Upper Limit (200-529 MHz)",
+                          RadioSettingValueInteger(200, 529, _limit))
+        def apply_limit(setting, obj):
+            value = int(setting.value) * 10
+            obj.upper_uhf = value
+        rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
 
         return group
