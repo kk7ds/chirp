@@ -668,8 +668,9 @@ class TMG707Radio(TMV7Radio):
         rf = TMV7Radio.get_features(self)
         rf.has_sub_devices = False
         rf.memory_bounds = (1, 180)
-        rf.valid_bands = [(144000000, 148000000),
-                          (430000000, 450000000)]
+        rf.valid_bands = [(118000000, 174000000),
+                          (300000000, 520000000),
+                          (800000000, 999000000)]
         return rf
 
 THG71_STEPS = [ 5, 6.25, 10, 12.5, 15, 20, 25, 30, 50, 100 ]
