@@ -101,6 +101,26 @@ struct {
   lbcd upper_uhf[2];
 } limits;
 
+struct vfosettings {
+  lbcd freq[4];
+  u8   rxtone;
+  u8   unknown1;
+  lbcd offset[3];
+  u8   txtone;
+  u8   power:1,
+       bandwidth:1,
+       unknown2:4,
+       duplex:2;
+  u8   step;
+  u8   unknown3[4];
+};
+
+#seekto 0x0790;
+struct {
+  struct vfosettings uhf;
+  struct vfosettings vhf;
+} vfo;
+
 #seekto 0x07C2;
 struct {
   u8 squelch;
@@ -434,6 +454,103 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             obj.upper_uhf = value
         rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
+
+        vfo_preset = RadioSettingGroup("vfo_preset", "VFO Presets")
+        group.append(vfo_preset)
+
+        def convert_bytes_to_freq(bytes):
+           real_freq = 0
+           real_freq = bytes
+           return chirp_common.format_freq(real_freq * 10)
+
+        def apply_vhf_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            obj.vhf.freq = value
+
+        val = RadioSettingValueString(0, 10,
+            convert_bytes_to_freq(int(self._memobj.vfo.vhf.freq)))
+        rs = RadioSetting("vfo.vhf.freq", "VHF RX Frequency (115.00000-236.00000)", val)
+        rs.set_apply_callback(apply_vhf_freq, self._memobj.vfo)
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.vhf.duplex", "Shift Direction",
+                          RadioSettingValueList(DUPLEX_LIST,
+                                        DUPLEX_LIST[self._memobj.vfo.vhf.duplex]))
+        vfo_preset.append(rs)
+
+        #rs = RadioSetting("vfo.vhf.offset", "Offset (0-37995)",
+        #                  RadioSettingValueInteger(0, 37995, self._memobj.vfo.vhf.offset))
+        #vfo_preset.append(rs)
+
+        def convert_bytes_to_offset(bytes):
+           real_offset = 0
+           real_offset = bytes
+           return chirp_common.format_freq(real_offset * 10000)
+
+        def apply_vhf_offset(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10000
+            obj.vhf.offset = value
+
+        val = RadioSettingValueString(0, 10,
+            convert_bytes_to_offset(int(self._memobj.vfo.vhf.offset)))
+        rs = RadioSetting("vfo.vhf.offset", "Offset (0.00-37.995)", val)
+        rs.set_apply_callback(apply_vhf_offset, self._memobj.vfo)
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.vhf.power", "Power Level",
+                          RadioSettingValueList(POWER_LIST,
+                                        POWER_LIST[self._memobj.vfo.vhf.power]))
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.vhf.bandwidth", "Bandwidth",
+                          RadioSettingValueList(BANDWIDTH_LIST,
+                                        BANDWIDTH_LIST[self._memobj.vfo.vhf.bandwidth]))
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.vhf.step", "Step",
+                          RadioSettingValueList(STEP_LIST,
+                                        STEP_LIST[self._memobj.vfo.vhf.step]))
+        vfo_preset.append(rs)
+
+        def apply_uhf_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            obj.uhf.freq = value
+
+        val = RadioSettingValueString(0, 10,
+            convert_bytes_to_freq(int(self._memobj.vfo.uhf.freq)))
+        rs = RadioSetting("vfo.uhf.freq", "UHF RX Frequency (200.00000-529.00000)", val)
+        rs.set_apply_callback(apply_uhf_freq, self._memobj.vfo)
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.uhf.duplex", "Shift Direction",
+                          RadioSettingValueList(DUPLEX_LIST,
+                                        DUPLEX_LIST[self._memobj.vfo.uhf.duplex]))
+        vfo_preset.append(rs)
+
+        def apply_uhf_offset(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10000
+            obj.uhf.offset = value
+
+        val = RadioSettingValueString(0, 10,
+            convert_bytes_to_offset(int(self._memobj.vfo.uhf.offset)))
+        rs = RadioSetting("vfo.uhf.offset", "Offset (0.00-69.995)", val)
+        rs.set_apply_callback(apply_uhf_offset, self._memobj.vfo)
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.uhf.power", "Power Level",
+                          RadioSettingValueList(POWER_LIST,
+                                        POWER_LIST[self._memobj.vfo.uhf.power]))
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.uhf.bandwidth", "Bandwidth",
+                          RadioSettingValueList(BANDWIDTH_LIST,
+                                        BANDWIDTH_LIST[self._memobj.vfo.uhf.bandwidth]))
+        vfo_preset.append(rs)
+
+        rs = RadioSetting("vfo.uhf.step", "Step",
+                          RadioSettingValueList(STEP_LIST,
+                                        STEP_LIST[self._memobj.vfo.uhf.step]))
+        vfo_preset.append(rs)
 
         fm_preset = RadioSettingGroup("fm_preset", "FM Radio Presets")
         group.append(fm_preset)
