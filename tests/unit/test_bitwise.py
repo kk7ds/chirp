@@ -168,6 +168,11 @@ class TestBitwiseBCDTypes(BaseTest):
             expected = "\x42" + (len(_data) == 2 and "\x00" or "")
         raw = data.get_packed()
         self.assertEqual(raw, expected)
+        
+        # attempt set with bitwise
+        setattr(obj, name, value)
+        raw = data.get_packed()
+        self.assertEqual(_data, raw)
 
     def test_bbcd(self):
         self._test_def("bbcd foo;", "foo", "\x12", 12)
@@ -177,9 +182,17 @@ class TestBitwiseBCDTypes(BaseTest):
 
     def test_bbcd_array(self):
         self._test_def("bbcd foo[2];", "foo", "\x12\x34", 1234)
+        self._test_def("bbcd foo[2];", "foo", "\x02\x34", 234)
 
     def test_lbcd_array(self):
         self._test_def("lbcd foo[2];", "foo", "\x12\x34", 3412)
+
+    def test_bbcd_packed_msb(self):
+        self._test_def("bbcd foo;", "foo", "\xC4", 124)
+
+    def test_bbcd_array_packed_msb(self):
+        self._test_def("bbcd foo[2];", "foo", "\xC4\x77", 12477)
+
 
 class TestBitwiseCharTypes(BaseTest):
     def test_char(self):

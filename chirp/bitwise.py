@@ -215,10 +215,12 @@ class arrayDataElement(DataElement):
             raise ValueError("Cannot coerce this to int")
 
     def __set_value_bbcd(self, value):
-        for i in reversed(self.__items):
+        for i in reversed(self.__items[1:]):
             twodigits = value % 100
             value /= 100
             i.set_value(twodigits)
+        # msb packing is only supported in first byte
+        self.__items[0].set_value(value)
 
     def __set_value_lbcd(self, value):
         for i in self.__items:
@@ -543,7 +545,8 @@ class bcdDataElement(DataElement):
                             type(data))
 
     def set_value(self, value):
-        self._data[self._offset] = int("%02i" % value, 16)
+        a, b = value / 10, value % 10
+        self._data[self._offset] = (a << 4) + b
 
     def _get_value(self, data):
         a = (ord(data) & 0xF0) >> 4
