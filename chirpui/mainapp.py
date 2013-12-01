@@ -1171,6 +1171,19 @@ If you think that it is valid, you can select a radio model below to force an op
         d.run()
         d.destroy()
 
+    def do_documentation(self):
+        d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=self,
+                              type=gtk.MESSAGE_INFO)
+
+        d.set_markup("<b><big>" + _("CHIRP Documentation") + "</big></b>\r\n")
+        msg = _("Documentation for CHIRP, including FAQs, and help for common " +
+                "problems is available on the CHIRP web site, please go to\n\n" +
+                "<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/Documentation\">" +
+                "http://chirp.danplanet.com/projects/chirp/wiki/Documentation</a>\n")
+        d.format_secondary_markup(msg.replace("\n","\r\n"))
+        d.run()
+        d.destroy()
+
     def do_columns(self):
         eset = self.get_current_editorset()
         driver = directory.get_driver(eset.rthread.radio.__class__)
@@ -1358,6 +1371,8 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_przemienniki(action[0] == "i")
         elif action == "about":
             self.do_about()
+        elif action == "documentation":
+            self.do_documentation()
         elif action == "columns":
             self.do_columns()
         elif action == "hide_unused":
@@ -1452,6 +1467,7 @@ If you think that it is valid, you can select a radio model below to force an op
     </menu>
     <menu action="help">
       <menuitem action="about"/>
+      <menuitem action="documentation"/>
       <menuitem action="report"/>
       <menuitem action="developer"/>
     </menu>
@@ -1506,6 +1522,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
+            ('documentation', None, _("Documentation"), None, None, self.mh),
             ]
 
         conf = config.get()
@@ -1652,6 +1669,9 @@ If you think that it is valid, you can select a radio model below to force an op
         aboutitem = self.menu_uim.get_widget("/MenuBar/help/about")
         macapp.insert_app_menu_item(aboutitem, 0)
 
+        documentationitem = self.menu_uim.get_widget("/MenuBar/help/documentation")
+        macapp.insert_app_menu_item(documentationitem, 0)
+        
         macapp.set_use_quartz_accelerators(False)
         macapp.ready()
 
