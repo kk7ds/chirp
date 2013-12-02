@@ -15,6 +15,20 @@ RF = chirp_common.RadioFeatures()
 KEYS = [x for x in sorted(RF.__dict__.keys()) \
             if "_" in x and not x.startswith("_")]
 
+RADIO_TYPES = {
+    'Clone': chirp_common.CloneModeRadio,
+    'File':  chirp_common.FileBackedRadio,
+    'Live':  chirp_common.LiveRadio,
+}
+
+
+def radio_type(radio):
+    for k, v in RADIO_TYPES.items():
+        if isinstance(radio, v):
+            return k
+    return ""
+
+
 def supported_row(radio, odd):
     row = '<tr class="%s" title="%s %s %s">' % (odd and "odd" or "even",
                                                 radio.VENDOR,
@@ -57,6 +71,7 @@ def supported_row(radio, odd):
                  value and "Yes" or "No")
         else:
             row += '<td class="%s">%s</td>' % (key, value)
+    row += '<td class="radio_type">%s</td>' % radio_type(radio)
     row += "</tr>\n"
     return row
 
@@ -66,6 +81,7 @@ def header_row():
     for key in KEYS:
         Key = key.split("_", 1)[1].title().replace("_", " ")
         row += '<th title="%s">%s</th>' % (RF.get_doc(key), Key)
+    row += '<th title="Radio programming type">Type</th>\n'
     row += "</tr></thead>\n"
     return row
 
