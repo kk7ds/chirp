@@ -221,6 +221,13 @@ struct {
   char line2[7];
 } firmware_msg;
 
+#seekto 0x1849;
+u8 power_uv55_vhf_hi[14]; // 136-174 MHz, 3 MHz divisions
+u8 power_uv55_uhf_hi[14]; // 400-470 MHz, 5 MHz divisions
+#seekto 0x1889;
+u8 power_uv55_vhf_lo[14];
+u8 power_uv55_uhf_lo[14];
+
 struct limit {
   u8 enable;
   bbcd lower[2];
