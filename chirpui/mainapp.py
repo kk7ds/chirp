@@ -1176,10 +1176,12 @@ If you think that it is valid, you can select a radio model below to force an op
                               type=gtk.MESSAGE_INFO)
 
         d.set_markup("<b><big>" + _("CHIRP Documentation") + "</big></b>\r\n")
-        msg = _("Documentation for CHIRP, including FAQs, and help for common " +
-                "problems is available on the CHIRP web site, please go to\n\n" +
-                "<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/Documentation\">" +
-                "http://chirp.danplanet.com/projects/chirp/wiki/Documentation</a>\n")
+        msg = _("Documentation for CHIRP, including FAQs, and help for common "
+                "problems is available on the CHIRP web site, please go to\n\n"
+                "<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/"
+                "Documentation\">"
+                "http://chirp.danplanet.com/projects/chirp/wiki/"
+                "Documentation</a>\n")
         d.format_secondary_markup(msg.replace("\n","\r\n"))
         d.run()
         d.destroy()
