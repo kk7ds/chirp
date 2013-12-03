@@ -920,20 +920,24 @@ class KGUV6DRadio(KGUVD1PRadio):
                   RadioSettingValueInteger(0, 9, _pwd[4]),
                   RadioSettingValueInteger(0, 9, _pwd[5]))
         top.append(rs)
-        try:
-            _ani = self._memobj.settings.ani_id_content
-            rs = RadioSetting("ani_id_content", "ANI Code",
-                              RadioSettingValueInteger(0, 9, _ani[0]),
-                              RadioSettingValueInteger(0, 9, _ani[1]),
-                              RadioSettingValueInteger(0, 9, _ani[2]),
-                              RadioSettingValueInteger(0, 9, _ani[3]),
-                              RadioSettingValueInteger(0, 9, _ani[4]),
-                              RadioSettingValueInteger(0, 9, _ani[5]))
-            top.append(rs)
-        except Exception:
-            print ("Your ANI code is not six digits, which is not currently"
-                   " supported in CHIRP.")
-                   
+
+        dtmfchars = "0123456789 *#ABCD"
+        _codeobj = self._memobj.settings.ani_id_content
+        _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 6, _code, False)
+        val.set_charset(dtmfchars)
+        rs = RadioSetting("settings.ani_id_content", "ANI Code", val)
+        def apply_ani_id(setting, obj):
+            value = []
+            for j in range(0, 6):
+                try:
+                    value.append(dtmfchars.index(str(setting.value)[j]))
+                except IndexError:
+                    value.append(0xFF)
+            obj.ani_id_content = value
+        rs.set_apply_callback(apply_ani_id, self._memobj.settings)
+        top.append(rs)
+
         for i in range(0, 9):
             if self._memobj.fm_presets_0[i] != 0xFFFF:
                 used = True
@@ -979,8 +983,13 @@ class KGUV6DRadio(KGUVD1PRadio):
                     else:
                         obj = self._memobj.settings
                         setting = element.get_name()
-                    print "Setting %s = %s" % (setting, element.value)
-                    setattr(obj, setting, element.value)
+
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
                 except Exception, e:
                     print element.get_name()
                     raise
