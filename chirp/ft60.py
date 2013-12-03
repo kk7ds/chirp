@@ -97,7 +97,7 @@ def _decode_freq(freqraw):
 
 def _encode_freq(freq):
     freqraw = freq / 10000
-    if ((freq / 100) % 10) == 5:
+    if ((freq / 1000) % 10) == 5:
         freqraw += 800000
     if chirp_common.is_fractional_step(freq):
         freqraw += 400000
