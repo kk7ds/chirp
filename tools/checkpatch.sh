@@ -55,8 +55,8 @@ function get_touched_files() {
     hg status -n --change $rev | grep '\.py$'
 }
 
-files=$(get_touched_files tip)
 rev=${1:-tip}
+files=$(get_touched_files $rev)
 
 for testname in $TESTS; do
     eval "$testname $rev \"$files\""
