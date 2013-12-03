@@ -184,7 +184,7 @@ def do_download(radio):
     do_ident(radio)
     data = "KT511 Radio Program data v1.08\x00\x00"
     data += ("\x00" * 16)
-
+    firstack = None
     for i in range(0, 0x1000, 16):
         frame = struct.pack(">cHB", "R", i, 16)
         radio.pipe.write(frame)
@@ -194,9 +194,13 @@ def do_download(radio):
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
         radio.pipe.write("\x06")
         ack = radio.pipe.read(1)
-        if ack not in UVB5_ACKS:
-            print "ack received:", util.hexprint(ack)
-            raise errors.RadioError("Unexpected response")
+        if not firstack:
+            firstack = ack
+        else:
+            if not ack == firstack:
+                print "first ack:", util.hexprint(firstack), \
+                    "ack received:", util.hexprint(ack)
+                raise errors.RadioError("Unexpected response")
         data += result[4:]
         do_status(radio, "from", i)
 
@@ -224,7 +228,6 @@ SPECIALS = {
     }
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
-UVB5_ACKS = ['\x48', '\x74', '\x78', '\x1f', '\x29']
 
 @directory.register
 class BaofengUVB5(chirp_common.CloneModeRadio,
