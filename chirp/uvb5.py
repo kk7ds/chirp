@@ -284,8 +284,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         rf.valid_power_levels = POWER_LEVELS
         rf.has_ctone = True
         rf.has_bank = False
-        rf.has_tuning_step = True
-        rf.valid_tuning_steps = UVB5_STEPS
+        rf.has_tuning_step = False
         rf.memory_bounds = (1, 99)
         return rf
 
@@ -371,11 +370,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
             self._decode_tone(_mem.txtone, _mem.txpol),
             self._decode_tone(_mem.rxtone, _mem.rxpol))
 
-        if _mem.step < 0x06:
-            mem.tuning_step = UVB5_STEPS[_mem.step]
-        else:
+        if _mem.step > 0x05:
             _mem.step = 0x00
-            mem.tuning_step = UVB5_STEPS[0]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = _mem.isnarrow and "NFM" or "FM"
         mem.skip = "" if _mem.scanadd else "S"
@@ -442,7 +438,6 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         self._encode_tone(_mem, 'tx', *tx)
         self._encode_tone(_mem, 'rx', *rx)
 
-        _mem.step = UVB5_STEPS.index(mem.tuning_step)
         _mem.isnarrow = mem.mode == "NFM"
         _mem.scanadd = mem.skip == ""
         _mem.highpower = mem.power == POWER_LEVELS[1]
