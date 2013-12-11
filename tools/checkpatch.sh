@@ -12,9 +12,13 @@ function check_long_lines() {
     local rev="$1"
     local files="$2"
 
+    # For now, ignore this check on chirp/
+    files=$(echo $files | sed -r 's#\bchirp[^ ]*\b##')
+ 
     if [ -z "$files" ]; then
 	return
     fi
+
     pep8 --select=E501 $files || \
 	error "Please use <80 columns in source files"
 }
