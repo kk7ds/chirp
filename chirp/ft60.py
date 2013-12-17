@@ -97,11 +97,12 @@ def _decode_freq(freqraw):
 
 def _encode_freq(freq):
     freqraw = freq / 10000
-    if ((freq / 1000) % 10) == 5:
-        freqraw += 800000
+    flags = 0x00
+    if ((freq / 1000) % 10) >= 5:
+        flags += 0x80
     if chirp_common.is_fractional_step(freq):
-        freqraw += 400000
-    return freqraw
+        flags += 0x40
+    return freqraw, flags
 
 
 MEM_FORMAT = """
@@ -290,9 +291,11 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.used = 1
             print "Wiped"
 
-        _mem.freq = _encode_freq(mem.freq)
+        _mem.freq, flags = _encode_freq(mem.freq)
+        _mem.freq[0].set_bits(flags)
         if mem.duplex == "split":
-            _mem.tx_freq = _encode_freq(mem.offset)
+            _mem.tx_freq, flags = _encode_freq(mem.offset)
+            _mem.tx_freq[0].set_bits(flags)
             _mem.offset = 0
         else:
             _mem.tx_freq = 0
