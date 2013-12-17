@@ -271,8 +271,8 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         return memmap.MemoryMap(data)
     
     def _clone_out(self):
-        looppredelay = 0.2
-        looppostdelay = 1.5
+        looppredelay = 0.4
+        looppostdelay = 1.9
         start = time.time()
     
         blocknum = 0
