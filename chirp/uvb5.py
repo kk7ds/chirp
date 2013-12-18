@@ -513,7 +513,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                                         options[self._memobj.settings.pttid]))
         basic.append(rs)
 
-        dtmfchars = "0123456789ABCD"
+        dtmfchars = "0123456789ABCD*#"
         _codeobj = self._memobj.pttid.code
         _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
         val = RadioSettingValueString(0, 6, _code, False)
