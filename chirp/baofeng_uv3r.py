@@ -354,69 +354,71 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         self._set_memory(mem, _rmem)
 
     def get_settings(self):
+        _settings = self._memobj.settings
+        _vfo = self._memobj.vfo
         basic = RadioSettingGroup("basic", "Basic Settings")
         group = RadioSettingGroup("top", "All Settings", basic)
 
         rs = RadioSetting("squelch", "Squelch Level",
-                          RadioSettingValueInteger(0, 9, self._memobj.settings.squelch))
+                          RadioSettingValueInteger(0, 9, _settings.squelch))
         basic.append(rs)
 
         rs = RadioSetting("backlight", "LCD Back Light",
                           RadioSettingValueList(BACKLIGHT_LIST,
-                                        BACKLIGHT_LIST[self._memobj.settings.backlight]))
+                                        BACKLIGHT_LIST[_settings.backlight]))
         basic.append(rs)
 
         rs = RadioSetting("beep", "Keypad Beep",
-                          RadioSettingValueBoolean(self._memobj.settings.beep))
+                          RadioSettingValueBoolean(_settings.beep))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX Level (0=OFF)",
-                          RadioSettingValueInteger(0, 9, self._memobj.settings.vox))
+                          RadioSettingValueInteger(0, 9, _settings.vox))
         basic.append(rs)
 
         rs = RadioSetting("dw", "Dual Watch",
-                          RadioSettingValueBoolean(self._memobj.settings.dw))
+                          RadioSettingValueBoolean(_settings.dw))
         basic.append(rs)
 
         rs = RadioSetting("ste", "Squelch Tail Eliminate",
                           RadioSettingValueList(STE_LIST,
-                                        STE_LIST[self._memobj.settings.ste]))
+                                        STE_LIST[_settings.ste]))
         basic.append(rs)
 
         rs = RadioSetting("save", "Battery Saver",
-                          RadioSettingValueBoolean(self._memobj.settings.save))
+                          RadioSettingValueBoolean(_settings.save))
         basic.append(rs)
 
         rs = RadioSetting("timeout", "Time Out Timer",
                           RadioSettingValueList(TIMEOUT_LIST,
-                                        TIMEOUT_LIST[self._memobj.settings.timeout]))
+                                        TIMEOUT_LIST[_settings.timeout]))
         basic.append(rs)
 
         rs = RadioSetting("scanm", "Scan Mode",
                           RadioSettingValueList(SCANM_LIST,
-                                        SCANM_LIST[self._memobj.settings.scanm]))
+                                        SCANM_LIST[_settings.scanm]))
         basic.append(rs)
 
         rs = RadioSetting("relaym", "Repeater Sound Response",
-                          RadioSettingValueBoolean(self._memobj.settings.relaym))
+                          RadioSettingValueBoolean(_settings.relaym))
         basic.append(rs)
 
         rs = RadioSetting("bclo", "Busy Channel Lock Out",
-                          RadioSettingValueBoolean(self._memobj.settings.bclo))
+                          RadioSettingValueBoolean(_settings.bclo))
         basic.append(rs)
 
         rs = RadioSetting("pri", "Priority Channel Scanning",
-                          RadioSettingValueBoolean(self._memobj.settings.pri))
+                          RadioSettingValueBoolean(_settings.pri))
         basic.append(rs)
 
         rs = RadioSetting("pri_ch", "Priority Channel",
                           RadioSettingValueList(PRI_CH_LIST,
-                                        PRI_CH_LIST[self._memobj.settings.pri_ch]))
+                                        PRI_CH_LIST[_settings.pri_ch]))
         basic.append(rs)
 
         rs = RadioSetting("ch_flag", "Display Mode",
                           RadioSettingValueList(CH_FLAG_LIST,
-                                        CH_FLAG_LIST[self._memobj.settings.ch_flag]))
+                                        CH_FLAG_LIST[_settings.ch_flag]))
         basic.append(rs)
 
         _limit = int(self._memobj.limits.lower_vhf) / 10
@@ -468,19 +470,16 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             obj.vhf.freq = value
 
         val = RadioSettingValueString(0, 10,
-            convert_bytes_to_freq(int(self._memobj.vfo.vhf.freq)))
-        rs = RadioSetting("vfo.vhf.freq", "VHF RX Frequency (115.00000-236.00000)", val)
-        rs.set_apply_callback(apply_vhf_freq, self._memobj.vfo)
+            convert_bytes_to_freq(int(_vfo.vhf.freq)))
+        rs = RadioSetting("vfo.vhf.freq",
+                          "VHF RX Frequency (115.00000-236.00000)", val)
+        rs.set_apply_callback(apply_vhf_freq, _vfo)
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.vhf.duplex", "Shift Direction",
                           RadioSettingValueList(DUPLEX_LIST,
-                                        DUPLEX_LIST[self._memobj.vfo.vhf.duplex]))
+                                        DUPLEX_LIST[_vfo.vhf.duplex]))
         vfo_preset.append(rs)
-
-        #rs = RadioSetting("vfo.vhf.offset", "Offset (0-37995)",
-        #                  RadioSettingValueInteger(0, 37995, self._memobj.vfo.vhf.offset))
-        #vfo_preset.append(rs)
 
         def convert_bytes_to_offset(bytes):
            real_offset = 0
@@ -492,24 +491,24 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             obj.vhf.offset = value
 
         val = RadioSettingValueString(0, 10,
-            convert_bytes_to_offset(int(self._memobj.vfo.vhf.offset)))
+            convert_bytes_to_offset(int(_vfo.vhf.offset)))
         rs = RadioSetting("vfo.vhf.offset", "Offset (0.00-37.995)", val)
-        rs.set_apply_callback(apply_vhf_offset, self._memobj.vfo)
+        rs.set_apply_callback(apply_vhf_offset, _vfo)
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.vhf.power", "Power Level",
                           RadioSettingValueList(POWER_LIST,
-                                        POWER_LIST[self._memobj.vfo.vhf.power]))
+                                        POWER_LIST[_vfo.vhf.power]))
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.vhf.bandwidth", "Bandwidth",
                           RadioSettingValueList(BANDWIDTH_LIST,
-                                        BANDWIDTH_LIST[self._memobj.vfo.vhf.bandwidth]))
+                                        BANDWIDTH_LIST[_vfo.vhf.bandwidth]))
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.vhf.step", "Step",
                           RadioSettingValueList(STEP_LIST,
-                                        STEP_LIST[self._memobj.vfo.vhf.step]))
+                                        STEP_LIST[_vfo.vhf.step]))
         vfo_preset.append(rs)
 
         def apply_uhf_freq(setting, obj):
@@ -517,14 +516,15 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             obj.uhf.freq = value
 
         val = RadioSettingValueString(0, 10,
-            convert_bytes_to_freq(int(self._memobj.vfo.uhf.freq)))
-        rs = RadioSetting("vfo.uhf.freq", "UHF RX Frequency (200.00000-529.00000)", val)
-        rs.set_apply_callback(apply_uhf_freq, self._memobj.vfo)
+            convert_bytes_to_freq(int(_vfo.uhf.freq)))
+        rs = RadioSetting("vfo.uhf.freq",
+                               "UHF RX Frequency (200.00000-529.00000)", val)
+        rs.set_apply_callback(apply_uhf_freq, _vfo)
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.uhf.duplex", "Shift Direction",
                           RadioSettingValueList(DUPLEX_LIST,
-                                        DUPLEX_LIST[self._memobj.vfo.uhf.duplex]))
+                                        DUPLEX_LIST[_vfo.uhf.duplex]))
         vfo_preset.append(rs)
 
         def apply_uhf_offset(setting, obj):
@@ -532,24 +532,24 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             obj.uhf.offset = value
 
         val = RadioSettingValueString(0, 10,
-            convert_bytes_to_offset(int(self._memobj.vfo.uhf.offset)))
+            convert_bytes_to_offset(int(_vfo.uhf.offset)))
         rs = RadioSetting("vfo.uhf.offset", "Offset (0.00-69.995)", val)
-        rs.set_apply_callback(apply_uhf_offset, self._memobj.vfo)
+        rs.set_apply_callback(apply_uhf_offset, _vfo)
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.uhf.power", "Power Level",
                           RadioSettingValueList(POWER_LIST,
-                                        POWER_LIST[self._memobj.vfo.uhf.power]))
+                                        POWER_LIST[_vfo.uhf.power]))
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.uhf.bandwidth", "Bandwidth",
                           RadioSettingValueList(BANDWIDTH_LIST,
-                                        BANDWIDTH_LIST[self._memobj.vfo.uhf.bandwidth]))
+                                        BANDWIDTH_LIST[_vfo.uhf.bandwidth]))
         vfo_preset.append(rs)
 
         rs = RadioSetting("vfo.uhf.step", "Step",
                           RadioSettingValueList(STEP_LIST,
-                                        STEP_LIST[self._memobj.vfo.uhf.step]))
+                                        STEP_LIST[_vfo.uhf.step]))
         vfo_preset.append(rs)
 
         fm_preset = RadioSettingGroup("fm_preset", "FM Radio Presets")
