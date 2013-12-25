@@ -83,6 +83,14 @@ struct {
      txtdr:2;
   u8 sidetone;
   u8 vox;
+  u8 unk1;
+  u8 mem_chan_a;
+  u16 fm_vfo;
+  u8 unk4;
+  u8 unk5;
+  u8 mem_chan_b;
+  u8 unk6;
+  u8 last_menu; // number of last menu item accessed
 } settings;
 
 #seekto 0x0D50;
@@ -505,6 +513,14 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         rs = RadioSetting("mdf_b", "Display Format(F2)",
                           RadioSettingValueList(options,
                                         options[self._memobj.settings.mdf_b]))
+        basic.append(rs)
+
+        rs = RadioSetting("mem_chan_a", "Mem Channel (A)",
+              RadioSettingValueInteger(0, 99, self._memobj.settings.mem_chan_a))
+        basic.append(rs)
+
+        rs = RadioSetting("mem_chan_b", "Mem Channel (B)",
+              RadioSettingValueInteger(0, 99, self._memobj.settings.mem_chan_b))
         basic.append(rs)
 
         options = ["Off", "BOT", "EOT", "Both"]
