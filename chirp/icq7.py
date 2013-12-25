@@ -13,9 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import struct
 from chirp import chirp_common, icf, directory
 from chirp import bitwise
 from chirp.chirp_common import to_GHz, from_GHz
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+                RadioSettingValueBoolean, RadioSettingValueList, \
+                RadioSettingValueInteger, RadioSettingValueString, \
+                RadioSettingValueFloat
 
 MEM_FORMAT = """
 struct {
@@ -39,12 +44,52 @@ struct {
 
 #seekto 0x0690;
 u8 flags_whole[200];
+
+#seekto 0x0767;
+struct {
+i8 rit;
+u8 squelch;
+u8 lock:1,
+   ritfunct:1,
+   unknown:6;
+u8 unknown1[6];
+u8 d_sel;
+u8 autorp;
+u8 priority;
+u8 resume;
+u8 pause;
+u8 p_scan;
+u8 bnk_scan;
+u8 expand;
+u8 ch;
+u8 beep;
+u8 light;
+u8 ap_off;
+u8 p_save;
+u8 monitor;
+u8 speed;
+u8 edge;
+u8 lockgroup;
+} settings;
+
 """
 
 TMODES = ["", "", "Tone", "TSQL", "TSQL"] # last one is pocket beep
 DUPLEX = ["", "", "-", "+"]
 MODES  = ["FM", "WFM", "AM", "Auto"]
 STEPS =  [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+AUTORP_LIST = ["Off", "Duplex Only", "Duplex and Tone"]
+LOCKGROUP_LIST = ["Normal", "No Squelch", "No Volume", "All"]
+SQUELCH_LIST = ["Open", "Auto"] + ["L%s" % x for x in range(1, 10)]
+MONITOR_LIST = ["Push", "Hold"]
+LIGHT_LIST = ["Off", "On", "Auto"]
+PRIORITY_LIST = ["Off", "On", "Bell"]
+BANKSCAN_LIST = ["Off", "Bank 0", "Bank 1"]
+EDGE_LIST = ["%sP" % x for x in range(0, 20)] + ["Band", "All"]
+PAUSE_LIST = ["%s sec" % x for x in range(2, 22, 2)] + ["Hold"]
+RESUME_LIST = ["%s sec" % x for x in range(0, 6)]
+APOFF_LIST = ["Off"] + ["%s min" % x for x in range(30, 150, 30)]
+D_SEL_LIST = ["100 KHz", "1 MHz", "10 MHz"]
 
 @directory.register
 class ICQ7Radio(icf.IcomCloneModeRadio):
@@ -60,6 +105,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.memory_bounds = (0, 199)
         rf.valid_modes = list(MODES)
         rf.valid_tmodes = list(TMODES)
@@ -148,3 +194,144 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         _flag.mode = MODES.index(mem.mode)
         _flag.skip = mem.skip == "S" and 1 or 0
         _flag.pskip = mem.skip == "P" and 1 or 0
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        group = RadioSettingGroup("top", "All Settings", basic)
+
+        rs = RadioSetting("ch", "Channel Indication Mode",
+                          RadioSettingValueBoolean(_settings.ch))
+        basic.append(rs)
+
+        rs = RadioSetting("expand", "Expanded Settings Mode",
+                          RadioSettingValueBoolean(_settings.expand))
+        basic.append(rs)
+
+        rs = RadioSetting("beep", "Beep Tones",
+                          RadioSettingValueBoolean(_settings.beep))
+        basic.append(rs)
+
+        rs = RadioSetting("autorp", "Auto Repeater Function",
+                          RadioSettingValueList(AUTORP_LIST,
+                              AUTORP_LIST[_settings.autorp]))
+        basic.append(rs)
+
+        rs = RadioSetting("ritfunct", "RIT Runction",
+                          RadioSettingValueBoolean(_settings.ritfunct))
+        basic.append(rs)
+
+        rs = RadioSetting("rit", "RIT Shift (KHz)",
+                          RadioSettingValueInteger(-7, 7, _settings.rit))
+        basic.append(rs)
+
+        rs = RadioSetting("lock", "Lock",
+                          RadioSettingValueBoolean(_settings.lock))
+        basic.append(rs)
+
+        rs = RadioSetting("lockgroup", "Lock Group",
+                          RadioSettingValueList(LOCKGROUP_LIST,
+                              LOCKGROUP_LIST[_settings.lockgroup]))
+        basic.append(rs)
+
+        rs = RadioSetting("squelch", "Squelch",
+                          RadioSettingValueList(SQUELCH_LIST,
+                              SQUELCH_LIST[_settings.squelch]))
+        basic.append(rs)
+
+        rs = RadioSetting("monitor", "Monitor Switch Function",
+                          RadioSettingValueList(MONITOR_LIST,
+                              MONITOR_LIST[_settings.monitor]))
+        basic.append(rs)
+
+        rs = RadioSetting("light", "Display Backlighting",
+                          RadioSettingValueList(LIGHT_LIST,
+                              LIGHT_LIST[_settings.light]))
+        basic.append(rs)
+
+        rs = RadioSetting("priority", "Priority Watch Operation",
+                          RadioSettingValueList(PRIORITY_LIST,
+                              PRIORITY_LIST[_settings.priority]))
+        basic.append(rs)
+
+        rs = RadioSetting("p_scan", "Frequency Skip Function",
+                          RadioSettingValueBoolean(_settings.p_scan))
+        basic.append(rs)
+
+        rs = RadioSetting("bnk_scan", "Memory Bank Scan Selection",
+                          RadioSettingValueList(BANKSCAN_LIST,
+                              BANKSCAN_LIST[_settings.bnk_scan]))
+        basic.append(rs)
+
+        rs = RadioSetting("edge", "Band Edge Scan Selection",
+                          RadioSettingValueList(EDGE_LIST,
+                              EDGE_LIST[_settings.edge]))
+        basic.append(rs)
+
+        rs = RadioSetting("pause", "Scan Pause Time",
+                          RadioSettingValueList(PAUSE_LIST,
+                              PAUSE_LIST[_settings.pause]))
+        basic.append(rs)
+
+        rs = RadioSetting("resume", "Scan Resume Time",
+                          RadioSettingValueList(RESUME_LIST,
+                              RESUME_LIST[_settings.resume]))
+        basic.append(rs)
+
+        rs = RadioSetting("p_save", "Power Saver",
+                          RadioSettingValueBoolean(_settings.p_save))
+        basic.append(rs)
+
+        rs = RadioSetting("ap_off", "Auto Power-off Function",
+                          RadioSettingValueList(APOFF_LIST,
+                              APOFF_LIST[_settings.ap_off]))
+        basic.append(rs)
+
+        rs = RadioSetting("speed", "Dial Speed Acceleration",
+                          RadioSettingValueBoolean(_settings.speed))
+        basic.append(rs)
+
+        rs = RadioSetting("d_sel", "Dial Select Step",
+                          RadioSettingValueList(D_SEL_LIST,
+                              D_SEL_LIST[_settings.d_sel]))
+        basic.append(rs)
+
+        return group
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                if element.get_name() == "fm_preset" :
+                    self._set_fm_preset(element)
+                else:
+                    self.set_settings(element)
+                    continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
+
