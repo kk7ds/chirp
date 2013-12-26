@@ -302,11 +302,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         _settings = self._memobj.settings
         for element in settings:
             if not isinstance(element, RadioSetting):
-                if element.get_name() == "fm_preset" :
-                    self._set_fm_preset(element)
-                else:
-                    self.set_settings(element)
-                    continue
+                self.set_settings(element)
+                continue
             else:
                 try:
                     name = element.get_name()
