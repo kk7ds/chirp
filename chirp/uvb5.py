@@ -516,11 +516,11 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         basic.append(rs)
 
         rs = RadioSetting("mem_chan_a", "Mem Channel (A)",
-              RadioSettingValueInteger(0, 99, self._memobj.settings.mem_chan_a))
+              RadioSettingValueInteger(1, 99, self._memobj.settings.mem_chan_a))
         basic.append(rs)
 
         rs = RadioSetting("mem_chan_b", "Mem Channel (B)",
-              RadioSettingValueInteger(0, 99, self._memobj.settings.mem_chan_b))
+              RadioSettingValueInteger(1, 99, self._memobj.settings.mem_chan_b))
         basic.append(rs)
 
         options = ["Off", "BOT", "EOT", "Both"]
