@@ -59,12 +59,15 @@ struct {
 } settings;
 #seekto 0x03C0;
 struct {
-    u8 beep:1,
+    u8 unused:6,
        batterysaver:1,
-       unused:6;
+       beep:1;
     u8 squelchlevel;
     u8 sidekeyfunction;
     u8 timeouttimer;
+    u8 unused2[3];
+    u8 unused3:7,
+       scanmode:1;
 } settings2;
 """
 
@@ -83,6 +86,7 @@ TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
                      "300 seconds"]
+SCANMODE_LIST = ["Carrier", "Time"]
 
 SETTING_LISTS = {
     "voice" : VOICE_LIST,
@@ -337,7 +341,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
         mem.extra.append(rs)
-        rs = RadioSetting("beatshift", "Beat Shift",
+        rs = RadioSetting("beatshift", "Beat Shift(scramble)",
                           RadioSettingValueBoolean(not _mem.beatshift))
         mem.extra.append(rs)
 
@@ -379,24 +383,27 @@ class H777Radio(chirp_common.CloneModeRadio):
 
     def get_settings(self):
         _settings = self._memobj.settings
-        _settings2 = self._memobj.settings2
         basic = RadioSettingGroup("basic", "Basic Settings")
 
         # TODO: Check that all these settings actually do what they
         # say they do.
 
-        rs = RadioSetting("voiceprompt", "Voice Prompt",
+        rs = RadioSetting("voiceprompt", "Voice prompt",
                           RadioSettingValueBoolean(_settings.voiceprompt))
         basic.append(rs)
 
-        rs = RadioSetting(
-            "voicelanguage", "Voice",
-            RadioSettingValueList(VOICE_LIST,
-                                  VOICE_LIST[_settings.voicelanguage]))
+        rs = RadioSetting("voicelanguage", "Voice language",
+                          RadioSettingValueList(VOICE_LIST,
+                              VOICE_LIST[_settings.voicelanguage]))
         basic.append(rs)
 
         rs = RadioSetting("scan", "Scan",
                           RadioSettingValueBoolean(_settings.scan))
+        basic.append(rs)
+
+        rs = RadioSetting("settings2.scanmode", "Scan mode",
+                          RadioSettingValueList(SCANMODE_LIST,
+                          SCANMODE_LIST[self._memobj.settings2.scanmode]))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX",
@@ -404,18 +411,19 @@ class H777Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("voxlevel", "VOX level",
-                          RadioSettingValueInteger(0, 4, _settings.voxlevel))
+                          RadioSettingValueInteger(
+                              1, 5, _settings.voxlevel + 1))
         basic.append(rs)
 
         rs = RadioSetting("voxinhibitonrx", "Inhibit VOX on receive",
                           RadioSettingValueBoolean(_settings.voxinhibitonrx))
         basic.append(rs)
 
-        rs = RadioSetting("lowvolinhibittx", "Low volume inhibit transmit",
+        rs = RadioSetting("lowvolinhibittx", "Low voltage inhibit transmit",
                           RadioSettingValueBoolean(_settings.lowvolinhibittx))
         basic.append(rs)
 
-        rs = RadioSetting("highvolinhibittx", "High volume inhibit transmit",
+        rs = RadioSetting("highvolinhibittx", "High voltage inhibit transmit",
                           RadioSettingValueBoolean(_settings.highvolinhibittx))
         basic.append(rs)
 
@@ -425,37 +433,67 @@ class H777Radio(chirp_common.CloneModeRadio):
 
         # TODO: This should probably be called “FM Broadcast Band Radio”
         # or something. I'm not sure if the model actually has one though.
-        rs = RadioSetting("fmradio", "FM Radio",
+        rs = RadioSetting("fmradio", "FM function",
                           RadioSettingValueBoolean(_settings.fmradio))
         basic.append(rs)
 
-        rs = RadioSetting("beep", "Beep",
-                          RadioSettingValueBoolean(_settings2.beep))
+        rs = RadioSetting("settings2.beep", "Beep",
+                          RadioSettingValueBoolean(
+                              self._memobj.settings2.beep))
         basic.append(rs)
 
-        rs = RadioSetting("batterysaver", "Battery saver",
-                          RadioSettingValueBoolean(_settings2.batterysaver))
+        rs = RadioSetting("settings2.batterysaver", "Battery saver",
+                          RadioSettingValueBoolean(
+                              self._memobj.settings2.batterysaver))
         basic.append(rs)
 
-        rs = RadioSetting("squelchlevel", "Squelch level",
+        rs = RadioSetting("settings2.squelchlevel", "Squelch level",
                           RadioSettingValueInteger(0, 9,
-                                                   _settings2.squelchlevel))
+                              self._memobj.settings2.squelchlevel))
         basic.append(rs)
 
-        rs = RadioSetting(
-            "sidekeyfunction", "Sidekey function",
-            RadioSettingValueList(SIDEKEYFUNCTION_LIST,
-                                  SIDEKEYFUNCTION_LIST[
-                                      _settings2.sidekeyfunction]))
+        rs = RadioSetting("settings2.sidekeyfunction", "Side key function",
+                          RadioSettingValueList(SIDEKEYFUNCTION_LIST,
+                          SIDEKEYFUNCTION_LIST[
+                              self._memobj.settings2.sidekeyfunction]))
         basic.append(rs)
 
-        rs = RadioSetting(
-            "timeouttimer", "Timeout timer",
-            RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                  TIMEOUTTIMER_LIST[_settings2.timeouttimer]))
+        rs = RadioSetting("settings2.timeouttimer", "Timeout timer",
+                          RadioSettingValueList(TIMEOUTTIMER_LIST,
+                          TIMEOUTTIMER_LIST[
+                              self._memobj.settings2.timeouttimer]))
         basic.append(rs)
 
         return basic
+
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            else:
+                try:
+                    if "." in element.get_name():
+                        bits = element.get_name().split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = self._memobj.settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    elif setting == "voxlevel":
+                        setattr(obj, setting, int(element.value) - 1)
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
 
 class H777TestCase(unittest.TestCase):
     def setUp(self):
