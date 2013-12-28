@@ -271,7 +271,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
             5. Ensure that the radio is tuned to channel with no activity.
             6. Click OK to upload image to device."""))
         return rp
-        
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
@@ -435,7 +435,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
             _mem.duplex = DUPLEX.index("-")
             _mem.offset = _mem.freq
         elif mem.duplex == "split":
-            diff = mem.offset - mem.freq 
+            diff = mem.offset - mem.freq
             _mem.duplex = DUPLEX.index("-") if diff < 0 else DUPLEX.index("+")
             _mem.offset = abs(diff) / 10
         else:
@@ -463,70 +463,70 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     def validate_memory(self, mem):
         msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
 
-        if (mem.duplex == "split" and abs(mem.freq - mem.offset) > 69995000) or \
-                (mem.duplex in ["+", "-"] and mem.offset > 69995000) :
+        if (mem.duplex == "split" and abs(mem.freq - mem.offset) > 69995000) \
+                or (mem.duplex in ["+", "-"] and mem.offset > 69995000) :
             msgs.append(chirp_common.ValidationError(
                     "Max split is 69.995MHz"))
         return msgs
 
 
     def get_settings(self):
+        _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
         group = RadioSettingGroup("top", "All Settings", basic)
 
         options = ["Time", "Carrier", "Search"]
         rs = RadioSetting("scantype", "Scan Type",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.scantype]))
+                                                options[_settings.scantype]))
         basic.append(rs)
 
-        options = ["%s min" % x for x in range(1, 8)]
-        options.insert(0, "Off")
+        options = ["Off"] + ["%s min" % x for x in range(1, 8)]
         rs = RadioSetting("timeout", "Time Out Timer",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.timeout]))
+                                                options[_settings.timeout]))
         basic.append(rs)
 
         options = ["A", "B"]
         rs = RadioSetting("freqmode_ab", "Frequency Mode",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.freqmode_ab]))
+                                               options[_settings.freqmode_ab]))
         basic.append(rs)
 
         options = ["Frequency Mode", "Channel Mode"]
         rs = RadioSetting("workmode_a", "Radio Work Mode(A)",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.workmode_a]))
+                                                options[_settings.workmode_a]))
         basic.append(rs)
 
         rs = RadioSetting("workmode_b", "Radio Work Mode(B)",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.workmode_b]))
+                                                options[_settings.workmode_b]))
         basic.append(rs)
 
         options = ["Frequency", "Name", "Channel"]
         rs = RadioSetting("mdf_a", "Display Format(F1)",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.mdf_a]))
+                                                options[_settings.mdf_a]))
         basic.append(rs)
 
         rs = RadioSetting("mdf_b", "Display Format(F2)",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.mdf_b]))
+                                                options[_settings.mdf_b]))
         basic.append(rs)
 
         rs = RadioSetting("mem_chan_a", "Mem Channel (A)",
-              RadioSettingValueInteger(1, 99, self._memobj.settings.mem_chan_a))
+              RadioSettingValueInteger(1, 99, _settings.mem_chan_a))
         basic.append(rs)
 
         rs = RadioSetting("mem_chan_b", "Mem Channel (B)",
-              RadioSettingValueInteger(1, 99, self._memobj.settings.mem_chan_b))
+              RadioSettingValueInteger(1, 99, _settings.mem_chan_b))
         basic.append(rs)
 
         options = ["Off", "BOT", "EOT", "Both"]
         rs = RadioSetting("pttid", "PTT-ID",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.pttid]))
+                                                options[_settings.pttid]))
         basic.append(rs)
 
         dtmfchars = "0123456789ABCD*#"
@@ -547,63 +547,61 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         basic.append(rs)
 
         rs = RadioSetting("squelch", "Squelch Level",
-                          RadioSettingValueInteger(0, 9, self._memobj.settings.squelch))
+                          RadioSettingValueInteger(0, 9, _settings.squelch))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX Level",
-                          RadioSettingValueInteger(0, 9, self._memobj.settings.vox))
+                          RadioSettingValueInteger(0, 9, _settings.vox))
         basic.append(rs)
 
         options = ["Frequency Mode", "Channel Mode"]
         rs = RadioSetting("workmode_fm", "FM Work Mode",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.workmode_fm]))
+                                                options[_settings.workmode_fm]))
         basic.append(rs)
 
         options = ["Current Frequency", "F1 Frequency", "F2 Frequency"]
         rs = RadioSetting("txtdr", "Dual Standby TX Priority",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.txtdr]))
+                                                options[_settings.txtdr]))
         basic.append(rs)
 
         options = ["English", "Chinese"]
         rs = RadioSetting("language", "Language",
                           RadioSettingValueList(options,
-                                        options[self._memobj.settings.language]))
+                                                options[_settings.language]))
         basic.append(rs)
 
         rs = RadioSetting("tdr", "Dual Standby",
-                          RadioSettingValueBoolean(self._memobj.settings.tdr))
+                          RadioSettingValueBoolean(_settings.tdr))
         basic.append(rs)
 
         rs = RadioSetting("roger", "Roger Beep",
-                          RadioSettingValueBoolean(self._memobj.settings.roger))
+                          RadioSettingValueBoolean(_settings.roger))
         basic.append(rs)
 
         rs = RadioSetting("backlight", "Backlight",
-                          RadioSettingValueBoolean(self._memobj.settings.backlight))
+                          RadioSettingValueBoolean(_settings.backlight))
         basic.append(rs)
 
         rs = RadioSetting("save_funct", "Save Mode",
-                          RadioSettingValueBoolean(self._memobj.settings.save_funct))
+                          RadioSettingValueBoolean( _settings.save_funct))
         basic.append(rs)
 
         rs = RadioSetting("fm", "FM Function",
-                          RadioSettingValueBoolean(self._memobj.settings.fm))
+                          RadioSettingValueBoolean(_settings.fm))
         basic.append(rs)
 
-        options = ["Enabled", "Disabled"]
         rs = RadioSetting("beep_tone", "Beep Prompt",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.beep_tone]))
+                          RadioSettingValueBoolean(not _settings.beep_tone))
         basic.append(rs)
 
         rs = RadioSetting("voice_prompt", "Voice Prompt",
-                          RadioSettingValueBoolean(self._memobj.settings.voice_prompt))
+                          RadioSettingValueBoolean(_settings.voice_prompt))
         basic.append(rs)
 
         rs = RadioSetting("sidetone", "DTMF Side Tone",
-                          RadioSettingValueBoolean(self._memobj.settings.sidetone))
+                          RadioSettingValueBoolean(_settings.sidetone))
         basic.append(rs)
 
         _limit = int(self._memobj.limits.lower_vhf) / 10
@@ -692,7 +690,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                 key = "test.%ssquelch%i" % (band, index)
                 name = "%s Squelch %i" % (band.upper(), index)
                 rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
-                        getattr(self._memobj.test, "%ssquelch%i" 
+                        getattr(self._memobj.test, "%ssquelch%i"
                                 % (band, index))))
                 testmode.append(rs)
 
@@ -728,6 +726,9 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                     if element.has_apply_callback():
                         print "Using apply callback"
                         element.run_apply_callback()
+                    elif setting == "beep_tone":
+                        print "Setting %s = %s" % (setting, not element.value)
+                        setattr(obj, setting, not element.value)
                     else:
                         print "Setting %s = %s" % (setting, element.value)
                         setattr(obj, setting, element.value)
