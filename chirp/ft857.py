@@ -286,6 +286,10 @@ class FT857Radio(ft817.FT817Radio):
         u8 beacon_text1[40];
         u8 beacon_text2[40];
         u8 beacon_text3[40];
+        u32 xvtr_a_offset;
+        u32 xvtr_b_offset;
+        u8 op_filter1_name[4];
+        u8 op_filter2_name[4];
 
         #seekto 0x1CAD;
         struct mem_struct sixtymeterchannels[5];
@@ -793,8 +797,18 @@ class FT857Radio(ft817.FT817Radio):
         rs = RadioSetting("nb_level", "Noise blanking level",
                           RadioSettingValueInteger(0, 100, _settings.nb_level))
         basic.append(rs)
-        # TODO op_filter1
-        # TODO op_filter2
+        s = RadioSettingValueString(0, 4, 
+                            ''.join([self._CALLSIGN_CHARSET[x] for x in 
+                                        self._memobj.op_filter1_name]))
+        s.set_charset(self._CALLSIGN_CHARSET)
+        rs = RadioSetting("op_filter1_name", "Optional filter1 name", s)
+        extended.append(rs)
+        s = RadioSettingValueString(0, 4, 
+                            ''.join([self._CALLSIGN_CHARSET[x] for x in 
+                                        self._memobj.op_filter2_name]))
+        s.set_charset(self._CALLSIGN_CHARSET)
+        rs = RadioSetting("op_filter2_name", "Optional filter2 name", s)
+        extended.append(rs)
         rs = RadioSetting("pg_a", "Programmable key MFq:A",
                           RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
                                         self.PROGRAMMABLEOPTIONS[_settings.pg_a]))
@@ -884,8 +898,12 @@ class FT857Radio(ft817.FT817Radio):
         rs = RadioSetting("vox_gain", "VOX Gain",
                           RadioSettingValueInteger(1, 100, _settings.vox_gain))
         basic.append(rs)
-        # TODO xvtr_a_freq
-        # TODO xvtr_b_freq
+        rs = RadioSetting("xvtr_a", "Xvtr A displacement",
+                          RadioSettingValueInteger(-4294967295, 4294967295, self._memobj.xvtr_a_offset * (-1 if _settings.xvtr_a_negative else 1)))
+        extended.append(rs)
+        rs = RadioSetting("xvtr_b", "Xvtr B displacement",
+                          RadioSettingValueInteger(-4294967295, 4294967295, self._memobj.xvtr_b_offset * (-1 if _settings.xvtr_b_negative else 1)))
+        extended.append(rs)
         options = ["OFF", "XVTR A", "XVTR B"]
         rs = RadioSetting("xvtr_sel", "Transverter function selection",
                           RadioSettingValueList(options,
@@ -964,7 +982,8 @@ class FT857Radio(ft817.FT817Radio):
                     self._memobj.arts_idw = \
                         [self._CALLSIGN_CHARSET_REV[x] for x in 
                                                         str(element.value)]
-                elif setting in ["beacon_text1", "beacon_text2", "beacon_text3"]:
+                elif setting in ["beacon_text1", "beacon_text2",
+                        "beacon_text3", "op_filter1_name", "op_filter2_name"]:
                     setattr(self._memobj, setting,
                         [self._BEACON_CHARSET_REV[x] for x in 
                                                         str(element.value)])
@@ -980,6 +999,10 @@ class FT857Radio(ft817.FT817Radio):
                     setattr(obj, setting, int(element.value)-1)
                 elif setting == "disp_contrast":
                     setattr(obj, setting, int(element.value)-2)
+                elif setting in ["xvtr_a", "xvtr_b"]:
+                    val = int(element.value)
+                    setattr(obj, setting + "_negative", int(val<0))
+                    setattr(self._memobj, setting + "_offset", abs(val))
                 else:
                     setattr(obj, setting, element.value)
             except Exception, e:
