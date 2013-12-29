@@ -452,7 +452,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
         group.append(
             RadioSetting("ponmsg", "Power-On Message",
-                         RadioSettingValueString(0, 7,
+                         RadioSettingValueString(0, 6,
                                                  _filter(_settings.ponmsg))))
         
         return group
