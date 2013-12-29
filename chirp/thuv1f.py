@@ -99,7 +99,7 @@ struct mem {
   lbcd rx_tone[2];
   lbcd tx_tone[2];
   u8 unknown1:1,
-     pttid:2, 
+     pttid:2,
      unknown2:2,
      ishighpower:1,
      unknown3:2;
@@ -199,7 +199,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         rf.valid_cross_modes = ["Tone->Tone", "DTCS->DTCS",
                                 "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS", "DTCS->"]
-                                
+
         return rf
 
     def sync_in(self):
@@ -221,8 +221,16 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata.startswith("\x13\x60\x17\x40\x40\x00\x48\x00" +
-                                   "\x35\x00\x39\x00\x47\x00\x52\x00")
+        # TYT TH-UVF1 original
+        if filedata.startswith("\x13\x60\x17\x40\x40\x00\x48\x00" +
+                               "\x35\x00\x39\x00\x47\x00\x52\x00"):
+            return True
+        # TYT TH-UVF1 V2
+        elif filedata.startswith("\x14\x40\x14\x80\x43\x00\x45\x00" +
+                                 "\x13\x60\x17\x40\x40\x00\x47\x00"):
+            return True
+        else:
+            return False
 
     def process_mmap(self):
         self._memobj = bitwise.parse(THUV1F_MEM_FORMAT, self._mmap)
@@ -230,7 +238,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     def _decode_tone(self, toneval):
         pol = "N"
         rawval = (toneval[1].get_bits(0xFF) << 8) | toneval[0].get_bits(0xFF)
-                              
+
         if toneval[0].get_bits(0xFF) == 0xFF:
             mode = ""
             val = 0
@@ -454,7 +462,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             RadioSetting("ponmsg", "Power-On Message",
                          RadioSettingValueString(0, 6,
                                                  _filter(_settings.ponmsg))))
-        
+
         return group
 
     def set_settings(self, settings):
