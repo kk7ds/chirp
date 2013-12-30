@@ -242,12 +242,24 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
     
     def get_features(self):
         rf = super(BaojieBJUV55Radio, self).get_features()
-        #rf.has_settings = False
         rf.valid_name_length = 6
         return rf
     
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
+
+    def set_memory(self, mem):
+        super(BaojieBJUV55Radio, self).set_memory(mem)
+        _mem = self._memobj.memory[mem.number]
+        if (mem.freq - mem.offset) > (400 * 1000000):
+            _mem.isuhf = True
+        else:
+            _mem.isuhf = False
+        if mem.tmode in ["Tone", "TSQL"]:
+            _mem.txtoneicon = True
+        else:
+            _mem.txtoneicon = False
+
 
     def _get_settings(self):
         _settings = self._memobj.settings

@@ -240,13 +240,6 @@ struct {
   struct limit uhf;
 } limits_old;
 
- #seekto 0x1908;
-struct {
-    struct limit vhf;
-    u8 unk11[11];
-    struct limit uhf;
-} limits_bj55;
-
 """
 
 # 0x1EC0 - 0x2000
@@ -734,30 +727,20 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         else:
             _mem.txfreq = mem.freq / 10
         
-        if self.MODEL == "BJ-UV55":
-            if (mem.freq - mem.offset) > (400 * 1000000):
-                _mem.isuhf = True
-            else:
-                _mem.isuhf = False
-        for i in range(0, 7):
+        _namelength = self.get_features().valid_name_length
+        for i in range(_namelength):
             try:
                 _nam.name[i] = mem.name[i]
             except IndexError:
                 _nam.name[i] = "\xFF"
 
         rxmode = txmode = ""
-        if self.MODEL == "BJ-UV55":
-            _mem.txtoneicon = False
         if mem.tmode == "Tone":
             _mem.txtone = int(mem.rtone * 10)
             _mem.rxtone = 0
-            if self.MODEL == "BJ-UV55":
-                _mem.txtoneicon = True
         elif mem.tmode == "TSQL":
             _mem.txtone = int(mem.ctone * 10)
             _mem.rxtone = int(mem.ctone * 10)
-            if self.MODEL == "BJ-UV55":
-                _mem.txtoneicon = True
         elif mem.tmode == "DTCS":
             rxmode = txmode = "DTCS"
             _mem.txtone = UV5R_DTCS.index(mem.dtcs) + 1
