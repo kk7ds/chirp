@@ -124,10 +124,7 @@ struct {
   u8 ponmsg;
   u8 roger;
   u8 rogerrx;
-} settings[2];
-
-#seekto 0x0E52;
-struct {
+  u8 unknown7; 
   u8 displayab:1,
      unknown1:2,
      fmradio:1,
@@ -137,8 +134,8 @@ struct {
      menu:1;
   u8 vfomrlock;
   u8 workmode;
-  u8 keylock;
-} extra;
+  u8 keylock; 
+} settings;
 
 #seekto 0x0E7E;
 struct {
@@ -220,13 +217,6 @@ struct {
   char line1[7];
   char line2[7];
 } firmware_msg;
-
-#seekto 0x1849;
-u8 power_uv55_vhf_hi[14]; // 136-174 MHz, 3 MHz divisions
-u8 power_uv55_uhf_hi[14]; // 400-470 MHz, 5 MHz divisions
-#seekto 0x1889;
-u8 power_uv55_vhf_lo[14];
-u8 power_uv55_uhf_lo[14];
 
 struct limit {
   u8 enable;
@@ -843,7 +833,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         return band_tag
 
     def _get_settings(self):
-        _settings = self._memobj.settings[0]
+        _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
         group = RadioSettingGroup("top", "All Settings", basic, advanced)
@@ -920,8 +910,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.autolk))
         advanced.append(rs)
 
-        rs = RadioSetting("extra.fmradio", "Broadcast FM Radio",
-                          RadioSettingValueBoolean(self._memobj.extra.fmradio))
+        rs = RadioSetting("fmradio", "Broadcast FM Radio",
+                          RadioSettingValueBoolean(self._memobj.settings.fmradio))
         advanced.append(rs)
 
         rs = RadioSetting("wtled", "Standby LED Color",
@@ -966,16 +956,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 STEDELAY_LIST[_settings.rptrl]))
         advanced.append(rs)
 
-        rs = RadioSetting("extra.reset", "RESET Menu",
-                          RadioSettingValueBoolean(self._memobj.extra.reset))
+        rs = RadioSetting("reset", "RESET Menu",
+                          RadioSettingValueBoolean(self._memobj.settings.reset))
         advanced.append(rs)
 
-        rs = RadioSetting("extra.menu", "All Menus",
-                          RadioSettingValueBoolean(self._memobj.extra.menu))
+        rs = RadioSetting("menu", "All Menus",
+                          RadioSettingValueBoolean(self._memobj.settings.menu))
         advanced.append(rs)
 
-        rs = RadioSetting("extra.vfomrlock", "VFO/MR Button (F-11 only)",
-                          RadioSettingValueBoolean(self._memobj.extra.vfomrlock))
+        rs = RadioSetting("vfomrlock", "VFO/MR Button (F-11 only)",
+                          RadioSettingValueBoolean(self._memobj.settings.vfomrlock))
         advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
@@ -1028,8 +1018,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         if self._is_orig():
             limit = "limits_old"
-        elif self.MODEL == "BJ-UV55":
-            limit = "limits_bj55"
         else:
             limit = "limits_new"
 
@@ -1065,19 +1053,19 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         group.append(workmode)
 
         options = ["A", "B"]
-        rs = RadioSetting("extra.displayab", "Display",
+        rs = RadioSetting("displayab", "Display",
                           RadioSettingValueList(options,
-                                                options[self._memobj.extra.displayab]))
+                                                options[self._memobj.settings.displayab]))
         workmode.append(rs)
 
         options = ["Frequency", "Channel"]
-        rs = RadioSetting("extra.workmode", "VFO/MR Mode",
+        rs = RadioSetting("workmode", "VFO/MR Mode",
                           RadioSettingValueList(options,
-                                                options[self._memobj.extra.workmode]))
+                                                options[self._memobj.settings.workmode]))
         workmode.append(rs)
 
-        rs = RadioSetting("extra.keylock", "Keypad Lock",
-                          RadioSettingValueBoolean(self._memobj.extra.keylock))
+        rs = RadioSetting("keylock", "Keypad Lock",
+                          RadioSettingValueBoolean(self._memobj.settings.keylock))
         workmode.append(rs)
 
         _mrcna = self._memobj.wmchannel.mrcha
@@ -1307,7 +1295,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             return None
 
     def set_settings(self, settings):
-        _settings = self._memobj.settings[0]
+        _settings = self._memobj.settings
         for element in settings:
             if not isinstance(element, RadioSetting):
                 if element.get_name() == "fm_preset" :
