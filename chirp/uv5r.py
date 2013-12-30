@@ -327,7 +327,6 @@ UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
 UV82_MODEL =     "\x50\xBB\xFF\x20\x13\x01\x05"
-BJUV55_MODEL   = "\x50\xBB\xDD\x55\x63\x98\x4D"
 
 def _upper_band_from_data(data):
     return data[0x03:0x04]
@@ -1368,20 +1367,4 @@ class BaofengUV82Radio(BaofengUV5R):
     _basetype = "82"
     _idents = [UV82_MODEL]
 
-@directory.register
-class BaojieBJUV55Radio(BaofengUV5R):
-    VENDOR = "Baojie"
-    MODEL = "BJ-UV55"
-    _basetype = "BJ55"
-    _idents = [ BJUV55_MODEL ]
-    _mem_params = ( 0x1928  # poweron_msg offset
-                    )
-    _fw_ver_file_start = 0x1938
-    _fw_ver_file_stop = 0x193E
-    
-    def get_features(self):
-        rf = super(BaojieBJUV55Radio, self).get_features()
-        #rf.has_settings = False
-        rf.valid_name_length = 6
-        return rf
     
