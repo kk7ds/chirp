@@ -106,8 +106,17 @@ class FT857Radio(ft817.FT817Radio):
         u8   name[8];
         };
         
-        #seekto 0x4;
+        #seekto 0x00;
         struct {
+            u16 radioconfig;
+            u8  mem_vfo:2,
+                m_tune:1,
+                home:1,
+                pms_tune:1,
+                qmb:1,
+                mt_qmb:1,
+                vfo_ab:1;
+            u8  unknown;
             u8  fst:1,
                 lock:1,
                 nb:1,
@@ -121,7 +130,9 @@ class FT857Radio(ft817.FT817Radio):
                 cw_speed_unit:1,
                 cw_key_rev:1,
                 pwr_meter_mode:2;
-            u8  unknown3[2];
+            u8  vfo_b_freq_range:4,
+                vfo_a_freq_range:4;
+            u8  unknown3;
             u8  disp_mode:2,
                 unknown4:2,
                 disp_contrast:4;
