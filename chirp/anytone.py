@@ -24,7 +24,7 @@ from chirp import errors
 from chirp import memmap
 from chirp import util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
-    RadioSettingValueList, RadioSettingValueString
+    RadioSettingValueList, RadioSettingValueString, RadioSettingValueBoolean
 
 _mem_format = """
 #seekto 0x0100;
@@ -83,7 +83,17 @@ struct {
 struct {
   u8 unknown1:6,
      display:2;
-  u8 unknown[351];
+  u8 unknown2[11];
+  u8 unknown3:3,
+     apo:5;
+  u8 unknown4a[2];
+  u8 unknown4b:6,
+     mute:2;
+  u8 unknown4;
+  u8 unknown5:5,
+     beep:1,
+     unknown6:2;
+  u8 unknown[334];
   char welcome[8];
 } settings;
 
@@ -472,6 +482,12 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                                                 display[_settings.display]))
         settings.append(rs)
 
+        apo = ["Off"] + ['%.1f hour(s)' % (0.5 * x) for x in range(1, 25)]
+        rs = RadioSetting("apo", "Automatic Power Off",
+                          RadioSettingValueList(apo,
+                                                apo[_settings.apo]))
+        settings.append(rs)
+
         def filter(s):
             s_ = ""
             for i in range(0, 8):
@@ -482,6 +498,16 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("welcome", "Welcome Message",
                           RadioSettingValueString(0, 8,
                                                   filter(_settings.welcome)))
+        settings.append(rs)
+
+        rs = RadioSetting("beep", "Beep Enabled",
+                          RadioSettingValueBoolean(_settings.beep))
+        settings.append(rs)
+
+        mute = ["Off", "TX", "RX", "TX/RX"]
+        rs = RadioSetting("mute", "Sub Band Mute",
+                          RadioSettingValueList(mute,
+                                                mute[_settings.mute]))
         settings.append(rs)
 
         return settings
