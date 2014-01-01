@@ -23,6 +23,8 @@ from chirp import directory
 from chirp import errors
 from chirp import memmap
 from chirp import util
+from chirp.settings import RadioSettingGroup, RadioSetting, \
+    RadioSettingValueList, RadioSettingValueString
 
 _mem_format = """
 #seekto 0x0100;
@@ -77,10 +79,13 @@ struct {
 	char date[16];
 } version;
 
-#seekto 0x03e0;
+#seekto 0x0280;
 struct {
-  char welcome1[8];
-} poweron_msg;
+  u8 unknown1:6,
+     display:2;
+  u8 unknown[351];
+  char welcome[8];
+} settings;
 
 #seekto 0x0540;
 struct memory memblk1[12];
@@ -291,6 +296,11 @@ TONES = [62.5] + list(chirp_common.TONES)
 TMODES = ['', 'Tone', 'DTCS']
 DUPLEXES = ['', '-', '+']
 MODES = ["FM", "FM", "NFM"]
+POWER_LEVELS = [chirp_common.PowerLevel("High", watts=50),
+                chirp_common.PowerLevel("Mid1", watts=25),
+                chirp_common.PowerLevel("Mid2", watts=10),
+                chirp_common.PowerLevel("Low", watts=5)]
+
 
 @directory.register
 class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
@@ -315,6 +325,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_bank = False
         rf.has_cross = True
         rf.has_tuning_step = False
@@ -328,6 +339,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_bands = [(108000000, 500000000)]
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
         rf.valid_name_length = 7
+        rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, 758)
         return rf
 
@@ -400,6 +412,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                                        (rxmode, rxtone, rxpol))
 
         mem.skip = _flg.get_skip() and "S" or _flg.get_pskip() and "P" or ""
+        mem.power = POWER_LEVELS[_mem.power]
 
         return mem
 
@@ -443,6 +456,41 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
         _flg.set_skip(mem.skip == "S")
         _flg.set_pskip(mem.skip == "P")
+
+        if mem.power:
+            _mem.power = POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = 0
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+        settings = RadioSettingGroup('all', 'All Settings')
+
+        display = ["Frequency", "Channel", "Name"]
+        rs = RadioSetting("display", "Display",
+                          RadioSettingValueList(display,
+                                                display[_settings.display]))
+        settings.append(rs)
+
+        def filter(s):
+            s_ = ""
+            for i in range(0, 8):
+                c = str(s[i])
+                s_ += (c if c in chirp_common.CHARSET_ASCII else "")
+            return s_
+
+        rs = RadioSetting("welcome", "Welcome Message",
+                          RadioSettingValueString(0, 8,
+                                                  filter(_settings.welcome)))
+        settings.append(rs)
+
+        return settings
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            name = element.get_name()
+            setattr(_settings, name, element.value)
 
 # since both the AnyTone 5888UV and the Intek HR-2040 place the same ident
 # (QX588UV) in the image, we need to check which of them it actually is.
