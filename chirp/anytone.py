@@ -325,8 +325,8 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone',
                                 '->Tone', '->DTCS', 'Tone->Tone']
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
-        rf.valid_bands = [(136000000, 500000000)]
-        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC
+        rf.valid_bands = [(108000000, 500000000)]
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
         rf.valid_name_length = 7
         rf.memory_bounds = (1, 758)
         return rf
