@@ -198,6 +198,12 @@ class TestBitwiseCharTypes(BaseTest):
         obj.foo = "bazfoo"
         self.assertEqual(data.get_packed(), "bazfoo")
 
+    def test_string_invalid_chars(self):
+        data = memmap.MemoryMap("\xFFoobar1")
+        obj = bitwise.parse("struct {char foo[7];} bar;", data)
+        self.assertIn('\\xffoobar1', repr(obj.bar))
+        
+
     def test_string_wrong_length(self):
         data = memmap.MemoryMap("foobar")
         obj = bitwise.parse("char foo[6];", data)

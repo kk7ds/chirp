@@ -165,7 +165,7 @@ class arrayDataElement(DataElement):
             return "%i:[(%i)]" % (len(self.__items), int(self))
 
         if isinstance(self.__items[0], charDataElement):
-            return "%i:[(%s)]" % (len(self.__items), str(self))
+            return "%i:[(%s)]" % (len(self.__items), repr(str(self))[1:-1])
 
         s = "%i:[" % len(self.__items)
         s += ",".join([repr(item) for item in self.__items])
