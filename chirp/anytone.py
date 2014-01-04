@@ -190,7 +190,7 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
-valid_model = ['QX588UV', 'HR-2040']
+valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00']
 
 def _ident(radio):
     radio.pipe.setTimeout(1)
@@ -319,6 +319,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UV"
     BAUD_RATE = 9600
+    _file_ident = "ANYTONE"
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -518,27 +519,20 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             name = element.get_name()
             setattr(_settings, name, element.value)
 
-# since both the AnyTone 5888UV and the Intek HR-2040 place the same ident
-# (QX588UV) in the image, we need to check which of them it actually is.
-# The Intek has HR-2040-XXXXXXXX (Serial No.) at offset 0x30:0x3f,
-# so this may be the best method of determining the actual model.
     @classmethod
     def match_model(cls, filedata, filename):
-		if filedata[0x30:0x37] == "HR-2040":
-			return False
-		return filedata[0x21:0x28] == "QX588UV"
+        return cls._file_ident in filedata[0x30:0x40]
 
 @directory.register
 class IntekHR2040Radio(AnyTone5888UVRadio):
     """Intek HR-2040"""
     VENDOR = "Intek"
     MODEL = "HR-2040"
+    _file_ident = "HR-2040"
 
-    @classmethod
-    def get_experimental_warning(cls):
-        return "Experimental - Based on the AnyTone 5888UV code"
-
-# Use the first part of the radio serial No. for Ident (HR-2040-XXXXXXXX) at offset 0x30:0x37
-    @classmethod
-    def match_model(cls, filedata, filename):
-       return filedata[0x30:0x37] == "HR-2040"
+@directory.register
+class PolmarDB50MRadio(AnyTone5888UVRadio):
+    """Polmar DB-50M"""
+    VENDOR = "Polmar"
+    MODEL = "DB-50M"
+    _file_ident = "DB-50M"
