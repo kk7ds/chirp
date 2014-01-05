@@ -36,6 +36,7 @@ def compareFiles(args):
 	f2.seek(args.offset)
 	
 	while True:
+		pos = f1.tell() - args.offset
 		c1 = f1.read(1)
 		c2 = f2.read(1)
 		if not (c1 and c2):
@@ -43,7 +44,6 @@ def compareFiles(args):
 		b1 = ord(c1)
 		b2 = ord(c2)
 		if b1 != b2:
-			pos = f1.tell() - args.offset
 			printDiff(pos, b1, b2, args)
 	
 	pos = f1.tell() - args.offset
