@@ -186,8 +186,8 @@ struct {
      unknown5:6;
 } vfob;
 
-#seekto 0x0F56;
-u16 fm_presets;
+#seekto 0x0F57;
+u8 fm_preset;
 
 #seekto 0x1008;
 struct {
@@ -549,8 +549,8 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         fm_preset = RadioSettingGroup("fm_preset", "FM Radio Preset")
         group.append(fm_preset)
 
-        preset = self._memobj.fm_presets / 10.0 + 87
-        rs = RadioSetting("fm_presets", "FM Preset(MHz)",
+        preset = self._memobj.fm_preset / 10.0 + 87
+        rs = RadioSetting("fm_preset", "FM Preset(MHz)",
                       RadioSettingValueFloat(87, 107.5, preset, 0.1, 1))
         fm_preset.append(rs)
 
@@ -635,8 +635,8 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
             try:
                 val = element.value
                 value = int(val.get_value() * 10 - 870)
-                print "Setting fm_presets = %s" % (value)
-                self._memobj.fm_presets = value
+                print "Setting fm_preset = %s" % (value)
+                self._memobj.fm_preset = value
             except Exception, e:
                 print element.get_name()
                 raise
