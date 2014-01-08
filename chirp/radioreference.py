@@ -16,6 +16,7 @@
 from chirp import chirp_common, errors
 try:
     from suds.client import Client
+    from suds import WebFault
     HAVE_SUDS = True
 except ImportError:
     HAVE_SUDS = False
@@ -62,8 +63,11 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
         """Fetches frequencies for all subcategories in a county."""
         self._freqs = []
 
-        zipcode = self._client.service.getZipcodeInfo(self._zip, self._auth)
-        county = self._client.service.getCountyInfo(zipcode.ctid, self._auth)
+        try:
+            zipcode = self._client.service.getZipcodeInfo(self._zip, self._auth)
+            county = self._client.service.getCountyInfo(zipcode.ctid, self._auth)
+        except WebFault, err:
+            raise errors.RadioError(err)
 
         status = chirp_common.Status()
         status.max = 0
