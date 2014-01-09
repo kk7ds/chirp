@@ -441,7 +441,8 @@ class FT7800Radio(FTx800Radio):
 
     _model = "AH016"
     _memsize = 31561
-
+    _block_lengths = [8, 31552, 1]
+    
     def get_bank_model(self):
         return FT7800BankModel(self)
 
@@ -455,6 +456,7 @@ class FT7800Radio(FTx800Radio):
             self._wipe_memory_banks(memory)
         FTx800Radio.set_memory(self, memory)
 
+@directory.register
 class FT7900Radio(FT7800Radio):
     """Yaesu FT-7900"""
     MODEL = "FT-7900"
