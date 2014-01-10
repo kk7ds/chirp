@@ -437,7 +437,7 @@ class FT7800BankModel(chirp_common.BankModel):
 @directory.register
 class FT7800Radio(FTx800Radio):
     """Yaesu FT-7800"""
-    MODEL = "FT-7800"
+    MODEL = "FT-7800/7900"
 
     _model = "AH016"
     _memsize = 31561
@@ -456,10 +456,7 @@ class FT7800Radio(FTx800Radio):
             self._wipe_memory_banks(memory)
         FTx800Radio.set_memory(self, memory)
 
-@directory.register
-class FT7900Radio(FT7800Radio):
-    """Yaesu FT-7900"""
-    MODEL = "FT-7900"
+
 
 MEM_FORMAT_8800 = """
 #seekto 0x%X;
