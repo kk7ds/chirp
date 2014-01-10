@@ -190,7 +190,7 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
-valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00']
+valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00', 'DB-750X']
 
 def _ident(radio):
     radio.pipe.setTimeout(1)
@@ -536,3 +536,10 @@ class PolmarDB50MRadio(AnyTone5888UVRadio):
     VENDOR = "Polmar"
     MODEL = "DB-50M"
     _file_ident = "DB-50M"
+
+@directory.register
+class PolmarDB50MRadio(AnyTone5888UVRadio):
+    """Powerwerx DB-750X"""
+    VENDOR = "Powerwerx"
+    MODEL = "DB-750X"
+    _file_ident = "DB-750X"
