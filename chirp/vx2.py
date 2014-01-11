@@ -686,7 +686,11 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
                     element.value -= 1
                     _settings = self._memobj   
                 if setting == "mymenu":
-                    element.value += 9             
+                    opts = element.value.get_options()                  
+                    optsidx = opts.index(element.value.get_value())
+                    idx =  optsidx + 9
+                    setattr(_settings, "mymenu", idx)
+                    continue            
                 oldval = getattr(_settings, setting)
                 newval = element.value
                 if setting == "cwid":
