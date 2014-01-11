@@ -303,8 +303,8 @@ def _upload(radio):
     _finish(radio)
 
 TONES = [62.5] + list(chirp_common.TONES)
-TMODES = ['', 'Tone', 'DTCS']
-DUPLEXES = ['', '-', '+']
+TMODES = ['', 'Tone', 'DTCS', '']
+DUPLEXES = ['', '-', '+', '']
 MODES = ["FM", "FM", "NFM"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=50),
                 chirp_common.PowerLevel("Mid1", watts=25),
@@ -319,7 +319,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UV"
     BAUD_RATE = 9600
-    _file_ident = "ANYTONE"
+    _file_ident = "QX588UV"
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -521,7 +521,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return cls._file_ident in filedata[0x30:0x40]
+        return cls._file_ident in filedata[0x20:0x40]
 
 @directory.register
 class IntekHR2040Radio(AnyTone5888UVRadio):
@@ -538,8 +538,11 @@ class PolmarDB50MRadio(AnyTone5888UVRadio):
     _file_ident = "DB-50M"
 
 @directory.register
-class PolmarDB50MRadio(AnyTone5888UVRadio):
+class PowerwerxDB750XRadio(AnyTone5888UVRadio):
     """Powerwerx DB-750X"""
     VENDOR = "Powerwerx"
     MODEL = "DB-750X"
     _file_ident = "DB-750X"
+
+    def get_settings(self):
+        return {}
