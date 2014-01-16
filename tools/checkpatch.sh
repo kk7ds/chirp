@@ -35,7 +35,7 @@ function _less_than_80() {
 	read line
 	if [ -z "$line" ]; then
 	    break
-	elif [ $(echo "$line" | wc -c) -ge 80 ]; then
+	elif [ $(echo -n "$line" | wc -c) -ge 80 ]; then
 	    return 1
 	fi
     done
