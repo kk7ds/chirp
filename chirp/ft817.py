@@ -293,7 +293,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             4. Press the [C] key ("RX" will appear on the LCD)."""))
         return rp
 
-    def _read(self, block, blocknum):
+    def _read(self, block, blocknum, lastblock):
         for _i in range(0, 60):
             data = self.pipe.read(block+2)
             if data:
@@ -308,7 +308,13 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                                     checksum.get_calculated(data), blocknum))
             data = data[1:block+1] # Chew away the block number and the checksum
         else:
-            raise Exception("Unable to read block %02X expected %i got %i" %
+            if lastblock and self._US_model:
+                raise Exception(_("Unable to read last block. "
+                            "This often happens when the selected model is US "
+                            "but the radio is a non-US one (or widebanded). "
+                            "Please choose the correct model and try again."))
+            else:
+                raise Exception("Unable to read block %02X expected %i got %i" %
                                 (blocknum, block+2, len(data)))
     
         if os.getenv("CHIRP_DEBUG"):
@@ -325,7 +331,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         blocks = 0
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
-        status.max = len(self._block_lengths) + 39
+        nblocks = len(self._block_lengths) + 39
+        status.max = nblocks
         for block in self._block_lengths:
             if blocks == 8:
                 # repeated read of 40 block same size (memory area)
@@ -333,7 +340,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             else:
                 repeat = 1
             for _i in range(0, repeat):	
-                data += self._read(block, blocks)
+                data += self._read(block, blocks, blocks == nblocks-1)
                 self.pipe.write(chr(CMD_ACK))
                 blocks += 1
                 status.cur = blocks
