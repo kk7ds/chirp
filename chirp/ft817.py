@@ -294,7 +294,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         return rp
 
     def _read(self, block, blocknum, lastblock):
-        for _i in range(0, 60):
+        # be very patient at first block
+        if blocknum == 0:
+            attempts = 60
+        else:
+            attempts = 5
+        for _i in range(0, attempts):
             data = self.pipe.read(block+2)
             if data:
                 break
