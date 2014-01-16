@@ -32,6 +32,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     MODEL = "FT-817"
     _model = ""
+    _US_model = False
 
     DUPLEX = ["", "-", "+", "split"]
     # narrow modes has to be at end
@@ -351,14 +352,15 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 status.cur = blocks
                 self.status_fn(status)
                 
-        status.msg = _("Clone completed, checking for spurious bytes")
-        self.status_fn(status)
-        moredata = self.pipe.read(2)
-        if moredata:
-            raise Exception(_("Radio sent data after the last awaited block, "
-                        "this happens when the selected model is a non-US "
-                        "but the radio is a US one. "
-                        "Please choose the correct model and try again."))
+        if not self._US_model:
+            status.msg = _("Clone completed, checking for spurious bytes")
+            self.status_fn(status)
+            moredata = self.pipe.read(2)
+            if moredata:
+                raise Exception(_("Radio sent data after the last awaited block, "
+                            "this happens when the selected model is a non-US "
+                            "but the radio is a US one. "
+                            "Please choose the correct model and try again."))
             
     
         print "Clone completed in %i seconds" % (time.time() - start)
@@ -1092,6 +1094,7 @@ class FT817NDUSRadio(FT817Radio):
     MODEL = "FT-817ND (US)"
 
     _model = ""
+    _US_model = True
     _memsize = 6651
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130, 130]
