@@ -65,7 +65,7 @@ struct {
   u8 freqmode_ab:1,
      save_funct:1,
      backlight:1,
-     beep_tone:1,
+     beep_tone_disabled:1,
      roger:1,
      tdr:1,
      scantype:2;
@@ -592,8 +592,9 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.fm))
         basic.append(rs)
 
-        rs = RadioSetting("beep_tone", "Beep Prompt",
-                          RadioSettingValueBoolean(not _settings.beep_tone))
+        rs = RadioSetting("beep_tone_disabled", "Beep Prompt",
+                          RadioSettingValueBoolean(
+                              not _settings.beep_tone_disabled))
         basic.append(rs)
 
         rs = RadioSetting("voice_prompt", "Voice Prompt",
@@ -726,9 +727,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                     if element.has_apply_callback():
                         print "Using apply callback"
                         element.run_apply_callback()
-                    elif setting == "beep_tone":
-                        print "Setting %s = %s" % (setting, not element.value)
-                        setattr(obj, setting, not element.value)
+                    elif setting == "beep_tone_disabled":
+                        val = not _settings.beep_tone_disabled
+                        print "Setting %s = %s" % (setting, val)
+                        setattr(obj, setting, val)
                     else:
                         print "Setting %s = %s" % (setting, element.value)
                         setattr(obj, setting, element.value)
