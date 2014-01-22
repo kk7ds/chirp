@@ -81,7 +81,10 @@ struct {
      mdf_a:2,
      unknown_1:2,
      txtdr:2;
-  u8 sidetone;
+  u8 unknown_2:4,
+     ste_disabled:1,
+     unknown_3:2,
+     sidetone:1;
   u8 vox;
   u8 unk1;
   u8 mem_chan_a;
@@ -605,6 +608,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.sidetone))
         basic.append(rs)
 
+        rs = RadioSetting("ste_disabled", "Squelch Tail Eliminate",
+                          RadioSettingValueBoolean(not _settings.ste_disabled))
+        basic.append(rs)
+
         _limit = int(self._memobj.limits.lower_vhf) / 10
         rs = RadioSetting("limits.lower_vhf", "VHF Lower Limit (MHz)",
                           RadioSettingValueInteger(136, 174, _limit))
@@ -729,6 +736,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                         element.run_apply_callback()
                     elif setting == "beep_tone_disabled":
                         val = not _settings.beep_tone_disabled
+                        print "Setting %s = %s" % (setting, val)
+                        setattr(obj, setting, val)
+                    elif setting == "ste_disabled":
+                        val = not _settings.ste_disabled
                         print "Setting %s = %s" % (setting, val)
                         setattr(obj, setting, val)
                     else:
