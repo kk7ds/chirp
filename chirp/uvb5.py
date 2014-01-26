@@ -76,7 +76,8 @@ struct {
      voice_prompt:1,
      fm:1,
      pttid:2;
-  u8 timeout;
+  u8 unknown_0:5,
+     timeout:3;
   u8 mdf_b:2,
      mdf_a:2,
      unknown_1:2,
@@ -323,7 +324,9 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         return repr(self._memobj.channels[number - 1])
 
     def _decode_tone(self, value, flag):
-        if value > 50:
+        if value > 155:
+            mode = val = pol = None
+        elif value > 50:
             mode = 'DTCS'
             val = chirp_common.DTCS_CODES[value - 51]
             pol = flag and 'R' or 'N'
