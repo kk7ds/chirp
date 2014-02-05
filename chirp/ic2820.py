@@ -176,7 +176,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(118000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
-        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 8
         rf.valid_special_chans = sorted(_get_special().keys())
 
