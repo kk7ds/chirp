@@ -655,6 +655,11 @@ If you think that it is valid, you can select a radio model below to force an op
         d.destroy()
         if not settings:
             return
+        prompts = radio.get_prompts()
+
+        if prompts.display_pre_upload_prompt_before_opening_port == True:
+            print "Opening port after pre_upload prompt."
+            self._show_instructions(radio, prompts.pre_upload)
 
         if isinstance(radio, chirp_common.ExperimentalRadio) and \
                 not self._confirm_experimental(radio.__class__):
@@ -673,7 +678,9 @@ If you think that it is valid, you can select a radio model below to force an op
             d.destroy()
             return
 
-        self._show_instructions(radio, radio.get_prompts().pre_upload)
+        if prompts.display_pre_upload_prompt_before_opening_port == False:
+            print "Opening port before pre_upload prompt."
+            self._show_instructions(radio, prompts.pre_upload)
 
         radio.set_pipe(ser)
 

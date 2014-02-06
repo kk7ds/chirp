@@ -199,6 +199,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             3. Replace mic with PC programming cable.
             4. Press the [DISP/SS] key
                 ("R" will appear on the lower left of LCD)."""))
+        rp.display_pre_upload_prompt_before_opening_port = False
         return rp
 
     @classmethod
