@@ -1125,6 +1125,12 @@ class TM271Radio(THK2Radio):
     def _cmd_set_memory_name(self, number, name):
         return "MN", "%03i,%s" % (number, name)
 
+@directory.register
+class TM281Radio(TM271Radio):
+    """Kenwood TM-281"""
+    MODEL = "TM-281"
+    # seems that this is a perfect clone of TM271 with just a different model
+
 def do_test():
     """Dev test"""
     mem = chirp_common.Memory()
