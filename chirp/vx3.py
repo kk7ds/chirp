@@ -334,7 +334,8 @@ def _wipe_memory(mem):
     #on the radio, some of these fields are unknown
     mem.name = [0xFF for _i in range(0, 6)]
     mem.unknown5 = 0x0D #not sure what this is
-    mem.unknown7 = 0x01 #this likely is part of autostep
+    mem.unknown7a = 0b0
+    mem.unknown7b = 0b1
     mem.automode = 0x01 #autoselect mode
 
 @directory.register
