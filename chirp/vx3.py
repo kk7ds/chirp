@@ -350,7 +350,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     _memsize = 32587
     _block_lengths = [ 10, 32577 ]
     #right now this reads in 45 seconds and writes in 41 seconds
-    _block_size = 64
+    _block_size = 32
 
     @classmethod
     def get_prompts(cls):
