@@ -457,7 +457,7 @@ def _do_upload(radio):
 
     # Main block
     for i in range(0x08, 0x1808, 0x10):
-        _send_block(radio, i - 0x08, radio.get_mmap()[i:i+0x10])
+        _send_block(radio, i - 0x08, radio.get_mmap()[i:i + 0x10])
         _do_status(radio, i)
 
     if len(radio.get_mmap().get_packed()) == 0x1808:
@@ -474,7 +474,7 @@ def _do_upload(radio):
     # Auxiliary block at radio address 0x1EC0, our offset 0x1808
     for i in range(0x1EC0, 0x2000, 0x10):
         addr = 0x1808 + (i - 0x1EC0)
-        _send_block(radio, i, radio.get_mmap()[addr:addr+0x10])
+        _send_block(radio, i, radio.get_mmap()[addr:addr + 0x10])
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
@@ -786,7 +786,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         try:
             if 'BFB' in version_tag:
                 idx = version_tag.index("BFB") + 3
-                version = int(version_tag[idx:idx+3])
+                version = int(version_tag[idx:idx + 3])
                 return version < 291
             if any(tag in version_tag for tag in ['BF82', 'B82', 'USA',
                                                   'BJ55']):
@@ -800,19 +800,19 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         version_tag = _firmware_version_from_image(self)
         if 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
-            return int(version_tag[idx:idx+3])
+            return int(version_tag[idx:idx + 3])
         elif 'BF82' in version_tag:
             idx = version_tag.index("BF82") + 2
-            return int(version_tag[idx:idx+4])
+            return int(version_tag[idx:idx + 4])
         elif 'B82S' in version_tag:
             idx = version_tag.index("B82S") + 4
-            return int(version_tag[idx:idx+2]) + 8200
+            return int(version_tag[idx:idx + 2]) + 8200
         elif 'USA' in version_tag:
             idx = version_tag.index("USA") + 3
-            return int(version_tag[idx:idx+3])
+            return int(version_tag[idx:idx + 3])
         elif 'BJ55' in version_tag:
             idx = version_tag.index("BJ55") + 2
-            return int(version_tag[idx:idx+2])
+            return int(version_tag[idx:idx + 2])
 
         raise Exception("Unrecognized firmware version string")
 
