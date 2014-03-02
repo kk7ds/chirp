@@ -321,9 +321,9 @@ def validate_291(ident):
         raise errors.RadioError("Radio version not supported")
 
 UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
-UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
-UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
-UV82_MODEL =     "\x50\xBB\xFF\x20\x13\x01\x05"
+UV5R_MODEL_291  = "\x50\xBB\xFF\x20\x12\x07\x25"
+UV5R_MODEL_F11  = "\x50\xBB\xFF\x13\xA1\x11\xDD"
+UV5R_MODEL_UV82 = "\x50\xBB\xFF\x20\x13\x01\x05"
 
 def _upper_band_from_data(data):
     return data[0x03:0x04]
@@ -509,8 +509,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     _memsize = 0x1808
     _basetype = "BFB"
-    _idents = [UV5R_MODEL_ORIG,
-               UV5R_MODEL_291,
+    _idents = [UV5R_MODEL_291,
+               UV5R_MODEL_ORIG
                ]
     _mem_params = ( 0x1828 # poweron_msg offset
                     )
@@ -1352,6 +1352,6 @@ class BaofengF11Radio(BaofengUV5R):
 class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
     _basetype = "82"
-    _idents = [UV82_MODEL]
+    _idents = [UV5R_MODEL_UV82]
 
 
