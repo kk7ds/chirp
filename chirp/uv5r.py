@@ -807,8 +807,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 idx = version_tag.index("BFB") + 3
                 version = int(version_tag[idx:idx + 3])
                 return version < 291
-            if any(tag in version_tag for tag in ['BF82', 'B82', 'USA', 'BJ55']):
-                return False
+            return False
         except:
             pass
         raise errors.RadioError("Unable to parse version string %s" %
@@ -1357,10 +1356,16 @@ class BaofengF11Radio(BaofengUV5R):
     _basetype = BASETYPE_F11
     _idents = [UV5R_MODEL_F11]
 
+    def _is_orig(self):
+        # Override this for F11 to always return False
+        return False
+
 @directory.register
 class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
     _basetype = BASETYPE_UV82
     _idents = [UV5R_MODEL_UV82]
 
-
+    def _is_orig(self):
+        # Override this for UV82 to always return False
+        return False
