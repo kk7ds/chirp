@@ -246,6 +246,13 @@ struct {
 
 vhf_220_radio = "\x02"
 
+BASETYPE_UV5R = ["BFS", "BFB"]
+BASETYPE_F11  = ["USA"]
+BASETYPE_UV82 = ["B82S", "BF82"]
+BASETYPE_BJ55 = ["BJ55"]          # needed for for the Baojie UV-55 in bjuv55.py
+BASETYPE_UV6  = ["BF1"]
+BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + BASETYPE_BJ55
+
 AB_LIST = ["A", "B"]
 ALMOD_LIST = ["Site", "Tone", "Code", "_unknown_"]
 BANDWIDTH_LIST = ["Wide", "Narrow"]
@@ -270,7 +277,6 @@ TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
 TXPOWER_LIST = ["High", "Low"]
 VOICE_LIST = ["Off", "English", "Chinese"]
 WORKMODE_LIST = ["Frequency", "Channel"]
-
 
 SETTING_LISTS = {
     "almod" : ALMOD_LIST,
@@ -465,7 +471,7 @@ def _do_upload(radio):
     print "Image is %s" % repr(image_version)
     print "Radio is %s" % repr(radio_version)
 
-    if not any(type in radio_version for type in ["BFB", "82", "USA", "BJ55"]):
+    if not any(type in radio_version for type in BASETYPE_LIST):
         raise errors.RadioError("Unsupported firmware version: `%s'" %
                                 radio_version)
 
@@ -508,7 +514,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     BAUD_RATE = 9600
 
     _memsize = 0x1808
-    _basetype = "BFB"
+    _basetype = BASETYPE_UV5R
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_ORIG
                ]
@@ -579,9 +585,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         match_model = False
         if len(filedata) in [0x1808, 0x1948]:
             match_size = True
-        if cls._basetype in _firmware_version_from_data(filedata,
-                                                        cls._fw_ver_file_start,
-                                                        cls._fw_ver_file_stop):
+        fwdata = _firmware_version_from_data(filedata,
+                                             cls._fw_ver_file_start,
+                                             cls._fw_ver_file_stop)
+        if any(type in fwdata for type in cls._basetype):
             match_model = True
         if match_size and match_model:
             return True
@@ -800,8 +807,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 idx = version_tag.index("BFB") + 3
                 version = int(version_tag[idx:idx + 3])
                 return version < 291
-            if any(tag in version_tag for tag in ['BF82', 'B82', 'USA',
-                                                  'BJ55']):
+            if any(tag in version_tag for tag in ['BF82', 'B82', 'USA', 'BJ55']):
                 return False
         except:
             pass
@@ -813,6 +819,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
             return int(version_tag[idx:idx + 3])
+        elif 'BFS' in version_tag:
+            idx = version_tag.index("BFS") + 3
+            return int(version_tag[idx:idx + 3])
         elif 'BF82' in version_tag:
             idx = version_tag.index("BF82") + 2
             return int(version_tag[idx:idx + 4])
@@ -821,10 +830,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             return int(version_tag[idx:idx + 2]) + 8200
         elif 'USA' in version_tag:
             idx = version_tag.index("USA") + 3
-            return int(version_tag[idx:idx + 3])
+            return int(version_tag[idx:idx + 3]) + 11000
         elif 'BJ55' in version_tag:
             idx = version_tag.index("BJ55") + 2
-            return int(version_tag[idx:idx + 2])
+            return int(version_tag[idx:idx + 4])
 
         raise Exception("Unrecognized firmware version string")
 
@@ -1345,13 +1354,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 class BaofengF11Radio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "F-11"
-    _basetype = "USA"
+    _basetype = BASETYPE_F11
     _idents = [UV5R_MODEL_F11]
 
 @directory.register
 class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
-    _basetype = "82"
+    _basetype = BASETYPE_UV82
     _idents = [UV5R_MODEL_UV82]
 
 
