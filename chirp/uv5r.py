@@ -264,7 +264,9 @@ PONMSG_LIST = ["Full", "Message"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 RESUME_LIST = ["TO", "CO", "SE"]
-RPSTE_LIST = ["OFF"] + ["%s" % x for x in range(1, 11, 1)]
+ROGERRX_LIST = ["Off"] + AB_LIST
+RPSTE_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
+SAVE_LIST = ["Off", "1:1", "1:2", "1:3", "1:4"]
 SCODE_LIST = ["%s" % x for x in range(1, 16)]
 SHIFTD_LIST = ["Off", "+", "-"]
 STEDELAY_LIST = ["OFF"] + ["%s ms" % x for x in range(100, 1100, 100)]
@@ -272,10 +274,11 @@ STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 STEP291_LIST = [str(x) for x in STEPS]
-TDRAB_LIST = ROGERRX_LIST = ["Off"] + AB_LIST
+TDRAB_LIST = ["Off"] + AB_LIST
 TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
 TXPOWER_LIST = ["High", "Low"]
 VOICE_LIST = ["Off", "English", "Chinese"]
+VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
 WORKMODE_LIST = ["Frequency", "Channel"]
 
 SETTING_LISTS = {
@@ -291,6 +294,7 @@ SETTING_LISTS = {
     "rogerrx" : ROGERRX_LIST,
     "rpste" : RPSTE_LIST,
     "rxled" : COLOR_LIST,
+    "save" : SAVE_LIST,
     "scode" : PTTIDCODE_LIST,
     "screv" : RESUME_LIST,
     "sftd" : SHIFTD_LIST,
@@ -302,6 +306,7 @@ SETTING_LISTS = {
     "txled" : COLOR_LIST,
     "txpower" : TXPOWER_LIST,
     "voice" : VOICE_LIST,
+    "vox" : VOX_LIST,
     "widenarr" : BANDWIDTH_LIST,
     "workmode" : WORKMODE_LIST,
     "wtled" : COLOR_LIST
@@ -855,11 +860,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         basic.append(rs)
 
         rs = RadioSetting("save", "Battery Saver",
-                          RadioSettingValueInteger(0, 4, _settings.save))
+                          RadioSettingValueList(SAVE_LIST,
+                                                SAVE_LIST[_settings.save]))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX Sensitivity",
-                          RadioSettingValueInteger(0, 10, _settings.vox))
+                          RadioSettingValueList(VOX_LIST,
+                                                VOX_LIST[_settings.vox]))
         advanced.append(rs)
 
         rs = RadioSetting("abr", "Backlight Timeout",
@@ -943,11 +950,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 COLOR_LIST[_settings.txled]))
         basic.append(rs)
 
-        if self._my_version() < 8215:
-            rs = RadioSetting("roger", "Roger Beep",
-                              RadioSettingValueBoolean(_settings.roger))
-            basic.append(rs)
-        else:
+        if self.MODEL == "UV-82":
             rs = RadioSetting("roger", "Roger Beep (TX)",
                               RadioSettingValueBoolean(_settings.roger))
             basic.append(rs)
@@ -955,6 +958,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                               RadioSettingValueList(ROGERRX_LIST,
                                                     ROGERRX_LIST[
                                                     _settings.rogerrx]))
+            basic.append(rs)
+        else:
+            rs = RadioSetting("roger", "Roger Beep",
+                              RadioSettingValueBoolean(_settings.roger))
             basic.append(rs)
 
         rs = RadioSetting("ste", "Squelch Tail Eliminate (HT to HT)",
@@ -979,9 +986,11 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.menu))
         advanced.append(rs)
 
-        rs = RadioSetting("vfomrlock", "VFO/MR Button (F-11 only)",
-                          RadioSettingValueBoolean(_settings.vfomrlock))
-        advanced.append(rs)
+        if self.MODEL == "F-11":
+            # this is an F-11 only feature
+            rs = RadioSetting("vfomrlock", "VFO/MR Button",
+                              RadioSettingValueBoolean(_settings.vfomrlock))
+            advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
             # Old image, without aux block
