@@ -770,7 +770,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         def _set_dcs(code, pol):
             val = int("%i" % code, 8) + 0x2800
             if pol == "R":
-                val += 0xA000
+                val += 0x8000
             return val
 
         if mem.tmode == "Cross":
