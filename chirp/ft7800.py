@@ -17,23 +17,87 @@ import time
 from chirp import chirp_common, yaesu_clone, memmap, directory
 from chirp import bitwise, errors
 from textwrap import dedent
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueInteger, RadioSettingValueList, \
+    RadioSettingValueBoolean, RadioSettingValueString
+import os, re
 
 from collections import defaultdict
+
+if os.getenv("CHIRP_DEBUG"):
+    CHIRP_DEBUG = True
+else:
+    CHIRP_DEBUG = False
 
 ACK = chr(0x06)
 
 MEM_FORMAT = """
-#seekto 0x04C8;
+#seekto 0x002A;
+u8  banks_unk2;
+u8  current_channel;
+u8  unk3;
+u8  unk4;
+u8  current_menu;
+
+#seekto 0x0035;
+u8  banks_unk1;
+
+#seekto 0x00C8;
 struct {
+    u8  memory[16];
+} dtmf[16];
+
+#seekto 0x003A;
+struct {
+    u8  apo;
+    u8  tot;
+    u8  lock:3,
+        arts_interval:1,
+        unk1a:1,
+        prog_panel_acc:3;
+    u8  prog_p1;
+    u8  prog_p2;
+    u8  prog_p3;
+    u8  prog_p4;
+    u8  rf_sql;
+    u8  inet_dtmf_mem:4,
+        inet_dtmf_digit:4;
+    u8  arts_cwid_enable:1,
+        prog_tone_vm:1,
+        unk2a:1,
+        hyper_write:2,
+        memory_only:1,
+        dimmer:2;
+    u8  beep_scan:1,
+        beep_edge:1,
+        beep_key:1,
+        unk3a:1,
+        inet_mode:1,
+        unk3b:1,
+        dtmf_speed:2;
+    u8  dcs_polarity:2,
+        smart_search:1,
+        priority_revert:1,
+        unk4a:1,
+        dtmf_delay:3;
+    u8  unk5a:3,
+        microphone_type:1,
+        scan_resume:1,
+        unk5b:1,
+        arts_mode:2;
+    u8  unk6;
+} settings;
+
+struct mem_struct {
   u8 used:1,
      unknown1:1,
      mode:2,
      unknown2:1,
      duplex:3;
   bbcd freq[3];
-  u8 unknown3:1,
+  u8 clockshift:1,
      tune_step:3,
-     unknown5:2,
+     unknown5:2, // TODO: tmode has extended settings, at least 4 bits
      tmode:2;
   bbcd split[3];
   u8 power:2,
@@ -43,7 +107,19 @@ struct {
   u8 unknown7[2];
   u8 offset;
   u8 unknown9[3];
-} memory[1000];
+};
+
+#seekto 0x0048;
+struct mem_struct vfos[5];
+
+#seekto 0x01C8;
+struct mem_struct homes[5];
+
+#seekto 0x0218;
+u8  arts_cwid[6];
+
+#seekto 0x04C8;
+struct mem_struct memory[1000];
 
 #seekto 0x4988;
 struct {
@@ -82,6 +158,8 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     list(" " * 10) + \
     list("*+,- /|      [ ] _") + \
     list("\x00" * 100)
+
+DTMFCHARSET = list("0123456789ABCD*#")           
 
 POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
                     chirp_common.PowerLevel("Mid1", watts=20),
@@ -449,6 +527,7 @@ class FT7800Radio(FTx800Radio):
     def get_features(self):
         rf = FTx800Radio.get_features(self)
         rf.has_bank = True
+        rf.has_settings = True
         return rf
 
     def set_memory(self, memory):
@@ -456,7 +535,209 @@ class FT7800Radio(FTx800Radio):
             self._wipe_memory_banks(memory)
         FTx800Radio.set_memory(self, memory)
 
+    def _decode_chars(self, inarr):
+        if CHIRP_DEBUG:
+            print "@_decode_chars, type: %s" % type(inarr)
+            print inarr
+        outstr = ""
+        for i in inarr:
+            if i == 0xFF:
+                break
+            outstr += CHARSET[i & 0x7F]
+        return outstr.rstrip()
+            
+    def _encode_chars(self, instr, length = 16):
+        if CHIRP_DEBUG:
+            print "@_encode_chars, type: %s" % type(instr)
+            print instr
+        outarr = []
+        instr = str(instr)
+        for i in range(length):
+            if i < len(instr):
+                outarr.append(CHARSET.index(instr[i]))
+            else:
+                outarr.append(0xFF)
+        return outarr
 
+    def get_settings(self):
+        _settings = self._memobj.settings
+        basic = RadioSettingGroup("basic", "Basic")
+        dtmf = RadioSettingGroup("dtmf", "DTMF")
+        arts = RadioSettingGroup("arts", "ARTS")
+        prog = RadioSettingGroup("prog", "Programmable Buttons")
+        top = RadioSettingGroup("top", "All Settings",
+                basic, dtmf, arts, prog)
+
+        basic.append( RadioSetting("priority_revert", "Priority Revert",
+                RadioSettingValueBoolean(_settings.priority_revert)))
+
+        basic.append( RadioSetting("memory_only", "Memory Only mode",
+                RadioSettingValueBoolean(_settings.memory_only)))
+        
+        opts = ["off"] + [ "%0.1f" % (t / 60.0) for t in range(30, 750, 30) ]
+        basic.append( RadioSetting("apo", "APO time (hrs)",
+                RadioSettingValueList(opts, opts[_settings.apo])))
+
+        basic.append( RadioSetting("beep_scan", "Beep: Scan",
+                RadioSettingValueBoolean(_settings.beep_scan)))
+
+        basic.append( RadioSetting("beep_edge", "Beep: Edge",
+                RadioSettingValueBoolean(_settings.beep_edge)))
+
+        basic.append( RadioSetting("beep_key", "Beep: Key",
+                RadioSettingValueBoolean(_settings.beep_key)))
+        
+        opts = ["T/RX Normal", "RX Reverse", "TX Reverse", "T/RX Reverse"]
+        basic.append( RadioSetting("dcs_polarity", "DCS polarity",
+                RadioSettingValueList(opts, opts[_settings.dcs_polarity])))
+        
+        opts = ["off", "dim 1", "dim 2", "dim 3"]
+        basic.append( RadioSetting("dimmer", "Dimmer",
+                RadioSettingValueList(opts, opts[_settings.dimmer])))
+
+        opts = ["manual", "auto", "1-auto"]
+        basic.append( RadioSetting("hyper_write", "Hyper Write",
+                RadioSettingValueList(opts, opts[_settings.hyper_write])))
+        
+        opts = ["", "key", "dial", "key+dial", "ptt", 
+                "ptt+key", "ptt+dial", "all"]
+        basic.append( RadioSetting("lock", "Lock mode",
+                RadioSettingValueList(opts, opts[_settings.lock]))) 
+
+        opts = ["MH-42", "MH-48"]
+        basic.append( RadioSetting("microphone_type", "Microphone Type",
+                RadioSettingValueList(opts, opts[_settings.microphone_type])))
+
+        opts = ["off"] + ["S-%d" % n for n in range(2, 10) ] + ["S-Full"]
+        basic.append( RadioSetting("rf_sql", "RF Squelch",
+                RadioSettingValueList(opts, opts[_settings.rf_sql])))
+
+        opts = ["time", "hold", "busy"]
+        basic.append( RadioSetting("scan_resume", "Scan Resume",
+                RadioSettingValueList(opts, opts[_settings.scan_resume])))
+
+        opts = ["single", "continuous"]
+        basic.append( RadioSetting("smart_search", "Smart Search",
+                RadioSettingValueList(opts, opts[_settings.smart_search])))
+
+        opts = ["off"] + [ "%d" % t for t in range(1, 31) ]
+        basic.append( RadioSetting("tot", "Time-out timer (mins)",
+                RadioSettingValueList(opts, opts[_settings.tot])))
+
+        # dtmf tab
+
+        opts = ["50", "100", "250", "450", "750", "1000"]
+        dtmf.append( RadioSetting("dtmf_delay", "DTMF delay (ms)",
+                RadioSettingValueList(opts, opts[_settings.dtmf_delay])))
+
+        opts = ["50", "75", "100"]
+        dtmf.append( RadioSetting("dtmf_speed", "DTMF speed (ms)",
+                RadioSettingValueList(opts, opts[_settings.dtmf_speed])))
+
+        for i in range(16):
+            name = "dtmf%02d" % i
+            dtmfsetting = self._memobj.dtmf[i]
+            dtmfstr = ""
+            for c in dtmfsetting.memory:
+                if c == 0xFF:
+                    break
+                if c < len(DTMFCHARSET):
+                    dtmfstr += DTMFCHARSET[c]
+            if CHIRP_DEBUG:
+                print dtmfstr
+            dtmfentry = RadioSettingValueString(0, 16, dtmfstr)
+            dtmfentry.set_charset(DTMFCHARSET + list(" "))
+            rs = RadioSetting(name, name.upper(), dtmfentry)
+            dtmf.append(rs) 
+
+        # arts tab        
+
+        opts = ["off", "in range", "always"]
+        arts.append( RadioSetting("arts_mode", "ARTS beep",
+                RadioSettingValueList(opts, opts[_settings.arts_mode])))
+
+        opts = ["15", "25"]
+        arts.append( RadioSetting("arts_interval", "ARTS interval",
+                RadioSettingValueList(opts, opts[_settings.arts_interval])))
+
+        arts.append( RadioSetting("arts_cwid_enable", "CW ID",
+                RadioSettingValueBoolean(_settings.arts_cwid_enable)))           
+
+        _arts_cwid = self._memobj.arts_cwid
+        cwid = RadioSettingValueString(0, 16, 
+                self._decode_chars(_arts_cwid.get_value()))
+        cwid.set_charset(CHARSET)
+        arts.append( RadioSetting("arts_cwid", "CW ID", cwid ))
+
+        # prog buttons
+
+        opts = ["WX", "Reverse", "Repeater", "SQL Off", "Lock", "Dimmer"]
+        prog.append( RadioSetting("prog_panel_acc", "Prog Panel - Low(ACC)",
+                RadioSettingValueList(opts, opts[_settings.prog_panel_acc])))
+
+        opts = ["Reverse", "Home"]
+        prog.append( RadioSetting("prog_tone_vm", "TONE | V/M",
+                RadioSettingValueList(opts, opts[_settings.prog_tone_vm])))
+
+        opts = ["" for n in range(26)] + \
+            ["Priority", "Low", "Tone", "MHz", "Reverse", "Home", "Band", 
+            "VFO/MR", "Scan", "Sql Off", "TCall", "SSCH", "ARTS", "Tone Freq",
+            "DCSC", "WX", "Repeater" ]
+
+        prog.append( RadioSetting("prog_p1", "P1",
+                RadioSettingValueList(opts, opts[_settings.prog_p1])))
+
+        prog.append( RadioSetting("prog_p2", "P2",
+                RadioSettingValueList(opts, opts[_settings.prog_p2])))
+
+        prog.append( RadioSetting("prog_p3", "P3",
+                RadioSettingValueList(opts, opts[_settings.prog_p3])))
+
+        prog.append( RadioSetting("prog_p4", "P4",
+                RadioSettingValueList(opts, opts[_settings.prog_p4])))
+
+        return top
+
+    def set_settings(self, uisettings):
+        for element in uisettings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            if not element.changed():
+                continue
+            try:
+                _settings = self._memobj.settings
+                setting = element.get_name()
+                if re.match('dtmf\d', setting):
+                    # set dtmf fields
+                    dtmfstr = str(element.value).strip()
+                    newval = []
+                    for i in range(0,16):
+                        if i < len(dtmfstr):
+                            newval.append(DTMFCHARSET.index(dtmfstr[i]))
+                        else:
+                            newval.append(0xFF)
+                    if CHIRP_DEBUG:
+                        print newval
+                    idx = int(setting[-2:])
+                    _settings = self._memobj.dtmf[idx]
+                    _settings.memory = newval
+                    continue                
+                if setting == "arts_cwid":
+                    oldval = self._memobj.arts_cwid
+                    newval = self._encode_chars(newval.get_value(), 6)
+                    self._memobj.arts_cwid = newval
+                    continue
+                # normal settings
+                newval = element.value
+                oldval = getattr(_settings, setting)
+                if CHIRP_DEBUG:
+                    print "Setting %s(%s) <= %s" % (setting,
+                                    oldval, newval)
+                setattr(_settings, setting, newval)
+            except Exception, e:
+                print element.get_name()
+                raise
 
 MEM_FORMAT_8800 = """
 #seekto 0x%X;
