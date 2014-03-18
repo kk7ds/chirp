@@ -37,6 +37,10 @@ BJUV55_MODEL   = "\x50\xBB\xDD\x55\x63\x98\x4D"
 
 COLOR_LIST = ["Off", "Blue", "Red", "Pink"]
 
+STEPS = uv5r.STEPS
+STEPS.remove(2.5)
+STEP_LIST = [str(x) for x in STEPS]
+
 MEM_FORMAT = """
 #seekto 0x0008;
 struct {
@@ -538,12 +542,12 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
 
 
         rs = RadioSetting("vfoa.step", "VFO A Tuning Step",
-                          RadioSettingValueList(uv5r.STEP291_LIST,
-                          uv5r.STEP291_LIST[self._memobj.vfoa.step]))
+                          RadioSettingValueList(STEP_LIST,
+                          STEP_LIST[self._memobj.vfoa.step]))
         workmode.append(rs)
         rs = RadioSetting("vfob.step", "VFO B Tuning Step",
-                          RadioSettingValueList(uv5r.STEP291_LIST,
-                          uv5r.STEP291_LIST[self._memobj.vfob.step]))
+                          RadioSettingValueList(STEP_LIST,
+                          STEP_LIST[self._memobj.vfob.step]))
         workmode.append(rs)
 
 
