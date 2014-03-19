@@ -673,6 +673,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             pol = (val & 0x8000) and "R" or "N"
             return code, pol
 
+        tpol = False
         if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2800:
             tcode, tpol = _get_dcs(_mem.tx_tone)
             mem.dtcs = tcode
@@ -683,6 +684,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         else:
             txmode = ""
 
+        rpol = False
         if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2800:
             rcode, rpol = _get_dcs(_mem.rx_tone)
             mem.rx_dtcs = rcode
@@ -703,8 +705,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             mem.tmode = "Cross"
             mem.cross_mode = "%s->%s" % (txmode, rxmode)
 
-        if mem.tmode == "DTCS":
-            mem.dtcs_polarity = "%s%s" % (tpol, rpol)
+        # always set it even if no dtcs is used
+        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
 
         if os.getenv("CHIRP_DEBUG"):
             print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
