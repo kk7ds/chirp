@@ -253,8 +253,9 @@ BASETYPE_F11  = ["USA"]
 BASETYPE_UV82 = ["B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]          # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6  = ["BF1"]
+BASETYPE_KT980HP = ["BFP3"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
-                BASETYPE_BJ55 + BASETYPE_UV6
+                BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP
 
 AB_LIST = ["A", "B"]
 ALMOD_LIST = ["Site", "Tone", "Code", "_unknown_"]
@@ -281,6 +282,7 @@ TDRAB_LIST = ["Off"] + AB_LIST
 TDRCH_LIST = ["CH%s" % x for x in range(1, 129)]
 TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
 TXPOWER_LIST = ["High", "Low"]
+TXPOWER3_LIST = ["High", "Mid", "Low"]
 VOICE_LIST = ["Off", "English", "Chinese"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
 WORKMODE_LIST = ["Frequency", "Channel"]
@@ -859,6 +861,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         elif 'BF1' in version_tag:
             idx = version_tag.index("BF1") + 2
             return int(version_tag[idx:idx + 4])
+        elif 'BFP' in version_tag:
+            idx = version_tag.index("BFP") + 5
+            return int(version_tag[idx:idx + 1]) + 98000
 
         raise Exception("Unrecognized firmware version string")
 
@@ -1233,17 +1238,31 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             rs.set_apply_callback(apply_offset, _vfob)
             workmode.append(rs)
 
-            rs = RadioSetting("vfoa.txpower", "VFO A Power",
-                              RadioSettingValueList(TXPOWER_LIST,
-                                                    TXPOWER_LIST[
-                                                    _vfoa.txpower]))
-            workmode.append(rs)
+            if self.MODEL != "KT-980HP":
+                rs = RadioSetting("vfoa.txpower", "VFO A Power",
+                                  RadioSettingValueList(TXPOWER_LIST,
+                                                        TXPOWER_LIST[
+                                                        _vfoa.txpower]))
+                workmode.append(rs)
 
-            rs = RadioSetting("vfob.txpower", "VFO B Power",
-                              RadioSettingValueList(TXPOWER_LIST,
-                                                    TXPOWER_LIST[
-                                                    _vfob.txpower]))
-            workmode.append(rs)
+                rs = RadioSetting("vfob.txpower", "VFO B Power",
+                                  RadioSettingValueList(TXPOWER_LIST,
+                                                        TXPOWER_LIST[
+                                                        _vfob.txpower]))
+                workmode.append(rs)
+            else:
+                rs = RadioSetting("vfoa.txpower", "VFO A Power",
+                                  RadioSettingValueList(TXPOWER3_LIST,
+                                                        TXPOWER3_LIST[
+                                                        _vfoa.txpower]))
+                workmode.append(rs)
+
+                rs = RadioSetting("vfob.txpower", "VFO B Power",
+                                  RadioSettingValueList(TXPOWER3_LIST,
+                                                        TXPOWER3_LIST[
+                                                        _vfob.txpower]))
+                workmode.append(rs)
+
 
             rs = RadioSetting("vfoa.widenarr", "VFO A Bandwidth",
                               RadioSettingValueList(BANDWIDTH_LIST,
@@ -1482,4 +1501,23 @@ class BaofengUV6Radio(BaofengUV5R):
 
     def _is_orig(self):
         # Override this for UV6 to always return False
+        return False
+
+@directory.register
+class IntekKT980Radio(BaofengUV5R):
+    VENDOR = "Intek"
+    MODEL = "KT-980HP"
+    _basetype = BASETYPE_KT980HP
+    _idents = [UV5R_MODEL_291]
+
+    def get_features(self):
+        rf = BaofengUV5R.get_features(self)
+        rf.valid_power_levels = [chirp_common.PowerLevel("High", watts=8.00),
+                                 chirp_common.PowerLevel("Med",  watts=4.00),
+                                 chirp_common.PowerLevel("Low",  watts=1.00)]
+        rf.valid_bands = [(130000000, 180000000), (400000000, 521000000)]
+        return rf
+
+    def _is_orig(self):
+        # Override this for KT980HP to always return False
         return False
