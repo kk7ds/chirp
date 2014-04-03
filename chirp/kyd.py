@@ -342,7 +342,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
 
         mem.power = NC630A_POWER_LEVELS[_mem.highpower]
 
-        mem.skip = (_skp & bitpos) and "S" or ""
+        mem.skip = "" if (_skp & bitpos) else "S"
         print "mem.skip %s" % mem.skip
 
         mem.extra = RadioSettingGroup("Extra", "extra")
@@ -424,7 +424,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
 
         _mem.highpower = mem.power == NC630A_POWER_LEVELS[1]
 
-        if mem.skip == "S":
+        if mem.skip != "S":
             _skp |= bitpos
         else:
             _skp &= ~bitpos
