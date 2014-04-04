@@ -161,16 +161,6 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
 
 DTMFCHARSET = list("0123456789ABCD*#")           
 
-POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
-                    chirp_common.PowerLevel("Mid1", watts=20),
-                    chirp_common.PowerLevel("Mid2", watts=10),
-                    chirp_common.PowerLevel("Low", watts=5)]
-
-POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
-                    chirp_common.PowerLevel("Mid1", watts=20),
-                    chirp_common.PowerLevel("Mid2", watts=10),
-                    chirp_common.PowerLevel("Low", watts=5)]
-
 def _send(ser, data):
     for i in data:
         ser.write(i)
@@ -194,10 +184,10 @@ def _download(radio):
 
     _send(radio.pipe, ACK)
 
-    for i in range(0, radio._block_lengths[1], 64):
-        chunk = radio.pipe.read(64)
+    for i in range(0, radio._block_lengths[1], radio._block_size):
+        chunk = radio.pipe.read(radio._block_size)
         data += chunk
-        if len(chunk) != 64:
+        if len(chunk) != radio._block_size:
             break
         time.sleep(0.01)
         _send(radio.pipe, ACK)
@@ -216,8 +206,8 @@ def _download(radio):
 def _upload(radio):
     cur = 0
     for block in radio._block_lengths:
-        for _i in range(0, block, 64):
-            length = min(64, block)
+        for _i in range(0, block, radio._block_size):
+            length = min(radio._block_size, block)
             #print "i=%i length=%i range: %i-%i" % (i, length,
             #                                       cur, cur+length)
             _send(radio.pipe, radio.get_mmap()[cur:cur+length])
@@ -261,6 +251,17 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODES = list(MODES)
+    _block_size = 64
+
+    POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
+                    chirp_common.PowerLevel("Mid1", watts=20),
+                    chirp_common.PowerLevel("Mid2", watts=10),
+                    chirp_common.PowerLevel("Low", watts=5)]
+
+    POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
+                    chirp_common.PowerLevel("Mid1", watts=20),
+                    chirp_common.PowerLevel("Mid2", watts=10),
+                    chirp_common.PowerLevel("Low", watts=5)]
 
     @classmethod
     def get_prompts(cls):
@@ -299,7 +300,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tuning_steps = STEPS
         rf.valid_bands = [(108000000, 520000000), (700000000, 990000000)]
         rf.valid_skips = ["", "S", "P"]
-        rf.valid_power_levels = POWER_LEVELS_VHF
+        rf.valid_power_levels = self.POWER_LEVELS_VHF
         rf.valid_characters = "".join(CHARSET)
         rf.valid_name_length = 6
         rf.can_odd_split = True
@@ -402,9 +403,9 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.name = self._get_mem_name(mem, _mem)
 
         if int(mem.freq / 100) == 4:
-            mem.power = POWER_LEVELS_UHF[_mem.power]
+            mem.power = self.POWER_LEVELS_UHF[_mem.power]
         else:
-            mem.power = POWER_LEVELS_VHF[_mem.power]
+            mem.power = self.POWER_LEVELS_VHF[_mem.power]
 
         mem.skip = self._get_mem_skip(mem, _mem)
 
@@ -427,7 +428,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int (mem.offset / 10000) or 0
         if mem.power:
-            _mem.power = POWER_LEVELS_VHF.index(mem.power)
+            _mem.power = self.POWER_LEVELS_VHF.index(mem.power)
         else:
             _mem.power = 0
         _mem.unknown5 = 0 # Make sure we don't leave garbage here
@@ -792,7 +793,6 @@ class FT8800Radio(FTx800Radio):
     _memsize = 22217
 
     _block_lengths = [8, 22208, 1]
-    _block_size = 64
 
     _memstart = 0x0000
 
