@@ -129,12 +129,15 @@ struct {
 } memory[1000];
 
 #seekto 0x6EC8;
+// skips:2 for Memory M in [1, 1000] is in skipflags[(M-1)/4].skip((M-1)%4).
+// Interpret with SKIPS[].
+// PMS memories L0 - U50 aka memory 1001 - 1100 don't have skip flags.
 struct {
-  u8 skip0:2,
-     skip1:2,
+  u8 skip3:2,
      skip2:2,
-     skip3:2;
-} flags[500];
+     skip1:2,
+     skip0:2;
+} skipflags[250];
 
 #seekto 0x4700;
 struct {
@@ -155,7 +158,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
                 chirp_common.PowerLevel("Mid", watts=2.5),
                 chirp_common.PowerLevel("Low", watts=1.0)]
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
-SKIPS = ["", "P", "S"]
+SKIPS = ["", "S", "P"]
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
 
 @directory.register
@@ -234,16 +237,18 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
+        _array_index = number - 1
         return repr(self._memobj.memory[number]) + \
-            repr(self._memobj.flags[number/4]) + \
+            repr(self._memobj.skipflags[_array_index/4]) + \
             repr(self._memobj.names[number])
 
     def get_memory(self, number):
+        _array_index = number - 1
         _mem = self._memobj.memory[number]
-        _skp = self._memobj.flags[number/4]
+        _skp = self._memobj.skipflags[_array_index/4]
         _nam = self._memobj.names[number]
 
-        skip = _skp["skip%i" % (number%4)]
+        skip = _skp["skip%i" % (_array_index%4)]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -279,8 +284,9 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
+        _array_index = mem.number - 1
         _mem = self._memobj.memory[mem.number]
-        _skp = self._memobj.flags[mem.number/4]
+        _skp = self._memobj.skipflags[_array_index/4]
         _nam = self._memobj.names[mem.number]
 
         if mem.empty:
@@ -310,7 +316,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.isam = mem.mode == "AM"
         _mem.step = STEPS.index(mem.tuning_step)
 
-        _skp["skip%i" % (mem.number%4)] = SKIPS.index(mem.skip)
+        _skp["skip%i" % (_array_index%4)] = SKIPS.index(mem.skip)
 
         for i in range(0, 6):
             try:
