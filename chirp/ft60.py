@@ -219,6 +219,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
+        self.check_checksums()
 
     def sync_out(self):
         self.update_checksums()
