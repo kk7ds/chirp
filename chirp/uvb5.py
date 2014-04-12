@@ -289,7 +289,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         rf.valid_skips = ["", "S"]
         rf.valid_characters = CHARSET
         rf.valid_name_length = 5
-        rf.valid_bands = [(136000000, 174000000),
+        rf.valid_bands = [(130000000, 175000000),
+                          (220000000, 269000000),
                           (400000000, 520000000)]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_special_chans = SPECIALS.keys()
@@ -617,7 +618,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
 
         _limit = int(self._memobj.limits.lower_vhf) / 10
         rs = RadioSetting("limits.lower_vhf", "VHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 174, _limit))
+                          RadioSettingValueInteger(128, 270, _limit))
         def apply_limit(setting, obj):
             value = int(setting.value) * 10
             obj.lower_vhf = value
@@ -626,7 +627,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
 
         _limit = int(self._memobj.limits.upper_vhf) / 10
         rs = RadioSetting("limits.upper_vhf", "VHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(136, 174, _limit))
+                          RadioSettingValueInteger(128, 270, _limit))
         def apply_limit(setting, obj):
             value = int(setting.value) * 10
             obj.upper_vhf = value
