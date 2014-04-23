@@ -379,7 +379,7 @@ class H777Radio(chirp_common.CloneModeRadio):
 
         for setting in mem.extra:
             # NOTE: Only two settings right now, both are inverted
-            setattr(_mem, setting.get_name(), not setting.value)
+            setattr(_mem, setting.get_name(), not int(setting.value))
 
     def get_settings(self):
         _settings = self._memobj.settings
