@@ -78,6 +78,8 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     def __init__(self, pipe):
         chirp_common.FileBackedRadio.__init__(self, None)
         self.memories = []
+        self.file_has_rTone = None  # Set in load(), used in _clean_tmode()
+        self.file_has_cTone = None
 
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
@@ -117,6 +119,17 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             if hasattr(self, fname):
                 mem = getattr(self, fname)(headers, line, mem)
         
+        return mem
+
+    def _clean_tmode(self, headers, line, mem):
+        """ If there is exactly one of [rToneFreq, cToneFreq] columns in the
+        csv file, use it for both rtone & ctone. Makes TSQL use friendlier."""
+
+        if self.file_has_rTone and not self.file_has_cTone:
+            mem.ctone = mem.rtone
+        elif self.file_has_cTone and not self.file_has_rTone:
+            mem.rtone = mem.ctone
+
         return mem
 
     def _parse_csv_data_line(self, headers, line):
@@ -168,6 +181,8 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             lineno += 1
             if lineno == 1:
                 header = line
+                self.file_has_rTone = "rToneFreq" in header
+                self.file_has_cTone = "cToneFreq" in header
                 continue
 
             if len(header) > len(line):
