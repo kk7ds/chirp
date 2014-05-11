@@ -43,8 +43,8 @@ struct {
   u8 unknown1:7,
      txtoneicon:1;
   u8 mailicon:3,
-     unknown2:4,
-     lowpower:1;
+     unknown2:3,
+     lowpower:2;
   u8 unknown3:1,
      wide:1,
      unknown4:2,
@@ -167,7 +167,8 @@ struct {
      unused4:4;
   u8 txpower:1,
      widenarr:1,
-     unknown5:6;
+     unknown5:4,
+     txpower3:2;
 } vfoa;
 
 #seekto 0x0F30;
@@ -190,7 +191,8 @@ struct {
      unused4:4;
   u8 txpower:1,
      widenarr:1,
-     unknown5:6;
+     unknown5:4,
+     txpower3:2;
 } vfob;
 
 #seekto 0x0F56;
@@ -312,6 +314,7 @@ SETTING_LISTS = {
     "timeout" : TIMEOUT_LIST,
     "txled" : COLOR_LIST,
     "txpower" : TXPOWER_LIST,
+    "txpower3" : TXPOWER3_LIST,
     "voice" : VOICE_LIST,
     "vox" : VOX_LIST,
     "widenarr" : BANDWIDTH_LIST,
@@ -511,6 +514,10 @@ def _do_upload(radio):
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
+
+UV5R_POWER_LEVELS3 = [chirp_common.PowerLevel("High", watts=8.00),
+                      chirp_common.PowerLevel("Med",  watts=4.00),
+                      chirp_common.PowerLevel("Low",  watts=1.00)]
 
 UV5R_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
@@ -724,7 +731,17 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if not _mem.scan:
             mem.skip = "S"
 
-        mem.power = UV5R_POWER_LEVELS[_mem.lowpower]
+        if self.MODEL == "KT-980HP":
+            levels = UV5R_POWER_LEVELS3
+        else:
+            levels = UV5R_POWER_LEVELS
+        try:
+            mem.power = levels[_mem.lowpower]
+        except IndexError:
+            print "Radio reported invalid power level %s (in %s)" % (
+                _mem.power, levels)
+            mem.power = levels[0]
+
         mem.mode = _mem.wide and "FM" or "NFM"
 
         mem.extra = RadioSettingGroup("Extra", "extra")
@@ -818,7 +835,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
-        _mem.lowpower = mem.power == UV5R_POWER_LEVELS[1]
+
+        if mem.power:
+            if self.MODEL == "KT-980HP":
+                levels = [str(l) for l in UV5R_POWER_LEVELS3]
+                _mem.lowpower = levels.index(str(mem.power))
+            else:
+                _mem.lowpower = UV5R_POWER_LEVELS.index(mem.power)
+        else:
+            _mem.lowpower = 0
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
@@ -1251,16 +1276,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                         _vfob.txpower]))
                 workmode.append(rs)
             else:
-                rs = RadioSetting("vfoa.txpower", "VFO A Power",
+                rs = RadioSetting("vfoa.txpower3", "VFO A Power",
                                   RadioSettingValueList(TXPOWER3_LIST,
                                                         TXPOWER3_LIST[
-                                                        _vfoa.txpower]))
+                                                        _vfoa.txpower3]))
                 workmode.append(rs)
 
-                rs = RadioSetting("vfob.txpower", "VFO B Power",
+                rs = RadioSetting("vfob.txpower3", "VFO B Power",
                                   RadioSettingValueList(TXPOWER3_LIST,
                                                         TXPOWER3_LIST[
-                                                        _vfob.txpower]))
+                                                        _vfob.txpower3]))
                 workmode.append(rs)
 
 
@@ -1512,9 +1537,7 @@ class IntekKT980Radio(BaofengUV5R):
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
-        rf.valid_power_levels = [chirp_common.PowerLevel("High", watts=8.00),
-                                 chirp_common.PowerLevel("Med",  watts=4.00),
-                                 chirp_common.PowerLevel("Low",  watts=1.00)]
+        rf.valid_power_levels = UV5R_POWER_LEVELS3
         rf.valid_bands = [(130000000, 180000000), (400000000, 521000000)]
         return rf
 
