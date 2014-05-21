@@ -15,7 +15,8 @@
 
 from chirp import chirp_common, icf, ic9x_icf_ll, util, directory, errors
 
-@directory.register
+# Don't register as this module is used to load icf file from File-Open menu
+# see do_open in mainapp.py
 class IC9xICFRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
     MODEL = "IC-91/92AD"
