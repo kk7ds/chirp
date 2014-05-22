@@ -134,7 +134,9 @@ struct {
      unknown2:1,
      reset:1,
      menu:1;
-  u8 vfomrlock;
+  u8 unknown1:6,
+     singleptt:1,
+     vfomrlock:1;
   u8 workmode;
   u8 keylock;
 } settings;
@@ -252,7 +254,7 @@ vhf_220_radio = "\x02"
 
 BASETYPE_UV5R = ["BFS", "BFB"]
 BASETYPE_F11  = ["USA"]
-BASETYPE_UV82 = ["B82S", "BF82"]
+BASETYPE_UV82 = ["US2S", "B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]          # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6  = ["BF1"]
 BASETYPE_KT980HP = ["BFP3"]
@@ -877,6 +879,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         elif 'B82S' in version_tag:
             idx = version_tag.index("B82S") + 4
             return int(version_tag[idx:idx + 2]) + 8200
+        elif 'US2S' in version_tag:
+            idx = version_tag.index("US2S") + 4
+            return int(version_tag[idx:idx + 2]) + 8200
         elif 'USA' in version_tag:
             idx = version_tag.index("USA") + 3
             return int(version_tag[idx:idx + 3]) + 11000
@@ -1074,6 +1079,18 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             # this is an F-11 only feature
             rs = RadioSetting("vfomrlock", "VFO/MR Button",
                               RadioSettingValueBoolean(_settings.vfomrlock))
+            advanced.append(rs)
+
+        if self.MODEL == "UV-82":
+            # this is a UV-82C only feature
+            rs = RadioSetting("vfomrlock", "VFO/MR Switching (UV-82C only)",
+                              RadioSettingValueBoolean(_settings.vfomrlock))
+            advanced.append(rs)
+
+        if self.MODEL == "UV-82":
+            # this is an UV-82C only feature
+            rs = RadioSetting("singleptt", "Single PTT (UV-82C only)",
+                              RadioSettingValueBoolean(_settings.singleptt))
             advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
@@ -1494,6 +1511,11 @@ class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
     _basetype = BASETYPE_UV82
     _idents = [UV5R_MODEL_UV82]
+
+    def get_features(self):
+        rf = BaofengUV5R.get_features(self)
+        rf.valid_bands = [(130000000, 176000000), (400000000, 521000000)]
+        return rf
 
     def _is_orig(self):
         # Override this for UV82 to always return False
