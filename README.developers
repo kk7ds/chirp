@@ -1,0 +1,31 @@
+This file describes some features in the Chirp Developer's Functions
+that allow some customization of their behavior, but are only
+accessible through editing the chirp.config file before starting
+Chirp, and are not accessible through the GUI.
+
+The Developer Functions are enabled in the GUI by checking the box
+in  the "Help" tab. They enable the Image Browser tab in the left
+sidebar, and several tools under the View -> Developer tab.
+
+These directives are similar to other chirp.config entries in syntax.
+They reside in the [developer] section in chirp.config.
+This section, and all the directives, are not required to be present;
+all the options have defaults.
+
+Here is an example [developer] section listing all the directives,
+followed by an explanation of each directive:
+
+===================================
+[developer]
+diff_fontsize = 16
+
+===================================
+
+diff_fontize = <integer>
+This specifies the fontsize used in the hex dump/diff display which is
+invoked by selecting View -> Developer -> Diff tabs, and then in the
+"Diff Radios" popup, selecting < 0 for either or both memory locations.
+
+The default size is 11. Values less than 4, greater than 144, or not
+recognized as an integer will result in a log message and the default 
+size will be used.

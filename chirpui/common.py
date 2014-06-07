@@ -23,7 +23,9 @@ import os
 import traceback
 
 from chirp import errors
-from chirpui import reporting
+from chirpui import reporting, config
+
+CONF = config.get()
 
 class Editor(gobject.GObject):
     __gsignals__ = {
@@ -391,6 +393,14 @@ def show_diff_blob(title, result):
     tag.set_property("weight", pango.WEIGHT_BOLD)
     tags.add(tag)
 
+    try:
+        fontsize = CONF.get_int("diff_fontsize", "developer")
+    except Exception:
+        fontsize = 11
+    if fontsize < 4 or fontsize > 144:
+        print "Unsupported diff_fontsize %i. Using 11." % fontsize
+        fontsize = 11
+
     lines = result.split(os.linesep)
     for line in lines:
         if line.startswith("-"):
@@ -401,7 +411,7 @@ def show_diff_blob(title, result):
             tags = ()
         b.insert_with_tags_by_name(b.get_end_iter(), line + os.linesep, *tags)
     v = gtk.TextView(b)
-    fontdesc = pango.FontDescription("Courier 11")
+    fontdesc = pango.FontDescription("Courier %i" % fontsize)
     v.modify_font(fontdesc)
     v.set_editable(False)
     v.show()
