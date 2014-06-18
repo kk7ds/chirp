@@ -18,6 +18,7 @@ followed by an explanation of each directive:
 ===================================
 [developer]
 diff_fontsize = 16
+browser_fontsize = 13
 
 ===================================
 
@@ -27,5 +28,15 @@ invoked by selecting View -> Developer -> Diff tabs, and then in the
 "Diff Radios" popup, selecting < 0 for either or both memory locations.
 
 The default size is 11. Values less than 4, greater than 144, or not
+recognized as an integer will result in a log message and the default 
+size will be used.
+
+========
+browser_fontsize = <integer>
+This specifies the fontsize used in the file browser, invoked by selecting
+the "Browser" tab in the left sidebar, which is visible when the Developer
+tools are enabled.
+
+The default size is 10. Values less than 4, greater than 144, or not
 recognized as an integer will result in a log message and the default 
 size will be used.

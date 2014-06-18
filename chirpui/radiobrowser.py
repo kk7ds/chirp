@@ -5,7 +5,9 @@ import re
 import os
 
 from chirp import bitwise
-from chirpui import common
+from chirpui import common, config
+
+CONF = config.get()
 
 def do_insert_line_with_tags(b, line):
     def i(text, *tags):
@@ -77,7 +79,16 @@ def bitwise_type(classname):
 class FixedEntry(gtk.Entry):
     def __init__(self, *args, **kwargs):
         super(FixedEntry, self).__init__(*args, **kwargs)
-        fontdesc = pango.FontDescription("Courier bold 10")
+
+        try:
+            fontsize = CONF.get_int("browser_fontsize", "developer")
+        except Exception:
+            fontsize = 10
+        if fontsize < 4 or fontsize > 144:
+            print "Unsupported browser_fontsize %i. Using 10." % fontsize
+            fontsize = 11
+
+        fontdesc = pango.FontDescription("Courier bold %i" % fontsize)
         self.modify_font(fontdesc)
 
 class IntegerEntry(FixedEntry):
