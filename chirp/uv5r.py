@@ -540,6 +540,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_ORIG
                ]
+    _vhf_range = (136000000, 174000000)
+    _220_range = (220000000, 260000000)
+    _uhf_range = (400000000, 520000000)
     _mem_params = ( 0x1828 # poweron_msg offset
                     )
     # offset of fw version in image file
@@ -589,8 +592,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
 
-        normal_bands = [(136000000, 174000000), (400000000, 520000000)]
-        rax_bands = [(136000000, 174000000), (220000000, 260000000)]
+        normal_bands = [self._vhf_range, self._uhf_range]
+        rax_bands = [self._vhf_range, self._220_range]
 
         if self._mmap is None:
             rf.valid_bands = [normal_bands[0], rax_bands[1], normal_bands[1]]
@@ -1511,11 +1514,8 @@ class BaofengUV82Radio(BaofengUV5R):
     MODEL = "UV-82"
     _basetype = BASETYPE_UV82
     _idents = [UV5R_MODEL_UV82]
-
-    def get_features(self):
-        rf = BaofengUV5R.get_features(self)
-        rf.valid_bands = [(130000000, 176000000), (400000000, 521000000)]
-        return rf
+    _vhf_range = (130000000, 176000000)
+    _uhf_range = (400000000, 521000000)
 
     def _is_orig(self):
         # Override this for UV82 to always return False
@@ -1556,11 +1556,12 @@ class IntekKT980Radio(BaofengUV5R):
     MODEL = "KT-980HP"
     _basetype = BASETYPE_KT980HP
     _idents = [UV5R_MODEL_291]
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
         rf.valid_power_levels = UV5R_POWER_LEVELS3
-        rf.valid_bands = [(130000000, 180000000), (400000000, 521000000)]
         return rf
 
     def _is_orig(self):
