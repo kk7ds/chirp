@@ -51,12 +51,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     CHARSET = list(chirp_common.CHARSET_ASCII)
     CHARSET.remove("\\")
 
-    # Hi not used in memory
-    POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
-                    chirp_common.PowerLevel("L3", watts=2.50),
-                    chirp_common.PowerLevel("L2", watts=1.00),
-                    chirp_common.PowerLevel("L1", watts=0.5)]
-
     _memsize = 6509
     # block 9 (130 Bytes long) is to be repeted 40 times
     _block_lengths = [ 2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 118]
@@ -443,7 +437,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tuning_steps = list(self.STEPSFM)
         rf.valid_bands = self.VALID_BANDS
         rf.valid_skips = ["", "S"]
-        rf.valid_power_levels = self.POWER_LEVELS
+        rf.valid_power_levels = []
         rf.valid_characters = "".join(self.CHARSET)
         rf.valid_name_length = 8
         rf.valid_special_chans = sorted(self.SPECIAL_MEMORIES.keys())
