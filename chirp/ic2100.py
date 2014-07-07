@@ -15,6 +15,10 @@
 
 from chirp import chirp_common, icf, util, directory
 from chirp import bitwise, memmap
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueInteger, RadioSettingValueList, \
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettingValueFloat, InvalidValueError
 
 MEM_FORMAT = """
 struct {
@@ -25,7 +29,9 @@ struct {
   u8    unknown1;
   bbcd  offset[2];
   u8    is_12_5:1,
-        unknownbits:3,
+        unknownbit1:1,
+        anm:1,
+        unknownbit2:1,
         duplex:2,
         tmode:2;
   u8    ctone;
@@ -43,7 +49,9 @@ struct {
   u8    unknown1;
   bbcd  offset[2];
   u8    is_12_5:1,
-        unknownbits:3,
+        unknownbit1:1,
+        anm:1,
+        unknownbit2:1,
         duplex:2,
         tmode:2;
   u8    ctone;
@@ -59,7 +67,9 @@ struct {
   u8    unknown1;
   bbcd  offset[2];
   u8    is_12_5:1,
-        unknownbits:3,
+        unknownbit1:1,
+        anm:1,
+        unknownbit2:1,
         duplex:2,
         tmode:2;
   u8    ctone;
@@ -218,6 +228,12 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
         
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        rs = RadioSetting("anm", "Alphanumeric Name",
+                          RadioSettingValueBoolean(_mem.anm))
+        mem.extra.append(rs)
+
         return mem
 
     def set_memory(self, mem):
@@ -240,6 +256,7 @@ class IC2100Radio(icf.IcomCloneModeRadio):
             else:
                 _skp &= ~mask
             _mem.name = mem.name.ljust(6)
+            _mem.anm = mem.name.strip() != ""
 
         _set_freq(_mem, mem.freq)
         _set_offset(_mem, mem.offset)
@@ -247,6 +264,9 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
