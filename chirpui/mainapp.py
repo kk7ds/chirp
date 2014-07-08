@@ -160,7 +160,7 @@ class ChirpMain(gtk.Window):
         choice_a = miscwidgets.make_choice(choices, False, choices[0])
         choice_a.show()
         chan_a = gtk.SpinButton()
-        chan_a.get_adjustment().set_all(1, -1, 999, 1, 10, 0)
+        chan_a.get_adjustment().set_all(1, -2, 999, 1, 10, 0)
         chan_a.show()
         hbox = gtk.HBox(False, 3)
         hbox.pack_start(choice_a, 1, 1, 1)
@@ -219,7 +219,12 @@ class ChirpMain(gtk.Window):
             # Diff whole (can do this without a job, since both are clone-mode)
             a = util.hexprint(eset_a.rthread.radio._mmap.get_packed())
             b = util.hexprint(eset_b.rthread.radio._mmap.get_packed())
-            common.show_diff_blob("Differences", common.simple_diff(a, b))
+            if sel_chan_a == -2:
+                diffsonly = True
+            else:
+                diffsonly = False
+            common.show_diff_blob("Differences",
+                    common.simple_diff(a, b, diffsonly))
         else:
             common.show_error("Cannot diff whole live-mode radios!")
 

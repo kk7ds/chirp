@@ -363,15 +363,22 @@ def show_warning(msg, text,
         return r, cb.get_active()
     return r
 
-def simple_diff(a, b):
+def simple_diff(a, b, diffsonly=False):
     lines_a = a.split(os.linesep)
     lines_b = b.split(os.linesep)
+    blankprinted = True
 
     diff = ""
     for i in range(0, len(lines_a)):
         if lines_a[i] != lines_b[i]:
             diff += "-%s%s" % (lines_a[i], os.linesep)
             diff += "+%s%s" % (lines_b[i], os.linesep)
+            blankprinted = False
+        elif diffsonly == True:
+            if blankprinted:
+                continue
+            diff += os.linesep
+            blankprinted = True
         else:
             diff += " %s%s" % (lines_a[i], os.linesep)
     return diff
