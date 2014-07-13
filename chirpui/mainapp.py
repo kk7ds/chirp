@@ -152,6 +152,13 @@ class ChirpMain(gtk.Window):
                                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
                        parent=self)
 
+        label = gtk.Label("")
+        label.set_markup("<b>-1</b> for either Mem # does a full-file hex " +
+                "dump with diffs highlighted.\n" +
+                "<b>-2</b> for first Mem # shows <b>only</b> the diffs.")
+        d.vbox.pack_start(label, True, True, 0)
+        label.show()
+
         choices = []
         for eset in esets:
             choices.append("%s %s (%s)" % (eset.rthread.radio.VENDOR,
