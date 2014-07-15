@@ -257,9 +257,11 @@ BASETYPE_F11  = ["USA"]
 BASETYPE_UV82 = ["US2S", "B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]          # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6  = ["BF1"]
-BASETYPE_KT980HP = ["BFP3"]
+BASETYPE_KT980HP = ["BFP3V3 B"]
+BASETYPE_F8HP = ["BFP3V3 F"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
-                BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP
+                BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP + \
+                BASETYPE_F8HP
 
 AB_LIST = ["A", "B"]
 ALMOD_LIST = ["Site", "Tone", "Code", "_unknown_"]
@@ -736,7 +738,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if not _mem.scan:
             mem.skip = "S"
 
-        if self.MODEL == "KT-980HP":
+        if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP":                          
             levels = UV5R_POWER_LEVELS3
         else:
             levels = UV5R_POWER_LEVELS
@@ -842,7 +844,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.wide = mem.mode == "FM"
 
         if mem.power:
-            if self.MODEL == "KT-980HP":
+            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP":
                 levels = [str(l) for l in UV5R_POWER_LEVELS3]
                 _mem.lowpower = levels.index(str(mem.power))
             else:
@@ -1283,19 +1285,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             rs.set_apply_callback(apply_offset, _vfob)
             workmode.append(rs)
 
-            if self.MODEL != "KT-980HP":
-                rs = RadioSetting("vfoa.txpower", "VFO A Power",
-                                  RadioSettingValueList(TXPOWER_LIST,
-                                                        TXPOWER_LIST[
-                                                        _vfoa.txpower]))
-                workmode.append(rs)
-
-                rs = RadioSetting("vfob.txpower", "VFO B Power",
-                                  RadioSettingValueList(TXPOWER_LIST,
-                                                        TXPOWER_LIST[
-                                                        _vfob.txpower]))
-                workmode.append(rs)
-            else:
+            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP":
                 rs = RadioSetting("vfoa.txpower3", "VFO A Power",
                                   RadioSettingValueList(TXPOWER3_LIST,
                                                         TXPOWER3_LIST[
@@ -1306,6 +1296,18 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                   RadioSettingValueList(TXPOWER3_LIST,
                                                         TXPOWER3_LIST[
                                                         _vfob.txpower3]))
+                workmode.append(rs)
+            else:
+                rs = RadioSetting("vfoa.txpower", "VFO A Power",
+                                  RadioSettingValueList(TXPOWER_LIST,
+                                                        TXPOWER_LIST[
+                                                        _vfoa.txpower]))
+                workmode.append(rs)
+
+                rs = RadioSetting("vfob.txpower", "VFO B Power",
+                                  RadioSettingValueList(TXPOWER_LIST,
+                                                        TXPOWER_LIST[
+                                                        _vfob.txpower]))
                 workmode.append(rs)
 
 
@@ -1429,14 +1431,22 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 DTMFST_LIST[_settings.dtmfst]))
         dtmf.append(rs)
 
+        if _ani.dtmfon > 0xC3:
+            val = 0x00
+        else:
+            val = _ani.dtmfon
         rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
                           RadioSettingValueList(DTMFSPEED_LIST,
-                                                DTMFSPEED_LIST[_ani.dtmfon]))
+                                                DTMFSPEED_LIST[val]))
         dtmf.append(rs)
 
+        if _ani.dtmfoff > 0xC3:
+            val = 0x00
+        else:
+            val = _ani.dtmfoff
         rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
                           RadioSettingValueList(DTMFSPEED_LIST,
-                                                DTMFSPEED_LIST[_ani.dtmfoff]))
+                                                DTMFSPEED_LIST[val]))
         dtmf.append(rs)
 
         return group
@@ -1566,4 +1576,22 @@ class IntekKT980Radio(BaofengUV5R):
 
     def _is_orig(self):
         # Override this for KT980HP to always return False
+        return False
+
+@directory.register
+class BaofengBFF8HPRadio(BaofengUV5R):
+    VENDOR = "Baofeng"
+    MODEL = "BF-F8HP"
+    _basetype = BASETYPE_F8HP
+    _idents = [UV5R_MODEL_291]
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
+
+    def get_features(self):
+        rf = BaofengUV5R.get_features(self)
+        rf.valid_power_levels = UV5R_POWER_LEVELS3
+        return rf
+
+    def _is_orig(self):
+        # Override this for BFF8HP to always return False
         return False
