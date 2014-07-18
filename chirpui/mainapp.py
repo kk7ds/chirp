@@ -224,8 +224,15 @@ class ChirpMain(gtk.Window):
         elif isinstance(eset_a.rthread.radio, chirp_common.CloneModeRadio) and\
                 isinstance(eset_b.rthread.radio, chirp_common.CloneModeRadio):
             # Diff whole (can do this without a job, since both are clone-mode)
-            a = util.hexprint(eset_a.rthread.radio._mmap.get_packed())
-            b = util.hexprint(eset_b.rthread.radio._mmap.get_packed())
+            try:
+                addrfmt = CONF.get('hexdump_addrfmt', section='developer',
+                                   raw=True)
+            except:
+                pass
+            a = util.hexprint(eset_a.rthread.radio._mmap.get_packed(),
+                              addrfmt=addrfmt)
+            b = util.hexprint(eset_b.rthread.radio._mmap.get_packed(),
+                              addrfmt=addrfmt)
             if sel_chan_a == -2:
                 diffsonly = True
             else:

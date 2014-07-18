@@ -36,14 +36,14 @@ class ChirpConfig:
         self.__config.write(cfg_file)
         cfg_file.close()
 
-    def get(self, key, section):
+    def get(self, key, section, raw=False):
         if not self.__config.has_section(section):
             return None
 
         if not self.__config.has_option(section, key):
             return None
 
-        return self.__config.get(section, key)
+        return self.__config.get(section, key, raw=raw)
 
     def set(self, key, value, section):
         if not self.__config.has_section(section):
@@ -65,8 +65,9 @@ class ChirpConfigProxy:
         self._config = config
         self._section = section
 
-    def get(self, key, section=None):
-        return self._config.get(key, section or self._section)
+    def get(self, key, section=None, raw=False):
+        return self._config.get(key, section or self._section,
+                                raw=raw)
 
     def set(self, key, value, section=None):
         return self._config.set(key, value, section or self._section)

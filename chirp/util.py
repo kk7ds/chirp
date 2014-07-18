@@ -15,34 +15,39 @@
 
 import struct
 
-def hexprint(data):
+def hexprint(data, addrfmt=None):
     """Return a hexdump-like encoding of @data"""
-    line_sz = 8
+    if addrfmt is None:
+        addrfmt = '%(block)03i'
 
-    lines = len(data) / line_sz
+    block_size = 8
+
+    lines = len(data) / block_size
     
-    if (len(data) % line_sz) != 0:
+    if (len(data) % block_size) != 0:
         lines += 1
-        data += "\x00" * ((lines * line_sz) - len(data))
+        data += "\x00" * ((lines * block_size) - len(data))
 
     out = ""
         
-    for i in range(0, (len(data)/line_sz)):
-        out += "%03i: " % (i * line_sz)
+    for block in range(0, (len(data)/block_size)):
+        addr = block * block_size
+        out += addrfmt % locals()
+        out += ': '
 
-        left = len(data) - (i * line_sz)
-        if left < line_sz:
+        left = len(data) - (block * block_size)
+        if left < block_size:
             limit = left
         else:
-            limit = line_sz
+            limit = block_size
             
         for j in range(0, limit):
-            out += "%02x " % ord(data[(i * line_sz) + j])
+            out += "%02x " % ord(data[(block * block_size) + j])
 
         out += "  "
 
         for j in range(0, limit):
-            char = data[(i * line_sz) + j]
+            char = data[(block * block_size) + j]
 
             if ord(char) > 0x20 and ord(char) < 0x7E:
                 out += "%s" % char

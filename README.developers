@@ -19,6 +19,7 @@ followed by an explanation of each directive:
 [developer]
 diff_fontsize = 16
 browser_fontsize = 13
+hexdump_addrfmt = %(addr)03i
 
 ===================================
 
@@ -40,3 +41,14 @@ tools are enabled.
 The default size is 10. Values less than 4, greater than 144, or not
 recognized as an integer will result in a log message and the default 
 size will be used.
+
+========
+hexdump_addrfmt = %(addr)03i
+This specifies the format of the address used during some hexdump
+operations. You can specify an alternate format, such as the following
+for hex:
+
+ hexdump_addrfmt = 0x%(addr)04x
+
+Any of the variables in local scope of chirp/util.py::hexdump.py are
+valid for substitution, including block and block_size.
