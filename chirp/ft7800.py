@@ -97,8 +97,8 @@ struct mem_struct {
   bbcd freq[3];
   u8 clockshift:1,
      tune_step:3,
-     unknown5:2, // TODO: tmode has extended settings, at least 4 bits
-     tmode:2;
+     unknown5:1, // TODO: tmode has extended settings, at least 4 bits
+     tmode:3;
   bbcd split[3];
   u8 power:2,
      tone:6;
@@ -148,7 +148,6 @@ u8 checksum;
 """
 
 MODES = ["FM", "AM", "NFM"]
-TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "", "-", "+", "split"]
 STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "S", "P", ""]
@@ -295,7 +294,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
         rf.valid_modes = MODES
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_tmodes = self.TMODES
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tuning_steps = STEPS
         rf.valid_bands = [(108000000, 520000000), (700000000, 990000000)]
@@ -393,7 +392,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
-        mem.tmode = TMODES[_mem.tmode]
+        mem.tmode = self.TMODES[_mem.tmode]
         mem.mode = self.MODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         if self.get_features().has_tuning_step:
@@ -420,7 +419,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
 
         set_freq(mem.freq, _mem, "freq")
         _mem.tone = chirp_common.TONES.index(mem.rtone)
-        _mem.tmode = TMODES.index(mem.tmode)
+        _mem.tmode = self.TMODES.index(mem.tmode)
         _mem.mode = self.MODES.index(mem.mode)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         if self.get_features().has_tuning_step:
@@ -521,6 +520,9 @@ class FT7800Radio(FTx800Radio):
     _model = "AH016"
     _memsize = 31561
     _block_lengths = [8, 31552, 1]
+    TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
+
+
     
     def get_bank_model(self):
         return FT7800BankModel(self)
@@ -795,6 +797,8 @@ class FT8800Radio(FTx800Radio):
     _block_lengths = [8, 22208, 1]
 
     _memstart = 0x0000
+
+    TMODES = ["", "Tone", "TSQL", "DTCS"]
 
     @classmethod
     def get_prompts(cls):
