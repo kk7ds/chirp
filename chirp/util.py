@@ -18,7 +18,7 @@ import struct
 def hexprint(data, addrfmt=None):
     """Return a hexdump-like encoding of @data"""
     if addrfmt is None:
-        addrfmt = '%(block)03i'
+        addrfmt = '%(addr)03i'
 
     block_size = 8
 
@@ -32,7 +32,10 @@ def hexprint(data, addrfmt=None):
         
     for block in range(0, (len(data)/block_size)):
         addr = block * block_size
-        out += addrfmt % locals()
+        try:
+            out += addrfmt % locals()
+        except (OverflowError, ValueError, TypeError, KeyError):
+            out += "%03i" % addr
         out += ': '
 
         left = len(data) - (block * block_size)

@@ -5,7 +5,7 @@ Chirp, and are not accessible through the GUI.
 
 The Developer Functions are enabled in the GUI by checking the box
 in  the "Help" tab. They enable the Image Browser tab in the left
-sidebar, and several tools under the View -> Developer tab.
+sidebar, several tools under the View -> Developer tab, and some others.
 
 These directives are similar to other chirp.config entries in syntax.
 They reside in the [developer] section in chirp.config.
@@ -19,20 +19,9 @@ followed by an explanation of each directive:
 [developer]
 diff_fontsize = 16
 browser_fontsize = 13
-hexdump_addrfmt = %(addr)03i
+hexdump_addrfmt = %(addr)04i x%(addr)04X
 
 ===================================
-
-diff_fontize = <integer>
-This specifies the fontsize used in the hex dump/diff display which is
-invoked by selecting View -> Developer -> Diff tabs, and then in the
-"Diff Radios" popup, selecting < 0 for either or both memory locations.
-
-The default size is 11. Values less than 4, greater than 144, or not
-recognized as an integer will result in a log message and the default 
-size will be used.
-
-========
 browser_fontsize = <integer>
 This specifies the fontsize used in the file browser, invoked by selecting
 the "Browser" tab in the left sidebar, which is visible when the Developer
@@ -43,12 +32,33 @@ recognized as an integer will result in a log message and the default
 size will be used.
 
 ========
-hexdump_addrfmt = %(addr)03i
-This specifies the format of the address used during some hexdump
-operations. You can specify an alternate format, such as the following
-for hex:
+diff_fontize = <integer>
+This specifies the fontsize used in the hex dump/diff display which is
+invoked by selecting View -> Developer -> Diff tabs.
 
- hexdump_addrfmt = 0x%(addr)04x
+The default size is 11. Values less than 4, greater than 144, or not
+recognized as an integer will result in a log message and the default 
+size will be used.
 
-Any of the variables in local scope of chirp/util.py::hexdump.py are
-valid for substitution, including block and block_size.
+========
+hexdump_addrfmt = <python format specification string>
+This specifies the format of the address printed during some hexdump
+operations. The default is %(addr)03i which prints the byte offset
+of the first byte of each line in decimal, producing lines such as
+ 064: 00 00 00 ...
+
+Any of the variables in local scope of chirp/util.py::hexdump() are
+valid for substitution, including block and block_size. Any may
+be used more than once. The example above, %(addr)04i x%(addr)04X
+produces lines such as
+ 0064 x0040: 00 00 00 ...
+
+0x%(addr)04x specifies lower case hex, and wwould produce lines such as
+ 0x0040: 00 00 00 ...
+
+Exceptions that have been observed in testing formats which are
+invalid in this context are caught, and the default format is used.
+
+========
+
+
