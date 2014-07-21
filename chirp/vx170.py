@@ -99,6 +99,7 @@ class VX170Radio(ft7800.FTx800Radio):
                 chirp_common.PowerLevel("Lo", watts=0.50)]
 
     MODES = ["FM", "NFM"]
+    TMODES = ["", "Tone", "TSQL", "DTCS"]
 
     @classmethod
     def get_prompts(cls):
