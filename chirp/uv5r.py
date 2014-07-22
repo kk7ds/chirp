@@ -443,7 +443,7 @@ def _get_radio_firmware_version(radio):
         block1 = _read_block(radio, 0x1EC0, 0x40)
         block2 = _read_block(radio, 0x1F00, 0x40)
         block = block1 + block2
-        version = block[48:64]
+        version = block[48:62]
     return version
 
 def _get_radio_special_block(radio):
@@ -573,7 +573,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     )
     # offset of fw version in image file
     _fw_ver_file_start = 0x1838
-    _fw_ver_file_stop = 0x1848
+    _fw_ver_file_stop = 0x1846
 
     @classmethod
     def get_prompts(cls):
@@ -896,11 +896,11 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def _my_version(self):
         version_tag = _firmware_version_from_image(self)
-        if 'BFB' in version_tag:
-            idx = version_tag.index("BFB") + 3
-            return int(version_tag[idx:idx + 3])
-        elif 'BFS' in version_tag:
+        if 'BFS' in version_tag:
             idx = version_tag.index("BFS") + 3
+            return int(version_tag[idx:idx + 3])
+        elif 'BFB' in version_tag:
+            idx = version_tag.index("BFB") + 3
             return int(version_tag[idx:idx + 3])
         elif 'BF82' in version_tag:
             idx = version_tag.index("BF82") + 2
