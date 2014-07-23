@@ -1555,7 +1555,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
         conf = config.get()
         re = not conf.get_bool("no_report");
-        hu = conf.get_bool("hide_unused", "memedit")
+        hu = conf.get_bool("hide_unused", "memedit", default=True)
         dv = conf.get_bool("developer", "state")
         st = not conf.get_bool("no_smart_tmode", "memedit")
 

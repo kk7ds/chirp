@@ -96,8 +96,12 @@ class ChirpConfigProxy:
 
         self.set(key, "%i" % value, section)
        
-    def get_bool(self, key, section=None):
-        return self.get(key, section) == "True"
+    def get_bool(self, key, section=None, default=False):
+        val = self.get(key, section)
+        if val is None:
+            return default
+        else:
+            return val == "True"
 
     def set_bool(self, key, value, section=None):
         self.set(key, str(bool(value)), section)
