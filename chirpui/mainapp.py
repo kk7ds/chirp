@@ -201,6 +201,12 @@ class ChirpMain(gtk.Window):
 
         print "Selected %s@%i and %s@%i" % (sel_a, sel_chan_a,
                                             sel_b, sel_chan_b)
+        name_a = os.path.basename (sel_a)
+        name_a = name_a[:name_a.rindex(")")]
+        name_b = os.path.basename (sel_b)
+        name_b = name_b[:name_b.rindex(")")]
+        diffwintitle = "%s@%i  diff  %s@%i" % (
+            name_a, sel_chan_a, name_b, sel_chan_b)
 
         eset_a = esets[choices.index(sel_a)]
         eset_b = esets[choices.index(sel_b)]
@@ -208,7 +214,7 @@ class ChirpMain(gtk.Window):
         def _show_diff(mem_b, mem_a):
             # Step 3: Show the diff
             diff = common.simple_diff(mem_a, mem_b)
-            common.show_diff_blob("Differences", diff)
+            common.show_diff_blob(diffwintitle, diff)
 
         def _get_mem_b(mem_a):
             # Step 2: Get memory b
@@ -237,7 +243,7 @@ class ChirpMain(gtk.Window):
                 diffsonly = True
             else:
                 diffsonly = False
-            common.show_diff_blob("Differences",
+            common.show_diff_blob(diffwintitle,
                     common.simple_diff(a, b, diffsonly))
         else:
             common.show_error("Cannot diff whole live-mode radios!")
