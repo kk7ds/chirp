@@ -24,12 +24,46 @@ from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
 from textwrap import dedent
 
 MEM_FORMAT = """
+#seekto 0x047f;
+struct {
+  u8 flag;
+  u16 unknown;
+  struct {
+    u8 padded_yaesu[16];
+  } message;
+} opening_message;
+
+#seekto 0x04bf;
+struct {
+  u8 beep; 
+} beep_select;
+
+#seekto 0x04cc;
+struct {
+  u8 lcd_dimmer;
+  u8 unknown[4];
+  u8 lcd_contrast;
+  u8 lamp;
+} lcd_settings;
+
+#seekto 0x04da;
+struct {
+  u8 scan_restart;
+  u8 unknown0;
+  u8 scan_resume;
+  u8 unknown1[6];
+  u8 tot;
+  u8 unknown2[3];
+  u8 scan_lamp;
+  u8 busy_led;
+} scan_settings;
+
 #seekto 0x54a;
 struct {
     u16 in_use;
 } bank_used[24];
 
-#seekto 0x64a;
+#seekto 0x064a;
 struct {
   u8 unknown0[4];
   u8 frequency_band;
@@ -650,6 +684,16 @@ class VX8DRadio(VX8Radio):
               "every 2 minutes", "every 3 minutes", "every 4 minutes",
               "every 5 minutes", "every 6 minutes", "every 7 minutes",
               "every 8 minutes", "every 9 minutes", "every 10 minutes")
+    _BEEP_SELECT = ("Off", "Key+Scan", "Key")
+    _OPENING_MESSAGE = ("Off", "DC", "Message", "Normal")
+    _SCAN_RESUME = ["%.1fs" % (0.5 * x) for x in range(4,21)] + \
+                   ["Busy", "Hold"]
+    _SCAN_RESTART = ["%.1fs" % (0.1 * x) for x in range(1,10)] + \
+                    ["%.1fs" % (0.5 * x) for x in range(2,21)]
+    _LAMP_KEY = ["Key %d sec" % x for x in range(2,11)] + ["Continuous", "OFF"]
+    _LCD_CONTRAST = ["Level %d" % x for x in range(1,16)]
+    _LCD_DIMMER = ["Level %d" % x for x in range(1,5)]
+    _TOT_TIME = ["Off"] + ["%.1f min" % (0.5 * x) for x in range(1, 21)]
     _MY_SYMBOL = ("/[ Person", "/b Bike", "/> Car", "User selected")
 
     def get_features(self):
@@ -1135,12 +1179,127 @@ class VX8DRadio(VX8Radio):
 
         return menu
  
+    def _get_beep_select(self):
+        menu = RadioSettingGroup("beep_select", "Beep Select")
+        beep_select = self._memobj.beep_select
+
+        val = RadioSettingValueList(
+            self._BEEP_SELECT,
+            self._BEEP_SELECT[beep_select.beep])
+        rs = RadioSetting("beep_select.beep", "Beep Select", val)
+        menu.append(rs)
+
+        return menu
+
+    def _get_scan_settings(self):
+        menu = RadioSettingGroup("scan_settings", "Scan Settings")
+        scan_settings = self._memobj.scan_settings
+
+        val = RadioSettingValueList(
+            self._SCAN_RESTART,
+            self._SCAN_RESTART[scan_settings.scan_restart])
+        rs = RadioSetting("scan_settings.scan_restart", "Scan Restart", val)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._SCAN_RESUME,
+            self._SCAN_RESUME[scan_settings.scan_resume])
+        rs = RadioSetting("scan_settings.scan_resume", "Scan Resume", val)
+        menu.append(rs)
+
+        opt = ["Off", "On"]
+        if scan_settings.busy_led == 0x42:
+            current = "Off"
+        else:
+            current = "On"
+        val = RadioSettingValueList(
+            opt,
+            current)
+        rs = RadioSetting("scan_settings.busy_led", "Busy LED", val)
+        rs.set_apply_callback(self.apply_busy_led, scan_settings)
+        menu.append(rs)
+
+        opt = ["Off", "On"]
+        if scan_settings.scan_lamp == 0x88:
+            current = "Off"
+        else:
+            current = "On"
+        val = RadioSettingValueList(
+            opt,
+            current)
+        rs = RadioSetting("scan_settings.scan_lamp", "Scan Lamp", val)
+        rs.set_apply_callback(self.apply_scan_lamp, scan_settings)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._TOT_TIME,
+            self._TOT_TIME[scan_settings.tot])
+        rs = RadioSetting("scan_settings.tot", "Transmit Timeout (TOT)", val)
+        menu.append(rs)
+
+        return menu
+
+    def _get_lcd_settings(self):
+        menu = RadioSettingGroup("lcd_settings", "LCD Settings")
+        lcd_settings = self._memobj.lcd_settings
+
+        val = RadioSettingValueList(
+            self._LCD_DIMMER,
+            self._LCD_DIMMER[lcd_settings.lcd_dimmer])
+        rs = RadioSetting("lcd_settings.lcd_dimmer", "LCD Dimmer", val)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._LCD_CONTRAST,
+            self._LCD_CONTRAST[0x0F & lcd_settings.lcd_contrast - 1])
+        rs = RadioSetting("lcd_settings.lcd_contrast", "LCD Contrast",
+                          val)
+        rs.set_apply_callback(self.apply_lcd_contrast, lcd_settings)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._LAMP_KEY,
+            self._LAMP_KEY[lcd_settings.lamp])
+        rs = RadioSetting("lcd_settings.lamp", "Lamp", val)
+        menu.append(rs)
+
+        return menu
+
+    def _get_opening_message(self):
+        menu = RadioSettingGroup("opening_message", "Opening Message")
+        opening_message = self._memobj.opening_message
+
+        val = RadioSettingValueList(
+            self._OPENING_MESSAGE,
+            self._OPENING_MESSAGE[opening_message.flag])
+        rs = RadioSetting("opening_message.flag", "Flag",
+                          val)
+        menu.append(rs)
+
+        msg = ""
+        for i in opening_message.message.padded_yaesu:
+            if i == 0xFF:
+                break
+            msg += CHARSET[i & 0x7F]
+        val = RadioSettingValueString(0, 16, msg)
+        rs = RadioSetting("opening_message.message.padded_yaesu", "Message", 
+                          val)
+        rs.set_apply_callback(self.apply_ff_padded_yaesu, 
+                              opening_message.message)
+        menu.append(rs)
+
+        return menu
+
     def _get_settings(self):
         top = RadioSettingGroup("all", "All Settings",
                                 self._get_aprs_general_settings(),
                                 self._get_aprs_rx_settings(),
                                 self._get_aprs_tx_settings(),
-                                self._get_aprs_smartbeacon())
+                                self._get_aprs_smartbeacon(),
+                                self._get_beep_select(),
+                                self._get_lcd_settings(),
+                                self._get_scan_settings(),
+                                self._get_opening_message())
         return top
 
     def get_settings(self):
@@ -1271,6 +1430,37 @@ class VX8DRadio(VX8Radio):
             except Exception, e:
                 print element.get_name()
                 raise
+
+    def apply_ff_padded_yaesu(cls, setting, obj):
+        # FF pad yaesus custom string format.
+        rawval = setting.value.get_value()
+        max_len = getattr(obj, "padded_yaesu").size() / 8
+        rawval = str(rawval).rstrip()
+        val = [CHARSET.index(x) for x in rawval]
+        for x in range(len(val), max_len):
+            val.append(0xFF)
+        setattr(obj, "padded_yaesu", val)
+
+    def apply_lcd_contrast(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = 0x10 | cls._LCD_CONTRAST.index(rawval) + 1
+        setattr(obj, "lcd_contrast", val)
+
+    def apply_busy_led(cls, setting, obj):
+        rawval = setting.value.get_value()
+        if rawval == "Off":
+            val = 0x42
+        else:
+            val = 0xc2
+        setattr(obj, "busy_led", val)
+
+    def apply_scan_lamp(cls, setting, obj):
+        rawval = setting.value.get_value()
+        if rawval == "Off":
+            val = 0x88
+        else:
+            val = 0xa8
+        setattr(obj, "scan_lamp", val)
 
 @directory.register
 class VX8GERadio(VX8DRadio):
