@@ -1439,12 +1439,12 @@ class VX8DRadio(VX8Radio):
         val = [CHARSET.index(x) for x in rawval]
         for x in range(len(val), max_len):
             val.append(0xFF)
-        setattr(obj, "padded_yaesu", val)
+        obj.padded_yaesu = val
 
     def apply_lcd_contrast(cls, setting, obj):
         rawval = setting.value.get_value()
         val = 0x10 | cls._LCD_CONTRAST.index(rawval) + 1
-        setattr(obj, "lcd_contrast", val)
+        obj.lcd_contrast = val
 
     def apply_busy_led(cls, setting, obj):
         rawval = setting.value.get_value()
@@ -1452,7 +1452,7 @@ class VX8DRadio(VX8Radio):
             val = 0x42
         else:
             val = 0xc2
-        setattr(obj, "busy_led", val)
+        obj.busy_led = val
 
     def apply_scan_lamp(cls, setting, obj):
         rawval = setting.value.get_value()
@@ -1460,7 +1460,7 @@ class VX8DRadio(VX8Radio):
             val = 0x88
         else:
             val = 0xa8
-        setattr(obj, "scan_lamp", val)
+        obj.scan_lamp = val
 
 @directory.register
 class VX8GERadio(VX8DRadio):
