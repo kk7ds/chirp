@@ -91,7 +91,8 @@ def _chunk_write(pipe, data, status_fn, block):
         chunk = data[i:i+block]
         pipe.write(chunk)
         count += len(chunk)
-        #print "Count is %i" % count
+        if os.getenv("CHIRP_DEBUG"):
+            print "@_chunk_write, count: %i, blocksize: %i" % (count,block)
         time.sleep(delay)
 
         status = chirp_common.Status()
@@ -119,7 +120,8 @@ def __clone_out(radio):
     for block in radio._block_lengths:
         blocks += 1
         if blocks != len(radio._block_lengths):
-            #print "Sending %i-%i" % (pos, pos+block)
+            if os.getenv("CHIRP_DEBUG"):
+                print "Sending %i-%i" % (pos, pos+block)
             pipe.write(radio.get_mmap()[pos:pos+block])
             buf = pipe.read(1)
             if buf and buf[0] != chr(CMD_ACK):
