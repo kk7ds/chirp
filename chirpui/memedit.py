@@ -745,7 +745,8 @@ class MemoryEditor(common.Editor):
             if len(locations) > 1:
                 self._apply_multiple(memory, dlg.get_fields(), locations)
             else:
-                mem.name = self.rthread.radio.filter_name(mem.name)
+                if not "name" in mem.immutable:
+                    mem.name = self.rthread.radio.filter_name(mem.name)
                 job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
                 job.set_desc(_("Writing memory {number}").format(
                         number=mem.number))
