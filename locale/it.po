@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-16 12:06-0800\n"
-"PO-Revision-Date: 2014-07-07 15:53+0100\n"
-"Last-Translator: Fabio Rusconi <iz2qdh@gmail.com>\n"
+"PO-Revision-Date: 2014-08-14 08:51+0100\n"
+"Last-Translator: Marco Filippi <iz3gme.marco@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.6.6\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../chirpui/common.py:204
 msgid "Completed"
@@ -56,7 +56,7 @@ msgstr "Aggiornamento informazioni Bank per la memoria {num}"
 
 #: ../chirpui/bankedit.py:200 ../chirpui/bankedit.py:229
 msgid "Getting memory {num}"
-msgstr "Lettura memoria {number}"
+msgstr "Lettura memoria {num}"
 
 #: ../chirpui/bankedit.py:214
 msgid "Setting index for memory {num}"
