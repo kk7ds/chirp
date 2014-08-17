@@ -468,6 +468,12 @@ def _ident_radio(radio):
 def _do_download(radio):
     data = _ident_radio(radio)
 
+    radio_version = _get_radio_firmware_version(radio)
+    print "Radio Version is %s" % repr(radio_version)
+
+    if not any(type in radio_version for type in radio._basetype):
+        raise errors.RadioError("Incorrect 'Model' selected.")
+
     # Main block
     if CHIRP_DEBUG:
         print "downloading main block..."
