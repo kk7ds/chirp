@@ -82,7 +82,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
              power_high:1,
              iswide:1,
              _2_unknown_2:4;
-          u8 unknown[2];
+          u8 unknown;
+          u8 _0_unknown_1:3,
+             iswidex:1,
+             _0_unknown_2:4;
         } memory[199];
         
         #seekto 0x0842;
@@ -766,6 +769,13 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         bcl.set_doc("Busy Channel Lockout")
         mem.extra.append(bcl)
 
+        options = ["NFM", "FM"]
+        iswidex = RadioSetting("iswidex", "Mode TX(KG-UV6X)",
+                         RadioSettingValueList(options,
+                                        options[_mem.iswidex]))
+        iswidex.set_doc("Mode TX")
+        mem.extra.append(iswidex)
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -887,7 +897,10 @@ class KGUV6DRadio(KGUVD1PRadio):
              power_high:1,
              iswide:1,
              _2_unknown_2:4;
-          u8 pad[2];
+          u8 pad;
+          u8 _0_unknown_1:3,
+             iswidex:1,
+             _0_unknown_2:4;
         } memory[199];
 
         #seekto 0x0F00;
@@ -1097,7 +1110,7 @@ class KGUV6DRadio(KGUVD1PRadio):
             return filtered
 
         # add some radio specific settings
-        options = ["Off", "Welcome", "V bat"]
+        options = ["Off", "Welcome", "V bat", "N/A(KG-UV6X)"]
         rs = RadioSetting("ponmsg", "Poweron message",
                           RadioSettingValueList(options,
                                         options[self._memobj.settings.ponmsg]))
@@ -1371,7 +1384,10 @@ class KG816Radio(KGUVD1PRadio,
              power_high:1,
              iswide:1,
              _2_unknown_2:4;
-          u8 unknown[2];
+          u8 unknown;
+          u8 _0_unknown_1:3,
+             iswidex:1,
+             _0_unknown_2:4;
         } memory[199];
         
         #seekto 0x0d70;
