@@ -756,7 +756,7 @@ msgstr "Movendo memória de {old} para {new}"
 
 #: ../chirpui/memedit.py:578
 msgid "Raw memory {number}"
-msgstr "Memória raw (number}"
+msgstr "Memória raw {number}"
 
 #: ../chirpui/memedit.py:582 ../chirpui/memedit.py:610
 #: ../chirpui/memedit.py:615

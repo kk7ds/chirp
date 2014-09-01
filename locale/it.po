@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-16 12:06-0800\n"
-"PO-Revision-Date: 2014-08-14 08:51+0100\n"
+"PO-Revision-Date: 2014-08-19 19:04+0100\n"
 "Last-Translator: Marco Filippi <iz3gme.marco@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -638,7 +638,7 @@ msgstr ""
 
 #: ../chirpui/editorset.py:260
 msgid "There was an error during import: {error}"
-msgstr "Si è verificato un errore importando {fname}: {error}"
+msgstr "Si è verificato un errore durante l'importazione: {error}"
 
 #: ../chirpui/editorset.py:270
 msgid "Unsupported file type"
@@ -646,7 +646,7 @@ msgstr "Tipo file non supportato"
 
 #: ../chirpui/editorset.py:286 ../chirpui/editorset.py:301
 msgid "There was an error during export: {error}"
-msgstr "Si è verificato un errore all'apertura di {fname}: {error}"
+msgstr "Si è verificato un errore durante l'esportazione: {error}"
 
 #: ../chirpui/editorset.py:313
 msgid "Priming memory"
@@ -884,7 +884,7 @@ msgid "Getting channel {chan}"
 msgstr "Lettura canale {chan}"
 
 #: ../chirpui/memedit.py:952
-msgid "Internal Error: Invalid limit {number"
+msgid "Internal Error: Invalid limit {number}"
 msgstr "Errore Interno: Limite non valido {number}"
 
 #: ../chirpui/memedit.py:962

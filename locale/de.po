@@ -385,7 +385,7 @@ msgstr "Datei existiert"
 
 #: ../chirpui/inputdialog.py:136
 msgid "The file {name} already exists. Do you want to overwrite it?"
-msgstr "Datei {Name} existiert bereit, wollen Sie diese überschreiben?"
+msgstr "Datei {name} existiert bereit, wollen Sie diese überschreiben?"
 
 #: ../chirpui/mainapp.py:219 ../chirpui/mainapp.py:442
 msgid "Untitled"
@@ -992,8 +992,8 @@ msgid "Getting channel {chan}"
 msgstr "Lade Kanal {chan}"
 
 #: ../chirpui/memedit.py:983
-msgid "Internal Error: Invalid limit {number"
-msgstr "Interner Fehler: Ungültige Grenzwert {Nummer}"
+msgid "Internal Error: Invalid limit {number}"
+msgstr "Interner Fehler: Ungültige Grenzwert {number}"
 
 #: ../chirpui/memedit.py:993
 msgid "Memory range:"
@@ -1070,7 +1070,7 @@ msgstr "Verschieben {src} nach {dst}"
 
 #: ../chirpui/shiftdialog.py:80
 msgid "Looking for a free spot ({number})"
-msgstr "Suche nach einer freien Stelle ({Nummer})"
+msgstr "Suche nach einer freien Stelle ({number})"
 
 #: ../chirpui/shiftdialog.py:93
 msgid "No space to insert a row"

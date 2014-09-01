@@ -51,7 +51,7 @@ msgstr "Nazwa"
 #: ../chirpui/bankedit.py:185
 #, fuzzy
 msgid "Updating bank index for memory {num}"
-msgstr "Pobieranie surowej pamięci {number}"
+msgstr "Pobieranie surowej pamięci {num}"
 
 #: ../chirpui/bankedit.py:194
 msgid "Updating bank information for memory {num}"
@@ -60,17 +60,17 @@ msgstr ""
 #: ../chirpui/bankedit.py:200 ../chirpui/bankedit.py:229
 #, fuzzy
 msgid "Getting memory {num}"
-msgstr "Pobieranie pamięci {number}"
+msgstr "Pobieranie pamięci {num}"
 
 #: ../chirpui/bankedit.py:214
 #, fuzzy
 msgid "Setting index for memory {num}"
-msgstr "Pobieranie pamięci {number}"
+msgstr "Pobieranie pamięci {num}"
 
 #: ../chirpui/bankedit.py:223
 #, fuzzy
 msgid "Getting bank for memory {num}"
-msgstr "Pobieranie surowej pamięci {number}"
+msgstr "Pobieranie surowej pamięci {num}"
 
 #: ../chirpui/bankedit.py:238 ../chirpui/memedit.py:63
 #: ../chirpui/memedit.py:172 ../chirpui/memedit.py:246
@@ -103,7 +103,7 @@ msgstr "Indeks banków"
 #: ../chirpui/bankedit.py:302
 #, fuzzy
 msgid "Getting bank information for memory {num}"
-msgstr "Pobieranie surowej pamięci {number}"
+msgstr "Pobieranie surowej pamięci {num}"
 
 #: ../chirpui/bankedit.py:323
 #, fuzzy
@@ -918,7 +918,7 @@ msgid "Getting channel {chan}"
 msgstr "Pobieranie kanału {chan}"
 
 #: ../chirpui/memedit.py:952
-msgid "Internal Error: Invalid limit {number"
+msgid "Internal Error: Invalid limit {number}"
 msgstr "Błąd wewnętrzny: Niewłaściwy limit {number}"
 
 #: ../chirpui/memedit.py:962
