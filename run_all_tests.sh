@@ -18,11 +18,15 @@ function driver_tests() {
     (cd tests && ./run_tests)
 }
 
+function make_supported() {
+    ./share/make_supported.py > /dev/null
+}
+
 function style_tests() {
     ./tools/checkpatch.sh
 }
 
-TESTS="unit_tests driver_tests style_tests"
+TESTS="unit_tests driver_tests make_supported style_tests"
 for testname in $TESTS; do
     eval "$testname" || record_failure "$testname"
 done
