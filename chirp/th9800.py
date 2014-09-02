@@ -66,8 +66,11 @@ class TYTTH9800File(chirp_common.FileBackedRadio):
         self.errors = []
         self._mmap = None
 
-        self.pipe = None
-        self.load_mmap(pipe)
+        if isinstance(pipe, str):
+            self.pipe = None
+            self.load_mmap(pipe)
+        else:
+            chirp_common.FileBackedRadio.__init__(self, pipe)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
