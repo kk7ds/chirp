@@ -350,6 +350,7 @@ UV5R_MODEL_291  = "\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11  = "\x50\xBB\xFF\x13\xA1\x11\xDD"
 UV5R_MODEL_UV82 = "\x50\xBB\xFF\x20\x13\x01\x05"
 UV5R_MODEL_UV6  = "\x50\xBB\xFF\x20\x12\x08\x23"
+UV5R_MODEL_UV6_ORIG  = "\x50\xBB\xFF\x12\x03\x98\x4D"
 
 def _upper_band_from_data(data):
     return data[0x03:0x04]
@@ -1573,7 +1574,9 @@ class BaofengUV6Radio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "UV-6"
     _basetype = BASETYPE_UV6
-    _idents = [UV5R_MODEL_UV6]
+    _idents = [UV5R_MODEL_UV6,
+               UV5R_MODEL_UV6_ORIG
+               ]
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
