@@ -38,9 +38,9 @@ IC9XA_SPECIAL["C0"] = IC9XB_SPECIAL["C0"] = -1
 IC9XA_SPECIAL["C1"] = IC9XB_SPECIAL["C1"] = -2
 
 IC9X_SPECIAL = {
-    0 : {},
-    1 : IC9XA_SPECIAL,
-    2 : IC9XB_SPECIAL,
+    0: {},
+    1: IC9XA_SPECIAL,
+    2: IC9XB_SPECIAL,
 }
 
 CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -64,7 +64,7 @@ class IC9xRadio(icf.IcomLiveRadio):
     """Base class for Icom IC-9x radios"""
     MODEL = "IC-91/92AD"
 
-    _model = "ic9x" # Fake model info for detect.py
+    _model = "ic9x"    # Fake model info for detect.py
     vfo = 0
     __last = 0
     _upper = 300
@@ -113,8 +113,8 @@ class IC9xRadio(icf.IcomLiveRadio):
             try:
                 number = IC9X_SPECIAL[self.vfo][number]
             except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
-                                                       number)
+                raise errors.InvalidMemoryLocation(
+                        "Unknown channel %s" % number)
 
         if number < -2 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
@@ -162,7 +162,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def get_memories(self, lo=0, hi=None):
         if hi is None:
-            hi = self._upper            
+            hi = self._upper
 
         memories = []
 
@@ -180,7 +180,7 @@ class IC9xRadio(icf.IcomLiveRadio):
                 break
 
         return memories
-        
+
     def set_memory(self, _memory):
         # Make sure we mirror the DV-ness of the new memory we're
         # setting, and that we capture the Bank value of any currently
@@ -237,7 +237,7 @@ class IC9xRadio(icf.IcomLiveRadio):
             i += 1
 
         return banks
-        
+
     def _ic9x_set_banks(self, banks):
 
         if len(banks) != len(self.__bankcache.keys()):
@@ -275,7 +275,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_sub_devices = True
         rf.valid_special_chans = IC9X_SPECIAL[self.vfo].keys()
-    
+
         return rf
 
 class IC9xRadioA(IC9xRadio):
@@ -360,12 +360,12 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
                 bcall = calls[i]
             except IndexError:
                 bcall = blank
-            
+
             if acall == bcall:
-                continue # No change to this one
+                continue    # No change to this one
 
             self._maybe_send_magic()
-            ic9x_ll.set_call(self.pipe, cstype, i+1, calls[i])
+            ic9x_ll.set_call(self.pipe, cstype, i + 1, calls[i])
 
         return calls
 
@@ -374,7 +374,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
                                              ic9x_ll.IC92MyCallsignFrame,
                                              self.MYCALL_LIMIT[1])
         return self.__mcalls
-        
+
     def get_urcall_list(self):
         self.__ucalls = self.__get_call_list(self.__ucalls,
                                              ic9x_ll.IC92YourCallsignFrame,
