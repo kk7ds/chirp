@@ -42,7 +42,7 @@ class FT857Radio(ft817.FT817Radio):
     CROSS_MODES = {
         0x01: "->Tone",
         0x02: "->DTCS",
-        # 0x04 : "Tone->", not supported in UI yet
+        0x04 : "Tone->",
         0x05: "Tone->Tone",
         0x06: "Tone->DTCS",
         0x08: "DTCS->",
