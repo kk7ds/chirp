@@ -158,6 +158,14 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_modes = MODES
+        rf.valid_cross_modes = [
+            "Tone->Tone",
+            "DTCS->",
+            "->DTCS",
+            "Tone->DTCS",
+            "DTCS->Tone",
+            "->Tone",
+            "DTCS->DTCS"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_skips = ["", "S"]
         rf.valid_bands = [self._range]
@@ -194,7 +202,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
             code = int("%03o" % (val & 0x07FF))
             pol = (val & 0x8000) and "R" or "N"
             return code, pol
-            
+
         if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2800:
             tcode, tpol = _get_dcs(_mem.tx_tone)
             mem.dtcs = tcode
@@ -330,7 +338,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
             _mem.tx_freq = mem.freq / 10
 
         self._set_tone(mem, _mem)
-        
+
 
         _mem.highpower = mem.power == POWER_LEVELS[1]
         _mem.wide = mem.mode == "FM"
@@ -388,7 +396,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
             else:
                 value = element.value
             setattr(obj, setting, value)
-            
+
     @classmethod
     def match_model(cls, filedata, filename):
         model = filedata[0x03D1:0x03D5]
