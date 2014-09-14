@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 SEPCHAR = ","
-    
+
 #print "Using separation character of '%s'" % SEPCHAR
 
 import math
@@ -30,7 +30,7 @@ TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
           177.3, 179.9, 183.5, 186.2, 189.9, 192.8,
           196.6, 199.5, 203.5, 206.5, 210.7, 218.1,
           225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
-          ]          
+          ]
 
 TONES_EXTRA = [62.5]
 
@@ -253,27 +253,27 @@ class Memory:
 
     def __init__(self):
         self.freq = 0
-        self.number = 0                   
-        self.extd_number = ""             
-        self.name = ""                    
-        self.vfo = 0                      
-        self.rtone = 88.5                 
-        self.ctone = 88.5                 
-        self.dtcs = 23                    
-        self.rx_dtcs = 23                    
-        self.tmode = ""                   
-        self.cross_mode = "Tone->Tone"      
-        self.dtcs_polarity = "NN"         
-        self.skip = ""                    
-        self.power = None                 
-        self.duplex = ""                  
+        self.number = 0
+        self.extd_number = ""
+        self.name = ""
+        self.vfo = 0
+        self.rtone = 88.5
+        self.ctone = 88.5
+        self.dtcs = 23
+        self.rx_dtcs = 23
+        self.tmode = ""
+        self.cross_mode = "Tone->Tone"
+        self.dtcs_polarity = "NN"
+        self.skip = ""
+        self.power = None
+        self.duplex = ""
         self.offset = 600000
-        self.mode = "FM"                  
-        self.tuning_step = 5.0            
-                                          
+        self.mode = "FM"
+        self.tuning_step = 5.0
+
         self.comment = ""
 
-        self.empty = False                
+        self.empty = False
 
         self.immutable = []
 
@@ -438,7 +438,7 @@ class Memory:
             self.offset = float(vals[4])
         except:
             raise errors.InvalidDataError("Offset is not a valid number")
-        
+
         self.tmode = vals[5]
         if self.tmode not in TONE_MODES:
             raise errors.InvalidDataError("Invalid tone mode `%s'" % self.tmode)
@@ -479,7 +479,7 @@ class Memory:
         if vals[10] in MODES:
             self.mode = vals[10]
         else:
-            raise errors.InvalidDataError("Mode is not valid")           
+            raise errors.InvalidDataError("Mode is not valid")
 
         try:
             self.tuning_step = float(vals[11])
@@ -878,7 +878,7 @@ class RadioFeatures:
         if self.valid_dtcs_codes and \
                 mem.rx_dtcs not in self.valid_dtcs_codes:
             msg = ValidationError("DTCS Code %03i not supported" % mem.rx_dtcs)
-            
+
         if self.valid_duplexes and mem.duplex not in self.valid_duplexes:
             msg = ValidationError("Duplex %s not supported" % mem.duplex)
             msgs.append(msg)
@@ -1011,7 +1011,7 @@ class Radio(object):
         if rf.valid_characters == rf.valid_characters.upper():
             # Radio only supports uppercase, so help out here
             name = name.upper()
-        return "".join([x for x in name[:rf.valid_name_length] 
+        return "".join([x for x in name[:rf.valid_name_length]
                         if x in rf.valid_characters])
 
     def get_sub_devices(self):
@@ -1048,7 +1048,7 @@ class FileBackedRadio(Radio):
     def __init__(self, *args, **kwargs):
         Radio.__init__(self, *args, **kwargs)
         self._memobj = None
-        
+
     def save(self, filename):
         """Save the radio's memory map to @filename"""
         self.save_mmap(filename)
@@ -1112,7 +1112,7 @@ class CloneModeRadio(FileBackedRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        """Given contents of a stored file (@filedata), return True if 
+        """Given contents of a stored file (@filedata), return True if
         this radio driver handles the represented model"""
 
         # Unless the radio driver does something smarter, claim
@@ -1145,7 +1145,7 @@ class IcomDstarSupport:
     MYCALL_LIMIT = (1, 1)
     URCALL_LIMIT = (1, 1)
     RPTCALL_LIMIT = (1, 1)
-    
+
     def get_urcall_list(self):
         """Return a list of URCALL callsigns"""
         return []
@@ -1360,7 +1360,7 @@ def split_tone_encode(mem):
     rxmode = ''
     txval = None
     rxval = None
-    
+
     if mem.tmode == "Tone":
         txmode = "Tone"
         txval = mem.rtone
