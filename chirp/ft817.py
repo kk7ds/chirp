@@ -599,7 +599,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.number = number
         if not used:
             mem.empty = True
-            if not valid:
+            if not valid or _mem.freq == 0xffffffff:
                 return mem
 
         return self._get_memory(mem, _mem)
