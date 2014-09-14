@@ -257,6 +257,14 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_ctone = True
         rf.has_cross = True
+        rf.valid_cross_modes = [
+            "Tone->Tone",
+            "DTCS->",
+            "->DTCS",
+            "Tone->DTCS",
+            "DTCS->Tone",
+            "->Tone",
+            "DTCS->DTCS"]
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.has_name = False
