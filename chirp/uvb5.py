@@ -739,13 +739,9 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                         print "Using apply callback"
                         element.run_apply_callback()
                     elif setting == "beep_tone_disabled":
-                        val = not _settings.beep_tone_disabled
-                        print "Setting %s = %s" % (setting, val)
-                        setattr(obj, setting, val)
+                        setattr(obj, setting, not int(element.value))
                     elif setting == "ste_disabled":
-                        val = not _settings.ste_disabled
-                        print "Setting %s = %s" % (setting, val)
-                        setattr(obj, setting, val)
+                        setattr(obj, setting, not int(element.value))
                     else:
                         print "Setting %s = %s" % (setting, element.value)
                         setattr(obj, setting, element.value)
