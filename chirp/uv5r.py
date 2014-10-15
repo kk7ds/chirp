@@ -264,7 +264,7 @@ BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
                 BASETYPE_F8HP
 
 AB_LIST = ["A", "B"]
-ALMOD_LIST = ["Site", "Tone", "Code", "_unknown_"]
+ALMOD_LIST = ["Site", "Tone", "Code"]
 BANDWIDTH_LIST = ["Wide", "Narrow"]
 COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
 DTMFSPEED_LIST = ["%s ms" % x for x in range(50, 2010, 10)]
@@ -1006,9 +1006,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                               RadioSettingValueBoolean(_settings.alarm))
             advanced.append(rs)
 
+        if _settings.almod > 0x02:
+            val = 0x01
+        else:
+            val = _settings.almod
         rs = RadioSetting("almod", "Alarm Mode",
                           RadioSettingValueList(ALMOD_LIST,
-                                                ALMOD_LIST[_settings.almod]))
+                                                ALMOD_LIST[val]))
         advanced.append(rs)
 
         rs = RadioSetting("beep", "Beep",
