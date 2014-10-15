@@ -475,6 +475,14 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         rf.memory_bounds = (1, 999)  # 999 memories
         return rf
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = ("This radio driver is currently under development. "
+                           "There are no known issues with it, but you should "
+                           "proceed with caution.")
+        return rp
+
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
