@@ -595,14 +595,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             1. Turn radio off.
             2. Connect cable to mic/spkr connector.
             3. Make sure connector is firmly connected.
-            4. Turn radio on.
+            4. Turn radio on (volume may need to be set at 100%).
             5. Ensure that the radio is tuned to channel with no activity.
             6. Click OK to download image from device."""))
         rp.pre_upload = _(dedent("""\
             1. Turn radio off.
             2. Connect cable to mic/spkr connector.
             3. Make sure connector is firmly connected.
-            4. Turn radio on.
+            4. Turn radio on (volume may need to be set at 100%).
             5. Ensure that the radio is tuned to channel with no activity.
             6. Click OK to upload image to device."""))
         return rp
