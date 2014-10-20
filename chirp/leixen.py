@@ -165,10 +165,10 @@ def finish(radio):
 
 
 @directory.register
-class JetstreamJT270MRadio(chirp_common.CloneModeRadio):
-    """Jetstream JT270M"""
-    VENDOR = "Jetstream"
-    MODEL = "JT270M"
+class LeixenVV898Radio(chirp_common.CloneModeRadio):
+    """Leixen VV-898"""
+    VENDOR = "Leixen"
+    MODEL = "VV-898"
     BAUD_RATE = 9600
 
     _memsize = 0x2000
@@ -326,3 +326,10 @@ class JetstreamJT270MRadio(chirp_common.CloneModeRadio):
     def match_model(cls, filedata, filename):
         model = filedata[0x900:0x906]
         return model == cls.MODEL
+
+
+@directory.register
+class JetstreamJT270MRadio(LeixenVV898Radio):
+    """Jetstream JT270M"""
+    VENDOR = "Jetstream"
+    MODEL = "JT270M"
