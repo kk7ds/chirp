@@ -464,6 +464,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.can_odd_split = True
+        rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = self.POWER_LEVELS
@@ -564,8 +565,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
 
         mem.dtcs_polarity = "".join(dtcs_pol)
 
-        if not _mem.scan_add:
-            mem.skip = "S"
+        mem.skip = "" if bool(_mem.scan_add) else "S"
 
         mem.power = self.POWER_LEVELS[_mem.power]
         mem.mode = _mem.iswide and "FM" or "NFM"
@@ -611,6 +611,10 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.txtone,
                                                  rx_mode, _mem.rxtone)
 
+    def _wipe_memory(self, mem):
+        mem.set_raw("\x00" * (mem.size() / 8))
+        self._memobj.valid[mem.number] = 0
+
     def set_memory(self, mem):
         number = mem.number
 
@@ -618,8 +622,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            wipe_memory(_mem, "\x00")
-            self._memobj.valid[mem.number] = 0
+            self._wipe_memory(_mem)
             return
 
         _mem.rxfreq = int(mem.freq / 10)
@@ -634,8 +637,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             _mem.txfreq = int(mem.freq / 10) - int(mem.offset / 10)
         else:
             _mem.txfreq = int(mem.freq / 10)
-        _mem.skip = mem.skip != "S"
-        _mem.iswide = mem.mode != "NFM"
+        _mem.scan_add = int(mem.skip != "S")
+        _mem.iswide = int(mem.mode == "NFM")
 
         self._set_tone(mem, _mem)
 
@@ -654,68 +657,69 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         cfg_grp = RadioSettingGroup("cfg_grp", "Configuration Settings")
-        vfo_grp = RadioSettingGroup("vfo_grp", "VFO Settings")
+        vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings")
+        vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings")
         key_grp = RadioSettingGroup("key_grp", "Key Settings")
         scn_grp = RadioSettingGroup("scn_grp", "Scan Group")
         cal_grp = RadioSettingGroup("cal_grp", "Call Group")
         lmt_grp = RadioSettingGroup("lmt_grp", "Frequency Limits")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
-        group = RadioSettingGroup("top", "All Settings", cfg_grp,
-                        vfo_grp, key_grp, scn_grp, cal_grp, lmt_grp, oem_grp)
+        group = RadioSettingGroup("top", "All Settings", cfg_grp, vfoa_grp,
+                        vfob_grp, key_grp, scn_grp, cal_grp, lmt_grp, oem_grp)
 
         #
         # Configuration Settings
         #
         rs = RadioSetting("ponmsg", "Poweron message", RadioSettingValueList(
-                        PONMSG_LIST, PONMSG_LIST[self._memobj.settings.ponmsg]))
+                        PONMSG_LIST, PONMSG_LIST[_settings.ponmsg]))
         cfg_grp.append(rs)
         rs = RadioSetting("voice", "Voice Guide", RadioSettingValueBoolean(
-                            self._memobj.settings.voice))
+                            _settings.voice))
         cfg_grp.append(rs)
-        rs = RadioSetting("timeout", "Timeout Timer",
-                        RadioSettingValueInteger(15, 900,
-                            self._memobj.settings.timeout * 15, 15))
+        rs = RadioSetting("timeout", "Timeout Timer", RadioSettingValueInteger(
+                        15, 900, _settings.timeout * 15, 15))
         cfg_grp.append(rs)
         rs = RadioSetting("toalarm", "Timeout Alarm",
-                        RadioSettingValueInteger(0, 10,
-                            self._memobj.settings.toalarm))
+                        RadioSettingValueInteger(0, 10, _settings.toalarm))
         cfg_grp.append(rs)
         rs = RadioSetting("channel_menu", "Menu available in channel mode",
-                        RadioSettingValueBoolean(
-                            self._memobj.settings.channel_menu))
+                            RadioSettingValueBoolean(_settings.channel_menu))
         cfg_grp.append(rs)
         rs = RadioSetting("power_save", "Power save", RadioSettingValueBoolean(
-                            self._memobj.settings.power_save))
+                            _settings.power_save))
         cfg_grp.append(rs)
         rs = RadioSetting("autolock", "Autolock", RadioSettingValueBoolean(
-                            self._memobj.settings.autolock))
+                            _settings.autolock))
         cfg_grp.append(rs)
         rs = RadioSetting("keylock", "Keypad Lock", RadioSettingValueBoolean(
-                            self._memobj.settings.keylock))
+                            _settings.keylock))
         cfg_grp.append(rs)
         rs = RadioSetting("beep", "Keypad Beep", RadioSettingValueBoolean(
-                            self._memobj.settings.keylock))
+                            _settings.keylock))
         cfg_grp.append(rs)
         rs = RadioSetting("stopwatch", "Stopwatch", RadioSettingValueBoolean(
-                            self._memobj.settings.keylock))
+                            _settings.keylock))
         cfg_grp.append(rs)
 
         #
-        # VFO Settings
+        # VFO A Settings
         #
-        #settings:
-        #   u8    workmode_a;
-        #   u8    workmode_b;
-        #   u16   work_cha;
-        #   u16   work_chb;
-        # vfoa/b:
-        #   u32   rxfreq;
+        rs = RadioSetting("vfoa_mode", "VFO A Workmode", RadioSettingValueList(
+                        WORKMODE_LIST, WORKMODE_LIST[_settings.workmode_a]))
+        vfoa_grp.append(rs)
+        rs = RadioSetting("vfoa_chan", "VFO A Channel",
+                        RadioSettingValueInteger(1, 999, _settings.work_cha))
+        vfoa_grp.append(rs)
+        rs = RadioSetting("rxfreqa", "VFO A Rx Frequency",
+                        RadioSettingValueInteger(134000000, 520000000,
+                            _vfoa.rxfreq * 10, 5000))
+        vfoa_grp.append(rs)
         #   u32   txoffset;
         #   u16   rxtone;
         #   u16   txtone;
         #   u8    unknown1:5,
         #         power:1,
-        #         unknown2:;
+        #         unknown2:2;
         #   u8    unknown3:1,
         #         shift_dir:2
         #         unknown4:2,
@@ -723,6 +727,34 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #         iswide:1;
         #   u8    step;
         #   u8    squelch;
+
+        #
+        # VFO B Settings
+        #
+        rs = RadioSetting("vfob_mode", "VFO B Workmode", RadioSettingValueList(
+                        WORKMODE_LIST, WORKMODE_LIST[_settings.workmode_b]))
+        vfob_grp.append(rs)
+        rs = RadioSetting("vfob_chan", "VFO B Channel",
+                        RadioSettingValueInteger(1, 999, _settings.work_chb))
+        vfob_grp.append(rs)
+        rs = RadioSetting("rxfreqb", "VFO B Rx Frequency",
+                        RadioSettingValueInteger(134000000, 520000000,
+                            _vfob.rxfreq * 10, 5000))
+        vfob_grp.append(rs)
+        #   u32   txoffset;
+        #   u16   rxtone;
+        #   u16   txtone;
+        #   u8    unknown1:5,
+        #         power:1,
+        #         unknown2:2;
+        #   u8    unknown3:1,
+        #         shift_dir:2
+        #         unknown4:2,
+        #         mute_mode:2,
+        #         iswide:1;
+        #   u8    step;
+        #   u8    squelch;
+
 
         #
         # Key Settings
@@ -734,7 +766,10 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         key_grp.append(rs)
         _ani = ""
         for i in _settings.ani:
-            _ani += chr(i + 0x30)
+            if i < 10:
+                _ani += chr(i + 0x30)
+            else:
+                break
         val = RadioSettingValueString(0, 6, _ani)
         val.set_mutable(True)
         rs = RadioSetting("ani", "ANI code", val)
@@ -804,16 +839,6 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #
         # OEM info
         #
-        # struct {
-        #       char    model[8];
-        #       u8      unknown[2];
-        #       char    oem1[10];
-        #       char    oem2[10];
-        #       char    unknown2[8];
-        #       char    version[10];
-        #       u8      unknown3[6];
-        #       char    date[8];
-        # } oem_info;
         _str = str(self._memobj.oem_info.model).split("\0")[0]
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
