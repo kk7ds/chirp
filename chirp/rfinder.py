@@ -171,7 +171,7 @@ class RFinderParser:
             "email"  : urllib.quote_plus(user),
             "pass"  : hashlib.new("md5", pw).hexdigest(),
             "lat"   : "%7.5f" % coords[0],
-            "lon"   : "%8.5f" % coords[1],
+            "lon"   : "%7.5f" % coords[1],
             "radius": "%i" % radius,
             "vers"  : "CH%s" % CHIRP_VERSION,
             }
