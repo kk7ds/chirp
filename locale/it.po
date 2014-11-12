@@ -638,7 +638,7 @@ msgstr ""
 
 #: ../chirpui/editorset.py:260
 msgid "There was an error during import: {error}"
-msgstr "Errore durante l'apertura del file {fname}: {error}"
+msgstr "Errore durante l'apertura del file: {error}"
 
 #: ../chirpui/editorset.py:270
 msgid "Unsupported file type"
@@ -646,7 +646,7 @@ msgstr "Tipo file non supportato"
 
 #: ../chirpui/editorset.py:286 ../chirpui/editorset.py:301
 msgid "There was an error during export: {error}"
-msgstr "Errore durante l'esportazione del file {fname}: {error}"
+msgstr "Errore durante l'esportazione del file: {error}"
 
 #: ../chirpui/editorset.py:313
 msgid "Priming memory"
@@ -884,7 +884,7 @@ msgid "Getting channel {chan}"
 msgstr "Acquisizione canale {chan}"
 
 #: ../chirpui/memedit.py:952
-msgid "Internal Error: Invalid limit {number"
+msgid "Internal Error: Invalid limit {number}"
 msgstr "Errore interno: limite non valido {number}"
 
 #: ../chirpui/memedit.py:962
