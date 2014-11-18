@@ -252,7 +252,7 @@ struct {
 
 vhf_220_radio = "\x02"
 
-BASETYPE_UV5R = ["BFS", "BFB", "N5R-2"]
+BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "BTS"]
 BASETYPE_F11  = ["USA"]
 BASETYPE_UV82 = ["US2S", "B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]          # needed for for the Baojie UV-55 in bjuv55.py
@@ -905,6 +905,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         version_tag = _firmware_version_from_image(self)
         if 'BFS' in version_tag:
             idx = version_tag.index("BFS") + 3
+            return int(version_tag[idx:idx + 3])
+        elif 'BTS' in version_tag:
+            idx = version_tag.index("BTS") + 3
             return int(version_tag[idx:idx + 3])
         elif 'BF82' in version_tag:
             idx = version_tag.index("BF82") + 2
