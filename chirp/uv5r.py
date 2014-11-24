@@ -258,7 +258,7 @@ BASETYPE_UV82 = ["US2S", "B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]          # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6  = ["BF1"]
 BASETYPE_KT980HP = ["BFP3V3 B"]
-BASETYPE_F8HP = ["BFP3V3 F", "N5R-3"]
+BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
                 BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP + \
                 BASETYPE_F8HP
@@ -936,6 +936,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         elif 'N5R-3' in version_tag:
             idx = version_tag.index("N5R-3") + 4
             return int(version_tag[idx:idx + 2]) + 98000
+        elif 'N5R3' in version_tag:
+            idx = version_tag.index("N5R3") + 4
+            return int(version_tag[idx:idx + 3]) + 98000
         elif 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
             return int(version_tag[idx:idx + 3])
