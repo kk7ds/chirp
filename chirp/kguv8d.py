@@ -37,14 +37,14 @@ CMD_WR = 131
 MEM_VALID = 158
 
 AB_LIST = ["A", "B"]
-STEPS = [5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0, 100.0]
+STEPS = [5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 STEP_LIST = [str(x) for x in STEPS]
 ROGER_LIST = ["Off", "BOT", "EOT", "Both"]
 TIMEOUT_LIST = ["Off"] + [str(x) + "s" for x in range(15, 901, 15)]
 VOX_LIST = ["Off"] + ["%s" % x for x in range(1, 10)]
-BANDWIDTH_LIST = ["Wide", "Narrow"]
+BANDWIDTH_LIST = ["Narrow", "Wide"]
 VOICE_LIST = ["Off", "On"]
-LANGUAGE_LIST = ["English", "Chinese"]
+LANGUAGE_LIST = ["Chinese", "English"]
 SCANMODE_LIST = ["TO", "CO", "SE"]
 PF1KEY_LIST = ["Call", "VFTX"]
 PF3KEY_LIST = ["Scan", "Lamp", "Tele Alarm", "SOS-CH", "Radio", "Disable"]
@@ -53,16 +53,17 @@ BACKLIGHT_LIST = ["Always On"] + [str(x) + "s" for x in range(1, 21)] + \
                 ["Always Off"]
 OFFSET_LIST = ["+", "-"]
 PONMSG_LIST = ["Bitmap", "Battery Volts"]
-SPMUTE_LIST = ["QT*DTMF", "QT+DTMF", "QT"]
+SPMUTE_LIST = ["QT", "QT+DTMF", "QT*DTMF"]
 DTMFST_LIST = ["DT-ST", "ANI-ST", "DT-ANI", "Off"]
 RPTSET_LIST = ["X-DIRPT", "X-TWRPT"]
 ALERTS = [1750, 2100, 1000, 1450]
 ALERTS_LIST = [str(x) for x in ALERTS]
 PTTID_LIST = ["BOT", "EOT", "Both"]
-RING_LIST = ["Off"] + ["%s" % x for x in range(1, 11)]
+LIST_10 = ["Off"] + ["%s" % x for x in range(1, 11)]
 SCANGRP_LIST = ["All"] + ["%s" % x for x in range(1, 11)]
 SCQT_LIST = ["All", "Decoder", "Encoder"]
 SMUTESET_LIST = ["Off", "Tx", "Rx", "Tx/Rx"]
+POWER_LIST = ["Lo", "Hi"]
 
 # memory slot 0 is not used, start at 1 (so need 1000 slots, not 999)
 # structure elements whose name starts with x are currently unidentified
@@ -196,9 +197,9 @@ _MEM_FORMAT = """
         u32     txoffset;
         u16     rxtone;
         u16     txtone;
-        u8      unknown1:5,
+        u8      unknown1:6,
                 power:1,
-                unknown2:2;
+                unknown2:1;
         u8      unknown3:1,
                 shift_dir:2
                 unknown4:2,
@@ -214,9 +215,9 @@ _MEM_FORMAT = """
         u32     txoffset;
         u16     rxtone;
         u16     txtone;
-        u8      unknown1:5,
+        u8      unknown1:6,
                 power:1,
-                unknown2:2;
+                unknown2:1;
         u8      unknown3:1,
                 shift_dir:2
                 unknown4:2,
@@ -232,9 +233,9 @@ _MEM_FORMAT = """
         u32     txfreq;
         u16     rxtone;
         u16     txtone;
-        u8      unknown1:5,
+        u8      unknown1:6,
                 power:1,
-                unknown2:2;
+                unknown2:1;
         u8      unknown3:2,
                 scan_add:1,
                 unknown4:2,
@@ -611,10 +612,6 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.txtone,
                                                  rx_mode, _mem.rxtone)
 
-    def _wipe_memory(self, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
-        self._memobj.valid[mem.number] = 0
-
     def set_memory(self, mem):
         number = mem.number
 
@@ -622,7 +619,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            self._wipe_memory(_mem)
+            _mem.set_raw("\x00" * (_mem.size() / 8))
+            self._memobj.valid[number] = 0
+            self._memobj.names[number] = ""
             return
 
         _mem.rxfreq = int(mem.freq / 10)
@@ -639,13 +638,16 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             _mem.txfreq = int(mem.freq / 10)
         _mem.scan_add = int(mem.skip != "S")
         _mem.iswide = int(mem.mode == "NFM")
-
+        # set the tone
         self._set_tone(mem, _mem)
-
+        # set the power
         if mem.power:
             _mem.power = not self.POWER_LEVELS.index(mem.power)
         else:
             _mem.power = True
+        # TODO: sett the correct mute mode, for now just
+        # set to mute mode to QT (not QT+DTMF or QT*DTMF)
+        _mem.mute_mode = 0
 
         for i in range(0, len(mem.name)):
             if mem.name[i]:
@@ -675,6 +677,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("voice", "Voice Guide", RadioSettingValueBoolean(
                             _settings.voice))
+        cfg_grp.append(rs)
+        rs = RadioSetting("language", "Language", RadioSettingValueList(
+                        LANGUAGE_LIST, LANGUAGE_LIST[_settings.language]))
         cfg_grp.append(rs)
         rs = RadioSetting("timeout", "Timeout Timer", RadioSettingValueInteger(
                         15, 900, _settings.timeout * 15, 15))
@@ -717,17 +722,26 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #   u32   txoffset;
         #   u16   rxtone;
         #   u16   txtone;
-        #   u8    unknown1:5,
-        #         power:1,
-        #         unknown2:2;
+        #   u8    unknown1:6,
+        rs = RadioSetting("vfoa_power", "VFO A Power", RadioSettingValueList(
+                        POWER_LIST, POWER_LIST[_vfoa.power]))
+        vfoa_grp.append(rs)
+        #         unknown2:1;
         #   u8    unknown3:1,
         #         shift_dir:2
         #         unknown4:2,
-        #         mute_mode:2,
-        #         iswide:1;
-        #   u8    step;
-        #   u8    squelch;
-
+        rs = RadioSetting("vfoa_mute_mode", "VFO A Mute", RadioSettingValueList(
+                        SPMUTE_LIST, SPMUTE_LIST[_vfoa.mute_mode]))
+        vfoa_grp.append(rs)
+        rs = RadioSetting("vfoa_iswide", "VFO A NBFM", RadioSettingValueList(
+                        BANDWIDTH_LIST, BANDWIDTH_LIST[_vfoa.iswide]))
+        vfoa_grp.append(rs)
+        rs = RadioSetting("vfoa_step", "VFO A Step (kHz)",
+                        RadioSettingValueList(STEP_LIST, STEP_LIST[_vfoa.step]))
+        vfoa_grp.append(rs)
+        rs = RadioSetting("vfoa_squelch", "VFO A Squelch",
+                        RadioSettingValueList(LIST_10, LIST_10[_vfoa.squelch]))
+        vfoa_grp.append(rs)
         #
         # VFO B Settings
         #
@@ -744,16 +758,26 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #   u32   txoffset;
         #   u16   rxtone;
         #   u16   txtone;
-        #   u8    unknown1:5,
-        #         power:1,
-        #         unknown2:2;
+        #   u8    unknown1:6,
+        rs = RadioSetting("vfob_power", "VFO B Power", RadioSettingValueList(
+                        POWER_LIST, POWER_LIST[_vfob.power]))
+        vfob_grp.append(rs)
+        #         unknown2:1;
         #   u8    unknown3:1,
         #         shift_dir:2
         #         unknown4:2,
-        #         mute_mode:2,
-        #         iswide:1;
-        #   u8    step;
-        #   u8    squelch;
+        rs = RadioSetting("vfob_mute_mode", "VFO B Mute", RadioSettingValueList(
+                        SPMUTE_LIST, SPMUTE_LIST[_vfob.mute_mode]))
+        vfob_grp.append(rs)
+        rs = RadioSetting("vfob_iswide", "VFO B NBFM", RadioSettingValueList(
+                        BANDWIDTH_LIST, BANDWIDTH_LIST[_vfob.iswide]))
+        vfob_grp.append(rs)
+        rs = RadioSetting("vfob_step", "VFO B Step (kHz)",
+                        RadioSettingValueList(STEP_LIST, STEP_LIST[_vfob.step]))
+        vfob_grp.append(rs)
+        rs = RadioSetting("vfob_squelch", "VFO B Squelch",
+                        RadioSettingValueList(LIST_10, LIST_10[_vfob.squelch]))
+        vfob_grp.append(rs)
 
 
         #
