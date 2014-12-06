@@ -143,6 +143,10 @@ class RadioSettingValueBoolean(RadioSettingValue):
     def set_value(self, value):
         RadioSettingValue.set_value(self, bool(value))
 
+    def __bool__(self):
+        return bool(self.get_value())
+    __nonzero__ = __bool__
+
     def __str__(self):
         return str(bool(self.get_value()))
 
@@ -168,11 +172,11 @@ class RadioSettingValueList(RadioSettingValue):
 class RadioSettingValueString(RadioSettingValue):
     """A string setting"""
     def __init__(self, minlength, maxlength, current,
-                 autopad=True):
+                 autopad=True, charset=chirp_common.CHARSET_ASCII):
         RadioSettingValue.__init__(self)
         self._minlength = minlength
         self._maxlength = maxlength
-        self._charset = chirp_common.CHARSET_ASCII
+        self._charset = charset
         self._autopad = autopad
         self.set_value(current)
 
