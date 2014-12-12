@@ -7,10 +7,10 @@ function record_failure() {
 function unit_tests() {
     NOSE=$(which nosetests)
     if [ -x "$NOSE" ]; then
-	$NOSE -v tests/unit
+        $NOSE -v tests/unit
     else
-	echo "NOTE: nosetests required for unit tests!"
-	record_failure unit_tests
+        echo "NOTE: nosetests required for unit tests!"
+        record_failure unit_tests
     fi
 }
 

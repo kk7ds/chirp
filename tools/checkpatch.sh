@@ -14,37 +14,36 @@ function check_long_lines() {
 
     # For now, ignore this check on chirp/
     files=$(echo $files | sed -r 's#\bchirp[^ ]*\b##')
- 
+
     if [ -z "$files" ]; then
-	return
+        return
     fi
 
     pep8 --select=E501 $files || \
-	error "Please use <80 columns in source files"
+        error "Please use <80 columns in source files"
 }
 
 function check_bug_number() {
     local rev="$1"
     hg log -vr $rev | grep -qE '#[0-9]+' || \
-	error "A bug number is required like #123"
-	
+        error "A bug number is required like #123"
 }
 
 function _less_than_80() {
     while true; do
-	read line
-	if [ -z "$line" ]; then
-	    break
-	elif [ $(echo -n "$line" | wc -c) -ge 80 ]; then
-	    return 1
-	fi
+        read line
+        if [ -z "$line" ]; then
+            break
+        elif [ $(echo -n "$line" | wc -c) -ge 80 ]; then
+            return 1
+        fi
     done
 }
 
 function check_commit_message_line_length() {
     local rev="$1"
     hg log -vr $rev | (_less_than_80) || \
-	error "Please keep commit message lines to <80 columns"
+        error "Please keep commit message lines to <80 columns"
 }
 
 # --- END OF TEST FUNCTIONS ---

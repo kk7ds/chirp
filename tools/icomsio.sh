@@ -18,21 +18,21 @@ product_to_name() {
     local prod=$1
 
     if [ "$prod" = "0012" ]; then
-	echo "ID-RP2000V TX"
+        echo "ID-RP2000V TX"
     elif [ "$prod" = "0013" ]; then
-	echo "ID-RP2000V RX"
+        echo "ID-RP2000V RX"
     elif [ "$prod" = "0010" ]; then
-	echo "ID-RP4000V TX"
+        echo "ID-RP4000V TX"
     elif [ "$prod" = "0011" ]; then
-	echo "ID-RP4000V RX"
+        echo "ID-RP4000V RX"
     elif [ "$prod" = "000b" ]; then
-	echo "ID-RP2D"
+        echo "ID-RP2D"
     elif [ "$prod" = "000c" ]; then
-	echo "ID-RP2V TX"
+        echo "ID-RP2V TX"
     elif [ "$prod" = "000d" ]; then
-	echo "ID-RP2V RX"
+        echo "ID-RP2V RX"
     else
-	echo "Unknown module (id=${prod})"
+        echo "Unknown module (id=${prod})"
     fi
 }
 
@@ -50,9 +50,9 @@ if echo $DEVICE | grep -q ' '; then
     echo "Multiple devices found.  Choose one:"
     i=0
     for dev in $DEVICE; do
-	name=$(product_to_name $dev)
-	echo "  ${i}: ${name}"
-	i=$(($i + 1))
+        name=$(product_to_name $dev)
+        echo "  ${i}: ${name}"
+        i=$(($i + 1))
     done
 
     echo -n "> "
@@ -62,7 +62,7 @@ if echo $DEVICE | grep -q ' '; then
 
     DEVICE=${array[$num]}
     if [ -z "$DEVICE" ]; then
-	exit
+        exit
     fi
 fi
 
@@ -86,10 +86,10 @@ for usbserial in /sys/class/tty/ttyUSB*; do
     driver=$(basename $(readlink -f ${usbserial}/device/driver))
     device=$(basename $usbserial)
     if [ "$driver" = "ftdi_sio" ]; then
-	name=$(product_to_name $DEVICE)
-	ln -sf /dev/${device} /dev/${LINK}
-	echo "Device $name is /dev/${device} -> /dev/${LINK}"
-	break
+        name=$(product_to_name $DEVICE)
+        ln -sf /dev/${device} /dev/${LINK}
+        echo "Device $name is /dev/${device} -> /dev/${LINK}"
+        break
     fi
 done
 
