@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/usr/bin/env bash -x
 
 VERSION=$(cat build/version)
 HOST=$1

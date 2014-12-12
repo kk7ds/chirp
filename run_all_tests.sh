@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function record_failure() {
     FAILED="$1 $FAILED"

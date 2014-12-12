@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 ## Copyright 2013 Jens Jensen AF5MI <kd4tjx@yahoo.com>
 

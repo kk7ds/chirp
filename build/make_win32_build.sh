@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/usr/bin/env bash -x
 
 OUTPUT=$(echo "c:\\cygwin\\${1}/" | sed 's/\//\\/'g)
 

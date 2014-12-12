@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 VERSION=$(cat build/version)
 INCLUDE="COPYING"
