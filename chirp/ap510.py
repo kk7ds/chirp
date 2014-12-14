@@ -192,7 +192,7 @@ class AP510Memory(object):
         if name.startswith('_'):
             super(AP510Memory, self).__setattr__(name, value)
             return
-        self._memobj[self.ATTR_MAP[name]] = value
+        self._memobj[self.ATTR_MAP[name]] = str(value)
 
 
 PTT_DELAY = ['60 ms', '120 ms', '180 ms', '300 ms', '480 ms',
