@@ -86,11 +86,17 @@ def download(radio):
     status.msg = "Downloading"
     radio.status_fn(status)
     radio.pipe.write("@DISP")
-    buf = radio.pipe.read(1024)
+    buf = ""
 
-    status.cur = 5
-    status.max = 5
-    radio.status_fn(status)
+    for status.cur in xrange(status.cur, status.max):
+        buf += radio.pipe.read(1024)
+        if buf.endswith("\r\n"):
+            status.cur = status.max
+            radio.status_fn(status)
+            break
+        radio.status_fn(status)
+    else:
+        raise errors.RadioError("Incomplete data received.")
 
     print "%04i P<R: %s" % (
         len(buf), util.hexprint(buf).replace("\n", "\n          "))
