@@ -355,12 +355,17 @@ class AP510Radio(chirp_common.CloneModeRadio):
         for field in fields:
             china.append(RadioSetting(*field))
 
+        try:
+            # Sometimes when digipeat is disabled, alias is 0xFF
+            alias = ALIAS[int(self._mmap.digipeat[1]) - 1]
+        except ValueError:
+            alias = ALIAS[0]
         fields = [
             ("digipeat", "Digipeat",
                 RadioSettingValueBoolean(strbool(self._mmap.digipeat[0]))),
             ("alias", "Digipeat Alias",
                 RadioSettingValueList(
-                    ALIAS, ALIAS[int(self._mmap.digipeat[1]) - 1])),
+                    ALIAS, alias)),
             ("virtualgps", "Static Position",
                 RadioSettingValueBoolean(strbool(self._mmap.virtualgps[0]))),
             ("btext", "Static Position BTEXT", RadioSettingValueString(
