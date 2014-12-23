@@ -436,7 +436,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
                               'busywait'):
                     setattr(self._mmap, name, boolstr(setting.value))
                 elif name == "path":
-                    self._mmap.path = PATH.index(str(setting.value)) + 1
+                    self._mmap.path = PATH.index(str(setting.value))
                 elif name == "table":
                     self.set_symbol(table=setting.value)
                 elif name == "symbol":
