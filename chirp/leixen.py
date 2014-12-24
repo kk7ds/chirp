@@ -348,7 +348,11 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata[0x170:0x176] == cls._file_ident
+        if filedata[0x170:0x176] == cls._file_ident:
+            return True
+        elif filedata[0x900:0x906] == cls.MODEL:
+            return True
+        return False
 
 
 @directory.register
