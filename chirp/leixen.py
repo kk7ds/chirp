@@ -189,6 +189,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.has_bank = False
         rf.has_tuning_step = False
+        rf.can_odd_split = True
         rf.has_rx_dtcs = True
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_modes = MODES
@@ -203,6 +204,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 7
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_skips = ["", "S"]
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 470000000)]
@@ -255,6 +257,12 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         chirp_common.split_tone_decode(mem, (tx_tmode, tx_tone, tx_pol),
                                             (rx_tmode, rx_tone, rx_pol))
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.tx_freq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
         _name = self._memobj.name[number - 1]
@@ -267,15 +275,19 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             return mem
 
         mem.freq = int(_mem.rx_freq) * 10
-        offset = (int(_mem.tx_freq) * 10) - mem.freq
-        if offset < 0:
-            mem.offset = abs(offset)
-            mem.duplex = "-"
-        elif offset > 0:
-            mem.offset = offset
-            mem.duplex = "+"
-        else:
+
+        if self._is_txinh(_mem):
+            mem.duplex = "off"
             mem.offset = 0
+        elif int(_mem.rx_freq) == int(_mem.tx_freq):
+            mem.duplex = ""
+            mem.offset = 0
+        elif abs(int(_mem.rx_freq) * 10 - int(_mem.tx_freq) * 10) > 70000000:
+            mem.duplex = "split"
+            mem.offset = int(_mem.tx_freq) * 10
+        else:
+            mem.duplex = int(_mem.rx_freq) > int(_mem.tx_freq) and "-" or "+"
+            mem.offset = abs(int(_mem.rx_freq) - int(_mem.tx_freq)) * 10
 
         mem.name = str(_name.name).rstrip()
 
@@ -314,7 +326,13 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             _mem.set_raw("\xFF" * 8 + "\xFF\x00\xFF\x00\xFF\xFE\xF0\xFC")
 
         _mem.rx_freq = mem.freq / 10
-        if mem.duplex == "+":
+
+        if mem.duplex == "off":
+            for i in range(0, 4):
+                _mem.tx_freq[i].set_raw("\xFF")
+        elif mem.duplex == "split":
+            _mem.tx_freq = mem.offset / 10
+        elif mem.duplex == "+":
             _mem.tx_freq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
             _mem.tx_freq = (mem.freq - mem.offset) / 10
