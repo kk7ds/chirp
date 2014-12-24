@@ -323,7 +323,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
         self._set_tone(mem, _mem)
 
-        _mem.power = mem.power and POWER_LEVELS.index(mem.power) or 1
+        _mem.power = mem.power and POWER_LEVELS.index(mem.power) or 0
         _mem.mode = MODES.index(mem.mode)
         _mem.skip = mem.skip == "S"
         _name.name = mem.name.ljust(7)
