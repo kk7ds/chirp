@@ -120,20 +120,19 @@ def do_download(radio):
     do_ident(radio)
 
     data = ""
-    for start, end in radio._ranges:
-        data += "\xFF" * (start - len(data))
-        for addr in range(start, end, 0x10):
-            send(radio, make_frame("R", addr, chr(0x10)))
-            _addr, _data = recv(radio)
-            if _addr != addr:
-                raise errors.RadioError("Radio sent unexpected address")
-            data += _data
+    data += "\xFF" * (0 - len(data))
+    for addr in range(0, radio._memsize, 0x10):
+        send(radio, make_frame("R", addr, chr(0x10)))
+        _addr, _data = recv(radio)
+        if _addr != addr:
+            raise errors.RadioError("Radio sent unexpected address")
+        data += _data
 
-            status = chirp_common.Status()
-            status.cur = addr
-            status.max = radio._memsize
-            status.msg = "Cloning from radio"
-            radio.status_fn(status)
+        status = chirp_common.Status()
+        status.cur = addr
+        status.max = radio._memsize
+        status.msg = "Cloning from radio"
+        radio.status_fn(status)
 
     finish(radio)
 
@@ -142,20 +141,21 @@ def do_download(radio):
 def do_upload(radio):
     do_ident(radio)
 
-    for addr in range(0x0d00, 0x2000, 0x10):
-        frame = make_frame("W", addr, radio._mmap[addr:addr + 0x10])
-        send(radio, frame)
-        # print "     P<R: %s" % util.hexprint(frame).replace("\n", "\n          ")
-        radio.pipe.write("\x06\x00\x06")
-        ack = radio.pipe.read(3)
-        if ack != "\x06\x00\x06":
-            raise errors.RadioError("Radio refused block at %04x" % addr)
+    for start, end in radio._ranges:
+        for addr in range(start, end, 0x10):
+            frame = make_frame("W", addr, radio._mmap[addr:addr + 0x10])
+            send(radio, frame)
+            # print "     P<R: %s" % util.hexprint(frame).replace("\n", "\n          ")
+            radio.pipe.write("\x06\x00\x06")
+            ack = radio.pipe.read(3)
+            if ack != "\x06\x00\x06":
+                raise errors.RadioError("Radio refused block at %04x" % addr)
 
-        status = chirp_common.Status()
-        status.cur = addr
-        status.max = radio._memsize
-        status.msg = "Cloning to radio"
-        radio.status_fn(status)
+            status = chirp_common.Status()
+            status.cur = addr
+            status.max = radio._memsize
+            status.msg = "Cloning to radio"
+            radio.status_fn(status)
 
     finish(radio)
 
@@ -171,9 +171,15 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     MODEL = "VV-898"
     BAUD_RATE = 9600
 
+    _file_ident = "LX-\x89\x85\x63"
     _memsize = 0x2000
     _ranges = [
-        (0x0900, 0x0910),
+        (0x0000, 0x013f),
+        (0x0148, 0x016f),
+        (0x0184, 0x018f),
+        (0x0190, 0x01cf),
+        (0x0900, 0x090f),
+        (0x0920, 0x0927),
         (0x0d00, 0x2000),
     ]
 
@@ -324,8 +330,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        model = filedata[0x900:0x906]
-        return model == cls.MODEL
+        return filedata[0x170:0x176] == cls._file_ident
 
 
 @directory.register
@@ -333,3 +338,5 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     """Jetstream JT270M"""
     VENDOR = "Jetstream"
     MODEL = "JT270M"
+
+    _file_ident = "LX-\x89\x85\x53"
