@@ -68,6 +68,12 @@ DTCS_CODES.sort()
 TMODES = ["", "Tone", "DTCS", "DTCS"]
 
 
+def _image_ident_from_data(data):
+    return data[0x170:0x176]
+
+def _image_ident_from_image(radio):
+    return _image_ident_from_data(radio.get_mmap())
+
 def checksum(frame):
     x = 0
     for b in frame:
@@ -139,9 +145,15 @@ def do_download(radio):
     return memmap.MemoryMap(data)
 
 def do_upload(radio):
-    do_ident(radio)
+    _ranges = [(0x0d00, 0x2000)]
 
-    for start, end in radio._ranges:
+    image_ident = _image_ident_from_image(radio)
+    if image_ident == radio._file_ident:
+        _ranges = radio._ranges
+
+    do_ident(radio)
+    
+    for start, end in _ranges:
         for addr in range(start, end, 0x10):
             frame = make_frame("W", addr, radio._mmap[addr:addr + 0x10])
             send(radio, frame)
@@ -348,7 +360,11 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata[0x170:0x176] == cls._file_ident
+        if filedata[0x170:0x176] == cls._file_ident:
+            return True
+        elif filedata[0x900:0x906] == cls.MODEL:
+            return True
+        return False
 
 
 @directory.register
