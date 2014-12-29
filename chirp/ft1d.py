@@ -1006,8 +1006,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
                 body = str( aprs_beacon[index].body ).rstrip("\xFF")
                 checksum = body[-2:]
-                body = ''.join(s for s in body[:-2] if s in string.printable).replace( "\x0d", " " )
-                val = RadioSettingValueString(0, 134, body.strip())
+                body = ''.join(s for s in body[:-2] if s in string.printable).translate(None, "\x09\x0a\x0b\x0c\x0d")
+                try:
+                    val = RadioSettingValueString(0, 134, body.strip())
+                except Exception as e:
+                    print "Error in APRS beacon at index", index
+                    raise e
                 rs = RadioSetting("aprs_beacon.body%d" % index, "Body", val)
                 menu.append(rs)
 
