@@ -69,7 +69,7 @@ TMODES = ["", "Tone", "DTCS", "DTCS"]
 
 
 def _image_ident_from_data(data):
-    return data[0x170:0x176]
+    return data[0x168:0x178]
 
 def _image_ident_from_image(radio):
     return _image_ident_from_data(radio.get_mmap())
@@ -148,7 +148,7 @@ def do_upload(radio):
     _ranges = [(0x0d00, 0x2000)]
 
     image_ident = _image_ident_from_image(radio)
-    if image_ident == radio._file_ident:
+    if image_ident.startswith(radio._file_ident) and "LX-" in image_ident:
         _ranges = radio._ranges
 
     do_ident(radio)
@@ -183,11 +183,11 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     MODEL = "VV-898"
     BAUD_RATE = 9600
 
-    _file_ident = "LX-\x89\x85\x63"
+    _file_ident = "Leixen"
     _memsize = 0x2000
     _ranges = [
         (0x0000, 0x013f),
-        (0x0148, 0x016f),
+        (0x0148, 0x0167),
         (0x0184, 0x018f),
         (0x0190, 0x01cf),
         (0x0900, 0x090f),
@@ -360,11 +360,13 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        if filedata[0x170:0x176] == cls._file_ident:
+        if filedata[0x168:0x170].startswith(cls._file_ident) and \
+                               filedata[0x170:0x178].startswith("LX-/x89/x85"):
             return True
         elif filedata[0x900:0x906] == cls.MODEL:
             return True
-        return False
+        else:
+            return False
 
 
 @directory.register
@@ -373,4 +375,4 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     VENDOR = "Jetstream"
     MODEL = "JT270M"
 
-    _file_ident = "LX-\x89\x85\x53"
+    _file_ident = "JET"
