@@ -14,11 +14,42 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
+import os
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueInteger, RadioSettingValueList, \
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettingValueFloat, InvalidValueError
+from textwrap import dedent
+
+if os.getenv("CHIRP_DEBUG"):
+    CHIRP_DEBUG = True
+else:
+    CHIRP_DEBUG = False
 
 MEM_FORMAT = """
+#seekto 0x0184;
+struct {
+  u8 unknown:4,
+     sql:4;              // squelch level
+  u8 unknown0x0185;
+  u8 unknown0x0186;
+  u8 unknown0x0187;
+  u8 keylock_off:1,      // key lock (inverted)
+     txstop_off:1,       // tx stop (inverted)
+     scanm:1,            // scan key/mode
+     vir:1,              // vox inhibit on receive
+     keylockm:2,         // key lock mode
+     lamp:2;             // backlight
+  u8 unknown0x0189;
+  u8 step:4,             // step
+     vol:4;              // volume
+  u8 apo:4,              // auto power off
+     tot:4;              // time out timer
+} settings;
+
 struct channel {
   bbcd rx_freq[4];
   bbcd tx_freq[4];
@@ -40,7 +71,7 @@ struct channel {
      reverseoff:1,
      blckoff:1,
      unknown7:4;
-  u8 unknown8;    
+  u8 unknown8;
 };
 
 struct name {
@@ -57,6 +88,13 @@ struct name defaultname[3];
 struct name name[199];
 """
 
+
+APO_LIST = ["OFF", "10M", "20M", "30M", "40M", "50M", "60M", "90M",
+            "2H", "4H", "6H", "8H", "10H", "12H", "14H", "16H"]
+SQL_LIST = ["%s" % x for x in range(0, 10)]
+SCANM_LIST = ["CO", "TO"]
+TOT_LIST = ["OFF"] + ["%s seconds" % x for x in range(10, 130, 10)]
+STEP_LIST = ["2.5 KHz", "5 KHz", "6.25 KHz", "10 KHz", "12.5 KHz", "25 KHz"]
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=4),
                 chirp_common.PowerLevel("High", watts=10)]
@@ -357,6 +395,81 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.skip = mem.skip == "S"
         _name.name = mem.name.ljust(7)
+
+    def _get_settings(self):
+        _settings = self._memobj.settings
+        cfg_grp = RadioSettingGroup("cfg_grp", "Basic Settings")
+        group = RadioSettingGroup("top", "All Settings", cfg_grp)
+
+
+        #
+        # Basic Settings
+        #
+        rs = RadioSetting("apo", "Auto Power Off",
+                          RadioSettingValueList(APO_LIST,
+                                                APO_LIST[_settings.apo]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("sql", "Squelch Level",
+                          RadioSettingValueList(SQL_LIST,
+                                                SQL_LIST[_settings.sql]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("scanm", "Scan Mode",
+                          RadioSettingValueList(SCANM_LIST,
+                                                SCANM_LIST[_settings.scanm]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("tot", "Time Out Timer",
+                          RadioSettingValueList(TOT_LIST,
+                                                TOT_LIST[_settings.tot]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("step", "Step",
+                          RadioSettingValueList(STEP_LIST,
+                                                STEP_LIST[_settings.step]))
+        cfg_grp.append(rs)
+
+        return group
+
+    def get_settings(self):
+        try:
+            return self._get_settings()
+        except:
+            import traceback
+            print "Failed to parse settings:"
+            traceback.print_exc()
+            return None
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        print "Using apply callback"
+                        element.run_apply_callback()
+                    else:
+                        print "Setting %s = %s" % (setting, element.value)
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    print element.get_name()
+                    raise
 
     @classmethod
     def match_model(cls, filedata, filename):
