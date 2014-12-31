@@ -60,10 +60,25 @@ struct {
   u8 unknown0x0192;
   u8 unknown0x0193;
   u8 unknown0x0194;
-  u8 unknown0x0195;
+  u8 menuen:1,           // menu enable
+     absel:1,            // a/b select
+     unknown:2
+     keymshort:4;        // m key short press
   u8 unknown:6,
      monitor:2;          // monitor
 } settings;
+
+#seekto 0x0900;
+struct {
+  char user1[7];         // user message 1
+  char unknown0x0907;
+  char unknown0x0908[8];
+  char unknown0x0910[8];
+  char system[7];        // system message
+  char unknown0x091F;
+  char user2[7];         // user message 2
+  char unknown0x0927;
+} messages;
 
 struct channel {
   bbcd rx_freq[4];
@@ -115,6 +130,9 @@ VFOMR_LIST = ["MR", "VFO"]
 MRCHA_LIST = ["MR CHA", "Freq. MR"]
 VOL_LIST = ["OFF"] + ["%s" % x for x in range(1, 16)]
 OPENDIS_LIST = ["All", "Lease Time", "User-defined", "Leixen"]
+LAMP_LIST = ["OFF", "KEY", "CONT"]
+KEYLOCKM_LIST = ["K+S", "PTT", "KEY", "ALL"]
+ABSEL_LIST = ["B Channel",  "A Channel"]
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=4),
                 chirp_common.PowerLevel("High", watts=10)]
@@ -464,6 +482,41 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("opendis", "Open Display",
                           RadioSettingValueList(OPENDIS_LIST,
                                               OPENDIS_LIST[_settings.opendis]))
+        cfg_grp.append(rs)
+
+        def _filter(name):
+            filtered = ""
+            for char in str(name):
+                if char in chirp_common.CHARSET_ASCII:
+                    filtered += char
+                else:
+                    filtered += " "
+            print "Filtered: %s" % filtered
+            return filtered
+
+        rs = RadioSetting("messages.user1", "User-defined Message 1",
+                          RadioSettingValueString(0, 7, _filter(_msg.user1)))
+        cfg_grp.append(rs)
+        rs = RadioSetting("messages.user2", "User-defined Message 2",
+                          RadioSettingValueString(0, 7, _filter(_msg.user2)))
+        cfg_grp.append(rs)
+
+        val = RadioSettingValueString(0, 7, _filter(_msg.system))
+        val.set_mutable(False)
+        rs = RadioSetting("messages.system", "System Message", val)
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("lamp", "Backlight",
+                          RadioSettingValueList(LAMP_LIST,
+                                                LAMP_LIST[_settings.lamp]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("keylockm", "Key Lock Mode",
+                          RadioSettingValueList(KEYLOCKM_LIST,
+                                            KEYLOCKM_LIST[_settings.keylockm]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("absel", "A/B Select",
+                          RadioSettingValueList(ABSEL_LIST,
+                                                ABSEL_LIST[_settings.absel]))
         cfg_grp.append(rs)
 
         return group
