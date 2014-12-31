@@ -36,18 +36,33 @@ struct {
      sql:4;              // squelch level
   u8 unknown0x0185;
   u8 unknown0x0186;
-  u8 unknown0x0187;
+  u8 unknown:6,
+     mrcha:1,            // mr/cha
+     vfomr:1;            // vfo/mr
   u8 keylock_off:1,      // key lock (inverted)
      txstop_off:1,       // tx stop (inverted)
      scanm:1,            // scan key/mode
      vir:1,              // vox inhibit on receive
      keylockm:2,         // key lock mode
      lamp:2;             // backlight
-  u8 unknown0x0189;
+  u8 opendis:2,          // open display
+     unknown:6;
   u8 step:4,             // step
      vol:4;              // volume
   u8 apo:4,              // auto power off
      tot:4;              // time out timer
+  u8 unknown0x018C;
+  u8 unknown0x018D;
+  u8 unknown0x018E;
+  u8 unknown0x018F;
+  u8 unknown0x0190;
+  u8 unknown0x0191;
+  u8 unknown0x0192;
+  u8 unknown0x0193;
+  u8 unknown0x0194;
+  u8 unknown0x0195;
+  u8 unknown:6,
+     monitor:2;          // monitor
 } settings;
 
 struct channel {
@@ -95,6 +110,11 @@ SQL_LIST = ["%s" % x for x in range(0, 10)]
 SCANM_LIST = ["CO", "TO"]
 TOT_LIST = ["OFF"] + ["%s seconds" % x for x in range(10, 130, 10)]
 STEP_LIST = ["2.5 KHz", "5 KHz", "6.25 KHz", "10 KHz", "12.5 KHz", "25 KHz"]
+MONITOR_LIST = ["CTC/DCS", "DTMF", "CTC/DCS and DTMF", "CTC/DCS or DTMF"]
+VFOMR_LIST = ["MR", "VFO"]
+MRCHA_LIST = ["MR CHA", "Freq. MR"]
+VOL_LIST = ["OFF"] + ["%s" % x for x in range(1, 16)]
+OPENDIS_LIST = ["All", "Lease Time", "User-defined", "Leixen"]
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=4),
                 chirp_common.PowerLevel("High", watts=10)]
@@ -424,6 +444,26 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("step", "Step",
                           RadioSettingValueList(STEP_LIST,
                                                 STEP_LIST[_settings.step]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("monitor", "Monitor",
+                          RadioSettingValueList(MONITOR_LIST,
+                                              MONITOR_LIST[_settings.monitor]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("vfomr", "VFO/MR",
+                          RadioSettingValueList(VFOMR_LIST,
+                                                VFOMR_LIST[_settings.vfomr]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("mrcha", "MR/CHA",
+                          RadioSettingValueList(MRCHA_LIST,
+                                                MRCHA_LIST[_settings.mrcha]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("vol", "Volume",
+                          RadioSettingValueList(VOL_LIST,
+                                                VOL_LIST[_settings.vol]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("opendis", "Open Display",
+                          RadioSettingValueList(OPENDIS_LIST,
+                                              OPENDIS_LIST[_settings.opendis]))
         cfg_grp.append(rs)
 
         return group
