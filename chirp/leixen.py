@@ -56,7 +56,11 @@ struct {
      keylockm:2,         // key lock mode
      lamp:2;             // backlight
   u8 opendis:2,          // open display
-     unknown:6;
+     fmen_off:1,         // fm enable (inverted)
+     unknown1:1,
+     fmscan_off:1,       // fm scan (inverted)
+     fmdw:1,             // fm dual watch
+     unknown2:2;
   u8 step:4,             // step
      vol:4;              // volume
   u8 apo:4,              // auto power off
@@ -81,6 +85,15 @@ struct {
      unknown2:1,
      keypadmic_off:1,    // keypad mic (inverted)
      unknown3:2;
+  u8 unknown0x0198;
+  u8 unknown0x0199;
+  u8 unknown0x019A;
+  u8 unknown0x019B;
+  u8 unknown0x019C;
+  u8 unknown0x019D;
+  u8 unknown1:3,
+     smfont_off:1,       // small font (inverted)
+     unknown:4;
 } settings;
 
 #seekto 0x0900;
@@ -571,6 +584,18 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("dw_off", "Dual Watch",
                           RadioSettingValueBoolean(not _settings.dw_off))
         cfg_grp.append(rs)
+        rs = RadioSetting("fmen_off", "FM Enable",
+                          RadioSettingValueBoolean(not _settings.fmen_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("fmdw", "FM Dual Watch",
+                          RadioSettingValueBoolean(_settings.fmdw))
+        cfg_grp.append(rs)
+        rs = RadioSetting("fmscan_off", "FM Scan",
+                          RadioSettingValueBoolean(not _settings.fmscan_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("keypadmic_off", "Keypad MIC",
+                          RadioSettingValueBoolean(not _settings.keypadmic_off))
+        cfg_grp.append(rs)
 
         return group
 
@@ -619,6 +644,12 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                     elif setting == "txstop_off":
                         setattr(obj, setting, not int(element.value))
                     elif setting == "dw_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "fmen_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "fmscan_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "keypadmic_off":
                         setattr(obj, setting, not int(element.value))
                     else:
                         print "Setting %s = %s" % (setting, element.value)
