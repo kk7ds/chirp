@@ -76,6 +76,11 @@ struct {
      keymshort:4;        // m key short press
   u8 unknown:6,
      monitor:2;          // monitor
+  u8 unknown1:3,
+     reset:1,            // reset enable
+     unknown2:1,
+     keypadmic_off:1,    // keypad mic (inverted)
+     unknown3:2;
 } settings;
 
 #seekto 0x0900;
@@ -548,6 +553,24 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("save", "Battery Save",
                           RadioSettingValueBoolean(_settings.save))
         cfg_grp.append(rs)
+        rs = RadioSetting("kbeep", "Key Beep",
+                          RadioSettingValueBoolean(_settings.kbeep))
+        cfg_grp.append(rs)
+        rs = RadioSetting("reset", "Reset Enable",
+                          RadioSettingValueBoolean(_settings.reset))
+        cfg_grp.append(rs)
+        rs = RadioSetting("smfont_off", "Small Font",
+                          RadioSettingValueBoolean(not _settings.smfont_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("aliasen_off", "Alias Enable",
+                          RadioSettingValueBoolean(not _settings.aliasen_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("txstop_off", "TX Stop",
+                          RadioSettingValueBoolean(not _settings.txstop_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("dw_off", "Dual Watch",
+                          RadioSettingValueBoolean(not _settings.dw_off))
+        cfg_grp.append(rs)
 
         return group
 
@@ -588,6 +611,14 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                         print "Using apply callback"
                         element.run_apply_callback()
                     elif setting == "keylock_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "smfont_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "aliasen_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "txstop_off":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "dw_off":
                         setattr(obj, setting, not int(element.value))
                     else:
                         print "Setting %s = %s" % (setting, element.value)
