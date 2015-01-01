@@ -34,7 +34,7 @@ struct {
 
 #seekto 0x04c1;
 struct {
-  u8 beep; 
+  u8 beep;
 } beep_select;
 
 #seekto 0x04ce;
@@ -140,7 +140,7 @@ struct {
   u8 name[16];
 } bank_info[24];
 
-#seekto 0x2D4A; 
+#seekto 0x2D4A;
 struct {
   u8 unknown1;
   u8 mode:2,
@@ -339,18 +339,18 @@ u8 checksum;
 
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM"]
+MODES = ["FM", "AM", "WFM"]
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(30.0)
 STEPS.append(100.0)
-STEPS.insert(2, 0.0) # There is a skipped tuning step at index 2 (?)
+STEPS.insert(2, 0.0)  # There is a skipped tuning step at index 2 (?)
 SKIPS = ["", "S", "P"]
 FT1_DTMF_CHARS = list("0123456789ABCD*#-")
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
-    [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
-    [" ",] + \
-    [chr(x) for x in range(ord("a"), ord("z")+1)] + \
+    [chr(x) for x in range(ord("A"), ord("Z") + 1)] + \
+    [" ", ] + \
+    [chr(x) for x in range(ord("a"), ord("z") + 1)] + \
     list(".,:;*#_-/&()@!?^ ") + list("\x00" * 100)
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
@@ -358,13 +358,13 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
+
 class FT1Bank(chirp_common.NamedBank):
     """A FT1D bank"""
 
     def get_name(self):
         _bank = self._model._radio._memobj.bank_info[self.index]
-        _bank_used = self._model._radio._memobj.bank_used[self.index]
-                      
+
         name = ""
         for i in _bank.name:
             if i == 0xFF:
@@ -375,6 +375,7 @@ class FT1Bank(chirp_common.NamedBank):
     def set_name(self, name):
         _bank = self._model._radio._memobj.bank_info[self.index]
         _bank.name = [CHARSET.index(x) for x in name.ljust(16)[:16]]
+
 
 class FT1BankModel(chirp_common.BankModel):
     """A FT1D bank model"""
@@ -421,28 +422,28 @@ class FT1BankModel(chirp_common.BankModel):
                 break
 
         for vfo_index in (0, 1):
-          # 3 VFO info structs are stored as 3 pairs of (master, backup)
-          vfo = self._radio._memobj.vfo_info[vfo_index * 2]
-          vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
+            # 3 VFO info structs are stored as 3 pairs of (master, backup)
+            vfo = self._radio._memobj.vfo_info[vfo_index * 2]
+            vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
 
-          if vfo.checksum != vfo_bak.checksum:
-              print "Warning: VFO settings are inconsistent with backup"
-          else:
-              if ((chosen_bank[vfo_index] is None) and
-                  (vfo.bank_index != 0xFFFF)):
-                  print "Disabling banks for VFO %d" % vfo_index
-                  vfo.bank_index = 0xFFFF
-                  vfo.mr_index = 0xFFFF
-                  vfo.bank_enable = 0xFFFF
-              elif ((chosen_bank[vfo_index] is not None) and
-                  (vfo.bank_index == 0xFFFF)):
-                  print "Enabling banks for VFO %d" % vfo_index
-                  vfo.bank_index = chosen_bank[vfo_index]
-                  vfo.mr_index = chosen_mr[vfo_index]
-                  vfo.bank_enable = 0x0000
-              vfo_bak.bank_index = vfo.bank_index
-              vfo_bak.mr_index = vfo.mr_index
-              vfo_bak.bank_enable = vfo.bank_enable
+            if vfo.checksum != vfo_bak.checksum:
+                print "Warning: VFO settings are inconsistent with backup"
+            else:
+                if ((chosen_bank[vfo_index] is None) and
+                    (vfo.bank_index != 0xFFFF)):
+                    print "Disabling banks for VFO %d" % vfo_index
+                    vfo.bank_index = 0xFFFF
+                    vfo.mr_index = 0xFFFF
+                    vfo.bank_enable = 0xFFFF
+                elif ((chosen_bank[vfo_index] is not None) and
+                    (vfo.bank_index == 0xFFFF)):
+                    print "Enabling banks for VFO %d" % vfo_index
+                    vfo.bank_index = chosen_bank[vfo_index]
+                    vfo.mr_index = chosen_mr[vfo_index]
+                    vfo.bank_enable = 0x0000
+                vfo_bak.bank_index = vfo.bank_index
+                vfo_bak.mr_index = vfo.mr_index
+                vfo_bak.bank_enable = vfo.bank_enable
 
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
         _members = self._radio._memobj.bank_members[bank.index]
@@ -471,7 +472,7 @@ class FT1BankModel(chirp_common.BankModel):
         try:
             channels_in_bank.remove(memory.number)
         except KeyError:
-            raise Exception("Memory %i is not in bank %s. Cannot remove" % \
+            raise Exception("Memory %i is not in bank %s. Cannot remove" %
                             (memory.number, bank))
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
@@ -496,9 +497,11 @@ class FT1BankModel(chirp_common.BankModel):
 
         return banks
 
+
 def _wipe_memory(mem):
     mem.set_raw("\x00" * (mem.size() / 8))
     mem.unknown1 = 0x05
+
 
 @directory.register
 class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -510,13 +513,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _model = "AH44M"
     _memsize = 130507
-    _block_lengths = [ 10, 130497 ]
+    _block_lengths = [10, 130497]
     _block_size = 32
-    _mem_params = (0xFECA, # APRS beacon metadata address.
-                   60,     # Number of beacons stored.
-                   0x1064A, # APRS beacon content address.
-                   134,    # Length of beacon data stored.
-                   60)     # Number of beacons stored.
+    _mem_params = (0xFECA,         # APRS beacon metadata address.
+                   60,             # Number of beacons stored.
+                   0x1064A,        # APRS beacon content address.
+                   134,            # Length of beacon data stored.
+                   60)             # Number of beacons stored.
     _has_vibrate = False
     _has_af_dual = True
 
@@ -567,16 +570,16 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
               "every 5 minutes", "every 6 minutes", "every 7 minutes",
               "every 8 minutes", "every 9 minutes", "every 10 minutes")
     _BEEP_SELECT = ("Off", "Key+Scan", "Key")
-    _SQUELCH = ["%d" % x for x in range (0,16)]
-    _VOLUME = ["%d" % x for x in range (0,33)]
+    _SQUELCH = ["%d" % x for x in range(0, 16)]
+    _VOLUME = ["%d" % x for x in range(0, 33)]
     _OPENING_MESSAGE = ("Off", "DC", "Message", "Normal")
-    _SCAN_RESUME = ["%.1fs" % (0.5 * x) for x in range(4,21)] + \
+    _SCAN_RESUME = ["%.1fs" % (0.5 * x) for x in range(4, 21)] + \
                    ["Busy", "Hold"]
-    _SCAN_RESTART = ["%.1fs" % (0.1 * x) for x in range(1,10)] + \
-                    ["%.1fs" % (0.5 * x) for x in range(2,21)]
-    _LAMP_KEY = ["Key %d sec" % x for x in range(2,11)] + ["Continuous", "OFF"]
-    _LCD_CONTRAST = ["Level %d" % x for x in range(1,16)]
-    _LCD_DIMMER = ["Level %d" % x for x in range(1,7)]
+    _SCAN_RESTART = ["%.1fs" % (0.1 * x) for x in range(1, 10)] + \
+                    ["%.1fs" % (0.5 * x) for x in range(2, 21)]
+    _LAMP_KEY = ["Key %d sec" % x for x in range(2, 11)] + ["Continuous", "OFF"]
+    _LCD_CONTRAST = ["Level %d" % x for x in range(1, 16)]
+    _LCD_DIMMER = ["Level %d" % x for x in range(1, 7)]
     _TOT_TIME = ["Off"] + ["%.1f min" % (0.5 * x) for x in range(1, 21)]
     _OFF_ON = ("Off", "On")
     _VOL_MODE = ("Normal", "Auto Back")
@@ -593,7 +596,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             2. Connect cable to DATA jack.
             3. Press and hold in the [FW] key while turning the radio on
                  ("CLONE" will appear on the display).
-            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+            4. <b>After clicking OK</b>, press the [BAND] key to send image."""
+            ))
         rp.pre_upload = _(dedent("""\
             1. Turn radio off.
             2. Connect cable to DATA jack.
@@ -628,11 +632,11 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x064A, 0x06C8),
-                 yaesu_clone.YaesuChecksum(0x06CA, 0x0748),
-                 yaesu_clone.YaesuChecksum(0x074A, 0x07C8),
-                 yaesu_clone.YaesuChecksum(0x07CA, 0x0848),
-                 yaesu_clone.YaesuChecksum(0x0000, 0x1FDC9) ]
+        return [yaesu_clone.YaesuChecksum(0x064A, 0x06C8),
+                yaesu_clone.YaesuChecksum(0x06CA, 0x0748),
+                yaesu_clone.YaesuChecksum(0x074A, 0x07C8),
+                yaesu_clone.YaesuChecksum(0x07CA, 0x0848),
+                yaesu_clone.YaesuChecksum(0x0000, 0x1FDC9)]
 
     @staticmethod
     def _add_ff_pad(val, length):
@@ -646,8 +650,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return result
 
     def get_memory(self, number):
-        flag = self._memobj.flag[number-1]
-        _mem = self._memobj.memory[number-1]
+        flag = self._memobj.flag[number - 1]
+        _mem = self._memobj.memory[number - 1]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -680,8 +684,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             bm.remove_memory_from_mapping(mem, bank)
 
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number-1]
-        flag = self._memobj.flag[mem.number-1]
+        _mem = self._memobj.memory[mem.number - 1]
+        flag = self._memobj.flag[mem.number - 1]
 
         self._debank(mem)
 
@@ -700,9 +704,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.freq < 30000000 or \
                 (mem.freq > 88000000 and mem.freq < 108000000) or \
                 mem.freq > 580000000:
-            flag.nosubvfo = True  # Masked from VFO B
+            flag.nosubvfo = True     # Masked from VFO B
         else:
-            flag.nosubvfo = False # Available in both VFOs
+            flag.nosubvfo = False    # Available in both VFOs
 
         _mem.freq = int(mem.freq / 1000)
         _mem.offset = int(mem.offset / 1000)
@@ -829,8 +833,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         symbols = list(chirp_common.APRS_SYMBOLS)
         selected = aprs.custom_symbol
         if aprs.custom_symbol >= len(chirp_common.APRS_SYMBOLS):
-          symbols.append("%d" % aprs.custom_symbol)
-          selected = len(symbols) - 1
+            symbols.append("%d" % aprs.custom_symbol)
+            selected = len(symbols) - 1
         val = RadioSettingValueList(symbols, symbols[selected])
         rs = RadioSetting("aprs.custom_symbol_text", "User Selected Symbol",
                           val)
@@ -947,17 +951,20 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def _get_aprs_msgs(self):
         menu = RadioSettingGroup("aprs_msg", "APRS Messages")
         aprs_msg = self._memobj.aprs_message_pkt
-        
-        for index in range( 0, 60 ):
-            if aprs_msg[index].flag != 255 :
+
+        for index in range(0, 60):
+            if aprs_msg[index].flag != 255:
                 val = RadioSettingValueString(0, 9,
-                    str(aprs_msg[index].dst_callsign).rstrip("\xFF") + "-%d" % aprs_msg[index].dst_callsign_ssid )
-                rs = RadioSetting("aprs_msg.dst_callsign%d" % index, "Dst Callsign %d" % index, val)
+                    str(aprs_msg[index].dst_callsign).rstrip("\xFF") +
+                    "-%d" % aprs_msg[index].dst_callsign_ssid)
+                rs = RadioSetting("aprs_msg.dst_callsign%d" % index,
+                        "Dst Callsign %d" % index, val)
                 menu.append(rs)
 
                 val = RadioSettingValueString(0, 66,
                     str(aprs_msg[index].path_and_body).rstrip("\xFF"))
-                rs = RadioSetting("aprs_msg.path_and_body%d" % index, "Body", val)
+                rs = RadioSetting("aprs_msg.path_and_body%d" %
+                        index, "Body", val)
                 menu.append(rs)
 
         return menu
@@ -966,47 +973,50 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         menu = RadioSettingGroup("aprs_beacons", "APRS Beacons")
         aprs_beacon = self._memobj.aprs_beacon_pkt
         aprs_meta = self._memobj.aprs_beacon_meta
-        
-        for index in range( 0, 60 ):
-            # There is probably a more pythonesque way to do this 
-            if int( aprs_meta[index].sender_callsign[0] ) != 255 :
+
+        for index in range(0, 60):
+            # There is probably a more pythonesque way to do this
+            if int(aprs_meta[index].sender_callsign[0]) != 255:
                 callsign = str(aprs_meta[index].sender_callsign).rstrip("\xFF")
                 #print "Callsign %s %s" % ( callsign, list(callsign) )
-                val = RadioSettingValueString(0, 9, callsign )
-                rs = RadioSetting("aprs_beacon.src_callsign%d" % index, "SRC Callsign %d" % index, val)
+                val = RadioSettingValueString(0, 9, callsign)
+                rs = RadioSetting("aprs_beacon.src_callsign%d" % index,
+                        "SRC Callsign %d" % index, val)
                 menu.append(rs)
-            
-            if int( aprs_beacon[index].dst_callsign[0] ) != 255 :
-                #print "DST callsign %s %d %s" % ( aprs_beacon[index].dst_callsign, aprs_beacon[index].dst_callsign[0],  list( str( aprs_beacon[index].dst_callsign )))
+
+            if int(aprs_beacon[index].dst_callsign[0]) != 255:
                 val = RadioSettingValueString(0, 9,
-                    str(aprs_beacon[index].dst_callsign).rstrip("\xFF") )
-                rs = RadioSetting("aprs_beacon.dst_callsign%d" % index, "DST Callsign %d" % index, val)
+                        str(aprs_beacon[index].dst_callsign).rstrip("\xFF"))
+                rs = RadioSetting("aprs_beacon.dst_callsign%d" % index,
+                        "DST Callsign %d" % index, val)
                 menu.append(rs)
 
-            if int( aprs_meta[index].sender_callsign[0] ) != 255 :
-
-                date = "%02d/%02d/%02d" %( aprs_meta[index].date[0], aprs_meta[index].date[1], aprs_meta[index].date[2] )
+            if int(aprs_meta[index].sender_callsign[0]) != 255:
+                date = "%02d/%02d/%02d" % (aprs_meta[index].date[0],
+                        aprs_meta[index].date[1], aprs_meta[index].date[2])
                 val = RadioSettingValueString(0, 8, date)
                 rs = RadioSetting("aprs_beacon.date%d" % index, "Date", val)
                 menu.append(rs)
 
-                time = "%02d:%02d" %( aprs_meta[index].time[0], aprs_meta[index].time[1] )
+                time = "%02d:%02d" % (aprs_meta[index].time[0],
+                        aprs_meta[index].time[1])
                 val = RadioSettingValueString(0, 5, time)
                 rs = RadioSetting("aprs_beacon.time%d" % index, "Time", val)
                 menu.append(rs)
 
-            if int( aprs_beacon[index].dst_callsign[0] ) != 255 :
-                path = str( aprs_beacon[index].path ).replace( "\x00", " " )
+            if int(aprs_beacon[index].dst_callsign[0]) != 255:
+                path = str(aprs_beacon[index].path).replace("\x00", " ")
                 path = ''.join(c for c in path if c in string.printable).strip()
-                path = str( path ).replace( "\xE0", "*" )
+                path = str(path).replace("\xE0", "*")
                 #print "path %s %s" % ( path, list(path) )
                 val = RadioSettingValueString(0, 32, path)
                 rs = RadioSetting("aprs_beacon.path%d" % index, "Digipath", val)
                 menu.append(rs)
 
-                body = str( aprs_beacon[index].body ).rstrip("\xFF")
+                body = str(aprs_beacon[index].body).rstrip("\xFF")
                 checksum = body[-2:]
-                body = ''.join(s for s in body[:-2] if s in string.printable).translate(None, "\x09\x0a\x0b\x0c\x0d")
+                body = ''.join(s for s in body[:-2] if s in string.printable
+                        ).translate(None, "\x09\x0a\x0b\x0c\x0d")
                 try:
                     val = RadioSettingValueString(0, 134, body.strip())
                 except Exception as e:
@@ -1094,7 +1104,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("aprs.selected_msg_group", "Selected Message Group",
                           val)
         menu.append(rs)
-        
+
         val = RadioSettingValueBoolean(aprs.filter_mic_e)
         rs = RadioSetting("aprs.filter_mic_e", "Receive Mic-E Beacons", val)
         menu.append(rs)
@@ -1131,7 +1141,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         menu = RadioSettingGroup("aprs_tx", "APRS Transmit")
         aprs = self._memobj.aprs
 
-        beacon_type = (aprs.tx_smartbeacon << 1) | aprs.tx_interval_beacon;
+        beacon_type = (aprs.tx_smartbeacon << 1) | aprs.tx_interval_beacon
         val = RadioSettingValueList(self._BEACON_TYPE,
                                     self._BEACON_TYPE[beacon_type])
         rs = RadioSetting("aprs.transmit", "TX Beacons", val)
@@ -1293,13 +1303,15 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         val = RadioSettingValueList(
             self._DTMF_SPEED,
             self._DTMF_SPEED[dtmf.dtmf_speed])
-        rs = RadioSetting("scan_settings.dtmf_speed", "DTMF AutoDial Speed", val)
+        rs = RadioSetting("scan_settings.dtmf_speed",
+                "DTMF AutoDial Speed", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._DTMF_DELAY,
             self._DTMF_DELAY[dtmf.dtmf_delay])
-        rs = RadioSetting("scan_settings.dtmf_delay", "DTMF AutoDial Delay", val)
+        rs = RadioSetting("scan_settings.dtmf_delay",
+                "DTMF AutoDial Delay", val)
         menu.append(rs)
 
         for i in range(10):
@@ -1368,7 +1380,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         val = RadioSettingValueString(0, 16, msg)
         rs = RadioSetting("opening_message.message.padded_yaesu",
                           "Opening Message", val)
-        rs.set_apply_callback(self.apply_ff_padded_yaesu, 
+        rs.set_apply_callback(self.apply_ff_padded_yaesu,
                               opening_message.message)
         menu.append(rs)
 
@@ -1599,8 +1611,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def apply_volume(cls, setting, vfo):
         val = setting.value.get_value()
-        cls._memobj.vfo_info[(vfo*2)].volume = val
-        cls._memobj.vfo_info[(vfo*2)+1].volume = val
+        cls._memobj.vfo_info[(vfo * 2)].volume = val
+        cls._memobj.vfo_info[(vfo * 2) + 1].volume = val
 
     def apply_lcd_contrast(cls, setting, obj):
         rawval = setting.value.get_value()
@@ -1613,4 +1625,3 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         for x in range(len(val), 16):
             val.append(0xFF)
         cls._memobj.dtmf[i].memory = val
-
