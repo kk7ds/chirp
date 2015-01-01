@@ -35,8 +35,18 @@ struct {
   u8 unknown:4,
      sql:4;              // squelch level
   u8 unknown0x0185;
-  u8 unknown0x0186;
-  u8 unknown:6,
+  u8 obeep:1,            // open beep
+     dw_off:1,           // dual watch (inverted)
+     kbeep:1,            // key beep
+     rbeep:1,            // roger beep
+     unknown:2,
+     ctdcsb:1,           // ct/dcs busy lock
+     unknown:1;
+  u8 alarm:1,            // alarm key
+     unknown1:1,
+     aliasen_off:1,      // alias enable (inverted)
+     save:1,             // battery save
+     unknown2:2,
      mrcha:1,            // mr/cha
      vfomr:1;            // vfo/mr
   u8 keylock_off:1,      // key lock (inverted)
@@ -436,6 +446,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     def _get_settings(self):
         _settings = self._memobj.settings
+        _msg = self._memobj.messages
         cfg_grp = RadioSettingGroup("cfg_grp", "Basic Settings")
         group = RadioSettingGroup("top", "All Settings", cfg_grp)
 
@@ -519,6 +530,25 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                                                 ABSEL_LIST[_settings.absel]))
         cfg_grp.append(rs)
 
+        rs = RadioSetting("obeep", "Open Beep",
+                          RadioSettingValueBoolean(_settings.obeep))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rbeep", "Roger Beep",
+                          RadioSettingValueBoolean(_settings.rbeep))
+        cfg_grp.append(rs)
+        rs = RadioSetting("keylock_off", "Key Lock",
+                          RadioSettingValueBoolean(not _settings.keylock_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("ctdcsb", "CT/DCS Busy Lock",
+                          RadioSettingValueBoolean(_settings.ctdcsb))
+        cfg_grp.append(rs)
+        rs = RadioSetting("alarm", "Alarm Key",
+                          RadioSettingValueBoolean(_settings.alarm))
+        cfg_grp.append(rs)
+        rs = RadioSetting("save", "Battery Save",
+                          RadioSettingValueBoolean(_settings.save))
+        cfg_grp.append(rs)
+
         return group
 
     def get_settings(self):
@@ -557,6 +587,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                     if element.has_apply_callback():
                         print "Using apply callback"
                         element.run_apply_callback()
+                    elif setting == "keylock_off":
+                        setattr(obj, setting, not int(element.value))
                     else:
                         print "Setting %s = %s" % (setting, element.value)
                         setattr(obj, setting, element.value)
