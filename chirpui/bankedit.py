@@ -335,7 +335,8 @@ class MappingMembershipEditor(common.Editor):
         sw.add(self._view)
         self._view.show()
 
-        for i in range(*self._rf.memory_bounds):
+        (min, max) = self._rf.memory_bounds
+        for i in range(min, max+1):
             iter = self._store.append()
             self._store.set(iter,
                             self.C_FILLED, False,
@@ -362,9 +363,6 @@ class MappingMembershipEditor(common.Editor):
                 row.append(self.mappings[i][0] in mappings)
                 
             self._store.set(iter, *tuple(row))
-            if memory.number == self._rf.memory_bounds[1] - 1:
-                print "Got all %s info in %s" % (self._type,
-                                                 (time.time() - self._start))
 
         job = MemoryMappingsJob(self._model, got_mem, number)
         job.set_desc(_("Getting {type} information "
@@ -372,8 +370,12 @@ class MappingMembershipEditor(common.Editor):
         self.rthread.submit(job)
 
     def refresh_all_memories(self):
-        for i in range(*self._rf.memory_bounds):
+        start = time.time()
+        (min, max) = self._rf.memory_bounds
+        for i in range(min, max+1):
             self.refresh_memory(i)
+        print "Got all %s info in %s" % (self._type, 
+                                        (time.time() - start))
 
     def refresh_mappings(self, and_memories=False):
         def got_mappings():
@@ -397,7 +399,6 @@ class MappingMembershipEditor(common.Editor):
         if self._loaded:
             return
 
-        self._start = time.time()
         self.refresh_mappings(True)
 
         self._loaded = True
