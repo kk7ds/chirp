@@ -170,8 +170,14 @@ class EditorSet(gtk.VBox):
         self.text_label.show()
         self.label.pack_start(self.text_label, 1, 1, 1)
 
-        button = gtk.Button("X")
+        button = gtk.Button()
         button.set_relief(gtk.RELIEF_NONE)
+        button.set_focus_on_click(False)
+
+        icon = gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_MENU)
+        icon.show()
+        button.add(icon)
+
         button.connect("clicked", lambda x: self.emit("want-close"))
         button.show()
         self.label.pack_start(button, 0, 0, 0)
