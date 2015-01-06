@@ -246,6 +246,34 @@ struct {
   struct limit uhf;
 } limits_old;
 
+struct squelch {
+  u8 sql0;
+  u8 sql1;
+  u8 sql2;
+  u8 sql3;
+  u8 sql4;
+  u8 sql5;
+  u8 sql6;
+  u8 sql7;
+  u8 sql8;
+  u8 sql9;
+};
+
+#seekto 0x18A8;
+struct {
+  struct squelch vhf;
+  u8 unknown1[6];
+  u8 unknown2[16];
+  struct squelch uhf;
+} squelch_new;
+
+#seekto 0x18E8;
+struct {
+  struct squelch vhf;
+  u8 unknown[6];
+  struct squelch uhf;
+} squelch_old;
+
 """
 
 # 0x1EC0 - 0x2000
@@ -952,6 +980,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     def _get_settings(self):
         _ani = self._memobj.ani
         _settings = self._memobj.settings
+        _squelch = self._memobj.squelch_new
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _wmchannel = self._memobj.wmchannel
@@ -1495,6 +1524,23 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                           RadioSettingValueList(DTMFSPEED_LIST,
                                                 DTMFSPEED_LIST[val]))
         dtmf.append(rs)
+
+        #if not self._is_orig():
+        if not self._my_version() < 291:
+            service = RadioSettingGroup("service", "Service Settings")
+            group.append(service)
+
+            for band in ["vhf", "uhf"]:
+                for index in range(0, 10):
+                    key = "squelch_new.%s.sql%i" % (band, index)
+                    if band == "vhf":
+                        _obj = self._memobj.squelch_new.vhf
+                    elif band == "uhf":
+                        _obj = self._memobj.squelch_new.uhf
+                    name = "%s Squelch %i" % (band.upper(), index)
+                    rs = RadioSetting(key, name, RadioSettingValueInteger(
+                                      0, 64, getattr(_obj, "sql%i" % (index))))
+                    service.append(rs)
 
         return group
 
