@@ -489,6 +489,12 @@ class THD7GRadio(THD7Radio):
     """Kenwood TH-D7G"""
     MODEL = "TH-D7G"
 
+    def get_features(self):
+        rf = super(THD7GRadio,self).get_features()
+        rf.valid_name_length = 8
+        return rf
+
+
 @directory.register
 class TMD700Radio(KenwoodOldLiveRadio):
     """Kenwood TH-D700"""
