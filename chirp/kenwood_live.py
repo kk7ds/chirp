@@ -302,7 +302,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_modes = MODES.values()
         rf.valid_tmodes = ["", "Tone", "TSQL"]
-        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC + "/.-+*)('&%$#! ~}|{"
         rf.valid_name_length = 7
         rf.memory_bounds = (1, self._upper)
         return rf
