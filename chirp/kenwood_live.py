@@ -992,6 +992,21 @@ class TMV71Radio(TMD710Radio):
     """Kenwood TM-V71"""
     MODEL = "TM-V71"
 
+@directory.register
+class TMD710GRadio(TMD710Radio):
+    """Kenwood TM-D710G"""
+    MODEL = "TM-D710G"
+
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = ("This radio driver is currently under development, "
+                           "and supports the same features as the TM-D710A/E. "
+                           "There are no known issues with it, but you should "
+                           "proceed with caution.")
+        return rp
+
+
 THK2_DUPLEX = ["", "+", "-"]
 THK2_MODES = ["FM", "NFM"]
 THK2_TONES = list(chirp_common.TONES)
