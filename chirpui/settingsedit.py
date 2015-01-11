@@ -28,12 +28,12 @@ class SettingsEditor(common.Editor):
     def __init__(self, rthread):
         super(SettingsEditor, self).__init__(rthread)
         self._changed = False
-        self.root = gtk.HBox(False, 10)
+        self.root = gtk.HBox(False, 0)
         self._store = gtk.TreeStore(gobject.TYPE_STRING,
                                     gobject.TYPE_PYOBJECT)
         self._view = gtk.TreeView(self._store)
         self._view.set_size_request(150, -1)
-        self._view.connect("button-press-event", self._group_selected)
+        self._view.get_selection().connect("changed", self._view_changed_cb)
         self._view.show()
         self.root.pack_start(self._view, 0, 0, 0)
 
@@ -222,15 +222,9 @@ class SettingsEditor(common.Editor):
     def _build_ui(self, group):
         gobject.idle_add(self._build_ui_real, group)
 
-    def _group_selected(self, view, event):
-        if event.button != 1:
-            return
+    def _view_changed_cb(self, selection):
+        (lst, iter) = selection.get_selected()
+        group, = self._store.get(iter, 1)
 
-        try:
-            path, col, x, y = view.get_path_at_pos(int(event.x), int(event.y))
-        except TypeError:
-            return # Didn't click on an actual item
-
-        group, = self._store.get(self._store.get_iter(path), 1)
         if group:
             self._build_ui_group(group)
