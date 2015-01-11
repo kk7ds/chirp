@@ -637,12 +637,12 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         else:
             _mem.txfreq = int(mem.freq / 10)
         _mem.scan_add = int(mem.skip != "S")
-        _mem.iswide = int(mem.mode == "NFM")
+        _mem.iswide = int(mem.mode == "FM")
         # set the tone
         self._set_tone(mem, _mem)
         # set the power
         if mem.power:
-            _mem.power = not self.POWER_LEVELS.index(mem.power)
+            _mem.power = self.POWER_LEVELS.index(mem.power)
         else:
             _mem.power = True
         # TODO: sett the correct mute mode, for now just
