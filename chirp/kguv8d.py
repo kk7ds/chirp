@@ -621,7 +621,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         if mem.empty:
             _mem.set_raw("\x00" * (_mem.size() / 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number] = ""
+            self._memobj.names[number].set_raw("\x00" * (_nam.size() / 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)
