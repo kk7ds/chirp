@@ -148,6 +148,11 @@ struct {
      unknown2:7;
 } names[1000];
 
+#seekto 0x69C8;
+struct {
+  bbcd memory[128];
+} banks[10];
+
 #seekto 0x6FC8;
 u8 checksum;
 """
@@ -160,6 +165,49 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "S", "P"]
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
+
+class FT60BankModel(chirp_common.BankModel):
+    def get_num_mappings(self):
+        return 10
+
+    def get_mappings(self):
+        banks = []
+        for i in range(0, self.get_num_mappings()):
+            bank = chirp_common.Bank(self, "%i" % (i + 1), "Bank %i" % (i + 1))
+            bank.index = i
+            banks.append(bank)
+        return banks
+
+    def add_memory_to_mapping(self, memory, bank):
+        number = (memory.number - 1) / 8
+        mask = 1 << ((memory.number - 1) & 7)
+        self._radio._memobj.banks[bank.index].memory[number].set_bits(mask)
+
+    def remove_memory_from_mapping(self, memory, bank):
+        number = (memory.number - 1) / 8
+        mask = 1 << ((memory.number - 1) & 7)
+        if self._radio._memobj.banks[bank.index].memory[number].get_bits(mask) != mask:
+            raise Exception("Memory %i is not in bank %s." % \
+                            (memory.number, bank))
+        self._radio._memobj.banks[bank.index].memory[number].clr_bits(mask)
+
+    def get_mapping_memories(self, bank):
+        memories = []
+        for i in range(*self._radio.get_features().memory_bounds):
+            number = (i - 1) / 8
+            mask = 1 << ((i - 1) & 7)
+            if self._radio._memobj.banks[bank.index].memory[number].get_bits(mask) == mask:
+                memories.append(self._radio.get_memory(i))
+        return memories
+
+    def get_memory_mappings(self, memory):
+        banks = []
+        for bank in self.get_mappings():
+            number = (memory.number - 1) / 8
+            mask = 1 << ((memory.number - 1) & 7)
+            if self._radio._memobj.banks[bank.index].memory[number].get_bits(mask) == mask:
+                banks.append(bank)
+        return banks
 
 @directory.register
 class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -206,10 +254,13 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_bands = [(108000000, 520000000), (700000000, 999990000)]
         rf.can_odd_split = True
         rf.has_ctone = False
-        rf.has_bank = False
+        rf.has_bank = True
         rf.has_dtcs_polarity = False
 
         return rf
+
+    def get_bank_model(self):
+        return FT60BankModel(self)
 
     def _checksums(self):
         return [ yaesu_clone.YaesuChecksum(0x0000, 0x6FC7) ]
