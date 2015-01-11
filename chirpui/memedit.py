@@ -929,6 +929,8 @@ class MemoryEditor(common.Editor):
         self.view.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.view.set_rules_hint(True)
 
+        hbox = gtk.HBox()
+
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add(self.view)
@@ -1004,10 +1006,13 @@ class MemoryEditor(common.Editor):
 
         self.view.show()
         sw.show()
+        hbox.pack_start(sw, 1, 1, 1)
 
         self.view.connect("button_press_event", self.click_cb)
 
-        return sw
+        hbox.show()
+
+        return hbox
 
     def col(self, caption):
         try:
