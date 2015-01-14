@@ -593,17 +593,17 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rp = chirp_common.RadioPrompts()
         rp.pre_download = _(dedent("""\
             1. Turn radio off.
-            2. Connect cable to DATA jack.
-            3. Press and hold in the [FW] key while turning the radio on
+            2. Connect cable to DATA terminal.
+            3. Press and hold in the [F] key while turning the radio on
                  ("CLONE" will appear on the display).
             4. <b>After clicking OK</b>, press the [BAND] key to send image."""
             ))
         rp.pre_upload = _(dedent("""\
             1. Turn radio off.
-            2. Connect cable to DATA jack.
-            3. Press and hold in the [FW] key while turning the radio on
+            2. Connect cable to DATA terminal.
+            3. Press and hold in the [F] key while turning the radio on
                  ("CLONE" will appear on the display).
-            4. Press the [MODE] key ("-WAIT-" will appear on the LCD)."""))
+            4. Press the [Dx] key ("-WAIT-" will appear on the LCD)."""))
         return rp
 
     def process_mmap(self):
