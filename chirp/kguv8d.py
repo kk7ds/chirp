@@ -246,7 +246,7 @@ _MEM_FORMAT = """
 
     #seekto 0x4780;
     struct {
-        char    name[8];
+        u8    name[8];
     } names[1000];
 
     #seekto 0x6700;
@@ -517,7 +517,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
         for char in _nam.name:
-            mem.name += str(char)
+            if char != 0:
+                mem.name += chr(char)
         mem.name = mem.name.rstrip()
 
         dtcs_pol = ["N", "N"]
@@ -649,9 +650,11 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         # set to mute mode to QT (not QT+DTMF or QT*DTMF)
         _mem.mute_mode = 0
 
-        for i in range(0, len(mem.name)):
-            if mem.name[i]:
-                _nam.name[i] = mem.name[i]
+        for i in range(0, len(_nam.name)):
+            if i < len(mem.name) and mem.name[i]:
+                _nam.name[i] = ord(mem.name[i])
+            else:
+                _nam.name[i] = 0x0
         self._memobj.valid[mem.number] = MEM_VALID
 
     def _get_settings(self):
