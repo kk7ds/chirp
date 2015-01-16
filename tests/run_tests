@@ -54,7 +54,7 @@ class TestCrashError(TestError):
             ("Args were: %s" % self.__args) + os.linesep + \
             self.__tb + os.linesep + \
             "Called from:" + os.linesep + self.__mytb
-            
+
 
     def get_original_exception(self):
         return self.__exc
@@ -102,7 +102,7 @@ class TestWrapper:
                 self.open()
             except Exception, e:
                 raise TestCrashError(get_tb(), e, "[Loading]")
-        
+
         try:
             fn = getattr(self._dst, function)
         except KeyError:
@@ -153,7 +153,7 @@ class TestCase:
 
     def compare_mem(self, a, b):
         rf = self._wrapper.do("get_features")
-        
+
         if a.tmode == "Cross":
             tx_mode, rx_mode = a.cross_mode.split("->")
 
@@ -171,13 +171,13 @@ class TestCase:
             elif k == "tuning_step" and not rf.has_tuning_step:
                 continue
             elif k == "rtone" and not (
-                        a.tmode == "Tone" or 
+                        a.tmode == "Tone" or
                         (a.tmode == "TSQL" and not rf.has_ctone) or
                         (a.tmode == "Cross" and tx_mode == "Tone") or
                         (a.tmode == "Cross" and rx_mode == "Tone" and not rf.has_ctone)
                         ):
                 continue
-            elif k == "ctone" and (not rf.has_ctone or 
+            elif k == "ctone" and (not rf.has_ctone or
                         not (
                             a.tmode == "TSQL" or
                             (a.tmode == "Cross" and rx_mode == "Tone")
@@ -185,7 +185,7 @@ class TestCase:
                     ):
                 continue
             elif k == "dtcs" and not (
-                        (a.tmode == "DTCS" and not rf.has_rx_dtcs) or 
+                        (a.tmode == "DTCS" and not rf.has_rx_dtcs) or
                         (a.tmode == "Cross" and tx_mode == "DTCS") or
                         (a.tmode == "Cross" and rx_mode == "DTCS" and not rf.has_rx_dtcs)
                         ):
@@ -276,7 +276,7 @@ class TestCaseBruteForce(TestCase):
     def set_and_compare(self, m):
         msgs = self._wrapper.do("validate_memory", m)
         if msgs:
-            
+
             raise TestFailedError("Radio did not validate a valid memory",
                                   os.linesep.join(["%s:%s" % (k,v) for k,v in m.__dict__.items()]) + os.linesep + os.linesep.join(msgs))
 
@@ -362,7 +362,7 @@ class TestCaseBruteForce(TestCase):
                 m.offset = rf.valid_bands[0][1] - 100000
             m.duplex = duplex
             self.set_and_compare(m)
-        
+
         if rf.can_odd_split and "split" not in rf.valid_duplexes:
             raise TestFailedError("Paste error: rf.can_odd_split defined, but "
                                   "split duplex not supported.")
@@ -506,7 +506,7 @@ class TestCaseEdges(TestCase):
                     self._wrapper.do("set_memory", m)
                     n = self._wrapper.do("get_memory", m.number)
                     self.compare_mem(m, n)
-        
+
 
     def run(self):
         rf = self._wrapper.do("get_features")
@@ -626,7 +626,7 @@ class TestCaseBanks(TestCase):
             did_error = False
         except Exception:
             did_error = True
-        
+
         if not did_error:
             raise TestFailedError("Removing memory from non-member bank " +\
                                       "did not raise Exception")
@@ -666,7 +666,7 @@ class TestCaseBanks(TestCase):
 
         self.do_bank_names(rf)
         self.do_bank_names_toolong(rf)
-        self.do_bank_names_no_trailing_whitespace(rf)        
+        self.do_bank_names_no_trailing_whitespace(rf)
         self.do_bank_store(rf)
         self.do_bank_store(rf) # Again to make sure we clear bank info on delete
         self.do_bank_index(rf)
@@ -784,7 +784,7 @@ class TestCaseClone(TestCase):
                                   "with %s data" % serial,
                                   "On sync_out()")
         elif not isinstance(error, errors.RadioError):
-            raise TestFailedError("Radio did not raise RadioError " + 
+            raise TestFailedError("Radio did not raise RadioError " +
                                   "with %s data" % serial,
                                   "sync_out(): Got: %s (%s)" % (\
                     error.__class__.__name__, error))
@@ -1029,7 +1029,7 @@ class TestRunner:
     def run_all(self):
         run_list = self._make_list()
         return self.run_list(run_list)
-                                                  
+
     def run_one(self, drv_name):
         return self.run_rclass_image(directory.get_radio(drv_name),
                                      os.path.join("images",
