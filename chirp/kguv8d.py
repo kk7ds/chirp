@@ -27,8 +27,6 @@ if os.getenv("CHIRP_DEBUG"):
 else:
     CHIRP_DEBUG = False
 
-KGUV8D_DTCS = sorted(chirp_common.DTCS_CODES)
-
 CMD_ID = 128
 CMD_END = 129
 CMD_RD = 130
@@ -488,6 +486,51 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
+    def _get_tone(self, _mem, mem):
+        def _get_dcs(val):
+            code = int("%03o" % (val & 0x07FF))
+            pol = (val & 0x8000) and "R" or "N"
+            return code, pol
+
+        tpol = False
+        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x2800) == 0x2800:
+            tcode, tpol = _get_dcs(_mem.txtone)
+            mem.dtcs = tcode
+            txmode = "DTCS"
+        elif _mem.txtone != 0xFFFF and _mem.txtone != 0x0:
+            mem.rtone = (_mem.txtone & 0x7fff) / 10.0
+            txmode = "Tone"
+        else:
+            txmode = ""
+
+        rpol = False
+        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x2800) == 0x2800:
+            rcode, rpol = _get_dcs(_mem.rxtone)
+            mem.rx_dtcs = rcode
+            rxmode = "DTCS"
+        elif _mem.rxtone != 0xFFFF and _mem.rxtone != 0x0:
+            mem.ctone = (_mem.rxtone & 0x7fff) / 10.0
+            rxmode = "Tone"
+        else:
+            rxmode = ""
+
+        if txmode == "Tone" and not rxmode:
+            mem.tmode = "Tone"
+        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
+            mem.tmode = "TSQL"
+        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
+            mem.tmode = "DTCS"
+        elif rxmode or txmode:
+            mem.tmode = "Cross"
+            mem.cross_mode = "%s->%s" % (txmode, rxmode)
+
+        # always set it even if no dtcs is used
+        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
+
+        if os.getenv("CHIRP_DEBUG"):
+            print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.txtone,
+                                                 rxmode, _mem.rxtone)
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -521,51 +564,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                 mem.name += chr(char)
         mem.name = mem.name.rstrip()
 
-        dtcs_pol = ["N", "N"]
-
-        if _mem.txtone in [0, 0x3fff]:
-            txmode = ""
-        elif _mem.txtone >= 0x8000 and _mem.txtone < 0xc000:
-            txmode = "Tone"
-            mem.rtone = int(_mem.txtone % 16384) / 10.0
-        elif _mem.txtone >= 0x4000 and _mem.txtone < 0x8000:
-            txmode = "DTCS"
-            if _mem.txtone > 0x69:
-                index = _mem.txtone - 0x6A
-                dtcs_pol[0] = "R"
-            else:
-                index = _mem.txtone - 1
-            mem.dtcs = KGUV8D_DTCS[index]
-        else:
-            print "Bug: txtone is %04x" % _mem.txtone
-
-        if _mem.rxtone in [0, 0x3fff]:
-            rxmode = ""
-        elif _mem.rxtone >= 0x0258:
-            rxmode = "Tone"
-            mem.ctone = int(_mem.rxtone % 16384) / 10.0
-        elif _mem.rxtone <= 0x0258:
-            rxmode = "DTCS"
-            if _mem.rxtone >= 0x6A:
-                index = _mem.rxtone - 0x6A
-                dtcs_pol[1] = "R"
-            else:
-                index = _mem.rxtone - 1
-            mem.rx_dtcs = KGUV8D_DTCS[index]
-        else:
-            print "Bug: rxtone is %04x" % _mem.rxtone
-
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-            mem.tmode = "DTCS"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        mem.dtcs_polarity = "".join(dtcs_pol)
+        self._get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
 
