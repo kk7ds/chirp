@@ -104,9 +104,31 @@ def _encode_freq(freq):
         flags += 0x40
     return freqraw, flags
 
+def _decode_name(mem):
+    name = ""
+    for i in mem:
+        if i == 0xFF:
+            break
+        try:
+            name += CHARSET[i]
+        except IndexError:
+            print "Unknown char index: %i " % (i)
+    return name
+
+
+def _encode_name(mem):
+    name = [None]*6
+    for i in range(0, 6):
+        try:
+            name[i] = CHARSET.index(mem[i]) 
+        except IndexError:
+            name[i] = CHARSET.index(" ")
+
+    return name
+
 
 MEM_FORMAT = """
-#seekto 0x0238;
+#seekto 0x0248;
 struct {
   u8 used:1,
      unknown1:1,
@@ -129,7 +151,7 @@ struct {
 } memory[1000];
 
 #seekto 0x6EC8;
-// skips:2 for Memory M in [1, 1000] is in skipflags[(M-1)/4].skip((M-1)%4).
+// skips:2 for Memory M in [1, 1000] is in flags[(M-1)/4].skip((M-1)%4).
 // Interpret with SKIPS[].
 // PMS memories L0 - U50 aka memory 1001 - 1100 don't have skip flags.
 struct {
@@ -137,9 +159,9 @@ struct {
      skip2:2,
      skip1:2,
      skip0:2;
-} skipflags[250];
+} flags[250];
 
-#seekto 0x4700;
+#seekto 0x4708;
 struct {
   u8 name[6];
   u8 use_name:1,
@@ -242,7 +264,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (1, 999)
+        rf.memory_bounds = (1, 1000)
         rf.valid_duplexes = DUPLEX
         rf.valid_tmodes = TMODES
         rf.valid_power_levels = POWER_LEVELS
@@ -288,18 +310,16 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
-        _array_index = number - 1
-        return repr(self._memobj.memory[number]) + \
-            repr(self._memobj.skipflags[_array_index/4]) + \
-            repr(self._memobj.names[number])
+        return repr(self._memobj.memory[number - 1]) + \
+            repr(self._memobj.flags[(number - 1) / 4]) + \
+            repr(self._memobj.names[number - 1])
 
     def get_memory(self, number):
-        _array_index = number - 1
-        _mem = self._memobj.memory[number]
-        _skp = self._memobj.skipflags[_array_index/4]
-        _nam = self._memobj.names[number]
+        _mem = self._memobj.memory[number - 1]
+        _skp = self._memobj.flags[(number - 1) / 4]
+        _nam = self._memobj.names[number - 1]
 
-        skip = _skp["skip%i" % (_array_index%4)]
+        skip = _skp["skip%i" % ((number - 1) % 4)]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -323,22 +343,14 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.skip = SKIPS[skip]
 
         if _nam.use_name and _nam.valid:
-            for i in _nam.name:
-                if i == 0xFF:
-                    break
-                try:
-                    mem.name += CHARSET[i]
-                except IndexError:
-                    print "Memory %i: Unknown char index: %i " % (number, i)
-            mem.name = mem.name.rstrip()
+            mem.name = _decode_name(_nam.name).rstrip()
 
         return mem
 
     def set_memory(self, mem):
-        _array_index = mem.number - 1
-        _mem = self._memobj.memory[mem.number]
-        _skp = self._memobj.skipflags[_array_index/4]
-        _nam = self._memobj.names[mem.number]
+        _mem = self._memobj.memory[mem.number - 1]
+        _skp = self._memobj.flags[(mem.number - 1) / 4]
+        _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
             _mem.used = False
@@ -367,13 +379,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.isam = mem.mode == "AM"
         _mem.step = STEPS.index(mem.tuning_step)
 
-        _skp["skip%i" % (_array_index%4)] = SKIPS.index(mem.skip)
+        _skp["skip%i" % ((mem.number - 1) % 4)] = SKIPS.index(mem.skip)
 
-        for i in range(0, 6):
-            try:
-                _nam.name[i] = CHARSET.index(mem.name[i])
-            except IndexError:
-                _nam.name[i] = CHARSET.index(" ")
-            
+        _nam.name = _encode_name(mem.name)
         _nam.use_name = mem.name.strip() and True or False
         _nam.valid = _nam.use_name
