@@ -322,14 +322,16 @@ class TYTTH9800Base(chirp_common.Radio):
 
   def set_memory(self, mem):
     _mem = self._memobj.memory[mem.number - 1]
+    
+    _prev_active = self.get_chan_active(mem.number)
     self.set_chan_active(mem.number, not mem.empty)
-    if mem.empty:
+    if mem.empty or not _prev_active:
+      if CHIRP_DEBUG:
+        print "initializing memory channel %d" % mem.number
       _mem.set_raw(BLANK_MEMORY)
+    
+    if mem.empty:
       return
-
-    #if _mem.get_raw() == BLANK_MEMORY:
-    #    print "Initializing empty memory"
-    #    _mem.set_raw(BLANK_MEMORY)
 
     _mem.rx_freq = mem.freq / 10
     if mem.duplex == "split":
