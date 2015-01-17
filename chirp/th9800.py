@@ -155,7 +155,7 @@ BLANK_MEMORY = "\xFF" * 8 + "\x00\x10\x23\x00\xC0\x08\x06\x00" \
                "\x00\x00\x76\x00\x00\x00" + "\xFF" * 10
 DTCS_POLARITY = ["NN", "RN", "NR", "RR"]
 SCAN_MODES = ["", "S", "P"]
-MODES = ["FM", "FM", "NFM"]  ## fixme?
+MODES = ["WFM", "FM", "NFM"]
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
                 chirp_common.PowerLevel("Mid2", watts=10.00),
