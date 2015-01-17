@@ -355,7 +355,7 @@ class TYTTH9800Base(chirp_common.Radio):
         _mem.fmdev = 0
     else:
         _mem.am = False
-    #    _mem.fmdev = MODES.index(mem.mode)
+        _mem.fmdev = MODES.index(mem.mode)
 
     _mem.power = POWER_LEVELS.index(mem.power)
     
