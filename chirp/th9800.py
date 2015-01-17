@@ -636,7 +636,7 @@ def _upload(radio, memsize = 0xF400, blocksize = 0x80):
         ly = _info.prog_yr
         lm = _info.prog_mon
         ld = _info.prog_day
-        print "Updating last program date:%d/%d/%d" % (lm,ld,ly, m,d,y)
+        print "Updating last program date:%d/%d/%d" % (lm,ld,ly)
         print "                  to today:%d/%d/%d" % (m,d,y)
 
     _info.prog_yr = y
