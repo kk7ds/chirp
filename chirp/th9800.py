@@ -177,7 +177,8 @@ class TYTTH9800Base(chirp_common.Radio):
     rf = chirp_common.RadioFeatures()
     rf.memory_bounds = (1, 800)
     rf.has_bank = False
-    rf.has_tuning_step = False
+    rf.has_tuning_step = True
+    rf.valid_tuning_steps = STEPS
     rf.can_odd_split = True
     rf.valid_duplexes = ["", "-", "+", "split", "off"]
     rf.valid_tmodes = TMODES
@@ -277,6 +278,7 @@ class TYTTH9800Base(chirp_common.Radio):
     mem.mode = _mem.am and "AM" or MODES[int(_mem.fmdev)]
 
     mem.power = POWER_LEVELS[_mem.power]
+    mem.tuning_step = STEPS[_mem.step]
 
     mem.extra = RadioSettingGroup("extra", "Extra")
     FreqName = RadioSetting("FreqName", "Frequency or Name",
@@ -366,7 +368,8 @@ class TYTTH9800Base(chirp_common.Radio):
         _mem.fmdev = MODES.index(mem.mode)
 
     _mem.power = POWER_LEVELS.index(mem.power)
-    
+    _mem.step = STEPS.index(mem.tuning_step)
+
     for setting in mem.extra:
       setattr(_mem, setting.get_name(), setting.value)
 
