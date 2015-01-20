@@ -49,7 +49,7 @@ struct mem {
      unknown1a:1,
      unknown1b:2;
   u8 rptmod:2,      // off, -, +
-     unknown2a:1,
+     reverse:1,
      talkaround:1,
      step:4;
   u8 dtcs_pol:2,
@@ -179,7 +179,7 @@ class TYTTH9800Base(chirp_common.Radio):
     rf.has_bank = False
     rf.has_tuning_step = False
     rf.can_odd_split = True
-    rf.valid_duplexes = ["", "-", "+", "split"]
+    rf.valid_duplexes = ["", "-", "+", "split", "off"]
     rf.valid_tmodes = TMODES
     rf.valid_power_levels = POWER_LEVELS
     rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "#*-+"
@@ -251,6 +251,9 @@ class TYTTH9800Base(chirp_common.Radio):
     txfreq = int(_mem.tx_freq) * 10
     if txfreq == mem.freq:
         mem.duplex = ""
+    elif txfreq == 0:
+        mem.duplex = "off"
+        mem.offset = 0
     elif abs(txfreq - mem.freq) > 70000000:
         mem.duplex = "split"
         mem.offset = txfreq
@@ -340,6 +343,9 @@ class TYTTH9800Base(chirp_common.Radio):
         _mem.tx_freq = (mem.freq - mem.offset) / 10
     elif mem.duplex == "+":
         _mem.tx_freq = (mem.freq + mem.offset) / 10
+    elif mem.duplex == "off":
+        _mem.tx_freq = 0
+        _mem.offset = 0
     else:
         _mem.tx_freq = mem.freq / 10
 
