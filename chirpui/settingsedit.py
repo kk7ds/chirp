@@ -45,6 +45,7 @@ class SettingsEditor(common.Editor):
         self._table.show()
 
         sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add_with_viewport(self._table)
         sw.show()
 
@@ -144,9 +145,9 @@ class SettingsEditor(common.Editor):
             if isinstance(element.value, list) and \
                     isinstance(element.value[0],
                                settings.RadioSettingValueInteger):
-                arraybox = gtk.HBox(3, True)
+                arraybox = gtk.HBox(True, 3)
             else:
-                arraybox = gtk.VBox(3, True)
+                arraybox = gtk.VBox(True, 3)
             pack(arraybox, 1)
             arraybox.show()
 
