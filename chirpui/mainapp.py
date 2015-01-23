@@ -17,6 +17,7 @@
 import os
 import tempfile
 import urllib
+import webbrowser
 from glob import glob
 import shutil
 import time
@@ -1177,9 +1178,12 @@ If you think that it is valid, you can select a radio model below to force an op
             ".".join([str(x) for x in gtk.pygtk_version]),
             sys.version.split()[0])
 
+        # Set url hook to handle user activating a URL link in the about dialog
+        gtk.about_dialog_set_url_hook(lambda dlg, url: webbrowser.open(url))
+
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)
-        d.set_copyright("Copyright 2013 Dan Smith (KK7DS)")
+        d.set_copyright("Copyright 2015 Dan Smith (KK7DS)")
         d.set_website("http://chirp.danplanet.com")
         d.set_authors(("Dan Smith KK7DS <dsmith@danplanet.com>",
                        _("With significant contributions from:"),
@@ -1205,20 +1209,8 @@ If you think that it is valid, you can select a radio model below to force an op
         d.run()
         d.destroy()
 
-    def do_documentation(self):
-        d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=self,
-                              type=gtk.MESSAGE_INFO)
-
-        d.set_markup("<b><big>" + _("CHIRP Documentation") + "</big></b>\r\n")
-        msg = _("Documentation for CHIRP, including FAQs, and help for common "
-                "problems is available on the CHIRP web site, please go to\n\n"
-                "<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/"
-                "Documentation\">"
-                "http://chirp.danplanet.com/projects/chirp/wiki/"
-                "Documentation</a>\n")
-        d.format_secondary_markup(msg.replace("\n","\r\n"))
-        d.run()
-        d.destroy()
+    def do_gethelp(self):
+        webbrowser.open("http://chirp.danplanet.com")
 
     def do_columns(self):
         eset = self.get_current_editorset()
@@ -1407,8 +1399,8 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_przemienniki(action[0] == "i")
         elif action == "about":
             self.do_about()
-        elif action == "documentation":
-            self.do_documentation()
+        elif action == "gethelp":
+            self.do_gethelp()
         elif action == "columns":
             self.do_columns()
         elif action == "hide_unused":
@@ -1502,10 +1494,12 @@ If you think that it is valid, you can select a radio model below to force an op
       <menuitem action="cancelq"/>
     </menu>
     <menu action="help">
-      <menuitem action="about"/>
-      <menuitem action="documentation"/>
+      <menuitem action="gethelp"/>
+      <separator/>
       <menuitem action="report"/>
       <menuitem action="developer"/>
+      <separator/>
+      <menuitem action="about"/>
     </menu>
   </menubar>
 </ui>
@@ -1558,7 +1552,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
-            ('documentation', None, _("Documentation"), None, None, self.mh),
+            ('gethelp', None, _("Get Help Online..."), None, None, self.mh),
             ]
 
         conf = config.get()
