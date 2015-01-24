@@ -126,8 +126,9 @@ struct {
 } settings;
 
 #seekto 0x%04X;
-u8  chan_active_a[128];
-u8  chan_active_b[128];
+u8  chan_active[128];
+u8  scan_enable[128];
+u8  priority[128];
 
 #seekto 0x%04X;
 struct {
@@ -201,35 +202,28 @@ class TYTTH9800Base(chirp_common.Radio):
        (self._mmap_offset, self._scanlimits_offset, self._settings_offset,
         self._chan_active_offset, self._info_offset), self._mmap)
 
-  def get_chan_active(self, num):
+  def get_active(self, banktype, num):
+    """get active flag for channel active, scan enable, or priority banks"""
+    bank = getattr(self._memobj, banktype)
     index = (num - 1) / 8
     bitpos = (num - 1) % 8
     mask = 2**bitpos
-    enabled = self._memobj.chan_active_a[index] & mask
-    if CHIRP_DEBUG:    
-      print "gca:", num, index, bitpos, self._memobj.chan_active_a[index],
-      enabled
+    enabled = bank[index] & mask
     if enabled:
       return True
     else:
       return False
 
-  def set_chan_active(self, num, enable):
+  def set_active(self, banktype, num, enable = True):
+    """set active flag for channel active, scan enable, or priority banks"""
+    bank = getattr(self._memobj, banktype)
     index = (num - 1)  / 8
     bitpos = (num - 1) % 8
     mask = 2**bitpos
-    if CHIRP_DEBUG:
-      print "setting to:", enable, mask
-      print "before:", self._memobj.chan_active_a[index]
     if enable:
-      self._memobj.chan_active_a[index] |= mask
-      self._memobj.chan_active_b[index] |= mask
+      bank[index] |= mask
     else:
-      self._memobj.chan_active_a[index] &= ~mask
-      self._memobj.chan_active_b[index] &= ~mask
-    if CHIRP_DEBUG:
-      print "sca:", num, index, bitpos
-      print "after:", self._memobj.chan_active_a[index]
+      bank[index] &= ~mask
 
   def get_raw_memory(self, number):
     return repr(self._memobj.memory[number - 1])
@@ -239,11 +233,7 @@ class TYTTH9800Base(chirp_common.Radio):
     mem = chirp_common.Memory()
     mem.number = number
 
-    #if not _mem.get_raw().startswith("\xFF\xFF\xFF\xFF"):
-    #  mem.empty = True
-    #  return mem
-
-    mem.empty = not self.get_chan_active(number)
+    mem.empty = not self.get_active("chan_active", number)
     if mem.empty:
       return mem
 
@@ -274,7 +264,13 @@ class TYTTH9800Base(chirp_common.Radio):
     mem.name = str(_mem.name)
     mem.name = mem.name.replace("\xFF", " ").rstrip()
 
-    mem.skip = SCAN_MODES[int(_mem.scan)]
+    if not self.get_active("scan_enable", number):
+        mem.skip = "S"
+    elif self.get_active("priority", number):
+        mem.skip = "P"
+    else:
+        mem.skip = ""
+
     mem.mode = _mem.am and "AM" or MODES[int(_mem.fmdev)]
 
     mem.power = POWER_LEVELS[_mem.power]
@@ -329,13 +325,13 @@ class TYTTH9800Base(chirp_common.Radio):
   def set_memory(self, mem):
     _mem = self._memobj.memory[mem.number - 1]
     
-    _prev_active = self.get_chan_active(mem.number)
-    self.set_chan_active(mem.number, not mem.empty)
+    _prev_active = self.get_active("chan_active", mem.number)
+    self.set_active("chan_active", mem.number, not mem.empty)
     if mem.empty or not _prev_active:
       if CHIRP_DEBUG:
         print "initializing memory channel %d" % mem.number
       _mem.set_raw(BLANK_MEMORY)
-    
+
     if mem.empty:
       return
 
@@ -360,6 +356,15 @@ class TYTTH9800Base(chirp_common.Radio):
     _mem.name = mem.name.ljust(6, "\xFF")
 
     _mem.scan = SCAN_MODES.index(mem.skip)
+    if mem.skip == "P":
+        self.set_active("priority", mem.number, True)
+        self.set_active("scan_enable", mem.number, True)
+    elif mem.skip == "S":
+        self.set_active("priority", mem.number, False)
+        self.set_active("scan_enable", mem.number, False)
+    elif mem.skip == "":
+        self.set_active("priority", mem.number, False)
+        self.set_active("scan_enable", mem.number, True)
 
     if mem.mode == "AM":
         _mem.am = True
@@ -427,8 +432,11 @@ class TYTTH9800Base(chirp_common.Radio):
       basic.append( RadioSetting("mute_mode", "Mute Mode",
             RadioSettingValueList(opts, opts[_settings.mute_mode])))
       opts = ["MEM", "MSM"]
-      basic.append( RadioSetting("scan_mode", "Scan Mode",
-            RadioSettingValueList(opts, opts[_settings.scan_mode])))
+      scanmode = RadioSetting("scan_mode", "Scan Mode",
+            RadioSettingValueList(opts, opts[_settings.scan_mode]))
+      scanmode.set_doc("MEM = Normal scan, bypass channels marked skip. " \
+                        " MSM = Scan only channels marked priority.")
+      basic.append(scanmode)
       opts = ["TO", "CO"]
       basic.append( RadioSetting("scan_resume", "Scan Resume",
             RadioSettingValueList(opts, opts[_settings.scan_resume])))
