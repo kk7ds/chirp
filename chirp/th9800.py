@@ -40,7 +40,7 @@ struct mem {
   u8 power:2,
      BeatShift:1,
      unknown0a:2,
-     FreqName:1,
+     display:1,     // freq=0, name=1
      scan:2;
   u8 fmdev:2,       // wide=00, mid=01, narrow=10
      scramb:1,
@@ -281,10 +281,11 @@ class TYTTH9800Base(chirp_common.Radio):
     mem.tuning_step = STEPS[_mem.step]
 
     mem.extra = RadioSettingGroup("extra", "Extra")
-    FreqName = RadioSetting("FreqName", "Frequency or Name",
-                       RadioSettingValueBoolean(bool(_mem.FreqName)))
-    FreqName.set_doc("Display Frequency or Name on=Name")
-    mem.extra.append(FreqName)
+
+    opts = ["Frequency", "Name"]
+    display = RadioSetting("display", "Display",
+                       RadioSettingValueList(opts, opts[_mem.display]))
+    mem.extra.append(display)
     
     bclo = RadioSetting("bclo", "Busy Lockout",
                            RadioSettingValueList(BUSY_LOCK,
