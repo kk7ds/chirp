@@ -899,13 +899,17 @@ class MemoryEditor(common.Editor):
 
     def click_cb(self, view, event):
         self.emit("usermsg", "")
-        if event.button != 3:
-            return False
-
-        menu = self.make_context_menu()
-        menu.popup(None, None, None, event.button, event.time)
-
-        return True
+        if event.button == 3:
+            pathinfo = view.get_path_at_pos(int(event.x), int(event.y))
+            if pathinfo is not None:
+                path, col, x, y = pathinfo
+                view.grab_focus()
+                sel = view.get_selection()
+                if (not sel.path_is_selected(path)):
+                    view.set_cursor(path, col)
+                menu = self.make_context_menu()
+                menu.popup(None, None, None, event.button, event.time)
+            return True
         
     def get_column_visible(self, col):
         column = self.view.get_column(col)
