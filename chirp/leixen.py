@@ -69,10 +69,14 @@ struct {
   u8 unknown0x018D;
   u8 unknown0x018E;
   u8 unknown0x018F;
-  u8 unknown0x0190;
-  u8 unknown0x0191;
-  u8 unknown0x0192;
-  u8 unknown0x0193;
+  u8 unknown:3,
+     lptime:5;           // long press time
+  u8 keyp2long:4,        // p2 key long press
+     keyp2short:4;       // p2 key short press
+  u8 keyp1long:4,        // p1 key long press
+     keyp1short:4;       // p1 key short press
+  u8 keyp3long:4,        // p3 key long press
+     keyp3short:4;       // p3 key short press
   u8 unknown0x0194;
   u8 menuen:1,           // menu enable
      absel:1,            // a/b select
@@ -161,6 +165,43 @@ OPENDIS_LIST = ["All", "Lease Time", "User-defined", "Leixen"]
 LAMP_LIST = ["OFF", "KEY", "CONT"]
 KEYLOCKM_LIST = ["K+S", "PTT", "KEY", "ALL"]
 ABSEL_LIST = ["B Channel",  "A Channel"]
+
+LPTIME_LIST = ["%i miliseconds" % x for x in range(500, 2600, 100)]
+PFKEYLONG_LIST = ["OFF",
+                  "FM",
+                  "Monitor Momentary",
+                  "Monitor Lock",
+                  "SQ Off Momentary",
+                  "Mute",
+                  "SCAN",
+                  "TX Power",
+                  "EMG",
+                  "VFO/MR",
+                  "DTMF",
+                  "CALL",
+                  "Transmit 1750Hz",
+                  "A/B",
+                  "Talk Around",
+                  "Reverse"
+                  ]
+
+PFKEYSHORT_LIST = ["OFF",
+                   "FM",
+                   "BandChange",
+                   "Time",
+                   "Monitor Lock",
+                   "Mute",
+                   "SCAN",
+                   "TX Power",
+                   "EMG",
+                   "VFO/MR",
+                   "DTMF",
+                   "CALL",
+                   "Transmit 1750Hz",
+                   "A/B",
+                   "Talk Around",
+                   "Reverse"
+                   ]
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=4),
                 chirp_common.PowerLevel("High", watts=10)]
@@ -466,8 +507,9 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _settings = self._memobj.settings
         _msg = self._memobj.messages
         cfg_grp = RadioSettingGroup("cfg_grp", "Basic Settings")
-        group = RadioSettingGroup("top", "All Settings", cfg_grp)
-
+        key_grp = RadioSettingGroup("key_grp", "Key Assignment")
+        group = RadioSettingGroup("top", "All Settings", cfg_grp,
+                        key_grp)
 
         #
         # Basic Settings
@@ -597,6 +639,48 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(not _settings.keypadmic_off))
         cfg_grp.append(rs)
 
+        #
+        # Key Settings
+        #
+        val = (_settings.lptime) - 5
+        rs = RadioSetting("lptime", "Long Press Time",
+                          RadioSettingValueList(LPTIME_LIST,
+                                                LPTIME_LIST[val]))
+        key_grp.append(rs)
+        rs = RadioSetting("keyp1long", "P1 Long Key",
+                          RadioSettingValueList(PFKEYLONG_LIST,
+                                          PFKEYLONG_LIST[_settings.keyp1long]))
+        key_grp.append(rs)
+        rs = RadioSetting("keyp1short", "P1 Short Key",
+                          RadioSettingValueList(PFKEYSHORT_LIST,
+                                        PFKEYSHORT_LIST[_settings.keyp1short]))
+        key_grp.append(rs)
+        rs = RadioSetting("keyp2long", "P2 Long Key",
+                          RadioSettingValueList(PFKEYLONG_LIST,
+                                          PFKEYLONG_LIST[_settings.keyp2long]))
+        key_grp.append(rs)
+        rs = RadioSetting("keyp2short", "P2 Short Key",
+                          RadioSettingValueList(PFKEYSHORT_LIST,
+                                        PFKEYSHORT_LIST[_settings.keyp2short]))
+        key_grp.append(rs)
+        rs = RadioSetting("keyp3long", "P3 Long Key",
+                          RadioSettingValueList(PFKEYLONG_LIST,
+                                          PFKEYLONG_LIST[_settings.keyp3long]))
+        key_grp.append(rs)
+        rs = RadioSetting("keyp3short", "P3 Short Key",
+                          RadioSettingValueList(PFKEYSHORT_LIST,
+                                        PFKEYSHORT_LIST[_settings.keyp3short]))
+        key_grp.append(rs)
+
+        val = RadioSettingValueList(PFKEYSHORT_LIST,
+                                    PFKEYSHORT_LIST[_settings.keymshort])
+        val.set_mutable(_settings.menuen == 0)
+        rs = RadioSetting("keymshort", "M Short Key", val)
+        key_grp.append(rs)
+        val = RadioSettingValueBoolean(_settings.menuen)
+        rs = RadioSetting("menuen", "Menu Enable", val)
+        key_grp.append(rs)
+
         return group
 
     def get_settings(self):
@@ -651,6 +735,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                         setattr(obj, setting, not int(element.value))
                     elif setting == "keypadmic_off":
                         setattr(obj, setting, not int(element.value))
+                    elif setting == "lptime":
+                        setattr(obj, setting, int(element.value) + 5)
                     else:
                         print "Setting %s = %s" % (setting, element.value)
                         setattr(obj, setting, element.value)
