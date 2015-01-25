@@ -108,6 +108,13 @@ struct {
      unknown:4;
 } settings;
 
+#seekto 0x01cd;
+struct {
+  u8 rssi136;            // squelch base level (vhf)
+  u8 unknown0x01ce;
+  u8 rssi400;            // squelch base level (uhf)
+} service;
+
 #seekto 0x0900;
 struct {
   char user1[7];         // user message 1
@@ -519,6 +526,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     def _get_settings(self):
         _settings = self._memobj.settings
+        _service = self._memobj.service
         _msg = self._memobj.messages
         cfg_grp = RadioSettingGroup("cfg_grp", "Basic Settings")
         adv_grp = RadioSettingGroup("adv_grp", "Advanced Settings")
@@ -698,6 +706,13 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         adv_grp.append(rs)
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
                           RadioSettingValueBoolean(_settings.dtmfst))
+        adv_grp.append(rs)
+
+        rs = RadioSetting("service.rssi400", "Squelch Base Level (UHF)",
+                          RadioSettingValueInteger(0, 255,_service.rssi400))
+        adv_grp.append(rs)
+        rs = RadioSetting("service.rssi136", "Squelch Base Level (VHF)",
+                          RadioSettingValueInteger(0, 255,_service.rssi136))
         adv_grp.append(rs)
 
         #
