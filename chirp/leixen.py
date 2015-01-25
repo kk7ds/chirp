@@ -83,7 +83,9 @@ struct {
      absel:1,            // a/b select
      unknown:2
      keymshort:4;        // m key short press
-  u8 unknown:6,
+  u8 unknown:4,
+     dtmfst:1,           // dtmf sidetone
+     ackdecode:1,        // ack decode
      monitor:2;          // monitor
   u8 unknown1:3,
      reset:1,            // reset enable
@@ -91,11 +93,16 @@ struct {
      keypadmic_off:1,    // keypad mic (inverted)
      unknown3:2;
   u8 unknown0x0198;
-  u8 unknown0x0199;
-  u8 unknown0x019A;
-  u8 unknown0x019B;
-  u8 unknown0x019C;
-  u8 unknown0x019D;
+  u8 unknown1:3,
+     dtmftime:5;         // dtmf digit time
+  u8 unknown1:3,
+     dtmfspace:5;        // dtmf digit space time
+  u8 unknown1:2,
+     dtmfdelay:6;        // dtmf first digit delay
+  u8 unknown1:1,
+     dtmfpretime:7;      // dtmf pretime
+  u8 unknown1:2,
+     dtmfdelay2:6;       // dtmf * and # digit delay
   u8 unknown1:3,
      smfont_off:1,       // small font (inverted)
      unknown:4;
@@ -168,8 +175,12 @@ KEYLOCKM_LIST = ["K+S", "PTT", "KEY", "ALL"]
 ABSEL_LIST = ["B Channel",  "A Channel"]
 VOXGAIN_LIST = ["%s" % x for x in range(1, 9)]
 VOXDT_LIST = ["%s seconds" % x for x in range(1, 5)]
+DTMFTIME_LIST = ["%i milliseconds" % x for x in range(50, 210, 10)]
+DTMFDELAY_LIST = ["%i milliseconds" % x for x in range(0, 550, 50)]
+DTMFPRETIME_LIST = ["%i milliseconds" % x for x in range(100, 1100, 100)]
+DTMFDELAY2_LIST = ["%i milliseconds" % x for x in range(0, 450, 50)]
 
-LPTIME_LIST = ["%i miliseconds" % x for x in range(500, 2600, 100)]
+LPTIME_LIST = ["%i milliseconds" % x for x in range(500, 2600, 100)]
 PFKEYLONG_LIST = ["OFF",
                   "FM",
                   "Monitor Momentary",
@@ -510,9 +521,10 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _settings = self._memobj.settings
         _msg = self._memobj.messages
         cfg_grp = RadioSettingGroup("cfg_grp", "Basic Settings")
+        adv_grp = RadioSettingGroup("adv_grp", "Advanced Settings")
         key_grp = RadioSettingGroup("key_grp", "Key Assignment")
         group = RadioSettingGroup("top", "All Settings", cfg_grp,
-                        key_grp)
+                        adv_grp, key_grp)
 
         #
         # Basic Settings
@@ -654,6 +666,41 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         cfg_grp.append(rs)
 
         #
+        # Advanced Settings
+        #
+        val = (_settings.dtmftime) - 5
+        rs = RadioSetting("dtmftime", "DTMF Digit Time",
+                          RadioSettingValueList(DTMFTIME_LIST,
+                                                DTMFTIME_LIST[val]))
+        adv_grp.append(rs)
+        val = (_settings.dtmfspace) - 5
+        rs = RadioSetting("dtmfspace", "DTMF Digit Space Time",
+                          RadioSettingValueList(DTMFTIME_LIST,
+                                                DTMFTIME_LIST[val]))
+        adv_grp.append(rs)
+        val = (_settings.dtmfdelay) / 5
+        rs = RadioSetting("dtmfdelay", "DTMF 1st Digit Delay",
+                          RadioSettingValueList(DTMFDELAY_LIST,
+                                                DTMFDELAY_LIST[val]))
+        adv_grp.append(rs)
+        val = (_settings.dtmfpretime) / 10 - 1
+        rs = RadioSetting("dtmfpretime", "DTMF Pretime",
+                          RadioSettingValueList(DTMFPRETIME_LIST,
+                                                DTMFPRETIME_LIST[val]))
+        adv_grp.append(rs)
+        val = (_settings.dtmfdelay2) / 5
+        rs = RadioSetting("dtmfdelay2", "DTMF * and # Digit Delay",
+                          RadioSettingValueList(DTMFDELAY2_LIST,
+                                                DTMFDELAY2_LIST[val]))
+        adv_grp.append(rs)
+        rs = RadioSetting("ackdecode", "ACK Decode",
+                          RadioSettingValueBoolean(_settings.ackdecode))
+        adv_grp.append(rs)
+        rs = RadioSetting("dtmfst", "DTMF Sidetone",
+                          RadioSettingValueBoolean(_settings.dtmfst))
+        adv_grp.append(rs)
+
+        #
         # Key Settings
         #
         val = (_settings.lptime) - 5
@@ -749,6 +796,16 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                         setattr(obj, setting, not int(element.value))
                     elif setting == "keypadmic_off":
                         setattr(obj, setting, not int(element.value))
+                    elif setting == "dtmftime":
+                        setattr(obj, setting, int(element.value) + 5)
+                    elif setting == "dtmfspace":
+                        setattr(obj, setting, int(element.value) + 5)
+                    elif setting == "dtmfdelay":
+                        setattr(obj, setting, int(element.value) * 5)
+                    elif setting == "dtmfpretime":
+                        setattr(obj, setting, (int(element.value) + 1) * 10)
+                    elif setting == "dtmfdelay2":
+                        setattr(obj, setting, int(element.value) * 5)
                     elif setting == "lptime":
                         setattr(obj, setting, int(element.value) + 5)
                     else:
