@@ -66,7 +66,8 @@ struct {
   u8 apo:4,              // auto power off
      tot:4;              // time out timer
   u8 unknown0x018C;
-  u8 unknown0x018D;
+  u8 voxdt:4,            // vox delay time
+     voxgain:4;          // vox gain
   u8 unknown0x018E;
   u8 unknown0x018F;
   u8 unknown:3,
@@ -165,6 +166,8 @@ OPENDIS_LIST = ["All", "Lease Time", "User-defined", "Leixen"]
 LAMP_LIST = ["OFF", "KEY", "CONT"]
 KEYLOCKM_LIST = ["K+S", "PTT", "KEY", "ALL"]
 ABSEL_LIST = ["B Channel",  "A Channel"]
+VOXGAIN_LIST = ["%s" % x for x in range(1, 9)]
+VOXDT_LIST = ["%s seconds" % x for x in range(1, 5)]
 
 LPTIME_LIST = ["%i miliseconds" % x for x in range(500, 2600, 100)]
 PFKEYLONG_LIST = ["OFF",
@@ -637,6 +640,17 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         cfg_grp.append(rs)
         rs = RadioSetting("keypadmic_off", "Keypad MIC",
                           RadioSettingValueBoolean(not _settings.keypadmic_off))
+        cfg_grp.append(rs)
+        rs = RadioSetting("voxgain", "VOX Gain",
+                          RadioSettingValueList(VOXGAIN_LIST,
+                                                VOXGAIN_LIST[_settings.voxgain]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("voxdt", "VOX Delay Time",
+                          RadioSettingValueList(VOXDT_LIST,
+                                                VOXDT_LIST[_settings.voxdt]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("vir", "VOX Inhibit on Receive",
+                          RadioSettingValueBoolean(_settings.vir))
         cfg_grp.append(rs)
 
         #
