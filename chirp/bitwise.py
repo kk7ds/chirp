@@ -304,6 +304,9 @@ class intDataElement(DataElement):
     def __or__(self, val):
         return self.get_value() | val
 
+    def __xor__(self, val):
+        return self.get_value() ^ val
+
     def __and__(self, val):
         return self.get_value() & val
 
@@ -324,6 +327,9 @@ class intDataElement(DataElement):
 
     def __ror__(self, val):
         return val | self.get_value()
+
+    def __rxor__(self, val):
+        return val ^ self.get_value()
 
     def __rmod__(self, val):
         return val % self.get_value()
@@ -360,6 +366,10 @@ class intDataElement(DataElement):
 
     def __ior__(self, val):
         self.set_value(self.get_value() | val)
+        return self
+
+    def __ixor__(self, val):
+        self.set_value(self.get_value() ^ val)
         return self
 
     def __index__(self):

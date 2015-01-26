@@ -274,10 +274,6 @@ class FT60BankModel(chirp_common.BankModel):
             bank = chirp_common.Bank(self, "%i" % (i + 1), "Bank %i" % (i + 1))
             bank.index = i
             banks.append(bank)
-
-            #mbs = (self._radio._memobj.mbs >> i) & 1
-            #print "Bank %i: mbs: %i " % (i, mbs) 
-
         return banks
 
     def add_memory_to_mapping(self, memory, bank):
@@ -402,9 +398,10 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         eai = RadioSettingGroup("eai", "EAI/EPCS Settings")
         switch = RadioSettingGroup("switch", "Switch/Knob Settings")
         misc = RadioSettingGroup("misc", "Miscellaneous Settings")
+        mbls = RadioSettingGroup("banks", "Memory Bank Link Scan")
 
         setmode = RadioSettingGroup("top", "Set Mode",
-                    repeater, ctcss, arts, scan, power, wires, eai, switch, misc)
+                    repeater, ctcss, arts, scan, power, wires, eai, switch, misc, mbls)
 
         # APO
         opts = [ "OFF" ] + [ "%0.1f" % (x * 0.5) for x in range(1, 24+1) ]
@@ -585,6 +582,20 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         scan.append( RadioSetting("wx_alt", "Weather Alert Scan",
             RadioSettingValueList(opts, opts[_settings.wx_alt])))
 
+        # MBS
+        for i in range(0, 10):
+            opts = [ "OFF" ] + [ "ON" ]
+            mbs = (self._memobj.mbs >> i) & 1
+            rs = RadioSetting("mbs%i" % i, "Bank %s Scan" % (i + 1),
+                RadioSettingValueList(opts, opts[mbs]))
+            def apply_mbs(s, index):
+                if int(s.value):
+                    self._memobj.mbs |= (1 << index)
+                else:
+                    self._memobj.mbs &= ~(1 << index);
+            rs.set_apply_callback(apply_mbs, i);
+            mbls.append(rs)
+
         return setmode
 
     def set_settings(self, uisettings):
@@ -599,16 +610,16 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             try:
                 name = element.get_name()
                 value = element.value
-                obj = getattr(_settings, name)
 
                 if element.has_apply_callback():
                     print "Using apply callback"
                     element.run_apply_callback()
                 else:
+                    obj = getattr(_settings, name)
                     setattr(_settings, name, value)
 
                 if os.getenv("CHIRP_DEBUG"):
-                    print "Setting %s: %s <= %s" % (name, obj, element.value)
+                    print "Setting %s: %s" % (name, value)
             except Exception, e:
                 print element.get_name()
                 raise
