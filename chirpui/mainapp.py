@@ -732,9 +732,10 @@ If you think that it is valid, you can select a radio model below to force an op
             dlg.set_text(_("File is modified, save changes before closing?"))
             res = dlg.run()
             dlg.destroy()
+
             if res == gtk.RESPONSE_YES:
                 self.do_save(eset)
-            elif res == gtk.RESPONSE_CANCEL:
+            elif res != gtk.RESPONSE_NO:
                 raise ModifiedError()
 
         eset.rthread.stop()
