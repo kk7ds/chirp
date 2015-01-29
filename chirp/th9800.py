@@ -356,6 +356,21 @@ class TYTTH9800Base(chirp_common.Radio):
 
     _mem.name = mem.name.ljust(6, "\xFF")
 
+    # autoset display to name if filled, else show frequency
+    if mem.extra:
+        # mem.extra only seems to be populated when called from edit panel
+        display = mem.extra["display"]
+    else:
+        display = None
+    if mem.name:
+        _mem.display = True
+        if display and not display.changed():
+            display.value = "Name"
+    else:
+        _mem.display = False
+        if display and not display.changed():
+            display.value = "Frequency"
+
     _mem.scan = SCAN_MODES.index(mem.skip)
     if mem.skip == "P":
         self.set_active("priority", mem.number, True)
@@ -381,6 +396,8 @@ class TYTTH9800Base(chirp_common.Radio):
     _mem.step = STEPS.index(mem.tuning_step)
 
     for setting in mem.extra:
+      if CHIRP_DEBUG:
+          print "@set_mem:", setting.get_name(), setting.value
       setattr(_mem, setting.get_name(), setting.value)
 
   def get_settings(self):
