@@ -520,7 +520,29 @@ class TestCaseEdges(TestCase):
         self.do_badname(rf)
 
         return []
+
 TESTS["Edges"] = TestCaseEdges
+
+
+class TestCaseSettings(TestCase):
+    def __str__(self):
+        return "Settings"
+
+    def do_get_settings(self, rf):
+        self._wrapper.do("get_settings")
+
+    def run(self):
+        rf = self._wrapper.do("get_features")
+
+        if not rf.has_settings:
+            raise TestSkippedError("Settings not supported")
+
+        self.do_get_settings(rf)
+
+        return []
+
+TESTS["Settings"] = TestCaseSettings
+
 
 class TestCaseBanks(TestCase):
     def __str__(self):
