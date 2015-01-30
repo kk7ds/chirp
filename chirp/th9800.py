@@ -183,6 +183,7 @@ class TYTTH9800Base(chirp_common.Radio):
     rf.can_odd_split = True
     rf.valid_duplexes = ["", "-", "+", "split", "off"]
     rf.valid_tmodes = TMODES
+    rf.has_ctone = False
     rf.valid_power_levels = POWER_LEVELS
     rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "#*-+"
     rf.valid_bands = [( 26000000,  33000000),
@@ -373,7 +374,10 @@ class TYTTH9800Base(chirp_common.Radio):
         _mem.am = False
         _mem.fmdev = MODES.index(mem.mode)
 
-    _mem.power = POWER_LEVELS.index(mem.power)
+    if mem.power:
+        _mem.power = POWER_LEVELS.index(mem.power)
+    else:
+        _mem.power = 0    # low
     _mem.step = STEPS.index(mem.tuning_step)
 
     for setting in mem.extra:
@@ -722,9 +726,17 @@ class TYTTH9800Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
       return rp
   
   def sync_in(self):
-      self._mmap = _download(self)
-      self.process_mmap()
+        try:
+            self._mmap = _download(self)
+        except Exception, e:
+            raise errors.RadioError( \
+                "Failed to communicate with the radio: %s" % e)
+        self.process_mmap()
 
   def sync_out(self):
-      _upload(self)
+        try:
+            _upload(self)
+        except Exception, e:
+            raise errors.RadioError( \
+                "Failed to communicate with the radio: %s" % e)        
 
