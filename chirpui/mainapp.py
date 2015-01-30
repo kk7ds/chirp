@@ -1700,7 +1700,7 @@ If you think that it is valid, you can select a radio model below to force an op
         aboutitem = self.menu_uim.get_widget("/MenuBar/help/about")
         macapp.insert_app_menu_item(aboutitem, 0)
 
-        documentationitem = self.menu_uim.get_widget("/MenuBar/help/documentation")
+        documentationitem = self.menu_uim.get_widget("/MenuBar/help/gethelp")
         macapp.insert_app_menu_item(documentationitem, 0)
         
         macapp.set_use_quartz_accelerators(False)
