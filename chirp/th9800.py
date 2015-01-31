@@ -299,12 +299,6 @@ class TYTTH9800Base(chirp_common.Radio):
                        RadioSettingValueBoolean(bool(_mem.compand)))
     compand.set_doc("Compress Audio")
     mem.extra.append(compand)
-
-    opts = ["Wide", "Midddle", "Narrow"]
-    dev = RadioSetting("fmdev", "FM Deviation",
-            RadioSettingValueList(opts, opts[_mem.fmdev]))
-    dev.set_doc("Wide ~6KHz, Middle ~4KHz, Narrow ~2.5KHz") 
-    mem.extra.append(dev)
     
     BeatShift = RadioSetting("BeatShift", "BeatShift",
                        RadioSettingValueBoolean(bool(_mem.BeatShift)))
