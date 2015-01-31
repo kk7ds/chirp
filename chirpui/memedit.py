@@ -795,7 +795,7 @@ class MemoryEditor(common.Editor):
             self._show_raw(cur_pos)
         elif action == "devdiffraw":
             self._diff_raw(paths)
-        elif action == "edit":
+        elif action == "properties":
             job = common.RadioJob(self.edit_memory, "get_memory", cur_pos)
             job.set_cb_args(selected)
             self.rthread.submit(job)
@@ -828,7 +828,10 @@ class MemoryEditor(common.Editor):
         menu_xml = """
 <ui>
   <popup name="Menu"> 
-    <menuitem action="edit"/>
+    <menuitem action="cut"/>
+    <menuitem action="copy"/>
+    <menuitem action="paste"/>
+    <separator/>
     <menuitem action="insert_prev"/>
     <menuitem action="insert_next"/>
     <menu action="deletes">
@@ -840,9 +843,7 @@ class MemoryEditor(common.Editor):
     <menuitem action="move_dn"/>
     <menuitem action="exchange"/>
     <separator/>
-    <menuitem action="cut"/>
-    <menuitem action="copy"/>
-    <menuitem action="paste"/>
+    <menuitem action="properties"/>
     %s
   </popup>
 </ui>
@@ -854,7 +855,9 @@ class MemoryEditor(common.Editor):
         istwo = len(paths) == 2
 
         actions = [
-            ("edit", _("Edit")),
+            ("cut", _("Cut")),
+            ("copy", _("Copy")),
+            ("paste", _("Paste")),
             ("insert_prev", _("Insert row above")),
             ("insert_next", _("Insert row below")),
             ("deletes", _("Delete")),
@@ -864,9 +867,7 @@ class MemoryEditor(common.Editor):
             ("move_up", _("Move up")),
             ("move_dn", _("Move down")),
             ("exchange", _("Exchange memories")),
-            ("cut", _("Cut")),
-            ("copy", _("Copy")),
-            ("paste", _("Paste")),
+            ("properties", _("P_roperties")),
             ("devshowraw", _("Show Raw Memory")),
             ("devdiffraw", _("Diff Raw Memories")),
             ]
@@ -1153,7 +1154,7 @@ class MemoryEditor(common.Editor):
     def make_controls(self, min, max):
         hbox = gtk.HBox(False, 2)
 
-        lab = gtk.Label(_("Memory range:"))
+        lab = gtk.Label(_("Memory Range:"))
         lab.show()
         hbox.pack_start(lab, 0, 0, 0)
 
@@ -1180,9 +1181,10 @@ class MemoryEditor(common.Editor):
         hi.show()
         hbox.pack_start(hi, 0, 0, 0)
 
-        refresh = gtk.Button(_("Go"))
-        refresh.show()
+        refresh = gtk.Button(_("Refresh"))
+        refresh.set_relief(gtk.RELIEF_NONE)
         refresh.connect("clicked", lambda x: self.prefill())
+        refresh.show()
         hbox.pack_start(refresh, 0, 0, 0)
 
         def activate_go(widget):
@@ -1200,22 +1202,33 @@ class MemoryEditor(common.Editor):
 
         sep = gtk.VSeparator()
         sep.show()
-        sep.set_size_request(20, -1)
-        hbox.pack_start(sep, 0, 0, 0)
+        hbox.pack_start(sep, 0, 0, 2)
 
-        showspecial = gtk.CheckButton(_("Special Channels"))
+        showspecial = gtk.ToggleButton(_("Special Channels"))
+        showspecial.set_relief(gtk.RELIEF_NONE)
         showspecial.set_active(self.show_special)
         showspecial.connect("toggled",
                             lambda x: self.set_show_special(x.get_active()))
         showspecial.show()
         hbox.pack_start(showspecial, 0, 0, 0)
 
-        showempty = gtk.CheckButton(_("Show Empty"))
+        showempty = gtk.ToggleButton(_("Show Empty"))
+        showempty.set_relief(gtk.RELIEF_NONE)
         showempty.set_active(self.show_empty);
         showempty.connect("toggled",
                           lambda x: self.set_show_empty(x.get_active()))
         showempty.show()
         hbox.pack_start(showempty, 0, 0, 0)
+
+        sep = gtk.VSeparator()
+        sep.show()
+        hbox.pack_start(sep, 0, 0, 2)
+
+        props = gtk.Button(_("Properties"))
+        props.set_relief(gtk.RELIEF_NONE)
+        props.connect("clicked", lambda x: self.hotkey(gtk.Action("properties", "", "", 0)))
+        props.show()
+        hbox.pack_start(props, 0, 0, 0)
 
         hbox.show()
 

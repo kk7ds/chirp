@@ -193,8 +193,6 @@ class MemoryDetailEditor(gtk.Dialog):
         self.vbox.pack_start(sw, 1, 1, 1)
         tab.show()
 
-        row = 0
-
         def _err(name, msg):
             try:
                 _img = self._editors[name][2]
@@ -210,6 +208,7 @@ class MemoryDetailEditor(gtk.Dialog):
             self.set_response_sensitive(gtk.RESPONSE_OK,
                                         True not in self._errors)
 
+        row = 0
         for name in self._order:
             labeltxt, editorcls, data = self._elements[name]
 
@@ -235,13 +234,10 @@ class MemoryDetailEditor(gtk.Dialog):
             row += 1
             self._order.append(name)
 
-    def _title(self):
-        return _("Edit Memory #{num}").format(num=self._memory.number)
-
     def __init__(self, features, memory, parent=None):
         self._memory = memory
         gtk.Dialog.__init__(self,
-                            title=self._title(),
+                            title="Memory Properties",
                             flags=gtk.DIALOG_MODAL,
                             parent=parent,
                             buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
@@ -337,8 +333,6 @@ class MemoryDetailEditor(gtk.Dialog):
         return self._memory
 
 class MultiMemoryDetailEditor(MemoryDetailEditor):
-    def _title(self):
-        return _("Edit Multiple Memories")
 
     def __init__(self, features, memory, parent=None):
         self._selections = dict()

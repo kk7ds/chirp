@@ -112,7 +112,8 @@ class ChirpMain(gtk.Window):
         
         for i in ["export", "close", "columns", "irbook", "irfinder",
                   "move_up", "move_dn", "exchange", "iradioreference",
-                  "cut", "copy", "paste", "delete", "viewdeveloper"]:
+                  "cut", "copy", "paste", "delete", "viewdeveloper",
+                  "properties"]:
             set_action_sensitive(i, eset is not None)
 
     def ev_status(self, editorset, msg):
@@ -1420,7 +1421,7 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_toggle_developer(_action)
         elif action in ["cut", "copy", "paste", "delete",
                         "move_up", "move_dn", "exchange",
-                        "devshowraw", "devdiffraw"]:
+                        "devshowraw", "devdiffraw", "properties"]:
             self.get_current_editorset().get_current_editor().hotkey(_action)
         elif action == "devdifftab":
             self.do_diff_radio()
@@ -1461,6 +1462,8 @@ If you think that it is valid, you can select a radio model below to force an op
       <menuitem action="move_up"/>
       <menuitem action="move_dn"/>
       <menuitem action="exchange"/>
+      <separator/>
+      <menuitem action="properties"/>
     </menu>
     <menu action="view">
       <menuitem action="columns"/>
@@ -1524,6 +1527,7 @@ If you think that it is valid, you can select a radio model below to force an op
             ('move_up', None, _("Move _Up"), "<Control>Up", None, self.mh),
             ('move_dn', None, _("Move Dow_n"), "<Control>Down", None, self.mh),
             ('exchange', None, _("E_xchange"), "<Control><Shift>x", None, self.mh),
+            ('properties', None, _("P_roperties"), None, None, self.mh),
             ('view', None, _("_View"), None, None, self.mh),
             ('columns', None, _("Columns"), None, None, self.mh),
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
