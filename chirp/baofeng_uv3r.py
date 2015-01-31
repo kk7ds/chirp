@@ -422,6 +422,8 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         _limit = int(self._memobj.limits.lower_vhf) / 10
+        if _limit < 115 or _limit > 239:
+            _limit = 144
         rs = RadioSetting("limits.lower_vhf", "VHF Lower Limit (115-239 MHz)",
                           RadioSettingValueInteger(115, 235, _limit))
         def apply_limit(setting, obj):
@@ -431,6 +433,8 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         _limit = int(self._memobj.limits.upper_vhf) / 10
+        if _limit < 115 or _limit > 239:
+            _limit = 146
         rs = RadioSetting("limits.upper_vhf", "VHF Upper Limit (115-239 MHz)",
                           RadioSettingValueInteger(115, 235, _limit))
         def apply_limit(setting, obj):
@@ -440,6 +444,8 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         _limit = int(self._memobj.limits.lower_uhf) / 10
+        if _limit < 200 or _limit > 529:
+            _limit = 420
         rs = RadioSetting("limits.lower_uhf", "UHF Lower Limit (200-529 MHz)",
                           RadioSettingValueInteger(200, 529, _limit))
         def apply_limit(setting, obj):
@@ -449,6 +455,8 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         _limit = int(self._memobj.limits.upper_uhf) / 10
+        if _limit < 200 or _limit > 529:
+            _limit = 450
         rs = RadioSetting("limits.upper_uhf", "UHF Upper Limit (200-529 MHz)",
                           RadioSettingValueInteger(200, 529, _limit))
         def apply_limit(setting, obj):
