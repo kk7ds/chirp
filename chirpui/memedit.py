@@ -791,6 +791,8 @@ class MemoryEditor(common.Editor):
             changed = self.copy_selection(action=="cut")
         elif action == "paste":
             changed = self.paste_selection()
+        elif action == "all":
+            changed = self.select_all()
         elif action == "devshowraw":
             self._show_raw(cur_pos)
         elif action == "devdiffraw":
@@ -832,6 +834,8 @@ class MemoryEditor(common.Editor):
     <menuitem action="copy"/>
     <menuitem action="paste"/>
     <separator/>
+    <menuitem action="all"/>
+    <separator/>
     <menuitem action="insert_prev"/>
     <menuitem action="insert_next"/>
     <menu action="deletes">
@@ -858,6 +862,7 @@ class MemoryEditor(common.Editor):
             ("cut", _("Cut")),
             ("copy", _("Copy")),
             ("paste", _("Paste")),
+            ("all", _("Select All")),
             ("insert_prev", _("Insert row above")),
             ("insert_next", _("Insert row below")),
             ("deletes", _("Delete")),
@@ -1497,6 +1502,9 @@ class MemoryEditor(common.Editor):
     def paste_selection(self):
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.request_text(self._paste_selection)
+
+    def select_all(self):
+        self.view.get_selection().select_all()
 
     def prepare_close(self):
         cols = self.view.get_columns()
