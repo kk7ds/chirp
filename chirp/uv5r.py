@@ -1539,7 +1539,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                         _obj = self._memobj.squelch_new.uhf
                     name = "%s Squelch %i" % (band.upper(), index)
                     rs = RadioSetting(key, name, RadioSettingValueInteger(
-                                      0, 64, getattr(_obj, "sql%i" % (index))))
+                                      0, 123, getattr(_obj, "sql%i" % (index))))
                     service.append(rs)
 
         return group
