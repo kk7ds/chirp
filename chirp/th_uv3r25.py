@@ -66,7 +66,7 @@ VOICE_MODE_LIST = ["Compander", "Scrambler", "None"]
 
 @directory.register
 class TYTUV3R25Radio(TYTUV3RRadio):
-    MODEL = "TH-UV3R (2.5kHz)"
+    MODEL = "TH-UV3R-25"
     _memsize = 2864
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
