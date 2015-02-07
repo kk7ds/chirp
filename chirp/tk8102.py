@@ -20,7 +20,7 @@ from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
-from chirp.settings import RadioSettingValueString
+from chirp.settings import RadioSettingValueString, RadioSettings
 
 MEM_FORMAT = """
 #seekto 0x0030;
@@ -355,7 +355,8 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
 
     def get_settings(self):
         _mem = self._memobj
-        top = RadioSettingGroup("all", "All Settings")
+        basic = RadioSettingGroup("basic", "Basic")
+        top = RadioSettings(basic)
 
         def _f(val):
             string = ""
@@ -369,18 +370,21 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
                              RadioSettingValueString(0, 32,
                                                      _f(_mem.messages.line1),
                                                      autopad=False))
-        top.append(line1)
+        basic.append(line1)
 
         line2 = RadioSetting("messages.line2", "Message Line 2",
                              RadioSettingValueString(0, 32,
                                                      _f(_mem.messages.line2),
                                                      autopad=False))
-        top.append(line2)
+        basic.append(line2)
 
         return top
 
     def set_settings(self, settings):
         for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
             if "." in element.get_name():
                 bits = element.get_name().split(".")
                 obj = self._memobj

@@ -18,8 +18,8 @@ from chirp import chirp_common, directory, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, RadioSettingValue, InvalidValueError
-
+    RadioSettingValueFloat, RadioSettingValue, InvalidValueError, \
+    RadioSettings
 
 def encode_base100(v):
     return (v / 100 << 8) + (v % 100)
@@ -313,7 +313,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
         aprs = RadioSettingGroup("aprs", "APRS", china, smartbeacon)
         digipeat = RadioSettingGroup("digipeat", "Digipeat")
         system = RadioSettingGroup("system", "System")
-        settings = RadioSettingGroup("all", "Settings", aprs, digipeat, system)
+        settings = RadioSettings(aprs, digipeat, system)
 
         # The RadioSetting syntax is really verbose, iterate it.
         fields = [

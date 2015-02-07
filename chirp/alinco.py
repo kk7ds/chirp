@@ -15,7 +15,7 @@
 
 from chirp import chirp_common, bitwise, memmap, errors, directory, util
 from chirp.settings import RadioSettingGroup, RadioSetting
-from chirp.settings import RadioSettingValueBoolean
+from chirp.settings import RadioSettingValueBoolean, RadioSettings
 
 import time
 

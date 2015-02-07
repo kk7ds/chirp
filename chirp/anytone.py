@@ -23,7 +23,7 @@ from chirp import directory
 from chirp import errors
 from chirp import memmap
 from chirp import util
-from chirp.settings import RadioSettingGroup, RadioSetting, \
+from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueList, RadioSettingValueString, RadioSettingValueBoolean
 
 _mem_format = """
@@ -475,19 +475,20 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
     def get_settings(self):
         _settings = self._memobj.settings
-        settings = RadioSettingGroup('all', 'All Settings')
+        basic = RadioSettingGroup("basic", "Basic")
+        settings = RadioSettings(basic)
 
         display = ["Frequency", "Channel", "Name"]
         rs = RadioSetting("display", "Display",
                           RadioSettingValueList(display,
                                                 display[_settings.display]))
-        settings.append(rs)
+        basic.append(rs)
 
         apo = ["Off"] + ['%.1f hour(s)' % (0.5 * x) for x in range(1, 25)]
         rs = RadioSetting("apo", "Automatic Power Off",
                           RadioSettingValueList(apo,
                                                 apo[_settings.apo]))
-        settings.append(rs)
+        basic.append(rs)
 
         def filter(s):
             s_ = ""
@@ -499,23 +500,26 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("welcome", "Welcome Message",
                           RadioSettingValueString(0, 8,
                                                   filter(_settings.welcome)))
-        settings.append(rs)
+        basic.append(rs)
 
         rs = RadioSetting("beep", "Beep Enabled",
                           RadioSettingValueBoolean(_settings.beep))
-        settings.append(rs)
+        basic.append(rs)
 
         mute = ["Off", "TX", "RX", "TX/RX"]
         rs = RadioSetting("mute", "Sub Band Mute",
                           RadioSettingValueList(mute,
                                                 mute[_settings.mute]))
-        settings.append(rs)
+        basic.append(rs)
 
         return settings
 
     def set_settings(self, settings):
         _settings = self._memobj.settings
         for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
             name = element.get_name()
             setattr(_settings, name, element.value)
 

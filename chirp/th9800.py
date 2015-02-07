@@ -20,7 +20,7 @@ import struct
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError
+    RadioSettingValueFloat, InvalidValueError, RadioSettings
 from chirp_common import format_freq
 import os
 import time
@@ -400,8 +400,7 @@ class TYTTH9800Base(chirp_common.Radio):
       _bandlimits = self._memobj.bandlimits
       basic = RadioSettingGroup("basic", "Basic")
       info =  RadioSettingGroup("info", "Model Info")
-      top = RadioSettingGroup("top", "All Settings",
-                              basic, info)
+      top = RadioSettings(basic, info)
       basic.append( RadioSetting("beep", "Beep",
             RadioSettingValueBoolean(_settings.beep)))
       basic.append( RadioSetting("beep_vol", "Beep Volume",

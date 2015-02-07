@@ -25,7 +25,7 @@
 
 from chirp import chirp_common, bitwise, directory, yaesu_clone
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueBoolean
+    RadioSettingValueBoolean, RadioSettings
 from textwrap import dedent
 
 MEM_FORMAT = """

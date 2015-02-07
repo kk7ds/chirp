@@ -22,7 +22,7 @@ from chirp.wouxun_common import do_download, do_upload
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat
+                RadioSettingValueFloat, RadioSettings
 
 if os.getenv("CHIRP_DEBUG"):
     DEBUG = True
@@ -357,7 +357,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         _settings = self._memobj.settings
         _vfo = self._memobj.vfo
         basic = RadioSettingGroup("basic", "Basic Settings")
-        group = RadioSettingGroup("top", "All Settings", basic)
+        group = RadioSettings(basic)
 
         rs = RadioSetting("squelch", "Squelch Level",
                           RadioSettingValueInteger(0, 9, _settings.squelch))

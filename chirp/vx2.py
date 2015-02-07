@@ -17,7 +17,8 @@
 from chirp import chirp_common, yaesu_clone, directory, bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 import os, traceback, re
 
 if os.getenv("CHIRP_DEBUG"):
@@ -437,7 +438,7 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         basic = RadioSettingGroup("basic", "Basic")
         dtmf = RadioSettingGroup("dtmf", "DTMF")
         arts = RadioSettingGroup("arts", "ARTS")
-        top = RadioSettingGroup("top", "All Settings", basic, arts, dtmf)
+        top = RadioSettings(basic, arts, dtmf)
 
         options = [ "off", "30m", "1h", "3h", "5h", "8h" ]
         rs = RadioSetting("apo", "APO time (hrs)",

@@ -17,7 +17,8 @@
 from chirp import chirp_common, bitwise, memmap, directory, errors, util, yaesu_clone
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 import time, os, traceback, string, re
 from textwrap import dedent
 
@@ -509,7 +510,8 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         basic = RadioSettingGroup("basic", "Basic")
         autodial = RadioSettingGroup("autodial", "AutoDial")
         keymaps = RadioSettingGroup("keymaps", "KeyMaps")
-        top = RadioSettingGroup("top", "All Settings", basic, keymaps, autodial)
+        
+        top = RadioSettings(basic, keymaps, autodial)
         
         rs = RadioSetting("beep", "Beep",
                           RadioSettingValueBoolean(_settings.beep))

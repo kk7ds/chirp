@@ -23,7 +23,7 @@ from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean
+    RadioSettingValueBoolean, RadioSettings
 
 DEBUG = os.getenv("CHIRP_DEBUG") and True or False
 
@@ -392,6 +392,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
+        top = RadioSettings(basic)
 
         # TODO: Check that all these settings actually do what they
         # say they do.
@@ -472,7 +473,7 @@ class H777Radio(chirp_common.CloneModeRadio):
                               self._memobj.settings2.timeouttimer]))
         basic.append(rs)
 
-        return basic
+        return top
 
     def set_settings(self, settings):
         for element in settings:

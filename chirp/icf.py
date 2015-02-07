@@ -19,7 +19,7 @@ import time
 
 from chirp import chirp_common, errors, util, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueBoolean
+    RadioSettingValueBoolean, RadioSettings
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN  = 0xE3
@@ -640,17 +640,18 @@ class IcomLiveRadio(chirp_common.LiveRadio):
 
 def make_speed_switch_setting(radio):
     if not radio.__class__._can_hispeed:
-        return []
+        return {}
     drvopts = RadioSettingGroup("drvopts", "Driver Options")
+    top = RadioSettings(drvopts)
     rs = RadioSetting("drv_clone_speed", "Use Hi-Speed Clone",
                       RadioSettingValueBoolean(radio._can_hispeed))
     drvopts.append(rs)
-    return drvopts
+    return top
 
 def honor_speed_switch_setting(radio, settings):
     for element in settings:
         if element.get_name() == "drvopts":
-            return honor_speed_switch_setting(radio, settings)
+            return honor_speed_switch_setting(radio, element)
         if element.get_name() == "drv_clone_speed":
             radio.__class__._can_hispeed = element.value.get_value()
             return

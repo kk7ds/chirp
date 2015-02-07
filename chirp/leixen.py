@@ -21,7 +21,7 @@ from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError
+    RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
 
 if os.getenv("CHIRP_DEBUG"):
@@ -531,8 +531,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         cfg_grp = RadioSettingGroup("cfg_grp", "Basic Settings")
         adv_grp = RadioSettingGroup("adv_grp", "Advanced Settings")
         key_grp = RadioSettingGroup("key_grp", "Key Assignment")
-        group = RadioSettingGroup("top", "All Settings", cfg_grp,
-                        adv_grp, key_grp)
+        group = RadioSettings(cfg_grp, adv_grp, key_grp)
 
         #
         # Basic Settings

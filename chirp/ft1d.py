@@ -20,7 +20,7 @@ import string
 
 from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
-from chirp.settings import RadioSettingGroup, RadioSetting
+from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
 from textwrap import dedent
@@ -1458,16 +1458,15 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return menu
 
     def _get_settings(self):
-        top = RadioSettingGroup("all", "All Settings",
-                                self._get_aprs_general_settings(),
-                                self._get_aprs_rx_settings(),
-                                self._get_aprs_tx_settings(),
-                                self._get_aprs_smartbeacon(),
-                                self._get_aprs_msgs(),
-                                self._get_aprs_beacons(),
-                                self._get_dtmf_settings(),
-                                self._get_misc_settings(),
-                                self._get_scan_settings())
+        top = RadioSettings(self._get_aprs_general_settings(),
+                            self._get_aprs_rx_settings(),
+                            self._get_aprs_tx_settings(),
+                            self._get_aprs_smartbeacon(),
+                            self._get_aprs_msgs(),
+                            self._get_aprs_beacons(),
+                            self._get_dtmf_settings(),
+                            self._get_misc_settings(),
+                            self._get_scan_settings())
         return top
 
     def get_settings(self):

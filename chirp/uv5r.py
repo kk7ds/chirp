@@ -22,7 +22,7 @@ from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError
+    RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
 
 if os.getenv("CHIRP_DEBUG"):
@@ -986,7 +986,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _wmchannel = self._memobj.wmchannel
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
-        group = RadioSettingGroup("top", "All Settings", basic, advanced)
+
+        group = RadioSettings(basic, advanced)
 
         rs = RadioSetting("squelch", "Carrier Squelch Level",
                           RadioSettingValueInteger(0, 9, _settings.squelch))

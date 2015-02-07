@@ -19,7 +19,7 @@ import os
 
 from chirp import chirp_common, yaesu_clone, directory, errors, util
 from chirp import bitwise, memmap
-from chirp.settings import RadioSettingGroup, RadioSetting
+from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 
 mem_format = """
@@ -380,7 +380,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         return filedata.startswith("AH033$")
 
     def get_settings(self):
-        top = RadioSettingGroup("all", "All Settings")
+        top = RadioSettings()
 
         aprs = RadioSettingGroup("aprs", "APRS")
         top.append(aprs)

@@ -27,7 +27,8 @@ import struct
 from chirp import chirp_common, bitwise, errors, directory, memmap, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 
 
 def uvf8d_identify(radio):
@@ -464,7 +465,8 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _settings = self._memobj.settings
 
-        group = RadioSettingGroup("top", "All Settings")
+        group = RadioSettingGroup("basic", "Basic")
+        top = RadioSettings(basic)
 
         group.append(
             RadioSetting("mode", "Mode",
@@ -595,7 +597,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
                          RadioSettingValueList(AB_LIST,
                                                AB_LIST[_settings.b_work_area])))
 
-        return group
+        return top
 
         group.append(
             RadioSetting("disnm", "Display Name",

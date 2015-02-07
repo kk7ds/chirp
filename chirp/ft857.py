@@ -19,7 +19,8 @@
 from chirp import ft817, chirp_common, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 import os
 from textwrap import dedent
 
@@ -525,7 +526,8 @@ class FT857Radio(ft817.FT817Radio):
         panel = RadioSettingGroup("panel", "Panel settings")
         extended = RadioSettingGroup("extended", "Extended")
         panelcontr = RadioSettingGroup("panelcontr", "Panel controls")
-        top = RadioSettingGroup("top", "All Settings", basic, cw, packet,
+
+        top = RadioSettings(basic, cw, packet,
                                 panelcontr, panel, extended)
 
         rs = RadioSetting("extended_menu", "Extended menu",
@@ -1073,7 +1075,7 @@ class FT857USRadio(FT857Radio):
 
     def get_settings(self):
         top = FT857Radio.get_settings(self)
-        basic = top["basic"]
+        basic = top[0]
         rs = RadioSetting("emergency", "Emergency",
                 RadioSettingValueBoolean(self._memobj.settings.emergency))
         basic.append(rs)

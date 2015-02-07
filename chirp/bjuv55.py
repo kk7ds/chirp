@@ -24,7 +24,7 @@ from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError
+    RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
 from chirp import uv5r
 
@@ -270,7 +270,7 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
-        group = RadioSettingGroup("top", "All Settings", basic, advanced)
+        group = RadioSettings(basic, advanced)
 
         rs = RadioSetting("squelch", "Carrier Squelch Level",
                           RadioSettingValueInteger(0, 9, _settings.squelch))

@@ -18,7 +18,7 @@ from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat
+                RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
 
 mem_format = """
@@ -480,7 +480,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     def get_settings(self):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
-        group = RadioSettingGroup("top", "All Settings", basic)
+        
+        group = RadioSettings(basic)
 
         options = ["Time", "Carrier", "Search"]
         rs = RadioSetting("scantype", "Scan Type",

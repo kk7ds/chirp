@@ -20,7 +20,8 @@ from chirp import chirp_common, yaesu_clone, util, memmap, errors, directory
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 import time, os
 from textwrap import dedent
 
@@ -763,7 +764,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         extended = RadioSettingGroup("extended", "Extended")
         antenna = RadioSettingGroup("antenna", "Antenna selection")
         panelcontr = RadioSettingGroup("panelcontr", "Panel controls")
-        top = RadioSettingGroup("top", "All Settings", basic, cw, packet,
+
+        top = RadioSettings(basic, cw, packet,
               panelcontr, panel, extended, antenna)
 
         rs = RadioSetting("ars_144", "144 ARS",
@@ -1136,7 +1138,7 @@ class FT817NDUSRadio(FT817Radio):
 
     def get_settings(self):
         top = FT817Radio.get_settings(self)
-        basic = top["basic"]
+        basic = top[0]
         rs = RadioSetting("emergency", "Emergency",
                 RadioSettingValueBoolean(self._memobj.settings.emergency))
         basic.append(rs)

@@ -19,7 +19,8 @@ from chirp import bitwise, errors
 from textwrap import dedent
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 import os, re
 
 from collections import defaultdict
@@ -568,8 +569,8 @@ class FT7800Radio(FTx800Radio):
         dtmf = RadioSettingGroup("dtmf", "DTMF")
         arts = RadioSettingGroup("arts", "ARTS")
         prog = RadioSettingGroup("prog", "Programmable Buttons")
-        top = RadioSettingGroup("top", "All Settings",
-                basic, dtmf, arts, prog)
+
+        top = RadioSettings(basic, dtmf, arts, prog)
 
         basic.append( RadioSetting("priority_revert", "Priority Revert",
                 RadioSettingValueBoolean(_settings.priority_revert)))

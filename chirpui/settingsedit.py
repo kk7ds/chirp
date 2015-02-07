@@ -16,7 +16,8 @@
 import gtk
 import gobject
 
-from chirp import chirp_common, settings
+from chirp import chirp_common
+from chirp import settings
 from chirpui import common, miscwidgets
 
 class RadioSettingProxy(settings.RadioSetting):
@@ -27,40 +28,40 @@ class RadioSettingProxy(settings.RadioSetting):
 class SettingsEditor(common.Editor):
     def __init__(self, rthread):
         super(SettingsEditor, self).__init__(rthread)
-        self._changed = False
+
+        # The main box
         self.root = gtk.HBox(False, 0)
-        self._store = gtk.TreeStore(gobject.TYPE_STRING,
-                                    gobject.TYPE_PYOBJECT)
+
+        # The pane
+        paned = gtk.HPaned()
+        paned.show()
+        self.root.pack_start(paned, 1, 1, 0)
+    
+        # The selection tree
+        self._store = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_INT)
         self._view = gtk.TreeView(self._store)
         self._view.set_size_request(150, -1)
         self._view.get_selection().connect("changed", self._view_changed_cb)
+        self._view.append_column(gtk.TreeViewColumn("", gtk.CellRendererText(), text=0))
         self._view.show()
-        self.root.pack_start(self._view, 0, 0, 0)
+        paned.pack1(self._view)
 
-        col = gtk.TreeViewColumn("", gtk.CellRendererText(), text=0)
-        self._view.append_column(col)
+        # The settings notebook
+        self._notebook = gtk.Notebook()
+        self._notebook.set_show_tabs(False)
+        self._notebook.set_show_border(False)
+        self._notebook.show()
+        paned.pack2(self._notebook)
 
-        self._table = gtk.Table(20, 3)
-        self._table.set_col_spacings(10)
-        self._table.show()
+        self._changed = False
+        self._settings = None
 
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        sw.add_with_viewport(self._table)
-        sw.show()
-
-        self.root.pack_start(sw, 1, 1, 1)
-
-        self._index = 0
-
-        self._top_setting_group = None
-
-        job = common.RadioJob(self._build_ui, "get_settings")
+        job = common.RadioJob(self._get_settings_cb, "get_settings")
         job.set_desc("Getting radio settings")
         self.rthread.submit(job)
 
     def _save_settings(self):
-        if self._top_setting_group is None:
+        if self._settings is None:
             return
 
         def setting_cb(result):
@@ -71,34 +72,10 @@ class SettingsEditor(common.Editor):
                 self._changed = False
 
         job = common.RadioJob(setting_cb, "set_settings",
-                              self._top_setting_group)
+                              self._settings)
         job.set_desc("Setting radio settings")
         self.rthread.submit(job)
 
-    def _load_setting(self, value, widget):
-        if isinstance(value, settings.RadioSettingValueInteger):
-            adj = widget.get_adjustment()
-            adj.configure(value.get_value(),
-                          value.get_min(), value.get_max(),
-                          value.get_step(), 1, 0)
-        elif isinstance(value, settings.RadioSettingValueFloat):
-            widget.set_text(value.format())
-        elif isinstance(value, settings.RadioSettingValueBoolean):
-            widget.set_active(value.get_value())
-        elif isinstance(value, settings.RadioSettingValueList):
-            model = widget.get_model()
-            model.clear()
-            for option in value.get_options():
-                widget.append_text(option)
-            current = value.get_value()
-            index = value.get_options().index(current)
-            widget.set_active(index)
-        elif isinstance(value, settings.RadioSettingValueString):
-            widget.set_text(str(value).rstrip())
-        else:
-            print "Unsupported widget type %s for %s" % (value.__class__,
-                                                         element.get_name())
-            
     def _do_save_setting(self, widget, value):
         if isinstance(value, settings.RadioSettingValueInteger):
             value.set_value(widget.get_adjustment().get_value())
@@ -124,108 +101,116 @@ class SettingsEditor(common.Editor):
         except settings.InvalidValueError, e:
             common.show_error(_("Invalid setting value: %s") % e)
 
-    def _build_ui_group(self, group):
-        def pack(widget, pos):
-            self._table.attach(widget, pos, pos+1, self._index, self._index+1,
-                               xoptions=gtk.FILL, yoptions=0)
+    def _build_ui_tab(self, group):
 
-        def abandon(child):
-            self._table.remove(child)
-        self._table.foreach(abandon)
+        # The scrolled window
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw.show()
 
-        self._index = 0
+        # Notebook tab
+        tab = self._notebook.append_page(sw, gtk.Label(_(group.get_name())))
+
+        # Settings table
+        table = gtk.Table(len(group), 2, False)
+        table.set_resize_mode(gtk.RESIZE_IMMEDIATE)
+        table.show()
+        sw.add_with_viewport(table)
+
+        row = 0
         for element in group:
             if not isinstance(element, settings.RadioSetting):
                 continue
-            label = gtk.Label(element.get_shortname())
-            label.set_alignment(1.0, 0.5)
+
+            # Label
+            label = gtk.Label(element.get_shortname() + ":")
+            label.set_alignment(0.0, 0.5)
             label.show()
-            pack(label, 0)
+
+            table.attach(label, 0, 1, row, row+1, xoptions=gtk.FILL, yoptions=0, xpadding=6, ypadding=3)
 
             if isinstance(element.value, list) and \
                     isinstance(element.value[0],
                                settings.RadioSettingValueInteger):
-                arraybox = gtk.HBox(True, 3)
+                box = gtk.HBox(True)
             else:
-                arraybox = gtk.VBox(True, 3)
-            pack(arraybox, 1)
-            arraybox.show()
+                box = gtk.VBox(True)
 
-            widgets = []
-            for index in element.keys():
-                value = element[index]
+            # Widget container
+            box.show()
+            table.attach(box, 1, 2, row, row+1, xoptions=gtk.FILL, yoptions=0, xpadding=12, ypadding=3)
+
+            for i in element.keys():
+                value = element[i]
                 if isinstance(value, settings.RadioSettingValueInteger):
                     widget = gtk.SpinButton()
-                    print "Digits: %i" % widget.get_digits()
-                    signal = "value-changed"
+                    adj = widget.get_adjustment()
+                    adj.configure(value.get_value(),
+                                  value.get_min(), value.get_max(),
+                                  value.get_step(), 1, 0)
+                    widget.connect("value-changed", self._save_setting, value)
                 elif isinstance(value, settings.RadioSettingValueFloat):
                     widget = gtk.Entry()
-                    signal = "focus-out-event"
+                    widget.set_width_chars(16)
+                    widget.set_text(value.format())
+                    widget.connect("focus-out-event", lambda w, e, v:
+                                       self._save_setting(w, v), value)
                 elif isinstance(value, settings.RadioSettingValueBoolean):
                     widget = gtk.CheckButton(_("Enabled"))
-                    signal = "toggled"
+                    widget.set_active(value.get_value())
+                    widget.connect("toggled", self._save_setting, value)
                 elif isinstance(value, settings.RadioSettingValueList):
                     widget = miscwidgets.make_choice([], editable=False)
-                    signal = "changed"
+                    model = widget.get_model()
+                    model.clear()
+                    for option in value.get_options():
+                        widget.append_text(option)
+                    current = value.get_value()
+                    index = value.get_options().index(current)
+                    widget.set_active(index)
+                    widget.connect("changed", self._save_setting, value)
                 elif isinstance(value, settings.RadioSettingValueString):
                     widget = gtk.Entry()
-                    signal = "changed"
+                    widget.set_width_chars(32)
+                    widget.set_text(str(value).rstrip())
+                    widget.connect("changed", self._save_setting, value)
                 else:
                     print "Unsupported widget type: %s" % value.__class__
 
-                # Make sure the widget gets left-aligned to match up
-                # with its label
-                lalign = gtk.Alignment(0, 0, 0, 0)
-                lalign.add(widget)
-                lalign.show()
-
                 widget.set_sensitive(value.get_mutable())
-
-                arraybox.pack_start(lalign, 1, 1, 1)
                 widget.show()
-                self._load_setting(value, widget)
-                if signal == "focus-out-event":
-                    widget.connect(signal, lambda w, e, v:
-                                       self._save_setting(w, v), value)
-                else:
-                    widget.connect(signal, self._save_setting, value)
+                
+                box.pack_start(widget, 1, 1, 1)
 
-            self._index += 1
+            row += 1
 
-    def _build_tree(self, group, parent):
-        iter = self._store.append(parent)
-        self._store.set(iter, 0, group.get_shortname(), 1, group)
+        return tab
+
+    def _build_ui_group(self, group, parent):
         
-        if self._set_default is None:
-            # If we haven't found the first page with actual settings on it
-            # yet, then look for one here
-            for element in group:
-                if isinstance(element, settings.RadioSetting):
-                    self._set_default = self._store.get_path(iter), group
-                    break
-
+        tab = self._build_ui_tab(group)
+        
+        iter = self._store.append(parent)
+        self._store.set(iter, 0, group.get_shortname(), 1, tab)
+        
         for element in group:
             if not isinstance(element, settings.RadioSetting):
-                self._build_tree(element, iter)
-        self._view.expand_all()
+                self._build_ui_group(element, iter)
 
-    def _build_ui_real(self, group):
-        if not isinstance(group, settings.RadioSettingGroup):
-            print "Toplevel is not a group"
+    def _build_ui(self, settings):
+        if not isinstance(settings, list):
+            raise Exception("Invalid Radio Settings")
             return
 
-        self._set_default = None
-        self._top_setting_group = group
-        self._build_tree(group, None)
-        self._view.set_cursor(self._set_default[0])
-        self._build_ui_group(self._set_default[1])
+        self._settings = settings
+        for group in settings:
+            self._build_ui_group(group, None)
+        self._view.expand_all()
 
-    def _build_ui(self, group):
-        gobject.idle_add(self._build_ui_real, group)
+    def _get_settings_cb(self, settings):
+        gobject.idle_add(self._build_ui, settings)
 
     def _view_changed_cb(self, selection):
         (lst, iter) = selection.get_selected()
-        group, = self._store.get(iter, 1)
-
-        if group:
-            self._build_ui_group(group)
+        tab, = self._store.get(iter, 1)
+        self._notebook.set_current_page(tab)

@@ -199,6 +199,11 @@ class RadioSettingValueString(RadioSettingValue):
     def __str__(self):
         return self._current
 
+
+class RadioSettings(list):
+    def __init__(self, *groups):
+        list.__init__(self, groups)
+
 class RadioSettingGroup(object):
     """A group of settings"""
     def _validate(self, element):
@@ -244,7 +249,7 @@ class RadioSettingGroup(object):
 
     def __iter__(self):
         class RSGIterator:
-            """Iterator for a RadioSettingsGroup"""
+            """Iterator for a RadioSettingGroup"""
             def __init__(self, rsg):
                 self.__rsg = rsg
                 self.__i = 0

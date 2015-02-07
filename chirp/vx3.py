@@ -18,7 +18,8 @@ from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 from textwrap import dedent
 import os, re
 
@@ -529,8 +530,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         arts = RadioSettingGroup("arts", "ARTS")
         eai = RadioSettingGroup("eai", "Emergency")
         msg = RadioSettingGroup("msg", "Messages")
-        top = RadioSettingGroup("top", "All Settings",
-                basic, sound, arts, dtmf, eai, msg)
+
+        top = RadioSettings(basic, sound, arts, dtmf, eai, msg)
 
         basic.append( RadioSetting("att_wx", "Attenuation WX",
                 RadioSettingValueBoolean(_settings.att_wx)))

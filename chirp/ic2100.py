@@ -18,7 +18,7 @@ from chirp import bitwise, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError
+    RadioSettingValueFloat, InvalidValueError, RadioSettings
 
 MEM_FORMAT = """
 struct {

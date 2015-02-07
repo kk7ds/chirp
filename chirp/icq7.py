@@ -20,7 +20,7 @@ from chirp.chirp_common import to_GHz, from_GHz
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat
+                RadioSettingValueFloat, RadioSettings
 
 MEM_FORMAT = """
 struct {
@@ -198,7 +198,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
     def get_settings(self):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
-        group = RadioSettingGroup("top", "All Settings", basic)
+        group = RadioSettings(basic)
 
         rs = RadioSetting("ch", "Channel Indication Mode",
                           RadioSettingValueBoolean(_settings.ch))

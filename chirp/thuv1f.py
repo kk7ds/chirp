@@ -17,11 +17,10 @@ import struct
 
 from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
-
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString
+    RadioSettingValueBoolean, RadioSettingValueString, \
+    RadioSettings
 
 def uvf1_identify(radio):
     """Do identify handshake with TYT TH-UVF1"""
@@ -383,7 +382,8 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _settings = self._memobj.settings
 
-        group = RadioSettingGroup("top", "All Settings")
+        group = RadioSettingGroup("basic", "Basic");
+        top = RadioSettings(group)
 
         group.append(
             RadioSetting("led", "LED Mode",
@@ -463,7 +463,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
                          RadioSettingValueString(0, 6,
                                                  _filter(_settings.ponmsg))))
 
-        return group
+        return top
 
     def set_settings(self, settings):
         _settings = self._memobj.settings

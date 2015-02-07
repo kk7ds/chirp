@@ -24,7 +24,7 @@ sys.path.insert(0, "../")
 
 from chirp import CHIRP_VERSION
 from chirp import *
-from chirp import chirp_common, directory, generic_csv, import_logic, memmap
+from chirp import chirp_common, directory, generic_csv, import_logic, memmap, settings
 from chirp import errors
 
 TESTS = {}
@@ -523,13 +523,15 @@ class TestCaseEdges(TestCase):
 
 TESTS["Edges"] = TestCaseEdges
 
-
 class TestCaseSettings(TestCase):
     def __str__(self):
         return "Settings"
 
     def do_get_settings(self, rf):
-        self._wrapper.do("get_settings")
+        lst = self._wrapper.do("get_settings")
+        if not isinstance(lst, list):
+	    raise TestFailedError("Invalid Radio Settings")
+        self._wrapper.do("set_settings", lst)
 
     def run(self):
         rf = self._wrapper.do("get_features")
@@ -537,7 +539,7 @@ class TestCaseSettings(TestCase):
         if not rf.has_settings:
             raise TestSkippedError("Settings not supported")
 
-        self.do_get_settings(rf)
+	self.do_get_settings(rf)
 
         return []
 

@@ -248,7 +248,7 @@ class Memory:
 
     immutable = []
 
-    # A RadioSettingsGroup of additional settings supported by the radio,
+    # A RadioSettingGroup of additional settings supported by the radio,
     # or an empty list if none
     extra = []
 
@@ -1027,7 +1027,7 @@ class Radio(object):
         return rf.validate_memory(mem)
 
     def get_settings(self):
-        """Returns a RadioSettingGroup containing one or more
+        """Returns a RadioSettings list containing one or more
         RadioSettingGroup or RadioSetting objects. These represent general
         setting knobs and dials that can be adjusted on the radio. If this
         function is implemented, the has_settings RadioFeatures flag should

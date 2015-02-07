@@ -19,7 +19,7 @@ from chirp import errors
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat
+    RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
 
 ACK = "\x06"
@@ -400,8 +400,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         misc = RadioSettingGroup("misc", "Miscellaneous Settings")
         mbls = RadioSettingGroup("banks", "Memory Bank Link Scan")
 
-        setmode = RadioSettingGroup("top", "Set Mode",
-                    repeater, ctcss, arts, scan, power, wires, eai, switch, misc, mbls)
+        setmode = RadioSettings(repeater, ctcss, arts, scan, power, wires, eai, switch, misc, mbls)
 
         # APO
         opts = [ "OFF" ] + [ "%0.1f" % (x * 0.5) for x in range(1, 24+1) ]

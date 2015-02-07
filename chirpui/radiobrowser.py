@@ -222,10 +222,12 @@ class RadioBrowser(common.Editor):
 
         self.root = gtk.HBox(False, 3)
         sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add(self._tree)
         sw.show()
         self.root.pack_start(sw, 0, 0, 0)
         sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add_with_viewport(self._display)
         sw.show()
         self.root.pack_start(sw, 1, 1, 1)

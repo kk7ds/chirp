@@ -20,7 +20,8 @@ import os
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
-                RadioSettingValueInteger, RadioSettingValueString
+                RadioSettingValueInteger, RadioSettingValueString, \
+                RadioSettings
 
 if os.getenv("CHIRP_DEBUG"):
     CHIRP_DEBUG = True
@@ -673,12 +674,11 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings")
         vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings")
         key_grp = RadioSettingGroup("key_grp", "Key Settings")
-        scn_grp = RadioSettingGroup("scn_grp", "Scan Group")
-        cal_grp = RadioSettingGroup("cal_grp", "Call Group")
         lmt_grp = RadioSettingGroup("lmt_grp", "Frequency Limits")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
-        group = RadioSettingGroup("top", "All Settings", cfg_grp, vfoa_grp,
-                        vfob_grp, key_grp, scn_grp, cal_grp, lmt_grp, oem_grp)
+        
+        group = RadioSettings(cfg_grp, vfoa_grp, vfob_grp, key_grp, 
+                            lmt_grp, oem_grp)
 
         #
         # Configuration Settings

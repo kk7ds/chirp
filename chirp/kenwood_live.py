@@ -27,7 +27,7 @@ if __name__ == "__main__":
 from chirp import chirp_common, errors, directory, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueBoolean, \
-    RadioSettingValueString, RadioSettingValueList
+    RadioSettingValueString, RadioSettingValueList, RadioSettings
 
 DEBUG = True
 
@@ -392,7 +392,8 @@ class THD7Radio(KenwoodOldLiveRadio):
                                   aux, tnc, save, display, dtmf)
         sky = RadioSettingGroup("sky", "SkyCommand")
         aprs = RadioSettingGroup("aprs", "APRS")
-        top = RadioSettingGroup("top", "All Settings", radio, aprs, sky)
+        
+        top = RadioSettings(radio, aprs, sky)
 
         bools = [("AMR", aprs, "APRS Message Auto-Reply"),
                  ("AIP", aux, "Advanced Intercept Point"),

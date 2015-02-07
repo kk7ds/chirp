@@ -21,7 +21,7 @@ from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat
+                RadioSettingValueFloat, RadioSettings
 from chirp.wouxun_common import wipe_memory, do_download, do_upload
 from textwrap import dedent
 
@@ -334,7 +334,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def get_settings(self):
         freqranges = RadioSettingGroup("freqranges", "Freq ranges")
         fm_preset = RadioSettingGroup("fm_preset", "FM Presets")
-        top = RadioSettingGroup("top", "All Settings", freqranges, fm_preset)
+        top = RadioSettings(freqranges, fm_preset)
 
         rs = RadioSetting("menu_available", "Menu Available",
                           RadioSettingValueBoolean(
@@ -1045,7 +1045,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     def get_settings(self):
         freqranges = RadioSettingGroup("freqranges", "Freq ranges")
         fm_preset = RadioSettingGroup("fm_preset", "FM Presets")
-        top = RadioSettingGroup("top", "All Settings", freqranges, fm_preset)
+        top = RadioSettings(freqranges, fm_preset)
 
         rs = RadioSetting("menu_available", "Menu Available",
                           RadioSettingValueBoolean(
@@ -1425,7 +1425,7 @@ class KG816Radio(KGUVD1PRadio,
 
     def get_settings(self):
         freqranges = RadioSettingGroup("freqranges", "Freq ranges (read only)")
-        top = RadioSettingGroup("top", "All Settings", freqranges)
+        group = RadioSettings(freqranges)
 
         rs = RadioSetting("vhf_rx_start", "vhf rx start",
                           RadioSettingValueInteger(66, 520,
@@ -1473,7 +1473,7 @@ class KG816Radio(KGUVD1PRadio,
             ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
              (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000)]
 
-        return top
+        return group
 
     @classmethod
     def match_model(cls, filedata, filename):
