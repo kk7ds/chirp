@@ -232,7 +232,8 @@ def _send(radio, cmd, addr, length, data=None):
         result = radio.pipe.read(1)
         if result != "\x06":
             print "Ack was: %s" % repr(result)
-            raise errors.RadioError("Radio did not accept block at %04x" % addr)
+            raise errors.RadioError("Radio did not accept block at %04x" % \
+                            addr)
         return
     result = _read(radio, length + 6)
     _debug("Got:\n%s" % util.hexprint(result))
