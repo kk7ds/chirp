@@ -58,8 +58,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     
     _querymodel = ("HiWOUXUN\x02", "PROGUV6X\x02")
     
-    CHARSET = list("0123456789") + [chr(x + ord("A")) for x in range(0, 26)] + \
-        list("?+-")
+    CHARSET = list("0123456789") + [chr(x + ord("A")) \
+                for x in range(0, 26)] + list("?+-")
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
@@ -199,7 +199,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = ('This version of the Wouxun driver allows you to modify the '
+        rp.experimental = \
+                ('This version of the Wouxun driver allows you to modify the '
                 'frequency range settings of your radio. This has been tested '
                 'and reports from other users indicate that it is a safe '
                 'thing to do. However, modifications to this value may have '
@@ -332,63 +333,63 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         return rf
 
     def get_settings(self):
-        freqranges = RadioSettingGroup("freqranges", "Freq Ranges")
+        freq_ranges = RadioSettingGroup("freq_ranges", "Freq Ranges")
         fm_preset = RadioSettingGroup("fm_preset", "FM Presets")
-        opt = RadioSettingGroup("options", "Options")
-        group = RadioSettings(opt, freqranges, fm_preset)
+        cfg_s = RadioSettingGroup("cfg_settings", "Configuration Settings")
+        group = RadioSettings(cfg_s, freq_ranges, fm_preset)
 
         rs = RadioSetting("menu_available", "Menu Available",
-                          RadioSettingValueBoolean(
+                        RadioSettingValueBoolean(
                             self._memobj.settings.menu_available))
-        opt.append(rs)
+        cfg_s.append(rs)
 
         rs = RadioSetting("vhf_rx_start", "1st band RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(50, 174, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_rx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(50, 174, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_rx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_rx_stop", "1st band RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(50, 174, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_rx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(50, 174, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_rx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_rx_start", "2nd band RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 520, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_rx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(136, 520, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_rx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_rx_stop", "2nd band RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(136, 520, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_rx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(136, 520, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_rx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_tx_start", "1st band TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(50, 174, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_tx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(50, 174, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_tx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_tx_stop", "1st TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(50, 174, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_tx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(50, 174, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_tx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_tx_start", "2st band TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 520, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_tx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(136, 520, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_tx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_tx_stop", "2st band TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(136, 520, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_tx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(136, 520, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_tx_stop)))
+        freq_ranges.append(rs)
         
         # tell the decoded ranges to UI
         self.valid_freq = [
-            ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
-             (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000),
-            ( decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
-             (decode_freq(self._memobj.freq_ranges.uhf_rx_stop)+1) * 1000000)]
+            (decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000,
+            (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000),
+            (decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
+            (decode_freq(self._memobj.freq_ranges.uhf_rx_stop)+1) * 1000000)]
 
         def _filter(name):
             filtered = ""
@@ -402,167 +403,168 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         # add some radio specific settings
         options = ["Off", "Welcome", "V bat"]
         rs = RadioSetting("ponmsg", "Poweron message",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.ponmsg]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.ponmsg]))
+        cfg_s.append(rs)
         rs = RadioSetting("strings.welcome1", "Power-On Message 1",
-                          RadioSettingValueString(0, 6,
-                              _filter(self._memobj.strings.welcome1)))
-        opt.append(rs)
+                        RadioSettingValueString(0, 6,
+                            _filter(self._memobj.strings.welcome1)))
+        cfg_s.append(rs)
         rs = RadioSetting("strings.welcome2", "Power-On Message 2",
-                          RadioSettingValueString(0, 6,
-                              _filter(self._memobj.strings.welcome2)))
-        opt.append(rs)
+                        RadioSettingValueString(0, 6,
+                            _filter(self._memobj.strings.welcome2)))
+        cfg_s.append(rs)
         rs = RadioSetting("strings.single_band", "Single Band Message",
-                          RadioSettingValueString(0, 6,
-                              _filter(self._memobj.strings.single_band)))
-        opt.append(rs)
+                        RadioSettingValueString(0, 6,
+                            _filter(self._memobj.strings.single_band)))
+        cfg_s.append(rs)
         options = ["Channel", "ch/freq","Name", "VFO"]
         rs = RadioSetting("vfo_a_ch_disp", "VFO A Channel disp mode",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.vfo_a_ch_disp]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_a_ch_disp]))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_ch_disp", "VFO B Channel disp mode",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.vfo_b_ch_disp]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_b_ch_disp]))
+        cfg_s.append(rs)
         options = ["5.0", "6.25", "10.0", "12.5", "25.0", "50.0", "100.0"]
         rs = RadioSetting("vfo_a_fr_step", "VFO A Frequency Step",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.vfo_a_fr_step]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_a_fr_step]))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_fr_step", "VFO B Frequency Step",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.vfo_b_fr_step]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_b_fr_step]))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_a_squelch", "VFO A Squelch",
-                          RadioSettingValueInteger(0, 9,
-                              self._memobj.settings.vfo_a_squelch))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9,
+                            self._memobj.settings.vfo_a_squelch))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_squelch", "VFO B Squelch",
-                          RadioSettingValueInteger(0, 9,
-                              self._memobj.settings.vfo_b_squelch))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9,
+                            self._memobj.settings.vfo_b_squelch))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_a_cur_chan", "VFO A current channel",
-                          RadioSettingValueInteger(1, 128,
-                              self._memobj.settings.vfo_a_cur_chan))
-        opt.append(rs)
+                        RadioSettingValueInteger(1, 128,
+                            self._memobj.settings.vfo_a_cur_chan))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_cur_chan", "VFO B current channel",
-                          RadioSettingValueInteger(1, 128,
-                              self._memobj.settings.vfo_b_cur_chan))
-        opt.append(rs)
+                        RadioSettingValueInteger(1, 128,
+                            self._memobj.settings.vfo_b_cur_chan))
+        cfg_s.append(rs)
         rs = RadioSetting("priority_chan", "Priority channel",
-                          RadioSettingValueInteger(0, 199,
-                              self._memobj.settings.priority_chan))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 199,
+                            self._memobj.settings.priority_chan))
+        cfg_s.append(rs)
         rs = RadioSetting("power_save", "Power save",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.power_save))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.power_save))
+        cfg_s.append(rs)
         options = ["Off", "Scan", "Lamp", "SOS", "Radio"]
         rs = RadioSetting("pf1_function", "PF1 Function select",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.pf1_function]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.pf1_function]))
+        cfg_s.append(rs)
         options = ["Off", "Begin", "End", "Both"]
         rs = RadioSetting("roger_beep", "Roger beep select",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.roger_beep]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.roger_beep]))
+        cfg_s.append(rs)
         options = ["%s" % x for x in range(15, 615, 15)]
         rs = RadioSetting("transmit_time_out", "TX Time-out Timer",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.transmit_time_out]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.transmit_time_out]))
+        cfg_s.append(rs)
         rs = RadioSetting("tx_time_out_alert", "TX Time-out Alert",
-                          RadioSettingValueInteger(0, 10,
-                              self._memobj.settings.tx_time_out_alert))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 10,
+                            self._memobj.settings.tx_time_out_alert))
+        cfg_s.append(rs)
         rs = RadioSetting("vox", "Vox",
-                          RadioSettingValueInteger(0, 10,
-                              self._memobj.settings.vox))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 10,
+                            self._memobj.settings.vox))
+        cfg_s.append(rs)
         options = ["Off", "Chinese", "English"]
         rs = RadioSetting("voice", "Voice",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.voice]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.voice]))
+        cfg_s.append(rs)
         rs = RadioSetting("beep", "Beep",
-                          RadioSettingValueBoolean(self._memobj.settings.beep))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.beep))
+        cfg_s.append(rs)
         rs = RadioSetting("ani_id_enable", "ANI id enable",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.ani_id_enable))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.ani_id_enable))
+        cfg_s.append(rs)
         rs = RadioSetting("ani_id_tx_delay", "ANI id tx delay",
-                          RadioSettingValueInteger(0, 30,
-                              self._memobj.settings.ani_id_tx_delay))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 30,
+                            self._memobj.settings.ani_id_tx_delay))
+        cfg_s.append(rs)
         options = ["Off", "Key", "ANI", "Key+ANI"]
         rs = RadioSetting("ani_id_sidetone", "ANI id sidetone",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.ani_id_sidetone]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.ani_id_sidetone]))
+        cfg_s.append(rs)
         options = ["Time", "Carrier", "Search"]
         rs = RadioSetting("scan_mode", "Scan mode",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.scan_mode]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.scan_mode]))
+        cfg_s.append(rs)
         rs = RadioSetting("kbd_lock", "Keyboard lock",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.kbd_lock))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.kbd_lock))
+        cfg_s.append(rs)
         rs = RadioSetting("auto_lock_kbd", "Auto lock keyboard",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.auto_lock_kbd))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.auto_lock_kbd))
+        cfg_s.append(rs)
         rs = RadioSetting("auto_backlight", "Auto backlight",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.auto_backlight))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.auto_backlight))
+        cfg_s.append(rs)
         options = ["CH A", "CH B"]
         rs = RadioSetting("sos_ch", "SOS CH",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.sos_ch]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.sos_ch]))
+        cfg_s.append(rs)
         rs = RadioSetting("stopwatch", "Stopwatch",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.stopwatch))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.stopwatch))
+        cfg_s.append(rs)
         rs = RadioSetting("dual_band_receive", "Dual band receive",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.dual_band_receive))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.dual_band_receive))
+        cfg_s.append(rs)
         options = ["VFO A", "VFO B"]
         rs = RadioSetting("current_vfo", "Current VFO",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.current_vfo]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.current_vfo]))
+        cfg_s.append(rs)
 
         options = ["Dual", "Single"]
         rs = RadioSetting("sd_available", "Single/Dual Band",
-                          RadioSettingValueList(options,
-                              options[self._memobj.settings.sd_available]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.sd_available]))
+        cfg_s.append(rs)
 
         _pwd = self._memobj.settings.mode_password
         rs = RadioSetting("mode_password", "Mode password (000000 disabled)",
-                  RadioSettingValueInteger(0, 9, _pwd[0]),
-                  RadioSettingValueInteger(0, 9, _pwd[1]),
-                  RadioSettingValueInteger(0, 9, _pwd[2]),
-                  RadioSettingValueInteger(0, 9, _pwd[3]),
-                  RadioSettingValueInteger(0, 9, _pwd[4]),
-                  RadioSettingValueInteger(0, 9, _pwd[5]))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9, _pwd[0]),
+                        RadioSettingValueInteger(0, 9, _pwd[1]),
+                        RadioSettingValueInteger(0, 9, _pwd[2]),
+                        RadioSettingValueInteger(0, 9, _pwd[3]),
+                        RadioSettingValueInteger(0, 9, _pwd[4]),
+                        RadioSettingValueInteger(0, 9, _pwd[5]))
+        cfg_s.append(rs)
         _pwd = self._memobj.settings.reset_password
         rs = RadioSetting("reset_password", "Reset password (000000 disabled)",
-                  RadioSettingValueInteger(0, 9, _pwd[0]),
-                  RadioSettingValueInteger(0, 9, _pwd[1]),
-                  RadioSettingValueInteger(0, 9, _pwd[2]),
-                  RadioSettingValueInteger(0, 9, _pwd[3]),
-                  RadioSettingValueInteger(0, 9, _pwd[4]),
-                  RadioSettingValueInteger(0, 9, _pwd[5]))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9, _pwd[0]),
+                        RadioSettingValueInteger(0, 9, _pwd[1]),
+                        RadioSettingValueInteger(0, 9, _pwd[2]),
+                        RadioSettingValueInteger(0, 9, _pwd[3]),
+                        RadioSettingValueInteger(0, 9, _pwd[4]),
+                        RadioSettingValueInteger(0, 9, _pwd[5]))
+        cfg_s.append(rs)
 
         dtmfchars = "0123456789 *#ABCD"
         _codeobj = self._memobj.settings.ani_id_content
@@ -579,7 +581,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                     value.append(0xFF)
             obj.ani_id_content = value
         rs.set_apply_callback(apply_ani_id, self._memobj.settings)
-        opt.append(rs)
+        cfg_s.append(rs)
 
         for i in range(0, 9):
             if self._memobj.fm_presets_0[i] != 0xFFFF:
@@ -588,9 +590,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             else:
                 used = False
                 preset = 76
-            rs = RadioSetting("fm_presets_0_%1i" % i, "Team 1 Location %i" % (i+1),
-                          RadioSettingValueBoolean(used),
-                          RadioSettingValueFloat(76, 108, preset, 0.1, 1))
+            rs = RadioSetting("fm_presets_0_%1i" % i, 
+                            "Team 1 Location %i" % (i+1),
+                            RadioSettingValueBoolean(used),
+                            RadioSettingValueFloat(76, 108, preset, 0.1, 1))
             fm_preset.append(rs)
         for i in range(0, 9):
             if self._memobj.fm_presets_1[i] != 0xFFFF:
@@ -599,9 +602,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             else:
                 used = False
                 preset = 76
-            rs = RadioSetting("fm_presets_1_%1i" % i, "Team 2 Location %i" % (i+1),
-                          RadioSettingValueBoolean(used),
-                          RadioSettingValueFloat(76, 108, preset, 0.1, 1))
+            rs = RadioSetting("fm_presets_1_%1i" % i, 
+                            "Team 2 Location %i" % (i+1),
+                            RadioSettingValueBoolean(used),
+                            RadioSettingValueFloat(76, 108, preset, 0.1, 1))
             fm_preset.append(rs)
 
         return group
@@ -609,7 +613,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def set_settings(self, settings):
         for element in settings:
             if not isinstance(element, RadioSetting):
-                if element.get_name() == "freqranges" :
+                if element.get_name() == "freq_ranges" :
                     self._set_freq_settings(element)
                 elif element.get_name() == "fm_preset" :
                     self._set_fm_preset(element)
@@ -642,7 +646,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         obj = self._memobj
         for element in settings:
             try:
-                (bank, index) = (int(a) for a in element.get_name().split("_")[-2:])
+                (bank, index) = \
+                    (int(a) for a in element.get_name().split("_")[-2:])
                 val = element.value
                 if val[0].get_value():
                     value = int(val[1].get_value()*10-760)
@@ -1044,63 +1049,63 @@ class KGUV6DRadio(KGUVD1PRadio):
         return rf
 
     def get_settings(self):
-        freqranges = RadioSettingGroup("freqranges", "Freq Ranges")
+        freq_ranges = RadioSettingGroup("freq_ranges", "Freq Ranges")
         fm_preset = RadioSettingGroup("fm_preset", "FM Presets")
-        opt = RadioSettingGroup("options", "Options")
-        group = RadioSettings(opt, freqranges, fm_preset)
+        cfg_s = RadioSettingGroup("cfg_settings", "Configuration Settings")
+        group = RadioSettings(cfg_s, freq_ranges, fm_preset)
 
         rs = RadioSetting("menu_available", "Menu Available",
-                          RadioSettingValueBoolean(
+                        RadioSettingValueBoolean(
                             self._memobj.settings.menu_available))
-        opt.append(rs)
+        cfg_s.append(rs)
 
         rs = RadioSetting("vhf_rx_start", "VHF RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_rx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_rx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_rx_stop", "VHF RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_rx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_rx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_rx_start", "UHF RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_rx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_rx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_rx_stop", "UHF RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_rx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_rx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_tx_start", "VHF TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_tx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_tx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_tx_stop", "VHF TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_tx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_tx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_tx_start", "UHF TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_tx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_tx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_tx_stop", "UHF TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000, 
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_tx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(1, 1000, 
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_tx_stop)))
+        freq_ranges.append(rs)
         
         # tell the decoded ranges to UI
         self.valid_freq = [
-            ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
-             (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000), 
-            ( decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
-             (decode_freq(self._memobj.freq_ranges.uhf_rx_stop)+1) * 1000000)]
+            (decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
+            (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000), 
+            (decode_freq(self._memobj.freq_ranges.uhf_rx_start)  * 1000000,
+            (decode_freq(self._memobj.freq_ranges.uhf_rx_stop)+1) * 1000000)]
 
         def _filter(name):
             filtered = ""
@@ -1114,154 +1119,174 @@ class KGUV6DRadio(KGUVD1PRadio):
         # add some radio specific settings
         options = ["Off", "Welcome", "V bat", "N/A(KG-UV6X)"]
         rs = RadioSetting("ponmsg", "Poweron message",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.ponmsg]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.ponmsg]))
+        cfg_s.append(rs)
         rs = RadioSetting("strings.welcome1", "Power-On Message 1",
-                          RadioSettingValueString(0, 6, _filter(self._memobj.strings.welcome1)))
-        opt.append(rs)
+                        RadioSettingValueString(0, 6, 
+                            _filter(self._memobj.strings.welcome1)))
+        cfg_s.append(rs)
         rs = RadioSetting("strings.welcome2", "Power-On Message 2",
-                          RadioSettingValueString(0, 6, _filter(self._memobj.strings.welcome2)))
-        opt.append(rs)
+                        RadioSettingValueString(0, 6, 
+                            _filter(self._memobj.strings.welcome2)))
+        cfg_s.append(rs)
         rs = RadioSetting("strings.single_band", "Single Band Message",
-                          RadioSettingValueString(0, 6, _filter(self._memobj.strings.single_band)))
-        opt.append(rs)
+                        RadioSettingValueString(0, 6, 
+                            _filter(self._memobj.strings.single_band)))
+        cfg_s.append(rs)
         options = ["Channel", "ch/freq","Name", "VFO"]
         rs = RadioSetting("vfo_a_ch_disp", "VFO A Channel disp mode",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.vfo_a_ch_disp]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_a_ch_disp]))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_ch_disp", "VFO B Channel disp mode",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.vfo_b_ch_disp]))
-        opt.append(rs)
-        options = ["2.5", "5.0", "6.25", "10.0", "12.5", "25.0", "50.0", "100.0"]
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_b_ch_disp]))
+        cfg_s.append(rs)
+        options = \
+            ["2.5", "5.0", "6.25", "10.0", "12.5", "25.0", "50.0", "100.0"]
         rs = RadioSetting("vfo_a_fr_step", "VFO A Frequency Step",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.vfo_a_fr_step]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_a_fr_step]))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_fr_step", "VFO B Frequency Step",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.vfo_b_fr_step]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.vfo_b_fr_step]))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_a_squelch", "VFO A Squelch",
-                          RadioSettingValueInteger(0, 9, self._memobj.settings.vfo_a_squelch))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9, 
+                            self._memobj.settings.vfo_a_squelch))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_squelch", "VFO B Squelch",
-                          RadioSettingValueInteger(0, 9, self._memobj.settings.vfo_b_squelch))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9, 
+                            self._memobj.settings.vfo_b_squelch))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_a_cur_chan", "VFO A current channel",
-                          RadioSettingValueInteger(1, 199, self._memobj.settings.vfo_a_cur_chan))
-        opt.append(rs)
+                        RadioSettingValueInteger(1, 199, 
+                            self._memobj.settings.vfo_a_cur_chan))
+        cfg_s.append(rs)
         rs = RadioSetting("vfo_b_cur_chan", "VFO B current channel",
-                          RadioSettingValueInteger(1, 199, self._memobj.settings.vfo_b_cur_chan))
-        opt.append(rs)
+                        RadioSettingValueInteger(1, 199, 
+                            self._memobj.settings.vfo_b_cur_chan))
+        cfg_s.append(rs)
         rs = RadioSetting("priority_chan", "Priority channel",
-                          RadioSettingValueInteger(0, 199, self._memobj.settings.priority_chan))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 199, 
+                            self._memobj.settings.priority_chan))
+        cfg_s.append(rs)
         rs = RadioSetting("power_save", "Power save",
-                          RadioSettingValueBoolean(self._memobj.settings.power_save))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.power_save))
+        cfg_s.append(rs)
         options = ["Off", "Scan", "Lamp", "SOS", "Radio"]
         rs = RadioSetting("pf1_function", "PF1 Function select",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.pf1_function]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.pf1_function]))
+        cfg_s.append(rs)
         options = ["Off", "Radio", "fr/ch", "Rpt", "Stopwatch", "Lamp", "SOS"]
         rs = RadioSetting("pf2_function", "PF2 Function select",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.pf2_function]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.pf2_function]))
+        cfg_s.append(rs)
         options = ["Off", "Begin", "End", "Both"]
         rs = RadioSetting("roger_beep", "Roger beep select",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.roger_beep]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                                options[self._memobj.settings.roger_beep]))
+        cfg_s.append(rs)
         options = ["%s" % x for x in range(15, 615, 15)]
         rs = RadioSetting("transmit_time_out", "TX Time-out Timer",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.transmit_time_out]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.transmit_time_out]))
+        cfg_s.append(rs)
         rs = RadioSetting("tx_time_out_alert", "TX Time-out Alert",
-                          RadioSettingValueInteger(0, 10, self._memobj.settings.tx_time_out_alert))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 10, 
+                            self._memobj.settings.tx_time_out_alert))
+        cfg_s.append(rs)
         rs = RadioSetting("vox", "Vox",
-                          RadioSettingValueInteger(0, 10, self._memobj.settings.vox))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 10, 
+                            self._memobj.settings.vox))
+        cfg_s.append(rs)
         options = ["Off", "Chinese", "English"]
         rs = RadioSetting("voice", "Voice",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.voice]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.voice]))
+        cfg_s.append(rs)
         rs = RadioSetting("beep", "Beep",
-                          RadioSettingValueBoolean(self._memobj.settings.beep))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.beep))
+        cfg_s.append(rs)
         rs = RadioSetting("ani_id_enable", "ANI id enable",
-                          RadioSettingValueBoolean(self._memobj.settings.ani_id_enable))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.ani_id_enable))
+        cfg_s.append(rs)
         rs = RadioSetting("ani_id_tx_delay", "ANI id tx delay",
-                          RadioSettingValueInteger(0, 30, self._memobj.settings.ani_id_tx_delay))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 30, 
+                            self._memobj.settings.ani_id_tx_delay))
+        cfg_s.append(rs)
         options = ["Off", "Key", "ANI", "Key+ANI"]
         rs = RadioSetting("ani_id_sidetone", "ANI id sidetone",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.ani_id_sidetone]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.ani_id_sidetone]))
+        cfg_s.append(rs)
         options = ["Time", "Carrier", "Search"]
         rs = RadioSetting("scan_mode", "Scan mode",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.scan_mode]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.scan_mode]))
+        cfg_s.append(rs)
         rs = RadioSetting("kbd_lock", "Keyboard lock",
-                          RadioSettingValueBoolean(self._memobj.settings.kbd_lock))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.kbd_lock))
+        cfg_s.append(rs)
         rs = RadioSetting("auto_lock_kbd", "Auto lock keyboard",
-                          RadioSettingValueBoolean(self._memobj.settings.auto_lock_kbd))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.auto_lock_kbd))
+        cfg_s.append(rs)
         rs = RadioSetting("auto_backlight", "Auto backlight",
-                          RadioSettingValueBoolean(self._memobj.settings.auto_backlight))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.auto_backlight))
+        cfg_s.append(rs)
         options = ["CH A", "CH B"]
         rs = RadioSetting("sos_ch", "SOS CH",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.sos_ch]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.sos_ch]))
+        cfg_s.append(rs)
         rs = RadioSetting("stopwatch", "Stopwatch",
-                          RadioSettingValueBoolean(self._memobj.settings.stopwatch))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.stopwatch))
+        cfg_s.append(rs)
         rs = RadioSetting("dual_band_receive", "Dual band receive",
-                          RadioSettingValueBoolean(self._memobj.settings.dual_band_receive))
-        opt.append(rs)
+                        RadioSettingValueBoolean(
+                            self._memobj.settings.dual_band_receive))
+        cfg_s.append(rs)
         options = ["VFO A", "VFO B"]
         rs = RadioSetting("current_vfo", "Current VFO",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.current_vfo]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.current_vfo]))
+        cfg_s.append(rs)
 
         options = ["Dual", "Single"]
         rs = RadioSetting("sd_available", "Single/Dual Band",
-                          RadioSettingValueList(options,
-                                        options[self._memobj.settings.sd_available]))
-        opt.append(rs)
+                        RadioSettingValueList(options,
+                            options[self._memobj.settings.sd_available]))
+        cfg_s.append(rs)
 
         _pwd = self._memobj.settings.mode_password
         rs = RadioSetting("mode_password", "Mode password (000000 disabled)",
-                  RadioSettingValueInteger(0, 9, _pwd[0]),
-                  RadioSettingValueInteger(0, 9, _pwd[1]),
-                  RadioSettingValueInteger(0, 9, _pwd[2]),
-                  RadioSettingValueInteger(0, 9, _pwd[3]),
-                  RadioSettingValueInteger(0, 9, _pwd[4]),
-                  RadioSettingValueInteger(0, 9, _pwd[5]))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9, _pwd[0]),
+                        RadioSettingValueInteger(0, 9, _pwd[1]),
+                        RadioSettingValueInteger(0, 9, _pwd[2]),
+                        RadioSettingValueInteger(0, 9, _pwd[3]),
+                        RadioSettingValueInteger(0, 9, _pwd[4]),
+                        RadioSettingValueInteger(0, 9, _pwd[5]))
+        cfg_s.append(rs)
         _pwd = self._memobj.settings.reset_password
         rs = RadioSetting("reset_password", "Reset password (000000 disabled)",
-                  RadioSettingValueInteger(0, 9, _pwd[0]),
-                  RadioSettingValueInteger(0, 9, _pwd[1]),
-                  RadioSettingValueInteger(0, 9, _pwd[2]),
-                  RadioSettingValueInteger(0, 9, _pwd[3]),
-                  RadioSettingValueInteger(0, 9, _pwd[4]),
-                  RadioSettingValueInteger(0, 9, _pwd[5]))
-        opt.append(rs)
+                        RadioSettingValueInteger(0, 9, _pwd[0]),
+                        RadioSettingValueInteger(0, 9, _pwd[1]),
+                        RadioSettingValueInteger(0, 9, _pwd[2]),
+                        RadioSettingValueInteger(0, 9, _pwd[3]),
+                        RadioSettingValueInteger(0, 9, _pwd[4]),
+                        RadioSettingValueInteger(0, 9, _pwd[5]))
+        cfg_s.append(rs)
 
         dtmfchars = "0123456789 *#ABCD"
         _codeobj = self._memobj.settings.ani_id_content
@@ -1278,7 +1303,7 @@ class KGUV6DRadio(KGUVD1PRadio):
                     value.append(0xFF)
             obj.ani_id_content = value
         rs.set_apply_callback(apply_ani_id, self._memobj.settings)
-        opt.append(rs)
+        cfg_s.append(rs)
 
         for i in range(0, 9):
             if self._memobj.fm_presets_0[i] != 0xFFFF:
@@ -1287,9 +1312,10 @@ class KGUV6DRadio(KGUVD1PRadio):
             else:
                 used = False
                 preset = 76
-            rs = RadioSetting("fm_presets_0_%1i" % i, "Team 1 Location %i" % (i+1),
-                          RadioSettingValueBoolean(used),
-                          RadioSettingValueFloat(76, 108, preset, 0.1, 1))
+            rs = RadioSetting("fm_presets_0_%1i" % i, 
+                            "Team 1 Location %i" % (i+1),
+                            RadioSettingValueBoolean(used),
+                            RadioSettingValueFloat(76, 108, preset, 0.1, 1))
             fm_preset.append(rs)
         for i in range(0, 9):
             if self._memobj.fm_presets_1[i] != 0xFFFF:
@@ -1298,9 +1324,10 @@ class KGUV6DRadio(KGUVD1PRadio):
             else:
                 used = False
                 preset = 76
-            rs = RadioSetting("fm_presets_1_%1i" % i, "Team 2 Location %i" % (i+1),
-                          RadioSettingValueBoolean(used),
-                          RadioSettingValueFloat(76, 108, preset, 0.1, 1))
+            rs = RadioSetting("fm_presets_1_%1i" % i, 
+                            "Team 2 Location %i" % (i+1),
+                            RadioSettingValueBoolean(used),
+                            RadioSettingValueFloat(76, 108, preset, 0.1, 1))
             fm_preset.append(rs)
 
         return group
@@ -1308,7 +1335,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     def set_settings(self, settings):
         for element in settings:
             if not isinstance(element, RadioSetting):
-                if element.get_name() == "freqranges" :
+                if element.get_name() == "freq_ranges" :
                     self._set_freq_settings(element)
                 elif element.get_name() == "fm_preset" :
                     self._set_fm_preset(element)
@@ -1340,7 +1367,8 @@ class KGUV6DRadio(KGUVD1PRadio):
         obj = self._memobj
         for element in settings:
             try:
-                (bank, index) = (int(a) for a in element.get_name().split("_")[-2:])
+                (bank, index) = \
+                    (int(a) for a in element.get_name().split("_")[-2:])
                 val = element.value
                 if val[0].get_value():
                     value = int(val[1].get_value()*10-760)
@@ -1426,54 +1454,55 @@ class KG816Radio(KGUVD1PRadio,
         return rf
 
     def get_settings(self):
-        freqranges = RadioSettingGroup("freqranges", "Freq Ranges (read only)")
-        group = RadioSettings(freqranges)
+        freq_ranges = RadioSettingGroup("freq_ranges", 
+                                        "Freq Ranges (read only)")
+        group = RadioSettings(freq_ranges)
 
         rs = RadioSetting("vhf_rx_start", "vhf rx start",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_rx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_rx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_rx_stop", "vhf rx stop",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_rx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_rx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_rx_start", "uhf rx start",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_rx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_rx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_rx_stop", "uhf rx stop",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_rx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_rx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_tx_start", "vhf tx start",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_tx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_tx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("vhf_tx_stop", "vhf tx stop",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.vhf_tx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.vhf_tx_stop)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_tx_start", "uhf tx start",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_tx_start)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_tx_start)))
+        freq_ranges.append(rs)
         rs = RadioSetting("uhf_tx_stop", "uhf tx stop",
-                          RadioSettingValueInteger(66, 520,
-                                decode_freq(
-                                    self._memobj.freq_ranges.uhf_tx_stop)))
-        freqranges.append(rs)
+                        RadioSettingValueInteger(66, 520,
+                            decode_freq(
+                                self._memobj.freq_ranges.uhf_tx_stop)))
+        freq_ranges.append(rs)
         
         # tell the decoded ranges to UI
         self.valid_freq = [
-            ( decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000, 
-             (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000)]
+            (decode_freq(self._memobj.freq_ranges.vhf_rx_start) * 1000000,
+            (decode_freq(self._memobj.freq_ranges.vhf_rx_stop)+1) * 1000000)]
 
         return group
 
