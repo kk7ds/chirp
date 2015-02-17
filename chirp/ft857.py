@@ -446,7 +446,8 @@ class FT857Radio(ft817.FT817Radio):
             3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
                  turning the radio on ("CLONE MODE" will appear on the
                  display).
-            4. Press the [A](RCV) key ("receiving" will appear on the LCD)."""))
+            4. Press the [A](RCV) key ("receiving" will appear on the LCD)."""
+            ))
         return rp
 
     def get_features(self):
@@ -692,7 +693,8 @@ class FT857Radio(ft817.FT817Radio):
         rs = RadioSetting("disp_color_band", "Display color band set",
                 RadioSettingValueInteger(0, 1, _settings.disp_color_band))
         panel.append(rs)
-        rs = RadioSetting("disp_color_memgrp", "Display color memory group set",
+        rs = RadioSetting("disp_color_memgrp",
+                "Display color memory group set",
                 RadioSettingValueInteger(0, 1, _settings.disp_color_memgrp))
         panel.append(rs)
         rs = RadioSetting("disp_color_mode", "Display color mode set",
