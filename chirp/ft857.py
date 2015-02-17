@@ -1031,7 +1031,7 @@ class FT857USRadio(FT857Radio):
 
         mem = self._get_memory(mem, _mem)
 
-        mem.immutable = ["number", "skip", "rtone", "ctone",
+        mem.immutable = ["number", "rtone", "ctone",
                          "extd_number", "name", "dtcs", "tmode", "cross_mode",
                          "dtcs_polarity", "power", "duplex", "offset",
                          "comment", "empty"]
