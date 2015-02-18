@@ -530,8 +530,24 @@ class TestCaseSettings(TestCase):
     def do_get_settings(self, rf):
         lst = self._wrapper.do("get_settings")
         if not isinstance(lst, list):
-	    raise TestFailedError("Invalid Radio Settings")
-        self._wrapper.do("set_settings", lst)
+            raise TestFailedError("Invalid Radio Settings")
+
+    def do_same_settings(self, rf):
+        o = self._wrapper.do("get_settings")
+        self._wrapper.do("set_settings", o)
+        n = self._wrapper.do("get_settings")
+        map(self.compare_settings, o, n)
+
+    @staticmethod
+    def compare_settings(a, b):
+        try:
+            map(TestCaseSettings.compare_settings, a, b)
+        except TypeError:
+            if a.get_value() != b.get_value():
+                msg = "Field is `%s', " % b + \
+                    "expected `%s' " % a
+                details = msg
+                raise TestFailedError(msg, details)
 
     def run(self):
         rf = self._wrapper.do("get_features")
@@ -539,7 +555,8 @@ class TestCaseSettings(TestCase):
         if not rf.has_settings:
             raise TestSkippedError("Settings not supported")
 
-	self.do_get_settings(rf)
+        self.do_get_settings(rf)
+        self.do_same_settings(rf)
 
         return []
 
