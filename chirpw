@@ -28,6 +28,7 @@ import sys
 import os
 import locale
 import gettext
+import argparse
 
 p = platform.get_platform()
 if hasattr(sys, "frozen"):
@@ -124,29 +125,21 @@ else:
 from chirp import *
 from chirpui import mainapp, config
 
+parser = argparse.ArgumentParser()
+parser.add_argument("files", metavar="file", nargs='*', help="File to open")
+parser.add_argument("--profile", action="store_true",
+                    help="Enable profiling")
+args = parser.parse_args()
+
 a = mainapp.ChirpMain()
 
-profile = False
-if len(sys.argv) > 1:
-    arg = sys.argv[1]
-    index = 2
-    if arg == "--profile":
-        profile = True
-    elif arg == "--help":
-        print "Usage: %s [file...]" % sys.argv[0]
-        sys.exit(0)
-    else:
-        index = 1
-else:
-    index = 1
-
-for i in sys.argv[index:]:
+for i in args.files:
     print "Opening %s" % i
     a.do_open(i)
 
 a.show()
 
-if profile:
+if args.profile:
     import cProfile, pstats
     cProfile.run("gtk.main()", "chirpw.stats")
     p = pstats.Stats("chirpw.stats")
