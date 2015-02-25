@@ -1201,7 +1201,7 @@ If you think that it is valid, you can select a radio model below to force an op
                                  os.linesep +
                                  "German: Benjamin HB9EUK" +
                                  os.linesep +
-                                 "Hungarian: Attila HA7JA" +
+                                 "Hungarian: Attila HA5JA" +
                                  os.linesep +
                                  "Russian: Dmitry Slukin" +
                                  os.linesep +
