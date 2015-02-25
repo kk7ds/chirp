@@ -137,8 +137,9 @@ if __name__ == "__main__":
 			  help="Set mode (%s)" % ",".join(chirp_common.MODES))
 	parser.add_argument("-r", "--radio", dest="radio",
 			  default=None,
-			  help="Radio model (one of %s)" % ",".join(RADIOS.keys()))
-
+			  help="Radio model (see --list-radios)")
+	parser.add_argument("--list-radios", action="store_true",
+			  help="List radio models")
 	parser.add_argument("--mmap", dest="mmap",
 			  default=None,
 			  help="Radio memory map file location")
@@ -158,6 +159,10 @@ if __name__ == "__main__":
 
 	options = parser.parse_args()
         args = options.args
+
+        if options.list_radios:
+            print "Supported Radios:\n\t", "\n\t".join(sorted(RADIOS.keys()))
+            sys.exit(0)
 
 	if options.id:
 	    from chirp import icf
