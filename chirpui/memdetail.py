@@ -160,21 +160,23 @@ class OffsetEditor(FreqEditor):
 class MemoryDetailEditor(gtk.Dialog):
     """Detail editor for a memory"""
 
-    def _add(self, tab, row, name, editor, labeltxt, colindex=0):
-        label = gtk.Label(labeltxt)
-        img = gtk.Image()
-
+    def _add(self, tab, row, name, editor, text, colindex = 0):
+        label = gtk.Label(text + ":")
+        label.set_alignment(0.0, 0.5)
         label.show()
-        tab.attach(label, colindex, colindex + 1, row, row + 1)
-        colindex += 1
+        tab.attach(label, colindex, colindex + 1, row, row + 1, 
+            xoptions=gtk.FILL, yoptions=0, xpadding=6, ypadding=3)
 
-        editor.get_widget().show()
-        tab.attach(editor.get_widget(), colindex, colindex + 1, row, row + 1)
-        colindex += 1
+        widget = editor.get_widget()
+        widget.show()
+        tab.attach(widget, colindex + 1, colindex + 2, row, row + 1, 
+            xoptions=gtk.FILL, yoptions=0, xpadding=3, ypadding=3)
 
-        img.set_size_request(15, -1)
+        img = gtk.Image()
+        img.set_size_request(16, -1)
         img.show()
-        tab.attach(img, colindex, colindex + 1, row, row + 1)
+        tab.attach(img, colindex + 2, colindex + 3, row, row + 1, 
+            xoptions=gtk.FILL, yoptions=0, xpadding=3, ypadding=3)
 
         self._editors[name] = label, editor, img
         return label, editor, img
@@ -182,16 +184,30 @@ class MemoryDetailEditor(gtk.Dialog):
     def _set_doc(self, name, doc):
         label, editor, _img = self._editors[name]
         self._tips.set_tip(label, doc)
-        self._tips.set_tip(editor.get_widget(), doc)
 
     def _make_ui(self):
+        
+        box = gtk.VBox()
+        box.show()
+
+        notebook = gtk.Notebook()
+        notebook.set_show_border(False)
+        notebook.show()
+
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         sw.show()
-        tab = gtk.Table(len(self._order), 3, False)
-        sw.add_with_viewport(tab)
-        self.vbox.pack_start(sw, 1, 1, 1)
-        tab.show()
+
+        hbox = gtk.HBox()
+        hbox.pack_start(sw, 1, 1, 1)
+        hbox.show()
+
+        tab = notebook.append_page(hbox, gtk.Label(_("General")))
+
+        table = gtk.Table(len(self._order), 4, False)
+        table.set_resize_mode(gtk.RESIZE_IMMEDIATE)
+        table.show()
+        sw.add_with_viewport(table)
 
         def _err(name, msg):
             try:
@@ -202,7 +218,7 @@ class MemoryDetailEditor(gtk.Dialog):
                 _img.clear()
                 self._tips.set_tip(_img, "")
             else:
-                _img.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_MENU)
+                _img.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
                 self._tips.set_tip(_img, str(msg))
             self._errors[self._order.index(name)] = msg is not None
             self.set_response_sensitive(gtk.RESPONSE_OK,
@@ -210,29 +226,49 @@ class MemoryDetailEditor(gtk.Dialog):
 
         row = 0
         for name in self._order:
-            labeltxt, editorcls, data = self._elements[name]
-
+            text, editorcls, data = self._elements[name]
             editor = editorcls(self._features, self._memory,
                                _err, name, data)
-            self._add(tab, row, name, editor, labeltxt)
+
+            self._add(table, row, name, editor, text)
+            self._set_doc(name, text)
             row += 1
 
-        for setting in self._memory.extra:
-            name = "extra_%s" % setting.get_name()
-            if isinstance(setting.value,
-                          settings.RadioSettingValueBoolean):
-                editor = BooleanEditor(self._features, self._memory,
-                                       _err, name)
-                self._add(tab, row, name, editor, setting.get_shortname())
-                self._set_doc(name, setting.__doc__)
-            elif isinstance(setting.value,
-                            settings.RadioSettingValueList):
-                editor = ChoiceEditor(self._features, self._memory,
-                                      _err, name, setting.value.get_options())
-                self._add(tab, row, name, editor, setting.get_shortname())
-                self._set_doc(name, setting.__doc__)
-            row += 1
-            self._order.append(name)
+        if len(self._memory.extra):
+            sw = gtk.ScrolledWindow()
+            sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+            sw.show()
+
+            hbox = gtk.HBox()
+            hbox.pack_start(sw, 1, 1, 1)
+            hbox.show()
+
+            tab = notebook.append_page(hbox, gtk.Label(_("Other")))
+
+            table = gtk.Table(len(self._memory.extra), 4, False)
+            table.set_resize_mode(gtk.RESIZE_IMMEDIATE)
+            table.show()
+            sw.add_with_viewport(table)
+
+            for setting in self._memory.extra:
+                name = "extra_%s" % setting.get_name()
+                if isinstance(setting.value,
+                              settings.RadioSettingValueBoolean):
+                    editor = BooleanEditor(self._features, self._memory,
+                                           _err, name)
+                    self._add(table, row, name, editor, setting.get_shortname())
+                    self._set_doc(name, setting.__doc__)
+                elif isinstance(setting.value,
+                                settings.RadioSettingValueList):
+                    editor = ChoiceEditor(self._features, self._memory,
+                                          _err, name, setting.value.get_options())
+                    self._add(table, row, name, editor, setting.get_shortname())
+                    self._set_doc(name, setting.__doc__)
+                row += 1
+                self._order.append(name)
+
+        self.vbox.pack_start(notebook, 1, 1, 1)
+
 
     def __init__(self, features, memory, parent=None):
         self._memory = memory
@@ -246,53 +282,55 @@ class MemoryDetailEditor(gtk.Dialog):
         self._tips = gtk.Tooltips()
 
         self._features = features
-
+        
         self._editors = {}
         self._elements = {
-            "freq" : (_("Frequency"), FreqEditor, None),
-            "name" : (_("Name"), StringEditor, features.valid_name_length),
-            "tmode" : (_("Tone Mode"), ChoiceEditor, features.valid_tmodes),
-            "rtone" : (_("Tone"), FloatChoiceEditor, chirp_common.TONES),
-            "ctone" : (_("ToneSql"), FloatChoiceEditor, chirp_common.TONES),
-            "dtcs"  : (_("DTCS Code"), IntChoiceEditor,
-                                       chirp_common.DTCS_CODES),
-            "dtcs_polarity" : (_("DTCS Pol"), ChoiceEditor, POL),
-            "cross_mode" : (_("Cross mode"),
-                            ChoiceEditor,
-                            features.valid_cross_modes),
-            "duplex" : (_("Duplex"), ChoiceEditor, features.valid_duplexes),
-            "offset" : (_("Offset"), OffsetEditor, None),
-            "mode" : (_("Mode"), ChoiceEditor, features.valid_modes),
-            "tuning_step" : (_("Tune Step"),
-                             FloatChoiceEditor,
-                             features.valid_tuning_steps),
-            "skip" : (_("Skip"), ChoiceEditor, features.valid_skips),
-            "comment" : (_("Comment"), StringEditor, 256),
-            }
-        self._order = ["freq", "name", "tmode", "rtone", "ctone", "cross_mode",
-                       "dtcs", "dtcs_polarity", "duplex", "offset",
-                       "mode", "tuning_step", "skip", "comment"]
+            "freq" : (_("Frequency"), 
+                        FreqEditor, None),
+            "name" : (_("Name"), 
+                        StringEditor, features.valid_name_length),
+            "tmode" : (_("Tone Mode"), 
+                        ChoiceEditor, features.valid_tmodes),
+            "rtone" : (_("Tone"), 
+                        FloatChoiceEditor, chirp_common.TONES),
+            "ctone" : (_("ToneSql"), 
+                        FloatChoiceEditor, chirp_common.TONES),
+            "dtcs" : (_("DTCS Code"), 
+                        IntChoiceEditor, chirp_common.DTCS_CODES),
+            "rx_dtcs" : (_("RX DTCS Code"),
+                        IntChoiceEditor, chirp_common.DTCS_CODES),
+            "dtcs_polarity" : (_("DTCS Pol"), 
+                        ChoiceEditor, POL),
+            "cross_mode" : (_("Cross mode"), 
+                        ChoiceEditor, features.valid_cross_modes),
+            "duplex" : (_("Duplex"), 
+                        ChoiceEditor, features.valid_duplexes),
+            "offset" : (_("Offset"), 
+                        OffsetEditor, None), 
+            "mode" : (_("Mode"), 
+                        ChoiceEditor, features.valid_modes),
+            "tuning_step" : (_("Tune Step"), 
+                        FloatChoiceEditor, features.valid_tuning_steps),
+            "skip" : (_("Skip"), 
+                        ChoiceEditor, features.valid_skips),
+            "power": (_("Power"),
+                        PowerChoiceEditor, features.valid_power_levels),
+            "comment" : (_("Comment"), 
+                        StringEditor, 256),
+        }
 
-        if self._features.has_rx_dtcs:
-            self._elements['rx_dtcs'] = (_("RX DTCS Code"),
-                                         IntChoiceEditor,
-                                         chirp_common.DTCS_CODES)
-            self._order.insert(self._order.index("dtcs") + 1, "rx_dtcs")
-
-        if self._features.valid_power_levels:
-            self._elements["power"] = (_("Power"),
-                                       PowerChoiceEditor,
-                                       features.valid_power_levels)
-            self._order.insert(self._order.index("skip"), "power")
-
-        self._make_ui()
-        self.set_default_size(400, -1)
+        self._order = [
+            "freq", "name", "tmode", "rtone", "ctone",  "cross_mode",
+            "dtcs", "rx_dtcs", "dtcs_polarity", "duplex", "offset",
+            "mode", "tuning_step", "skip", "power", "comment"
+        ]
 
         hide_rules = [
             ("name", features.has_name),
             ("tmode", len(features.valid_tmodes) > 0),
             ("ctone", features.has_ctone),
             ("dtcs", features.has_dtcs),
+            ("rx_dtcs", features.has_rx_dtcs),
             ("dtcs_polarity", features.has_dtcs_polarity),
             ("cross_mode", "Cross" in features.valid_tmodes),
             ("duplex", len(features.valid_duplexes) > 0),
@@ -300,16 +338,16 @@ class MemoryDetailEditor(gtk.Dialog):
             ("mode", len(features.valid_modes) > 0),
             ("tuning_step", features.has_tuning_step),
             ("skip", len(features.valid_skips) > 0),
+            ("power", features.valid_power_levels),
             ("comment", features.has_comment),
-            ]
+        ]
 
         for name, visible in hide_rules:
             if not visible:
-                for widget in self._editors[name]:
-                    if isinstance(widget, ValueEditor):
-                        widget.get_widget().hide()
-                    else:
-                        widget.hide()
+                del self._elements[name]
+                self._order.remove(name)
+
+        self._make_ui()
 
         self._errors = [False] * len(self._order)
 
@@ -342,21 +380,18 @@ class MultiMemoryDetailEditor(MemoryDetailEditor):
         for widget in widgets:
             widget.set_sensitive(selector.get_active())
 
-    def _add(self, tab, row, name, editor, labeltxt):
+    def _add(self, tab, row, name, editor, text):
+ 
         label, editor, img = super(MultiMemoryDetailEditor, self)._add(
-            tab, row, name, editor, labeltxt, 1)
+            tab, row, name, editor, text, 1)
 
         selector = gtk.CheckButton()
-        tab.attach(selector, 0, 1, row, row + 1)
+        tab.attach(selector, 0, 1, row, row + 1,
+            xoptions=gtk.FILL, yoptions=0, xpadding=0, ypadding=3)
         selector.show()
         self._toggle_selector(selector, label, editor, img)
         selector.connect("toggled", self._toggle_selector, label, editor, img)
         self._selections[name] = selector
-        self._tips.set_tip(
-            selector,
-            _("Check this to change the {name} value").format(
-                name=labeltxt))
-
 
     def get_fields(self):
         return [k for k, v in self._selections.items() if v.get_active()]
