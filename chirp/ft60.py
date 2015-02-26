@@ -204,8 +204,7 @@ struct {
 #seekto 0x09E;
 ul16 mbs;
 
-#seekto 0x0248;
-struct {
+struct mem {
   u8 used:1,
      unknown1:1,
      isnarrow:1,
@@ -224,7 +223,13 @@ struct {
   u8 unknown5[2];
   u8 offset;
   u8 unknown6[3];
-} memory[1000];
+};
+
+#seekto 0x0248;
+struct mem memory[1000];
+
+#seekto 0x40c8;
+struct mem pms[100];
 
 #seekto 0x6EC8;
 // skips:2 for Memory M in [1, 1000] is in flags[(M-1)/4].skip((M-1)%4).
@@ -263,6 +268,8 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "S", "P"]
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
+SPECIALS = ["%s%d" % (c,i+1) for i in range(0, 50) for c in ('L', 'U') ]
+
 
 class FT60BankModel(chirp_common.BankModel):
     def get_num_mappings(self):
@@ -346,6 +353,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = STEPS
         rf.valid_skips = SKIPS
+        rf.valid_special_chans = SPECIALS
         rf.valid_characters = CHARSET
         rf.valid_name_length = 6
         rf.valid_modes = ["FM", "NFM", "AM"]
@@ -629,14 +637,28 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             repr(self._memobj.names[number - 1])
 
     def get_memory(self, number):
-        _mem = self._memobj.memory[number - 1]
-        _skp = self._memobj.flags[(number - 1) / 4]
-        _nam = self._memobj.names[number - 1]
-
-        skip = _skp["skip%i" % ((number - 1) % 4)]
-
+    
         mem = chirp_common.Memory()
-        mem.number = number
+
+        if isinstance(number, str):
+            # pms channel
+            mem.number = 1001 + SPECIALS.index(number)
+            mem.extd_number = number
+            mem.immutable = ["number", "extd_number", "name", "skip"]
+            _mem = self._memobj.pms[mem.number - 1001]
+            _nam = _skp = None
+        elif number > 1000:
+            # pms channel
+            mem.number = number
+            mem.extd_number = SPECIALS[number - 1001]
+            mem.immutable = ["number", "extd_number", "name", "skip"]
+            _mem = self._memobj.pms[mem.number - 1001]
+            _nam = _skp = None
+        else:
+            mem.number = number
+            _mem = self._memobj.memory[mem.number - 1]
+            _nam = self._memobj.names[mem.number - 1]
+            _skp = self._memobj.flags[(mem.number - 1) / 4]
 
         if not _mem.used:
             mem.empty = True
@@ -644,7 +666,6 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem.freq = _decode_freq(_mem.freq)
         mem.offset = int(_mem.offset) * 50000
-
         mem.duplex = DUPLEX[_mem.duplex]
         if mem.duplex == "split":
             mem.offset = _decode_freq(_mem.tx_freq)
@@ -654,18 +675,29 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.power = POWER_LEVELS[_mem.power]
         mem.mode = _mem.isam and "AM" or _mem.isnarrow and "NFM" or "FM"
         mem.tuning_step = STEPS[_mem.step]
-        mem.skip = SKIPS[skip]
 
-        if _nam.use_name and _nam.valid:
-            mem.name = _decode_name(_nam.name).rstrip()
+        if not _skp is None:
+            skip = _skp["skip%i" % ((mem.number - 1) % 4)]
+            mem.skip = SKIPS[skip]
+
+        if not _nam is None:
+            if _nam.use_name and _nam.valid:
+                mem.name = _decode_name(_nam.name).rstrip()
 
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number - 1]
-        _skp = self._memobj.flags[(mem.number - 1) / 4]
-        _nam = self._memobj.names[mem.number - 1]
 
+        if mem.number > 1000:
+            # pms channel
+            _mem = self._memobj.pms[mem.number - 1001]
+            _nam = _skp = None
+        else:
+            _mem = self._memobj.memory[mem.number - 1]
+            _nam = self._memobj.names[mem.number - 1]
+            _skp = self._memobj.flags[(mem.number - 1) / 4]
+
+        assert(_mem)
         if mem.empty:
             _mem.used = False
             return
@@ -673,7 +705,6 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         if not _mem.used:
             _mem.set_raw("\x00" * 16)
             _mem.used = 1
-            print "Wiped"
 
         _mem.freq, flags = _encode_freq(mem.freq)
         _mem.freq[0].set_bits(flags)
@@ -693,8 +724,10 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.isam = mem.mode == "AM"
         _mem.step = STEPS.index(mem.tuning_step)
 
-        _skp["skip%i" % ((mem.number - 1) % 4)] = SKIPS.index(mem.skip)
+        if not _skp is None:
+            _skp["skip%i" % ((mem.number - 1) % 4)] = SKIPS.index(mem.skip)
 
-        _nam.name = _encode_name(mem.name)
-        _nam.use_name = mem.name.strip() and True or False
-        _nam.valid = _nam.use_name
+        if not _nam is None:
+            _nam.name = _encode_name(mem.name)
+            _nam.use_name = mem.name.strip() and True or False
+            _nam.valid = _nam.use_name
