@@ -1360,11 +1360,7 @@ class MemoryEditor(common.Editor):
 
         self.prefill()
         
-        self.choices["Mode"] = self._features.valid_modes
-
         self.root = vbox
-
-        self.prefill()
 
         # Run low priority jobs to get the rest of the memories
         hi = int(self.hi_limit_adj.get_value())
