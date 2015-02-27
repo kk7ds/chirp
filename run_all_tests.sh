@@ -26,8 +26,15 @@ function style_tests() {
     ./tools/checkpatch.sh
 }
 
-TESTS="unit_tests driver_tests make_supported style_tests"
-for testname in $TESTS; do
+function pep8() {
+    echo "Checking for PEP8 regressions..."
+    time ./tools/cpep8.py --stats
+}
+
+if test -z "${TESTS[*]}"; then
+    TESTS=( unit_tests driver_tests make_supported style_tests pep8 )
+fi
+for testname in "${TESTS[@]}"; do
     eval "$testname" || record_failure "$testname"
 done
 
