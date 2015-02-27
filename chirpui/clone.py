@@ -24,6 +24,7 @@ from chirpui import miscwidgets, cloneprog, inputdialog, common, config
 
 AUTO_DETECT_STRING = "Auto Detect (Icom Only)"
 
+
 class CloneSettings:
     def __init__(self):
         self.port = None
@@ -32,10 +33,11 @@ class CloneSettings:
     def __str__(self):
         s = ""
         if self.radio_class:
-            return _("{vendor} {model} on {port}").format(\
+            return _("{vendor} {model} on {port}").format(
                 vendor=self.radio_class.VENDOR,
                 model=self.radio_class.MODEL,
                 port=self.port)
+
 
 class CloneSettingsDialog(gtk.Dialog):
     def __make_field(self, label, widget):
@@ -73,7 +75,7 @@ class CloneSettingsDialog(gtk.Dialog):
                     not issubclass(rclass, chirp_common.LiveRadio):
                 continue
 
-            if not vendors.has_key(rclass.VENDOR):
+            if rclass.VENDOR not in vendors:
                 vendors[rclass.VENDOR] = []
 
             vendors[rclass.VENDOR].append(rclass)
@@ -169,7 +171,9 @@ class CloneSettingsDialog(gtk.Dialog):
             try:
                 cs.radio_class = detect.DETECT_FUNCTIONS[vendor](cs.port)
                 if not cs.radio_class:
-                    raise Exception(_("Unable to detect radio on {port}").format(port=cs.port))
+                    raise Exception(
+                        _("Unable to detect radio on {port}").format(
+                            port=cs.port))
             except Exception, e:
                 d = inputdialog.ExceptionDialog(e)
                 d.run()
@@ -181,7 +185,9 @@ class CloneSettingsDialog(gtk.Dialog):
                     cs.radio_class = rclass
                     break
             if not cs.radio_class:
-                common.show_error(_("Internal error: Unable to upload to {model}").format(model=model))
+                common.show_error(
+                    _("Internal error: Unable to upload to {model}").format(
+                        model=model))
                 print self.__vendors
                 return None
 
@@ -192,8 +198,10 @@ class CloneSettingsDialog(gtk.Dialog):
 
         return cs
 
+
 class CloneCancelledException(Exception):
     pass
+
 
 class CloneThread(threading.Thread):
     def __status(self, status):
@@ -219,7 +227,7 @@ class CloneThread(threading.Thread):
         gobject.idle_add(self.__progw.show)
 
         self.__radio.status_fn = self.__status
-        
+
         try:
             if self.__out:
                 self.__radio.sync_out()
@@ -241,6 +249,7 @@ class CloneThread(threading.Thread):
 
         if self.__cback and not self.__cancelled:
             gobject.idle_add(self.__cback, self.__radio, emsg)
+
 
 if __name__ == "__main__":
     d = CloneSettingsDialog("/dev/ttyUSB0")

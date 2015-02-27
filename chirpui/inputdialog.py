@@ -18,6 +18,7 @@ import gtk
 from miscwidgets import make_choice
 from chirpui import reporting
 
+
 class TextInputDialog(gtk.Dialog):
     def respond_ok(self, _):
         self.response(gtk.RESPONSE_OK)
@@ -31,7 +32,7 @@ class TextInputDialog(gtk.Dialog):
         self.label.set_size_request(300, 100)
         # pylint: disable-msg=E1101
         self.vbox.pack_start(self.label, 1, 1, 0)
-       
+
         self.text = gtk.Entry()
         self.text.connect("activate", self.respond_ok, None)
         # pylint: disable-msg=E1101
@@ -39,6 +40,7 @@ class TextInputDialog(gtk.Dialog):
 
         self.label.show()
         self.text.show()
+
 
 class ChoiceDialog(gtk.Dialog):
     editable = False
@@ -66,6 +68,7 @@ class ChoiceDialog(gtk.Dialog):
 
         self.set_default_response(gtk.RESPONSE_OK)
 
+
 class EditableChoiceDialog(ChoiceDialog):
     editable = True
 
@@ -73,6 +76,7 @@ class EditableChoiceDialog(ChoiceDialog):
         ChoiceDialog.__init__(self, choices, **args)
 
         self.choice.child.set_activates_default(True)
+
 
 class ExceptionDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
@@ -87,6 +91,7 @@ class ExceptionDialog(gtk.MessageDialog):
         print "--- Exception Dialog: %s ---" % exception
         traceback.print_exc(limit=100, file=sys.stdout)
         print "----------------------------"
+
 
 class FieldDialog(gtk.Dialog):
     def __init__(self, **kwargs):
@@ -118,11 +123,12 @@ class FieldDialog(gtk.Dialog):
 
         # pylint: disable-msg=E1101
         self.vbox.pack_start(box, 0, 0, 0)
-    
+
         self.__fields[label] = widget
 
     def get_field(self, label):
         return self.__fields.get(label, None)
+
 
 class OverwriteDialog(gtk.MessageDialog):
     def __init__(self, filename):

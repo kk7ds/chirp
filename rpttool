@@ -22,6 +22,7 @@ import commands
 
 from chirp import idrp, chirp_common
 
+
 def open_device():
     try:
         s = serial.Serial(port="/dev/icom",
@@ -34,6 +35,7 @@ def open_device():
     rp = idrp.IDRPx000V(s)
 
     return rp
+
 
 def read_freq():
     rp = open_device()
@@ -49,6 +51,7 @@ def read_freq():
     rp.pipe.close()
 
     return mem.freq
+
 
 def _set_freq(rp):
     try:
@@ -81,6 +84,7 @@ def _set_freq(rp):
         chirp_common.format_freq(mem.freq)
     return True
 
+
 def set_freq():
     rp = open_device()
     if not rp:
@@ -91,9 +95,10 @@ def set_freq():
     except Exception, e:
         print "Unknown error while setting frequency: %s" % e
         res = False
-    
+
     rp.pipe.close()
     return res
+
 
 def main_menu():
     print "Looking for a repeater...",
@@ -114,7 +119,7 @@ Current Setting: %s
 3. Quit
 --------------------------------
 > """ % chirp_common.format_freq(freq),
-    
+
         cmd = sys.stdin.readline().strip()
 
         if cmd == "1":
@@ -124,8 +129,9 @@ Current Setting: %s
             freq = read_freq()
         elif cmd != "3":
             print "Invalid entry"
-        
+
     return 0
+
 
 if __name__ == "__main__":
     if os.path.exists("tools/icomsio.sh"):

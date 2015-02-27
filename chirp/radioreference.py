@@ -22,14 +22,15 @@ except ImportError:
     HAVE_SUDS = False
 
 MODES = {
-    "FM"    : "FM",
-    "AM"    : "AM",
-    "FMN"   : "NFM",
+    "FM":     "FM",
+    "AM":     "AM",
+    "FMN":    "NFM",
     "D-STAR": "DV",
-    "USB"   : "USB",
-    "LSB"   : "LSB",
-    "P25"   : "P25",
+    "USB":    "USB",
+    "LSB":    "LSB",
+    "P25":    "P25",
 }
+
 
 class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
     """RadioReference.com data source"""
@@ -44,7 +45,7 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
 
         if not HAVE_SUDS:
             raise errors.RadioError(
-                "Suds library required for RadioReference.com import.\n" + \
+                "Suds library required for RadioReference.com import.\n" +
                 "Try installing your distribution's python-suds package.")
 
         self._auth = {"appKey": self.APPKEY, "username": "", "password": ""}
@@ -64,8 +65,9 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
         self._freqs = []
 
         try:
-            zipcode = self._client.service.getZipcodeInfo(self._zip, self._auth)
-            county = self._client.service.getCountyInfo(zipcode.ctid, self._auth)
+            service = self._client.service
+            zipcode = service.getZipcodeInfo(self._zip, self._auth)
+            county = service.getCountyInfo(zipcode.ctid, self._auth)
         except WebFault, err:
             raise errors.RadioError(err)
 
@@ -130,7 +132,7 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
             mem.duplex = "split"
             mem.offset = chirp_common.parse_freq(str(freq["in"]))
         if freq.tone is not None:
-            if str(freq.tone) == "CSQ": # Carrier Squelch
+            if str(freq.tone) == "CSQ":  # Carrier Squelch
                 mem.tmode = ""
             else:
                 try:

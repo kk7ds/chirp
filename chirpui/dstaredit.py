@@ -21,9 +21,10 @@ from chirpui import common, miscwidgets
 WIDGETW = 80
 WIDGETH = 30
 
+
 class CallsignEditor(gtk.HBox):
     __gsignals__ = {
-        "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "changed": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
 
     def _cs_changed(self, listw, callid):
@@ -35,10 +36,10 @@ class CallsignEditor(gtk.HBox):
         return True
 
     def make_list(self, width):
-        cols = [ (gobject.TYPE_INT, ""),
-                 (gobject.TYPE_INT, ""),
-                 (gobject.TYPE_STRING, _("Callsign")),
-                 ]
+        cols = [(gobject.TYPE_INT, ""),
+                (gobject.TYPE_INT, ""),
+                (gobject.TYPE_STRING, _("Callsign")),
+                ]
 
         self.listw = miscwidgets.KeyedListWidget(cols)
         self.listw.show()
@@ -54,7 +55,7 @@ class CallsignEditor(gtk.HBox):
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add_with_viewport(self.listw)
         sw.show()
-        
+
         return sw
 
     def __init__(self, first_fixed=False, width=8):
@@ -89,6 +90,7 @@ class CallsignEditor(gtk.HBox):
             calls.insert(0, "")
 
         return calls
+
 
 class DStarEditor(common.Editor):
     def __cs_changed(self, cse):
@@ -149,7 +151,7 @@ class DStarEditor(common.Editor):
         return box
 
     def focus(self):
-        if  self.loaded:
+        if self.loaded:
             return
         self.loaded = True
         print "Loading callsigns..."
@@ -186,7 +188,7 @@ class DStarEditor(common.Editor):
         self.editor_ucall = self.editor_rcall = None
 
         vbox = gtk.VBox(False, 2)
-        vbox.pack_start(self.make_callsigns(), 0, 0, 0)        
+        vbox.pack_start(self.make_callsigns(), 0, 0, 0)
 
         tmp = gtk.Label("")
         tmp.show()

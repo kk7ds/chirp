@@ -15,15 +15,16 @@
 
 import gtk
 
+
 class CloneProg(gtk.Window):
     def __init__(self, **args):
-        if args.has_key("parent"):
+        if "parent" in args:
             parent = args["parent"]
             del args["parent"]
         else:
             parent = None
 
-        if args.has_key("cancel"):
+        if "cancel" in args:
             cancel = args["cancel"]
             del args["cancel"]
         else:
@@ -34,7 +35,7 @@ class CloneProg(gtk.Window):
         self.set_transient_for(parent)
         self.set_modal(True)
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
-        self.set_position(gtk.WIN_POS_CENTER_ON_PARENT)	
+        self.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
 
         vbox = gtk.VBox(False, 2)
         vbox.show()

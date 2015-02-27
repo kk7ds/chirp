@@ -16,10 +16,10 @@
 
 import gtk
 import gobject
-
 import threading
 
 from chirp import errors, chirp_common
+
 
 class ShiftDialog(gtk.Dialog):
     def __init__(self, rthread, parent=None):
@@ -80,7 +80,7 @@ class ShiftDialog(gtk.Dialog):
 
         pos = start
         while pos <= ulimit:
-            self.status(_("Looking for a free spot ({number})").format(\
+            self.status(_("Looking for a free spot ({number})").format(
                         number=pos), 0)
             try:
                 mem = self.rthread.radio.get_memory(pos)
@@ -126,7 +126,8 @@ class ShiftDialog(gtk.Dialog):
         if self.quiet:
             gobject.idle_add(self.response, gtk.RESPONSE_OK)
         else:
-            gobject.idle_add(self.set_response_sensitive, gtk.RESPONSE_OK, True)
+            gobject.idle_add(self.set_response_sensitive,
+                             gtk.RESPONSE_OK, True)
 
     def threadfn(self, newhole, func, *args):
         self.status("Waiting for radio to become available", 0)

@@ -15,6 +15,7 @@
 
 from chirp import util
 
+
 class MemoryMap:
     """
     A pythonic memory map interface
@@ -54,8 +55,8 @@ class MemoryMap:
                 self._data[pos] = byte
                 pos += 1
         else:
-            raise ValueError("Unsupported type %s for value" % \
-                                 type(value).__name__)
+            raise ValueError("Unsupported type %s for value" %
+                             type(value).__name__)
 
     def get_packed(self):
         """Return the entire memory map as raw data"""

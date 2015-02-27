@@ -15,6 +15,7 @@
 
 import struct
 
+
 def hexprint(data, addrfmt=None):
     """Return a hexdump-like encoding of @data"""
     if addrfmt is None:
@@ -23,13 +24,13 @@ def hexprint(data, addrfmt=None):
     block_size = 8
 
     lines = len(data) / block_size
-    
+
     if (len(data) % block_size) != 0:
         lines += 1
         data += "\x00" * ((lines * block_size) - len(data))
 
     out = ""
-        
+
     for block in range(0, (len(data)/block_size)):
         addr = block * block_size
         try:
@@ -43,7 +44,7 @@ def hexprint(data, addrfmt=None):
             limit = left
         else:
             limit = block_size
-            
+
         for j in range(0, limit):
             out += "%02x " % ord(data[(block * block_size) + j])
 
@@ -61,6 +62,7 @@ def hexprint(data, addrfmt=None):
 
     return out
 
+
 def bcd_encode(val, bigendian=True, width=None):
     """This is really old and shouldn't be used anymore"""
     digits = []
@@ -77,13 +79,14 @@ def bcd_encode(val, bigendian=True, width=None):
         digits.append(0)
 
     for i in range(0, len(digits), 2):
-        newval = struct.pack("B", (digits[i+1] << 4) | digits[i])
+        newval = struct.pack("B", (digits[i + 1] << 4) | digits[i])
         if bigendian:
-            result =  newval + result
+            result = newval + result
         else:
             result = result + newval
-    
+
     return result
+
 
 def get_dict_rev(thedict, value):
     """Return the first matching key for a given @value in @dict"""

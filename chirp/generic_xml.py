@@ -18,12 +18,13 @@ import libxml2
 
 from chirp import chirp_common, errors, xml_ll, platform, directory
 
+
 def validate_doc(doc):
     """Validate the document"""
     basepath = platform.get_platform().executable_path()
     path = os.path.abspath(os.path.join(basepath, "chirp.xsd"))
     if not os.path.exists(path):
-        path = "/usr/share/chirp/chirp.xsd"         
+        path = "/usr/share/chirp/chirp.xsd"
 
     try:
         ctx = libxml2.schemaNewParserCtxt(path)
@@ -54,6 +55,7 @@ def validate_doc(doc):
         print os.linesep.join(errs)
         raise errors.RadioError("Schema error")
 
+
 def default_banks():
     """Return an empty set of banks"""
     banks = []
@@ -62,6 +64,7 @@ def default_banks():
         banks.append("Bank-%s" % (chr(ord("A") + i)))
 
     return banks
+
 
 @directory.register
 class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
@@ -94,7 +97,7 @@ class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         rf.valid_name_length = 999
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         return rf
-        
+
     def load(self, filename=None):
         if not self._filename and not filename:
             raise errors.RadioError("Need a location to load from")
@@ -125,7 +128,7 @@ class XMLRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                 pass
 
         return mems
-    
+
     def get_memory(self, number):
         mem = xml_ll.get_memory(self.doc, number)
 

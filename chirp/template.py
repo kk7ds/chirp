@@ -32,6 +32,7 @@ struct {
 } memory[10];
 """
 
+
 def do_download(radio):
     """This is your download function"""
     # NOTE: Remove this in your real implementation!
@@ -49,6 +50,7 @@ def do_download(radio):
 
     return memmap.MemoryMap(data)
 
+
 def do_upload(radio):
     """This is your upload function"""
     # NOTE: Remove this in your real implementation!
@@ -63,22 +65,23 @@ def do_upload(radio):
     for i in range(0, 1000):
         serial.write(radio.get_mmap()[i])
 
+
 # Uncomment this to actually register this radio in CHIRP
 # @directory.register
 class TemplateRadio(chirp_common.CloneModeRadio):
     """Acme Template"""
-    VENDOR = "Acme"    # Replace this with your vendor
-    MODEL = "Template" # Replace this with your model
-    BAUD_RATE = 9600   # Replace this with your baud rate
+    VENDOR = "Acme"     # Replace this with your vendor
+    MODEL = "Template"  # Replace this with your model
+    BAUD_RATE = 9600    # Replace this with your baud rate
 
     # Return information about this radio's features, including
     # how many memories it has, what bands it supports, etc
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
-        rf.memory_bounds = (0, 9) # This radio supports memories 0-9
-        rf.valid_bands = [(144000000, 148000000), # Supports 2-meters
-                          (440000000, 450000000), # Supports 70-centimeters
+        rf.memory_bounds = (0, 9)  # This radio supports memories 0-9
+        rf.valid_bands = [(144000000, 148000000),  # Supports 2-meters
+                          (440000000, 450000000),  # Supports 70-centimeters
                           ]
         return rf
 
@@ -91,7 +94,7 @@ class TemplateRadio(chirp_common.CloneModeRadio):
     def sync_out(self):
         do_upload(self)
 
-    # Return a raw representation of the memory object, which 
+    # Return a raw representation of the memory object, which
     # is very helpful for development
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
@@ -105,10 +108,10 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         # Create a high-level memory object to return to the UI
         mem = chirp_common.Memory()
 
-        mem.number = number                # Set the memory number
-        mem.freq = int(_mem.freq)          # Convert your low-level frequency
-                                           # to Hertz
-        mem.name = str(_mem.name).rstrip() # Set the alpha tag
+        mem.number = number                 # Set the memory number
+        mem.freq = int(_mem.freq)           # Convert your low-level frequency
+                                            # to Hertz
+        mem.name = str(_mem.name).rstrip()  # Set the alpha tag
 
         # We'll consider any blank (i.e. 0MHz frequency) to be empty
         if mem.freq == 0:
@@ -125,4 +128,3 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         _mem.freq = mem.freq               # Convert to low-level frequency
                                            # representation
         _mem.name = mem.name.ljust(8)[:8]  # Store the alpha tag
-

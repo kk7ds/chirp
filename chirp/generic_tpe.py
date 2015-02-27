@@ -25,14 +25,14 @@ class TpeRadio(generic_csv.CSVRadio):
     FILE_EXTENSION = "tpe"
 
     ATTR_MAP = {
-        "Sequence Number" : (int, "number"),
-        "Location"        : (str, "comment"),
-        "Call Sign"       : (str, "name"),
+        "Sequence Number":  (int, "number"),
+        "Location":         (str, "comment"),
+        "Call Sign":        (str, "name"),
         "Output Frequency": (chirp_common.parse_freq, "freq"),
-        "Input Frequency" : (str, "duplex"),
-        "CTCSS Tones"     : (lambda v: float(v)
-                              if v and float(v) in chirp_common.TONES
-                              else 88.5, "rtone"),
+        "Input Frequency":  (str, "duplex"),
+        "CTCSS Tones":      (lambda v: float(v)
+                             if v and float(v) in chirp_common.TONES
+                             else 88.5, "rtone"),
         "Repeater Notes":   (str, "comment"),
     }
 

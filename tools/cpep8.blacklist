@@ -15,8 +15,6 @@
 ./chirp/bitwise_grammar.py
 ./chirp/bjuv55.py
 ./chirp/chirp_common.py
-./chirp/detect.py
-./chirp/directory.py
 ./chirp/elib_intl.py
 ./chirp/errors.py
 ./chirp/ft1802.py
@@ -31,8 +29,6 @@
 ./chirp/ft90.py
 ./chirp/ftm350.py
 ./chirp/generic_csv.py
-./chirp/generic_tpe.py
-./chirp/generic_xml.py
 ./chirp/h777.py
 ./chirp/ic208.py
 ./chirp/ic2100.py
@@ -62,14 +58,11 @@
 ./chirp/kguv8d.py
 ./chirp/kyd.py
 ./chirp/leixen.py
-./chirp/memmap.py
 ./chirp/platform.py
 ./chirp/puxing.py
 ./chirp/pyPEG.py
-./chirp/radioreference.py
 ./chirp/rfinder.py
 ./chirp/settings.py
-./chirp/template.py
 ./chirp/th9800.py
 ./chirp/th_uv3r.py
 ./chirp/th_uv3r25.py
@@ -79,7 +72,6 @@
 ./chirp/tk8102.py
 ./chirp/tmv71.py
 ./chirp/tmv71_ll.py
-./chirp/util.py
 ./chirp/uv5r.py
 ./chirp/uvb5.py
 ./chirp/vx170.py
@@ -96,15 +88,10 @@
 ./chirp/xml_ll.py
 ./chirp/yaesu_clone.py
 ./chirpui/bankedit.py
-./chirpui/clone.py
-./chirpui/cloneprog.py
 ./chirpui/common.py
-./chirpui/config.py
-./chirpui/dstaredit.py
 ./chirpui/editorset.py
 ./chirpui/fips.py
 ./chirpui/importdialog.py
-./chirpui/inputdialog.py
 ./chirpui/mainapp.py
 ./chirpui/memdetail.py
 ./chirpui/memedit.py
@@ -112,10 +99,8 @@
 ./chirpui/radiobrowser.py
 ./chirpui/reporting.py
 ./chirpui/settingsedit.py
-./chirpui/shiftdialog.py
 ./csvdump/csvapp.py
 ./csvdump/csvdump.py
-./rpttool
 ./setup.py
 ./share/make_supported.py
 ./tests/run_tests

@@ -17,6 +17,7 @@ from chirp import platform
 from ConfigParser import ConfigParser
 import os
 
+
 class ChirpConfig:
     def __init__(self, basepath, name="chirp.config"):
         self.__basepath = basepath
@@ -60,6 +61,7 @@ class ChirpConfig:
         if not self.__config.items(section):
             self.__config.remove_section(section)
 
+
 class ChirpConfigProxy:
     def __init__(self, config, section="global"):
         self._config = config
@@ -95,7 +97,7 @@ class ChirpConfigProxy:
             raise ValueError("Value is not an integer")
 
         self.set(key, "%i" % value, section)
-       
+
     def get_bool(self, key, section=None, default=False):
         val = self.get(key, section)
         if val is None:
@@ -112,7 +114,10 @@ class ChirpConfigProxy:
     def remove_option(self, key, section):
         self._config.remove_option(section, key)
 
+
 _CONFIG = None
+
+
 def get(section="global"):
     global _CONFIG
 

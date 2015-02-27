@@ -18,6 +18,7 @@ import serial
 from chirp import errors, icf, directory, ic9x_ll
 from chirp import kenwood_live, icomciv
 
+
 def _icom_model_data_to_rclass(md):
     for _rtype, rclass in directory.DRV_TO_RADIO.items():
         if rclass.VENDOR != "Icom":
@@ -27,11 +28,9 @@ def _icom_model_data_to_rclass(md):
         if rclass.get_model()[:4] == md[:4]:
             return rclass
 
-    raise errors.RadioError("Unknown radio type %02x%02x%02x%02x" %\
-                                (ord(md[0]),
-                                 ord(md[1]),
-                                 ord(md[2]),
-                                 ord(md[3])))
+    raise errors.RadioError("Unknown radio type %02x%02x%02x%02x" %
+                            (ord(md[0]), ord(md[1]), ord(md[2]), ord(md[3])))
+
 
 def _detect_icom_radio(ser):
     # ICOM VHF/UHF Clone-type radios @ 9600 baud
@@ -65,6 +64,7 @@ def _detect_icom_radio(ser):
 
     raise errors.RadioError("Unable to get radio model")
 
+
 def detect_icom_radio(port):
     """Detect which Icom model is connected to @port"""
     ser = serial.Serial(port=port, timeout=0.5)
@@ -83,6 +83,7 @@ def detect_icom_radio(port):
 
     return result
 
+
 def detect_kenwoodlive_radio(port):
     """Detect which Kenwood model is connected to @port"""
     ser = serial.Serial(port=port, baudrate=9600, timeout=0.5)
@@ -100,6 +101,6 @@ def detect_kenwoodlive_radio(port):
         raise errors.RadioError("Unsupported model `%s'" % r_id)
 
 DETECT_FUNCTIONS = {
-    "Icom" : detect_icom_radio,
-    "Kenwood" : detect_kenwoodlive_radio,
+    "Icom":    detect_icom_radio,
+    "Kenwood": detect_kenwoodlive_radio,
 }
