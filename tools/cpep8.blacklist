@@ -96,7 +96,6 @@
 ./chirp/wouxun_common.py
 ./chirp/xml_ll.py
 ./chirp/yaesu_clone.py
-./chirpc
 ./chirpui/bankedit.py
 ./chirpui/clone.py
 ./chirpui/cloneprog.py
@@ -115,7 +114,6 @@
 ./chirpui/reporting.py
 ./chirpui/settingsedit.py
 ./chirpui/shiftdialog.py
-./chirpw
 ./csvdump/__init__.py
 ./csvdump/csvapp.py
 ./csvdump/csvdump.py

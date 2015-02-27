@@ -40,16 +40,16 @@ conf = config.get()
 manual_language = conf.get("language", "state")
 langs = []
 if manual_language and manual_language != "Auto":
-    lang_codes = { "English"         : "en_US",
-                   "Polish"          : "pl",
-                   "Italian"         : "it",
-                   "Dutch"           : "nl",
-                   "German"          : "de",
-                   "Hungarian"       : "hu",
-                   "Russian"         : "ru",
-                   "Portuguese (BR)" : "pt_BR",
-                   "French"          : "fr",
-                   }
+    lang_codes = {"English":          "en_US",
+                  "Polish":           "pl",
+                  "Italian":          "it",
+                  "Dutch":            "nl",
+                  "German":           "de",
+                  "Hungarian":        "hu",
+                  "Russian":          "ru",
+                  "Portuguese (BR)":  "pt_BR",
+                  "French":           "fr",
+                  }
     try:
         print lang_codes[manual_language]
         langs = [lang_codes[manual_language]]
@@ -58,7 +58,7 @@ if manual_language and manual_language != "Auto":
 else:
     lc, encoding = locale.getdefaultlocale()
     if (lc):
-	langs = [lc]
+        langs = [lc]
     try:
         langs += os.getenv("LANG").split(":")
     except:
@@ -79,6 +79,7 @@ lang = gettext.translation("CHIRP", localepath, languages=langs,
 
 import gtk
 
+
 # Python <2.6 does not have str.format(), which chirp uses to make translation
 # strings nicer. So, instead of installing the gettext standard "_()" function,
 # we can install our own, which returns a string of the following class,
@@ -87,21 +88,22 @@ import gtk
 class CompatStr(str):
     def format(self, **kwargs):
         base = lang.gettext(self)
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             base = base.replace("{%s}" % k, str(v))
         return base
 
 pyver = sys.version.split()[0]
 
-try :
+try:
     vmaj, vmin, vrel = pyver.split(".", 3)
-except :
+except:
     vmaj, vmin = pyver.split(".", 2)
     vrel = 0
 
 if int(vmaj) < 2 or int(vmin) < 6:
     # Python <2.6, emulate str.format()
     import __builtin__
+
     def lang_with_format(string):
         return CompatStr(string)
     __builtin__._ = lang_with_format
@@ -131,7 +133,8 @@ for i in args.files:
 a.show()
 
 if args.profile:
-    import cProfile, pstats
+    import cProfile
+    import pstats
     cProfile.run("gtk.main()", "chirpw.stats")
     p = pstats.Stats("chirpw.stats")
     p.sort_stats("cumulative").print_stats(10)
