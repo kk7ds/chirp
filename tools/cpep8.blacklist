@@ -92,7 +92,6 @@
 ./chirpui/reporting.py
 ./csvdump/csvapp.py
 ./csvdump/csvdump.py
-./setup.py
 ./share/make_supported.py
 ./tests/run_tests
 ./tests/unit/test_import_logic.py

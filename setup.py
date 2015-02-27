@@ -6,15 +6,16 @@ from chirp import CHIRP_VERSION
 from chirp import *
 import chirp
 
+
 def staticify_chirp_module():
     import chirp
 
-    init = file("chirp/__init__.py", "w")
-    print >>init, "CHIRP_VERSION = \"%s\"" % CHIRP_VERSION
-    print >>init, "__all__ = %s\n" % str(chirp.__all__)
-    init.close()
+    with file("chirp/__init__.py", "w") as init:
+        print >>init, "CHIRP_VERSION = \"%s\"" % CHIRP_VERSION
+        print >>init, "__all__ = %s\n" % str(chirp.__all__)
 
-    print "Set chirp.py::__all__ = %s" % str(chirp.__all__)
+    print "Set chirp/__init__.py::__all__ = %s" % str(chirp.__all__)
+
 
 def win32_build():
     from distutils.core import setup
@@ -26,7 +27,7 @@ def win32_build():
         import win32com
         for p in win32com.__path__[1:]:
             modulefinder.AddPackagePath("win32com", p)
-        for extra in ["win32com.shell"]: #,"win32com.mapi"
+        for extra in ["win32com.shell"]:  # ,"win32com.mapi"
             __import__(extra)
             m = sys.modules[extra]
             for p in m.__path__[1:]:
@@ -38,13 +39,15 @@ def win32_build():
     staticify_chirp_module()
 
     opts = {
-        "py2exe" : {
-            "includes" : "pango,atk,gobject,cairo,pangocairo,win32gui,win32com,win32com.shell,email.iterators,email.generator,gio",
+        "py2exe": {
+            "includes": "pango,atk,gobject,cairo,pangocairo," +
+                        "win32gui,win32com,win32com.shell," +
+                        "email.iterators,email.generator,gio",
 
-            "compressed" : 1,
-            "optimize" : 2,
-            "bundle_files" : 3,
-            #        "packages" : ""
+            "compressed": 1,
+            "optimize": 2,
+            "bundle_files": 3,
+            # "packages": ""
             }
         }
 
@@ -55,10 +58,11 @@ def win32_build():
 
     setup(
         zipfile=None,
-        windows=[{'script'        : "chirpw",
+        windows=[{'script':         "chirpw",
                   'icon_resources': [(0x0004, 'share/chirp.ico')],
-		 }],
+                  }],
         options=opts)
+
 
 def macos_build():
     from setuptools import setup
@@ -66,11 +70,10 @@ def macos_build():
 
     APP = ['chirp-%s.py' % CHIRP_VERSION]
     shutil.copy("chirpw", APP[0])
-    DATA_FILES = [('../Frameworks',
-                   ['/opt/local/lib/libpangox-1.0.dylib']),
-		  ('../Resources/', ['/opt/local/lib/pango']),
+    DATA_FILES = [('../Frameworks', ['/opt/local/lib/libpangox-1.0.dylib']),
+                  ('../Resources/', ['/opt/local/lib/pango']),
                   ]
-    OPTIONS = {'argv_emulation': True, "includes" : "gtk,atk,pangocairo,cairo"}
+    OPTIONS = {'argv_emulation': True, "includes": "gtk,atk,pangocairo,cairo"}
 
     setup(
         app=APP,
@@ -79,9 +82,11 @@ def macos_build():
         setup_requires=['py2app'],
         )
 
-    EXEC = 'bash ./build/macos/make_pango.sh /opt/local dist/chirp-%s.app' % CHIRP_VERSION
+    EXEC = 'bash ./build/macos/make_pango.sh ' + \
+           '/opt/local dist/chirp-%s.app' % CHIRP_VERSION
     #print "exec string: %s" % EXEC
-    os.system(EXEC) 
+    os.system(EXEC)
+
 
 def default_build():
     from distutils.core import setup
@@ -117,9 +122,10 @@ def default_build():
                     ('share/chirp/stock_configs', stock_configs),
                     ] + locale_files)
 
+
 def rpttool_build():
     from distutils.core import setup
-    
+
     setup(name="rpttool",
           packages=["chirp"],
           version="0.3",
@@ -127,6 +133,7 @@ def rpttool_build():
           description="A frequency tool for ICOM D-STAR Repeaters",
           data_files=[('/usr/sbin', ["tools/icomsio.sh"])],
           )
+
 
 def nuke_manifest(*files):
     for i in ["MANIFEST", "MANIFEST.in"]:
@@ -140,7 +147,8 @@ def nuke_manifest(*files):
     for fn in files:
         print >>f, fn
     f.close()
-                    
+
+
 if sys.platform == "darwin":
     macos_build()
 elif sys.platform == "win32":
@@ -157,4 +165,3 @@ else:
                       "include stock_configs/*",
                       "include COPYING")
         default_build()
-
