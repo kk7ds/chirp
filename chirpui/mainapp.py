@@ -21,10 +21,13 @@ import webbrowser
 from glob import glob
 import shutil
 import time
+import logging
 
 import gtk
 import gobject
 gobject.threads_init()
+
+LOG = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     import sys
@@ -526,7 +529,7 @@ If you think that it is valid, you can select a radio model below to force an op
         files = glob(os.path.join(basepath, "*.csv"))
         for fn in files:
             if os.path.exists(os.path.join(stock_dir, os.path.basename(fn))):
-                print "Skipping existing stock config"
+                LOG.info("Skipping existing stock config")
                 continue
             try:
                 shutil.copy(fn, stock_dir)

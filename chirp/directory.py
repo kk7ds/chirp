@@ -16,9 +16,12 @@
 
 import os
 import tempfile
+import logging
 
 from chirp import icf
 from chirp import chirp_common, util, rfinder, radioreference, errors
+
+LOG = logging.getLogger(__name__)
 
 def radio_class_id(cls):
     """Return a unique identification string for @cls"""
@@ -47,12 +50,12 @@ def register(cls):
     ident = radio_class_id(cls)
     if ident in DRV_TO_RADIO.keys():
         if ALLOW_DUPS:
-            print "Replacing existing driver id `%s'" % ident
+            LOG.warn("Replacing existing driver id `%s'" % ident)
         else:
             raise Exception("Duplicate radio driver id `%s'" % ident)
     DRV_TO_RADIO[ident] = cls
     RADIO_TO_DRV[cls] = ident
-    print "Registered %s = %s" % (ident, cls.__name__)
+    LOG.info("Registered %s = %s" % (ident, cls.__name__))
 
     return cls
 
