@@ -17,8 +17,9 @@
 
 import os
 
+from chirp import logger
 from chirp import elib_intl
-from chirp import platform, CHIRP_VERSION
+from chirp import platform
 from chirpui import config
 
 # Hack to setup environment
@@ -29,20 +30,6 @@ import os
 import locale
 import gettext
 import argparse
-
-p = platform.get_platform()
-if hasattr(sys, "frozen"):
-    log = file(p.config_file("debug.log"), "w", 0)
-    sys.stderr = log
-    sys.stdout = log
-elif not os.isatty(0):
-    log = file(p.config_file("debug.log"), "w", 0)
-    sys.stdout = log
-    sys.stderr = log
-
-print "CHIRP %s on %s (Python %s)" % (CHIRP_VERSION,
-                                      platform.get_platform().os_version_string(),
-                                      sys.version.split()[0])
 
 execpath = platform.get_platform().executable_path()
 localepath = os.path.abspath(os.path.join(execpath, "locale"))
@@ -127,9 +114,13 @@ from chirpui import mainapp, config
 
 parser = argparse.ArgumentParser()
 parser.add_argument("files", metavar="file", nargs='*', help="File to open")
+logger.add_version_argument(parser)
 parser.add_argument("--profile", action="store_true",
                     help="Enable profiling")
+logger.add_arguments(parser)
 args = parser.parse_args()
+
+logger.handle_options(args)
 
 a = mainapp.ChirpMain()
 

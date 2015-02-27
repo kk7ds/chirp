@@ -56,6 +56,9 @@ log_level_names = {"critical": logging.CRITICAL,
 
 
 class Logger(object):
+
+    log_format = '[%(asctime)s] %(name)s - %(levelname)s: %(message)s'
+
     def __init__(self):
         # create root logger
         self.logger = logging.getLogger()
@@ -67,20 +70,35 @@ class Logger(object):
         # It can be a number or a name; otherwise, level is set to 'debug'
         # in order to maintain backward compatibility.
         CHIRP_DEBUG = os.getenv("CHIRP_DEBUG")
-        level = logging.WARNING
+        self.early_level = logging.WARNING
         if CHIRP_DEBUG:
             try:
-                level = int(CHIRP_DEBUG)
+                self.early_level = int(CHIRP_DEBUG)
             except ValueError:
                 try:
-                    level = log_level_names[CHIRP_DEBUG]
+                    self.early_level = log_level_names[CHIRP_DEBUG]
                 except KeyError:
-                    level = logging.DEBUG
+                    self.early_level = logging.DEBUG
 
-        self.console = logging.StreamHandler()
-        self.console.setLevel(level)
-        format_str = '%(levelname)s: %(message)s'
-        self.console.setFormatter(logging.Formatter(format_str))
+        # If we're on Win32 or MacOS, we don't use the console; instead,
+        # we create 'debug.log', redirect all output there, and set the
+        # console logging handler level to DEBUG.  To test this on Linux,
+        # set CHIRP_DEBUG_LOG in the environment.
+        console_stream = None
+        console_format = '%(levelname)s: %(message)s'
+        if hasattr(sys, "frozen") or not os.isatty(0) \
+                or os.getenv("CHIRP_DEBUG_LOG"):
+            p = platform.get_platform()
+            log = file(p.config_file("debug.log"), "w", 0)
+            sys.stdout = log
+            sys.stderr = log
+            console_stream = log
+            console_format = self.log_format
+            self.early_level = logging.DEBUG
+
+        self.console = logging.StreamHandler(console_stream)
+        self.console.setLevel(self.early_level)
+        self.console.setFormatter(logging.Formatter(console_format))
         self.logger.addHandler(self.console)
 
         # Set CHIRP_LOG in environment to the name of log file.
@@ -94,31 +112,33 @@ class Logger(object):
             else:
                 self.set_log_level(logging.DEBUG)
 
+        if self.early_level <= logging.DEBUG:
+            self.LOG.debug(version_string())
+
     def create_log_file(self, name):
         if self.logfile is None:
             self.logname = name
-            lf = file(name, "w")
-            print >>lf, version_string()
-            lf.close()
+            # always truncate the log file
+            with file(name, "w") as fh:
+                pass
             self.logfile = logging.FileHandler(name)
-            format_str = '[%(created)s] %(name)s - %(levelname)s: %(message)s'
+            format_str = self.log_format
             self.logfile.setFormatter(logging.Formatter(format_str))
             self.logger.addHandler(self.logfile)
-
         else:
             self.logger.error("already logging to " + self.logname)
 
     def set_verbosity(self, level):
+        self.LOG.debug("verbosity=%d", level)
         if level > logging.CRITICAL:
             level = logging.CRITICAL
         self.console.setLevel(level)
-        self.LOG.debug("verbosity=%d", level)
 
     def set_log_level(self, level):
+        self.LOG.debug("log level=%d", level)
         if level > logging.CRITICAL:
             level = logging.CRITICAL
         self.logfile.setLevel(level)
-        self.LOG.debug("log level=%d", level)
 
     def set_log_level_by_name(self, level):
         self.set_log_level(log_level_names[level])
@@ -153,3 +173,6 @@ def handle_options(options):
             logger.set_log_level(level)
         except ValueError:
             logger.set_log_level_by_name(options.log_level)
+
+    if logger.early_level > logging.DEBUG:
+        logger.LOG.debug(version_string())

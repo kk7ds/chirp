@@ -19,9 +19,13 @@
 import serial
 import sys
 import argparse
+import logging
 
+from chirp import logger
 from chirp import *
 from chirp import chirp_common, errors, idrp, directory, util
+
+LOG = logging.getLogger("chirpc")
 
 def fail_unsupported():
     print "Operation not supported by selected radio"
@@ -62,6 +66,7 @@ class DTCSPolarityAction(argparse.Action):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
+	logger.add_version_argument(parser)
 	parser.add_argument("-s", "--serial", dest="serial",
 			  default="mmap",
 			  help="Serial port (default: mmap)")
@@ -151,14 +156,18 @@ if __name__ == "__main__":
 			  action="store_true",
 			  default=False,
 			  help="Upload memory map to radio")
+        logger.add_arguments(parser)
         parser.add_argument("args", metavar="arg", nargs='*',
                             help="Some commands require additional arguments")
+
 	if len(sys.argv) <= 1:
 		parser.print_help()
 		sys.exit(0)
 
 	options = parser.parse_args()
         args = options.args
+
+        logger.handle_options(options)
 
         if options.list_radios:
             print "Supported Radios:\n\t", "\n\t".join(sorted(RADIOS.keys()))
