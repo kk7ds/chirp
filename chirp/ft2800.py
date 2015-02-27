@@ -15,11 +15,12 @@
 
 import time
 import os
+import logging
 
 from chirp import util, memmap, chirp_common, bitwise, directory, errors
 from chirp.yaesu_clone import YaesuCloneModeRadio
 
-DEBUG = os.getenv("CHIRP_DEBUG") and True or False
+LOG = logging.getLogger(__name__)
 
 CHUNK_SIZE = 16
 def _send(s, data):
@@ -41,8 +42,7 @@ def _download(radio):
         if data == IDBLOCK:
             break
 
-    if DEBUG:
-        print "Header:\n%s" % util.hexprint(data)
+    LOG.debug("Header:\n%s" % util.hexprint(data))
 
     if len(data) != 8:
         raise Exception("Failed to read header")
@@ -54,8 +54,7 @@ def _download(radio):
     while len(data) < radio._block_sizes[1]:
         time.sleep(0.1)
         chunk = radio.pipe.read(38)
-        if DEBUG:
-            print "Got: %i:\n%s" % (len(chunk), util.hexprint(chunk))
+        LOG.debug("Got: %i:\n%s" % (len(chunk), util.hexprint(chunk)))
         if len(chunk) == 8:
             print "END?"
         elif len(chunk) != 38:
@@ -79,8 +78,7 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    if DEBUG:
-        print "Total: %i" % len(data)
+    LOG.debug("Total: %i" % len(data))
 
     return memmap.MemoryMap(data)
 
@@ -94,8 +92,7 @@ def _upload(radio):
     _send(radio.pipe, IDBLOCK)
     time.sleep(1)
     ack = radio.pipe.read(300)
-    if DEBUG:
-        print "Ack was (%i):\n%s" % (len(ack), util.hexprint(ack))
+    LOG.debug("Ack was (%i):\n%s" % (len(ack), util.hexprint(ack)))
     if ack != ACK:
         raise Exception("Radio did not ack ID")
 
@@ -108,8 +105,7 @@ def _upload(radio):
             cs += ord(byte)
         data += chr(cs & 0xFF)
 
-        if DEBUG:
-            print "Writing block %i:\n%s" % (block, util.hexprint(data))
+        LOG.debug("Writing block %i:\n%s" % (block, util.hexprint(data)))
 
         _send(radio.pipe, data)
         time.sleep(0.1)

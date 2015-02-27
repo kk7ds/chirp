@@ -13,12 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import serial
+import serial, logging
 
-from chirp import chirp_common, errors
-from chirp import util
+from chirp import chirp_common, errors, util
 
-DEBUG_IDRP = False
+LOG = logging.getLogger(__name__)
 
 def parse_frames(buf):
     """Parse frames from the radio"""
@@ -49,8 +48,7 @@ def send(pipe, buf):
             break
 
         data += buf
-        if DEBUG_IDRP:
-            print "Got: \n%s" % util.hexprint(buf)
+        LOG.debug("Got: \n%s" % util.hexprint(buf))
 
     return parse_frames(data)
 
@@ -97,8 +95,7 @@ def get_freq(pipe):
                                                  ord(els[2]),
                                                  ord(els[1]),
                                                  ord(els[0])))
-            if DEBUG_IDRP:
-                print "Freq: %f" % freq
+            LOG.debug("Freq: %f" % freq)
             return freq
 
     raise errors.InvalidDataError("No frequency frame received")

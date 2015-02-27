@@ -18,6 +18,7 @@ import time
 import os
 import struct
 import unittest
+import logging
 
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -25,7 +26,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettings
 
-DEBUG = os.getenv("CHIRP_DEBUG") and True or False
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0010;
@@ -139,8 +140,7 @@ def _h777_read_block(radio, block_addr, block_size):
 
     cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
     expectedresponse = "W" + cmd[1:]
-    if DEBUG:
-        print("Reading block %04x..." % (block_addr))
+    LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         serial.write(cmd)
@@ -166,9 +166,8 @@ def _h777_write_block(radio, block_addr, block_size):
     cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
     data = radio.get_mmap()[block_addr:block_addr + 8]
 
-    if DEBUG:
-        print("Writing Data:")
-        print util.hexprint(cmd + data)
+    LOG.debug("Writing Data:")
+    LOG.debug(util.hexprint(cmd + data))
 
     try:
         serial.write(cmd + data)
@@ -197,9 +196,8 @@ def do_download(radio):
         block = _h777_read_block(radio, addr, BLOCK_SIZE)
         data += block
 
-        if DEBUG:
-            print "Address: %04x" % addr
-            print util.hexprint(block)
+        LOG.debug("Address: %04x" % addr)
+        LOG.debug(util.hexprint(block))
 
     _h777_exit_programming_mode(radio)
 

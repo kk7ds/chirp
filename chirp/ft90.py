@@ -19,13 +19,10 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
-import time, os, traceback, string, re
+import time, os, traceback, string, re, logging
 from textwrap import dedent
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG=False
+LOG = logging.getLogger(__name__)
 
 CMD_ACK = chr(0x06)
 
@@ -289,27 +286,24 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
             blocknumbyte = chr(blocknum)
             payloadbytes = self.get_mmap()[pos:pos+blocksize]
             checksumbyte = chr(checksum.get_calculated(self.get_mmap()))
-            if CHIRP_DEBUG:
-                print "Block %i - will send from %i to %i byte " % \
-                    (blocknum, pos, pos + blocksize)
-                print util.hexprint(blocknumbyte)
-                print util.hexprint(payloadbytes)
-                print util.hexprint(checksumbyte)
+            LOG.debug("Block %i - will send from %i to %i byte " % \
+                (blocknum, pos, pos + blocksize))
+            LOG.debug(util.hexprint(blocknumbyte))
+            LOG.debug(util.hexprint(payloadbytes))
+            LOG.debug(util.hexprint(checksumbyte))
             # send wrapped bytes
             time.sleep(looppredelay)
             self.pipe.write(blocknumbyte)
             self.pipe.write(payloadbytes)
             self.pipe.write(checksumbyte)
             tmp = self.pipe.read(blocksize+2)  #chew echo
-            if CHIRP_DEBUG:
-                print "bytes echoed: "
-                print util.hexprint(tmp)
+            LOG.debug("bytes echoed: ")
+            LOG.debug(util.hexprint(tmp))
             # radio is slow to write/ack:
             time.sleep(looppostdelay) 
             buf = self.pipe.read(1)
-            if CHIRP_DEBUG:
-                print "ack recd:"
-                print util.hexprint(buf)
+            LOG.debug("ack recd:")
+            LOG.debug(util.hexprint(buf))
             if buf != CMD_ACK:
                 raise Exception("Radio did not ack block %i" % blocknum)
             pos += blocksize
@@ -463,12 +457,10 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _decode_cwid(self, cwidarr):
         cwid = ""
-        if CHIRP_DEBUG:
-            print "@ +_decode_cwid:"
+        LOG.debug("@ +_decode_cwid:")
         for byte in cwidarr.get_value():
             char = int(byte)
-            if CHIRP_DEBUG:
-                print char
+            LOG.debug(char)
             # bitwise wraps in quotes! get rid of those
             if char < len(FT90_CWID_CHARS):
                 cwid += FT90_CWID_CHARS[char]
@@ -476,21 +468,17 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _encode_cwid(self, cwidarr):
         cwid = ""
-        if CHIRP_DEBUG:
-            print "@ _encode_cwid:"
+        LOG.debug("@ _encode_cwid:")
         for char in cwidarr.get_value():
             cwid += chr(FT90_CWID_CHARS.index(char))
-        if CHIRP_DEBUG:
-            print cwid
+        LOG.debug(cwid)
         return cwid
     
     def _bbcd2dtmf(self, bcdarr, strlen = 16):
         # doing bbcd, but with support for ABCD*#
-        if CHIRP_DEBUG:
-            print bcdarr.get_value()
+        LOG.debug(bcdarr.get_value())
         string = ''.join("%02X" % b for b in bcdarr)
-        if CHIRP_DEBUG:
-            print "@_bbcd2dtmf, received: %s" % string
+        LOG.debug("@_bbcd2dtmf, received: %s" % string)
         string = string.replace('E','*').replace('F','#')
         if strlen <= 16:
             string = string[:strlen]
@@ -501,8 +489,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
         dtmfstr = dtmfstr.replace('*', 'E').replace('#', 'F')
         dtmfstr = str.ljust(dtmfstr.strip(), 16, "0" )
         bcdarr = list(bytearray.fromhex(dtmfstr))
-        if CHIRP_DEBUG:
-            print "@_dtmf2bbcd, sending: %s" % bcdarr
+        LOG.debug("@_dtmf2bbcd, sending: %s" % bcdarr)
         return bcdarr
     
     def get_settings(self):
@@ -644,9 +631,7 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
                     dtmfstrlen = len(str(newval).strip())
                     setattr(_settings, setting + "_len", dtmfstrlen)
                     newval = self._dtmf2bbcd(newval)
-                if CHIRP_DEBUG:
-                    print "Setting %s(%s) <= %s" % (setting,
-                                    oldval, newval)
+                LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
             except Exception, e:
                 print element.get_name()

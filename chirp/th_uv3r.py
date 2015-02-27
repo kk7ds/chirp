@@ -19,11 +19,6 @@ import os
 from chirp import chirp_common, bitwise, errors, directory
 from chirp.wouxun_common import do_download, do_upload
 
-if os.getenv("CHIRP_DEBUG"):
-    DEBUG = True
-else:
-    DEBUG = False
-
 def tyt_uv3r_prep(radio):
     try:
         radio.pipe.write("PROGRAMa")

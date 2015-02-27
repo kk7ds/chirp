@@ -19,11 +19,6 @@ from textwrap import dedent
 import time, os
 from chirp import ft7800
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
-
 MEM_FORMAT = """
 #seekto 0x018A;
 struct {

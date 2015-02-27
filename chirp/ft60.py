@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time, os
+import time, os, logging
 from chirp import chirp_common, yaesu_clone, memmap, bitwise, directory
 from chirp import errors
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -21,6 +21,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 ACK = "\x06"
 
@@ -625,8 +627,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                     obj = getattr(_settings, name)
                     setattr(_settings, name, value)
 
-                if os.getenv("CHIRP_DEBUG"):
-                    print "Setting %s: %s" % (name, value)
+                LOG.debug("Setting %s: %s" % (name, value))
             except Exception, e:
                 print element.get_name()
                 raise

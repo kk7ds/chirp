@@ -17,6 +17,7 @@
 
 import time
 import os
+import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
@@ -24,6 +25,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueFloat, RadioSettings
 from chirp.wouxun_common import wipe_memory, do_download, do_upload
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 FREQ_ENCODE_TABLE = [ 0x7, 0xa, 0x0, 0x9, 0xb, 0x2, 0xe, 0x1, 0x3, 0xf ]
  
@@ -717,9 +720,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         # always set it even if no dtcs is used
         mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
-                                                 rxmode, _mem.rx_tone)
+        LOG.debug("Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
+                                              rxmode, _mem.rx_tone))
 
     def _is_txinh(self, _mem):
         raw_tx = ""
@@ -817,9 +819,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         else:
             _mem.rx_tone = 0xFFFF
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
-                                                 rx_mode, _mem.rx_tone)
+        LOG.debug("Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
+                                              rx_mode, _mem.rx_tone))
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]

@@ -16,6 +16,7 @@
 import struct
 import time
 import os
+import logging
 
 from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
@@ -25,10 +26,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0008;
@@ -394,8 +392,7 @@ def _firmware_version_from_image(radio):
     version = _firmware_version_from_data(radio.get_mmap(),
                                           radio._fw_ver_file_start,
                                           radio._fw_ver_file_stop)
-    if CHIRP_DEBUG:
-        print "_firmware_version_from_image: " + util.hexprint(version)
+    LOG.debug("_firmware_version_from_image: " + util.hexprint(version))
     return version
 
 def _special_block_from_data(data, special_block_start, special_block_stop):
@@ -404,8 +401,7 @@ def _special_block_from_data(data, special_block_start, special_block_stop):
 
 def _special_block_from_image(radio):
     special_block = _special_block_from_data(radio.get_mmap(), 0x0CFA, 0x0D01)
-    if CHIRP_DEBUG:
-        print "_special_block_from_image: " + util.hexprint(special_block)
+    LOG.debug("_special_block_from_image: " + util.hexprint(special_block))
     return special_block
 
 def _do_ident(radio, magic):
@@ -504,19 +500,16 @@ def _do_download(radio):
         raise errors.RadioError("Incorrect 'Model' selected.")
 
     # Main block
-    if CHIRP_DEBUG:
-        print "downloading main block..."
+    LOG.debug("downloading main block...")
     for i in range(0, 0x1800, 0x40):
         data += _read_block(radio, i, 0x40)
         _do_status(radio, i)
-    if CHIRP_DEBUG:
-        print "done."
-        print "downloading aux block..."
+    LOG.debug("done.")
+    LOG.debug("downloading aux block...")
     # Auxiliary block starts at 0x1ECO (?)
     for i in range(0x1EC0, 0x2000, 0x40):
         data += _read_block(radio, i, 0x40)
-    if CHIRP_DEBUG:
-        print "done."
+    LOG.debug("done.")
     return memmap.MemoryMap(data)
 
 def _send_block(radio, addr, data):
@@ -916,8 +909,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def _is_orig(self):
         version_tag = _firmware_version_from_image(self)
-        if CHIRP_DEBUG:
-            print "@_is_orig, version_tag:", util.hexprint(version_tag)
+        LOG.debug("@_is_orig, version_tag: %s", util.hexprint(version_tag))
         try:
             if 'BFB' in version_tag:
                 idx = version_tag.index("BFB") + 3

@@ -24,11 +24,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
-
 MEM_FORMAT = """
 #seekto 0x0184;
 struct {

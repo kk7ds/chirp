@@ -28,11 +28,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 from textwrap import dedent
 from chirp import uv5r
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
-
 BJUV55_MODEL   = "\x50\xBB\xDD\x55\x63\x98\x4D"
 
 COLOR_LIST = ["Off", "Blue", "Red", "Pink"]

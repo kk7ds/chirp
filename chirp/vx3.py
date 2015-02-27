@@ -21,18 +21,15 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
 from textwrap import dedent
-import os, re
+import os, re, logging
+
+LOG = logging.getLogger(__name__)
 
 #interesting offsets which may be checksums needed later
 #0x0393 checksum1?
 #0x0453 checksum1a?
 #0x0409 checksum2?
 #0x04C9 checksum2a?
-
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
 
 MEM_FORMAT = """
 #seekto 0x7F4A;
@@ -499,9 +496,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         return VX3BankModel(self)
 
     def _decode_chars(self, inarr):
-        if CHIRP_DEBUG:
-            print "@_decode_chars, type: %s" % type(inarr)
-            print inarr
+        LOG.debug("@_decode_chars, type: %s" % type(inarr))
+        LOG.debug(inarr)
         outstr = ""
         for i in inarr:
             if i == 0xFF:
@@ -510,9 +506,8 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         return outstr.rstrip()
             
     def _encode_chars(self, instr, length = 16):
-        if CHIRP_DEBUG:
-            print "@_encode_chars, type: %s" % type(instr)
-            print instr
+        LOG.debug("@_encode_chars, type: %s" % type(instr))
+        LOG.debug(instr)
         outarr = []
         instr = str(instr)
         for i in range(length):
@@ -785,8 +780,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
             for c in dtmfsetting.memory:
                 if c < len(DTMFCHARSET):
                     dtmfstr += DTMFCHARSET[c]
-            if CHIRP_DEBUG:
-                print dtmfstr
+            LOG.debug(dtmfstr)
             dtmfentry = RadioSettingValueString(0, 16, dtmfstr)
             dtmfentry.set_charset(DTMFCHARSET + list(" "))
             rs = RadioSetting(name, name.upper(), dtmfentry)
@@ -861,8 +855,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                             newval.append(DTMFCHARSET.index(dtmfstr[i]))
                         else:
                             newval.append(0xFF)
-                    if CHIRP_DEBUG:
-                        print newval
+                    LOG.debug(newval)
                     idx = int(setting[-1:])
                     _settings = self._memobj.dtmf[idx]
                     _settings.memory = newval
@@ -885,9 +878,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                     newval = self._encode_chars(newval)
                 if setting == "openmsg":
                     newval = self._encode_chars(newval, 6)
-                if CHIRP_DEBUG:
-                    print "Setting %s(%s) <= %s" % (setting,
-                                    oldval, newval)
+                LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
             except Exception, e:
                 print element.get_name()

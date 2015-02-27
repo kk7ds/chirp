@@ -20,11 +20,6 @@ import os
 from chirp import util, chirp_common, bitwise, errors, directory
 from chirp.wouxun_common import wipe_memory, do_download, do_upload
 
-if os.getenv("CHIRP_DEBUG"):
-    DEBUG = True
-else:
-    DEBUG = False
-
 def _puxing_prep(radio):
     radio.pipe.write("\x02PROGRA")
     ack = radio.pipe.read(1)

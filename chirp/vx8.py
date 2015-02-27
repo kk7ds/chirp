@@ -15,6 +15,7 @@
 
 import os
 import re
+import logging
 
 from chirp import chirp_common, yaesu_clone, directory
 from chirp import bitwise
@@ -22,6 +23,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x047f;
@@ -1461,8 +1464,7 @@ class VX8DRadio(VX8Radio):
         is_latitude = name.endswith("latitude")
         lat_long = setting.value.get_value().strip()
         sign, l_d, l_m, l_s = cls._str_to_latlong(lat_long, is_latitude)
-        if os.getenv("CHIRP_DEBUG"):
-            print "%s: %d %d %d %d" % (name, sign, l_d, l_m, l_s)
+        LOG.debug("%s: %d %d %d %d" % (name, sign, l_d, l_m, l_s))
         setattr(obj, "%s_sign" % name, sign)
         setattr(obj, "%s_degree" % name, l_d)
         setattr(obj, "%s_minute" % name, l_m)
@@ -1499,9 +1501,8 @@ class VX8DRadio(VX8Radio):
 
                 try:
                     old_val = getattr(obj, setting)
-                    if os.getenv("CHIRP_DEBUG"):
-                        print "Setting %s(%r) <= %s" % (
-                            element.get_name(), old_val, element.value)
+                    LOG.debug("Setting %s(%r) <= %s" % (
+                            element.get_name(), old_val, element.value))
                     setattr(obj, setting, element.value)
                 except AttributeError as e:
                     print "Setting %s is not in the memory map: %s" % (

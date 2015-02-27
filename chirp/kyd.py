@@ -17,6 +17,7 @@
 import time
 import os
 import struct
+import logging
 
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -24,7 +25,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettings
 
-DEBUG = os.getenv("CHIRP_DEBUG") and True or False
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0010;
@@ -132,8 +133,7 @@ def _nc630a_read_block(radio, block_addr, block_size):
 
     cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
     expectedresponse = "W" + cmd[1:]
-    if DEBUG:
-        print("Reading block %04x..." % (block_addr))
+    LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         serial.write(cmd)
@@ -159,9 +159,8 @@ def _nc630a_write_block(radio, block_addr, block_size):
     cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
     data = radio.get_mmap()[block_addr:block_addr + 8]
 
-    if DEBUG:
-        print("Writing Data:")
-        print util.hexprint(cmd + data)
+    LOG.debug("Writing Data:")
+    LOG.debug(util.hexprint(cmd + data))
 
     try:
         serial.write(cmd + data)
@@ -190,9 +189,8 @@ def do_download(radio):
         block = _nc630a_read_block(radio, addr, BLOCK_SIZE)
         data += block
 
-        if DEBUG:
-            print "Address: %04x" % addr
-            print util.hexprint(block)
+        LOG.debug("Address: %04x" % addr)
+        LOG.debug(util.hexprint(block))
 
     _nc630a_exit_programming_mode(radio)
 
@@ -301,9 +299,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         if mem.tmode == "DTCS":
             mem.dtcs_polarity = "%s%s" % (tpol, rpol)
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
-                                                 rxmode, _mem.rx_tone)
+        LOG.debug("Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
+                                              rxmode, _mem.rx_tone))
 
     def get_memory(self, number):
         bitpos = (1 << ((number - 1) % 8))
@@ -387,9 +384,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         else:
             _mem.rx_tone = 0xFFFF
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
-                                                 rx_mode, _mem.rx_tone)
+        LOG.debug("Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
+                                              rx_mode, _mem.rx_tone))
 
     def set_memory(self, mem):
         bitpos = (1 << ((mem.number - 1) % 8))

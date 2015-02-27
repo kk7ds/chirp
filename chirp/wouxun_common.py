@@ -18,7 +18,10 @@
 
 import struct
 import os
+import logging
 from chirp import util, chirp_common, memmap
+
+LOG = logging.getLogger(__name__)
 
 def wipe_memory(_mem, byte):
     """Cleanup a memory"""
@@ -29,8 +32,7 @@ def do_download(radio, start, end, blocksize):
     image = ""
     for i in range(start, end, blocksize):
         cmd = struct.pack(">cHb", "R", i, blocksize)
-        if os.getenv("CHIRP_DEBUG"):
-            print util.hexprint(cmd)
+        LOG.debug(util.hexprint(cmd))
         radio.pipe.write(cmd)
         length = len(cmd) + blocksize
         resp = radio.pipe.read(length)
@@ -61,8 +63,7 @@ def do_upload(radio, start, end, blocksize):
         chunk = radio.get_mmap()[ptr:ptr+blocksize]
         ptr += blocksize
         radio.pipe.write(cmd + chunk)
-        if os.getenv("CHIRP_DEBUG"):
-            print util.hexprint(cmd + chunk)
+        LOG.debug(util.hexprint(cmd + chunk))
 
         ack = radio.pipe.read(1)
         if not ack == "\x06":

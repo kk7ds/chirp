@@ -17,6 +17,9 @@ import threading
 import os
 import sys
 import time
+import logging
+
+LOG = logging.getLogger(__name__)
 
 NOCACHE = os.environ.has_key("CHIRP_NOCACHE")
 
@@ -28,8 +31,6 @@ from chirp import chirp_common, errors, directory, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueBoolean, \
     RadioSettingValueString, RadioSettingValueList, RadioSettings
-
-DEBUG = True
 
 DUPLEX = { 0 : "", 1 : "+", 2 : "-" }
 MODES = { 0 : "FM", 1 : "AM" }
@@ -49,8 +50,7 @@ def command(ser, cmd, *args):
     LOCK.acquire()
     if args:
         cmd += " " + " ".join(args)
-    if DEBUG:
-        print "PC->RADIO: %s" % cmd
+    LOG.debug("PC->RADIO: %s" % cmd)
     ser.write(cmd + "\r")
 
     result = ""
@@ -60,8 +60,7 @@ def command(ser, cmd, *args):
             print "Timeout waiting for data"
             break
 
-    if DEBUG:
-        print "D7->PC: %s" % result.strip()
+    LOG.debug("D7->PC: %s" % result.strip())
 
     LOCK.release()
 

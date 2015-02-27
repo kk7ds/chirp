@@ -21,8 +21,10 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
-import os
+import os, logging
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 @directory.register
 class FT857Radio(ft817.FT817Radio):
@@ -956,9 +958,11 @@ class FT857Radio(ft817.FT817Radio):
                 else:
                     obj = _settings
                     setting = element.get_name()
-                if os.getenv("CHIRP_DEBUG"):
-                    print "Setting %s(%s) <= %s" % (setting,
-                                    getattr(obj, setting), element.value)
+                try:
+                    LOG.debug("Setting %s(%s) <= %s" % (setting,
+                              getattr(obj, setting), element.value))
+                except AttributeError:
+                    LOG.debug("Setting %s <= %s" % (setting, element.value))
                 if setting == "arts_idw":
                     self._memobj.arts_idw = \
                         [self._CALLSIGN_CHARSET_REV[x] for x in

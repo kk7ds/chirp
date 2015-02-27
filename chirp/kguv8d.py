@@ -17,16 +17,14 @@
 
 import time
 import os
+import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettings
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
+LOG = logging.getLogger(__name__)
 
 CMD_ID = 128
 CMD_END = 129
@@ -304,8 +302,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             _packet += payload
         # calculate and add the checksum to the packet
         _packet += chr(self._checksum(_packet[1:]))
-        if CHIRP_DEBUG:
-            print "Sent:\n%s" % util.hexprint(_packet)
+        LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
     def _read_record(self):
@@ -317,9 +314,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _cs += self._checksum(_packet)
         _cs %= 256
         _rcs = ord(self.pipe.read(1))
-        if CHIRP_DEBUG:
-            print "_cs =", _cs
-            print "_rcs=", _rcs
+        LOG.debug("_cs =", _cs)
+        LOG.debug("_rcs=", _rcs)
         return (_rcs != _cs, _packet)
 
 # Identify the radio
@@ -350,14 +346,12 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         for _i in range(0, 10):
             self._write_record(CMD_ID)
             _chksum_err, _resp = self._read_record()
-            if CHIRP_DEBUG:
-                print "Got:\n%s" % util.hexprint(_resp)
+            LOG.debug("Got:\n%s" % util.hexprint(_resp))
             if _chksum_err:
                 print "Checksum error: retrying ident..."
                 time.sleep(0.100)
                 continue
-            if CHIRP_DEBUG:
-                print "Model %s" % util.hexprint(_resp[0:7])
+            LOG.debug("Model %s" % util.hexprint(_resp[0:7]))
             if _resp[0:7] == self._model:
                 return
             if len(_resp) == 0:
@@ -407,8 +401,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                 # TODO: probably should retry a few times here
                 print util.hexprint(resp)
                 raise Exception("Checksum error on read")
-            if CHIRP_DEBUG:
-                print "Got:\n%s" % util.hexprint(resp)
+            LOG.debug("Got:\n%s" % util.hexprint(resp))
             image += resp[2:]
             if self.status_fn:
                 status = chirp_common.Status()
@@ -436,11 +429,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             req = chr(i / 256) + chr(i % 256)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
-            if CHIRP_DEBUG:
-                print util.hexprint(req + chunk)
+            LOG.debug(util.hexprint(req + chunk))
             cserr, ack = self._read_record()
-            if CHIRP_DEBUG:
-                print util.hexprint(ack)
+            LOG.debug(util.hexprint(ack))
             j = ord(ack[0]) * 256 + ord(ack[1])
             if cserr or j != ptr:
                 raise Exception("Radio did not ack block %i" % ptr)
@@ -537,9 +528,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         # always set it even if no dtcs is used
         mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Got TX %s (%i) RX %s (%i)" % (txmode, _mem.txtone,
-                                                 rxmode, _mem.rxtone)
+        LOG.debug("Got TX %s (%i) RX %s (%i)" % (txmode, _mem.txtone,
+                                              rxmode, _mem.rxtone))
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
@@ -549,8 +539,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         mem.number = number
         _valid = self._memobj.valid[mem.number]
 
-        if CHIRP_DEBUG:
-            print number, _valid == MEM_VALID
+        LOG.debug("%d %s", number, _valid == MEM_VALID)
         if _valid != MEM_VALID:
             mem.empty = True
             return mem
@@ -618,9 +607,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         else:
             _mem.rxtone = 0
 
-        if CHIRP_DEBUG:
-            print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.txtone,
-                                                 rx_mode, _mem.rxtone)
+        LOG.debug("Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.txtone,
+                                              rx_mode, _mem.rxtone))
 
     def set_memory(self, mem):
         number = mem.number

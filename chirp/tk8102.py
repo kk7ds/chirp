@@ -15,12 +15,15 @@
 
 import struct
 import os
+import logging
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.settings import RadioSettingValueString, RadioSettings
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0030;
@@ -317,9 +320,8 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         else:
             _mem.rx_tone = 0xFFFF
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
-                                                 rx_mode, _mem.rx_tone)
+        LOG.debug("Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
+                                              rx_mode, _mem.rx_tone))
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
 

@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct, time
+import struct, time, logging
 
 from chirp import memmap, chirp_common, errors
 
-DEBUG = True
+LOG = logging.getLogger(__name__)
 
 POS_MODE   = 5
 POS_DUP    = 6
@@ -50,13 +50,11 @@ def command(s, cmd, timeout=0.5):
     start = time.time()
 
     data = ""
-    if DEBUG:
-        print "PC->V71: %s" % cmd
+    LOG.debug("PC->V71: %s" % cmd)
     s.write(cmd + "\r")
     while not data.endswith("\r") and (time.time() - start) < timeout:
         data += s.read(1)
-    if DEBUG:
-        print "V71->PC: %s" % data.strip()
+    LOG.debug("V71->PC: %s" % data.strip())
     return data.strip()
 
 def get_id(s):

@@ -24,11 +24,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
 
-if os.getenv("CHIRP_DEBUG"):
-    DEBUG = True
-else:
-    DEBUG = False
-
 def _uv3r_prep(radio):
     radio.pipe.write("\x05PROGRAM")
     ack = radio.pipe.read(1)

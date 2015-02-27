@@ -16,8 +16,10 @@
 CMD_ACK = 0x06
 
 from chirp import chirp_common, util, memmap, errors
-import time, os
+import time, os, logging
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 def _safe_read(pipe, count):
     buf = ""
@@ -49,8 +51,7 @@ def _chunk_read(pipe, count, status_fn):
         status.max = count
         status.cur = len(data)
         status_fn(status)
-        if os.getenv("CHIRP_DEBUG"):
-            print "Read %i/%i" % (len(data), count)
+        LOG.debug("Read %i/%i" % (len(data), count))
     return data        
 
 def __clone_in(radio):
@@ -91,8 +92,7 @@ def _chunk_write(pipe, data, status_fn, block):
         chunk = data[i:i+block]
         pipe.write(chunk)
         count += len(chunk)
-        if os.getenv("CHIRP_DEBUG"):
-            print "@_chunk_write, count: %i, blocksize: %i" % (count,block)
+        LOG.debug("@_chunk_write, count: %i, blocksize: %i" % (count,block))
         time.sleep(delay)
 
         status = chirp_common.Status()
@@ -120,8 +120,7 @@ def __clone_out(radio):
     for block in radio._block_lengths:
         blocks += 1
         if blocks != len(radio._block_lengths):
-            if os.getenv("CHIRP_DEBUG"):
-                print "Sending %i-%i" % (pos, pos+block)
+            LOG.debug("Sending %i-%i" % (pos, pos+block))
             pipe.write(radio.get_mmap()[pos:pos+block])
             buf = pipe.read(1)
             if buf and buf[0] != chr(CMD_ACK):

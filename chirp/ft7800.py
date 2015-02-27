@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
+import time, logging
 from chirp import chirp_common, yaesu_clone, memmap, directory
 from chirp import bitwise, errors
 from textwrap import dedent
@@ -25,10 +25,7 @@ import os, re
 
 from collections import defaultdict
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
+LOG = logging.getLogger(__name__)
 
 ACK = chr(0x06)
 
@@ -540,9 +537,8 @@ class FT7800Radio(FTx800Radio):
         FTx800Radio.set_memory(self, memory)
 
     def _decode_chars(self, inarr):
-        if CHIRP_DEBUG:
-            print "@_decode_chars, type: %s" % type(inarr)
-            print inarr
+        LOG.debug("@_decode_chars, type: %s" % type(inarr))
+        LOG.debug(inarr)
         outstr = ""
         for i in inarr:
             if i == 0xFF:
@@ -551,9 +547,8 @@ class FT7800Radio(FTx800Radio):
         return outstr.rstrip()
             
     def _encode_chars(self, instr, length = 16):
-        if CHIRP_DEBUG:
-            print "@_encode_chars, type: %s" % type(instr)
-            print instr
+        LOG.debug("@_encode_chars, type: %s" % type(instr))
+        LOG.debug(instr)
         outarr = []
         instr = str(instr)
         for i in range(length):
@@ -647,8 +642,7 @@ class FT7800Radio(FTx800Radio):
                     break
                 if c < len(DTMFCHARSET):
                     dtmfstr += DTMFCHARSET[c]
-            if CHIRP_DEBUG:
-                print dtmfstr
+            LOG.debug(dtmfstr)
             dtmfentry = RadioSettingValueString(0, 16, dtmfstr)
             dtmfentry.set_charset(DTMFCHARSET + list(" "))
             rs = RadioSetting(name, name.upper(), dtmfentry)
@@ -721,8 +715,7 @@ class FT7800Radio(FTx800Radio):
                             newval.append(DTMFCHARSET.index(dtmfstr[i]))
                         else:
                             newval.append(0xFF)
-                    if CHIRP_DEBUG:
-                        print newval
+                    LOG.debug(newval)
                     idx = int(setting[-2:])
                     _settings = self._memobj.dtmf[idx]
                     _settings.memory = newval
@@ -735,9 +728,7 @@ class FT7800Radio(FTx800Radio):
                 # normal settings
                 newval = element.value
                 oldval = getattr(_settings, setting)
-                if CHIRP_DEBUG:
-                    print "Setting %s(%s) <= %s" % (setting,
-                                    oldval, newval)
+                LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
             except Exception, e:
                 print element.get_name()

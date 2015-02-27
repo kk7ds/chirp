@@ -1,9 +1,9 @@
 
-import struct
+import struct, logging
 from chirp import chirp_common, icf, util, errors, bitwise, directory
 from chirp.memmap import MemoryMap
 
-DEBUG = True
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 bbcd number[2];
@@ -80,9 +80,8 @@ class Frame:
         raw = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
         raw += str(self._data) + chr(0xFD)
 
-        if DEBUG:
-            print "%02x -> %02x (%i):\n%s" % (src, dst,
-                                              len(raw), util.hexprint(raw))
+        LOG.debug("%02x -> %02x (%i):\n%s" % (src, dst,
+                                          len(raw), util.hexprint(raw)))
 
         serial.write(raw)
         if willecho:
@@ -106,8 +105,7 @@ class Frame:
             raise errors.RadioError("Radio reported error")
 
         src, dst = struct.unpack("BB", data[2:4])
-        if DEBUG:
-            print "%02x <- %02x:\n%s" % (src, dst, util.hexprint(data))
+        LOG.debug("%02x <- %02x:\n%s" % (src, dst, util.hexprint(data)))
 
         self._cmd = ord(data[4])
         self._sub = ord(data[5])

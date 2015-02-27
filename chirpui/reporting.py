@@ -28,15 +28,17 @@
 import threading
 import os
 import time
+import logging
 
 from chirp import CHIRP_VERSION, platform
 
 REPORT_URL = "http://chirp.danplanet.com/report/report.php?do_report"
 ENABLED = True
-DEBUG = os.getenv("CHIRP_DEBUG") == "y"
 THREAD_SEM = threading.Semaphore(10) # Maximum number of outstanding threads
 LAST = 0
 LAST_TYPE = None
+
+LOG = logging.getLogger(__name__)
 
 try:
     # Don't let failure to import any of these modules cause trouble
@@ -45,18 +47,14 @@ try:
 except:
     ENABLED = False
 
-def debug(string):
-    if DEBUG:
-        print string
-
 def should_report():
     if not ENABLED:
-        debug("Not reporting due to recent failure")
+        LOG.debug("Not reporting due to recent failure")
         return False
 
     conf = config.get()
     if conf.get_bool("no_report"):
-        debug("Reporting disabled")
+        LOG.debug("Reporting disabled")
         return False
 
     return True
@@ -70,7 +68,7 @@ def _report_model_usage(model, direction, success):
     model = "%s_%s" % (model.VENDOR, model.MODEL)
     data = "%s,%s,%s" % (model, direction, success)
 
-    debug("Reporting model usage: %s" % data)
+    LOG.debug("Reporting model usage: %s" % data)
 
     proxy = xmlrpclib.ServerProxy(REPORT_URL)
     id = proxy.report_stats(CHIRP_VERSION,
@@ -84,7 +82,7 @@ def _report_model_usage(model, direction, success):
 def _report_exception(stack):
     global ENABLED
 
-    debug("Reporting exception")
+    LOG.debug("Reporting exception")
 
     proxy = xmlrpclib.ServerProxy(REPORT_URL)
     id = proxy.report_exception(CHIRP_VERSION,
@@ -98,7 +96,7 @@ def _report_exception(stack):
 def _report_misc_error(module, data):
     global ENABLED
 
-    debug("Reporting misc error with %s" % module)
+    LOG.debug("Reporting misc error with %s" % module)
 
     proxy = xmlrpclib.ServerProxy(REPORT_URL)
     id = proxy.report_misc_error(CHIRP_VERSION,
@@ -109,12 +107,12 @@ def _report_misc_error(module, data):
     return id != 0
 
 def _check_for_updates(callback):
-    debug("Checking for updates")
+    LOG.debug("Checking for updates")
     proxy = xmlrpclib.ServerProxy(REPORT_URL)
     ver = proxy.check_for_updates(CHIRP_VERSION,
                                   platform.get_platform().os_version_string())
 
-    debug("Server reports version %s is latest" % ver)
+    LOG.debug("Server reports version %s is latest" % ver)
     callback(ver)
     return True
 
@@ -128,7 +126,7 @@ class ReportThread(threading.Thread):
         try:
             return self.__func(*self.__args)
         except Exception, e:
-            debug("Failed to report: %s" % e)
+            LOG.debug("Failed to report: %s" % e)
             return False
         
     def run(self):
@@ -139,7 +137,7 @@ class ReportThread(threading.Thread):
             ENABLED = False
         elif (time.time() - start) > 15:
             # Reporting took too long
-            debug("Time to report was %.2f sec -- Disabling" % \
+            LOG.debug("Time to report was %.2f sec -- Disabling" % \
                       (time.time()-start))
             ENABLED = False
 
@@ -151,13 +149,13 @@ def dispatch_thread(func, *args):
 
     # If reporting is disabled or failing, bail
     if not should_report():
-        debug("Reporting is disabled")
+        LOG.debug("Reporting is disabled")
         return
 
     # If the time between now and the last report is less than 5 seconds, bail
     delta = time.time() - LAST
     if delta < 5 and func == LAST_TYPE:
-        debug("Throttling...")
+        LOG.debug("Throttling...")
         return
 
     LAST = time.time()
@@ -165,7 +163,7 @@ def dispatch_thread(func, *args):
 
     # If there are already too many threads running, bail
     if not THREAD_SEM.acquire(False):
-        debug("Too many threads already running")
+        LOG.debug("Too many threads already running")
         return
 
     t = ReportThread(func, *args)

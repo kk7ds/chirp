@@ -24,12 +24,10 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 from chirp_common import format_freq
 import os
 import time
+import logging
 from datetime import date
 
-if os.getenv("CHIRP_DEBUG"):
-    CHIRP_DEBUG = True
-else:
-    CHIRP_DEBUG = False
+LOG = logging.getLogger(__name__)
 
 TH9800_MEM_FORMAT = """
 struct mem {
@@ -323,8 +321,7 @@ class TYTTH9800Base(chirp_common.Radio):
     _prev_active = self.get_active("chan_active", mem.number)
     self.set_active("chan_active", mem.number, not mem.empty)
     if mem.empty or not _prev_active:
-      if CHIRP_DEBUG:
-        print "initializing memory channel %d" % mem.number
+      LOG.debug("initializing memory channel %d" % mem.number)
       _mem.set_raw(BLANK_MEMORY)
 
     if mem.empty:
@@ -390,8 +387,7 @@ class TYTTH9800Base(chirp_common.Radio):
     _mem.step = STEPS.index(mem.tuning_step)
 
     for setting in mem.extra:
-      if CHIRP_DEBUG:
-          print "@set_mem:", setting.get_name(), setting.value
+      LOG.debug("@set_mem:", setting.get_name(), setting.value)
       setattr(_mem, setting.get_name(), setting.value)
 
   def get_settings(self):
@@ -559,9 +555,7 @@ class TYTTH9800Base(chirp_common.Radio):
               oldval = getattr(_settings, setting)
               newval = element.value
 
-              if CHIRP_DEBUG:
-                  print "Setting %s(%s) <= %s" % (setting,
-                                                  oldval, newval)
+              LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
               setattr(_settings, setting, newval)
           except Exception, e:
               print element.get_name()
@@ -666,12 +660,12 @@ def _upload(radio, memsize = 0xF400, blocksize = 0x80):
     m = today.month
     d = today.day
     _info = radio._memobj.info
-    if CHIRP_DEBUG:
-        ly = _info.prog_yr
-        lm = _info.prog_mon
-        ld = _info.prog_day
-        print "Updating last program date:%d/%d/%d" % (lm,ld,ly)
-        print "                  to today:%d/%d/%d" % (m,d,y)
+
+    ly = _info.prog_yr
+    lm = _info.prog_mon
+    ld = _info.prog_day
+    LOG.debug("Updating last program date:%d/%d/%d" % (lm,ld,ly))
+    LOG.debug("                  to today:%d/%d/%d" % (m,d,y))
 
     _info.prog_yr = y
     _info.prog_mon = m
@@ -680,8 +674,7 @@ def _upload(radio, memsize = 0xF400, blocksize = 0x80):
     offset = 0x0100
     for addr in range(offset, memsize, blocksize):
         mapaddr = addr + radio._mmap_offset - offset
-        if CHIRP_DEBUG:
-          print "addr: 0x%04X, mmapaddr: 0x%04X" % (addr, mapaddr)
+        LOG.debug("addr: 0x%04X, mmapaddr: 0x%04X" % (addr, mapaddr))
         msg = struct.pack(">cHB", "W", addr, blocksize)        
         msg += radio._mmap[mapaddr:(mapaddr + blocksize)]
         print util.hexprint(msg)
@@ -703,8 +696,7 @@ def _upload(radio, memsize = 0xF400, blocksize = 0x80):
 
     # Checksum?
     final_data = radio.pipe.read(3)
-    if CHIRP_DEBUG:
-      print "final:", util.hexprint(final_data)
+    LOG.debug("final:", util.hexprint(final_data))
 
 @directory.register
 class TYTTH9800Radio(TYTTH9800Base, chirp_common.CloneModeRadio,

@@ -15,9 +15,9 @@
 
 from chirp import chirp_common, errors, util, directory
 from chirp import bitwise, memmap
-import time, struct, sys
+import time, struct, sys, logging
 
-DEBUG = True
+LOG = logging.getLogger(__name__)
 
 # TH-D72 memory map
 # 0x0000..0x0200: startup password and other stuff
@@ -452,13 +452,11 @@ class THD72Radio(chirp_common.CloneModeRadio):
         start = time.time()
 
         data = ""
-        if DEBUG:
-            print "PC->D72: %s" % cmd
+        LOG.debug("PC->D72: %s" % cmd)
         self.pipe.write(cmd + "\r")
         while not data.endswith("\r") and (time.time() - start) < timeout:
             data += self.pipe.read(1)
-        if DEBUG:
-            print "D72->PC: %s" % data.strip()
+        LOG.debug("D72->PC: %s" % data.strip())
         return data.strip()
 
     def get_id(self):

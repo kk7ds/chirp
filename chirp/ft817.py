@@ -22,8 +22,10 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
-import time, os
+import time, os, logging
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 CMD_ACK = 0x06
 
@@ -319,8 +321,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 raise Exception("Unable to read block %02X expected %i got %i" %
                                 (blocknum, block + 2, len(data)))
 
-        if os.getenv("CHIRP_DEBUG"):
-            print "Read %i" % len(data)
+        LOG.debug("Read %i" % len(data))
         return data
 
     def _clone_in(self):
@@ -382,15 +383,12 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 time.sleep(0.01)
                 checksum = yaesu_clone.YaesuChecksum(pos, pos + block - 1)
-                if os.getenv("CHIRP_DEBUG"):
-                    print "Block %i - will send from %i to %i byte " % \
-                        (blocks,
-                         pos,
-                         pos + block)
-                    print util.hexprint(chr(blocks))
-                    print util.hexprint(self.get_mmap()[pos:pos + block])
-                    print util.hexprint(chr(checksum.get_calculated(
-                                self.get_mmap())))
+                LOG.debug("Block %i - will send from %i to %i byte " % \
+                        (blocks, pos, pos + block))
+                LOG.debug(util.hexprint(chr(blocks)))
+                LOG.debug(util.hexprint(self.get_mmap()[pos:pos + block]))
+                LOG.debug(util.hexprint(chr(checksum.get_calculated(
+                            self.get_mmap()))))
                 self.pipe.write(chr(blocks))
                 self.pipe.write(self.get_mmap()[pos:pos + block])
                 self.pipe.write(chr(checksum.get_calculated(self.get_mmap())))
@@ -399,8 +397,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                     time.sleep(delay)
                     buf = self.pipe.read(1)
                 if not buf or buf[0] != chr(CMD_ACK):
-                    if os.getenv("CHIRP_DEBUG"):
-                        print util.hexprint(buf)
+                    LOG.debug(util.hexprint(buf))
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
                 blocks += 1
@@ -1030,9 +1027,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 else:
                     obj = _settings
                     setting = element.get_name()
-                if os.getenv("CHIRP_DEBUG"):
-                    print "Setting %s(%s) <= %s" % (setting,
-                            getattr(obj, setting), element.value)
+                try:
+                    LOG.debug("Setting %s(%s) <= %s" % (setting,
+                              getattr(obj, setting), element.value))
+                except AttributeError:
+                    LOG.debug("Setting %s <= %s" % (setting, element.value))
                 if setting == "contrast":
                     setattr(obj, setting, int(element.value) + 1)
                 elif setting == "callsign":

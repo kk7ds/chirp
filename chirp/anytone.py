@@ -16,6 +16,7 @@
 import os
 import struct
 import time
+import logging
 
 from chirp import bitwise
 from chirp import chirp_common
@@ -25,6 +26,8 @@ from chirp import memmap
 from chirp import util
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueList, RadioSettingValueString, RadioSettingValueBoolean
+
+LOG = logging.getLogger(__name__)
 
 _mem_format = """
 #seekto 0x0100;
@@ -164,10 +167,6 @@ def _should_send_addr(memobj, addr):
     else:
         return _is_loc_used(memobj, _addr_to_loc(addr))
 
-def _debug(string):
-    if "CHIRP_DEBUG" in os.environ or True:
-        print string
-
 def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
@@ -201,7 +200,7 @@ def _ident(radio):
         raise errors.RadioError("Unsupported model")
     _echo_write(radio, "\x02")
     response = radio.pipe.read(16)
-    _debug(util.hexprint(response))
+    LOG.debug(util.hexprint(response))
     if response[1:8] not in valid_model:
         print "Response was:\n%s" % util.hexprint(response)
         raise errors.RadioError("Unsupported model")
@@ -227,7 +226,7 @@ def _send(radio, cmd, addr, length, data=None):
         frame += chr(_checksum(frame[1:]))
         frame += "\x06"
     _echo_write(radio, frame)
-    _debug("Sent:\n%s" % util.hexprint(frame))
+    LOG.debug("Sent:\n%s" % util.hexprint(frame))
     if data:
         result = radio.pipe.read(1)
         if result != "\x06":
@@ -236,7 +235,7 @@ def _send(radio, cmd, addr, length, data=None):
                             addr)
         return
     result = _read(radio, length + 6)
-    _debug("Got:\n%s" % util.hexprint(result))
+    LOG.debug("Got:\n%s" % util.hexprint(result))
     header = result[0:4]
     data = result[4:-2]
     ack = result[-1]

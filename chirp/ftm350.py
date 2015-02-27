@@ -16,11 +16,14 @@
 import time
 import struct
 import os
+import logging
 
 from chirp import chirp_common, yaesu_clone, directory, errors, util
 from chirp import bitwise, memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
+
+LOG = logging.getLogger(__name__)
 
 mem_format = """
 struct mem {
@@ -141,8 +144,8 @@ def _clone_in(radio):
             radio.pipe.write("\x06")
             time.sleep(0.05)
 
-            if os.getenv("CHIRP_DEBUG") and (last_addr + 128) != addr:
-                print "Gap, expecting %04x, got %04x" % (last_addr+128, addr)
+            if (last_addr + 128) != addr:
+                LOG.debug("Gap, expecting %04x, got %04x" % (last_addr+128, addr))
             last_addr = addr
             data[addr] = block
             length += len(block)
