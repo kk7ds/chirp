@@ -12,11 +12,9 @@
 ./chirp/bandplan_na.py
 ./chirp/baofeng_uv3r.py
 ./chirp/bitwise.py
-./chirp/bitwise_grammar.py
 ./chirp/bjuv55.py
 ./chirp/chirp_common.py
 ./chirp/elib_intl.py
-./chirp/errors.py
 ./chirp/ft1802.py
 ./chirp/ft1d.py
 ./chirp/ft2800.py
@@ -28,7 +26,6 @@
 ./chirp/ft857.py
 ./chirp/ft90.py
 ./chirp/ftm350.py
-./chirp/generic_csv.py
 ./chirp/h777.py
 ./chirp/ic208.py
 ./chirp/ic2100.py
@@ -51,14 +48,12 @@
 ./chirp/id800.py
 ./chirp/id880.py
 ./chirp/idrp.py
-./chirp/import_logic.py
 ./chirp/kenwood_hmk.py
 ./chirp/kenwood_itm.py
 ./chirp/kenwood_live.py
 ./chirp/kguv8d.py
 ./chirp/kyd.py
 ./chirp/leixen.py
-./chirp/platform.py
 ./chirp/puxing.py
 ./chirp/pyPEG.py
 ./chirp/rfinder.py
@@ -85,9 +80,7 @@
 ./chirp/vxa700.py
 ./chirp/wouxun.py
 ./chirp/wouxun_common.py
-./chirp/xml_ll.py
 ./chirp/yaesu_clone.py
-./chirpui/bankedit.py
 ./chirpui/common.py
 ./chirpui/editorset.py
 ./chirpui/fips.py
@@ -96,9 +89,7 @@
 ./chirpui/memdetail.py
 ./chirpui/memedit.py
 ./chirpui/miscwidgets.py
-./chirpui/radiobrowser.py
 ./chirpui/reporting.py
-./chirpui/settingsedit.py
 ./csvdump/csvapp.py
 ./csvdump/csvdump.py
 ./setup.py

@@ -9,6 +9,7 @@ from chirpui import common, config
 
 CONF = config.get()
 
+
 def do_insert_line_with_tags(b, line):
     def i(text, *tags):
         b.insert_with_tags_by_name(b.get_end_iter(), text, *tags)
@@ -63,6 +64,7 @@ def do_insert_line_with_tags(b, line):
 
     i(line)
 
+
 def do_insert_with_tags(buf, text):
     buf.set_text('')
     lines = text.split(os.linesep)
@@ -70,11 +72,14 @@ def do_insert_with_tags(buf, text):
         do_insert_line_with_tags(buf, line)
         buf.insert_with_tags_by_name(buf.get_end_iter(), os.linesep)
 
+
 def classname(obj):
     return str(obj.__class__).split('.')[-1]
 
+
 def bitwise_type(classname):
     return classname.split("DataElement")[0]
+
 
 class FixedEntry(gtk.Entry):
     def __init__(self, *args, **kwargs):
@@ -91,6 +96,7 @@ class FixedEntry(gtk.Entry):
         fontdesc = pango.FontDescription("Courier bold %i" % fontsize)
         self.modify_font(fontdesc)
 
+
 class IntegerEntry(FixedEntry):
     def _colorize(self, _self):
         value = self.get_text()
@@ -106,11 +112,13 @@ class IntegerEntry(FixedEntry):
         super(IntegerEntry, self).__init__(*args, **kwargs)
         self.connect("changed", self._colorize)
 
+
 class BitwiseEditor(gtk.HBox):
     def __init__(self, element):
         super(BitwiseEditor, self).__init__(False, 3)
         self._element = element
         self._build_ui()
+
 
 class IntegerEditor(BitwiseEditor):
     def _changed(self, entry, base):
@@ -150,6 +158,7 @@ class IntegerEditor(BitwiseEditor):
             ent.show()
         self._update_entries()
 
+
 class BCDArrayEditor(BitwiseEditor):
     def _changed(self, entry, hexent):
         self._element.set_value(int(entry.get_text()))
@@ -183,6 +192,7 @@ class BCDArrayEditor(BitwiseEditor):
         ent.connect('changed', self._changed, hexent)
         self._format_hexent(hexent)
 
+
 class CharArrayEditor(BitwiseEditor):
     def _changed(self, entry):
         self._element.set_value(entry.get_text().ljust(len(self._element)))
@@ -193,6 +203,7 @@ class CharArrayEditor(BitwiseEditor):
         ent.connect('changed', self._changed)
         ent.show()
         self.pack_start(ent, 1, 1, 1)
+
 
 class OtherEditor(BitwiseEditor):
     def _build_ui(self):
@@ -206,6 +217,7 @@ class OtherEditor(BitwiseEditor):
         l = gtk.Label(name)
         l.show()
         self.pack_start(l, 1, 1, 1)
+
 
 class RadioBrowser(common.Editor):
     def _build_ui(self):
@@ -287,7 +299,7 @@ class RadioBrowser(common.Editor):
             pack(l, 0)
 
             if (isinstance(item, bitwise.intDataElement) or
-                isinstance(item, bitwise.bcdDataElement)):
+                    isinstance(item, bitwise.bcdDataElement)):
                 e = IntegerEditor(item)
             elif (isinstance(item, bitwise.arrayDataElement) and
                   isinstance(item[0], bitwise.bcdDataElement)):
@@ -300,7 +312,6 @@ class RadioBrowser(common.Editor):
             e.show()
             pack(e, 1)
             next_row()
-
 
     def __init__(self, rthread):
         super(RadioBrowser, self).__init__(rthread)
@@ -317,14 +328,17 @@ class RadioBrowser(common.Editor):
             self.emit("changed")
             self._focused = False
 
+
 if __name__ == "__main__":
     from chirp import *
     from chirp import directory
     import sys
 
     r = directory.get_radio_by_image(sys.argv[1])
+
     class Foo:
         radio = r
+
     w = gtk.Window()
     b = RadioBrowser(Foo)
     w.set_default_size(1024, 768)

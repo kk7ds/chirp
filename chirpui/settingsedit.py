@@ -20,10 +20,12 @@ from chirp import chirp_common
 from chirp import settings
 from chirpui import common, miscwidgets
 
+
 class RadioSettingProxy(settings.RadioSetting):
     def __init__(self, setting, editor):
         self._setting = setting
         self._editor = editor
+
 
 class SettingsEditor(common.Editor):
     def __init__(self, rthread):
@@ -36,13 +38,14 @@ class SettingsEditor(common.Editor):
         paned = gtk.HPaned()
         paned.show()
         self.root.pack_start(paned, 1, 1, 0)
-    
+
         # The selection tree
         self._store = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_INT)
         self._view = gtk.TreeView(self._store)
         self._view.set_size_request(150, -1)
         self._view.get_selection().connect("changed", self._view_changed_cb)
-        self._view.append_column(gtk.TreeViewColumn("", gtk.CellRendererText(), text=0))
+        self._view.append_column(
+            gtk.TreeViewColumn("", gtk.CellRendererText(), text=0))
         self._view.show()
         paned.pack1(self._view)
 
@@ -88,9 +91,8 @@ class SettingsEditor(common.Editor):
         elif isinstance(value, settings.RadioSettingValueString):
             value.set_value(widget.get_text())
         else:
-            print "Unsupported widget type %s for %s" % (\
-                element.value.__class__,
-                element.get_name())
+            print "Unsupported widget type %s for %s" % \
+                (element.value.__class__, element.get_name())
 
         self._changed = True
         self._save_settings()
@@ -127,7 +129,9 @@ class SettingsEditor(common.Editor):
             label.set_alignment(0.0, 0.5)
             label.show()
 
-            table.attach(label, 0, 1, row, row+1, xoptions=gtk.FILL, yoptions=0, xpadding=6, ypadding=3)
+            table.attach(label, 0, 1, row, row + 1,
+                         xoptions=gtk.FILL, yoptions=0,
+                         xpadding=6, ypadding=3)
 
             if isinstance(element.value, list) and \
                     isinstance(element.value[0],
@@ -138,7 +142,9 @@ class SettingsEditor(common.Editor):
 
             # Widget container
             box.show()
-            table.attach(box, 1, 2, row, row+1, xoptions=gtk.FILL, yoptions=0, xpadding=12, ypadding=3)
+            table.attach(box, 1, 2, row, row + 1,
+                         xoptions=gtk.FILL, yoptions=0,
+                         xpadding=12, ypadding=3)
 
             for i in element.keys():
                 value = element[i]
@@ -154,7 +160,7 @@ class SettingsEditor(common.Editor):
                     widget.set_width_chars(16)
                     widget.set_text(value.format())
                     widget.connect("focus-out-event", lambda w, e, v:
-                                       self._save_setting(w, v), value)
+                                   self._save_setting(w, v), value)
                 elif isinstance(value, settings.RadioSettingValueBoolean):
                     widget = gtk.CheckButton(_("Enabled"))
                     widget.set_active(value.get_value())
@@ -179,7 +185,7 @@ class SettingsEditor(common.Editor):
 
                 widget.set_sensitive(value.get_mutable())
                 widget.show()
-                
+
                 box.pack_start(widget, 1, 1, 1)
 
             row += 1
@@ -187,12 +193,11 @@ class SettingsEditor(common.Editor):
         return tab
 
     def _build_ui_group(self, group, parent):
-        
         tab = self._build_ui_tab(group)
-        
+
         iter = self._store.append(parent)
         self._store.set(iter, 0, group.get_shortname(), 1, tab)
-        
+
         for element in group:
             if not isinstance(element, settings.RadioSetting):
                 self._build_ui_group(element, iter)

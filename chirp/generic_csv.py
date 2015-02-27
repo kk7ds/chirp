@@ -18,9 +18,11 @@ import csv
 
 from chirp import chirp_common, errors, directory
 
+
 class OmittedHeaderError(Exception):
     """Internal exception to signal that a column has been omitted"""
     pass
+
 
 def get_datum_by_header(headers, data, header):
     """Return the column corresponding to @headers[@header] from @data"""
@@ -30,14 +32,16 @@ def get_datum_by_header(headers, data, header):
     try:
         return data[headers.index(header)]
     except IndexError:
-        raise OmittedHeaderError("Header %s not provided on this line" % \
-                                     header)
+        raise OmittedHeaderError("Header %s not provided on this line" %
+                                 header)
+
 
 def write_memory(writer, mem):
     """Write @mem using @writer if not empty"""
     if mem.empty:
         return
     writer.writerow(mem.to_csv())
+
 
 @directory.register
 class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
@@ -47,23 +51,23 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     FILE_EXTENSION = "csv"
 
     ATTR_MAP = {
-        "Location"     : (int,   "number"),
-        "Name"         : (str,   "name"),
-        "Frequency"    : (chirp_common.parse_freq, "freq"),
-        "Duplex"       : (str,   "duplex"),
-        "Offset"       : (chirp_common.parse_freq, "offset"),
-        "Tone"         : (str,   "tmode"),
-        "rToneFreq"    : (float, "rtone"),
-        "cToneFreq"    : (float, "ctone"),
-        "DtcsCode"     : (int,   "dtcs"),
-        "DtcsPolarity" : (str,   "dtcs_polarity"),
-        "Mode"         : (str,   "mode"),
-        "TStep"        : (float, "tuning_step"),
-        "Skip"         : (str,   "skip"),
-        "URCALL"       : (str,   "dv_urcall"),
-        "RPT1CALL"     : (str,   "dv_rpt1call"),
-        "RPT2CALL"     : (str,   "dv_rpt2call"),
-        "Comment"      : (str,   "comment"),
+        "Location":      (int,   "number"),
+        "Name":          (str,   "name"),
+        "Frequency":     (chirp_common.parse_freq, "freq"),
+        "Duplex":        (str,   "duplex"),
+        "Offset":        (chirp_common.parse_freq, "offset"),
+        "Tone":          (str,   "tmode"),
+        "rToneFreq":     (float, "rtone"),
+        "cToneFreq":     (float, "ctone"),
+        "DtcsCode":      (int,   "dtcs"),
+        "DtcsPolarity":  (str,   "dtcs_polarity"),
+        "Mode":          (str,   "mode"),
+        "TStep":         (float, "tuning_step"),
+        "Skip":          (str,   "skip"),
+        "URCALL":        (str,   "dv_urcall"),
+        "RPT1CALL":      (str,   "dv_rpt1call"),
+        "RPT2CALL":      (str,   "dv_rpt2call"),
+        "Comment":       (str,   "comment"),
         }
 
     def _blank(self):
@@ -118,7 +122,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             fname = "_clean_%s" % attr
             if hasattr(self, fname):
                 mem = getattr(self, fname)(headers, line, mem)
-        
+
         return mem
 
     def _clean_tmode(self, headers, line, mem):
@@ -189,7 +193,8 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                 print "Line %i has %i columns, expected %i" % (lineno,
                                                                len(line),
                                                                len(header))
-                self.errors.append("Column number mismatch on line %i" % lineno)
+                self.errors.append("Column number mismatch on line %i" %
+                                   lineno)
                 continue
 
             try:
@@ -247,7 +252,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             return
 
         delta += 1
-        
+
         for i in range(len(self.memories), len(self.memories) + delta + 1):
             mem = chirp_common.Memory()
             mem.empty = True
@@ -313,7 +318,7 @@ class CommanderCSVRadio(CSVRadio):
     def _clean_duplex(self, headers, line, mem):
         try:
             txfreq = chirp_common.parse_freq(
-                        get_datum_by_header(headers, line, "TX Freq"))
+                get_datum_by_header(headers, line, "TX Freq"))
         except ValueError:
             mem.duplex = "off"
             return mem
@@ -325,7 +330,7 @@ class CommanderCSVRadio(CSVRadio):
             mem.offset = txfreq
 
         return mem
-    
+
     def _clean_tmode(self, headers, line, mem):
         rtone = get_datum_by_header(headers, line, "Encode")
         ctone = get_datum_by_header(headers, line, "Decode")
@@ -356,7 +361,8 @@ class CommanderCSVRadio(CSVRadio):
             filedata.startswith("Name,RX Freq,TX Freq,Decode,Encode,TX Pwr,"
                                 "Scan,TX Dev,Busy Lck,Group/Notes") or \
             filedata.startswith('"#","Name","RX Freq","TX Freq","Decode",'
-                '"Encode","TX Pwr","Scan","TX Dev","Busy Lck","Group/Notes"')
+                                '"Encode","TX Pwr","Scan","TX Dev",'
+                                '"Busy Lck","Group/Notes"')
 
 
 @directory.register
@@ -372,7 +378,7 @@ class RTCSVRadio(CSVRadio):
         "Simplex":  "",
         "Split":    "split",
     }
-    
+
     SKIP_MAP = {
         "Off":    "",
         "On":     "S",
@@ -391,19 +397,25 @@ class RTCSVRadio(CSVRadio):
     }
 
     ATTR_MAP = {
-        "Channel Number":   (int,   "number"),
-        "Receive Frequency":(chirp_common.parse_freq, "freq"),
-        "Offset Frequency": (chirp_common.parse_freq, "offset"),
-        "Offset Direction": (lambda v: RTCSVRadio.DUPLEX_MAP.get(v, v), "duplex"),
-        "Operating Mode":   (str,   "mode"),
-        "Name":             (str,   "name"),
-        "Tone Mode":        (lambda v: RTCSVRadio.TMODE_MAP.get(v, v), "tmode"),
-        "CTCSS":            (lambda v: float(v.split(" ")[0]), "rtone"),
-        "DCS":              (int,   "dtcs"),
-        "Skip":             (lambda v: RTCSVRadio.SKIP_MAP.get(v, v), "skip"),
-        "Step":             (lambda v: float(v.split(" ")[0]), "tuning_step"),
-        "Mask":             (lambda v: RTCSVRadio.BOOL_MAP.get(v, v), "empty",),
-        "Comment":          (str,   "comment"),
+        "Channel Number":    (int,   "number"),
+        "Receive Frequency": (chirp_common.parse_freq, "freq"),
+        "Offset Frequency":  (chirp_common.parse_freq, "offset"),
+        "Offset Direction":  (lambda v:
+                              RTCSVRadio.DUPLEX_MAP.get(v, v), "duplex"),
+        "Operating Mode":    (str,   "mode"),
+        "Name":              (str,   "name"),
+        "Tone Mode":         (lambda v:
+                              RTCSVRadio.TMODE_MAP.get(v, v), "tmode"),
+        "CTCSS":             (lambda v:
+                              float(v.split(" ")[0]), "rtone"),
+        "DCS":               (int,   "dtcs"),
+        "Skip":              (lambda v:
+                              RTCSVRadio.SKIP_MAP.get(v, v), "skip"),
+        "Step":              (lambda v:
+                              float(v.split(" ")[0]), "tuning_step"),
+        "Mask":              (lambda v:
+                              RTCSVRadio.BOOL_MAP.get(v, v), "empty",),
+        "Comment":           (str,   "comment"),
         }
 
     def _clean_duplex(self, headers, line, mem):
@@ -441,5 +453,6 @@ class RTCSVRadio(CSVRadio):
         # consistent across radio models.
         return filename.lower().endswith("." + cls.FILE_EXTENSION) and \
             filedata.startswith("Channel Number,Receive Frequency,"
-                "Transmit Frequency,Offset Frequency,Offset Direction,"
-                "Operating Mode,Name,Tone Mode,CTCSS,DCS")
+                                "Transmit Frequency,Offset Frequency,"
+                                "Offset Direction,Operating Mode,"
+                                "Name,Tone Mode,CTCSS,DCS")

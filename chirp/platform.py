@@ -19,6 +19,7 @@ import glob
 import re
 from subprocess import Popen
 
+
 def win32_comports_bruteforce():
     import win32file
     import win32con
@@ -36,7 +37,7 @@ def win32_comports_bruteforce():
                                      win32con.OPEN_EXISTING,
                                      0,
                                      None)
-            ports.append((portname,"Unknown","Serial"))
+            ports.append((portname, "Unknown", "Serial"))
             win32file.CloseHandle(port)
             port = None
         except Exception, e:
@@ -44,18 +45,22 @@ def win32_comports_bruteforce():
 
     return ports
 
+
 try:
     from serial.tools.list_ports import comports
 except:
     comports = win32_comports_bruteforce
 
+
 def _find_me():
     return sys.modules["chirp.platform"].__file__
+
 
 def natural_sorted(l):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     natural_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(l, key=natural_key)
+
 
 class Platform:
     """Base class for platform-specific functions"""
@@ -229,6 +234,7 @@ class Platform:
             return os.path.dirname(os.path.abspath(os.path.join(_find_me(),
                                                                 "..")))
 
+
 def _unix_editor():
     macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"
 
@@ -237,23 +243,24 @@ def _unix_editor():
     else:
         return "gedit"
 
+
 class UnixPlatform(Platform):
     """A platform module suitable for UNIX systems"""
     def __init__(self, basepath):
         if not basepath:
             basepath = os.path.abspath(os.path.join(self.default_dir(),
                                                     ".chirp"))
-        
+
         if not os.path.isdir(basepath):
             os.mkdir(basepath)
 
         Platform.__init__(self, basepath)
 
-	# This is a hack that needs to be properly fixed by importing the
-	# latest changes to this module from d-rats.  In the interest of
-	# time, however, I'll throw it here
+        # This is a hack that needs to be properly fixed by importing the
+        # latest changes to this module from d-rats.  In the interest of
+        # time, however, I'll throw it here
         if sys.platform == "darwin":
-            if not os.environ.has_key("DISPLAY"):
+            if "DISPLAY" not in os.environ:
                 print "Forcing DISPLAY for MacOS"
                 os.environ["DISPLAY"] = ":0"
 
@@ -301,6 +308,7 @@ class UnixPlatform(Platform):
             ver = " ".join(os.uname())
 
         return ver
+
 
 class Win32Platform(Platform):
     """A platform module suitable for Windows systems"""
@@ -362,7 +370,7 @@ class Win32Platform(Platform):
     def gui_save_file(self, start_dir=None, default_name=None, types=[]):
         import win32gui
         import win32api
-        
+
         (pform, _, _, _, _) = win32api.GetVersionEx()
 
         typestrs = ""
@@ -405,14 +413,16 @@ class Win32Platform(Platform):
     def os_version_string(self):
         import win32api
 
-        vers = { 4: "Win2k",
-                 5: "WinXP",
-                 6: "WinVista/7",
-                 }
+        vers = {4: "Win2k",
+                5: "WinXP",
+                6: "WinVista/7",
+                }
 
         (pform, sub, build, _, _) = win32api.GetVersionEx()
 
-        return vers.get(pform, "Win32 (Unknown %i.%i:%i)" % (pform, sub, build))
+        return vers.get(pform,
+                        "Win32 (Unknown %i.%i:%i)" % (pform, sub, build))
+
 
 def _get_platform(basepath):
     if os.name == "nt":
@@ -421,6 +431,8 @@ def _get_platform(basepath):
         return UnixPlatform(basepath)
 
 PLATFORM = None
+
+
 def get_platform(basepath=None):
     """Return the platform singleton"""
     global PLATFORM
@@ -429,6 +441,7 @@ def get_platform(basepath=None):
         PLATFORM = _get_platform(basepath)
 
     return PLATFORM
+
 
 def _do_test():
     __pform = get_platform()

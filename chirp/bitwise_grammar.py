@@ -21,62 +21,82 @@ TYPES = ["bit", "u8", "u16", "ul16", "u24", "ul24", "u32", "ul32",
          "lbcd", "bbcd"]
 DIRECTIVES = ["seekto", "seek", "printoffset"]
 
+
 def string():
     return re.compile(r"\"[^\"]*\"")
+
 
 def symbol():
     return re.compile(r"\w+")
 
+
 def count():
     return re.compile(r"([1-9][0-9]*|0x[0-9a-fA-F]+)")
+
 
 def bitdef():
     return symbol, ":", count, -1
 
+
 def _bitdeflist():
     return bitdef, -1, (",", bitdef)
+
 
 def bitfield():
     return -2, _bitdeflist
 
+
 def array():
     return symbol, '[', count, ']'
+
 
 def _typedef():
     return re.compile(r"(%s)" % "|".join(TYPES))
 
+
 def definition():
     return _typedef, [array, bitfield, symbol], ";"
+
 
 def seekto():
     return keyword("seekto"), count
 
+
 def seek():
     return keyword("seek"), count
+
 
 def printoffset():
     return keyword("printoffset"), string
 
+
 def directive():
     return "#", [seekto, seek, printoffset], ";"
+
 
 def _block_inner():
     return -2, [definition, struct, directive]
 
+
 def _block():
     return "{", _block_inner, "}"
+
 
 def struct_defn():
     return symbol, _block
 
+
 def struct_decl():
     return [symbol, _block], [array, symbol]
+
 
 def struct():
     return keyword("struct"), [struct_defn, struct_decl], ";"
 
+
 def _language():
     return _block_inner
+
 
 def parse(data):
     lines = data.split("\n")

@@ -17,6 +17,7 @@ import re
 
 from chirp import chirp_common, errors
 
+
 def get_memory(doc, number):
     """Extract a Memory object from @doc"""
     ctx = doc.xpathNewContext()
@@ -59,7 +60,7 @@ def get_memory(doc, number):
     mem.ctone = float(_get("/squelch[@id='ctone']/tone/text()"))
     mem.dtcs = int(_get("/squelch[@id='dtcs']/code/text()"), 10)
     mem.dtcs_polarity = _get("/squelch[@id='dtcs']/polarity/text()")
-    
+
     try:
         sql = _get("/squelchSetting/text()")
         if sql == "rtone":
@@ -73,7 +74,7 @@ def get_memory(doc, number):
     except IndexError:
         mem.tmode = ""
 
-    dmap = {"positive" : "+", "negative" : "-", "none" : ""}
+    dmap = {"positive": "+", "negative": "-", "none": ""}
     dupx = _get("/duplex/text()")
     mem.duplex = dmap.get(dupx, "")
 
@@ -96,6 +97,7 @@ def get_memory(doc, number):
     #        mem.bank_index = int(bank_index)
 
     return mem
+
 
 def set_memory(doc, mem):
     """Set @mem in @doc"""
@@ -121,11 +123,11 @@ def set_memory(doc, mem):
     lname_filter = "[^.A-Za-z0-9/ >-]"
     lname = memnode.newChild(None, "longName", None)
     lname.addContent(re.sub(lname_filter, "", mem.name[:16]))
-    
+
     freq = memnode.newChild(None, "frequency", None)
     freq.newProp("units", "MHz")
     freq.addContent(chirp_common.format_freq(mem.freq))
-    
+
     rtone = memnode.newChild(None, "squelch", None)
     rtone.newProp("id", "rtone")
     rtone.newProp("type", "repeater")
@@ -154,7 +156,7 @@ def set_memory(doc, mem):
     elif mem.tmode == "DTCS":
         sset.addContent("dtcs")
 
-    dmap = {"+" : "positive", "-" : "negative", "" : "none"}
+    dmap = {"+": "positive", "-": "negative", "": "none"}
     dupx = memnode.newChild(None, "duplex", None)
     dupx.addContent(dmap[mem.duplex])
 
@@ -168,7 +170,7 @@ def set_memory(doc, mem):
     step = memnode.newChild(None, "tuningStep", None)
     step.newProp("units", "kHz")
     step.addContent("%.5f" % mem.tuning_step)
-    
+
     if mem.skip:
         skip = memnode.newChild(None, "skip", None)
         skip.addContent(mem.skip)
@@ -197,6 +199,7 @@ def set_memory(doc, mem):
         dc = dv.newChild(None, "digitalCode", None)
         dc.addContent(str(mem.dv_code))
 
+
 def del_memory(doc, number):
     """Remove memory @number from @doc"""
     path = "//radio/memories/memory[@location=%i]" % number
@@ -205,12 +208,14 @@ def del_memory(doc, number):
 
     for field in fields:
         field.unlinkNode()
-    
+
+
 def _get_bank(node):
     bank = chirp_common.Bank(node.prop("label"))
     ident = int(node.prop("id"))
 
     return ident, bank
+
 
 def get_banks(doc):
     """Return a list of banks from @doc"""
@@ -228,6 +233,7 @@ def get_banks(doc):
     banks.sort(cmp=_cmp)
 
     return [x[1] for x in banks]
+
 
 def set_banks(doc, banklist):
     """Set the list of banks in @doc"""

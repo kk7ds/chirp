@@ -22,6 +22,7 @@ from gobject import TYPE_INT, TYPE_STRING, TYPE_BOOLEAN
 from chirp import chirp_common
 from chirpui import common, miscwidgets
 
+
 class MappingNamesJob(common.RadioJob):
     def __init__(self, model, editor, cb):
         common.RadioJob.__init__(self, cb, None)
@@ -36,6 +37,7 @@ class MappingNamesJob(common.RadioJob):
             self.__editor.mappings.append((mapping, mapping.get_name()))
 
         gobject.idle_add(self.cb, *self.cb_args)
+
 
 class MappingNameEditor(common.Editor):
     def refresh(self):
@@ -117,6 +119,7 @@ class MappingNameEditor(common.Editor):
     def mappings_changed(self):
         pass
 
+
 class MemoryMappingsJob(common.RadioJob):
     def __init__(self, model, cb, number):
         common.RadioJob.__init__(self, cb, None)
@@ -136,6 +139,7 @@ class MemoryMappingsJob(common.RadioJob):
                 for mapping in mappings:
                     indexes.append(self.__model.get_memory_index(mem, mapping))
         self.cb(mem, mappings, indexes, *self.cb_args)
+
 
 class MappingMembershipEditor(common.Editor):
     def _number_to_path(self, number):
@@ -160,9 +164,9 @@ class MappingMembershipEditor(common.Editor):
         indexes.sort()
         for i in range(0, num_indexes):
             if i not in indexes:
-                return i + index_bounds[0] # In case not zero-origin index
+                return i + index_bounds[0]  # In case not zero-origin index
 
-        return 0 # If the mapping is full, just wrap around!
+        return 0  # If the mapping is full, just wrap around!
 
     def _toggled_cb(self, rend, path, colnum):
         try:
@@ -233,7 +237,7 @@ class MappingMembershipEditor(common.Editor):
 
     def _index_edited_cb(self, rend, path, new):
         loc, = self._store.get(self._store.get_iter(path), self.C_LOC)
-        
+
         def refresh_memory(*args):
             self.refresh_memory(loc)
 
@@ -261,7 +265,7 @@ class MappingMembershipEditor(common.Editor):
         job = common.RadioJob(get_mapping, "get_memory", loc)
         job.set_desc(_("Getting memory {num}").format(num=loc))
         self.rthread.submit(job)
-            
+
     def __init__(self, rthread, editorset, model):
         super(MappingMembershipEditor, self).__init__(rthread)
 
@@ -278,16 +282,16 @@ class MappingMembershipEditor(common.Editor):
             ]
 
         self._cols = [
-            ("_filled",      TYPE_BOOLEAN, None,                 ),
+            ("_filled",      TYPE_BOOLEAN, None, ),
             ] + self._view_cols
 
         self.C_FILLED = 0
-        self.C_LOC    = 1
-        self.C_FREQ   = 2
-        self.C_NAME   = 3
-        self.C_INDEX  = 4
-        self.C_MAPPINGS  = 5 # and beyond
-        
+        self.C_LOC = 1
+        self.C_FREQ = 2
+        self.C_NAME = 3
+        self.C_INDEX = 4
+        self.C_MAPPINGS = 5  # and beyond
+
         cols = list(self._cols)
 
         self._index_cache = []
@@ -296,7 +300,7 @@ class MappingMembershipEditor(common.Editor):
             label = "%s %i" % (self._type, (i+1))
             cols.append((label, TYPE_BOOLEAN, gtk.CellRendererToggle))
 
-        self._store = gtk.ListStore(*tuple([y for x,y,z in cols]))
+        self._store = gtk.ListStore(*tuple([y for x, y, z in cols]))
         self._view = gtk.TreeView(self._store)
 
         is_indexed = isinstance(self._model,
@@ -361,7 +365,7 @@ class MappingMembershipEditor(common.Editor):
             for i in range(0, len(self.mappings)):
                 row.append(i + len(self._cols))
                 row.append(self.mappings[i][0] in mappings)
-                
+
             self._store.set(iter, *tuple(row))
 
         job = MemoryMappingsJob(self._model, got_mem, number)
@@ -374,8 +378,7 @@ class MappingMembershipEditor(common.Editor):
         (min, max) = self._rf.memory_bounds
         for i in range(min, max+1):
             self.refresh_memory(i)
-        print "Got all %s info in %s" % (self._type, 
-                                        (time.time() - start))
+        print "Got all %s info in %s" % (self._type, (time.time() - start))
 
     def refresh_mappings(self, and_memories=False):
         def got_mappings():
