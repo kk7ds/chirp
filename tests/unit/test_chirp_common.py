@@ -2,6 +2,7 @@ from tests.unit import base
 from chirp import chirp_common
 from chirp import errors
 
+
 class TestUtilityFunctions(base.BaseTest):
     def test_parse_freq_whole(self):
         self.assertEqual(chirp_common.parse_freq("146.520000"), 146520000)
@@ -46,6 +47,7 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(chirp_common.format_freq(1800000), "1.800000")
         self.assertEqual(chirp_common.format_freq(1), "0.000001")
         self.assertEqual(chirp_common.format_freq(1250000000), "1250.000000")
+
 
 class TestSplitTone(base.BaseTest):
     def _test_split_tone_decode(self, tx, rx, **vals):
@@ -183,6 +185,7 @@ class TestSplitTone(base.BaseTest):
                                        ctone=100.0),
                          (('', None, None),
                           ('Tone', 100.0, None)))
+
 
 class TestStepFunctions(base.BaseTest):
     _625 = [145856250,

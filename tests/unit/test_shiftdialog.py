@@ -6,6 +6,7 @@ from chirpui import shiftdialog
 from chirp import chirp_common
 from chirp import errors
 
+
 class FakeRadio(object):
     def __init__(self, *memories):
         self._mems = {}
@@ -43,6 +44,7 @@ class FakeRadioThread(object):
 
     def unlock(self):
         pass
+
 
 class ShiftDialogTest(base.BaseTest):
     def _test_hole(self, fn, starting, arg, expected):

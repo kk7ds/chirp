@@ -20,6 +20,7 @@ import os
 from tests.unit import base
 from chirp import platform
 
+
 class Win32PlatformTest(base.BaseTest):
     def _test_init(self):
         self.mox.StubOutWithMock(platform, 'comports')

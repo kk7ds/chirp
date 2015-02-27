@@ -18,6 +18,7 @@ import unittest
 from chirp import bitwise
 from chirp import memmap
 
+
 class BaseTest(unittest.TestCase):
     def _compare_structure(self, obj, primitive):
         for key, value in primitive.iteritems():
@@ -25,6 +26,7 @@ class BaseTest(unittest.TestCase):
                 self._compare_structure(getattr(obj, key), value)
             else:
                 self.assertEqual(type(value)(getattr(obj, key)), value)
+
 
 class TestBitwiseBaseIntTypes(BaseTest):
     def _test_type(self, datatype, _data, value):
@@ -77,6 +79,7 @@ class TestBitwiseBaseIntTypes(BaseTest):
             self.assertEqual(i, obj.foo[i])
             obj.foo[i] = i * 2
         self.assertEqual('\x00\x02\x04\x06', data.get_packed())
+
 
 class TestBitfieldTypes(BaseTest):
     def test_bitfield_u8(self):
@@ -139,6 +142,7 @@ class TestBitfieldTypes(BaseTest):
     def test_bitfield_ul24(self):
         self._test_bitfield_24("l", "\xC2\x40\x00")
 
+
 class TestBitType(BaseTest):
     def test_bit_array(self):
         defn = "bit foo[24];"
@@ -152,6 +156,7 @@ class TestBitType(BaseTest):
 
     def test_bit_array_fail(self):
         self.assertRaises(ValueError, bitwise.parse, "bit foo[23];", "000")
+
 
 class TestBitwiseBCDTypes(BaseTest):
     def _test_def(self, definition, name, _data, value):
@@ -181,6 +186,7 @@ class TestBitwiseBCDTypes(BaseTest):
     def test_lbcd_array(self):
         self._test_def("lbcd foo[2];", "foo", "\x12\x34", 3412)
 
+
 class TestBitwiseCharTypes(BaseTest):
     def test_char(self):
         data = memmap.MemoryMap("c")
@@ -202,13 +208,13 @@ class TestBitwiseCharTypes(BaseTest):
         data = memmap.MemoryMap("\xFFoobar1")
         obj = bitwise.parse("struct {char foo[7];} bar;", data)
         self.assertIn('\\xffoobar1', repr(obj.bar))
-        
 
     def test_string_wrong_length(self):
         data = memmap.MemoryMap("foobar")
         obj = bitwise.parse("char foo[6];", data)
         self.assertRaises(ValueError, setattr, obj, "foo", "bazfo")
         self.assertRaises(ValueError, setattr, obj, "foo", "bazfooo")
+
 
 class TestBitwiseStructTypes(BaseTest):
     def _test_def(self, definition, data, primitive):
@@ -218,12 +224,12 @@ class TestBitwiseStructTypes(BaseTest):
 
     def test_struct_one_element(self):
         defn = "struct { u8 bar; } foo;"
-        value = {"foo" : {"bar": 128}}
+        value = {"foo": {"bar": 128}}
         self._test_def(defn, "\x80", value)
 
     def test_struct_two_elements(self):
         defn = "struct { u8 bar; u16 baz; } foo;"
-        value = {"foo" : {"bar": 128, "baz": 256}}
+        value = {"foo": {"bar": 128, "baz": 256}}
         self._test_def(defn, "\x80\x01\x00", value)
 
     def test_struct_writes(self):
@@ -233,6 +239,7 @@ class TestBitwiseStructTypes(BaseTest):
         obj.foo.bar = 0x12
         obj.foo.baz = 0x34
         self.assertEqual(data.get_packed(), "\x12\x34")
+
 
 class TestBitwiseSeek(BaseTest):
     def test_seekto(self):
@@ -246,9 +253,11 @@ class TestBitwiseSeek(BaseTest):
         self.assertEqual(str(obj.foo), "A")
         self.assertEqual(str(obj.bar), "Z")
 
+
 class TestBitwiseErrors(BaseTest):
     def test_missing_semicolon(self):
         self.assertRaises(SyntaxError, bitwise.parse, "u8 foo", "")
+
 
 class TestBitwiseComments(BaseTest):
     def test_comment_inline_cppstyle(self):

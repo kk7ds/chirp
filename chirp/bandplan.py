@@ -15,6 +15,7 @@
 
 from chirp import chirp_common
 
+
 class Band(object):
     def __init__(self, limits, name, mode=None, step_khz=None,
                  input_offset=None, output_offset=None, tones=None):
@@ -79,6 +80,6 @@ class Band(object):
             self.step_khz and 'step_khz: %s ' % (self.step_khz,) or '',
             self.offset and 'offset: %s ' % (self.offset,) or '',
             self.tones and 'tones: %s ' % (self.tones,) or '')
-        
+
         return "%s-%s %s %s %s" % (
             self.limits[0], self.limits[1], self.name, self.duplex, desc)
