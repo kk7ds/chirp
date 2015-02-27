@@ -19,7 +19,10 @@ import traceback, sys, os, shutil, glob, tempfile, time
 from optparse import OptionParser
 from serial import Serial
 
-# Assume we're running in the tests/ directory of the archive
+# change to the tests directory
+scriptdir = os.path.dirname(sys.argv[0])
+os.chdir(scriptdir)
+
 sys.path.insert(0, "../")
 
 from chirp import CHIRP_VERSION
