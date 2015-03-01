@@ -57,8 +57,12 @@ def _find_me():
 
 
 def natural_sorted(l):
-    convert = lambda text: int(text) if text.isdigit() else text.lower()
-    natural_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    def convert(text):
+        int(text) if text.isdigit() else text.lower()
+
+    def natural_key(key):
+        [convert(c) for c in re.split('([0-9]+)', key)]
+
     return sorted(l, key=natural_key)
 
 
@@ -451,10 +455,10 @@ def _do_test():
     print "Log file (foo): %s" % __pform.log_file("foo")
     print "Serial ports: %s" % __pform.list_serial_ports()
     print "OS Version: %s" % __pform.os_version_string()
-    #__pform.open_text_file("d-rats.py")
+    # __pform.open_text_file("d-rats.py")
 
-    #print "Open file: %s" % __pform.gui_open_file()
-    #print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
+    # print "Open file: %s" % __pform.gui_open_file()
+    # print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
     print "Open folder: %s" % __pform.gui_select_dir("/tmp")
 
 if __name__ == "__main__":

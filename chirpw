@@ -20,16 +20,16 @@ import os
 from chirp import logger
 from chirp import elib_intl
 from chirp import platform
+from chirp import *
 from chirpui import config
 
-# Hack to setup environment
-platform.get_platform()
 
 import sys
 import os
 import locale
 import gettext
 import argparse
+
 
 execpath = platform.get_platform().executable_path()
 localepath = os.path.abspath(os.path.join(execpath, "locale"))
@@ -77,8 +77,6 @@ gettext.textdomain("CHIRP")
 lang = gettext.translation("CHIRP", localepath, languages=langs,
                            fallback=True)
 
-import gtk
-
 
 # Python <2.6 does not have str.format(), which chirp uses to make translation
 # strings nicer. So, instead of installing the gettext standard "_()" function,
@@ -111,9 +109,6 @@ else:
     # Python >=2.6, use normal gettext behavior
     lang.install()
 
-from chirp import *
-from chirpui import mainapp, config
-
 parser = argparse.ArgumentParser()
 parser.add_argument("files", metavar="file", nargs='*', help="File to open")
 logger.add_version_argument(parser)
@@ -124,7 +119,10 @@ args = parser.parse_args()
 
 logger.handle_options(args)
 
-a = mainapp.ChirpMain()
+a = None
+if True:
+    from chirpui import mainapp
+    a = mainapp.ChirpMain()
 
 for i in args.files:
     print "Opening %s" % i
@@ -135,10 +133,12 @@ a.show()
 if args.profile:
     import cProfile
     import pstats
+    import gtk
     cProfile.run("gtk.main()", "chirpw.stats")
     p = pstats.Stats("chirpw.stats")
     p.sort_stats("cumulative").print_stats(10)
 else:
+    import gtk
     gtk.main()
 
 if config._CONFIG:

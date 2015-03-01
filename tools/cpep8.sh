@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs cpep.py with the proper verion of the pep8 library.
 
-PEP8_VERSION="1.4.6"
+PEP8_VERSION="1.6.2"
 
 TOOLS_DIR="$(dirname $0)"
 VENV="${TMPDIR:-${TOOLS_DIR}}/cpep8.venv"

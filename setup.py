@@ -84,7 +84,7 @@ def macos_build():
 
     EXEC = 'bash ./build/macos/make_pango.sh ' + \
            '/opt/local dist/chirp-%s.app' % CHIRP_VERSION
-    #print "exec string: %s" % EXEC
+    # print "exec string: %s" % EXEC
     os.system(EXEC)
 
 
@@ -95,7 +95,7 @@ def default_build():
     os.system("make -C locale clean all")
 
     desktop_files = glob("share/*.desktop")
-    #form_files = glob("forms/*.x?l")
+    # form_files = glob("forms/*.x?l")
     image_files = glob("images/*")
     _locale_files = glob("locale/*/LC_MESSAGES/CHIRP.mo")
     stock_configs = glob("stock_configs/*")

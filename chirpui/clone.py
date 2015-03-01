@@ -60,7 +60,7 @@ class CloneSettingsDialog(gtk.Dialog):
                 port = ports[0]
             else:
                 port = ""
-            if not port in ports:
+            if port not in ports:
                 ports.insert(0, port)
 
         return miscwidgets.make_choice(ports, True, port)

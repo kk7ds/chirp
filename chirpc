@@ -40,9 +40,6 @@ def fail_missing_mmap():
 
 
 class ToneAction(argparse.Action):
-#    def __init__(self, **kwargs):
-#        super(ToneAction, self).__init__(**kwargs)
-
     def __call__(self, parser, namespace, value, option_string=None):
         if value in chirp_common.TONES:
             raise argparse.ArgumentError("Invalid tone valeu: %.1f" % value)
@@ -296,12 +293,12 @@ if __name__ == "__main__":
         print mem
 
     if options.download_mmap:
-        #isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
+        # isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
         radio.sync_in()
         radio.save_mmap(options.mmap)
 
     if options.upload_mmap:
-        #isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
+        # isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
         radio.load_mmap(options.mmap)
         if radio.sync_out():
             print "Clone successful"

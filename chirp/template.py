@@ -109,8 +109,8 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
 
         mem.number = number                 # Set the memory number
-        mem.freq = int(_mem.freq)           # Convert your low-level frequency
-                                            # to Hertz
+        # Convert your low-level frequency to Hertz
+        mem.freq = int(_mem.freq)
         mem.name = str(_mem.name).rstrip()  # Set the alpha tag
 
         # We'll consider any blank (i.e. 0MHz frequency) to be empty
@@ -125,6 +125,6 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number]
 
-        _mem.freq = mem.freq               # Convert to low-level frequency
-                                           # representation
+        # Convert to low-level frequency representation
+        _mem.freq = mem.freq
         _mem.name = mem.name.ljust(8)[:8]  # Store the alpha tag
