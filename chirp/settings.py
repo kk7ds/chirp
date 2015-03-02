@@ -15,13 +15,16 @@
 
 from chirp import chirp_common
 
+
 class InvalidValueError(Exception):
     """An invalid value was specified for a given setting"""
     pass
 
+
 class InternalError(Exception):
     """A driver provided an invalid settings object structure"""
     pass
+
 
 class RadioSettingValue:
     """Base class for a single radio setting"""
@@ -49,7 +52,7 @@ class RadioSettingValue:
         if not self.get_mutable():
             raise InvalidValueError("This value is not mutable")
 
-        if self._current != None and value != self._current:
+        if self._current is not None and value != self._current:
             self._has_changed = True
         self._current = self._validate_callback(value)
 
@@ -62,6 +65,7 @@ class RadioSettingValue:
 
     def __str__(self):
         return str(self.get_value())
+
 
 class RadioSettingValueInteger(RadioSettingValue):
     """An integer setting"""
@@ -78,9 +82,8 @@ class RadioSettingValueInteger(RadioSettingValue):
         except:
             raise InvalidValueError("An integer is required")
         if value > self._max or value < self._min:
-            raise InvalidValueError("Value %i not in range %i-%i" % (value,
-                                                                     self._min,
-                                                                     self._max))
+            raise InvalidValueError("Value %i not in range %i-%i" %
+                                    (value, self._min, self._max))
         RadioSettingValue.set_value(self, value)
 
     def get_min(self):
@@ -94,6 +97,7 @@ class RadioSettingValueInteger(RadioSettingValue):
     def get_step(self):
         """Returns the step increment"""
         return self._step
+
 
 class RadioSettingValueFloat(RadioSettingValue):
     """A floating-point setting"""
@@ -122,7 +126,7 @@ class RadioSettingValueFloat(RadioSettingValue):
             raise InvalidValueError("Value %s not in range %s-%s" % (
                     self.format(value),
                     self.format(self._min), self.format(self._max)))
-        
+
         # FIXME: honor resolution
 
         RadioSettingValue.set_value(self, value)
@@ -133,6 +137,7 @@ class RadioSettingValueFloat(RadioSettingValue):
 
     def get_max(self):
         """Returns the maximum allowed value"""
+
 
 class RadioSettingValueBoolean(RadioSettingValue):
     """A boolean setting"""
@@ -150,6 +155,7 @@ class RadioSettingValueBoolean(RadioSettingValue):
     def __str__(self):
         return str(bool(self.get_value()))
 
+
 class RadioSettingValueList(RadioSettingValue):
     """A list-of-strings setting"""
     def __init__(self, options, current):
@@ -158,7 +164,7 @@ class RadioSettingValueList(RadioSettingValue):
         self.set_value(current)
 
     def set_value(self, value):
-        if not value in self._options:
+        if value not in self._options:
             raise InvalidValueError("%s is not valid for this setting" % value)
         RadioSettingValue.set_value(self, value)
 
@@ -168,6 +174,7 @@ class RadioSettingValueList(RadioSettingValue):
 
     def __trunc__(self):
         return self._options.index(self._current)
+
 
 class RadioSettingValueString(RadioSettingValue):
     """A string setting"""
@@ -186,8 +193,8 @@ class RadioSettingValueString(RadioSettingValue):
 
     def set_value(self, value):
         if len(value) < self._minlength or len(value) > self._maxlength:
-            raise InvalidValueError("Value must be between %i and %i chars" % (\
-                    self._minlength, self._maxlength))
+            raise InvalidValueError("Value must be between %i and %i chars" %
+                                    (self._minlength, self._maxlength))
         if self._autopad:
             value = value.ljust(self._maxlength)
         for char in value:
@@ -204,6 +211,7 @@ class RadioSettings(list):
     def __init__(self, *groups):
         list.__init__(self, groups)
 
+
 class RadioSettingGroup(object):
     """A group of settings"""
     def _validate(self, element):
@@ -212,12 +220,12 @@ class RadioSettingGroup(object):
             raise InternalError("Incorrect type %s" % type(element))
 
     def __init__(self, name, shortname, *elements):
-        self._name = name           # Setting identifier
-        self._shortname = shortname # Short human-readable name/description
-        self.__doc__ = name         # Longer explanation/documentation
+        self._name = name            # Setting identifier
+        self._shortname = shortname  # Short human-readable name/description
+        self.__doc__ = name          # Longer explanation/documentation
         self._elements = {}
         self._element_order = []
-        
+
         for element in elements:
             self._validate(element)
             self.append(element)
@@ -250,16 +258,19 @@ class RadioSettingGroup(object):
     def __iter__(self):
         class RSGIterator:
             """Iterator for a RadioSettingGroup"""
+
             def __init__(self, rsg):
                 self.__rsg = rsg
                 self.__i = 0
+
             def __iter__(self):
                 return self
+
             def next(self):
                 """Next Iterator Interface"""
                 if self.__i >= len(self.__rsg.keys()):
                     raise StopIteration()
-                e =  self.__rsg[self.__rsg.keys()[self.__i]]
+                e = self.__rsg[self.__rsg.keys()[self.__i]]
                 self.__i += 1
                 return e
         return RSGIterator(self)
@@ -290,6 +301,7 @@ class RadioSettingGroup(object):
         """Returns the list of elements"""
         return [self._elements[name] for name in self._element_order]
 
+
 class RadioSetting(RadioSettingGroup):
     """A single setting, which could be an array of items like a group"""
     def __init__(self, *args):
@@ -311,7 +323,8 @@ class RadioSetting(RadioSettingGroup):
             raise InternalError("Incorrect type")
 
     def changed(self):
-        """Returns True if any of the elements in the group have been changed"""
+        """Returns True if any of the elements
+        in the group have been changed"""
         for element in self._elements.values():
             if element.changed():
                 return True
@@ -341,7 +354,7 @@ class RadioSetting(RadioSettingGroup):
                 raise InternalError("Setting %s is not a scalar" % self._name)
         else:
             self.__dict__[name] = value
-            
+
     # List interface
 
     def append(self, value):
@@ -357,8 +370,7 @@ class RadioSetting(RadioSettingGroup):
     def __setitem__(self, name, value):
         if not isinstance(name, int):
             raise IndexError("Index `%s' is not an integer" % name)
-        if self._elements.has_key(name):
+        if name in self._elements:
             self._elements[name].set_value(value)
         else:
             self._elements[name] = value
-

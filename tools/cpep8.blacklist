@@ -47,7 +47,6 @@
 ./chirp/leixen.py
 ./chirp/puxing.py
 ./chirp/rfinder.py
-./chirp/settings.py
 ./chirp/th9800.py
 ./chirp/th_uv3r.py
 ./chirp/th_uv3r25.py
