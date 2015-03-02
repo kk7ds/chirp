@@ -5,11 +5,6 @@
 ./chirp/alinco.py
 ./chirp/anytone.py
 ./chirp/ap510.py
-./chirp/bandplan_au.py
-./chirp/bandplan_iaru_r1.py
-./chirp/bandplan_iaru_r2.py
-./chirp/bandplan_iaru_r3.py
-./chirp/bandplan_na.py
 ./chirp/baofeng_uv3r.py
 ./chirp/bitwise.py
 ./chirp/bjuv55.py

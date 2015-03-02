@@ -20,9 +20,10 @@ from chirp import bandplan, bandplan_iaru_r3
 SHORTNAME = "australia"
 
 DESC = {
-  "name": "Australian Amateur Band Plan",
+  "name":    "Australian Amateur Band Plan",
   "updated": "April 2010",
-  "url": "http://www.wia.org.au/members/bandplans/data/documents/Australian%20Band%20Plans%20100404.pdf",
+  "url":     "http://www.wia.org.au/members/bandplans/data"
+             "/documents/Australian%20Band%20Plans%20100404.pdf",
 }
 
 BANDS_10M = (

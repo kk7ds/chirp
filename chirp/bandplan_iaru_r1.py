@@ -18,8 +18,9 @@ from chirp import bandplan
 SHORTNAME = "iaru_r1"
 
 DESC = {
-  "name": "IARU Region 1 (Europe, Africa, Middle East and Northern Asia)",
-  "url": "http://iaru-r1.org/index.php?option=com_content&view=article&id=175&Itemid=127",
+  "name":    "IARU Region 1 (Europe, Africa, Middle East and Northern Asia)",
+  "url":     "http://iaru-r1.org/index.php?option=com_content"
+             "&view=article&id=175&Itemid=127",
   "updated": "General Conference Sun City 2011",
 }
 
@@ -60,8 +61,8 @@ BANDS_40M = (
   bandplan.Band((7053000, 7060000), "All modes, digimodes"),
   bandplan.Band((7060000, 7100000), "All modes, SSB contest preferred",
                 mode="LSB"),
-  bandplan.Band((7100000, 7130000), "All modes, R1 Emergency Center Of Activity",
-                mode="LSB"),
+  bandplan.Band((7100000, 7130000),
+                "All modes, R1 Emergency Center Of Activity", mode="LSB"),
   bandplan.Band((7130000, 7200000), "All modes, SSB contest preferred",
                 mode="LSB"),
   bandplan.Band((7175000, 7200000), "All modes, SSB DX preferred", mode="LSB"),
@@ -82,8 +83,8 @@ BANDS_20M = (
   bandplan.Band((14101000, 14112000), "All narrow band modes, digimodes"),
   bandplan.Band((14125000, 14350000), "All modes, SSB contest preferred",
                 mode="USB"),
-  bandplan.Band((14300000, 14350000), "All modes, Global Emergency center of activity",
-                mode="USB"),
+  bandplan.Band((14300000, 14350000),
+                "All modes, Global Emergency center of activity", mode="USB"),
 )
 
 BANDS_17M = (
@@ -99,7 +100,8 @@ BANDS_15M = (
   bandplan.Band((21000000, 21450000), "15 Meter Band"),
   bandplan.Band((21000000, 21070000), "CW", mode="CW"),
   bandplan.Band((21070000, 21090000), "All narrow band modes, digimodes"),
-  bandplan.Band((21090000, 21110000), "All narrow band, digimodes, unattended"),
+  bandplan.Band((21090000, 21110000),
+                "All narrow band, digimodes, unattended"),
   bandplan.Band((21110000, 21120000), "All modes, digimodes, unattended"),
   bandplan.Band((21120000, 21149000), "All narrow band modes"),
   bandplan.Band((21149000, 21151000), "IBP, exclusively for beacons",
@@ -120,7 +122,8 @@ BANDS_10M = (
   bandplan.Band((28000000, 29700000), "10 Meter Band"),
   bandplan.Band((28000000, 28070000), "CW", mode="CW"),
   bandplan.Band((28070000, 28120000), "All narrow band modes, digimodes"),
-  bandplan.Band((28120000, 28150000), "All narrow band, digimodes, unattended"),
+  bandplan.Band((28120000, 28150000),
+                "All narrow band, digimodes, unattended"),
   bandplan.Band((28150000, 28190000), "All narrow band modes"),
   bandplan.Band((28190000, 28199000), "Beacons", mode="CW"),
   bandplan.Band((28199000, 28201000), "IBP, exclusively for beacons",
