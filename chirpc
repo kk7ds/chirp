@@ -30,12 +30,12 @@ RADIOS = directory.DRV_TO_RADIO
 
 
 def fail_unsupported():
-    print "Operation not supported by selected radio"
+    LOG.error("Operation not supported by selected radio")
     sys.exit(1)
 
 
 def fail_missing_mmap():
-    print "mmap-only operation requires specification of an mmap file"
+    LOG.error("mmap-only operation requires specification of an mmap file")
     sys.exit(1)
 
 
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         else:
             s = options.radio + ".img"
     else:
-        print "opening %s at %i" % (options.serial, rclass.BAUD_RATE)
+        LOG.info("opening %s at %i" % (options.serial, rclass.BAUD_RATE))
         s = serial.Serial(port=options.serial,
                           baudrate=rclass.BAUD_RATE,
                           timeout=0.5)
@@ -218,8 +218,8 @@ if __name__ == "__main__":
         if options.set_mem_dup != "+" and \
                 options.set_mem_dup != "-" and \
                 options.set_mem_dup != "":
-            print "Invalid duplex value `%s'" % options.set_mem_dup
-            print "Valid values are: '+', '-', ''"
+            LOG.error("Invalid duplex value `%s'" % options.set_mem_dup)
+            LOG.error("Valid values are: '+', '-', ''")
             sys.exit(1)
         else:
             _dup = options.set_mem_dup
@@ -227,9 +227,9 @@ if __name__ == "__main__":
         _dup = None
 
     if options.set_mem_mode:
-        print "Set mode: %s" % options.set_mem_mode
+        LOG.info("Set mode: %s" % options.set_mem_mode)
         if options.set_mem_mode not in chirp_common.MODES:
-            print "Invalid mode `%s'"
+            LOG.error("Invalid mode `%s'")
             sys.exit(1)
         else:
             _mode = options.set_mem_mode
@@ -303,7 +303,7 @@ if __name__ == "__main__":
         if radio.sync_out():
             print "Clone successful"
         else:
-            print "Clone failed"
+            LOG.error("Clone failed")
 
     if options.mmap and isinstance(radio, chirp_common.CloneModeRadio):
         radio.save_mmap(options.mmap)

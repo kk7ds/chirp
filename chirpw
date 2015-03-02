@@ -29,6 +29,9 @@ import os
 import locale
 import gettext
 import argparse
+import logging
+
+LOG = logging.getLogger("chirpw")
 
 
 execpath = platform.get_platform().executable_path()
@@ -51,10 +54,10 @@ if manual_language and manual_language != "Auto":
                   "French":           "fr",
                   }
     try:
-        print lang_codes[manual_language]
+        LOG.info("Language: %s", lang_codes[manual_language])
         langs = [lang_codes[manual_language]]
     except KeyError:
-        print "Unsupported language `%s'" % manual_language
+        LOG.error("Unsupported language `%s'" % manual_language)
 else:
     lc, encoding = locale.getdefaultlocale()
     if (lc):
@@ -125,7 +128,7 @@ if True:
     a = mainapp.ChirpMain()
 
 for i in args.files:
-    print "Opening %s" % i
+    LOG.info("Opening %s", i)
     a.do_open(i)
 
 a.show()
