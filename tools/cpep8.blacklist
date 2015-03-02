@@ -71,7 +71,6 @@
 ./chirp/wouxun_common.py
 ./chirp/yaesu_clone.py
 ./chirpui/fips.py
-./chirpui/miscwidgets.py
 ./chirpui/reporting.py
 ./tools/bitdiff.py
 ./tools/img2thd72.py

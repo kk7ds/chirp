@@ -21,17 +21,18 @@ import os
 
 from chirp import platform
 
+
 class KeyedListWidget(gtk.HBox):
     __gsignals__ = {
-        "item-selected" : (gobject.SIGNAL_RUN_LAST,
-                           gobject.TYPE_NONE,
-                           (gobject.TYPE_STRING,)),
-        "item-toggled" : (gobject.SIGNAL_ACTION,
-                          gobject.TYPE_BOOLEAN,
-                          (gobject.TYPE_STRING, gobject.TYPE_BOOLEAN)),
-        "item-set" : (gobject.SIGNAL_ACTION,
-                      gobject.TYPE_BOOLEAN,
-                      (gobject.TYPE_STRING,)),
+        "item-selected": (gobject.SIGNAL_RUN_LAST,
+                          gobject.TYPE_NONE,
+                          (gobject.TYPE_STRING,)),
+        "item-toggled": (gobject.SIGNAL_ACTION,
+                         gobject.TYPE_BOOLEAN,
+                         (gobject.TYPE_STRING, gobject.TYPE_BOOLEAN)),
+        "item-set": (gobject.SIGNAL_ACTION,
+                     gobject.TYPE_BOOLEAN,
+                     (gobject.TYPE_STRING,)),
         }
 
     def _toggle(self, rend, path, colnum):
@@ -60,13 +61,14 @@ class KeyedListWidget(gtk.HBox):
 
     def _make_view(self):
         colnum = -1
-    
+
         for typ, cap in self.columns:
             colnum += 1
             if colnum == 0:
-                continue # Key column
-    
-            if typ in [gobject.TYPE_STRING, gobject.TYPE_INT, gobject.TYPE_FLOAT]:
+                continue  # Key column
+
+            if typ in [gobject.TYPE_STRING, gobject.TYPE_INT,
+                       gobject.TYPE_FLOAT]:
                 rend = gtk.CellRendererText()
                 rend.set_property("ellipsize", pango.ELLIPSIZE_END)
                 column = gtk.TreeViewColumn(cap, rend, text=colnum)
@@ -76,10 +78,10 @@ class KeyedListWidget(gtk.HBox):
                 column = gtk.TreeViewColumn(cap, rend, active=colnum)
             else:
                 raise Exception("Unsupported type %s" % typ)
-            
+
             column.set_sort_column_id(colnum)
             self.__view.append_column(column)
-    
+
         self.__view.connect("button_press_event", self._mouse)
 
     def set_item(self, key, *values):
@@ -91,11 +93,11 @@ class KeyedListWidget(gtk.HBox):
                 self.__store.remove(iter)
                 return
             iter = self.__store.iter_next(iter)
-    
+
         self.__store.append(row=(key,) + values)
 
         self.emit("item-set", key)
-    
+
     def get_item(self, key):
         iter = self.__store.get_iter_first()
         while iter:
@@ -103,9 +105,9 @@ class KeyedListWidget(gtk.HBox):
             if vals[0] == key:
                 return vals
             iter = self.__store.iter_next(iter)
-    
+
         return None
-    
+
     def del_item(self, key):
         iter = self.__store.get_iter_first()
         while iter:
@@ -115,12 +117,12 @@ class KeyedListWidget(gtk.HBox):
                 return True
 
             iter = self.__store.iter_next(iter)
-    
+
         return False
-    
+
     def has_item(self, key):
         return self.get_item(key) is not None
-    
+
     def get_selected(self):
         try:
             (store, iter) = self.__view.get_selection().get_selected()
@@ -145,7 +147,7 @@ class KeyedListWidget(gtk.HBox):
             iter = self.__store.iter_next(iter)
 
         return False
-        
+
     def get_keys(self):
         keys = []
         iter = self.__store.get_iter_first()
@@ -158,16 +160,16 @@ class KeyedListWidget(gtk.HBox):
 
     def __init__(self, columns):
         gtk.HBox.__init__(self, True, 0)
-    
+
         self.columns = columns
-    
-        types = tuple([x for x,y in columns])
-    
+
+        types = tuple([x for x, y in columns])
+
         self.__store = gtk.ListStore(*types)
         self.__view = gtk.TreeView(self.__store)
-    
+
         self.pack_start(self.__view, 1, 1, 1)
-    
+
         self.__toggle_connected = False
 
         self._make_view()
@@ -176,7 +178,7 @@ class KeyedListWidget(gtk.HBox):
     def connect(self, signame, *args):
         if signame == "item-toggled":
             self.__toggle_connected = True
-        
+
         gtk.HBox.connect(self, signame, *args)
 
     def set_editable(self, column, is_editable):
@@ -194,14 +196,15 @@ class KeyedListWidget(gtk.HBox):
     def get_renderer(self, colnum):
         return self.__view.get_column(colnum).get_cell_renderers()[0]
 
+
 class ListWidget(gtk.HBox):
     __gsignals__ = {
-        "click-on-list" : (gobject.SIGNAL_RUN_LAST,
-                           gobject.TYPE_NONE,
-                           (gtk.TreeView, gtk.gdk.Event)),
-        "item-toggled" : (gobject.SIGNAL_RUN_LAST,
+        "click-on-list": (gobject.SIGNAL_RUN_LAST,
                           gobject.TYPE_NONE,
-                          (gobject.TYPE_PYOBJECT,)),
+                          (gtk.TreeView, gtk.gdk.Event)),
+        "item-toggled": (gobject.SIGNAL_RUN_LAST,
+                         gobject.TYPE_NONE,
+                         (gobject.TYPE_PYOBJECT,)),
         }
 
     store_type = gtk.ListStore
@@ -251,7 +254,7 @@ class ListWidget(gtk.HBox):
         # pylint: disable-msg=W0612
         col_types = tuple([x for x, y in columns])
         self._ncols = len(col_types)
-        
+
         self._store = self.store_type(*col_types)
         self._view = None
         self.make_view(columns)
@@ -337,6 +340,7 @@ class ListWidget(gtk.HBox):
 
         for i in lst:
             self.add_item(*i)
+
 
 class TreeWidget(ListWidget):
     store_type = gtk.TreeStore
@@ -452,6 +456,7 @@ class TreeWidget(ListWidget):
         else:
             raise Exception("Item not found")
 
+
 class ProgressDialog(gtk.Window):
     def __init__(self, title, parent=None):
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
@@ -471,7 +476,7 @@ class ProgressDialog(gtk.Window):
 
         self.pbar = gtk.ProgressBar()
         self.pbar.show()
-        
+
         vbox.pack_start(self.label, 0, 0, 0)
         vbox.pack_start(self.pbar, 0, 0, 0)
 
@@ -492,6 +497,7 @@ class ProgressDialog(gtk.Window):
 
         while gtk.events_pending():
             gtk.main_iteration_do(False)
+
 
 class LatLonEntry(gtk.Entry):
     def __init__(self, *args):
@@ -526,7 +532,7 @@ class LatLonEntry(gtk.Entry):
     def parse_dm(self, string):
         string = string.strip()
         string = string.replace('  ', ' ')
-        
+
         (_degrees, _minutes) = string.split(' ', 2)
 
         degrees = int(_degrees)
@@ -565,7 +571,7 @@ class LatLonEntry(gtk.Entry):
         degrees = int(deg)
         minutes = int(mns)
         seconds = float(sec)
-        
+
         return degrees + (minutes / 60.0) + (seconds / 3600.0)
 
     def value(self):
@@ -591,6 +597,7 @@ class LatLonEntry(gtk.Entry):
         except:
             return False
 
+
 class YesNoDialog(gtk.Dialog):
     def __init__(self, title="", parent=None, buttons=None):
         gtk.Dialog.__init__(self, title=title, parent=parent, buttons=buttons)
@@ -603,6 +610,7 @@ class YesNoDialog(gtk.Dialog):
 
     def set_text(self, text):
         self._label.set_text(text)
+
 
 def make_choice(options, editable=True, default=None):
     if editable:
@@ -622,9 +630,10 @@ def make_choice(options, editable=True, default=None):
 
     return sel
 
+
 class FilenameBox(gtk.HBox):
     __gsignals__ = {
-        "filename-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "filename-changed": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
 
     def do_browse(self, _, dir):
@@ -663,7 +672,8 @@ class FilenameBox(gtk.HBox):
         self.filename.set_text(fn)
 
     def get_filename(self):
-        return self.filename.get_text()    
+        return self.filename.get_text()
+
 
 def make_pixbuf_choice(options, default=None):
     store = gtk.ListStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING)
@@ -689,14 +699,15 @@ def make_pixbuf_choice(options, default=None):
 
     return box
 
+
 def test():
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
     lst = ListWidget([(gobject.TYPE_STRING, "Foo"),
-                    (gobject.TYPE_BOOLEAN, "Bar")])
+                      (gobject.TYPE_BOOLEAN, "Bar")])
 
     lst.add_item("Test1", True)
     lst.set_values([("Test2", True), ("Test3", False)])
-    
+
     lst.show()
     win.add(lst)
     win.show()
@@ -714,10 +725,8 @@ def test():
     lst = TreeWidget([(gobject.TYPE_STRING, "Id"),
                       (gobject.TYPE_STRING, "Value")],
                      1)
-    #l.add_item(None, "Foo", "Bar")
-    #l.add_item("Foo", "Bar", "Baz")
-    lst.set_values({"Fruit" : [("Apple", "Red"), ("Orange", "Orange")],
-                    "Pizza" : [("Cheese", "Simple"), ("Pepperoni", "Yummy")]})
+    lst.set_values({"Fruit": [("Apple", "Red"), ("Orange", "Orange")],
+                    "Pizza": [("Cheese", "Simple"), ("Pepperoni", "Yummy")]})
     lst.add_item("Fruit", "Bananna", "Yellow")
     lst.show()
     win3.add(lst)
@@ -738,6 +747,7 @@ def test():
         pass
 
     print lst.get_values()
+
 
 if __name__ == "__main__":
     test()
