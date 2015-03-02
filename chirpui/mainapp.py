@@ -22,9 +22,17 @@ from glob import glob
 import shutil
 import time
 import logging
-
 import gtk
 import gobject
+
+from chirpui import inputdialog, common
+from chirp import platform, generic_xml, generic_csv, directory, util
+from chirp import ic9x, kenwood_live, idrp, vx7, vx5, vx6
+from chirp import CHIRP_VERSION, chirp_common, detect, errors
+from chirp import icf, ic9x_icf
+from chirpui import editorset, clone, miscwidgets, config, reporting, fips
+from chirpui import bandplans
+
 gobject.threads_init()
 
 LOG = logging.getLogger(__name__)
@@ -33,33 +41,28 @@ if __name__ == "__main__":
     import sys
     sys.path.insert(0, "..")
 
-from chirpui import inputdialog, common
 try:
     import serial
-except ImportError,e:
+except ImportError, e:
     common.log_exception()
     common.show_error("\nThe Pyserial module is not installed!")
-from chirp import platform, generic_xml, generic_csv, directory, util
-from chirp import ic9x, kenwood_live, idrp, vx7, vx5, vx6
-from chirp import CHIRP_VERSION, chirp_common, detect, errors
-from chirp import icf, ic9x_icf
-from chirpui import editorset, clone, miscwidgets, config, reporting, fips
-from chirpui import bandplans
+
 
 CONF = config.get()
 
 KEEP_RECENT = 8
 
 RB_BANDS = {
-    "--All--"                 : 0,
-    "10 meters (29MHz)"       : 29,
-    "6 meters (54MHz)"        : 5,
-    "2 meters (144MHz)"       : 14,
-    "1.25 meters (220MHz)"    : 22,
-    "70 centimeters (440MHz)" : 4,
-    "33 centimeters (900MHz)" : 9,
-    "23 centimeters (1.2GHz)" : 12,
+    "--All--":                  0,
+    "10 meters (29MHz)":        29,
+    "6 meters (54MHz)":         5,
+    "2 meters (144MHz)":        14,
+    "1.25 meters (220MHz)":     22,
+    "70 centimeters (440MHz)":  4,
+    "33 centimeters (900MHz)":  9,
+    "23 centimeters (1.2GHz)":  12,
 }
+
 
 def key_bands(band):
     if band.startswith("-"):
@@ -70,8 +73,10 @@ def key_bands(band):
 
     return 100000 - (float(amount) * scale)
 
+
 class ModifiedError(Exception):
     pass
+
 
 class ChirpMain(gtk.Window):
     def get_current_editorset(self):
@@ -112,7 +117,7 @@ class ChirpMain(gtk.Window):
 
         for i in ["cancelq"]:
             set_action_sensitive(i, eset is not None and not save_sens)
-        
+
         for i in ["export", "close", "columns", "irbook", "irfinder",
                   "move_up", "move_dn", "exchange", "iradioreference",
                   "cut", "copy", "paste", "delete", "viewdeveloper",
@@ -129,7 +134,7 @@ class ChirpMain(gtk.Window):
 
     def ev_editor_selected(self, editorset, editortype):
         mappings = {
-            "memedit" : ["view", "edit"],
+            "memedit": ["view", "edit"],
             }
 
         for _editortype, actions in mappings.items():
@@ -159,8 +164,9 @@ class ChirpMain(gtk.Window):
 
         label = gtk.Label("")
         label.set_markup("<b>-1</b> for either Mem # does a full-file hex " +
-                "dump with diffs highlighted.\n" +
-                "<b>-2</b> for first Mem # shows <b>only</b> the diffs.")
+                         "dump with diffs highlighted.\n" +
+                         "<b>-2</b> for first Mem # shows " +
+                         "<b>only</b> the diffs.")
         d.vbox.pack_start(label, True, True, 0)
         label.show()
 
@@ -206,9 +212,9 @@ class ChirpMain(gtk.Window):
 
         print "Selected %s@%i and %s@%i" % (sel_a, sel_chan_a,
                                             sel_b, sel_chan_b)
-        name_a = os.path.basename (sel_a)
+        name_a = os.path.basename(sel_a)
         name_a = name_a[:name_a.rindex(")")]
-        name_b = os.path.basename (sel_b)
+        name_b = os.path.basename(sel_b)
         name_b = name_b[:name_b.rindex(")")]
         diffwintitle = "%s@%i  diff  %s@%i" % (
             name_a, sel_chan_a, name_b, sel_chan_b)
@@ -223,14 +229,16 @@ class ChirpMain(gtk.Window):
 
         def _get_mem_b(mem_a):
             # Step 2: Get memory b
-            job = common.RadioJob(_show_diff, "get_raw_memory", int(sel_chan_b))
+            job = common.RadioJob(_show_diff, "get_raw_memory",
+                                  int(sel_chan_b))
             job.set_cb_args(mem_a)
             eset_b.rthread.submit(job)
-            
+
         if sel_chan_a >= 0 and sel_chan_b >= 0:
             # Diff numbered memory
             # Step 1: Get memory a
-            job = common.RadioJob(_get_mem_b, "get_raw_memory", int(sel_chan_a))
+            job = common.RadioJob(_get_mem_b, "get_raw_memory",
+                                  int(sel_chan_a))
             eset_a.rthread.submit(job)
         elif isinstance(eset_a.rthread.radio, chirp_common.CloneModeRadio) and\
                 isinstance(eset_b.rthread.radio, chirp_common.CloneModeRadio):
@@ -249,7 +257,7 @@ class ChirpMain(gtk.Window):
             else:
                 diffsonly = False
             common.show_diff_blob(diffwintitle,
-                    common.simple_diff(a, b, diffsonly))
+                                  common.simple_diff(a, b, diffsonly))
         else:
             common.show_error("Cannot diff whole live-mode radios!")
 
@@ -271,7 +279,11 @@ class ChirpMain(gtk.Window):
 
         lab = gtk.Label("""<b><big>Unable to detect model!</big></b>
 
-If you think that it is valid, you can select a radio model below to force an open attempt. If selecting the model manually works, please file a bug on the website and attach your image. If selecting the model does not work, it is likely that you are trying to open some other type of file.
+If you think that it is valid, you can select a radio model below to
+force an open attempt. If selecting the model manually works, please
+file a bug on the website and attach your image. If selecting the model
+does not work, it is likely that you are trying to open some other type
+of file.
 """)
 
         lab.set_justify(gtk.JUSTIFY_FILL)
@@ -288,7 +300,7 @@ If you think that it is valid, you can select a radio model below to force an op
         d.vbox.set_spacing(5)
         choice.show()
         d.set_default_size(400, 200)
-        #d.set_resizable(False)
+        # d.set_resizable(False)
         r = d.run()
         d.destroy()
         if r != gtk.RESPONSE_OK:
@@ -318,7 +330,7 @@ If you think that it is valid, you can select a radio model below to force an op
         self.record_recent_file(fname)
 
         if icf.is_icf_file(fname):
-            a = common.ask_yesno_question(\
+            a = common.ask_yesno_question(
                 _("ICF files cannot be edited, only displayed or imported "
                   "into another file. Open in read-only mode?"),
                 self)
@@ -378,8 +390,8 @@ If you think that it is valid, you can select a radio model below to force an op
                 "to the radio. Because of this, you cannot perform the "
                 "<u>Save</u> or <u>Upload</u> operations. If you wish to "
                 "edit the contents offline, please <u>Export</u> to a CSV "
-                "file, using the <b>File menu</b>.").format(vendor=radio.VENDOR,
-                                                            model=radio.MODEL)
+                "file, using the <b>File menu</b>.")
+        msg = msg.format(vendor=radio.VENDOR, model=radio.MODEL)
         d.format_secondary_markup(msg)
 
         again = gtk.CheckButton(_("Don't show this again"))
@@ -416,10 +428,10 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_saveas(self):
         eset = self.get_current_editorset()
 
-        label = _("{vendor} {model} image file").format(\
+        label = _("{vendor} {model} image file").format(
             vendor=eset.radio.VENDOR,
             model=eset.radio.MODEL)
-                                                     
+
         types = [(label + " (*.%s)" % eset.radio.FILE_EXTENSION,
                  eset.radio.FILE_EXTENSION)]
 
@@ -447,7 +459,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
         try:
             eset.save(fname)
-        except Exception,e:
+        except Exception, e:
             d = inputdialog.ExceptionDialog(e)
             d.run()
             d.destroy()
@@ -462,7 +474,7 @@ If you think that it is valid, you can select a radio model below to force an op
             d.run()
             d.destroy()
 
-    def cb_cloneout(self, radio, emsg= None):
+    def cb_cloneout(self, radio, emsg=None):
         radio.pipe.close()
         reporting.report_model_usage(radio, "upload", True)
         if emsg:
@@ -477,7 +489,7 @@ If you think that it is valid, you can select a radio model below to force an op
             if fn:
                 recent.append(fn)
         return recent
-                    
+
     def _set_recent_list(self, recent):
         for fn in recent:
             CONF.set("recent%i" % recent.index(fn), fn, "state")
@@ -493,13 +505,12 @@ If you think that it is valid, you can select a radio model below to force an op
                 self.menu_ag.remove_action(old_action)
 
             file_basename = os.path.basename(fname).replace("_", "__")
-            action = gtk.Action(action_name,
-                                "_%i. %s" % (i+1, file_basename),
-                                _("Open recent file {name}").format(name=fname),
-                                "")
-            action.connect("activate", lambda a,f: self.do_open(f), fname)
+            action = gtk.Action(
+                action_name, "_%i. %s" % (i+1, file_basename),
+                _("Open recent file {name}").format(name=fname), "")
+            action.connect("activate", lambda a, f: self.do_open(f), fname)
             mid = self.menu_uim.new_merge_id()
-            self.menu_uim.add_ui(mid, path, 
+            self.menu_uim.add_ui(mid, path,
                                  action_name, action_name,
                                  gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
@@ -575,13 +586,12 @@ If you think that it is valid, you can select a radio model below to force an op
                                 _("Open stock "
                                   "configuration {name}").format(name=name),
                                 "")
-            action.connect("activate", lambda a,c: self.do_open(c), config)
+            action.connect("activate", lambda a, c: self.do_open(c), config)
             mid = self.menu_uim.new_merge_id()
             mid = self.menu_uim.add_ui(mid, path,
                                        action_name, action_name,
                                        gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
-            
 
         configs = glob(os.path.join(stock_dir, "*.csv"))
         for config in configs:
@@ -619,7 +629,8 @@ If you think that it is valid, you can select a radio model below to force an op
         msg = _("{instructions}").format(instructions=message)
         d.format_secondary_markup(msg)
 
-        again = gtk.CheckButton(_("Don't show instructions for any radio again"))
+        again = gtk.CheckButton(
+            _("Don't show instructions for any radio again"))
         again.show()
         d.vbox.pack_start(again, 0, 0, 0)
         h_button_box = d.vbox.get_children()[2]
@@ -669,7 +680,8 @@ If you think that it is valid, you can select a radio model below to force an op
 
         fn = tempfile.mktemp()
         if isinstance(radio, chirp_common.CloneModeRadio):
-            ct = clone.CloneThread(radio, "in", cb=self.cb_clonein, parent=self)
+            ct = clone.CloneThread(radio, "in", cb=self.cb_clonein,
+                                   parent=self)
             ct.start()
         else:
             self.do_open_live(radio)
@@ -688,7 +700,7 @@ If you think that it is valid, you can select a radio model below to force an op
             return
         prompts = radio.get_prompts()
 
-        if prompts.display_pre_upload_prompt_before_opening_port == True:
+        if prompts.display_pre_upload_prompt_before_opening_port is True:
             print "Opening port after pre_upload prompt."
             self._show_instructions(radio, prompts.pre_upload)
 
@@ -709,7 +721,7 @@ If you think that it is valid, you can select a radio model below to force an op
             d.destroy()
             return
 
-        if prompts.display_pre_upload_prompt_before_opening_port == False:
+        if prompts.display_pre_upload_prompt_before_opening_port is False:
             print "Opening port before pre_upload prompt."
             self._show_instructions(radio, prompts.pre_upload)
 
@@ -728,11 +740,11 @@ If you think that it is valid, you can select a radio model below to force an op
             return False
 
         if eset.is_modified():
-            dlg = miscwidgets.YesNoDialog(title=_("Save Changes?"),
-                                          parent=self,
-                                          buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
-                                                   gtk.STOCK_NO, gtk.RESPONSE_NO,
-                                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            dlg = miscwidgets.YesNoDialog(
+                title=_("Save Changes?"), parent=self,
+                buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
+                         gtk.STOCK_NO, gtk.RESPONSE_NO,
+                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
             dlg.set_text(_("File is modified, save changes before closing?"))
             res = dlg.run()
             dlg.destroy()
@@ -744,7 +756,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
         eset.rthread.stop()
         eset.rthread.join()
-    
+
         eset.prepare_close()
 
         if eset.radio.pipe:
@@ -785,11 +797,11 @@ If you think that it is valid, you can select a radio model below to force an op
     def do_repeaterbook_prompt(self):
         if not CONF.get_bool("has_seen_credit", "repeaterbook"):
             d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
-            d.set_markup("<big><big><b>RepeaterBook</b></big>\r\n" + \
-                             "<i>North American Repeater Directory</i></big>")
-            d.format_secondary_markup("For more information about this " +\
-                                          "free service, please go to\r\n" +\
-                                          "http://www.repeaterbook.com")
+            d.set_markup("<big><big><b>RepeaterBook</b></big>\r\n" +
+                         "<i>North American Repeater Directory</i></big>")
+            d.format_secondary_markup("For more information about this " +
+                                      "free service, please go to\r\n" +
+                                      "http://www.repeaterbook.com")
             d.run()
             d.destroy()
             CONF.set_bool("has_seen_credit", True, "repeaterbook")
@@ -802,19 +814,20 @@ If you think that it is valid, you can select a radio model below to force an op
                 code = int(CONF.get("state", "repeaterbook"))
             except:
                 code = CONF.get("state", "repeaterbook")
-            for k,v in fips.FIPS_STATES.items():
+            for k, v in fips.FIPS_STATES.items():
                 if code == v:
                     default_state = k
                     break
 
             code = CONF.get("county", "repeaterbook")
-            for k,v in fips.FIPS_COUNTIES[fips.FIPS_STATES[default_state]].items():
+            items = fips.FIPS_COUNTIES[fips.FIPS_STATES[default_state]].items()
+            for k, v in items:
                 if code == v:
                     default_county = k
                     break
 
             code = int(CONF.get("band", "repeaterbook"))
-            for k,v in RB_BANDS.items():
+            for k, v in RB_BANDS.items():
                 if code == v:
                     default_band = k
                     break
@@ -823,18 +836,21 @@ If you think that it is valid, you can select a radio model below to force an op
 
         state = miscwidgets.make_choice(sorted(fips.FIPS_STATES.keys()),
                                         False, default_state)
-        county = miscwidgets.make_choice(sorted(fips.FIPS_COUNTIES[fips.FIPS_STATES[default_state]].keys()),
-                                        False, default_county)
+        county = miscwidgets.make_choice(
+            sorted(fips.FIPS_COUNTIES[fips.FIPS_STATES[default_state]].keys()),
+            False, default_county)
         band = miscwidgets.make_choice(sorted(RB_BANDS.keys(), key=key_bands),
                                        False, default_band)
+
         def _changed(box, county):
             state = fips.FIPS_STATES[box.get_active_text()]
             county.get_model().clear()
             for fips_county in sorted(fips.FIPS_COUNTIES[state].keys()):
                 county.append_text(fips_county)
             county.set_active(0)
+
         state.connect("changed", _changed, county)
-        
+
         d = inputdialog.FieldDialog(title=_("RepeaterBook Query"), parent=self)
         d.add_field("State", state)
         d.add_field("County", county)
@@ -866,22 +882,24 @@ If you think that it is valid, you can select a radio model below to force an op
             try:
                 code = CONF.get("state", "repeaterbook")
             except:
-                code = '41' # Oregon default
+                code = '41'  # Oregon default
 
         try:
             county = CONF.get("county", "repeaterbook")
         except:
-            county = '%' # --All-- default
+            county = '%'  # --All-- default
 
         try:
             band = int(CONF.get("band", "repeaterbook"))
         except:
-            band = 14 # 2m default
+            band = 14  # 2m default
 
-        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php?" + \
-            "func=default&state_id=%s&band=%s&freq=%%&band6=%%&loc=%%" + \
+        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php" + \
+            "?func=default&state_id=%s&band=%s&freq=%%&band6=%%&loc=%%" + \
             "&county_id=%s&status_id=%%&features=%%&coverage=%%&use=%%"
-        query = query % (code, band and band or "%%", county and county or "%%")
+        query = query % (code,
+                         band and band or "%%",
+                         county and county or "%%")
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
@@ -1009,16 +1027,12 @@ If you think that it is valid, you can select a radio model below to force an op
             self.do_open_live(radio, read_only=True)
 
     def do_rfinder_prompt(self):
-        fields = {"1Email"    :      (gtk.Entry(),
-                                      lambda x: "@" in x),
-                  "2Password" :      (gtk.Entry(),
-                                      lambda x: x),
-                  "3Latitude" :      (gtk.Entry(),
-                                      lambda x: float(x) < 90 and \
-                                          float(x) > -90),
-                  "4Longitude":      (gtk.Entry(),
-                                      lambda x: float(x) < 180 and \
-                                          float(x) > -180),
+        fields = {"1Email": (gtk.Entry(), lambda x: "@" in x),
+                  "2Password": (gtk.Entry(), lambda x: x),
+                  "3Latitude": (gtk.Entry(),
+                                lambda x: float(x) < 90 and float(x) > -90),
+                  "4Longitude": (gtk.Entry(),
+                                 lambda x: float(x) < 180 and float(x) > -180),
                   "5Range_in_Miles": (gtk.Entry(),
                                       lambda x: int(x) > 0 and int(x) < 5000),
                   }
@@ -1070,7 +1084,9 @@ If you think that it is valid, you can select a radio model below to force an op
 
         if do_import:
             eset = self.get_current_editorset()
-            count = eset.do_import("rfinder://%s/%s/%f/%f/%i" % (email, passwd, lat, lon, miles))
+            rfstr = "rfinder://%s/%s/%f/%f/%i" % \
+                    (email, passwd, lat, lon, miles)
+            count = eset.do_import(rfstr)
         else:
             from chirp import rfinder
             radio = rfinder.RFinderRadio(None)
@@ -1080,9 +1096,9 @@ If you think that it is valid, you can select a radio model below to force an op
         self.window.set_cursor(None)
 
     def do_radioreference_prompt(self):
-        fields = {"1Username"    : (gtk.Entry(), lambda x: x),
-                  "2Password"    : (gtk.Entry(), lambda x: x),
-                  "3Zipcode"     : (gtk.Entry(), lambda x: x),
+        fields = {"1Username":  (gtk.Entry(), lambda x: x),
+                  "2Password":  (gtk.Entry(), lambda x: x),
+                  "3Zipcode":   (gtk.Entry(), lambda x: x),
                   }
 
         d = inputdialog.FieldDialog(title=_("RadioReference.com Query"),
@@ -1131,7 +1147,8 @@ If you think that it is valid, you can select a radio model below to force an op
 
         if do_import:
             eset = self.get_current_editorset()
-            count = eset.do_import("radioreference://%s/%s/%s" % (zipcode, username, passwd))
+            rrstr = "radioreference://%s/%s/%s" % (zipcode, username, passwd)
+            count = eset.do_import(rrstr)
         else:
             try:
                 from chirp import radioreference
@@ -1178,7 +1195,7 @@ If you think that it is valid, you can select a radio model below to force an op
         d = gtk.AboutDialog()
         d.set_transient_for(self)
         import sys
-        verinfo = "GTK %s\nPyGTK %s\nPython %s\n" % ( \
+        verinfo = "GTK %s\nPyGTK %s\nPython %s\n" % (
             ".".join([str(x) for x in gtk.gtk_version]),
             ".".join([str(x) for x in gtk.pygtk_version]),
             sys.version.split()[0])
@@ -1210,7 +1227,7 @@ If you think that it is valid, you can select a radio model below to force an op
                                  os.linesep +
                                  "Portuguese (BR): Crezivando PP7CJ")
         d.set_comments(verinfo)
-        
+
         d.run()
         d.destroy()
 
@@ -1238,12 +1255,13 @@ If you think that it is valid, you can select a radio model below to force an op
         d.set_size_request(-1, 300)
         d.set_resizable(False)
 
-        label = gtk.Label(_("Visible columns for {radio}").format(radio=radio_name))
+        labelstr = _("Visible columns for {radio}").format(radio=radio_name)
+        label = gtk.Label(labelstr)
         label.show()
         vbox.pack_start(label)
 
         fields = []
-        memedit = eset.get_current_editor() #.editors["memedit"]
+        memedit = eset.get_current_editor()  # .editors["memedit"]
         unsupported = memedit.get_unsupported_columns()
         for colspec in memedit.cols:
             if colspec[0].startswith("_"):
@@ -1266,7 +1284,7 @@ If you think that it is valid, you can select a radio model below to force an op
                 memedit.set_column_visible(colnum, widget.get_active())
                 if widget.get_active():
                     selected_columns.append(widget.get_label())
-                                                
+
         d.destroy()
 
         CONF.set(driver, ",".join(selected_columns), "memedit_columns")
@@ -1299,18 +1317,18 @@ If you think that it is valid, you can select a radio model below to force an op
 
     def do_toggle_report(self, action):
         if not action.get_active():
-            d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO,
-                                  parent=self)
-            d.set_markup("<b><big>" + _("Reporting is disabled") + "</big></b>")
+            d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO, parent=self)
+            markup = "<b><big>" + _("Reporting is disabled") + "</big></b>"
+            d.set_markup(markup)
             msg = _("The reporting feature of CHIRP is designed to help "
                     "<u>improve quality</u> by allowing the authors to focus "
                     "on the radio drivers used most often and errors "
                     "experienced by the users. The reports contain no "
-                    "identifying information and are used only for statistical "
-                    "purposes by the authors. Your privacy is extremely "
-                    "important, but <u>please consider leaving this feature "
-                    "enabled to help make CHIRP better!</u>\n\n<b>Are you "
-                    "sure you want to disable this feature?</b>")
+                    "identifying information and are used only for "
+                    "statistical purposes by the authors. Your privacy is "
+                    "extremely important, but <u>please consider leaving "
+                    "this feature enabled to help make CHIRP better!</u>\n\n"
+                    "<b>Are you sure you want to disable this feature?</b>")
             d.format_secondary_markup(msg.replace("\n", "\r\n"))
             r = d.run()
             d.destroy()
@@ -1513,7 +1531,7 @@ If you think that it is valid, you can select a radio model below to force an op
   </menubar>
 </ui>
 """
-        actions = [\
+        actions = [
             ('file', None, _("_File"), None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
@@ -1530,36 +1548,49 @@ If you think that it is valid, you can select a radio model below to force an op
             ('paste', None, _("_Paste"), "<Ctrl>v", None, self.mh),
             ('delete', None, _("_Delete"), "Delete", None, self.mh),
             ('all', None, _("Select _All"), None, None, self.mh),
-            ('move_up', None, _("Move _Up"), "<Control>Up", None, self.mh),
-            ('move_dn', None, _("Move Dow_n"), "<Control>Down", None, self.mh),
-            ('exchange', None, _("E_xchange"), "<Control><Shift>x", None, self.mh),
+            ('move_up', None, _("Move _Up"),
+             "<Control>Up", None, self.mh),
+            ('move_dn', None, _("Move Dow_n"),
+             "<Control>Down", None, self.mh),
+            ('exchange', None, _("E_xchange"),
+             "<Control><Shift>x", None, self.mh),
             ('properties', None, _("P_roperties"), None, None, self.mh),
             ('view', None, _("_View"), None, None, self.mh),
             ('columns', None, _("Columns"), None, None, self.mh),
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
-            ('devshowraw', None, _('Show raw memory'), "<Control><Shift>r", None, self.mh),
-            ('devdiffraw', None, _("Diff raw memories"), "<Control><Shift>d", None, self.mh),
-            ('devdifftab', None, _("Diff tabs"), "<Control><Shift>t", None, self.mh),
+            ('devshowraw', None, _('Show raw memory'),
+             "<Control><Shift>r", None, self.mh),
+            ('devdiffraw', None, _("Diff raw memories"),
+             "<Control><Shift>d", None, self.mh),
+            ('devdifftab', None, _("Diff tabs"),
+             "<Control><Shift>t", None, self.mh),
             ('language', None, _("Change language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
-            ('download', None, _("Download From Radio"), "<Alt>d", None, self.mh),
+            ('download', None, _("Download From Radio"),
+             "<Alt>d", None, self.mh),
             ('upload', None, _("Upload To Radio"), "<Alt>u", None, self.mh),
             ('import', None, _("Import"), "<Alt>i", None, self.mh),
             ('export', None, _("Export"), "<Alt>x", None, self.mh),
-            ('importsrc', None, _("Import from data source"), None, None, self.mh),
-            ('iradioreference', None, _("RadioReference.com"), None, None, self.mh),
+            ('importsrc', None, _("Import from data source"),
+             None, None, self.mh),
+            ('iradioreference', None, _("RadioReference.com"),
+             None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
             ('ipr', None, _("przemienniki.net"), None, None, self.mh),
             ('querysrc', None, _("Query data source"), None, None, self.mh),
-            ('qradioreference', None, _("RadioReference.com"), None, None, self.mh),
+            ('qradioreference', None, _("RadioReference.com"),
+             None, None, self.mh),
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
             ('qpr', None, _("przemienniki.net"), None, None, self.mh),
             ('qrbook', None, _("RepeaterBook"), None, None, self.mh),
-            ('export_chirp', None, _("CHIRP Native File"), None, None, self.mh),
+            ('export_chirp', None, _("CHIRP Native File"),
+             None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
-            ('stock', None, _("Import from stock config"), None, None, self.mh),
-            ('channel_defaults', None, _("Channel defaults"), None, None, self.mh),
+            ('stock', None, _("Import from stock config"),
+             None, None, self.mh),
+            ('channel_defaults', None, _("Channel defaults"),
+             None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
@@ -1567,17 +1598,20 @@ If you think that it is valid, you can select a radio model below to force an op
             ]
 
         conf = config.get()
-        re = not conf.get_bool("no_report");
+        re = not conf.get_bool("no_report")
         hu = conf.get_bool("hide_unused", "memedit", default=True)
         dv = conf.get_bool("developer", "state")
         st = not conf.get_bool("no_smart_tmode", "memedit")
 
-        toggles = [\
-            ('report', None, _("Report statistics"), None, None, self.mh, re),
-            ('hide_unused', None, _("Hide Unused Fields"), None, None, self.mh, hu),
-            ('no_smart_tmode', None, _("Smart Tone Modes"), None, None, self.mh, st),
-            ('developer', None, _("Enable Developer Functions"), None, None, self.mh, dv),
-            ]
+        toggles = [('report', None, _("Report statistics"),
+                    None, None, self.mh, re),
+                   ('hide_unused', None, _("Hide Unused Fields"),
+                    None, None, self.mh, hu),
+                   ('no_smart_tmode', None, _("Smart Tone Modes"),
+                    None, None, self.mh, st),
+                   ('developer', None, _("Enable Developer Functions"),
+                    None, None, self.mh, dv),
+                   ]
 
         self.menu_uim = gtk.UIManager()
         self.menu_ag = gtk.ActionGroup("MenuBar")
@@ -1599,7 +1633,7 @@ If you think that it is valid, you can select a radio model below to force an op
     def make_tabs(self):
         self.tabs = gtk.Notebook()
 
-        return self.tabs        
+        return self.tabs
 
     def close_out(self):
         num = self.tabs.get_n_pages()
@@ -1621,28 +1655,29 @@ If you think that it is valid, you can select a radio model below to force an op
         self.sb_general = gtk.Statusbar()
         self.sb_general.set_has_resize_grip(False)
         self.sb_general.show()
-        box.pack_start(self.sb_general, 1,1,1)
-        
+        box.pack_start(self.sb_general, 1, 1, 1)
+
         self.sb_radio = gtk.Statusbar()
         self.sb_radio.set_has_resize_grip(True)
         self.sb_radio.show()
-        box.pack_start(self.sb_radio, 1,1,1)
+        box.pack_start(self.sb_radio, 1, 1, 1)
 
         box.show()
         return box
 
     def ev_delete(self, window, event):
         if not self.close_out():
-            return True # Don't exit
+            return True  # Don't exit
 
     def ev_destroy(self, window):
         if not self.close_out():
-            return True # Don't exit
+            return True  # Don't exit
 
     def setup_extra_hotkeys(self):
         accelg = self.menu_uim.get_accel_group()
 
-        memedit = lambda a: self.get_current_editorset().editors["memedit"].hotkey(a)
+        def memedit(a):
+            self.get_current_editorset().editors["memedit"].hotkey(a)
 
         actions = [
             # ("action_name", "key", function)
@@ -1654,7 +1689,7 @@ If you think that it is valid, you can select a radio model below to force an op
             self.menu_ag.add_action_with_accel(a, key)
             a.set_accel_group(accelg)
             a.connect_accelerator()
-        
+
     def _set_icon(self):
         execpath = platform.get_platform().executable_path()
         path = os.path.abspath(os.path.join(execpath, "share", "chirp.png"))
@@ -1679,7 +1714,7 @@ If you think that it is valid, you can select a radio model below to force an op
         intv = 3600 * 24 * 7
 
         if CONF.is_defined("last_update_check", "state") and \
-             (time.time() - CONF.get_int("last_update_check", "state")) < intv:
+           (time.time() - CONF.get_int("last_update_check", "state")) < intv:
             return
 
         CONF.set_int("last_update_check", int(time.time()), "state")
@@ -1700,7 +1735,7 @@ If you think that it is valid, you can select a radio model below to force an op
         except ImportError, e:
             print "No MacOS support: %s" % e
             return
-        
+
         menu_bar.hide()
         macapp.set_menu_bar(menu_bar)
 
@@ -1712,7 +1747,7 @@ If you think that it is valid, you can select a radio model below to force an op
 
         documentationitem = self.menu_uim.get_widget("/MenuBar/help/gethelp")
         macapp.insert_app_menu_item(documentationitem, 0)
-        
+
         macapp.set_use_quartz_accelerators(False)
         macapp.ready()
 
@@ -1746,7 +1781,7 @@ If you think that it is valid, you can select a radio model below to force an op
         mbar = self.make_menubar()
 
         if os.name != "nt":
-            self._set_icon() # Windows gets the icon from the exe
+            self._set_icon()  # Windows gets the icon from the exe
             if os.uname()[0] == "Darwin":
                 self._init_macos(mbar)
 
@@ -1787,7 +1822,7 @@ If you think that it is valid, you can select a radio model below to force an op
             d.set_markup("<b><big>" +
                          _("Error reporting is enabled") +
                          "</big></b>")
-            d.format_secondary_markup(\
+            d.format_secondary_markup(
                 _("If you wish to disable this feature you may do so in "
                   "the <u>Help</u> menu"))
             d.run()
