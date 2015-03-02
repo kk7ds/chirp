@@ -21,18 +21,19 @@ from chirp import chirp_common, directory, generic_csv, generic_xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 from chirpui import inputdialog, reporting, settingsedit, radiobrowser, config
 
+
 class EditorSet(gtk.VBox):
     __gsignals__ = {
-        "want-close" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        "status" : (gobject.SIGNAL_RUN_LAST,
-                    gobject.TYPE_NONE,
-                    (gobject.TYPE_STRING,)),
-        "usermsg": (gobject.SIGNAL_RUN_LAST,
+        "want-close": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "status": (gobject.SIGNAL_RUN_LAST,
                    gobject.TYPE_NONE,
                    (gobject.TYPE_STRING,)),
-        "editor-selected" : (gobject.SIGNAL_RUN_LAST,
-                             gobject.TYPE_NONE,
-                             (gobject.TYPE_STRING,)),
+        "usermsg": (gobject.SIGNAL_RUN_LAST,
+                    gobject.TYPE_NONE,
+                    (gobject.TYPE_STRING,)),
+        "editor-selected": (gobject.SIGNAL_RUN_LAST,
+                            gobject.TYPE_NONE,
+                            (gobject.TYPE_STRING,)),
         }
 
     def _make_device_mapping_editors(self, device, devrthread, index):
@@ -76,7 +77,7 @@ class EditorSet(gtk.VBox):
         memories.connect("changed", self.editor_changed)
 
         if self.rf.has_sub_devices:
-            label = (_("Memories (%(variant)s)") % 
+            label = (_("Memories (%(variant)s)") %
                      dict(variant=device.VARIANT))
             rf = device.get_features()
         else:
@@ -97,7 +98,8 @@ class EditorSet(gtk.VBox):
             editor.connect("changed", self.editor_changed)
             self.editors["dstar"] = editor
 
-    def __init__(self, source, parent_window=None, filename=None, tempname=None):
+    def __init__(self, source, parent_window=None,
+                 filename=None, tempname=None):
         gtk.VBox.__init__(self, True, 0)
 
         self.parent_window = parent_window
@@ -146,7 +148,7 @@ class EditorSet(gtk.VBox):
 
         conf = config.get()
         if (hasattr(self.rthread.radio, '_memobj') and
-            conf.get_bool("developer", "state")):
+                conf.get_bool("developer", "state")):
             editor = radiobrowser.RadioBrowser(self.rthread)
             lab = gtk.Label(_("Browser"))
             self.tabs.append_page(editor.root, lab)
@@ -197,7 +199,7 @@ class EditorSet(gtk.VBox):
         if not fname:
             fname = self.filename
             if not os.path.exists(self.filename):
-                return # Probably before the first "Save as"
+                return  # Probably before the first "Save as"
         else:
             self.filename = fname
 
@@ -240,7 +242,7 @@ class EditorSet(gtk.VBox):
         # interface to queue our own changes before opening it up to the
         # rest of the world.
 
-        dst_rthread._qlock_when_idle(5) # Suspend job submission when idle
+        dst_rthread._qlock_when_idle(5)  # Suspend job submission when idle
 
         dialog = dlgclass(src_radio, dst_rthread.radio, self.parent_window)
         r = dialog.run()
@@ -265,10 +267,9 @@ class EditorSet(gtk.VBox):
         choices = [x.VARIANT for x in devices]
 
         d = inputdialog.ChoiceDialog(choices)
-        d.label.set_text(_("The {vendor} {model} has multiple "
-                           "independent sub-devices").format( \
-                vendor=radio.VENDOR, model=radio.MODEL) + os.linesep + \
-                             _("Choose one to import from:"))
+        text = _("The {vendor} {model} has multiple independent sub-devices")
+        d.label.set_text(text.format(vendor=radio.VENDOR, model=radio.MODEL) +
+                         os.linesep + _("Choose one to import from:"))
         r = d.run()
         chosen = d.choice.get_active_text()
         d.destroy()
@@ -297,8 +298,10 @@ class EditorSet(gtk.VBox):
         if isinstance(src_radio, chirp_common.NetworkSourceRadio):
             ww = importdialog.WaitWindow("Querying...", self.parent_window)
             ww.show()
+
             def status(status):
                 ww.set(float(status.cur) / float(status.max))
+
             try:
                 src_radio.status_fn = status
                 src_radio.do_fetch()
@@ -331,7 +334,7 @@ class EditorSet(gtk.VBox):
             common.log_exception()
             common.show_error(_("There was an error during "
                                 "import: {error}").format(error=e))
-        
+
     def do_export(self, filen):
         try:
             if filen.lower().endswith(".csv"):
@@ -373,7 +376,7 @@ class EditorSet(gtk.VBox):
             common.show_error(_("There was an error during "
                                 "export: {error}").format(error=e),
                               self)
-            
+
     def prime(self):
         # NOTE: this is only called to prime new CSV files, so assume
         # only one memory editor for now
@@ -389,7 +392,7 @@ class EditorSet(gtk.VBox):
 
     def tab_selected(self, notebook, foo, pagenum):
         widget = notebook.get_nth_page(pagenum)
-        for k,v in self.editors.items():
+        for k, v in self.editors.items():
             if v and v.root == widget:
                 v.focus()
                 self.emit("editor-selected", k)
@@ -408,8 +411,9 @@ class EditorSet(gtk.VBox):
             editor and editor.prepare_close()
 
     def get_current_editor(self):
+        tabs = self.tabs
         for lab, e in self.editors.items():
-            if e and self.tabs.page_num(e.root) == self.tabs.get_current_page():
+            if e and tabs.page_num(e.root) == tabs.get_current_page():
                 return e
         raise Exception("No editor selected?")
 
