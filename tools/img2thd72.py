@@ -18,43 +18,46 @@
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import sys, getopt
+import sys
+import getopt
 from PIL import Image as im
+
 
 def die(msg):
     print msg
     sys.exit(1)
 
+
 def thd72bitmap(fname, invert):
     img = im.open(ifname)
-    if img.size != (120,48):
+    if img.size != (120, 48):
         die("Image has wrong dimensions: must be 120x48")
-    
+
     colors = img.getcolors()
     if len(colors) != 2:
         die("Image must be 1 bits per pixel (black and white)")
-    
-    if ('-i','') in opts:
-        c,black = colors[0]
-        c,white = colors[1]
+
+    if ('-i', '') in opts:
+        c, black = colors[0]
+        c, white = colors[1]
     else:
-        c,white = colors[0]
-        c,black = colors[1]
+        c, white = colors[0]
+        c, black = colors[1]
 
-
-    colors = { black: 1, white: 0 }
+    colors = {black: 1, white: 0}
     data = img.getdata()
     buf = ''
     for y in range(6):
         for x in range(120):
             b = 0
             for i in range(8):
-                b |= colors[data[x + 120*(y*8+i)]] << i
+                b |= colors[data[x + 120 * (y * 8 + i)]] << i
             buf += chr(b)
     return buf
 
+
 def display_thd72(buf):
-    dots = { 0: '*', 1: ' '}
+    dots = {0: '*', 1: ' '}
     lines = []
     for y in range(48):
         line = ''
@@ -65,8 +68,10 @@ def display_thd72(buf):
     for l in lines:
         print l
 
+
 def usage():
-    print "\nUsage: %s <-s|-g> [-i] [-d] <image-file> <thd72-nvram-file>" % sys.argv[0]
+    print "\nUsage: %s <-s|-g> [-i] [-d] " \
+          "<image-file> <thd72-nvram-file>" % sys.argv[0]
     print "\nThis program will modify whatever nvram file provided or will"
     print "create a new one if the file does not exist.  After using this to"
     print "modify the image, you can use that file to upload all or part of"
@@ -112,7 +117,7 @@ if __name__ == "__main__":
     of.seek(65536)
     of.close()
 
-    if ('-d','') in opts:
+    if ('-d', '') in opts:
         display_thd72(buf)
 
     blocks = [0, ]
@@ -120,4 +125,3 @@ if __name__ == "__main__":
     blocks.append(1+imgpos/256)
     blocks.append(2+imgpos/256)
     print "Modified block list:", blocks
-
