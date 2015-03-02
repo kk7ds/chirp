@@ -58,10 +58,10 @@ def _find_me():
 
 def natural_sorted(l):
     def convert(text):
-        int(text) if text.isdigit() else text.lower()
+        return int(text) if text.isdigit() else text.lower()
 
     def natural_key(key):
-        [convert(c) for c in re.split('([0-9]+)', key)]
+        return [convert(c) for c in re.split('([0-9]+)', key)]
 
     return sorted(l, key=natural_key)
 
