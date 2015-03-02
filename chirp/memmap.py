@@ -24,7 +24,7 @@ class MemoryMap:
     def __init__(self, data):
         self._data = list(data)
 
-    def printable(self, start=None, end=None, printit=True):
+    def printable(self, start=None, end=None):
         """Return a printable representation of the memory map"""
         if not start:
             start = 0
@@ -33,9 +33,6 @@ class MemoryMap:
             end = len(self._data)
 
         string = util.hexprint(self._data[start:end])
-
-        if printit:
-            print string
 
         return string
 

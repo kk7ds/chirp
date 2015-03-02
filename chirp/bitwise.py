@@ -59,9 +59,12 @@
 
 import struct
 import os
+import logging
 
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
+
+LOG = logging.getLogger(__name__)
 
 
 class ParseError(Exception):
@@ -770,8 +773,8 @@ class Processor:
             bitsleft -= bits
 
         if bitsleft:
-            print "WARNING: %i trailing bits unaccounted for in %s" % \
-                  (bitsleft, bitfield)
+            LOG.warn("WARNING: %i trailing bits unaccounted for in %s" %
+                     (bitsleft, bitfield))
 
         return bytes
 
@@ -866,7 +869,8 @@ class Processor:
         elif name == "seek":
             self._offset += int(value, 0)
         elif name == "printoffset":
-            print "%s: %i (0x%08X)" % (value[1:-1], self._offset, self._offset)
+            LOG.debug("%s: %i (0x%08X)" %
+                      (value[1:-1], self._offset, self._offset))
 
     def parse_block(self, lang):
         for t, d in lang:

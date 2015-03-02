@@ -423,8 +423,8 @@ class Memory:
         try:
             self.number = int(vals[0])
         except:
-            print "Loc: %s" % vals[0]
-            raise errors.InvalidDataError("Location is not a valid integer")
+            raise errors.InvalidDataError(
+                "Location '%s' is not a valid integer" % vals[0])
 
         self.name = vals[1]
 

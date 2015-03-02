@@ -114,7 +114,6 @@ class RadioSettingValueFloat(RadioSettingValue):
         if value is None:
             value = self._current
         fmt_string = "%%.%if" % self._pre
-        print fmt_string
         return fmt_string % value
 
     def set_value(self, value):

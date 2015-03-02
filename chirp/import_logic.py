@@ -13,7 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from chirp import chirp_common, errors
+
+LOG = logging.getLogger(__name__)
 
 
 class ImportError(Exception):
@@ -255,7 +258,7 @@ def import_bank(dst_radio, src_radio, dst_mem, src_mem):
     for index in src_indexes:
         try:
             bank = dst_banks[index]
-            print "Adding memory to bank %s" % bank
+            LOG.debug("Adding memory to bank %s" % bank)
             dst_bm.add_memory_to_mapping(dst_mem, bank)
             if isinstance(dst_bm, chirp_common.MappingModelIndexInterface):
                 dst_bm.set_memory_index(dst_mem, bank,

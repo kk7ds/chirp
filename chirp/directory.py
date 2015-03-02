@@ -45,7 +45,7 @@ def enable_reregistrations():
     exception"""
     global ALLOW_DUPS
     if not ALLOW_DUPS:
-        print "NOTE: driver re-registration enabled"
+        LOG.info("driver re-registration enabled")
     ALLOW_DUPS = True
 
 
@@ -106,8 +106,7 @@ def icf_to_image(icf_file, img_file):
         f.write(img_data)
         f.close()
     else:
-        print "Unsupported model data:"
-        print util.hexprint(mdata)
+        LOG.error("Unsupported model data: %s" % util.hexprint(mdata))
         raise Exception("Unsupported model")
 
 
@@ -128,7 +127,7 @@ def get_radio_by_image(image_file):
     if os.path.exists(image_file) and icf.is_icf_file(image_file):
         tempf = tempfile.mktemp()
         icf_to_image(image_file, tempf)
-        print "Auto-converted %s -> %s" % (image_file, tempf)
+        LOG.info("Auto-converted %s -> %s" % (image_file, tempf))
         image_file = tempf
 
     if os.path.exists(image_file):

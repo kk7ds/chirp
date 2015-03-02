@@ -13,7 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from chirp import chirp_common, errors
+
+LOG = logging.getLogger(__name__)
+
 try:
     from suds.client import Client
     from suds import WebFault
@@ -78,9 +82,9 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
         status.max += len(county.agencyList)
 
         for cat in county.cats:
-            print "Fetching category:", cat.cName
+            LOG.debug("Fetching category:", cat.cName)
             for subcat in cat.subcats:
-                print "\t", subcat.scName
+                LOG.debug("\t", subcat.scName)
                 result = self._client.service.getSubcatFreqs(subcat.scid,
                                                              self._auth)
                 self._freqs += result
@@ -92,9 +96,9 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
             for cat in agency.cats:
                 status.max += len(cat.subcats)
             for cat in agency.cats:
-                print "Fetching category:", cat.cName
+                LOG.debug("Fetching category:", cat.cName)
                 for subcat in cat.subcats:
-                    print "\t", subcat.scName
+                    LOG.debug("\t", subcat.scName)
                     result = self._client.service.getSubcatFreqs(subcat.scid,
                                                                  self._auth)
                     self._freqs += result
@@ -146,8 +150,7 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
                     mem.tmode = "DTCS"
                     mem.dtcs = int(tone)
                 else:
-                    print "Error: unsupported tone"
-                    print freq
+                    LOG.error("Error: unsupported tone: %s" % freq)
         try:
             mem.mode = self._get_mode(freq.mode)
         except KeyError:

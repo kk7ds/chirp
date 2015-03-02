@@ -15,8 +15,11 @@
 
 import os
 import libxml2
+import logging
 
 from chirp import chirp_common, errors, xml_ll, platform, directory
+
+LOG = logging.getLogger(__name__)
 
 
 def validate_doc(doc):
@@ -30,8 +33,8 @@ def validate_doc(doc):
         ctx = libxml2.schemaNewParserCtxt(path)
         schema = ctx.schemaParse()
     except libxml2.parserError, e:
-        print "Unable to load schema: %s" % e
-        print "Path: %s" % path
+        LOG.error("Unable to load schema: %s" % e)
+        LOG.error("Path: %s" % path)
         raise errors.RadioError("Unable to load schema")
 
     del ctx
@@ -43,16 +46,19 @@ def validate_doc(doc):
         errs.append("ERROR: %s" % msg)
 
     def _wrn(msg, *_args):
-        print "WARNING: %s" % msg
         warnings.append("WARNING: %s" % msg)
 
     validctx = schema.schemaNewValidCtxt()
     validctx.setValidityErrorHandler(_err, _wrn)
     err = validctx.schemaValidateDoc(doc)
-    print os.linesep.join(warnings)
+    for w in warnings:
+        LOG.warn(w)
     if err:
-        print "---DOC---\n%s\n------" % doc.serialize(format=1)
-        print os.linesep.join(errs)
+        for l in ["--- DOC ---",
+                  doc.serialize(format=1).split("\n"),
+                  "-----------",
+                  errs]:
+            LOG.error(l)
         raise errors.RadioError("Schema error")
 
 

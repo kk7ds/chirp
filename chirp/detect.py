@@ -14,9 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import serial
+import logging
 
 from chirp import errors, icf, directory, ic9x_ll
 from chirp import kenwood_live, icomciv
+
+LOG = logging.getLogger(__name__)
 
 
 def _icom_model_data_to_rclass(md):
@@ -40,7 +43,7 @@ def _detect_icom_radio(ser):
         md = icf.get_model_data(ser)
         return _icom_model_data_to_rclass(md)
     except errors.RadioError, e:
-        print e
+        LOG.error(e)
 
     # ICOM IC-91/92 Live-mode radios @ 4800/38400 baud
 
@@ -77,9 +80,8 @@ def detect_icom_radio(port):
 
     ser.close()
 
-    print "Auto-detected %s %s on %s" % (result.VENDOR,
-                                         result.MODEL,
-                                         port)
+    LOG.info("Auto-detected %s %s on %s" %
+             (result.VENDOR, result.MODEL, port))
 
     return result
 

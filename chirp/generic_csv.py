@@ -15,8 +15,11 @@
 
 import os
 import csv
+import logging
 
 from chirp import chirp_common, errors, directory
+
+LOG = logging.getLogger(__name__)
 
 
 class OmittedHeaderError(Exception):
@@ -190,9 +193,8 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                 continue
 
             if len(header) > len(line):
-                print "Line %i has %i columns, expected %i" % (lineno,
-                                                               len(line),
-                                                               len(header))
+                LOG.error("Line %i has %i columns, expected %i",
+                          lineno, len(line), len(header))
                 self.errors.append("Column number mismatch on line %i" %
                                    lineno)
                 continue
@@ -202,7 +204,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                 if mem.number is None:
                     raise Exception("Invalid Location field" % lineno)
             except Exception, e:
-                print "Line %i: %s" % (lineno, e)
+                LOG.error("Line %i: %s", lineno, e)
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
 
@@ -211,7 +213,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
             good += 1
 
         if not good:
-            print self.errors
+            LOG.error(self.errors)
             raise errors.InvalidDataError("No channels found")
 
     def save(self, filename=None):

@@ -17,7 +17,10 @@ import os
 import sys
 import glob
 import re
+import logging
 from subprocess import Popen
+
+LOG = logging.getLogger(__name__)
 
 
 def win32_comports_bruteforce():
@@ -265,7 +268,7 @@ class UnixPlatform(Platform):
         # time, however, I'll throw it here
         if sys.platform == "darwin":
             if "DISPLAY" not in os.environ:
-                print "Forcing DISPLAY for MacOS"
+                LOG.info("Forcing DISPLAY for MacOS")
                 os.environ["DISPLAY"] = ":0"
 
             os.environ["PANGO_RC_FILE"] = "../Resources/etc/pango/pangorc"
@@ -282,13 +285,13 @@ class UnixPlatform(Platform):
             pid2 = os.fork()
             if pid2 == 0:
                 editor = _unix_editor()
-                print "calling `%s %s'" % (editor, path)
+                LOG.debug("calling `%s %s'" % (editor, path))
                 os.execlp(editor, editor, path)
             else:
                 sys.exit(0)
         else:
             os.waitpid(pid1, 0)
-            print "Exec child exited"
+            LOG.debug("Exec child exited")
 
     def open_html_file(self, path):
         os.system("firefox '%s'" % path)
@@ -350,7 +353,7 @@ class Win32Platform(Platform):
             ports = list(comports())
         except Exception, e:
             if comports != win32_comports_bruteforce:
-                print "Failed to detect win32 serial ports: %s" % e
+                LOG.error("Failed to detect win32 serial ports: %s" % e)
                 ports = win32_comports_bruteforce()
         return natural_sorted([port for port, name, url in ports])
 
@@ -366,7 +369,7 @@ class Win32Platform(Platform):
         try:
             fname, _, _ = win32gui.GetOpenFileNameW(Filter=typestrs)
         except Exception, e:
-            print "Failed to get filename: %s" % e
+            LOG.error("Failed to get filename: %s" % e)
             return None
 
         return str(fname)
@@ -397,7 +400,7 @@ class Win32Platform(Platform):
                                                     DefExt=def_ext,
                                                     Filter=typestrs)
         except Exception, e:
-            print "Failed to get filename: %s" % e
+            LOG.error("Failed to get filename: %s" % e)
             return None
 
         return str(fname)
@@ -409,7 +412,7 @@ class Win32Platform(Platform):
             pidl, _, _ = shell.SHBrowseForFolder()
             fname = shell.SHGetPathFromIDList(pidl)
         except Exception, e:
-            print "Failed to get directory: %s" % e
+            LOG.error("Failed to get directory: %s" % e)
             return None
 
         return str(fname)
