@@ -20,6 +20,7 @@ import pango
 from chirp import errors, chirp_common, generic_xml, import_logic
 from chirpui import common
 
+
 class WaitWindow(gtk.Window):
     def __init__(self, msg, parent=None):
         gtk.Window.__init__(self)
@@ -56,6 +57,7 @@ class WaitWindow(gtk.Window):
 
         self.prog.set_fraction(fraction)
 
+
 class ImportMemoryBankJob(common.RadioJob):
     def __init__(self, cb, dst_mem, src_radio, src_mem):
         common.RadioJob.__init__(self, cb, None)
@@ -68,6 +70,7 @@ class ImportMemoryBankJob(common.RadioJob):
                                  self.__dst_mem, self.__src_mem)
         if self.cb:
             gobject.idle_add(self.cb, *self.cb_args)
+
 
 class ImportDialog(gtk.Dialog):
 
@@ -89,8 +92,7 @@ class ImportDialog(gtk.Dialog):
             d.set_property("text",
                            _("Location {number} is already being imported. "
                              "Choose another value for 'New Location' "
-                             "before selection 'Import'").format(\
-                    number=nloc))
+                             "before selection 'Import'").format(number=nloc))
             d.run()
             d.destroy()
         else:
@@ -98,7 +100,7 @@ class ImportDialog(gtk.Dialog):
 
     def _render(self, _, rend, model, iter, colnum):
         newloc, imp = model.get(iter, self.col_nloc, self.col_import)
-        lo,hi = self.dst_radio.get_features().memory_bounds
+        lo, hi = self.dst_radio.get_features().memory_bounds
 
         rend.set_property("text", "%i" % newloc)
         if newloc in self.used_list and imp:
@@ -113,7 +115,7 @@ class ImportDialog(gtk.Dialog):
 
     def _edited(self, rend, path, new, col):
         iter = self.__store.get_iter(path)
-        
+
         if col == self.col_nloc:
             nloc, = self.__store.get(iter, self.col_nloc)
 
@@ -149,12 +151,9 @@ class ImportDialog(gtk.Dialog):
         import_list = []
         iter = self.__store.get_iter_first()
         while iter:
-            old, new, name, comm, enb = self.__store.get(iter,
-                                             self.col_oloc,
-                                             self.col_nloc,
-                                             self.col_name,
-                                             self.col_comm,
-                                             self.col_import)
+            old, new, name, comm, enb = \
+                self.__store.get(iter, self.col_oloc, self.col_nloc,
+                                 self.col_name, self.col_comm, self.col_import)
             if enb:
                 import_list.append((old, new, name, comm))
             iter = self.__store.iter_next(iter)
@@ -186,7 +185,7 @@ class ImportDialog(gtk.Dialog):
                     print "Adding %s to rcall list" % mem.dv_rpt2call
                     rlist.append(mem.dv_rpt2call)
                     rlist_changed = True
-                
+
         if ulist_changed:
             job = common.RadioJob(None, "set_urcall_list", ulist)
             job.set_desc(_("Updating URCALL list"))
@@ -196,7 +195,7 @@ class ImportDialog(gtk.Dialog):
             job = common.RadioJob(None, "set_repeater_call_list", ulist)
             job.set_desc(_("Updating RPTCALL list"))
             dst_rthread._qsubmit(job, 0)
-            
+
         return
 
     def _convert_power(self, dst_levels, src_levels, mem):
@@ -237,7 +236,8 @@ class ImportDialog(gtk.Dialog):
 
         if not isinstance(self.dst_radio, generic_xml.XMLRadio) and \
                 len(dst_banks) != len(src_banks):
-            print "Source and destination radios have a different number of banks"
+            print "Source and destination radios have " + \
+                  "a different number of banks"
         else:
             self.dst_radio.set_banks(src_banks)
 
@@ -258,8 +258,8 @@ class ImportDialog(gtk.Dialog):
                 mem = import_logic.import_mem(self.dst_radio,
                                               src_features,
                                               src,
-                                              {"number" : new,
-                                               "name"   : name,
+                                              {"number":  new,
+                                               "name":    name,
                                                "comment": comm})
             except import_logic.ImportError, e:
                 print e
@@ -267,7 +267,8 @@ class ImportDialog(gtk.Dialog):
                 continue
 
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc(_("Setting memory {number}").format(number=mem.number))
+            desc = _("Setting memory {number}").format(number=mem.number)
+            job.set_desc(desc)
             dst_rthread._qsubmit(job, 0)
 
             job = ImportMemoryBankJob(None, mem, self.src_radio, src)
@@ -285,12 +286,12 @@ class ImportDialog(gtk.Dialog):
     def make_view(self):
         editable = [self.col_nloc, self.col_name, self.col_comm]
 
-        self.__store = gtk.ListStore(gobject.TYPE_BOOLEAN, # Import
-                                     gobject.TYPE_INT,     # Source loc
-                                     gobject.TYPE_INT,     # Destination loc
-                                     gobject.TYPE_STRING,  # Name
-                                     gobject.TYPE_STRING,  # Frequency
-                                     gobject.TYPE_STRING,  # Comment
+        self.__store = gtk.ListStore(gobject.TYPE_BOOLEAN,  # Import
+                                     gobject.TYPE_INT,      # Source loc
+                                     gobject.TYPE_INT,      # Destination loc
+                                     gobject.TYPE_STRING,   # Name
+                                     gobject.TYPE_STRING,   # Frequency
+                                     gobject.TYPE_STRING,   # Comment
                                      gobject.TYPE_BOOLEAN,
                                      gobject.TYPE_STRING)
         self.__view = gtk.TreeView(self.__store)
@@ -330,7 +331,7 @@ class ImportDialog(gtk.Dialog):
             self.__view.append_column(column)
 
         self.__view.set_tooltip_column(self.col_tmsg)
-        
+
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         sw.add(self.__view)
@@ -387,13 +388,13 @@ class ImportDialog(gtk.Dialog):
     def make_select(self):
         hbox = gtk.HBox(True, 2)
 
-        all = gtk.Button(_("All"));
+        all = gtk.Button(_("All"))
         all.connect("clicked", self.__select_all, True)
         all.set_size_request(50, 25)
         all.show()
         hbox.pack_start(all, 0, 0, 0)
 
-        none = gtk.Button(_("None"));
+        none = gtk.Button(_("None"))
         none.connect("clicked", self.__select_all, False)
         none.set_size_request(50, 25)
         none.show()
@@ -488,10 +489,10 @@ class ImportDialog(gtk.Dialog):
 
     def make_controls(self):
         hbox = gtk.HBox(False, 2)
-        
+
         hbox.pack_start(self.make_select(), 0, 0, 0)
         hbox.pack_start(self.make_adjust(), 0, 0, 0)
-        #hbox.pack_start(self.make_options(), 0, 0, 0)
+        # hbox.pack_start(self.make_options(), 0, 0, 0)
         hbox.show()
 
         return hbox
@@ -548,7 +549,8 @@ class ImportDialog(gtk.Dialog):
                                                 mem))
             except import_logic.DestNotCompatible:
                 msgs = self.dst_radio.validate_memory(mem)
-            errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
+            errs = [x for x in msgs
+                    if isinstance(x, chirp_common.ValidationError)]
             if errs:
                 msg = _("Cannot be imported because") + ":\r\n"
                 msg += ",".join(errs)
@@ -566,7 +568,6 @@ class ImportDialog(gtk.Dialog):
                                      msg
                                      ))
             self.record_use_of(mem.number)
-
 
     TITLE = _("Import From File")
     ACTION = _("Import")
@@ -588,28 +589,28 @@ class ImportDialog(gtk.Dialog):
         self.col_tmsg = 7
 
         self.caps = {
-            self.col_import : self.ACTION,
-            self.col_nloc   : _("To"),
-            self.col_oloc   : _("From"),
-            self.col_name   : _("Name"),
-            self.col_freq   : _("Frequency"),
-            self.col_comm   : _("Comment"),
+            self.col_import:  self.ACTION,
+            self.col_nloc:    _("To"),
+            self.col_oloc:    _("From"),
+            self.col_name:    _("Name"),
+            self.col_freq:    _("Frequency"),
+            self.col_comm:    _("Comment"),
             }
 
         self.tips = {
-            self.col_nloc : _("Location memory will be imported into"),
-            self.col_oloc : _("Location of memory in the file being imported"),
+            self.col_nloc:  _("Location memory will be imported into"),
+            self.col_oloc:  _("Location of memory in the file being imported"),
             }
 
         self.types = {
-            self.col_import : gobject.TYPE_BOOLEAN,
-            self.col_oloc   : gobject.TYPE_INT,
-            self.col_nloc   : gobject.TYPE_INT,
-            self.col_name   : gobject.TYPE_STRING,
-            self.col_freq   : gobject.TYPE_STRING,
-            self.col_comm   : gobject.TYPE_STRING,
-            self.col_okay   : gobject.TYPE_BOOLEAN,
-            self.col_tmsg   : gobject.TYPE_STRING,
+            self.col_import:  gobject.TYPE_BOOLEAN,
+            self.col_oloc:    gobject.TYPE_INT,
+            self.col_nloc:    gobject.TYPE_INT,
+            self.col_name:    gobject.TYPE_STRING,
+            self.col_freq:    gobject.TYPE_STRING,
+            self.col_comm:    gobject.TYPE_STRING,
+            self.col_okay:    gobject.TYPE_BOOLEAN,
+            self.col_tmsg:    gobject.TYPE_STRING,
             }
 
         self.src_radio = src_radio
@@ -628,6 +629,7 @@ class ImportDialog(gtk.Dialog):
         self.populate_list()
 
         self.ww.hide()
+
 
 class ExportDialog(ImportDialog):
     TITLE = _("Export To File")

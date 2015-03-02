@@ -71,7 +71,6 @@
 ./chirp/wouxun_common.py
 ./chirp/yaesu_clone.py
 ./chirpui/fips.py
-./chirpui/importdialog.py
 ./chirpui/mainapp.py
 ./chirpui/memdetail.py
 ./chirpui/memedit.py
