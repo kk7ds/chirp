@@ -21,6 +21,7 @@ from chirpui import miscwidgets, common
 
 POL = ["NN", "NR", "RN", "RR"]
 
+
 class ValueEditor:
     """Base class"""
     def __init__(self, features, memory, errfn, name, data=None):
@@ -49,7 +50,8 @@ class ValueEditor:
             return getattr(self._memory, self._name)
 
     def _get_value(self):
-        """Returns the value from the widget that should be set in the memory"""
+        """Returns the value from the widget that
+        should be set in the memory"""
 
     def update(self):
         """Updates the memory object with self._getvalue()"""
@@ -87,6 +89,7 @@ class ValueEditor:
         else:
             self._errfn(self._name, None)
 
+
 class StringEditor(ValueEditor):
     def _init(self, data):
         self._widget = gtk.Entry(int(data))
@@ -98,6 +101,7 @@ class StringEditor(ValueEditor):
 
     def changed(self, _widget):
         self.update()
+
 
 class ChoiceEditor(ValueEditor):
     def _init(self, data):
@@ -112,6 +116,7 @@ class ChoiceEditor(ValueEditor):
     def changed(self, _widget):
         self.update()
 
+
 class PowerChoiceEditor(ChoiceEditor):
     def _init(self, data):
         self._choices = data
@@ -124,13 +129,16 @@ class PowerChoiceEditor(ChoiceEditor):
                 return level
         raise Exception("Internal error: power level went missing")
 
+
 class IntChoiceEditor(ChoiceEditor):
     def _get_value(self):
         return int(self._widget.get_active_text())
 
+
 class FloatChoiceEditor(ChoiceEditor):
     def _get_value(self):
         return float(self._widget.get_active_text())
+
 
 class FreqEditor(StringEditor):
     def _init(self, data):
@@ -141,6 +149,7 @@ class FreqEditor(StringEditor):
 
     def _get_value(self):
         return chirp_common.parse_freq(self._widget.get_text())
+
 
 class BooleanEditor(ValueEditor):
     def _init(self, data):
@@ -154,29 +163,31 @@ class BooleanEditor(ValueEditor):
     def toggled(self, _widget):
         self.update()
 
+
 class OffsetEditor(FreqEditor):
     pass
+
 
 class MemoryDetailEditor(gtk.Dialog):
     """Detail editor for a memory"""
 
-    def _add(self, tab, row, name, editor, text, colindex = 0):
+    def _add(self, tab, row, name, editor, text, colindex=0):
         label = gtk.Label(text + ":")
         label.set_alignment(0.0, 0.5)
         label.show()
-        tab.attach(label, colindex, colindex + 1, row, row + 1, 
-            xoptions=gtk.FILL, yoptions=0, xpadding=6, ypadding=3)
+        tab.attach(label, colindex, colindex + 1, row, row + 1,
+                   xoptions=gtk.FILL, yoptions=0, xpadding=6, ypadding=3)
 
         widget = editor.get_widget()
         widget.show()
-        tab.attach(widget, colindex + 1, colindex + 2, row, row + 1, 
-            xoptions=gtk.FILL, yoptions=0, xpadding=3, ypadding=3)
+        tab.attach(widget, colindex + 1, colindex + 2, row, row + 1,
+                   xoptions=gtk.FILL, yoptions=0, xpadding=3, ypadding=3)
 
         img = gtk.Image()
         img.set_size_request(16, -1)
         img.show()
-        tab.attach(img, colindex + 2, colindex + 3, row, row + 1, 
-            xoptions=gtk.FILL, yoptions=0, xpadding=3, ypadding=3)
+        tab.attach(img, colindex + 2, colindex + 3, row, row + 1,
+                   xoptions=gtk.FILL, yoptions=0, xpadding=3, ypadding=3)
 
         self._editors[name] = label, editor, img
         return label, editor, img
@@ -186,7 +197,7 @@ class MemoryDetailEditor(gtk.Dialog):
         self._tips.set_tip(label, doc)
 
     def _make_ui(self):
-        
+
         box = gtk.VBox()
         box.show()
 
@@ -218,7 +229,8 @@ class MemoryDetailEditor(gtk.Dialog):
                 _img.clear()
                 self._tips.set_tip(_img, "")
             else:
-                _img.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
+                _img.set_from_stock(gtk.STOCK_DIALOG_WARNING,
+                                    gtk.ICON_SIZE_MENU)
                 self._tips.set_tip(_img, str(msg))
             self._errors[self._order.index(name)] = msg is not None
             self.set_response_sensitive(gtk.RESPONSE_OK,
@@ -256,19 +268,20 @@ class MemoryDetailEditor(gtk.Dialog):
                               settings.RadioSettingValueBoolean):
                     editor = BooleanEditor(self._features, self._memory,
                                            _err, name)
-                    self._add(table, row, name, editor, setting.get_shortname())
+                    self._add(table, row, name, editor,
+                              setting.get_shortname())
                     self._set_doc(name, setting.__doc__)
                 elif isinstance(setting.value,
                                 settings.RadioSettingValueList):
-                    editor = ChoiceEditor(self._features, self._memory,
-                                          _err, name, setting.value.get_options())
-                    self._add(table, row, name, editor, setting.get_shortname())
+                    editor = ChoiceEditor(self._features, self._memory, _err,
+                                          name, setting.value.get_options())
+                    self._add(table, row, name, editor,
+                              setting.get_shortname())
                     self._set_doc(name, setting.__doc__)
                 row += 1
                 self._order.append(name)
 
         self.vbox.pack_start(notebook, 1, 1, 1)
-
 
     def __init__(self, features, memory, parent=None):
         self._memory = memory
@@ -282,41 +295,41 @@ class MemoryDetailEditor(gtk.Dialog):
         self._tips = gtk.Tooltips()
 
         self._features = features
-        
+
         self._editors = {}
         self._elements = {
-            "freq" : (_("Frequency"), 
-                        FreqEditor, None),
-            "name" : (_("Name"), 
-                        StringEditor, features.valid_name_length),
-            "tmode" : (_("Tone Mode"), 
-                        ChoiceEditor, features.valid_tmodes),
-            "rtone" : (_("Tone"), 
-                        FloatChoiceEditor, chirp_common.TONES),
-            "ctone" : (_("ToneSql"), 
-                        FloatChoiceEditor, chirp_common.TONES),
-            "dtcs" : (_("DTCS Code"), 
-                        IntChoiceEditor, chirp_common.DTCS_CODES),
-            "rx_dtcs" : (_("RX DTCS Code"),
-                        IntChoiceEditor, chirp_common.DTCS_CODES),
-            "dtcs_polarity" : (_("DTCS Pol"), 
-                        ChoiceEditor, POL),
-            "cross_mode" : (_("Cross mode"), 
-                        ChoiceEditor, features.valid_cross_modes),
-            "duplex" : (_("Duplex"), 
-                        ChoiceEditor, features.valid_duplexes),
-            "offset" : (_("Offset"), 
-                        OffsetEditor, None), 
-            "mode" : (_("Mode"), 
-                        ChoiceEditor, features.valid_modes),
-            "tuning_step" : (_("Tune Step"), 
-                        FloatChoiceEditor, features.valid_tuning_steps),
-            "skip" : (_("Skip"), 
-                        ChoiceEditor, features.valid_skips),
-            "power": (_("Power"),
-                        PowerChoiceEditor, features.valid_power_levels),
-            "comment" : (_("Comment"), 
-                        StringEditor, 256),
+            "freq":          (_("Frequency"),
+                              FreqEditor, None),
+            "name":          (_("Name"),
+                              StringEditor, features.valid_name_length),
+            "tmode":         (_("Tone Mode"),
+                              ChoiceEditor, features.valid_tmodes),
+            "rtone":         (_("Tone"),
+                              FloatChoiceEditor, chirp_common.TONES),
+            "ctone":         (_("ToneSql"),
+                              FloatChoiceEditor, chirp_common.TONES),
+            "dtcs":          (_("DTCS Code"),
+                              IntChoiceEditor, chirp_common.DTCS_CODES),
+            "rx_dtcs":       (_("RX DTCS Code"),
+                              IntChoiceEditor, chirp_common.DTCS_CODES),
+            "dtcs_polarity": (_("DTCS Pol"),
+                              ChoiceEditor, POL),
+            "cross_mode":    (_("Cross mode"),
+                              ChoiceEditor, features.valid_cross_modes),
+            "duplex":        (_("Duplex"),
+                              ChoiceEditor, features.valid_duplexes),
+            "offset":        (_("Offset"),
+                              OffsetEditor, None),
+            "mode":          (_("Mode"),
+                              ChoiceEditor, features.valid_modes),
+            "tuning_step":   (_("Tune Step"),
+                              FloatChoiceEditor, features.valid_tuning_steps),
+            "skip":          (_("Skip"),
+                              ChoiceEditor, features.valid_skips),
+            "power":         (_("Power"),
+                              PowerChoiceEditor, features.valid_power_levels),
+            "comment":       (_("Comment"),
+                              StringEditor, 256),
         }
 
         self._order = [
@@ -370,6 +383,7 @@ class MemoryDetailEditor(gtk.Dialog):
         self._memory.empty = False
         return self._memory
 
+
 class MultiMemoryDetailEditor(MemoryDetailEditor):
 
     def __init__(self, features, memory, parent=None):
@@ -381,13 +395,13 @@ class MultiMemoryDetailEditor(MemoryDetailEditor):
             widget.set_sensitive(selector.get_active())
 
     def _add(self, tab, row, name, editor, text):
- 
+
         label, editor, img = super(MultiMemoryDetailEditor, self)._add(
             tab, row, name, editor, text, 1)
 
         selector = gtk.CheckButton()
         tab.attach(selector, 0, 1, row, row + 1,
-            xoptions=gtk.FILL, yoptions=0, xpadding=0, ypadding=3)
+                   xoptions=gtk.FILL, yoptions=0, xpadding=0, ypadding=3)
         selector.show()
         self._toggle_selector(selector, label, editor, img)
         selector.connect("toggled", self._toggle_selector, label, editor, img)
