@@ -24,19 +24,19 @@ import os
 import csvdump
 from chirpui import inputdialog, cloneprog
 
-gobject.threads_init()
-
 import chirp
 from chirp import ic9x, id800, ic2820, ic2200, errors
-
 from chirp import platform
 
-RADIOS = { "ic9x:A": ic9x.IC9xRadioA,
-           "ic9x:B": ic9x.IC9xRadioB,
-           "id800" : id800.ID800v2Radio,
-           "ic2820": ic2820.IC2820Radio,
-           "ic2200": ic2200.IC2200Radio,
-}
+gobject.threads_init()
+
+RADIOS = {"ic9x:A": ic9x.IC9xRadioA,
+          "ic9x:B": ic9x.IC9xRadioB,
+          "id800":  id800.ID800v2Radio,
+          "ic2820": ic2820.IC2820Radio,
+          "ic2200": ic2200.IC2200Radio,
+          }
+
 
 class CsvDumpApp:
     def update_status(self, s):
@@ -57,7 +57,7 @@ class CsvDumpApp:
 
             print "Sync done, saving to: %s" % fn
             radio.save_mmap(fn)
-        
+
             self.refresh_radio()
         except serial.SerialException, e:
             gobject.idle_add(self.mainwin.set_status,
@@ -107,7 +107,7 @@ class CsvDumpApp:
     def upload_img(self):
         t = threading.Thread(target=self._upload_img)
         t.start()
-    
+
     def _export_file_mmap(self, fname):
         count = 0
 
@@ -173,7 +173,6 @@ class CsvDumpApp:
             return low, high
         else:
             return None, None
-            
 
     def export_file(self, fname):
         if not fname.lower().endswith(".csv"):
@@ -185,7 +184,7 @@ class CsvDumpApp:
                 return
 
             t = threading.Thread(target=self._export_file_live,
-                                 args=(fname,l,h))
+                                 args=(fname, l, h))
             t.start()
         else:
             self._export_file_mmap(fname)
@@ -200,7 +199,7 @@ class CsvDumpApp:
         except Exception, e:
             print "Failed to parse `%s': %s" % (line, e)
             return None
-        
+
         return m
 
     def _import_file_live(self, fname):
@@ -226,7 +225,7 @@ class CsvDumpApp:
                 continue
             except Exception, e:
                 print "Parse error on line %i: %s" % (lineno, e)
-                break # FIXME: Report error here
+                break  # FIXME: Report error here
 
             lineno += 1
             memories.append(m)
@@ -242,7 +241,7 @@ class CsvDumpApp:
 #            try:
 #                self.radio.get_memory(m.number, 2)
 #            except errors.InvalidMemoryLocation:
-#                m 
+#                m
 
             try:
                 self.radio.set_memory(m)
@@ -333,7 +332,7 @@ class CsvDumpApp:
         self.rtype = radio
         self.rport = port
         self.refresh_radio()
-        
+
     def __init__(self):
         self.mainwin = csvdump.CsvDumpWindow(self.select_radio,
                                              self.download_img,
@@ -344,7 +343,7 @@ class CsvDumpApp:
         self.progwin = cloneprog.CloneProg()
         self.progwin.set_transient_for(self.mainwin)
         self.progwin.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
-        
+
         self.radio = None
 
     def run(self):
@@ -352,6 +351,7 @@ class CsvDumpApp:
         self.mainwin.connect("destroy", lambda x: gtk.main_quit())
 
         gtk.main()
+
 
 if __name__ == "__main__":
     a = CsvDumpApp()
