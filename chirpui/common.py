@@ -27,11 +27,12 @@ from chirpui import reporting, config
 
 CONF = config.get()
 
+
 class Editor(gobject.GObject):
     __gsignals__ = {
-        'changed' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        'usermsg' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                     (gobject.TYPE_STRING,)),
+        'changed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        'usermsg': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                    (gobject.TYPE_STRING,)),
         }
 
     root = None
@@ -74,11 +75,13 @@ class Editor(gobject.GObject):
 
 gobject.type_register(Editor)
 
+
 def DBG(*args):
     if False:
         print " ".join(args)
 
 VERBOSE = False
+
 
 class RadioJob:
     def __init__(self, cb, func, *args, **kwargs):
@@ -137,11 +140,11 @@ class RadioJob:
 
         self._execute(self.target, func)
 
+
 class RadioThread(threading.Thread, gobject.GObject):
     __gsignals__ = {
-        "status" : (gobject.SIGNAL_RUN_LAST,
-                    gobject.TYPE_NONE,
-                    (gobject.TYPE_STRING,)),
+        "status": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                   (gobject.TYPE_STRING,)),
         }
 
     def __init__(self, radio, parent=None):
@@ -171,7 +174,7 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.__lock.release()
 
     def _qsubmit(self, job, priority):
-        if not self.__queue.has_key(priority):
+        if priority not in self.__queue:
             self.__queue[priority] = []
 
         self.__queue[priority].append(job)
@@ -179,7 +182,7 @@ class RadioThread(threading.Thread, gobject.GObject):
 
     def _queue_clear_below(self, priority):
         for i in range(0, priority):
-            if self.__queue.has_key(i) and len(self.__queue[i]) != 0:
+            if i in self.__queue and len(self.__queue[i]) != 0:
                 return False
 
         return True
@@ -221,13 +224,13 @@ class RadioThread(threading.Thread, gobject.GObject):
         self.flush()
         self.__counter.release()
         self.__enabled = False
-    
+
     def _status(self, msg):
         jobs = 0
         for i in dict(self.__queue):
                 jobs += len(self.__queue[i])
         gobject.idle_add(self.emit, "status", "[%i] %s" % (jobs, msg))
-            
+
     def _queue_pop(self, priority):
         try:
             return self.__queue[priority].pop(0)
@@ -239,8 +242,8 @@ class RadioThread(threading.Thread, gobject.GObject):
         while self.__enabled:
             DBG("Waiting for a job")
             if last_job_desc:
-                self.status(_("Completed") + " " + last_job_desc + \
-                                " (" + _("idle") + ")")
+                self.status(_("Completed") + " " + last_job_desc +
+                            " (" + _("idle") + ")")
             self.__counter.acquire()
 
             self._qlock()
@@ -260,15 +263,17 @@ class RadioThread(threading.Thread, gobject.GObject):
 
         print "RadioThread exiting"
 
+
 def log_exception():
-	import traceback
-	import sys
+    import traceback
+    import sys
 
-        reporting.report_exception(traceback.format_exc(limit=30))
+    reporting.report_exception(traceback.format_exc(limit=30))
 
-	print "-- Exception: --"
-	traceback.print_exc(limit=30, file=sys.stdout)
-	print "------"
+    print "-- Exception: --"
+    traceback.print_exc(limit=30, file=sys.stdout)
+    print "------"
+
 
 def show_error(msg, parent=None):
     d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent,
@@ -280,6 +285,7 @@ def show_error(msg, parent=None):
 
     d.run()
     d.destroy()
+
 
 def ask_yesno_question(msg, parent=None):
     d = gtk.MessageDialog(buttons=gtk.BUTTONS_YES_NO, parent=parent,
@@ -294,6 +300,7 @@ def ask_yesno_question(msg, parent=None):
 
     return r == gtk.RESPONSE_YES
 
+
 def combo_select(box, value):
     store = box.get_model()
     iter = store.get_iter_first()
@@ -305,6 +312,7 @@ def combo_select(box, value):
 
     return False
 
+
 def _add_text(d, text):
     v = gtk.TextView()
     v.get_buffer().set_text(text)
@@ -314,8 +322,9 @@ def _add_text(d, text):
     sw = gtk.ScrolledWindow()
     sw.add(v)
     sw.show()
-    d.vbox.pack_start(sw, 1,1,1)
+    d.vbox.pack_start(sw, 1, 1, 1)
     return v
+
 
 def show_error_text(msg, text, parent=None):
     d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=parent,
@@ -329,6 +338,7 @@ def show_error_text(msg, text, parent=None):
     d.set_size_request(600, 400)
     d.run()
     d.destroy()
+
 
 def show_warning(msg, text,
                  parent=None, buttons=None, title="Warning",
@@ -363,6 +373,7 @@ def show_warning(msg, text,
         return r, cb.get_active()
     return r
 
+
 def simple_diff(a, b, diffsonly=False):
     lines_a = a.split(os.linesep)
     lines_b = b.split(os.linesep)
@@ -374,7 +385,7 @@ def simple_diff(a, b, diffsonly=False):
             diff += "-%s%s" % (lines_a[i], os.linesep)
             diff += "+%s%s" % (lines_b[i], os.linesep)
             blankprinted = False
-        elif diffsonly == True:
+        elif diffsonly is True:
             if blankprinted:
                 continue
             diff += os.linesep
@@ -382,6 +393,7 @@ def simple_diff(a, b, diffsonly=False):
         else:
             diff += " %s%s" % (lines_a[i], os.linesep)
     return diff
+
 
 # A quick hacked up tool to show a blob of text in a dialog window
 # using fixed-width fonts. It also highlights lines that start with
@@ -429,6 +441,7 @@ def show_diff_blob(title, result):
     d.set_size_request(600, 400)
     d.run()
     d.destroy()
+
 
 def unpluralize(string):
     if string.endswith("s"):

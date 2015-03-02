@@ -70,7 +70,6 @@
 ./chirp/wouxun.py
 ./chirp/wouxun_common.py
 ./chirp/yaesu_clone.py
-./chirpui/common.py
 ./chirpui/editorset.py
 ./chirpui/fips.py
 ./chirpui/importdialog.py
