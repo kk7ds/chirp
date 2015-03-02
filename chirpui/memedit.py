@@ -14,10 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if __name__ == "__main__":
-    import sys
-    sys.path.insert(0, "..")
-
 import threading
 
 import gtk
@@ -36,8 +32,15 @@ from chirpui import common, shiftdialog, miscwidgets, config, memdetail
 from chirpui import bandplans
 from chirp import chirp_common, errors, directory, import_logic
 
+
+if __name__ == "__main__":
+    import sys
+    sys.path.insert(0, "..")
+
+
 def handle_toggle(_, path, store, col):
-    store[path][col] = not store[path][col]    
+    store[path][col] = not store[path][col]
+
 
 def handle_ed(_, iter, new, store, col):
     old, = store.get(iter, col)
@@ -47,11 +50,13 @@ def handle_ed(_, iter, new, store, col):
     else:
         return False
 
+
 class ValueErrorDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
         self.set_property("text", _("Invalid value for this field"))
         self.format_secondary_text(str(exception))
+
 
 def iter_prev(store, iter):
     row = store.get_path(iter)[0]
@@ -59,63 +64,64 @@ def iter_prev(store, iter):
         return None
     return store.get_iter((row - 1,))
 
+
 class MemoryEditor(common.Editor):
     cols = [
-        (_("Loc")           , TYPE_INT,     gtk.CellRendererText,  ),
-        (_("Frequency")     , TYPE_INT64,   gtk.CellRendererText,  ),
-        (_("Name")          , TYPE_STRING,  gtk.CellRendererText,  ), 
-        (_("Tone Mode")     , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Tone")          , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        (_("ToneSql")       , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        (_("DTCS Code")     , TYPE_INT,     gtk.CellRendererCombo, ),
-        (_("DTCS Rx Code")  , TYPE_INT,     gtk.CellRendererCombo, ),
-        (_("DTCS Pol")      , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Cross Mode")    , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Duplex")        , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Offset")        , TYPE_INT64,   gtk.CellRendererText,  ),
-        (_("Mode")          , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Power")         , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Tune Step")     , TYPE_FLOAT,   gtk.CellRendererCombo, ),
-        (_("Skip")          , TYPE_STRING,  gtk.CellRendererCombo, ),
-        (_("Comment")       , TYPE_STRING,  gtk.CellRendererText,  ),
-        ("_filled"          , TYPE_BOOLEAN, None,                  ),
-        ("_hide_cols"       , TYPE_PYOBJECT,None,                  ),
-        ("_extd"            , TYPE_STRING,  None,                  ),
+        (_("Loc"),            TYPE_INT,      gtk.CellRendererText,),
+        (_("Frequency"),      TYPE_INT64,    gtk.CellRendererText,),
+        (_("Name"),           TYPE_STRING,   gtk.CellRendererText,),
+        (_("Tone Mode"),      TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Tone"),           TYPE_FLOAT,    gtk.CellRendererCombo,),
+        (_("ToneSql"),        TYPE_FLOAT,    gtk.CellRendererCombo,),
+        (_("DTCS Code"),      TYPE_INT,      gtk.CellRendererCombo,),
+        (_("DTCS Rx Code"),   TYPE_INT,      gtk.CellRendererCombo,),
+        (_("DTCS Pol"),       TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Cross Mode"),     TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Duplex"),         TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Offset"),         TYPE_INT64,    gtk.CellRendererText,),
+        (_("Mode"),           TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Power"),          TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Tune Step"),      TYPE_FLOAT,    gtk.CellRendererCombo,),
+        (_("Skip"),           TYPE_STRING,   gtk.CellRendererCombo,),
+        (_("Comment"),        TYPE_STRING,   gtk.CellRendererText,),
+        ("_filled",           TYPE_BOOLEAN,  None,),
+        ("_hide_cols",        TYPE_PYOBJECT, None,),
+        ("_extd",             TYPE_STRING,   None,),
         ]
 
     defaults = {
-        _("Name")          : "",
-        _("Frequency")     : 146010000,
-        _("Tone")          : 88.5,
-        _("ToneSql")       : 88.5,
-        _("DTCS Code")     : 23,
-        _("DTCS Rx Code")  : 23,
-        _("DTCS Pol")      : "NN",
-        _("Cross Mode")    : "Tone->Tone",
-        _("Duplex")        : "",
-        _("Offset")        : 0,
-        _("Mode")          : "FM",
-        _("Power")         : "",
-        _("Tune Step")     : 5.0,
-        _("Tone Mode")     : "",
-        _("Skip")          : "",
-        _("Comment")       : "",
+        _("Name"):           "",
+        _("Frequency"):      146010000,
+        _("Tone"):           88.5,
+        _("ToneSql"):        88.5,
+        _("DTCS Code"):      23,
+        _("DTCS Rx Code"):   23,
+        _("DTCS Pol"):       "NN",
+        _("Cross Mode"):     "Tone->Tone",
+        _("Duplex"):         "",
+        _("Offset"):         0,
+        _("Mode"):           "FM",
+        _("Power"):          "",
+        _("Tune Step"):      5.0,
+        _("Tone Mode"):      "",
+        _("Skip"):           "",
+        _("Comment"):        "",
         }
 
     choices = {
-        _("Tone")          : chirp_common.TONES,
-        _("ToneSql")       : chirp_common.TONES,
-        _("DTCS Code")     : chirp_common.ALL_DTCS_CODES,
-        _("DTCS Rx Code")  : chirp_common.ALL_DTCS_CODES,
-        _("DTCS Pol")      : ["NN", "NR", "RN", "RR"],
-        _("Mode")          : chirp_common.MODES,
-        _("Power")         : [],
-        _("Duplex")        : ["", "-", "+", "split", "off"],
-        _("Tune Step")     : chirp_common.TUNING_STEPS,
-        _("Tone Mode")     : ["", "Tone", "TSQL", "DTCS"],
-        _("Cross Mode")    : chirp_common.CROSS_MODES,
+        _("Tone"):           chirp_common.TONES,
+        _("ToneSql"):        chirp_common.TONES,
+        _("DTCS Code"):      chirp_common.ALL_DTCS_CODES,
+        _("DTCS Rx Code"):   chirp_common.ALL_DTCS_CODES,
+        _("DTCS Pol"):       ["NN", "NR", "RN", "RR"],
+        _("Mode"):           chirp_common.MODES,
+        _("Power"):          [],
+        _("Duplex"):         ["", "-", "+", "split", "off"],
+        _("Tune Step"):      chirp_common.TUNING_STEPS,
+        _("Tone Mode"):      ["", "Tone", "TSQL", "DTCS"],
+        _("Cross Mode"):     chirp_common.CROSS_MODES,
         }
-    
+
     def ed_name(self, _, __, new, ___):
         return self.rthread.radio.filter_name(new)
 
@@ -136,7 +142,7 @@ class MemoryEditor(common.Editor):
                 dup = "-"
                 offset *= -1
 
-            if not dup in self.choices[_("Duplex")]:
+            if dup not in self.choices[_("Duplex")]:
                 print "Duplex %s not supported by this radio" % dup
                 return
 
@@ -203,7 +209,7 @@ class MemoryEditor(common.Editor):
 
     def ed_duplex(self, _foo1, path, new, _foo2):
         if new == "":
-            return # Fast path outta here
+            return  # Fast path outta here
 
         iter = self.store.get_iter(path)
         freq, = self.store.get(iter, self.col(_("Frequency")))
@@ -234,6 +240,7 @@ class MemoryEditor(common.Editor):
             if modes[0] not in tmodes:
                 modes[0] = tmodes[0]
                 self.store.set(iter, self.col(_("Tone Mode")), modes[0])
+
         def _cm(*cmodes):
             if modes[0] == "Cross" and modes[1] not in cmodes:
                 modes[1] = cmodes[0]
@@ -314,7 +321,6 @@ class MemoryEditor(common.Editor):
         if duplex == "" or duplex == "(None)" or duplex == "off":
             hide += [self.col(_("Offset"))]
 
-
         return hide
 
     def maybe_hide_cols(self, iter):
@@ -327,19 +333,19 @@ class MemoryEditor(common.Editor):
             return
 
         iter = self.store.get_iter(path)
-        if not self.store.get(iter, self.col("_filled"))[0] \
-        and self.store.get(iter, self.col(_("Frequency")))[0] == 0:
+        if not self.store.get(iter, self.col("_filled"))[0] and \
+                self.store.get(iter, self.col(_("Frequency")))[0] == 0:
             print _("Editing new item, taking defaults")
             self.insert_new(iter)
 
         colnum = self.col(cap)
         funcs = {
-            _("Loc") : self.ed_loc,
-            _("Name") : self.ed_name,
-            _("Frequency") : self.ed_freq,
-            _("Duplex") : self.ed_duplex,
-            _("Offset") : self.ed_offset,
-            _("Tone") : self.ed_tone_field,
+            _("Loc"): self.ed_loc,
+            _("Name"): self.ed_name,
+            _("Frequency"): self.ed_freq,
+            _("Duplex"): self.ed_duplex,
+            _("Offset"): self.ed_offset,
+            _("Tone"): self.ed_tone_field,
             _("ToneSql"): self.ed_tone_field,
             _("DTCS Code"): self.ed_tone_field,
             _("DTCS Rx Code"): self.ed_tone_field,
@@ -347,7 +353,7 @@ class MemoryEditor(common.Editor):
             _("Cross Mode"): self.ed_tone_field,
             }
 
-        if funcs.has_key(cap):
+        if cap in func:
             new = funcs[cap](rend, path, new, colnum)
 
         if new is None:
@@ -375,8 +381,8 @@ class MemoryEditor(common.Editor):
 
         msgs = self.rthread.radio.validate_memory(mem)
         if msgs:
-            common.show_error(_("Error setting memory") + ": " + \
-                                  "\r\n\r\n".join(msgs))
+            common.show_error(_("Error setting memory") + ": " +
+                              "\r\n\r\n".join(msgs))
             self.prefill()
             return
 
@@ -414,7 +420,6 @@ class MemoryEditor(common.Editor):
             if extd:
                 val = extd
 
-
         return val
 
     def render(self, _, rend, model, iter, colnum):
@@ -427,14 +432,14 @@ class MemoryEditor(common.Editor):
         for key, val in self.defaults.items():
             line.append(self.col(key))
             line.append(val)
-        
+
         if not loc:
             loc, = self.store.get(iter, self.col(_("Loc")))
 
         self.store.set(iter,
                        0, loc,
                        *tuple(line))
-        
+
         return self._get_memory(iter)
 
     def insert_easy(self, store, _iter, delta):
@@ -454,12 +459,12 @@ class MemoryEditor(common.Editor):
         self.rthread.submit(job)
 
     def insert_hard(self, store, _iter, delta, warn=True):
-	if isinstance(self.rthread.radio, chirp_common.LiveRadio) and warn:
+        if isinstance(self.rthread.radio, chirp_common.LiveRadio) and warn:
             txt = _("This operation requires moving all subsequent channels "
                     "by one spot until an empty location is reached.  This "
                     "can take a LONG time.  Are you sure you want to do this?")
             if not common.ask_yesno_question(txt):
-                return False # No change
+                return False  # No change
 
         if delta <= 0:
             iter = _iter
@@ -477,11 +482,12 @@ class MemoryEditor(common.Editor):
         else:
             sd.insert(pos)
             sd.destroy()
-            job = common.RadioJob(lambda x: self.prefill(), "erase_memory", pos)
+            job = common.RadioJob(
+                lambda x: self.prefill(), "erase_memory", pos)
             job.set_desc(_("Adding memory {number}").format(number=pos))
             self.rthread.submit(job)
 
-        return True # We changed memories
+        return True  # We changed memories
 
     def _delete_rows(self, paths):
         to_remove = []
@@ -493,16 +499,15 @@ class MemoryEditor(common.Editor):
             job = common.RadioJob(None, "erase_memory", cur_pos)
             job.set_desc(_("Erasing memory {number}").format(number=cur_pos))
             self.rthread.submit(job)
-            
+
             def handler(mem):
                 if not isinstance(mem, Exception):
                     if not mem.empty or self.show_empty:
                         gobject.idle_add(self.set_memory, mem)
-            
+
             job = common.RadioJob(handler, "get_memory", cur_pos)
             job.set_desc(_("Getting memory {number}").format(number=cur_pos))
             self.rthread.submit(job)
-            
 
         if not self.show_empty:
             # We need to actually remove the rows from the store
@@ -518,11 +523,11 @@ class MemoryEditor(common.Editor):
                 if pos in to_remove:
                     to_remove.remove(pos)
                     if not self.store.remove(iter):
-                        break # This was the last row
+                        break  # This was the last row
                 else:
                     iter = self.store.iter_next(iter)
 
-        return True # We changed memories
+        return True  # We changed memories
 
     def _delete_rows_and_shift(self, paths, all=False):
         iter = self.store.get_iter(paths[0])
@@ -533,7 +538,7 @@ class MemoryEditor(common.Editor):
             sd.destroy()
 
         self.prefill()
-        return True # We changed memories
+        return True  # We changed memories
 
     def _move_up_down(self, paths, action):
         if action.endswith("up"):
@@ -550,12 +555,12 @@ class MemoryEditor(common.Editor):
             if victim_path[0] < 0:
                 raise ValueError()
             donor_loc = self.store.get(self.store.get_iter(donor_path),
-                                  self.col(_("Loc")))[0]
+                                       self.col(_("Loc")))[0]
             victim_loc = self.store.get(self.store.get_iter(victim_path),
-                                   self.col(_("Loc")))[0]
+                                        self.col(_("Loc")))[0]
         except ValueError:
             self.emit("usermsg", "No room to %s" % (action.replace("_", " ")))
-            return False # No change
+            return False  # No change
 
         class Context:
             pass
@@ -587,7 +592,7 @@ class MemoryEditor(common.Editor):
             old = mem.number
             mem.number = dest
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc(\
+            job.set_desc(
                 _("Moving memory from {old} to {new}").format(old=old,
                                                               new=dest))
             self.rthread.submit(job)
@@ -598,7 +603,7 @@ class MemoryEditor(common.Editor):
             old = mem.number
             mem.number += delta
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc(\
+            job.set_desc(
                 _("Moving memory from {old} to {new}").format(old=old,
                                                               new=old+delta))
             self.rthread.submit(job)
@@ -631,7 +636,7 @@ class MemoryEditor(common.Editor):
             job.set_desc("Getting memory %i" % loc)
             self.rthread.submit(job)
 
-        return True # We (scheduled some) change to the memories
+        return True  # We (scheduled some) change to the memories
 
     def _exchange_memories(self, paths):
         if len(paths) != 2:
@@ -647,8 +652,9 @@ class MemoryEditor(common.Editor):
             src = mem.number
             mem.number = dst
             job = common.RadioJob(None, "set_memory", mem)
-            job.set_desc(_("Moving memory from {old} to {new}").format(old=src,
-                                                                       new=dst))
+            job.set_desc(
+                _("Moving memory from {old} to {new}").format(
+                    old=src, new=dst))
             self.rthread.submit(job)
             if dst == loc_a:
                 self.prefill()
@@ -669,8 +675,8 @@ class MemoryEditor(common.Editor):
     def _show_raw(self, cur_pos):
         def idle_show_raw(result):
             gobject.idle_add(common.show_diff_blob,
-                             _("Raw memory {number}").format(number=cur_pos),
-                                                             result)
+                             _("Raw memory {number}").format(
+                                 number=cur_pos), result)
 
         job = common.RadioJob(idle_show_raw, "get_raw_memory", cur_pos)
         job.set_desc(_("Getting raw memory {number}").format(number=cur_pos))
@@ -722,8 +728,8 @@ class MemoryEditor(common.Editor):
             def apply_and_set(memory):
                 for field in fields:
                     self._copy_field(src_memory, memory, field)
-                    cb = (memory.number == locations[-1]
-                          and self._set_memory_cb or None)
+                    cb = (memory.number == locations[-1] and
+                          self._set_memory_cb or None)
                     job = common.RadioJob(cb, "set_memory", memory)
                     job.set_desc(_("Writing memory {number}").format(
                             number=memory.number))
@@ -745,7 +751,7 @@ class MemoryEditor(common.Editor):
             if len(locations) > 1:
                 self._apply_multiple(memory, dlg.get_fields(), locations)
             else:
-                if not "name" in mem.immutable:
+                if "name" not in mem.immutable:
                     mem.name = self.rthread.radio.filter_name(mem.name)
                 job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
                 job.set_desc(_("Writing memory {number}").format(
@@ -788,7 +794,7 @@ class MemoryEditor(common.Editor):
         elif action == "exchange":
             changed = self._exchange_memories(paths)
         elif action in ["cut", "copy"]:
-            changed = self.copy_selection(action=="cut")
+            changed = self.copy_selection(action == "cut")
         elif action == "paste":
             changed = self.paste_selection()
         elif action == "all":
@@ -829,7 +835,7 @@ class MemoryEditor(common.Editor):
 
         menu_xml = """
 <ui>
-  <popup name="Menu"> 
+  <popup name="Menu">
     <menuitem action="cut"/>
     <menuitem action="copy"/>
     <menuitem action="paste"/>
@@ -852,7 +858,6 @@ class MemoryEditor(common.Editor):
   </popup>
 </ui>
 """ % devmenu
-
 
         (store, paths) = self.view.get_selection().get_selected_rows()
         issingle = len(paths) == 1
@@ -916,7 +921,7 @@ class MemoryEditor(common.Editor):
                 menu = self.make_context_menu()
                 menu.popup(None, None, None, event.button, event.time)
             return True
-        
+
     def get_column_visible(self, col):
         column = self.view.get_column(col)
         return column.get_visible()
@@ -924,7 +929,7 @@ class MemoryEditor(common.Editor):
     def set_column_visible(self, col, visible):
         column = self.view.get_column(col)
         column.set_visible(visible)
-    
+
     def cell_editing_started(self, rend, event, path):
         self._in_editing = True
 
@@ -947,10 +952,10 @@ class MemoryEditor(common.Editor):
 
         filled = self.col("_filled")
 
-        default_col_order = [x for x,y,z in self.cols if z]
+        default_col_order = [x for x, y, z in self.cols if z]
         try:
-            col_order = self._config.get("column_order_%s" % \
-                                             self.__class__.__name__).split(",")
+            col_order = self._config.get("column_order_%s" %
+                                         self.__class__.__name__).split(",")
             if len(col_order) != len(default_col_order):
                 raise Exception()
             for i in col_order:
@@ -976,9 +981,10 @@ class MemoryEditor(common.Editor):
             rend.connect('edited', self.cell_editing_stopped)
 
             if _type == TYPE_BOOLEAN:
-                #rend.set_property("activatable", True)
-                #rend.connect("toggled", handle_toggle, self.store, i)
-                col = gtk.TreeViewColumn(_cap, rend, active=i, sensitive=filled)
+                # rend.set_property("activatable", True)
+                # rend.connect("toggled", handle_toggle, self.store, i)
+                col = gtk.TreeViewColumn(_cap, rend, active=i,
+                                         sensitive=filled)
             elif _rend == gtk.CellRendererCombo:
                 if isinstance(self.choices[_cap], gtk.ListStore):
                     choices = self.choices[_cap]
@@ -998,14 +1004,14 @@ class MemoryEditor(common.Editor):
                 rend.connect("edited", self.edited, _cap)
                 col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
-                
+
             col.set_reorderable(True)
             col.set_sort_column_id(i)
             col.set_resizable(True)
             col.set_min_width(1)
             col.set_visible(not _cap.startswith("_") and
                             _cap in visible_cols and
-                            not _cap in unsupported_cols)
+                            _cap not in unsupported_cols)
             cols[_cap] = col
             i += 1
 
@@ -1028,7 +1034,9 @@ class MemoryEditor(common.Editor):
         try:
             return self._cached_cols[caption]
         except KeyError:
-            raise Exception(_("Internal Error: Column {name} not found").format(name=caption))
+            raise Exception(
+                _("Internal Error: Column {name} not found").format(
+                    name=caption))
 
     def prefill(self):
         self.store.clear()
@@ -1109,13 +1117,14 @@ class MemoryEditor(common.Editor):
                 # FIXME: Make the actual remove happen on callback
                 self.store.remove(iter)
                 job = common.RadioJob(None, "erase_memory", number)
-                job.set_desc(_("Erasing memory {number}").format(number=number))
+                job.set_desc(
+                    _("Erasing memory {number}").format(number=number))
                 self.rthread.submit()
                 break
             iter = self.store.iter_next(iter)
 
     def _set_mem_vals(self, mem, vals, iter):
-        power_levels = {"" : None}
+        power_levels = {"": None}
         for i in self._features.valid_power_levels:
             power_levels[str(i)] = i
 
@@ -1149,9 +1158,10 @@ class MemoryEditor(common.Editor):
 
     def _limit_key(self, which):
         if which not in ["lo", "hi"]:
-            raise Exception(_("Internal Error: Invalid limit {number}").format(number=which))
-        return "%s_%s" % (directory.radio_class_id(self.rthread.radio.__class__),
-                          which)
+            raise Exception(_("Internal Error: Invalid limit {number}").format(
+                             number=which))
+        return "%s_%s" % \
+            (directory.radio_class_id(self.rthread.radio.__class__), which)
 
     def _store_limit(self, sb, which):
         self._config.set_int(self._limit_key(which), int(sb.get_value()))
@@ -1200,7 +1210,7 @@ class MemoryEditor(common.Editor):
             hival = self.hi_limit_adj.get_value()
             if loval >= hival:
                 self.hi_limit_adj.set_value(loval + 25)
-        
+
         lo.connect_after("focus-out-event", set_hi)
         lo.connect_after("activate", activate_go)
         hi.connect_after("activate", activate_go)
@@ -1219,7 +1229,7 @@ class MemoryEditor(common.Editor):
 
         showempty = gtk.ToggleButton(_("Show Empty"))
         showempty.set_relief(gtk.RELIEF_NONE)
-        showempty.set_active(self.show_empty);
+        showempty.set_active(self.show_empty)
         showempty.connect("toggled",
                           lambda x: self.set_show_empty(x.get_active()))
         showempty.show()
@@ -1231,7 +1241,9 @@ class MemoryEditor(common.Editor):
 
         props = gtk.Button(_("Properties"))
         props.set_relief(gtk.RELIEF_NONE)
-        props.connect("clicked", lambda x: self.hotkey(gtk.Action("properties", "", "", 0)))
+        props.connect("clicked",
+                      lambda x: self.hotkey(
+                            gtk.Action("properties", "", "", 0)))
         props.show()
         hbox.pack_start(props, 0, 0, 0)
 
@@ -1359,7 +1371,7 @@ class MemoryEditor(common.Editor):
         vbox.show()
 
         self.prefill()
-        
+
         self.root = vbox
 
         # Run low priority jobs to get the rest of the memories
@@ -1393,13 +1405,14 @@ class MemoryEditor(common.Editor):
             mem = self._get_memory(iter)
             selection.append(mem.dupe())
             maybe_cut.append((iter, mem))
-        
+
         if cut:
             for iter, mem in maybe_cut:
                 mem.empty = True
                 job = common.RadioJob(self._set_memory_cb,
                                       "erase_memory", mem.number)
-                job.set_desc(_("Cutting memory {number}").format(number=mem.number))
+                job.set_desc(
+                    _("Cutting memory {number}").format(number=mem.number))
                 self.rthread.submit(job)
 
                 self._set_memory(iter, mem)
@@ -1408,7 +1421,7 @@ class MemoryEditor(common.Editor):
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.set_text(result)
 
-        return cut # Only changed if we did a cut
+        return cut  # Only changed if we did a cut
 
     def _paste_selection(self, clipboard, text, data):
         if not text:
@@ -1432,9 +1445,9 @@ class MemoryEditor(common.Editor):
         if (paths[0][0] + len(mem_list)) > self._rows_in_store:
             common.show_error(_("Unable to paste {src} memories into "
                                 "{dst} rows. Increase the memory bounds "
-                                "or show empty memories.").format(\
-                    src=len(mem_list),
-                    dst=(self._rows_in_store - paths[0][0])))
+                                "or show empty memories.").format(
+                src=len(mem_list),
+                dst=(self._rows_in_store - paths[0][0])))
             return
 
         for mem in mem_list:
@@ -1449,7 +1462,8 @@ class MemoryEditor(common.Editor):
                                                      gtk.STOCK_NO, 2,
                                                      gtk.STOCK_CANCEL, 3,
                                                      "All", 4))
-                d.set_text(_("Overwrite location {number}?").format(number=loc))
+                d.set_text(
+                    _("Overwrite location {number}?").format(number=loc))
                 r = d.run()
                 d.destroy()
                 if r == 4:
@@ -1464,22 +1478,23 @@ class MemoryEditor(common.Editor):
 
             src_number = mem.number
             mem.number = loc
-            
+
             try:
                 mem = import_logic.import_mem(self.rthread.radio,
                                               src_features,
                                               mem)
             except import_logic.DestNotCompatible:
                 msgs = self.rthread.radio.validate_memory(mem)
-                errs = [x for x in msgs if isinstance(x,
-                                                      chirp_common.ValidationError)]
+                errs = [x for x in msgs
+                        if isinstance(x, chirp_common.ValidationError)]
                 if errs:
                     d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
                                                 buttons=(gtk.STOCK_OK, 1,
                                                          gtk.STOCK_CANCEL, 2))
-                    d.set_text(_("Pasted memory {number} is not compatible with "
-                                 "this radio because:").format(number=src_number) +\
-                                   os.linesep + os.linesep.join(msgs))
+                    d.set_text(
+                        _("Pasted memory {number} is not compatible with "
+                          "this radio because:").format(number=src_number) +
+                        os.linesep + os.linesep.join(msgs))
                     r = d.run()
                     d.destroy()
                     if r == 2:
@@ -1492,7 +1507,8 @@ class MemoryEditor(common.Editor):
             iter = store.iter_next(iter)
 
             job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
-            job.set_desc(_("Writing memory {number}").format(number=mem.number))
+            job.set_desc(
+                _("Writing memory {number}").format(number=mem.number))
             self.rthread.submit(job)
 
     def paste_selection(self):
@@ -1509,6 +1525,7 @@ class MemoryEditor(common.Editor):
 
     def other_editor_changed(self, target_editor):
         self.need_refresh = True
+
 
 class DstarMemoryEditor(MemoryEditor):
     def _get_cols_to_hide(self, iter):
@@ -1582,12 +1599,12 @@ class DstarMemoryEditor(MemoryEditor):
         self.defaults["Digital Code"] = 0
 
         MemoryEditor.__init__(self, rthread)
-    
+
         def ucall_cb(calls):
             self.defaults["URCALL"] = calls[0]
             for call in calls:
                 self.choices["URCALL"].append((call, call))
-        
+
         if self._features.requires_call_lists:
             ujob = common.RadioJob(ucall_cb, "get_urcall_list")
             ujob.set_desc(_("Downloading URCALL list"))
@@ -1609,7 +1626,7 @@ class DstarMemoryEditor(MemoryEditor):
 
         if not self._features.requires_call_lists:
             for i in _dv_columns:
-                if not self.choices.has_key(i):
+                if i not in self.choices:
                     continue
                 column = self.view.get_column(self.col(i))
                 rend = column.get_cell_renderers()[0]
@@ -1652,6 +1669,7 @@ class DstarMemoryEditor(MemoryEditor):
                            self.col("RPT2CALL"), "",
                            self.col("Digital Code"), 0,
                            )
+
 
 class ID800MemoryEditor(DstarMemoryEditor):
     pass
