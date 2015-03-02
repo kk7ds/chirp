@@ -5,7 +5,6 @@
 ./chirp/anytone.py
 ./chirp/ap510.py
 ./chirp/baofeng_uv3r.py
-./chirp/bitwise.py
 ./chirp/bjuv55.py
 ./chirp/ft1802.py
 ./chirp/ft1d.py

@@ -36,13 +36,13 @@
 #  lbcd foo;     /* BCD-encoded byte (LE)                   */
 #  bbcd foo;     /* BCD-encoded byte (BE)                   */
 #  char foo[8];  /* 8-char array                            */
-#  struct {                                                 
-#   u8 foo;                                                 
-#   u16 bar;                                                
+#  struct {
+#   u8 foo;
+#   u16 bar;
 #  } baz;        /* Structure with u8 and u16               */
 #
 # Example directives:
-# 
+#
 # #seekto 0x1AB; /* Set the data offset to 0x1AB            */
 # #seek 4;       /* Set the data offset += 4                */
 # #printoffset "foobar" /* Echo the live data offset,
@@ -51,7 +51,7 @@
 # Usage:
 #
 # Create a data definition in a string, and pass it and the data
-# to parse to the parse() function.  The result is a structure with 
+# to parse to the parse() function.  The result is a structure with
 # dict-like objects for structures, indexed by name, and lists of
 # objects for arrays.  The actual data elements can be interpreted
 # as integers directly (for int types).  Strings and BCD arrays
@@ -63,9 +63,11 @@ import os
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
 
+
 class ParseError(Exception):
     """Indicates an error parsing a definition"""
     pass
+
 
 def format_binary(nbits, value, pad=8):
     s = ""
@@ -74,9 +76,11 @@ def format_binary(nbits, value, pad=8):
         value >>= 1
     return "%s%s" % ((pad - len(s)) * ".", s)
 
+
 def bits_between(start, end):
-    bits = (1 << (end - start )) - 1
+    bits = (1 << (end - start)) - 1
     return bits << start
+
 
 def pp(structure, level=0):
     for i in structure:
@@ -91,6 +95,7 @@ def pp(structure, level=0):
         elif isinstance(i, str):
             print "%s%s" % (" " * level, i)
 
+
 def array_copy(dst, src):
     """Copy an array src into DataElement array dst"""
     if len(dst) != len(src):
@@ -99,27 +104,33 @@ def array_copy(dst, src):
     for i in range(0, len(dst)):
         dst[i].set_value(src[i])
 
+
 def bcd_to_int(bcd_array):
-    """Convert an array of bcdDataElement like \x12\x34 into an int like 1234"""
+    """Convert an array of bcdDataElement like \x12\x34
+    into an int like 1234"""
     value = 0
     for bcd in bcd_array:
         a, b = bcd.get_value()
         value = (value * 100) + (a * 10) + b
     return value
-        
+
+
 def int_to_bcd(bcd_array, value):
     """Convert an int like 1234 into bcdDataElements like "\x12\x34" """
     for i in reversed(range(0, len(bcd_array))):
         bcd_array[i].set_value(value % 100)
         value /= 100
 
+
 def get_string(char_array):
     """Convert an array of charDataElements into a string"""
     return "".join([x.get_value() for x in char_array])
 
+
 def set_string(char_array, string):
     """Set an array of charDataElements from a string"""
     array_copy(char_array, list(string))
+
 
 class DataElement:
     _size = 1
@@ -139,7 +150,8 @@ class DataElement:
         raise Exception("Not implemented")
 
     def get_value(self):
-        return self._get_value(self._data[self._offset:self._offset+self._size])
+        value = self._data[self._offset:self._offset + self._size]
+        return self._get_value(value)
 
     def set_value(self, value):
         raise Exception("Not implemented for %s" % self.__class__)
@@ -158,6 +170,7 @@ class DataElement:
         return "(%s:%i bytes @ %04x)" % (self.__class__.__name__,
                                          self._size,
                                          self._offset)
+
 
 class arrayDataElement(DataElement):
     def __repr__(self):
@@ -252,7 +265,7 @@ class arrayDataElement(DataElement):
             if i.get_value() == value:
                 return index
             index += 1
-        raise IndexError()            
+        raise IndexError()
 
     def __iter__(self):
         return iter(self.__items)
@@ -269,11 +282,12 @@ class arrayDataElement(DataElement):
             size += i.size()
         return size
 
+
 class intDataElement(DataElement):
     def __repr__(self):
         fmt = "0x%%0%iX" % (self._size * 2)
         return fmt % int(self)
-    
+
     def __int__(self):
         return self.get_value()
 
@@ -396,6 +410,7 @@ class intDataElement(DataElement):
     def __nonzero__(self):
         return self.get_value() != 0
 
+
 class u8DataElement(intDataElement):
     _size = 1
 
@@ -404,6 +419,7 @@ class u8DataElement(intDataElement):
 
     def set_value(self, value):
         self._data[self._offset] = (int(value) & 0xFF)
+
 
 class u16DataElement(intDataElement):
     _size = 2
@@ -416,9 +432,11 @@ class u16DataElement(intDataElement):
         self._data[self._offset] = struct.pack(self._endianess + "H",
                                                int(value) & 0xFFFF)
 
+
 class ul16DataElement(u16DataElement):
     _endianess = "<"
-    
+
+
 class u24DataElement(intDataElement):
     _size = 3
     _endianess = ">"
@@ -435,11 +453,13 @@ class u24DataElement(intDataElement):
         else:
             start = 1
             end = 4
-        self._data[self._offset] = struct.pack(self._endianess + "I",
-                                               int(value) & 0xFFFFFFFF)[start:end]
+        packed = struct.pack(self._endianess + "I", int(value) & 0xFFFFFFFF)
+        self._data[self._offset] = packed[start:end]
+
 
 class ul24DataElement(u24DataElement):
     _endianess = "<"
+
 
 class u32DataElement(intDataElement):
     _size = 4
@@ -452,8 +472,10 @@ class u32DataElement(intDataElement):
         self._data[self._offset] = struct.pack(self._endianess + "I",
                                                int(value) & 0xFFFFFFFF)
 
+
 class ul32DataElement(u32DataElement):
     _endianess = "<"
+
 
 class i8DataElement(u8DataElement):
     _size = 1
@@ -462,8 +484,9 @@ class i8DataElement(u8DataElement):
         return struct.unpack("b", data)[0]
 
     def set_value(self, value):
-        self._data[self._offset] = struct.pack("b", int(value) )
-        
+        self._data[self._offset] = struct.pack("b", int(value))
+
+
 class i16DataElement(intDataElement):
     _size = 2
     _endianess = ">"
@@ -473,10 +496,12 @@ class i16DataElement(intDataElement):
 
     def set_value(self, value):
         self._data[self._offset] = struct.pack(self._endianess + "h",
-                                               int(value) )
+                                               int(value))
+
 
 class il16DataElement(i16DataElement):
     _endianess = "<"
+
 
 class i24DataElement(intDataElement):
     _size = 3
@@ -495,10 +520,12 @@ class i24DataElement(intDataElement):
             start = 1
             end = 4
         self._data[self._offset] = struct.pack(self._endianess + "i",
-                                               int(value) )[start:end]
+                                               int(value))[start:end]
+
 
 class il24DataElement(i24DataElement):
     _endianess = "<"
+
 
 class i32DataElement(intDataElement):
     _size = 4
@@ -509,10 +536,12 @@ class i32DataElement(intDataElement):
 
     def set_value(self, value):
         self._data[self._offset] = struct.pack(self._endianess + "i",
-                                               int(value) )
+                                               int(value))
+
 
 class il32DataElement(i32DataElement):
     _endianess = "<"
+
 
 class charDataElement(DataElement):
     _size = 1
@@ -528,6 +557,7 @@ class charDataElement(DataElement):
 
     def set_value(self, value):
         self._data[self._offset] = str(value)
+
 
 class bcdDataElement(DataElement):
     def __int__(self):
@@ -560,16 +590,19 @@ class bcdDataElement(DataElement):
         b = ord(data) & 0x0F
         return (a, b)
 
+
 class lbcdDataElement(bcdDataElement):
     _size = 1
+
 
 class bbcdDataElement(bcdDataElement):
     _size = 1
 
+
 class bitDataElement(intDataElement):
     _nbits = 0
     _shift = 0
-    _subgen = u8DataElement # Default to a byte
+    _subgen = u8DataElement  # Default to a byte
 
     def __repr__(self):
         fmt = "0x%%0%iX (%%sb)" % (self._size * 2)
@@ -578,30 +611,22 @@ class bitDataElement(intDataElement):
     def get_value(self):
         data = self._subgen(self._data, self._offset).get_value()
         mask = bits_between(self._shift-self._nbits, self._shift)
-        val = data & mask
-
-        #print "start: %i bits: %i" % (self._shift, self._nbits)
-        #print "data:  %04x" % data
-        #print "mask:  %04x" % mask
-        #print " val:  %04x" % val
-
-        val >>= (self._shift - self._nbits)
+        val = (data & mask) >> (self._shift - self._nbits)
         return val
 
     def set_value(self, value):
         mask = bits_between(self._shift-self._nbits, self._shift)
+
         data = self._subgen(self._data, self._offset).get_value()
         data &= ~mask
 
-        #print "data: %04x" % data
-        #print "mask: %04x" % mask
-        #print "valu: %04x" % value
-
         value = ((int(value) << (self._shift-self._nbits)) & mask) | data
+
         self._subgen(self._data, self._offset).set_value(value)
-        
+
     def size(self):
         return self._nbits
+
 
 class structDataElement(DataElement):
     def __repr__(self):
@@ -660,7 +685,7 @@ class structDataElement(DataElement):
             raise AttributeError("No attribute %s in struct" % name)
 
     def __setattr__(self, name, value):
-        if not self.__dict__.has_key("_structDataElement__init"):
+        if "_structDataElement__init" not in self.__dict__:
             self.__dict__[name] = value
         else:
             self.__dict__["_generators"][name].set_value(value)
@@ -675,7 +700,6 @@ class structDataElement(DataElement):
             for el in gen:
                 i += 1
                 size += el.size()
-                #print "Size of %s[%i] = %i" % (name, i, el.size())
         return size
 
     def get_raw(self):
@@ -695,25 +719,26 @@ class structDataElement(DataElement):
         for key in self._keys:
             yield key, self._generators[key]
 
+
 class Processor:
 
     _types = {
-        "u8"   : u8DataElement,
-        "u16"  : u16DataElement,
-        "ul16" : ul16DataElement,
-        "u24"  : u24DataElement,
-        "ul24" : ul24DataElement,
-        "u32"  : u32DataElement,
-        "ul32" : ul32DataElement,
-        "i8"   : i8DataElement,
-        "i16"  : i16DataElement,
-        "il16" : il16DataElement,
-        "i24"  : i24DataElement,
-        "il24" : il24DataElement,
-        "i32"  : i32DataElement,
-        "char" : charDataElement,
-        "lbcd" : lbcdDataElement,
-        "bbcd" : bbcdDataElement,
+        "u8":    u8DataElement,
+        "u16":   u16DataElement,
+        "ul16":  ul16DataElement,
+        "u24":   u24DataElement,
+        "ul24":  ul24DataElement,
+        "u32":   u32DataElement,
+        "ul32":  ul32DataElement,
+        "i8":    i8DataElement,
+        "i16":   i16DataElement,
+        "il16":  il16DataElement,
+        "i24":   i24DataElement,
+        "il24":  il24DataElement,
+        "i32":   i32DataElement,
+        "char":  charDataElement,
+        "lbcd":  lbcdDataElement,
+        "bbcd":  bbcdDataElement,
         }
 
     def __init__(self, data, offset):
@@ -740,13 +765,13 @@ class Processor:
                 _nbits = bits
                 _shift = bitsleft
                 _subgen = self._types[dtype]
-            
+
             self._generators[name] = bitDE(self._data, self._offset)
             bitsleft -= bits
 
         if bitsleft:
-            print "WARNING: %i trailing bits unaccounted for in %s" % (bitsleft,
-                                                                       bitfield)
+            print "WARNING: %i trailing bits unaccounted for in %s" % \
+                  (bitsleft, bitfield)
 
         return bytes
 
@@ -828,7 +853,7 @@ class Processor:
     def parse_struct(self, struct):
         if struct[0][0] == "struct_defn":
             return self.parse_struct_defn(struct[0][1])
-        elif struct [0][0] == "struct_decl":
+        elif struct[0][0] == "struct_decl":
             return self.parse_struct_decl(struct[0][1])
         else:
             raise Exception("Internal error: What is `%s'?" % struct[0][0])
@@ -837,7 +862,6 @@ class Processor:
         name = directive[0][0]
         value = directive[0][1][0][1]
         if name == "seekto":
-            #print "NOTICE: Setting offset to %i (0x%X)" % (offset, offset)
             self._offset = int(value, 0)
         elif name == "seek":
             self._offset += int(value, 0)
@@ -846,14 +870,12 @@ class Processor:
 
     def parse_block(self, lang):
         for t, d in lang:
-            #print t
             if t == "struct":
                 self.parse_struct(d)
             elif t == "definition":
                 self.parse_defn(d)
             elif t == "directive":
                 self.parse_directive(d)
-        
 
     def parse(self, lang):
         self._generators = structDataElement(self._data, self._offset)
@@ -894,7 +916,6 @@ struct {
     import sys
     sys.exit(0)
 
-
     test = """
     struct {
       u16 bar;
@@ -913,12 +934,12 @@ struct {
     data = "\xfe\x10\x00\x08\xFF\x23\x01\x02\x03abc\x34\x89"
     data = (data * 2) + "\x12"
     data = MemoryMap(data)
-    
+
     ast = bitwise_grammar.parse(test)
 
     # Just for testing, pretty-print the tree
     pp(ast)
-    
+
     # Mess with it a little
     p = Processor(data, 0)
     obj = p.parse(ast)
@@ -931,7 +952,7 @@ struct {
     obj["foo"][0]["onebit"].set_value(1)
     print "%i" % int(obj["foo"][0]["bar"])
 
-    for i in  obj["foo"][0]["array"]:
+    for i in obj["foo"][0]["array"]:
         print int(i)
     obj["foo"][0]["array"][1].set_value(255)
 
