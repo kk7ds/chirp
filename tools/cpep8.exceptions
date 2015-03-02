@@ -2,5 +2,6 @@
 # Each line must contain the file name, a tab, and a comma-separated list
 # of style rules to ignore in that file.  This mechanism should be used
 # sparingly and as a measure of last resort.
+./share/make_supported.py	E402
 ./tests/run_tests	E402
 ./tests/unit/test_memedit_edits.py	E402

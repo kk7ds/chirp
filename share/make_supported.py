@@ -12,8 +12,8 @@ from chirp import *
 sys.stdout = tmp
 
 RF = chirp_common.RadioFeatures()
-KEYS = [x for x in sorted(RF.__dict__.keys()) \
-            if "_" in x and not x.startswith("_")]
+KEYS = [x for x in sorted(RF.__dict__.keys())
+        if "_" in x and not x.startswith("_")]
 
 RADIO_TYPES = {
     'Clone': chirp_common.CloneModeRadio,
@@ -41,13 +41,13 @@ def supported_row(radio, odd):
         if key == "valid_bands":
             value = ["%s-%s MHz" % (chirp_common.format_freq(x),
                                     chirp_common.format_freq(y))
-                     for x,y in value]
+                     for x, y in value]
 
         if key in ["valid_bands", "valid_modes", "valid_power_levels",
                    "valid_tuning_steps"]:
             try:
-                value = ", ".join([str(x) for x in value \
-                                       if not str(x).startswith("?")])
+                value = ", ".join([str(x) for x in value
+                                   if not str(x).startswith("?")])
             except Exception, e:
                 raise
 
@@ -75,6 +75,7 @@ def supported_row(radio, odd):
     row += "</tr>\n"
     return row
 
+
 def header_row():
     row = "<thead><tr>"
     row += "<th>Radio</th>\n"
@@ -84,6 +85,7 @@ def header_row():
     row += '<th title="Radio programming type">Type</th>\n'
     row += "</tr></thead>\n"
     return row
+
 
 print """
 <style>
@@ -114,13 +116,12 @@ span.false {
 <table>
 """
 
-models = {
-    "Icom" : [],
-    "Kenwood" : [],
-    "Yaesu" : [],
-    "Alinco" : [],
-    "z_Other" : [],
-}
+models = {"Icom": [],
+          "Kenwood": [],
+          "Yaesu": [],
+          "Alinco": [],
+          "z_Other": [],
+          }
 
 exclude = [directory.DRV_TO_RADIO["Icom_7200"]]
 

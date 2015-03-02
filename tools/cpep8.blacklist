@@ -90,6 +90,5 @@
 ./chirpui/memedit.py
 ./chirpui/miscwidgets.py
 ./chirpui/reporting.py
-./share/make_supported.py
 ./tools/bitdiff.py
 ./tools/img2thd72.py
