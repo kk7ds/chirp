@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CHIRP_VERSION="0.3.0dev"
-
 import os
 import sys
 from glob import glob
+
+CHIRP_VERSION = "0.3.0dev"
 
 module_dir = os.path.dirname(sys.modules["chirp"].__file__)
 __all__ = []
