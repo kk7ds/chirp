@@ -13,7 +13,6 @@
 ./chirp/baofeng_uv3r.py
 ./chirp/bitwise.py
 ./chirp/bjuv55.py
-./chirp/elib_intl.py
 ./chirp/ft1802.py
 ./chirp/ft1d.py
 ./chirp/ft2800.py
