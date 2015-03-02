@@ -3,9 +3,12 @@ import gobject
 import pango
 import re
 import os
+import logging
 
 from chirp import bitwise
 from chirpui import common, config
+
+LOG = logging.getLogger(__name__)
 
 CONF = config.get()
 
@@ -90,7 +93,7 @@ class FixedEntry(gtk.Entry):
         except Exception:
             fontsize = 10
         if fontsize < 4 or fontsize > 144:
-            print "Unsupported browser_fontsize %i. Using 10." % fontsize
+            LOG.warn("Unsupported browser_fontsize %i. Using 10." % fontsize)
             fontsize = 11
 
         fontdesc = pango.FontDescription("Courier bold %i" % fontsize)

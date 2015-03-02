@@ -50,12 +50,12 @@ except:
 
 def should_report():
     if not ENABLED:
-        LOG.debug("Not reporting due to recent failure")
+        LOG.info("Not reporting due to recent failure")
         return False
 
     conf = config.get()
     if conf.get_bool("no_report"):
-        LOG.debug("Reporting disabled")
+        LOG.info("Reporting disabled")
         return False
 
     return True
@@ -65,7 +65,7 @@ def _report_model_usage(model, direction, success):
     global ENABLED
     if direction not in ["live", "download", "upload",
                          "import", "export", "importsrc"]:
-        print "Invalid direction `%s'" % direction
+        LOG.warn("Invalid direction `%s'" % direction)
         return True  # This is a bug, but not fatal
 
     model = "%s_%s" % (model.VENDOR, model.MODEL)

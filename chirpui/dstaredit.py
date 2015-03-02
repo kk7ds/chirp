@@ -15,8 +15,11 @@
 
 import gtk
 import gobject
+import logging
 
 from chirpui import common, miscwidgets
+
+LOG = logging.getLogger(__name__)
 
 WIDGETW = 80
 WIDGETH = 30
@@ -96,24 +99,24 @@ class DStarEditor(common.Editor):
     def __cs_changed(self, cse):
         job = None
 
-        print "Callsigns: %s" % cse.get_callsigns()
+        LOG.debug("Callsigns: %s" % cse.get_callsigns())
         if cse == self.editor_ucall:
             job = common.RadioJob(None,
                                   "set_urcall_list",
                                   cse.get_callsigns())
-            print "Set urcall"
+            LOG.debug("Set urcall")
         elif cse == self.editor_rcall:
             job = common.RadioJob(None,
                                   "set_repeater_call_list",
                                   cse.get_callsigns())
-            print "Set rcall"
+            LOG.debug("Set rcall")
         elif cse == self.editor_mcall:
             job = common.RadioJob(None,
                                   "set_mycall_list",
                                   cse.get_callsigns())
 
         if job:
-            print "Submitting job to update call lists"
+            LOG.debug("Submitting job to update call lists")
             self.rthread.submit(job)
 
         self.emit("changed")
@@ -154,7 +157,7 @@ class DStarEditor(common.Editor):
         if self.loaded:
             return
         self.loaded = True
-        print "Loading callsigns..."
+        LOG.debug("Loading callsigns...")
 
         def set_ucall(calls):
             self.editor_ucall.set_callsigns(calls)

@@ -16,11 +16,14 @@
 import gtk
 import gobject
 import time
+import logging
 
 from gobject import TYPE_INT, TYPE_STRING, TYPE_BOOLEAN
 
 from chirp import chirp_common
 from chirpui import common, miscwidgets
+
+LOG = logging.getLogger(__name__)
 
 
 class MappingNamesJob(common.RadioJob):
@@ -378,7 +381,8 @@ class MappingMembershipEditor(common.Editor):
         (min, max) = self._rf.memory_bounds
         for i in range(min, max+1):
             self.refresh_memory(i)
-        print "Got all %s info in %s" % (self._type, (time.time() - start))
+        LOG.debug("Got all %s info in %s" %
+                  (self._type, (time.time() - start)))
 
     def refresh_mappings(self, and_memories=False):
         def got_mappings():

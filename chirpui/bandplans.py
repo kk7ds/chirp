@@ -14,9 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
+import logging
 from chirp import bandplan, bandplan_na, bandplan_au
 from chirp import bandplan_iaru_r1, bandplan_iaru_r2, bandplan_iaru_r3
 from chirpui import inputdialog
+
+LOG = logging.getLogger(__name__)
 
 
 class BandPlans(object):
@@ -44,7 +47,8 @@ class BandPlans(object):
                 # Check for duplicates.
                 duplicates = [x for x in plan.BANDS if x == band]
                 if len(duplicates) > 1:
-                    print "Bandplan %s has duplicates %s" % (name, duplicates)
+                    LOG.warn("Bandplan %s has duplicates %s" %
+                             (name, duplicates))
                 # Add repeater inputs.
                 rpt_input = band.inverse()
                 if rpt_input not in plan.BANDS:
@@ -102,6 +106,7 @@ class BandPlans(object):
                 self._config.set_bool(shortname, selection == details[0],
                                       "bandplan")
                 if selection == details[0]:
-                    print "Selected band plan %s: %s" % (shortname, selection)
+                    LOG.info("Selected band plan %s: %s" %
+                             (shortname, selection))
 
         d.destroy()

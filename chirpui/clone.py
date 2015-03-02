@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import threading
+import logging
 import os
 
 import gtk
@@ -21,6 +22,8 @@ import gobject
 
 from chirp import platform, directory, detect, chirp_common
 from chirpui import miscwidgets, cloneprog, inputdialog, common, config
+
+LOG = logging.getLogger(__name__)
 
 AUTO_DETECT_STRING = "Auto Detect (Icom Only)"
 
@@ -188,7 +191,7 @@ class CloneSettingsDialog(gtk.Dialog):
                 common.show_error(
                     _("Internal error: Unable to upload to {model}").format(
                         model=model))
-                print self.__vendors
+                LOG.info(self.__vendors)
                 return None
 
         conf = config.get("state")
@@ -222,7 +225,7 @@ class CloneThread(threading.Thread):
         self.__cancelled = True
 
     def run(self):
-        print "Clone thread started"
+        LOG.debug("Clone thread started")
 
         gobject.idle_add(self.__progw.show)
 
@@ -237,7 +240,7 @@ class CloneThread(threading.Thread):
             emsg = None
         except Exception, e:
             common.log_exception()
-            print _("Clone failed: {error}").format(error=e)
+            LOG.error(_("Clone failed: {error}").format(error=e))
             emsg = e
 
         gobject.idle_add(self.__progw.hide)
@@ -245,7 +248,7 @@ class CloneThread(threading.Thread):
         # NB: Compulsory close of the radio's serial connection
         self.__radio.pipe.close()
 
-        print "Clone thread ended"
+        LOG.debug("Clone thread ended")
 
         if self.__cback and not self.__cancelled:
             gobject.idle_add(self.__cback, self.__radio, emsg)

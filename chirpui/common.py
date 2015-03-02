@@ -21,9 +21,12 @@ import threading
 import time
 import os
 import traceback
+import logging
 
 from chirp import errors
 from chirpui import reporting, config
+
+LOG = logging.getLogger(__name__)
 
 CONF = config.get()
 
@@ -78,9 +81,7 @@ gobject.type_register(Editor)
 
 def DBG(*args):
     if False:
-        print " ".join(args)
-
-VERBOSE = False
+        LOG.debug(" ".join(args))
 
 
 class RadioJob:
@@ -111,17 +112,17 @@ class RadioJob:
             DBG("Running %s (%s %s)" % (self.func,
                                         str(self.args),
                                         str(self.kwargs)))
-            if VERBOSE:
-                print self.desc
+            DBG(self.desc)
             result = func(*self.args, **self.kwargs)
         except errors.InvalidMemoryLocation, e:
             result = e
         except Exception, e:
-            print "Exception running RadioJob: %s" % e
+            LOG.error("Exception running RadioJob: %s" % e)
             log_exception()
-            print "Job Args:   %s" % str(self.args)
-            print "Job KWArgs: %s" % str(self.kwargs)
-            print "Job Called from:%s%s" % (os.linesep, "".join(self.tb[:-1]))
+            LOG.error("Job Args:   %s" % str(self.args))
+            LOG.error("Job KWArgs: %s" % str(self.kwargs))
+            LOG.error("Job Called from:%s%s" %
+                      (os.linesep, "".join(self.tb[:-1])))
             result = e
 
         if self.cb:
@@ -134,8 +135,8 @@ class RadioJob:
         try:
             func = getattr(self.target, self.func)
         except AttributeError, e:
-            print "No such radio function `%s' in %s" % (self.func,
-                                                         self.target)
+            LOG.error("No such radio function `%s' in %s" %
+                      (self.func, self.target))
             return
 
         self._execute(self.target, func)
@@ -261,7 +262,7 @@ class RadioThread(threading.Thread, gobject.GObject):
                 last_job_desc = job.desc
                 self.unlock()
 
-        print "RadioThread exiting"
+        LOG.debug("RadioThread exiting")
 
 
 def log_exception():
@@ -270,9 +271,9 @@ def log_exception():
 
     reporting.report_exception(traceback.format_exc(limit=30))
 
-    print "-- Exception: --"
-    traceback.print_exc(limit=30, file=sys.stdout)
-    print "------"
+    LOG.error("-- Exception: --")
+    LOG.error(traceback.format_exc(limit=30))
+    LOG.error("----------------")
 
 
 def show_error(msg, parent=None):
@@ -417,7 +418,7 @@ def show_diff_blob(title, result):
     except Exception:
         fontsize = 11
     if fontsize < 4 or fontsize > 144:
-        print "Unsupported diff_fontsize %i. Using 11." % fontsize
+        LOG.info("Unsupported diff_fontsize %i. Using 11." % fontsize)
         fontsize = 11
 
     lines = result.split(os.linesep)

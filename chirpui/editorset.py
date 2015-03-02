@@ -16,10 +16,13 @@
 import os
 import gtk
 import gobject
+import logging
 
 from chirp import chirp_common, directory, generic_csv, generic_xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 from chirpui import inputdialog, reporting, settingsedit, radiobrowser, config
+
+LOG = logging.getLogger(__name__)
 
 
 class EditorSet(gtk.VBox):
@@ -220,7 +223,7 @@ class EditorSet(gtk.VBox):
         memedit.prefill()
 
     def editor_changed(self, target_editor=None):
-        print "%s changed" % target_editor
+        LOG.debug("%s changed" % target_editor)
         if not isinstance(self.radio, chirp_common.LiveRadio):
             self.modified = True
             self.update_tab()
@@ -252,7 +255,7 @@ class EditorSet(gtk.VBox):
             return
 
         count = dialog.do_import(dst_rthread)
-        print "Imported %i" % count
+        LOG.debug("Imported %i" % count)
         dst_rthread._qunlock()
 
         if count > 0:

@@ -15,10 +15,13 @@
 
 import gtk
 import gobject
+import logging
 
 from chirp import chirp_common
 from chirp import settings
 from chirpui import common, miscwidgets
+
+LOG = logging.getLogger(__name__)
 
 
 class RadioSettingProxy(settings.RadioSetting):
@@ -91,8 +94,8 @@ class SettingsEditor(common.Editor):
         elif isinstance(value, settings.RadioSettingValueString):
             value.set_value(widget.get_text())
         else:
-            print "Unsupported widget type %s for %s" % \
-                (element.value.__class__, element.get_name())
+            LOG.error("Unsupported widget type %s for %s" %
+                      (element.value.__class__, element.get_name()))
 
         self._changed = True
         self._save_settings()
@@ -181,7 +184,7 @@ class SettingsEditor(common.Editor):
                     widget.set_text(str(value).rstrip())
                     widget.connect("changed", self._save_setting, value)
                 else:
-                    print "Unsupported widget type: %s" % value.__class__
+                    LOG.error("Unsupported widget type: %s" % value.__class__)
 
                 widget.set_sensitive(value.get_mutable())
                 widget.show()

@@ -27,10 +27,13 @@ from gobject import TYPE_INT, \
 import gobject
 import pickle
 import os
+import logging
 
 from chirpui import common, shiftdialog, miscwidgets, config, memdetail
 from chirpui import bandplans
 from chirp import chirp_common, errors, directory, import_logic
+
+LOG = logging.getLogger(__name__)
 
 
 if __name__ == "__main__":
@@ -143,7 +146,7 @@ class MemoryEditor(common.Editor):
                 offset *= -1
 
             if dup not in self.choices[_("Duplex")]:
-                print "Duplex %s not supported by this radio" % dup
+                LOG.warn("Duplex %s not supported by this radio" % dup)
                 return
 
             if offset:
@@ -155,7 +158,7 @@ class MemoryEditor(common.Editor):
             if ts in self.choices[_("Tune Step")]:
                 self.store.set(iter, self.col(_("Tune Step")), ts)
             else:
-                print "Tune step %s not supported by this radio" % ts
+                LOG.warn("Tune step %s not supported by this radio" % ts)
 
         def get_ts(path):
             return self.store.get(iter, self.col(_("Tune Step")))[0]
@@ -164,19 +167,19 @@ class MemoryEditor(common.Editor):
             if mode in self.choices[_("Mode")]:
                 self.store.set(iter, self.col(_("Mode")), mode)
             else:
-                print "Mode %s not supported by this radio (%s)" % (
-                    mode, self.choices[_("Mode")])
+                LOG.warn("Mode %s not supported by this radio (%s)" %
+                         (mode, self.choices[_("Mode")]))
 
         def set_tone(tone):
             if tone in self.choices[_("Tone")]:
                 self.store.set(iter, self.col(_("Tone")), tone)
             else:
-                print "Tone %s not supported by this radio" % tone
+                LOG.warn("Tone %s not supported by this radio" % tone)
 
         try:
             new = chirp_common.parse_freq(new)
         except ValueError, e:
-            print e
+            LOG.error(e)
             new = None
 
         if not self._features.has_nostep_tuning:
@@ -335,7 +338,7 @@ class MemoryEditor(common.Editor):
         iter = self.store.get_iter(path)
         if not self.store.get(iter, self.col("_filled"))[0] and \
                 self.store.get(iter, self.col(_("Frequency")))[0] == 0:
-            print _("Editing new item, taking defaults")
+            LOG.error(_("Editing new item, taking defaults"))
             self.insert_new(iter)
 
         colnum = self.col(cap)
@@ -357,7 +360,7 @@ class MemoryEditor(common.Editor):
             new = funcs[cap](rend, path, new, colnum)
 
         if new is None:
-            print _("Bad value for {col}: {val}").format(col=cap, val=new)
+            LOG.error(_("Bad value for {col}: {val}").format(col=cap, val=new))
             return
 
         if self.store.get_column_type(colnum) == TYPE_INT:
@@ -451,7 +454,7 @@ class MemoryEditor(common.Editor):
         newpos, = store.get(_iter, self.col(_("Loc")))
         newpos += delta
 
-        print "Insert easy: %i" % delta
+        LOG.debug("Insert easy: %i" % delta)
 
         mem = self.insert_new(iter, newpos)
         job = common.RadioJob(None, "set_memory", mem)
@@ -962,7 +965,7 @@ class MemoryEditor(common.Editor):
                 if i not in default_col_order:
                     raise Exception()
         except Exception, e:
-            print e
+            LOG.error(e)
             col_order = default_col_order
 
         non_editable = ["Loc"]
@@ -1113,7 +1116,7 @@ class MemoryEditor(common.Editor):
         while iter:
             loc, = self.store.get(iter, self.col(_("Loc")))
             if loc == number:
-                print "Deleting %i" % number
+                LOG.debug("Deleting %i" % number)
                 # FIXME: Make the actual remove happen on callback
                 self.store.remove(iter)
                 job = common.RadioJob(None, "erase_memory", number)
@@ -1299,7 +1302,7 @@ class MemoryEditor(common.Editor):
         for feature, colname in maybe_hide:
             if feature.startswith("has_"):
                 supported = self._features[feature]
-                print "%s supported: %s" % (colname, supported)
+                LOG.info("%s supported: %s" % (colname, supported))
             elif feature.startswith("valid_"):
                 supported = len(self._features[feature]) != 0
 
@@ -1439,7 +1442,7 @@ class MemoryEditor(common.Editor):
         try:
             src_features, mem_list = pickle.loads(text)
         except Exception:
-            print "Paste failed to unpickle"
+            LOG.error("Paste failed to unpickle")
             return
 
         if (paths[0][0] + len(mem_list)) > self._rows_in_store:

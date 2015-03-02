@@ -14,9 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
+import logging
 
 from miscwidgets import make_choice
 from chirpui import reporting
+
+LOG = logging.getLogger(__name__)
 
 
 class TextInputDialog(gtk.Dialog):
@@ -88,9 +91,9 @@ class ExceptionDialog(gtk.MessageDialog):
         import traceback
         import sys
         reporting.report_exception(traceback.format_exc(limit=30))
-        print "--- Exception Dialog: %s ---" % exception
-        traceback.print_exc(limit=100, file=sys.stdout)
-        print "----------------------------"
+        LOG.error("--- Exception Dialog: %s ---" % exception)
+        LOG.error(traceback.format_exc(limit=100))
+        LOG.error("----------------------------")
 
 
 class FieldDialog(gtk.Dialog):
@@ -105,7 +108,7 @@ class FieldDialog(gtk.Dialog):
         gtk.Dialog.__init__(self, **kwargs)
 
     def response(self, _):
-        print "Blocking response"
+        LOG.debug("Blocking response")
         return
 
     def add_field(self, label, widget, validator=None):

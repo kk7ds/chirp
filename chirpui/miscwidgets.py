@@ -18,8 +18,11 @@ import gobject
 import pango
 
 import os
+import logging
 
 from chirp import platform
+
+LOG = logging.getLogger(__name__)
 
 
 class KeyedListWidget(gtk.HBox):
@@ -128,7 +131,7 @@ class KeyedListWidget(gtk.HBox):
             (store, iter) = self.__view.get_selection().get_selected()
             return store.get(iter, 0)[0]
         except Exception, e:
-            print "Unable to find selected: %s" % e
+            LOG.error("Unable to find selected: %s" % e)
             return None
 
     def select_item(self, key):
@@ -298,7 +301,7 @@ class ListWidget(gtk.HBox):
             (lst, iter) = self._view.get_selection().get_selected()
             lst.remove(iter)
         except Exception, e:
-            print "Unable to remove selected: %s" % e
+            LOG.error("Unable to remove selected: %s" % e)
 
     def get_selected(self, take_default=False):
         (lst, iter) = self._view.get_selection().get_selected()
@@ -416,7 +419,7 @@ class TreeWidget(ListWidget):
         elif isinstance(vals, tuple):
             self._add_item(parent, *vals)
         else:
-            print "Unknown type: %s" % vals
+            LOG.error("Unknown type: %s" % vals)
 
     def set_values(self, vals):
         self._store.clear()
@@ -586,7 +589,7 @@ class LatLonEntry(gtk.Entry):
                 try:
                     return self.parse_dms(string)
                 except Exception, e:
-                    print "DMS: %s" % e
+                    LOG.error("DMS: %s" % e)
 
         raise Exception("Invalid format")
 

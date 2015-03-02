@@ -17,8 +17,11 @@
 import gtk
 import gobject
 import threading
+import logging
 
 from chirp import errors, chirp_common
+
+LOG = logging.getLogger(__name__)
 
 
 class ShiftDialog(gtk.Dialog):
@@ -59,7 +62,7 @@ class ShiftDialog(gtk.Dialog):
             src = i.number
             dst = src + delta
 
-            print "Moving %i to %i" % (src, dst)
+            LOG.info("Moving %i to %i" % (src, dst))
             self.status(_("Moving {src} to {dst}").format(src=src,
                                                           dst=dst),
                         count / len(memories))
@@ -95,7 +98,7 @@ class ShiftDialog(gtk.Dialog):
         if pos > ulimit and not endokay:
             raise errors.InvalidMemoryLocation(_("No space to insert a row"))
 
-        print "Found a hole: %i" % pos
+        LOG.debug("Found a hole: %i" % pos)
 
         return mems
 
@@ -109,7 +112,7 @@ class ShiftDialog(gtk.Dialog):
                 self.rthread.radio.erase_memory(start)
             return ret
         else:
-            print "No memory list?"
+            LOG.warn("No memory list?")
             return 0
 
     def _delete_hole(self, start, all=False):
@@ -119,7 +122,7 @@ class ShiftDialog(gtk.Dialog):
             self.rthread.radio.erase_memory(count+start)
             return count
         else:
-            print "No memory list?"
+            LOG.warn("No memory list?")
             return 0
 
     def finished(self):

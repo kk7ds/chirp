@@ -16,9 +16,12 @@
 import gtk
 import gobject
 import pango
+import logging
 
 from chirp import errors, chirp_common, generic_xml, import_logic
 from chirpui import common
+
+LOG = logging.getLogger(__name__)
 
 
 class WaitWindow(gtk.Window):
@@ -174,15 +177,15 @@ class ImportDialog(gtk.Dialog):
             mem = self.src_radio.get_memory(old)
             if isinstance(mem, chirp_common.DVMemory):
                 if mem.dv_urcall not in ulist:
-                    print "Adding %s to ucall list" % mem.dv_urcall
+                    LOG.debug("Adding %s to ucall list" % mem.dv_urcall)
                     ulist.append(mem.dv_urcall)
                     ulist_changed = True
                 if mem.dv_rpt1call not in rlist:
-                    print "Adding %s to rcall list" % mem.dv_rpt1call
+                    LOG.debug("Adding %s to rcall list" % mem.dv_rpt1call)
                     rlist.append(mem.dv_rpt1call)
                     rlist_changed = True
                 if mem.dv_rpt2call not in rlist:
-                    print "Adding %s to rcall list" % mem.dv_rpt2call
+                    LOG.debug("Adding %s to rcall list" % mem.dv_rpt2call)
                     rlist.append(mem.dv_rpt2call)
                     rlist_changed = True
 
@@ -231,13 +234,13 @@ class ImportDialog(gtk.Dialog):
             if not dst_banks or not src_banks:
                 raise Exception()
         except Exception:
-            print "One or more of the radios doesn't support banks"
+            LOG.error("One or more of the radios doesn't support banks")
             return
 
         if not isinstance(self.dst_radio, generic_xml.XMLRadio) and \
                 len(dst_banks) != len(src_banks):
-            print "Source and destination radios have " + \
-                  "a different number of banks"
+            LOG.warn("Source and destination radios have "
+                     "a different number of banks")
         else:
             self.dst_radio.set_banks(src_banks)
 
@@ -250,7 +253,7 @@ class ImportDialog(gtk.Dialog):
 
         for old, new, name, comm in import_list:
             i += 1
-            print "%sing %i -> %i" % (self.ACTION, old, new)
+            LOG.debug("%sing %i -> %i" % (self.ACTION, old, new))
 
             src = self.src_radio.get_memory(old)
 
@@ -262,7 +265,7 @@ class ImportDialog(gtk.Dialog):
                                                "name":    name,
                                                "comment": comm})
             except import_logic.ImportError, e:
-                print e
+                LOG.error(e)
                 error_messages[new] = str(e)
                 continue
 
@@ -322,7 +325,7 @@ class ImportDialog(gtk.Dialog):
                 column.set_cell_data_func(rend, self._render, k)
 
             if k in self.tips.keys():
-                print "Doing %s" % k
+                LOG.debug("Doing %s" % k)
                 lab = gtk.Label(self.caps[k])
                 column.set_widget(lab)
                 tips.set_tip(lab, self.tips[k])
@@ -512,10 +515,11 @@ class ImportDialog(gtk.Dialog):
             if mem and not mem.empty and number not in self.used_list:
                 self.used_list.append(number)
         except errors.InvalidMemoryLocation:
-            print "Location %i empty or at limit of destination radio" % number
+            LOG.error("Location %i empty or at limit of destination radio" %
+                      number)
         except errors.InvalidDataError, e:
-            print "Got error from radio, assuming %i beyond limits: %s" % \
-                (number, e)
+            LOG.error("Got error from radio, assuming %i beyond limits: %s" %
+                      (number, e))
 
     def populate_list(self):
         start, end = self.src_radio.get_features().memory_bounds

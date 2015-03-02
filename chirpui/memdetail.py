@@ -15,9 +15,12 @@
 
 import gtk
 import os
+import logging
 
 from chirp import chirp_common, settings
 from chirpui import miscwidgets, common
+
+LOG = logging.getLogger(__name__)
 
 POL = ["NN", "NR", "RN", "RR"]
 
@@ -224,7 +227,7 @@ class MemoryDetailEditor(gtk.Dialog):
             try:
                 _img = self._editors[name][2]
             except KeyError:
-                print self._editors.keys()
+                LOG.error(self._editors.keys())
             if msg is None:
                 _img.clear()
                 self._tips.set_tip(_img, "")
