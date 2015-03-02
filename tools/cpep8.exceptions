@@ -2,3 +2,4 @@
 # Each line must contain the file name, a tab, and a comma-separated list
 # of style rules to ignore in that file.  This mechanism should be used
 # sparingly and as a measure of last resort.
+./tests/run_tests	E402

@@ -93,7 +93,6 @@
 ./csvdump/csvapp.py
 ./csvdump/csvdump.py
 ./share/make_supported.py
-./tests/run_tests
 ./tests/unit/test_import_logic.py
 ./tests/unit/test_memedit_edits.py
 ./tests/unit/test_settings.py

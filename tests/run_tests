@@ -15,7 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import traceback, sys, os, shutil, glob, tempfile, time
+import traceback
+import sys
+import os
+import shutil
+import glob
+import tempfile
+import time
 from optparse import OptionParser
 from serial import Serial
 
@@ -27,19 +33,22 @@ sys.path.insert(0, "../")
 
 from chirp import CHIRP_VERSION
 from chirp import *
-from chirp import chirp_common, directory, generic_csv, import_logic, memmap, settings
-from chirp import errors
+from chirp import chirp_common, directory, generic_csv
+from chirp import import_logic, memmap, settings, errors
 
 TESTS = {}
 
 time.sleep = lambda s: None
 
+
 class TestError(Exception):
     def get_detail(self):
         return str(self)
 
+
 class TestInternalError(TestError):
     pass
+
 
 class TestCrashError(TestError):
     def __init__(self, tb, exc, args):
@@ -58,9 +67,9 @@ class TestCrashError(TestError):
             self.__tb + os.linesep + \
             "Called from:" + os.linesep + self.__mytb
 
-
     def get_original_exception(self):
         return self.__exc
+
 
 class TestFailedError(TestError):
     def __init__(self, msg, detail=""):
@@ -70,11 +79,14 @@ class TestFailedError(TestError):
     def get_detail(self):
         return self._detail
 
+
 class TestSkippedError(TestError):
     pass
 
+
 def get_tb():
     return traceback.format_exc()
+
 
 class TestWrapper:
     def __init__(self, dstclass, filename):
@@ -120,8 +132,8 @@ class TestWrapper:
             for arg in args:
                 if isinstance(arg, chirp_common.Memory):
                     details += os.linesep + \
-                        os.linesep.join(["%s:%s" % (k,v) \
-                                             for k,v in arg.__dict__.items()])
+                        os.linesep.join(["%s:%s" % (k, v) for k, v
+                                         in arg.__dict__.items()])
             raise TestCrashError(get_tb(), e, details)
 
         if self._make_reload:
@@ -139,6 +151,7 @@ class TestWrapper:
 
     def get_radio(self):
         return self._dst
+
 
 class TestCase:
     def __init__(self, wrapper):
@@ -162,12 +175,12 @@ class TestCase:
 
         for k, v in a.__dict__.items():
             if k == "power":
-                continue # FIXME
+                continue  # FIXME
             elif k == "immutable":
                 continue
             elif k == "name":
                 if not rf.has_name:
-                    continue # Don't complain about name, if not supported
+                    continue  # Don't complain about name, if not supported
                 else:
                     # Name mismatch fair if filter_name() is right
                     v = self._wrapper.do("filter_name", v).rstrip()
@@ -177,24 +190,24 @@ class TestCase:
                         a.tmode == "Tone" or
                         (a.tmode == "TSQL" and not rf.has_ctone) or
                         (a.tmode == "Cross" and tx_mode == "Tone") or
-                        (a.tmode == "Cross" and rx_mode == "Tone" and not rf.has_ctone)
+                        (a.tmode == "Cross" and rx_mode == "Tone" and
+                         not rf.has_ctone)
                         ):
                 continue
             elif k == "ctone" and (not rf.has_ctone or
-                        not (
-                            a.tmode == "TSQL" or
-                            (a.tmode == "Cross" and rx_mode == "Tone")
-                        )
-                    ):
+                                   not (a.tmode == "TSQL" or
+                                        (a.tmode == "Cross" and
+                                         rx_mode == "Tone"))):
                 continue
             elif k == "dtcs" and not (
-                        (a.tmode == "DTCS" and not rf.has_rx_dtcs) or
-                        (a.tmode == "Cross" and tx_mode == "DTCS") or
-                        (a.tmode == "Cross" and rx_mode == "DTCS" and not rf.has_rx_dtcs)
-                        ):
+                    (a.tmode == "DTCS" and not rf.has_rx_dtcs) or
+                    (a.tmode == "Cross" and tx_mode == "DTCS") or
+                    (a.tmode == "Cross" and rx_mode == "DTCS" and
+                     not rf.has_rx_dtcs)):
                 continue
             elif k == "rx_dtcs" and (not rf.has_rx_dtcs or
-                        not (a.tmode == "Cross" and rx_mode == "DTCS")):
+                                     not (a.tmode == "Cross" and
+                                          rx_mode == "DTCS")):
                 continue
             elif k == "offset" and not a.duplex:
                 continue
@@ -209,16 +222,17 @@ class TestCase:
 
                     details = msg
                     details += os.linesep + "### Wanted:" + os.linesep
-                    details += os.linesep.join(["%s:%s" % (k,v) for k,v in \
-                                                    a.__dict__.items()])
+                    details += os.linesep.join(["%s:%s" % (k, v) for k, v
+                                                in a.__dict__.items()])
                     details += os.linesep + "### Got:" + os.linesep
-                    details += os.linesep.join(["%s:%s" % (k,v) for k,v in \
-                                                    b.__dict__.items()])
+                    details += os.linesep.join(["%s:%s" % (k, v) for k, v
+                                                in b.__dict__.items()])
                     raise TestFailedError(msg, details)
             except KeyError, e:
                 print sorted(a.__dict__.keys())
                 print sorted(b.__dict__.keys())
                 raise
+
 
 class TestCaseCopyAll(TestCase):
     "Copy Memories From CSV"
@@ -245,9 +259,9 @@ class TestCaseCopyAll(TestCase):
 
             try:
                 dst_mem = import_logic.import_mem(self._wrapper.get_radio(),
-                                                  src_rf,
-                                                  src_mem,
-                                                  overrides={"number":dst_number})
+                                                  src_rf, src_mem,
+                                                  overrides={
+                                                    "number": dst_number})
                 import_logic.import_bank(self._wrapper.get_radio(),
                                          self._src,
                                          dst_mem,
@@ -255,8 +269,8 @@ class TestCaseCopyAll(TestCase):
             except import_logic.DestNotCompatible:
                 continue
             except import_logic.ImportError, e:
-                failures.append(TestFailedError("<%i>: Import Failed: %s" %\
-                                                    (dst_number, e)))
+                failures.append(TestFailedError("<%i>: Import Failed: %s" %
+                                                (dst_number, e)))
                 continue
             except Exception, e:
                 raise TestCrashError(get_tb(), e, "[Import]")
@@ -267,10 +281,12 @@ class TestCaseCopyAll(TestCase):
             try:
                 self.compare_mem(dst_mem, ret_mem)
             except TestFailedError, e:
-                failures.append(TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
+                failures.append(
+                    TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
 
         return failures
 TESTS["CopyAll"] = TestCaseCopyAll
+
 
 class TestCaseBruteForce(TestCase):
     def __str__(self):
@@ -281,7 +297,9 @@ class TestCaseBruteForce(TestCase):
         if msgs:
 
             raise TestFailedError("Radio did not validate a valid memory",
-                                  os.linesep.join(["%s:%s" % (k,v) for k,v in m.__dict__.items()]) + os.linesep + os.linesep.join(msgs))
+                                  os.linesep.join(["%s:%s" % (k, v) for k, v
+                                                   in m.__dict__.items()]) +
+                                  os.linesep + os.linesep.join(msgs))
 
         self._wrapper.do("set_memory", m)
         ret_m = self._wrapper.do("get_memory", m.number)
@@ -289,7 +307,8 @@ class TestCaseBruteForce(TestCase):
         # Damned Baofeng radios don't seem to properly store
         # shift and direction, so be gracious here
         if m.duplex == "split" and ret_m.duplex in ["-", "+"]:
-            ret_m.offset = ret_m.freq + (ret_m.offset * int(ret_m.duplex + "1"))
+            ret_m.offset = ret_m.freq + \
+                (ret_m.offset * int(ret_m.duplex + "1"))
             ret_m.duplex = "split"
 
         self.compare_mem(m, ret_m)
@@ -301,7 +320,7 @@ class TestCaseBruteForce(TestCase):
                 if tmode not in chirp_common.TONE_MODES:
                     continue
                 elif tmode in ["DTCS", "DTCS-R", "Cross"]:
-                    continue # We'll test DCS and Cross tones separately
+                    continue  # We'll test DCS and Cross tones separately
 
                 m.tmode = tmode
                 if tmode == "":
@@ -413,6 +432,7 @@ class TestCaseBruteForce(TestCase):
 
     def run(self):
         rf = self._wrapper.do("get_features")
+
         def clean_mem():
             m = chirp_common.Memory()
             m.number = rf.memory_bounds[0]
@@ -444,6 +464,7 @@ class TestCaseBruteForce(TestCase):
         return []
 TESTS["BruteForce"] = TestCaseBruteForce
 
+
 class TestCaseEdges(TestCase):
     def __str__(self):
         return "Edges"
@@ -458,7 +479,7 @@ class TestCaseEdges(TestCase):
 
     def do_longname(self, rf):
         m = self._mem(rf)
-        m.name = ("X" * 256) # Should be longer than any radio can handle
+        m.name = ("X" * 256)  # Should be longer than any radio can handle
         m.name = self._wrapper.do("filter_name", m.name)
 
         self._wrapper.do("set_memory", m)
@@ -489,9 +510,9 @@ class TestCaseEdges(TestCase):
 
     def do_oddsteps(self, rf):
         odd_steps = {
-            145 : [145.85625, 145.86250],
-            445 : [445.85625, 445.86250],
-            862 : [862.73125, 862.73750],
+            145: [145.85625, 145.86250],
+            445: [445.85625, 445.86250],
+            862: [862.73125, 862.73750],
             }
 
         m = self._mem(rf)
@@ -510,7 +531,6 @@ class TestCaseEdges(TestCase):
                     n = self._wrapper.do("get_memory", m.number)
                     self.compare_mem(m, n)
 
-
     def run(self):
         rf = self._wrapper.do("get_features")
 
@@ -525,6 +545,7 @@ class TestCaseEdges(TestCase):
         return []
 
 TESTS["Edges"] = TestCaseEdges
+
 
 class TestCaseSettings(TestCase):
     def __str__(self):
@@ -606,9 +627,8 @@ class TestCaseBanks(TestCase):
             # Truncation is allowed, but not failure
             if not testname.lower().startswith(str(newbanks[i]).lower()):
                 raise TestFailedError("Bank names not properly truncated",
-                                      "Tried: %s on %i\nGot: %s" % (testname,
-                                                                    i,
-                                                                    newbanks[i]))
+                                      "Tried: %s on %i\nGot: %s" %
+                                      (testname, i, newbanks[i]))
 
     def do_bank_names_no_trailing_whitespace(self, rf):
         banks, newbanks = self._do_bank_names(rf, "foo  ")
@@ -635,9 +655,8 @@ class TestCaseBanks(TestCase):
 
         mem_banks = model.get_memory_mappings(mem)
         if len(mem_banks) != 0:
-            raise TestFailedError("Freshly-created memory has banks and " +\
-                                  "should not",
-                                  "Banks: %s" % str(mem_banks))
+            raise TestFailedError("Freshly-created memory has banks and " +
+                                  "should not", "Banks: %s" % str(mem_banks))
 
         banks = model.get_mappings()
 
@@ -654,10 +673,10 @@ class TestCaseBanks(TestCase):
         reason = verify(banks[0])
         if reason is not None:
             raise TestFailedError("Setting memory bank does not persist",
-                                  "%s\nMemory banks:%s\nBank memories:%s" %\
-                                      (reason,
-                                       model.get_memory_mappings(mem),
-                                       model.get_mapping_memories(banks[0])))
+                                  "%s\nMemory banks:%s\nBank memories:%s" %
+                                  (reason,
+                                   model.get_memory_mappings(mem),
+                                   model.get_mapping_memories(banks[0])))
 
         model.remove_memory_from_mapping(mem, banks[0])
         reason = verify(banks[0])
@@ -672,8 +691,8 @@ class TestCaseBanks(TestCase):
             did_error = True
 
         if not did_error:
-            raise TestFailedError("Removing memory from non-member bank " +\
-                                      "did not raise Exception")
+            raise TestFailedError("Removing memory from non-member bank " +
+                                  "did not raise Exception")
 
     def do_bank_index(self, rf):
         if not rf.has_bank_index:
@@ -697,7 +716,7 @@ class TestCaseBanks(TestCase):
                 raise TestFailedError("Bank index not persisted")
 
         suggested_index = model.get_next_mapping_index(banks[0])
-        if suggested_index  not in range(*index_bounds):
+        if suggested_index not in range(*index_bounds):
             raise TestFailedError("Suggested bank index not in valid range",
                                   "Got %i, range is %s" % (suggested_index,
                                                            index_bounds))
@@ -712,12 +731,14 @@ class TestCaseBanks(TestCase):
         self.do_bank_names_toolong(rf)
         self.do_bank_names_no_trailing_whitespace(rf)
         self.do_bank_store(rf)
-        self.do_bank_store(rf) # Again to make sure we clear bank info on delete
+        # Again to make sure we clear bank info on delete
+        self.do_bank_store(rf)
         self.do_bank_index(rf)
 
         return []
 
 TESTS["Banks"] = TestCaseBanks
+
 
 class TestCaseDetect(TestCase):
     def __str__(self):
@@ -737,31 +758,37 @@ class TestCaseDetect(TestCase):
         if issubclass(self._wrapper._dstclass, radio.__class__):
             pass
         elif radio.__class__ != self._wrapper._dstclass:
-            raise TestFailedError("%s detected as %s" % \
-                                      (self._wrapper._dstclass,
-                                       radio.__class__))
+            raise TestFailedError("%s detected as %s" %
+                                  (self._wrapper._dstclass, radio.__class__))
         return []
 
 TESTS["Detect"] = TestCaseDetect
+
 
 class TestCaseClone(TestCase):
     class SerialNone:
         def read(self, size):
             return ""
+
         def write(self, data):
             pass
+
         def setBaudrate(self, rate):
             pass
+
         def setTimeout(self, timeout):
             pass
+
         def setParity(self, parity):
             pass
+
         def __str__(self):
-            return self.__class__.__name__.replace("Serial","")
+            return self.__class__.__name__.replace("Serial", "")
 
     class SerialError(SerialNone):
         def read(self, size):
             raise Exception("Foo")
+
         def write(self, data):
             raise Exception("Bar")
 
@@ -797,7 +824,7 @@ class TestCaseClone(TestCase):
             if not isinstance(error, errors.RadioError):
                 raise TestFailedError("Live radio didn't notice serial " +
                                       "was dead on init")
-            return [] # Nothing more to test on an error'd live radio
+            return []  # Nothing more to test on an error'd live radio
 
         error = None
         try:
@@ -812,8 +839,9 @@ class TestCaseClone(TestCase):
         elif not isinstance(error, errors.RadioError):
             raise TestFailedError("Radio did not raise RadioError " +
                                   "with %s data" % serial,
-                                  "sync_in() Got: %s (%s)\n%s" % (\
-                    error.__class__.__name__, error, get_tb()))
+                                  "sync_in() Got: %s (%s)\n%s" %
+                                  (error.__class__.__name__,
+                                   error, get_tb()))
 
         radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
 
@@ -830,8 +858,8 @@ class TestCaseClone(TestCase):
         elif not isinstance(error, errors.RadioError):
             raise TestFailedError("Radio did not raise RadioError " +
                                   "with %s data" % serial,
-                                  "sync_out(): Got: %s (%s)" % (\
-                    error.__class__.__name__, error))
+                                  "sync_out(): Got: %s (%s)" %
+                                  (error.__class__.__name__, error))
 
         return []
 
@@ -844,11 +872,13 @@ class TestCaseClone(TestCase):
 
 TESTS["Clone"] = TestCaseClone
 
+
 class TestOutput:
     def __init__(self, output=None):
         if not output:
             output = sys.stdout
         self._out = output
+
     def prepare(self):
         pass
 
@@ -865,14 +895,15 @@ class TestOutput:
                                                tc,
                                                msg, e))
 
+
 class TestOutputANSI(TestOutput):
     def __init__(self, output=None):
         TestOutput.__init__(self, output)
         self.__counts = {
-            "PASSED"  : 0,
-            "FAILED"  : 0,
-            "CRASHED" : 0,
-            "SKIPPED" : 0,
+            "PASSED":  0,
+            "FAILED":  0,
+            "CRASHED": 0,
+            "SKIPPED": 0,
             }
         self.__total = 0
 
@@ -898,8 +929,9 @@ class TestOutputANSI(TestOutput):
         self._print("-" * 70)
         self._print("Results:")
         self._print("  %-7s: %i" % ("TOTAL", self.__total))
-        for t,c in self.__counts.items():
+        for t, c in self.__counts.items():
             self._print("  %-7s: %i" % (t, c))
+
 
 class TestOutputHTML(TestOutput):
     def __init__(self, filename):
@@ -946,7 +978,8 @@ td.SKIPPED {
 <h3>Generated on %s (%s)</h3>
 <table class="testlist">
 <tr>
-  <th>Vendor</th><th>Model</th><th>Test Case</th><th>Status</th><th>Message</th>
+  <th>Vendor</th><th>Model</th><th>Test Case</th>
+  <th>Status</th><th>Message</th>
 </tr>
 """ % (CHIRP_VERSION, CHIRP_VERSION, time.strftime("%x at %X"), os.name)
         print >>self._out, s
@@ -959,14 +992,16 @@ td.SKIPPED {
     def report(self, rclass, tc, msg, e):
         s = ("<tr class='%s'>" % msg) + \
             ("<td class='vendor'>%s</td>" % rclass.VENDOR) + \
-            ("<td class='model'>%s %s</td>" % (rclass.MODEL, rclass.VARIANT))+\
+            ("<td class='model'>%s %s</td>" %
+                (rclass.MODEL, rclass.VARIANT)) + \
             ("<td class='tc'>%s</td>" % tc) + \
-            ("<td class='%s'>%s</td>" % (msg,msg)) + \
+            ("<td class='%s'>%s</td>" % (msg, msg)) + \
             ("<td class='error'>%s</td>" % e) + \
             "</tr>"
         print >>self._out, s
         sys.stdout.write(".")
         sys.stdout.flush()
+
 
 class TestRunner:
     def __init__(self, images_dir, test_list, test_out):
@@ -1007,7 +1042,7 @@ class TestRunner:
         nfailed = 0
         for tcclass in self._test_list:
             nprinted = 0
-            tw = TestWrapper(rclass,parm)
+            tw = TestWrapper(rclass, parm)
             tc = tcclass(tw)
 
             self.nuke_log(rclass, tc)
