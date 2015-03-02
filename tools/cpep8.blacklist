@@ -53,7 +53,6 @@
 ./chirp/kyd.py
 ./chirp/leixen.py
 ./chirp/puxing.py
-./chirp/pyPEG.py
 ./chirp/rfinder.py
 ./chirp/settings.py
 ./chirp/th9800.py
