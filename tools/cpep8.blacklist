@@ -13,7 +13,6 @@
 ./chirp/ft50_ll.py
 ./chirp/ft60.py
 ./chirp/ft7800.py
-./chirp/ft857.py
 ./chirp/ft90.py
 ./chirp/ftm350.py
 ./chirp/h777.py
