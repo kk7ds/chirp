@@ -34,7 +34,7 @@ from chirp import CHIRP_VERSION, platform
 
 REPORT_URL = "http://chirp.danplanet.com/report/report.php?do_report"
 ENABLED = True
-THREAD_SEM = threading.Semaphore(10) # Maximum number of outstanding threads
+THREAD_SEM = threading.Semaphore(10)  # Maximum number of outstanding threads
 LAST = 0
 LAST_TYPE = None
 
@@ -46,6 +46,7 @@ try:
     import xmlrpclib
 except:
     ENABLED = False
+
 
 def should_report():
     if not ENABLED:
@@ -59,11 +60,13 @@ def should_report():
 
     return True
 
+
 def _report_model_usage(model, direction, success):
     global ENABLED
-    if direction not in ["live", "download", "upload", "import", "export", "importsrc"]:
+    if direction not in ["live", "download", "upload",
+                         "import", "export", "importsrc"]:
         print "Invalid direction `%s'" % direction
-        return True # This is a bug, but not fatal
+        return True  # This is a bug, but not fatal
 
     model = "%s_%s" % (model.VENDOR, model.MODEL)
     data = "%s,%s,%s" % (model, direction, success)
@@ -79,6 +82,7 @@ def _report_model_usage(model, direction, success):
     # If the server returns zero, it wants us to shut up
     return id != 0
 
+
 def _report_exception(stack):
     global ENABLED
 
@@ -93,6 +97,7 @@ def _report_exception(stack):
     # If the server returns zero, it wants us to shut up
     return id != 0
 
+
 def _report_misc_error(module, data):
     global ENABLED
 
@@ -106,6 +111,7 @@ def _report_misc_error(module, data):
     # If the server returns zero, it wants us to shut up
     return id != 0
 
+
 def _check_for_updates(callback):
     LOG.debug("Checking for updates")
     proxy = xmlrpclib.ServerProxy(REPORT_URL)
@@ -115,6 +121,7 @@ def _check_for_updates(callback):
     LOG.debug("Server reports version %s is latest" % ver)
     callback(ver)
     return True
+
 
 class ReportThread(threading.Thread):
     def __init__(self, func, *args):
@@ -128,7 +135,7 @@ class ReportThread(threading.Thread):
         except Exception, e:
             LOG.debug("Failed to report: %s" % e)
             return False
-        
+
     def run(self):
         start = time.time()
         result = self._run()
@@ -137,11 +144,12 @@ class ReportThread(threading.Thread):
             ENABLED = False
         elif (time.time() - start) > 15:
             # Reporting took too long
-            LOG.debug("Time to report was %.2f sec -- Disabling" % \
+            LOG.debug("Time to report was %.2f sec -- Disabling" %
                       (time.time()-start))
             ENABLED = False
 
         THREAD_SEM.release()
+
 
 def dispatch_thread(func, *args):
     global LAST
@@ -169,14 +177,18 @@ def dispatch_thread(func, *args):
     t = ReportThread(func, *args)
     t.start()
 
+
 def report_model_usage(model, direction, success):
     dispatch_thread(_report_model_usage, model, direction, success)
+
 
 def report_exception(stack):
     dispatch_thread(_report_exception, stack)
 
+
 def report_misc_error(module, data):
     dispatch_thread(_report_misc_error, module, data)
+
 
 # Calls callback with the latest version
 def check_for_updates(callback):
