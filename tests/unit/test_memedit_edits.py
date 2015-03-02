@@ -26,17 +26,20 @@ class TestEdits(base.BaseTest):
         memedit.MemoryEditor.ed_tone_field(editor, None, 'path', None, col)
 
     def _test_auto_tone_mode(self, col, exp_tmode, exp_cmode):
+        cross_exp_cmode = (exp_tmode == "Cross" and exp_cmode or None)
+
         # No tmode -> expected tmode, maybe requires cross mode change
         self._test_tone_column_change(col, exp_tmode=exp_tmode,
-            exp_cmode=(exp_tmode=="Cross" and exp_cmode or None))
+                                      exp_cmode=cross_exp_cmode)
 
         # Expected tmode does not re-set tmode, may change cmode
         self._test_tone_column_change(col, ini_tmode=exp_tmode,
-            exp_cmode=(exp_tmode=="Cross" and exp_cmode or None))
+                                      exp_cmode=cross_exp_cmode)
 
         # Invalid tmode -> expected, may change cmode
-        self._test_tone_column_change(col, ini_tmode="foo", exp_tmode=exp_tmode,
-            exp_cmode=(exp_tmode=="Cross" and exp_cmode or None))
+        self._test_tone_column_change(col, ini_tmode="foo",
+                                      exp_tmode=exp_tmode,
+                                      exp_cmode=cross_exp_cmode)
 
         # Expected cmode does not re-set cmode
         self._test_tone_column_change(col, ini_tmode="Cross",

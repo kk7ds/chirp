@@ -16,6 +16,7 @@
 from tests.unit import base
 from chirp import settings
 
+
 class TestSettingValues(base.BaseTest):
     def _set_and_test(self, rsv, *values):
         for value in values:
@@ -26,7 +27,7 @@ class TestSettingValues(base.BaseTest):
         for value in values:
             self.assertRaises(settings.InvalidValueError,
                               rsv.set_value, value)
-        
+
     def test_radio_setting_value_integer(self):
         value = settings.RadioSettingValueInteger(0, 10, 5)
         self.assertEqual(value.get_value(), 5)
@@ -65,6 +66,7 @@ class TestSettingValues(base.BaseTest):
             pass
 
         value = settings.RadioSettingValueString(0, 5, "foo", autopad=False)
+
         def test_validate(val):
             if val == "bar":
                 raise TestException()
@@ -79,6 +81,7 @@ class TestSettingValues(base.BaseTest):
         self.assertFalse(value.changed())
         value.set_value(True)
         self.assertTrue(value.changed())
+
 
 class TestSettingContainers(base.BaseTest):
     def test_radio_setting_group(self):
@@ -97,6 +100,7 @@ class TestSettingContainers(base.BaseTest):
         self.assertEqual(group.values(), [s1, s2, s3])
         self.assertEqual(group.keys(), ["s1", "s2", "s3"])
         self.assertEqual([x for x in group], [s1, s2, s3])
+
         def set_dupe():
             group["s3"] = s3
         self.assertRaises(KeyError, set_dupe)
@@ -125,6 +129,7 @@ class TestSettingContainers(base.BaseTest):
 
         rs = settings.RadioSetting("foo", "Foo")
         self.assertFalse(rs.has_apply_callback())
+
         def test_cb(setting, data1, data2):
             self.assertEqual(setting, rs)
             self.assertEqual(data1, "foo")

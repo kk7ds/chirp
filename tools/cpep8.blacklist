@@ -93,8 +93,5 @@
 ./csvdump/csvapp.py
 ./csvdump/csvdump.py
 ./share/make_supported.py
-./tests/unit/test_import_logic.py
-./tests/unit/test_memedit_edits.py
-./tests/unit/test_settings.py
 ./tools/bitdiff.py
 ./tools/img2thd72.py
