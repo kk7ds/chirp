@@ -1,0 +1,4 @@
+# This file contains a list of per-file exceptions to the pep8 style rules
+# Each line must contain the file name, a tab, and a comma-separated list
+# of style rules to ignore in that file.  This mechanism should be used
+# sparingly and as a measure of last resort.

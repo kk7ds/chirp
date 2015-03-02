@@ -30,6 +30,8 @@ parser.add_argument("-d", "--dir", action="store", default=".",
                     help="Root directory of source tree")
 parser.add_argument("-s", "--stats", action="store_true",
                     help="Only show statistics")
+parser.add_argument("--strict", action="store_true",
+                    help="Ignore listed exceptions")
 parser.add_argument("-S", "--scan", action="store_true",
                     help="Scan for additional files")
 parser.add_argument("-u", "--update", action="store_true",
@@ -52,6 +54,7 @@ def file_to_lines(name):
 scriptdir = os.path.dirname(sys.argv[0])
 manifest_filename = os.path.join(scriptdir, "cpep8.manifest")
 blacklist_filename = os.path.join(scriptdir, "cpep8.blacklist")
+exceptions_filename = os.path.join(scriptdir, "cpep8.exceptions")
 
 manifest = []
 if args.scan:
@@ -68,10 +71,28 @@ if args.scan:
 else:
     manifest += file_to_lines(manifest_filename)
 
+
+# unless we are being --strict, load per-file style exceptions
+exceptions = {}
+if not args.strict:
+    exception_lines = file_to_lines(exceptions_filename)
+    exception_lists = [x.split('\t')
+                       for x in exception_lines if not x.startswith('#')]
+    for filename, codes in exception_lists:
+        exceptions[filename] = codes
+
+
+def get_exceptions(f):
+    try:
+        ignore = exceptions[f]
+    except KeyError:
+        ignore = None
+    return ignore
+
 if args.update:
     bad = []
     for f in manifest:
-        checker = pep8.StyleGuide(quiet=True)
+        checker = pep8.StyleGuide(quiet=True, ignore=get_exceptions(f))
         results = checker.check_files([f])
         if results.total_errors:
             bad.append(f)
@@ -100,12 +121,15 @@ for f in manifest:
         check_list.append(f)
 check_list = sorted(check_list)
 
-if args.verbose:
-    print "Checking the following files:\n", "\n".join(check_list)
+total_errors = 0
+for f in check_list:
+    if args.verbose:
+        print "Checking %s" % f
 
-checker = pep8.StyleGuide(quiet=args.stats)
-results = checker.check_files(check_list)
-if args.stats:
-    results.print_statistics()
+    checker = pep8.Checker(f, quiet=args.stats, ignore=get_exceptions(f))
+    results = checker.check_all()
+    if args.stats:
+        checker.report.print_statistics()
+    total_errors += results
 
-sys.exit(results.total_errors and 1 or 0)
+sys.exit(total_errors and 1 or 0)
