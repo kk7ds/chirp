@@ -7,7 +7,6 @@
 ./chirp/baofeng_uv3r.py
 ./chirp/bjuv55.py
 ./chirp/ft1802.py
-./chirp/ft1d.py
 ./chirp/ft2800.py
 ./chirp/ft50.py
 ./chirp/ft50_ll.py
