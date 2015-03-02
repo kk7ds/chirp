@@ -13,24 +13,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SEPCHAR = ","
-
-#print "Using separation character of '%s'" % SEPCHAR
-
 import math
-
 from chirp import errors, memmap
 
+SEPCHAR = ","
+
 # 50 Tones
-TONES = [ 67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
-          85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,
-          107.2, 110.9, 114.8, 118.8, 123.0, 127.3,
-          131.8, 136.5, 141.3, 146.2, 151.4, 156.7,
-          159.8, 162.2, 165.5, 167.9, 171.3, 173.8,
-          177.3, 179.9, 183.5, 186.2, 189.9, 192.8,
-          196.6, 199.5, 203.5, 206.5, 210.7, 218.1,
-          225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
-          ]
+TONES = [67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
+         85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,
+         107.2, 110.9, 114.8, 118.8, 123.0, 127.3,
+         131.8, 136.5, 141.3, 146.2, 151.4, 156.7,
+         159.8, 162.2, 165.5, 167.9, 171.3, 173.8,
+         177.3, 179.9, 183.5, 186.2, 189.9, 192.8,
+         196.6, 199.5, 203.5, 206.5, 210.7, 218.1,
+         225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
+         ]
 
 TONES_EXTRA = [62.5]
 
@@ -40,8 +37,8 @@ OLD_TONES = list(TONES)
 
 # 104 DTCS Codes
 DTCS_CODES = [
-     23,  25,  26,  31,  32,  36,  43,  47,  51,  53,  54,
-     65,  71,  72,  73,  74, 114, 115, 116, 122, 125, 131,
+    23,  25,  26,  31,  32,  36,  43,  47,  51,  53,  54,
+    65,  71,  72,  73,  74,  114, 115, 116, 122, 125, 131,
     132, 134, 143, 145, 152, 155, 156, 162, 165, 172, 174,
     205, 212, 223, 225, 226, 243, 244, 245, 246, 251, 252,
     255, 261, 263, 265, 266, 271, 274, 306, 311, 315, 325,
@@ -50,7 +47,7 @@ DTCS_CODES = [
     465, 466, 503, 506, 516, 523, 526, 532, 546, 565, 606,
     612, 624, 627, 631, 632, 654, 662, 664, 703, 712, 723,
     731, 732, 734, 743, 754,
-     ]
+    ]
 
 # 512 Possible DTCS Codes
 ALL_DTCS_CODES = []
@@ -90,7 +87,7 @@ TUNING_STEPS = [
     9.0, 1.0, 2.5,
 ]
 
-SKIP_VALUES = [ "", "S", "P" ]
+SKIP_VALUES = ["", "S", "P"]
 
 CHARSET_UPPER_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890"
 CHARSET_ALPHANUMERIC = \
@@ -143,13 +140,16 @@ APRS_SYMBOLS = (
     "TDB", "[reserved]"
 )
 
+
 def watts_to_dBm(watts):
     """Converts @watts in watts to dBm"""
     return int(10 * math.log10(int(watts * 1000)))
 
+
 def dBm_to_watts(dBm):
     """Converts @dBm from dBm to watts"""
     return int(math.pow(10, (dBm - 30) / 10))
+
 
 class PowerLevel:
     """Represents a power level supported by a radio"""
@@ -188,6 +188,7 @@ class PowerLevel:
     def __repr__(self):
         return "%s (%i dBm)" % (self._label, self._power)
 
+
 def parse_freq(freqstr):
     """Parse a frequency string and return the value in integral Hz"""
     freqstr = freqstr.strip()
@@ -213,13 +214,16 @@ def parse_freq(freqstr):
 
     return mhz + khz
 
+
 def format_freq(freq):
     """Format a frequency given in Hz as a string"""
 
     return "%i.%06i" % (freq / 1000000, freq % 1000000)
 
+
 class ImmutableValueError(ValueError):
     pass
+
 
 class Memory:
     """Base class for a single radio memory"""
@@ -279,18 +283,18 @@ class Memory:
         self.immutable = []
 
     _valid_map = {
-        "rtone"         : TONES + TONES_EXTRA,
-        "ctone"         : TONES + TONES_EXTRA,
-        "dtcs"          : ALL_DTCS_CODES,
-        "rx_dtcs"       : ALL_DTCS_CODES,
-        "tmode"         : TONE_MODES,
-        "dtcs_polarity" : ["NN", "NR", "RN", "RR"],
-        "cross_mode"    : CROSS_MODES,
-        "mode"          : MODES,
-        "duplex"        : ["", "+", "-", "split", "off"],
-        "skip"          : SKIP_VALUES,
-        "empty"         : [True, False],
-        "dv_code"       : [x for x in range(0, 100)],
+        "rtone":          TONES + TONES_EXTRA,
+        "ctone":          TONES + TONES_EXTRA,
+        "dtcs":           ALL_DTCS_CODES,
+        "rx_dtcs":        ALL_DTCS_CODES,
+        "tmode":          TONE_MODES,
+        "dtcs_polarity":  ["NN", "NR", "RN", "RR"],
+        "cross_mode":     CROSS_MODES,
+        "mode":           MODES,
+        "duplex":         ["", "+", "-", "split", "off"],
+        "skip":           SKIP_VALUES,
+        "empty":          [True, False],
+        "dv_code":        [x for x in range(0, 100)],
         }
 
     def __repr__(self):
@@ -324,10 +328,9 @@ class Memory:
             raise ImmutableValueError("Field %s is not " % name +
                                       "mutable on this memory")
 
-        if self._valid_map.has_key(name) and val not in self._valid_map[name]:
-            raise ValueError("`%s' is not in valid list: %s" % (\
-                    val,
-                    self._valid_map[name]))
+        if name in self._valid_map and val not in self._valid_map[name]:
+            raise ValueError("`%s' is not in valid list: %s" %
+                             (val, self._valid_map[name]))
 
         self.__dict__[name] = val
 
@@ -361,7 +364,7 @@ class Memory:
         else:
             dup = self.duplex
 
-        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [%.2f]"% \
+        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [%.2f]" % \
             (self.number,
              format_freq(self.freq),
              dup,
@@ -380,20 +383,20 @@ class Memory:
     def to_csv(self):
         """Return a CSV representation of this memory"""
         return [
-            "%i"   % self.number,
-            "%s"   % self.name,
+            "%i" % self.number,
+            "%s" % self.name,
             format_freq(self.freq),
-            "%s"   % self.duplex,
+            "%s" % self.duplex,
             format_freq(self.offset),
-            "%s"   % self.tmode,
+            "%s" % self.tmode,
             "%.1f" % self.rtone,
             "%.1f" % self.ctone,
             "%03i" % self.dtcs,
-            "%s"   % self.dtcs_polarity,
-            "%s"   % self.mode,
+            "%s" % self.dtcs_polarity,
+            "%s" % self.mode,
             "%.2f" % self.tuning_step,
-            "%s"   % self.skip,
-            "%s"   % self.comment,
+            "%s" % self.skip,
+            "%s" % self.comment,
             "", "", "", ""]
 
     @classmethod
@@ -442,7 +445,8 @@ class Memory:
 
         self.tmode = vals[5]
         if self.tmode not in TONE_MODES:
-            raise errors.InvalidDataError("Invalid tone mode `%s'" % self.tmode)
+            raise errors.InvalidDataError("Invalid tone mode `%s'" %
+                                          self.tmode)
 
         try:
             self.rtone = float(vals[6])
@@ -494,6 +498,7 @@ class Memory:
 
         return True
 
+
 class DVMemory(Memory):
     """A Memory with D-STAR attributes"""
     dv_urcall = "CQCQCQ"
@@ -512,24 +517,24 @@ class DVMemory(Memory):
 
     def to_csv(self):
         return [
-            "%i"   % self.number,
-            "%s"   % self.name,
+            "%i" % self.number,
+            "%s" % self.name,
             format_freq(self.freq),
-            "%s"   % self.duplex,
+            "%s" % self.duplex,
             format_freq(self.offset),
-            "%s"   % self.tmode,
+            "%s" % self.tmode,
             "%.1f" % self.rtone,
             "%.1f" % self.ctone,
             "%03i" % self.dtcs,
-            "%s"   % self.dtcs_polarity,
-            "%s"   % self.mode,
+            "%s" % self.dtcs_polarity,
+            "%s" % self.mode,
             "%.2f" % self.tuning_step,
-            "%s"   % self.skip,
+            "%s" % self.skip,
             "%s" % self.comment,
-            "%s"   % self.dv_urcall,
-            "%s"   % self.dv_rpt1call,
-            "%s"   % self.dv_rpt2call,
-            "%i"   % self.dv_code]
+            "%s" % self.dv_urcall,
+            "%s" % self.dv_rpt1call,
+            "%s" % self.dv_rpt2call,
+            "%i" % self.dv_code]
 
     def really_from_csv(self, vals):
         Memory.really_from_csv(self, vals)
@@ -541,6 +546,7 @@ class DVMemory(Memory):
             self.dv_code = int(vals[18].strip())
         except Exception:
             self.dv_code = 0
+
 
 class MemoryMapping(object):
     """Base class for a memory mapping"""
@@ -565,6 +571,7 @@ class MemoryMapping(object):
 
     def __eq__(self, other):
         return self.get_index() == other.get_index()
+
 
 class MappingModel(object):
     """Base class for a memory mapping model"""
@@ -602,8 +609,10 @@ class MappingModel(object):
         """Return a list of mappings that @memory is in"""
         raise NotImplementedError()
 
+
 class Bank(MemoryMapping):
     """Base class for a radio's Bank"""
+
 
 class NamedBank(Bank):
     """A bank that can have a name"""
@@ -611,10 +620,12 @@ class NamedBank(Bank):
         """Changes the user-adjustable bank name"""
         self._name = name
 
+
 class BankModel(MappingModel):
     """A bank model where one memory is in zero or one banks at any point"""
     def __init__(self, radio, name='Banks'):
         super(BankModel, self).__init__(radio, name)
+
 
 class MappingModelIndexInterface:
     """Interface for mappings with index capabilities"""
@@ -635,9 +646,11 @@ class MappingModelIndexInterface:
         Exception if full"""
         raise NotImplementedError()
 
+
 class MTOBankModel(BankModel):
     """A bank model where one memory can be in multiple banks at once """
     pass
+
 
 def console_status(status):
     """Write a status object to the console"""
@@ -656,76 +669,77 @@ class RadioPrompts:
 
 BOOLEAN = [True, False]
 
+
 class RadioFeatures:
     """Radio Feature Flags"""
     _valid_map = {
         # General
-        "has_bank_index"      : BOOLEAN,
-        "has_dtcs"            : BOOLEAN,
-        "has_rx_dtcs"         : BOOLEAN,
-        "has_dtcs_polarity"   : BOOLEAN,
-        "has_mode"            : BOOLEAN,
-        "has_offset"          : BOOLEAN,
-        "has_name"            : BOOLEAN,
-        "has_bank"            : BOOLEAN,
-        "has_bank_names"      : BOOLEAN,
-        "has_tuning_step"     : BOOLEAN,
-        "has_ctone"           : BOOLEAN,
-        "has_cross"           : BOOLEAN,
-        "has_infinite_number" : BOOLEAN,
-        "has_nostep_tuning"   : BOOLEAN,
-        "has_comment"         : BOOLEAN,
-        "has_settings"        : BOOLEAN,
+        "has_bank_index":       BOOLEAN,
+        "has_dtcs":             BOOLEAN,
+        "has_rx_dtcs":          BOOLEAN,
+        "has_dtcs_polarity":    BOOLEAN,
+        "has_mode":             BOOLEAN,
+        "has_offset":           BOOLEAN,
+        "has_name":             BOOLEAN,
+        "has_bank":             BOOLEAN,
+        "has_bank_names":       BOOLEAN,
+        "has_tuning_step":      BOOLEAN,
+        "has_ctone":            BOOLEAN,
+        "has_cross":            BOOLEAN,
+        "has_infinite_number":  BOOLEAN,
+        "has_nostep_tuning":    BOOLEAN,
+        "has_comment":          BOOLEAN,
+        "has_settings":         BOOLEAN,
 
         # Attributes
-        "valid_modes"         : [],
-        "valid_tmodes"        : [],
-        "valid_duplexes"      : [],
-        "valid_tuning_steps"  : [],
-        "valid_bands"         : [],
-        "valid_skips"         : [],
-        "valid_power_levels"  : [],
-        "valid_characters"    : "",
-        "valid_name_length"   : 0,
-        "valid_cross_modes"   : [],
-        "valid_dtcs_pols"     : [],
-        "valid_dtcs_codes"    : [],
-        "valid_special_chans" : [],
+        "valid_modes":          [],
+        "valid_tmodes":         [],
+        "valid_duplexes":       [],
+        "valid_tuning_steps":   [],
+        "valid_bands":          [],
+        "valid_skips":          [],
+        "valid_power_levels":   [],
+        "valid_characters":     "",
+        "valid_name_length":    0,
+        "valid_cross_modes":    [],
+        "valid_dtcs_pols":      [],
+        "valid_dtcs_codes":     [],
+        "valid_special_chans":  [],
 
-        "has_sub_devices"     : BOOLEAN,
-        "memory_bounds"       : (0, 0),
-        "can_odd_split"       : BOOLEAN,
+        "has_sub_devices":      BOOLEAN,
+        "memory_bounds":        (0, 0),
+        "can_odd_split":        BOOLEAN,
 
         # D-STAR
-        "requires_call_lists" : BOOLEAN,
-        "has_implicit_calls"  : BOOLEAN,
+        "requires_call_lists":  BOOLEAN,
+        "has_implicit_calls":   BOOLEAN,
         }
 
     def __setattr__(self, name, val):
         if name.startswith("_"):
             self.__dict__[name] = val
             return
-        elif not name in self._valid_map.keys():
+        elif name not in self._valid_map.keys():
             raise ValueError("No such attribute `%s'" % name)
 
         if type(self._valid_map[name]) == tuple:
             # Tuple, cardinality must match
             if type(val) != tuple or len(val) != len(self._valid_map[name]):
-                raise ValueError("Invalid value `%s' for attribute `%s'" % \
-                                     (val, name))
+                raise ValueError("Invalid value `%s' for attribute `%s'" %
+                                 (val, name))
         elif type(self._valid_map[name]) == list and not self._valid_map[name]:
             # Empty list, must be another list
             if type(val) != list:
-                raise ValueError("Invalid value `%s' for attribute `%s'" % \
-                                     (val, name))
+                raise ValueError("Invalid value `%s' for attribute `%s'" %
+                                 (val, name))
         elif type(self._valid_map[name]) == str:
             if type(val) != str:
-                raise ValueError("Invalid value `%s' for attribute `%s'" % \
-                                     (val, name))
+                raise ValueError("Invalid value `%s' for attribute `%s'" %
+                                 (val, name))
         elif type(self._valid_map[name]) == int:
             if type(val) != int:
-                raise ValueError("Invalid value `%s' for attribute `%s'" % \
-                                     (val, name))
+                raise ValueError("Invalid value `%s' for attribute `%s'" %
+                                 (val, name))
         elif val not in self._valid_map[name]:
             # Value not in the list of valid values
             raise ValueError("Invalid value `%s' for attribute `%s'" % (val,
@@ -753,7 +767,8 @@ class RadioFeatures:
         self.init("has_dtcs", True,
                   "Indicates that DTCS tone mode is available")
         self.init("has_rx_dtcs", False,
-                  "Indicates that radio can use two different DTCS codes for rx and tx")
+                  "Indicates that radio can use two different " +
+                  "DTCS codes for rx and tx")
         self.init("has_dtcs_polarity", True,
                   "Indicates that the DTCS polarity can be changed")
         self.init("has_mode", True,
@@ -851,8 +866,8 @@ class RadioFeatures:
             msgs.append(msg)
 
         if (self.valid_modes and
-            mem.mode not in self.valid_modes and
-            mem.mode != "Auto"):
+                mem.mode not in self.valid_modes and
+                mem.mode != "Auto"):
             msg = ValidationError("Mode %s not supported" % mem.mode)
             msgs.append(msg)
 
@@ -863,14 +878,14 @@ class RadioFeatures:
             if mem.tmode == "Cross":
                 if self.valid_cross_modes and \
                         mem.cross_mode not in self.valid_cross_modes:
-                    msg = ValidationError("Cross tone mode %s not supported" % \
-                                              mem.cross_mode)
+                    msg = ValidationError("Cross tone mode %s not supported" %
+                                          mem.cross_mode)
                     msgs.append(msg)
 
         if self.has_dtcs_polarity and \
                 mem.dtcs_polarity not in self.valid_dtcs_pols:
-            msg = ValidationError("DTCS Polarity %s not supported" % \
-                                      mem.dtcs_polarity)
+            msg = ValidationError("DTCS Polarity %s not supported" %
+                                  mem.dtcs_polarity)
             msgs.append(msg)
 
         if self.valid_dtcs_codes and \
@@ -912,8 +927,8 @@ class RadioFeatures:
             try:
                 step = required_step(mem.freq)
                 if step not in self.valid_tuning_steps:
-                    msg = ValidationError("Frequency requires %.2fkHz step" %\
-                                              required_step(mem.freq))
+                    msg = ValidationError("Frequency requires %.2fkHz step" %
+                                          required_step(mem.freq))
                     msgs.append(msg)
             except errors.InvalidDataError, e:
                 msgs.append(str(e))
@@ -928,17 +943,21 @@ class RadioFeatures:
 
         return msgs
 
+
 class ValidationMessage(str):
     """Base class for Validation Errors and Warnings"""
     pass
+
 
 class ValidationWarning(ValidationMessage):
     """A non-fatal warning during memory validation"""
     pass
 
+
 class ValidationError(ValidationMessage):
     """A fatal error during memory validation"""
     pass
+
 
 class Radio(object):
     """Base class for all Radio drivers"""
@@ -1042,6 +1061,7 @@ class Radio(object):
         should be True and get_settings() must be implemented as well."""
         pass
 
+
 class FileBackedRadio(Radio):
     """A file-backed radio stores its data in a file"""
     FILE_EXTENSION = "img"
@@ -1084,7 +1104,6 @@ class FileBackedRadio(Radio):
     def get_mmap(self):
         """Return the radio's memory map object"""
         return self._mmap
-
 
 
 class CloneModeRadio(FileBackedRadio):
@@ -1131,15 +1150,18 @@ class CloneModeRadio(FileBackedRadio):
         "Initiate a PC-to-radio clone operation"
         pass
 
+
 class LiveRadio(Radio):
     """Base class for all Live-Mode radios"""
     pass
+
 
 class NetworkSourceRadio(Radio):
     """Base class for all radios based on a network source"""
     def do_fetch(self):
         """Fetch the source data from the network"""
         pass
+
 
 class IcomDstarSupport:
     """Base interface for radios supporting Icom's D-STAR technology"""
@@ -1171,12 +1193,14 @@ class IcomDstarSupport:
         """Set the MYCALL callsign list"""
         pass
 
+
 class ExperimentalRadio:
     """Interface for experimental radios"""
     @classmethod
     def get_experimental_warning(cls):
         return ("This radio's driver is marked as experimental and may " +
                 "be unstable or unsafe to use.")
+
 
 class Status:
     """Clone status object for conveying clone progress to the UI"""
@@ -1196,25 +1220,31 @@ class Status:
 
         return "|%-10s| %2.1f%% %s" % (ticks, pct, self.msg)
 
+
 def is_fractional_step(freq):
     """Returns True if @freq requires a 12.5kHz or 6.25kHz step"""
     return not is_5_0(freq) and (is_12_5(freq) or is_6_25(freq))
+
 
 def is_5_0(freq):
     """Returns True if @freq is reachable by a 5kHz step"""
     return (freq % 5000) == 0
 
+
 def is_12_5(freq):
     """Returns True if @freq is reachable by a 12.5kHz step"""
     return (freq % 12500) == 0
+
 
 def is_6_25(freq):
     """Returns True if @freq is reachable by a 6.25kHz step"""
     return (freq % 6250) == 0
 
+
 def is_2_5(freq):
     """Returns True if @freq is reachable by a 2.5kHz step"""
     return (freq % 2500) == 0
+
 
 def required_step(freq):
     """Returns the simplest tuning step that is required to reach @freq"""
@@ -1228,9 +1258,9 @@ def required_step(freq):
         return 2.5
     else:
         raise errors.InvalidDataError("Unable to calculate the required " +
-                                      "tuning step for %i.%5i" % \
-                                          (freq / 1000000,
-                                           freq % 1000000))
+                                      "tuning step for %i.%5i" %
+                                      (freq / 1000000, freq % 1000000))
+
 
 def fix_rounded_step(freq):
     """Some radios imply the last bit of 12.5kHz and 6.25kHz step
@@ -1259,8 +1289,9 @@ def fix_rounded_step(freq):
     except errors.InvalidDataError:
         pass
 
-    raise errors.InvalidDataError("Unable to correct rounded frequency " + \
-                                      format_freq(freq))
+    raise errors.InvalidDataError("Unable to correct rounded frequency " +
+                                  format_freq(freq))
+
 
 def _name(name, len, just_upper):
     """Justify @name to @len, optionally converting to all uppercase"""
@@ -1268,41 +1299,51 @@ def _name(name, len, just_upper):
         name = name.upper()
     return name.ljust(len)[:len]
 
+
 def name6(name, just_upper=True):
     """6-char name"""
     return _name(name, 6, just_upper)
+
 
 def name8(name, just_upper=False):
     """8-char name"""
     return _name(name, 8, just_upper)
 
+
 def name16(name, just_upper=False):
     """16-char name"""
     return _name(name, 16, just_upper)
+
 
 def to_GHz(val):
     """Convert @val in GHz to Hz"""
     return val * 1000000000
 
+
 def to_MHz(val):
     """Convert @val in MHz to Hz"""
     return val * 1000000
+
 
 def to_kHz(val):
     """Convert @val in kHz to Hz"""
     return val * 1000
 
+
 def from_GHz(val):
     """Convert @val in Hz to GHz"""
     return val / 100000000
+
 
 def from_MHz(val):
     """Convert @val in Hz to MHz"""
     return val / 100000
 
+
 def from_kHz(val):
     """Convert @val in Hz to kHz"""
     return val / 100
+
 
 def split_tone_decode(mem, txtone, rxtone):
     """
@@ -1348,6 +1389,7 @@ def split_tone_decode(mem, txtone, rxtone):
         mem.ctone = rxval
     elif rxmode == "DTCS":
         mem.rx_dtcs = rxval
+
 
 def split_tone_encode(mem):
     """
