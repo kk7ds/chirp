@@ -25,14 +25,14 @@ import logging
 import gtk
 import gobject
 
-from chirpui import inputdialog, common
+from chirp.ui import inputdialog, common
 from chirp import platform, directory, util
 from chirp.drivers import generic_xml, generic_csv
 from chirp.drivers import ic9x, kenwood_live, idrp, vx7, vx5, vx6
 from chirp.drivers import icf, ic9x_icf
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
-from chirpui import editorset, clone, miscwidgets, config, reporting, fips
-from chirpui import bandplans
+from chirp.ui import editorset, clone, miscwidgets, config, reporting, fips
+from chirp.ui import bandplans
 
 gobject.threads_init()
 

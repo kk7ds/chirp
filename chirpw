@@ -21,7 +21,7 @@ from chirp import logger
 from chirp import elib_intl
 from chirp import platform
 from chirp.drivers import *
-from chirpui import config
+from chirp.ui import config
 
 
 import sys
@@ -124,7 +124,7 @@ logger.handle_options(args)
 
 a = None
 if True:
-    from chirpui import mainapp
+    from chirp.ui import mainapp
     a = mainapp.ChirpMain()
 
 for i in args.files:

@@ -42,7 +42,7 @@ LOG = logging.getLogger(__name__)
 
 try:
     # Don't let failure to import any of these modules cause trouble
-    from chirpui import config
+    from chirp.ui import config
     import xmlrpclib
 except:
     ENABLED = False

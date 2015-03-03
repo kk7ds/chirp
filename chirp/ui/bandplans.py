@@ -17,7 +17,7 @@ import gtk
 import logging
 from chirp import bandplan, bandplan_na, bandplan_au
 from chirp import bandplan_iaru_r1, bandplan_iaru_r2, bandplan_iaru_r3
-from chirpui import inputdialog
+from chirp.ui import inputdialog
 
 LOG = logging.getLogger(__name__)
 

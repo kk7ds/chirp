@@ -2,7 +2,7 @@ import unittest
 import mox
 
 from tests.unit import base
-from chirpui import shiftdialog
+from chirp.ui import shiftdialog
 from chirp import chirp_common
 from chirp import errors
 

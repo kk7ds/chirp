@@ -20,7 +20,7 @@ import logging
 
 from chirp import errors, chirp_common, import_logic
 from chirp.drivers import generic_xml
-from chirpui import common
+from chirp.ui import common
 
 LOG = logging.getLogger(__name__)
 
@@ -641,7 +641,7 @@ class ExportDialog(ImportDialog):
     ACTION = _("Export")
 
 if __name__ == "__main__":
-    from chirpui import editorset
+    from chirp.ui import editorset
     import sys
 
     f = sys.argv[1]

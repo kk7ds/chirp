@@ -13,7 +13,7 @@ clean:
 	find * -depth -type d -exec rmdir "{}" \;
 
 chirpui.pot:
-	/usr/bin/find ../chirpui -name '*.py' > .files
+	/usr/bin/find ../chirp/ui -name '*.py' > .files
 	xgettext -L Python -k_ -o chirpui.pot -f .files $(XGT_OPTS)
 
 %.po: chirpui.pot

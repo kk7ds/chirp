@@ -24,7 +24,7 @@ import traceback
 import logging
 
 from chirp import errors
-from chirpui import reporting, config
+from chirp.ui import reporting, config
 
 LOG = logging.getLogger(__name__)
 

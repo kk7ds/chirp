@@ -17,7 +17,7 @@ import gtk
 import gobject
 import logging
 
-from chirpui import common, miscwidgets
+from chirp.ui import common, miscwidgets
 
 LOG = logging.getLogger(__name__)
 

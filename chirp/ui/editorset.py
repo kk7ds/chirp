@@ -20,8 +20,8 @@ import logging
 
 from chirp import chirp_common, directory
 from chirp.drivers import generic_csv, generic_xml
-from chirpui import memedit, dstaredit, bankedit, common, importdialog
-from chirpui import inputdialog, reporting, settingsedit, radiobrowser, config
+from chirp.ui import memedit, dstaredit, bankedit, common, importdialog
+from chirp.ui import inputdialog, reporting, settingsedit, radiobrowser, config
 
 LOG = logging.getLogger(__name__)
 

@@ -22,7 +22,7 @@ import serial
 import os
 
 import csvdump
-from chirpui import inputdialog, cloneprog
+from chirp.ui import inputdialog, cloneprog
 
 import chirp
 from chirp import ic9x, id800, ic2820, ic2200, errors

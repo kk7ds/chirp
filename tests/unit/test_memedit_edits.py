@@ -3,7 +3,7 @@ from tests.unit import base
 
 __builtins__["_"] = lambda s: s
 
-from chirpui import memedit
+from chirp.ui import memedit
 
 
 class TestEdits(base.BaseTest):

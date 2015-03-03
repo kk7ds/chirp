@@ -17,7 +17,7 @@ import gtk
 import logging
 
 from miscwidgets import make_choice
-from chirpui import reporting
+from chirp.ui import reporting
 
 LOG = logging.getLogger(__name__)
 

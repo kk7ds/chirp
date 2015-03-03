@@ -119,7 +119,7 @@ def default_build():
 
     setup(
         name="chirp",
-        packages=["chirp", "chirp.drivers", "chirpui"],
+        packages=["chirp", "chirp.drivers", "chirp.ui"],
         version=CHIRP_VERSION,
         scripts=["chirpw"],
         data_files=[('share/applications', desktop_files),
@@ -166,7 +166,7 @@ else:
     if os.path.exists("rpttool"):
         nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
         rpttool_build()
-    if os.path.exists("chirpui"):
+    if os.path.exists("chirp/ui"):
         nuke_manifest("include *.xsd",
                       "include share/*.desktop",
                       "include share/chirp.png",

@@ -21,7 +21,7 @@ import logging
 from gobject import TYPE_INT, TYPE_STRING, TYPE_BOOLEAN
 
 from chirp import chirp_common
-from chirpui import common, miscwidgets
+from chirp.ui import common, miscwidgets
 
 LOG = logging.getLogger(__name__)
 

@@ -21,7 +21,7 @@ import gtk
 import gobject
 
 from chirp import platform, directory, detect, chirp_common
-from chirpui import miscwidgets, cloneprog, inputdialog, common, config
+from chirp.ui import miscwidgets, cloneprog, inputdialog, common, config
 
 LOG = logging.getLogger(__name__)
 

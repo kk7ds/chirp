@@ -18,7 +18,7 @@ import os
 import logging
 
 from chirp import chirp_common, settings
-from chirpui import miscwidgets, common
+from chirp.ui import miscwidgets, common
 
 LOG = logging.getLogger(__name__)
 

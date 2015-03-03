@@ -29,8 +29,8 @@ import pickle
 import os
 import logging
 
-from chirpui import common, shiftdialog, miscwidgets, config, memdetail
-from chirpui import bandplans
+from chirp.ui import common, shiftdialog, miscwidgets, config, memdetail
+from chirp.ui import bandplans
 from chirp import chirp_common, errors, directory, import_logic
 
 LOG = logging.getLogger(__name__)
