@@ -58,19 +58,22 @@ MODES = ["NFM", "FM"]
 PTTID = ["", "BOT", "EOT", "Both"]
 SIGNAL = ["", "DTMF"]
 
+
 def make_frame(cmd, addr, length, data=""):
     return struct.pack(">BHB", ord(cmd), addr, length) + data
 
+
 def send(radio, frame):
-    #print "%04i P>R: %s" % (len(frame), util.hexprint(frame))
+    # print "%04i P>R: %s" % (len(frame), util.hexprint(frame))
     radio.pipe.write(frame)
+
 
 def recv(radio, readdata=True):
     hdr = radio.pipe.read(4)
     cmd, addr, length = struct.unpack(">BHB", hdr)
     if readdata:
         data = radio.pipe.read(length)
-        #print "     P<R: %s" % util.hexprint(hdr + data)
+        # print "     P<R: %s" % util.hexprint(hdr + data)
         if len(data) != length:
             raise errors.RadioError("Radio sent %i bytes (expected %i)" % (
                     len(data), length))
@@ -78,6 +81,7 @@ def recv(radio, readdata=True):
         data = ""
     radio.pipe.write("\x06")
     return addr, data
+
 
 def do_ident(radio):
     send(radio, "PROGRAM")
@@ -92,6 +96,7 @@ def do_ident(radio):
     print "Model: %s" % util.hexprint(ident)
     radio.pipe.write("\x06")
     ack = radio.pipe.read(1)
+
 
 def do_download(radio):
     radio.pipe.setParity("E")
@@ -122,6 +127,7 @@ def do_download(radio):
             data)
     return memmap.MemoryMap(data)
 
+
 def do_upload(radio):
     radio.pipe.setParity("E")
     radio.pipe.setTimeout(1)
@@ -142,6 +148,7 @@ def do_upload(radio):
         radio.status_fn(status)
 
     radio.pipe.write("\x45")
+
 
 class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
     """Kenwood TK-x102"""
@@ -320,8 +327,9 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         else:
             _mem.rx_tone = 0xFFFF
 
-        LOG.debug("Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
-                                              rx_mode, _mem.rx_tone))
+        LOG.debug("Set TX %s (%i) RX %s (%i)" %
+                  (tx_mode, _mem.tx_tone, rx_mode, _mem.rx_tone))
+
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
 
@@ -340,7 +348,6 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
             _mem.tx_freq = mem.freq / 10
 
         self._set_tone(mem, _mem)
-
 
         _mem.highpower = mem.power == POWER_LEVELS[1]
         _mem.wide = mem.mode == "FM"
@@ -416,11 +423,13 @@ class KenwoodTK7102Radio(KenwoodTKx102Radio):
     _range = (136000000, 174000000)
     _upper = 4
 
+
 @directory.register
 class KenwoodTK8102Radio(KenwoodTKx102Radio):
     MODEL = "TK-8102"
     _range = (400000000, 500000000)
     _upper = 4
+
 
 @directory.register
 class KenwoodTK7108Radio(KenwoodTKx102Radio):
@@ -428,9 +437,9 @@ class KenwoodTK7108Radio(KenwoodTKx102Radio):
     _range = (136000000, 174000000)
     _upper = 8
 
+
 @directory.register
 class KenwoodTK8108Radio(KenwoodTKx102Radio):
     MODEL = "TK-8108"
     _range = (400000000, 500000000)
     _upper = 8
-
