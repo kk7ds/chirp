@@ -49,7 +49,7 @@ struct {
   u8 voice;       // Voice Annunciation
   u8 tot;         // Time-out Timer
   u8 totalert;    // Time-out Timer Pre-alert
-  u8 unknown1[2]; 
+  u8 unknown1[2];
   u8 squelch;     // Squelch Level
   u8 save;        // Battery Saver
   u8 beep;        // Beep
@@ -78,13 +78,14 @@ VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 17)]
 VOXDELAY_LIST = ["0.3", "0.5", "1.0", "1.5", "2.0", "3.0"]
 
 SETTING_LISTS = {
-    "bcl" : BCL_LIST,
-    "tot" : TIMEOUTTIMER_LIST,
-    "totalert" : TOTALERT_LIST,
-    "voice" : VOICE_LIST,
-    "vox" : VOX_LIST,
-    "voxdelay" : VOXDELAY_LIST,
+    "bcl": BCL_LIST,
+    "tot": TIMEOUTTIMER_LIST,
+    "totalert": TOTALERT_LIST,
+    "voice": VOICE_LIST,
+    "vox": VOX_LIST,
+    "voxdelay": VOXDELAY_LIST,
     }
+
 
 def _nc630a_enter_programming_mode(radio):
     serial = radio.pipe
@@ -121,12 +122,14 @@ def _nc630a_enter_programming_mode(radio):
     if ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 
+
 def _nc630a_exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write("E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
+
 
 def _nc630a_read_block(radio, block_addr, block_size):
     serial = radio.pipe
@@ -153,6 +156,7 @@ def _nc630a_read_block(radio, block_addr, block_size):
 
     return block_data
 
+
 def _nc630a_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
@@ -169,6 +173,7 @@ def _nc630a_write_block(radio, block_addr, block_size):
     except:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
+
 
 def do_download(radio):
     print "download"
@@ -196,6 +201,7 @@ def do_download(radio):
 
     return memmap.MemoryMap(data)
 
+
 def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
@@ -212,6 +218,7 @@ def do_upload(radio):
             _nc630a_write_block(radio, addr, BLOCK_SIZE)
 
     _nc630a_exit_programming_mode(radio)
+
 
 @directory.register
 class NC630aRadio(chirp_common.CloneModeRadio):
@@ -299,8 +306,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         if mem.tmode == "DTCS":
             mem.dtcs_polarity = "%s%s" % (tpol, rpol)
 
-        LOG.debug("Got TX %s (%i) RX %s (%i)" % (txmode, _mem.tx_tone,
-                                              rxmode, _mem.rx_tone))
+        LOG.debug("Got TX %s (%i) RX %s (%i)" %
+                  (txmode, _mem.tx_tone, rxmode, _mem.rx_tone))
 
     def get_memory(self, number):
         bitpos = (1 << ((number - 1) % 8))
@@ -345,8 +352,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         mem.extra = RadioSettingGroup("Extra", "extra")
 
         rs = RadioSetting("bcl", "Busy Channel Lockout",
-                          RadioSettingValueList(BCL_LIST,
-                          BCL_LIST[_mem.bcl]))
+                          RadioSettingValueList(
+                              BCL_LIST, BCL_LIST[_mem.bcl]))
         mem.extra.append(rs)
 
         return mem
@@ -366,11 +373,10 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         else:
             tx_mode = rx_mode = mem.tmode
 
-
         if tx_mode == "DTCS":
             _mem.tx_tone = mem.tmode != "DTCS" and \
-                _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or \
-                _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
+                           _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or \
+                           _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
         elif tx_mode:
             _mem.tx_tone = tx_mode == "Tone" and \
                 int(mem.rtone * 10) or int(mem.ctone * 10)
@@ -384,8 +390,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         else:
             _mem.rx_tone = 0xFFFF
 
-        LOG.debug("Set TX %s (%i) RX %s (%i)" % (tx_mode, _mem.tx_tone,
-                                              rx_mode, _mem.rx_tone))
+        LOG.debug("Set TX %s (%i) RX %s (%i)" %
+                  (tx_mode, _mem.tx_tone, rx_mode, _mem.rx_tone))
 
     def set_memory(self, mem):
         bitpos = (1 << ((mem.number - 1) % 8))
@@ -435,23 +441,25 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         top = RadioSettings(basic)
 
         rs = RadioSetting("tot", "Time-out timer",
-                          RadioSettingValueList(TIMEOUTTIMER_LIST,
-                          TIMEOUTTIMER_LIST[_settings.tot]))
+                          RadioSettingValueList(
+                              TIMEOUTTIMER_LIST,
+                              TIMEOUTTIMER_LIST[_settings.tot]))
         basic.append(rs)
 
         rs = RadioSetting("totalert", "TOT Pre-alert",
-                          RadioSettingValueList(TOTALERT_LIST,
-                          TOTALERT_LIST[_settings.totalert]))
+                          RadioSettingValueList(
+                              TOTALERT_LIST,
+                              TOTALERT_LIST[_settings.totalert]))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX Gain",
-                          RadioSettingValueList(VOX_LIST,
-                          VOX_LIST[_settings.vox]))
+                          RadioSettingValueList(
+                              VOX_LIST, VOX_LIST[_settings.vox]))
         basic.append(rs)
 
         rs = RadioSetting("voice", "Voice Annumciation",
-                          RadioSettingValueList(VOICE_LIST,
-                          VOICE_LIST[_settings.voice]))
+                          RadioSettingValueList(
+                              VOICE_LIST, VOICE_LIST[_settings.voice]))
         basic.append(rs)
 
         rs = RadioSetting("squelch", "Squelch Level",
@@ -459,8 +467,9 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("voxdelay", "VOX Delay",
-                          RadioSettingValueList(VOXDELAY_LIST,
-                          VOXDELAY_LIST[_settings.voxdelay]))
+                          RadioSettingValueList(
+                              VOXDELAY_LIST,
+                              VOXDELAY_LIST[_settings.voxdelay]))
         basic.append(rs)
 
         rs = RadioSetting("beep", "Beep",
