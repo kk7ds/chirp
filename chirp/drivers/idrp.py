@@ -13,11 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import serial, logging
+import serial
+import logging
 
 from chirp import chirp_common, errors, util
 
 LOG = logging.getLogger(__name__)
+
 
 def parse_frames(buf):
     """Parse frames from the radio"""
@@ -36,6 +38,7 @@ def parse_frames(buf):
 
     return frames
 
+
 def send(pipe, buf):
     """Send data in @buf to @pipe"""
     pipe.write("\xfe\xfe%s\xfd" % buf)
@@ -52,9 +55,11 @@ def send(pipe, buf):
 
     return parse_frames(data)
 
+
 def send_magic(pipe):
     """Send the magic wakeup call to @pipe"""
     send(pipe, ("\xfe" * 15) + "\x01\x7f\x19")
+
 
 def drain(pipe):
     """Chew up any data waiting on @pipe"""
@@ -62,6 +67,7 @@ def drain(pipe):
         buf = pipe.read(4096)
         if not buf:
             break
+
 
 def set_freq(pipe, freq):
     """Set the frequency of the radio on @pipe to @freq"""
@@ -77,7 +83,8 @@ def set_freq(pipe, freq):
                 return True
 
     raise errors.InvalidDataError("Repeater reported error")
-    
+
+
 def get_freq(pipe):
     """Get the frequency of the radio attached to @pipe"""
     buf = "\x01\x7f\x1a\x09"
@@ -104,15 +111,16 @@ RP_IMMUTABLE = ["number", "skip", "bank", "extd_number", "name", "rtone",
                 "ctone", "dtcs", "tmode", "dtcs_polarity", "skip", "duplex",
                 "offset", "mode", "tuning_step", "bank_index"]
 
+
 class IDRPx000V(chirp_common.LiveRadio):
     """Icom IDRP-*"""
     BAUD_RATE = 19200
     VENDOR = "Icom"
     MODEL = "ID-2000V/4000V/2D/2V"
 
-    _model = "0000" # Unknown
+    _model = "0000"  # Unknown
     mem_upper_limit = 0
-        
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.valid_modes = ["DV"]
@@ -129,7 +137,7 @@ class IDRPx000V(chirp_common.LiveRadio):
         rf.has_mode = False
         rf.has_name = False
         rf.has_offset = False
-        rf.has_tuning_step = False        
+        rf.has_tuning_step = False
         rf.memory_bounds = (0, 0)
         return rf
 
@@ -153,11 +161,13 @@ class IDRPx000V(chirp_common.LiveRadio):
 
         set_freq(self.pipe, mem.freq)
 
+
 def do_test():
     """Get the frequency of /dev/icom"""
     ser = serial.Serial(port="/dev/icom", baudrate=19200, timeout=0.5)
-    #set_freq(pipe, 439.920)
+    # set_freq(pipe, 439.920)
     get_freq(ser)
+
 
 if __name__ == "__main__":
     do_test()
