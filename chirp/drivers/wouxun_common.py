@@ -23,10 +23,12 @@ from chirp import util, chirp_common, memmap
 
 LOG = logging.getLogger(__name__)
 
+
 def wipe_memory(_mem, byte):
     """Cleanup a memory"""
     _mem.set_raw(byte * (_mem.size() / 8))
-    
+
+
 def do_download(radio, start, end, blocksize):
     """Initiate a download of @radio between @start and @end"""
     image = ""
@@ -38,22 +40,22 @@ def do_download(radio, start, end, blocksize):
         resp = radio.pipe.read(length)
         if len(resp) != (len(cmd) + blocksize):
             print util.hexprint(resp)
-            raise Exception("Failed to read full block (%i!=%i)" % \
-                                (len(resp),
-                                 len(cmd) + blocksize))
-        
+            raise Exception("Failed to read full block (%i!=%i)" %
+                            (len(resp), len(cmd) + blocksize))
+
         radio.pipe.write("\x06")
         radio.pipe.read(1)
         image += resp[4:]
 
         if radio.status_fn:
-            status = chirp_common.Status()           
+            status = chirp_common.Status()
             status.cur = i
             status.max = end
             status.msg = "Cloning from radio"
             radio.status_fn(status)
-    
+
     return memmap.MemoryMap(image)
+
 
 def do_upload(radio, start, end, blocksize):
     """Initiate an upload of @radio between @start and @end"""
@@ -68,7 +70,7 @@ def do_upload(radio, start, end, blocksize):
         ack = radio.pipe.read(1)
         if not ack == "\x06":
             raise Exception("Radio did not ack block %i" % ptr)
-        #radio.pipe.write(ack)
+        # radio.pipe.write(ack)
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -76,5 +78,3 @@ def do_upload(radio, start, end, blocksize):
             status.max = end
             status.msg = "Cloning to radio"
             radio.status_fn(status)
-
-

@@ -60,4 +60,3 @@
 ./chirp/drivers/vx8.py
 ./chirp/drivers/vxa700.py
 ./chirp/drivers/wouxun.py
-./chirp/drivers/wouxun_common.py
