@@ -80,10 +80,11 @@ u8 name_flags[132];
 
 TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", ""]
 DUPLEX = ["", "-", "+", "?3"]
-DTCSP  = ["NN", "NR", "RN", "RR"]
-MODES  = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
-STEPS  = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
-          100.0, 125.0, 200.0]
+DTCSP = ["NN", "NR", "RN", "RR"]
+MODES = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
+STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
+         100.0, 125.0, 200.0]
+
 
 def decode_call(sevenbytes):
     """Decode a callsign from a packed region @sevenbytes"""
@@ -96,16 +97,17 @@ def decode_call(sevenbytes):
     for byte in [ord(x) for x in sevenbytes]:
         i += 1
 
-        mask = (1 << i) - 1           # Mask is 0x01, 0x03, 0x07, etc
+        # Mask is 0x01, 0x03, 0x07, etc
+        mask = (1 << i) - 1
 
-        code = (byte >> i) | rem      # Code gets the upper bits of remainder
-                                      # plus all but the i lower bits of this
-                                      # byte
+        # Code gets the upper bits of remainder plus all but the i lower
+        # bits of this byte
+        code = (byte >> i) | rem
         call += chr(code)
 
-        rem = (byte & mask) << 7 - i  # Remainder for next time are the masked
-                                      # bits, moved to the high places for the
-                                      # next round
+        # Remainder for next time are the masked bits, moved to the high
+        # places for the next round
+        rem = (byte & mask) << 7 - i
 
     # After seven trips gathering overflow bits, we chould have seven
     # left, which is the final character
@@ -113,11 +115,12 @@ def decode_call(sevenbytes):
 
     return call.rstrip()
 
+
 def encode_call(call):
     """Encode @call into a 7-byte region"""
     call = call.ljust(8)
     buf = []
-    
+
     for i in range(0, 8):
         byte = ord(call[i])
         if i > 0:
@@ -132,6 +135,7 @@ def encode_call(call):
 
     return "".join([chr(x) for x in buf[:7]])
 
+
 def _get_freq(_mem):
     val = int(_mem.freq)
 
@@ -144,6 +148,7 @@ def _get_freq(_mem):
 
     return (val * mult)
 
+
 def _set_freq(_mem, freq):
     if chirp_common.is_fractional_step(freq):
         mult = 6250
@@ -154,8 +159,10 @@ def _set_freq(_mem, freq):
 
     _mem.freq = (freq / mult) | flag
 
+
 def _wipe_memory(mem, char):
     mem.set_raw(char * (mem.size() / 8))
+
 
 class ID880Bank(icf.IcomNamedBank):
     """ID880 Bank"""
@@ -166,6 +173,7 @@ class ID880Bank(icf.IcomNamedBank):
     def set_name(self, name):
         _bank = self._model._radio._memobj.bank_names[self.index]
         _bank.name = name.ljust(6)[:6]
+
 
 @directory.register
 class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
@@ -206,7 +214,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def _get_bank_index(self, loc):
         _bank = self._memobj.bank_info[loc]
         return _bank.index
-        
+
     def _set_bank_index(self, loc, index):
         _bank = self._memobj.bank_info[loc]
         _bank.index = index
@@ -231,7 +239,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_skips = ["", "S", "P"]
         rf.valid_name_length = 8
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + \
-                              "!\"#$%&'()*+,-./:;<=>?@[\]^"
+            "!\"#$%&'()*+,-./:;<=>?@[\]^"
         rf.memory_bounds = (0, 999)
         return rf
 
@@ -265,7 +273,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             elif _pskip & bitpos:
                 mem.skip = "P"
         else:
-            pass # FIXME: Special memories
+            pass  # FIXME: Special memories
 
         if not is_used:
             mem.empty = True
@@ -329,7 +337,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.urcall = encode_call(mem.dv_urcall)
             _mem.r1call = encode_call(mem.dv_rpt1call)
             _mem.r2call = encode_call(mem.dv_rpt2call)
-            
+
         if mem.number < 1000:
             skip = self._memobj.skip_flags[bytepos]
             pskip = self._memobj.pskip_flags[bytepos]
@@ -377,7 +385,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         # destination, but it should suffice in most cases until we get
         # a rich container file format
         return len(filedata) == cls._memsize and "API880," in filedata
-        
+
+
 # This radio isn't really supported yet and detects as a conflict with
 # the ID-880. So, don't register right now
 @directory.register
@@ -386,11 +395,10 @@ class ID80Radio(ID880Radio):
     MODEL = "ID-80H"
 
     _model = "\x31\x55\x00\x01"
-    
+
     @classmethod
     def match_model(cls, filedata, filename):
         # This is a horrid hack, given that people can change the GPS-A
         # destination, but it should suffice in most cases until we get
         # a rich container file format
         return len(filedata) == cls._memsize and "API80," in filedata
-        

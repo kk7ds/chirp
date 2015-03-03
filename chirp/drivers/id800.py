@@ -20,7 +20,7 @@ MEM_FORMAT = """
 #seekto 0x0020;
 struct {
   u24 freq;
-  u16 offset;  
+  u16 offset;
   u8  unknown0:2,
       rtone:6;
   u8  duplex:2,
@@ -46,7 +46,7 @@ struct {
      digital_code:7;
   u8 urcall;
   u8 rpt1call;
-  u8 rpt2call;  
+  u8 rpt2call;
   u8 unknown7:1,
      mode:3,
      unknown8:4;
@@ -84,12 +84,12 @@ DTCS_POL = ["NN", "NR", "RN", "RR"]
 STEPS = [5.0, 10.0, 12.5, 15, 20.0, 25.0, 30.0, 50.0, 100.0, 200.0, 6.25]
 
 ID800_SPECIAL = {
-    "C2" : 510,
-    "C1" : 511,
+    "C2": 510,
+    "C1": 511,
     }
 ID800_SPECIAL_REV = {
-    510 : "C2",
-    511 : "C1",
+    510: "C2",
+    511: "C1",
     }
 
 for i in range(0, 5):
@@ -103,6 +103,7 @@ for i in range(0, 5):
 
 ALPHA_CHARSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 NUMERIC_CHARSET = "0123456789+-=*/()|"
+
 
 def get_name(_mem):
     """Decode the name from @_mem"""
@@ -121,6 +122,7 @@ def get_name(_mem):
         name += _get_char(val)
 
     return name.rstrip()
+
 
 def set_name(_mem, name):
     """Encode @name in @_mem"""
@@ -144,6 +146,7 @@ def set_name(_mem, name):
     _mem.name4 = _get_index(name[3])
     _mem.name5 = _get_index(name[4])
     _mem.name6 = _get_index(name[5])
+
 
 @directory.register
 class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
@@ -192,10 +195,10 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                (0x37E0, 0x3898, 32),
                (0x3898, 0x389A,  2),
 
-               (0x38A8, 0x38C0, 16),]
+               (0x38A8, 0x38C0, 16), ]
 
-    MYCALL_LIMIT  = (1, 7)
-    URCALL_LIMIT  = (1, 99)
+    MYCALL_LIMIT = (1, 7)
+    URCALL_LIMIT = (1, 99)
     RPTCALL_LIMIT = (1, 59)
 
     def _get_bank(self, loc):
@@ -235,10 +238,10 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_memory(self, number):
         if isinstance(number, str):
             try:
-                number = ID800_SPECIAL[number] + 1 # Because we subtract below
+                number = ID800_SPECIAL[number] + 1  # Because we subtract below
             except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
-                                                       number)
+                raise errors.InvalidMemoryLocation("Unknown channel %s" %
+                                                   number)
 
         _mem = self._memobj.memory[number-1]
         _flg = self._memobj.flags[number-1]
@@ -351,25 +354,25 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             calls.append(str(self._memobj.mycalls[i-1].call).rstrip())
 
         return calls
-    
+
     def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
             try:
-                call = calls[i].upper() # Skip the implicit CQCQCQ
+                call = calls[i].upper()  # Skip the implicit CQCQCQ
             except IndexError:
                 call = " " * 8
-            
+
             self._memobj.urcalls[i-1].call = call.ljust(8)[:8]
 
     def set_repeater_call_list(self, calls):
         for i in range(*self.RPTCALL_LIMIT):
             try:
-                call = calls[i].upper() # Skip the implicit blank
+                call = calls[i].upper()  # Skip the implicit blank
             except IndexError:
                 call = " " * 8
 
             self._memobj.rptcalls[i-1].call = call.ljust(8)[:8]
-        
+
     def set_mycall_list(self, calls):
         for i in range(*self.MYCALL_LIMIT):
             try:
