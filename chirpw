@@ -20,7 +20,7 @@ import os
 from chirp import logger
 from chirp import elib_intl
 from chirp import platform
-from chirp import *
+from chirp.drivers import *
 from chirpui import config
 
 

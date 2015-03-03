@@ -22,8 +22,8 @@ import argparse
 import logging
 
 from chirp import logger
-from chirp import *
-from chirp import chirp_common, errors, idrp, directory, util
+from chirp.drivers import *
+from chirp import chirp_common, errors, directory, util
 
 LOG = logging.getLogger("chirpc")
 RADIOS = directory.DRV_TO_RADIO

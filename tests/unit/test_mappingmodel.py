@@ -15,7 +15,7 @@
 
 from tests.unit import base
 from chirp import chirp_common
-from chirp import icf
+from chirp.drivers import icf
 
 
 class TestBaseMapping(base.BaseTest):

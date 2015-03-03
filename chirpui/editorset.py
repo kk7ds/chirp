@@ -18,7 +18,8 @@ import gtk
 import gobject
 import logging
 
-from chirp import chirp_common, directory, generic_csv, generic_xml
+from chirp import chirp_common, directory
+from chirp.drivers import generic_csv, generic_xml
 from chirpui import memedit, dstaredit, bankedit, common, importdialog
 from chirpui import inputdialog, reporting, settingsedit, radiobrowser, config
 

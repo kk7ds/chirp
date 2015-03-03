@@ -26,10 +26,11 @@ import gtk
 import gobject
 
 from chirpui import inputdialog, common
-from chirp import platform, generic_xml, generic_csv, directory, util
-from chirp import ic9x, kenwood_live, idrp, vx7, vx5, vx6
+from chirp import platform, directory, util
+from chirp.drivers import generic_xml, generic_csv
+from chirp.drivers import ic9x, kenwood_live, idrp, vx7, vx5, vx6
+from chirp.drivers import icf, ic9x_icf
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
-from chirp import icf, ic9x_icf
 from chirpui import editorset, clone, miscwidgets, config, reporting, fips
 from chirpui import bandplans
 
@@ -1088,7 +1089,7 @@ of file.
                     (email, passwd, lat, lon, miles)
             count = eset.do_import(rfstr)
         else:
-            from chirp import rfinder
+            from chirp.drivers import rfinder
             radio = rfinder.RFinderRadio(None)
             radio.set_params((lat, lon), miles, email, passwd)
             self.do_open_live(radio, read_only=True)

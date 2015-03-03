@@ -333,7 +333,7 @@ class RadioBrowser(common.Editor):
 
 
 if __name__ == "__main__":
-    from chirp import *
+    from chirp.drivers import *
     from chirp import directory
     import sys
 

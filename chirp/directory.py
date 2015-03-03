@@ -18,8 +18,8 @@ import os
 import tempfile
 import logging
 
-from chirp import icf
-from chirp import chirp_common, util, rfinder, radioreference, errors
+from chirp.drivers import icf, rfinder
+from chirp import chirp_common, util, radioreference, errors
 
 LOG = logging.getLogger(__name__)
 

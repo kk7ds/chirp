@@ -32,8 +32,8 @@ os.chdir(scriptdir)
 sys.path.insert(0, "../")
 
 from chirp import CHIRP_VERSION
-from chirp import *
-from chirp import chirp_common, directory, generic_csv
+from chirp.drivers import *
+from chirp import chirp_common, directory
 from chirp import import_logic, memmap, settings, errors
 
 TESTS = {}

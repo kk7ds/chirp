@@ -18,7 +18,8 @@ import gobject
 import pango
 import logging
 
-from chirp import errors, chirp_common, generic_xml, import_logic
+from chirp import errors, chirp_common, import_logic
+from chirp.drivers import generic_xml
 from chirpui import common
 
 LOG = logging.getLogger(__name__)

@@ -16,8 +16,8 @@
 import serial
 import logging
 
-from chirp import errors, icf, directory, ic9x_ll
-from chirp import kenwood_live, icomciv
+from chirp import errors, directory
+from chirp.drivers import ic9x_ll, icf, kenwood_live, icomciv
 
 LOG = logging.getLogger(__name__)
 

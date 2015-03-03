@@ -9,6 +9,7 @@ sys.path.insert(0, "..")
 tmp = sys.stdout
 sys.stdout = sys.stderr
 from chirp import *
+from chirp.drivers import *
 sys.stdout = tmp
 
 RF = chirp_common.RadioFeatures()
