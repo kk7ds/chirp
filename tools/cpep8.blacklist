@@ -36,7 +36,6 @@
 ./chirp/drivers/kguv8d.py
 ./chirp/drivers/kyd.py
 ./chirp/drivers/leixen.py
-./chirp/drivers/puxing.py
 ./chirp/drivers/th9800.py
 ./chirp/drivers/th_uv3r.py
 ./chirp/drivers/th_uv3r25.py
