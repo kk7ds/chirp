@@ -225,15 +225,16 @@ class AP510Memory(object):
         ))
 
     def set_smartbeacon(self, d):
-        self._memobj[self.ATTR_MAP['smartbeacon']] = struct.pack(">7H",
-            encode_base100(d['lowspeed']),
-            encode_base100(d['slowrate']),
-            encode_base100(d['highspeed']),
-            encode_base100(d['fastrate']),
-            encode_base100(d['turnslope']),
-            encode_base100(d['turnangle']),
-            encode_base100(d['turntime']),
-        )
+        self._memobj[self.ATTR_MAP['smartbeacon']] = \
+            struct.pack(">7H",
+                        encode_base100(d['lowspeed']),
+                        encode_base100(d['slowrate']),
+                        encode_base100(d['highspeed']),
+                        encode_base100(d['fastrate']),
+                        encode_base100(d['turnslope']),
+                        encode_base100(d['turnangle']),
+                        encode_base100(d['turntime']),
+                        )
 
 
 class AP510Memory20141215(AP510Memory):
@@ -251,24 +252,24 @@ class AP510Memory20141215(AP510Memory):
     }.items())
 
     def get_multiple(self):
-        return dict(zip((
-            'mice_message', # conveniently matches APRS spec Mic-E messages
-            'voltage',      # voltage in comment
-            'temperature',  # temperature in comment
-            'tfx',          # not sure what the TF/X toggle does
-            'squelch',      # squelch level 0-8 (0 = disabled)
-            'blueled',      # 0: squelch LED on GPS lock
-                            # 1: light LED on GPS lock
-            'telemetry',    # 1: enable
+        return dict(zip(
+           (
+            'mice_message',     # conveniently matches APRS spec Mic-E messages
+            'voltage',          # voltage in comment
+            'temperature',      # temperature in comment
+            'tfx',              # not sure what the TF/X toggle does
+            'squelch',          # squelch level 0-8 (0 = disabled)
+            'blueled',          # 0: squelch LED on GPS lock
+                                # 1: light LED on GPS lock
+            'telemetry',        # 1: enable
             'telemetry_every',  # two-digit int
             'timeslot_enable',  # 1: enable   Is this implemented in firmware?
-            'timeslot',     # int 00-59
-            'dcd',          # 0: Blue LED displays squelch,
-                            # 1: Blue LED displays software DCD
-            'tf_card'       # 0: KML,  1: WPL
-        ), map(int, chunks(
-            self._memobj[self.ATTR_MAP['multiple']],
-            (1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1)))
+            'timeslot',         # int 00-59
+            'dcd',              # 0: Blue LED displays squelch,
+                                # 1: Blue LED displays software DCD
+            'tf_card'           # 0: KML,  1: WPL
+            ), map(int, chunks(self._memobj[self.ATTR_MAP['multiple']],
+                               (1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1)))
         ))
 
     def set_multiple(self, d):
@@ -329,7 +330,7 @@ BEACON = ['manual', 'auto', 'auto + manual', 'smart', 'smart + manual']
 ALIAS = ['WIDE1-N', 'WIDE2-N', 'WIDE1-N + WIDE2-N']
 CHARSET = "".join(map(chr, range(0, 256)))
 MICE_MESSAGE = ['Emergency', 'Priority', 'Special', 'Committed', 'Returning',
-    'In Service', 'En Route', 'Off Duty']
+                'In Service', 'En Route', 'Off Duty']
 TF_CARD = ['WPL', 'KML']
 POWER_LEVELS = [chirp_common.PowerLevel("0.5 watt", watts=0.50),
                 chirp_common.PowerLevel("1 watt", watts=1.00)]
@@ -440,7 +441,6 @@ class AP510Radio(chirp_common.CloneModeRadio):
             except NotImplementedError:
                 pass
 
-
     def get_settings(self):
         china = RadioSettingGroup("china", "China Map Fix")
         smartbeacon = RadioSettingGroup("smartbeacon", "Smartbeacon")
@@ -451,77 +451,85 @@ class AP510Radio(chirp_common.CloneModeRadio):
         settings = RadioSettings(aprs, digipeat, system)
 
         aprs.append(RadioSetting("callsign", "Callsign",
-            RadioSettingValueString(0, 6, self._mmap.callsign[:6])))
+                    RadioSettingValueString(0, 6, self._mmap.callsign[:6])))
         aprs.append(RadioSetting("ssid", "SSID", RadioSettingValueInteger(
-            0, 15, ord(self._mmap.callsign[6]) - 0x30)))
+                    0, 15, ord(self._mmap.callsign[6]) - 0x30)))
+        pttdelay = PTT_DELAY[int(self._mmap.pttdelay) - 1]
         aprs.append(RadioSetting("pttdelay", "PTT Delay",
-            RadioSettingValueList(
-                PTT_DELAY, PTT_DELAY[int(self._mmap.pttdelay) - 1])))
+                    RadioSettingValueList(PTT_DELAY, pttdelay)))
+        output = OUTPUT[int(self._mmap.output) - 1]
         aprs.append(RadioSetting("output", "Output",
-            RadioSettingValueList(
-                OUTPUT, OUTPUT[int(self._mmap.output) - 1])))
+                    RadioSettingValueList(OUTPUT, output)))
         aprs.append(RadioSetting("mice", "Mic-E",
-            RadioSettingValueBoolean(strbool(self._mmap.mice))))
+                    RadioSettingValueBoolean(strbool(self._mmap.mice))))
         try:
+            mice_msg = MICE_MESSAGE[int(self._mmap.multiple['mice_message'])]
             aprs.append(RadioSetting("mice_message", "Mic-E Message",
-                RadioSettingValueList(
-                    MICE_MESSAGE,
-                    MICE_MESSAGE[int(self._mmap.multiple['mice_message'])])))
+                        RadioSettingValueList(MICE_MESSAGE, mice_msg)))
         except NotImplementedError:
             pass
         try:
             aprs.append(RadioSetting("path1", "Path 1",
-                RadioSettingValueString(0, 6, self._mmap.path1[:6],
-                    autopad=True, charset=CHARSET)))
+                        RadioSettingValueString(0, 6, self._mmap.path1[:6],
+                                                autopad=True,
+                                                charset=CHARSET)))
+            ssid1 = ord(self._mmap.path1[6]) - 0x30
             aprs.append(RadioSetting("ssid1", "SSID 1",
-                RadioSettingValueInteger(
-                    0, 7, ord(self._mmap.path1[6]) - 0x30)))
+                        RadioSettingValueInteger(0, 7, ssid1)))
             aprs.append(RadioSetting("path2", "Path 2",
-                RadioSettingValueString(0, 6, self._mmap.path2[:6],
-                    autopad=True, charset=CHARSET)))
+                        RadioSettingValueString(0, 6, self._mmap.path2[:6],
+                                                autopad=True,
+                                                charset=CHARSET)))
+            ssid2 = ord(self._mmap.path2[6]) - 0x30
             aprs.append(RadioSetting("ssid2", "SSID 2",
-                RadioSettingValueInteger(
-                    0, 7, ord(self._mmap.path2[6]) - 0x30)))
+                        RadioSettingValueInteger(0, 7, ssid2)))
             aprs.append(RadioSetting("path3", "Path 3",
-                RadioSettingValueString(0, 6, self._mmap.path3[:6],
-                    autopad=True, charset=CHARSET)))
+                        RadioSettingValueString(0, 6, self._mmap.path3[:6],
+                                                autopad=True,
+                                                charset=CHARSET)))
+            ssid3 = ord(self._mmap.path3[6]) - 0x30
             aprs.append(RadioSetting("ssid3", "SSID 3",
-                RadioSettingValueInteger(
-                    0, 7, ord(self._mmap.path3[6]) - 0x30)))
+                        RadioSettingValueInteger(0, 7, ssid3)))
         except NotImplementedError:
             aprs.append(RadioSetting("path", "Path",
-                RadioSettingValueList(PATH, PATH[int(self._mmap.path)])))
+                        RadioSettingValueList(PATH,
+                                              PATH[int(self._mmap.path)])))
         aprs.append(RadioSetting("table", "Table or Overlay",
-            RadioSettingValueList(TABLE, self._mmap.symbol[1])))
+                    RadioSettingValueList(TABLE, self._mmap.symbol[1])))
         aprs.append(RadioSetting("symbol", "Symbol",
-            RadioSettingValueList(SYMBOL, self._mmap.symbol[0])))
+                    RadioSettingValueList(SYMBOL, self._mmap.symbol[0])))
         aprs.append(RadioSetting("beacon", "Beacon Mode",
-            RadioSettingValueList(
-                BEACON, BEACON[int(self._mmap.beacon) - 1])))
+                    RadioSettingValueList(BEACON,
+                                          BEACON[int(self._mmap.beacon) - 1])))
         aprs.append(RadioSetting("rate", "Beacon Rate (seconds)",
-            RadioSettingValueInteger(10, 9999, self._mmap.rate)))
-        aprs.append(RadioSetting("comment", "Comment", RadioSettingValueString(
-            0, 34, self._mmap.comment, autopad=False, charset=CHARSET)))
+                    RadioSettingValueInteger(10, 9999, self._mmap.rate)))
+        aprs.append(RadioSetting("comment", "Comment",
+                    RadioSettingValueString(0, 34, self._mmap.comment,
+                                            autopad=False, charset=CHARSET)))
         try:
+            voltage = self._mmap.multiple['voltage']
             aprs.append(RadioSetting("voltage", "Voltage in comment",
-                RadioSettingValueBoolean(self._mmap.multiple['voltage'])))
+                        RadioSettingValueBoolean(voltage)))
+            temperature = self._mmap.multiple['temperature']
             aprs.append(RadioSetting("temperature", "Temperature in comment",
-                RadioSettingValueBoolean(self._mmap.multiple['temperature'])))
+                        RadioSettingValueBoolean(temperature)))
         except NotImplementedError:
             pass
         aprs.append(RadioSetting("status", "Status", RadioSettingValueString(
             0, 34, self._mmap.status, autopad=False, charset=CHARSET)))
         try:
+            telemetry = self._mmap.multiple['telemetry']
             aprs.append(RadioSetting("telemetry", "Telemetry",
-                RadioSettingValueBoolean(self._mmap.multiple['telemetry'])))
+                        RadioSettingValueBoolean(telemetry)))
+            telemetry_every = self._mmap.multiple['telemetry_every']
             aprs.append(RadioSetting("telemetry_every", "Telemetry every",
-                RadioSettingValueInteger(
-                    1, 99, self._mmap.multiple['telemetry_every'])))
+                        RadioSettingValueInteger(1, 99, telemetry_every)))
+            timeslot_enable = self._mmap.multiple['telemetry']
             aprs.append(RadioSetting("timeslot_enable", "Timeslot",
-                RadioSettingValueBoolean(self._mmap.multiple['telemetry'])))
+                        RadioSettingValueBoolean(timeslot_enable)))
+            timeslot = self._mmap.multiple['timeslot']
             aprs.append(RadioSetting("timeslot", "Timeslot (second of minute)",
-                RadioSettingValueInteger(
-                    0, 59, self._mmap.multiple['timeslot'])))
+                        RadioSettingValueInteger(0, 59, timeslot)))
         except NotImplementedError:
             pass
 
@@ -575,44 +583,54 @@ class AP510Radio(chirp_common.CloneModeRadio):
             ))
 
         system.append(RadioSetting("version", "Version (read-only)",
-            RadioSettingValueString(0, 14, self._mmap.version)))
+                      RadioSettingValueString(0, 14, self._mmap.version)))
         system.append(RadioSetting("autooff", "Auto off (after 90 minutes)",
-            RadioSettingValueBoolean(strbool(self._mmap.autooff))))
+                      RadioSettingValueBoolean(strbool(self._mmap.autooff))))
         system.append(RadioSetting("beep", "Beep on transmit",
-            RadioSettingValueBoolean(strbool(self._mmap.beep))))
+                      RadioSettingValueBoolean(strbool(self._mmap.beep))))
         system.append(RadioSetting("highaltitude", "High Altitude",
-            RadioSettingValueBoolean(strbool(self._mmap.highaltitude))))
+                      RadioSettingValueBoolean(
+                          strbool(self._mmap.highaltitude))))
         system.append(RadioSetting("busywait",
-            "Wait for clear channel before transmit",
-            RadioSettingValueBoolean(strbool(self._mmap.busywait))))
+                                   "Wait for clear channel before transmit",
+                                   RadioSettingValueBoolean(
+                                       strbool(self._mmap.busywait))))
         try:
             system.append(RadioSetting("tx_volume", "Transmit volume",
-                RadioSettingValueList(
-                    map(str, range(1, 7)), self._mmap.tx_volume)))
+                          RadioSettingValueList(
+                              map(str, range(1, 7)), self._mmap.tx_volume)))
             system.append(RadioSetting("rx_volume", "Receive volume",
-                RadioSettingValueList(
-                    map(str, range(1, 10)), self._mmap.rx_volume)))
+                          RadioSettingValueList(
+                              map(str, range(1, 10)), self._mmap.rx_volume)))
             system.append(RadioSetting("squelch", "Squelch",
-                RadioSettingValueList(map(str, range(0, 9)),
-                    str(self._mmap.multiple['squelch']))))
+                          RadioSettingValueList(
+                              map(str, range(0, 9)),
+                              str(self._mmap.multiple['squelch']))))
             system.append(RadioSetting("tx_serial_ui_out", "Tx serial UI out",
-                RadioSettingValueBoolean(
-                    strbool(self._mmap.tx_serial_ui_out))))
+                          RadioSettingValueBoolean(
+                              strbool(self._mmap.tx_serial_ui_out))))
             system.append(RadioSetting("auto_on", "Auto-on with 5V input",
-                RadioSettingValueBoolean(strbool(self._mmap.auto_on[0]))))
-            system.append(RadioSetting("auto_on_delay",
-                "Auto-off delay after 5V lost (seconds)",
-                RadioSettingValueInteger(0, 9999, int(self._mmap.auto_on[1:]))
+                          RadioSettingValueBoolean(
+                              strbool(self._mmap.auto_on[0]))))
+            system.append(RadioSetting(
+                              "auto_on_delay",
+                              "Auto-off delay after 5V lost (seconds)",
+                              RadioSettingValueInteger(
+                                  0, 9999, int(self._mmap.auto_on[1:]))
             ))
             system.append(RadioSetting("tfx", "TF/X",
-                RadioSettingValueBoolean(self._mmap.multiple['tfx'])))
+                          RadioSettingValueBoolean(
+                              self._mmap.multiple['tfx'])))
             system.append(RadioSetting("blueled", "Light blue LED on GPS lock",
-                RadioSettingValueBoolean(self._mmap.multiple['blueled'])))
+                          RadioSettingValueBoolean(
+                              self._mmap.multiple['blueled'])))
             system.append(RadioSetting("dcd", "Blue LED shows software DCD",
-                RadioSettingValueBoolean(self._mmap.multiple['dcd'])))
+                          RadioSettingValueBoolean(
+                              self._mmap.multiple['dcd'])))
             system.append(RadioSetting("tf_card", "TF card format",
-                RadioSettingValueList(
-                    TF_CARD, TF_CARD[int(self._mmap.multiple['tf_card'])])))
+                          RadioSettingValueList(
+                              TF_CARD,
+                              TF_CARD[int(self._mmap.multiple['tf_card'])])))
         except NotImplementedError:
             pass
 
@@ -685,7 +703,8 @@ class AP510Radio(chirp_common.CloneModeRadio):
                 elif name == "status":
                     self._mmap.status = str(setting.value)
                 elif name in ("telemetry", "telemetry_every",
-                    "timeslot_enable", "timeslot", "tfx", "blueled", "dcd"):
+                              "timeslot_enable", "timeslot",
+                              "tfx", "blueled", "dcd"):
                     multiple = self._mmap.multiple
                     multiple[name] = int(setting.value)
                     self._mmap.multiple = multiple
