@@ -29,9 +29,6 @@
 ./chirp/drivers/id31.py
 ./chirp/drivers/id800.py
 ./chirp/drivers/id880.py
-./chirp/drivers/kenwood_hmk.py
-./chirp/drivers/kenwood_itm.py
-./chirp/drivers/kenwood_live.py
 ./chirp/drivers/kguv8d.py
 ./chirp/drivers/th9800.py
 ./chirp/drivers/th_uv3r.py

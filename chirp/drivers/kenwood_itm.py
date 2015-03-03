@@ -19,9 +19,11 @@ import csv
 from chirp import chirp_common, errors, directory
 from chirp.drivers import generic_csv
 
+
 class OmittedHeaderError(Exception):
     """An internal exception to indicate that a header was omitted"""
     pass
+
 
 @directory.register
 class ITMRadio(generic_csv.CSVRadio):
@@ -31,9 +33,9 @@ class ITMRadio(generic_csv.CSVRadio):
     FILE_EXTENSION = "itm"
 
     ATTR_MAP = {
-        "CH"           : (int,  "number"),
-        "RXF"          : (chirp_common.parse_freq, "freq"),
-        "NAME"         : (str,  "name"),
+        "CH":            (int,  "number"),
+        "RXF":           (chirp_common.parse_freq, "freq"),
+        "NAME":          (str,  "name"),
         }
 
     def _clean_duplex(self, headers, line, mem):
@@ -51,7 +53,7 @@ class ITMRadio(generic_csv.CSVRadio):
             mem.offset = txfreq
 
         return mem
-    
+
     def _clean_number(self, headers, line, mem):
         zone = int(generic_csv.get_datum_by_header(headers, line, "ZN"))
         mem.number = zone * 100 + mem.number
@@ -100,14 +102,14 @@ class ITMRadio(generic_csv.CSVRadio):
                 break
 
             if len(header) > len(line):
-                print "Line %i has %i columns, expected %i" % (lineno,
-                                                               len(line),
-                                                               len(header))
-                self.errors.append("Column number mismatch on line %i" % lineno)
+                print "Line %i has %i columns, expected %i" % \
+                      (lineno, len(line), len(header))
+                self.errors.append("Column number mismatch on line %i" %
+                                   lineno)
                 continue
 
             # fix EU decimal
-            line = [i.replace(',','.') for i in line]
+            line = [i.replace(',', '.') for i in line]
 
             try:
                 mem = self._parse_csv_data_line(header, line)

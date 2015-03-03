@@ -19,9 +19,11 @@ import csv
 from chirp import chirp_common, errors, directory
 from chirp.drivers import generic_csv
 
+
 class OmittedHeaderError(Exception):
     """An internal exception to indicate that a header was omitted"""
     pass
+
 
 @directory.register
 class HMKRadio(generic_csv.CSVRadio):
@@ -51,18 +53,18 @@ class HMKRadio(generic_csv.CSVRadio):
         }
 
     ATTR_MAP = {
-        "!!Ch"         : (int,   "number"),
-        "M.Name"       : (str,   "name"),
-        "Rx Freq."     : (chirp_common.parse_freq, "freq"),
-        "Shift/Split"  : (lambda v: HMKRadio.DUPLEX_MAP[v], "duplex"),
-        "Offset"       : (chirp_common.parse_freq, "offset"),
-        "T/CT/DCS"     : (lambda v: HMKRadio.TMODE_MAP[v], "tmode"),
-        "TO Freq."     : (float, "rtone"),
-        "CT Freq."     : (float, "ctone"),
-        "DCS Code"     : (int,   "dtcs"),
-        "Mode"         : (str,   "mode"),
-        "Rx Step"      : (float, "tuning_step"),
-        "L.Out"        : (lambda v: HMKRadio.SKIP_MAP[v], "skip"),
+        "!!Ch":          (int,   "number"),
+        "M.Name":        (str,   "name"),
+        "Rx Freq.":      (chirp_common.parse_freq, "freq"),
+        "Shift/Split":   (lambda v: HMKRadio.DUPLEX_MAP[v], "duplex"),
+        "Offset":        (chirp_common.parse_freq, "offset"),
+        "T/CT/DCS":      (lambda v: HMKRadio.TMODE_MAP[v], "tmode"),
+        "TO Freq.":      (float, "rtone"),
+        "CT Freq.":      (float, "ctone"),
+        "DCS Code":      (int,   "dtcs"),
+        "Mode":          (str,   "mode"),
+        "Rx Step":       (float, "tuning_step"),
+        "L.Out":         (lambda v: HMKRadio.SKIP_MAP[v], "skip"),
         }
 
     def load(self, filename=None):
@@ -90,10 +92,10 @@ class HMKRadio(generic_csv.CSVRadio):
                 continue
 
             if len(header) > len(line):
-                print "Line %i has %i columns, expected %i" % (lineno,
-                                                               len(line),
-                                                               len(header))
-                self.errors.append("Column number mismatch on line %i" % lineno)
+                print "Line %i has %i columns, expected %i" % \
+                      (lineno, len(line), len(header))
+                self.errors.append("Column number mismatch on line %i" %
+                                   lineno)
                 continue
 
             # hmk stores Tx Freq. in its own field, but Chirp expects the Tx
@@ -103,7 +105,7 @@ class HMKRadio(generic_csv.CSVRadio):
                 line[header.index('Offset')] = line[header.index('Tx Freq.')]
 
             # fix EU decimal
-            line = [i.replace(',','.') for i in line]
+            line = [i.replace(',', '.') for i in line]
 
             try:
                 mem = self._parse_csv_data_line(header, line)
