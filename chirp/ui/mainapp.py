@@ -1633,6 +1633,7 @@ of file.
 
     def make_tabs(self):
         self.tabs = gtk.Notebook()
+        self.tabs.set_scrollable(True)
 
         return self.tabs
 
