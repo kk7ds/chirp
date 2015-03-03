@@ -169,6 +169,7 @@ struct {
 } test;
 """
 
+
 def do_ident(radio):
     radio.pipe.setTimeout(3)
     radio.pipe.write("PROGRAM")
@@ -185,12 +186,14 @@ def do_ident(radio):
     if ack != "\x06":
         raise errors.RadioError("Radio did not ack ident")
 
+
 def do_status(radio, direction, addr):
     status = chirp_common.Status()
     status.msg = "Cloning %s radio" % direction
     status.cur = addr
     status.max = 0x1000
     radio.status_fn(status)
+
 
 def do_download(radio):
     do_ident(radio)
@@ -218,6 +221,7 @@ def do_download(radio):
 
     return memmap.MemoryMap(data)
 
+
 def do_upload(radio):
     do_ident(radio)
     data = radio._mmap[0x0030:]
@@ -241,9 +245,10 @@ SPECIALS = {
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 
+
 @directory.register
 class BaofengUVB5(chirp_common.CloneModeRadio,
-        chirp_common.ExperimentalRadio):
+                  chirp_common.ExperimentalRadio):
     """Baofeng UV-B5"""
     VENDOR = "Baofeng"
     MODEL = "UV-B5"
@@ -254,12 +259,13 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = ('This version of the UV-B5 driver allows you to '
-                'modify the Test Mode settings of your radio. This has been '
-                'tested and reports from other users indicate that it is a '
-                'safe thing to do. However, modifications to these values may '
-                'have unintended consequences, including damage to your '
-                'device. You have been warned. Proceed at your own risk!')
+        rp.experimental = \
+            ('This version of the UV-B5 driver allows you to '
+             'modify the Test Mode settings of your radio. This has been '
+             'tested and reports from other users indicate that it is a '
+             'safe thing to do. However, modifications to these values may '
+             'have unintended consequences, including damage to your '
+             'device. You have been warned. Proceed at your own risk!')
         rp.pre_download = _(dedent("""\
             1. Turn radio off.
             2. Connect cable to mic/spkr connector.
@@ -393,8 +399,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         mem.power = POWER_LEVELS[_mem.highpower]
 
         if mem.freq == mem.offset and mem.duplex == "-":
-           mem.duplex = "off"
-           mem.offset = 0
+            mem.duplex = "off"
+            mem.offset = 0
 
         if _nam:
             for char in _nam:
@@ -471,16 +477,15 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
 
         if (mem.duplex == "split" and abs(mem.freq - mem.offset) > 69995000) \
-                or (mem.duplex in ["+", "-"] and mem.offset > 69995000) :
+                or (mem.duplex in ["+", "-"] and mem.offset > 69995000):
             msgs.append(chirp_common.ValidationError(
                     "Max split is 69.995MHz"))
         return msgs
 
-
     def get_settings(self):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
-        
+
         group = RadioSettings(basic)
 
         options = ["Time", "Carrier", "Search"]
@@ -491,50 +496,52 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
 
         options = ["Off"] + ["%s min" % x for x in range(1, 8)]
         rs = RadioSetting("timeout", "Time Out Timer",
-                          RadioSettingValueList(options,
-                                                options[_settings.timeout]))
+                          RadioSettingValueList(
+                              options, options[_settings.timeout]))
         basic.append(rs)
 
         options = ["A", "B"]
         rs = RadioSetting("freqmode_ab", "Frequency Mode",
-                          RadioSettingValueList(options,
-                                               options[_settings.freqmode_ab]))
+                          RadioSettingValueList(
+                              options, options[_settings.freqmode_ab]))
         basic.append(rs)
 
         options = ["Frequency Mode", "Channel Mode"]
         rs = RadioSetting("workmode_a", "Radio Work Mode(A)",
-                          RadioSettingValueList(options,
-                                                options[_settings.workmode_a]))
+                          RadioSettingValueList(
+                              options, options[_settings.workmode_a]))
         basic.append(rs)
 
         rs = RadioSetting("workmode_b", "Radio Work Mode(B)",
-                          RadioSettingValueList(options,
-                                                options[_settings.workmode_b]))
+                          RadioSettingValueList(
+                              options, options[_settings.workmode_b]))
         basic.append(rs)
 
         options = ["Frequency", "Name", "Channel"]
         rs = RadioSetting("mdf_a", "Display Format(F1)",
-                          RadioSettingValueList(options,
-                                                options[_settings.mdf_a]))
+                          RadioSettingValueList(
+                              options, options[_settings.mdf_a]))
         basic.append(rs)
 
         rs = RadioSetting("mdf_b", "Display Format(F2)",
-                          RadioSettingValueList(options,
-                                                options[_settings.mdf_b]))
+                          RadioSettingValueList(
+                              options, options[_settings.mdf_b]))
         basic.append(rs)
 
         rs = RadioSetting("mem_chan_a", "Mem Channel (A)",
-              RadioSettingValueInteger(1, 99, _settings.mem_chan_a))
+                          RadioSettingValueInteger(
+                              1, 99, _settings.mem_chan_a))
         basic.append(rs)
 
         rs = RadioSetting("mem_chan_b", "Mem Channel (B)",
-              RadioSettingValueInteger(1, 99, _settings.mem_chan_b))
+                          RadioSettingValueInteger(
+                              1, 99, _settings.mem_chan_b))
         basic.append(rs)
 
         options = ["Off", "BOT", "EOT", "Both"]
         rs = RadioSetting("pttid", "PTT-ID",
-                          RadioSettingValueList(options,
-                                                options[_settings.pttid]))
+                          RadioSettingValueList(
+                              options, options[_settings.pttid]))
         basic.append(rs)
 
         dtmfchars = "0123456789ABCD*#"
@@ -543,6 +550,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         val = RadioSettingValueString(0, 6, _code, False)
         val.set_charset(dtmfchars)
         rs = RadioSetting("pttid.code", "PTT-ID Code", val)
+
         def apply_code(setting, obj):
             code = []
             for j in range(0, 6):
@@ -564,8 +572,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
 
         options = ["Frequency Mode", "Channel Mode"]
         rs = RadioSetting("workmode_fm", "FM Work Mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.workmode_fm]))
+                          RadioSettingValueList(
+                              options, options[_settings.workmode_fm]))
         basic.append(rs)
 
         options = ["Current Frequency", "F1 Frequency", "F2 Frequency"]
@@ -593,7 +601,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         basic.append(rs)
 
         rs = RadioSetting("save_funct", "Save Mode",
-                          RadioSettingValueBoolean( _settings.save_funct))
+                          RadioSettingValueBoolean(_settings.save_funct))
         basic.append(rs)
 
         rs = RadioSetting("fm", "FM Function",
@@ -620,6 +628,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _limit = int(self._memobj.limits.lower_vhf) / 10
         rs = RadioSetting("limits.lower_vhf", "VHF Lower Limit (MHz)",
                           RadioSettingValueInteger(128, 270, _limit))
+
         def apply_limit(setting, obj):
             value = int(setting.value) * 10
             obj.lower_vhf = value
@@ -629,6 +638,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _limit = int(self._memobj.limits.upper_vhf) / 10
         rs = RadioSetting("limits.upper_vhf", "VHF Upper Limit (MHz)",
                           RadioSettingValueInteger(128, 270, _limit))
+
         def apply_limit(setting, obj):
             value = int(setting.value) * 10
             obj.upper_vhf = value
@@ -638,6 +648,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _limit = int(self._memobj.limits.lower_uhf) / 10
         rs = RadioSetting("limits.lower_uhf", "UHF Lower Limit (MHz)",
                           RadioSettingValueInteger(400, 520, _limit))
+
         def apply_limit(setting, obj):
             value = int(setting.value) * 10
             obj.lower_uhf = value
@@ -647,6 +658,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _limit = int(self._memobj.limits.upper_uhf) / 10
         rs = RadioSetting("limits.upper_uhf", "UHF Upper Limit (MHz)",
                           RadioSettingValueInteger(400, 520, _limit))
+
         def apply_limit(setting, obj):
             value = int(setting.value) * 10
             obj.upper_uhf = value
@@ -664,8 +676,8 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                 used = False
                 preset = 65
             rs = RadioSetting("fm_presets_%1i" % i, "FM Preset %i" % (i + 1),
-                          RadioSettingValueBoolean(used),
-                          RadioSettingValueFloat(65, 108, preset, 0.1, 1))
+                              RadioSettingValueBoolean(used),
+                              RadioSettingValueFloat(65, 108, preset, 0.1, 1))
             fm_preset.append(rs)
 
         testmode = RadioSettingGroup("testmode", "Test Mode Settings")
@@ -678,33 +690,39 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         powernamedata = ["Hi", "Lo"]
         powerkeydata = ["hipwr", "lopwr"]
 
-        for power in range (0, 2):
+        for power in range(0, 2):
             for index in range(0, 8):
                 key = "test.vhf%s%i" % (powerkeydata[power], index)
                 name = "%s Mhz %s Power" % (vhfdata[index],
                                             powernamedata[power])
-                rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
-                        getattr(self._memobj.test, "vhf%s%i"
-                                % (powerkeydata[power], index))))
+                rs = RadioSetting(
+                        key, name, RadioSettingValueInteger(
+                            0, 255, getattr(
+                                self._memobj.test,
+                                "vhf%s%i" % (powerkeydata[power], index))))
                 testmode.append(rs)
 
-        for power in range (0, 2):
+        for power in range(0, 2):
             for index in range(0, 8):
                 key = "test.uhf%s%i" % (powerkeydata[power], index)
                 name = "%s Mhz %s Power" % (uhfdata[index],
                                             powernamedata[power])
-                rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
-                        getattr(self._memobj.test, "uhf%s%i"
-                                % (powerkeydata[power], index))))
+                rs = RadioSetting(
+                        key, name, RadioSettingValueInteger(
+                            0, 255, getattr(
+                                self._memobj.test,
+                                "uhf%s%i" % (powerkeydata[power], index))))
                 testmode.append(rs)
 
         for band in ["vhf", "uhf"]:
             for index in range(0, 10):
                 key = "test.%ssquelch%i" % (band, index)
                 name = "%s Squelch %i" % (band.upper(), index)
-                rs = RadioSetting(key, name, RadioSettingValueInteger(0, 255,
-                        getattr(self._memobj.test, "%ssquelch%i"
-                                % (band, index))))
+                rs = RadioSetting(
+                        key, name, RadioSettingValueInteger(
+                            0, 255, getattr(
+                                self._memobj.test,
+                                "%ssquelch%i" % (band, index))))
                 testmode.append(rs)
 
         return group
@@ -713,7 +731,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _settings = self._memobj.settings
         for element in settings:
             if not isinstance(element, RadioSetting):
-                if element.get_name() == "fm_preset" :
+                if element.get_name() == "fm_preset":
                     self._set_fm_preset(element)
                 else:
                     self.set_settings(element)
@@ -765,7 +783,6 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
             except Exception, e:
                 print element.get_name()
                 raise
-
 
     @classmethod
     def match_model(cls, filedata, filename):

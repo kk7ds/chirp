@@ -48,7 +48,6 @@
 ./chirp/drivers/tk8102.py
 ./chirp/drivers/tmv71.py
 ./chirp/drivers/tmv71_ll.py
-./chirp/drivers/uvb5.py
 ./chirp/drivers/vx170.py
 ./chirp/drivers/vx2.py
 ./chirp/drivers/vx3.py
