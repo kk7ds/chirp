@@ -19,6 +19,7 @@ from chirp.settings import RadioSettingValueBoolean, RadioSettings
 
 import time
 
+
 DRX35_MEM_FORMAT = """
 #seekto 0x0120;
 u8 used_flags[25];
@@ -67,12 +68,14 @@ RLENGTH = 2 + 5 + 32 + 2
 
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0]
 
+
 def isascii(data):
     for byte in data:
         if (ord(byte) < ord(" ") or ord(byte) > ord("~")) and \
                 byte not in "\r\n":
             return False
     return True
+
 
 def tohex(data):
     if isascii(data):
@@ -81,6 +84,7 @@ def tohex(data):
     for byte in data:
         string += "%02X" % ord(byte)
     return string
+
 
 class AlincoStyleRadio(chirp_common.CloneModeRadio):
     """Base class for all known Alinco radios"""
@@ -204,18 +208,20 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
+
 DUPLEX = ["", "-", "+"]
 TMODES = ["", "Tone", "", "TSQL"] + [""] * 12
 TMODES[12] = "DTCS"
 DCS_CODES = {
-    "Alinco" : chirp_common.DTCS_CODES,
-    "Jetstream" : [17] + chirp_common.DTCS_CODES,
+    "Alinco": chirp_common.DTCS_CODES,
+    "Jetstream": [17] + chirp_common.DTCS_CODES,
 }
 
 CHARSET = (["\x00"] * 0x30) + \
     [chr(x + ord("0")) for x in range(0, 10)] + \
     [chr(x + ord("A")) for x in range(0, 26)] + [" "] + \
     list("\x00" * 128)
+
 
 def _get_name(_mem):
     name = ""
@@ -224,6 +230,7 @@ def _get_name(_mem):
             break
         name += CHARSET[i]
     return name
+
 
 def _set_name(mem, _mem):
     name = [0x00] * 7
@@ -250,6 +257,7 @@ ALINCO_TONES.remove(199.5)
 ALINCO_TONES.remove(206.5)
 ALINCO_TONES.remove(229.1)
 ALINCO_TONES.remove(254.1)
+
 
 class DRx35Radio(AlincoStyleRadio):
     """Base class for the DR-x35 radios"""
@@ -385,6 +393,7 @@ class DRx35Radio(AlincoStyleRadio):
 
         self._set_extra(_mem, mem)
 
+
 @directory.register
 class DR03Radio(DRx35Radio):
     """Alinco DR03"""
@@ -400,6 +409,7 @@ class DR03Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x28)
 
+
 @directory.register
 class DR06Radio(DRx35Radio):
     """Alinco DR06"""
@@ -414,7 +424,8 @@ class DR06Radio(DRx35Radio):
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x50)
-            
+
+
 @directory.register
 class DR135Radio(DRx35Radio):
     """Alinco DR135"""
@@ -429,6 +440,7 @@ class DR135Radio(DRx35Radio):
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x01) and filedata[0x65] == chr(0x44)
+
 
 @directory.register
 class DR235Radio(DRx35Radio):
@@ -445,6 +457,7 @@ class DR235Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x02) and filedata[0x65] == chr(0x22)
 
+
 @directory.register
 class DR435Radio(DRx35Radio):
     """Alinco DR435"""
@@ -459,6 +472,7 @@ class DR435Radio(DRx35Radio):
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x04) and filedata[0x65] == chr(0x00)
+
 
 @directory.register
 class DJ596Radio(DRx35Radio):
@@ -477,6 +491,7 @@ class DJ596Radio(DRx35Radio):
         return len(filedata) == cls._memsize and \
             filedata[0x64] == chr(0x45) and filedata[0x65] == chr(0x01)
 
+
 @directory.register
 class JT220MRadio(DRx35Radio):
     """Jetstream JT220"""
@@ -491,6 +506,7 @@ class JT220MRadio(DRx35Radio):
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
             filedata[0x60:0x64] == "2009"
+
 
 @directory.register
 class DJ175Radio(DRx35Radio):

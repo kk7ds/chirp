@@ -27,6 +27,7 @@ from chirp import util
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueList, RadioSettingValueString, RadioSettingValueBoolean
 
+
 LOG = logging.getLogger(__name__)
 
 _mem_format = """
@@ -74,12 +75,12 @@ struct memory {
 
 #seekto 0x0030;
 struct {
-	char serial[16];
+  char serial[16];
 } serial_no;
 
 #seekto 0x0050;
 struct {
-	char date[16];
+  char date[16];
 } version;
 
 #seekto 0x0280;
@@ -109,6 +110,7 @@ struct memory memory[758];
 #seekto 0x7ec0;
 struct memory memblk2[10];
 """
+
 
 class FlagObj(object):
     def __init__(self, flagobj, which):
@@ -155,17 +157,21 @@ class FlagObj(object):
     def __repr__(self):
         return repr(self._flagobj)
 
+
 def _is_loc_used(memobj, loc):
     return memobj.flags[loc / 2].get_raw() != "\xFF"
 
+
 def _addr_to_loc(addr):
     return (addr - 0x2000) / 32
+
 
 def _should_send_addr(memobj, addr):
     if addr < 0x2000 or addr >= 0x7EC0:
         return True
     else:
         return _is_loc_used(memobj, _addr_to_loc(addr))
+
 
 def _echo_write(radio, data):
     try:
@@ -174,6 +180,7 @@ def _echo_write(radio, data):
     except Exception, e:
         print "Error writing to radio: %s" % e
         raise errors.RadioError("Unable to write to radio")
+
 
 def _read(radio, length):
     try:
@@ -191,6 +198,7 @@ def _read(radio, length):
 
 valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00', 'DB-750X']
 
+
 def _ident(radio):
     radio.pipe.setTimeout(1)
     _echo_write(radio, "PROGRAM")
@@ -205,6 +213,7 @@ def _ident(radio):
         print "Response was:\n%s" % util.hexprint(response)
         raise errors.RadioError("Unsupported model")
 
+
 def _finish(radio):
     endframe = "\x45\x4E\x44"
     _echo_write(radio, endframe)
@@ -213,11 +222,13 @@ def _finish(radio):
         print "Got:\n%s" % util.hexprint(result)
         raise errors.RadioError("Radio did not finish cleanly")
 
+
 def _checksum(data):
     cs = 0
     for byte in data:
         cs += ord(byte)
     return cs % 256
+
 
 def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
@@ -231,8 +242,8 @@ def _send(radio, cmd, addr, length, data=None):
         result = radio.pipe.read(1)
         if result != "\x06":
             print "Ack was: %s" % repr(result)
-            raise errors.RadioError("Radio did not accept block at %04x" % \
-                            addr)
+            raise errors.RadioError(
+                "Radio did not accept block at %04x" % addr)
         return
     result = _read(radio, length + 6)
     LOG.debug("Got:\n%s" % util.hexprint(result))
@@ -254,6 +265,7 @@ def _send(radio, cmd, addr, length, data=None):
         print "Actual:     %02x" % ord(result[-2])
         raise errors.RadioError("Block at 0x%04x failed checksum" % addr)
     return data
+
 
 def _download(radio):
     _ident(radio)
@@ -282,6 +294,7 @@ def _download(radio):
 
     return memmap.MemoryMap(data)
 
+
 def _upload(radio):
     _ident(radio)
 
@@ -301,6 +314,7 @@ def _upload(radio):
             radio.status_fn(status)
 
     _finish(radio)
+
 
 TONES = [62.5] + list(chirp_common.TONES)
 TMODES = ['', 'Tone', 'DTCS', '']
@@ -527,6 +541,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     def match_model(cls, filedata, filename):
         return cls._file_ident in filedata[0x20:0x40]
 
+
 @directory.register
 class IntekHR2040Radio(AnyTone5888UVRadio):
     """Intek HR-2040"""
@@ -534,12 +549,14 @@ class IntekHR2040Radio(AnyTone5888UVRadio):
     MODEL = "HR-2040"
     _file_ident = "HR-2040"
 
+
 @directory.register
 class PolmarDB50MRadio(AnyTone5888UVRadio):
     """Polmar DB-50M"""
     VENDOR = "Polmar"
     MODEL = "DB-50M"
     _file_ident = "DB-50M"
+
 
 @directory.register
 class PowerwerxDB750XRadio(AnyTone5888UVRadio):
