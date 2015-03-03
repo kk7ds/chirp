@@ -61,4 +61,3 @@
 ./chirp/drivers/vxa700.py
 ./chirp/drivers/wouxun.py
 ./chirp/drivers/wouxun_common.py
-./chirp/drivers/yaesu_clone.py

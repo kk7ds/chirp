@@ -13,29 +13,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CMD_ACK = 0x06
-
-from chirp import chirp_common, util, memmap, errors
-import time, os, logging
+import time
+import os
+import logging
 from textwrap import dedent
 
+from chirp import chirp_common, util, memmap, errors
+
 LOG = logging.getLogger(__name__)
+
+CMD_ACK = 0x06
+
 
 def _safe_read(pipe, count):
     buf = ""
     first = True
     for _i in range(0, 60):
         buf += pipe.read(count - len(buf))
-        #print "safe_read: %i/%i\n" % (len(buf), count)
+        # print "safe_read: %i/%i\n" % (len(buf), count)
         if buf:
             if first and buf[0] == chr(CMD_ACK):
-                #print "Chewed an ack"
-                buf = buf[1:] # Chew an echo'd ack if using a 2-pin cable
+                # print "Chewed an ack"
+                buf = buf[1:]  # Chew an echo'd ack if using a 2-pin cable
             first = False
         if len(buf) == count:
             break
     print util.hexprint(buf)
     return buf
+
 
 def _chunk_read(pipe, count, status_fn):
     block = 32
@@ -44,15 +49,16 @@ def _chunk_read(pipe, count, status_fn):
         data += pipe.read(block)
         if data:
             if data[0] == chr(CMD_ACK):
-                data = data[1:] # Chew an echo'd ack if using a 2-pin cable
-                #print "Chewed an ack"
+                data = data[1:]  # Chew an echo'd ack if using a 2-pin cable
+                # print "Chewed an ack"
         status = chirp_common.Status()
         status.msg = "Cloning from radio"
         status.max = count
         status.cur = len(data)
         status_fn(status)
         LOG.debug("Read %i/%i" % (len(data), count))
-    return data        
+    return data
+
 
 def __clone_in(radio):
     pipe = radio.pipe
@@ -79,11 +85,13 @@ def __clone_in(radio):
 
     return memmap.MemoryMap(data)
 
+
 def _clone_in(radio):
     try:
         return __clone_in(radio)
     except Exception, e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
+
 
 def _chunk_write(pipe, data, status_fn, block):
     delay = 0.03
@@ -92,7 +100,7 @@ def _chunk_write(pipe, data, status_fn, block):
         chunk = data[i:i+block]
         pipe.write(chunk)
         count += len(chunk)
-        LOG.debug("@_chunk_write, count: %i, blocksize: %i" % (count,block))
+        LOG.debug("@_chunk_write, count: %i, blocksize: %i" % (count, block))
         time.sleep(delay)
 
         status = chirp_common.Status()
@@ -100,7 +108,8 @@ def _chunk_write(pipe, data, status_fn, block):
         status.max = len(data)
         status.cur = count
         status_fn(status)
-        
+
+
 def __clone_out(radio):
     pipe = radio.pipe
     block_lengths = radio._block_lengths
@@ -132,15 +141,17 @@ def __clone_out(radio):
                          radio.status_fn, radio._block_size)
         pos += block
 
-    pipe.read(pos) # Chew the echo if using a 2-pin cable
+    pipe.read(pos)  # Chew the echo if using a 2-pin cable
 
     print "Clone completed in %i seconds" % (time.time() - start)
+
 
 def _clone_out(radio):
     try:
         return __clone_out(radio)
     except Exception, e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
+
 
 class YaesuChecksum:
     """A Yaesu Checksum Object"""
@@ -172,6 +183,7 @@ class YaesuChecksum:
                                       self._stop,
                                       self._address)
 
+
 class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     """Base class for all Yaesu clone-mode radios"""
     _block_lengths = [8, 65536]
@@ -194,7 +206,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
             3. Prepare radio for clone.
             4. Press the key to receive the image."""))
         return rp
-        
+
     def _checksums(self):
         """Return a list of checksum objects that need to be calculated"""
         return []
