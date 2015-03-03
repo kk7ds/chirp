@@ -15,7 +15,10 @@
 
 from chirp import chirp_common, errors, util, directory
 from chirp import bitwise, memmap
-import time, struct, sys, logging
+import time
+import struct
+import sys
+import logging
 
 LOG = logging.getLogger(__name__)
 
@@ -41,7 +44,7 @@ LOG = logging.getLogger(__name__)
 # 0xe500..0xe7d0: startup bitmap
 # 0xe7d0..0xe800: startup bitmap filename
 # 0xe800..0xead0: gps-logger bitmap
-# 0xe8d0..0xeb00: gps-logger bipmap filename 
+# 0xe8d0..0xeb00: gps-logger bipmap filename
 # 0xeb00..0xff00: ?
 # 0xff00..0xffff: stuff?
 
@@ -111,47 +114,47 @@ THD72_SPECIAL["C VHF"] = 1030
 THD72_SPECIAL["C UHF"] = 1031
 
 THD72_SPECIAL_REV = {}
-for k,v in THD72_SPECIAL.items():
+for k, v in THD72_SPECIAL.items():
     THD72_SPECIAL_REV[v] = k
 
 TMODES = {
-    0x08 : "Tone",
-    0x04 : "TSQL",
-    0x02 : "DTCS",
-    0x01 : "Cross",
-    0x00 : "",
+    0x08: "Tone",
+    0x04: "TSQL",
+    0x02: "DTCS",
+    0x01: "Cross",
+    0x00: "",
 }
 TMODES_REV = {
-    ""      : 0x00,
-    "Cross" : 0x01,
-    "DTCS"  : 0x02,
-    "TSQL"  : 0x04,
-    "Tone"  : 0x08,
+    "": 0x00,
+    "Cross": 0x01,
+    "DTCS": 0x02,
+    "TSQL": 0x04,
+    "Tone": 0x08,
 }
 
 MODES = {
-    0x00 : "FM",
-    0x01 : "NFM",
-    0x02 : "AM",
+    0x00: "FM",
+    0x01: "NFM",
+    0x02: "AM",
 }
 
 MODES_REV = {
-    "FM" : 0x00,
+    "FM": 0x00,
     "NFM": 0x01,
-    "AM" : 0x2,
+    "AM": 0x2,
 }
 
 DUPLEX = {
-    0x00 : "",
-    0x01 : "+",
-    0x02 : "-",
-    0x04 : "split",
+    0x00: "",
+    0x01: "+",
+    0x02: "-",
+    0x04: "split",
 }
 DUPLEX_REV = {
-    ""  : 0x00,
-    "+" : 0x01,
-    "-" : 0x02,
-    "split" : 0x04,
+    "": 0x00,
+    "+": 0x01,
+    "-": 0x02,
+    "split": 0x04,
 }
 
 
@@ -170,7 +173,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     mem_upper_limit = 1022
     _memsize = 65536
-    _model = "" # FIXME: REMOVE
+    _model = ""  # FIXME: REMOVE
     _dirty_blocks = []
 
     def get_features(self):
@@ -252,11 +255,12 @@ class THD72Radio(chirp_common.CloneModeRadio):
             try:
                 number = THD72_SPECIAL[number]
             except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
-                                                       number)
+                raise errors.InvalidMemoryLocation("Unknown channel %s" %
+                                                   number)
 
         if number < 0 or number > (max(THD72_SPECIAL.values()) + 1):
-            raise errors.InvalidMemoryLocation("Number must be between 0 and 999")
+            raise errors.InvalidMemoryLocation(
+                    "Number must be between 0 and 999")
 
         _mem = self._memobj.memory[number]
         flag = self._memobj.flag[number]
@@ -287,17 +291,18 @@ class THD72Radio(chirp_common.CloneModeRadio):
             mem.cross_mode = chirp_common.CROSS_MODES[0]
             mem.immutable = ["number", "bank", "extd_number", "cross_mode"]
             if number >= 1020 and number < 1030:
-                mem.immutable += ["freq", "offset", "tone", "mode", "tmode", "ctone", "skip"] # FIXME: ALL
+                mem.immutable += ["freq", "offset", "tone", "mode",
+                                  "tmode", "ctone", "skip"]  # FIXME: ALL
             else:
                 mem.immutable += ["name"]
 
         return mem
 
-
     def set_memory(self, mem):
-        print "set_memory(%d)"%mem.number
+        print "set_memory(%d)" % mem.number
         if mem.number < 0 or mem.number > (max(THD72_SPECIAL.values()) + 1):
-            raise errors.InvalidMemoryLocation("Number must be between 0 and 999")
+            raise errors.InvalidMemoryLocation(
+                "Number must be between 0 and 999")
 
         # weather channels can only change name, nothing else
         if mem.number >= 1020 and mem.number < 1030:
@@ -335,7 +340,6 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
         if mem.number < 999:
             flag.skip = chirp_common.SKIP_VALUES.index(mem.skip)
-
 
     def sync_in(self):
         self._detect_baud()
@@ -447,7 +451,6 @@ class THD72Radio(chirp_common.CloneModeRadio):
         # clear out blocks we uploaded from the dirty blocks list
         self._dirty_blocks = [b for b in self._dirty_blocks if b not in blocks]
 
-
     def command(self, cmd, timeout=0.5):
         start = time.time()
 
@@ -466,7 +469,6 @@ class THD72Radio(chirp_common.CloneModeRadio):
         else:
             raise errors.RadioError("No response to ID command")
 
-
     def initialize(self, mmap):
         mmap[0] = \
             "\x80\xc8\xb3\x08\x00\x01\x00\x08" + \
@@ -478,15 +480,18 @@ if __name__ == "__main__":
     import serial
     import detect
     import getopt
+
     def fixopts(opts):
         r = {}
         for opt in opts:
-            k,v = opt
+            k, v = opt
             r[k] = v
         return r
 
     def usage():
-        print "Usage: %s <-i input.img>|<-o output.img> -p port [[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" % sys.argv[0]
+        print "Usage: %s <-i input.img>|<-o output.img> -p port " \
+            "[[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" % \
+            sys.argv[0]
         sys.exit(1)
 
     opts, args = getopt.getopt(sys.argv[1:], "i:o:p:f:l:b:")
@@ -507,9 +512,9 @@ if __name__ == "__main__":
         usage()
 
     if '-f' in opts:
-        first = int(opts['-f'],0)
+        first = int(opts['-f'], 0)
     if '-l' in opts:
-        last = int(opts['-l'],0)
+        last = int(opts['-l'], 0)
     if '-b' in opts:
         blocks = [int(b, 0) for b in opts['-b'].split(',')]
         blocks.sort()
@@ -540,4 +545,3 @@ if __name__ == "__main__":
         r._mmap = file(fname, "rb").read(r._memsize)
         r.upload(blocks)
     print "\nDone"
-
