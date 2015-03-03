@@ -19,9 +19,11 @@ from chirp import bitwise
 import time
 import struct
 
+
 def _debug(string):
     pass
     print string
+
 
 def _send(radio, data):
     _debug("Sending %s" % repr(data))
@@ -31,8 +33,9 @@ def _send(radio, data):
     if len(echo) != len(data):
         raise errors.RadioError("Invalid echo")
 
+
 def _spoonfeed(radio, data):
-    #count = 0
+    # count = 0
     _debug("Writing %i:\n%s" % (len(data), util.hexprint(data)))
     for byte in data:
         radio.pipe.write(byte)
@@ -45,7 +48,8 @@ def _spoonfeed(radio, data):
         if echo != byte:
             print "%02x != %02x" % (ord(echo), ord(byte))
             raise errors.RadioError("No echo?")
-        #count += 1
+        # count += 1
+
 
 def _download(radio):
     count = 0
@@ -80,6 +84,7 @@ def _download(radio):
 
     return memmap.MemoryMap(data)
 
+
 def _upload(radio):
     for i in range(0, radio.get_memsize(), 128):
         chunk = radio.get_mmap()[i:i+128]
@@ -102,7 +107,7 @@ def _upload(radio):
         if ack != "\x06":
             print repr(ack)
             raise errors.RadioError("Radio did not ack block %i" % (i / 132))
-        #radio.pipe.read(1)
+        # radio.pipe.read(1)
         if radio.status_fn:
             status = chirp_common.Status()
             status.msg = "Cloning to radio"
@@ -146,9 +151,9 @@ struct memory_struct memory[100];
 
 CHARSET = "".join(["%i" % i for i in range(0, 10)]) + \
     "".join([chr(ord("A") + i) for i in range(0, 26)]) + \
-    "".join([chr(ord("a") + i) for i in range(0,26)]) + \
+    "".join([chr(ord("a") + i) for i in range(0, 26)]) + \
     "., :;!\"#$%&'()*+-/=<>?@[?]^_`{|}????~??????????????????????????"
-            
+
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", ""]
 POWER = [chirp_common.PowerLevel("Low1", watts=0.050),
@@ -156,8 +161,10 @@ POWER = [chirp_common.PowerLevel("Low1", watts=0.050),
          chirp_common.PowerLevel("Low3", watts=2.500),
          chirp_common.PowerLevel("High", watts=5.000)]
 
+
 def _wipe_memory(_mem):
     _mem.set_raw("\x00" * (_mem.size() / 8))
+
 
 @directory.register
 class VXA700Radio(chirp_common.CloneModeRadio):
@@ -178,10 +185,10 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
-        #header[4] = 0x00 <- default
-        #            0xFF <- air band only
-        #            0x01 <- air band only
-        #            0x02 <- air band only
+        # header[4] = 0x00 <- default
+        #             0xFF <- air band only
+        #             0x01 <- air band only
+        #             0x02 <- air band only
         try:
             self.pipe.setTimeout(2)
             _upload(self)
@@ -205,7 +212,8 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         rf.valid_characters = CHARSET
         rf.valid_skips = ["", "S"]
         rf.valid_bands = [(88000000, 165000000)]
-        rf.valid_tuning_steps = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+        rf.valid_tuning_steps = \
+            [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
         rf.valid_modes = ["AM", "FM"]
         rf.valid_power_levels = POWER
         rf.memory_bounds = (1, 100)
@@ -232,7 +240,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.step & 0x05: # Not sure this is right, but it seems to be
+        if _mem.step & 0x05:  # Not sure this is right, but it seems to be
             mult = 6250
         else:
             mult = 5000
@@ -274,9 +282,9 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         self._memobj.invisible_bits[byte] &= ~bit
         self._memobj.invalid_bits[byte] &= ~bit
 
-        _mem.unknown2 = 0x02 # Channels don't display without this
-        _mem.unknown7 = 0x01 # some bit in this field is related to
-        _mem.unknown8 = 0xFF # being able to transmit
+        _mem.unknown2 = 0x02  # Channels don't display without this
+        _mem.unknown7 = 0x01  # some bit in this field is related to
+        _mem.unknown8 = 0xFF  # being able to transmit
 
         if chirp_common.required_step(mem.freq) == 12.5:
             mult = 6250
@@ -296,7 +304,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         try:
             _mem.power = POWER.index(mem.power)
         except ValueError:
-            _mem.power = 3 # High
+            _mem.power = 3  # High
 
         for i in range(0, 8):
             try:
