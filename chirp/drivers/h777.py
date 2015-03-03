@@ -90,8 +90,9 @@ TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
 SCANMODE_LIST = ["Carrier", "Time"]
 
 SETTING_LISTS = {
-    "voice" : VOICE_LIST,
+    "voice": VOICE_LIST,
     }
+
 
 def _h777_enter_programming_mode(radio):
     serial = radio.pipe
@@ -128,12 +129,14 @@ def _h777_enter_programming_mode(radio):
     if ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 
+
 def _h777_exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write("E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
+
 
 def _h777_read_block(radio, block_addr, block_size):
     serial = radio.pipe
@@ -160,6 +163,7 @@ def _h777_read_block(radio, block_addr, block_size):
 
     return block_data
 
+
 def _h777_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
@@ -176,6 +180,7 @@ def _h777_write_block(radio, block_addr, block_size):
     except:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
+
 
 def do_download(radio):
     print "download"
@@ -203,6 +208,7 @@ def do_download(radio):
 
     return memmap.MemoryMap(data)
 
+
 def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
@@ -220,6 +226,7 @@ def do_upload(radio):
 
     _h777_exit_programming_mode(radio)
 
+
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -232,7 +239,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     # This code currently requires that ranges start at 0x0000
     # and are continious. In the original program 0x0388 and 0x03C8
     # are only written (all bytes 0xFF), not read.
-    #_ranges = [
+    # _ranges = [
     #       (0x0000, 0x0110),
     #       (0x02B0, 0x02C0),
     #       (0x0380, 0x03E0)
@@ -400,7 +407,8 @@ class H777Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("voicelanguage", "Voice language",
-                          RadioSettingValueList(VOICE_LIST,
+                          RadioSettingValueList(
+                              VOICE_LIST,
                               VOICE_LIST[_settings.voicelanguage]))
         basic.append(rs)
 
@@ -409,8 +417,9 @@ class H777Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("settings2.scanmode", "Scan mode",
-                          RadioSettingValueList(SCANMODE_LIST,
-                          SCANMODE_LIST[self._memobj.settings2.scanmode]))
+                          RadioSettingValueList(
+                              SCANMODE_LIST,
+                              SCANMODE_LIST[self._memobj.settings2.scanmode]))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX",
@@ -455,20 +464,22 @@ class H777Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("settings2.squelchlevel", "Squelch level",
-                          RadioSettingValueInteger(0, 9,
-                              self._memobj.settings2.squelchlevel))
+                          RadioSettingValueInteger(
+                              0, 9, self._memobj.settings2.squelchlevel))
         basic.append(rs)
 
         rs = RadioSetting("settings2.sidekeyfunction", "Side key function",
-                          RadioSettingValueList(SIDEKEYFUNCTION_LIST,
-                          SIDEKEYFUNCTION_LIST[
-                              self._memobj.settings2.sidekeyfunction]))
+                          RadioSettingValueList(
+                              SIDEKEYFUNCTION_LIST,
+                              SIDEKEYFUNCTION_LIST[
+                                  self._memobj.settings2.sidekeyfunction]))
         basic.append(rs)
 
         rs = RadioSetting("settings2.timeouttimer", "Timeout timer",
-                          RadioSettingValueList(TIMEOUTTIMER_LIST,
-                          TIMEOUTTIMER_LIST[
-                              self._memobj.settings2.timeouttimer]))
+                          RadioSettingValueList(
+                              TIMEOUTTIMER_LIST,
+                              TIMEOUTTIMER_LIST[
+                                  self._memobj.settings2.timeouttimer]))
         basic.append(rs)
 
         return top
@@ -501,6 +512,7 @@ class H777Radio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     print element.get_name()
                     raise
+
 
 class H777TestCase(unittest.TestCase):
     def setUp(self):
