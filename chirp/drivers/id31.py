@@ -94,6 +94,7 @@ DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
 TUNING_STEPS = [5.0, 6.25, 0, 0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
                 100.0, 125.0, 200.0]
 
+
 def _decode_call(_call):
     # Why Icom, why?
     call = ""
@@ -107,6 +108,7 @@ def _decode_call(_call):
     call += chr(acc)
     return call
 
+
 def _encode_call(call):
     _call = [0x00] * 7
     for i in range(0, 7):
@@ -115,8 +117,9 @@ def _encode_call(call):
             _call[i-1] |= (val & 0xFF00) >> 8
         _call[i] = val
     _call[6] |= (ord(call[7]) & 0x7F)
-        
+
     return _call
+
 
 def _get_freq(_mem):
     freq = int(_mem.freq)
@@ -131,6 +134,7 @@ def _get_freq(_mem):
 
     return (freq * mult), (offs * mult)
 
+
 def _set_freq(_mem, freq, offset):
     if chirp_common.is_fractional_step(freq):
         mult = 6250
@@ -142,6 +146,7 @@ def _set_freq(_mem, freq, offset):
     _mem.freq = (freq / mult) | flag
     _mem.offset = (offset / mult)
 
+
 class ID31Bank(icf.IcomBank):
     """A ID-31 Bank"""
     def get_name(self):
@@ -151,6 +156,7 @@ class ID31Bank(icf.IcomBank):
     def set_name(self, name):
         _banks = self._model._radio._memobj.bank_names
         _banks[self.index].name = str(name).ljust(16)[:16]
+
 
 @directory.register
 class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
@@ -250,7 +256,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.skip = "P"
         if _skp & bit:
             mem.skip = "S"
-            
+
         return mem
 
     def set_memory(self, memory):
@@ -277,8 +283,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(memory.dtcs)
         _mem.dtcs_polarity = DTCS_POLARITY.index(memory.dtcs_polarity)
         _mem.tune_step = TUNING_STEPS.index(memory.tuning_step)
-        _mem.mode = next(i for i, mode in self.MODES.items() \
-                            if mode == memory.mode)
+        _mem.mode = next(i for i, mode in self.MODES.items()
+                         if mode == memory.mode)
 
         if isinstance(memory, chirp_common.DVMemory):
             _mem.urcall = _encode_call(memory.dv_urcall.ljust(8))
@@ -288,15 +294,15 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             raise Exception("BUG")
 
         if memory.skip == "S":
-            _skp |=  bit
+            _skp |= bit
             _psk &= ~bit
         elif memory.skip == "P":
             _skp &= ~bit
-            _psk |=  bit
+            _psk |= bit
         else:
             _skp &= ~bit
             _psk &= ~bit
-            
+
     def get_urcall_list(self):
         calls = []
         for i in range(0, 200):

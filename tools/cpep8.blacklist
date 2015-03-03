@@ -26,7 +26,6 @@
 ./chirp/drivers/icw32.py
 ./chirp/drivers/icx8x.py
 ./chirp/drivers/icx8x_ll.py
-./chirp/drivers/id31.py
 ./chirp/drivers/id800.py
 ./chirp/drivers/id880.py
 ./chirp/drivers/th9800.py
