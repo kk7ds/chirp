@@ -1,5 +1,6 @@
 
-import struct, logging
+import struct
+import logging
 from chirp.drivers import icf
 from chirp import chirp_common, util, errors, bitwise, directory
 from chirp.memmap import MemoryMap
@@ -55,6 +56,7 @@ u8   unknown[11];
 char name[9];
 """
 
+
 class Frame:
     """Base class for an ICF frame"""
     _cmd = 0x00
@@ -81,8 +83,8 @@ class Frame:
         raw = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
         raw += str(self._data) + chr(0xFD)
 
-        LOG.debug("%02x -> %02x (%i):\n%s" % (src, dst,
-                                          len(raw), util.hexprint(raw)))
+        LOG.debug("%02x -> %02x (%i):\n%s" %
+                  (src, dst, len(raw), util.hexprint(raw)))
 
         serial.write(raw)
         if willecho:
@@ -117,6 +119,7 @@ class Frame:
     def get_obj(self):
         raise errors.RadioError("Generic frame has no structure")
 
+
 class MemFrame(Frame):
     """A memory frame"""
     _cmd = 0x1A
@@ -138,12 +141,13 @@ class MemFrame(Frame):
 
     def get_obj(self):
         """Return a bitwise parsed object"""
-        self._data = MemoryMap(str(self._data)) # Make sure we're assignable
+        self._data = MemoryMap(str(self._data))  # Make sure we're assignable
         return bitwise.parse(MEM_FORMAT, self._data)
 
     def initialize(self):
         """Initialize to sane values"""
         self._data = MemoryMap("".join(["\x00"] * (self.get_obj().size() / 8)))
+
 
 class MultiVFOMemFrame(MemFrame):
     """A memory frame for radios with multiple VFOs"""
@@ -152,13 +156,15 @@ class MultiVFOMemFrame(MemFrame):
         self._data = struct.pack(">BH", vfo, int("%04i" % loc, 16))
 
     def get_obj(self):
-        self._data = MemoryMap(str(self._data)) # Make sure we're assignable
+        self._data = MemoryMap(str(self._data))  # Make sure we're assignable
         return bitwise.parse(MEM_VFO_FORMAT, self._data)
+
 
 class DupToneMemFrame(MemFrame):
     def get_obj(self):
         self._data = MemoryMap(str(self._data))
         return bitwise.parse(mem_duptone_format, self._data)
+
 
 class IcomCIVRadio(icf.IcomLiveRadio):
     """Base class for ICOM CIV-based radios"""
@@ -191,7 +197,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         icf.IcomLiveRadio.__init__(self, *args, **kwargs)
 
         self._classes = {
-            "mem" : MemFrame,
+            "mem": MemFrame,
             }
 
         if self.pipe:
@@ -199,16 +205,16 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             print "Interface echo: %s" % self._willecho
             self.pipe.setTimeout(1)
 
-        #f = Frame()
-        #f.set_command(0x19, 0x00)
-        #self._send_frame(f)
+        # f = Frame()
+        # f.set_command(0x19, 0x00)
+        # self._send_frame(f)
         #
-        #res = f.read(self.pipe)
-        #if res:
+        # res = f.read(self.pipe)
+        # if res:
         #    print "Result: %x->%x (%i)" % (res[0], res[1], len(f.get_data()))
         #    print util.hexprint(f.get_data())
         #
-        #self._id = f.get_data()[0]
+        # self._id = f.get_data()[0]
         self._rf = chirp_common.RadioFeatures()
 
         self._initialize()
@@ -281,8 +287,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             self._send_frame(f)
             return
 
-        #f.set_data(MemoryMap(self.get_raw_memory(mem.number)))
-        #f.initialize()
+        # f.set_data(MemoryMap(self.get_raw_memory(mem.number)))
+        # f.initialize()
 
         memobj = f.get_obj()
         memobj.number = mem.number
@@ -307,6 +313,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         f = self._recv_frame()
         print "Result:\n%s" % util.hexprint(f.get_data())
 
+
 @directory.register
 class Icom7200Radio(IcomCIVRadio):
     """Icom IC-7200"""
@@ -328,6 +335,7 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.valid_tuning_steps = []
         self._rf.valid_skips = []
         self._rf.memory_bounds = (1, 200)
+
 
 @directory.register
 class Icom7000Radio(IcomCIVRadio):
@@ -354,6 +362,7 @@ class Icom7000Radio(IcomCIVRadio):
         self._rf.valid_name_length = 9
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
         self._rf.memory_bounds = (1, 99)
+
 
 @directory.register
 class Icom746Radio(IcomCIVRadio):
@@ -383,10 +392,11 @@ class Icom746Radio(IcomCIVRadio):
         self._rf.memory_bounds = (1, 99)
 
 CIV_MODELS = {
-    (0x76, 0xE0) : Icom7200Radio,
-    (0x70, 0xE0) : Icom7000Radio,
-    (0x46, 0xE0) : Icom746Radio,
+    (0x76, 0xE0): Icom7200Radio,
+    (0x70, 0xE0): Icom7000Radio,
+    (0x46, 0xE0): Icom746Radio,
 }
+
 
 def probe_model(ser):
     """Probe the radio attatched to @ser for its model"""

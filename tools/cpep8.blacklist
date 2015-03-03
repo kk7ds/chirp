@@ -19,7 +19,6 @@
 ./chirp/drivers/ic9x_icf_ll.py
 ./chirp/drivers/ic9x_ll.py
 ./chirp/drivers/icf.py
-./chirp/drivers/icomciv.py
 ./chirp/drivers/icq7.py
 ./chirp/drivers/ict70.py
 ./chirp/drivers/ict8.py
