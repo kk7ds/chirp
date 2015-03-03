@@ -28,7 +28,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
 
-BJUV55_MODEL   = "\x50\xBB\xDD\x55\x63\x98\x4D"
+
+BJUV55_MODEL = "\x50\xBB\xDD\x55\x63\x98\x4D"
 
 COLOR_LIST = ["Off", "Blue", "Red", "Pink"]
 
@@ -91,11 +92,11 @@ struct {
   u8 step;
   u8 tdrab;
   u8 tdr;
-  u8 vox;	
+  u8 vox;
   u8 timeout;
   u8 unk2[6];
   u8 abr;
-  u8 beep; 
+  u8 beep;
   u8 ani;
   u8 unknown3[2];
   u8 voice;
@@ -228,23 +229,23 @@ struct {
 
 """
 
+
 @directory.register
 class BaojieBJUV55Radio(uv5r.BaofengUV5R):
     VENDOR = "Baojie"
     MODEL = "BJ-UV55"
-    #_basetype = "BJ55"
     _basetype = ["BJ55"]
-    _idents = [ BJUV55_MODEL ]
-    _mem_params = ( 0x1928  # poweron_msg offset
-                    )
+    _idents = [BJUV55_MODEL]
+    _mem_params = (0x1928  # poweron_msg offset
+                   )
     _fw_ver_file_start = 0x1938
     _fw_ver_file_stop = 0x193E
-    
+
     def get_features(self):
         rf = super(BaojieBJUV55Radio, self).get_features()
         rf.valid_name_length = 6
         return rf
-    
+
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
@@ -259,7 +260,6 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
             _mem.txtoneicon = True
         else:
             _mem.txtoneicon = False
-
 
     def _get_settings(self):
         _settings = self._memobj.settings
@@ -284,8 +284,9 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         advanced.append(rs)
 
         rs = RadioSetting("tdrab", "Dual Watch TX Priority",
-                          RadioSettingValueList(uv5r.TDRAB_LIST,
-                          uv5r.TDRAB_LIST[_settings.tdrab]))
+                          RadioSettingValueList(
+                              uv5r.TDRAB_LIST,
+                              uv5r.TDRAB_LIST[_settings.tdrab]))
         advanced.append(rs)
 
         rs = RadioSetting("alarm", "Alarm",
@@ -297,23 +298,25 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         basic.append(rs)
 
         rs = RadioSetting("timeout", "Timeout Timer",
-                          RadioSettingValueList(uv5r.TIMEOUT_LIST,
-                          uv5r.TIMEOUT_LIST[_settings.timeout]))
+                          RadioSettingValueList(
+                              uv5r.TIMEOUT_LIST,
+                              uv5r.TIMEOUT_LIST[_settings.timeout]))
         basic.append(rs)
 
         rs = RadioSetting("screv", "Scan Resume",
-                          RadioSettingValueList(uv5r.RESUME_LIST,
-                          uv5r.RESUME_LIST[_settings.screv]))
+                          RadioSettingValueList(
+                              uv5r.RESUME_LIST,
+                              uv5r.RESUME_LIST[_settings.screv]))
         advanced.append(rs)
 
         rs = RadioSetting("mdfa", "Display Mode (A)",
-                          RadioSettingValueList(uv5r.MODE_LIST,
-                          uv5r.MODE_LIST[_settings.mdfa]))
+                          RadioSettingValueList(
+                              uv5r.MODE_LIST, uv5r.MODE_LIST[_settings.mdfa]))
         basic.append(rs)
 
         rs = RadioSetting("mdfb", "Display Mode (B)",
-                          RadioSettingValueList(uv5r.MODE_LIST,
-                          uv5r.MODE_LIST[_settings.mdfb]))
+                          RadioSettingValueList(
+                              uv5r.MODE_LIST, uv5r.MODE_LIST[_settings.mdfb]))
         basic.append(rs)
 
         rs = RadioSetting("bcl", "Busy Channel Lockout",
@@ -329,18 +332,18 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         advanced.append(rs)
 
         rs = RadioSetting("wtled", "Standby LED Color",
-                          RadioSettingValueList(COLOR_LIST,
-                          COLOR_LIST[_settings.wtled]))
+                          RadioSettingValueList(
+                              COLOR_LIST, COLOR_LIST[_settings.wtled]))
         basic.append(rs)
 
         rs = RadioSetting("rxled", "RX LED Color",
-                          RadioSettingValueList(COLOR_LIST,
-                          COLOR_LIST[_settings.rxled]))
+                          RadioSettingValueList(
+                              COLOR_LIST, COLOR_LIST[_settings.rxled]))
         basic.append(rs)
 
         rs = RadioSetting("txled", "TX LED Color",
-                          RadioSettingValueList(COLOR_LIST,
-                          COLOR_LIST[_settings.txled]))
+                          RadioSettingValueList(
+                              COLOR_LIST, COLOR_LIST[_settings.txled]))
         basic.append(rs)
 
         rs = RadioSetting("reset", "RESET Menu",
@@ -350,7 +353,6 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         rs = RadioSetting("menu", "All Menus",
                           RadioSettingValueBoolean(_settings.menu))
         advanced.append(rs)
-
 
         if len(self._mmap.get_packed()) == 0x1808:
             # Old image, without aux block
@@ -379,13 +381,13 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         limit = "limits"
         vhf_limit = getattr(self._memobj, limit).vhf
         rs = RadioSetting("%s.vhf.lower" % limit, "VHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000,
-                                                   vhf_limit.lower))
+                          RadioSettingValueInteger(
+                              1, 1000, vhf_limit.lower))
         other.append(rs)
 
         rs = RadioSetting("%s.vhf.upper" % limit, "VHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000,
-                                                   vhf_limit.upper))
+                          RadioSettingValueInteger(
+                              1, 1000, vhf_limit.upper))
         other.append(rs)
 
         rs = RadioSetting("%s.vhf.enable" % limit, "VHF TX Enabled",
@@ -394,12 +396,12 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
 
         uhf_limit = getattr(self._memobj, limit).uhf
         rs = RadioSetting("%s.uhf.lower" % limit, "UHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000,
-                                                   uhf_limit.lower))
+                          RadioSettingValueInteger(
+                              1, 1000, uhf_limit.lower))
         other.append(rs)
         rs = RadioSetting("%s.uhf.upper" % limit, "UHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(1, 1000,
-                                                   uhf_limit.upper))
+                          RadioSettingValueInteger(
+                              1, 1000, uhf_limit.upper))
         other.append(rs)
         rs = RadioSetting("%s.uhf.enable" % limit, "UHF TX Enabled",
                           RadioSettingValueBoolean(uhf_limit.enable))
@@ -410,14 +412,14 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
 
         options = ["A", "B"]
         rs = RadioSetting("displayab", "Display Selected",
-                          RadioSettingValueList(options,
-                                                options[_settings.displayab]))
+                          RadioSettingValueList(
+                              options, options[_settings.displayab]))
         workmode.append(rs)
 
         options = ["Frequency", "Channel"]
         rs = RadioSetting("workmode", "VFO/MR Mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.workmode]))
+                          RadioSettingValueList(
+                              options, options[_settings.workmode]))
         workmode.append(rs)
 
         rs = RadioSetting("keylock", "Keypad Lock",
@@ -435,10 +437,10 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         workmode.append(rs)
 
         def convert_bytes_to_freq(bytes):
-           real_freq = 0
-           for byte in bytes:
-               real_freq = (real_freq * 10) + byte
-           return chirp_common.format_freq(real_freq * 10)
+            real_freq = 0
+            for byte in bytes:
+                real_freq = (real_freq * 10) + byte
+            return chirp_common.format_freq(real_freq * 10)
 
         def my_validate(value):
             value = chirp_common.parse_freq(value)
@@ -453,15 +455,15 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
                 obj.freq[i] = value % 10
                 value /= 10
 
-        val1a = RadioSettingValueString(0, 10,
-            convert_bytes_to_freq(self._memobj.vfoa.freq))
+        val1a = RadioSettingValueString(
+                0, 10, convert_bytes_to_freq(self._memobj.vfoa.freq))
         val1a.set_validate_callback(my_validate)
         rs = RadioSetting("vfoa.freq", "VFO A Frequency", val1a)
         rs.set_apply_callback(apply_freq, self._memobj.vfoa)
         workmode.append(rs)
 
-        val1b = RadioSettingValueString(0, 10,
-            convert_bytes_to_freq(self._memobj.vfob.freq))
+        val1b = RadioSettingValueString(
+                0, 10, convert_bytes_to_freq(self._memobj.vfob.freq))
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfob.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, self._memobj.vfob)
@@ -469,20 +471,20 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
 
         options = ["Off", "+", "-"]
         rs = RadioSetting("vfoa.sftd", "VFO A Shift",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfoa.sftd]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfoa.sftd]))
         workmode.append(rs)
 
         rs = RadioSetting("vfob.sftd", "VFO B Shift",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfob.sftd]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfob.sftd]))
         workmode.append(rs)
 
         def convert_bytes_to_offset(bytes):
-           real_offset = 0
-           for byte in bytes:
-               real_offset = (real_offset * 10) + byte
-           return chirp_common.format_freq(real_offset * 10000)
+            real_offset = 0
+            for byte in bytes:
+                real_offset = (real_offset * 10) + byte
+            return chirp_common.format_freq(real_offset * 10000)
 
         def apply_offset(setting, obj):
             value = chirp_common.parse_freq(str(setting.value)) / 10000
@@ -490,68 +492,66 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
                 obj.offset[i] = value % 10
                 value /= 10
 
-        val1a = RadioSettingValueString(0, 10,
-            convert_bytes_to_offset(self._memobj.vfoa.offset))
+        val1a = RadioSettingValueString(
+                0, 10, convert_bytes_to_offset(self._memobj.vfoa.offset))
         rs = RadioSetting("vfoa.offset", "VFO A Offset (0.00-69.95)", val1a)
         rs.set_apply_callback(apply_offset, self._memobj.vfoa)
         workmode.append(rs)
 
-        val1b = RadioSettingValueString(0, 10,
-            convert_bytes_to_offset(self._memobj.vfob.offset))
+        val1b = RadioSettingValueString(
+                0, 10, convert_bytes_to_offset(self._memobj.vfob.offset))
         rs = RadioSetting("vfob.offset", "VFO B Offset (0.00-69.95)", val1b)
         rs.set_apply_callback(apply_offset, self._memobj.vfob)
         workmode.append(rs)
 
         options = ["High", "Low"]
         rs = RadioSetting("vfoa.txpower", "VFO A Power",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfoa.txpower]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfoa.txpower]))
         workmode.append(rs)
 
         rs = RadioSetting("vfob.txpower", "VFO B Power",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfob.txpower]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfob.txpower]))
         workmode.append(rs)
 
         options = ["Wide", "Narrow"]
         rs = RadioSetting("vfoa.widenarr", "VFO A Bandwidth",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfoa.widenarr]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfoa.widenarr]))
         workmode.append(rs)
 
         rs = RadioSetting("vfob.widenarr", "VFO B Bandwidth",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfob.widenarr]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfob.widenarr]))
         workmode.append(rs)
 
         options = ["%s" % x for x in range(1, 16)]
         rs = RadioSetting("vfoa.scode", "VFO A PTT-ID",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfoa.scode]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfoa.scode]))
         workmode.append(rs)
 
         rs = RadioSetting("vfob.scode", "VFO B PTT-ID",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.vfob.scode]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.vfob.scode]))
         workmode.append(rs)
-
 
         rs = RadioSetting("vfoa.step", "VFO A Tuning Step",
-                          RadioSettingValueList(STEP_LIST,
-                          STEP_LIST[self._memobj.vfoa.step]))
+                          RadioSettingValueList(
+                              STEP_LIST, STEP_LIST[self._memobj.vfoa.step]))
         workmode.append(rs)
         rs = RadioSetting("vfob.step", "VFO B Tuning Step",
-                          RadioSettingValueList(STEP_LIST,
-                          STEP_LIST[self._memobj.vfob.step]))
+                          RadioSettingValueList(
+                              STEP_LIST, STEP_LIST[self._memobj.vfob.step]))
         workmode.append(rs)
-
 
         fm_preset = RadioSettingGroup("fm_preset", "FM Radio Preset")
         group.append(fm_preset)
 
         preset = self._memobj.fm_preset / 10.0 + 87
         rs = RadioSetting("fm_preset", "FM Preset(MHz)",
-                      RadioSettingValueFloat(87, 107.5, preset, 0.1, 1))
+                          RadioSettingValueFloat(87, 107.5, preset, 0.1, 1))
         fm_preset.append(rs)
 
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
@@ -563,7 +563,9 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
             _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
             val = RadioSettingValueString(0, 5, _code, False)
             val.set_charset(dtmfchars)
-            rs = RadioSetting("pttid/%i.code" % i, "PTT ID Code %i" % (i + 1), val)
+            rs = RadioSetting("pttid/%i.code" % i,
+                              "PTT ID Code %i" % (i + 1), val)
+
             def apply_code(setting, obj):
                 code = []
                 for j in range(0, 5):
@@ -580,6 +582,7 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         val = RadioSettingValueString(0, 5, _code, False)
         val.set_charset(dtmfchars)
         rs = RadioSetting("ani.code", "ANI Code", val)
+
         def apply_code(setting, obj):
             code = []
             for j in range(0, 5):
@@ -593,8 +596,8 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
 
         options = ["Off", "BOT", "EOT", "Both"]
         rs = RadioSetting("ani.aniid", "ANI ID",
-                          RadioSettingValueList(options,
-                                                options[self._memobj.ani.aniid]))
+                          RadioSettingValueList(
+                              options, options[self._memobj.ani.aniid]))
         dtmf.append(rs)
 
         _codeobj = self._memobj.ani.alarmcode
@@ -602,6 +605,7 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         val = RadioSettingValueString(0, 5, _code, False)
         val.set_charset(dtmfchars)
         rs = RadioSetting("ani.alarmcode", "Alarm Code", val)
+
         def apply_code(setting, obj):
             alarmcode = []
             for j in range(5):
@@ -614,18 +618,21 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         dtmf.append(rs)
 
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
-                          RadioSettingValueList(uv5r.DTMFST_LIST,
-                          uv5r.DTMFST_LIST[_settings.dtmfst]))
+                          RadioSettingValueList(
+                              uv5r.DTMFST_LIST,
+                              uv5r.DTMFST_LIST[_settings.dtmfst]))
         dtmf.append(rs)
 
         rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
-                          RadioSettingValueList(uv5r.DTMFSPEED_LIST,
-                          uv5r.DTMFSPEED_LIST[self._memobj.ani.dtmfon]))
+                          RadioSettingValueList(
+                              uv5r.DTMFSPEED_LIST,
+                              uv5r.DTMFSPEED_LIST[self._memobj.ani.dtmfon]))
         dtmf.append(rs)
 
         rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
-                          RadioSettingValueList(uv5r.DTMFSPEED_LIST,
-                          uv5r.DTMFSPEED_LIST[self._memobj.ani.dtmfoff]))
+                          RadioSettingValueList(
+                              uv5r.DTMFSPEED_LIST,
+                              uv5r.DTMFSPEED_LIST[self._memobj.ani.dtmfoff]))
         dtmf.append(rs)
 
         return group
