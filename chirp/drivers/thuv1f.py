@@ -22,6 +22,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
 
+
 def uvf1_identify(radio):
     """Do identify handshake with TYT TH-UVF1"""
     radio.pipe.write("PROG333")
@@ -36,6 +37,7 @@ def uvf1_identify(radio):
     if ack != "\x06":
         raise errors.RadioError("Radio did not ack identification")
     return ident
+
 
 def uvf1_download(radio):
     """Download from TYT TH-UVF1"""
@@ -62,6 +64,7 @@ def uvf1_download(radio):
     radio.pipe.write("\x45")
 
     return memmap.MemoryMap(data)
+
 
 def uvf1_upload(radio):
     """Upload to TYT TH-UVF1"""
@@ -90,6 +93,7 @@ def uvf1_upload(radio):
 
     # End of clone?
     radio.pipe.write("\x45")
+
 
 THUV1F_MEM_FORMAT = """
 struct mem {
@@ -169,6 +173,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 BCL_LIST = ["Off", "CSQ", "QT/DQT"]
 CODES_LIST = [x for x in range(1, 9)]
+
 
 @directory.register
 class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
@@ -307,9 +312,8 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         txmode, txval, txpol = self._decode_tone(_mem.tx_tone)
         rxmode, rxval, rxpol = self._decode_tone(_mem.rx_tone)
 
-        chirp_common.split_tone_decode(mem,
-                                      (txmode, txval, txpol),
-                                      (rxmode, rxval, rxpol))
+        chirp_common.split_tone_decode(
+            mem, (txmode, txval, txpol), (rxmode, rxval, rxpol))
 
         mem.name = str(self._memobj.names[number - 1].name)
         mem.name = mem.name.replace("\xFF", " ").rstrip()
@@ -335,8 +339,8 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         mem.extra.append(rs)
 
         rs = RadioSetting("scramble_code", "Scramble Code",
-                          RadioSettingValueList(CODES_LIST,
-                                                CODES_LIST[_mem.scramble_code]))
+                          RadioSettingValueList(
+                              CODES_LIST, CODES_LIST[_mem.scramble_code]))
         mem.extra.append(rs)
 
         return mem
@@ -382,7 +386,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _settings = self._memobj.settings
 
-        group = RadioSettingGroup("basic", "Basic");
+        group = RadioSettingGroup("basic", "Basic")
         top = RadioSettings(group)
 
         group.append(
@@ -396,7 +400,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
         group.append(
             RadioSetting("squelch", "Squelch Level",
-                          RadioSettingValueInteger(0, 9, _settings.squelch)))
+                         RadioSettingValueInteger(0, 9, _settings.squelch)))
 
         group.append(
             RadioSetting("vox_level", "VOX Level",
