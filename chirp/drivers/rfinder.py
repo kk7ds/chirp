@@ -18,7 +18,6 @@ import hashlib
 import re
 
 from math import pi, cos, acos, sin, atan2
-
 from chirp import chirp_common, CHIRP_VERSION
 
 EARTH_RADIUS = 3963.1
@@ -47,17 +46,21 @@ SCHEMA = [
     "DOC_ID",
     ]
 
+
 def deg2rad(deg):
     """Convert degrees to radians"""
     return deg * (pi / 180)
+
 
 def rad2deg(rad):
     """Convert radians to degrees"""
     return rad / (pi / 180)
 
+
 def dm2deg(degrees, minutes):
     """Convert degrees and minutes to decimal degrees"""
     return degrees + (minutes / 60.0)
+
 
 def deg2dm(decdeg):
     """Convert decimal degrees to degrees and minutes"""
@@ -65,6 +68,7 @@ def deg2dm(decdeg):
     minutes = (decdeg - degrees) * 60.0
 
     return degrees, minutes
+
 
 def nmea2deg(nmea, direction="N"):
     """Convert NMEA-encoded value to float"""
@@ -81,35 +85,37 @@ def nmea2deg(nmea, direction="N"):
 
     return dm2deg(deg, minutes) * sign
 
+
 def deg2nmea(deg):
     """Convert degrees to a NMEA-encoded value"""
     degrees, minutes = deg2dm(deg)
 
     return (degrees * 100) + minutes
 
+
 def meters2feet(meters):
     """Convert meters to feet"""
     return meters * 3.2808399
+
 
 def feet2meters(feet):
     """Convert feet to meters"""
     return feet * 0.3048
 
+
 def distance(lat_a, lon_a, lat_b, lon_b):
     """Calculate the distance between two points"""
     lat_a = deg2rad(lat_a)
     lon_a = deg2rad(lon_a)
-    
+
     lat_b = deg2rad(lat_b)
     lon_b = deg2rad(lon_b)
-    
+
     earth_radius = EARTH_RADIUS
-    
-    tmp = (cos(lat_a) * cos(lon_a) * \
-               cos(lat_b) * cos(lon_b)) + \
-               (cos(lat_a) * sin(lon_a) * \
-                    cos(lat_b) * sin(lon_b)) + \
-                    (sin(lat_a) * sin(lat_b))
+
+    tmp = (cos(lat_a) * cos(lon_a) * cos(lat_b) * cos(lon_b)) + \
+          (cos(lat_a) * sin(lon_a) * cos(lat_b) * sin(lon_b)) + \
+          (sin(lat_a) * sin(lat_b))
 
     # Correct round-off error (which is just *silly*)
     if tmp > 1:
@@ -120,6 +126,7 @@ def distance(lat_a, lon_a, lat_b, lon_b):
     dist = acos(tmp)
 
     return dist * earth_radius
+
 
 def bearing(lat_a, lon_a, lat_b, lon_b):
     """Calculate the bearing between two points"""
@@ -134,6 +141,7 @@ def bearing(lat_a, lon_a, lat_b, lon_b):
     bear = rad2deg(atan2(posy, posx))
 
     return (bear + 360) % 360
+
 
 def fuzzy_to(lat_a, lon_a, lat_b, lon_b):
     """Calculate a fuzzy distance to a point"""
@@ -155,6 +163,7 @@ def fuzzy_to(lat_a, lon_a, lat_b, lon_b):
 
     return direction
 
+
 class RFinderParser:
     """Parser for RFinder's data format"""
     def __init__(self, lat, lon):
@@ -168,18 +177,18 @@ class RFinderParser:
         print user
         print pw
         args = {
-            "email"  : urllib.quote_plus(user),
-            "pass"  : hashlib.new("md5", pw).hexdigest(),
-            "lat"   : "%7.5f" % coords[0],
-            "lon"   : "%7.5f" % coords[1],
+            "email": urllib.quote_plus(user),
+            "pass": hashlib.new("md5", pw).hexdigest(),
+            "lat": "%7.5f" % coords[0],
+            "lon": "%7.5f" % coords[1],
             "radius": "%i" % radius,
-            "vers"  : "CH%s" % CHIRP_VERSION,
+            "vers": "CH%s" % CHIRP_VERSION,
             }
 
-        _url = "https://www.rfinder.net/query.php?%s" % (\
-            "&".join(["%s=%s" % (k,v) for k,v in args.items()]))
+        _url = "https://www.rfinder.net/query.php?%s" % \
+               ("&".join(["%s=%s" % (k, v) for k, v in args.items()]))
 
-        print "Query URL: %s" % _url    
+        print "Query URL: %s" % _url
 
         f = urllib.urlopen(_url)
         data = f.read()
@@ -247,7 +256,8 @@ class RFinderParser:
                 number += 1
                 self.__memories.append(mem)
             except Exception, e:
-                import traceback, sys
+                import traceback
+                import sys
                 traceback.print_exc(file=sys.stdout)
                 print "Error in received data, cannot continue"
                 print e
@@ -259,6 +269,7 @@ class RFinderParser:
         """Return the Memory objects associated with the fetched data"""
         return self.__memories
 
+
 class RFinderRadio(chirp_common.NetworkSourceRadio):
     """A network source radio that supports the RFinder repeater directory"""
     VENDOR = "ITWeRKS"
@@ -266,13 +277,13 @@ class RFinderRadio(chirp_common.NetworkSourceRadio):
 
     def __init__(self, *args, **kwargs):
         chirp_common.NetworkSourceRadio.__init__(self, *args, **kwargs)
-       
+
         self._lat = 0
         self._lon = 0
         self._user = ""
         self._pass = ""
         self._miles = 25
- 
+
         self._rfp = None
 
     def set_params(self, (lat, lon), miles, email, password):
@@ -290,7 +301,7 @@ class RFinderRadio(chirp_common.NetworkSourceRadio):
                                                   self._pass,
                                                   (self._lat, self._lon),
                                                   self._miles))
-        
+
     def get_features(self):
         if not self._rfp:
             self.do_fetch()
@@ -308,6 +319,7 @@ class RFinderRadio(chirp_common.NetworkSourceRadio):
             self.do_fetch()
 
         return self._rfp.get_memories()[number-1]
+
 
 def _test():
     rfp = RFinderParser()
