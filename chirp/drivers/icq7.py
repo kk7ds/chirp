@@ -74,10 +74,10 @@ u8 lockgroup;
 
 """
 
-TMODES = ["", "", "Tone", "TSQL", "TSQL"] # last one is pocket beep
+TMODES = ["", "", "Tone", "TSQL", "TSQL"]  # last one is pocket beep
 DUPLEX = ["", "", "-", "+"]
-MODES  = ["FM", "WFM", "AM", "Auto"]
-STEPS =  [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+MODES = ["FM", "WFM", "AM", "Auto"]
+STEPS = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 AUTORP_LIST = ["Off", "Duplex Only", "Duplex and Tone"]
 LOCKGROUP_LIST = ["Normal", "No Squelch", "No Volume", "All"]
 SQUELCH_LIST = ["Open", "Auto"] + ["L%s" % x for x in range(1, 10)]
@@ -90,6 +90,7 @@ PAUSE_LIST = ["%s sec" % x for x in range(2, 22, 2)] + ["Hold"]
 RESUME_LIST = ["%s sec" % x for x in range(0, 6)]
 APOFF_LIST = ["Off"] + ["%s min" % x for x in range(30, 150, 30)]
 D_SEL_LIST = ["100 KHz", "1 MHz", "10 MHz"]
+
 
 @directory.register
 class ICQ7Radio(icf.IcomCloneModeRadio):
@@ -111,8 +112,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
-        rf.valid_bands = [(  1000000,  823995000),
-                          (849000000,  868995000),
+        rf.valid_bands = [(1000000,   823995000),
+                          (849000000, 868995000),
                           (894000000, 1309995000)]
         rf.valid_skips = ["", "S", "P"]
         rf.has_dtcs = False
@@ -170,12 +171,12 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number]
         _flag = self._memobj.flags[mem.number]
-        
+
         if mem.empty:
             self._memobj.flags_whole[mem.number] = 0xFF
             return
-            
-        _mem.set_raw("\x00" * 8)    
+
+        _mem.set_raw("\x00" * 8)
 
         if mem.freq > to_GHz(1):
             _mem.freq = (mem.freq / 1000) - to_GHz(1)
@@ -213,8 +214,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("autorp", "Auto Repeater Function",
-                          RadioSettingValueList(AUTORP_LIST,
-                              AUTORP_LIST[_settings.autorp]))
+                          RadioSettingValueList(
+                              AUTORP_LIST, AUTORP_LIST[_settings.autorp]))
         basic.append(rs)
 
         rs = RadioSetting("ritfunct", "RIT Runction",
@@ -230,27 +231,30 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("lockgroup", "Lock Group",
-                          RadioSettingValueList(LOCKGROUP_LIST,
+                          RadioSettingValueList(
+                              LOCKGROUP_LIST,
                               LOCKGROUP_LIST[_settings.lockgroup]))
         basic.append(rs)
 
         rs = RadioSetting("squelch", "Squelch",
-                          RadioSettingValueList(SQUELCH_LIST,
-                              SQUELCH_LIST[_settings.squelch]))
+                          RadioSettingValueList(
+                              SQUELCH_LIST, SQUELCH_LIST[_settings.squelch]))
         basic.append(rs)
 
         rs = RadioSetting("monitor", "Monitor Switch Function",
-                          RadioSettingValueList(MONITOR_LIST,
+                          RadioSettingValueList(
+                              MONITOR_LIST,
                               MONITOR_LIST[_settings.monitor]))
         basic.append(rs)
 
         rs = RadioSetting("light", "Display Backlighting",
-                          RadioSettingValueList(LIGHT_LIST,
-                              LIGHT_LIST[_settings.light]))
+                          RadioSettingValueList(
+                              LIGHT_LIST, LIGHT_LIST[_settings.light]))
         basic.append(rs)
 
         rs = RadioSetting("priority", "Priority Watch Operation",
-                          RadioSettingValueList(PRIORITY_LIST,
+                          RadioSettingValueList(
+                              PRIORITY_LIST,
                               PRIORITY_LIST[_settings.priority]))
         basic.append(rs)
 
@@ -259,23 +263,24 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("bnk_scan", "Memory Bank Scan Selection",
-                          RadioSettingValueList(BANKSCAN_LIST,
+                          RadioSettingValueList(
+                              BANKSCAN_LIST,
                               BANKSCAN_LIST[_settings.bnk_scan]))
         basic.append(rs)
 
         rs = RadioSetting("edge", "Band Edge Scan Selection",
-                          RadioSettingValueList(EDGE_LIST,
-                              EDGE_LIST[_settings.edge]))
+                          RadioSettingValueList(
+                              EDGE_LIST, EDGE_LIST[_settings.edge]))
         basic.append(rs)
 
         rs = RadioSetting("pause", "Scan Pause Time",
-                          RadioSettingValueList(PAUSE_LIST,
-                              PAUSE_LIST[_settings.pause]))
+                          RadioSettingValueList(
+                              PAUSE_LIST, PAUSE_LIST[_settings.pause]))
         basic.append(rs)
 
         rs = RadioSetting("resume", "Scan Resume Time",
-                          RadioSettingValueList(RESUME_LIST,
-                              RESUME_LIST[_settings.resume]))
+                          RadioSettingValueList(
+                              RESUME_LIST, RESUME_LIST[_settings.resume]))
         basic.append(rs)
 
         rs = RadioSetting("p_save", "Power Saver",
@@ -283,8 +288,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("ap_off", "Auto Power-off Function",
-                          RadioSettingValueList(APOFF_LIST,
-                              APOFF_LIST[_settings.ap_off]))
+                          RadioSettingValueList(
+                              APOFF_LIST, APOFF_LIST[_settings.ap_off]))
         basic.append(rs)
 
         rs = RadioSetting("speed", "Dial Speed Acceleration",
@@ -292,8 +297,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         basic.append(rs)
 
         rs = RadioSetting("d_sel", "Dial Select Step",
-                          RadioSettingValueList(D_SEL_LIST,
-                              D_SEL_LIST[_settings.d_sel]))
+                          RadioSettingValueList(
+                              D_SEL_LIST, D_SEL_LIST[_settings.d_sel]))
         basic.append(rs)
 
         return group
@@ -331,4 +336,3 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
                 except Exception, e:
                     print element.get_name()
                     raise
-
