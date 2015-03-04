@@ -85,15 +85,17 @@ _TMODES = ["", "Tone", "TSQL", "-RVT", "DTCS", "-PR", "-PAG"]
 TMODES = ["", "Tone", "TSQL", "", "DTCS", "", ""]
 MODES = ["FM", "AM", "NFM", "", "WFM"]
 DUPLEXES = ["", "", "-", "+", "split"]
-#TODO: add japaneese characters (viewable in special menu, scroll backwards)
-CHARSET = ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
-           '#$%&`()*+,-./:;<=>?@[\\]^_`{|}~?????? ' + '?' * 91)
+# TODO: add japaneese characters (viewable in special menu, scroll backwards)
+CHARSET = \
+    ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
+     '#$%&`()*+,-./:;<=>?@[\\]^_`{|}~?????? ' + '?' * 91)
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=50),
                 chirp_common.PowerLevel("Mid", watts=20),
                 chirp_common.PowerLevel("Low", watts=5)]
 
 SKIPS = ["", "S", "P"]
+
 
 def aprs_call_to_str(_call):
     call = ""
@@ -103,11 +105,13 @@ def aprs_call_to_str(_call):
         call += i
     return call
 
+
 def _safe_read(radio, length):
     data = ""
     while len(data) < length:
         data += radio.pipe.read(length - len(data))
     return data
+
 
 def _clone_in(radio):
     data = ""
@@ -145,7 +149,8 @@ def _clone_in(radio):
             time.sleep(0.05)
 
             if (last_addr + 128) != addr:
-                LOG.debug("Gap, expecting %04x, got %04x" % (last_addr+128, addr))
+                LOG.debug("Gap, expecting %04x, got %04x" %
+                          (last_addr+128, addr))
             last_addr = addr
             data[addr] = block
             length += len(block)
@@ -157,6 +162,7 @@ def _clone_in(radio):
         radio.status_fn(status)
 
     return data
+
 
 def _clone_out(radio):
     radio.pipe.setTimeout(1)
@@ -190,6 +196,7 @@ def _clone_out(radio):
             status.msg = "Cloning to radio"
             radio.status_fn(status)
 
+
 def get_freq(rawfreq):
     """Decode a frequency that may include a fractional step flag"""
     # Ugh.  The 0x80 and 0x40 indicate values to add to get the
@@ -204,6 +211,7 @@ def get_freq(rawfreq):
         rawfreq = (rawfreq - 2000000000) + 1250
 
     return rawfreq
+
 
 def set_freq(freq, obj, field):
     """Encode a frequency with any necessary fractional step flags"""
@@ -224,6 +232,7 @@ def set_freq(freq, obj, field):
 
     return freq
 
+
 @directory.register
 class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FTM-350"""
@@ -243,7 +252,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_tuning_step = False
         rf.has_dtcs_polarity = False
         rf.has_sub_devices = self.VARIANT == ""
-        rf.valid_skips = [] # FIXME: Finish this
+        rf.valid_skips = []  # FIXME: Finish this
         rf.valid_tmodes = [""] + [x for x in TMODES if x]
         rf.valid_modes = [x for x in MODES if x]
         rf.valid_duplexes = DUPLEXES
@@ -252,8 +261,8 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_characters = CHARSET
         rf.memory_bounds = (0, 500)
         rf.valid_power_levels = POWER_LEVELS
-        rf.valid_bands = [(  500000,    1800000),
-                          (76000000,  250000000),
+        rf.valid_bands = [(500000,   1800000),
+                          (76000000, 250000000),
                           (30000000, 1000000000)]
         rf.can_odd_split = True
         return rf
@@ -282,13 +291,20 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
+
+        def identity(o):
+            return o
+
+        def indexed(o):
+            return o[number - 1]
+
         if number == 0:
             suffix = "_zero"
-            fn = lambda o: o
+            fn = identity
         else:
             suffix = ""
-            fn = lambda o: o[number - 1]
-        return (repr(fn(self._memory_obj(suffix))) + 
+            fn = indexed
+        return (repr(fn(self._memory_obj(suffix))) +
                 repr(fn(self._label_obj(suffix))))
 
     def _memory_obj(self, suffix=""):
@@ -318,7 +334,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
         if _mem.oddsplit:
             mem.duplex = "split"
             mem.offset = get_freq(int(_mem.split) * 10000)
-        else: 
+        else:
             mem.duplex = DUPLEXES[_mem.duplex]
             mem.offset = int(_mem.offset) * 50000
 
@@ -417,6 +433,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
 class FTM350RadioLeft(FTM350Radio):
     VARIANT = "Left"
     _vfo = "left"
+
 
 class FTM350RadioRight(FTM350Radio):
     VARIANT = "Right"
