@@ -44,7 +44,7 @@ struct {
 
 #seekto 0x04bf;
 struct {
-  u8 beep; 
+  u8 beep;
 } beep_select;
 
 #seekto 0x04cc;
@@ -326,17 +326,17 @@ u8 checksum;
 
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM"]
+MODES = ["FM", "AM", "WFM"]
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(30.0)
 STEPS.append(100.0)
-STEPS.insert(2, 0.0) # There is a skipped tuning step at index 2 (?)
+STEPS.insert(2, 0.0)  # There is a skipped tuning step at index 2 (?)
 SKIPS = ["", "S", "P"]
 VX8_DTMF_CHARS = list("0123456789ABCD*#-")
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
-    [" ",] + \
+    [" "] + \
     [chr(x) for x in range(ord("a"), ord("z")+1)] + \
     list(".,:;*#_-/&()@!?^ ") + list("\x00" * 100)
 
@@ -345,13 +345,14 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
+
 class VX8Bank(chirp_common.NamedBank):
     """A VX-8 bank"""
 
     def get_name(self):
         _bank = self._model._radio._memobj.bank_info[self.index]
         _bank_used = self._model._radio._memobj.bank_used[self.index]
-                      
+
         name = ""
         for i in _bank.name:
             if i == 0xFF:
@@ -362,6 +363,7 @@ class VX8Bank(chirp_common.NamedBank):
     def set_name(self, name):
         _bank = self._model._radio._memobj.bank_info[self.index]
         _bank.name = [CHARSET.index(x) for x in name.ljust(16)[:16]]
+
 
 class VX8BankModel(chirp_common.BankModel):
     """A VX-8 bank model"""
@@ -408,28 +410,28 @@ class VX8BankModel(chirp_common.BankModel):
                 break
 
         for vfo_index in (0, 1):
-          # 3 VFO info structs are stored as 3 pairs of (master, backup)
-          vfo = self._radio._memobj.vfo_info[vfo_index * 2]
-          vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
+            # 3 VFO info structs are stored as 3 pairs of (master, backup)
+            vfo = self._radio._memobj.vfo_info[vfo_index * 2]
+            vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
 
-          if vfo.checksum != vfo_bak.checksum:
-              print "Warning: VFO settings are inconsistent with backup"
-          else:
-              if ((chosen_bank[vfo_index] is None) and
-                  (vfo.bank_index != 0xFFFF)):
-                  print "Disabling banks for VFO %d" % vfo_index
-                  vfo.bank_index = 0xFFFF
-                  vfo.mr_index = 0xFFFF
-                  vfo.bank_enable = 0xFFFF
-              elif ((chosen_bank[vfo_index] is not None) and
-                  (vfo.bank_index == 0xFFFF)):
-                  print "Enabling banks for VFO %d" % vfo_index
-                  vfo.bank_index = chosen_bank[vfo_index]
-                  vfo.mr_index = chosen_mr[vfo_index]
-                  vfo.bank_enable = 0x0000
-              vfo_bak.bank_index = vfo.bank_index
-              vfo_bak.mr_index = vfo.mr_index
-              vfo_bak.bank_enable = vfo.bank_enable
+            if vfo.checksum != vfo_bak.checksum:
+                print "Warning: VFO settings are inconsistent with backup"
+            else:
+                if ((chosen_bank[vfo_index] is None) and
+                        (vfo.bank_index != 0xFFFF)):
+                    print "Disabling banks for VFO %d" % vfo_index
+                    vfo.bank_index = 0xFFFF
+                    vfo.mr_index = 0xFFFF
+                    vfo.bank_enable = 0xFFFF
+                elif ((chosen_bank[vfo_index] is not None) and
+                        (vfo.bank_index == 0xFFFF)):
+                    print "Enabling banks for VFO %d" % vfo_index
+                    vfo.bank_index = chosen_bank[vfo_index]
+                    vfo.mr_index = chosen_mr[vfo_index]
+                    vfo.bank_enable = 0x0000
+                vfo_bak.bank_index = vfo.bank_index
+                vfo_bak.mr_index = vfo.mr_index
+                vfo_bak.bank_enable = vfo.bank_enable
 
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
         _members = self._radio._memobj.bank_members[bank.index]
@@ -458,7 +460,7 @@ class VX8BankModel(chirp_common.BankModel):
         try:
             channels_in_bank.remove(memory.number)
         except KeyError:
-            raise Exception("Memory %i is not in bank %s. Cannot remove" % \
+            raise Exception("Memory %i is not in bank %s. Cannot remove" %
                             (memory.number, bank))
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
@@ -483,9 +485,11 @@ class VX8BankModel(chirp_common.BankModel):
 
         return banks
 
+
 def _wipe_memory(mem):
     mem.set_raw("\x00" * (mem.size() / 8))
     mem.unknown1 = 0x05
+
 
 @directory.register
 class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -497,13 +501,13 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _model = "AH029"
     _memsize = 65227
-    _block_lengths = [ 10, 65217 ]
+    _block_lengths = [10, 65217]
     _block_size = 32
-    _mem_params = (0xC24A, # APRS beacon metadata address.
-                   40,     # Number of beacons stored.
-                   0xC60A, # APRS beacon content address.
-                   194,    # Length of beacon data stored.
-                   40)     # Number of beacons stored.
+    _mem_params = (0xC24A,  # APRS beacon metadata address.
+                   40,      # Number of beacons stored.
+                   0xC60A,  # APRS beacon content address.
+                   194,     # Length of beacon data stored.
+                   40)      # Number of beacons stored.
     _has_vibrate = False
     _has_af_dual = True
 
@@ -511,17 +515,17 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to DATA jack.
-            3. Press and hold in the [FW] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+1. Turn radio off.
+2. Connect cable to DATA jack.
+3. Press and hold in the [FW] key while turning the radio on
+     ("CLONE" will appear on the display).
+4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
         rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to DATA jack.
-            3. Press and hold in the [FW] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. Press the [MODE] key ("-WAIT-" will appear on the LCD)."""))
+1. Turn radio off.
+2. Connect cable to DATA jack.
+3. Press and hold in the [FW] key while turning the radio on
+     ("CLONE" will appear on the display).
+4. Press the [MODE] key ("-WAIT-" will appear on the LCD)."""))
         return rp
 
     def process_mmap(self):
@@ -549,11 +553,11 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x064A, 0x06C8),
-                 yaesu_clone.YaesuChecksum(0x06CA, 0x0748),
-                 yaesu_clone.YaesuChecksum(0x074A, 0x07C8),
-                 yaesu_clone.YaesuChecksum(0x07CA, 0x0848),
-                 yaesu_clone.YaesuChecksum(0x0000, 0xFEC9) ]
+        return [yaesu_clone.YaesuChecksum(0x064A, 0x06C8),
+                yaesu_clone.YaesuChecksum(0x06CA, 0x0748),
+                yaesu_clone.YaesuChecksum(0x074A, 0x07C8),
+                yaesu_clone.YaesuChecksum(0x07CA, 0x0848),
+                yaesu_clone.YaesuChecksum(0x0000, 0xFEC9)]
 
     @staticmethod
     def _add_ff_pad(val, length):
@@ -621,9 +625,9 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.freq < 30000000 or \
                 (mem.freq > 88000000 and mem.freq < 108000000) or \
                 mem.freq > 580000000:
-            flag.nosubvfo = True  # Masked from VFO B
+            flag.nosubvfo = True   # Masked from VFO B
         else:
-            flag.nosubvfo = False # Available in both VFOs
+            flag.nosubvfo = False  # Available in both VFOs
 
         _mem.freq = int(mem.freq / 1000)
         _mem.offset = int(mem.offset / 1000)
@@ -650,19 +654,20 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_bank_model(self):
         return VX8BankModel(self)
 
+
 @directory.register
 class VX8DRadio(VX8Radio):
     """Yaesu VX-8DR"""
     _model = "AH29D"
-    _mem_params = (0xC24A, # APRS beacon metadata address.
-                   50,     # Number of beacons stored.
-                   0xC6FA, # APRS beacon content address.
-                   146,    # Length of beacon data stored.
-                   50)     # Number of beacons stored.
+    _mem_params = (0xC24A,  # APRS beacon metadata address.
+                   50,      # Number of beacons stored.
+                   0xC6FA,  # APRS beacon content address.
+                   146,     # Length of beacon data stored.
+                   50)      # Number of beacons stored.
     VARIANT = "DR"
 
     _SG_RE = re.compile(r"(?P<sign>[-+NESW]?)(?P<d>[\d]+)[\s\.,]*"
-                         "(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
+                        "(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
 
     _RX_BAUD = ("off", "1200 baud", "9600 baud")
     _TX_DELAY = ("100ms", "150ms", "200ms", "250ms", "300ms",
@@ -708,16 +713,17 @@ class VX8DRadio(VX8Radio):
               "every 5 minutes", "every 6 minutes", "every 7 minutes",
               "every 8 minutes", "every 9 minutes", "every 10 minutes")
     _BEEP_SELECT = ("Off", "Key+Scan", "Key")
-    _SQUELCH = ["%d" % x for x in range (0,16)]
-    _VOLUME = ["%d" % x for x in range (0,33)]
+    _SQUELCH = ["%d" % x for x in range(0, 16)]
+    _VOLUME = ["%d" % x for x in range(0, 33)]
     _OPENING_MESSAGE = ("Off", "DC", "Message", "Normal")
-    _SCAN_RESUME = ["%.1fs" % (0.5 * x) for x in range(4,21)] + \
+    _SCAN_RESUME = ["%.1fs" % (0.5 * x) for x in range(4, 21)] + \
                    ["Busy", "Hold"]
-    _SCAN_RESTART = ["%.1fs" % (0.1 * x) for x in range(1,10)] + \
-                    ["%.1fs" % (0.5 * x) for x in range(2,21)]
-    _LAMP_KEY = ["Key %d sec" % x for x in range(2,11)] + ["Continuous", "OFF"]
-    _LCD_CONTRAST = ["Level %d" % x for x in range(1,16)]
-    _LCD_DIMMER = ["Level %d" % x for x in range(1,5)]
+    _SCAN_RESTART = ["%.1fs" % (0.1 * x) for x in range(1, 10)] + \
+                    ["%.1fs" % (0.5 * x) for x in range(2, 21)]
+    _LAMP_KEY = ["Key %d sec" % x for x in range(2, 11)] + \
+                ["Continuous", "OFF"]
+    _LCD_CONTRAST = ["Level %d" % x for x in range(1, 16)]
+    _LCD_DIMMER = ["Level %d" % x for x in range(1, 5)]
     _TOT_TIME = ["Off"] + ["%.1f min" % (0.5 * x) for x in range(1, 21)]
     _OFF_ON = ("Off", "On")
     _VOL_MODE = ("Normal", "Auto Back")
@@ -811,8 +817,8 @@ class VX8DRadio(VX8Radio):
         menu = RadioSettingGroup("aprs_general", "APRS General")
         aprs = self._memobj.aprs
 
-        val = RadioSettingValueString(0, 6,
-            str(aprs.my_callsign.callsign).rstrip("\xFF"))
+        val = RadioSettingValueString(
+                0, 6, str(aprs.my_callsign.callsign).rstrip("\xFF"))
         rs = RadioSetting("aprs.my_callsign.callsign", "My Callsign", val)
         rs.set_apply_callback(self.apply_callsign, aprs.my_callsign)
         menu.append(rs)
@@ -831,8 +837,8 @@ class VX8DRadio(VX8Radio):
         symbols = list(chirp_common.APRS_SYMBOLS)
         selected = aprs.custom_symbol
         if aprs.custom_symbol >= len(chirp_common.APRS_SYMBOLS):
-          symbols.append("%d" % aprs.custom_symbol)
-          selected = len(symbols) - 1
+            symbols.append("%d" % aprs.custom_symbol)
+            selected = len(symbols) - 1
         val = RadioSettingValueList(symbols, symbols[selected])
         rs = RadioSetting("aprs.custom_symbol_text", "User Selected Symbol",
                           val)
@@ -861,8 +867,8 @@ class VX8DRadio(VX8Radio):
         # TODO: Rebuild this when latitude/longitude change.
         # TODO: Add saved positions p1 - p10 to memory map.
         position_str = list(self._POSITIONS)
-        #position_str[1] = "%s %s" % (latitude, longitude)
-        #position_str[2] = "%s %s" % (latitude, longitude)
+        # position_str[1] = "%s %s" % (latitude, longitude)
+        # position_str[2] = "%s %s" % (latitude, longitude)
         val = RadioSettingValueList(position_str,
                                     position_str[aprs.selected_position])
         rs = RadioSetting("aprs.selected_position", "My Position", val)
@@ -878,8 +884,8 @@ class VX8DRadio(VX8Radio):
         rs.set_apply_callback(self.apply_lat_long, aprs)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._TIME_SOURCE,
-            self._TIME_SOURCE[aprs.set_time_manually])
+        val = RadioSettingValueList(
+                self._TIME_SOURCE, self._TIME_SOURCE[aprs.set_time_manually])
         rs = RadioSetting("aprs.set_time_manually", "Time Source", val)
         menu.append(rs)
 
@@ -887,59 +893,62 @@ class VX8DRadio(VX8Radio):
         rs = RadioSetting("aprs.timezone", "Timezone", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._SPEED_UNITS,
-                                    self._SPEED_UNITS[aprs.aprs_units_speed])
+        val = RadioSettingValueList(
+                self._SPEED_UNITS, self._SPEED_UNITS[aprs.aprs_units_speed])
         rs = RadioSetting("aprs.aprs_units_speed", "APRS Speed Units", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._SPEED_UNITS,
-                                    self._SPEED_UNITS[aprs.gps_units_speed])
+        val = RadioSettingValueList(
+                self._SPEED_UNITS, self._SPEED_UNITS[aprs.gps_units_speed])
         rs = RadioSetting("aprs.gps_units_speed", "GPS Speed Units", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._ALT_UNITS,
-            self._ALT_UNITS[aprs.aprs_units_altitude_ft])
+        val = RadioSettingValueList(
+                self._ALT_UNITS, self._ALT_UNITS[aprs.aprs_units_altitude_ft])
         rs = RadioSetting("aprs.aprs_units_altitude_ft", "APRS Altitude Units",
                           val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._ALT_UNITS,
-            self._ALT_UNITS[aprs.gps_units_altitude_ft])
+        val = RadioSettingValueList(
+                self._ALT_UNITS, self._ALT_UNITS[aprs.gps_units_altitude_ft])
         rs = RadioSetting("aprs.gps_units_altitude_ft", "GPS Altitude Units",
                           val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._POS_UNITS,
-            self._POS_UNITS[aprs.aprs_units_position_mmss])
+        val = RadioSettingValueList(
+                self._POS_UNITS,
+                self._POS_UNITS[aprs.aprs_units_position_mmss])
         rs = RadioSetting("aprs.aprs_units_position_mmss",
                           "APRS Position Format", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._POS_UNITS,
-            self._POS_UNITS[aprs.gps_units_position_sss])
+        val = RadioSettingValueList(
+                self._POS_UNITS, self._POS_UNITS[aprs.gps_units_position_sss])
         rs = RadioSetting("aprs.gps_units_position_sss",
                           "GPS Position Format", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._DIST_UNITS,
-            self._DIST_UNITS[aprs.aprs_units_distance_m])
+        val = RadioSettingValueList(
+                self._DIST_UNITS,
+                self._DIST_UNITS[aprs.aprs_units_distance_m])
         rs = RadioSetting("aprs.aprs_units_distance_m", "APRS Distance Units",
                           val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._WIND_UNITS,
-                                    self._WIND_UNITS[aprs.aprs_units_wind_mph])
+        val = RadioSettingValueList(
+                self._WIND_UNITS, self._WIND_UNITS[aprs.aprs_units_wind_mph])
         rs = RadioSetting("aprs.aprs_units_wind_mph", "APRS Wind Speed Units",
                           val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._RAIN_UNITS,
-            self._RAIN_UNITS[aprs.aprs_units_rain_inch])
+        val = RadioSettingValueList(
+                self._RAIN_UNITS, self._RAIN_UNITS[aprs.aprs_units_rain_inch])
         rs = RadioSetting("aprs.aprs_units_rain_inch", "APRS Rain Units", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._TEMP_UNITS,
-            self._TEMP_UNITS[aprs.aprs_units_temperature_f])
+        val = RadioSettingValueList(
+                self._TEMP_UNITS,
+                self._TEMP_UNITS[aprs.aprs_units_temperature_f])
         rs = RadioSetting("aprs.aprs_units_temperature_f",
                           "APRS Temperature Units", val)
         menu.append(rs)
@@ -1060,20 +1069,20 @@ class VX8DRadio(VX8Radio):
         menu = RadioSettingGroup("aprs_tx", "APRS Transmit")
         aprs = self._memobj.aprs
 
-        beacon_type = (aprs.tx_smartbeacon << 1) | aprs.tx_interval_beacon;
-        val = RadioSettingValueList(self._BEACON_TYPE,
-                                    self._BEACON_TYPE[beacon_type])
+        beacon_type = (aprs.tx_smartbeacon << 1) | aprs.tx_interval_beacon
+        val = RadioSettingValueList(
+                self._BEACON_TYPE, self._BEACON_TYPE[beacon_type])
         rs = RadioSetting("aprs.transmit", "TX Beacons", val)
         rs.set_apply_callback(self.apply_beacon_type, aprs)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._TX_DELAY,
-                                    self._TX_DELAY[aprs.tx_delay])
+        val = RadioSettingValueList(
+                self._TX_DELAY, self._TX_DELAY[aprs.tx_delay])
         rs = RadioSetting("aprs.tx_delay", "TX Delay", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._BEACON_INT,
-                                    self._BEACON_INT[aprs.beacon_interval])
+        val = RadioSettingValueList(
+                self._BEACON_INT, self._BEACON_INT[aprs.beacon_interval])
         rs = RadioSetting("aprs.beacon_interval", "Beacon Interval", val)
         menu.append(rs)
 
@@ -1137,11 +1146,11 @@ class VX8DRadio(VX8Radio):
 
         # Show friendly messages for empty slots rather than blanks.
         # TODO: Rebuild this when digi_path_[34567] change.
-        #path_str[3] = path_str[3] or self._DIGI_PATHS[3]
-        #path_str[4] = path_str[4] or self._DIGI_PATHS[4]
-        #path_str[5] = path_str[5] or self._DIGI_PATHS[5]
-        #path_str[6] = path_str[6] or self._DIGI_PATHS[6]
-        #path_str[7] = path_str[7] or self._DIGI_PATHS[7]
+        # path_str[3] = path_str[3] or self._DIGI_PATHS[3]
+        # path_str[4] = path_str[4] or self._DIGI_PATHS[4]
+        # path_str[5] = path_str[5] or self._DIGI_PATHS[5]
+        # path_str[6] = path_str[6] or self._DIGI_PATHS[6]
+        # path_str[7] = path_str[7] or self._DIGI_PATHS[7]
         path_str[3] = self._DIGI_PATHS[3]
         path_str[4] = self._DIGI_PATHS[4]
         path_str[5] = self._DIGI_PATHS[5]
@@ -1222,13 +1231,15 @@ class VX8DRadio(VX8Radio):
         val = RadioSettingValueList(
             self._DTMF_SPEED,
             self._DTMF_SPEED[dtmf.dtmf_speed])
-        rs = RadioSetting("scan_settings.dtmf_speed", "DTMF AutoDial Speed", val)
+        rs = RadioSetting("scan_settings.dtmf_speed",
+                          "DTMF AutoDial Speed", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._DTMF_DELAY,
             self._DTMF_DELAY[dtmf.dtmf_delay])
-        rs = RadioSetting("scan_settings.dtmf_delay", "DTMF AutoDial Delay", val)
+        rs = RadioSetting("scan_settings.dtmf_delay",
+                          "DTMF AutoDial Delay", val)
         menu.append(rs)
 
         for i in range(10):
@@ -1297,7 +1308,7 @@ class VX8DRadio(VX8Radio):
         val = RadioSettingValueString(0, 16, msg)
         rs = RadioSetting("opening_message.message.padded_yaesu",
                           "Opening Message", val)
-        rs.set_apply_callback(self.apply_ff_padded_yaesu, 
+        rs.set_apply_callback(self.apply_ff_padded_yaesu,
                               opening_message.message)
         menu.append(rs)
 
@@ -1537,6 +1548,7 @@ class VX8DRadio(VX8Radio):
         for x in range(len(val), 16):
             val.append(0xFF)
         cls._memobj.dtmf[i].memory = val
+
 
 @directory.register
 class VX8GERadio(VX8DRadio):
