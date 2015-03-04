@@ -1,6 +1,5 @@
 # cpep8.blacklist: The list of files that do not meet PEP8 standards.
 # DO NOT ADD NEW FILES!!  Instead, fix the code to be compliant.
 # Over time, this list should shrink and (eventually) be eliminated.
-./chirp/drivers/icw32.py
 ./chirp/drivers/icx8x.py
 ./chirp/drivers/icx8x_ll.py

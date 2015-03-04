@@ -61,12 +61,14 @@ struct {
 DUPLEX = ["", "", "-", "+"]
 TONE = ["", "", "Tone", "TSQL"]
 
+
 def _get_special():
     special = {}
     for i in range(0, 5):
         special["M%iA" % (i+1)] = 100 + i*2
         special["M%iB" % (i+1)] = 100 + i*2 + 1
-    return special            
+    return special
+
 
 @directory.register
 class ICW32ARadio(icf.IcomCloneModeRadio):
@@ -94,7 +96,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_name_length = 8
         rf.valid_special_chans = sorted(_get_special().keys())
-    
+
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_ctone = True
         rf.has_dtcs = False
@@ -187,11 +189,13 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
             return False
         return filedata[-16:] == "IcomCloneFormat3"
 
+
 class ICW32ARadioVHF(ICW32ARadio):
     """ICW32 VHF subdevice"""
     VARIANT = "VHF"
     _limits = (118000000, 174000000)
     _mem_positions = (0x0000, 0x0DC0)
+
 
 class ICW32ARadioUHF(ICW32ARadio):
     """ICW32 UHF subdevice"""
