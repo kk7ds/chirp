@@ -11,18 +11,20 @@ def staticify_chirp_module():
     import chirp
 
     with file("chirp/__init__.py", "w") as init:
+        print >>init, "CHIRP_VERSION = \"%s\"" % CHIRP_VERSION
         print >>init, "__all__ = %s\n" % str(chirp.__all__)
 
     print "Set chirp/__init__.py::__all__ = %s" % str(chirp.__all__)
 
 
 def staticify_drivers_module():
-    import chirp
+    import chirp.drivers
 
     with file("chirp/drivers/__init__.py", "w") as init:
-        print >>init, "__all__ = %s\n" % str(chirp.__all__)
+        print >>init, "__all__ = %s\n" % str(chirp.drivers.__all__)
 
-    print "Set chirp/drivers/__init__.py::__all__ = %s" % str(chirp.__all__)
+    print "Set chirp/drivers/__init__.py::__all__ = %s" % str(
+        chirp.drivers.__all__)
 
 
 def win32_build():
@@ -61,8 +63,10 @@ def win32_build():
         }
 
     mods = []
-    for mod in chirp.__all__, chirp.drivers.__all__:
+    for mod in chirp.__all__:
         mods.append("chirp.%s" % mod)
+    for mod in chirp.drivers.__all__:
+        mods.append("chirp.drivers.%s" % mod)
     opts["py2exe"]["includes"] += ("," + ",".join(mods))
 
     setup(
