@@ -90,10 +90,11 @@ struct {
 
 TMODES = ["", "Tone", "", "TSQL"]
 DUPLEX = ["", "", "+", "-"]
-STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
+STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
+
 
 def _get_special():
-    special = { "C": 506 }
+    special = {"C": 506}
     for i in range(0, 3):
         ida = "%iA" % (i + 1)
         idb = "%iB" % (i + 1)
@@ -102,6 +103,7 @@ def _get_special():
         special[idb] = num + 1
 
     return special
+
 
 def _get_freq(mem):
     freq = (int(mem.freq) * 100000) + \
@@ -122,12 +124,14 @@ def _get_freq(mem):
 
     return freq
 
+
 def _set_freq(mem, freq):
     mem.freq = freq / 100000
     mem.freq_10khz = (freq / 10000) % 10
     khz = (freq / 1000) % 10
     mem.freq_1khz = khz
     mem.is_12_5 = chirp_common.is_12_5(freq)
+
 
 def _get_offset(mem):
     raw = memmap.MemoryMap(mem.get_raw())
@@ -141,6 +145,7 @@ def _get_offset(mem):
     else:
         return int(mem.offset) * 1000
 
+
 def _set_offset(mem, offset):
     if (offset % 10) == 5000:
         extra = 0x0A
@@ -153,8 +158,10 @@ def _set_offset(mem, offset):
     raw[5] = ord(raw[5]) | extra
     mem.set_raw(raw.get_packed())
 
+
 def _wipe_memory(mem, char):
     mem.set_raw(char * (mem.size() / 8))
+
 
 @directory.register
 class IC2100Radio(icf.IcomCloneModeRadio):
@@ -227,7 +234,7 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
-        
+
         mem.extra = RadioSettingGroup("Extra", "extra")
 
         rs = RadioSetting("anm", "Alphanumeric Name",
