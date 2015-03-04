@@ -75,7 +75,7 @@ struct {
 """
 
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM", "Auto"]
+MODES = ["FM", "AM", "WFM", "Auto"]
 TMODES = ["", "Tone", "TSQL", "DTCS", "Cross"]
 CROSS_MODES = ["DTCS->", "Tone->DTCS", "DTCS->Tone"]
 STEPS = list(chirp_common.TUNING_STEPS)
@@ -99,8 +99,10 @@ POWER_LEVELS = [chirp_common.PowerLevel("L1", watts=0.05),
 POWER_LEVELS_220 = [chirp_common.PowerLevel("L1", watts=0.05),
                     chirp_common.PowerLevel("L2", watts=0.30)]
 
+
 def _is220(freq):
     return freq >= 222000000 and freq <= 225000000
+
 
 class VX7BankModel(chirp_common.BankModel):
     """A VX-7 Bank model"""
@@ -140,7 +142,7 @@ class VX7BankModel(chirp_common.BankModel):
         if not found:
             raise Exception("Memory {num} not in " +
                             "bank {bank}".format(num=memory.number,
-                                                    bank=bank))
+                                                 bank=bank))
         if not remaining_members:
             _bank_used.in_use = 0xFFFF
 
@@ -167,10 +169,12 @@ class VX7BankModel(chirp_common.BankModel):
                 banks.append(bank)
         return banks
 
+
 def _wipe_memory(mem):
     mem.set_raw("\x00" * (mem.size() / 8))
     mem.unknown1 = 0x05
     mem.ones = 0x03
+
 
 @directory.register
 class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -181,31 +185,31 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _model = ""
     _memsize = 16211
-    _block_lengths = [ 10, 8, 16193 ]
+    _block_lengths = [10, 8, 16193]
     _block_size = 8
 
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to MIC/SP jack.
-            3. Press and hold in the [MON-F] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+1. Turn radio off.
+2. Connect cable to MIC/SP jack.
+3. Press and hold in the [MON-F] key while turning the radio on
+     ("CLONE" will appear on the display).
+4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
         rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to MIC/SP jack.
-            3. Press and hold in the [MON-F] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. Press the [V/M] key ("CLONE WAIT" will appear on the LCD)."""))
+1. Turn radio off.
+2. Connect cable to MIC/SP jack.
+3. Press and hold in the [MON-F] key while turning the radio on
+     ("CLONE" will appear on the display).
+4. Press the [V/M] key ("CLONE WAIT" will appear on the LCD)."""))
         return rp
-        
+
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x0592, 0x0610),
-                 yaesu_clone.YaesuChecksum(0x0612, 0x0690),
-                 yaesu_clone.YaesuChecksum(0x0000, 0x3F51),
-                 ]
+        return [yaesu_clone.YaesuChecksum(0x0592, 0x0610),
+                yaesu_clone.YaesuChecksum(0x0612, 0x0690),
+                yaesu_clone.YaesuChecksum(0x0000, 0x3F51),
+                ]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -293,7 +297,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag = self._memobj.flags[(mem.number-1)/2]
 
         nibble = ((mem.number-1) % 2) and "even" or "odd"
-        
+
         valid = _flag["%s_valid" % nibble]
         used = _flag["%s_masked" % nibble]
 
@@ -339,14 +343,14 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
 
         for i in range(0, 8):
             _mem.name[i] = CHARSET.index(mem.name.ljust(8)[i])
-        
+
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
 
         if _is220(mem.freq):
             if str(mem.power) not in [str(l) for l in POWER_LEVELS_220]:
-                msgs.append(chirp_common.ValidationError(\
-                        "Power level %s not supported on 220MHz band" % \
+                msgs.append(chirp_common.ValidationError(
+                        "Power level %s not supported on 220MHz band" %
                             mem.power))
 
         return msgs
