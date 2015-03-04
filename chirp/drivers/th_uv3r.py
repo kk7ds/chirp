@@ -19,6 +19,7 @@ import os
 from chirp import chirp_common, bitwise, errors, directory
 from chirp.drivers.wouxun import do_download, do_upload
 
+
 def tyt_uv3r_prep(radio):
     try:
         radio.pipe.write("PROGRAMa")
@@ -28,9 +29,11 @@ def tyt_uv3r_prep(radio):
     except:
         raise errors.RadioError("Unable to communicate with the radio")
 
+
 def tyt_uv3r_download(radio):
     tyt_uv3r_prep(radio)
     return do_download(radio, 0x0000, 0x0910, 0x0010)
+
 
 def tyt_uv3r_upload(radio):
     tyt_uv3r_prep(radio)
@@ -64,6 +67,8 @@ THUV3R_CHARSET = "".join([chr(ord("0") + x) for x in range(0, 10)] +
                          [" -*+"] +
                          [chr(ord("A") + x) for x in range(0, 26)] +
                          ["_/"])
+
+
 @directory.register
 class TYTUV3RRadio(chirp_common.CloneModeRadio):
     VENDOR = "TYT"
@@ -147,7 +152,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
         if rx_mode == "Tone":
             mem.ctone = rx_tone
         elif rx_mode == "DTCS":
-            mem.dtcs = rx_tone # No support for different codes yet
+            mem.dtcs = rx_tone  # No support for different codes yet
 
     def _encode_tone(self, mem, _mem):
         if mem.tmode == "":
@@ -156,6 +161,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
 
         def _tone(val):
             return int("%i" % (val * 10), 16)
+
         def _dcs(val, pol):
             polmask = pol == "R" and 0xC000 or 0x8000
             return int("%i" % (val), 16) | polmask
@@ -185,7 +191,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
                 rx_tone = _tone(mem.ctone)
 
         _mem.rx_tone = rx_tone
-        _mem.tx_tone = tx_tone            
+        _mem.tx_tone = tx_tone
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -259,4 +265,3 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == 2320
-
