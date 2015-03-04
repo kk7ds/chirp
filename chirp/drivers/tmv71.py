@@ -16,6 +16,7 @@
 from chirp import chirp_common, errors, util
 from chirp.drivers import tmv71_ll
 
+
 class TMV71ARadio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
@@ -23,7 +24,7 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
 
     mem_upper_limit = 1022
     _memsize = 32512
-    _model = "" # FIXME: REMOVE
+    _model = ""  # FIXME: REMOVE
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -55,8 +56,8 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
             try:
                 number = tmv71_ll.V71_SPECIAL[number]
             except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % \
-                                                       number)
+                raise errors.InvalidMemoryLocation("Unknown channel %s" %
+                                                   number)
 
         return tmv71_ll.get_memory(self._mmap, number)
 
