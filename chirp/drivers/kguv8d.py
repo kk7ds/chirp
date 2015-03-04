@@ -83,14 +83,14 @@ _MEM_FORMAT = """
 
     #seekto 0x0400;
     struct {
-        char    model[8];
-        u8      unknown[2];
-        char    oem1[10];
-        char    oem2[10];
-        char    unknown2[8];
-        char    version[10];
-        u8      unknown3[6];
-        char    date[8];
+        u8     model[8];
+        u8     unknown[2];
+        u8     oem1[10];
+        u8     oem2[10];
+        u8     unknown2[8];
+        u8     version[10];
+        u8     unknown3[6];
+        u8     date[8];
     } oem_info;
 
     #seekto 0x0480;
@@ -888,27 +888,32 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #
         # OEM info
         #
-        _str = str(self._memobj.oem_info.model).split("\0")[0]
+        def _decode(lst):
+            _str = ''.join([chr(c) for c in lst
+                            if chr(c) in chirp_common.CHARSET_ASCII])
+            return _str
+
+        _str = _decode(self._memobj.oem_info.model)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
         rs = RadioSetting("model", "Model", val)
         oem_grp.append(rs)
-        _str = str(self._memobj.oem_info.oem1).split("\0")[0]
+        _str = _decode(self._memobj.oem_info.oem1)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
         rs = RadioSetting("oem1", "OEM String 1", val)
         oem_grp.append(rs)
-        _str = str(self._memobj.oem_info.oem2).split("\0")[0]
+        _str = _decode(self._memobj.oem_info.oem2)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
         rs = RadioSetting("oem2", "OEM String 2", val)
         oem_grp.append(rs)
-        _str = str(self._memobj.oem_info.version).split("\0")[0]
+        _str = _decode(self._memobj.oem_info.version)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
         rs = RadioSetting("version", "Software Version", val)
         oem_grp.append(rs)
-        _str = str(self._memobj.oem_info.date).split("\0")[0]
+        _str = _decode(self._memobj.oem_info.date)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
         rs = RadioSetting("date", "OEM Date", val)
