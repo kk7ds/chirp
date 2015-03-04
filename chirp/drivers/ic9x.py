@@ -49,6 +49,7 @@ CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
 
 LOCK = threading.Lock()
 
+
 class IC9xBank(icf.IcomNamedBank):
     """Icom 9x Bank"""
     def get_name(self):
@@ -59,6 +60,7 @@ class IC9xBank(icf.IcomNamedBank):
         banks = self._model._radio._ic9x_get_banks()
         banks[self.index] = name
         self._model._radio._ic9x_set_banks(banks)
+
 
 @directory.register
 class IC9xRadio(icf.IcomLiveRadio):
@@ -120,7 +122,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         if number < -2 or number > 999:
             raise errors.InvalidValueError("Number must be between 0 and 999")
 
-        if self.__memcache.has_key(number):
+        if number in self.__memcache:
             return self.__memcache[number]
 
         self._lock.acquire()
@@ -242,12 +244,12 @@ class IC9xRadio(icf.IcomLiveRadio):
     def _ic9x_set_banks(self, banks):
 
         if len(banks) != len(self.__bankcache.keys()):
-            raise errors.InvalidDataError("Invalid bank list length (%i:%i)" %\
-                                              (len(banks),
-                                               len(self.__bankcache.keys())))
+            raise errors.InvalidDataError("Invalid bank list length (%i:%i)" %
+                                          (len(banks),
+                                           len(self.__bankcache.keys())))
 
-        cached_names = [str(self.__bankcache[x]) \
-                            for x in sorted(self.__bankcache.keys())]
+        cached_names = [str(self.__bankcache[x])
+                        for x in sorted(self.__bankcache.keys())]
 
         need_update = False
         for i in range(0, 26):
@@ -279,6 +281,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         return rf
 
+
 class IC9xRadioA(IC9xRadio):
     """IC9x Band A subdevice"""
     VARIANT = "Band A"
@@ -300,6 +303,7 @@ class IC9xRadioA(IC9xRadio):
         rf.valid_characters = CHARSET
         rf.valid_name_length = 8
         return rf
+
 
 class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
     """IC9x Band B subdevice"""
@@ -406,6 +410,7 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
                                              self.RPTCALL_LIMIT[1],
                                              calls)
 
+
 def _test():
     import serial
     ser = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
@@ -413,6 +418,7 @@ def _test():
     print ser.get_urcall_list()
     print "-- FOO --"
     ser.set_urcall_list(["K7TAY", "FOOBAR", "BAZ"])
+
 
 if __name__ == "__main__":
     _test()
