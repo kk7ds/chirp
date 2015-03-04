@@ -23,7 +23,6 @@
 ./chirp/drivers/th_uvf8d.py
 ./chirp/drivers/tmv71.py
 ./chirp/drivers/tmv71_ll.py
-./chirp/drivers/vx2.py
 ./chirp/drivers/vx3.py
 ./chirp/drivers/vx5.py
 ./chirp/drivers/vx510.py
