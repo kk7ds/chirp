@@ -42,6 +42,7 @@ struct flags flags[100];
 DUPLEX = ["", "", "-", "+"]
 TMODES = ["", "", "Tone", "TSQL"]
 
+
 @directory.register
 class ICT8ARadio(icf.IcomCloneModeRadio):
     """Icom IC-T8A"""
