@@ -93,10 +93,10 @@ struct {
 """
 
 DUPLEX = ["", "-", "+", "split"]
-MODES  = ["FM", "AM", "WFM", "FM"] # last is auto
+MODES = ["FM", "AM", "WFM", "FM"]  # last is auto
 TMODES = ["", "Tone", "TSQL", "DTCS"]
-STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0,
-          9.0, 200.0, 5.0]  # last is auto, 9.0k and 200.0k are unadvertised
+STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0,
+         9.0, 200.0, 5.0]  # last is auto, 9.0k and 200.0k are unadvertised
 
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
@@ -109,10 +109,11 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.30)]
 POWER_LEVELS_220 = [chirp_common.PowerLevel("Hi", watts=1.50),
-                chirp_common.PowerLevel("L3", watts=1.00),
-                chirp_common.PowerLevel("L2", watts=0.50),
-                chirp_common.PowerLevel("L1", watts=0.20)]
-                
+                    chirp_common.PowerLevel("L3", watts=1.00),
+                    chirp_common.PowerLevel("L2", watts=0.50),
+                    chirp_common.PowerLevel("L1", watts=0.20)]
+
+
 class VX6Bank(chirp_common.NamedBank):
     """A VX6 Bank"""
     def get_name(self):
@@ -128,6 +129,7 @@ class VX6Bank(chirp_common.NamedBank):
         name = name.upper()
         _bank = self._model._radio._memobj.bank_names[self.index]
         _bank.name = [CHARSET.index(x) for x in name.ljust(6)[:6]]
+
 
 class VX6BankModel(chirp_common.BankModel):
     """A VX-6 bank model"""
@@ -170,25 +172,25 @@ class VX6BankModel(chirp_common.BankModel):
         channels_in_bank.add(memory.number)
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
         _bank_used = self._radio._memobj.bank_used[bank.index]
-        _bank_used.in_use = 0x0000 # enable
+        _bank_used.in_use = 0x0000  # enable
 
         # also needed for unit to recognize any banks?
         self._radio._memobj.banksoff1 = 0x0000
         self._radio._memobj.banksoff2 = 0x0000
         # TODO: turn back off (0xFFFF) when all banks are empty?
-        
+
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
         try:
             channels_in_bank.remove(memory.number)
         except KeyError:
-            raise Exception("Memory %i is not in bank %s. Cannot remove" % \
+            raise Exception("Memory %i is not in bank %s. Cannot remove" %
                             (memory.number, bank))
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
         if not channels_in_bank:
             _bank_used = self._radio._memobj.bank_used[bank.index]
-            _bank_used.in_use = 0xFFFF # disable bank
+            _bank_used.in_use = 0xFFFF  # disable bank
 
     def get_mapping_memories(self, bank):
         memories = []
@@ -204,6 +206,7 @@ class VX6BankModel(chirp_common.BankModel):
                 banks.append(bank)
 
         return banks
+
 
 @directory.register
 class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -221,21 +224,21 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to MIC/SP jack.
-            3. Press and hold in the [F/W] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
+1. Turn radio off.
+2. Connect cable to MIC/SP jack.
+3. Press and hold in the [F/W] key while turning the radio on
+     ("CLONE" will appear on the display).
+4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
         rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to MIC/SP jack.
-            3. Press and hold in the [F/W] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. Press the [V/M] key ("-WAIT-" will appear on the LCD)."""))
+1. Turn radio off.
+2. Connect cable to MIC/SP jack.
+3. Press and hold in the [F/W] key while turning the radio on
+     ("CLONE" will appear on the display).
+4. Press the [V/M] key ("-WAIT-" will appear on the LCD)."""))
         return rp
-        
+
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x0000, 0x7F49) ]
+        return [yaesu_clone.YaesuChecksum(0x0000, 0x7F49)]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -293,7 +296,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs & 0x7f]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.skip = pskip and "P" or skip and "S" or ""
-        
+
         if mem.freq > 220000000 and mem.freq < 225000000:
             mem.power = POWER_LEVELS_220[3 - _mem.power]
         else:
@@ -364,5 +367,3 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_bank_model(self):
         return VX6BankModel(self)
-
-
