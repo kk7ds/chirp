@@ -69,6 +69,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Mid", watts=1.0),
                 ]
 
+
 class ICT70Bank(icf.IcomBank):
     """ICT70 bank"""
     def get_name(self):
@@ -78,6 +79,7 @@ class ICT70Bank(icf.IcomBank):
     def set_name(self, name):
         _bank = self._model._radio._memobj.bank_names[self.index]
         _bank.name = name.ljust(6)[:6]
+
 
 @directory.register
 class ICT70Radio(icf.IcomCloneModeRadio):
@@ -93,7 +95,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
     _num_banks = 26
     _bank_class = ICT70Bank
-    
+
     def _get_bank(self, loc):
         _bank = self._memobj.banks[loc]
         if _bank.bank != 0xFF:
@@ -115,7 +117,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
     def _set_bank_index(self, loc, index):
         _bank = self._memobj.banks[loc]
         _bank.index = index
-   
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 299)
@@ -171,7 +173,7 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         mem.dtcs_polarity = DTCS_POLARITY[_mem.dtcs_polarity]
         mem.tmode = TMODES[_mem.tmode]
         mem.skip = (_psk & bit and "P") or (_skp & bit and "S") or ""
-        
+
         return mem
 
     def set_memory(self, mem):
@@ -219,4 +221,3 @@ class ICT70Radio(icf.IcomCloneModeRadio):
         else:
             _skp &= ~bit
             _psk &= ~bit
-        
