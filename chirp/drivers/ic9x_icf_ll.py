@@ -20,15 +20,16 @@ from chirp.memmap import MemoryMap
 MEM_LOC_SIZE_A = 20
 MEM_LOC_SIZE_B = MEM_LOC_SIZE_A + 1 + (3 * 8)
 
-POS_FREQ     = 0
-POS_OFFSET   = 3
-POS_TONE     = 5
-POS_MODE     = 6
-POS_DTCS     = 7
-POS_TS       = 8
-POS_DTCSPOL  = 11
-POS_DUPLEX   = 11
-POS_NAME     = 12
+POS_FREQ = 0
+POS_OFFSET = 3
+POS_TONE = 5
+POS_MODE = 6
+POS_DTCS = 7
+POS_TS = 8
+POS_DTCSPOL = 11
+POS_DUPLEX = 11
+POS_NAME = 12
+
 
 def get_mem_offset(number):
     """Get the offset into the memory map for memory @number"""
@@ -36,6 +37,7 @@ def get_mem_offset(number):
         return MEM_LOC_SIZE_A * number
     else:
         return (MEM_LOC_SIZE_A * 850) + (MEM_LOC_SIZE_B * (number - 850))
+
 
 def get_raw_memory(mmap, number):
     """Return a raw representation of memory @number"""
@@ -46,6 +48,7 @@ def get_raw_memory(mmap, number):
         size = MEM_LOC_SIZE_A
     return MemoryMap(mmap[offset:offset+size])
 
+
 def get_freq(mmap):
     """Return the memory frequency"""
     if ord(mmap[10]) & 0x10:
@@ -55,25 +58,30 @@ def get_freq(mmap):
     val, = struct.unpack(">I", "\x00" + mmap[POS_FREQ:POS_FREQ+3])
     return val * mult
 
+
 def get_offset(mmap):
     """Return the memory offset"""
     val, = struct.unpack(">H", mmap[POS_OFFSET:POS_OFFSET+2])
     return val * 5000
+
 
 def get_rtone(mmap):
     """Return the memory rtone"""
     val = (ord(mmap[POS_TONE]) & 0xFC) >> 2
     return chirp_common.TONES[val]
 
+
 def get_ctone(mmap):
     """Return the memory ctone"""
     val = (ord(mmap[POS_TONE]) & 0x03) | ((ord(mmap[POS_TONE+1]) & 0xF0) >> 4)
     return chirp_common.TONES[val]
 
+
 def get_dtcs(mmap):
     """Return the memory dtcs value"""
     val = ord(mmap[POS_DTCS]) >> 1
     return chirp_common.DTCS_CODES[val]
+
 
 def get_mode(mmap):
     """Return the memory mode"""
@@ -83,11 +91,12 @@ def get_mode(mmap):
 
     return modemap[val]
 
+
 def get_ts(mmap):
     """Return the memory tuning step"""
     val = (ord(mmap[POS_TS]) & 0xF0) >> 4
     if val == 14:
-        return 5.0 # Coerce "Auto" to 5.0
+        return 5.0  # Coerce "Auto" to 5.0
 
     icf_ts = list(chirp_common.TUNING_STEPS)
     icf_ts.insert(2, 8.33)
@@ -98,6 +107,7 @@ def get_ts(mmap):
 
     return icf_ts[val]
 
+
 def get_dtcs_polarity(mmap):
     """Return the memory dtcs polarity"""
     val = (ord(mmap[POS_DTCSPOL]) & 0x03)
@@ -105,6 +115,7 @@ def get_dtcs_polarity(mmap):
     pols = ["NN", "NR", "RN", "RR"]
 
     return pols[val]
+
 
 def get_duplex(mmap):
     """Return the memory duplex"""
@@ -114,9 +125,11 @@ def get_duplex(mmap):
 
     return dup[val]
 
+
 def get_name(mmap):
     """Return the memory name"""
     return mmap[POS_NAME:POS_NAME+8]
+
 
 def get_memory(_mmap, number):
     """Get memory @number from global memory map @_mmap"""
