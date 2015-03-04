@@ -356,7 +356,7 @@ class MemoryEditor(common.Editor):
             _("Cross Mode"): self.ed_tone_field,
             }
 
-        if cap in func:
+        if cap in funcs:
             new = funcs[cap](rend, path, new, colnum)
 
         if new is None:
