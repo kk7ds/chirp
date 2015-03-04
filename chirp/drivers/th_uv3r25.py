@@ -64,6 +64,7 @@ u8 skipflags[16];
 
 VOICE_MODE_LIST = ["Compander", "Scrambler", "None"]
 
+
 @directory.register
 class TYTUV3R25Radio(TYTUV3RRadio):
     MODEL = "TH-UV3R-25"
@@ -144,8 +145,9 @@ class TYTUV3R25Radio(TYTUV3RRadio):
         mem.extra.append(rs)
 
         rs = RadioSetting("voice_mode", "Voice Mode",
-                          RadioSettingValueList(VOICE_MODE_LIST,
-                                                VOICE_MODE_LIST[_mem.voice_mode-1]))
+                          RadioSettingValueList(
+                              VOICE_MODE_LIST,
+                              VOICE_MODE_LIST[_mem.voice_mode-1]))
         mem.extra.append(rs)
 
         return mem
@@ -201,7 +203,6 @@ class TYTUV3R25Radio(TYTUV3RRadio):
                 setattr(_mem, element.get_name(), 1 - int(element.value))
             else:
                 setattr(_mem, element.get_name(), element.value)
-
 
     @classmethod
     def match_model(cls, filedata, filename):
