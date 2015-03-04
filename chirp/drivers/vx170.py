@@ -16,7 +16,8 @@
 from chirp.drivers import yaesu_clone, ft7800
 from chirp import chirp_common, directory, memmap, bitwise, errors
 from textwrap import dedent
-import time, os
+import time
+import os
 
 MEM_FORMAT = """
 #seekto 0x018A;
@@ -79,6 +80,7 @@ struct {
 } flags[50];
 """
 
+
 @directory.register
 class VX170Radio(ft7800.FTx800Radio):
     """Yaesu VX-170"""
@@ -89,8 +91,8 @@ class VX170Radio(ft7800.FTx800Radio):
     _block_size = 32
 
     POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=5.00),
-                chirp_common.PowerLevel("Med", watts=2.00),
-                chirp_common.PowerLevel("Lo", watts=0.50)]
+                        chirp_common.PowerLevel("Med", watts=2.00),
+                        chirp_common.PowerLevel("Lo", watts=0.50)]
 
     MODES = ["FM", "NFM"]
     TMODES = ["", "Tone", "TSQL", "DTCS"]
@@ -99,23 +101,23 @@ class VX170Radio(ft7800.FTx800Radio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to MIC/SP jack.
-            3. Press and hold in the [moni] key while turning the radio on.
-            4. Select CLONE in menu, then press F. Radio restarts in clone mode.
-                 ("CLONE" will appear on the display).
-            5. <b>After clicking OK</b>, breifly hold [PTT] key to send image. 
-                ("-TX-" will appear on the LCD). """))
+1. Turn radio off.
+2. Connect cable to MIC/SP jack.
+3. Press and hold in the [moni] key while turning the radio on.
+4. Select CLONE in menu, then press F. Radio restarts in clone mode.
+     ("CLONE" will appear on the display).
+5. <b>After clicking OK</b>, breifly hold [PTT] key to send image.
+    ("-TX-" will appear on the LCD). """))
         rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            3. Press and hold in the [moni] key while turning the radio on.
-            4. Select CLONE in menu, then press F. Radio restarts in clone mode.
-                 ("CLONE" will appear on the display).
-            5. Press the [moni] key ("-RX-" will appear on the LCD)."""))
+1. Turn radio off.
+3. Press and hold in the [moni] key while turning the radio on.
+4. Select CLONE in menu, then press F. Radio restarts in clone mode.
+     ("CLONE" will appear on the display).
+5. Press the [moni] key ("-RX-" will appear on the LCD)."""))
         return rp
-        
+
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x0000, self._memsize - 2) ]
+        return [yaesu_clone.YaesuChecksum(0x0000, self._memsize - 2)]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
