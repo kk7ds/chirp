@@ -20,32 +20,32 @@ from chirp.memmap import MemoryMap
 from chirp.chirp_common import to_MHz
 
 POS_FREQ_START = 0
-POS_FREQ_END   = 2
-POS_OFFSET     = 2
+POS_FREQ_END = 2
+POS_OFFSET = 2
 POS_NAME_START = 4
-POS_NAME_END   = 9
-POS_RTONE      = 9
-POS_CTONE      = 10
-POS_DTCS       = 11
-POS_TUNE_STEP  = 17
-POS_TMODE      = 21
-POS_MODE       = 21
-POS_MULT_FLAG  = 21
-POS_DTCS_POL   = 22
-POS_DUPLEX     = 22
-POS_DIG        = 23
-POS_TXI        = 23
+POS_NAME_END = 9
+POS_RTONE = 9
+POS_CTONE = 10
+POS_DTCS = 11
+POS_TUNE_STEP = 17
+POS_TMODE = 21
+POS_MODE = 21
+POS_MULT_FLAG = 21
+POS_DTCS_POL = 22
+POS_DUPLEX = 22
+POS_DIG = 23
+POS_TXI = 23
 
-POS_FLAGS_START= 0x1370
-POS_MYCALL     = 0x15E0
-POS_URCALL     = 0x1640
-POS_RPCALL     = 0x16A0
-POS_RP2CALL    = 0x1700
+POS_FLAGS_START = 0x1370
+POS_MYCALL = 0x15E0
+POS_URCALL = 0x1640
+POS_RPCALL = 0x16A0
+POS_RP2CALL = 0x1700
 
-MEM_LOC_SIZE   = 24
+MEM_LOC_SIZE = 24
 
-ICx8x_SPECIAL = { "C" : 206 }
-ICx8x_SPECIAL_REV = { 206 : "C" }
+ICx8x_SPECIAL = {"C": 206}
+ICx8x_SPECIAL_REV = {206: "C"}
 
 for i in range(0, 3):
     idA = "%iA" % i
@@ -56,9 +56,11 @@ for i in range(0, 3):
     ICx8x_SPECIAL_REV[num] = idA
     ICx8x_SPECIAL_REV[num+1] = idB
 
+
 def bank_name(index):
     char = chr(ord("A") + index)
     return "BANK-%s" % char
+
 
 def get_freq(mmap, base):
     if (ord(mmap[POS_MULT_FLAG]) & 0x80) == 0x80:
@@ -69,6 +71,7 @@ def get_freq(mmap, base):
     val = struct.unpack("<H", mmap[POS_FREQ_START:POS_FREQ_END])[0]
 
     return (val * mult) + to_MHz(base)
+
 
 def set_freq(mmap, freq, base):
     tflag = ord(mmap[POS_MULT_FLAG]) & 0x7F
@@ -84,64 +87,77 @@ def set_freq(mmap, freq, base):
     mmap[POS_MULT_FLAG] = tflag
     mmap[POS_FREQ_START] = struct.pack("<H", value)
 
+
 def get_name(mmap):
     return mmap[POS_NAME_START:POS_NAME_END].strip()
 
+
 def set_name(mmap, name):
     mmap[POS_NAME_START] = name.ljust(5)[:5]
+
 
 def get_rtone(mmap):
     idx, = struct.unpack("B", mmap[POS_RTONE])
 
     return chirp_common.TONES[idx]
 
+
 def set_rtone(mmap, tone):
     mmap[POS_RTONE] = chirp_common.TONES.index(tone)
+
 
 def get_ctone(mmap):
     idx, = struct.unpack("B", mmap[POS_CTONE])
 
     return chirp_common.TONES[idx]
 
+
 def set_ctone(mmap, tone):
     mmap[POS_CTONE] = chirp_common.TONES.index(tone)
+
 
 def get_dtcs(mmap):
     idx, = struct.unpack("B", mmap[POS_DTCS])
 
     return chirp_common.DTCS_CODES[idx]
 
+
 def set_dtcs(mmap, code):
     mmap[POS_DTCS] = chirp_common.DTCS_CODES.index(code)
+
 
 def get_dtcs_polarity(mmap):
     val = struct.unpack("B", mmap[POS_DTCS_POL])[0] & 0xC0
 
     pol_values = {
-        0x00 : "NN",
-        0x40 : "NR",
-        0x80 : "RN",
-        0xC0 : "RR" }
+        0x00: "NN",
+        0x40: "NR",
+        0x80: "RN",
+        0xC0: "RR"}
 
     return pol_values[val]
 
+
 def set_dtcs_polarity(mmap, polarity):
     val = struct.unpack("B", mmap[POS_DTCS_POL])[0] & 0x3F
-    pol_values = { "NN" : 0x00,
-                   "NR" : 0x40,
-                   "RN" : 0x80,
-                   "RR" : 0xC0 }
+    pol_values = {"NN": 0x00,
+                  "NR": 0x40,
+                  "RN": 0x80,
+                  "RR": 0xC0}
     val |= pol_values[polarity]
 
     mmap[POS_DTCS_POL] = val
+
 
 def get_dup_offset(mmap):
     val = struct.unpack("<H", mmap[POS_OFFSET:POS_OFFSET+2])[0]
     return val * 5000
 
+
 def set_dup_offset(mmap, offset):
     val = struct.pack("<H", offset / 5000)
     mmap[POS_OFFSET] = val
+
 
 def get_duplex(mmap):
     val = struct.unpack("B", mmap[POS_DUPLEX])[0] & 0x30
@@ -153,6 +169,7 @@ def get_duplex(mmap):
     else:
         return ""
 
+
 def set_duplex(mmap, duplex):
     val = struct.unpack("B", mmap[POS_DUPLEX])[0] & 0xCF
 
@@ -162,6 +179,7 @@ def set_duplex(mmap, duplex):
         val |= 0x20
 
     mmap[POS_DUPLEX] = val
+
 
 def get_tone_enabled(mmap):
     val = struct.unpack("B", mmap[POS_TMODE])[0] & 0x03
@@ -175,6 +193,7 @@ def get_tone_enabled(mmap):
     else:
         return ""
 
+
 def set_tone_enabled(mmap, tmode):
     val = struct.unpack("B", mmap[POS_TMODE])[0] & 0xFC
 
@@ -187,6 +206,7 @@ def set_tone_enabled(mmap, tmode):
 
     mmap[POS_TMODE] = val
 
+
 def get_tune_step(mmap):
     tsidx = struct.unpack("B", mmap[POS_TUNE_STEP])[0] & 0xF0
     tsidx >>= 4
@@ -196,8 +216,9 @@ def get_tune_step(mmap):
     try:
         return icx8x_ts[tsidx]
     except IndexError:
-        raise errors.InvalidDataError("TS index %i out of range (%i)" % (tsidx,
-                                                                         len(icx8x_ts)))
+        raise errors.InvalidDataError("TS index %i out of range (%i)" %
+                                      (tsidx, len(icx8x_ts)))
+
 
 def set_tune_step(mmap, tstep):
     val = struct.unpack("B", mmap[POS_TUNE_STEP])[0] & 0x0F
@@ -207,7 +228,8 @@ def set_tune_step(mmap, tstep):
     tsidx = icx8x_ts.index(tstep)
     val |= (tsidx << 4)
 
-    mmap[POS_TUNE_STEP] = val    
+    mmap[POS_TUNE_STEP] = val
+
 
 def get_mode(mmap):
     val = struct.unpack("B", mmap[POS_DIG])[0] & 0x08
@@ -221,6 +243,7 @@ def get_mode(mmap):
         return "NFM"
     else:
         return "FM"
+
 
 def set_mode(mmap, mode):
     dig = struct.unpack("B", mmap[POS_DIG])[0] & 0xF7
@@ -239,11 +262,13 @@ def set_mode(mmap, mode):
     mmap[POS_DIG] = dig
     mmap[POS_MODE] = val
 
+
 def is_used(mmap, number):
     if number == ICx8x_SPECIAL["C"]:
         return True
 
     return (ord(mmap[POS_FLAGS_START + number]) & 0x20) == 0
+
 
 def set_used(mmap, number, used=True):
     if number == ICx8x_SPECIAL["C"]:
@@ -256,6 +281,7 @@ def set_used(mmap, number, used=True):
 
     mmap[POS_FLAGS_START + number] = val
 
+
 def get_skip(mmap, number):
     val = struct.unpack("B", mmap[POS_FLAGS_START + number])[0] & 0x10
 
@@ -263,6 +289,7 @@ def get_skip(mmap, number):
         return "S"
     else:
         return ""
+
 
 def set_skip(mmap, number, skip):
     if skip == "P":
@@ -275,10 +302,12 @@ def set_skip(mmap, number, skip):
 
     mmap[POS_FLAGS_START + number] = val
 
+
 def get_call_indices(mmap):
     return ord(mmap[18]) & 0x0F, \
         (ord(mmap[19]) & 0xF0) >> 4, \
         ord(mmap[19]) & 0x0F
+
 
 def set_call_indices(_map, mmap, urcall, r1call, r2call):
     ulist = []
@@ -318,12 +347,15 @@ def set_call_indices(_map, mmap, urcall, r1call, r2call):
 
 # --
 
+
 def get_mem_offset(number):
     return number * MEM_LOC_SIZE
+
 
 def get_raw_memory(mmap, number):
     offset = get_mem_offset(number)
     return MemoryMap(mmap[offset:offset + MEM_LOC_SIZE])
+
 
 def get_bank(mmap, number):
     val = ord(mmap[POS_FLAGS_START + number]) & 0x0F
@@ -332,6 +364,7 @@ def get_bank(mmap, number):
         return None
     else:
         return val
+
 
 def set_bank(mmap, number, bank):
     if bank > 9:
@@ -344,7 +377,8 @@ def set_bank(mmap, number, bank):
 
     val = ord(mmap[POS_FLAGS_START + number]) & 0xF0
     val |= index
-    mmap[POS_FLAGS_START + number] = val    
+    mmap[POS_FLAGS_START + number] = val
+
 
 def _get_memory(_map, mmap, base):
     if get_mode(mmap) == "DV":
@@ -370,6 +404,7 @@ def _get_memory(_map, mmap, base):
 
     return mem
 
+
 def get_memory(_map, number, base):
     if not is_used(_map, number):
         mem = chirp_common.Memory()
@@ -391,10 +426,12 @@ def get_memory(_map, number, base):
 
     return mem
 
+
 def clear_tx_inhibit(mmap):
     txi = struct.unpack("B", mmap[POS_TXI])[0]
     txi |= 0x40
     mmap[POS_TXI] = txi
+
 
 def set_memory(_map, memory, base):
     mmap = get_raw_memory(_map, memory.number)
@@ -428,13 +465,16 @@ def set_memory(_map, memory, base):
 
     return _map
 
+
 def erase_memory(_map, number):
     set_used(_map, number, False)
 
     return _map
 
+
 def call_location(base, index):
     return base + (16 * index)
+
 
 def get_urcall(mmap, index):
     if index > 5:
@@ -444,6 +484,7 @@ def get_urcall(mmap, index):
 
     return mmap[start:start+8].rstrip()
 
+
 def get_rptcall(mmap, index):
     if index > 5:
         raise errors.InvalidDataError("RPTCALL index %i must be <= 5" % index)
@@ -451,6 +492,7 @@ def get_rptcall(mmap, index):
     start = call_location(POS_RPCALL, index)
 
     return mmap[start:start+8].rstrip()
+
 
 def get_mycall(mmap, index):
     if index > 5:
@@ -460,6 +502,7 @@ def get_mycall(mmap, index):
 
     return mmap[start:start+8].rstrip()
 
+
 def set_urcall(mmap, index, call):
     if index > 5:
         raise errors.InvalidDataError("URCALL index %i must be <= 5" % index)
@@ -467,8 +510,9 @@ def set_urcall(mmap, index, call):
     start = call_location(POS_URCALL, index)
 
     mmap[start] = call.ljust(12)
-    
+
     return mmap
+
 
 def set_rptcall(mmap, index, call):
     if index > 5:
@@ -479,8 +523,9 @@ def set_rptcall(mmap, index, call):
 
     start = call_location(POS_RP2CALL, index)
     mmap[start] = call.ljust(12)
-    
+
     return mmap
+
 
 def set_mycall(mmap, index, call):
     if index > 5:
@@ -489,5 +534,5 @@ def set_mycall(mmap, index, call):
     start = call_location(POS_MYCALL, index)
 
     mmap[start] = call.ljust(12)
-    
+
     return mmap
