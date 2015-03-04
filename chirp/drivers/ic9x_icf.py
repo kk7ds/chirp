@@ -16,6 +16,7 @@
 from chirp.drivers import icf, ic9x_icf_ll
 from chirp import chirp_common, util, directory, errors
 
+
 # Don't register as this module is used to load icf file from File-Open menu
 # see do_open in mainapp.py
 class IC9xICFRadio(chirp_common.CloneModeRadio):
@@ -53,6 +54,7 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
         return [IC9xICFRadioA(self._mmap),
                 IC9xICFRadioB(self._mmap)]
 
+
 class IC9xICFRadioA(IC9xICFRadio):
     VARIANT = "ICF File Band A"
 
@@ -63,6 +65,7 @@ class IC9xICFRadioA(IC9xICFRadio):
             raise errors.InvalidMemoryLocation("Number must be <800")
 
         return ic9x_icf_ll.get_memory(self._mmap, number)
+
 
 class IC9xICFRadioB(IC9xICFRadio):
     VARIANT = "ICF File Band B"
