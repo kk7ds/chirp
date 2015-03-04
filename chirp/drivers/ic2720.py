@@ -67,12 +67,13 @@ POWER_LEVELS_UHF = [chirp_common.PowerLevel("High", watts=35),
                     chirp_common.PowerLevel("Low", watts=5),
                     chirp_common.PowerLevel("Mid", watts=15)]
 
+
 @directory.register
 class IC2720Radio(icf.IcomCloneModeRadio):
     """Icom IC-2720"""
     VENDOR = "Icom"
     MODEL = "IC-2720H"
-    
+
     _model = "\x24\x92\x00\x01"
     _memsize = 5152
     _endframe = "Icom Inc\x2eA0"
@@ -161,7 +162,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         _mem = self._memobj.memory[mem.number]
         _skp = self._memobj.skips[bytepos]
         _usd = self._memobj.used[bytepos]
-        
+
         if mem.empty:
             _usd |= bitpos
             self._set_bank(mem.number, None)
@@ -178,7 +179,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
         _mem.tuning_step = STEPS.index(mem.tuning_step)
         _mem.is_fm = mem.mode == "FM"
         _mem.duplex = DUPLEX.index(mem.duplex)
-        
+
         if mem.skip == "S":
             _skp |= bitpos
         else:
