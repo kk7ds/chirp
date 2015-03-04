@@ -23,6 +23,8 @@ from yaesu_clone import YaesuCloneModeRadio
 LOG = logging.getLogger(__name__)
 
 CHUNK_SIZE = 16
+
+
 def _send(s, data):
     for i in range(0, len(data), CHUNK_SIZE):
         chunk = data[i:i+CHUNK_SIZE]
@@ -34,6 +36,7 @@ def _send(s, data):
 IDBLOCK = "\x0c\x01\x41\x33\x35\x02\x00\xb8"
 TRAILER = "\x0c\x02\x41\x33\x35\x00\x00\xb7"
 ACK = "\x0C\x06\x00"
+
 
 def _download(radio):
     data = ""
@@ -60,7 +63,7 @@ def _download(radio):
         elif len(chunk) != 38:
             print "Should fail?"
             break
-            #raise Exception("Failed to get full data block")
+            # raise Exception("Failed to get full data block")
         else:
             cs = 0
             for byte in chunk[:-1]:
@@ -81,6 +84,7 @@ def _download(radio):
     LOG.debug("Total: %i" % len(data))
 
     return memmap.MemoryMap(data)
+
 
 def _upload(radio):
     for _i in range(0, 10):
@@ -157,6 +161,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=65),
                 ]
 CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + "()+-=*/???|_"
 
+
 @directory.register
 class FT2800Radio(YaesuCloneModeRadio):
     """Yaesu FT-2800"""
@@ -176,7 +181,8 @@ class FT2800Radio(YaesuCloneModeRadio):
         rf.has_dtcs_polarity = False
         rf.has_bank = False
 
-        rf.valid_tuning_steps = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+        rf.valid_tuning_steps = [5.0, 10.0, 12.5, 15.0,
+                                 20.0, 25.0, 50.0, 100.0]
         rf.valid_modes = MODES
         rf.valid_tmodes = TMODES
         rf.valid_bands = [(137000000, 174000000)]

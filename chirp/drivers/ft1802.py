@@ -94,15 +94,15 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to mic jack.
-            3. Press and hold in the [LOW(A/N)] key while turning the radio on.
-            4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."""))
+1. Turn radio off.
+2. Connect cable to mic jack.
+3. Press and hold in the [LOW(A/N)] key while turning the radio on.
+4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."""))
         rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to mic jack.
-            3. Press and hold in the [LOW(A/N)] key while turning the radio on.
-            4. Press the [D/MR(MW)] key ("--WAIT--" will appear on the LCD)."""))
+1. Turn radio off.
+2. Connect cable to mic jack.
+3. Press and hold in the [LOW(A/N)] key while turning the radio on.
+4. Press the [D/MR(MW)] key ("--WAIT--" will appear on the LCD)."""))
         return rp
 
     def get_features(self):
@@ -113,8 +113,8 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.can_odd_split = True
         rf.has_ctone = False
         rf.has_tuning_step = True
-        rf.has_dtcs_polarity = False # in radio settings, not per memory
-        rf.has_bank = False # has banks, but not implemented
+        rf.has_dtcs_polarity = False  # in radio settings, not per memory
+        rf.has_bank = False  # has banks, but not implemented
 
         rf.valid_tuning_steps = STEPS
         rf.valid_modes = MODES
@@ -162,7 +162,8 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
         mem.offset = chirp_common.fix_rounded_step(int(_mem.offset) * 1000)
         mem.duplex = DUPLEX[_mem.duplex]
-        mem.tuning_step = _mem.step_changed and STEPS[_mem.tune_step] or STEPS[0]
+        mem.tuning_step = _mem.step_changed and \
+            STEPS[_mem.tune_step] or STEPS[0]
         if _mem.tmode < TMODES.index("Cross"):
             mem.tmode = TMODES[_mem.tmode]
             mem.cross_mode = CROSS_MODES[0]
@@ -196,7 +197,7 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
         _flag = self._memobj.flags[mem.number/2]
 
         nibble = (mem.number % 2) and "odd" or "even"
-        
+
         valid = _flag["%s_valid" % nibble]
         visible = _flag["%s_visible" % nibble]
 
@@ -228,7 +229,8 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.tmode != "Cross":
             _mem.tmode = TMODES.index(mem.tmode)
         else:
-            _mem.tmode = TMODES.index("Cross") + CROSS_MODES.index(mem.cross_mode)
+            _mem.tmode = TMODES.index("Cross") + \
+                         CROSS_MODES.index(mem.cross_mode)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
 
@@ -239,7 +241,7 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
             except IndexError:
                 raise Exception("Character `%s' not supported")
         if _mem.name[0] != 0xFF:
-            _mem.name[0] += 0x80 # show name instead of frequency
+            _mem.name[0] += 0x80  # show name instead of frequency
 
         _mem.narrow = MODES.index(mem.mode)
         _mem.power = 3 if mem.power is None else POWER_LEVELS.index(mem.power)

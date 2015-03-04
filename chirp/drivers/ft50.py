@@ -16,8 +16,9 @@
 from chirp.drivers import yaesu_clone, ft50_ll
 from chirp import chirp_common, directory
 
+
 # Not working, don't register
-#@directory.register
+# @directory.register
 class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
@@ -32,7 +33,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.memory_bounds = (1, 100)
         rf.has_dtcs_polarity = False
         rf.has_bank = False
-        rf.valid_modes = [ "FM", "WFM", "AM" ]
+        rf.valid_modes = ["FM", "WFM", "AM"]
         return rf
 
     def _update_checksum(self):
