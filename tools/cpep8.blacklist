@@ -1,7 +1,6 @@
 # cpep8.blacklist: The list of files that do not meet PEP8 standards.
 # DO NOT ADD NEW FILES!!  Instead, fix the code to be compliant.
 # Over time, this list should shrink and (eventually) be eliminated.
-./chirp/drivers/ft7800.py
 ./chirp/drivers/ft90.py
 ./chirp/drivers/ftm350.py
 ./chirp/drivers/ic208.py
