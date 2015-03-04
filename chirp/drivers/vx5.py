@@ -81,6 +81,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
+
 class VX5BankModel(chirp_common.BankModel):
     def get_num_mappings(self):
         return 5
@@ -98,7 +99,7 @@ class VX5BankModel(chirp_common.BankModel):
         _bank_used = self._radio._memobj.bank_used[bank.index]
         for i in range(0, len(_members)):
             if _members[i].status == 0xFF:
-                #print "empty found, inserting %d at %d" % (memory.number, i)
+                # print "empty found, inserting %d at %d" % (memory.number, i)
                 if self._radio._memobj.current_bank == 0xFF:
                     self._radio._memobj.current_bank = bank.index
                 _members[i].status = 0x00
@@ -151,6 +152,7 @@ class VX5BankModel(chirp_common.BankModel):
                     banks.append(bank)
         return banks
 
+
 @directory.register
 class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu VX-5"""
@@ -164,7 +166,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_size = 8
 
     def _checksums(self):
-        return [ yaesu_clone.YaesuChecksum(0x0000, 0x1FB9) ]
+        return [yaesu_clone.YaesuChecksum(0x0000, 0x1FB9)]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -176,8 +178,8 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_tmodes = TMODES
         rf.valid_duplexes = DUPLEX
         rf.memory_bounds = (1, 220)
-        rf.valid_bands = [(   500000,  16000000),
-                          ( 48000000, 729000000),
+        rf.valid_bands = [(500000,    16000000),
+                          (48000000,  729000000),
                           (800000000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS
@@ -213,7 +215,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.offset = int(_mem.offset) * 1000
         mem.power = POWER_LEVELS[3 - _mem.power]
-        mem.tmode = TMODES[_mem.tmode & 0x3] # masked so bad mems can be read
+        mem.tmode = TMODES[_mem.tmode & 0x3]  # masked so bad mems can be read
         if mem.duplex == "split":
             mem.offset = chirp_common.fix_rounded_step(mem.offset)
         mem.rtone = mem.ctone = chirp_common.OLD_TONES[_mem.tone]
@@ -226,7 +228,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number-1]
         _flg = self._memobj.flag[mem.number-1]
-        
+
         # initialize new channel to safe defaults
         if not mem.empty and not _flg.used:
             _flg.used = True
@@ -234,11 +236,11 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.unknown2 = 0x00
             _mem.unknown3 = 0x00
             _mem.unknown4 = 0x00
-            _mem.icon = 12 # file cabinet icon
+            _mem.icon = 12  # file cabinet icon
             _mem.unknown7 = 0x00
             _mem.unknown8 = 0x00
             _mem.unknown9 = 0x00
-            
+
         if mem.empty and _flg.used and not _flg.visible:
             _flg.used = False
             return
