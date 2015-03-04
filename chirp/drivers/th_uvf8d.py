@@ -1,4 +1,5 @@
-# Copyright 2013 Dan Smith <dsmith@danplanet.com>, Eric Allen <eric@hackerengineer.net>
+# Copyright 2013 Dan Smith <dsmith@danplanet.com>
+#                Eric Allen <eric@hackerengineer.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +38,8 @@ def uvf8d_identify(radio):
         radio.pipe.write("\x02PROGRAM")
         ack = radio.pipe.read(2)
         if ack != "PG":
-            raise errors.RadioError("Radio did not ACK first command: %x" % ord(ack))
+            raise errors.RadioError("Radio did not ACK first command: %x" %
+                                    ord(ack))
     except:
         raise errors.RadioError("Unable to communicate with the radio")
 
@@ -83,8 +85,9 @@ def tyt_uvf8d_upload(radio):
     radio.pipe.setTimeout(1)
 
     if data != radio._mmap[:32]:
-        raise errors.RadioError("Model mis-match: \n%s\n%s" % (util.hexprint(data),
-                                                               util.hexprint(radio._mmap[:32])))
+        raise errors.RadioError("Model mis-match: \n%s\n%s" %
+                                (util.hexprint(data),
+                                 util.hexprint(radio._mmap[:32])))
 
     for i in range(0, 0x4000, 0x20):
         addr = i + 0x20
@@ -248,8 +251,10 @@ APRO_LIST = ["Off", "Compander", "Scramble 1", "Scramble 2", "Scramble 3",
              "Scramble 8"]
 LOCK_MODE_LIST = ["PTT", "Key", "Key+S", "All"]
 
-TUNING_STEPS_LIST = ["2.5", "5.0", "6.25", "10.0", "12.5", "25.0", "50.0", "100.0"]
-BACKLIGHT_TIMEOUT_LIST = ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "10s"]
+TUNING_STEPS_LIST = ["2.5", "5.0", "6.25", "10.0", "12.5",
+                     "25.0", "50.0", "100.0"]
+BACKLIGHT_TIMEOUT_LIST = ["1s", "2s", "3s", "4s", "5s",
+                          "6s", "7s", "8s", "9s", "10s"]
 
 SPECIALS = {
     "VFO1": -2,
@@ -271,7 +276,8 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         rf.has_cross = False
         rf.has_rx_dtcs = True
         rf.has_settings = True
-        rf.can_odd_split = False  # it may actually be supported, but I haven't tested
+        # it may actually be supported, but I haven't tested
+        rf.can_odd_split = False
         rf.valid_duplexes = THUVF8D_DUPLEX
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
@@ -363,15 +369,17 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
             return mem
 
         if isinstance(number, int):
-            enabled = self._memobj.enable[(number - 1) / 8].flags[7 - ((number - 1) % 8)]
-            dont_skip = self._memobj.skip[(number - 1) / 8].flags[7 - ((number - 1) % 8)]
+            e = self._memobj.enable[(number - 1) / 8]
+            enabled = e.flags[7 - ((number - 1) % 8)]
+            s = self._memobj.skip[(number - 1) / 8]
+            dont_skip = s.flags[7 - ((number - 1) % 8)]
         else:
             enabled = True
             dont_skip = True
 
         if not enabled:
-          mem.empty = True
-          return mem
+            mem.empty = True
+            return mem
 
         mem.freq = int(_mem.rx_freq) * 10
 
@@ -382,8 +390,8 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         rxmode, rxval, rxpol = self._decode_tone(_mem.rx_tone)
 
         chirp_common.split_tone_decode(mem,
-                                      (txmode, txval, txpol),
-                                      (rxmode, rxval, rxpol))
+                                       (txmode, txval, txpol),
+                                       (rxmode, rxval, rxpol))
 
         mem.name = str(_mem.name).rstrip('\xFF ')
 
@@ -423,13 +431,15 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         _mem, _name = self._get_memobjs(mem.number)
 
+        e = self._memobj.enable[(mem.number - 1) / 8]
+        s = self._memobj.skip[(mem.number - 1) / 8]
         if mem.empty:
             _mem.set_raw("\xFF" * 32)
-            self._memobj.enable[(mem.number - 1) / 8].flags[7 - ((mem.number - 1) % 8)] = False
-            self._memobj.skip[(mem.number - 1) / 8].flags[7 - ((mem.number - 1) % 8)] = False
+            e.flags[7 - ((mem.number - 1) % 8)] = False
+            s.flags[7 - ((mem.number - 1) % 8)] = False
             return
         else:
-            self._memobj.enable[(mem.number - 1) / 8].flags[7 - ((mem.number - 1) % 8)] = True
+            e.flags[7 - ((mem.number - 1) % 8)] = True
 
         if _mem.get_raw() == ("\xFF" * 32):
             print "Initializing empty memory"
@@ -455,7 +465,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         _mem.name = mem.name.rstrip(' ').ljust(7, "\xFF")
 
         flag_index = 7 - ((mem.number - 1) % 8)
-        self._memobj.skip[(mem.number - 1) / 8].flags[flag_index] = (mem.skip == "")
+        s.flags[flag_index] = (mem.skip == "")
         _mem.wideband = mem.mode == "FM"
         _mem.ishighpower = mem.power == POWER_LEVELS[0]
 
@@ -468,140 +478,139 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         group = RadioSettingGroup("basic", "Basic")
         top = RadioSettings(basic)
 
-        group.append(
-            RadioSetting("mode", "Mode",
-                         RadioSettingValueList(MODE_LIST,
-                                               MODE_LIST[_settings.mode])))
+        group.append(RadioSetting(
+                "mode", "Mode",
+                RadioSettingValueList(
+                    MODE_LIST, MODE_LIST[_settings.mode])))
 
-        group.append(
-            RadioSetting("ab_switch", "A/B",
-                         RadioSettingValueList(AB_LIST,
-                                               AB_LIST[_settings.ab_switch])))
+        group.append(RadioSetting(
+                "ab_switch", "A/B",
+                RadioSettingValueList(
+                    AB_LIST, AB_LIST[_settings.ab_switch])))
 
-        group.append(
-            RadioSetting("a_channel", "A Selected Memory",
-                         RadioSettingValueInteger(1, 128, _settings.a_channel + 1)))
+        group.append(RadioSetting(
+                "a_channel", "A Selected Memory",
+                RadioSettingValueInteger(1, 128, _settings.a_channel + 1)))
 
-        group.append(
-            RadioSetting("b_channel", "B Selected Memory",
-                         RadioSettingValueInteger(1, 128, _settings.b_channel + 1)))
+        group.append(RadioSetting(
+                "b_channel", "B Selected Memory",
+                RadioSettingValueInteger(1, 128, _settings.b_channel + 1)))
 
-        group.append(
-            RadioSetting("a_display", "A Channel Display",
-                         RadioSettingValueList(DISPLAY_LIST,
-                                               DISPLAY_LIST[_settings.a_display])))
-        group.append(
-            RadioSetting("b_display", "B Channel Display",
-                         RadioSettingValueList(DISPLAY_LIST,
-                                               DISPLAY_LIST[_settings.b_display])))
-        group.append(
-            RadioSetting("tx_sel", "Priority Transmit",
-                         RadioSettingValueList(TXSEL_LIST,
-                                               TXSEL_LIST[_settings.tx_sel])))
-        group.append(
-            RadioSetting("vox_level", "VOX Level",
-                         RadioSettingValueList(VOX_LIST,
-                                               VOX_LIST[_settings.vox_level])))
+        group.append(RadioSetting(
+                "a_display", "A Channel Display",
+                RadioSettingValueList(
+                    DISPLAY_LIST, DISPLAY_LIST[_settings.a_display])))
+        group.append(RadioSetting(
+                "b_display", "B Channel Display",
+                RadioSettingValueList(
+                    DISPLAY_LIST, DISPLAY_LIST[_settings.b_display])))
+        group.append(RadioSetting(
+                "tx_sel", "Priority Transmit",
+                RadioSettingValueList(
+                    TXSEL_LIST, TXSEL_LIST[_settings.tx_sel])))
+        group.append(RadioSetting(
+                "vox_level", "VOX Level",
+                RadioSettingValueList(
+                    VOX_LIST, VOX_LIST[_settings.vox_level])))
 
-        group.append(
-            RadioSetting("squelch", "Squelch Level",
-                         RadioSettingValueInteger(0, 9, _settings.squelch)))
+        group.append(RadioSetting(
+                "squelch", "Squelch Level",
+                RadioSettingValueInteger(0, 9, _settings.squelch)))
 
-        group.append(
-            RadioSetting("dwait", "Dual Wait",
-                         RadioSettingValueBoolean(_settings.dwait)))
+        group.append(RadioSetting(
+                "dwait", "Dual Wait",
+                RadioSettingValueBoolean(_settings.dwait)))
 
-        group.append(
-            RadioSetting("led", "LED Mode",
-                         RadioSettingValueList(LED_LIST,
-                                               LED_LIST[_settings.led])))
+        group.append(RadioSetting(
+                "led", "LED Mode",
+                RadioSettingValueList(LED_LIST, LED_LIST[_settings.led])))
 
-        group.append(
-            RadioSetting("light", "Light Color",
-                         RadioSettingValueList(LIGHT_LIST,
-                                               LIGHT_LIST[_settings.light])))
+        group.append(RadioSetting(
+                "light", "Light Color",
+                RadioSettingValueList(
+                    LIGHT_LIST, LIGHT_LIST[_settings.light])))
 
-        group.append(
-            RadioSetting("beep", "Beep",
-                         RadioSettingValueBoolean(_settings.beep)))
+        group.append(RadioSetting(
+                "beep", "Beep",
+                RadioSettingValueBoolean(_settings.beep)))
 
-        group.append(
-            RadioSetting("ani", "ANI",
-                         RadioSettingValueBoolean(_settings.ani)))
+        group.append(RadioSetting(
+                "ani", "ANI",
+                RadioSettingValueBoolean(_settings.ani)))
 
-        group.append(
-            RadioSetting("tot", "Timeout Timer",
-                         RadioSettingValueList(TOT_LIST,
-                                               TOT_LIST[_settings.tot])))
+        group.append(RadioSetting(
+                "tot", "Timeout Timer",
+                RadioSettingValueList(TOT_LIST, TOT_LIST[_settings.tot])))
 
-        group.append(
-            RadioSetting("roger", "Roger Beep",
-                         RadioSettingValueBoolean(_settings.roger)))
+        group.append(RadioSetting(
+                "roger", "Roger Beep",
+                RadioSettingValueBoolean(_settings.roger)))
 
-        group.append(
-            RadioSetting("dw", "Dual Watch",
-                         RadioSettingValueBoolean(_settings.dw)))
+        group.append(RadioSetting(
+                "dw", "Dual Watch",
+                RadioSettingValueBoolean(_settings.dw)))
 
-        group.append(
-            RadioSetting("rxsave", "RX Save",
-                         RadioSettingValueBoolean(_settings.rxsave)))
+        group.append(RadioSetting(
+                "rxsave", "RX Save",
+                RadioSettingValueBoolean(_settings.rxsave)))
 
         def _filter(name):
             return str(name).rstrip("\xFF").rstrip()
 
-        group.append(
-            RadioSetting("ponmsg", "Power-On Message",
-                         RadioSettingValueString(0, 7,
-                                                 _filter(_settings.ponmsg))))
+        group.append(RadioSetting(
+                "ponmsg", "Power-On Message",
+                RadioSettingValueString(0, 7, _filter(_settings.ponmsg))))
 
-        group.append(
-            RadioSetting("scan_mode", "Scan Mode",
-                         RadioSettingValueList(SCAN_MODE_LIST,
-                                               SCAN_MODE_LIST[_settings.scan_mode])))
+        group.append(RadioSetting(
+                "scan_mode", "Scan Mode",
+                RadioSettingValueList(
+                    SCAN_MODE_LIST, SCAN_MODE_LIST[_settings.scan_mode])))
 
-        group.append(
-            RadioSetting("autolk", "Auto Lock",
-                         RadioSettingValueBoolean(_settings.autolk)))
+        group.append(RadioSetting(
+                "autolk", "Auto Lock",
+                RadioSettingValueBoolean(_settings.autolk)))
 
-        group.append(
-            RadioSetting("lock_mode", "Keypad Lock Mode",
-                         RadioSettingValueList(LOCK_MODE_LIST,
-                                               LOCK_MODE_LIST[_settings.lock_mode])))
+        group.append(RadioSetting(
+                "lock_mode", "Keypad Lock Mode",
+                RadioSettingValueList(
+                    LOCK_MODE_LIST, LOCK_MODE_LIST[_settings.lock_mode])))
 
-        group.append(
-            RadioSetting("voice", "Voice Prompt",
-                         RadioSettingValueBoolean(_settings.voice)))
+        group.append(RadioSetting(
+                "voice", "Voice Prompt",
+                RadioSettingValueBoolean(_settings.voice)))
 
-        group.append(
-            RadioSetting("opnmsg", "Opening Message",
-                         RadioSettingValueList(OPNMSG_LIST,
-                                               OPNMSG_LIST[_settings.opnmsg])))
+        group.append(RadioSetting(
+                "opnmsg", "Opening Message",
+                RadioSettingValueList(
+                    OPNMSG_LIST, OPNMSG_LIST[_settings.opnmsg])))
 
-        group.append(
-            RadioSetting("tuning_step", "Tuning Step",
-                         RadioSettingValueList(TUNING_STEPS_LIST,
-                                               TUNING_STEPS_LIST[_settings.tuning_step])))
+        group.append(RadioSetting(
+                "tuning_step", "Tuning Step",
+                RadioSettingValueList(
+                    TUNING_STEPS_LIST,
+                    TUNING_STEPS_LIST[_settings.tuning_step])))
 
-        group.append(
-            RadioSetting("lamp_t", "Backlight Timeout",
-                         RadioSettingValueList(BACKLIGHT_TIMEOUT_LIST,
-                                               BACKLIGHT_TIMEOUT_LIST[_settings.lamp_t])))
+        group.append(RadioSetting(
+                "lamp_t", "Backlight Timeout",
+                RadioSettingValueList(
+                    BACKLIGHT_TIMEOUT_LIST,
+                    BACKLIGHT_TIMEOUT_LIST[_settings.lamp_t])))
 
-        group.append(
-            RadioSetting("a_work_area", "A Work Area",
-                         RadioSettingValueList(AB_LIST,
-                                               AB_LIST[_settings.a_work_area])))
+        group.append(RadioSetting(
+                "a_work_area", "A Work Area",
+                RadioSettingValueList(
+                    AB_LIST, AB_LIST[_settings.a_work_area])))
 
-        group.append(
-            RadioSetting("b_work_area", "B Work Area",
-                         RadioSettingValueList(AB_LIST,
-                                               AB_LIST[_settings.b_work_area])))
+        group.append(RadioSetting(
+                "b_work_area", "B Work Area",
+                RadioSettingValueList(
+                    AB_LIST, AB_LIST[_settings.b_work_area])))
 
         return top
 
-        group.append(
-            RadioSetting("disnm", "Display Name",
-                         RadioSettingValueBoolean(_settings.disnm)))
+        group.append(RadioSetting(
+                "disnm", "Display Name",
+                RadioSettingValueBoolean(_settings.disnm)))
 
         return group
 
@@ -616,9 +625,9 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
                     _settings.rxsave = 0
                 continue
             if element.get_name().endswith('_channel'):
-              print element.value, type(element.value)
-              setattr(_settings, element.get_name(), int(element.value) - 1)
-              continue
+                print element.value, type(element.value)
+                setattr(_settings, element.get_name(), int(element.value) - 1)
+                continue
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
                 continue
