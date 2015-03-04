@@ -162,9 +162,11 @@ class VX510Radio(yaesu_clone.YaesuCloneModeRadio):
 
         if tmode_tx == "Tone" and not tmode_rx:
             mem.tmode = "Tone"
-        elif tmode_tx == tmode_rx and tmode_tx == "Tone" and mem.rtone == mem.ctone:
+        elif tmode_tx == tmode_rx and tmode_tx == "Tone" and \
+                mem.rtone == mem.ctone:
             mem.tmode = "TSQL"
-        elif tmode_tx == tmode_rx and tmode_tx == "DTCS" and mem.dtcs == mem.rx_dtcs:
+        elif tmode_tx == tmode_rx and tmode_tx == "DTCS" and \
+                mem.dtcs == mem.rx_dtcs:
             mem.tmode = "DTCS"
         elif tmode_rx or tmode_tx:
             mem.tmode = "Cross"
