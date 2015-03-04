@@ -30,19 +30,25 @@ DTCS_POL = ["NN", "NR", "RN", "RR"]
 MEM_LEN = 34
 DV_MEM_LEN = 60
 
+
 # Dirty hack until I clean up this IC9x mess
 class IC9xMemory(chirp_common.Memory):
     """A dirty hack to stash bank information in a memory"""
     _bank = None
     _bank_index = 0
+
     def __init__(self):
         chirp_common.Memory.__init__(self)
+
+
 class IC9xDVMemory(chirp_common.DVMemory):
     """See above dirty hack"""
     _bank = None
     _bank_index = 0
+
     def __init__(self):
         chirp_common.DVMemory.__init__(self)
+
 
 def _ic9x_parse_frames(buf):
     frames = []
@@ -65,9 +71,10 @@ def _ic9x_parse_frames(buf):
         except errors.InvalidDataError, e:
             print "Broken frame: %s" % e
 
-        #print "Parsed %i frames" % len(frames)
+        # print "Parsed %i frames" % len(frames)
 
     return frames
+
 
 def ic9x_send(pipe, buf):
     """Send @buf to @pipe, wrapped in a header and trailer.  Attempt to read
@@ -76,7 +83,7 @@ def ic9x_send(pipe, buf):
     # Add header and trailer
     realbuf = "\xfe\xfe" + buf + "\xfd"
 
-    #print "Sending:\n%s" % util.hexprint(realbuf)
+    # print "Sending:\n%s" % util.hexprint(realbuf)
 
     pipe.write(realbuf)
     pipe.flush()
@@ -90,6 +97,7 @@ def ic9x_send(pipe, buf):
         data += buf
 
     return _ic9x_parse_frames(data)
+
 
 class IC92Frame:
     """IC9x frame base class"""
@@ -149,7 +157,8 @@ class IC92Frame:
 
     def __getslice__(self, start, end):
         return self._map[start+4:end+4]
-    
+
+
 class IC92GetBankFrame(IC92Frame):
     """A frame for requesting bank information"""
     def __init__(self):
@@ -162,6 +171,7 @@ class IC92GetBankFrame(IC92Frame):
             raise errors.InvalidDataError("No response from radio")
 
         return rframes
+
 
 class IC92BankFrame(IC92Frame):
     """A frame for bank information"""
@@ -186,6 +196,7 @@ class IC92BankFrame(IC92Frame):
         """Set the letter for the bank (A-Z)"""
         self[0] = ident[0]
 
+
 class IC92MemClearFrame(IC92Frame):
     """A frame for clearing (erasing) a memory"""
     def __init__(self, loc):
@@ -194,6 +205,7 @@ class IC92MemClearFrame(IC92Frame):
         IC92Frame.__init__(self, 0x00, 4)
 
         self[0] = struct.pack(">BHB", 1, int("%i" % loc, 16), 0xFF)
+
 
 class IC92MemGetFrame(IC92Frame):
     """A frame for requesting a memory"""
@@ -208,6 +220,7 @@ class IC92MemGetFrame(IC92Frame):
 
         self[0] = struct.pack(">BH", call, int("%i" % loc, 16))
 
+
 class IC92GetCallsignFrame(IC92Frame):
     """A frame for getting callsign information"""
     def __init__(self, calltype, number):
@@ -215,9 +228,10 @@ class IC92GetCallsignFrame(IC92Frame):
 
         self[0] = chr(number)
 
+
 class IC92CallsignFrame(IC92Frame):
     """A frame to communicate callsign information"""
-    command = 0 # Invalid
+    command = 0  # Invalid
     width = 8
 
     def __init__(self, number=0, callsign=""):
@@ -231,18 +245,21 @@ class IC92CallsignFrame(IC92Frame):
         """Return the actual callsign"""
         return self[1:self.width+1].rstrip()
 
+
 class IC92YourCallsignFrame(IC92CallsignFrame):
     """URCALL frame"""
-    command = 6 # Your
+    command = 6  # Your
+
 
 class IC92RepeaterCallsignFrame(IC92CallsignFrame):
     """RPTCALL frame"""
-    command = 7 # Repeater
+    command = 7  # Repeater
+
 
 class IC92MyCallsignFrame(IC92CallsignFrame):
     """MYCALL frame"""
-    command = 8 # My
-    width = 12 # 4 bytes for /STID
+    command = 8  # My
+    width = 12  # 4 bytes for /STID
 
 MEMORY_FRAME_FORMAT = """
 struct {
@@ -275,6 +292,7 @@ struct {
   char urcall[8];
 } mem[1];
 """
+
 
 class IC92MemoryFrame(IC92Frame):
     """A frame for communicating memory information"""
@@ -393,6 +411,7 @@ class IC92MemoryFrame(IC92Frame):
 
         return mem
 
+
 def _send_magic_4800(pipe):
     cmd = "\x01\x80\x19"
     magic = ("\xFE" * 25) + cmd
@@ -402,15 +421,17 @@ def _send_magic_4800(pipe):
             return resp[0].get_raw()[0] == "\x80"
     return True
 
+
 def _send_magic_38400(pipe):
     cmd = "\x01\x80\x19"
-    #rsp = "\x80\x01\x19"
+    # rsp = "\x80\x01\x19"
     magic = ("\xFE" * 400) + cmd
     for _i in [0, 1]:
         resp = ic9x_send(pipe, magic)
         if resp:
             return resp[0].get_raw()[0] == "\x80"
     return False
+
 
 def send_magic(pipe):
     """Send the magic incantation to wake up an ic9x radio"""
@@ -437,8 +458,9 @@ def send_magic(pipe):
         pipe.setBaudrate(4800)
         raise errors.RadioError("Radio not responding")
     else:
-        raise errors.InvalidDataError("Radio in unknown state (%i)" % \
-                                          pipe.getBaudrate())    
+        raise errors.InvalidDataError("Radio in unknown state (%i)" %
+                                      pipe.getBaudrate())
+
 
 def get_memory_frame(pipe, vfo, number):
     """Get the memory frame for @vfo and @number via @pipe"""
@@ -452,6 +474,7 @@ def get_memory_frame(pipe, vfo, number):
     frame.set_vfo(vfo)
 
     return frame.send(pipe)
+
 
 def get_memory(pipe, vfo, number):
     """Get a memory object for @vfo and @number via @pipe"""
@@ -468,20 +491,22 @@ def get_memory(pipe, vfo, number):
 
     return mf.get_memory()
 
+
 def set_memory(pipe, vfo, memory):
     """Set memory @memory on @vfo via @pipe"""
     frame = IC92MemoryFrame()
     frame.set_memory(memory)
     frame.set_vfo(vfo)
 
-    #print "Sending (%i):" % (len(frame.get_raw()))
-    #print util.hexprint(frame.get_raw())
+    # print "Sending (%i):" % (len(frame.get_raw()))
+    # print util.hexprint(frame.get_raw())
 
     rframe = frame.send(pipe)
 
     if rframe.get_raw()[2] != "\xfb":
-        raise errors.InvalidDataError("Radio reported error:\n%s" %\
-                                          util.hexprint(rframe.get_payload()))
+        raise errors.InvalidDataError("Radio reported error:\n%s" %
+                                      util.hexprint(rframe.get_payload()))
+
 
 def erase_memory(pipe, vfo, number):
     """Erase memory @number on @vfo via @pipe"""
@@ -491,6 +516,7 @@ def erase_memory(pipe, vfo, number):
     rframe = frame.send(pipe)
     if rframe.get_raw()[2] != "\xfb":
         raise errors.InvalidDataError("Radio reported error")
+
 
 def get_banks(pipe, vfo):
     """Get banks for @vfo via @pipe"""
@@ -511,8 +537,9 @@ def get_banks(pipe, vfo):
         bframe.from_frame(rframes[i])
 
         banks.append(bframe.get_name().rstrip())
-    
+
     return banks
+
 
 def set_banks(pipe, vfo, banks):
     """Set banks for @vfo via @pipe"""
@@ -526,6 +553,7 @@ def set_banks(pipe, vfo, banks):
         if rframe.get_payload() != "\xfb":
             raise errors.InvalidDataError("Radio reported error")
 
+
 def get_call(pipe, cstype, number):
     """Get @cstype callsign @number via @pipe"""
     cframe = IC92GetCallsignFrame(cstype.command, number)
@@ -536,6 +564,7 @@ def get_call(pipe, cstype, number):
     cframe.from_frame(rframe)
 
     return cframe.get_callsign()
+
 
 def set_call(pipe, cstype, number, call):
     """Set @cstype @call at position @number via @pipe"""
