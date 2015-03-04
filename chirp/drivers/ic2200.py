@@ -75,16 +75,17 @@ struct {
 
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+"]
-DTCSP  = ["NN", "NR", "RN", "RR"]
-STEPS =  [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
+DTCSP = ["NN", "NR", "RN", "RR"]
+STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=65),
                 chirp_common.PowerLevel("Mid", watts=25),
                 chirp_common.PowerLevel("MidLow", watts=10),
                 chirp_common.PowerLevel("Low", watts=5)]
 
+
 def _get_special():
-    special = { "C" : 206 }
+    special = {"C": 206}
     for i in range(0, 3):
         ida = "%iA" % (i+1)
         idb = "%iB" % (i+1)
@@ -94,8 +95,10 @@ def _get_special():
 
     return special
 
+
 def _wipe_memory(mem, char):
     mem.set_raw(char * (mem.size() / 8))
+
 
 @directory.register
 class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
@@ -128,8 +131,8 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                (0x1AB8, 0x1AC0,  8),
                ]
 
-    MYCALL_LIMIT  = (0, 6)
-    URCALL_LIMIT  = (0, 6)
+    MYCALL_LIMIT = (0, 6)
+    URCALL_LIMIT = (0, 6)
     RPTCALL_LIMIT = (0, 6)
 
     def _get_bank(self, loc):
@@ -145,7 +148,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _flag.bank = 0x0A
         else:
             _flag.bank = bank
-        
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
@@ -173,7 +176,7 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if _mem.mode_dv and not _flag.empty:
             mem = chirp_common.DVMemory()
-            mem.dv_urcall   = \
+            mem.dv_urcall = \
                 str(self._memobj.urcalls[_mem.urcall].call).rstrip()
             mem.dv_rpt1call = \
                 str(self._memobj.rptcalls[_mem.r1call].call).rstrip()
