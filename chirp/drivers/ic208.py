@@ -19,7 +19,7 @@ from chirp import chirp_common, errors, directory, bitwise
 MEM_FORMAT = """
 struct memory {
   u24 freq;
-  u16 offset;  
+  u16 offset;
   u8  power:2,
       rtone:6;
   u8  duplex:2,
@@ -75,11 +75,12 @@ for i in range(1, 6):
     IC208_SPECIAL.append("%iA" % i)
     IC208_SPECIAL.append("%iB" % i)
 
-CHARSET = dict(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f], " ()*+-/") + 
-    zip(range(0x10, 0x1a), "0123456789") + 
-    [(0x1c,'|'), (0x1d,'=')] + 
-    zip(range(0x21, 0x3b), "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+CHARSET = dict(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f], " ()*+-/") +
+               zip(range(0x10, 0x1a), "0123456789") +
+               [(0x1c, '|'), (0x1d, '=')] +
+               zip(range(0x21, 0x3b), "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 CHARSET_REV = dict(zip(CHARSET.values(), CHARSET.keys()))
+
 
 def get_name(_mem):
     """Decode the name from @_mem"""
@@ -96,6 +97,7 @@ def get_name(_mem):
         name += _get_char(val)
 
     return name.rstrip()
+
 
 def set_name(_mem, name):
     """Encode @name in @_mem"""
@@ -117,6 +119,7 @@ def set_name(_mem, name):
     _mem.name4 = _get_index(name[3])
     _mem.name5 = _get_index(name[4])
     _mem.name6 = _get_index(name[5])
+
 
 @directory.register
 class IC208Radio(icf.IcomCloneModeRadio):
@@ -157,7 +160,6 @@ class IC208Radio(icf.IcomCloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
-
     def _get_bank(self, loc):
         _flg = self._memobj.flags[loc-1]
         if _flg.bank >= 0x0A:
@@ -193,7 +195,6 @@ class IC208Radio(icf.IcomCloneModeRadio):
             _flg = self._memobj.flags[number - 1]
 
         return _mem, _flg, index
-
 
     def get_memory(self, number):
         _mem, _flg, index = self._get_memory(number)
@@ -258,4 +259,3 @@ class IC208Radio(icf.IcomCloneModeRadio):
         if not isinstance(mem.number, str):
             _flg.skip = mem.skip == "S"
             _flg.pskip = mem.skip == "P"
-
