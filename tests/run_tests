@@ -31,6 +31,17 @@ os.chdir(scriptdir)
 
 sys.path.insert(0, "../")
 
+import logging
+from chirp import logger
+
+class LoggerOpts(object):
+    quiet = 2
+    verbose = 0
+    log_file = os.path.join('logs', 'debug.log')
+    log_level = logging.DEBUG
+
+logger.handle_options(LoggerOpts())
+
 from chirp import CHIRP_VERSION
 from chirp.drivers import *
 from chirp import chirp_common, directory
