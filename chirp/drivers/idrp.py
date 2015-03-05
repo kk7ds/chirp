@@ -30,7 +30,7 @@ def parse_frames(buf):
             start = buf.index("\xfe\xfe")
             end = buf[start:].index("\xfd") + start + 1
         except Exception:
-            print "Unable to parse frames"
+            LOG.error("Unable to parse frames")
             break
 
         frames.append(buf[start:end])
