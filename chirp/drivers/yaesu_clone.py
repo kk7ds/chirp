@@ -30,15 +30,15 @@ def _safe_read(pipe, count):
     first = True
     for _i in range(0, 60):
         buf += pipe.read(count - len(buf))
-        # print "safe_read: %i/%i\n" % (len(buf), count)
+        # LOG.debug("safe_read: %i/%i\n" % (len(buf), count))
         if buf:
             if first and buf[0] == chr(CMD_ACK):
-                # print "Chewed an ack"
+                # LOG.debug("Chewed an ack")
                 buf = buf[1:]  # Chew an echo'd ack if using a 2-pin cable
             first = False
         if len(buf) == count:
             break
-    print util.hexprint(buf)
+    LOG.debug(util.hexprint(buf))
     return buf
 
 
@@ -50,7 +50,7 @@ def _chunk_read(pipe, count, status_fn):
         if data:
             if data[0] == chr(CMD_ACK):
                 data = data[1:]  # Chew an echo'd ack if using a 2-pin cable
-                # print "Chewed an ack"
+                # LOG.debug("Chewed an ack")
         status = chirp_common.Status()
         status.msg = "Cloning from radio"
         status.max = count
@@ -81,7 +81,7 @@ def __clone_in(radio):
     if len(data) != radio.get_memsize():
         raise errors.RadioError("Received incomplete image from radio")
 
-    print "Clone completed in %i seconds" % (time.time() - start)
+    LOG.debug("Clone completed in %i seconds" % (time.time() - start))
 
     return memmap.MemoryMap(data)
 
@@ -143,7 +143,7 @@ def __clone_out(radio):
 
     pipe.read(pos)  # Chew the echo if using a 2-pin cable
 
-    print "Clone completed in %i seconds" % (time.time() - start)
+    LOG.debug("Clone completed in %i seconds" % (time.time() - start))
 
 
 def _clone_out(radio):
@@ -222,7 +222,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
             if checksum.get_existing(self._mmap) != \
                     checksum.get_calculated(self._mmap):
                 raise errors.RadioError("Checksum Failed [%s]" % checksum)
-            print "Checksum %s: OK" % checksum
+            LOG.debug("Checksum %s: OK" % checksum)
 
     def sync_in(self):
         self._mmap = _clone_in(self)
