@@ -117,7 +117,7 @@ def _h777_enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if not ident.startswith("P3107"):
-        print util.hexprint(ident)
+        LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
     try:
@@ -183,7 +183,7 @@ def _h777_write_block(radio, block_addr, block_size):
 
 
 def do_download(radio):
-    print "download"
+    LOG.debug("download")
     _h777_enter_programming_mode(radio)
 
     data = ""
@@ -502,15 +502,15 @@ class H777Radio(chirp_common.CloneModeRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     elif setting == "voxlevel":
                         setattr(obj, setting, int(element.value) - 1)
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
 

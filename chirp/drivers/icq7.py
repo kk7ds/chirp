@@ -14,6 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
+import logging
+
 from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
 from chirp.chirp_common import to_GHz, from_GHz
@@ -21,6 +23,9 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
+
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 struct {
@@ -154,7 +159,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         try:
             mem.tuning_step = STEPS[_mem.tune_step]
         except IndexError:
-            print "Invalid tune step index %i" % _mem.tune_step
+            LOG.error("Invalid tune step index %i" % _mem.tune_step)
         mem.tmode = TMODES[_flag.tmode]
         mem.duplex = DUPLEX[_flag.duplex]
         if mem.freq < 30000000:
@@ -328,11 +333,11 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise

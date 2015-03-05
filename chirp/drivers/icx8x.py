@@ -13,8 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from chirp.drivers import icf, icx8x_ll
 from chirp import chirp_common, errors, directory
+
+LOG = logging.getLogger(__name__)
 
 
 def _isuhf(pipe):
@@ -25,7 +29,7 @@ def _isuhf(pipe):
     except:
         raise errors.RadioError("Unable to probe radio band")
 
-    print "Radio is a %s82" % (uhf and "U" or "V")
+    LOG.debug("Radio is a %s82" % (uhf and "U" or "V"))
 
     return uhf
 
@@ -102,7 +106,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         # that flag.
         if isinstance(pipe, str):
             self._isuhf = (ord(self._mmap[0x1930]) != 0)
-            # print "Found %s image" % (self.isUHF and "UHF" or "VHF")
+            # LOG.debug("Found %s image" % (self.isUHF and "UHF" or "VHF"))
         else:
             self._isuhf = None
 

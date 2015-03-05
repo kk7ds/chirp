@@ -90,9 +90,9 @@ class Frame:
         if willecho:
             echo = serial.read(len(raw))
             if echo != raw and echo:
-                print "Echo differed (%i/%i)" % (len(raw), len(echo))
-                print util.hexprint(raw)
-                print util.hexprint(echo)
+                LOG.debug("Echo differed (%i/%i)" % (len(raw), len(echo)))
+                LOG.debug(util.hexprint(raw))
+                LOG.debug(util.hexprint(echo))
 
     def read(self, serial):
         """Read the frame from @serial"""
@@ -100,7 +100,7 @@ class Frame:
         while not data.endswith(chr(0xFD)):
             char = serial.read(1)
             if not char:
-                print "Read %i bytes total" % len(data)
+                LOG.debug("Read %i bytes total" % len(data))
                 raise errors.RadioError("Timeout")
             data += char
 
@@ -190,7 +190,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         echo_test = "\xfe\xfe\xe0\xe0\xfa\xfd"
         self.pipe.write(echo_test)
         resp = self.pipe.read(6)
-        print "Echo:\n%s" % util.hexprint(resp)
+        LOG.debug("Echo:\n%s" % util.hexprint(resp))
         return resp == echo_test
 
     def __init__(self, *args, **kwargs):
@@ -202,7 +202,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         if self.pipe:
             self._willecho = self._detect_echo()
-            print "Interface echo: %s" % self._willecho
+            LOG.debug("Interface echo: %s" % self._willecho)
             self.pipe.setTimeout(1)
 
         # f = Frame()
@@ -211,8 +211,9 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         #
         # res = f.read(self.pipe)
         # if res:
-        #    print "Result: %x->%x (%i)" % (res[0], res[1], len(f.get_data()))
-        #    print util.hexprint(f.get_data())
+        #    LOG.debug("Result: %x->%x (%i)" %
+        #              (res[0], res[1], len(f.get_data())))
+        #    LOG.debug(util.hexprint(f.get_data()))
         #
         # self._id = f.get_data()[0]
         self._rf = chirp_common.RadioFeatures()
@@ -237,7 +238,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         return repr(f.get_obj())
 
     def get_memory(self, number):
-        print "Getting %i" % number
+        LOG.debug("Getting %i" % number)
         f = self._classes["mem"]()
         f.set_location(number)
         self._send_frame(f)
@@ -253,7 +254,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             return mem
 
         memobj = f.get_obj()
-        print repr(memobj)
+        LOG.debug(repr(memobj))
 
         mem.freq = int(memobj.freq)
         mem.mode = self._rf.valid_modes[memobj.mode]
@@ -307,11 +308,11 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             memobj.ctone = int(mem.ctone * 10)
             memobj.rtone = int(mem.rtone * 10)
 
-        print repr(memobj)
+        LOG.debug(repr(memobj))
         self._send_frame(f)
 
         f = self._recv_frame()
-        print "Result:\n%s" % util.hexprint(f.get_data())
+        LOG.debug("Result:\n%s" % util.hexprint(f.get_data()))
 
 
 @directory.register
@@ -415,8 +416,8 @@ def probe_model(ser):
             return CIV_MODELS[(model, controller)]
 
         if f.get_data():
-            print "Got data, but not 1 byte:"
-            print util.hexprint(f.get_data())
+            LOG.debug("Got data, but not 1 byte:")
+            LOG.debug(util.hexprint(f.get_data()))
             raise errors.RadioError("Unknown response")
 
     raise errors.RadioError("Unsupported model")

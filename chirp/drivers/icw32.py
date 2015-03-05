@@ -13,8 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from chirp.drivers import icf
 from chirp import chirp_common, util, directory, bitwise
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x%x;
@@ -174,10 +178,10 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         _flg.am = mem.mode == "AM"
 
         if self._memobj.state.left_scanning:
-            print "Canceling scan on left VFO"
+            LOG.debug("Canceling scan on left VFO")
             self._memobj.state.left_scanning = 0
         if self._memobj.state.right_scanning:
-            print "Canceling scan on right VFO"
+            LOG.debug("Canceling scan on right VFO")
             self._memobj.state.right_scanning = 0
 
     def get_sub_devices(self):
