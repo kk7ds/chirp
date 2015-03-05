@@ -1093,7 +1093,7 @@ class FT857Radio(ft817.FT817Radio):
                 else:
                     setattr(obj, setting, element.value)
             except:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
 

@@ -141,8 +141,8 @@ def _clone_in(radio):
             for i in frame[:-1]:
                 cs = (cs + ord(i)) % 256
             if cs != checksum:
-                print "Calc: %02x Real: %02x Len: %i" % (cs, checksum,
-                                                         len(block))
+                LOG.debug("Calc: %02x Real: %02x Len: %i" %
+                          (cs, checksum, len(block)))
                 raise errors.RadioError("Block failed checksum")
 
             radio.pipe.write("\x06")

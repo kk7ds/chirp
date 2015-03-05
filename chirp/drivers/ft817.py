@@ -362,7 +362,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                             "but the radio is a US one. "
                             "Please choose the correct model and try again."))
 
-        print "Clone completed in %i seconds" % (time.time() - start)
+        LOG.info("Clone completed in %i seconds" % (time.time() - start))
 
         return memmap.MemoryMap(data)
 
@@ -405,7 +405,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 status.cur = blocks
                 self.status_fn(status)
 
-        print "Clone completed in %i seconds" % (time.time() - start)
+        LOG.info("Clone completed in %i seconds" % (time.time() - start))
 
     def sync_in(self):
         try:
@@ -661,7 +661,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 else:
                     # radio have some graphical chars that are not supported
                     # we replace those with a *
-                    print "Replacing char %x with *" % i
+                    LOG.info("Replacing char %x with *" % i)
                     mem.name += "*"
             mem.name = mem.name.rstrip()
         else:
@@ -1095,7 +1095,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 else:
                     setattr(obj, setting, element.value)
             except:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
 

@@ -59,9 +59,9 @@ def _download(radio):
         chunk = radio.pipe.read(38)
         LOG.debug("Got: %i:\n%s" % (len(chunk), util.hexprint(chunk)))
         if len(chunk) == 8:
-            print "END?"
+            LOG.debug("END?")
         elif len(chunk) != 38:
-            print "Should fail?"
+            LOG.debug("Should fail?")
             break
             # raise Exception("Failed to get full data block")
         else:
@@ -91,7 +91,7 @@ def _upload(radio):
         data = radio.pipe.read(256)
         if not data:
             break
-        print "What is this garbage?\n%s" % util.hexprint(data)
+        LOG.debug("What is this garbage?\n%s" % util.hexprint(data))
 
     _send(radio.pipe, IDBLOCK)
     time.sleep(1)
@@ -203,7 +203,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        print "Downloaded in %.2f sec" % (time.time() - start)
+        LOG.info("Downloaded in %.2f sec" % (time.time() - start))
         self.process_mmap()
 
     def sync_out(self):
@@ -216,7 +216,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        print "Uploaded in %.2f sec" % (time.time() - start)
+        LOG.info("Uploaded in %.2f sec" % (time.time() - start))
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)

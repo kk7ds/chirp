@@ -429,17 +429,17 @@ class FT1BankModel(chirp_common.BankModel):
             vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
 
             if vfo.checksum != vfo_bak.checksum:
-                print "Warning: VFO settings are inconsistent with backup"
+                LOG.warn("VFO settings are inconsistent with backup")
             else:
                 if ((chosen_bank[vfo_index] is None) and (vfo.bank_index !=
                                                           0xFFFF)):
-                    print "Disabling banks for VFO %d" % vfo_index
+                    LOG.info("Disabling banks for VFO %d" % vfo_index)
                     vfo.bank_index = 0xFFFF
                     vfo.mr_index = 0xFFFF
                     vfo.bank_enable = 0xFFFF
                 elif ((chosen_bank[vfo_index] is not None) and
                       (vfo.bank_index == 0xFFFF)):
-                    print "Enabling banks for VFO %d" % vfo_index
+                    LOG.info("Enabling banks for VFO %d" % vfo_index)
                     vfo.bank_index = chosen_bank[vfo_index]
                     vfo.mr_index = chosen_mr[vfo_index]
                     vfo.bank_enable = 0x0000
@@ -982,7 +982,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             # There is probably a more pythonesque way to do this
             if int(aprs_meta[index].sender_callsign[0]) != 255:
                 callsign = str(aprs_meta[index].sender_callsign).rstrip("\xFF")
-                # print "Callsign %s %s" % ( callsign, list(callsign) )
+                # LOG.debug("Callsign %s %s" % (callsign, list(callsign)))
                 val = RadioSettingValueString(0, 9, callsign)
                 rs = RadioSetting(
                     "aprs_beacon.src_callsign%d" % index,
@@ -1019,7 +1019,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 path = ''.join(c for c in path
                                if c in string.printable).strip()
                 path = str(path).replace("\xE0", "*")
-                # print "path %s %s" % ( path, list(path) )
+                # LOG.debug("path %s %s" % (path, list(path)))
                 val = RadioSettingValueString(0, 32, path)
                 rs = RadioSetting(
                     "aprs_beacon.path%d" % index, "Digipath", val)
@@ -1033,7 +1033,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 try:
                     val = RadioSettingValueString(0, 134, body.strip())
                 except Exception as e:
-                    print "Error in APRS beacon at index", index
+                    LOG.error("Error in APRS beacon at index %s", index)
                     raise e
                 rs = RadioSetting("aprs_beacon.body%d" % index, "Body", val)
                 menu.append(rs)
@@ -1487,8 +1487,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             return self._get_settings()
         except:
             import traceback
-            print "Failed to parse settings:"
-            traceback.print_exc()
+            LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None
 
     @staticmethod
@@ -1578,11 +1577,11 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 continue
             try:
                 if element.has_apply_callback():
-                    print "Using apply callback"
+                    LOG.debug("Using apply callback")
                     try:
                         element.run_apply_callback()
                     except NotImplementedError as e:
-                        print e
+                        LOG.error(e)
                     continue
 
                 # Find the object containing setting.
@@ -1603,10 +1602,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                             element.get_name(), old_val, element.value))
                     setattr(obj, setting, element.value)
                 except AttributeError as e:
-                    print "Setting %s is not in the memory map: %s" % (
-                        element.get_name(), e)
+                    LOG.error("Setting %s is not in the memory map: %s" %
+                              (element.get_name(), e))
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     def apply_ff_padded_yaesu(cls, setting, obj):

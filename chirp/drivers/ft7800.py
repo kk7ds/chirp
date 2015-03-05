@@ -211,8 +211,8 @@ def _upload(radio):
     for block in radio._block_lengths:
         for _i in range(0, block, radio._block_size):
             length = min(radio._block_size, block)
-            # print "i=%i length=%i range: %i-%i" % (i, length,
-            #                                       cur, cur+length)
+            # LOG.debug("i=%i length=%i range: %i-%i" %
+            #           (i, length, cur, cur+length))
             _send(radio.pipe, radio.get_mmap()[cur:cur+length])
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
@@ -323,7 +323,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        print "Download finished in %i seconds" % (time.time() - start)
+        LOG.info("Download finished in %i seconds" % (time.time() - start))
         self.check_checksums()
         self.process_mmap()
 
@@ -339,7 +339,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             raise
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        print "Upload finished in %i seconds" % (time.time() - start)
+        LOG.info("Upload finished in %i seconds" % (time.time() - start))
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
@@ -767,7 +767,7 @@ class FT7800Radio(FTx800Radio):
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
 MEM_FORMAT_8800 = """

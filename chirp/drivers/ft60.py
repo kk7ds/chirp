@@ -47,7 +47,7 @@ def _download(radio):
         elif chunk:
             raise Exception("Received invalid response from radio")
         time.sleep(1)
-        print "Trying again..."
+        LOG.info("Trying again...")
 
     if not data:
         raise Exception("Radio is not responding")
@@ -128,7 +128,7 @@ def _decode_name(mem):
         try:
             name += CHARSET[i]
         except IndexError:
-            print "Unknown char index: %i " % (i)
+            LOG.error("Unknown char index: %i " % (i))
     return name
 
 
@@ -655,7 +655,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                 value = element.value
 
                 if element.has_apply_callback():
-                    print "Using apply callback"
+                    LOG.debug("Using apply callback")
                     element.run_apply_callback()
                 else:
                     obj = getattr(_settings, name)
@@ -663,7 +663,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
 
                 LOG.debug("Setting %s: %s" % (name, value))
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     def get_raw_memory(self, number):

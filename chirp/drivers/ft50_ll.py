@@ -15,6 +15,9 @@
 
 from chirp import chirp_common, util, errors, memmap
 import time
+import logging
+
+LOG = logging.getLogger(__name__)
 
 ACK = chr(0x06)
 
@@ -49,11 +52,11 @@ def read_exact(s, count):
     i = 0
     while len(data) < count:
         if i == 3:
-            print util.hexprint(data)
+            LOG.debug(util.hexprint(data))
             raise errors.RadioError("Failed to read %i (%i) from radio" %
                                     (count, len(data)))
         elif i > 0:
-            print "Retry %i" % i
+            LOG.info("Retry %i" % i)
         data += s.read(count - len(data))
         i += 1
 
@@ -66,7 +69,7 @@ def download(radio):
     radio.pipe.setTimeout(1)
 
     for block in radio._block_lengths:
-        print "Doing block %i" % block
+        LOG.debug("Doing block %i" % block)
         if block > 112:
             step = 16
         else:
@@ -74,9 +77,9 @@ def download(radio):
         for i in range(0, block, step):
             # data += read_exact(radio.pipe, step)
             chunk = radio.pipe.read(step*2)
-            print "Length of chunk: %i" % len(chunk)
+            LOG.debug("Length of chunk: %i" % len(chunk))
             data += chunk
-            print "Reading %i" % i
+            LOG.debug("Reading %i" % i)
             time.sleep(0.1)
             send(radio.pipe, ACK)
             if radio.status_fn:
@@ -88,10 +91,10 @@ def download(radio):
 
     r = radio.pipe.read(100)
     send(radio.pipe, ACK)
-    print "R: %i" % len(r)
-    print util.hexprint(r)
+    LOG.debug("R: %i" % len(r))
+    LOG.debug(util.hexprint(r))
 
-    print "Got: %i Expecting %i" % (len(data), radio._memsize)
+    LOG.debug("Got: %i Expecting %i" % (len(data), radio._memsize))
 
     return memmap.MemoryMap(data)
 
@@ -176,7 +179,7 @@ def get_offset(mmap):
 
 def set_offset(mmap, offset):
     val = util.bcd_encode(int(offset * 1000), width=4)[:3]
-    print "Offfset:\n%s" % util.hexprint(val)
+    LOG.debug("Offset:\n%s" % util.hexprint(val))
     mmap[POS_OFFSET] = val
 
 
@@ -312,5 +315,5 @@ def update_checksum(map):
     for i in range(0, 3722):
         cs += ord(map[i])
     cs %= 256
-    print "Checksum old=%02x new=%02x" % (ord(map[3722]), cs)
+    LOG.debug("Checksum old=%02x new=%02x" % (ord(map[3722]), cs))
     map[3722] = cs

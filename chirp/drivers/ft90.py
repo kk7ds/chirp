@@ -278,8 +278,8 @@ struct  {
             status.cur = blocknum
             self.status_fn(status)
 
-        print "Clone completed in %i seconds, blocks read: %i" % \
-              (time.time() - start, blocknum)
+        LOG.info("Clone completed in %i seconds, blocks read: %i" %
+                 (time.time() - start, blocknum))
 
         return memmap.MemoryMap(data)
 
@@ -325,7 +325,7 @@ struct  {
             status.cur = blocknum
             self.status_fn(status)
 
-        print "Clone completed in %i seconds" % (time.time() - start)
+        LOG.info("Clone completed in %i seconds" % (time.time() - start))
 
     def sync_in(self):
         try:
@@ -671,5 +671,5 @@ struct  {
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
