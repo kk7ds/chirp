@@ -314,8 +314,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _cs += self._checksum(_packet)
         _cs %= 256
         _rcs = ord(self.pipe.read(1))
-        LOG.debug("_cs =", _cs)
-        LOG.debug("_rcs=", _rcs)
+        LOG.debug("_cs =%x", _cs)
+        LOG.debug("_rcs=%x", _rcs)
         return (_rcs != _cs, _packet)
 
 # Identify the radio
@@ -348,7 +348,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             _chksum_err, _resp = self._read_record()
             LOG.debug("Got:\n%s" % util.hexprint(_resp))
             if _chksum_err:
-                print "Checksum error: retrying ident..."
+                LOG.error("Checksum error: retrying ident...")
                 time.sleep(0.100)
                 continue
             LOG.debug("Model %s" % util.hexprint(_resp[0:7]))
@@ -399,7 +399,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             cs_error, resp = self._read_record()
             if cs_error:
                 # TODO: probably should retry a few times here
-                print util.hexprint(resp)
+                LOG.debug(util.hexprint(resp))
                 raise Exception("Checksum error on read")
             LOG.debug("Got:\n%s" % util.hexprint(resp))
             image += resp[2:]
@@ -926,6 +926,5 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             return self._get_settings()
         except:
             import traceback
-            print "Failed to parse settings:"
-            traceback.print_exc()
+            LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None

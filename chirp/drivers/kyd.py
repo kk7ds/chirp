@@ -110,7 +110,7 @@ def _nc630a_enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if not ident.startswith("P32073"):
-        print util.hexprint(ident)
+        LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
     try:
@@ -176,7 +176,7 @@ def _nc630a_write_block(radio, block_addr, block_size):
 
 
 def do_download(radio):
-    print "download"
+    LOG.debug("download")
     _nc630a_enter_programming_mode(radio)
 
     data = ""
@@ -312,8 +312,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
     def get_memory(self, number):
         bitpos = (1 << ((number - 1) % 8))
         bytepos = ((number - 1) / 8)
-        print "bitpos %s" % bitpos
-        print "bytepos %s" % bytepos
+        LOG.debug("bitpos %s" % bitpos)
+        LOG.debug("bytepos %s" % bytepos)
 
         _mem = self._memobj.memory[number - 1]
         _skp = self._memobj.skipflags[bytepos]
@@ -347,7 +347,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         mem.power = NC630A_POWER_LEVELS[_mem.highpower]
 
         mem.skip = "" if (_skp & bitpos) else "S"
-        print "mem.skip %s" % mem.skip
+        LOG.debug("mem.skip %s" % mem.skip)
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
@@ -396,8 +396,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         bitpos = (1 << ((mem.number - 1) % 8))
         bytepos = ((mem.number - 1) / 8)
-        print "bitpos %s" % bitpos
-        print "bytepos %s" % bytepos
+        LOG.debug("bitpos %s" % bitpos)
+        LOG.debug("bytepos %s" % bytepos)
 
         _mem = self._memobj.memory[mem.number - 1]
         _skp = self._memobj.skipflags[bytepos]
@@ -430,7 +430,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
             _skp |= bitpos
         else:
             _skp &= ~bitpos
-        print "_skp %s" % _skp
+        LOG.debug("_skp %s" % _skp)
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
@@ -499,8 +499,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
                         obj = self._memobj.settings
                         setting = element.get_name()
 
-                    print "Setting %s = %s" % (setting, element.value)
+                    LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
