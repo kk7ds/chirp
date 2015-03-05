@@ -16,10 +16,13 @@
 import struct
 import re
 import time
+import logging
 
 from chirp import chirp_common, errors, util, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettings
+
+LOG = logging.getLogger(__name__)
 
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN = 0xE3
@@ -106,7 +109,7 @@ class RadioStream:
 
                 self.data = rest
             except errors.InvalidDataError, e:
-                print "Failed to parse frame (cmd=%i): %s" % (cmd, e)
+                LOG.error("Failed to parse frame (cmd=%i): %s" % (cmd, e))
                 return []
 
         return frames
@@ -184,11 +187,11 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
     frame = "\xfe\xfe\xee\xef%s%s%s\xfd" % (chr(cmd), hed, cs)
 
     if SAVE_PIPE:
-        print "Saving data..."
+        LOG.debug("Saving data...")
         SAVE_PIPE.write(frame)
 
-    # print "Sending:\n%s" % util.hexprint(frame)
-    # print "Sending:\n%s" % util.hexprint(hed[6:])
+    # LOG.debug("Sending:\n%s" % util.hexprint(frame))
+    # LOG.debug("Sending:\n%s" % util.hexprint(hed[6:]))
     if cmd == 0xe4:
         # Uncomment to avoid cloning to the radio
         # return frame
@@ -209,7 +212,7 @@ def process_bcd(bcddata):
             i += 2
             data += struct.pack("B", val)
         except ValueError, e:
-            print "Failed to parse byte: %s" % e
+            LOG.error("Failed to parse byte: %s" % e)
             break
 
     return data
@@ -230,8 +233,8 @@ def process_data_frame(frame, _mmap):
     try:
         _mmap[saddr] = data
     except IndexError:
-        print "Error trying to set %i bytes at %05x (max %05x)" % \
-            (bytes, saddr, len(_mmap))
+        LOG.error("Error trying to set %i bytes at %05x (max %05x)" %
+                  (bytes, saddr, len(_mmap)))
     return saddr, saddr + length
 
 
@@ -241,13 +244,13 @@ def start_hispeed_clone(radio, cmd):
         "\xEE\xEF\xE8" + \
         radio.get_model() + \
         "\x00\x00\x02\x01\xFD"
-    print "Starting HiSpeed:\n%s" % util.hexprint(buf)
+    LOG.debug("Starting HiSpeed:\n%s" % util.hexprint(buf))
     radio.pipe.write(buf)
     radio.pipe.flush()
     resp = radio.pipe.read(128)
-    print "Response:\n%s" % util.hexprint(resp)
+    LOG.debug("Response:\n%s" % util.hexprint(resp))
 
-    print "Switching to 38400 baud"
+    LOG.info("Switching to 38400 baud")
     radio.pipe.setBaudrate(38400)
 
     buf = ("\xFE" * 14) + \
@@ -255,7 +258,7 @@ def start_hispeed_clone(radio, cmd):
         chr(cmd) + \
         radio.get_model()[:3] + \
         "\x00\xFD"
-    print "Starting HiSpeed Clone:\n%s" % util.hexprint(buf)
+    LOG.debug("Starting HiSpeed Clone:\n%s" % util.hexprint(buf))
     radio.pipe.write(buf)
     radio.pipe.flush()
 
@@ -264,8 +267,8 @@ def _clone_from_radio(radio):
     md = get_model_data(radio.pipe)
 
     if md[0:4] != radio.get_model():
-        print "This model: %s" % util.hexprint(md[0:4])
-        print "Supp model: %s" % util.hexprint(radio.get_model())
+        LOG.info("This model: %s" % util.hexprint(md[0:4]))
+        LOG.info("Supp model: %s" % util.hexprint(radio.get_model()))
         raise errors.RadioError("I can't talk to this model")
 
     if radio.is_hispeed():
@@ -274,7 +277,7 @@ def _clone_from_radio(radio):
         send_clone_frame(radio.pipe, CMD_CLONE_OUT,
                          radio.get_model(), raw=True)
 
-    print "Sent clone frame"
+    LOG.debug("Sent clone frame")
 
     stream = RadioStream(radio.pipe)
 
@@ -290,17 +293,16 @@ def _clone_from_radio(radio):
             if frame.cmd == CMD_CLONE_DAT:
                 src, dst = process_data_frame(frame, _mmap)
                 if last_size != (dst - src):
-                    print "ICF Size change from %i to %i at %04x" % (last_size,
-                                                                     dst - src,
-                                                                     src)
+                    LOG.debug("ICF Size change from %i to %i at %04x" %
+                              (last_size, dst - src, src))
                     last_size = dst - src
                 if addr != src:
-                    print "ICF GAP %04x - %04x" % (addr, src)
+                    LOG.debug("ICF GAP %04x - %04x" % (addr, src))
                 addr = dst
             elif frame.cmd == CMD_CLONE_END:
-                print "End frame (%i):\n%s" % (len(frame.payload),
-                                               util.hexprint(frame.payload))
-                print "Last addr: %04x" % addr
+                LOG.debug("End frame (%i):\n%s" %
+                          (len(frame.payload), util.hexprint(frame.payload)))
+                LOG.debug("Last addr: %04x" % addr)
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -393,7 +395,7 @@ def _clone_to_radio(radio):
             frames += stream.get_frames(True)
             result = frames[-1]
         except IndexError:
-            print "Waiting for clone result..."
+            LOG.debug("Waiting for clone result...")
             time.sleep(0.5)
 
     if len(frames) == 0:
@@ -445,7 +447,7 @@ def convert_data_line(line):
             i += 2
             _mmap += struct.pack("B", val)
         except ValueError, e:
-            print "Failed to parse byte: %s" % e
+            LOG.debug("Failed to parse byte: %s" % e)
             break
 
     return _mmap
