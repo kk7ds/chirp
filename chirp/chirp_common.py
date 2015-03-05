@@ -654,9 +654,12 @@ class MTOBankModel(BankModel):
 
 def console_status(status):
     """Write a status object to the console"""
+    import logging
+    from chirp import logger
+    if not logger.is_visible(logging.WARN):
+        return
     import sys
-
-    sys.stderr.write("\r%s" % status)
+    sys.stdout.write("\r%s" % status)
 
 
 class RadioPrompts:
