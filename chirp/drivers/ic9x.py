@@ -15,10 +15,13 @@
 
 import time
 import threading
+import logging
 
 from chirp.drivers import ic9x_ll, icf
 from chirp import chirp_common, errors, util, directory
 from chirp import bitwise
+
+LOG = logging.getLogger(__name__)
 
 IC9XA_SPECIAL = {}
 IC9XB_SPECIAL = {}
@@ -107,7 +110,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def _maybe_send_magic(self):
         if (time.time() - self.__last) > 1:
-            print "Sending magic"
+            LOG.debug("Sending magic")
             ic9x_ll.send_magic(self.pipe)
         self.__last = time.time()
 
@@ -171,15 +174,15 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         for i in range(lo, hi + 1):
             try:
-                print "Getting %i" % i
+                LOG.debug("Getting %i" % i)
                 mem = self.get_memory(i)
                 if mem:
                     memories.append(mem)
-                print "Done: %s" % mem
+                LOG.debug("Done: %s" % mem)
             except errors.InvalidMemoryLocation:
                 pass
             except errors.InvalidDataError, e:
-                print "Error talking to radio: %s" % e
+                LOG.error("Error talking to radio: %s" % e)
                 break
 
         return memories
@@ -256,9 +259,8 @@ class IC9xRadio(icf.IcomLiveRadio):
             if banks[i] != cached_names[i]:
                 need_update = True
                 self.__bankcache[i] = banks[i]
-                print "Updating %s: %s -> %s" % (chr(i + ord("A")),
-                                                 cached_names[i],
-                                                 banks[i])
+                LOG.dbeug("Updating %s: %s -> %s" %
+                          (chr(i + ord("A")), cached_names[i], banks[i]))
 
         if need_update:
             self._lock.acquire()

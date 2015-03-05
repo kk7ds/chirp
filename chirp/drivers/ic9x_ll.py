@@ -14,9 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
+import logging
 
 from chirp import chirp_common, util, errors, bitwise
 from chirp.memmap import MemoryMap
+
+LOG = logging.getLogger(__name__)
 
 TUNING_STEPS = [
     5.0, 6.25, 8.33,  9.0, 10.0, 12.5, 15, 20, 25, 30, 50, 100, 125, 200
@@ -58,7 +61,7 @@ def _ic9x_parse_frames(buf):
             start = buf.index("\xfe\xfe")
             end = buf[start:].index("\xfd") + start + 1
         except Exception, e:
-            print "No trailing bit"
+            LOG.error("No trailing bit")
             break
 
         framedata = buf[start:end]
@@ -69,9 +72,9 @@ def _ic9x_parse_frames(buf):
             frame.from_raw(framedata[2:-1])
             frames.append(frame)
         except errors.InvalidDataError, e:
-            print "Broken frame: %s" % e
+            LOG.error("Broken frame: %s" % e)
 
-        # print "Parsed %i frames" % len(frames)
+        # LOG.debug("Parsed %i frames" % len(frames))
 
     return frames
 
@@ -83,7 +86,7 @@ def ic9x_send(pipe, buf):
     # Add header and trailer
     realbuf = "\xfe\xfe" + buf + "\xfd"
 
-    # print "Sending:\n%s" % util.hexprint(realbuf)
+    # LOG.debug("Sending:\n%s" % util.hexprint(realbuf))
 
     pipe.write(realbuf)
     pipe.flush()
@@ -140,7 +143,7 @@ class IC92Frame:
     def send(self, pipe, verbose=False):
         """Send the frame to the radio via @pipe"""
         if verbose:
-            print "Sending:\n%s" % util.hexprint(self.get_raw())
+            LOG.debug("Sending:\n%s" % util.hexprint(self.get_raw()))
 
         response = ic9x_send(pipe, self.get_raw())
 
@@ -334,7 +337,8 @@ class IC92MemoryFrame(IC92Frame):
         if mem.number < 0:
             self.set_iscall(True)
             mem.number = abs(mem.number) - 1
-            print "Memory is %i (call %s)" % (mem.number, self.get_iscall())
+            LOG.debug("Memory is %i (call %s)" %
+                      (mem.number, self.get_iscall()))
 
         _mem = bitwise.parse(MEMORY_FRAME_FORMAT, self).mem
 
@@ -439,7 +443,7 @@ def send_magic(pipe):
         resp = _send_magic_38400(pipe)
         if resp:
             return
-        print "Switching from 38400 to 4800"
+        LOG.info("Switching from 38400 to 4800")
         pipe.setBaudrate(4800)
         resp = _send_magic_4800(pipe)
         pipe.setBaudrate(38400)
@@ -450,7 +454,7 @@ def send_magic(pipe):
         resp = _send_magic_4800(pipe)
         if resp:
             return
-        print "Switching from 4800 to 38400"
+        LOG.info("Switching from 4800 to 38400")
         pipe.setBaudrate(38400)
         resp = _send_magic_38400(pipe)
         if resp:
@@ -498,8 +502,8 @@ def set_memory(pipe, vfo, memory):
     frame.set_memory(memory)
     frame.set_vfo(vfo)
 
-    # print "Sending (%i):" % (len(frame.get_raw()))
-    # print util.hexprint(frame.get_raw())
+    # LOG.debug("Sending (%i):" % (len(frame.get_raw())))
+    # LOG.debug(util.hexprint(frame.get_raw()))
 
     rframe = frame.send(pipe)
 
