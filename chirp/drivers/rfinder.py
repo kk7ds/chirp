@@ -16,9 +16,12 @@
 import urllib
 import hashlib
 import re
+import logging
 
 from math import pi, cos, acos, sin, atan2
 from chirp import chirp_common, CHIRP_VERSION
+
+LOG = logging.getLogger(__name__)
 
 EARTH_RADIUS = 3963.1
 
@@ -174,8 +177,8 @@ class RFinderParser:
 
     def fetch_data(self, user, pw, coords, radius):
         """Fetches the data for a set of parameters"""
-        print user
-        print pw
+        LOG.debug(user)
+        LOG.debug(pw)
         args = {
             "email": urllib.quote_plus(user),
             "pass": hashlib.new("md5", pw).hexdigest(),
@@ -188,7 +191,7 @@ class RFinderParser:
         _url = "https://www.rfinder.net/query.php?%s" % \
                ("&".join(["%s=%s" % (k, v) for k, v in args.items()]))
 
-        print "Query URL: %s" % _url
+        LOG.debug("Query URL: %s" % _url)
 
         f = urllib.urlopen(_url)
         data = f.read()
@@ -210,7 +213,7 @@ class RFinderParser:
             try:
                 vals[SCHEMA[i]] = _vals[i]
             except IndexError:
-                print "No such vals %s" % SCHEMA[i]
+                LOG.error("No such vals %s" % SCHEMA[i])
         self.__cheat = vals
 
         mem.name = vals["TRUSTEE"]
@@ -238,7 +241,7 @@ class RFinderParser:
                 bear = fuzzy_to(self.__lat, self.__lon, lat, lon)
                 mem.comment = "(%imi %s) %s" % (dist, bear, mem.comment)
             except Exception, e:
-                print "Failed to calculate distance: %s" % e
+                LOG.error("Failed to calculate distance: %s" % e)
 
         return mem
 
@@ -257,13 +260,11 @@ class RFinderParser:
                 self.__memories.append(mem)
             except Exception, e:
                 import traceback
-                import sys
-                traceback.print_exc(file=sys.stdout)
-                print "Error in received data, cannot continue"
-                print e
-                print self.__cheat
-                print line
-                print "\n\n"
+                LOG.error(traceback.format_exc())
+                LOG.error("Error in received data, cannot continue")
+                LOG.error(e)
+                LOG.error(self.__cheat)
+                LOG.error(line)
 
     def get_memories(self):
         """Return the Memory objects associated with the fetched data"""
@@ -328,7 +329,7 @@ def _test():
     rfp.parse_data(data)
 
     for mem in rfp.get_memories():
-        print mem
+        LOG.debug(mem)
 
 if __name__ == "__main__":
     _test()
