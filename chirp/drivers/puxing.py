@@ -17,8 +17,12 @@
 
 import time
 import os
+import logging
+
 from chirp import util, chirp_common, bitwise, errors, directory
 from chirp.drivers.wouxun import wipe_memory, do_download, do_upload
+
+LOG = logging.getLogger(__name__)
 
 
 def _puxing_prep(radio):
@@ -30,7 +34,7 @@ def _puxing_prep(radio):
     radio.pipe.write("M\x02")
     ident = radio.pipe.read(8)
     if len(ident) != 8:
-        print util.hexprint(ident)
+        LOG.debug(util.hexprint(ident))
         raise Exception("Radio did not send identification")
 
     radio.pipe.write("\x06")
@@ -173,8 +177,8 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
             try:
                 rf.valid_bands = [PUXING_777_BANDS[limit_idx]]
             except IndexError:
-                print "Invalid band index %i (0x%02x)" % \
-                    (limit_idx, self._memobj.model.limits)
+                LOG.error("Invalid band index %i (0x%02x)" %
+                          (limit_idx, self._memobj.model.limits))
                 rf.valid_bands = [PUXING_777_BANDS[1]]
         elif self._memobj.model.model == PUXING_MODELS[328]:
             # There are PX-777 that says to be model 328 ...
@@ -356,7 +360,7 @@ def puxing_2r_prep(radio):
 
     radio.pipe.write(ack)
     ident = radio.pipe.read(16)
-    print "Radio ident: %s (%i)" % (repr(ident), len(ident))
+    LOG.info("Radio ident: %s (%i)" % (repr(ident), len(ident)))
 
 
 def puxing_2r_download(radio):
@@ -475,8 +479,8 @@ class Puxing2RRadio(chirp_common.CloneModeRadio):
             try:
                 mem.name += PX2R_CHARSET[i]
             except Exception:
-                print "Unknown name char %i: 0x%02x (mem %i)" % (count,
-                                                                 i, number)
+                LOG.error("Unknown name char %i: 0x%02x (mem %i)" %
+                          (count, i, number))
                 mem.name += " "
             count += 1
         mem.name = mem.name.rstrip()

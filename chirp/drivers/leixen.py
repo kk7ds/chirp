@@ -15,6 +15,7 @@
 
 import struct
 import os
+import logging
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
@@ -23,6 +24,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0184;
@@ -252,8 +255,9 @@ def make_frame(cmd, addr, data=""):
 
 
 def send(radio, frame):
-    # print "%04i P>R: %s" % \
-    #       (len(frame), util.hexprint(frame).replace("\n", "\n          "))
+    # LOG.debug("%04i P>R: %s" %
+    #           (len(frame),
+    #            util.hexprint(frame).replace("\n", "\n          ")))
     try:
         radio.pipe.write(frame)
     except Exception, e:
@@ -262,16 +266,16 @@ def send(radio, frame):
 
 def recv(radio, readdata=True):
     hdr = radio.pipe.read(4)
-    # print "%04i P<R: %s" % \
-    #       (len(hdr), util.hexprint(hdr).replace("\n", "\n          "))
+    # LOG.debug("%04i P<R: %s" %
+    #           (len(hdr), util.hexprint(hdr).replace("\n", "\n          ")))
     if hdr == "\x09\x00\x09":
         raise errors.RadioError("Radio rejected command.")
     cmd, length, addr = struct.unpack(">BBH", hdr)
     length -= 2
     if readdata:
         data = radio.pipe.read(length)
-        # print "     P<R: %s" % \
-        #       util.hexprint(hdr + data).replace("\n", "\n          ")
+        # LOG.debug("     P<R: %s" %
+        #           util.hexprint(hdr + data).replace("\n", "\n          "))
         if len(data) != length:
             raise errors.RadioError("Radio sent %i bytes (expected %i)" % (
                     len(data), length))
@@ -284,7 +288,8 @@ def recv(radio, readdata=True):
 def do_ident(radio):
     send(radio, "\x02\x06LEIXEN\x17")
     ident = radio.pipe.read(9)
-    print "     P<R: %s" % util.hexprint(ident).replace("\n", "\n          ")
+    LOG.debug("     P<R: %s" %
+              util.hexprint(ident).replace("\n", "\n          "))
     if ident != "\x06\x06leixen\x13":
         raise errors.RadioError("Radio refused program mode")
     radio.pipe.write("\x06\x00\x06")
@@ -329,8 +334,8 @@ def do_upload(radio):
         for addr in range(start, end, 0x10):
             frame = make_frame("W", addr, radio._mmap[addr:addr + 0x10])
             send(radio, frame)
-            # print "     P<R: %s" % \
-            #       util.hexprint(frame).replace("\n", "\n          ")
+            # LOG.debug("     P<R: %s" %
+            #           util.hexprint(frame).replace("\n", "\n          "))
             radio.pipe.write("\x06\x00\x06")
             ack = radio.pipe.read(3)
             if ack != "\x06\x00\x06":
@@ -592,7 +597,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                     filtered += char
                 else:
                     filtered += " "
-            print "Filtered: %s" % filtered
+            LOG.debug("Filtered: %s" % filtered)
             return filtered
 
         rs = RadioSetting("messages.user1", "User-defined Message 1",
@@ -780,8 +785,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             return self._get_settings()
         except:
             import traceback
-            print "Failed to parse settings:"
-            traceback.print_exc()
+            LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None
 
     def set_settings(self, settings):
@@ -809,7 +813,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     elif setting == "keylock_off":
                         setattr(obj, setting, not int(element.value))
@@ -840,10 +844,10 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                     elif setting == "lptime":
                         setattr(obj, setting, int(element.value) + 5)
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
     @classmethod
