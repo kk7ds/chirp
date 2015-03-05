@@ -99,7 +99,8 @@ class VX5BankModel(chirp_common.BankModel):
         _bank_used = self._radio._memobj.bank_used[bank.index]
         for i in range(0, len(_members)):
             if _members[i].status == 0xFF:
-                # print "empty found, inserting %d at %d" % (memory.number, i)
+                # LOG.debug("empty found, inserting %d at %d" %
+                #           (memory.number, i))
                 if self._radio._memobj.current_bank == 0xFF:
                     self._radio._memobj.current_bank = bank.index
                 _members[i].status = 0x00

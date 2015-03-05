@@ -415,17 +415,17 @@ class VX8BankModel(chirp_common.BankModel):
             vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
 
             if vfo.checksum != vfo_bak.checksum:
-                print "Warning: VFO settings are inconsistent with backup"
+                LOG.warn("VFO settings are inconsistent with backup")
             else:
                 if ((chosen_bank[vfo_index] is None) and
                         (vfo.bank_index != 0xFFFF)):
-                    print "Disabling banks for VFO %d" % vfo_index
+                    LOG.info("Disabling banks for VFO %d" % vfo_index)
                     vfo.bank_index = 0xFFFF
                     vfo.mr_index = 0xFFFF
                     vfo.bank_enable = 0xFFFF
                 elif ((chosen_bank[vfo_index] is not None) and
                         (vfo.bank_index == 0xFFFF)):
-                    print "Enabling banks for VFO %d" % vfo_index
+                    LOG.debug("Enabling banks for VFO %d" % vfo_index)
                     vfo.bank_index = chosen_bank[vfo_index]
                     vfo.mr_index = chosen_mr[vfo_index]
                     vfo.bank_enable = 0x0000
@@ -1400,8 +1400,7 @@ class VX8DRadio(VX8Radio):
             return self._get_settings()
         except:
             import traceback
-            print "Failed to parse settings:"
-            traceback.print_exc()
+            LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None
 
     @staticmethod
@@ -1491,11 +1490,11 @@ class VX8DRadio(VX8Radio):
                 continue
             try:
                 if element.has_apply_callback():
-                    print "Using apply callback"
+                    LOG.debug("Using apply callback")
                     try:
                         element.run_apply_callback()
                     except NotImplementedError as e:
-                        print e
+                        LOG.error(e)
                     continue
 
                 # Find the object containing setting.
@@ -1516,10 +1515,10 @@ class VX8DRadio(VX8Radio):
                             element.get_name(), old_val, element.value))
                     setattr(obj, setting, element.value)
                 except AttributeError as e:
-                    print "Setting %s is not in the memory map: %s" % (
-                        element.get_name(), e)
+                    LOG.error("Setting %s is not in the memory map: %s" %
+                              (element.get_name(), e))
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     def apply_ff_padded_yaesu(cls, setting, obj):

@@ -18,15 +18,13 @@ from chirp import bitwise
 
 import time
 import struct
+import logging
 
-
-def _debug(string):
-    pass
-    print string
+LOG = logging.getLogger(__name__)
 
 
 def _send(radio, data):
-    _debug("Sending %s" % repr(data))
+    LOG.debug("Sending %s" % repr(data))
     radio.pipe.write(data)
     radio.pipe.flush()
     echo = radio.pipe.read(len(data))
@@ -46,7 +44,7 @@ def _spoonfeed(radio, data):
         # so just blindly send the data
         echo = radio.pipe.read(1)
         if echo != byte:
-            print "%02x != %02x" % (ord(echo), ord(byte))
+            LOG.debug("%02x != %02x" % (ord(echo), ord(byte)))
             raise errors.RadioError("No echo?")
         # count += 1
 
@@ -105,7 +103,7 @@ def _upload(radio):
         ack = "\x06"
         time.sleep(0.5)
         if ack != "\x06":
-            print repr(ack)
+            LOG.debug(repr(ack))
             raise errors.RadioError("Radio did not ack block %i" % (i / 132))
         # radio.pipe.read(1)
         if radio.status_fn:

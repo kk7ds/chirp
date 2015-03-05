@@ -16,6 +16,9 @@
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, directory, bitwise
 from textwrap import dedent
+import logging
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0611;
@@ -280,8 +283,8 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         try:
             mem.power = levels[_mem.power]
         except IndexError:
-            print "Radio reported invalid power level %s (in %s)" % (
-                _mem.power, levels)
+            LOG.error("Radio reported invalid power level %s (in %s)" %
+                      (_mem.power, levels))
             mem.power = levels[0]
 
         for i in _mem.name:
