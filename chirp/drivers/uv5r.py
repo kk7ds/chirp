@@ -519,6 +519,7 @@ def _do_download(radio):
     for i in range(0, 0x1800, 0x40):
         data += _read_block(radio, i, 0x40)
         _do_status(radio, i)
+    _do_status(radio, radio.get_memsize())
     LOG.debug("done.")
     LOG.debug("downloading aux block...")
     # Auxiliary block starts at 0x1ECO (?)
@@ -568,6 +569,7 @@ def _do_upload(radio):
     for i in range(0x08, 0x1808, 0x10):
         _send_block(radio, i - 0x08, radio.get_mmap()[i:i + 0x10])
         _do_status(radio, i)
+    _do_status(radio, radio.get_memsize())
 
     if len(radio.get_mmap().get_packed()) == 0x1808:
         LOG.info("Old image, not writing aux block")
