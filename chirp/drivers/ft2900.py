@@ -258,7 +258,6 @@ def _encode_name(mem):
 
 def _wipe_memory(mem):
     mem.set_raw("\xff" * (mem.size() / 8))
-    mem.empty = True
 
 
 @directory.register
