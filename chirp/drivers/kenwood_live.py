@@ -54,7 +54,7 @@ def command(ser, cmd, *args):
     while not result.endswith("\r"):
         result += ser.read(8)
         if (time.time() - start) > 0.5:
-            print "Timeout waiting for data"
+            LOG.error("Timeout waiting for data")
             break
 
     LOG.debug("D7->PC: %s" % result.strip())
@@ -74,7 +74,7 @@ def get_id(ser):
     bauds.insert(0, LAST_BAUD)
 
     for i in bauds:
-        print "Trying ID at baud %i" % i
+        LOG.info("Trying ID at baud %i" % i)
         ser.setBaudrate(i)
         ser.write("\r")
         ser.read(25)
@@ -166,7 +166,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             self.__memcache[mem.number] = mem
             return mem
         elif " " not in result:
-            print "Not sure what to do with this: `%s'" % result
+            LOG.error("Not sure what to do with this: `%s'" % result)
             raise errors.RadioError("Unexpected result returned from radio")
 
         value = result.split(" ")[1]
@@ -350,7 +350,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         if spec[11] and spec[11].isdigit():
             mem.dtcs = chirp_common.DTCS_CODES[int(spec[11][:-1]) - 1]
         else:
-            print "Unknown or invalid DCS: %s" % spec[11]
+            LOG.warn("Unknown or invalid DCS: %s" % spec[11])
         if spec[13]:
             mem.offset = int(spec[13])
         else:
@@ -489,7 +489,7 @@ class THD7Radio(KenwoodOldLiveRadio):
             elif isinstance(element.value, RadioSettingValueString):
                 self._kenwood_set(element.get_name(), str(element.value))
             else:
-                print "Unknown type %s" % element.value
+                LOG.error("Unknown type %s" % element.value)
 
 
 @directory.register
@@ -561,7 +561,7 @@ class TMD700Radio(KenwoodOldLiveRadio):
         if spec[11] and spec[11].isdigit():
             mem.dtcs = chirp_common.DTCS_CODES[int(spec[11][:-1]) - 1]
         else:
-            print "Unknown or invalid DCS: %s" % spec[11]
+            LOG.warn("Unknown or invalid DCS: %s" % spec[11])
         if spec[13]:
             mem.offset = int(spec[13])
         else:
@@ -811,7 +811,7 @@ class THF6ARadio(KenwoodLiveRadio):
         if spec[11] and spec[11].isdigit():
             mem.dtcs = chirp_common.DTCS_CODES[int(spec[11])]
         else:
-            print "Unknown or invalid DCS: %s" % spec[11]
+            LOG.warn("Unknown or invalid DCS: %s" % spec[11])
         if spec[12]:
             mem.offset = int(spec[12])
         else:
@@ -830,7 +830,7 @@ class THF6ARadio(KenwoodLiveRadio):
             duplex = 0
             offset = 0
         else:
-            print "Bug: unsupported duplex `%s'" % mem.duplex
+            LOG.warn("Bug: unsupported duplex `%s'" % mem.duplex)
         spec = (
             "%011i" % mem.freq,
             "%X" % THF6A_STEPS.index(mem.tuning_step),

@@ -15,9 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import csv
+import logging
 
 from chirp import chirp_common, errors, directory
 from chirp.drivers import generic_csv
+
+LOG = logging.getLogger(__name__)
 
 
 class OmittedHeaderError(Exception):
@@ -102,8 +105,8 @@ class ITMRadio(generic_csv.CSVRadio):
                 break
 
             if len(header) > len(line):
-                print "Line %i has %i columns, expected %i" % \
-                      (lineno, len(line), len(header))
+                LOG.error("Line %i has %i columns, expected %i" %
+                          (lineno, len(line), len(header)))
                 self.errors.append("Column number mismatch on line %i" %
                                    lineno)
                 continue
@@ -116,7 +119,7 @@ class ITMRadio(generic_csv.CSVRadio):
                 if mem.number is None:
                     raise Exception("Invalid Location field" % lineno)
             except Exception, e:
-                print "Line %i: %s" % (lineno, e)
+                LOG.error("Line %i: %s" % (lineno, e))
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
 
@@ -125,7 +128,8 @@ class ITMRadio(generic_csv.CSVRadio):
             good += 1
 
         if not good:
-            print self.errors
+            for e in errors:
+                LOG.error(e)
             raise errors.InvalidDataError("No channels found")
 
     @classmethod
