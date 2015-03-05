@@ -17,5 +17,5 @@ fi
 
 source ${VENV}/bin/activate
 pip install pep8==${PEP8_VERSION} >${VENV}/pep8.log 2>&1
-./tools/cpep8.py "$@"
+${TOOLS_DIR}/cpep8.py "$@"
 deactivate

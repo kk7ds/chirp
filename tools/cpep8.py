@@ -90,12 +90,14 @@ def get_exceptions(f):
     return ignore
 
 if args.update:
+    print "Starting update of %d files" % len(manifest)
     bad = []
     for f in manifest:
         checker = pep8.StyleGuide(quiet=True, ignore=get_exceptions(f))
         results = checker.check_files([f])
         if results.total_errors:
             bad.append(f)
+        print "%s: %s" % (results.total_errors and "FAIL" or "PASS", f)
 
     with file(blacklist_filename, "w") as fh:
         print >>fh, """\
