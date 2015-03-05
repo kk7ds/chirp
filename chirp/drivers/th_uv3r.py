@@ -16,8 +16,11 @@
 """TYT uv3r radio management module"""
 
 import os
+import logging
 from chirp import chirp_common, bitwise, errors, directory
 from chirp.drivers.wouxun import do_download, do_upload
+
+LOG = logging.getLogger(__name__)
 
 
 def tyt_uv3r_prep(radio):
@@ -260,7 +263,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
                 c = THUV3R_CHARSET.index(" ")
             name.append(c)
         _mem.name = name
-        print repr(_mem)
+        LOG.debug(repr(_mem))
 
     @classmethod
     def match_model(cls, filedata, filename):

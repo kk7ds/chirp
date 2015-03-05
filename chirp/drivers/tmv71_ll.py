@@ -146,14 +146,14 @@ def get_mem_offset(number):
 
 def get_raw_mem(map, number):
     base = get_mem_offset(number)
-    # print "Offset for %i is %04x" % (number, base)
+    # LOG.debug("Offset for %i is %04x" % (number, base))
     return map[base:base+MEM_LOC_SIZE]
 
 
 def get_used(map, number):
     pos = MEM_FLG_BASE + (number * 2)
     flag = ord(map[pos])
-    print "Flag byte is %02x" % flag
+    LOG.debug("Flag byte is %02x" % flag)
     return not (flag & 0x80)
 
 
@@ -239,7 +239,7 @@ def get_tone(mmap, offset):
 
 
 def set_tone(mmap, tone, offset):
-    print tone
+    LOG.debug(tone)
     mmap[offset] = chirp_common.TONES.index(tone)
 
 

@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
+import logging
 
 from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
@@ -21,6 +22,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
+
+LOG = logging.getLogger(__name__)
 
 
 def uvf1_identify(radio):
@@ -31,7 +34,7 @@ def uvf1_identify(radio):
         raise errors.RadioError("Radio did not respond")
     radio.pipe.write("\x02")
     ident = radio.pipe.read(16)
-    print "Ident:\n%s" % util.hexprint(ident)
+    LOG.info("Ident:\n%s" % util.hexprint(ident))
     radio.pipe.write("\x06")
     ack = radio.pipe.read(1)
     if ack != "\x06":
@@ -83,7 +86,7 @@ def uvf1_upload(radio):
         radio.pipe.write(msg)
         ack = radio.pipe.read(1)
         if ack != "\x06":
-            print repr(ack)
+            LOG.debug(repr(ack))
             raise errors.RadioError("Radio did not ack block %i" % i)
         status = chirp_common.Status()
         status.cur = i
@@ -352,7 +355,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             return
 
         if _mem.get_raw() == ("\xFF" * 16):
-            print "Initializing empty memory"
+            LOG.debug("Initializing empty memory")
             _mem.set_raw("\x00" * 16)
 
         _mem.rx_freq = mem.freq / 10
@@ -459,7 +462,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
                          RadioSettingValueBoolean(_settings.disnm)))
 
         def _filter(name):
-            print repr(str(name))
+            LOG.debug(repr(str(name)))
             return str(name).rstrip("\xFF").rstrip()
 
         group.append(

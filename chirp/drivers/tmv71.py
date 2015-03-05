@@ -15,6 +15,9 @@
 
 from chirp import chirp_common, errors, util
 from chirp.drivers import tmv71_ll
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 class TMV71ARadio(chirp_common.CloneModeRadio):
@@ -38,7 +41,7 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
             self.pipe.read(32)
             try:
                 id = tmv71_ll.get_id(self.pipe)
-                print "Radio %s at %i baud" % (id, baud)
+                LOG.info("Radio %s at %i baud" % (id, baud))
                 return True
             except errors.RadioError:
                 pass

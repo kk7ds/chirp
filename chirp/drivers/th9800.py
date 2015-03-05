@@ -594,7 +594,7 @@ class TYTTH9800Base(chirp_common.Radio):
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
 
@@ -637,7 +637,7 @@ def _identify(radio):
             raise errors.RadioError("Radio did not ACK first command: %x"
                                     % ord(ack))
     except:
-        print util.hexprint(ack)
+        LOG.debug(util.hexprint(ack))
         raise errors.RadioError("Unable to communicate with the radio")
 
     radio.pipe.write("M\x02")
@@ -652,19 +652,19 @@ def _identify(radio):
 def _download(radio, memsize=0x10000, blocksize=0x80):
     """Download from TYT TH-9800"""
     data = _identify(radio)
-    print "ident:", util.hexprint(data)
+    LOG.info("ident:", util.hexprint(data))
     offset = 0x100
     for addr in range(offset, memsize, blocksize):
         msg = struct.pack(">cHB", "R", addr, blocksize)
         radio.pipe.write(msg)
         block = radio.pipe.read(blocksize + 4)
         if len(block) != (blocksize + 4):
-            print util.hexprint(block)
+            LOG.debug(util.hexprint(block))
             raise errors.RadioError("Radio sent a short block")
         radio.pipe.write("A")
         ack = radio.pipe.read(1)
         if ack != "A":
-            print util.hexprint(ack)
+            LOG.debug(util.hexprint(ack))
             raise errors.RadioError("Radio NAKed block")
         data += block[4:]
 
@@ -715,11 +715,11 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
         LOG.debug("addr: 0x%04X, mmapaddr: 0x%04X" % (addr, mapaddr))
         msg = struct.pack(">cHB", "W", addr, blocksize)
         msg += radio._mmap[mapaddr:(mapaddr + blocksize)]
-        print util.hexprint(msg)
+        LOG.debug(util.hexprint(msg))
         radio.pipe.write(msg)
         ack = radio.pipe.read(1)
         if ack != "A":
-            print util.hexprint(ack)
+            LOG.debug(util.hexprint(ack))
             raise errors.RadioError("Radio did not ack block 0x%04X" % addr)
 
         if radio.status_fn:

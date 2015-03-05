@@ -209,7 +209,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
             self.pipe.read(32)
             try:
                 id = self.get_id()
-                print "Radio %s at %i baud" % (id, baud)
+                LOG.info("Radio %s at %i baud" % (id, baud))
                 return True
             except errors.RadioError:
                 pass
@@ -224,7 +224,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         if block not in self._dirty_blocks:
             self._dirty_blocks.append(block)
         self._dirty_blocks.sort()
-        print "dirty blocks:", self._dirty_blocks
+        print("dirty blocks: ", self._dirty_blocks)
 
     def get_channel_name(self, number):
         if number < 999:
@@ -299,7 +299,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        print "set_memory(%d)" % mem.number
+        LOG.debug("set_memory(%d)" % mem.number)
         if mem.number < 0 or mem.number > (max(THD72_SPECIAL.values()) + 1):
             raise errors.InvalidMemoryLocation(
                 "Number must be between 0 and 999")
@@ -397,7 +397,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         self.pipe.setRTS()
         self.pipe.read(1)
         data = ""
-        print "reading blocks %d..%d" % (blocks[0], blocks[-1])
+        LOG.debug("reading blocks %d..%d" % (blocks[0], blocks[-1]))
         total = len(blocks)
         count = 0
         for i in allblocks:
@@ -432,7 +432,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         self.pipe.getCTS()
         self.pipe.setRTS()
         self.pipe.read(1)
-        print "writing blocks %d..%d" % (blocks[0], blocks[-1])
+        LOG.debug("writing blocks %d..%d" % (blocks[0], blocks[-1]))
         total = len(blocks)
         count = 0
         for i in blocks:

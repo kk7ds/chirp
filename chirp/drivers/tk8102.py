@@ -64,7 +64,7 @@ def make_frame(cmd, addr, length, data=""):
 
 
 def send(radio, frame):
-    # print "%04i P>R: %s" % (len(frame), util.hexprint(frame))
+    # LOG.debug("%04i P>R: %s" % (len(frame), util.hexprint(frame)))
     radio.pipe.write(frame)
 
 
@@ -73,7 +73,7 @@ def recv(radio, readdata=True):
     cmd, addr, length = struct.unpack(">BHB", hdr)
     if readdata:
         data = radio.pipe.read(length)
-        # print "     P<R: %s" % util.hexprint(hdr + data)
+        # LOG.debug("     P<R: %s" % util.hexprint(hdr + data))
         if len(data) != length:
             raise errors.RadioError("Radio sent %i bytes (expected %i)" % (
                     len(data), length))
@@ -93,7 +93,7 @@ def do_ident(radio):
     if ident[1:5] != radio.MODEL.split("-")[1]:
         raise errors.RadioError("Incorrect model: TK-%s, expected %s" % (
                 ident[1:5], radio.MODEL))
-    print "Model: %s" % util.hexprint(ident)
+    LOG.info("Model: %s" % util.hexprint(ident))
     radio.pipe.write("\x06")
     ack = radio.pipe.read(1)
 
@@ -413,7 +413,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         model = filedata[0x03D1:0x03D5]
-        print model
+        LOG.debug(model)
         return model == cls.MODEL.split("-")[1]
 
 

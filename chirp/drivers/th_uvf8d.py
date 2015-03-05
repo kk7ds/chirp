@@ -22,14 +22,16 @@
 # TODO: [setting] Tail Eliminate
 # TODO: [setting] Tail Mode
 
-
 import struct
+import logging
 
 from chirp import chirp_common, bitwise, errors, directory, memmap, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
+
+LOG = logging.getLogger(__name__)
 
 
 def uvf8d_identify(radio):
@@ -442,7 +444,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
             e.flags[7 - ((mem.number - 1) % 8)] = True
 
         if _mem.get_raw() == ("\xFF" * 32):
-            print "Initializing empty memory"
+            LOG.debug("Initializing empty memory")
             _mem.set_raw("\x00" * 32)
 
         _mem.rx_freq = mem.freq / 10
@@ -625,7 +627,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
                     _settings.rxsave = 0
                 continue
             if element.get_name().endswith('_channel'):
-                print element.value, type(element.value)
+                LOG.debug(element.value, type(element.value))
                 setattr(_settings, element.get_name(), int(element.value) - 1)
                 continue
             if not isinstance(element, RadioSetting):
