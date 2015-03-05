@@ -15,12 +15,15 @@
 
 import struct
 from time import sleep
+import logging
 
 from chirp import chirp_common, directory, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     InvalidValueError, RadioSettings
+
+LOG = logging.getLogger(__name__)
 
 
 def chunks(s, t):
@@ -91,8 +94,8 @@ def download(radio):
     else:
         raise errors.RadioError("Incomplete data received.")
 
-    print "%04i P<R: %s" % (
-        len(buf), util.hexprint(buf).replace("\n", "\n          "))
+    LOG.debug("%04i P<R: %s" %
+              (len(buf), util.hexprint(buf).replace("\n", "\n          ")))
     return buf
 
 
@@ -189,7 +192,7 @@ class AP510Memory(object):
             if '=' in line:
                 data.append(line.split('=', 1))
         self._memobj = dict(data)
-        print self.version
+        LOG.debug(self.version)
 
     def __getattr__(self, name):
         if hasattr(self, 'get_%s' % name):
@@ -751,7 +754,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
                     multiple['tf_card'] = TF_CARD.index(str(setting.value))
                     self._mmap.multiple = multiple
             except:
-                print setting.get_name()
+                LOG.debug(setting.get_name())
                 raise
 
     def set_callsign(self, callsign=None, ssid=None):

@@ -18,6 +18,9 @@ from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettings
 
 import time
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 DRX35_MEM_FORMAT = """
@@ -92,13 +95,13 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
     _model = "NONE"
 
     def _send(self, data):
-        print "PC->R: (%2i) %s" % (len(data), tohex(data))
+        LOG.debug("PC->R: (%2i) %s" % (len(data), tohex(data)))
         self.pipe.write(data)
         self.pipe.read(len(data))
 
     def _read(self, length):
         data = self.pipe.read(length)
-        print "R->PC: (%2i) %s" % (len(data), tohex(data))
+        LOG.debug("R->PC: (%2i) %s" % (len(data), tohex(data)))
         return data
 
     def _download_chunk(self, addr):
@@ -119,10 +122,10 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             data += chr(int(_data[i:i+2], 16))
 
         if len(data) != 16:
-            print "Response was:"
-            print "|%s|"
-            print "Which I converted to:"
-            print util.hexprint(data)
+            LOG.debug("Response was:")
+            LOG.debug("|%s|")
+            LOG.debug("Which I converted to:")
+            LOG.debug(util.hexprint(data))
             raise Exception("Radio returned less than 16 bytes")
 
         return data
@@ -556,10 +559,10 @@ class DJ175Radio(DRx35Radio):
             data += chr(int(_data[i:i+2], 16))
 
         if len(data) != 16:
-            print "Response was:"
-            print "|%s|"
-            print "Which I converted to:"
-            print util.hexprint(data)
+            LOG.debug("Response was:")
+            LOG.debug("|%s|")
+            LOG.debug("Which I converted to:")
+            LOG.debug(util.hexprint(data))
             raise Exception("Radio returned less than 16 bytes")
 
         return data

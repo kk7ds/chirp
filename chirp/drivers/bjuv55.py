@@ -18,6 +18,7 @@
 import struct
 import time
 import os
+import logging
 
 from chirp.drivers import uv5r
 from chirp import chirp_common, errors, util, directory, memmap
@@ -27,6 +28,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 
 BJUV55_MODEL = "\x50\xBB\xDD\x55\x63\x98\x4D"
@@ -642,8 +645,8 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
             try:
                 val = element.value
                 value = int(val.get_value() * 10 - 870)
-                print "Setting fm_preset = %s" % (value)
+                LOG.debug("Setting fm_preset = %s" % (value))
                 self._memobj.fm_preset = value
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise

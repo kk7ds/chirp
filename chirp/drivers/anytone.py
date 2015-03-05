@@ -178,7 +178,7 @@ def _echo_write(radio, data):
         radio.pipe.write(data)
         radio.pipe.read(len(data))
     except Exception, e:
-        print "Error writing to radio: %s" % e
+        LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
 
@@ -186,13 +186,13 @@ def _read(radio, length):
     try:
         data = radio.pipe.read(length)
     except Exception, e:
-        print "Error reading from radio: %s" % e
+        LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
     if len(data) != length:
-        print "Short read from radio (%i, expected %i)" % (len(data),
-                                                           length)
-        print util.hexprint(data)
+        LOG.error("Short read from radio (%i, expected %i)" %
+                  (len(data), length))
+        LOG.debug(util.hexprint(data))
         raise errors.RadioError("Short read from radio")
     return data
 
@@ -204,13 +204,13 @@ def _ident(radio):
     _echo_write(radio, "PROGRAM")
     response = radio.pipe.read(3)
     if response != "QX\x06":
-        print "Response was:\n%s" % util.hexprint(response)
+        LOG.debug("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model")
     _echo_write(radio, "\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
     if response[1:8] not in valid_model:
-        print "Response was:\n%s" % util.hexprint(response)
+        LOG.debug("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model")
 
 
@@ -219,7 +219,7 @@ def _finish(radio):
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
     if result != "\x06":
-        print "Got:\n%s" % util.hexprint(result)
+        LOG.debug("Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
 
@@ -241,7 +241,7 @@ def _send(radio, cmd, addr, length, data=None):
     if data:
         result = radio.pipe.read(1)
         if result != "\x06":
-            print "Ack was: %s" % repr(result)
+            LOG.debug("Ack was: %s" % repr(result))
             raise errors.RadioError(
                 "Radio did not accept block at %04x" % addr)
         return
@@ -251,18 +251,18 @@ def _send(radio, cmd, addr, length, data=None):
     data = result[4:-2]
     ack = result[-1]
     if ack != "\x06":
-        print "Ack was: %s" % repr(ack)
+        LOG.debug("Ack was: %s" % repr(ack))
         raise errors.RadioError("Radio NAK'd block at %04x" % addr)
     _cmd, _addr, _length = struct.unpack(">cHb", header)
     if _addr != addr or _length != _length:
-        print "Expected/Received:"
-        print " Length: %02x/%02x" % (length, _length)
-        print " Addr: %04x/%04x" % (addr, _addr)
+        LOG.debug("Expected/Received:")
+        LOG.debug(" Length: %02x/%02x" % (length, _length))
+        LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
     cs = _checksum(result[1:-2])
     if cs != ord(result[-2]):
-        print "Calculated: %02x" % cs
-        print "Actual:     %02x" % ord(result[-2])
+        LOG.debug("Calculated: %02x" % cs)
+        LOG.debug("Actual:     %02x" % ord(result[-2]))
         raise errors.RadioError("Block at 0x%04x failed checksum" % addr)
     return data
 

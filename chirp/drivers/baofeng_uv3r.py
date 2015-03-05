@@ -17,12 +17,16 @@
 
 import time
 import os
+import logging
+
 from wouxun_common import do_download, do_upload
 from chirp import util, chirp_common, bitwise, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
+
+LOG = logging.getLogger(__name__)
 
 
 def _uv3r_prep(radio):
@@ -34,7 +38,7 @@ def _uv3r_prep(radio):
     radio.pipe.write("\x02")
     ident = radio.pipe.read(8)
     if len(ident) != 8:
-        print util.hexprint(ident)
+        LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio did not send identification")
 
     radio.pipe.write("\x06")
@@ -260,7 +264,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             mem.dtcs = tcode
             txmode = "DTCS"
         else:
-            print "Bug: tx_mode is %02x" % _mem.txtone
+            LOG.warn("Bug: tx_mode is %02x" % _mem.txtone)
 
         if _mem.rxtone in [0, 0xFF]:
             rxmode = ""
@@ -272,7 +276,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
             mem.dtcs = rcode
             rxmode = "DTCS"
         else:
-            print "Bug: rx_mode is %02x" % _mem.rxtone
+            LOG.warn("Bug: rx_mode is %02x" % _mem.rxtone)
 
         if txmode == "Tone" and not rxmode:
             mem.tmode = "Tone"
@@ -613,13 +617,13 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
     def _set_fm_preset(self, settings):
@@ -631,11 +635,11 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                     value = int(val[1].get_value() * 10 - 650)
                 else:
                     value = 0x01AF
-                print "Setting fm_presets[%1i] = %s" % (index, value)
+                LOG.debug("Setting fm_presets[%1i] = %s" % (index, value))
                 setting = self._memobj.fm_presets
                 setting[index] = value
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     @classmethod
