@@ -211,8 +211,8 @@ class ChirpMain(gtk.Window):
             common.show_error("Can't diff the same tab!")
             return
 
-        print "Selected %s@%i and %s@%i" % (sel_a, sel_chan_a,
-                                            sel_b, sel_chan_b)
+        LOG.debug("Selected %s@%i and %s@%i" %
+                  (sel_a, sel_chan_a, sel_b, sel_chan_b))
         name_a = os.path.basename(sel_a)
         name_a = name_a[:name_a.rindex(")")]
         name_b = os.path.basename(sel_b)
@@ -352,7 +352,7 @@ of file.
                 radio = self._do_manual_select(fname)
                 if not radio:
                     return
-                print "Manually selected %s" % radio
+                LOG.debug("Manually selected %s" % radio)
             except Exception, e:
                 common.log_exception()
                 common.show_error(os.path.basename(fname) + ": " + str(e))
@@ -545,9 +545,9 @@ of file.
                 continue
             try:
                 shutil.copy(fn, stock_dir)
-                print "Copying %s -> %s" % (fn, stock_dir)
+                LOG.debug("Copying %s -> %s" % (fn, stock_dir))
             except Exception, e:
-                print "ERROR: Unable to copy %s to %s: %s" % (fn, stock_dir, e)
+                LOG.error("Unable to copy %s to %s: %s" % (fn, stock_dir, e))
                 return False
         return True
 
@@ -557,7 +557,7 @@ of file.
             try:
                 os.mkdir(stock_dir)
             except Exception, e:
-                print "ERROR: Unable to create directory: %s" % stock_dir
+                LOG.error("Unable to create directory: %s" % stock_dir)
                 return
         if not self.copy_shipped_stock_configs(stock_dir):
             return
@@ -661,9 +661,8 @@ of file.
 
         self._show_instructions(rclass, rclass.get_prompts().pre_download)
 
-        print "User selected %s %s on port %s" % (rclass.VENDOR,
-                                                  rclass.MODEL,
-                                                  settings.port)
+        LOG.debug("User selected %s %s on port %s" %
+                  (rclass.VENDOR, rclass.MODEL, settings.port))
 
         try:
             ser = serial.Serial(port=settings.port,
@@ -702,7 +701,7 @@ of file.
         prompts = radio.get_prompts()
 
         if prompts.display_pre_upload_prompt_before_opening_port is True:
-            print "Opening port after pre_upload prompt."
+            LOG.debug("Opening port after pre_upload prompt.")
             self._show_instructions(radio, prompts.pre_upload)
 
         if isinstance(radio, chirp_common.ExperimentalRadio) and \
@@ -723,7 +722,7 @@ of file.
             return
 
         if prompts.display_pre_upload_prompt_before_opening_port is False:
-            print "Opening port before pre_upload prompt."
+            LOG.debug("Opening port before pre_upload prompt.")
             self._show_instructions(radio, prompts.pre_upload)
 
         radio.set_pipe(ser)
@@ -911,8 +910,7 @@ of file.
         fn = tempfile.mktemp(".csv")
         filename, headers = urllib.urlretrieve(query, fn)
         if not os.path.exists(filename):
-            print "Failed, headers were:"
-            print str(headers)
+            LOG.error("Failed, headers were: %s", headers)
             common.show_error(_("RepeaterBook query failed"))
             self.window.set_cursor(None)
             return
@@ -990,7 +988,7 @@ of file.
                     args.append("=".join((name.replace(" ", "").lower(),
                                           contents)))
             query += "&".join(args)
-            print query
+            LOG.debug(query)
             d.destroy()
             return query
 
@@ -1005,8 +1003,7 @@ of file.
         fn = tempfile.mktemp(".csv")
         filename, headers = urllib.urlretrieve(url, fn)
         if not os.path.exists(filename):
-            print "Failed, headers were:"
-            print str(headers)
+            LOG.error("Failed, headers were: %s", str(headers))
             common.show_error(_("Query failed"))
             return
 
@@ -1362,7 +1359,7 @@ of file.
         d.label.set_line_wrap(True)
         r = d.run()
         if r == gtk.RESPONSE_OK:
-            print "Chose language %s" % d.choice.get_active_text()
+            LOG.debug("Chose language %s" % d.choice.get_active_text())
             conf = config.get()
             conf.set("language", d.choice.get_active_text(), "state")
         d.destroy()
@@ -1641,7 +1638,7 @@ of file.
         num = self.tabs.get_n_pages()
         while num > 0:
             num -= 1
-            print "Closing %i" % num
+            LOG.debug("Closing %i" % num)
             try:
                 self.do_close(self.tabs.get_nth_page(num))
             except ModifiedError:
@@ -1701,7 +1698,7 @@ of file.
         if os.path.exists(path):
             self.set_icon_from_file(path)
         else:
-            print "Icon %s not found" % path
+            LOG.warn("Icon %s not found" % path)
 
     def _updates(self, version):
         if not version:
@@ -1710,7 +1707,7 @@ of file.
         if version == CHIRP_VERSION:
             return
 
-        print "Server reports version %s is available" % version
+        LOG.info("Server reports version %s is available" % version)
 
         # Report new updates every seven days
         intv = 3600 * 24 * 7
@@ -1735,7 +1732,7 @@ of file.
             import gtk_osxapplication
             macapp = gtk_osxapplication.OSXApplication()
         except ImportError, e:
-            print "No MacOS support: %s" % e
+            LOG.error("No MacOS support: %s" % e)
             return
 
         menu_bar.hide()
@@ -1753,7 +1750,7 @@ of file.
         macapp.set_use_quartz_accelerators(False)
         macapp.ready()
 
-        print "Initialized MacOS support"
+        LOG.debug("Initialized MacOS support")
 
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
