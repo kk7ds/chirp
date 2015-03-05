@@ -418,7 +418,7 @@ def _do_ident(radio, magic):
     serial = radio.pipe
     serial.setTimeout(1)
 
-    print "Sending Magic: %s" % util.hexprint(magic)
+    LOG.info("Sending Magic: %s" % util.hexprint(magic))
     for byte in magic:
         serial.write(byte)
         time.sleep(0.01)
@@ -426,13 +426,13 @@ def _do_ident(radio, magic):
 
     if ack != "\x06":
         if ack:
-            print repr(ack)
+            LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond")
 
     serial.write("\x02")
     ident = serial.read(8)
 
-    print "Ident:\n%s" % util.hexprint(ident)
+    LOG.info("Ident: %s" % util.hexprint(ident))
 
     serial.write("\x06")
     ack = serial.read(1)
@@ -452,15 +452,15 @@ def _read_block(radio, start, size):
 
     cmd, addr, length = struct.unpack(">BHB", answer)
     if cmd != ord("X") or addr != start or length != size:
-        print "Invalid answer for block 0x%04x:" % start
-        print "CMD: %s  ADDR: %04x  SIZE: %02x" % (cmd, addr, length)
+        LOG.error("Invalid answer for block 0x%04x:" % start)
+        LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (cmd, addr, length))
         raise errors.RadioError("Unknown response from radio")
 
     chunk = radio.pipe.read(0x40)
     if not chunk:
         raise errors.RadioError("Radio did not send block 0x%04x" % start)
     elif len(chunk) != size:
-        print "Chunk length was 0x%04i" % len(chunk)
+        LOG.error("Chunk length was 0x%04i" % len(chunk))
         raise errors.RadioError("Radio sent incomplete block 0x%04x" % start)
 
     radio.pipe.write("\x06")
@@ -497,7 +497,7 @@ def _ident_radio(radio):
             data = _do_ident(radio, magic)
             return data
         except errors.RadioError, e:
-            print e
+            LOG.error(e)
             error = e
             time.sleep(2)
     if error:
@@ -509,7 +509,7 @@ def _do_download(radio):
     data = _ident_radio(radio)
 
     radio_version = _get_radio_firmware_version(radio)
-    print "Radio Version is %s" % repr(radio_version)
+    LOG.info("Radio Version is %s" % repr(radio_version))
 
     if not any(type in radio_version for type in radio._basetype):
         raise errors.RadioError("Incorrect 'Model' selected.")
@@ -548,8 +548,8 @@ def _do_upload(radio):
 
     image_version = _firmware_version_from_image(radio)
     radio_version = _get_radio_firmware_version(radio)
-    print "Image Version is %s" % repr(image_version)
-    print "Radio Version is %s" % repr(radio_version)
+    LOG.info("Image Version is %s" % repr(image_version))
+    LOG.info("Radio Version is %s" % repr(radio_version))
 
     if not any(type in radio_version for type in BASETYPE_LIST):
         raise errors.RadioError("Unsupported firmware version: `%s'" %
@@ -557,8 +557,8 @@ def _do_upload(radio):
 
     image_special_block = _special_block_from_image(radio)
     radio_special_block = _get_radio_special_block(radio)
-    print "Image Special Block is " + util.hexprint(image_special_block)
-    print "Radio Special Block is " + util.hexprint(radio_special_block)
+    LOG.debug("Image Special Block is " + util.hexprint(image_special_block))
+    LOG.debug("Radio Special Block is " + util.hexprint(radio_special_block))
 
     if image_special_block != radio_special_block:
         raise errors.RadioError("Image not supported by radio: `%s'" %
@@ -570,7 +570,7 @@ def _do_upload(radio):
         _do_status(radio, i)
 
     if len(radio.get_mmap().get_packed()) == 0x1808:
-        print "Old image, not writing aux block"
+        LOG.info("Old image, not writing aux block")
         return  # Old image, no aux block
 
     if image_version != radio_version:
@@ -776,7 +776,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 index = _mem.txtone - 1
             mem.dtcs = UV5R_DTCS[index]
         else:
-            print "Bug: txtone is %04x" % _mem.txtone
+            LOG.warn("Bug: txtone is %04x" % _mem.txtone)
 
         if _mem.rxtone in [0, 0xFFFF]:
             rxmode = ""
@@ -792,7 +792,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 index = _mem.rxtone - 1
             mem.rx_dtcs = UV5R_DTCS[index]
         else:
-            print "Bug: rxtone is %04x" % _mem.rxtone
+            LOG.warn("Bug: rxtone is %04x" % _mem.rxtone)
 
         if txmode == "Tone" and not rxmode:
             mem.tmode = "Tone"
@@ -816,8 +816,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         try:
             mem.power = levels[_mem.lowpower]
         except IndexError:
-            print "Radio reported invalid power level %s (in %s)" % \
-                  (_mem.power, levels)
+            LOG.error("Radio reported invalid power level %s (in %s)" %
+                      (_mem.power, levels))
             mem.power = levels[0]
 
         mem.mode = _mem.wide and "FM" or "NFM"
@@ -1551,8 +1551,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             return self._get_settings()
         except:
             import traceback
-            print "Failed to parse settings:"
-            traceback.print_exc()
+            LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None
 
     def set_settings(self, settings):
@@ -1583,13 +1582,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
     def _set_fm_preset(self, settings):
@@ -1597,10 +1596,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             try:
                 val = element.value
                 value = int(val.get_value() * 10 - 650)
-                print "Setting fm_presets = %s" % (value)
+                LOG.debug("Setting fm_presets = %s" % (value))
                 self._memobj.fm_presets = value
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
 

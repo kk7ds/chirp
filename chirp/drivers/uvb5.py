@@ -14,12 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
+import logging
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 mem_format = """
 struct memory {
@@ -178,7 +181,7 @@ def do_ident(radio):
         raise errors.RadioError("Radio did not ack programming mode")
     radio.pipe.write("\x02")
     ident = radio.pipe.read(8)
-    print util.hexprint(ident)
+    LOG.debug(util.hexprint(ident))
     if not ident.startswith('HKT511'):
         raise errors.RadioError("Unsupported model")
     radio.pipe.write("\x06")
@@ -205,7 +208,7 @@ def do_download(radio):
         radio.pipe.write(frame)
         result = radio.pipe.read(20)
         if frame[1:4] != result[1:4]:
-            print util.hexprint(result)
+            LOG.debug(util.hexprint(result))
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
         radio.pipe.write("\x06")
         ack = radio.pipe.read(1)
@@ -213,8 +216,8 @@ def do_download(radio):
             firstack = ack
         else:
             if not ack == firstack:
-                print "first ack:", util.hexprint(firstack), \
-                    "ack received:", util.hexprint(ack)
+                LOG.debug("first ack: %s ack received: %s",
+                          util.hexprint(firstack), util.hexprint(ack))
                 raise errors.RadioError("Unexpected response")
         data += result[4:]
         do_status(radio, "from", i)
@@ -755,17 +758,17 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     elif setting == "beep_tone_disabled":
                         setattr(obj, setting, not int(element.value))
                     elif setting == "ste_disabled":
                         setattr(obj, setting, not int(element.value))
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
     def _set_fm_preset(self, settings):
@@ -777,11 +780,11 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                     value = int(val[1].get_value() * 10 - 650)
                 else:
                     value = 0x01AF
-                print "Setting fm_presets[%1i] = %s" % (index, value)
+                LOG.debug("Setting fm_presets[%1i] = %s" % (index, value))
                 setting = self._memobj.fm_presets
                 setting[index] = value
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     @classmethod
