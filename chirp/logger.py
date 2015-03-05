@@ -97,6 +97,7 @@ class Logger(object):
             self.early_level = logging.DEBUG
 
         self.console = logging.StreamHandler(console_stream)
+        self.console_level = self.early_level
         self.console.setLevel(self.early_level)
         self.console.setFormatter(logging.Formatter(console_format))
         self.logger.addHandler(self.console)
@@ -132,6 +133,7 @@ class Logger(object):
         self.LOG.debug("verbosity=%d", level)
         if level > logging.CRITICAL:
             level = logging.CRITICAL
+        self.console_level = level
         self.console.setLevel(level)
 
     def set_log_level(self, level):
@@ -146,6 +148,11 @@ class Logger(object):
     instance = None
 
 Logger.instance = Logger()
+
+
+def is_visible(level):
+    """Returns True if a message at level will be shown on the console"""
+    return level >= Logger.instance.console_level
 
 
 def add_arguments(parser):
