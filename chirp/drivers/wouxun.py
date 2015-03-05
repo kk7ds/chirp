@@ -50,7 +50,7 @@ def decode_freq(data):
         freq *= 10
         freq += FREQ_ENCODE_TABLE.index((data >> shift) & 0xf)
         shift -= 4
-        # print "data %04x freq %d shift %d" % (data, freq, shift)
+        # LOG.debug("data %04x freq %d shift %d" % (data, freq, shift))
     return freq
 
 
@@ -245,8 +245,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             self.pipe.write(query.next())
             resp = self.pipe.read(9)
             if len(resp) != 9:
-                print "Got:\n%s" % util.hexprint(resp)
-                print "Retrying identification..."
+                LOG.debug("Got:\n%s" % util.hexprint(resp))
+                LOG.info("Retrying identification...")
                 time.sleep(1)
                 continue
             if resp[2:8] != self._model:
@@ -297,7 +297,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
 
     def process_mmap(self):
         if len(self._mmap.get_packed()) != 8192:
-            print "NOTE: Fixing old-style Wouxun image"
+            LOG.info("Fixing old-style Wouxun image")
             # Originally, CHIRP's wouxun image had eight bytes of
             # static data, followed by the first memory at offset
             # 0x0008.  Between 0.1.11 and 0.1.12, this was fixed to 16
@@ -652,13 +652,13 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
     def _set_fm_preset(self, settings):
@@ -672,14 +672,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                     value = int(val[1].get_value()*10-760)
                 else:
                     value = 0xffff
-                print "Setting fm_presets_%1i[%1i] = %s" % (bank, index, value)
+                LOG.debug("Setting fm_presets_%1i[%1i] = %s" %
+                          (bank, index, value))
                 if bank == 0:
                     setting = self._memobj.fm_presets_0
                 else:
                     setting = self._memobj.fm_presets_1
                 setting[index] = value
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     def _set_freq_settings(self, settings):
@@ -689,7 +690,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                         element.get_name(),
                         encode_freq(int(element.value)))
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     def get_raw_memory(self, number):
@@ -1384,13 +1385,13 @@ class KGUV6DRadio(KGUVD1PRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        print "Using apply callback"
+                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     else:
-                        print "Setting %s = %s" % (setting, element.value)
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
-                    print element.get_name()
+                    LOG.debug(element.get_name())
                     raise
 
     def _set_fm_preset(self, settings):
@@ -1404,14 +1405,15 @@ class KGUV6DRadio(KGUVD1PRadio):
                     value = int(val[1].get_value()*10-760)
                 else:
                     value = 0xffff
-                print "Setting fm_presets_%1i[%1i] = %s" % (bank, index, value)
+                LOG.debug("Setting fm_presets_%1i[%1i] = %s" %
+                          (bank, index, value))
                 if bank == 0:
                     setting = self._memobj.fm_presets_0
                 else:
                     setting = self._memobj.fm_presets_1
                 setting[index] = value
             except Exception, e:
-                print element.get_name()
+                LOG.debug(element.get_name())
                 raise
 
     @classmethod

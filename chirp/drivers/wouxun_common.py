@@ -39,7 +39,7 @@ def do_download(radio, start, end, blocksize):
         length = len(cmd) + blocksize
         resp = radio.pipe.read(length)
         if len(resp) != (len(cmd) + blocksize):
-            print util.hexprint(resp)
+            LOG.debug(util.hexprint(resp))
             raise Exception("Failed to read full block (%i!=%i)" %
                             (len(resp), len(cmd) + blocksize))
 
