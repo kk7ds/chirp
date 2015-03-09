@@ -406,9 +406,9 @@ class THD7Radio(KenwoodOldLiveRadio):
                  ("BCN", aprs, "Beacon"),
                  ("CH", radio, "Channel Mode Display"),
                  # ("DIG", aprs, "APRS Digipeater"),
-                 ("DL", all, "Dual"),
-                 ("LK", all, "Lock"),
-                 ("LMP", all, "Lamp"),
+                 ("DL", top, "Dual"),
+                 ("LK", top, "Lock"),
+                 ("LMP", top, "Lamp"),
                  ("TSP", dtmf, "DTMF Fast Transmission"),
                  ("TXH", dtmf, "TX Hold"),
                  ]
@@ -419,7 +419,7 @@ class THD7Radio(KenwoodOldLiveRadio):
                               RadioSettingValueBoolean(value))
             group.append(rs)
 
-        lists = [("BAL", all, "Balance"),
+        lists = [("BAL", top, "Balance"),
                  ("BEP", aux, "Beep"),
                  ("BEPT", aprs, "APRS Beep"),
                  ("DS", tnc, "Data Sense"),
@@ -427,7 +427,7 @@ class THD7Radio(KenwoodOldLiveRadio):
                  ("DTBA", aprs, "APRS Data Band"),
                  ("DTX", aprs, "APRS Data TX"),
                  # ("ICO", aprs, "APRS Icon"),
-                 ("MNF", all, "Memory Display Mode"),
+                 ("MNF", top, "Memory Display Mode"),
                  ("PKSA", aprs, "APRS Packet Speed"),
                  ("POSC", aprs, "APRS Position Comment"),
                  ("PT", dtmf, "DTMF Speed"),
