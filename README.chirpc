@@ -1,0 +1,104 @@
+chirpc: CHIRP Command-line interface
+====================================
+
+CHIRP provides a CLI tool (chirpc) to interact with your radio and
+memory image files.  It has been designed to be used from programs or
+scripts written in other languages, providing facilities for automating
+queries and transformations.
+
+
+WARNING: All modifications are made in-place, overwriting the original
+file with new contents.  Be sure to make a backup copy of any files
+that you want unchanged.
+
+
+========
+Cookbook
+========
+
+This section provides copy-and-paste recipies for accomplishing some
+tasks using the CLI.
+
+
+List Radios
+-----------
+
+To see the list of supported <radio> names that can be passed to the
+-r/--radio option:
+
+    chirpc --list-radios
+
+
+Download from Radio
+-------------------
+
+To download a new image from your radio:
+
+    chirpc -r <radio> --serial=<port> --mmap=<file> --download-mmap
+
+This will connect to the specified <radio> on <port>, saving the image
+obtained from the radio into the specified <file>.
+
+
+Upload to Radio
+---------------
+
+To upload an existing image to your radio:
+
+    chirpc -r <radio> --serial=<port> --mmap=<file> --upload-mmap
+
+This will connect to the specified <radio> on <port>, loading the image
+in the specified <file> onto the radio.
+
+
+List Settings
+-------------
+
+For radios that support settings, you can list the current settings
+in a saved image:
+
+    chirpc --mmap=<file> --list-settings
+
+
+Show Memory Channels
+--------------------
+
+You can list all current memory channels in a saved image:
+
+    chirpc --mmap=<file> --list-mem
+
+That command only lists the currently programmed channels.  To see the
+complete list (including empty channels), add '--verbose'.
+
+To view only a single channel, use the --get-mem option:
+
+    chirpc --mmap=<file> --get-mem <channel>
+
+
+Set a Memory Channel
+--------------------
+
+    chirpc --mmap=<file> --set-mem-name=<name> ... <channel>
+
+See the --help text for a complete list of options that can be used
+to configure the channel.  Any settings that are not configured using
+a command option will be left unchanged.
+
+
+Clearing a Memory Channel
+-------------------------
+
+You can clear a memory channel, discarding all settings:
+
+    chirpc --mmap=<file> --clear-mem <channel>
+
+
+Copying a Memory Channel
+------------------------
+
+You can copy a memory channel:
+
+    chirpc --mmap=<file> --copy-mem <source_channel> <destination_channel>
+
+Note: The contents of <destination_channel> will be overwritten with
+the contents from <source_channel>
