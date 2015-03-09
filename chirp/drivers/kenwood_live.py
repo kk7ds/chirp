@@ -1177,42 +1177,6 @@ class TM281Radio(TM271Radio):
     # seems that this is a perfect clone of TM271 with just a different model
 
 
-def do_test():
-    """Dev test"""
-    mem = chirp_common.Memory()
-    mem.number = 1
-    mem.freq = 144000000
-    mem.duplex = "split"
-    mem.offset = 146000000
-
-    tc = THF6ARadio
-
-    class FakeSerial:
-        """Faked serial line"""
-        buf = ""
-
-        def write(self, buf):
-            """Write"""
-            self.buf = buf
-
-        def read(self, count):
-            """Read"""
-            if self.buf[:2] == "ID":
-                return "ID %s\r" % tc.MODEL
-            return self.buf
-
-        def setTimeout(self, foo):
-            """Set Timeout"""
-            pass
-
-        def setBaudrate(self, foo):
-            """Set Baudrate"""
-            pass
-
-    radio = tc(FakeSerial())
-    radio.set_memory(mem)
-
-
 @directory.register
 class TM471Radio(THK2Radio):
     """Kenwood TM-471"""
@@ -1246,43 +1210,3 @@ class TM471Radio(THK2Radio):
 
     def _cmd_set_memory_name(self, number, name):
         return "MN", "%03i,%s" % (number, name)
-
-
-def do_test():
-    """Dev test"""
-    mem = chirp_common.Memory()
-    mem.number = 1
-    mem.freq = 440000000
-    mem.duplex = "split"
-    mem.offset = 442000000
-
-    tc = THF6ARadio
-
-    class FakeSerial:
-        """Faked serial line"""
-        buf = ""
-
-        def write(self, buf):
-            """Write"""
-            self.buf = buf
-
-        def read(self, count):
-            """Read"""
-            if self.buf[:2] == "ID":
-                return "ID %s\r" % tc.MODEL
-            return self.buf
-
-        def setTimeout(self, foo):
-            """Set Timeout"""
-            pass
-
-        def setBaudrate(self, foo):
-            """Set Baudrate"""
-            pass
-
-    radio = tc(FakeSerial())
-    radio.set_memory(mem)
-
-
-if __name__ == "__main__":
-    do_test()
