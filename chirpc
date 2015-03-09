@@ -17,6 +17,7 @@
 
 
 import serial
+import os
 import sys
 import argparse
 import logging
@@ -185,7 +186,7 @@ if __name__ == "__main__":
         if options.mmap:
             rclass = directory.get_radio_by_image(options.mmap).__class__
         else:
-            print "Must specify a radio model"
+            print "You must specify a radio model.  See --list-radios."
             sys.exit(1)
     else:
         rclass = directory.get_radio(options.radio)
@@ -195,6 +196,9 @@ if __name__ == "__main__":
             s = options.mmap
         else:
             s = options.radio + ".img"
+        if not os.path.exists(s):
+            LOG.error("Image file '%s' does not exist" % s)
+            sys.exit(1)
     else:
         LOG.info("opening %s at %i" % (options.serial, rclass.BAUD_RATE))
         s = serial.Serial(port=options.serial,
@@ -293,17 +297,33 @@ if __name__ == "__main__":
         print mem
 
     if options.download_mmap:
-        # isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
-        radio.sync_in()
-        radio.save_mmap(options.mmap)
+        if not issubclass(rclass, chirp_common.CloneModeRadio):
+            LOG.error("%s is not a clone mode radio" % options.radio)
+            sys.exit(1)
+        if not options.mmap:
+            LOG.error("You must specify the destination file name with --mmap")
+            sys.exit(1)
+        try:
+            radio.sync_in()
+            radio.save_mmap(options.mmap)
+        except Exception, e:
+            LOG.exception(e)
+        sys.exit(1)
 
     if options.upload_mmap:
-        # isinstance(radio, chirp_common.IcomMmapRadio) or fail_unsupported()
-        radio.load_mmap(options.mmap)
-        if radio.sync_out():
-            print "Clone successful"
-        else:
-            LOG.error("Clone failed")
+        if not issubclass(rclass, chirp_common.CloneModeRadio):
+            LOG.error("%s is not a clone mode radio" % options.radio)
+            sys.exit(1)
+        if not options.mmap:
+            LOG.error("You must specify the source file name with --mmap")
+            sys.exit(1)
+        try:
+            radio.load_mmap(options.mmap)
+            radio.sync_out()
+            print "Upload successful"
+        except Exception, e:
+            LOG.exception(e)
+        sys.exit(1)
 
     if options.mmap and isinstance(radio, chirp_common.CloneModeRadio):
         radio.save_mmap(options.mmap)
