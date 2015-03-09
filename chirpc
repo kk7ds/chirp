@@ -73,6 +73,9 @@ if __name__ == "__main__":
                         default="mmap",
                         help="Serial port (default: mmap)")
 
+    parser.add_argument("--list-settings", action="store_true",
+                        help="List settings")
+
     parser.add_argument("-i", "--id", dest="id",
                         default=False,
                         action="store_true",
@@ -187,6 +190,10 @@ if __name__ == "__main__":
                           timeout=0.5)
 
     radio = rclass(s)
+
+    if options.list_settings:
+        print radio.get_settings()
+        sys.exit(0)
 
     if options.raw:
         data = radio.get_raw_memory(int(args[0]))
