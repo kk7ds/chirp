@@ -82,6 +82,9 @@ if __name__ == "__main__":
                         help="Request radio ID string")
 
     memarg = parser.add_argument_group("Memory/Channel Options")
+    memarg.add_argument("--list-mem", action="store_true",
+                        help="List all memory locations")
+
     memarg.add_argument("--raw", action="store_true",
                         help="Dump raw memory location")
 
@@ -193,6 +196,16 @@ if __name__ == "__main__":
 
     if options.list_settings:
         print radio.get_settings()
+        sys.exit(0)
+
+    if options.list_mem:
+        rf = radio.get_features()
+        start, end = rf.memory_bounds
+        for i in range(start, end + 1):
+            mem = radio.get_memory(i)
+            if mem.empty and not logger.is_visible(logging.INFO):
+                continue
+            print mem
         sys.exit(0)
 
     if options.raw:
