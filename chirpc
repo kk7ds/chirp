@@ -66,6 +66,26 @@ class DTCSPolarityAction(argparse.Action):
         setattr(parser.values, option.dest, value)
 
 
+def parse_memory_number(radio, args):
+    if len(args) < 1:
+        LOG.error("You must provide an argument specifying the memory number.")
+        sys.exit(1)
+
+    try:
+        memnum = int(args[0])
+    except ValueError:
+        LOG.error("'%s' is not a valid memory number", args[0])
+        sys.exit(1)
+
+    rf = radio.get_features()
+    start, end = rf.memory_bounds
+    if memnum < start or memnum > end:
+        LOG.error("memory number must be between %d and %d (got %d)",
+                  start, end, memnum)
+        sys.exit(1)
+    return memnum
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     logger.add_version_argument(parser)
@@ -209,12 +229,12 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.raw:
-        data = radio.get_raw_memory(int(args[0]))
+        memnum = parse_memory_number(radio, args)
+        data = radio.get_raw_memory(memnum)
         for i in data:
             if ord(i) > 0x7F:
-                print "Memory location %i (%i):\n%s" % (int(args[0]),
-                                                        len(data),
-                                                        util.hexprint(data))
+                print "Memory location %i (%i):\n%s" % \
+                      (memnum, len(data), util.hexprint(data))
                 sys.exit(0)
         print data
         sys.exit(0)
@@ -249,11 +269,17 @@ if __name__ == "__main__":
             options.set_mem_dtcs or options.set_mem_dup is not None or \
             options.set_mem_mode or options.set_mem_dtcspol or\
             options.set_mem_offset:
+        memnum = parse_memory_number(radio, args)
         try:
-            mem = radio.get_memory(int(args[0]))
-        except errors.InvalidMemoryLocation:
+            mem = radio.get_memory(memnum)
+        except errors.InvalidMemoryLocation, e:
+            LOG.exception(e)
+            sys.exit(1)
+
+        if mem.empty:
+            LOG.info("creating new memory (#%d)", memnum)
             mem = chirp_common.Memory()
-            mem.number = int(args[0])
+            mem.number = memnum
 
         mem.name = options.set_mem_name or mem.name
         mem.freq = options.set_mem_freq or mem.freq
@@ -284,11 +310,7 @@ if __name__ == "__main__":
         radio.set_memory(mem)
 
     if options.get_mem:
-        try:
-            pos = int(args[0])
-        except ValueError:
-            pos = args[0]
-
+        pos = parse_memory_number(radio, args)
         try:
             mem = radio.get_memory(pos)
         except errors.InvalidMemoryLocation, e:
@@ -296,6 +318,7 @@ if __name__ == "__main__":
             mem.number = pos
 
         print mem
+        sys.exit(0)
 
     if options.download_mmap:
         if not issubclass(rclass, chirp_common.CloneModeRadio):
