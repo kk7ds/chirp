@@ -210,6 +210,10 @@ class RadioSettings(list):
     def __init__(self, *groups):
         list.__init__(self, groups)
 
+    def __str__(self):
+        items = [str(self[i]) for i in range(0, len(self))]
+        return "\n".join(items)
+
 
 class RadioSettingGroup(object):
     """A group of settings"""
@@ -242,9 +246,9 @@ class RadioSettingGroup(object):
         self.__doc__ = doc
 
     def __str__(self):
-        string = "{Settings Group %s:\n" % self._name
-        for element in self._elements.values():
-            string += str(element) + "\n"
+        string = "group '%s': {\n" % self._name
+        for element in sorted(self._elements.values()):
+            string += "\t" + str(element) + "\n"
         string += "}"
         return string
 
