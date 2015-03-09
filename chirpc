@@ -77,71 +77,52 @@ if __name__ == "__main__":
                         default=False,
                         action="store_true",
                         help="Request radio ID string")
-    parser.add_argument("--raw", dest="raw",
-                        default=False,
-                        action="store_true",
+
+    memarg = parser.add_argument_group("Memory/Channel Options")
+    memarg.add_argument("--raw", action="store_true",
                         help="Dump raw memory location")
 
-    parser.add_argument("--get-mem", dest="get_mem",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--get-mem", action="store_true",
                         help="Get and print memory location")
-    parser.add_argument("--set-mem-name", dest="set_mem_name",
-                        default=None,
-                        help="Set memory name")
-    parser.add_argument("--set-mem-freq", dest="set_mem_freq",
-                        type=float,
-                        default=None,
+    memarg.add_argument("--set-mem-name", help="Set memory name")
+    memarg.add_argument("--set-mem-freq", type=float,
                         help="Set memory frequency")
 
-    parser.add_argument("--set-mem-tencon", dest="set_mem_tencon",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--set-mem-tencon", action="store_true",
                         help="Set tone encode enabled flag")
-    parser.add_argument("--set-mem-tencoff", dest="set_mem_tencoff",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--set-mem-tencoff", action="store_true",
                         help="Set tone decode disabled flag")
-    parser.add_argument("--set-mem-tsqlon", dest="set_mem_tsqlon",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--set-mem-tsqlon", action="store_true",
                         help="Set tone squelch enabled flag")
-    parser.add_argument("--set-mem-tsqloff", dest="set_mem_tsqloff",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--set-mem-tsqloff", action="store_true",
                         help="Set tone squelch disabled flag")
-    parser.add_argument("--set-mem-dtcson", dest="set_mem_dtcson",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--set-mem-dtcson", action="store_true",
                         help="Set DTCS enabled flag")
-    parser.add_argument("--set-mem-dtcsoff", dest="set_mem_dtcsoff",
-                        default=False,
-                        action="store_true",
+    memarg.add_argument("--set-mem-dtcsoff", action="store_true",
                         help="Set DTCS disabled flag")
 
-    parser.add_argument("--set-mem-tenc", dest="set_mem_tenc",
+    memarg.add_argument("--set-mem-tenc",
                         type=float, action=ToneAction, nargs=1,
                         help="Set memory encode tone")
-    parser.add_argument("--set-mem-tsql", dest="set_mem_tsql",
+    memarg.add_argument("--set-mem-tsql",
                         type=float, action=ToneAction, nargs=1,
                         help="Set memory squelch tone")
 
-    parser.add_argument("--set-mem-dtcs", dest="set_mem_dtcs",
+    memarg.add_argument("--set-mem-dtcs",
                         type=int, action=DTCSAction, nargs=1,
                         help="Set memory DTCS code")
-    parser.add_argument("--set-mem-dtcspol", dest="set_mem_dtcspol",
+    memarg.add_argument("--set-mem-dtcspol",
                         action=DTCSPolarityAction, nargs=1,
                         help="Set memory DTCS polarity (NN, NR, RN, RR)")
 
-    parser.add_argument("--set-mem-dup", dest="set_mem_dup",
+    memarg.add_argument("--set-mem-dup",
                         help="Set memory duplex (+,-, or blank)")
-    parser.add_argument("--set-mem-offset", dest="set_mem_offset",
-                        type=float,
+    memarg.add_argument("--set-mem-offset", type=float,
                         help="Set memory duplex offset (in MHz)")
 
-    parser.add_argument("--set-mem-mode", dest="set_mem_mode",
-                        default=None,
+    memarg.add_argument("--set-mem-mode",
                         help="Set mode (%s)" % ",".join(chirp_common.MODES))
+
     parser.add_argument("-r", "--radio", dest="radio",
                         default=None,
                         help="Radio model (see --list-radios)")
