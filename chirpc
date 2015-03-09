@@ -110,6 +110,8 @@ if __name__ == "__main__":
 
     memarg.add_argument("--get-mem", action="store_true",
                         help="Get and print memory location")
+    memarg.add_argument("--copy-mem", action="store_true",
+                        help="Copy memory location")
     memarg.add_argument("--clear-mem", action="store_true",
                         help="Clear memory location")
 
@@ -230,6 +232,18 @@ if __name__ == "__main__":
                 continue
             print mem
         sys.exit(0)
+
+    if options.copy_mem:
+        src = parse_memory_number(radio, args)
+        dst = parse_memory_number(radio, args[1:])
+        try:
+            mem = radio.get_memory(src)
+        except errors.InvalidMemoryLocation, e:
+            LOG.exception(e)
+            sys.exit(1)
+        LOG.info("copying memory %d to %d", src, dst)
+        mem.number = dst
+        radio.set_memory(mem)
 
     if options.clear_mem:
         memnum = parse_memory_number(radio, args)
