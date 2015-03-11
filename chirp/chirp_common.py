@@ -659,7 +659,10 @@ def console_status(status):
     if not logger.is_visible(logging.WARN):
         return
     import sys
+    import os
     sys.stdout.write("\r%s" % status)
+    if status.cur == status.max:
+        sys.stdout.write(os.linesep)
 
 
 class RadioPrompts:
