@@ -218,10 +218,10 @@ struct {
 MODES = ["FM", "NFM"]
 TMODES = ["", "Tone", "TSQL", "DTCS", "TSQL-R"]
 DUPLEX = ["", "-", "+", ""]
-POWER_LEVELS = [chirp_common.PowerLevel("Low1", watts=5),
-                chirp_common.PowerLevel("Low2", watts=10),
+POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=75),
                 chirp_common.PowerLevel("Low3", watts=30),
-                chirp_common.PowerLevel("Hi", watts=75),
+                chirp_common.PowerLevel("Low2", watts=10),
+                chirp_common.PowerLevel("Low1", watts=5),
                 ]
 
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ +-/?C[] _"
@@ -242,8 +242,8 @@ def _decode_name(mem):
 
 
 def _encode_name(mem):
-    if(mem == "      " or mem == ""):
-        return [0x7f, 0xff, 0xff, 0xff, 0xff, 0xff]
+    if(mem.strip() == ""):
+        return [0xff]*6
 
     name = [None]*6
     for i in range(0, 6):
@@ -356,7 +356,7 @@ class FT2900Radio(YaesuCloneModeRadio):
 
         mem.mode = _mem.isnarrow and "NFM" or "FM"
         mem.skip = pskip and "P" or skip and "S" or ""
-        mem.power = POWER_LEVELS[_mem.power]
+        mem.power = POWER_LEVELS[3 - _mem.power]
 
         return mem
 
@@ -396,11 +396,20 @@ class FT2900Radio(YaesuCloneModeRadio):
         _flag["%s_pskip" % nibble] = mem.skip == "P"
         _flag["%s_skip" % nibble] = mem.skip == "S"
         if mem.power:
-            _mem.power = POWER_LEVELS.index(mem.power)
+            _mem.power = 3 - POWER_LEVELS.index(mem.power)
         else:
             _mem.power = 3
 
         _mem.name = _encode_name(mem.name)
+
+        # set all unknown areas of the memory map to 0
+        _mem.unknown0 = 0
+        _mem.unknown1 = 0
+        _mem.unknown2 = 0
+        _mem.unknown3 = 0
+        _mem.unknown4 = 0
+        _mem.unknown5 = 0
+        _mem.unknown6 = 0
 
         LOG.debug("encoded mem\n%s\n" % (util.hexprint(_mem.get_raw()[0:20])))
 
