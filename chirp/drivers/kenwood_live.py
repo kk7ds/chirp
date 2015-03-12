@@ -57,7 +57,7 @@ def command(ser, cmd, *args):
             LOG.error("Timeout waiting for data")
             break
 
-    LOG.debug("D7->PC: %s" % result.strip())
+    LOG.debug("RADIO->PC: %s" % result.strip())
 
     LOCK.release()
 
@@ -243,32 +243,60 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             raise errors.RadioError("Radio refused delete of %i" % number)
         del self.__memcache[number]
 
-TH_D7_SETTINGS = {
-    "BAL":   ["4:0", "3:1", "2:2", "1:3", "0:4"],
-    "BEP":   ["Off", "Key", "Key+Data", "All"],
-    "BEPT":  ["Off", "Mine", "All New"],  # D700 has fourth "All"
-    "DS":    ["Data Band", "Both Bands"],
-    "DTB":   ["A", "B"],
-    "DTBA":  ["A", "B", "A:TX/B:RX"],  # D700 has fourth A:RX/B:TX
-    "DTX":   ["Manual", "PTT", "Auto"],
-    "ICO":   ["Kenwood", "Runner", "House", "Tent", "Boat", "SSTV",
-              "Plane", "Speedboat", "Car", "Bicycle"],
-    "MNF":   ["Name", "Frequency"],
-    "PKSA":  ["1200", "9600"],
-    "POSC":  ["Off Duty", "Enroute", "In Service", "Returning",
-              "Committed", "Special", "Priority", "Emergency"],
-    "PT":    ["100ms", "200ms", "500ms", "750ms",
-              "1000ms", "1500ms", "2000ms"],
-    "SCR":   ["Time", "Carrier", "Seek"],
-    "SV":    ["Off", "0.2s", "0.4s", "0.6s", "0.8s", "1.0s",
-              "2s", "3s", "4s", "5s"],
-    "TEMP":  ["F", "C"],
-    "TXI":   ["30sec", "1min", "2min", "3min", "4min", "5min",
-              "10min", "20min", "30min"],
-    "UNIT":  ["English", "Metric"],
-    "WAY":   ["Off", "6 digit NMEA", "7 digit NMEA", "8 digit NMEA",
-              "9 digit NMEA", "6 digit Magellan", "DGPS"],
-}
+    def _kenwood_get(self, cmd):
+        resp = command(self.pipe, cmd)
+        if " " in resp:
+            return resp.split(" ", 1)
+        else:
+            if resp == cmd:
+                return [resp, ""]
+            else:
+                raise errors.RadioError("Radio refused to return %s" % cmd)
+
+    def _kenwood_set(self, cmd, value):
+        resp = command(self.pipe, cmd, value)
+        if resp[:len(cmd)] == cmd:
+            return
+        raise errors.RadioError("Radio refused to set %s" % cmd)
+
+    def _kenwood_get_bool(self, cmd):
+        _cmd, result = self._kenwood_get(cmd)
+        return result == "1"
+
+    def _kenwood_set_bool(self, cmd, value):
+        return self._kenwood_set(cmd, str(int(value)))
+
+    def _kenwood_get_int(self, cmd):
+        _cmd, result = self._kenwood_get(cmd)
+        return int(result)
+
+    def _kenwood_set_int(self, cmd, value, digits=1):
+        return self._kenwood_set(cmd, ("%%0%ii" % digits) % value)
+
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            if not element.changed():
+                continue
+            if isinstance(element.value, RadioSettingValueBoolean):
+                self._kenwood_set_bool(element.get_name(), element.value)
+            elif isinstance(element.value, RadioSettingValueList):
+                options = self._SETTINGS_OPTIONS[element.get_name()]
+                self._kenwood_set_int(element.get_name(),
+                                      options.index(str(element.value)))
+            elif isinstance(element.value, RadioSettingValueInteger):
+                if element.value.get_max() > 9:
+                    digits = 2
+                else:
+                    digits = 1
+                self._kenwood_set_int(element.get_name(),
+                                      element.value, digits)
+            elif isinstance(element.value, RadioSettingValueString):
+                self._kenwood_set(element.get_name(), str(element.value))
+            else:
+                LOG.error("Unknown type %s" % element.value)
 
 
 class KenwoodOldLiveRadio(KenwoodLiveRadio):
@@ -293,6 +321,33 @@ class THD7Radio(KenwoodOldLiveRadio):
     MODEL = "TH-D7"
 
     _kenwood_split = True
+
+    _SETTINGS_OPTIONS = {
+        "BAL": ["4:0", "3:1", "2:2", "1:3", "0:4"],
+        "BEP": ["Off", "Key", "Key+Data", "All"],
+        "BEPT": ["Off", "Mine", "All New"],  # D700 has fourth "All"
+        "DS": ["Data Band", "Both Bands"],
+        "DTB": ["A", "B"],
+        "DTBA": ["A", "B", "A:TX/B:RX"],  # D700 has fourth A:RX/B:TX
+        "DTX": ["Manual", "PTT", "Auto"],
+        "ICO": ["Kenwood", "Runner", "House", "Tent", "Boat", "SSTV",
+                "Plane", "Speedboat", "Car", "Bicycle"],
+        "MNF": ["Name", "Frequency"],
+        "PKSA": ["1200", "9600"],
+        "POSC": ["Off Duty", "Enroute", "In Service", "Returning",
+                 "Committed", "Special", "Priority", "Emergency"],
+        "PT": ["100ms", "200ms", "500ms", "750ms",
+               "1000ms", "1500ms", "2000ms"],
+        "SCR": ["Time", "Carrier", "Seek"],
+        "SV": ["Off", "0.2s", "0.4s", "0.6s", "0.8s", "1.0s",
+               "2s", "3s", "4s", "5s"],
+        "TEMP": ["F", "C"],
+        "TXI": ["30sec", "1min", "2min", "3min", "4min", "5min",
+                "10min", "20min", "30min"],
+        "UNIT": ["English", "Metric"],
+        "WAY": ["Off", "6 digit NMEA", "7 digit NMEA", "8 digit NMEA",
+                "9 digit NMEA", "6 digit Magellan", "DGPS"],
+    }
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -360,33 +415,6 @@ class THD7Radio(KenwoodOldLiveRadio):
 
         return mem
 
-    def _kenwood_get(self, cmd):
-        resp = command(self.pipe, cmd)
-        if " " in resp:
-            return resp.split(" ", 1)
-        else:
-            raise errors.RadioError("Radio refused to return %s" % cmd)
-
-    def _kenwood_set(self, cmd, value):
-        resp = command(self.pipe, cmd, value)
-        if " " in resp:
-            return
-        raise errors.RadioError("Radio refused to set %s" % cmd)
-
-    def _kenwood_get_bool(self, cmd):
-        _cmd, result = self._kenwood_get(cmd)
-        return result == "1"
-
-    def _kenwood_set_bool(self, cmd, value):
-        return self._kenwood_set(cmd, str(int(value)))
-
-    def _kenwood_get_int(self, cmd):
-        _cmd, result = self._kenwood_get(cmd)
-        return int(result)
-
-    def _kenwood_set_int(self, cmd, value, digits=1):
-        return self._kenwood_set(cmd, ("%%0%ii" % digits) % value)
-
     def get_settings(self):
         main = RadioSettingGroup("main", "Main")
         aux = RadioSettingGroup("aux", "Aux")
@@ -441,7 +469,7 @@ class THD7Radio(KenwoodOldLiveRadio):
 
         for setting, group, name in lists:
             value = self._kenwood_get_int(setting)
-            options = TH_D7_SETTINGS[setting]
+            options = self._SETTINGS_OPTIONS[setting]
             rs = RadioSetting(setting, name,
                               RadioSettingValueList(options,
                                                     options[value]))
@@ -469,28 +497,6 @@ class THD7Radio(KenwoodOldLiveRadio):
             group.append(rs)
 
         return top
-
-    def set_settings(self, settings):
-        for element in settings:
-            if not element.changed():
-                continue
-            if isinstance(element.value, RadioSettingValueBoolean):
-                self._kenwood_set_bool(element.get_name(), element.value)
-            elif isinstance(element.value, RadioSettingValueList):
-                options = TH_D7_SETTINGS[element.get_name()]
-                self._kenwood_set_int(element.get_name(),
-                                      options.index(str(element.value)))
-            elif isinstance(element.value, RadioSettingValueInteger):
-                if element.value.get_max() > 9:
-                    digits = 2
-                else:
-                    digits = 1
-                self._kenwood_set_int(element.get_name(),
-                                      element.value, digits)
-            elif isinstance(element.value, RadioSettingValueString):
-                self._kenwood_set(element.get_name(), str(element.value))
-            else:
-                LOG.error("Unknown type %s" % element.value)
 
 
 @directory.register
@@ -777,6 +783,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 8
         rf.memory_bounds = (0, self._upper)
+        rf.has_settings = True
         return rf
 
     def _cmd_set_memory(self, number, spec):
@@ -848,6 +855,98 @@ class THF6ARadio(KenwoodLiveRadio):
             "%i" % (mem.skip == "S"))
 
         return spec
+
+    _SETTINGS_OPTIONS = {
+        "APO": ["Off", "30min", "60min"],
+        "BAL": ["100%:0%", "75%:25%", "50%:50%", "25%:75%", "%0:100%"],
+        "BAT": ["Lithium", "Alkaline"],
+        "CKEY": ["Call", "1750Hz"],
+        "DATP": ["1200bps", "9600bps"],
+        "LAN": ["English", "Japanese"],
+        "MNF": ["Name", "Frequency"],
+        "MRM": ["All Band", "Current Band"],
+        "PT": ["100ms", "250ms", "500ms", "750ms",
+               "1000ms", "1500ms", "2000ms"],
+        "SCR": ["Time", "Carrier", "Seek"],
+        "SV": ["Off", "0.2s", "0.4s", "0.6s", "0.8s", "1.0s",
+               "2s", "3s", "4s", "5s"],
+        "VXD": ["250ms", "500ms", "750ms", "1s", "1.5s", "2s", "3s"],
+    }
+
+    def get_settings(self):
+        main = RadioSettingGroup("main", "Main")
+        aux = RadioSettingGroup("aux", "Aux")
+        save = RadioSettingGroup("save", "Save")
+        display = RadioSettingGroup("display", "Display")
+        dtmf = RadioSettingGroup("dtmf", "DTMF")
+        top = RadioSettings(main, aux, save, display, dtmf)
+
+        lists = [("APO", save, "Automatic Power Off"),
+                 ("BAL", main, "Balance"),
+                 ("BAT", save, "Battery Type"),
+                 ("CKEY", aux, "CALL Key Set Up"),
+                 ("DATP", aux, "Data Packet Speed"),
+                 ("LAN", display, "Language"),
+                 ("MNF", main, "Memory Display Mode"),
+                 ("MRM", main, "Memory Recall Method"),
+                 ("PT", dtmf, "DTMF Speed"),
+                 ("SCR", main, "Scan Resume"),
+                 ("SV", save, "Battery Save"),
+                 ("VXD", aux, "VOX Drop Delay"),
+                 ]
+
+        bools = [("ANT", aux, "Bar Antenna"),
+                 ("ATT", main, "Attenuator Enabled"),
+                 ("ARO", main, "Automatic Repeater Offset"),
+                 ("BEP", aux, "Beep for keypad"),
+                 ("DL", main, "Dual"),
+                 ("DLK", dtmf, "DTMF Lockout On Transmit"),
+                 ("ELK", aux, "Enable Locked Tuning"),
+                 ("LK", main, "Lock"),
+                 ("LMP", display, "Lamp"),
+                 ("NSFT", aux, "Noise Shift"),
+                 ("TH", aux, "Tx Hold for 1750"),
+                 ("TSP", dtmf, "DTMF Fast Transmission"),
+                 ("TXH", dtmf, "TX Hold DTMF"),
+                 ("TXS", main, "Transmit Inhibit"),
+                 ("VOX", aux, "VOX Enable"),
+                 ("VXB", aux, "VOX On Busy"),
+                 ]
+
+        ints = [("CNT", display, "Contrast", 1, 16),
+                ("VXG", aux, "VOX Gain", 0, 9),
+                ]
+
+        strings = [("MES", display, "Power-on Message", 8),
+                   ]
+
+        for setting, group, name in bools:
+            value = self._kenwood_get_bool(setting)
+            rs = RadioSetting(setting, name,
+                              RadioSettingValueBoolean(value))
+            group.append(rs)
+
+        for setting, group, name in lists:
+            value = self._kenwood_get_int(setting)
+            options = self._SETTINGS_OPTIONS[setting]
+            rs = RadioSetting(setting, name,
+                              RadioSettingValueList(options,
+                                                    options[value]))
+            group.append(rs)
+
+        for setting, group, name, minv, maxv in ints:
+            value = self._kenwood_get_int(setting)
+            rs = RadioSetting(setting, name,
+                              RadioSettingValueInteger(minv, maxv, value))
+            group.append(rs)
+
+        for setting, group, name, length in strings:
+            _cmd, value = self._kenwood_get(setting)
+            rs = RadioSetting(setting, name,
+                              RadioSettingValueString(0, length, value))
+            group.append(rs)
+
+        return top
 
 
 @directory.register
