@@ -442,9 +442,15 @@ def _do_ident(radio, magic):
     return ident
 
 
-def _read_block(radio, start, size):
+def _read_block(radio, start, size, first_command=False):
     msg = struct.pack(">BHB", ord("S"), start, size)
     radio.pipe.write(msg)
+
+    if first_command is False:
+        ack = radio.pipe.read(1)
+        if ack != "\x06":
+            raise errors.RadioError(
+                "Radio refused to send second block 0x%04x" % start)
 
     answer = radio.pipe.read(4)
     if len(answer) != 4:
@@ -464,28 +470,25 @@ def _read_block(radio, start, size):
         raise errors.RadioError("Radio sent incomplete block 0x%04x" % start)
 
     radio.pipe.write("\x06")
-
-    ack = radio.pipe.read(1)
-    if ack != "\x06":
-        raise errors.RadioError("Radio refused to send block 0x%04x" % start)
+    time.sleep(0.005)
 
     return chunk
 
 
 def _get_radio_firmware_version(radio):
     if radio.MODEL == "BJ-UV55":
-        block = _read_block(radio, 0x1FF0, 0x40)
+        block = _read_block(radio, 0x1FF0, 0x40, True)
         version = block[0:6]
     else:
-        block1 = _read_block(radio, 0x1EC0, 0x40)
-        block2 = _read_block(radio, 0x1F00, 0x40)
+        block1 = _read_block(radio, 0x1EC0, 0x40, True)
+        block2 = _read_block(radio, 0x1F00, 0x40, False)
         block = block1 + block2
         version = block[48:62]
     return version
 
 
 def _get_radio_special_block(radio):
-    block = _read_block(radio, 0xCF0, 0x40)
+    block = _read_block(radio, 0xCF0, 0x40, False)
     special_block = block[2:9]
     return special_block
 
@@ -517,14 +520,14 @@ def _do_download(radio):
     # Main block
     LOG.debug("downloading main block...")
     for i in range(0, 0x1800, 0x40):
-        data += _read_block(radio, i, 0x40)
+        data += _read_block(radio, i, 0x40, False)
         _do_status(radio, i)
     _do_status(radio, radio.get_memsize())
     LOG.debug("done.")
     LOG.debug("downloading aux block...")
     # Auxiliary block starts at 0x1ECO (?)
     for i in range(0x1EC0, 0x2000, 0x40):
-        data += _read_block(radio, i, 0x40)
+        data += _read_block(radio, i, 0x40, False)
     LOG.debug("done.")
     return memmap.MemoryMap(data)
 
@@ -532,6 +535,7 @@ def _do_download(radio):
 def _send_block(radio, addr, data):
     msg = struct.pack(">BHB", ord("X"), addr, len(data))
     radio.pipe.write(msg + data)
+    time.sleep(0.05)
 
     ack = radio.pipe.read(1)
     if ack != "\x06":
