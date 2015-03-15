@@ -27,7 +27,8 @@ from serial import Serial
 
 # change to the tests directory
 scriptdir = os.path.dirname(sys.argv[0])
-os.chdir(scriptdir)
+if scriptdir:
+    os.chdir(scriptdir)
 
 sys.path.insert(0, "../")
 
@@ -40,6 +41,8 @@ class LoggerOpts(object):
     log_file = os.path.join('logs', 'debug.log')
     log_level = logging.DEBUG
 
+if not os.path.exists("logs"):
+    os.mkdir("logs")
 logger.handle_options(LoggerOpts())
 
 from chirp import CHIRP_VERSION
@@ -1021,8 +1024,6 @@ class TestRunner:
         self._test_out = test_out
         if not os.path.exists("tmp"):
             os.mkdir("tmp")
-        if not os.path.exists("logs"):
-            os.mkdir("logs")
 
     def _make_list(self):
         run_list = []
