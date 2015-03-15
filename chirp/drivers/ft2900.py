@@ -204,11 +204,10 @@ struct {
      unknown4:3,
      tmode:3;
   u8 name[6];
-  u8 unknown5;
-  bbcd offset[2];
+  bbcd offset[3];
   u8 tone;
   u8 dtcs;
-  u8 unknown6;
+  u8 unknown5;
   u8 tone2;
   u8 dtcs2;
 } memory[200];
@@ -217,7 +216,7 @@ struct {
 
 MODES = ["FM", "NFM"]
 TMODES = ["", "Tone", "TSQL", "DTCS", "TSQL-R"]
-DUPLEX = ["", "-", "+", ""]
+DUPLEX = ["", "-", "+", "split"]
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=75),
                 chirp_common.PowerLevel("Low3", watts=30),
                 chirp_common.PowerLevel("Low2", watts=10),
@@ -275,6 +274,7 @@ class FT2900Radio(YaesuCloneModeRadio):
 
         rf.memory_bounds = (0, 199)
 
+        rf.can_odd_split = True
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
         rf.has_bank = False
@@ -346,7 +346,7 @@ class FT2900Radio(YaesuCloneModeRadio):
             if (lastdigit == 2 or lastdigit == 7):
                 mem.freq += 500
 
-        mem.offset = int(_mem.offset) * 1000
+        mem.offset = chirp_common.fix_rounded_step(int(_mem.offset) * 1000)
         mem.duplex = DUPLEX[_mem.duplex]
         mem.tmode = TMODES[_mem.tmode]
         mem.rtone = chirp_common.TONES[_mem.tone]
@@ -409,7 +409,6 @@ class FT2900Radio(YaesuCloneModeRadio):
         _mem.unknown3 = 0
         _mem.unknown4 = 0
         _mem.unknown5 = 0
-        _mem.unknown6 = 0
 
         LOG.debug("encoded mem\n%s\n" % (util.hexprint(_mem.get_raw()[0:20])))
 
