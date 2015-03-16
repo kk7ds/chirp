@@ -264,7 +264,7 @@ def _wipe_memory(mem):
 class FT2900Radio(YaesuCloneModeRadio):
     """Yaesu FT-2900"""
     VENDOR = "Yaesu"
-    MODEL = "FT-2900R"
+    MODEL = "FT-2900R/1900R"
     BAUD_RATE = 19200
 
     _memsize = 8000
