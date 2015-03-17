@@ -289,7 +289,7 @@ class MemoryEditor(common.Editor):
                      self.col(_("DTCS Rx Code")),
                      self.col(_("DTCS Pol")),
                      self.col(_("Cross Mode"))]
-        elif tmode == "TSQL":
+        elif tmode == "TSQL" or tmode == "TSQL-R":
             if self._features.has_ctone:
                 hide += [self.col(_("Tone"))]
 
@@ -297,7 +297,7 @@ class MemoryEditor(common.Editor):
                      self.col(_("DTCS Rx Code")),
                      self.col(_("DTCS Pol")),
                      self.col(_("Cross Mode"))]
-        elif tmode == "DTCS":
+        elif tmode == "DTCS" or tmode == "DTCS-R":
             hide += [self.col(_("Tone")),
                      self.col(_("ToneSql")),
                      self.col(_("Cross Mode")),
