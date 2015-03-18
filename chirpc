@@ -270,8 +270,7 @@ if __name__ == "__main__":
             LOG.exception(e)
             sys.exit(1)
         if mem.empty:
-            LOG.warn("memory %s is already empty, exiting", memnum)
-            sys.exit(0)
+            LOG.warn("memory %s is already empty, deleting again", memnum)
         mem.empty = True
         radio.set_memory(mem)
 
