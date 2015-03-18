@@ -74,14 +74,19 @@ def parse_memory_number(radio, args):
     try:
         memnum = int(args[0])
     except ValueError:
-        LOG.error("'%s' is not a valid memory number", args[0])
-        sys.exit(1)
+        memnum = args[0]
 
     rf = radio.get_features()
     start, end = rf.memory_bounds
-    if memnum < start or memnum > end:
-        LOG.error("memory number must be between %d and %d (got %d)",
-                  start, end, memnum)
+    if not (start <= memnum <= end or memnum in rf.valid_special_chans):
+        if len(rf.valid_special_chans) > 0:
+            LOG.error(
+                "memory number must be between %d and %d or one of %s"
+                " (got %s)",
+                start, end, ", ".join(rf.valid_special_chans), memnum)
+        else:
+            LOG.error("memory number must be between %d and %d (got %s)",
+                      start, end, memnum)
         sys.exit(1)
     return memnum
 
@@ -253,7 +258,7 @@ if __name__ == "__main__":
         except errors.InvalidMemoryLocation, e:
             LOG.exception(e)
             sys.exit(1)
-        LOG.info("copying memory %d to %d", src, dst)
+        LOG.info("copying memory %s to %s", src, dst)
         mem.number = dst
         radio.set_memory(mem)
 
@@ -265,7 +270,7 @@ if __name__ == "__main__":
             LOG.exception(e)
             sys.exit(1)
         if mem.empty:
-            LOG.warn("memory %d is already empty, exiting", memnum)
+            LOG.warn("memory %s is already empty, exiting", memnum)
             sys.exit(0)
         mem.empty = True
         radio.set_memory(mem)
@@ -275,7 +280,7 @@ if __name__ == "__main__":
         data = radio.get_raw_memory(memnum)
         for i in data:
             if ord(i) > 0x7F:
-                print "Memory location %i (%i):\n%s" % \
+                print "Memory location %s (%i):\n%s" % \
                       (memnum, len(data), util.hexprint(data))
                 sys.exit(0)
         print data
@@ -319,7 +324,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
         if mem.empty:
-            LOG.info("creating new memory (#%d)", memnum)
+            LOG.info("creating new memory (#%s)", memnum)
             mem = chirp_common.Memory()
             mem.number = memnum
 
