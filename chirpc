@@ -105,6 +105,9 @@ if __name__ == "__main__":
     memarg.add_argument("--list-mem", action="store_true",
                         help="List all memory locations")
 
+    memarg.add_argument("--list-special-mem", action="store_true",
+                        help="List all special memory locations")
+
     memarg.add_argument("--raw", action="store_true",
                         help="Dump raw memory location")
 
@@ -227,6 +230,15 @@ if __name__ == "__main__":
         rf = radio.get_features()
         start, end = rf.memory_bounds
         for i in range(start, end + 1):
+            mem = radio.get_memory(i)
+            if mem.empty and not logger.is_visible(logging.INFO):
+                continue
+            print mem
+        sys.exit(0)
+
+    if options.list_special_mem:
+        rf = radio.get_features()
+        for i in sorted(rf.valid_special_chans):
             mem = radio.get_memory(i)
             if mem.empty and not logger.is_visible(logging.INFO):
                 continue

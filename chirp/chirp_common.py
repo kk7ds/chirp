@@ -364,8 +364,9 @@ class Memory:
         else:
             dup = self.duplex
 
-        return "Memory %i: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [%.2f]" % \
-            (self.number,
+        return \
+            "Memory %s: %s%s%s %s (%s) r%.1f%s c%.1f%s d%03i%s%s [%.2f]" % \
+            (self.number if self.extd_number == "" else self.extd_number,
              format_freq(self.freq),
              dup,
              format_freq(self.offset),
