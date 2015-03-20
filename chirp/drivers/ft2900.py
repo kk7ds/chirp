@@ -205,11 +205,15 @@ struct {
      tmode:3;
   u8 name[6];
   bbcd offset[3];
-  u8 ctone;
-  u8 rx_dtcs;
+  u8 ctonesplitflag:1,
+     ctone:7;
+  u8 rx_dtcssplitflag:1,
+     rx_dtcs:7;
   u8 unknown5;
-  u8 rtone;
-  u8 dtcs;
+  u8 rtonesplitflag:1,
+     rtone:7;
+  u8 dtcssplitflag:1,
+     dtcs:7;
 } memory[200];
 
 """
@@ -227,6 +231,24 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=75),
 
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ +-/?C[] _"
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+
+
+def _decode_tone(radiotone):
+    try:
+        chirptone = chirp_common.TONES[radiotone]
+    except IndexError:
+        chirptone = 100
+        LOG.debug("found invalid radio tone: %i\n" % radiotone)
+    return chirptone
+
+
+def _decode_dtcs(radiodtcs):
+    try:
+        chirpdtcs = chirp_common.DTCS_CODES[radiodtcs]
+    except IndexError:
+        chirpdtcs = 23
+        LOG.debug("found invalid radio dtcs code: %i\n" % radiodtcs)
+    return chirpdtcs
 
 
 def _decode_name(mem):
@@ -359,17 +381,19 @@ class FT2900Radio(YaesuCloneModeRadio):
         else:
             mem.tmode = "Cross"
             mem.cross_mode = CROSS_MODES[_mem.tmode - TMODES.index("Cross")]
-        mem.rtone = chirp_common.TONES[_mem.rtone]
-        mem.ctone = chirp_common.TONES[_mem.ctone]
+
+        mem.rtone = _decode_tone(_mem.rtone)
+        mem.ctone = _decode_tone(_mem.ctone)
 
         # check for unequal ctone/rtone in TSQL mode.  map it as a
         # cross tone mode
-        if mem.rtone != mem.ctone and mem.tmode == "TSQL":
+        if mem.rtone != mem.ctone and (mem.tmode == "TSQL" or
+                                       mem.tmode == "Tone"):
             mem.tmode = "Cross"
             mem.cross_mode = "Tone->Tone"
 
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
-        mem.rx_dtcs = chirp_common.DTCS_CODES[_mem.rx_dtcs]
+        mem.dtcs = _decode_dtcs(_mem.dtcs)
+        mem.rx_dtcs = _decode_dtcs(_mem.rx_dtcs)
 
         # check for unequal dtcs/rx_dtcs in DTCS mode.  map it as a
         # cross tone mode
@@ -434,14 +458,16 @@ class FT2900Radio(YaesuCloneModeRadio):
             _mem.rx_dtcs = chirp_common.DTCS_CODES.index(mem.rx_dtcs)
             if mem.cross_mode == "Tone->Tone":
                 # tone->tone cross mode is treated as
-                # TSQL, but with separate tones for
+                # Tone, but with separate tones for
                 # send and receive
-                _mem.tmode = TMODES.index("TSQL")
+                _mem.tmode = TMODES.index("Tone")
+                _mem.rtonesplitflag = 1
             elif mem.cross_mode == "DTCS->DTCS":
                 # DTCS->DTCS cross mode is treated as
                 # DTCS, but with separate codes for
                 # send and receive
                 _mem.tmode = TMODES.index("DTCS")
+                _mem.dtcssplitflag = 1
             else:
                 _mem.tmode = TMODES.index("Cross") + \
                     CROSS_MODES.index(mem.cross_mode)
