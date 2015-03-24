@@ -157,6 +157,11 @@ def _upload(radio):
     _send(radio.pipe, chr(cs & 0xFF))
 
 MEM_FORMAT = """
+#seekto 0x00c0;
+struct {
+  u16 in_use;
+} bank_used[8];
+
 #seekto 0x00ef;
   u8 currentTone;
 
@@ -166,17 +171,31 @@ MEM_FORMAT = """
 #seekto 0x0127;
   u8 curChannelNum;
 
+#seekto 0x012a;
+  u8 banksoff1;
+
 #seekto 0x15f;
   u8 checksum1;
 
 #seekto 0x16f;
   u8 curentTone2;
 
-#seekto 0x1a7;
-  u8 curChannelMem2[20];
+#seekto 0x1aa;
+  u16 banksoff2;
 
 #seekto 0x1df;
   u8 checksum2;
+
+#seekto 0x0360;
+struct{
+  u8 name[6];
+} bank_names[8];
+
+
+#seekto 0x03c4;
+struct{
+  u16 channels[50];
+} banks[8];
 
 #seekto 0x06e4;
 struct {
@@ -283,6 +302,98 @@ def _wipe_memory(mem):
     mem.set_raw("\xff" * (mem.size() / 8))
 
 
+class FT2900Bank(chirp_common.NamedBank):
+    def get_name(self):
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        name = ""
+        for i in _bank.name:
+            if i == 0xff:
+                break
+            name += CHARSET[i & 0x7f]
+
+        return name.rstrip()
+
+    def set_name(self, name):
+        name = name.upper().ljust(6)[:6]
+        _bank = self._model._radio._memobj.bank_names[self.index]
+        _bank.name = [CHARSET.index(x) for x in name.ljust(6)[:6]]
+
+
+class FT2900BankModel(chirp_common.BankModel):
+    def get_num_mappings(self):
+        return 8
+
+    def get_mappings(self):
+        banks = self._radio._memobj.banks
+        bank_mappings = []
+        for index, _bank in enumerate(banks):
+            bank = FT2900Bank(self, "%i" % index, "b%i" % (index + 1))
+            bank.index = index
+            bank_mappings.append(bank)
+
+        return bank_mappings
+
+    def _get_channel_numbers_in_bank(self, bank):
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if _bank_used.in_use == 0xffff:
+            return set()
+
+        _members = self._radio._memobj.banks[bank.index]
+        return set([int(ch) for ch in _members.channels if ch != 0xffff])
+
+    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
+        _members = self._radio._memobj.banks[bank.index]
+        if len(channels_in_bank) > len(_members.channels):
+            raise Exception("More than %i entries in bank %d" %
+                            (len(_members.channels), bank.index))
+
+        empty = 0
+        for index, channel_number in enumerate(sorted(channels_in_bank)):
+            _members.channels[index] = channel_number
+            empty = index + 1
+        for index in range(empty, len(_members.channels)):
+            _members.channels[index] = 0xffff
+
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if empty == 0:
+            _bank_used.in_use = 0xffff
+        else:
+            _bank_used.in_use = empty - 1
+
+    def add_memory_to_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        channels_in_bank.add(memory.number)
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        # tells radio that banks are active
+        self._radio._memobj.banksoff1 = bank.index
+        self._radio._memobj.banksoff2 = bank.index
+
+    def remove_memory_from_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        try:
+            channels_in_bank.remove(memory.number)
+        except KeyError:
+            raise Exception("Memory %i is not in bank %s. Cannot remove" %
+                            (memory.number, bank))
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+    def get_mapping_memories(self, bank):
+        memories = []
+        for channel in self._get_channel_numbers_in_bank(bank):
+            memories.append(self._radio.get_memory(channel))
+
+        return memories
+
+    def get_memory_mappings(self, memory):
+        banks = []
+        for bank in self.get_mappings():
+            if memory.number in self._get_channel_numbers_in_bank(bank):
+                banks.append(bank)
+
+        return banks
+
+
 @directory.register
 class FT2900Radio(YaesuCloneModeRadio):
     """Yaesu FT-2900"""
@@ -303,7 +414,8 @@ class FT2900Radio(YaesuCloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_cross = True
         rf.has_dtcs_polarity = False
-        rf.has_bank = False
+        rf.has_bank = True
+        rf.has_bank_names = True
 
         rf.valid_tuning_steps = STEPS
         rf.valid_modes = MODES
@@ -492,6 +604,9 @@ class FT2900Radio(YaesuCloneModeRadio):
         _mem.unknown5 = 0
 
         LOG.debug("encoded mem\n%s\n" % (util.hexprint(_mem.get_raw()[0:20])))
+
+    def get_bank_model(self):
+        return FT2900BankModel(self)
 
     @classmethod
     def match_model(cls, filedata, filename):
