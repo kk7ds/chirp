@@ -548,6 +548,13 @@ class FT2900Radio(YaesuCloneModeRadio):
         _mem.freq = mem.freq / 1000
         _mem.offset = mem.offset / 1000
         _mem.duplex = DUPLEX.index(mem.duplex)
+
+        # clear all the split tone flags -- we'll set them as needed below
+        _mem.ctonesplitflag = 0
+        _mem.rx_dtcssplitflag = 0
+        _mem.rtonesplitflag = 0
+        _mem.dtcssplitflag = 0
+
         if mem.tmode != "Cross":
             _mem.tmode = TMODES.index(mem.tmode)
             # for the non-cross modes, use ONE tone for both send
@@ -570,9 +577,9 @@ class FT2900Radio(YaesuCloneModeRadio):
             _mem.rx_dtcs = chirp_common.DTCS_CODES.index(mem.rx_dtcs)
             if mem.cross_mode == "Tone->Tone":
                 # tone->tone cross mode is treated as
-                # Tone, but with separate tones for
+                # TSQL, but with separate tones for
                 # send and receive
-                _mem.tmode = TMODES.index("Tone")
+                _mem.tmode = TMODES.index("TSQL")
                 _mem.rtonesplitflag = 1
             elif mem.cross_mode == "DTCS->DTCS":
                 # DTCS->DTCS cross mode is treated as
