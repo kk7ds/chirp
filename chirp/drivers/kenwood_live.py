@@ -36,34 +36,46 @@ STEPS.append(100.0)
 THF6_MODES = ["FM", "WFM", "AM", "LSB", "USB", "CW"]
 
 LOCK = threading.Lock()
+COMMAND_RESP_BUFSIZE = 8
+LAST_BAUD = 9600
+LAST_DELIMITER = ("\r", " ")
+
+# The Kenwood TS-2000 uses ";" as a CAT command message delimiter, and all
+# others use "\n". Also, TS-2000 doesn't space delimite the command fields,
+# but others do.
 
 
 def command(ser, cmd, *args):
     """Send @cmd to radio via @ser"""
-    global LOCK
+    global LOCK, LAST_DELIMITER, COMMAND_RESP_BUFSIZE
 
     start = time.time()
 
     LOCK.acquire()
+
     if args:
-        cmd += " " + " ".join(args)
-    LOG.debug("PC->RADIO: %s" % cmd)
-    ser.write(cmd + "\r")
+        cmd += LAST_DELIMITER[1] + LAST_DELIMITER[1].join(args)
+    cmd += LAST_DELIMITER[0]
+
+    LOG.debug("PC->RADIO: %s" % cmd.strip())
+    ser.write(cmd)
 
     result = ""
-    while not result.endswith("\r"):
-        result += ser.read(8)
+    while not result.endswith(LAST_DELIMITER[0]):
+        result += ser.read(COMMAND_RESP_BUFSIZE)
         if (time.time() - start) > 0.5:
             LOG.error("Timeout waiting for data")
             break
 
-    LOG.debug("RADIO->PC: %s" % result.strip())
+    if result.endswith(LAST_DELIMITER[0]):
+        LOG.debug("RADIO->PC: %s" % result.strip())
+        result = result[:-1]
+    else:
+        LOG.error("Giving up")
 
     LOCK.release()
 
     return result.strip()
-
-LAST_BAUD = 9600
 
 
 def get_id(ser):
@@ -73,15 +85,28 @@ def get_id(ser):
     bauds.remove(LAST_BAUD)
     bauds.insert(0, LAST_BAUD)
 
+    global LAST_DELIMITER
+    command_delimiters = [("\r", " "), (";", "")]
+
     for i in bauds:
-        LOG.info("Trying ID at baud %i" % i)
-        ser.setBaudrate(i)
-        ser.write("\r")
-        ser.read(25)
-        resp = command(ser, "ID")
-        if " " in resp:
-            LAST_BAUD = i
-            return resp.split(" ")[1]
+        for delimiter in command_delimiters:
+            LAST_DELIMITER = delimiter
+            LOG.info("Trying ID at baud %i with delimiter \"%s\"" %
+                     (i, repr(delimiter)))
+            ser.setBaudrate(i)
+            ser.write(LAST_DELIMITER[0])
+            ser.read(25)
+            resp = command(ser, "ID")
+
+            # most kenwood radios
+            if " " in resp:
+                LAST_BAUD = i
+                return resp.split(" ")[1]
+
+            # TS-2000
+            if "ID019" == resp:
+                LAST_BAUD = i
+                return "TS-2000"
 
     raise errors.RadioError("No response from radio")
 
@@ -117,7 +142,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     def __init__(self, *args, **kwargs):
         chirp_common.LiveRadio.__init__(self, *args, **kwargs)
 
-        self.__memcache = {}
+        self._memcache = {}
 
         if self.pipe:
             self.pipe.setTimeout(0.1)
@@ -155,15 +180,15 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         if number < 0 or number > self._upper:
             raise errors.InvalidMemoryLocation(
                 "Number must be between 0 and %i" % self._upper)
-        if number in self.__memcache and not NOCACHE:
-            return self.__memcache[number]
+        if number in self._memcache and not NOCACHE:
+            return self._memcache[number]
 
         result = command(self.pipe, *self._cmd_get_memory(number))
         if result == "N" or result == "E":
             mem = chirp_common.Memory()
             mem.number = number
             mem.empty = True
-            self.__memcache[mem.number] = mem
+            self._memcache[mem.number] = mem
             return mem
         elif " " not in result:
             LOG.error("Not sure what to do with this: `%s'" % result)
@@ -173,7 +198,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         spec = value.split(",")
 
         mem = self._parse_mem_spec(spec)
-        self.__memcache[mem.number] = mem
+        self._memcache[mem.number] = mem
 
         result = command(self.pipe, *self._cmd_get_memory_name(number))
         if " " in result:
@@ -218,7 +243,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                                                                memory.name))
             if not iserr(r2):
                 memory.name = memory.name.rstrip()
-                self.__memcache[memory.number] = memory
+                self._memcache[memory.number] = memory
             else:
                 raise errors.InvalidDataError("Radio refused name %i: %s" %
                                               (memory.number,
@@ -235,13 +260,13 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                                               memory.number)
 
     def erase_memory(self, number):
-        if number not in self.__memcache:
+        if number not in self._memcache:
             return
 
         resp = command(self.pipe, *self._cmd_set_memory(number, ""))
         if iserr(resp):
             raise errors.RadioError("Radio refused delete of %i" % number)
-        del self.__memcache[number]
+        del self._memcache[number]
 
     def _kenwood_get(self, cmd):
         resp = command(self.pipe, cmd)
