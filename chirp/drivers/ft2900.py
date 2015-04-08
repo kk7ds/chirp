@@ -34,7 +34,6 @@ def _send(s, data):
         raise Exception("Failed to read echo")
     LOG.debug("got echo\n%s\n" % util.hexprint(echo))
 
-IDBLOCK = "\x56\x43\x32\x33\x00\x02\x46\x01\x01\x01"
 ACK = "\x06"
 INITIAL_CHECKSUM = 73
 
@@ -53,10 +52,10 @@ def _download(radio):
         LOG.debug("Header:\n%s" % util.hexprint(data))
         LOG.debug("len(header) = %s\n" % len(data))
 
-        if data == IDBLOCK:
+        if data == radio.IDBLOCK:
             break
 
-    if data != IDBLOCK:
+    if data != radio.IDBLOCK:
         raise Exception("Failed to read header")
 
     _send(radio.pipe, ACK)
@@ -125,7 +124,7 @@ def _upload(radio):
         LOG.debug("What is this garbage?\n%s" % util.hexprint(data))
         raise Exception("Radio sent unrecognized data")
 
-    _send(radio.pipe, IDBLOCK)
+    _send(radio.pipe, radio.IDBLOCK)
     time.sleep(.2)
     ack = radio.pipe.read(300)
     LOG.debug("Ack was (%i):\n%s" % (len(ack), util.hexprint(ack)))
@@ -399,6 +398,7 @@ class FT2900Radio(YaesuCloneModeRadio):
     """Yaesu FT-2900"""
     VENDOR = "Yaesu"
     MODEL = "FT-2900R/1900R"
+    IDBLOCK = "\x56\x43\x32\x33\x00\x02\x46\x01\x01\x01"
     BAUD_RATE = 19200
 
     _memsize = 8000
@@ -634,3 +634,14 @@ class FT2900Radio(YaesuCloneModeRadio):
             4. Press "MW D/MR" to receive image.
             5. Click OK to dismiss this dialog and start transfer."""))
         return rp
+
+
+# the FT2900E is the European version of the radio, almost identical
+# to the R (USA) version, except for the model number and ID Block.  We
+# create and register a class for it, with only the needed overrides
+@directory.register
+class FT2900ERadio(FT2900Radio):
+    """Yaesu FT-2900E"""
+    MODEL = "FT-2900E/1900E"
+    VARIANT = "E"
+    IDBLOCK = "\x56\x43\x32\x33\x00\x02\x41\x02\x01\x01"
