@@ -1261,6 +1261,8 @@ class THK2Radio(KenwoodLiveRadio):
 
 
 TM271_STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+
+
 @directory.register
 class TM271Radio(THK2Radio):
     """Kenwood TM-271"""
