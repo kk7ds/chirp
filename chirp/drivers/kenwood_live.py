@@ -1260,6 +1260,7 @@ class THK2Radio(KenwoodLiveRadio):
         return spec
 
 
+TM271_STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 @directory.register
 class TM271Radio(THK2Radio):
     """Kenwood TM-271"""
@@ -1278,7 +1279,7 @@ class TM271Radio(THK2Radio):
         rf.valid_name_length = 6
         rf.valid_bands = [(137000000, 173990000)]
         rf.valid_skips = ["", "S"]
-        rf.valid_tuning_steps = [5.0]
+        rf.valid_tuning_steps = list(TM271_STEPS)
         rf.memory_bounds = (0, 99)
         return rf
 
