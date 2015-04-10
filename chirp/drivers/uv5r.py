@@ -470,7 +470,7 @@ def _read_block(radio, start, size, first_command=False):
         raise errors.RadioError("Radio sent incomplete block 0x%04x" % start)
 
     radio.pipe.write("\x06")
-    time.sleep(0.005)
+    time.sleep(0.05)
 
     return chunk
 
