@@ -360,20 +360,6 @@ def _do_status(radio, block):
     status.max = radio.get_memsize()
     radio.status_fn(status)
 
-
-def validate_orig(ident):
-    try:
-        ver = int(ident[4:7])
-        if ver >= 291:
-            raise errors.RadioError("Radio version %i not supported" % ver)
-    except ValueError:
-        raise errors.RadioError("Radio reported invalid version string")
-
-
-def validate_291(ident):
-    if ident[4:7] != "\x30\x04\x50":
-        raise errors.RadioError("Radio version not supported")
-
 UV5R_MODEL_ORIG = "\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = "\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
@@ -556,9 +542,11 @@ def _do_upload(radio):
     LOG.info("Image Version is %s" % repr(image_version))
     LOG.info("Radio Version is %s" % repr(radio_version))
 
-    if not any(type in radio_version for type in BASETYPE_LIST):
-        raise errors.RadioError("Unsupported firmware version: `%s'" %
-                                radio_version)
+    if image_version != radio_version:
+        msg = ("The upload was stopped because the firmware "
+               "version of the image (%s) does not match that "
+               "of the radio (%s).")
+        raise errors.RadioError(msg % (image_version, radio_version))
 
     image_special_block = _special_block_from_image(radio)
     radio_special_block = _get_radio_special_block(radio)
@@ -948,43 +936,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def _my_version(self):
         version_tag = _firmware_version_from_image(self)
-        if 'BFS' in version_tag:
-            idx = version_tag.index("BFS") + 3
-            return int(version_tag[idx:idx + 3])
-        elif 'BTS' in version_tag:
-            idx = version_tag.index("BTS") + 3
-            return int(version_tag[idx:idx + 3])
-        elif 'BF82' in version_tag:
-            idx = version_tag.index("BF82") + 2
-            return int(version_tag[idx:idx + 4])
-        elif 'B82S' in version_tag:
-            idx = version_tag.index("B82S") + 4
-            return int(version_tag[idx:idx + 2]) + 8200
-        elif 'US2S' in version_tag:
-            idx = version_tag.index("US2S") + 4
-            return int(version_tag[idx:idx + 2]) + 8200
-        elif 'USA' in version_tag:
-            idx = version_tag.index("USA") + 3
-            return int(version_tag[idx:idx + 3]) + 11000
-        elif 'BJ55' in version_tag:
-            idx = version_tag.index("BJ55") + 2
-            return int(version_tag[idx:idx + 4])
-        elif 'BF1' in version_tag:
-            idx = version_tag.index("BF1") + 2
-            return int(version_tag[idx:idx + 4])
-        elif 'BFP' in version_tag:
-            idx = version_tag.index("BFP") + 5
-            return int(version_tag[idx:idx + 1]) + 98000
-        elif 'N5R-2' in version_tag:
-            idx = version_tag.index("N5R-2") + 4
-            return int(version_tag[idx:idx + 2]) + 300
-        elif 'N5R-3' in version_tag:
-            idx = version_tag.index("N5R-3") + 4
-            return int(version_tag[idx:idx + 2]) + 98000
-        elif 'N5R3' in version_tag:
-            idx = version_tag.index("N5R3") + 4
-            return int(version_tag[idx:idx + 3]) + 98000
-        elif 'BFB' in version_tag:
+        if 'BFB' in version_tag:
             idx = version_tag.index("BFB") + 3
             return int(version_tag[idx:idx + 3])
 
@@ -1532,7 +1484,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 DTMFSPEED_LIST[val]))
         dtmf.append(rs)
 
-        if not self._my_version() < 291:
+        if not self._is_orig():
             service = RadioSettingGroup("service", "Service Settings")
             group.append(service)
 
