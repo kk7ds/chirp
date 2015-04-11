@@ -278,7 +278,7 @@ struct {
 
 vhf_220_radio = "\x02"
 
-BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "BTS"]
+BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS"]
 BASETYPE_F11 = ["USA"]
 BASETYPE_UV82 = ["US2S", "B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]  # needed for for the Baojie UV-55 in bjuv55.py
