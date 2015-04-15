@@ -259,6 +259,7 @@ MODES = ["FM", "NFM"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Mid", watts=2),
                 chirp_common.PowerLevel("Low", watts=1)]
+SQUELCH = ['%s' % x for x in range(0, 10)]
 TMODES = ['', 'Tone', 'DTCS', '']
 TONES = [62.5] + list(chirp_common.TONES)
 
@@ -385,6 +386,11 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueList(BCLO,
                                                 BCLO[_mem.bcl]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("squelch", "Squelch",
+                          RadioSettingValueList(SQUELCH,
+                                                SQUELCH[_mem.squelch]))
         mem.extra.append(rs)
 
         return mem
