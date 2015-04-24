@@ -414,7 +414,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         _settings = self._memobj.settings
 
         repeater = RadioSettingGroup("repeater", "Repeater Settings")
-        ctcss = RadioSettingGroup("ctcss", "CTCSS/DSC/DTMF Settings")
+        ctcss = RadioSettingGroup("ctcss", "CTCSS/DCS/DTMF Settings")
         arts = RadioSettingGroup("arts", "ARTS Settings")
         scan = RadioSettingGroup("scan", "Scan Settings")
         power = RadioSettingGroup("power", "Power Saver Settings")
@@ -458,7 +458,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # BCLO
         opts = ["OFF", "ON"]
         misc.append(RadioSetting(
-                "bclo", "Bush Channel Lock-Out",
+                "bclo", "Busy Channel Lock-Out",
                 RadioSettingValueList(opts, opts[_settings.bclo])))
 
         # BEEP
