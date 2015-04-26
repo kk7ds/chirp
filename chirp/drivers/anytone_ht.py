@@ -98,12 +98,126 @@ u8 skip_flags[50];
 
 #seekto 0x0220;
 struct {
-  u8 unknown1:6,
+  u8 unknown220:6,
      display:2;
-  u8 unknown2[19];
-  u8 unknown3:3,
+  u8 unknown221:7,
+     upvfomr:1;
+  u8 unknown222:7,
+     dnvfomr:1;
+  u8 unknown223:7,
+     fmvfomr:1;
+  u8 upmrch;
+  u8 dnmrch;
+  u8 unknown226:1,
+     fmmrch:7;
+  u8 unknown227;
+  u8 unknown228:7,
+     fastscano:1;       // obltr-8r only
+  u8 unknown229:6,
+     pause:2;
+  u8 unknown22A:5,
+     stop:3;
+  u8 unknown22B:6,
+     backlight:2;
+  u8 unknown22C:6,
+     color:2;
+  u8 unknown22D:6,
+     vdisplay:2;
+  u8 unknown22E;
+  u8 unknown22F:5,
+     pf1key:3;
+  u8 beep:1,
+     alarmoff:1,
+     main:1,
+     radio:1,
+     unknown230:1,
+     allband:1,
+     elimtail:1,
+     monikey:1;
+  u8 fastscan:1,        // termn-8r only
+     keylock:1,
+     unknown231:2,
+     lwenable:1,
+     swenable:1,
+     fmenable:1,
+     amenable:1;
+  u8 unknown232:3,
+     tot:5;
+  u8 unknown233:7,
+     amvfomr:1;
+  u8 unknown234:3,
      apo:5;
+  u8 unknown235:5,
+     pf2key:3;          // keylock for obltr-8r
+  u8 unknown236;
+  u8 unknown237:4,
+     save:4;
+  u8 unknown238:5,
+     tbst:3;
+  u8 unknown239:4,
+     voxlevel:4;
+  u8 unknown23A:3,
+     voxdelay:5;
+  u8 unknown23B:5,
+     tail:3;
+  u8 unknown23C;
+  u8 unknown23D:1,
+     ammrch:7;
+  u8 unknown23E:5,
+     vvolume:3;
+  u8 unknown23F:5,
+     fmam:3;
+  u8 unknown240:4,
+     upmrbank:4;
+  u8 unknown241:7,
+     upwork:1;
+  u8 unknown242:7,
+     uplink:1;
+  u8 unknown243:4,
+     dnmrbank:4;
+  u8 unknown244:7,
+     dnwork:1;
+  u8 unknown245:7,
+     downlink:1;
+  u8 unknown246:7,
+     banklink1:1;
+  u8 unknown247:7,
+     banklink2:1;
+  u8 unknown248:7,
+     banklink3:1;
+  u8 unknown249:7,
+     banklink4:1;
+  u8 unknown24A:7,
+     banklink5:1;
+  u8 unknown24B:7,
+     banklink6:1;
+  u8 unknown24C:7,
+     banklink7:1;
+  u8 unknown24D:7,
+     banklink8:1;
+  u8 unknown24E:7,
+     banklink9:1;
+  u8 unknown24F:7,
+     banklink0:1;
+  u8 unknown250:6,
+     noaa:2;
+  u8 unknown251:5,
+     noaach:3;
+  u8 unknown252:6,
+     part95:2;
+  u8 unknown253:3,
+     gmrs:5;
+  u8 unknown254:5,
+     murs:3;
+  u8 unknown255:5,
+     amsql:3;
 } settings;
+
+#seekto 0x0246;
+struct {
+  u8 unused:7,
+     bank:1;
+} banklink[10];
 
 #seekto 0x03E0;
 struct {
@@ -250,18 +364,43 @@ def _upload(radio):
     _finish(radio)
 
 
-APO = ['Off', '30 Min', '1 Hour', '2 Hours']
+APO = ['Off', '30 Minutes', '1 Hour', '2 Hours']
+BACKLIGHT = ['Off', 'On', 'Auto']
 BCLO = ['Off', 'Repeater', 'Busy']
 CHARSET = chirp_common.CHARSET_ASCII
-DISPLAY = ['Frequency', 'Channel', 'Name']
+COLOR = ['Blue', 'Orange', 'Purple']
+DISPLAY = ['Frequency', 'N/A', 'Name']
 DUPLEXES = ['', 'N/A', '-', '+', 'split', 'off']
-MODES = ["FM", "NFM"]
+GMRS = ['GMRS %s' % x for x in range(1, 8)] + \
+       ['GMRS %s' % x for x in range(15, 23)] + \
+       ['GMRS Repeater %s' % x for x in range(15, 23)]
+MAIN = ['Up', 'Down']
+MODES = ['FM', 'NFM']
+MONI = ['Squelch Off Momentarily', 'Squelch Off']
+MRBANK = ['Bank %s' % x for x in range(1, 10)] + ['Bank 0']
+MURS = ['MURS %s' % x for x in range(1, 6)]
+NOAA = ['Weather Off', 'Weather On', 'Weather Alerts']
+NOAACH = ['WX %s' % x for x in range(1, 8)]
+PART95 = ['Normal(Part 90)', 'GMRS(Part 95A)', 'MURS(Part 95J)']
+PAUSE = ['%s Seconds (TO)' % x for x in range(5, 20, 5)] + ['2 Seconds (CO)']
+PFKEYT = ['Off', 'VOLT', 'CALL', 'FHSS', 'SUB PTT', 'ALARM', 'MONI']
+PFKEYO = ['Off', 'VOLT', 'CALL', 'SUB PTT', 'ALARM', 'MONI']
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Mid", watts=2),
                 chirp_common.PowerLevel("Low", watts=1)]
+SAVE = ['Off', '1:2', '1:3', '1:5', '1:8', 'Auto']
 SQUELCH = ['%s' % x for x in range(0, 10)]
+STOP = ['%s Seconds' % x for x in range(0, 4)] + ['Manual']
+TAIL = ['Off', '120 Degree', '180 Degree', '240 Degree']
+TBST = ['Off', '1750 Hz', '2100 Hz', '1000 Hz', '1450 Hz']
 TMODES = ['', 'Tone', 'DTCS', '']
 TONES = [62.5] + list(chirp_common.TONES)
+TOT = ['Off'] + ['%s Seconds' % x for x in range(10, 280, 10)]
+VDISPLAY = ['Frequency/Channel', 'Battery Voltage', 'Off']
+VFOMR = ["VFO", "MR"]
+VOXLEVEL = ['Off'] + ['%s' % x for x in range(1, 11)]
+VOXDELAY = ['%.1f Seconds' % (0.1 * x) for x in range(5, 31)]
+WORKMODE = ["Channel", "Bank"]
 
 
 @directory.register
@@ -511,9 +650,223 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
                                                 DISPLAY[_settings.display]))
         cfg_grp.append(rs)
 
+        rs = RadioSetting("upvfomr", "Up VFO/MR",
+                          RadioSettingValueList(VFOMR,
+                                                VFOMR[_settings.upvfomr]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("dnvfomr", "Down VFO/MR",
+                          RadioSettingValueList(VFOMR,
+                                                VFOMR[_settings.dnvfomr]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("upwork", "Up Work Mode",
+                          RadioSettingValueList(WORKMODE,
+                                                WORKMODE[_settings.upwork]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("upmrbank", "Up MR Bank",
+                          RadioSettingValueList(MRBANK,
+                                                MRBANK[_settings.upmrbank]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("upmrch", "Up MR Channel",
+                          RadioSettingValueInteger(0, 200, _settings.upmrch))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("dnwork", "Down Work Mode",
+                          RadioSettingValueList(WORKMODE,
+                                                WORKMODE[_settings.dnwork]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("dnmrbank", "Down MR Bank",
+                          RadioSettingValueList(MRBANK,
+                                                MRBANK[_settings.dnmrbank]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("dnmrch", "Down MR Channel",
+                          RadioSettingValueInteger(0, 200, _settings.dnmrch))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("main", "Main",
+                          RadioSettingValueList(MAIN,
+                                                MAIN[_settings.main]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("pause", "Scan Pause Time",
+                          RadioSettingValueList(PAUSE,
+                                                PAUSE[_settings.pause]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("stop", "Function Keys Stop Time",
+                          RadioSettingValueList(STOP,
+                                                STOP[_settings.stop]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("backlight", "Backlight",
+                          RadioSettingValueList(BACKLIGHT,
+                                                BACKLIGHT[_settings.backlight]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("color", "Backlight Color",
+                          RadioSettingValueList(COLOR,
+                                                COLOR[_settings.color]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("vdisplay", "Vice-Machine Display",
+                          RadioSettingValueList(VDISPLAY,
+                                                VDISPLAY[_settings.vdisplay]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("voxlevel", "Vox Level",
+                          RadioSettingValueList(VOXLEVEL,
+                                                VOXLEVEL[_settings.voxlevel]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("voxdelay", "Vox Delay",
+                          RadioSettingValueList(VOXDELAY,
+                                                VOXDELAY[_settings.voxdelay]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("tot", "Time Out Timer",
+                          RadioSettingValueList(TOT,
+                                                TOT[_settings.tot]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("tbst", "Tone Burst",
+                          RadioSettingValueList(TBST,
+                                                TBST[_settings.tbst]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("monikey", "MONI Key Function",
+                          RadioSettingValueList(MONI,
+                                                MONI[_settings.monikey]))
+        cfg_grp.append(rs)
+
+        if self.MODEL == "TERMN-8R":
+            rs = RadioSetting("pf1key", "PF1 Key Function",
+                              RadioSettingValueList(PFKEYT,
+                                                    PFKEYT[_settings.pf1key]))
+            cfg_grp.append(rs)
+
+            rs = RadioSetting("pf2key", "PF2 Key Function",
+                              RadioSettingValueList(PFKEYT,
+                                                    PFKEYT[_settings.pf2key]))
+            cfg_grp.append(rs)
+
+        if self.MODEL == "OBLTR-8R":
+            rs = RadioSetting("pf1key", "PF1 Key Function",
+                              RadioSettingValueList(PFKEYO,
+                                                    PFKEYO[_settings.pf1key]))
+            cfg_grp.append(rs)
+
+            rs = RadioSetting("fmam", "PF2 Key Function",
+                              RadioSettingValueList(PFKEYO,
+                                                    PFKEYO[_settings.fmam]))
+            cfg_grp.append(rs)
+
         rs = RadioSetting("apo", "Automatic Power Off",
                           RadioSettingValueList(APO,
                                                 APO[_settings.apo]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("save", "Power Save",
+                          RadioSettingValueList(SAVE,
+                                                SAVE[_settings.save]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("tail", "Tail Eliminator Type",
+                          RadioSettingValueList(TAIL,
+                                                TAIL[_settings.tail]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("fmvfomr", "FM VFO/MR",
+                          RadioSettingValueList(VFOMR,
+                                                VFOMR[_settings.fmvfomr]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("fmmrch", "FM MR Channel",
+                          RadioSettingValueInteger(0, 100, _settings.fmmrch))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("noaa", "NOAA",
+                          RadioSettingValueList(NOAA,
+                                                NOAA[_settings.noaa]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("noaach", "NOAA Channel",
+                          RadioSettingValueList(NOAACH,
+                                                NOAACH[_settings.noaach]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("part95", "PART95",
+                          RadioSettingValueList(PART95,
+                                                PART95[_settings.part95]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("gmrs", "GMRS",
+                          RadioSettingValueList(GMRS,
+                                                GMRS[_settings.gmrs]))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("murs", "MURS",
+                          RadioSettingValueList(MURS,
+                                                MURS[_settings.murs]))
+        cfg_grp.append(rs)
+
+        for i in range(0, 9):
+            val = self._memobj.banklink[i].bank
+            rs = RadioSetting("banklink/%i.bank" % i,
+                              "Bank Link %i" % (i + 1),
+                              RadioSettingValueBoolean(val))
+            cfg_grp.append(rs)
+
+        val = self._memobj.banklink[9].bank
+        rs = RadioSetting("banklink/9.bank", "Bank Link 0",
+                          RadioSettingValueBoolean(val))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("allband", "All Band",
+                          RadioSettingValueBoolean(_settings.allband))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("alarmoff", "Alarm Function Off",
+                          RadioSettingValueBoolean(_settings.alarmoff))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("beep", "Beep",
+                          RadioSettingValueBoolean(_settings.beep))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("radio", "Radio",
+                          RadioSettingValueBoolean(_settings.radio))
+        cfg_grp.append(rs)
+
+        if self.MODEL == "TERMN-8R":
+            rs = RadioSetting("keylock", "Keylock",
+                              RadioSettingValueBoolean(_settings.keylock))
+            cfg_grp.append(rs)
+
+            rs = RadioSetting("fastscan", "Fast Scan",
+                              RadioSettingValueBoolean(_settings.fastscan))
+            cfg_grp.append(rs)
+
+        if self.MODEL == "OBLTR-8R":
+            # "pf2key" is used for OBLTR-8R "keylock"
+            rs = RadioSetting("pf2key", "Keylock",
+                              RadioSettingValueBoolean(_settings.pf2key))
+            cfg_grp.append(rs)
+
+            rs = RadioSetting("fastscano", "Fast Scan",
+                              RadioSettingValueBoolean(_settings.fastscano))
+            cfg_grp.append(rs)
+
+        rs = RadioSetting("uplink", "Up Bank Link Select",
+                          RadioSettingValueBoolean(_settings.uplink))
+        cfg_grp.append(rs)
+
+        rs = RadioSetting("downlink", "Down Bank Link Select",
+                          RadioSettingValueBoolean(_settings.downlink))
         cfg_grp.append(rs)
 
         #
