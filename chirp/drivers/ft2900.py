@@ -35,7 +35,7 @@ def _send(s, data):
     LOG.debug("got echo\n%s\n" % util.hexprint(echo))
 
 ACK = "\x06"
-INITIAL_CHECKSUM = 73
+INITIAL_CHECKSUM = 0
 
 
 def _download(radio):
@@ -100,9 +100,12 @@ def _download(radio):
 
     # compute checksum
     cs = INITIAL_CHECKSUM
+    for byte in radio.IDBLOCK:
+        cs += ord(byte)
     for byte in data:
         cs += ord(byte)
     LOG.debug("calculated checksum is %x\n" % (cs & 0xff))
+    LOG.debug("Radio sent checksum is %x\n" % ord(chunk[0]))
 
     if (cs & 0xff) != ord(chunk[0]):
         raise Exception("Failed checksum on read.")
@@ -133,6 +136,8 @@ def _upload(radio):
 
     block = 0
     cs = INITIAL_CHECKSUM
+    for byte in radio.IDBLOCK:
+        cs += ord(byte)
 
     while block < (radio.get_memsize() / 32):
         data = radio.get_mmap()[block*32:(block+1)*32]
