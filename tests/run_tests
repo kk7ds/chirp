@@ -451,7 +451,7 @@ class TestCaseBruteForce(TestCase):
             m = chirp_common.Memory()
             m.number = rf.memory_bounds[0]
             if rf.valid_bands:
-                m.freq = rf.valid_bands[0][0] + 100000
+                m.freq = rf.valid_bands[0][0] + 600000
             else:
                 m.freq = 146520000
             if m.freq < 30000000 and "AM" in rf.valid_modes:

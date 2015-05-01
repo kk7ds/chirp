@@ -924,6 +924,26 @@ class RadioFeatures:
                      "of supported range").format(freq=format_freq(mem.freq)))
                 msgs.append(msg)
 
+        if self.valid_bands and \
+                self.valid_duplexes and \
+                mem.duplex in ["split", "-", "+"]:
+            if mem.duplex == "split":
+                freq = mem.offset
+            elif mem.duplex == "-":
+                freq = mem.freq - mem.offset
+            elif mem.duplex == "+":
+                freq = mem.freq + mem.offset
+            valid = False
+            for lo, hi in self.valid_bands:
+                if lo <= freq < hi:
+                    valid = True
+                    break
+            if not valid:
+                msg = ValidationError(
+                        ("Tx freq {freq} is out "
+                         "of supported range").format(freq=format_freq(freq)))
+                msgs.append(msg)
+
         if mem.power and \
                 self.valid_power_levels and \
                 mem.power not in self.valid_power_levels:
