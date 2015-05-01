@@ -476,15 +476,6 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
 
-    def validate_memory(self, mem):
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        if (mem.duplex == "split" and abs(mem.freq - mem.offset) > 69995000) \
-                or (mem.duplex in ["+", "-"] and mem.offset > 69995000):
-            msgs.append(chirp_common.ValidationError(
-                    "Max split is 69.995MHz"))
-        return msgs
-
     def get_settings(self):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
