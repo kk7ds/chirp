@@ -949,8 +949,10 @@ of file.
                                     parent=self)
         fields = {
             "Country":
-                (miscwidgets.make_choice(['by', 'cz', 'de', 'lt', 'pl',
-                                          'sk', 'uk'], False),
+                (miscwidgets.make_choice(
+                    ['at', 'bg', 'by', 'ch', 'cz', 'de', 'dk', 'es', 'fi',
+                        'fr', 'hu', 'it', 'lt', 'lv', 'no', 'pl', 'ro', 'se',
+                        'sk', 'ua', 'uk'], False),
                  lambda x: str(x.get_active_text())),
             "Band":
                 (miscwidgets.make_choice(['10m', '4m', '6m', '2m', '70cm',
