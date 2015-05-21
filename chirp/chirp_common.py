@@ -1462,3 +1462,12 @@ def split_tone_encode(mem):
 
     return ((txmode, txval, txpol),
             (rxmode, rxval, rxpol))
+
+
+def sanitize_string(astring, validcharset=CHARSET_ASCII, replacechar='*'):
+    myfilter = ''.join(
+        [
+            [replacechar, chr(x)][chr(x) in validcharset]
+            for x in xrange(256)
+        ])
+    return astring.translate(myfilter)

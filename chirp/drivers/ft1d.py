@@ -957,16 +957,21 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         for index in range(0, 60):
             if aprs_msg[index].flag != 255:
+                astring = \
+                    str(aprs_msg[index].dst_callsign).partition("\xFF")[0]
+
                 val = RadioSettingValueString(
-                    0, 9, str(aprs_msg[index].dst_callsign).rstrip("\xFF") +
+                    0, 9, chirp_common.sanitize_string(astring) +
                     "-%d" % aprs_msg[index].dst_callsign_ssid)
                 rs = RadioSetting(
                     "aprs_msg.dst_callsign%d" % index,
                     "Dst Callsign %d" % index, val)
                 menu.append(rs)
 
+                astring = \
+                    str(aprs_msg[index].path_and_body).partition("\xFF")[0]
                 val = RadioSettingValueString(
-                    0, 66, str(aprs_msg[index].path_and_body).rstrip("\xFF"))
+                    0, 66, chirp_common.sanitize_string(astring))
                 rs = RadioSetting(
                     "aprs_msg.path_and_body%d" % index, "Body", val)
                 menu.append(rs)
