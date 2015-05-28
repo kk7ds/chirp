@@ -963,6 +963,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 val = RadioSettingValueString(
                     0, 9, chirp_common.sanitize_string(astring) +
                     "-%d" % aprs_msg[index].dst_callsign_ssid)
+                val.set_mutable(False)
                 rs = RadioSetting(
                     "aprs_msg.dst_callsign%d" % index,
                     "Dst Callsign %d" % index, val)
@@ -972,6 +973,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     str(aprs_msg[index].path_and_body).partition("\xFF")[0]
                 val = RadioSettingValueString(
                     0, 66, chirp_common.sanitize_string(astring))
+                val.set_mutable(False)
                 rs = RadioSetting(
                     "aprs_msg.path_and_body%d" % index, "Body", val)
                 menu.append(rs)
@@ -989,6 +991,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 callsign = str(aprs_meta[index].sender_callsign).rstrip("\xFF")
                 # LOG.debug("Callsign %s %s" % (callsign, list(callsign)))
                 val = RadioSettingValueString(0, 9, callsign)
+                val.set_mutable(False)
                 rs = RadioSetting(
                     "aprs_beacon.src_callsign%d" % index,
                     "SRC Callsign %d" % index, val)
@@ -998,6 +1001,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 val = RadioSettingValueString(
                         0, 9,
                         str(aprs_beacon[index].dst_callsign).rstrip("\xFF"))
+                val.set_mutable(False)
                 rs = RadioSetting(
                         "aprs_beacon.dst_callsign%d" % index,
                         "DST Callsign %d" % index, val)
@@ -1009,6 +1013,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     aprs_meta[index].date[1],
                     aprs_meta[index].date[2])
                 val = RadioSettingValueString(0, 8, date)
+                val.set_mutable(False)
                 rs = RadioSetting("aprs_beacon.date%d" % index, "Date", val)
                 menu.append(rs)
 
@@ -1016,6 +1021,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     aprs_meta[index].time[0],
                     aprs_meta[index].time[1])
                 val = RadioSettingValueString(0, 5, time)
+                val.set_mutable(False)
                 rs = RadioSetting("aprs_beacon.time%d" % index, "Time", val)
                 menu.append(rs)
 
@@ -1026,6 +1032,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 path = str(path).replace("\xE0", "*")
                 # LOG.debug("path %s %s" % (path, list(path)))
                 val = RadioSettingValueString(0, 32, path)
+                val.set_mutable(False)
                 rs = RadioSetting(
                     "aprs_beacon.path%d" % index, "Digipath", val)
                 menu.append(rs)
@@ -1040,6 +1047,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 except Exception as e:
                     LOG.error("Error in APRS beacon at index %s", index)
                     raise e
+                val.set_mutable(False)
                 rs = RadioSetting("aprs_beacon.body%d" % index, "Body", val)
                 menu.append(rs)
 
