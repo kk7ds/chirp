@@ -853,7 +853,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         if filedata[0x168:0x170].startswith(cls._file_ident) and \
-                               filedata[0x170:0x178].startswith("LX-/x89/x85"):
+                               filedata[0x170:0x178].startswith("LX-\x89\x85"):
             return True
         elif filedata[0x900:0x906] == cls.MODEL:
             return True
