@@ -278,7 +278,7 @@ struct {
 
 vhf_220_radio = "\x02"
 
-BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS"]
+BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS", "BFT"]
 BASETYPE_F11 = ["USA"]
 BASETYPE_UV82 = ["US2S", "B82S", "BF82"]
 BASETYPE_BJ55 = ["BJ55"]  # needed for for the Baojie UV-55 in bjuv55.py
@@ -366,6 +366,7 @@ UV5R_MODEL_F11 = "\x50\xBB\xFF\x13\xA1\x11\xDD"
 UV5R_MODEL_UV82 = "\x50\xBB\xFF\x20\x13\x01\x05"
 UV5R_MODEL_UV6 = "\x50\xBB\xFF\x20\x12\x08\x23"
 UV5R_MODEL_UV6_ORIG = "\x50\xBB\xFF\x12\x03\x98\x4D"
+UV5R_MODEL_A58 = "\x50\xBB\xFF\x20\x14\x04\x13"
 
 
 def _upper_band_from_data(data):
@@ -604,6 +605,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     _memsize = 0x1808
     _basetype = BASETYPE_UV5R
     _idents = [UV5R_MODEL_291,
+               UV5R_MODEL_A58,
                UV5R_MODEL_ORIG
                ]
     _vhf_range = (136000000, 174000000)
