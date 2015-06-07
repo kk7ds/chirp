@@ -145,7 +145,8 @@ struct channel {
      mode:1
      reverseoff:1,
      blckoff:1,
-     unknown7:4;
+     unknown7:1,
+     apro:3;
   u8 unknown8;
 };
 
@@ -487,6 +488,60 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         mem.power = POWER_LEVELS[_mem.power]
         mem.skip = _mem.skip and "S" or ""
 
+        self._get_tone(mem, _mem)
+        mem.mode = MODES[_mem.mode]
+        mem.power = POWER_LEVELS[_mem.power]
+        mem.skip = _mem.skip and "S" or ""
+
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        opts = ["On", "Off"]
+        rs = RadioSetting("blckoff", "Busy Channel Lockout",
+                          RadioSettingValueList(
+                              opts, opts[_mem.blckoff]))
+        mem.extra.append(rs)
+        opts = ["Off", "On"]
+        rs = RadioSetting("tailcut", "Squelch Tail Elimination",
+                          RadioSettingValueList(
+                              opts, opts[_mem.tailcut]))
+        mem.extra.append(rs)
+        opts = ["Off", "Compander", "Scrambler", "TX Scrambler",
+                "RX Scrambler"]
+        rs = RadioSetting("apro", "Audio Processing",
+                          RadioSettingValueList(
+                              opts, opts[_mem.apro]))
+        mem.extra.append(rs)
+        opts = ["On", "Off"]
+        rs = RadioSetting("voxoff", "VOX",
+                          RadioSettingValueList(
+                              opts, opts[_mem.voxoff]))
+        mem.extra.append(rs)
+        opts = ["On", "Off"]
+        rs = RadioSetting("pttidoff", "PTT ID",
+                          RadioSettingValueList(
+                              opts, opts[_mem.pttidoff]))
+        mem.extra.append(rs)
+        opts = ["On", "Off"]
+        rs = RadioSetting("dtmfoff", "DTMF",
+                          RadioSettingValueList(
+                              opts, opts[_mem.dtmfoff]))
+        mem.extra.append(rs)
+        opts = ["Name", "Frequency"]
+        aliasop = RadioSetting("aliasop", "Display",
+                               RadioSettingValueList(
+                                   opts, opts[_mem.aliasop]))
+        mem.extra.append(aliasop)
+        opts = ["On", "Off"]
+        rs = RadioSetting("reverseoff", "Reverse Frequency",
+                          RadioSettingValueList(
+                              opts, opts[_mem.reverseoff]))
+        mem.extra.append(rs)
+        opts = ["On", "Off"]
+        rs = RadioSetting("talkaroundoff", "Talk Around",
+                          RadioSettingValueList(
+                              opts, opts[_mem.talkaroundoff]))
+        mem.extra.append(rs)
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -536,6 +591,24 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _mem.mode = MODES.index(mem.mode)
         _mem.skip = mem.skip == "S"
         _name.name = mem.name.ljust(7)
+
+        # autoset display to name if filled, else show frequency
+        if mem.extra:
+            # mem.extra only seems to be populated when called from edit panel
+            aliasop = mem.extra["aliasop"]
+        else:
+            aliasop = None
+        if mem.name:
+            _mem.aliasop = False
+            if aliasop and not aliasop.changed():
+                aliasop.value = "Name"
+        else:
+            _mem.aliasop = True
+            if aliasop and not aliasop.changed():
+                aliasop.value = "Frequency"
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
     def _get_settings(self):
         _settings = self._memobj.settings
