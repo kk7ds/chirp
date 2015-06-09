@@ -63,6 +63,10 @@ def _chunk_read(pipe, count, status_fn):
 def __clone_in(radio):
     pipe = radio.pipe
 
+    status = chirp_common.Status()
+    status.msg = "Cloning from radio"
+    status.max = radio.get_memsize()
+
     start = time.time()
 
     data = ""
@@ -76,6 +80,9 @@ def __clone_in(radio):
             pipe.write(chr(CMD_ACK))
         if not chunk:
             raise errors.RadioError("No response from radio")
+        if radio.status_fn:
+            status.cur = len(data)
+            radio.status_fn(status)
         data += chunk
 
     if len(data) != radio.get_memsize():
