@@ -397,7 +397,10 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
 
         mem.name = str(_mem.name).rstrip('\xFF ')
 
-        mem.skip = dont_skip and "" or "S"
+        if dont_skip:
+            mem.skip = ''
+        else:
+            mem.skip = 'S'
 
         mem.mode = _mem.wideband and "FM" or "NFM"
         mem.power = POWER_LEVELS[1 - _mem.ishighpower]
