@@ -95,7 +95,8 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @classmethod
     def match_model(cls, data, path):
-        if len(data) == cls._memsize and data[1:10] == '\x01\x01\x07\x08\x02\x01\x01\x00\x01':
+        if (len(data) == cls._memsize and
+                data[1:10] == '\x01\x01\x07\x08\x02\x01\x01\x00\x01'):
             return True
 
         return False
@@ -236,9 +237,9 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
     def _checksums(self):
         return [yaesu_clone.YaesuChecksum(0x0000, 0x0B96)]
 
-    # I didn't believe this myself, but it seems that there's a bit for enabling
-    # VHF M01, but no bit for UHF01, and the enables are shifted down, so that
-    # the first bit is for M02
+    # I didn't believe this myself, but it seems that there's a bit for
+    # enabling VHF M01, but no bit for UHF01, and the enables are shifted down,
+    # so that the first bit is for M02
     def _bit_byte(self, number):
         if self.VARIANT == 'VHF':
             bit = 1 << ((number - 1) % 8)
