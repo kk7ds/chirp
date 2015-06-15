@@ -124,7 +124,9 @@ struct {
   u8 ponmsg;
   u8 roger;
   u8 rogerrx;
-  u8 tdrch;
+  u8 tdrch; // NOTE: The UV-82HP calls this byte rtone, but the UV-6
+            // calls it tdrch. Since this is a minor difference, it will
+            // be referred to by the wrong name for the UV-82HP.
   u8 displayab:1,
      unknown1:2,
      fmradio:1,
@@ -278,16 +280,17 @@ struct {
 
 vhf_220_radio = "\x02"
 
-BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS", "BFT", "D5R2"]
+BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS", "D5R2"]
 BASETYPE_F11 = ["USA"]
 BASETYPE_UV82 = ["US2S", "B82S", "BF82", "N82-2", "N822"]
 BASETYPE_BJ55 = ["BJ55"]  # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6 = ["BF1"]
 BASETYPE_KT980HP = ["BFP3V3 B"]
-BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3"]
+BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3", "BFT"]
+BASETYPE_UV82HP = ["N82-3", "N823"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
                 BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP + \
-                BASETYPE_F8HP
+                BASETYPE_F8HP + BASETYPE_UV82HP
 
 AB_LIST = ["A", "B"]
 ALMOD_LIST = ["Site", "Tone", "Code"]
@@ -299,6 +302,7 @@ MODE_LIST = ["Channel", "Name", "Frequency"]
 PONMSG_LIST = ["Full", "Message"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
+RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100Hz"]
 RESUME_LIST = ["TO", "CO", "SE"]
 ROGERRX_LIST = ["Off"] + AB_LIST
 RPSTE_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
@@ -329,6 +333,7 @@ SETTING_LISTS = {
     "mdfb": MODE_LIST,
     "ponmsg": PONMSG_LIST,
     "pttid": PTTID_LIST,
+    "rtone": RTONE_LIST,
     "rogerrx": ROGERRX_LIST,
     "rpste": RPSTE_LIST,
     "rxled": COLOR_LIST,
@@ -805,7 +810,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if not _mem.scan:
             mem.skip = "S"
 
-        if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP":
+        if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP" \
+                or self.MODEL == "UV-82HP":
             levels = UV5R_POWER_LEVELS3
         else:
             levels = UV5R_POWER_LEVELS
@@ -911,7 +917,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.wide = mem.mode == "FM"
 
         if mem.power:
-            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP":
+            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP" \
+                                        or self.MODEL == "UV-82HP":
                 levels = [str(l) for l in UV5R_POWER_LEVELS3]
                 _mem.lowpower = levels.index(str(mem.power))
             else:
@@ -1133,10 +1140,29 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                               RadioSettingValueBoolean(_settings.vfomrlock))
             advanced.append(rs)
 
+        if self.MODEL == "UV-82HP":
+            # this is a UV-82HP only feature
+            rs = RadioSetting("vfomrlock", "VFO/MR Switching",
+                              RadioSettingValueBoolean(_settings.vfomrlock))
+            advanced.append(rs)
+
         if self.MODEL == "UV-82":
             # this is an UV-82C only feature
             rs = RadioSetting("singleptt", "Single PTT (UV-82C only)",
                               RadioSettingValueBoolean(_settings.singleptt))
+            advanced.append(rs)
+
+        if self.MODEL == "UV-82HP":
+            # this is an UV-82HP only feature
+            rs = RadioSetting("singleptt", "Single PTT",
+                              RadioSettingValueBoolean(_settings.singleptt))
+            advanced.append(rs)
+
+        if self.MODEL == "UV-82HP":
+            # this is an UV-82HP only feature
+            rs = RadioSetting("tdrch", "Tone Burst Frequency",
+                              RadioSettingValueList(
+                                  RTONE_LIST, RTONE_LIST[_settings.tdrch]))
             advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
@@ -1324,7 +1350,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             rs.set_apply_callback(apply_offset, _vfob)
             workmode.append(rs)
 
-            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP":
+            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP" \
+                    or self.MODEL == "UV-82HP":
                 rs = RadioSetting("vfoa.txpower3", "VFO A Power",
                                   RadioSettingValueList(
                                       TXPOWER3_LIST,
@@ -1655,4 +1682,23 @@ class BaofengBFF8HPRadio(BaofengUV5R):
 
     def _is_orig(self):
         # Override this for BFF8HP to always return False
+        return False
+
+
+@directory.register
+class BaofengUV82HPRadio(BaofengUV5R):
+    VENDOR = "Baofeng"
+    MODEL = "UV-82HP"
+    _basetype = BASETYPE_UV82HP
+    _idents = [UV5R_MODEL_UV82]
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 521000000)
+
+    def get_features(self):
+        rf = BaofengUV5R.get_features(self)
+        rf.valid_power_levels = UV5R_POWER_LEVELS3
+        return rf
+
+    def _is_orig(self):
+        # Override this for UV82HP to always return False
         return False
