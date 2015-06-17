@@ -809,8 +809,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if not _mem.scan:
             mem.skip = "S"
 
-        if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP" \
-                or self.MODEL == "UV-82HP":
+        if self.MODEL in ("KT-980HP", "BF-F8HP", "UV-82HP"):
             levels = UV5R_POWER_LEVELS3
         else:
             levels = UV5R_POWER_LEVELS
@@ -916,8 +915,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.wide = mem.mode == "FM"
 
         if mem.power:
-            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP" \
-                                        or self.MODEL == "UV-82HP":
+            if self.MODEL in ("KT-980HP", "BF-F8HP", "UV-82HP"):
                 levels = [str(l) for l in UV5R_POWER_LEVELS3]
                 _mem.lowpower = levels.index(str(mem.power))
             else:
@@ -1349,8 +1347,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             rs.set_apply_callback(apply_offset, _vfob)
             workmode.append(rs)
 
-            if self.MODEL == "KT-980HP" or self.MODEL == "BF-F8HP" \
-                    or self.MODEL == "UV-82HP":
+            if self.MODEL in ("KT-980HP", "BF-F8HP", "UV-82HP"):
                 rs = RadioSetting("vfoa.txpower3", "VFO A Power",
                                   RadioSettingValueList(
                                       TXPOWER3_LIST,
