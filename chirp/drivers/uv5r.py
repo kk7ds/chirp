@@ -610,7 +610,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     _memsize = 0x1808
     _basetype = BASETYPE_UV5R
     _idents = [UV5R_MODEL_291,
-               UV5R_MODEL_A58,
                UV5R_MODEL_ORIG
                ]
     _vhf_range = (136000000, 174000000)
@@ -1652,7 +1651,9 @@ class IntekKT980Radio(BaofengUV5R):
     VENDOR = "Intek"
     MODEL = "KT-980HP"
     _basetype = BASETYPE_KT980HP
-    _idents = [UV5R_MODEL_291]
+    _idents = [UV5R_MODEL_291,
+               UV5R_MODEL_A58
+               ]
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
 
