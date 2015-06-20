@@ -84,7 +84,7 @@ Section "Uninstall"
 SectionEnd
 EOF
     unix2dos chirp.nsi
-    /cygdrive/c/Program\ Files/NSIS/makensis chirp.nsi
+    /cygdrive/c/Program\ Files\ \(x86\)/NSIS/makensis chirp.nsi
 }
 
 rm -f $LOG
