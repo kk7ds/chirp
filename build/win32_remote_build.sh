@@ -1,8 +1,13 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash
+
+set -x
 
 VERSION=$(cat build/version)
 HOST=$1
 shift
+
+SSH='ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null'
+SCP='scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null'
 
 if [ -z "$HOST" ]; then
     echo "Usage: $0 [host]"
@@ -10,14 +15,14 @@ if [ -z "$HOST" ]; then
 fi
 
 temp_dir() {
-    ssh $HOST "mktemp -d /tmp/${1}.XXXXXX"
+    $SSH $HOST "mktemp -d /tmp/${1}.XXXXXX"
 }
 
 copy_source() {
     tmp=$1
     hg status -nmca > .files
 
-    rsync -av --files-from=.files . $HOST:$tmp
+    rsync -e "$SSH" -av --files-from=.files . $HOST:$tmp
 }
 
 do_build() {
@@ -27,19 +32,19 @@ do_build() {
     shift
     shift
 
-    ssh $HOST "cd $tmp && ./build/make_win32_build.sh $out $* && chmod 755 $out/*"
+    $SSH $HOST "cd $tmp && ./build/make_win32_build.sh $out $* && chmod 755 $out/*"
 }
 
 grab_builds() {
     out=$1
 
-    scp -r "$HOST:$out/*" dist
+    $SCP -r "$HOST:$out/*" dist
 }
 
 cleanup () {
     tmp=$1
 
-    ssh $HOST "rm -Rf $tmp"
+    $SSH $HOST "rm -Rf $tmp"
 }
 
 sed -i 's/^CHIRP_VERSION.*$/CHIRP_VERSION=\"'$VERSION'\"/' chirp/__init__.py
