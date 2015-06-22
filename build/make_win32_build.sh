@@ -84,7 +84,8 @@ Section "Uninstall"
 SectionEnd
 EOF
     unix2dos chirp.nsi
-    /cygdrive/c/Program\ Files\ \(x86\)/NSIS/makensis chirp.nsi
+    pfiles=$(echo $PROGRAMFILES | sed 's/C:.//')
+    "/cygdrive/c/$pfiles/NSIS/makensis" chirp.nsi
 }
 
 rm -f $LOG
