@@ -1509,6 +1509,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                                 DTMFSPEED_LIST[val]))
         dtmf.append(rs)
 
+        rs = RadioSetting("pttlt", "PTT ID Delay",
+                          RadioSettingValueInteger(0, 30, _settings.pttlt))
+        dtmf.append(rs)
+
         if not self._is_orig():
             service = RadioSettingGroup("service", "Service Settings")
             group.append(service)
