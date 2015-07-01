@@ -33,6 +33,16 @@ MODES = {0: "FM", 1: "AM"}
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.append(100.0)
 
+KENWOOD_TONES = list(chirp_common.TONES)
+KENWOOD_TONES.remove(159.8)
+KENWOOD_TONES.remove(165.5)
+KENWOOD_TONES.remove(171.3)
+KENWOOD_TONES.remove(177.3)
+KENWOOD_TONES.remove(183.5)
+KENWOOD_TONES.remove(189.9)
+KENWOOD_TONES.remove(196.6)
+KENWOOD_TONES.remove(199.5)
+
 THF6_MODES = ["FM", "WFM", "AM", "LSB", "USB", "CW"]
 
 LOCK = threading.Lock()
@@ -793,6 +803,7 @@ class THF6ARadio(KenwoodLiveRadio):
 
     _upper = 399
     _kenwood_split = True
+    _kenwood_valid_tones = list(KENWOOD_TONES)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -983,15 +994,6 @@ D710_DUPLEX = ["", "+", "-", "split"]
 D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
 D710_STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
-D710_TONES = list(chirp_common.TONES)
-D710_TONES.remove(159.8)
-D710_TONES.remove(165.5)
-D710_TONES.remove(171.3)
-D710_TONES.remove(177.3)
-D710_TONES.remove(183.5)
-D710_TONES.remove(189.9)
-D710_TONES.remove(196.6)
-D710_TONES.remove(199.5)
 
 
 @directory.register
@@ -1000,7 +1002,7 @@ class TMD710Radio(KenwoodLiveRadio):
     MODEL = "TM-D710"
 
     _upper = 999
-    _kenwood_valid_tones = list(D710_TONES)
+    _kenwood_valid_tones = list(KENWOOD_TONES)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1162,15 +1164,6 @@ class TMD710GRadio(TMD710Radio):
 
 THK2_DUPLEX = ["", "+", "-"]
 THK2_MODES = ["FM", "NFM"]
-THK2_TONES = list(chirp_common.TONES)
-THK2_TONES.remove(159.8)  # ??
-THK2_TONES.remove(165.5)  # ??
-THK2_TONES.remove(171.3)  # ??
-THK2_TONES.remove(177.3)  # ??
-THK2_TONES.remove(183.5)  # ??
-THK2_TONES.remove(189.9)  # ??
-THK2_TONES.remove(196.6)  # ??
-THK2_TONES.remove(199.5)  # ??
 
 THK2_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "-/"
 
@@ -1180,7 +1173,7 @@ class THK2Radio(KenwoodLiveRadio):
     """Kenwood TH-K2"""
     MODEL = "TH-K2"
 
-    _kenwood_valid_tones = list(THK2_TONES)
+    _kenwood_valid_tones = list(KENWOOD_TONES)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
