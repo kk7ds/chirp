@@ -1652,9 +1652,7 @@ class IntekKT980Radio(BaofengUV5R):
     VENDOR = "Intek"
     MODEL = "KT-980HP"
     _basetype = BASETYPE_KT980HP
-    _idents = [UV5R_MODEL_291,
-               UV5R_MODEL_A58
-               ]
+    _idents = [UV5R_MODEL_291]
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
 
@@ -1673,7 +1671,9 @@ class BaofengBFF8HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP"
     _basetype = BASETYPE_F8HP
-    _idents = [UV5R_MODEL_291]
+    _idents = [UV5R_MODEL_291,
+               UV5R_MODEL_A58
+               ]
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
 
