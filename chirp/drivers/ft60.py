@@ -272,7 +272,7 @@ struct {
 u8 checksum;
 """
 
-DUPLEX = ["", "", "-", "+", "split"]
+DUPLEX = ["", "", "-", "+", "split", "off"]
 TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
                 chirp_common.PowerLevel("Mid", watts=2.0),
@@ -703,7 +703,10 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.offset = int(_mem.offset) * 50000
         mem.duplex = DUPLEX[_mem.duplex]
         if mem.duplex == "split":
-            mem.offset = _decode_freq(_mem.tx_freq)
+            if int(_mem.tx_freq) == 0:
+                mem.duplex = "off"
+            else:
+                mem.offset = _decode_freq(_mem.tx_freq)
         mem.tmode = TMODES[_mem.tmode]
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
@@ -746,6 +749,9 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.duplex == "split":
             _mem.tx_freq, flags = _encode_freq(mem.offset)
             _mem.tx_freq[0].set_bits(flags)
+            _mem.offset = 0
+        elif mem.duplex == "off":
+            _mem.tx_freq = 0
             _mem.offset = 0
         else:
             _mem.tx_freq = 0
