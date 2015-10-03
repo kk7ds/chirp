@@ -364,7 +364,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 1000)
-        rf.valid_duplexes = DUPLEX
+        rf.valid_duplexes = DUPLEX[1:]
         rf.valid_tmodes = TMODES
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = STEPS
