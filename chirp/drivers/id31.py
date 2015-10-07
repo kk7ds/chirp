@@ -254,7 +254,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
         if _psk & bit:
             mem.skip = "P"
-        if _skp & bit:
+        elif _skp & bit:
             mem.skip = "S"
 
         return mem
@@ -297,7 +297,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _skp |= bit
             _psk &= ~bit
         elif memory.skip == "P":
-            _skp &= ~bit
+            _skp |= bit
             _psk |= bit
         else:
             _skp &= ~bit
