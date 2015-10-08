@@ -171,6 +171,11 @@ class IP620Radio(chirp_common.CloneModeRadio,
               ]
     _memsize = 0x2000
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return len(filedata) == cls._memsize and \
+            filedata[0xF7E:0xF80] == "\x01\xE2"
+
     def _ip620_exit_programming_mode(self):
         try:
             self.pipe.write("\x06")
