@@ -29,7 +29,7 @@ def win32_comports_bruteforce():
 
     ports = []
     for i in range(1, 257):
-        portname = "COM%i" % i
+        portname = "\\\\.\\COM%i" % i
         try:
             mode = win32con.GENERIC_READ | win32con.GENERIC_WRITE
             port = \
@@ -40,6 +40,8 @@ def win32_comports_bruteforce():
                                      win32con.OPEN_EXISTING,
                                      0,
                                      None)
+            if portname.startswith("\\"):
+                portname = portname[4:]
             ports.append((portname, "Unknown", "Serial"))
             win32file.CloseHandle(port)
             port = None
