@@ -175,9 +175,12 @@ struct {
 
 def do_ident(radio):
     radio.pipe.setTimeout(3)
-    radio.pipe.write("PROGRAM")
-    ack = radio.pipe.read(1)
-    if ack != '\x06':
+    radio.pipe.write("\x05PROGRAM")
+    for x in xrange(10):
+        ack = radio.pipe.read(1)
+        if ack == '\x06':
+            break
+    else:
         raise errors.RadioError("Radio did not ack programming mode")
     radio.pipe.write("\x02")
     ident = radio.pipe.read(8)
