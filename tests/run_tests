@@ -1162,8 +1162,8 @@ Available drivers:
 %s
 Available tests:
 %s
-""" % ("\n".join(["  %s" % x for x in tests]),
-       "\n".join(["  %s" % x for x in TESTS.keys()]))
+""" % ("\n".join(["  %s" % x for x in sorted(tests)]),
+       "\n".join(["  %s" % x for x in sorted(TESTS.keys())]))
 
     (options, args) = op.parse_args()
 
