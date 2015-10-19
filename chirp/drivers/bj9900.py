@@ -56,6 +56,13 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             chirp_common.PowerLevel("High", watts=40.00)]
 
     _memsize = 0x18F1
+
+    # dat file format is
+    # 2 char per byte hex string
+    # on CR LF terminated lines of 96 char
+    # plus an empty line at the end
+    _datsize = (_memsize * 2) / 96 * 98 + 2
+
     # block are read in same order as original sw eventhough they are not
     # in physical order
     _blocks = [
@@ -184,6 +191,12 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
+        if len(self._mmap) == self._datsize:
+            self._mmap = memmap.MemoryMap([
+                    chr(int(self._mmap.get(i, 2), 16))
+                    for i in range(0, self._datsize, 2)
+                    if self._mmap.get(i, 2) != "\r\n"
+                    ])
         try:
             self._memobj = bitwise.parse(
                 self.MEM_FORMAT % self._memstart, self._mmap)
@@ -379,7 +392,8 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return len(filedata) == cls._memsize
+        return len(filedata) == cls._memsize or \
+            (len(filedata) == cls._datsize and filedata[-4:] == "\r\n\r\n")
 
 class BJ9900RadioLeft(BJ9900Radio):
     """Baojie BJ-9900 Left VFO subdevice"""
