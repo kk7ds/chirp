@@ -232,8 +232,9 @@ struct mem {
      tone:6;
   u8 unknown4:1,
      dtcs:7;
-  u8 unknown5[2];
-  u8 offset;
+  u8 unknown5;
+  u16 unknown5_1:1
+      offset:15;
   u8 unknown6[3];
 };
 
