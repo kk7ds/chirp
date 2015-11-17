@@ -44,8 +44,8 @@ struct mem {
      scramb:1,
      compand:1,
      emphasis:1
-     unknown1a:1,
-     unknown1b:2;
+     unknown1a:2,
+     sqlmode:1;     // carrier, tone
   u8 rptmod:2,      // off, -, +
      reverse:1,
      talkaround:1,
@@ -352,6 +352,10 @@ class TYTTH9800Base(chirp_common.Radio):
             _mem.tx_freq = mem.freq / 10
 
         _mem.tmode = TMODES.index(mem.tmode)
+        if mem.tmode == "TSQL" or mem.tmode == "DTCS":
+            _mem.sqlmode = 1
+        else:
+            _mem.sqlmode = 0
         _mem.ctcss = mem.rtone * 10
         _mem.dtcs = mem.dtcs
         _mem.dtcs_pol = DTCS_POLARITY.index(mem.dtcs_polarity)
