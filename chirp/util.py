@@ -94,3 +94,16 @@ def get_dict_rev(thedict, value):
     for k, v in thedict.items():
         _dict[v] = k
     return _dict[value]
+
+
+def safe_charset_string(indexes, charset, safechar = " "):
+    """Return a string from an array of charset indexes,
+    replaces out of charset values with safechar"""
+    assert safechar in charset
+    _string = ""
+    for i in indexes:
+        try:
+            _string += charset[i]
+        except IndexError:
+            _string += safechar
+    return _string

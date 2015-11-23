@@ -25,6 +25,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 import os
 import logging
 from textwrap import dedent
+from chirp.util import safe_charset_string
 
 LOG = logging.getLogger(__name__)
 
@@ -569,29 +570,34 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueBoolean(_settings.arts_id))
         extended.append(rs)
         st = RadioSettingValueString(0, 10,
-                                     ''.join([self._CALLSIGN_CHARSET[x]
-                                             for x in self._memobj.arts_idw]))
+                                     safe_charset_string(
+                                         self._memobj.arts_idw,
+                                         self._CALLSIGN_CHARSET)
+                                     )
         st.set_charset(self._CALLSIGN_CHARSET)
         rs = RadioSetting("arts_idw", "ARTS IDW", st)
         extended.append(rs)
         st = RadioSettingValueString(0, 40,
-                                     ''.join([self._BEACON_CHARSET[x]
-                                             for x in self._memobj.beacon_text1
-                                              ]))
+                                     safe_charset_string(
+                                         self._memobj.beacon_text1,
+                                         self._BEACON_CHARSET)
+                                     )
         st.set_charset(self._BEACON_CHARSET)
         rs = RadioSetting("beacon_text1", "Beacon text1", st)
         extended.append(rs)
         st = RadioSettingValueString(0, 40,
-                                     ''.join([self._BEACON_CHARSET[x]
-                                              for x in
-                                              self._memobj.beacon_text2]))
+                                     safe_charset_string(
+                                         self._memobj.beacon_text2,
+                                         self._BEACON_CHARSET)
+                                     )
         st.set_charset(self._BEACON_CHARSET)
         rs = RadioSetting("beacon_text2", "Beacon text2", st)
         extended.append(rs)
         st = RadioSettingValueString(0, 40,
-                                     ''.join([self._BEACON_CHARSET[x]
-                                              for x in
-                                              self._memobj.beacon_text3]))
+                                     safe_charset_string(
+                                         self._memobj.beacon_text3,
+                                         self._BEACON_CHARSET)
+                                     )
         st.set_charset(self._BEACON_CHARSET)
         rs = RadioSetting("beacon_text3", "Beacon text3", st)
         extended.append(rs)
@@ -856,16 +862,18 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueInteger(0, 100, _settings.nb_level))
         basic.append(rs)
         st = RadioSettingValueString(0, 4,
-                                     ''.join([self._CALLSIGN_CHARSET[x]
-                                              for x in
-                                              self._memobj.op_filter1_name]))
+                                     safe_charset_string(
+                                         self._memobj.op_filter1_name,
+                                         self._CALLSIGN_CHARSET)
+                                     )
         st.set_charset(self._CALLSIGN_CHARSET)
         rs = RadioSetting("op_filter1_name", "Optional filter1 name", st)
         extended.append(rs)
         st = RadioSettingValueString(0, 4,
-                                     ''.join([self._CALLSIGN_CHARSET[x]
-                                              for x in
-                                              self._memobj.op_filter2_name]))
+                                     safe_charset_string(
+                                         self._memobj.op_filter2_name,
+                                         self._CALLSIGN_CHARSET)
+                                     )
         st.set_charset(self._CALLSIGN_CHARSET)
         rs = RadioSetting("op_filter2_name", "Optional filter2 name", st)
         extended.append(rs)
