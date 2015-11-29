@@ -96,7 +96,7 @@ def get_dict_rev(thedict, value):
     return _dict[value]
 
 
-def safe_charset_string(indexes, charset, safechar = " "):
+def safe_charset_string(indexes, charset, safechar=" "):
     """Return a string from an array of charset indexes,
     replaces out of charset values with safechar"""
     assert safechar in charset
@@ -107,3 +107,4 @@ def safe_charset_string(indexes, charset, safechar = " "):
         except IndexError:
             _string += safechar
     return _string
+
