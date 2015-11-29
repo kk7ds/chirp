@@ -107,4 +107,3 @@ def safe_charset_string(indexes, charset, safechar=" "):
         except IndexError:
             _string += safechar
     return _string
-
