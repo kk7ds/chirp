@@ -1,0 +1,917 @@
+# Ukrainian translations for CHIRP package.
+# Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
+# This file is distributed under the same license as the CHIRP package.
+# Dan Smith <dan@theine>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-16 12:06-0800\n"
+"PO-Revision-Date: 2015-11-30 10:36+0200\n"
+"Last-Translator: laser <student.laser@gmail.com>\n"
+"Language-Team: laser <student.laser@gmail.com>\n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../chirpui/common.py:204
+msgid "Completed"
+msgstr "Завершено"
+
+#: ../chirpui/common.py:205
+msgid "idle"
+msgstr "простоювання"
+
+#: ../chirpui/bankedit.py:52
+msgid "Retrieving bank information"
+msgstr "Отримання інформації банку"
+
+#: ../chirpui/bankedit.py:75
+msgid "Setting name on bank"
+msgstr "Настройка назви бана"
+
+#: ../chirpui/bankedit.py:85
+msgid "Bank"
+msgstr "Банк"
+
+#: ../chirpui/bankedit.py:86 ../chirpui/bankedit.py:240
+#: ../chirpui/importdialog.py:536 ../chirpui/memedit.py:65
+#: ../chirpui/memedit.py:85 ../chirpui/memedit.py:247
+#: ../chirpui/memedit.py:872 ../chirpui/memedit.py:926
+#: ../chirpui/memedit.py:1063 ../chirpui/memedit.py:1065
+msgid "Name"
+msgstr "Ім'я"
+
+#: ../chirpui/bankedit.py:185
+msgid "Updating bank index for memory {num}"
+msgstr "Оновлення індексу банку пам'яті {num}"
+
+#: ../chirpui/bankedit.py:194
+msgid "Updating bank information for memory {num}"
+msgstr "Оновлення інформації банку пам'яті {num}"
+
+#: ../chirpui/bankedit.py:200 ../chirpui/bankedit.py:229
+msgid "Getting memory {num}"
+msgstr "Отримання пам'яті {num}"
+
+#: ../chirpui/bankedit.py:214
+msgid "Setting index for memory {num}"
+msgstr "Установка індексу для пам'яті {num}"
+
+#: ../chirpui/bankedit.py:223
+msgid "Getting bank for memory {num}"
+msgstr "Отримання банку пам'яті {num}"
+
+#: ../chirpui/bankedit.py:238 ../chirpui/memedit.py:63
+#: ../chirpui/memedit.py:172 ../chirpui/memedit.py:246
+#: ../chirpui/memedit.py:315 ../chirpui/memedit.py:335
+#: ../chirpui/memedit.py:349 ../chirpui/memedit.py:423
+#: ../chirpui/memedit.py:435 ../chirpui/memedit.py:459
+#: ../chirpui/memedit.py:461 ../chirpui/memedit.py:534
+#: ../chirpui/memedit.py:548 ../chirpui/memedit.py:550
+#: ../chirpui/memedit.py:591 ../chirpui/memedit.py:593
+#: ../chirpui/memedit.py:621 ../chirpui/memedit.py:822
+#: ../chirpui/memedit.py:870 ../chirpui/memedit.py:895
+#: ../chirpui/memedit.py:907 ../chirpui/memedit.py:924
+#: ../chirpui/memedit.py:1230
+msgid "Loc"
+msgstr "Loc"
+
+#: ../chirpui/bankedit.py:239 ../chirpui/importdialog.py:537
+#: ../chirpui/memedit.py:64 ../chirpui/memedit.py:86 ../chirpui/memedit.py:187
+#: ../chirpui/memedit.py:248 ../chirpui/memedit.py:271
+#: ../chirpui/memedit.py:296 ../chirpui/memedit.py:304
+#: ../chirpui/memedit.py:873 ../chirpui/memedit.py:923
+msgid "Frequency"
+msgstr "Частота"
+
+#: ../chirpui/bankedit.py:241
+msgid "Index"
+msgstr "Зміст"
+
+#: ../chirpui/bankedit.py:302
+msgid "Getting bank information for memory {num}"
+msgstr "Отримання інформації банку для пам'яті {num}"
+
+#: ../chirpui/bankedit.py:323
+msgid "Getting bank information"
+msgstr "Отримання інформації банку"
+
+#: ../chirpui/inputdialog.py:81
+msgid "An error has occurred"
+msgstr "Сталася помилка"
+
+#: ../chirpui/inputdialog.py:130
+msgid "Overwrite"
+msgstr "Перезаписати"
+
+#: ../chirpui/inputdialog.py:133
+msgid "File Exists"
+msgstr "Файл існує"
+
+#: ../chirpui/inputdialog.py:136
+msgid "The file {name} already exists. Do you want to overwrite it?"
+msgstr "Файл {name} вже існує. Ви дійсно хочете перезаписати його?"
+
+#: ../chirpui/importdialog.py:90
+msgid "Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'"
+msgstr "Розташування {number} вже імпортуються. Виберіть інше значення для 'Нове розташування' перед вибором 'Імпорт'"
+
+#: ../chirpui/importdialog.py:121
+msgid "Invalid value. Must be an integer."
+msgstr "Неприпустиме значення. Повинно бути цілим числом."
+
+#: ../chirpui/importdialog.py:130
+msgid "Location {number} is already being imported"
+msgstr "Розташування {number} вже імпортованого"
+
+#: ../chirpui/importdialog.py:182
+msgid "Updating URCALL list"
+msgstr "Оновлення списку URCALL"
+
+#: ../chirpui/importdialog.py:187
+msgid "Updating RPTCALL list"
+msgstr "Оновлення списку RPTCALL"
+
+#: ../chirpui/importdialog.py:256
+msgid "Setting memory {number}"
+msgstr "Установка пам'яті {number}"
+
+#: ../chirpui/importdialog.py:260
+msgid "Importing bank information"
+msgstr "Імпортування інформації банку"
+
+#: ../chirpui/importdialog.py:264
+#, fuzzy
+msgid "Error importing memories:"
+msgstr "Помилка імпорту пам'яті:"
+
+#: ../chirpui/importdialog.py:376
+msgid "All"
+msgstr "Все"
+
+#: ../chirpui/importdialog.py:382
+msgid "None"
+msgstr "Не вказано"
+
+#: ../chirpui/importdialog.py:388
+msgid "Inverse"
+msgstr "Інверсія"
+
+#: ../chirpui/importdialog.py:394
+#, fuzzy
+msgid "Select"
+msgstr "Обрати"
+
+#: ../chirpui/importdialog.py:416
+msgid "Auto"
+msgstr "Авто"
+
+#: ../chirpui/importdialog.py:422
+msgid "Reverse"
+msgstr "Реверс"
+
+#: ../chirpui/importdialog.py:428
+msgid "Adjust New Location"
+msgstr "Настроїти нове розташування"
+
+#: ../chirpui/importdialog.py:438
+msgid "Confirm overwrites"
+msgstr "Підтвердіть заміну"
+
+#: ../chirpui/importdialog.py:444
+msgid "Options"
+msgstr "Опції"
+
+#: ../chirpui/importdialog.py:495
+msgid "Cannot be imported because"
+msgstr "Не можна імпортувати, оскільки"
+
+#: ../chirpui/importdialog.py:513
+#, fuzzy
+msgid "Import From File"
+msgstr "Імпортувати з файлу"
+
+#: ../chirpui/importdialog.py:514 ../chirpui/mainapp.py:1196
+msgid "Import"
+msgstr "Імпорт"
+
+#: ../chirpui/importdialog.py:534
+msgid "To"
+msgstr "До"
+
+#: ../chirpui/importdialog.py:535
+msgid "From"
+msgstr "З"
+
+#: ../chirpui/importdialog.py:538 ../chirpui/memedit.py:78
+#: ../chirpui/memedit.py:99 ../chirpui/memedit.py:886
+#: ../chirpui/memedit.py:940 ../chirpui/memedit.py:1068
+msgid "Comment"
+msgstr "Коментар"
+
+#: ../chirpui/importdialog.py:542
+msgid "Location memory will be imported into"
+msgstr "Розташування пам'яті буде імпортовано до"
+
+#: ../chirpui/importdialog.py:543
+msgid "Location of memory in the file being imported"
+msgstr "Розташування пам'яті у файлі, що імпортуються"
+
+#: ../chirpui/importdialog.py:566
+msgid "Preparing memory list..."
+msgstr "Підготовка списку пам'яті..."
+
+#: ../chirpui/importdialog.py:575
+#, fuzzy
+msgid "Export To File"
+msgstr "Експорт до файлу"
+
+#: ../chirpui/importdialog.py:576 ../chirpui/mainapp.py:1197
+msgid "Export"
+msgstr "Експорт"
+
+#: ../chirpui/mainapp.py:269 ../chirpui/mainapp.py:483
+msgid "Untitled"
+msgstr "Без назви"
+
+#: ../chirpui/mainapp.py:316 ../chirpui/mainapp.py:715
+msgid "CHIRP Radio Images"
+msgstr "Образи радіостанцій CHIRP"
+
+#: ../chirpui/mainapp.py:317 ../chirpui/mainapp.py:714
+#: ../chirpui/mainapp.py:880
+msgid "CHIRP Files"
+msgstr "CHIRP файли"
+
+#: ../chirpui/mainapp.py:318 ../chirpui/mainapp.py:716
+#: ../chirpui/mainapp.py:879
+msgid "CSV Files"
+msgstr "CSV-файли"
+
+#: ../chirpui/mainapp.py:319 ../chirpui/mainapp.py:717
+msgid "ICF Files"
+msgstr "ICF файли"
+
+#: ../chirpui/mainapp.py:320 ../chirpui/mainapp.py:718
+msgid "VX7 Commander Files"
+msgstr "Файли VX7 командира"
+
+#: ../chirpui/mainapp.py:330
+msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+msgstr "ICF файли не можна редагувати, тільки відобразити або імпортувати. Відкрити в режимі тільки для читання?"
+
+#: ../chirpui/mainapp.py:373
+msgid "There was an error opening {fname}: {error}"
+msgstr "Сталася помилка при відкритті {fname}: {error}"
+
+#: ../chirpui/mainapp.py:388
+msgid "{num} errors during open:"
+msgstr "{num} помилки під час відкриття:"
+
+#: ../chirpui/mainapp.py:394
+msgid "Note:"
+msgstr "Примітка:"
+
+#: ../chirpui/mainapp.py:395
+msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+msgstr "{vendor} {model} працює в <b>режимі реального часу</b>. Це означає, що будь-які зміни негайно відправляються на радіостанцію. Через це не вдалося виконати <u>Збереження</u> або <u>Запис</u> операцій. Якщо ви хочете редагувати вміст в автономному режимі, будь ласка, <u>Експортуйте</u> файл CSV, за допомогою <b>Меню Файл</b>."
+
+#: ../chirpui/mainapp.py:404
+msgid "Don't show this again"
+msgstr "Не показувати наступного разу"
+
+#: ../chirpui/mainapp.py:448
+msgid "{vendor} {model} image file"
+msgstr "файлу образу {vendor} {model}"
+
+#: ../chirpui/mainapp.py:456
+msgid "VX7 Commander"
+msgstr "Командир VX7"
+
+#: ../chirpui/mainapp.py:518
+msgid "Open recent file {name}"
+msgstr "Відкриті останній файл {name}"
+
+#: ../chirpui/mainapp.py:579
+msgid "Import stock configuration {name}"
+msgstr "Імпорт заводської конфігурації {name}"
+
+#: ../chirpui/mainapp.py:595
+msgid "Open stock configuration {name}"
+msgstr "Відкрите заводські конфігурації {name}"
+
+#: ../chirpui/mainapp.py:681
+msgid "Discard Changes?"
+msgstr "Скасувати зміни?"
+
+#: ../chirpui/mainapp.py:686
+msgid "File is modified, save changes before closing?"
+msgstr "Файл змінено, зберегти зміни перед закриттям?"
+
+#: ../chirpui/mainapp.py:923
+msgid "With significant contributions by:"
+msgstr "Значні внески зробили:"
+
+#: ../chirpui/mainapp.py:940
+msgid "Select Columns"
+msgstr "Виберіть Стовпці"
+
+#: ../chirpui/mainapp.py:955
+msgid "Visible columns for {radio}"
+msgstr "Видимі стовпці для {radio}"
+
+#: ../chirpui/mainapp.py:1012
+msgid "Reporting is disabled"
+msgstr "Звіти вимкнуто"
+
+#: ../chirpui/mainapp.py:1013
+msgid "The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
+"\n"
+"<b>Are you sure you want to disable this feature?</b>"
+msgstr "Функцію звітування CHIRP розроблено, щоб допомогти <u>поліпшити якість</u>, дозволяючи авторам зосередитися на драйверах радіостанцій, що найчастіше використовується і помилках досвідчених користувачів. Звіти не містять ідентифікаційну інформацію і використовуються тільки для статистичних цілей авторів. Ваша конфіденційність є надзвичайно важлива, але <u>будь ласка, залиште цю функцію включеною, щоб допомогти зробити CHIRP краще!</u>\n"
+"\n"
+"<b>ви впевнені, що хочете відключити цю функцію?</b>"
+
+#: ../chirpui/mainapp.py:1045
+msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
+msgstr "Виберіть мову або авто для використання в операційній системі. Вам потрібно буде перезапустити додаток до того, як зміни вступлять в силу"
+
+#: ../chirpui/mainapp.py:1169
+msgid "_File"
+msgstr "_Файл"
+
+#: ../chirpui/mainapp.py:1172
+msgid "Open stock config"
+msgstr "Відкрити заводські конфігурації"
+
+#: ../chirpui/mainapp.py:1173
+msgid "_Recent"
+msgstr "Ос_танні"
+
+#: ../chirpui/mainapp.py:1178
+msgid "_Edit"
+msgstr "_Редагувати"
+
+#: ../chirpui/mainapp.py:1179
+msgid "_Cut"
+msgstr "_Вирізати"
+
+#: ../chirpui/mainapp.py:1180
+msgid "_Copy"
+msgstr "_Копіювати"
+
+#: ../chirpui/mainapp.py:1181
+msgid "_Paste"
+msgstr "_Вставити"
+
+#: ../chirpui/mainapp.py:1182
+msgid "_Delete"
+msgstr "_Видалити"
+
+#: ../chirpui/mainapp.py:1183
+msgid "Move _Up"
+msgstr "Перемістити В_гору"
+
+#: ../chirpui/mainapp.py:1184
+#, fuzzy
+msgid "Move Dow_n"
+msgstr "Перемістити В_низ"
+
+#: ../chirpui/mainapp.py:1185
+msgid "E_xchange"
+msgstr "_Обмін"
+
+#: ../chirpui/mainapp.py:1186
+msgid "_View"
+msgstr "В_игляд"
+
+#: ../chirpui/mainapp.py:1187
+msgid "Columns"
+msgstr "Стовпці"
+
+#: ../chirpui/mainapp.py:1188
+msgid "Developer"
+msgstr "Розробник"
+
+#: ../chirpui/mainapp.py:1189
+msgid "Show raw memory"
+msgstr "Показати raw пам'ять"
+
+#: ../chirpui/mainapp.py:1190
+msgid "Diff raw memories"
+msgstr "Порівняти raw пам'ять"
+
+#: ../chirpui/mainapp.py:1191
+msgid "Diff tabs"
+msgstr "Вкладки порівняння"
+
+#: ../chirpui/mainapp.py:1192
+msgid "Change language"
+msgstr "Змінити мову"
+
+#: ../chirpui/mainapp.py:1193
+msgid "_Radio"
+msgstr "_Радіостанція"
+
+#: ../chirpui/mainapp.py:1194
+msgid "Download From Radio"
+msgstr "Скопіювати з радіостанції"
+
+#: ../chirpui/mainapp.py:1195
+msgid "Upload To Radio"
+msgstr "Записати в радіостанцію"
+
+#: ../chirpui/mainapp.py:1198
+msgid "Import from RFinder"
+msgstr "Імпорт з RFinder"
+
+#: ../chirpui/mainapp.py:1199
+msgid "CHIRP Native File"
+msgstr "Файл CHIRP"
+
+#: ../chirpui/mainapp.py:1200
+msgid "CSV File"
+msgstr "Файл CSV"
+
+#: ../chirpui/mainapp.py:1201
+msgid "Import from RepeaterBook"
+msgstr "Імпорт з RepeaterBook"
+
+#: ../chirpui/mainapp.py:1202
+#, fuzzy
+msgid "Import from stock config"
+msgstr "Імпорт з сховища конфігурацій"
+
+#: ../chirpui/mainapp.py:1204
+msgid "Help"
+msgstr "Довідка"
+
+#: ../chirpui/mainapp.py:1215
+msgid "Report statistics"
+msgstr "Звіт статистики"
+
+#: ../chirpui/mainapp.py:1216
+msgid "Hide Unused Fields"
+msgstr "Приховувати невикористовувані поля"
+
+#: ../chirpui/mainapp.py:1217
+msgid "Automatic Repeater Offset"
+msgstr "Автоматичний рознос репітера"
+
+#: ../chirpui/mainapp.py:1218
+msgid "Enable Developer Functions"
+msgstr "Увімкнення функції розробника"
+
+#: ../chirpui/mainapp.py:1352
+msgid "Error reporting is enabled"
+msgstr "Звітування про критичні помилки ввімкнуто"
+
+#: ../chirpui/mainapp.py:1355
+msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgstr "Якщо ви хочете вимкнути цю функцію, ви можете зробити це в меню <u>Довідка</u>"
+
+#: ../chirpui/cloneprog.py:43
+msgid "Clone Progress"
+msgstr "Поступ клонування"
+
+#: ../chirpui/cloneprog.py:46
+msgid "Cloning"
+msgstr "Клонування"
+
+#: ../chirpui/cloneprog.py:55
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: ../chirpui/shiftdialog.py:27
+msgid "Shift"
+msgstr "Зміщення"
+
+#: ../chirpui/shiftdialog.py:63
+msgid "Moving {src} to {dst}"
+msgstr "Переміщення {src} до {dst}"
+
+#: ../chirpui/shiftdialog.py:80
+msgid "Looking for a free spot ({number})"
+msgstr "Пошук вільної точки ({number})"
+
+#: ../chirpui/shiftdialog.py:135
+msgid "Moved {count} memories"
+msgstr "Перемещенно {count} записів пам'яті"
+
+#: ../chirpui/clone.py:35
+#, fuzzy
+msgid "{vendor} {model} on {port}"
+msgstr "{vendor} {model} на {port}"
+
+#: ../chirpui/clone.py:100 ../chirpui/clone.py:162
+msgid "Detect"
+msgstr "Визначити"
+
+#: ../chirpui/clone.py:123
+msgid "Port"
+msgstr "Порт"
+
+#: ../chirpui/clone.py:124
+msgid "Vendor"
+msgstr "Виробник"
+
+#: ../chirpui/clone.py:125
+msgid "Model"
+msgstr "Модель"
+
+#: ../chirpui/clone.py:138
+#, fuzzy
+msgid "Radio"
+msgstr "Радіостанція"
+
+#: ../chirpui/clone.py:166
+msgid "Unable to detect radio on {port}"
+msgstr "Не вдалося виявити радіо на {port}"
+
+#: ../chirpui/clone.py:178
+msgid "Internal error: Unable to upload to {model}"
+msgstr "Внутрішня помилка: не вдалося записати на {model}"
+
+#: ../chirpui/clone.py:226
+msgid "Clone failed: {error}"
+msgstr "Помилка клонування: {error}"
+
+#: ../chirpui/dstaredit.py:40
+msgid "Callsign"
+msgstr "Позивний"
+
+#: ../chirpui/dstaredit.py:124
+msgid "Your callsign"
+msgstr "Ваш позивний"
+
+#: ../chirpui/dstaredit.py:132
+msgid "Repeater callsign"
+msgstr "Позивний репітера"
+
+#: ../chirpui/dstaredit.py:140
+msgid "My callsign"
+msgstr "Мій позивний"
+
+#: ../chirpui/dstaredit.py:170 ../chirpui/memedit.py:1365
+msgid "Downloading URCALL list"
+msgstr "Завантаження списку URCALL"
+
+#: ../chirpui/dstaredit.py:174 ../chirpui/memedit.py:1377
+msgid "Downloading RPTCALL list"
+msgstr "Завантаження списку RPTCALL"
+
+#: ../chirpui/dstaredit.py:178
+msgid "Downloading MYCALL list"
+msgstr "Завантаження списку MYCALL"
+
+#: ../chirpui/editorset.py:87
+#, fuzzy
+msgid "Memories"
+msgstr "Пам'ять"
+
+#: ../chirpui/editorset.py:92
+msgid "D-STAR"
+msgstr "D-STAR"
+
+#: ../chirpui/editorset.py:98
+msgid "Bank Names"
+msgstr "Імена банків"
+
+#: ../chirpui/editorset.py:104
+msgid "Banks"
+msgstr "Банки"
+
+#: ../chirpui/editorset.py:222
+msgid "The {vendor} {model} has multiple independent sub-devices"
+msgstr "{vendor} {model} має кілька незалежних суб пристроїв"
+
+#: ../chirpui/editorset.py:225
+msgid "Choose one to import from:"
+msgstr "Виберіть один для Імпорту з:"
+
+#: ../chirpui/editorset.py:230
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#: ../chirpui/editorset.py:235
+msgid "Internal Error"
+msgstr "Внутрішня помилка"
+
+#: ../chirpui/editorset.py:248
+msgid "There were errors while opening {file}. The affected memories will not be importable!"
+msgstr "Там були помилки при відкритті {file}. Порушена пам'ять не буде імпортована!"
+
+#: ../chirpui/editorset.py:260
+msgid "There was an error during import: {error}"
+msgstr "Виникла помилка під час імпортування: {error}"
+
+#: ../chirpui/editorset.py:270
+msgid "Unsupported file type"
+msgstr "Файл непідтримуваного типу"
+
+#: ../chirpui/editorset.py:286 ../chirpui/editorset.py:301
+#, fuzzy
+msgid "There was an error during export: {error}"
+msgstr "Виникла помилка під час експортування: {error}"
+
+#: ../chirpui/editorset.py:313
+msgid "Priming memory"
+msgstr "Первинна пам'ять"
+
+#: ../chirpui/memedit.py:52
+msgid "Invalid value for this field"
+msgstr "Неприпустиме значення для цього поля"
+
+#: ../chirpui/memedit.py:66 ../chirpui/memedit.py:97 ../chirpui/memedit.py:111
+#: ../chirpui/memedit.py:204 ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:874 ../chirpui/memedit.py:931
+#: ../chirpui/memedit.py:1069 ../chirpui/memedit.py:1133
+msgid "Tone Mode"
+msgstr "Тоновий режим"
+
+#: ../chirpui/memedit.py:67 ../chirpui/memedit.py:87 ../chirpui/memedit.py:103
+#: ../chirpui/memedit.py:214 ../chirpui/memedit.py:218
+#: ../chirpui/memedit.py:220 ../chirpui/memedit.py:310
+#: ../chirpui/memedit.py:875 ../chirpui/memedit.py:928
+#: ../chirpui/memedit.py:1070
+msgid "Tone"
+msgstr "Тон"
+
+#: ../chirpui/memedit.py:68 ../chirpui/memedit.py:88 ../chirpui/memedit.py:104
+#: ../chirpui/memedit.py:210 ../chirpui/memedit.py:218
+#: ../chirpui/memedit.py:221 ../chirpui/memedit.py:310
+#: ../chirpui/memedit.py:876 ../chirpui/memedit.py:929
+#: ../chirpui/memedit.py:1066
+msgid "ToneSql"
+msgstr "ToneSql"
+
+#: ../chirpui/memedit.py:69 ../chirpui/memedit.py:89 ../chirpui/memedit.py:105
+#: ../chirpui/memedit.py:211 ../chirpui/memedit.py:215
+#: ../chirpui/memedit.py:222 ../chirpui/memedit.py:306
+#: ../chirpui/memedit.py:877 ../chirpui/memedit.py:930
+#: ../chirpui/memedit.py:1059
+msgid "DTCS Code"
+msgstr "DTCS код"
+
+#: ../chirpui/memedit.py:70 ../chirpui/memedit.py:90 ../chirpui/memedit.py:106
+#: ../chirpui/memedit.py:212 ../chirpui/memedit.py:216
+#: ../chirpui/memedit.py:223 ../chirpui/memedit.py:878
+#: ../chirpui/memedit.py:933 ../chirpui/memedit.py:1060
+msgid "DTCS Pol"
+msgstr "DTCS Pol"
+
+#: ../chirpui/memedit.py:71 ../chirpui/memedit.py:91 ../chirpui/memedit.py:112
+#: ../chirpui/memedit.py:879 ../chirpui/memedit.py:932
+#: ../chirpui/memedit.py:1067 ../chirpui/memedit.py:1134
+msgid "Cross Mode"
+msgstr "Кросрежим"
+
+#: ../chirpui/memedit.py:72 ../chirpui/memedit.py:92 ../chirpui/memedit.py:109
+#: ../chirpui/memedit.py:137 ../chirpui/memedit.py:205
+#: ../chirpui/memedit.py:249 ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:880 ../chirpui/memedit.py:934
+#: ../chirpui/memedit.py:1071 ../chirpui/memedit.py:1144
+msgid "Duplex"
+msgstr "Дуплекс"
+
+#: ../chirpui/memedit.py:73 ../chirpui/memedit.py:93 ../chirpui/memedit.py:135
+#: ../chirpui/memedit.py:198 ../chirpui/memedit.py:226
+#: ../chirpui/memedit.py:250 ../chirpui/memedit.py:308
+#: ../chirpui/memedit.py:881 ../chirpui/memedit.py:935
+#: ../chirpui/memedit.py:1062
+msgid "Offset"
+msgstr "Зсув"
+
+#: ../chirpui/memedit.py:74 ../chirpui/memedit.py:94 ../chirpui/memedit.py:107
+#: ../chirpui/memedit.py:882 ../chirpui/memedit.py:936
+#: ../chirpui/memedit.py:1061 ../chirpui/memedit.py:1132
+#: ../chirpui/memedit.py:1289 ../chirpui/memedit.py:1307
+#: ../chirpui/memedit.py:1317
+msgid "Mode"
+msgstr "Режим"
+
+#: ../chirpui/memedit.py:75 ../chirpui/memedit.py:95 ../chirpui/memedit.py:108
+#: ../chirpui/memedit.py:296 ../chirpui/memedit.py:883
+#: ../chirpui/memedit.py:937 ../chirpui/memedit.py:1073
+#: ../chirpui/memedit.py:1136 ../chirpui/memedit.py:1140
+msgid "Power"
+msgstr "Потужність"
+
+#: ../chirpui/memedit.py:76 ../chirpui/memedit.py:96 ../chirpui/memedit.py:110
+#: ../chirpui/memedit.py:140 ../chirpui/memedit.py:143
+#: ../chirpui/memedit.py:884 ../chirpui/memedit.py:938
+#: ../chirpui/memedit.py:1064
+msgid "Tune Step"
+msgstr "Крок настройки"
+
+#: ../chirpui/memedit.py:77 ../chirpui/memedit.py:98 ../chirpui/memedit.py:885
+#: ../chirpui/memedit.py:939 ../chirpui/memedit.py:1072
+#: ../chirpui/memedit.py:1135
+msgid "Skip"
+msgstr "Пропустити"
+
+#: ../chirpui/memedit.py:175
+msgid "Erasing memory {loc}"
+msgstr "Стирання пам'яті {loc}"
+
+#: ../chirpui/memedit.py:236
+msgid "Unable to make changes to this model"
+msgstr "Не вдається внести зміни до цієї моделі"
+
+#: ../chirpui/memedit.py:241
+msgid "Editing new item, taking defaults"
+msgstr "Редагування нового елемента, беручи за замовчуванням"
+
+#: ../chirpui/memedit.py:257
+msgid "Bad value for {col}: {val}"
+msgstr "Погане значення для {col}: {val}"
+
+#: ../chirpui/memedit.py:281
+msgid "Error setting memory"
+msgstr "Помилка настройки пам'яті"
+
+#: ../chirpui/memedit.py:289 ../chirpui/memedit.py:356
+#: ../chirpui/memedit.py:1272
+msgid "Writing memory {number}"
+msgstr "Запис пам'яті {number}"
+
+#: ../chirpui/memedit.py:361
+msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
+msgstr "Ця операція вимагає переміщення всіх наступних каналів на одне місце до тих пір, поки пусте місце не буде досягнуто. Це може зайняти багато часу. Ви впевнені, що хочете це зробити?"
+
+#: ../chirpui/memedit.py:387
+msgid "Adding memory {number}"
+msgstr "Додавання пам'яті {number}"
+
+#: ../chirpui/memedit.py:400 ../chirpui/memedit.py:913
+msgid "Erasing memory {number}"
+msgstr "Стирання пам'яті {number}"
+
+#: ../chirpui/memedit.py:409 ../chirpui/memedit.py:518
+#: ../chirpui/memedit.py:564 ../chirpui/memedit.py:569
+#: ../chirpui/memedit.py:856 ../chirpui/memedit.py:1166
+msgid "Getting memory {number}"
+msgstr "Отримання пам'яті {number}"
+
+#: ../chirpui/memedit.py:497 ../chirpui/memedit.py:508
+#: ../chirpui/memedit.py:556
+msgid "Moving memory from {old} to {new}"
+msgstr "Переміщення пам'яті з {old} до {new}"
+
+#: ../chirpui/memedit.py:578
+msgid "Raw memory {number}"
+msgstr "RAW пам'ять {number}"
+
+#: ../chirpui/memedit.py:582 ../chirpui/memedit.py:610
+#: ../chirpui/memedit.py:615
+msgid "Getting raw memory {number}"
+msgstr "Отримання RAW пам'яті {number}"
+
+#: ../chirpui/memedit.py:587
+msgid "You can only diff two memories!"
+msgstr "Ви можете порівняти тільки дві пам'яті!"
+
+#: ../chirpui/memedit.py:598
+msgid "Memory {number}"
+msgstr "Пам'ять {number}"
+
+#: ../chirpui/memedit.py:604
+msgid "Diff of {a} and {b}"
+msgstr "Порівняння {a} та {b}"
+
+#: ../chirpui/memedit.py:628
+msgid "Memories must be contiguous"
+msgstr "Пам'ять має бути безперервна"
+
+#: ../chirpui/memedit.py:700
+msgid "Insert row above"
+msgstr "Додати рядок зверху"
+
+#: ../chirpui/memedit.py:701
+msgid "Insert row below"
+msgstr "Додати рядок знизу"
+
+#: ../chirpui/memedit.py:702
+#, fuzzy
+msgid "Delete"
+msgstr "Видалити"
+
+#: ../chirpui/memedit.py:702
+#, fuzzy
+msgid "Delete all"
+msgstr "Видалити все"
+
+#: ../chirpui/memedit.py:703
+msgid "Delete (and shift up)"
+msgstr "Видалити (та зсунути вгору)"
+
+#: ../chirpui/memedit.py:704
+#, fuzzy
+msgid "Move up"
+msgstr "Перемістити вгору"
+
+#: ../chirpui/memedit.py:705
+#, fuzzy
+msgid "Move down"
+msgstr "Перемістити вниз"
+
+#: ../chirpui/memedit.py:706
+#, fuzzy
+msgid "Exchange memories"
+msgstr "Обмін пам'яттю"
+
+#: ../chirpui/memedit.py:707
+#, fuzzy
+msgid "Cut"
+msgstr "Вирізати"
+
+#: ../chirpui/memedit.py:708
+#, fuzzy
+msgid "Copy"
+msgstr "Копіювати"
+
+#: ../chirpui/memedit.py:709
+#, fuzzy
+msgid "Paste"
+msgstr "Вставити"
+
+#: ../chirpui/memedit.py:710
+#, fuzzy
+msgid "Show Raw Memory"
+msgstr "Показати Raw пам'ять"
+
+#: ../chirpui/memedit.py:711
+#, fuzzy
+msgid "Diff Raw Memories"
+msgstr "Порівняти Raw пам'ять"
+
+#: ../chirpui/memedit.py:835
+msgid "Internal Error: Column {name} not found"
+msgstr "Внутрішня помилка: не знайдено стовпець {name}"
+
+#: ../chirpui/memedit.py:863
+msgid "Getting channel {chan}"
+msgstr "Отримання каналу {chan}"
+
+#: ../chirpui/memedit.py:952
+msgid "Internal Error: Invalid limit {number}"
+msgstr "Внутрішня помилка: Неприпустиме обмеження {number}"
+
+#: ../chirpui/memedit.py:962
+msgid "Memory range:"
+msgstr "Діапазон пам'яті:"
+
+#: ../chirpui/memedit.py:989
+msgid "Go"
+msgstr "Іти"
+
+#: ../chirpui/memedit.py:1012
+msgid "Special Channels"
+msgstr "Спеціальні канали"
+
+#: ../chirpui/memedit.py:1019
+msgid "Show Empty"
+msgstr "Показувати порожні"
+
+#: ../chirpui/memedit.py:1198
+msgid "Cutting memory {number}"
+msgstr "Отримання пам'яті {number}"
+
+#: ../chirpui/memedit.py:1232
+msgid "Overwrite?"
+msgstr "Перезаписати?"
+
+#: ../chirpui/memedit.py:1237
+msgid "Overwrite location {number}?"
+msgstr "Перезаписати місце {number}?"
+
+#: ../chirpui/memedit.py:1254
+msgid "Incompatible Memory"
+msgstr "Несумісна пам'ять"
+
+#: ../chirpui/memedit.py:1257
+msgid "Pasted memory {number} is not compatible with this radio because:"
+msgstr "Вставлена пам'ять {number} несумісна із цією радіостанцією тому що:"
+
+#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1324
+msgid "URCALL"
+msgstr "URCALL"
+
+#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1325
+msgid "RPT1CALL"
+msgstr "RPT1CALL"
+
+#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1326
+msgid "RPT2CALL"
+msgstr "RPT2CALL"
+
+#: ../chirpui/memedit.py:1310 ../chirpui/memedit.py:1327
+msgid "Digital Code"
+msgstr "Цифровий код"
+
+#~ msgid "%i errors during open, check the debug log for details"
+#~ msgstr "%i errors during open, check the debug log for details"
