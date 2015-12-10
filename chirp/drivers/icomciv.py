@@ -30,8 +30,8 @@ u8   unknown4;
 bbcd rtone[2];
 u8   unknown5;
 bbcd ctone[2];
-u8   unknown6[2];
-bbcd dtcs;
+u8   dtcs_polarity;
+bbcd dtcs[2];
 u8   unknown[17];
 char name[9];
 """
@@ -50,8 +50,8 @@ u8   unknown4;
 bbcd rtone[2];
 u8   unknown5;
 bbcd ctone[2];
-u8   unknown6[2];
-bbcd dtcs;
+u8   dtcs_polarity;
+bbcd dtcs[2];
 u8   unknown[11];
 char name[9];
 """
@@ -265,9 +265,18 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         if self._rf.valid_tmodes:
             mem.tmode = self._rf.valid_tmodes[memobj.tmode]
 
+        if self._rf.has_dtcs_polarity:
+            if memobj.dtcs_polarity == 0x11:
+                mem.dtcs_polarity = "RR"
+            elif memobj.dtcs_polarity == 0x10:
+                mem.dtcs_polarity = "RN"
+            elif memobj.dtcs_polarity == 0x01:
+                mem.dtcs_polarity = "NR"
+            else:
+                mem.dtcs_polarity = "NN"
+
         if self._rf.has_dtcs:
-            # FIXME
-            mem.dtcs = bitwise.bcd_to_int([memobj.dtcs])
+            mem.dtcs = bitwise.bcd_to_int(memobj.dtcs)
 
         if "Tone" in self._rf.valid_tmodes:
             mem.rtone = int(memobj.rtone) / 10.0
@@ -307,6 +316,19 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         if self._rf.has_ctone:
             memobj.ctone = int(mem.ctone * 10)
             memobj.rtone = int(mem.rtone * 10)
+
+        if self._rf.has_dtcs_polarity:
+            if mem.dtcs_polarity == "RR":
+                memobj.dtcs_polarity = 0x11
+            elif mem.dtcs_polarity == "RN":
+                memobj.dtcs_polarity = 0x10
+            elif mem.dtcs_polarity == "NR":
+                memobj.dtcs_polarity = 0x01
+            else:
+                memobj.dtcs_polarity = 0x00
+
+        if self._rf.has_dtcs:
+            bitwise.int_to_bcd(memobj.dtcs, mem.dtcs)
 
         LOG.debug(repr(memobj))
         self._send_frame(f)
