@@ -376,7 +376,7 @@ class Icom7000Radio(IcomCIVRadio):
         self._rf.has_offset = False
         self._rf.has_name = True
         self._rf.has_tuning_step = False
-        self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY", "FM"]
+        self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY", "FM", "WFM"]
         self._rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         self._rf.valid_duplexes = ["", "-", "+"]
         self._rf.valid_bands = [(30000, 199999999), (400000000, 470000000)]
