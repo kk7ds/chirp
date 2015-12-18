@@ -14,8 +14,8 @@ lbcd freq[5];
 u8   unknown2:5,
      mode:3;
 """
-MEM_VFO_FORMAT = """
-u8   vfo;
+MEM_IC7000_FORMAT = """
+u8   bank;
 bbcd number[2];
 u8   unknown1;
 lbcd freq[5];
@@ -149,15 +149,24 @@ class MemFrame(Frame):
         self._data = MemoryMap("".join(["\x00"] * (self.get_obj().size() / 8)))
 
 
-class MultiVFOMemFrame(MemFrame):
-    """A memory frame for radios with multiple VFOs"""
-    def set_location(self, loc, vfo=1):
+class BankMemFrame(MemFrame):
+    """A memory frame for radios with multiple banks"""
+    _bnk = 0
+
+    def set_location(self, loc, bank=1):
         self._loc = loc
-        self._data = struct.pack(">BH", vfo, int("%04i" % loc, 16))
+        self._bnk = bank
+        self._data = struct.pack(">BH", int("%02i" % bank, 16),
+            int("%04i" % loc, 16))
+
+    def make_empty(self):
+        """Mark as empty so the radio will erase the memory"""
+        self._data = struct.pack(">BHB", int("%02i" % self._bnk, 16),
+            int("%04i" % self._loc, 16), 0xFF)
 
     def get_obj(self):
         self._data = MemoryMap(str(self._data))  # Make sure we're assignable
-        return bitwise.parse(MEM_VFO_FORMAT, self._data)
+        return bitwise.parse(MEM_IC7000_FORMAT, self._data)
 
 
 class DupToneMemFrame(MemFrame):
@@ -172,6 +181,12 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     MODEL = "CIV Radio"
     _model = "\x00"
     _template = 0
+
+    def mem_to_ch_bnk(self, mem):
+        l, h = self._bank_index_bounds
+        bank_no = (mem // (h - l + 1)) + l
+        channel = mem % (h - l + 1) + l
+        return (channel, bank_no)
 
     def _send_frame(self, frame):
         return frame.send(ord(self._model), 0xE0, self.pipe,
@@ -237,10 +252,26 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         f.read(self.pipe)
         return repr(f.get_obj())
 
+# We have a simple mapping between the memory location in the frequency
+# editor and (bank, channel) of the radio.  The mapping doesn't
+# change so we use a little math to calculate what bank a location
+# is in.  We can't change the bank a location is in so we just pass.
+    def _get_bank(self, loc):
+        l, h = self._bank_index_bounds
+        return loc // (h - l + 1)
+
+    def _set_bank(self, loc, bank):
+        pass
+
     def get_memory(self, number):
         LOG.debug("Getting %i" % number)
         f = self._classes["mem"]()
-        f.set_location(number)
+        if self._rf.has_bank:
+            ch, bnk = self.mem_to_ch_bnk(number)
+            f.set_location(ch, bnk)
+            LOG.debug("Bank %i, Channel %02i" % (bnk, ch))
+        else:
+            f.set_location(number)
         self._send_frame(f)
 
         mem = chirp_common.Memory()
@@ -290,18 +321,37 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         return mem
 
     def set_memory(self, mem):
+        LOG.debug("Setting %i" % mem.number)
+        if self._rf.has_bank:
+            ch, bnk = self.mem_to_ch_bnk(mem.number)
+            LOG.debug("Bank %i, Channel %02i" % (bnk, ch))
         f = self._get_template_memory()
         if mem.empty:
-            f.set_location(mem.number)
+            if self._rf.has_bank:
+                f.set_location(ch, bnk)
+            else:
+                f.set_location(mem.number)
+            LOG.debug("Making %i empty" % mem.number)
             f.make_empty()
             self._send_frame(f)
+
+# The next two lines accept the radio's status after setting the memory
+# and reports the results to the debug log.  This is needed for the
+# IC-7000.  No testing was done to see if it breaks memory delete on the
+# IC-746 or IC-7200.
+            f = self._recv_frame()
+            LOG.debug("Result:\n%s" % util.hexprint(f.get_data()))
             return
 
         # f.set_data(MemoryMap(self.get_raw_memory(mem.number)))
         # f.initialize()
 
         memobj = f.get_obj()
-        memobj.number = mem.number
+        if self._rf.has_bank:
+            memobj.bank = bnk
+            memobj.number = ch
+        else:
+            memobj.number = mem.number
         memobj.freq = int(mem.freq)
         memobj.mode = self._rf.valid_modes.index(mem.mode)
         if self._rf.has_name:
@@ -344,6 +394,8 @@ class Icom7200Radio(IcomCIVRadio):
     _model = "\x76"
     _template = 201
 
+    _num_banks = 1		# Banks not supported
+
     def _initialize(self):
         self._rf.has_bank = False
         self._rf.has_dtcs_polarity = False
@@ -363,13 +415,17 @@ class Icom7200Radio(IcomCIVRadio):
 @directory.register
 class Icom7000Radio(IcomCIVRadio):
     """Icom IC-7000"""
-    MODEL = "7000"
+    MODEL = "IC-7000"
     _model = "\x70"
     _template = 102
 
+    _num_banks = 5		# Banks A-E
+    _bank_index_bounds = (1, 99)
+    _bank_class = icf.IcomBank
+
     def _initialize(self):
-        self._classes["mem"] = MultiVFOMemFrame
-        self._rf.has_bank = False
+        self._classes["mem"] = BankMemFrame
+        self._rf.has_bank = True
         self._rf.has_dtcs_polarity = True
         self._rf.has_dtcs = True
         self._rf.has_ctone = True
@@ -384,7 +440,7 @@ class Icom7000Radio(IcomCIVRadio):
         self._rf.valid_skips = []
         self._rf.valid_name_length = 9
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
-        self._rf.memory_bounds = (1, 99)
+        self._rf.memory_bounds = (0, 99 * self._num_banks - 1)
 
 
 @directory.register
@@ -394,6 +450,8 @@ class Icom746Radio(IcomCIVRadio):
     BAUD_RATE = 9600
     _model = "\x56"
     _template = 102
+
+    _num_banks = 1		# Banks not supported
 
     def _initialize(self):
         self._classes["mem"] = DupToneMemFrame
