@@ -156,12 +156,13 @@ class BankMemFrame(MemFrame):
     def set_location(self, loc, bank=1):
         self._loc = loc
         self._bnk = bank
-        self._data = struct.pack(">BH", int("%02i" % bank, 16),
-            int("%04i" % loc, 16))
+        self._data = struct.pack(
+            ">BH", int("%02i" % bank, 16), int("%04i" % loc, 16))
 
     def make_empty(self):
         """Mark as empty so the radio will erase the memory"""
-        self._data = struct.pack(">BHB", int("%02i" % self._bnk, 16),
+        self._data = struct.pack(
+            ">BHB", int("%02i" % self._bnk, 16),
             int("%04i" % self._loc, 16), 0xFF)
 
     def get_obj(self):
