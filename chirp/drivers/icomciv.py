@@ -17,7 +17,7 @@ u8   unknown2:5,
 MEM_IC7000_FORMAT = """
 u8   bank;
 bbcd number[2];
-u8   unknown1;
+u8   skip;
 lbcd freq[5];
 u8   unknown2:5,
      mode:3;
@@ -288,6 +288,10 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         memobj = f.get_obj()
         LOG.debug(repr(memobj))
 
+        if memobj.skip == 1:
+            mem.skip = ""
+        else:
+            mem.skip = "S"
         mem.freq = int(memobj.freq)
         mem.mode = self._rf.valid_modes[memobj.mode]
 
@@ -353,6 +357,10 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             memobj.number = ch
         else:
             memobj.number = mem.number
+        if mem.skip == "S":
+            memobj.skip = 0
+        else:
+            memobj.skip = 1
         memobj.freq = int(mem.freq)
         memobj.mode = self._rf.valid_modes.index(mem.mode)
         if self._rf.has_name:
@@ -438,7 +446,7 @@ class Icom7000Radio(IcomCIVRadio):
         self._rf.valid_duplexes = ["", "-", "+"]
         self._rf.valid_bands = [(30000, 199999999), (400000000, 470000000)]
         self._rf.valid_tuning_steps = []
-        self._rf.valid_skips = []
+        self._rf.valid_skips = ["S", ""]
         self._rf.valid_name_length = 9
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
         self._rf.memory_bounds = (0, 99 * self._num_banks - 1)
