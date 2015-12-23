@@ -1,4 +1,4 @@
-Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,URCALL,RPT1CALL,RPT2CALL
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
 1,60m CH1,5.332000,,0.600000,,88.5,88.5,023,NN,USB,5.00,,,,,
 2,60m CH2,5.348000,,0.600000,,88.5,88.5,023,NN,USB,5.00,,,,,
 3,60m CH3,5.358500,,0.600000,,88.5,88.5,023,NN,USB,5.00,,,,,
