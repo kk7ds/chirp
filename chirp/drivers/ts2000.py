@@ -125,7 +125,7 @@ class TS2000Radio(KenwoodLiveRadio):
         spec = " " + spec
 
         # use the same variable names as the Kenwood docs
-        #_p1 = spec[3]
+        # _p1 = spec[3]
         _p2 = spec[4]
         _p3 = spec[5:7]
         _p4 = spec[7:18]
@@ -135,11 +135,11 @@ class TS2000Radio(KenwoodLiveRadio):
         _p8 = spec[21:23]
         _p9 = spec[23:25]
         _p10 = spec[25:28]
-        #_p11 = spec[28]
+        # _p11 = spec[28]
         _p12 = spec[29]
         _p13 = spec[30:39]
         _p14 = spec[39:41]
-        #_p15 = spec[41]
+        # _p15 = spec[41]
         _p16 = spec[42:49]
 
         mem.number = int(_p2 + _p3)     # concat bank num and chan num
