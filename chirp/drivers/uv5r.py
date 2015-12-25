@@ -954,6 +954,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
     def _get_settings(self):
         _ani = self._memobj.ani
+        _fm_presets = self._memobj.fm_presets
         _settings = self._memobj.settings
         _squelch = self._memobj.squelch_new
         _vfoa = self._memobj.vfoa
@@ -1416,12 +1417,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         fm_preset = RadioSettingGroup("fm_preset", "FM Radio Preset")
         group.append(fm_preset)
 
-        if self._memobj.fm_presets <= 116.1 * 10 - 650:
-            preset = self._memobj.fm_presets / 10.0 + 65
+        if _fm_presets <= 108.0 * 10 - 650:
+            preset = _fm_presets / 10.0 + 65
+        elif _fm_presets >= 65.0 * 10 and _fm_presets <= 108.0 * 10:
+            preset = _fm_presets / 10.0
         else:
             preset = 76.0
         rs = RadioSetting("fm_presets", "FM Preset(MHz)",
-                          RadioSettingValueFloat(65, 116.1, preset, 0.1, 1))
+                          RadioSettingValueFloat(65, 108.0, preset, 0.1, 1))
         fm_preset.append(rs)
 
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
@@ -1582,7 +1585,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         for element in settings:
             try:
                 val = element.value
-                value = int(val.get_value() * 10 - 650)
+                if self._memobj.fm_presets <= 108.0 * 10 - 650:
+                    value = int(val.get_value() * 10 - 650)
+                else:
+                    value = int(val.get_value() * 10)
                 LOG.debug("Setting fm_presets = %s" % (value))
                 self._memobj.fm_presets = value
             except Exception, e:
