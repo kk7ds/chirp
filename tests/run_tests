@@ -667,10 +667,24 @@ class TestCaseBanks(TestCase):
 
         model = self._wrapper.do("get_bank_model")
 
+        # If in your bank model every channel has to be tied to a bank, just
+        # add a variable named channelAlwaysHasBank to it and make it True
+        try:
+            channelAlwaysHasBank = model.channelAlwaysHasBank
+        except:
+            channelAlwaysHasBank = False
+
         mem_banks = model.get_memory_mappings(mem)
-        if len(mem_banks) != 0:
-            raise TestFailedError("Freshly-created memory has banks and " +
-                                  "should not", "Banks: %s" % str(mem_banks))
+        if channelAlwaysHasBank:
+            if len(mem_banks) == 0:
+                raise TestFailedError("Freshly-created memory has no banks " +
+                                      "and it should", "Bank: %s" %
+                                      str(mem_banks))
+        else:
+            if len(mem_banks) != 0:
+                raise TestFailedError("Freshly-created memory has banks " +
+                                      "and should not", "Bank: %s" %
+                                      str(mem_banks))
 
         banks = model.get_mappings()
 
@@ -694,9 +708,9 @@ class TestCaseBanks(TestCase):
 
         model.remove_memory_from_mapping(mem, banks[0])
         reason = verify(banks[0])
-        if reason is None:
+        if reason is None and not channelAlwaysHasBank:
             raise TestFailedError("Memory remains in bank after remove",
-                                  reason)
+                                      reason)
 
         try:
             model.remove_memory_from_mapping(mem, banks[0])
@@ -704,7 +718,7 @@ class TestCaseBanks(TestCase):
         except Exception:
             did_error = True
 
-        if not did_error:
+        if not did_error and not channelAlwaysHasBank:
             raise TestFailedError("Removing memory from non-member bank " +
                                   "did not raise Exception")
 
