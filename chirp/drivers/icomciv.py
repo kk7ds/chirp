@@ -14,25 +14,31 @@ lbcd freq[5];
 u8   unknown2:5,
      mode:3;
 """
+# http://www.vk4adc.com/
+#     web/index.php/reference-information/49-general-ref-info/182-civ7400
 MEM_IC7000_FORMAT = """
 u8   bank;
 bbcd number[2];
-u8   skip;
+u8   spl:4,
+     skip:4;
 lbcd freq[5];
-u8   unknown2:5,
-     mode:3;
-u8   unknown1;
-u8   unknown2:2,
-     duplex:2,
-     unknown3:1,
-     tmode:3;
-u8   unknown4;
-bbcd rtone[2];
-u8   unknown5;
-bbcd ctone[2];
+u8   mode;
+u8   filter;
+u8   duplex:4,
+     tmode:4;
+bbcd rtone[3];
+bbcd ctone[3];
 u8   dtcs_polarity;
 bbcd dtcs[2];
-u8   unknown[17];
+lbcd freq_tx[5];
+u8   mode_tx;
+u8   filter_tx;
+u8   duplex_tx:4,
+     tmode_tx:4;
+bbcd rtone_tx[3];
+bbcd ctone_tx[3];
+u8   dtcs_polarity_tx;
+bbcd dtcs_tx[2];
 char name[9];
 """
 mem_duptone_format = """
@@ -55,6 +61,8 @@ bbcd dtcs[2];
 u8   unknown[11];
 char name[9];
 """
+
+SPLIT = ["", "spl"]
 
 
 class Frame:
@@ -277,6 +285,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
+        mem.immutable = []
 
         f = self._recv_frame(f)
         if len(f.get_data()) == 0:
@@ -322,6 +331,13 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         if self._rf.valid_duplexes:
             mem.duplex = self._rf.valid_duplexes[memobj.duplex]
+
+        if self._rf.can_odd_split and memobj.spl:
+            mem.duplex = "split"
+            mem.offset = int(memobj.freq_tx)
+            mem.immutable = []
+        else:
+            mem.immutable = ["offset"]
 
         return mem
 
@@ -369,9 +385,6 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         if self._rf.valid_tmodes:
             memobj.tmode = self._rf.valid_tmodes.index(mem.tmode)
 
-        if self._rf.valid_duplexes:
-            memobj.duplex = self._rf.valid_duplexes.index(mem.duplex)
-
         if self._rf.has_ctone:
             memobj.ctone = int(mem.ctone * 10)
             memobj.rtone = int(mem.rtone * 10)
@@ -388,6 +401,18 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         if self._rf.has_dtcs:
             bitwise.int_to_bcd(memobj.dtcs, mem.dtcs)
+
+        if self._rf.can_odd_split and mem.duplex == "split":
+            memobj.spl = 1
+            memobj.duplex = 0
+            memobj.freq_tx = int(mem.offset)
+            memobj.tmode_tx = memobj.tmode
+            memobj.ctone_tx = memobj.ctone
+            memobj.rtone_tx = memobj.rtone
+            memobj.dtcs_polarity_tx = memobj.dtcs_polarity
+            memobj.dtcs_tx = memobj.dtcs
+        elif self._rf.valid_duplexes:
+            memobj.duplex = self._rf.valid_duplexes.index(mem.duplex)
 
         LOG.debug(repr(memobj))
         self._send_frame(f)
@@ -438,18 +463,19 @@ class Icom7000Radio(IcomCIVRadio):
         self._rf.has_dtcs_polarity = True
         self._rf.has_dtcs = True
         self._rf.has_ctone = True
-        self._rf.has_offset = False
+        self._rf.has_offset = True
         self._rf.has_name = True
         self._rf.has_tuning_step = False
         self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY", "FM", "WFM"]
         self._rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
-        self._rf.valid_duplexes = ["", "-", "+"]
+        self._rf.valid_duplexes = ["", "-", "+", "split"]
         self._rf.valid_bands = [(30000, 199999999), (400000000, 470000000)]
         self._rf.valid_tuning_steps = []
         self._rf.valid_skips = ["S", ""]
         self._rf.valid_name_length = 9
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
         self._rf.memory_bounds = (0, 99 * self._num_banks - 1)
+        self._rf.can_odd_split = True
 
 
 @directory.register
