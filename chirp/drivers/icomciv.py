@@ -256,10 +256,19 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
     def get_raw_memory(self, number):
         f = self._classes["mem"]()
-        f.set_location(number)
+        if self._rf.has_bank:
+            ch, bnk = self.mem_to_ch_bnk(number)
+            f.set_location(ch, bnk)
+            loc = "bank %i, channel %02i" % (bnk, ch)
+        else:
+            f.set_location(number)
+            loc = "number %i" % number
         self._send_frame(f)
         f.read(self.pipe)
-        return repr(f.get_obj())
+        if f.get_data() and f.get_data()[-1] == "\xFF":
+            return "Memory " + loc + " empty."
+        else:
+            return repr(f.get_obj())
 
 # We have a simple mapping between the memory location in the frequency
 # editor and (bank, channel) of the radio.  The mapping doesn't
