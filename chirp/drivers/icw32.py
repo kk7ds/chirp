@@ -206,3 +206,46 @@ class ICW32ARadioUHF(ICW32ARadio):
     VARIANT = "UHF"
     _limits = (400000000, 470000000)
     _mem_positions = (0x06E0, 0x0E2E)
+
+
+# IC-W32E are the very same as IC-W32A but have a different _model
+@directory.register
+class ICW32ERadio(ICW32ARadio):
+    """Icom IC-W32E"""
+    MODEL = "IC-W32E"
+
+    _model = "\x18\x82\x00\x02"
+
+    # an extra byte is added to distinguish file images from IC-W32A
+    # it will be allocated and initialized to 0x00 in _clone_from_radio
+    # (icf.py) but radio will not send it
+    # That byte is not sent to radio because the _clone_to_radio use _ranges
+    # for the send cycle
+    _memsize = ICW32ARadio._memsize + 1
+
+    def get_sub_devices(self):
+        # this is needed because sub devices must be of a child class
+        return [ICW32ERadioVHF(self._mmap), ICW32ERadioUHF(self._mmap)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if not len(filedata) == cls._memsize:
+            return False
+        return filedata[-16 - 1: -1] == "IcomCloneFormat3" and \
+            filedata[-1] == chr(0x00)
+
+
+# this is the very same as ICW32ARadioVHF but have ICW32ERadio as parent class
+class ICW32ERadioVHF(ICW32ERadio):
+    """ICW32 VHF subdevice"""
+    VARIANT = "VHF"
+    _limits = (118000000, 174000000)
+    _mem_positions = (0x0000, 0x0DC0)
+
+
+# this is the very same as ICW32ARadioUHF but have ICW32ERadio as parent class
+class ICW32ERadioUHF(ICW32ERadio):
+    """ICW32 UHF subdevice"""
+    VARIANT = "UHF"
+    _limits = (400000000, 470000000)
+    _mem_positions = (0x06E0, 0x0E2E)
