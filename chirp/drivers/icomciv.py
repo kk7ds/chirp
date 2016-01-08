@@ -116,7 +116,7 @@ class Frame:
             raise errors.RadioError("Radio reported error")
 
         src, dst = struct.unpack("BB", data[2:4])
-        LOG.debug("%02x <- %02x:\n%s" % (src, dst, util.hexprint(data)))
+        LOG.debug("%02x <- %02x:\n%s" % (dst, src, util.hexprint(data)))
 
         self._cmd = ord(data[4])
         self._sub = ord(data[5])
@@ -301,6 +301,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             raise errors.RadioError("Radio reported error")
         if f.get_data() and f.get_data()[-1] == "\xFF":
             mem.empty = True
+            LOG.debug("Found %i empty" % mem.number)
             return mem
 
         memobj = f.get_obj()
@@ -351,7 +352,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         return mem
 
     def set_memory(self, mem):
-        LOG.debug("Setting %i" % mem.number)
+        LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
         if self._rf.has_bank:
             ch, bnk = self.mem_to_ch_bnk(mem.number)
             LOG.debug("Bank %i, Channel %02i" % (bnk, ch))
