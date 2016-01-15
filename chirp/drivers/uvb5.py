@@ -174,7 +174,7 @@ struct {
 
 
 def do_ident(radio):
-    radio.pipe.setTimeout(3)
+    radio.pipe.timeout = 3
     radio.pipe.write("\x05PROGRAM")
     for x in xrange(10):
         ack = radio.pipe.read(1)

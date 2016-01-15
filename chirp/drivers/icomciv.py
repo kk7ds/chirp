@@ -227,7 +227,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         if self.pipe:
             self._willecho = self._detect_echo()
             LOG.debug("Interface echo: %s" % self._willecho)
-            self.pipe.setTimeout(1)
+            self.pipe.timeout = 1
 
         # f = Frame()
         # f.set_command(0x19, 0x00)

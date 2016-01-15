@@ -82,7 +82,7 @@ class TYTUV3R25Radio(TYTUV3RRadio):
         return rf
 
     def sync_in(self):
-        self.pipe.setTimeout(2)
+        self.pipe.timeout = 2
         self._mmap = tyt_uv3r_download(self)
         self.process_mmap()
 

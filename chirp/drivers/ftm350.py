@@ -116,7 +116,7 @@ def _safe_read(radio, length):
 def _clone_in(radio):
     data = ""
 
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
     attempts = 30
 
     data = memmap.MemoryMap("\x00" * (radio._memsize + 128))
@@ -165,7 +165,7 @@ def _clone_in(radio):
 
 
 def _clone_out(radio):
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
 
     # Seriously, WTF Yaesu?
     ranges = [

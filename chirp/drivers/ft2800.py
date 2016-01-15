@@ -207,7 +207,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
-        self.pipe.setTimeout(1)
+        self.pipe.timeout = 1
         self.pipe.setParity("E")
         start = time.time()
         try:

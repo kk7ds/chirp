@@ -328,7 +328,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _clone_in(self):
         # Be very patient with the radio
-        self.pipe.setTimeout(2)
+        self.pipe.timeout = 2
 
         start = time.time()
 

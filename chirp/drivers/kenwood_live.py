@@ -155,7 +155,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         self._memcache = {}
 
         if self.pipe:
-            self.pipe.setTimeout(0.1)
+            self.pipe.timeout = 0.1
             radio_id = get_id(self.pipe)
             if radio_id != self.MODEL.split(" ")[0]:
                 raise Exception("Radio reports %s (not %s)" % (radio_id,

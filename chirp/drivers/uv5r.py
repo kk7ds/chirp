@@ -408,7 +408,7 @@ def _special_block_from_image(radio):
 
 def _do_ident(radio, magic):
     serial = radio.pipe
-    serial.setTimeout(1)
+    serial.timeout = 1
 
     LOG.info("Sending Magic: %s" % util.hexprint(magic))
     for byte in magic:

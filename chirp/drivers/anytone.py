@@ -200,7 +200,7 @@ valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00', 'DB-750X']
 
 
 def _ident(radio):
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
     _echo_write(radio, "PROGRAM")
     response = radio.pipe.read(3)
     if response != "QX\x06":

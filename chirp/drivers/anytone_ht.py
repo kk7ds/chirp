@@ -256,7 +256,7 @@ valid_model = ['TERMN8R', 'OBLTR8R']
 
 
 def _ident(radio):
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
     _echo_write(radio, "PROGRAM")
     response = radio.pipe.read(3)
     if response != "QX\x06":

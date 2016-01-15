@@ -431,7 +431,7 @@ def _recv(radio):
 
 def _open_radio(radio):
     """Open the radio into program mode and check if it's the correct model"""
-    radio.pipe.setTimeout(0.25)  # only works in the range 0.2 - 0.3
+    radio.pipe.timeout = 0.25  # only works in the range 0.2 - 0.3
     radio.pipe.setParity("E")
 
     _raw_send(radio, "PROGRAM")
@@ -463,7 +463,7 @@ def do_download(radio):
     _open_radio(radio)
 
     # speed up the reading
-    radio.pipe.setTimeout(0.03)  # only works in the range 0.25 and up
+    radio.pipe.timeout = 0.03  # only works in the range 0.25 and up
 
     # UI progress
     status = chirp_common.Status()
@@ -501,7 +501,7 @@ def do_upload(radio):
 
     # Radio need time to write data to eeprom
     # 0.55 seconds as per the original software...
-    radio.pipe.setTimeout(0.55)
+    radio.pipe.timeout = 0.55
 
     # UI progress
     status = chirp_common.Status()

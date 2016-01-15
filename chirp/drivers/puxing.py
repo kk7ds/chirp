@@ -352,7 +352,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
 
 def puxing_2r_prep(radio):
     """Do the Puxing 2R identification dance"""
-    radio.pipe.setTimeout(0.2)
+    radio.pipe.timeout = 0.2
     radio.pipe.write("PROGRAM\x02")
     ack = radio.pipe.read(1)
     if ack != "\x06":

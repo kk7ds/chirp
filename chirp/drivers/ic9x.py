@@ -100,7 +100,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         icf.IcomLiveRadio.__init__(self, *args, **kwargs)
 
         if self.pipe:
-            self.pipe.setTimeout(0.1)
+            self.pipe.timeout = 0.1
 
         self.__memcache = {}
         self.__bankcache = {}

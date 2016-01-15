@@ -73,7 +73,7 @@ def uvf1_upload(radio):
     """Upload to TYT TH-UVF1"""
     data = uvf1_identify(radio)
 
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
 
     if data != radio._mmap[:16]:
         raise errors.RadioError("Unable to talk to this model")

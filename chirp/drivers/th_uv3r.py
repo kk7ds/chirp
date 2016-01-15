@@ -100,7 +100,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
         return rf
 
     def sync_in(self):
-        self.pipe.setTimeout(2)
+        self.pipe.timeout = 2
         self._mmap = tyt_uv3r_download(self)
         self.process_mmap()
 

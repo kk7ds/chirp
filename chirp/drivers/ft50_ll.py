@@ -66,7 +66,7 @@ def read_exact(s, count):
 def download(radio):
     data = ""
 
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
 
     for block in radio._block_lengths:
         LOG.debug("Doing block %i" % block)

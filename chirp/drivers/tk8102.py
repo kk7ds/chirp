@@ -100,7 +100,7 @@ def do_ident(radio):
 
 def do_download(radio):
     radio.pipe.setParity("E")
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
     do_ident(radio)
 
     data = ""
@@ -130,7 +130,7 @@ def do_download(radio):
 
 def do_upload(radio):
     radio.pipe.setParity("E")
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
     do_ident(radio)
 
     for addr in range(0, 0x0400, 8):

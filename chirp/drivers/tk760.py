@@ -189,7 +189,7 @@ def open_radio(radio):
     # Set serial discipline
     try:
         radio.pipe.setParity("N")
-        radio.pipe.setTimeout(TIMEOUT)
+        radio.pipe.timeout = TIMEOUT
         radio.pipe.flushOutput()
         radio.pipe.flushInput()
     except:

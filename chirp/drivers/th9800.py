@@ -688,7 +688,7 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
     """Upload to TYT TH-9800"""
     data = _identify(radio)
 
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
 
     if data != radio._mmap[:radio._mmap_offset]:
         raise errors.RadioError(

@@ -263,7 +263,7 @@ struct  {
 
     def _clone_in(self):
         # Be very patient with the radio
-        self.pipe.setTimeout(4)
+        self.pipe.timeout = 4
         start = time.time()
 
         data = ""

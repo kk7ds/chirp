@@ -447,7 +447,7 @@ class FT2900Radio(YaesuCloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
-        self.pipe.setTimeout(1)
+        self.pipe.timeout = 1
         start = time.time()
         try:
             _upload(self)

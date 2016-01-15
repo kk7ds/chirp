@@ -84,7 +84,7 @@ def tyt_uvf8d_upload(radio):
     """Upload to TYT TH-UVF8D"""
     data = uvf8d_identify(radio)
 
-    radio.pipe.setTimeout(1)
+    radio.pipe.timeout = 1
 
     if data != radio._mmap[:32]:
         raise errors.RadioError("Model mis-match: \n%s\n%s" %
