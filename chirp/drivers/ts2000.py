@@ -25,7 +25,7 @@ TS2000_DUPLEX = dict(kenwood_live.DUPLEX)
 TS2000_DUPLEX[3] = "="
 TS2000_DUPLEX[4] = "split"
 TS2000_MODES = ["?", "LSB", "USB", "CW", "FM", "AM",
-                "FSK", "CW-R", "?", "FSK-R"]
+                "FSK", "CWR", "?", "FSKR"]
 TS2000_TMODES = ["", "Tone", "TSQL", "DTCS"]
 TS2000_TONES = list(chirp_common.OLD_TONES)
 TS2000_TONES.remove(69.3)
