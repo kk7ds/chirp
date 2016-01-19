@@ -4,16 +4,26 @@ import logging
 from chirp.drivers import icf
 from chirp import chirp_common, util, errors, bitwise, directory
 from chirp.memmap import MemoryMap
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+    RadioSettingValueList, RadioSettingValueBoolean
 
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 bbcd number[2];
-u8   unknown1;
+u8   unknown:3
+     split:1,
+     unknown_0:4;
 lbcd freq[5];
 u8   unknown2:5,
      mode:3;
+u8   filter;
+u8   unknown_1:3,
+     dig:1,
+     unknown_2:4;
 """
+
+
 # http://www.vk4adc.com/
 #     web/index.php/reference-information/49-general-ref-info/182-civ7400
 MEM_IC7000_FORMAT = """
@@ -359,6 +369,27 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         else:
             mem.immutable = ["offset"]
 
+        mem.extra = RadioSettingGroup("extra", "Extra")
+        try:
+            dig = RadioSetting("dig", "Digital",
+                               RadioSettingValueBoolean(bool(memobj.dig)))
+        except AttributeError:
+            pass
+        else:
+            dig.set_doc("Enable digital mode")
+            mem.extra.append(dig)
+
+        options = ["Wide", "Mid", "Narrow"]
+        try:
+            fil = RadioSetting("filter", "Filter",
+                               RadioSettingValueList(options,
+                                                options[memobj.filter - 1]))
+        except AttributeError:
+            pass
+        else:
+            fil.set_doc("Filter settings")
+            mem.extra.append(fil)
+
         return mem
 
     def set_memory(self, mem):
@@ -437,6 +468,12 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         elif self._rf.valid_duplexes:
             memobj.duplex = self._rf.valid_duplexes.index(mem.duplex)
 
+        for setting in mem.extra:
+            if setting.get_name() == "filter":
+                setattr(memobj, setting.get_name(), int(setting.value) + 1)
+            else:
+                setattr(memobj, setting.get_name(), setting.value)
+
         LOG.debug(repr(memobj))
         self._send_frame(f)
 
@@ -460,13 +497,12 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.has_ctone = False
         self._rf.has_offset = False
         self._rf.has_name = False
-        self._rf.has_nostep_tuning = True
+        self._rf.has_tuning_step = False
         self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY",
             "CWR", "RTTYR"]
         self._rf.valid_tmodes = []
         self._rf.valid_duplexes = []
         self._rf.valid_bands = [(30000, 60000000)]
-        self._rf.valid_tuning_steps = []
         self._rf.valid_skips = []
         self._rf.memory_bounds = (1, 201)
 
