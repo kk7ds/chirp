@@ -191,6 +191,12 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     _model = "\x00"
     _template = 0
 
+    # complete list of modes from CI-V documentation
+    # each radio supports a subset
+    # WARNING: "S-AM" and "PSK" are not valid (yet) for chirp
+    _MODES = ["LSB", "USB", "AM", "CW", "RTTY",
+        "FM", "WFM", "CWR", "RTTYR", "S-AM", "PSK"]
+
     def mem_to_ch_bnk(self, mem):
         l, h = self._bank_index_bounds
         bank_no = (mem // (h - l + 1)) + l
@@ -316,7 +322,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             pass
 
         mem.freq = int(memobj.freq)
-        mem.mode = self._rf.valid_modes[memobj.mode]
+        mem.mode = self._MODES[memobj.mode]
 
         if self._rf.has_name:
             mem.name = str(memobj.name).rstrip()
@@ -395,7 +401,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             except KeyError:
                 pass
         memobj.freq = int(mem.freq)
-        memobj.mode = self._rf.valid_modes.index(mem.mode)
+        memobj.mode = self._MODES.index(mem.mode)
         if self._rf.has_name:
             memobj.name = mem.name.ljust(9)[:9]
 
@@ -454,13 +460,15 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.has_ctone = False
         self._rf.has_offset = False
         self._rf.has_name = False
-        self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY"]
+        self._rf.has_nostep_tuning = True
+        self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY",
+            "CWR", "RTTYR"]
         self._rf.valid_tmodes = []
         self._rf.valid_duplexes = []
-        self._rf.valid_bands = [(1800000, 59000000)]
+        self._rf.valid_bands = [(30000, 60000000)]
         self._rf.valid_tuning_steps = []
         self._rf.valid_skips = []
-        self._rf.memory_bounds = (1, 200)
+        self._rf.memory_bounds = (1, 201)
 
 
 @directory.register
