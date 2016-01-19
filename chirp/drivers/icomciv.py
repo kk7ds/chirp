@@ -307,10 +307,14 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         memobj = f.get_obj()
         LOG.debug(repr(memobj))
 
-        if memobj.skip == 1:
-            mem.skip = ""
-        else:
-            mem.skip = "S"
+        try:
+            if memobj.skip == 1:
+                mem.skip = ""
+            else:
+                mem.skip = "S"
+        except AttributeError:
+            pass
+
         mem.freq = int(memobj.freq)
         mem.mode = self._rf.valid_modes[memobj.mode]
 
@@ -386,7 +390,10 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         if mem.skip == "S":
             memobj.skip = 0
         else:
-            memobj.skip = 1
+            try:
+                memobj.skip = 1
+            except KeyError:
+                pass
         memobj.freq = int(mem.freq)
         memobj.mode = self._rf.valid_modes.index(mem.mode)
         if self._rf.has_name:
