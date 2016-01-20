@@ -1,4 +1,4 @@
-# Copyright 2016 Dan Smith <dsmith@danplanet.com>
+# Copyright 2016 Pavel Milanes CO7WT, <co7wt@frcuba.co.cu> <pavelmc@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,8 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# Driver author: Pavel CO7WT, co7wt@frcuba.co.cu, pavelmc@gmail.com
 
 import time
 import struct
@@ -844,8 +842,8 @@ class TK868_Radio(Kenwood_M60_Radio):
     MODEL = "TK-868"
     TYPE = "M0868"
     VARIANTS = {
-        "M0868\x25\x00\x00": (2, 406, 430, "F4"),
-        "M0868\x24\x00\x00": (2, 488, 512, "F3"),
-        "M0868\x23\x00\x00": (2, 470, 496, "F2"),
-        "M0868\x22\x00\x00": (2, 450, 476, "F1")
+        "M0868\x25\x00\x00": (32, 406, 430, "F4"),
+        "M0868\x24\x00\x00": (32, 488, 512, "F3"),
+        "M0868\x23\x00\x00": (32, 470, 496, "F2"),
+        "M0868\x22\x00\x00": (32, 450, 476, "F1")
         }
