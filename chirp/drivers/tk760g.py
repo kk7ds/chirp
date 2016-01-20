@@ -1,4 +1,4 @@
-# Copyright 2012 Dan Smith <dsmith@danplanet.com>
+# Copyright 2016 Pavel Milanes CO7WT, <co7wt@frcuba.co.cu> <pavelmc@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,8 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# driver author Pavel Milanes, CO7WT, pavelmc@gmail.com, co7wt@frcuba.co.cu
 
 import logging
 import struct
