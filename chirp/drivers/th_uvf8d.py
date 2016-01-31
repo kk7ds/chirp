@@ -481,7 +481,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         _settings = self._memobj.settings
 
         group = RadioSettingGroup("basic", "Basic")
-        top = RadioSettings(basic)
+        top = RadioSettings(group)
 
         group.append(RadioSetting(
                 "mode", "Mode",
