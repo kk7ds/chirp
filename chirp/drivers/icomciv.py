@@ -205,7 +205,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     # each radio supports a subset
     # WARNING: "S-AM" and "PSK" are not valid (yet) for chirp
     _MODES = ["LSB", "USB", "AM", "CW", "RTTY",
-        "FM", "WFM", "CWR", "RTTYR", "S-AM", "PSK"]
+              "FM", "WFM", "CWR", "RTTYR", "S-AM", "PSK"]
 
     def mem_to_ch_bnk(self, mem):
         l, h = self._bank_index_bounds
@@ -381,9 +381,10 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         options = ["Wide", "Mid", "Narrow"]
         try:
-            fil = RadioSetting("filter", "Filter",
-                               RadioSettingValueList(options,
-                                                options[memobj.filter - 1]))
+            fil = RadioSetting(
+                "filter", "Filter",
+                RadioSettingValueList(options,
+                                      options[memobj.filter - 1]))
         except AttributeError:
             pass
         else:
@@ -499,7 +500,7 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.has_name = False
         self._rf.has_tuning_step = False
         self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY",
-            "CWR", "RTTYR"]
+                                "CWR", "RTTYR"]
         self._rf.valid_tmodes = []
         self._rf.valid_duplexes = []
         self._rf.valid_bands = [(30000, 60000000)]
