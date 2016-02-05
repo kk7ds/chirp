@@ -581,8 +581,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                             "unknown you hit a bug!!")
 
         for key in cur_mem.immutable:
-            if cur_mem.__dict__[key] != mem.__dict__[key]:
-                raise errors.RadioError("Editing field `%s' " % key +
+            if key != "extd_number":
+                if cur_mem.__dict__[key] != mem.__dict__[key]:
+                    raise errors.RadioError("Editing field `%s' " % key +
                                         "is not supported on this channel")
 
         self._set_memory(mem, _mem)
