@@ -1,4 +1,5 @@
 # Copyright 2010 Vernon Mauery <vernon@mauery.org>
+# Copyright 2016 Angus Ainslie <angus@akkea.ca>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +16,9 @@
 
 from chirp import chirp_common, errors, util, directory
 from chirp import bitwise, memmap
+from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
+from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
+from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
 import time
 import struct
 import sys
@@ -64,6 +68,24 @@ struct {
   u8   unknown1[7];
   u8   passwd[6];
 } frontmatter;
+
+#seekto 0x0300;
+struct {
+  char power_on_msg[8];
+  u8 unknown0[8];
+  u8 unknown1[2];
+  u8 lamp_timer;
+  u8 contrast;
+  u8 battery_saver;
+  u8 APO;
+  u8 unknown2;
+  u8 key_beep;
+  u8 unknown3[8];
+  u8 unknown4;
+  u8 balance;
+  u8 unknown5[23];
+  u8 lamp_control;
+} settings;
 
 #seekto 0x0c00;
 struct {
@@ -161,7 +183,6 @@ DUPLEX_REV = {
 EXCH_R = "R\x00\x00\x00\x00"
 EXCH_W = "W\x00\x00\x00\x00"
 
-
 # Uploads result in "MCP Error" and garbage data in memory
 # Clone driver disabled in favor of error-checking live driver.
 @directory.register
@@ -176,6 +197,14 @@ class THD72Radio(chirp_common.CloneModeRadio):
     _model = ""  # FIXME: REMOVE
     _dirty_blocks = []
 
+    _LCD_CONTRAST = ["Level %d" % x for x in range(1, 16)]
+    _LAMP_CONTROL = ["Manual", "Auto"]
+    _LAMP_TIMER = ["Seconds %d" % x for x in range(2, 11)]
+    _BATTERY_SAVER = [ "OFF", "0.03 Seconds", "0.2 Seconds", "0.4 Seconds", "0.6 Seconds", "0.8 Seconds", "1 Seconds", "2 Seconds", "3 Seconds", "4 Seconds", "5 Seconds" ]
+    _APO = [ "OFF", "15 Minutes", "30 Minutes", "60 Minutes" ]
+    _AUDIO_BALANCE = [ "Center", "A +50%", "A +100%", "B +50%", "B +100%" ]
+    _KEY_BEEP = [ "OFF", "Radio & GPS", "Radio Only", "GPS Only" ]
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 1031)
@@ -186,6 +215,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         rf.has_dtcs_polarity = False
         rf.has_tuning_step = False
         rf.has_bank = False
+        rf.has_settings = True
         rf.valid_tuning_steps = []
         rf.valid_modes = MODES_REV.keys()
         rf.valid_tmodes = TMODES_REV.keys()
@@ -474,6 +504,191 @@ class THD72Radio(chirp_common.CloneModeRadio):
             "\x80\xc8\xb3\x08\x00\x01\x00\x08" + \
             "\x08\x00\xc0\x27\x09\x00\x00\xff"
 
+    def _get_settings(self):
+        top = RadioSettings(self._get_display_settings(),
+                            self._get_audio_settings(),
+                            self._get_battery_settings())
+        return top
+
+    def set_settings(self, settings):
+        _mem = self._memobj
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            if not element.changed():
+                continue
+            try:
+                if element.has_apply_callback():
+                    LOG.debug("Using apply callback")
+                    try:
+                        element.run_apply_callback()
+                    except NotImplementedError as e:
+                        LOG.error(e)
+                    continue
+
+                # Find the object containing setting.
+                obj = _mem
+                bits = element.get_name().split(".")
+                setting = bits[-1]
+                for name in bits[:-1]:
+                    if name.endswith("]"):
+                        name, index = name.split("[")
+                        index = int(index[:-1])
+                        obj = getattr(obj, name)[index]
+                    else:
+                        obj = getattr(obj, name)
+
+                try:
+                    old_val = getattr(obj, setting)
+                    LOG.debug("Setting %s(%r) <= %s" % (
+                            element.get_name(), old_val, element.value))
+                    setattr(obj, setting, element.value)
+                except AttributeError as e:
+                    LOG.error("Setting %s is not in the memory map: %s" %
+                              (element.get_name(), e))
+            except Exception, e:
+                LOG.debug(element.get_name())
+                raise
+
+    def get_settings(self):
+        try:
+            return self._get_settings()
+        except:
+            import traceback
+            LOG.error("Failed to parse settings: %s", traceback.format_exc())
+            return None
+
+    @classmethod
+    def apply_power_on_msg(cls, setting, obj):
+        message = setting.value.get_value()
+        setattr(obj, "power_on_msg", cls._add_ff_pad(message, 8))
+
+    def apply_lcd_contrast(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._LCD_CONTRAST.index(rawval) + 1
+        obj.contrast = val
+
+    def apply_lamp_control(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._LAMP_CONTROL.index(rawval)
+        obj.lamp_control = val
+
+    def apply_lamp_timer(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._LAMP_TIMER.index(rawval) + 2
+        obj.lamp_timer = val
+
+    def _get_display_settings(self):
+        menu = RadioSettingGroup("display", "Display")
+        display_settings = self._memobj.settings
+
+        val = RadioSettingValueString(
+            0, 8, str(display_settings.power_on_msg).rstrip("\xFF"))
+        rs = RadioSetting("display.power_on_msg", "Power on message", val)
+        rs.set_apply_callback(self.apply_power_on_msg, display_settings)
+        menu.append(rs)
+        
+        val = RadioSettingValueList(
+            self._LCD_CONTRAST,
+            self._LCD_CONTRAST[display_settings.contrast - 1])
+        rs = RadioSetting("display.contrast", "LCD Contrast",
+                          val)
+        rs.set_apply_callback(self.apply_lcd_contrast, display_settings)
+        menu.append(rs)
+        
+        val = RadioSettingValueList(
+            self._LAMP_CONTROL,
+            self._LAMP_CONTROL[display_settings.lamp_control])
+        rs = RadioSetting("display.lamp_control", "Lamp Control",
+                          val)
+        rs.set_apply_callback(self.apply_lamp_control, display_settings)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._LAMP_TIMER,
+            self._LAMP_TIMER[display_settings.lamp_timer - 2])
+        rs = RadioSetting("display.lamp_timer", "Lamp Timer",
+                          val)
+        rs.set_apply_callback(self.apply_lamp_timer, display_settings)
+        menu.append(rs)
+
+        return menu
+
+    def apply_battery_saver(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._BATTERY_SAVER.index(rawval)
+        obj.battery_saver = val
+
+    def apply_APO(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._APO.index(rawval)
+        obj.APO = val
+
+    def _get_battery_settings(self):
+        menu = RadioSettingGroup("battery", "Battery")
+        battery_settings = self._memobj.settings
+
+        val = RadioSettingValueList(
+            self._BATTERY_SAVER,
+            self._BATTERY_SAVER[battery_settings.battery_saver])
+        rs = RadioSetting("battery.battery_saver", "Battery Saver",
+                          val)
+        rs.set_apply_callback(self.apply_battery_saver, battery_settings)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._APO,
+            self._APO[battery_settings.APO])
+        rs = RadioSetting("battery.APO", "Auto Power Off",
+                          val)
+        rs.set_apply_callback(self.apply_APO, battery_settings)
+        menu.append(rs)
+
+        return menu
+
+    def apply_balance(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._AUDIO_BALANCE.index(rawval)
+        obj.balance = val
+
+    def apply_key_beep(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = cls._KEY_BEEP.index(rawval)
+        obj.key_beep = val
+
+    def _get_audio_settings(self):
+        menu = RadioSettingGroup("audio", "Audio")
+        audio_settings = self._memobj.settings
+
+        val = RadioSettingValueList(
+            self._AUDIO_BALANCE,
+            self._AUDIO_BALANCE[audio_settings.balance])
+        rs = RadioSetting("audio.balance", "Balance",
+                          val)
+        rs.set_apply_callback(self.apply_balance, audio_settings)
+        menu.append(rs)
+
+        val = RadioSettingValueList(
+            self._KEY_BEEP,
+            self._KEY_BEEP[audio_settings.key_beep])
+        rs = RadioSetting("audio.key_beep", "Key Beep",
+                          val)
+        rs.set_apply_callback(self.apply_key_beep, audio_settings)
+        menu.append(rs)
+
+        return menu
+
+    @staticmethod
+    def _add_ff_pad(val, length):
+        return val.ljust(length, "\xFF")[:length]
+
+    @classmethod
+    def _strip_ff_pads(cls, messages):
+        result = []
+        for msg_text in messages:
+            result.append(str(msg_text).rstrip("\xFF"))
+        return result
 
 if __name__ == "__main__":
     import sys
