@@ -99,7 +99,9 @@ MEM_SIZE = 0x400
 BLOCK_SIZE = 8
 MEM_BLOCKS = range(0, (MEM_SIZE / BLOCK_SIZE))
 ACK_CMD = "\x06"
-TIMEOUT = 0.05  # from 0.03 up it' s safe, we set in 0.05 for a margin
+# from 0.03 up it' s safe
+# I have to turn it up, some users reported problems with this, was 0.05
+TIMEOUT = 0.1
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
@@ -187,32 +189,61 @@ def open_radio(radio):
     # Set serial discipline
     try:
         radio.pipe.setParity("N")
-        radio.pipe.timeout = TIMEOUT
+        radio.pipe.setTimeout(TIMEOUT)
         radio.pipe.flushOutput()
         radio.pipe.flushInput()
+        LOG.debug("Serial port open successful")
     except:
         msg = "Serial error: Can't set serial line discipline"
         raise errors.RadioError(msg)
 
     magic = "PROGRAM"
-    for i in range(0, len(magic)):
-        ack = rawrecv(radio, 1)
-        time.sleep(0.05)
-        send(radio, magic[i])
+    LOG.debug("Sending MAGIC")
+    exito = False
 
-    handshake(radio, "Radio not entering Program mode")
+    for i in range(0, 5):
+        LOG.debug("Try %i" % i)
+        for i in range(0, len(magic)):
+            ack = rawrecv(radio, 1)
+            time.sleep(0.05)
+            send(radio, magic[i])
+
+        try:
+            handshake(radio, "Radio not entering Program mode")
+            LOG.debug("Radio opened for programming")
+            exito = True
+            break
+        except:
+            LOG.debug("No go, next try")
+            pass
+
+    # validate the success
+    if exito is False:
+        msg = "Radio refuse to enter into program mode after a few tries"
+        raise errors.RadioError(msg)
+
     rawsend(radio, "\x02")
     ident = rawrecv(radio, 8)
+
+    # validate the input
+    if  len(ident) != 8:
+        LOG.debug("Wrong ID, get only %s bytes, we expect 8" % len(ident))
+        LOG.debug(hexprint(ident))
+        msg = "Bad ID received, just %s bytes, we want 8" % len(ident)
+        raise errors.RadioError(msg)
+
     handshake(radio, "Comm error after ident", True)
+    LOG.debug("Correct get ident and hanshake")
 
     if not (radio.TYPE in ident):
-        LOG.debug("Incorrect model ID, got %s" % util.hexprint(ident))
+        LOG.debug("Incorrect model ID:")
+        LOG.debug(util.hexprint(ident))
         msg = "Incorrect model ID, got %s, it not contains %s" % \
             (ident[0:5], radio.TYPE)
         raise errors.RadioError(msg)
 
-    # DEBUG
-    #print("Full ident string is %s" % util.hexprint(ident))
+    LOG.debug("Full ident string is:")
+    LOG.debug(util.hexprint(ident))
 
     # this is needed, I don't know why, yet
     send(radio, make_frame("W", 0x03e1, "\xff\x01" + "\xff" * 6))
@@ -231,12 +262,12 @@ def do_download(radio):
     radio.status_fn(status)
 
     data = ""
+    LOG.debug("Starting the downolad")
     for addr in MEM_BLOCKS:
         send(radio, make_frame("R", addr * BLOCK_SIZE))
         data += recv(radio)
         handshake(radio, "Rx error in block %03i" % addr, True)
-        # DEBUG
-        #print("Block: %04x, Pos: %06x" % (addr, addr * BLOCK_SIZE))
+        LOG.debug("Block: %04x, Pos: %06x" % (addr, addr * BLOCK_SIZE))
 
         # UI Update
         status.cur = addr
@@ -264,19 +295,17 @@ def do_upload(radio):
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
-        block = addr * BLOCK_SIZE
-        if block > 0x0378:
+        pos = addr * BLOCK_SIZE
+        if pos > 0x0378:
             # it seems that from this point forward is read only !?!?!?
             continue
 
-        send(radio, make_frame("W", block,
-                               radio.get_mmap()[block:block + BLOCK_SIZE]))
-
-        # DEBUG
-        #print("Block: %04x, Pos: %04x" % (addr, addr * BLOCK_SIZE))
+        data = radio.get_mmap()[pos:pos + BLOCK_SIZE]
+        send(radio, make_frame("W", pos, data))
+        LOG.debug("Block: %04x, Pos: %06x" % (addr, pos))
 
         time.sleep(0.1)
-        handshake(radio, "Rx error in block %03i" % addr)
+        handshake(radio, "Rx error in block %04x" % addr)
 
 
 def get_rid(data):
@@ -331,16 +360,18 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
              'it will be implemented in the future.'
              )
         rp.pre_download = _(dedent("""\
-            Follow this instructions to download your info:
+            Follow this instructions to read your radio:
             1 - Turn off your radio
             2 - Connect your interface cable
-            3 - Do the download of your radio data
+            3 - Turn on your radio
+            4 - Do the download of your radio data
             """))
         rp.pre_upload = _(dedent("""\
-            Follow this instructions to download your info:
+            Follow this instructions to write your radio:
             1 - Turn off your radio
             2 - Connect your interface cable
-            3 - Do the upload of your radio data
+            3 - Turn on your radio
+            4 - Do the upload of your radio data
             """))
         return rp
 
