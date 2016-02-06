@@ -15,6 +15,8 @@
 
 import logging
 import struct
+import time
+
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
 from textwrap import dedent
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -379,6 +381,10 @@ def _handshake(radio, msg=""):
     if ack != ACK_CMD:
         _close_radio(radio)
         mesg = "Handshake failed " + msg
+
+        # DEBUG
+        LOG.debug(mesg)
+
         raise Exception(mesg)
 
 
@@ -429,16 +435,34 @@ def _recv(radio):
 
 def _open_radio(radio):
     """Open the radio into program mode and check if it's the correct model"""
-    radio.pipe.timeout = 0.25  # only works in the range 0.2 - 0.3
+    # minimum timeout is 0.13, set to 0.25 to be safe
+    radio.pipe.setTimeout(0.25)
     radio.pipe.setParity("E")
 
-    _raw_send(radio, "PROGRAM")
-    ack = _raw_recv(radio, 1)
+    # DEBUG
+    LOG.debug("Entering program mode.")
 
-    if ack != ACK_CMD:
-        # bad response, properly close the radio before exception
+    # try a few times to get the radio into program mode
+    exito = False
+    for i in range(0, 10):
+        _raw_send(radio, "PROGRAM")
+        ack = _raw_recv(radio, 1)
+
+        if ack != ACK_CMD:
+            # DEBUG
+            LOG.debug("Try %s failed, traying again...")
+            time.sleep(0.25)
+        else:
+            exito = True
+            break
+
+    if exito is False:
         _close_radio(radio)
+        LOG.debug("Radio did not accepted PROGRAM command in five atempts")
         raise errors.RadioError("The radio doesn't accept program mode")
+
+    # DEBUG
+    LOG.debug("Received ACK to the PROGRAM command, send ID query.")
 
     _raw_send(radio, "\x02")
     rid = _raw_recv(radio, 8)
@@ -446,31 +470,40 @@ def _open_radio(radio):
     if not (radio.TYPE in rid):
         # bad response, properly close the radio before exception
         _close_radio(radio)
-        # LOG.debug("Incorrect model ID, got %s" % util.hexprint(rid))
+
+        # DEBUG
+        LOG.debug("Incorrect model ID:")
+        LOG.debug(util.hexprint(rid))
+
         raise errors.RadioError(
             "Incorrect model ID, got %s, it not contains %s" %
             (rid.strip("\xff"), radio.TYPE))
 
     # DEBUG
-    LOG.debug("Full ident string is: %s" % util.hexprint(rid))
+    LOG.debug("Full ident string is:")
+    LOG.debug(util.hexprint(rid))
+
     _handshake(radio)
 
 
 def do_download(radio):
     """ The download function """
-    _open_radio(radio)
-
-    # speed up the reading
-    radio.pipe.timeout = 0.03  # only works in the range 0.25 and up
-
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
     status.max = MEM_SIZE / 256
-    status.msg = "Cloning from radio..."
+    status.msg = "Getting the radio into program mode."
     radio.status_fn(status)
     data = ""
     count = 0
+
+    # open the radio
+    _open_radio(radio)
+    # speed up the reading
+    radio.pipe.setTimeout(0.1)
+
+    # DEBUG
+    LOG.debug("Starting the download from radio")
 
     for addr in MEM_BLOCKS:
         _send(radio, _make_frame("R", addr))
@@ -479,6 +512,11 @@ def do_download(radio):
         # aka we asume a empty 256 xFF block
         if d is False:
             d = EMPTY_BLOCK
+            # DEBUG
+            LOG.debug("Receiving block %02x empty." % addr)
+        else:
+            # DEBUG
+            LOG.debug("Receiving block %02x ok." % addr)
 
         data += d
 
@@ -495,22 +533,25 @@ def do_download(radio):
 
 def do_upload(radio):
     """ The upload function """
-    _open_radio(radio)
-
-    # Radio need time to write data to eeprom
-    # 0.55 seconds as per the original software...
-    radio.pipe.timeout = 0.55
-
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = BLOCKS
-    status.msg = "Cloning to radio..."
+    status.max = MEM_SIZE / 256
+    status.msg = "Getting the radio into program mode."
     radio.status_fn(status)
+    data = ""
+    count = 0
+
+    # open the radio
+    _open_radio(radio)
+    # the default for the original soft as measured
+    radio.pipe.setTimeout(0.5)
+
+    # DEBUG
+    LOG.debug("Starting the download to the radio")
 
     count = 0
     raddr = 0
-
     for addr in MEM_BLOCKS:
         # this is the data block to write
         data = radio.get_mmap()[raddr:raddr+BLOCK_SIZE]
@@ -541,6 +582,9 @@ def do_upload(radio):
         _send(radio, frame)
         ack = _raw_recv(radio, 1)
         _check_write_ack(radio, ack, addr)
+
+        # DEBUG
+        LOG.debug("Sending block %02x" % addr)
 
         # UI Update
         status.cur = count
@@ -1458,6 +1502,47 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio):
 #
 # this effectively render the data password USELESS even if set.
 # this can change if user request it with high priority
+
+@directory.register
+class TK868G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-868G Radio M/C"""
+    MODEL = "TK-868G"
+    TYPE = "M8680"
+    VARIANTS = {
+        "M8680\x18\xff":    (8, 400, 490, "M"),
+        "M8680;\xff":       (128, 350, 390, "C1"),
+        "M86808\xff":       (128, 400, 430, "C2"),
+        "M86806\xff":       (128, 450, 490, "C3"),
+        }
+
+
+@directory.register
+class TK862G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-862G Radio K/E/(N)E"""
+    MODEL = "TK-862G"
+    TYPE = "M8620"
+    VARIANTS = {
+        "M8620\x06\xff":    (8, 450, 490, "K"),
+        "M8620\x07\xff":    (8, 485, 512, "K2"),
+        "M8620&\xff":       (8, 440, 470, "E"),
+        "M8620V\xff":       (8, 440, 470, "(N)E"),
+        }
+
+
+@directory.register
+class TK860G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-860G Radio K"""
+    MODEL = "TK-860G"
+    TYPE = "M8600"
+    VARIANTS = {
+        "M8600\x08\xff":    (128, 400, 430, "K"),
+        "M8600\x06\xff":    (128, 450, 490, "K1"),
+        "M8600\x07\xff":    (128, 485, 512, "K2"),
+        "M8600\x18\xff":    (128, 400, 430, "M"),
+        "M8600\x16\xff":    (128, 450, 490, "M1"),
+        "M8600\x17\xff":    (128, 485, 520, "M2"),
+        }
+
 
 @directory.register
 class TK768G_Radios(Kenwood_Serie_60G):
