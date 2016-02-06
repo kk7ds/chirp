@@ -705,7 +705,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
         top = RadioSettings(basic, fkeys)
 
         # Basic
-        val = RadioSettingValueString(0, 35, self.VARIANT)
+        val = RadioSettingValueString(0, 35, self._VARIANT)
         val.set_mutable(False)
         mod = RadioSetting("not.mod", "Radio version", val)
         basic.append(mod)
