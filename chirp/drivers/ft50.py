@@ -117,7 +117,9 @@ struct {
   u8 pagingbell;
   u8 paginganswer;
 
-  #seekto 0x0E32;
+  #seekto 0x0E30;
+  u8 squelch;       // squelch
+  u8 unknown0c;
   u8 rptl:1,        // repeater input tracking
      amod:1,        // auto mode
      scnl:1,        // scan lamp
@@ -368,6 +370,11 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
         arts = RadioSettingGroup("arts", "ARTS")
         autodial = RadioSettingGroup("autodial", "AutoDial")
         top = RadioSettings(basic, autodial, arts, dtmf)
+
+        rs = RadioSetting(
+                "squelch", "Squelch",
+                RadioSettingValueInteger(0, 15, _settings.squelch))
+        basic.append(rs)
 
         rs = RadioSetting(
                 "keybeep", "Keypad Beep",
