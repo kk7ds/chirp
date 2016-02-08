@@ -1,4 +1,4 @@
-# Copyright 2014 Ron Wellsted <ron@wellsted.org.uk> M0RNW
+# Copyright 2014 Ron Wellsted <ron@m0rnw.uk> M0RNW
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ CMD_WR = 131
 MEM_VALID = 158
 
 AB_LIST = ["A", "B"]
-STEPS = [5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
+STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 STEP_LIST = [str(x) for x in STEPS]
 ROGER_LIST = ["Off", "BOT", "EOT", "Both"]
 TIMEOUT_LIST = ["Off"] + [str(x) + "s" for x in range(15, 901, 15)]
@@ -45,14 +45,15 @@ LANGUAGE_LIST = ["Chinese", "English"]
 SCANMODE_LIST = ["TO", "CO", "SE"]
 PF1KEY_LIST = ["Call", "VFTX"]
 PF3KEY_LIST = ["Scan", "Lamp", "Tele Alarm", "SOS-CH", "Radio", "Disable"]
-WORKMODE_LIST = ["VFO", "Channel No.", "Frequency + No", "Name"]
+WORKMODE_LIST = ["VFO", "Channel No.", "Ch. No.+Freq.", "Ch. No.+Name"]
 BACKLIGHT_LIST = ["Always On"] + [str(x) + "s" for x in range(1, 21)] + \
                 ["Always Off"]
 OFFSET_LIST = ["+", "-"]
 PONMSG_LIST = ["Bitmap", "Battery Volts"]
 SPMUTE_LIST = ["QT", "QT+DTMF", "QT*DTMF"]
 DTMFST_LIST = ["DT-ST", "ANI-ST", "DT-ANI", "Off"]
-RPTSET_LIST = ["X-DIRPT", "X-TWRPT"]
+DTMF_TIMES = ["%s" % x for x in range(50, 501, 10)]
+RPTSET_LIST = ["X-TWRPT", "X-DIRRPT"]
 ALERTS = [1750, 2100, 1000, 1450]
 ALERTS_LIST = [str(x) for x in ALERTS]
 PTTID_LIST = ["BOT", "EOT", "Both"]
@@ -61,6 +62,8 @@ SCANGRP_LIST = ["All"] + ["%s" % x for x in range(1, 11)]
 SCQT_LIST = ["All", "Decoder", "Encoder"]
 SMUTESET_LIST = ["Off", "Tx", "Rx", "Tx/Rx"]
 POWER_LIST = ["Lo", "Hi"]
+HOLD_TIMES = ["Off"] + ["%s" % x for x in range(100, 5001, 100)]
+RPTMODE_LIST = ["Radio", "Repeater"]
 
 # memory slot 0 is not used, start at 1 (so need 1000 slots, not 999)
 # structure elements whose name starts with x are currently unidentified
@@ -148,8 +151,8 @@ _MEM_FORMAT = """
         u8      alert;
         u8      pf1_func;
         u8      pf3_func;
-        u8      workmode_a;
         u8      workmode_b;
+        u8      workmode_a;
         u8 x0845;
         u8      dtmf_tx_time;
         u8      dtmf_interval;
@@ -175,7 +178,7 @@ _MEM_FORMAT = """
         u8 x085d;
         u8 x085e;
         u8      single_display;
-        u8      ring;
+        u8      ring_time;
         u8      scg_a;
         u8      scg_b;
         u8 x0863;
@@ -643,7 +646,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             _mem.power = self.POWER_LEVELS.index(mem.power)
         else:
             _mem.power = True
-        # TODO: sett the correct mute mode, for now just
+        # TODO: set the correct mute mode, for now just
         # set to mute mode to QT (not QT+DTMF or QT*DTMF)
         _mem.mute_mode = 0
 
@@ -658,7 +661,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _settings = self._memobj.settings
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
-        cfg_grp = RadioSettingGroup("cfg_grp", "Configuration Settings")
+        cfg_grp = RadioSettingGroup("cfg_grp", "Configuration")
         vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings")
         vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings")
         key_grp = RadioSettingGroup("key_grp", "Key Settings")
@@ -671,86 +674,175 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #
         # Configuration Settings
         #
-        rs = RadioSetting("ponmsg", "Poweron message",
-                          RadioSettingValueList(
-                              PONMSG_LIST, PONMSG_LIST[_settings.ponmsg]))
-        cfg_grp.append(rs)
-        rs = RadioSetting("voice", "Voice Guide",
-                          RadioSettingValueBoolean(_settings.voice))
-        cfg_grp.append(rs)
-        rs = RadioSetting("language", "Language",
-                          RadioSettingValueList(
-                              LANGUAGE_LIST,
-                              LANGUAGE_LIST[_settings.language]))
-        cfg_grp.append(rs)
-        rs = RadioSetting("timeout", "Timeout Timer",
-                          RadioSettingValueInteger(
-                              15, 900, _settings.timeout * 15, 15))
-        cfg_grp.append(rs)
-        rs = RadioSetting("toalarm", "Timeout Alarm",
-                          RadioSettingValueInteger(0, 10, _settings.toalarm))
-        cfg_grp.append(rs)
         rs = RadioSetting("channel_menu", "Menu available in channel mode",
                           RadioSettingValueBoolean(_settings.channel_menu))
         cfg_grp.append(rs)
+        rs = RadioSetting("ponmsg", "Poweron message",
+                        RadioSettingValueList(
+                            PONMSG_LIST, PONMSG_LIST[_settings.ponmsg]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("voice", "Voice Guide",
+                        RadioSettingValueBoolean(_settings.voice))
+        cfg_grp.append(rs)
+        rs = RadioSetting("language", "Language",
+                        RadioSettingValueList(LANGUAGE_LIST,
+                            LANGUAGE_LIST[_settings.language]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("timeout", "Timeout Timer",
+                        RadioSettingValueInteger(15, 900,
+                            _settings.timeout * 15, 15))
+        cfg_grp.append(rs)
+        rs = RadioSetting("toalarm", "Timeout Alarm",
+                        RadioSettingValueInteger(0, 10, _settings.toalarm))
+        cfg_grp.append(rs)
+        rs = RadioSetting("roger_beep", "Roger Beep",
+                        RadioSettingValueBoolean(_settings.roger_beep))
+        cfg_grp.append(rs)
         rs = RadioSetting("power_save", "Power save",
-                          RadioSettingValueBoolean(_settings.power_save))
+                        RadioSettingValueBoolean(_settings.power_save))
         cfg_grp.append(rs)
         rs = RadioSetting("autolock", "Autolock",
-                          RadioSettingValueBoolean(_settings.autolock))
+                        RadioSettingValueBoolean(_settings.autolock))
         cfg_grp.append(rs)
         rs = RadioSetting("keylock", "Keypad Lock",
-                          RadioSettingValueBoolean(_settings.keylock))
+                        RadioSettingValueBoolean(_settings.keylock))
         cfg_grp.append(rs)
         rs = RadioSetting("beep", "Keypad Beep",
-                          RadioSettingValueBoolean(_settings.keylock))
+                        RadioSettingValueBoolean(_settings.beep))
         cfg_grp.append(rs)
         rs = RadioSetting("stopwatch", "Stopwatch",
-                          RadioSettingValueBoolean(_settings.keylock))
+                        RadioSettingValueBoolean(_settings.stopwatch))
         cfg_grp.append(rs)
-
+        rs = RadioSetting("backlight", "Backlight",
+                        RadioSettingValueList(BACKLIGHT_LIST,
+                            BACKLIGHT_LIST[_settings.backlight]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("dtmf_st", "DTMF Sidetone",
+                        RadioSettingValueList(DTMFST_LIST,
+                            DTMFST_LIST[_settings.dtmf_st]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("ani-id_sw", "ANI-ID Switch",
+                        RadioSettingValueBoolean(_settings.ani_sw))
+        cfg_grp.append(rs)
+        rs = RadioSetting("ptt-id_delay", "PTT-ID Delay",
+                        RadioSettingValueList(PTTID_LIST,
+                            PTTID_LIST[_settings.ptt_id]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("ring_time", "Ring Time",
+                        RadioSettingValueList(LIST_10,
+                            LIST_10[_settings.ring_time]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("scan_rev", "Scan Mode",
+                        RadioSettingValueList(SCANMODE_LIST,
+                            SCANMODE_LIST[_settings.scan_rev]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("vox", "VOX",
+                        RadioSettingValueList(LIST_10,
+                            LIST_10[_settings.vox]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("prich_sw", "Priority Channel Switch",
+                        RadioSettingValueBoolean(_settings.prich_sw))
+        cfg_grp.append(rs)
+        rs = RadioSetting("pri_ch", "Priority Channel",
+                        RadioSettingValueInteger(1, 999, _settings.pri_ch))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rpt_mode", "Radio Mode",
+                        RadioSettingValueList(RPTMODE_LIST,
+                            RPTMODE_LIST[_settings.rpt_mode]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rpt_set", "Repeater Setting",
+                        RadioSettingValueList(RPTSET_LIST,
+                            RPTSET_LIST[_settings.rpt_set]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rpt_spk", "Repeater Mode Speaker",
+                        RadioSettingValueBoolean(_settings.rpt_spk))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rpt_ptt", "Repeater PTT",
+                        RadioSettingValueBoolean(_settings.rpt_ptt))
+        cfg_grp.append(rs)
+        rs = RadioSetting("dtmf_tx_time", "DTMF Tx Duration",
+                        RadioSettingValueList(DTMF_TIMES,
+                            DTMF_TIMES[_settings.dtmf_tx_time]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("dtmf_interval", "DTMF Interval",
+                        RadioSettingValueList(DTMF_TIMES,
+                            DTMF_TIMES[_settings.dtmf_interval]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("alert", "Alert Tone",
+                        RadioSettingValueList(ALERTS_LIST,
+                            ALERTS_LIST[_settings.alert]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rpt_tone", "Repeater Tone",
+                        RadioSettingValueBoolean(_settings.rpt_tone))
+        cfg_grp.append(rs)
+        rs = RadioSetting("rpt_hold", "Repeater Hold Time",
+                        RadioSettingValueList(HOLD_TIMES,
+                            HOLD_TIMES[_settings.rpt_hold]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("scan_det", "Scan DET",
+                        RadioSettingValueBoolean(_settings.scan_det))
+        cfg_grp.append(rs)
+        rs = RadioSetting("sc_qt", "SC-QT",
+                        RadioSettingValueList(SCQT_LIST,
+                            SCQT_LIST[_settings.smuteset]))
+        cfg_grp.append(rs)
+        rs = RadioSetting("smuteset", "SubFreq Mute",
+                        RadioSettingValueList(SMUTESET_LIST,
+                            SMUTESET_LIST[_settings.smuteset]))
+        cfg_grp.append(rs)
+        _pwd = "".join(map(chr, _settings.mode_sw_pwd))
+        val = RadioSettingValueString(0, 6, _pwd)
+        val.set_mutable(True)
+        rs = RadioSetting("mode_sw_pwd", "Mode Switch Password", val)
+        cfg_grp.append(rs)
+        _pwd = "".join(map(chr, _settings.reset_pwd))
+        val = RadioSettingValueString(0, 6, _pwd)
+        val.set_mutable(True)
+        rs = RadioSetting("reset_pwd", "Reset Password", val)
+        cfg_grp.append(rs)
         #
         # VFO A Settings
         #
         rs = RadioSetting("vfoa_mode", "VFO A Workmode",
-                          RadioSettingValueList(
-                              WORKMODE_LIST,
+                        RadioSettingValueList(WORKMODE_LIST,
                               WORKMODE_LIST[_settings.workmode_a]))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa_chan", "VFO A Channel",
-                          RadioSettingValueInteger(1, 999, _settings.work_cha))
+                        RadioSettingValueInteger(1, 999, _settings.work_cha))
         vfoa_grp.append(rs)
         rs = RadioSetting("rxfreqa", "VFO A Rx Frequency",
-                          RadioSettingValueInteger(
+                        RadioSettingValueInteger(
                               134000000, 520000000, _vfoa.rxfreq * 10, 5000))
         vfoa_grp.append(rs)
-        #   u32   txoffset;
+        rs = RadioSetting("txoffa", "VFO A Tx Offset",
+                        RadioSettingValueInteger(
+                              0, 520000000, _vfoa.txoffset * 10, 5000))
+        vfoa_grp.append(rs)
         #   u16   rxtone;
         #   u16   txtone;
-        #   u8    unknown1:6,
         rs = RadioSetting("vfoa_power", "VFO A Power",
-                          RadioSettingValueList(
+                        RadioSettingValueList(
                               POWER_LIST, POWER_LIST[_vfoa.power]))
         vfoa_grp.append(rs)
-        #         unknown2:1;
-        #   u8    unknown3:1,
         #         shift_dir:2
-        #         unknown4:2,
-        rs = RadioSetting("vfoa_mute_mode", "VFO A Mute",
-                          RadioSettingValueList(
-                              SPMUTE_LIST, SPMUTE_LIST[_vfoa.mute_mode]))
-        vfoa_grp.append(rs)
         rs = RadioSetting("vfoa_iswide", "VFO A NBFM",
-                          RadioSettingValueList(
+                        RadioSettingValueList(
                               BANDWIDTH_LIST, BANDWIDTH_LIST[_vfoa.iswide]))
         vfoa_grp.append(rs)
+        rs = RadioSetting("vfoa_mute_mode", "VFO A Mute",
+                        RadioSettingValueList(
+                              SPMUTE_LIST, SPMUTE_LIST[_vfoa.mute_mode]))
+        vfoa_grp.append(rs)
         rs = RadioSetting("vfoa_step", "VFO A Step (kHz)",
-                          RadioSettingValueList(
+                        RadioSettingValueList(
                               STEP_LIST, STEP_LIST[_vfoa.step]))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa_squelch", "VFO A Squelch",
-                          RadioSettingValueList(
+                        RadioSettingValueList(
                               LIST_10, LIST_10[_vfoa.squelch]))
+        vfoa_grp.append(rs)
+        rs = RadioSetting("bcl_a", "Busy Channel Lock-out A",
+                        RadioSettingValueBoolean(_settings.bcl_a))
         vfoa_grp.append(rs)
         #
         # VFO B Settings
@@ -767,25 +859,24 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(
                               134000000, 520000000, _vfob.rxfreq * 10, 5000))
         vfob_grp.append(rs)
-        #   u32   txoffset;
+        rs = RadioSetting("txoffb", "VFO B Tx Offset",
+                          RadioSettingValueInteger(
+                              0, 520000000, _vfob.txoffset * 10, 5000))
+        vfob_grp.append(rs)
         #   u16   rxtone;
         #   u16   txtone;
-        #   u8    unknown1:6,
         rs = RadioSetting("vfob_power", "VFO B Power",
                           RadioSettingValueList(
                               POWER_LIST, POWER_LIST[_vfob.power]))
         vfob_grp.append(rs)
-        #         unknown2:1;
-        #   u8    unknown3:1,
         #         shift_dir:2
-        #         unknown4:2,
-        rs = RadioSetting("vfob_mute_mode", "VFO B Mute",
-                          RadioSettingValueList(
-                              SPMUTE_LIST, SPMUTE_LIST[_vfob.mute_mode]))
-        vfob_grp.append(rs)
         rs = RadioSetting("vfob_iswide", "VFO B NBFM",
                           RadioSettingValueList(
                               BANDWIDTH_LIST, BANDWIDTH_LIST[_vfob.iswide]))
+        vfob_grp.append(rs)
+        rs = RadioSetting("vfob_mute_mode", "VFO B Mute",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, SPMUTE_LIST[_vfob.mute_mode]))
         vfob_grp.append(rs)
         rs = RadioSetting("vfob_step", "VFO B Step (kHz)",
                           RadioSettingValueList(
@@ -795,7 +886,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueList(
                               LIST_10, LIST_10[_vfob.squelch]))
         vfob_grp.append(rs)
-
+        rs = RadioSetting("bcl_b", "Busy Channel Lock-out B",
+                        RadioSettingValueBoolean(_settings.bcl_b))
+        vfob_grp.append(rs)
         #
         # Key Settings
         #
