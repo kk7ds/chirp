@@ -80,6 +80,18 @@ struct {
      beep:1;            // beep on tone (1=on)
   u8 unknown51[2];
 } settings;
+
+#seekto 0x03f0;
+struct {
+  u8 batt_level;        // inverted (ff-val)
+  u8 sq_tight;          // sq tight (ff-val)
+  u8 sq_open;           // sq open (ff-val)
+  u8 high_power;        // High power
+  u8 qt_dev;            // QT deviation
+  u8 dqt_dev;           // DQT deviation
+  u8 low_power;         // low power
+} tune;
+
 """
 
 MEM_SIZE = 0x400
@@ -222,9 +234,6 @@ def open_radio(radio):
         msg = "Incorrect model ID, got %s, it not contains %s" % \
             (ident[0:5], radio.TYPE)
         raise errors.RadioError(msg)
-
-    # DEBUG
-    #print("Full ident string is %s" % util.hexprint(ident))
 
 
 def do_download(radio):
@@ -554,15 +563,17 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         if _mem.get_raw()[0] == "\xFF":
             mem.empty = True
-            # but is not enough, you have to crear the memory in the mmap
-            # to get it ready for the sync_out process
+            # but is not enough, you have to clear the memory in the mmap
+            # to get it ready for the sync_out process, just in case
             _mem.set_raw("\xFF" * 16)
+            # set the channel to inactive state
+            self.set_active(number - 1, False)
             return mem
 
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw()[4] == "\xFF":
+        if _mem.get_raw()[4] == "\xFF" or int(_mem.txen) == 255:
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
@@ -616,14 +627,16 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # Empty memory
         if mem.empty:
             _mem.set_raw("\xFF" * 16)
-            self.set_active(mem.number, False)
+            self.set_active(mem.number - 1, False)
             return
 
         # freq rx
         _mem.rxfreq = mem.freq / 10
 
-        # rx enabled if valid channel
+        # rx enabled if valid channel,
+        # set tx to on, we decide if off after duplex = off
         _mem.rxen = 0
+        _mem.txen = 0
 
         # freq tx
         if mem.duplex == "+":
@@ -631,8 +644,10 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         elif mem.duplex == "-":
             _mem.txfreq = (mem.freq - mem.offset) / 10
         elif mem.duplex == "off":
+            # set tx freq on the memap to xff
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw("\xFF")
+            # erase the txen flag
             _mem.txen = 255
         else:
             _mem.txfreq = mem.freq / 10
@@ -684,7 +699,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         # basic features of the radio
         basic = RadioSettingGroup("basic", "Basic Settings")
-        # buttons
+        # keys
         fkeys = RadioSettingGroup("keys", "Function keys")
 
         top = RadioSettings(basic, fkeys)
