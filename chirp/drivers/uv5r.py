@@ -1574,7 +1574,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
-                    else:
+                    elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
                 except Exception, e:
