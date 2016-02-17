@@ -216,6 +216,11 @@ struct {
 #seekto 0x09E;
 ul16 mbs;
 
+#seekto 0x0C8;
+struct {
+  u8 memory[16];
+} dtmf[9];
+
 struct mem {
   u8 used:1,
      unknown1:1,
@@ -280,6 +285,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
                 chirp_common.PowerLevel("Low", watts=0.5)]
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "S", "P"]
+DTMF_CHARS = list("0123456789ABCD*#")
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
 SPECIALS = ["%s%d" % (c, i + 1) for i in range(0, 50) for c in ('L', 'U')]
 
@@ -500,6 +506,28 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         opts = ["50 MS", "100 MS"]
         ctcss.append(RadioSetting("dt_spd", "DTMF Autodialer Sending Speed",
                      RadioSettingValueList(opts, opts[_settings.dt_spd])))
+
+        # DT.WRT
+        for i in range(0, 9):
+            dtmf = self._memobj.dtmf[i]
+            str = ""
+            for c in dtmf.memory:
+                if c == 0xFF:
+                    break
+                if c < len(DTMF_CHARS):
+                    str += DTMF_CHARS[c]
+            val = RadioSettingValueString(0, 16, str, False)
+            val.set_charset(DTMF_CHARS + list("abcd"))
+            rs = RadioSetting("dtmf_%i" % i, 
+                        "DTMF Autodialer Memory %i" % (i + 1), val)
+            def apply_dtmf(s, obj):
+                str = s.value.get_value().upper().rstrip()
+                val = [DTMF_CHARS.index(x) for x in str]
+                for x in range(len(val), 16):
+                    val.append(0xFF)
+                obj.memory = val
+            rs.set_apply_callback(apply_dtmf, dtmf)
+            ctcss.append(rs)
 
         # EDG.BEP
         opts = ["OFF", "ON"]
