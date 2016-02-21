@@ -852,6 +852,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         if mem.empty:
             _mem.set_raw("\xff" * 16)
+            _nam.set_raw("\xff" * 16)
             return
 
         _mem.set_raw("\x00" * 16)
