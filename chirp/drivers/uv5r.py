@@ -395,17 +395,6 @@ def _firmware_version_from_image(radio):
     return version
 
 
-def _special_block_from_data(data, special_block_start, special_block_stop):
-    special_block_tag = data[special_block_start:special_block_stop]
-    return special_block_tag
-
-
-def _special_block_from_image(radio):
-    special_block = _special_block_from_data(radio.get_mmap(), 0x0CFA, 0x0D01)
-    LOG.debug("_special_block_from_image: " + util.hexprint(special_block))
-    return special_block
-
-
 def _do_ident(radio, magic):
     serial = radio.pipe
     serial.timeout = 1
@@ -479,12 +468,6 @@ def _get_radio_firmware_version(radio):
     return version
 
 
-def _get_radio_special_block(radio):
-    block = _read_block(radio, 0xCF0, 0x40, False)
-    special_block = block[2:9]
-    return special_block
-
-
 def _ident_radio(radio):
     for magic in radio._idents:
         error = None
@@ -553,15 +536,6 @@ def _do_upload(radio):
                "version of the image (%s) does not match that "
                "of the radio (%s).")
         raise errors.RadioError(msg % (image_version, radio_version))
-
-    image_special_block = _special_block_from_image(radio)
-    radio_special_block = _get_radio_special_block(radio)
-    LOG.debug("Image Special Block is " + util.hexprint(image_special_block))
-    LOG.debug("Radio Special Block is " + util.hexprint(radio_special_block))
-
-    if image_special_block != radio_special_block:
-        raise errors.RadioError("Image not supported by radio: `%s'" %
-                                radio_special_block)
 
     # Main block
     for i in range(0x08, 0x1808, 0x10):
