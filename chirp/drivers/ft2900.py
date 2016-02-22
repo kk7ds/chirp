@@ -132,7 +132,10 @@ def _upload(radio):
     ack = radio.pipe.read(300)
     LOG.debug("Ack was (%i):\n%s" % (len(ack), util.hexprint(ack)))
     if ack != ACK:
-        raise Exception("Radio did not ack ID")
+        raise Exception("Radio did not ack ID. Check cable, verify"
+                        " radio is not locked.\n"
+                        " (press & Hold red \"*L\" button to unlock"
+                        " radio if needed)")
 
     block = 0
     cs = INITIAL_CHECKSUM
@@ -637,7 +640,12 @@ class FT2900Radio(YaesuCloneModeRadio):
             2. Connect data cable.
             3. While holding "A/N LOW" button, turn radio on.
             4. Press "MW D/MR" to receive image.
-            5. Click OK to dismiss this dialog and start transfer."""))
+            5. Make sure display says "-WAIT-" (see note below if not)
+            6. Click OK to dismiss this dialog and start transfer.
+
+            Note: if you don't see "-WAIT-" at step 5, try cycling
+                  power and pressing and holding red "*L" button to unlock
+                  radio, then start back at step 1."""))
         return rp
 
 
