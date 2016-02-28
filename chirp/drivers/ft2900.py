@@ -658,3 +658,16 @@ class FT2900ERadio(FT2900Radio):
     MODEL = "FT-2900E/1900E"
     VARIANT = "E"
     IDBLOCK = "\x56\x43\x32\x33\x00\x02\x41\x02\x01\x01"
+
+
+# the FT2900Mod is a version of the radio that has been modified to
+# allow transmit on a greater range of frequencies.  It is almost
+# identical to the standard version, except for the model number and
+# ID Block. We create and register a class for it, with only the
+# needed overrides
+@directory.register
+class FT2900ModRadio(FT2900Radio):
+    """Yaesu FT-2900Mod"""
+    MODEL = "FT-2900/1900 (Modded)"
+    VARIANT = "Opened Xmit"
+    IDBLOCK = "\x56\x43\x32\x33\x00\x02\xc7\x01\x01\x01"
