@@ -201,6 +201,10 @@ def open_radio(radio):
     LOG.debug("Sending MAGIC")
     exito = False
 
+    # it appears that some buggy interfaces/serial devices keep sending
+    # data in the RX line, we will try to catch this garbage here
+    devnull = rawrecv(radio, 256)
+
     for i in range(0, 5):
         LOG.debug("Try %i" % i)
         for i in range(0, len(magic)):
@@ -244,10 +248,6 @@ def open_radio(radio):
 
     LOG.debug("Full ident string is:")
     LOG.debug(util.hexprint(ident))
-
-    # this is needed, I don't know why, yet
-    send(radio, make_frame("W", 0x03e1, "\xff\x01" + "\xff" * 6))
-    handshake(radio, "Comm error  after setup", True)
 
 
 def do_download(radio):
@@ -337,7 +337,7 @@ def model_match(cls, data):
 class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
     """Kenwood Mobile Family 60 Radios"""
     VENDOR = "Kenwood"
-    _range = [350000000, 500000000]  # don't mind, it will be overited
+    _range = [136000000, 500000000]  # don't mind, it will be overited
     _upper = 32
     VARIANT = ""
     MODEL = ""
@@ -644,8 +644,8 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
         elif mem.duplex == "-":
             _mem.txfreq = (mem.freq - mem.offset) / 10
         elif mem.duplex == "off":
-            for i in range(0, 4):
-                _mem.txfreq[i].set_raw("\xFF")
+            for byte in _mem.txfreq:
+                byte.set_raw("\xFF")
         else:
             _mem.txfreq = mem.freq / 10
 
@@ -815,7 +815,7 @@ class TK760_Radio(Kenwood_M60_Radio):
     TYPE = "M0760"
     VARIANTS = {
         "M0760\x01\x00\x00": (32, 136, 156, "K2"),
-        "M0760\x00\x00\x00": (32, 148, 174, "K")
+        "M0760\x00\x00\x00": (32, 144, 174, "K")   # 148-147 Original
         }
 
 
@@ -826,7 +826,7 @@ class TK762_Radio(Kenwood_M60_Radio):
     TYPE = "M0762"
     VARIANTS = {
         "M0762\x01\x00\x00": (2, 136, 156, "K2"),
-        "M0762\x00\x00\x00": (2, 148, 174, "K")
+        "M0762\x00\x00\x00": (2, 144, 174, "K")   # 148-147 Original
         }
 
 
@@ -837,7 +837,7 @@ class TK768_Radio(Kenwood_M60_Radio):
     TYPE = "M0768"
     VARIANTS = {
         "M0768\x21\x00\x00": (32, 136, 156, "K2"),
-        "M0768\x20\x00\x00": (32, 148, 174, "K")
+        "M0768\x20\x00\x00": (32, 144, 174, "K")   # 148-147 Original
         }
 
 
@@ -847,7 +847,7 @@ class TK860_Radio(Kenwood_M60_Radio):
     MODEL = "TK-860"
     TYPE = "M0860"
     VARIANTS = {
-        "M0860\x05\x00\x00": (32, 406, 430, "F4"),
+        "M0860\x05\x00\x00": (32, 406, 440, "F4"),   # 406-430 Original
         "M0860\x04\x00\x00": (32, 488, 512, "F3"),
         "M0860\x03\x00\x00": (32, 470, 496, "F2"),
         "M0860\x02\x00\x00": (32, 450, 476, "F1")
@@ -860,7 +860,7 @@ class TK862_Radio(Kenwood_M60_Radio):
     MODEL = "TK-862"
     TYPE = "M0862"
     VARIANTS = {
-        "M0862\x05\x00\x00": (2, 406, 430, "F4"),
+        "M0862\x05\x00\x00": (2, 406, 440, "F4"),   # 406-430 Original
         "M0862\x04\x00\x00": (2, 488, 512, "F3"),
         "M0862\x03\x00\x00": (2, 470, 496, "F2"),
         "M0862\x02\x00\x00": (2, 450, 476, "F1")
@@ -873,7 +873,7 @@ class TK868_Radio(Kenwood_M60_Radio):
     MODEL = "TK-868"
     TYPE = "M0868"
     VARIANTS = {
-        "M0868\x25\x00\x00": (32, 406, 430, "F4"),
+        "M0868\x25\x00\x00": (32, 406, 440, "F4"),   # 406-430 Original
         "M0868\x24\x00\x00": (32, 488, 512, "F3"),
         "M0868\x23\x00\x00": (32, 470, 496, "F2"),
         "M0868\x22\x00\x00": (32, 450, 476, "F1")
