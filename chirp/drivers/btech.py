@@ -596,16 +596,12 @@ class btech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('This driver is experimental and for personal use only.\n'
+            ('This driver is experimental.\n'
              '\n'
              'Please keep a copy of your memories with the original software '
-             'if you treasure them, this is the first release and may contain'
+             'if you treasure them, this driver is new and may contain'
              ' bugs.\n'
              '\n'
-             'You will miss the setting tab, we are working on it. Your '
-             'success/failure story is appreciated, visit the Chirp\'s '
-             'website and drop us a comment or just say THANKS if it works '
-             'for you.\n'
              )
         rp.pre_download = _(dedent("""\
             Follow these instructions to download your info:
