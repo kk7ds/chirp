@@ -293,75 +293,45 @@ def _recv(radio, addr):
     return data
 
 
-def _do_magic(radio, status):
-    """Try to put the radio in program mode and get the ident string
-    it will make multiple tries"""
+def _start_clone_mode(radio, status):
+    """Put the radio in clone mode and get the ident string, 3 tries"""
 
-    # how many tries
-    tries = 5
+    # cleaning the serial buffet
+    # to be included in next patch: new serial.flush()
+    radio.pipe.setTimeout(0.6)
 
     # prep the data to show in the UI
     status.cur = 0
     status.msg = "Identifying the radio..."
-    status.max = len(radio._magic) * tries
+    status.max = 3
     radio.status_fn(status)
-    mc = 0
 
     try:
-        # do the magic
-        for magic in radio._magic:
-            # we try a few times
-            for a in range(0, tries):
-                # Update the UI
-                status.cur = (mc * tries) + a
+        for a in range(0, status.max):
+            # Update the UI
+            status.cur = a + 1
+            radio.status_fn(status)
+
+            # send the magic word
+            _send(radio, radio._magic)
+
+            # Now you get a x06 of ACK if all goes well
+            ack = radio.pipe.read(1)
+
+            if ack == "\x06":
+                # DEBUG
+                LOG.info("Magic ACK received")
+                status.cur = status.max
                 radio.status_fn(status)
 
-                # cleaning the serial buffer, try wrapped
-                try:
-                    radio.pipe.flushInput()
-                except:
-                    msg = "Error with a serial rx buffer flush at _do_magic"
-                    LOG.error(msg)
-                    raise errors.RadioError(msg)
+            return True
 
-                # send the magic a byte at a time
-                for byte in magic:
-                    ack = _rawrecv(radio, 1)
-                    _send(radio, byte)
-
-                # A explicit time delay, with a longer one for the UV-5001
-                if "5001" in radio.MODEL:
-                    time.sleep(0.5)
-                else:
-                    time.sleep(0.1)
-
-                # Now you get a x06 of ACK if all goes well
-                ack = _rawrecv(radio, 1)
-
-                if ack == "\x06":
-                    # DEBUG
-                    LOG.info("Magic ACK received")
-                    status.msg = "Positive Ident!"
-                    status.cur = status.max
-                    radio.status_fn(status)
-
-                    return True
-
-            # increment the count of magics to send, this is for the UI status
-            mc += 1
-
-            # wait between tries for different MAGICs to allow the radio to
-            # timeout, this is an experimental fature for the 5001 alpha that
-            # has the same ident as the MINI8900, raise it if it don't work
-            time.sleep(5)
+        return False
 
     except errors.RadioError:
         raise
     except Exception, e:
-        msg = "Unknown error sending Magic to radio:\n%s" % e
-        raise errors.RadioError(msg)
-
-    return False
+        raise errors.RadioError("Error sending Magic to radio:\n%s" % e)
 
 
 def _do_ident(radio, status):
@@ -378,8 +348,8 @@ def _do_ident(radio, status):
         LOG.error(msg)
         raise errors.RadioError(msg)
 
-    # do the magic trick
-    if _do_magic(radio, status) is False:
+    # open the radio into program mode
+    if _start_clone_mode(radio, status) is False:
         msg = "Radio did not respond to magic string, check your cable."
         LOG.error(msg)
         raise errors.RadioError(msg)
@@ -607,7 +577,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     _220_range = (210000000, 231000000)
     _uhf_range = (400000000, 521000000)
     _upper = 199
-    _magic = None
+    _magic = MSTRING
     _fileid = None
 
     @classmethod
@@ -983,19 +953,10 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             return False
 
 
-# Note:
-# the order in the lists in the _magic, IDENT and _fileid is important
-# we put the most common units first, the policy is as follows:
-
-# - First latest (newer) units, as they will be the most common
-# - Second the former latest version, and recursively...
-# - At the end the pre-production units (pp) as this will be unique
-
 @directory.register
 class UV2501(BTech):
     """Baofeng Tech UV2501"""
     MODEL = "UV-2501"
-    _magic = [MSTRING, ]
     _fileid = [UV2501G2_fp, UV2501pp2_fp, UV2501pp_fp]
 
 
@@ -1003,7 +964,7 @@ class UV2501(BTech):
 class UV2501_220(BTech):
     """Baofeng Tech UV2501+220"""
     MODEL = "UV-2501+220"
-    _magic = [MSTRING_220, ]
+    _magic = MSTRING_220
     _fileid = [UV2501_220_fp, UV2501_220pp_fp]
     _id2 = [UV2501_220pp_id, ]
 
@@ -1012,7 +973,6 @@ class UV2501_220(BTech):
 class UV5001(BTech):
     """Baofeng Tech UV5001"""
     MODEL = "UV-5001"
-    _magic = [MSTRING, MSTRING_MINI8900]
     _fileid = [UV5001G22_fp, UV5001G2_fp, UV5001alpha_fp, UV5001pp_fp]
 
 
@@ -1021,7 +981,7 @@ class MINI8900(BTech):
     """WACCOM MINI-8900"""
     VENDOR = "WACCOM"
     MODEL = "MINI-8900"
-    _magic = [MSTRING_MINI8900, ]
+    _magic = MSTRING_MINI8900
     _fileid = [MINI8900_fp, ]
 
 
@@ -1032,5 +992,5 @@ class KTUV980(BTech):
     MODEL = "KT-UV980"
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
-    _magic = [MSTRING_MINI8900, ]
+    _magic = MSTRING_MINI8900
     _fileid = [KTUV890_fp, ]
