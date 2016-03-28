@@ -52,6 +52,7 @@ if manual_language and manual_language != "Auto":
                   "Russian":          "ru",
                   "Portuguese (BR)":  "pt_BR",
                   "French":           "fr",
+                  "Spanish":          "es_ES",
                   }
     try:
         LOG.info("Language: %s", lang_codes[manual_language])

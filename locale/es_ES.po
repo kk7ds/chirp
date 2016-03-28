@@ -1,0 +1,946 @@
+# Spanish translations for CHIRP package.
+# Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
+# This file is distributed under the same license as the CHIRP package.
+# Dan Smith <dan@theine>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-02-16 12:06-0800\n"
+"PO-Revision-Date: 2016-03-28 02:44+0100\n"
+"Last-Translator: Alfonso Moratalla <alfonso.moratalla@gmail.com>\n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../chirpui/common.py:204
+msgid "Completed"
+msgstr "Completado"
+
+#: ../chirpui/common.py:205
+msgid "idle"
+msgstr "inactivo"
+
+#: ../chirpui/bankedit.py:52
+msgid "Retrieving bank information"
+msgstr "Recibiendo información del banco"
+
+#: ../chirpui/bankedit.py:75
+msgid "Setting name on bank"
+msgstr "Poniendo nombre al banco"
+
+#: ../chirpui/bankedit.py:85
+msgid "Bank"
+msgstr "Banco"
+
+#: ../chirpui/bankedit.py:86 ../chirpui/bankedit.py:240
+#: ../chirpui/importdialog.py:536 ../chirpui/memedit.py:65
+#: ../chirpui/memedit.py:85 ../chirpui/memedit.py:247
+#: ../chirpui/memedit.py:872 ../chirpui/memedit.py:926
+#: ../chirpui/memedit.py:1063 ../chirpui/memedit.py:1065
+msgid "Name"
+msgstr "Nombre"
+
+#: ../chirpui/bankedit.py:185
+msgid "Updating bank index for memory {num}"
+msgstr "Actualizando índice del banco para memoria {num}"
+
+#: ../chirpui/bankedit.py:194
+msgid "Updating bank information for memory {num}"
+msgstr "Actualizando información del banco para memoria {num}"
+
+#: ../chirpui/bankedit.py:200 ../chirpui/bankedit.py:229
+msgid "Getting memory {num}"
+msgstr "Obteniendo memoria {num}"
+
+#: ../chirpui/bankedit.py:214
+msgid "Setting index for memory {num}"
+msgstr "Fijando índice para memoria {num}"
+
+#: ../chirpui/bankedit.py:223
+msgid "Getting bank for memory {num}"
+msgstr "Obteniendo banco para memoria {num}"
+
+#: ../chirpui/bankedit.py:238 ../chirpui/memedit.py:63
+#: ../chirpui/memedit.py:172 ../chirpui/memedit.py:246
+#: ../chirpui/memedit.py:315 ../chirpui/memedit.py:335
+#: ../chirpui/memedit.py:349 ../chirpui/memedit.py:423
+#: ../chirpui/memedit.py:435 ../chirpui/memedit.py:459
+#: ../chirpui/memedit.py:461 ../chirpui/memedit.py:534
+#: ../chirpui/memedit.py:548 ../chirpui/memedit.py:550
+#: ../chirpui/memedit.py:591 ../chirpui/memedit.py:593
+#: ../chirpui/memedit.py:621 ../chirpui/memedit.py:822
+#: ../chirpui/memedit.py:870 ../chirpui/memedit.py:895
+#: ../chirpui/memedit.py:907 ../chirpui/memedit.py:924
+#: ../chirpui/memedit.py:1230
+msgid "Loc"
+msgstr "Loc"
+
+#: ../chirpui/bankedit.py:239 ../chirpui/importdialog.py:537
+#: ../chirpui/memedit.py:64 ../chirpui/memedit.py:86 ../chirpui/memedit.py:187
+#: ../chirpui/memedit.py:248 ../chirpui/memedit.py:271
+#: ../chirpui/memedit.py:296 ../chirpui/memedit.py:304
+#: ../chirpui/memedit.py:873 ../chirpui/memedit.py:923
+msgid "Frequency"
+msgstr "Frecuencia"
+
+#: ../chirpui/bankedit.py:241
+msgid "Index"
+msgstr "Índice"
+
+#: ../chirpui/bankedit.py:302
+msgid "Getting bank information for memory {num}"
+msgstr "Obteniendo información del banco para memoria {num}"
+
+#: ../chirpui/bankedit.py:323
+msgid "Getting bank information"
+msgstr "Obteniendo información del banco"
+
+#: ../chirpui/inputdialog.py:81
+msgid "An error has occurred"
+msgstr "Ha ocurrido un error"
+
+#: ../chirpui/inputdialog.py:130
+msgid "Overwrite"
+msgstr "Sobreescribir"
+
+#: ../chirpui/inputdialog.py:133
+msgid "File Exists"
+msgstr "El fichero existe"
+
+#: ../chirpui/inputdialog.py:136
+msgid "The file {name} already exists. Do you want to overwrite it?"
+msgstr "El fichero {name} ya existe. ¿Quiere sobreescribirlo?"
+
+#: ../chirpui/importdialog.py:90
+msgid ""
+"Location {number} is already being imported. Choose another value for 'New "
+"Location' before selection 'Import'"
+msgstr ""
+"La localización {number} ya ha sido importada. Elija otro valor para 'Nueva "
+"Localización' antes de seleccionar 'Importar'"
+
+#: ../chirpui/importdialog.py:121
+msgid "Invalid value. Must be an integer."
+msgstr "Valor no válido. Debe ser un número entero."
+
+#: ../chirpui/importdialog.py:130
+msgid "Location {number} is already being imported"
+msgstr "Localización {number} ya está siendo importada"
+
+#: ../chirpui/importdialog.py:182
+msgid "Updating URCALL list"
+msgstr "Actualizando listado URCALL"
+
+#: ../chirpui/importdialog.py:187
+msgid "Updating RPTCALL list"
+msgstr "Actualizando listado RPTCALL"
+
+#: ../chirpui/importdialog.py:256
+msgid "Setting memory {number}"
+msgstr "Fijando memoria {number}"
+
+#: ../chirpui/importdialog.py:260
+msgid "Importing bank information"
+msgstr "Importando información del banco"
+
+#: ../chirpui/importdialog.py:264
+msgid "Error importing memories:"
+msgstr "Error importando memorias:"
+
+#: ../chirpui/importdialog.py:376
+msgid "All"
+msgstr "Todos"
+
+#: ../chirpui/importdialog.py:382
+msgid "None"
+msgstr "Ninguno"
+
+#: ../chirpui/importdialog.py:388
+msgid "Inverse"
+msgstr "Inverso"
+
+#: ../chirpui/importdialog.py:394
+msgid "Select"
+msgstr "Seleccionar"
+
+#: ../chirpui/importdialog.py:416
+msgid "Auto"
+msgstr "Auto"
+
+#: ../chirpui/importdialog.py:422
+msgid "Reverse"
+msgstr "Reverso"
+
+#: ../chirpui/importdialog.py:428
+msgid "Adjust New Location"
+msgstr "Ajustar nueva localización"
+
+#: ../chirpui/importdialog.py:438
+msgid "Confirm overwrites"
+msgstr "Confirmar sobreescritura"
+
+#: ../chirpui/importdialog.py:444
+msgid "Options"
+msgstr "Opciones"
+
+#: ../chirpui/importdialog.py:495
+msgid "Cannot be imported because"
+msgstr "No puede ser importado porque"
+
+#: ../chirpui/importdialog.py:513
+msgid "Import From File"
+msgstr "Importar desde fichero"
+
+#: ../chirpui/importdialog.py:514 ../chirpui/mainapp.py:1196
+msgid "Import"
+msgstr "Importar"
+
+#: ../chirpui/importdialog.py:534
+msgid "To"
+msgstr "A"
+
+#: ../chirpui/importdialog.py:535
+msgid "From"
+msgstr "Desde"
+
+#: ../chirpui/importdialog.py:538 ../chirpui/memedit.py:78
+#: ../chirpui/memedit.py:99 ../chirpui/memedit.py:886
+#: ../chirpui/memedit.py:940 ../chirpui/memedit.py:1068
+msgid "Comment"
+msgstr "Comentario"
+
+#: ../chirpui/importdialog.py:542
+msgid "Location memory will be imported into"
+msgstr "La localización de memoria será importada en"
+
+#: ../chirpui/importdialog.py:543
+msgid "Location of memory in the file being imported"
+msgstr "Localización de la memoria en el fichero que está siendo importado"
+
+#: ../chirpui/importdialog.py:566
+msgid "Preparing memory list..."
+msgstr "Preparando lista de memoria..."
+
+#: ../chirpui/importdialog.py:575
+msgid "Export To File"
+msgstr "Exportar a fichero"
+
+#: ../chirpui/importdialog.py:576 ../chirpui/mainapp.py:1197
+msgid "Export"
+msgstr "Exportar"
+
+#: ../chirpui/mainapp.py:269 ../chirpui/mainapp.py:483
+msgid "Untitled"
+msgstr "Sin nombre"
+
+#: ../chirpui/mainapp.py:316 ../chirpui/mainapp.py:715
+msgid "CHIRP Radio Images"
+msgstr "Imagenes de radio CHIRP"
+
+#: ../chirpui/mainapp.py:317 ../chirpui/mainapp.py:714
+#: ../chirpui/mainapp.py:880
+msgid "CHIRP Files"
+msgstr "Ficheros CHIRP"
+
+#: ../chirpui/mainapp.py:318 ../chirpui/mainapp.py:716
+#: ../chirpui/mainapp.py:879
+msgid "CSV Files"
+msgstr "Ficheros CSV"
+
+#: ../chirpui/mainapp.py:319 ../chirpui/mainapp.py:717
+msgid "ICF Files"
+msgstr "Ficheros ICF"
+
+#: ../chirpui/mainapp.py:320 ../chirpui/mainapp.py:718
+msgid "VX7 Commander Files"
+msgstr "Ficheros del VX7 Commander"
+
+#: ../chirpui/mainapp.py:330
+msgid ""
+"ICF files cannot be edited, only displayed or imported into another file. "
+"Open in read-only mode?"
+msgstr ""
+"Los ficheros ICF no se pueden editar, solo mostrarse o importarse en otro "
+"fichero. ¿Abrirlo en modo solo-lectura?"
+
+#: ../chirpui/mainapp.py:373
+msgid "There was an error opening {fname}: {error}"
+msgstr "Hubo un error abriendo {fname}: {error}"
+
+#: ../chirpui/mainapp.py:388
+msgid "{num} errors during open:"
+msgstr "{num} errores mientras se abría:"
+
+#: ../chirpui/mainapp.py:394
+msgid "Note:"
+msgstr "Nota:"
+
+#: ../chirpui/mainapp.py:395
+msgid ""
+"The {vendor} {model} operates in <b>live mode</b>. This means that any "
+"changes you make are immediately sent to the radio. Because of this, you "
+"cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to "
+"edit the contents offline, please <u>Export</u> to a CSV file, using the "
+"<b>File menu</b>."
+msgstr ""
+"El {vendor} {model} opera en <b>modo live</b>. Esto significa que cualquier "
+"cambio que haga es enviado inmediatamente a la radio. Por esto, no puede "
+"usar las operaciones <u>Guardar</u> o <u>Subir</u>. Si quiere editar el "
+"contenido offline, por favor <u>Exporte</u> a un fichero CSV, usando el menu "
+"<b>Archivo</b>."
+
+#: ../chirpui/mainapp.py:404
+msgid "Don't show this again"
+msgstr "No mostrar esto otra vez"
+
+#: ../chirpui/mainapp.py:448
+msgid "{vendor} {model} image file"
+msgstr "fichero de imagen para {vendor} {model}"
+
+#: ../chirpui/mainapp.py:456
+msgid "VX7 Commander"
+msgstr "VX7 Commander"
+
+#: ../chirpui/mainapp.py:518
+msgid "Open recent file {name}"
+msgstr "Abrir fichero reciente {name}"
+
+#: ../chirpui/mainapp.py:579
+msgid "Import stock configuration {name}"
+msgstr "Importar configuración por defecto {name}"
+
+#: ../chirpui/mainapp.py:595
+msgid "Open stock configuration {name}"
+msgstr "Abrir configuración por defecto {name}"
+
+#: ../chirpui/mainapp.py:681
+msgid "Discard Changes?"
+msgstr "¿Descartar cambios?"
+
+#: ../chirpui/mainapp.py:686
+msgid "File is modified, save changes before closing?"
+msgstr "El fichero ha sido modificado, ¿guardar los cambios antes de cerrarlo?"
+
+#: ../chirpui/mainapp.py:923
+msgid "With significant contributions by:"
+msgstr "Con contribuciones significativas de:"
+
+#: ../chirpui/mainapp.py:940
+msgid "Select Columns"
+msgstr "Seleccionar columnas"
+
+#: ../chirpui/mainapp.py:955
+msgid "Visible columns for {radio}"
+msgstr "Columnas visibles para {radio}"
+
+#: ../chirpui/mainapp.py:1012
+msgid "Reporting is disabled"
+msgstr "Informar está deshabilitado"
+
+#: ../chirpui/mainapp.py:1013
+msgid ""
+"The reporting feature of CHIRP is designed to help <u>improve quality</u> by "
+"allowing the authors to focus on the radio drivers used most often and "
+"errors experienced by the users. The reports contain no identifying "
+"information and are used only for statistical purposes by the authors. Your "
+"privacy is extremely important, but <u>please consider leaving this feature "
+"enabled to help make CHIRP better!</u>\n"
+"\n"
+"<b>Are you sure you want to disable this feature?</b>"
+msgstr ""
+"La característica de informar de CHIRP está diseñada para ayudar a "
+"<u>mejorar la calidad</u> permitiendo a los autores centrarse en los drivers "
+"de las radios usadas mas frecuentemente y los errores que se experimentan "
+"los usuarios. Los informes no contienen información que identifique al "
+"usuario y solo son usadas para fines estadísticos por los autores. Su "
+"privacidad es extremadamente importante, pero <u>por favor considere dejar "
+"esta característica habilitada para ayudar a hacer CHIRP mejor</u>\n"
+"\n"
+"<b>¿Seguro que quiere deshabilitar esta caracteristica?</b>"
+
+#: ../chirpui/mainapp.py:1045
+msgid ""
+"Choose a language or Auto to use the operating system default. You will need "
+"to restart the application before the change will take effect"
+msgstr ""
+"Elija un idioma o Auto para usar el de por defecto del sistema operativo. "
+"Tendrá que reiniciar la aplicación para que el cambio surta efecto."
+
+#: ../chirpui/mainapp.py:1169
+msgid "_File"
+msgstr "_Fichero"
+
+#: ../chirpui/mainapp.py:1172
+msgid "Open stock config"
+msgstr "Abrir configuración por defecto"
+
+#: ../chirpui/mainapp.py:1173
+msgid "_Recent"
+msgstr "_Reciente"
+
+#: ../chirpui/mainapp.py:1178
+msgid "_Edit"
+msgstr "_Editar"
+
+#: ../chirpui/mainapp.py:1179
+msgid "_Cut"
+msgstr "_Cortar"
+
+#: ../chirpui/mainapp.py:1180
+msgid "_Copy"
+msgstr "_Copiar"
+
+#: ../chirpui/mainapp.py:1181
+msgid "_Paste"
+msgstr "_Pegar"
+
+#: ../chirpui/mainapp.py:1182
+msgid "_Delete"
+msgstr "_Borrar"
+
+#: ../chirpui/mainapp.py:1183
+msgid "Move _Up"
+msgstr "Subir"
+
+#: ../chirpui/mainapp.py:1184
+msgid "Move Dow_n"
+msgstr "Mover Abaj_o"
+
+#: ../chirpui/mainapp.py:1185
+msgid "E_xchange"
+msgstr "I_ntercambio"
+
+#: ../chirpui/mainapp.py:1186
+msgid "_View"
+msgstr "_Ver"
+
+#: ../chirpui/mainapp.py:1187
+msgid "Columns"
+msgstr "Columnas"
+
+#: ../chirpui/mainapp.py:1188
+msgid "Developer"
+msgstr "Desarrollador"
+
+#: ../chirpui/mainapp.py:1189
+msgid "Show raw memory"
+msgstr "Mostrar memoria raw"
+
+#: ../chirpui/mainapp.py:1190
+msgid "Diff raw memories"
+msgstr "Diferencias entre memorias raw"
+
+#: ../chirpui/mainapp.py:1191
+msgid "Diff tabs"
+msgstr "Pestañas de diferencias"
+
+#: ../chirpui/mainapp.py:1192
+msgid "Change language"
+msgstr "Cambiar idioma"
+
+#: ../chirpui/mainapp.py:1193
+msgid "_Radio"
+msgstr "_Radio"
+
+#: ../chirpui/mainapp.py:1194
+msgid "Download From Radio"
+msgstr "Descargar desde radio"
+
+#: ../chirpui/mainapp.py:1195
+msgid "Upload To Radio"
+msgstr "Subir a radio"
+
+#: ../chirpui/mainapp.py:1198
+msgid "Import from RFinder"
+msgstr "Importar desde RFinder"
+
+#: ../chirpui/mainapp.py:1199
+msgid "CHIRP Native File"
+msgstr "Fichero CHIRP nativo"
+
+#: ../chirpui/mainapp.py:1200
+msgid "CSV File"
+msgstr "Fichero CSV"
+
+#: ../chirpui/mainapp.py:1201
+msgid "Import from RepeaterBook"
+msgstr "Importar desde RepeaterBook"
+
+#: ../chirpui/mainapp.py:1202
+msgid "Import from stock config"
+msgstr "Importar desde configuración por defecto"
+
+#: ../chirpui/mainapp.py:1204
+msgid "Help"
+msgstr "Ayuda"
+
+#: ../chirpui/mainapp.py:1215
+msgid "Report statistics"
+msgstr "Enviar estadísticas"
+
+#: ../chirpui/mainapp.py:1216
+msgid "Hide Unused Fields"
+msgstr "Ocultar campos no usados"
+
+#: ../chirpui/mainapp.py:1217
+msgid "Automatic Repeater Offset"
+msgstr "Desplazamiento del repetidor automático"
+
+#: ../chirpui/mainapp.py:1218
+msgid "Enable Developer Functions"
+msgstr "Habilitar funciones de desarrollador"
+
+#: ../chirpui/mainapp.py:1352
+msgid "Error reporting is enabled"
+msgstr "Informar de errores está habilitado"
+
+#: ../chirpui/mainapp.py:1355
+msgid ""
+"If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgstr ""
+"Si quieres deshabilitar esta característica tiene que hacerlo en el menú "
+"<u>Ayuda</u>"
+
+#: ../chirpui/cloneprog.py:43
+msgid "Clone Progress"
+msgstr "Progreso del clonado"
+
+#: ../chirpui/cloneprog.py:46
+msgid "Cloning"
+msgstr "Clonando"
+
+#: ../chirpui/cloneprog.py:55
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../chirpui/shiftdialog.py:27
+msgid "Shift"
+msgstr "Desplazamiento"
+
+#: ../chirpui/shiftdialog.py:63
+msgid "Moving {src} to {dst}"
+msgstr "Moviendo {src} a {dst}"
+
+#: ../chirpui/shiftdialog.py:80
+msgid "Looking for a free spot ({number})"
+msgstr "Buscando un hueco libre({number})"
+
+#: ../chirpui/shiftdialog.py:135
+msgid "Moved {count} memories"
+msgstr "Movidas {count} memorias"
+
+#: ../chirpui/clone.py:35
+msgid "{vendor} {model} on {port}"
+msgstr "{vendor} {model} en {port}"
+
+#: ../chirpui/clone.py:100 ../chirpui/clone.py:162
+msgid "Detect"
+msgstr "Detectar"
+
+#: ../chirpui/clone.py:123
+msgid "Port"
+msgstr "Puerto"
+
+#: ../chirpui/clone.py:124
+msgid "Vendor"
+msgstr "Proveedor"
+
+#: ../chirpui/clone.py:125
+msgid "Model"
+msgstr "Modelo"
+
+#: ../chirpui/clone.py:138
+msgid "Radio"
+msgstr "Radio"
+
+#: ../chirpui/clone.py:166
+msgid "Unable to detect radio on {port}"
+msgstr "No se puede detectar radio en {port}"
+
+#: ../chirpui/clone.py:178
+msgid "Internal error: Unable to upload to {model}"
+msgstr "Error interno: No se ha podido subir a {model}"
+
+#: ../chirpui/clone.py:226
+msgid "Clone failed: {error}"
+msgstr "Clonado fallido: {error}"
+
+#: ../chirpui/dstaredit.py:40
+msgid "Callsign"
+msgstr "Indicativo"
+
+#: ../chirpui/dstaredit.py:124
+msgid "Your callsign"
+msgstr "Tu indicativo"
+
+#: ../chirpui/dstaredit.py:132
+msgid "Repeater callsign"
+msgstr "Indicativo del repetidor"
+
+#: ../chirpui/dstaredit.py:140
+msgid "My callsign"
+msgstr "Mi indicativ"
+
+#: ../chirpui/dstaredit.py:170 ../chirpui/memedit.py:1365
+msgid "Downloading URCALL list"
+msgstr "Descargando lista URCALL"
+
+#: ../chirpui/dstaredit.py:174 ../chirpui/memedit.py:1377
+msgid "Downloading RPTCALL list"
+msgstr "Descargando lista RPTCALL"
+
+#: ../chirpui/dstaredit.py:178
+msgid "Downloading MYCALL list"
+msgstr "Descargando lista MYCALL"
+
+#: ../chirpui/editorset.py:87
+msgid "Memories"
+msgstr "Memorias"
+
+#: ../chirpui/editorset.py:92
+msgid "D-STAR"
+msgstr "D-STAR"
+
+#: ../chirpui/editorset.py:98
+msgid "Bank Names"
+msgstr "Nombres de los bancos"
+
+#: ../chirpui/editorset.py:104
+msgid "Banks"
+msgstr "Bancos"
+
+#: ../chirpui/editorset.py:222
+msgid "The {vendor} {model} has multiple independent sub-devices"
+msgstr "El {vendor} {model} tiene multiples sub-dispositivos independientes"
+
+#: ../chirpui/editorset.py:225
+msgid "Choose one to import from:"
+msgstr "Elija uno desde el que importar:"
+
+#: ../chirpui/editorset.py:230
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#: ../chirpui/editorset.py:235
+msgid "Internal Error"
+msgstr "Error interno"
+
+#: ../chirpui/editorset.py:248
+msgid ""
+"There were errors while opening {file}. The affected memories will not be "
+"importable!"
+msgstr ""
+"Hubo errores mientras se abría {file}. ¡Las memorias afectadas no se podrán "
+"importar!"
+
+#: ../chirpui/editorset.py:260
+msgid "There was an error during import: {error}"
+msgstr "Hubo un error durante la importación: {error}"
+
+#: ../chirpui/editorset.py:270
+msgid "Unsupported file type"
+msgstr "Tipo de fichero no soportado"
+
+#: ../chirpui/editorset.py:286 ../chirpui/editorset.py:301
+msgid "There was an error during export: {error}"
+msgstr "Hubo un error mientras se exportaba: {error}"
+
+#: ../chirpui/editorset.py:313
+msgid "Priming memory"
+msgstr "Priming memory"
+
+#: ../chirpui/memedit.py:52
+msgid "Invalid value for this field"
+msgstr "Valor no válido para este campo"
+
+#: ../chirpui/memedit.py:66 ../chirpui/memedit.py:97 ../chirpui/memedit.py:111
+#: ../chirpui/memedit.py:204 ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:874 ../chirpui/memedit.py:931
+#: ../chirpui/memedit.py:1069 ../chirpui/memedit.py:1133
+msgid "Tone Mode"
+msgstr "Modo del tono"
+
+#: ../chirpui/memedit.py:67 ../chirpui/memedit.py:87 ../chirpui/memedit.py:103
+#: ../chirpui/memedit.py:214 ../chirpui/memedit.py:218
+#: ../chirpui/memedit.py:220 ../chirpui/memedit.py:310
+#: ../chirpui/memedit.py:875 ../chirpui/memedit.py:928
+#: ../chirpui/memedit.py:1070
+msgid "Tone"
+msgstr "Tono"
+
+#: ../chirpui/memedit.py:68 ../chirpui/memedit.py:88 ../chirpui/memedit.py:104
+#: ../chirpui/memedit.py:210 ../chirpui/memedit.py:218
+#: ../chirpui/memedit.py:221 ../chirpui/memedit.py:310
+#: ../chirpui/memedit.py:876 ../chirpui/memedit.py:929
+#: ../chirpui/memedit.py:1066
+msgid "ToneSql"
+msgstr "ToneSql"
+
+#: ../chirpui/memedit.py:69 ../chirpui/memedit.py:89 ../chirpui/memedit.py:105
+#: ../chirpui/memedit.py:211 ../chirpui/memedit.py:215
+#: ../chirpui/memedit.py:222 ../chirpui/memedit.py:306
+#: ../chirpui/memedit.py:877 ../chirpui/memedit.py:930
+#: ../chirpui/memedit.py:1059
+msgid "DTCS Code"
+msgstr "Código DTCS"
+
+#: ../chirpui/memedit.py:70 ../chirpui/memedit.py:90 ../chirpui/memedit.py:106
+#: ../chirpui/memedit.py:212 ../chirpui/memedit.py:216
+#: ../chirpui/memedit.py:223 ../chirpui/memedit.py:878
+#: ../chirpui/memedit.py:933 ../chirpui/memedit.py:1060
+msgid "DTCS Pol"
+msgstr "DTCS Pol"
+
+#: ../chirpui/memedit.py:71 ../chirpui/memedit.py:91 ../chirpui/memedit.py:112
+#: ../chirpui/memedit.py:879 ../chirpui/memedit.py:932
+#: ../chirpui/memedit.py:1067 ../chirpui/memedit.py:1134
+msgid "Cross Mode"
+msgstr "Modo cruzado"
+
+#: ../chirpui/memedit.py:72 ../chirpui/memedit.py:92 ../chirpui/memedit.py:109
+#: ../chirpui/memedit.py:137 ../chirpui/memedit.py:205
+#: ../chirpui/memedit.py:249 ../chirpui/memedit.py:312
+#: ../chirpui/memedit.py:880 ../chirpui/memedit.py:934
+#: ../chirpui/memedit.py:1071 ../chirpui/memedit.py:1144
+msgid "Duplex"
+msgstr "Duplex"
+
+#: ../chirpui/memedit.py:73 ../chirpui/memedit.py:93 ../chirpui/memedit.py:135
+#: ../chirpui/memedit.py:198 ../chirpui/memedit.py:226
+#: ../chirpui/memedit.py:250 ../chirpui/memedit.py:308
+#: ../chirpui/memedit.py:881 ../chirpui/memedit.py:935
+#: ../chirpui/memedit.py:1062
+msgid "Offset"
+msgstr "Desplazamiento"
+
+#: ../chirpui/memedit.py:74 ../chirpui/memedit.py:94 ../chirpui/memedit.py:107
+#: ../chirpui/memedit.py:882 ../chirpui/memedit.py:936
+#: ../chirpui/memedit.py:1061 ../chirpui/memedit.py:1132
+#: ../chirpui/memedit.py:1289 ../chirpui/memedit.py:1307
+#: ../chirpui/memedit.py:1317
+msgid "Mode"
+msgstr "Modo"
+
+#: ../chirpui/memedit.py:75 ../chirpui/memedit.py:95 ../chirpui/memedit.py:108
+#: ../chirpui/memedit.py:296 ../chirpui/memedit.py:883
+#: ../chirpui/memedit.py:937 ../chirpui/memedit.py:1073
+#: ../chirpui/memedit.py:1136 ../chirpui/memedit.py:1140
+msgid "Power"
+msgstr "Potencia"
+
+#: ../chirpui/memedit.py:76 ../chirpui/memedit.py:96 ../chirpui/memedit.py:110
+#: ../chirpui/memedit.py:140 ../chirpui/memedit.py:143
+#: ../chirpui/memedit.py:884 ../chirpui/memedit.py:938
+#: ../chirpui/memedit.py:1064
+msgid "Tune Step"
+msgstr "Escalón de sintonía"
+
+#: ../chirpui/memedit.py:77 ../chirpui/memedit.py:98 ../chirpui/memedit.py:885
+#: ../chirpui/memedit.py:939 ../chirpui/memedit.py:1072
+#: ../chirpui/memedit.py:1135
+msgid "Skip"
+msgstr "Saltar"
+
+#: ../chirpui/memedit.py:175
+msgid "Erasing memory {loc}"
+msgstr "Borrando memoria {loc}"
+
+#: ../chirpui/memedit.py:236
+msgid "Unable to make changes to this model"
+msgstr "No se pueden hacer cambios a este modelo"
+
+#: ../chirpui/memedit.py:241
+msgid "Editing new item, taking defaults"
+msgstr "Editando elemento nuevo, tomando valores por defecto"
+
+#: ../chirpui/memedit.py:257
+msgid "Bad value for {col}: {val}"
+msgstr "Valor incorrecto para {col}: {val}"
+
+#: ../chirpui/memedit.py:281
+msgid "Error setting memory"
+msgstr "Error fijando memoria"
+
+#: ../chirpui/memedit.py:289 ../chirpui/memedit.py:356
+#: ../chirpui/memedit.py:1272
+msgid "Writing memory {number}"
+msgstr "Escribiendo memoria {number}"
+
+#: ../chirpui/memedit.py:361
+msgid ""
+"This operation requires moving all subsequent channels by one spot until an "
+"empty location is reached.  This can take a LONG time.  Are you sure you "
+"want to do this?"
+msgstr ""
+"Esta operación requiere mover los subsecuentes canales un hueco hasta "
+"encontrar una localización vacía. Esto puede tardar MUCHO tiempo. ¿Está "
+"seguro de hacerlo?"
+
+#: ../chirpui/memedit.py:387
+msgid "Adding memory {number}"
+msgstr "Añadiendo memoria {number}"
+
+#: ../chirpui/memedit.py:400 ../chirpui/memedit.py:913
+msgid "Erasing memory {number}"
+msgstr "Borrando memoria {number}"
+
+#: ../chirpui/memedit.py:409 ../chirpui/memedit.py:518
+#: ../chirpui/memedit.py:564 ../chirpui/memedit.py:569
+#: ../chirpui/memedit.py:856 ../chirpui/memedit.py:1166
+msgid "Getting memory {number}"
+msgstr "Obteniendo memoria {number}"
+
+#: ../chirpui/memedit.py:497 ../chirpui/memedit.py:508
+#: ../chirpui/memedit.py:556
+msgid "Moving memory from {old} to {new}"
+msgstr "Moviendo memoria de {old} a {new}"
+
+#: ../chirpui/memedit.py:578
+msgid "Raw memory {number}"
+msgstr "Memoria raw {number}"
+
+#: ../chirpui/memedit.py:582 ../chirpui/memedit.py:610
+#: ../chirpui/memedit.py:615
+msgid "Getting raw memory {number}"
+msgstr "Obteniendo memoria raw {number}"
+
+#: ../chirpui/memedit.py:587
+msgid "You can only diff two memories!"
+msgstr "¡Solo puede ver diferencias entre dos memorias!"
+
+#: ../chirpui/memedit.py:598
+msgid "Memory {number}"
+msgstr "Memoria {number}"
+
+#: ../chirpui/memedit.py:604
+msgid "Diff of {a} and {b}"
+msgstr "Diferencia entre {a} y {b}"
+
+#: ../chirpui/memedit.py:628
+msgid "Memories must be contiguous"
+msgstr "Las memorias deben ser continuas"
+
+#: ../chirpui/memedit.py:700
+msgid "Insert row above"
+msgstr "Insertar fila encima"
+
+#: ../chirpui/memedit.py:701
+msgid "Insert row below"
+msgstr "Insertar fila debajo"
+
+#: ../chirpui/memedit.py:702
+msgid "Delete"
+msgstr "Borrar"
+
+#: ../chirpui/memedit.py:702
+msgid "Delete all"
+msgstr "Borrar todo"
+
+#: ../chirpui/memedit.py:703
+msgid "Delete (and shift up)"
+msgstr "Borrar (y desplazar hacia arriba)"
+
+#: ../chirpui/memedit.py:704
+msgid "Move up"
+msgstr "Subir"
+
+#: ../chirpui/memedit.py:705
+msgid "Move down"
+msgstr "Bajar"
+
+#: ../chirpui/memedit.py:706
+msgid "Exchange memories"
+msgstr "Intercambiar memorias"
+
+#: ../chirpui/memedit.py:707
+msgid "Cut"
+msgstr "Cortar"
+
+#: ../chirpui/memedit.py:708
+msgid "Copy"
+msgstr "Copiar"
+
+#: ../chirpui/memedit.py:709
+msgid "Paste"
+msgstr "Pegar"
+
+#: ../chirpui/memedit.py:710
+msgid "Show Raw Memory"
+msgstr "Mostrar memoria raw"
+
+#: ../chirpui/memedit.py:711
+msgid "Diff Raw Memories"
+msgstr "Diferencias entre memorias raw"
+
+#: ../chirpui/memedit.py:835
+msgid "Internal Error: Column {name} not found"
+msgstr "Error interno: La columna {name} no se encuentra"
+
+#: ../chirpui/memedit.py:863
+msgid "Getting channel {chan}"
+msgstr "Obteniendo canal {chan}"
+
+#: ../chirpui/memedit.py:952
+msgid "Internal Error: Invalid limit {number}"
+msgstr "Error interno: límite {number} invalido"
+
+#: ../chirpui/memedit.py:962
+msgid "Memory range:"
+msgstr "Rango de memoria:"
+
+#: ../chirpui/memedit.py:989
+msgid "Go"
+msgstr "Ir"
+
+#: ../chirpui/memedit.py:1012
+msgid "Special Channels"
+msgstr "Canales especiales"
+
+#: ../chirpui/memedit.py:1019
+msgid "Show Empty"
+msgstr "Mostrar vacíos"
+
+#: ../chirpui/memedit.py:1198
+msgid "Cutting memory {number}"
+msgstr "Cortando memoria {number}"
+
+#: ../chirpui/memedit.py:1232
+msgid "Overwrite?"
+msgstr "¿Sobrescribir?"
+
+#: ../chirpui/memedit.py:1237
+msgid "Overwrite location {number}?"
+msgstr "¿Sobrescribir localización {number}?"
+
+#: ../chirpui/memedit.py:1254
+msgid "Incompatible Memory"
+msgstr "Memoria incompatible"
+
+#: ../chirpui/memedit.py:1257
+msgid "Pasted memory {number} is not compatible with this radio because:"
+msgstr "Memoria {number} pegada no es compatible con esta radio porque:"
+
+#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1324
+msgid "URCALL"
+msgstr "URCALL"
+
+#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1325
+msgid "RPT1CALL"
+msgstr "RPT1CALL"
+
+#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1326
+msgid "RPT2CALL"
+msgstr "RPT2CALL"
+
+#: ../chirpui/memedit.py:1310 ../chirpui/memedit.py:1327
+msgid "Digital Code"
+msgstr "Código digital"
+
+#~ msgid "%i errors during open, check the debug log for details"
+#~ msgstr "%i errors during open, check the debug log for details"
