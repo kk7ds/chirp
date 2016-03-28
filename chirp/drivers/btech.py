@@ -595,7 +595,7 @@ def _split(rf, f1, f2):
     return False
 
 
-class btech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
+class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """BTECH's UV-5001 and alike radios"""
     VENDOR = "BTECH"
     MODEL = ""
@@ -989,7 +989,7 @@ class btech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 # - At the end the pre-production units (pp) as this will be unique
 
 @directory.register
-class UV2501(btech):
+class UV2501(BTech):
     """Baofeng Tech UV2501"""
     MODEL = "UV-2501"
     _magic = [MSTRING, ]
@@ -997,7 +997,7 @@ class UV2501(btech):
 
 
 @directory.register
-class UV2501_220(btech):
+class UV2501_220(BTech):
     """Baofeng Tech UV2501+220"""
     MODEL = "UV-2501+220"
     _magic = [MSTRING_220, ]
@@ -1006,7 +1006,7 @@ class UV2501_220(btech):
 
 
 @directory.register
-class UV5001(btech):
+class UV5001(BTech):
     """Baofeng Tech UV5001"""
     MODEL = "UV-5001"
     _magic = [MSTRING, MSTRING_MINI8900]
@@ -1014,7 +1014,7 @@ class UV5001(btech):
 
 
 @directory.register
-class MINI8900(btech):
+class MINI8900(BTech):
     """WACCOM MINI-8900"""
     VENDOR = "WACCOM"
     MODEL = "MINI-8900"
