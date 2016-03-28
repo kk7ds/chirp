@@ -160,6 +160,9 @@ UV5001G22_fp = "V2G204"
 MINI8900_fp = "M28854"
 
 
+# QYT KT UV-890
+KTUV890_fp = "H28854"
+
 #### MAGICS
 # for the Waccom Mini-8900
 MSTRING_MINI8900 = "\x55\xA5\xB5\x45\x55\x45\x4d\x02"
@@ -1020,3 +1023,14 @@ class MINI8900(BTech):
     MODEL = "MINI-8900"
     _magic = [MSTRING_MINI8900, ]
     _fileid = [MINI8900_fp, ]
+
+
+@directory.register
+class KTUV980(BTech):
+    """QYT KT-UV980"""
+    VENDOR = "QYT"
+    MODEL = "KT-UV980"
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = [MSTRING_MINI8900, ]
+    _fileid = [KTUV890_fp, ]
