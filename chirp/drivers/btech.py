@@ -712,7 +712,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         ranges"""
 
         # setting the correct ranges for each radio type
-        if self.MODEL == "UV-2501+220":
+        if "+220" in self.MODEL:
             # the model 2501+220 has a segment in 220
             # and a different position in the memmap
             ranges = self._memobj.ranges220
@@ -728,7 +728,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         LOG.info("Radio ranges: UHF %d to %d" % uhf)
 
         # 220Mhz case
-        if self.MODEL == "UV-2501+220":
+        if "+220" in self.MODEL:
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
             self._220_range = vhf2
