@@ -870,10 +870,12 @@ class btech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                                    PTTID_LIST[_mem.pttid]))
         mem.extra.append(pttid)
 
+        # validating scode
+        scode = _mem.scode if _mem.scode != 15 else 0
         pttidcode = RadioSetting("scode", "PTT ID signal code",
                                  RadioSettingValueList(
                                      PTTIDCODE_LIST,
-                                     PTTIDCODE_LIST[_mem.scode]))
+                                     PTTIDCODE_LIST[scode]))
         mem.extra.append(pttidcode)
 
         optsig = RadioSetting("optsig", "Optional signaling",
