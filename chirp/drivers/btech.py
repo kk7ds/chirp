@@ -580,6 +580,21 @@ def _decode_ranges(low, high):
     return (ilow, ihigh)
 
 
+def _split(rf, f1, f2):
+    """Returns False if the two freqs are in the same band (no split)
+    or True otherwise"""
+
+    # determine if the two freqs are in the same band
+    for low, high in rf.valid_bands:
+        if f1 >= low and f1 <= high and \
+                f2 >= low and f2 <= high:
+            # if the two freqs are on the same Band this is not a split
+            return False
+
+    # if you get here is because the freq pairs are split
+    return False
+
+
 class btech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """BTECH's UV-5001 and alike radios"""
     VENDOR = "BTECH"
@@ -805,7 +820,7 @@ class btech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             # TX freq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset != 0:
-                if offset > 70000000:   # 70 Mhz
+                if _split(self.get_features(), mem.freq, int(_mem.txfreq) * 10):
                     mem.duplex = "split"
                     mem.offset = int(_mem.txfreq) * 10
                 elif offset < 0:
