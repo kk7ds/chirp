@@ -257,52 +257,31 @@ def _make_frame(cmd, addr, length, data=""):
 
 
 def _recv(radio, addr):
-    """Get data from the radio """
-    # 1 byte ACK +
-    # 4 bytes header +
-    # data of length of data (as I see always 0x40 = 64 bytes)
+    """Get data from the radio all at once to lower syscalls load"""
 
-    # catching ack
-    ack = _rawrecv(radio, 1)
+    # Get the full 69 bytes at a time to reduce load
+    # 1 byte ACK + 4 bytes header + 64 bytes of data (BLOCK_SIZE)
 
-    # checking for a response
-    if len(ack) != 1:
-        msg = "No response in the read of the block #0x%04x" % addr
-        LOG.error(msg)
-        raise errors.RadioError(msg)
+    # get the whole block
+    block = _rawrecv(radio, BLOCK_SIZE + 5)
 
-    # valid data
-    if ack != ACK_CMD:
-        msg = "Bad ack received from radio in block 0x%04x" % addr
-        LOG.error(msg)
-        LOG.debug("Bad ACK was 0x%02x" % ord(ack))
-        raise errors.RadioError(msg)
+    # basic check
+    if len(block) < (BLOCK_SIZE + 5):
+        raise errors.RadioError("Short read of the block 0x%04x" % addr)
 
-    # Get the header + basic sanitize
-    hdr = _rawrecv(radio, 4)
-    if len(hdr) != 4:
-        msg = "Short header for block: 0x%04x" % addr
-        LOG.error(msg)
-        raise errors.RadioError(msg)
+    # checking for the ack
+    if block[0] != ACK_CMD:
+        raise errors.RadioError("Bad ack from radio in block 0x%04x" % addr)
 
-    # receive and validate the header
-    c, a, l = struct.unpack(">BHB", hdr)
+    # header validation
+    c, a, l = struct.unpack(">BHB", block[1:5])
     if a != addr or l != BLOCK_SIZE or c != ord("X"):
-        msg = "Invalid answer for block 0x%04x:" % addr
-        LOG.error(msg)
+        LOG.debug("Invalid header for block 0x%04x" % addr)
         LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (c, a, l))
-        raise errors.RadioError(msg)
+        raise errors.RadioError("Invalid header for block 0x%04x:" % addr)
 
-    # Get the data
-    data = _rawrecv(radio, l)
-
-    # basic validation
-    if len(data) != l:
-        msg = "Short block of data in block #0x%04x" % addr
-        LOG.error(msg)
-        raise errors.RadioError(msg)
-
-    return data
+    # return the data
+    return block[5:]
 
 
 def _start_clone_mode(radio, status):
