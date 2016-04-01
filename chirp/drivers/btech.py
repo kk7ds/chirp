@@ -164,11 +164,11 @@ UV5001G22_fp = "V2G204"
 MINI8900_fp = "M28854"
 
 
-# QYT KT-UV980
+# QYT KT-UV980 & JetStream JT2705M
 KTUV980_fp = "H28854"
 
 
-# QYT KT8900
+# QYT KT8900 & Juentai JT-6188
 KT8900_fp = "M29154"
 # this radio has an extra ID
 KT8900_id = "      303688"
@@ -390,17 +390,25 @@ def _do_ident(radio, status, upload=False):
             # send an ACK
             _send(radio, ACK_CMD)
 
-            # the amount of data deppend on the radio, we read one here
-            # that will be sufficient for the QYT KT8900
-            ack = _rawrecv(radio, 1)
+            # the amount of data depend on the radio, so far we have two radios
+            # reading two bytes with an ACK at the end and just ONE with just
+            # one byte (QYT KT8900)
+            # the JT-6188 appears a clone of the last, but reads TWO bytes.
+            #
+            # we will read two bytes with a custom timeout to not penalize the
+            # users for this.
+            #
+            # we just check for a response and last byte being a ACK, that is
+            # the common stone for all radios (3 so far)
+            radio.pipe.setTimeout(0.1)
+            ack = _rawrecv(radio, 2)
 
-            # but the BTECH UV2501+220 send two with the ACK at the end
-            # we read the extra byte here
-            if radio.MODEL == "UV-2501+220":
-                ack = _rawrecv(radio, 1)
-
-            if len(ack) != 1 or ack != ACK_CMD:
+            # checking
+            if len(ack) == 0 or ack[-1:] != ACK_CMD:
                 raise errors.RadioError("Radio didn't ACK the upload")
+
+            # restore the default serial timeout
+            radio.pipe.setTimeout(STIMEOUT)
 
     # DEBUG
     LOG.info("Positive ident, this is a %s %s" % (radio.VENDOR, radio.MODEL))
