@@ -164,8 +164,8 @@ UV5001G22_fp = "V2G204"
 MINI8900_fp = "M28854"
 
 
-# QYT KT UV-890
-KTUV890_fp = "H28854"
+# QYT KT UV-980
+KTUV980_fp = "H28854"
 
 #### MAGICS
 # for the Waccom Mini-8900
@@ -332,18 +332,14 @@ def _do_ident(radio, status, upload=False):
 
     # open the radio into program mode
     if _start_clone_mode(radio, status) is False:
-        msg = "Radio did not respond to magic string, check your cable."
-        LOG.error(msg)
-        raise errors.RadioError(msg)
+        raise errors.RadioError("Radio didn't entered in the clone mode")
 
     # Ok, get the ident string
     ident = _rawrecv(radio, 49)
 
     # basic check for the ident
     if len(ident) != 49:
-        msg = "Radio send a sort ident block, you need to increase maxtime."
-        LOG.error(msg)
-        raise errors.RadioError(msg)
+        raise errors.RadioError("Radio send a short ident block.")
 
     # check if ident is OK
     itis = False
@@ -353,10 +349,7 @@ def _do_ident(radio, status, upload=False):
             break
 
     if itis is False:
-        # bad ident
-        msg = "Incorrect model ID, got this:\n\n"
-        msg += util.hexprint(ident)
-        LOG.debug(msg)
+        LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
         raise errors.RadioError("Radio identification failed.")
 
     # some radios needs a extra read and check for a code on it, this ones
@@ -494,14 +487,10 @@ def _upload(radio):
 
         # basic check
         if len(ack) != 1:
-            msg = "No response in the write of block #0x%04x" % addr
-            LOG.error(msg)
-            raise errors.RadioError(msg)
+            raise errors.RadioError("No ACK when writing block 0x%04x" % addr)
 
         if not ack in "\x06\x05":
-            msg = "Bad ack writing block 0x%04x:" % addr
-            LOG.info(msg)
-            raise errors.RadioError(msg)
+            raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
 
          # UI Update
         status.cur = addr / TX_BLOCK_SIZE
@@ -971,4 +960,4 @@ class KTUV980(BTech):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_MINI8900
-    _fileid = [KTUV890_fp, ]
+    _fileid = [KTUV980_fp, ]
