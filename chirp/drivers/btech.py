@@ -172,6 +172,30 @@ MSTRING_220 = "\x55\x20\x15\x12\x12\x01\x4d\x02"
 MSTRING = "\x55\x20\x15\x09\x20\x45\x4d\x02"
 
 
+def _clean_buffer(radio):
+    """Cleaning the read serial buffer, hard timeout to survive an infinite
+    data stream"""
+
+    # WARNING: every time we call this we touch the serialTimeout
+    # this is to optimize the flushing
+    radio.pipe.setTimeout(0.1)
+    dump = "1"
+    datacount = 0
+
+    try:
+        while len(dump) > 0:
+            dump = radio.pipe.read(100)
+            datacount += len(dump)
+            # hard limit to survive a infinite serial data stream
+            # 5 times bigger than a normal rx block (69 bytes)
+            if datacount > 345:
+                seriale = "Please check your serial port selection."
+                raise errors.RadioError(seriale)
+
+    except Exception:
+        raise errors.RadioError("Unknown error cleaning the serial buffer")
+
+
 def _rawrecv(radio, amount):
     """Raw read from the radio device, new approach, this time a byte at
     a time as the original driver, the receive data has to be atomic"""
@@ -296,8 +320,8 @@ def _recv(radio, addr):
 def _start_clone_mode(radio, status):
     """Put the radio in clone mode and get the ident string, 3 tries"""
 
-    # cleaning the serial buffet
-    # to be included in next patch: new serial.flush()
+    # cleaning the serial buffer
+    _clean_buffer(radio)
     radio.pipe.setTimeout(0.6)
 
     # prep the data to show in the UI
@@ -339,14 +363,10 @@ def _do_ident(radio, status):
     #  set the serial discipline
     radio.pipe.setBaudrate(9600)
     radio.pipe.setParity("N")
-    radio.pipe.setTimeout(0.005)
-    # cleaning the serial buffer, try wrapped
-    try:
-        radio.pipe.flushInput()
-    except:
-        msg = "Error with a serial rx buffer flush at _do_ident"
-        LOG.error(msg)
-        raise errors.RadioError(msg)
+
+    # cleaning the serial buffer
+    _clean_buffer(radio)
+    radio.pipe.setTimeout(0.6)
 
     # open the radio into program mode
     if _start_clone_mode(radio, status) is False:
@@ -449,16 +469,12 @@ def _download(radio):
     status.cur = 0
     radio.status_fn(status)
 
+    # cleaning the serial buffer
+    _clean_buffer(radio)
+    radio.pipe.setTimeout(0.6)
+
     data = ""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
-        # flush input, as per the original driver behavior, try wrapped
-        try:
-            radio.pipe.flushInput()
-        except:
-            msg = "Error with a serial rx buffer flush at _download"
-            LOG.error(msg)
-            raise errors.RadioError(msg)
-
         # sending the read request
         _send(radio, _make_frame("S", addr, BLOCK_SIZE), 0.1)
 
@@ -498,16 +514,12 @@ def _upload(radio):
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
+    # cleaning the serial buffer
+    _clean_buffer(radio)
+    radio.pipe.setTimeout(0.6)
+
     # the fun start here
     for addr in range(0, MEM_SIZE, TX_BLOCK_SIZE):
-        # flush input, as per the original driver behavior, try wrapped
-        try:
-            radio.pipe.flushInput()
-        except:
-            msg = "Error with a serial rx buffer flush at _upload"
-            LOG.error(msg)
-            raise errors.RadioError(msg)
-
         # sending the data
         d = data[addr:addr + TX_BLOCK_SIZE]
         _send(radio, _make_frame("X", addr, TX_BLOCK_SIZE, d), 0.015)
