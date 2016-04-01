@@ -204,36 +204,26 @@ def _clean_buffer(radio):
 
 
 def _rawrecv(radio, amount):
-    """Raw read from the radio device, new approach, this time a byte at
-    a time as the original driver, the receive data has to be atomic"""
+    """Raw read from the radio device, less intensive way"""
+
     data = ""
 
     try:
-        tdiff = 0
-        start = time.time()
-        maxtime = amount * 0.020
-
-        while len(data) < amount and tdiff < maxtime:
-            d = radio.pipe.read(1)
-            if len(d) == 1:
-                data += d
-
-            # Delta time
-            tdiff = time.time() - start
-
-            # DEBUG
-            if debug is True:
-                LOG.debug("time diff %.04f maxtime %.04f, data: %d" %
-                          (tdiff, maxtime, len(data)))
+        data = radio.pipe.read(amount)
 
         # DEBUG
         if debug is True:
             LOG.debug("<== (%d) bytes:\n\n%s" %
                       (len(data), util.hexprint(data)))
 
+        # fail if no data is received
+        if len(data) == 0:
+            raise errors.RadioError("No data received from radio")
+
+        # notice on the logs if short
         if len(data) < amount:
-            LOG.error("Short reading %d bytes from the %d requested." %
-                      (len(data), amount))
+            LOG.warn("Short reading %d bytes from the %d requested." %
+                     (len(data), amount))
 
     except:
         raise errors.RadioError("Error reading data from radio")
