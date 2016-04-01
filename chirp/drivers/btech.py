@@ -324,7 +324,7 @@ def _start_clone_mode(radio, status):
         raise errors.RadioError("Error sending Magic to radio:\n%s" % e)
 
 
-def _do_ident(radio, status):
+def _do_ident(radio, status, upload=False):
     """Put the radio in PROGRAM mode & identify it"""
     #  set the serial discipline
     radio.pipe.setBaudrate(9600)
@@ -378,6 +378,19 @@ def _do_ident(radio, status):
             LOG.debug("Full *BAD* extra ID on the %s is: \n%s" %
                       (radio.MODEL, util.hexprint(id2)))
             raise errors.RadioError("The extra ID is wrong, aborting.")
+
+        # the BTECH UV2501+220 have a trick only the upload, they must send
+        # a ACK_CMD and read two bytes always ending on an ACK
+        #
+        # also the first block of TX must no have the ACK at the beginning
+        # see _upload for this.
+        if upload is True:
+            # send a ACK, capture the answer
+            _send(radio, ACK_CMD)
+            ack = _rawrecv(radio, 2)
+
+            if len(ack) != 2 or ack[1] != ACK_CMD:
+                raise errors.RadioError("Radio didn't ACK the upload")
 
     # DEBUG
     LOG.info("Positive ident, this is a %s %s" % (radio.VENDOR, radio.MODEL))
@@ -442,7 +455,7 @@ def _upload(radio):
     status = chirp_common.Status()
 
     # put radio in program mode and identify it
-    _do_ident(radio, status)
+    _do_ident(radio, status, True)
 
     # get the data to upload to radio
     data = radio.get_mmap()
@@ -462,9 +475,19 @@ def _upload(radio):
 
     # the fun start here
     for addr in range(0, MEM_SIZE, TX_BLOCK_SIZE):
-        # sending the data
+        # getting the block of data to send
         d = data[addr:addr + TX_BLOCK_SIZE]
-        _send(radio, _make_frame("X", addr, TX_BLOCK_SIZE, d))
+
+        # build the frame to send
+        frame = _make_frame("X", addr, TX_BLOCK_SIZE, d)
+
+        # first block must not send the ACK at the beginning for the
+        # ones that has the extra id, since this have to do a extra step
+        if addr == 0 and radio._id2 is not False:
+            frame = frame[1:]
+
+        # send the frame
+        _send(radio, frame)
 
         # receiving the response
         ack = _rawrecv(radio, 1)
