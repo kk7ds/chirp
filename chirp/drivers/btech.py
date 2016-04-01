@@ -107,6 +107,10 @@ PTTID_LIST = ["OFF", "BOT", "EOT", "BOTH"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 OPTSIG_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 
+# This is a general serial timeout for all serial read functions.
+# Practice has show that about 0.7 sec will be enough to cover all radios.
+STIMEOUT = 0.7
+
 # this var controls the verbosity in the debug and by default it's low (False)
 # make it True and you will to get a very verbose debug.log
 debug = False
@@ -176,8 +180,8 @@ def _clean_buffer(radio):
     """Cleaning the read serial buffer, hard timeout to survive an infinite
     data stream"""
 
-    # WARNING: every time we call this we touch the serialTimeout
-    # this is to optimize the flushing
+    # touching the serial timeout to optimize the flushing
+    # restored at the end to the default value
     radio.pipe.setTimeout(0.1)
     dump = "1"
     datacount = 0
@@ -191,6 +195,9 @@ def _clean_buffer(radio):
             if datacount > 345:
                 seriale = "Please check your serial port selection."
                 raise errors.RadioError(seriale)
+
+        # restore the default serial timeout
+        radio.pipe.setTimeout(STIMEOUT)
 
     except Exception:
         raise errors.RadioError("Unknown error cleaning the serial buffer")
@@ -239,7 +246,6 @@ def _rawsend(radio, data):
     try:
         for byte in data:
             radio.pipe.write(byte)
-            time.sleep(0.003)
 
         # DEBUG
         if debug is True:
@@ -322,7 +328,6 @@ def _start_clone_mode(radio, status):
 
     # cleaning the serial buffer
     _clean_buffer(radio)
-    radio.pipe.setTimeout(0.6)
 
     # prep the data to show in the UI
     status.cur = 0
@@ -363,10 +368,6 @@ def _do_ident(radio, status):
     #  set the serial discipline
     radio.pipe.setBaudrate(9600)
     radio.pipe.setParity("N")
-
-    # cleaning the serial buffer
-    _clean_buffer(radio)
-    radio.pipe.setTimeout(0.6)
 
     # open the radio into program mode
     if _start_clone_mode(radio, status) is False:
@@ -471,7 +472,6 @@ def _download(radio):
 
     # cleaning the serial buffer
     _clean_buffer(radio)
-    radio.pipe.setTimeout(0.6)
 
     data = ""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
@@ -516,7 +516,6 @@ def _upload(radio):
 
     # cleaning the serial buffer
     _clean_buffer(radio)
-    radio.pipe.setTimeout(0.6)
 
     # the fun start here
     for addr in range(0, MEM_SIZE, TX_BLOCK_SIZE):
