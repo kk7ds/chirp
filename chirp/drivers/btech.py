@@ -231,8 +231,9 @@ def _rawrecv(radio, amount):
     return data
 
 
-def _rawsend(radio, data):
-    """Raw send to the radio device"""
+def _send(radio, data):
+    """Send data to the radio device"""
+
     try:
         for byte in data:
             radio.pipe.write(byte)
@@ -253,15 +254,6 @@ def _make_frame(cmd, addr, length, data=""):
         frame += data
 
     return frame
-
-
-def _send(radio, frame, pause=0):
-    """Generic send data to the radio"""
-    _rawsend(radio, frame)
-
-    # make a *optional* pause, to allow to build for an answer
-    if pause != 0:
-        time.sleep(pause)
 
 
 def _recv(radio, addr):
@@ -400,7 +392,7 @@ def _do_ident(radio, status):
         # DEBUG
         LOG.debug("This is a BTECH UV-2501+220, requesting the extra ID")
         # send the read request
-        _send(radio, _make_frame("S", 0x3DF0, 16), 0.04)
+        _send(radio, _make_frame("S", 0x3DF0, 16))
         id2 = _rawrecv(radio, 20)
         # WARNING !!!!!!
         # Different versions send as response with a different amount of data
@@ -466,7 +458,7 @@ def _download(radio):
     data = ""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
         # sending the read request
-        _send(radio, _make_frame("S", addr, BLOCK_SIZE), 0.1)
+        _send(radio, _make_frame("S", addr, BLOCK_SIZE))
 
         # read
         d = _recv(radio, addr)
@@ -511,7 +503,7 @@ def _upload(radio):
     for addr in range(0, MEM_SIZE, TX_BLOCK_SIZE):
         # sending the data
         d = data[addr:addr + TX_BLOCK_SIZE]
-        _send(radio, _make_frame("X", addr, TX_BLOCK_SIZE, d), 0.015)
+        _send(radio, _make_frame("X", addr, TX_BLOCK_SIZE, d))
 
         # receiving the response
         ack = _rawrecv(radio, 1)
