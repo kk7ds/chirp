@@ -359,48 +359,28 @@ def _do_ident(radio, status):
         LOG.debug(msg)
         raise errors.RadioError("Radio identification failed.")
 
-    # DEBUG
-    LOG.info("Positive ident, this is a %s" % radio.MODEL)
-
-    # Ok, we have a radio in the other end, we need a pause here
-    time.sleep(0.01)
-
-    # the 2501+220 has one more check:
-    # reading the block 0x3DF0 to see if it's a code inside
-    if "+220" in radio.MODEL:
-        # DEBUG
-        LOG.debug("This is a BTECH UV-2501+220, requesting the extra ID")
-        # send the read request
+    # some radios needs a extra read and check for a code on it, this ones
+    # has the check value in the _id2 var, others simply False
+    if radio._id2 is not False:
+        # query & receive the extra ID
         _send(radio, _make_frame("S", 0x3DF0, 16))
-        id2 = _rawrecv(radio, 20)
+        id2 = _rawrecv(radio, 21)
+
         # WARNING !!!!!!
-        # Different versions send as response with a different amount of data
+        # different radios send a response with a different amount of data
         # it seems that it's padded with \xff, \x20 and some times with \x00
         # we just care about the first 16, our magic string is in there
         if len(id2) < 16:
-            msg = "The extra UV-2501+220 ID is short, aborting."
-            # DEBUG
-            LOG.error(msg)
-            raise errors.RadioError(msg)
+            raise errors.RadioError("The extra ID is short, aborting.")
 
-        # ok, check for it, any of the correct ID must be in the received data
-        itis = False
-        for eid in radio._id2:
-            if eid in id2:
-                # DEBUG
-                LOG.info("Confirmed, this is a BTECH UV-2501+220")
-                # set the flag and exit
-                itis = True
-                break
+        # ok, the correct string must be in the received data
+        if radio._id2 not in id2:
+            LOG.debug("Full *BAD* extra ID on the %s is: \n%s" %
+                      (radio.MODEL, util.hexprint(id2)))
+            raise errors.RadioError("The extra ID is wrong, aborting.")
 
-        # It is a UV-2501+220?
-        if itis is False:
-            msg = "The extra UV-2501+220 ID is wrong, aborting."
-            # DEBUG
-            LOG.error(msg)
-            LOG.debug("Full extra ID on the 2501+220 is: \n%s" %
-                      util.hexprint(id2))
-            raise errors.RadioError(msg)
+    # DEBUG
+    LOG.info("Positive ident, this is a %s %s" % (radio.VENDOR, radio.MODEL))
 
     return True
 
@@ -414,16 +394,14 @@ def _download(radio):
     # put radio in program mode and identify it
     _do_ident(radio, status)
 
-    # the first dummy packet for all model but the 2501+220
-    if not "+220" in radio.MODEL:
-        # In the logs we have found that the first block is discarded
-        # this is the \x05 in ack one, so we will simulate it here
-        _send(radio, _make_frame("S", 0, BLOCK_SIZE), 0.1)
-        discard = _rawrecv(radio, BLOCK_SIZE)
+    # the models that doesn't have the extra ID have to make a dummy read here
+    if radio._id2 is False:
+        _send(radio, _make_frame("S", 0, BLOCK_SIZE))
+        discard = _rawrecv(radio, BLOCK_SIZE + 5)
 
         if debug is True:
-            LOG.info("Dummy first block read done, got this:\n\n")
-            LOG.debug(util.hexprint(discard))
+            LOG.info("Dummy first block read done, got this:\n\n %s",
+                     util.hexprint(discard))
 
     # reset the progress bar in the UI
     status.max = MEM_SIZE / BLOCK_SIZE
@@ -474,6 +452,10 @@ def _upload(radio):
     status.cur = 0
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
+
+    # the radios that doesn't have the extra ID 'may' do a dummy write, I found
+    # that leveraging the bad ACK and NOT doing the dummy write is ok, as the
+    # dummy write is accepted (it actually writes to the mem!) by the radio.
 
     # cleaning the serial buffer
     _clean_buffer(radio)
@@ -551,6 +533,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     _upper = 199
     _magic = MSTRING
     _fileid = None
+    _id2 = False
 
     @classmethod
     def get_prompts(cls):
@@ -938,7 +921,7 @@ class UV2501_220(BTech):
     MODEL = "UV-2501+220"
     _magic = MSTRING_220
     _fileid = [UV2501_220_fp, UV2501_220pp_fp]
-    _id2 = [UV2501_220pp_id, ]
+    _id2 = UV2501_220pp_id
 
 
 @directory.register
