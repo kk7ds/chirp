@@ -164,14 +164,23 @@ UV5001G22_fp = "V2G204"
 MINI8900_fp = "M28854"
 
 
-# QYT KT UV-980
+# QYT KT-UV980
 KTUV980_fp = "H28854"
+
+
+# QYT KT8900
+KT8900_fp = "M29154"
+# this radio has an extra ID
+KT8900_id = "      303688"
+
 
 #### MAGICS
 # for the Waccom Mini-8900
 MSTRING_MINI8900 = "\x55\xA5\xB5\x45\x55\x45\x4d\x02"
 # for the B-TECH UV-2501+220 (including pre production ones)
 MSTRING_220 = "\x55\x20\x15\x12\x12\x01\x4d\x02"
+# for the QYT KT8900
+MSTRING_KT8900 = "\x55\x20\x15\x09\x16\x45\x4D\x02"
 # magic string for all other models
 MSTRING = "\x55\x20\x15\x09\x20\x45\x4d\x02"
 
@@ -372,17 +381,25 @@ def _do_ident(radio, status, upload=False):
                       (radio.MODEL, util.hexprint(id2)))
             raise errors.RadioError("The extra ID is wrong, aborting.")
 
-        # the BTECH UV2501+220 have a trick only the upload, they must send
-        # a ACK_CMD and read two bytes always ending on an ACK
+        # this radios need a extra request/answer here on the upload
+        # the amount of data received depends of the radio type
         #
         # also the first block of TX must no have the ACK at the beginning
         # see _upload for this.
         if upload is True:
-            # send a ACK, capture the answer
+            # send an ACK
             _send(radio, ACK_CMD)
-            ack = _rawrecv(radio, 2)
 
-            if len(ack) != 2 or ack[1] != ACK_CMD:
+            # the amount of data deppend on the radio, we read one here
+            # that will be sufficient for the QYT KT8900
+            ack = _rawrecv(radio, 1)
+
+            # but the BTECH UV2501+220 send two with the ACK at the end
+            # we read the extra byte here
+            if radio.MODEL == "UV-2501+220":
+                ack = _rawrecv(radio, 1)
+
+            if len(ack) != 1 or ack != ACK_CMD:
                 raise errors.RadioError("Radio didn't ACK the upload")
 
     # DEBUG
@@ -961,3 +978,15 @@ class KTUV980(BTech):
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_MINI8900
     _fileid = [KTUV980_fp, ]
+
+
+@directory.register
+class KT9800(BTech):
+    """QYT KT8900"""
+    VENDOR = "QYT"
+    MODEL = "KT8900"
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = MSTRING_KT8900
+    _fileid = [KT8900_fp, ]
+    _id2 = KT8900_id
