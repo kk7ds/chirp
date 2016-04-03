@@ -364,6 +364,9 @@ def _do_ident(radio, status, upload=False):
     # some radios needs a extra read and check for a code on it, this ones
     # has the check value in the _id2 var, others simply False
     if radio._id2 is not False:
+        # lower the timeout here as this radios are reseting due to timeout
+        radio.pipe.setTimeout(0.05)
+
         # query & receive the extra ID
         _send(radio, _make_frame("S", 0x3DF0, 16))
         id2 = _rawrecv(radio, 21)
@@ -400,7 +403,6 @@ def _do_ident(radio, status, upload=False):
             #
             # we just check for a response and last byte being a ACK, that is
             # the common stone for all radios (3 so far)
-            radio.pipe.setTimeout(0.1)
             ack = _rawrecv(radio, 2)
 
             # checking
