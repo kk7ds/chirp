@@ -106,6 +106,7 @@ NAME_LENGTH = 6
 PTTID_LIST = ["OFF", "BOT", "EOT", "BOTH"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 OPTSIG_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
+SPMUTE_LIST = ["Tone/DTCS", "Tone/DTCS and Optsig", "Tone/DTCS or Optsig"]
 
 # This is a general serial timeout for all serial read functions.
 # Practice has show that about 0.7 sec will be enough to cover all radios.
@@ -820,10 +821,6 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # Extra
         mem.extra = RadioSettingGroup("extra", "Extra")
 
-        spmute = RadioSetting("spmute", "Speaker mute",
-                              RadioSettingValueBoolean(bool(_mem.spmute)))
-        mem.extra.append(spmute)
-
         scramble = RadioSetting("scramble", "Scramble",
                                 RadioSettingValueBoolean(bool(_mem.scramble)))
         mem.extra.append(scramble)
@@ -850,6 +847,12 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                   OPTSIG_LIST,
                                   OPTSIG_LIST[_mem.optsig]))
         mem.extra.append(optsig)
+
+        spmute = RadioSetting("spmute", "Speaker mute",
+                              RadioSettingValueList(
+                                  SPMUTE_LIST,
+                                  SPMUTE_LIST[_mem.spmute]))
+        mem.extra.append(spmute)
 
         return mem
 
