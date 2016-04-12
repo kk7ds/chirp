@@ -152,6 +152,11 @@ struct {
   u8 uhf_high[3];
 } ranges220;
 
+#seekto 0x3F70;
+struct {
+  char fp[6];
+} fingerprint;
+
 """
 
 # A note about the memmory in these radios
@@ -1021,7 +1026,8 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
-        top = RadioSettings(basic, advanced)
+        other = RadioSettingGroup("other", "Other Settings")
+        top = RadioSettings(basic, advanced, other)
 
         # Basic
         tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -1205,6 +1211,65 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                   RadioSettingValueBoolean(
                                       _mem.settings2.menuen))
             advanced.append(menuen)
+
+        # Other
+        def convert_bytes_to_limit(bytes):
+            limit = ""
+            for byte in bytes:
+                if byte < 10:
+                    limit += chr(byte + 0x30)
+                else:
+                    break
+            return limit
+
+        if "+220" in self.MODEL:
+            _ranges = self._memobj.ranges220
+            ranges = "ranges220"
+        else:
+            _ranges = self._memobj.ranges
+            ranges = "ranges"
+
+        _limit = convert_bytes_to_limit(_ranges.vhf_low)
+        val = RadioSettingValueString(0, 3, _limit)
+        val.set_mutable(False)
+        vhf_low = RadioSetting("%s.vhf_low" % ranges, "VHF low", val)
+        other.append(vhf_low)
+
+        _limit = convert_bytes_to_limit(_ranges.vhf_high)
+        val = RadioSettingValueString(0, 3, _limit)
+        val.set_mutable(False)
+        vhf_high = RadioSetting("%s.vhf_high" % ranges, "VHF high", val)
+        other.append(vhf_high)
+
+        if "+220" in self.MODEL:
+            _limit = convert_bytes_to_limit(_ranges.vhf2_low)
+            val = RadioSettingValueString(0, 3, _limit)
+            val.set_mutable(False)
+            vhf2_low = RadioSetting("%s.vhf2_low" % ranges, "VHF2 low", val)
+            other.append(vhf2_low)
+
+            _limit = convert_bytes_to_limit(_ranges.vhf2_high)
+            val = RadioSettingValueString(0, 3, _limit)
+            val.set_mutable(False)
+            vhf2_high = RadioSetting("%s.vhf2_high" % ranges, "VHF2 high", val)
+            other.append(vhf2_high)
+
+        _limit = convert_bytes_to_limit(_ranges.uhf_low)
+        val = RadioSettingValueString(0, 3, _limit)
+        val.set_mutable(False)
+        uhf_low = RadioSetting("%s.uhf_low" % ranges, "UHF low", val)
+        other.append(uhf_low)
+
+        _limit = convert_bytes_to_limit(_ranges.uhf_high)
+        val = RadioSettingValueString(0, 3, _limit)
+        val.set_mutable(False)
+        uhf_high = RadioSetting("%s.uhf_high" % ranges, "UHF high", val)
+        other.append(uhf_high)
+
+        val = RadioSettingValueString(0, 6, _filter(_mem.fingerprint.fp))
+        val.set_mutable(False)
+        fp = RadioSetting("fingerprint.fp", "Fingerprint", val)
+        other.append(fp)
 
         return top
 
