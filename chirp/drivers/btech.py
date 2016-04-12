@@ -54,6 +54,50 @@ struct {
      pttid:2;
 } memory[200];
 
+#seekto 0x0E00;
+struct {
+  u8 tdr;
+  u8 unknown1;
+  u8 sql;
+  u8 unknown2[2];
+  u8 tot;
+  u8 apo;           // BTech radios use this as the Auto Power Off time
+                    // other radios use this as pre-Time Out Alert
+  u8 unknown3;
+  u8 abr;
+  u8 beep;
+  u8 unknown4[4];
+  u8 dtmfst;
+  u8 unknown5[2];
+  u8 prisc;
+  u8 prich;
+  u8 screv;
+  u8 unknown6[2];
+  u8 pttid;
+  u8 pttlt;
+  u8 unknown7;
+  u8 emctp;
+  u8 emcch;
+  u8 ringt;
+  u8 unknown8;
+  u8 camdf;
+  u8 cbmdf;
+  u8 sync;          // BTech radios use this as the display sync setting
+                    // other radios use this as the auto keypad lock setting
+  u8 ponmsg;
+  u8 wtled;
+  u8 rxled;
+  u8 txled;
+  u8 unknown9[5];
+  u8 anil;
+  u8 reps;
+  u8 repm;
+  u8 tdrab;
+  u8 ste;
+  u8 rpste;
+  u8 rptdl;
+} settings;
+
 #seekto 0x1000;
 struct {
   char name[6];
@@ -107,6 +151,22 @@ PTTID_LIST = ["OFF", "BOT", "EOT", "BOTH"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 OPTSIG_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 SPMUTE_LIST = ["Tone/DTCS", "Tone/DTCS and Optsig", "Tone/DTCS or Optsig"]
+
+LIST_TOT = ["%s sec" % x for x in range(15, 615, 15)]
+LIST_TOA = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
+LIST_APO = ["Off"] + ["%s minutes" % x for x in range(30, 330, 30)]
+LIST_ABR = ["Off"] + ["%s seconds" % x for x in range(1, 51)]
+LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboad + ANI"]
+LIST_SCREV = ["TO (timeout)", "CO (carrier operated)", "SE (search)"]
+LIST_EMCTP = ["TX alarm sound", "TX ANI", "Both"]
+LIST_RINGT = ["Off"] + ["%s seconds" % x for x in range(1, 10)]
+LIST_MDF = ["Frequency", "Channel", "Name"]
+LIST_PONMSG = ["Full", "Message", "Battery voltage"]
+LIST_COLOR = ["Off", "Blue", "Orange", "Purple"]
+LIST_REPS = ["1000 Hz", "1450 Hz", "1750 Hz", "2100Hz"]
+LIST_REPM = ["Off", "Carrier", "CTCSS or DCS", "Tone", "DTMF"]
+LIST_RPTDL = ["Off"] + ["%s ms" % x for x in range(1, 10)]
+LIST_ANIL = ["3", "4", "5"]
 
 # This is a general serial timeout for all serial read functions.
 # Practice has show that about 0.7 sec will be enough to cover all radios.
@@ -613,7 +673,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         global POWER_LEVELS
 
         rf = chirp_common.RadioFeatures()
-        rf.has_settings = False
+        rf.has_settings = True
         rf.has_bank = False
         rf.has_tuning_step = False
         rf.can_odd_split = True
@@ -931,6 +991,200 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             _mem.scode = 0
 
         return mem
+
+    def get_settings(self):
+        """Translate the bit in the mem_struct into settings in the UI"""
+        _mem = self._memobj
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        top = RadioSettings(basic)
+
+        # Basic
+        tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
+                           RadioSettingValueBoolean(_mem.settings.tdr))
+        basic.append(tdr)
+
+        sql = RadioSetting("settings.sql", "Squelch level",
+                           RadioSettingValueInteger(0, 9, _mem.settings.sql))
+        basic.append(sql)
+
+        tot = RadioSetting("settings.tot", "Time out timer",
+                           RadioSettingValueList(LIST_TOT, LIST_TOT[
+                               _mem.settings.tot]))
+        basic.append(tot)
+
+        if self.MODEL in ("UV-2501", "UV-2501+220", "UV-5001"):
+            apo = RadioSetting("settings.apo", "Auto power off timer",
+                               RadioSettingValueList(LIST_APO, LIST_APO[
+                                   _mem.settings.apo]))
+            basic.append(apo)
+        else:
+            toa = RadioSetting("settings.apo", "Time out alert timer",
+                               RadioSettingValueList(LIST_TOA, LIST_TOA[
+                                   _mem.settings.apo]))
+            basic.append(toa)
+
+        abr = RadioSetting("settings.abr", "Backlight timer",
+                           RadioSettingValueList(LIST_ABR, LIST_ABR[
+                               _mem.settings.abr]))
+        basic.append(abr)
+
+        beep = RadioSetting("settings.beep", "Key beep",
+                            RadioSettingValueBoolean(_mem.settings.beep))
+        basic.append(beep)
+
+        dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone",
+                              RadioSettingValueList(LIST_DTMFST, LIST_DTMFST[
+                                  _mem.settings.dtmfst]))
+        basic.append(dtmfst)
+
+        prisc = RadioSetting("settings.prisc", "Priority scan",
+                             RadioSettingValueBoolean(_mem.settings.prisc))
+        basic.append(prisc)
+
+        prich = RadioSetting("settings.prich", "Priority channel",
+                             RadioSettingValueInteger(0, 199,
+                                 _mem.settings.prich))
+        basic.append(prich)
+
+        screv = RadioSetting("settings.screv", "Scan resume method",
+                             RadioSettingValueList(LIST_SCREV, LIST_SCREV[
+                                 _mem.settings.screv]))
+        basic.append(screv)
+
+        pttlt = RadioSetting("settings.pttlt", "PTT transmit delay",
+                             RadioSettingValueInteger(0, 30, 
+                                 _mem.settings.pttlt))
+        basic.append(pttlt)
+
+        emctp = RadioSetting("settings.emctp", "Alarm mode",
+                             RadioSettingValueList(LIST_EMCTP, LIST_EMCTP[
+                                 _mem.settings.emctp]))
+        basic.append(emctp)
+
+        emcch = RadioSetting("settings.emcch", "Alarm channel",
+                             RadioSettingValueInteger(0, 199, 
+                                 _mem.settings.emcch))
+        basic.append(emcch)
+
+        ringt = RadioSetting("settings.ringt", "Ring time",
+                             RadioSettingValueList(LIST_RINGT, LIST_RINGT[
+                                 _mem.settings.ringt]))
+        basic.append(ringt)
+
+        camdf = RadioSetting("settings.camdf", "Display mode A",
+                             RadioSettingValueList(LIST_MDF, LIST_MDF[
+                                 _mem.settings.camdf]))
+        basic.append(camdf)
+
+        cbmdf = RadioSetting("settings.cbmdf", "Display mode B",
+                             RadioSettingValueList(LIST_MDF, LIST_MDF[
+                                 _mem.settings.cbmdf]))
+        basic.append(cbmdf)
+
+        if self.MODEL in ("UV-2501", "UV-2501+220", "UV-5001"):
+           sync = RadioSetting("settings.sync", "A/B channel sync",
+                               RadioSettingValueBoolean(_mem.settings.sync))
+           basic.append(sync)
+        else:
+           autolk = RadioSetting("settings.sync", "Auto keylock",
+                                 RadioSettingValueBoolean(_mem.settings.sync))
+           basic.append(autolk)
+
+        ponmsg = RadioSetting("settings.ponmsg", "Power-on message",
+                              RadioSettingValueList(LIST_PONMSG, LIST_PONMSG[
+                                  _mem.settings.ponmsg]))
+        basic.append(ponmsg)
+
+        wtled = RadioSetting("settings.wtled", "Standby backlight Color",
+                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
+                                 _mem.settings.wtled]))
+        basic.append(wtled)
+
+        rxled = RadioSetting("settings.rxled", "RX backlight Color",
+                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
+                                 _mem.settings.rxled]))
+        basic.append(rxled)
+
+        txled = RadioSetting("settings.txled", "TX backlight Color",
+                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
+                                 _mem.settings.txled]))
+        basic.append(txled)
+
+        anil = RadioSetting("settings.anil", "ANI length",
+                            RadioSettingValueList(LIST_ANIL, LIST_ANIL[
+                                _mem.settings.anil]))
+        basic.append(anil)
+
+        reps = RadioSetting("settings.reps", "Relay signal (tone burst)",
+                            RadioSettingValueList(LIST_REPS, LIST_REPS[
+                                _mem.settings.reps]))
+        basic.append(reps)
+
+        repm = RadioSetting("settings.repm", "Relay condition",
+                            RadioSettingValueList(LIST_REPM, LIST_REPM[
+                                _mem.settings.repm]))
+        basic.append(repm)
+
+        if self.MODEL in ("UV-2501", "UV-2501+220", "UV-5001"):
+            tdrab = RadioSetting("settings.tdrab", "TDR return time",
+                                 RadioSettingValueList(LIST_ABR, LIST_ABR[
+                                     _mem.settings.tdrab]))
+            basic.append(tdrab)
+
+            ste = RadioSetting("settings.ste", "Squelch tail eliminate",
+                               RadioSettingValueBoolean(_mem.settings.ste))
+            basic.append(ste)
+
+            rpste = RadioSetting("settings.rpste", "Repeater STE",
+                                 RadioSettingValueList(LIST_RINGT, LIST_RINGT[
+                                     _mem.settings.rpste]))
+            basic.append(rpste)
+
+            rptdl = RadioSetting("settings.rptdl", "Repeater STE delay",
+                                 RadioSettingValueList(LIST_RPTDL, LIST_RPTDL[
+                                     _mem.settings.rptdl]))
+            basic.append(rptdl)
+
+        return top
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                if element.get_name() == "fm_preset":
+                    self._set_fm_preset(element)
+                else:
+                    self.set_settings(element)
+                    continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        LOG.debug("Using apply callback")
+                        element.run_apply_callback()
+                    elif setting == "vfomr":
+                        setattr(obj, setting, not int(element.value))
+                    elif element.value.get_mutable():
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    LOG.debug(element.get_name())
+                    raise
 
     @classmethod
     def match_model(cls, filedata, filename):
