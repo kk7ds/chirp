@@ -1199,7 +1199,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         if self.MODEL in ("UV-2501", "UV-5001"):
             vfomren = RadioSetting("settings2.vfomren", "VFO/MR switching",
                                    RadioSettingValueBoolean(
-                                       not _mem.settings2.vfomr))
+                                       not _mem.settings2.vfomren))
             advanced.append(vfomren)
 
             reseten = RadioSetting("settings2.reseten", "RESET",
@@ -1303,7 +1303,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
-                    elif setting == "vfomr":
+                    elif setting == "vfomren":
                         setattr(obj, setting, not int(element.value))
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
