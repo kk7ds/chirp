@@ -26,7 +26,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettings
+    RadioSettings, InvalidValueError
 from textwrap import dedent
 
 MEM_FORMAT = """
@@ -122,6 +122,30 @@ struct {
   char line2[6];
 } poweron_msg;
 
+struct settings_vfo {
+  u8 freq[8];
+  u8 unknown1;
+  u8 offset[4];
+  u8 unknown2[3];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 scode;
+  u8 spmute;
+  u8 optsig;
+  u8 scramble;
+  u8 wide;
+  u8 power;
+  u8 shiftd;
+  u8 step;
+  u8 unknown3[4];
+};
+
+#seekto 0x0F00;
+struct {
+  struct settings_vfo a;
+  struct settings_vfo b;
+} vfo;
+
 #seekto 0x1000;
 struct {
   char name[6];
@@ -196,6 +220,13 @@ LIST_REPS = ["1000 Hz", "1450 Hz", "1750 Hz", "2100Hz"]
 LIST_REPM = ["Off", "Carrier", "CTCSS or DCS", "Tone", "DTMF"]
 LIST_RPTDL = ["Off"] + ["%s ms" % x for x in range(1, 10)]
 LIST_ANIL = ["3", "4", "5"]
+LIST_AB = ["A", "B"]
+LIST_VFOMR = ["Frequency", "Channel"]
+LIST_SHIFT = ["Off", "+", "-"]
+LIST_TXP = ["High", "Low"]
+LIST_WIDE = ["Wide", "Narrow"]
+STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
+LIST_STEP = [str(x) for x in STEPS]
 
 # This is a general serial timeout for all serial read functions.
 # Practice has show that about 0.7 sec will be enough to cover all radios.
@@ -1027,7 +1058,8 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
         other = RadioSettingGroup("other", "Other Settings")
-        top = RadioSettings(basic, advanced, other)
+        work = RadioSettingGroup("work", "Work Mode Settings")
+        top = RadioSettings(basic, advanced, other, work)
 
         # Basic
         tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -1270,6 +1302,181 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         val.set_mutable(False)
         fp = RadioSetting("fingerprint.fp", "Fingerprint", val)
         other.append(fp)
+
+        # Work
+        dispab = RadioSetting("settings2.dispab", "Display",
+                              RadioSettingValueList(LIST_AB,LIST_AB[
+                                  _mem.settings2.dispab]))
+        work.append(dispab)
+
+        vfomr = RadioSetting("settings2.vfomr", "VFO/MR mode",
+                             RadioSettingValueList(LIST_VFOMR,LIST_VFOMR[
+                                 _mem.settings2.vfomr]))
+        work.append(vfomr)
+
+        keylock = RadioSetting("settings2.keylock", "Keypad lock",
+                           RadioSettingValueBoolean(_mem.settings2.keylock))
+        work.append(keylock)
+
+        mrcha = RadioSetting("settings2.mrcha", "MR A channel",
+                             RadioSettingValueInteger(0, 199,
+                                 _mem.settings2.mrcha))
+        work.append(mrcha)
+
+        mrchb = RadioSetting("settings2.mrchb", "MR B channel",
+                             RadioSettingValueInteger(0, 199,
+                                 _mem.settings2.mrchb))
+        work.append(mrchb)
+
+        def convert_bytes_to_freq(bytes):
+            real_freq = 0
+            for byte in bytes:
+                real_freq = (real_freq * 10) + byte
+            return chirp_common.format_freq(real_freq * 10)
+
+        def my_validate(value):
+            value = chirp_common.parse_freq(value)
+            print value
+            if 180000000 <= value and value < 210000000:
+                msg = ("Can't be between 180.00000-210.00000")
+                raise InvalidValueError(msg)
+            elif 231000000 <= value and value < 400000000:
+                msg = ("Can't be between 231.00000-400.00000")
+                raise InvalidValueError(msg)
+            elif 210000000 <= value and value < 231000000 \
+                and "+220" not in self.MODEL:
+                msg = ("Can't be between 180.00000-400.00000")
+                raise InvalidValueError(msg)
+            return chirp_common.format_freq(value)
+
+        def apply_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            for i in range(7, -1, -1):
+                obj.freq[i] = value % 10
+                value /= 10
+
+        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                        _mem.vfo.a.freq))
+        val1a.set_validate_callback(my_validate)
+        vfoafreq = RadioSetting("vfo.a.freq", "VFO A frequency", val1a)
+        vfoafreq.set_apply_callback(apply_freq, _mem.vfo.a)
+        work.append(vfoafreq)
+
+        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                        _mem.vfo.b.freq))
+        val1b.set_validate_callback(my_validate)
+        vfobfreq = RadioSetting("vfo.b.freq", "VFO B frequency", val1b)
+        vfobfreq.set_apply_callback(apply_freq, _mem.vfo.b)
+        work.append(vfobfreq)
+
+        vfoashiftd = RadioSetting("vfo.a.shiftd", "VFO A shift",
+                                  RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[
+                                      _mem.vfo.a.shiftd]))
+        work.append(vfoashiftd)
+
+        vfobshiftd = RadioSetting("vfo.b.shiftd", "VFO B shift",
+                                  RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[
+                                      _mem.vfo.b.shiftd]))
+        work.append(vfobshiftd)
+
+        def convert_bytes_to_offset(bytes):
+            real_offset = 0
+            for byte in bytes:
+                real_offset = (real_offset * 10) + byte
+            return chirp_common.format_freq(real_offset * 10000)
+
+        def apply_offset(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10000
+            for i in range(3, -1, -1):
+                obj.offset[i] = value % 10
+                value /= 10
+
+        val1a = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                        _mem.vfo.a.offset))
+        vfoaoffset = RadioSetting("vfo.a.offset",
+                                  "VFO A offset (0.00-99.95)", val1a)
+        vfoaoffset.set_apply_callback(apply_offset, _mem.vfo.a)
+        work.append(vfoaoffset)
+
+        val1b = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                        _mem.vfo.b.offset))
+        vfoboffset = RadioSetting("vfo.b.offset",
+                                  "VFO B offset (0.00-99.95)", val1b)
+        vfoboffset.set_apply_callback(apply_offset, _mem.vfo.b)
+        work.append(vfoboffset)
+
+        vfoatxp = RadioSetting("vfo.a.power", "VFO A power",
+                                RadioSettingValueList(LIST_TXP,LIST_TXP[
+                                    _mem.vfo.a.power]))
+        work.append(vfoatxp)
+
+        vfobtxp = RadioSetting("vfo.b.power", "VFO B power",
+                                RadioSettingValueList(LIST_TXP,LIST_TXP[
+                                    _mem.vfo.b.power]))
+        work.append(vfobtxp)
+
+        vfoawide = RadioSetting("vfo.a.wide", "VFO A bandwidth",
+                                RadioSettingValueList(LIST_WIDE,LIST_WIDE[
+                                    _mem.vfo.a.wide]))
+        work.append(vfoawide)
+
+        vfobwide = RadioSetting("vfo.b.wide", "VFO B bandwidth",
+                                RadioSettingValueList(LIST_WIDE,LIST_WIDE[
+                                    _mem.vfo.b.wide]))
+        work.append(vfobwide)
+
+        vfoastep = RadioSetting("vfo.a.step", "VFO A step",
+                                RadioSettingValueList(LIST_STEP,LIST_STEP[
+                                    _mem.vfo.a.step]))
+        work.append(vfoastep)
+
+        vfobstep = RadioSetting("vfo.b.step", "VFO B step",
+                                RadioSettingValueList(LIST_STEP,LIST_STEP[
+                                    _mem.vfo.b.step]))
+        work.append(vfobstep)
+
+        vfoaoptsig = RadioSetting("vfo.a.optsig", "VFO A optional signal",
+                                  RadioSettingValueList(OPTSIG_LIST,
+                                      OPTSIG_LIST[_mem.vfo.a.optsig]))
+        work.append(vfoaoptsig)
+
+        vfoboptsig = RadioSetting("vfo.b.optsig", "VFO B optional signal",
+                                  RadioSettingValueList(OPTSIG_LIST,
+                                      OPTSIG_LIST[_mem.vfo.b.optsig]))
+        work.append(vfoboptsig)
+
+        vfoaspmute = RadioSetting("vfo.a.spmute", "VFO A speaker mute",
+                                  RadioSettingValueList(SPMUTE_LIST,
+                                      SPMUTE_LIST[_mem.vfo.a.spmute]))
+        work.append(vfoaspmute)
+
+        vfobspmute = RadioSetting("vfo.b.spmute", "VFO B speaker mute",
+                                  RadioSettingValueList(SPMUTE_LIST,
+                                      SPMUTE_LIST[_mem.vfo.b.spmute]))
+        work.append(vfobspmute)
+
+        vfoascr = RadioSetting("vfo.a.scramble", "VFO A scramble",
+                               RadioSettingValueBoolean(_mem.vfo.a.scramble))
+        work.append(vfoascr)
+
+        vfobscr = RadioSetting("vfo.b.scramble", "VFO B scramble",
+                               RadioSettingValueBoolean(_mem.vfo.b.scramble))
+        work.append(vfobscr)
+
+        vfoascode = RadioSetting("vfo.a.scode", "VFO A PTT-ID",
+                                 RadioSettingValueList(PTTIDCODE_LIST,
+                                     PTTIDCODE_LIST[_mem.vfo.a.scode]))
+        work.append(vfoascode)
+
+        vfobscode = RadioSetting("vfo.b.scode", "VFO B PTT-ID",
+                                 RadioSettingValueList(PTTIDCODE_LIST,
+                                     PTTIDCODE_LIST[_mem.vfo.b.scode]))
+        work.append(vfobscode)
+
+        pttid = RadioSetting("settings.pttid", "PTT ID",
+                             RadioSettingValueList(PTTID_LIST,
+                                 PTTID_LIST[_mem.settings.pttid]))
+        work.append(pttid)
 
         return top
 
