@@ -98,6 +98,30 @@ struct {
   u8 rptdl;
 } settings;
 
+#seekto 0x0E80;
+struct {
+  u8 unknown1;
+  u8 vfomr;
+  u8 keylock;
+  u8 unknown2;
+  u8 unknown3:4,
+     vfomren:1,
+     unknown4:1,
+     reseten:1,
+     menuen:1;
+  u8 unknown5[11];
+  u8 dispab;
+  u8 mrcha;
+  u8 mrchb;
+  u8 menu;
+} settings2;
+
+#seekto 0x0EC0;
+struct {
+  char line1[6];
+  char line2[6];
+} poweron_msg;
+
 #seekto 0x1000;
 struct {
   char name[6];
@@ -996,7 +1020,8 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
-        top = RadioSettings(basic)
+        advanced = RadioSettingGroup("advanced", "Advanced Settings")
+        top = RadioSettings(basic, advanced)
 
         # Basic
         tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -1144,6 +1169,42 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                  RadioSettingValueList(LIST_RPTDL, LIST_RPTDL[
                                      _mem.settings.rptdl]))
             basic.append(rptdl)
+
+        # Advanced
+        def _filter(name):
+            filtered = ""
+            for char in str(name):
+                if char in VALID_CHARS:
+                    filtered += char
+                else:
+                    filtered += " "
+            return filtered
+
+        _msg = self._memobj.poweron_msg
+        line1 = RadioSetting("poweron_msg.line1", "Power-on message line 1",
+                             RadioSettingValueString(0, 6, _filter(
+                                 _msg.line1)))
+        advanced.append(line1)
+        line2 = RadioSetting("poweron_msg.line2", "Power-on message line 2",
+                             RadioSettingValueString(0, 6, _filter(
+                                 _msg.line2)))
+        advanced.append(line2)
+
+        if self.MODEL in ("UV-2501", "UV-5001"):
+            vfomren = RadioSetting("settings2.vfomren", "VFO/MR switching",
+                                   RadioSettingValueBoolean(
+                                       not _mem.settings2.vfomr))
+            advanced.append(vfomren)
+
+            reseten = RadioSetting("settings2.reseten", "RESET",
+                                   RadioSettingValueBoolean(
+                                       _mem.settings2.reseten))
+            advanced.append(reseten)
+
+            menuen = RadioSetting("settings2.menuen", "Menu",
+                                  RadioSettingValueBoolean(
+                                      _mem.settings2.menuen))
+            advanced.append(menuen)
 
         return top
 
