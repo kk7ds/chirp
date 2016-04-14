@@ -295,6 +295,12 @@ KT8900_fp = "M29154"
 KT8900_id = "      303688"
 
 
+# Sainsonic GT890
+GT890_fp = "M2G1F4"
+# this need a second id
+# and is the same of the QYT KT8900
+
+
 #### MAGICS
 # for the Waccom Mini-8900
 MSTRING_MINI8900 = "\x55\xA5\xB5\x45\x55\x45\x4d\x02"
@@ -1589,4 +1595,15 @@ class KT9800(BTech):
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900
     _fileid = [KT8900_fp, ]
+    _id2 = KT8900_id
+
+
+@directory.register
+class GT890(BTech):
+    """Sainsonic GT890"""
+    VENDOR = "Sainsonic"
+    MODEL = "GT-890"
+    # ranges are the same as btech's defaults
+    _magic = MSTRING_KT8900
+    _fileid = [GT890_fp, ]
     _id2 = KT8900_id
