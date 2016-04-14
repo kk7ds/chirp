@@ -263,11 +263,12 @@ UV2501G2_fp = "BTG214"
 # B-TECH UV-2501+220 pre-production units
 UV2501_220pp_fp = "M3C281"
 # extra block read for the 2501+220 pre-production units
+# the same for all of this radios so far
 UV2501_220pp_id = "      280528"
 # B-TECH UV-2501+220
 UV2501_220_fp = "M3G201"
-# extra block read for the 2501+220
-# the extra block is the same as the pp unit
+# new variant, let's call it Generation 2
+UV2501_220G2_fp = "BTG211"
 
 
 # B-TECH UV-5001 pre-production units + 1st Gen radios
@@ -275,7 +276,6 @@ UV5001pp_fp = "V19204"
 # B-TECH UV-5001 alpha units
 UV5001alpha_fp = "V28204"
 # B-TECH UV-5001 second generation (2G) radios
-# !!!! This is the same as the UV-2501 (2G) Radios !!!!
 UV5001G2_fp = "BTG214"
 # B-TECH UV-5001 second generation (2G2)
 UV5001G22_fp = "V2G204"
@@ -1549,7 +1549,7 @@ class UV2501_220(BTech):
     """Baofeng Tech UV2501+220"""
     MODEL = "UV-2501+220"
     _magic = MSTRING_220
-    _fileid = [UV2501_220_fp, UV2501_220pp_fp]
+    _fileid = [UV2501_220G2_fp, UV2501_220_fp, UV2501_220pp_fp]
     _id2 = UV2501_220pp_id
 
 
