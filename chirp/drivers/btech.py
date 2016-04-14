@@ -444,7 +444,7 @@ def _start_clone_mode(radio, status):
                 status.cur = status.max
                 radio.status_fn(status)
 
-            return True
+                return True
 
         return False
 
@@ -1115,7 +1115,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         basic.append(screv)
 
         pttlt = RadioSetting("settings.pttlt", "PTT transmit delay",
-                             RadioSettingValueInteger(0, 30, 
+                             RadioSettingValueInteger(0, 30,
                                  _mem.settings.pttlt))
         basic.append(pttlt)
 
@@ -1125,7 +1125,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         basic.append(emctp)
 
         emcch = RadioSetting("settings.emcch", "Alarm channel",
-                             RadioSettingValueInteger(0, 199, 
+                             RadioSettingValueInteger(0, 199,
                                  _mem.settings.emcch))
         basic.append(emcch)
 
