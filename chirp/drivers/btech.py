@@ -1342,7 +1342,6 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         def my_validate(value):
             value = chirp_common.parse_freq(value)
-            print value
             if 180000000 <= value and value < 210000000:
                 msg = ("Can't be between 180.00000-210.00000")
                 raise InvalidValueError(msg)
