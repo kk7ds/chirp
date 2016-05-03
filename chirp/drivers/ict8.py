@@ -35,6 +35,11 @@ struct flags {
 
 struct memory memory[100];
 
+#seekto 0x0400;
+struct {
+  char name[4];
+} names[100];
+
 #seekto 0x0600;
 struct flags flags[100];
 """
@@ -65,7 +70,8 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_modes = ["FM"]
         rf.memory_bounds = (0, 99)
-        rf.has_name = False
+        rf.valid_name_length = 4
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC
         rf.has_dtcs = False
         rf.has_dtcs_polarity = False
         rf.has_tuning_step = False
@@ -78,11 +84,13 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
 
     def get_raw_memory(self, number):
         return (str(self._memobj.memory[number]) +
-                str(self._memobj.duptone[number]))
+                str(self._memobj.names[number]) +
+                str(self._memobj.flags[number]))
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _flg = self._memobj.flags[number]
+        _name = self._memobj.names[number]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -98,12 +106,15 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
         mem.duplex = DUPLEX[_flg.duplex]
         mem.tmode = TMODES[_flg.tmode]
         mem.skip = _flg.skip and "S" or ""
+        if _name.name.get_raw() != "\xFF\xFF\xFF\xFF":
+            mem.name = str(_name.name).rstrip()
 
         return mem
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number]
         _flg = self._memobj.flags[mem.number]
+        _name = self._memobj.names[mem.number]
 
         if mem.empty:
             _flg.empty = True
@@ -119,3 +130,8 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
         _flg.duplex = DUPLEX.index(mem.duplex)
         _flg.tmode = TMODES.index(mem.tmode)
         _flg.skip = mem.skip == "S"
+
+        if mem.name:
+            _name.name = mem.name.ljust(4)
+        else:
+            _name.name = "\xFF\xFF\xFF\xFF"
