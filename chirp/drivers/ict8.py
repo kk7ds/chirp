@@ -19,8 +19,8 @@ from chirp import bitwise
 
 mem_format = """
 struct memory {
-  bbcd freq[4];
-  bbcd offset[2];
+  bbcd freq[3];
+  bbcd offset[3];
   u8 rtone;
   u8 ctone;
 };
@@ -46,6 +46,16 @@ struct flags flags[100];
 
 DUPLEX = ["", "", "-", "+"]
 TMODES = ["", "", "Tone", "TSQL"]
+
+
+def _get_freq(bcd_array):
+    lastnibble = bcd_array[2].get_bits(0x0F)
+    return (int(bcd_array) - lastnibble) * 1000 + lastnibble * 500
+
+
+def _set_freq(bcd_array, freq):
+    bitwise.int_to_bcd(bcd_array, freq / 1000)
+    bcd_array[2].set_raw(bcd_array[2].get_bits(0xF0) + freq % 10000 / 500)
 
 
 @directory.register
@@ -99,8 +109,8 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.freq) * 10
-        mem.offset = int(_mem.offset) * 1000
+        mem.freq = _get_freq(_mem.freq)
+        mem.offset = _get_freq(_mem.offset)
         mem.rtone = chirp_common.TONES[_mem.rtone - 1]
         mem.ctone = chirp_common.TONES[_mem.ctone - 1]
         mem.duplex = DUPLEX[_flg.duplex]
@@ -123,8 +133,8 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
         _mem.set_raw("\x00" * 8)
         _flg.set_raw("\x00")
 
-        _mem.freq = mem.freq / 10
-        _mem.offset = mem.offset / 1000
+        _set_freq(_mem.freq, mem.freq)
+        _set_freq(_mem.offset, mem.offset)
         _mem.rtone = chirp_common.TONES.index(mem.rtone) + 1
         _mem.ctone = chirp_common.TONES.index(mem.ctone) + 1
         _flg.duplex = DUPLEX.index(mem.duplex)
