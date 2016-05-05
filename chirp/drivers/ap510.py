@@ -343,7 +343,6 @@ RP_IMMUTABLE = ["number", "skip", "bank", "extd_number", "name", "rtone",
                 "offset", "mode", "tuning_step", "bank_index"]
 
 
-@directory.register
 class AP510Radio(chirp_common.CloneModeRadio):
     """Sainsonic AP510"""
     BAUD_RATE = 9600
