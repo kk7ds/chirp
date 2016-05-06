@@ -1335,7 +1335,7 @@ class MemoryEditor(common.Editor):
         self.count = 100
         self.show_special = self._config.get_bool("show_special")
         self.show_empty = not self._config.get_bool("hide_empty")
-        self.hide_unused = self._config.get_bool("hide_unused")
+        self.hide_unused = self._config.get_bool("hide_unused", default=True)
         self.read_only = False
 
         self.need_refresh = False
