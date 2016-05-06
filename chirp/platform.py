@@ -303,6 +303,8 @@ class UnixPlatform(Platform):
                  "/dev/ttyUSB*",
                  "/dev/ttyAMA*",
                  "/dev/cu.*",
+                 "/dev/cuaU*",
+                 "/dev/cua0*",
                  "/dev/term/*",
                  "/dev/tty.KeySerial*"]
         return natural_sorted(sum([glob.glob(x) for x in ports], []))
