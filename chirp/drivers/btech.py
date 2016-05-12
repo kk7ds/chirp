@@ -291,6 +291,10 @@ KTUV980_fp = "H28854"
 
 # QYT KT8900 & Juentai JT-6188
 KT8900_fp = "M29154"
+# New generations KT8900
+KT8900_fp1 = "M2C234"
+KT8900_fp2 = "M2G1F4"
+KT8900_fp3 = "M2G2F4"
 # this radio has an extra ID
 KT8900_id = "      303688"
 
@@ -1593,7 +1597,7 @@ class KT9800(BTech):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900
-    _fileid = [KT8900_fp, ]
+    _fileid = [KT8900_fp, KT8900_fp1, KT8900_fp2, KT8900_fp3]
     _id2 = KT8900_id
 
 
