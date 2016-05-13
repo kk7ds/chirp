@@ -258,6 +258,8 @@ UV2501pp_fp = "M2C294"
 UV2501pp2_fp = "M29204"
 # B-TECH UV-2501 second generation (2G) radios
 UV2501G2_fp = "BTG214"
+# B-TECH UV-2501 third generation (3G) radios
+UV2501G3_fp = "BTG324"
 
 
 # B-TECH UV-2501+220 pre-production units
@@ -269,6 +271,8 @@ UV2501_220pp_id = "      280528"
 UV2501_220_fp = "M3G201"
 # new variant, let's call it Generation 2
 UV2501_220G2_fp = "BTG211"
+# B-TECH UV-2501+220 third generation (3G)
+UV2501_220G3_fp = "BTG311"
 
 
 # B-TECH UV-5001 pre-production units + 1st Gen radios
@@ -279,6 +283,8 @@ UV5001alpha_fp = "V28204"
 UV5001G2_fp = "BTG214"
 # B-TECH UV-5001 second generation (2G2)
 UV5001G22_fp = "V2G204"
+# B-TECH UV-5001 third generation (3G)
+UV5001G3_fp = "BTG304"
 
 
 # WACCOM Mini-8900
@@ -1549,7 +1555,10 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 class UV2501(BTech):
     """Baofeng Tech UV2501"""
     MODEL = "UV-2501"
-    _fileid = [UV2501G2_fp, UV2501pp2_fp, UV2501pp_fp]
+    _fileid = [UV2501G3_fp,
+               UV2501G2_fp,
+               UV2501pp2_fp,
+               UV2501pp_fp]
 
 
 @directory.register
@@ -1557,15 +1566,22 @@ class UV2501_220(BTech):
     """Baofeng Tech UV2501+220"""
     MODEL = "UV-2501+220"
     _magic = MSTRING_220
-    _fileid = [UV2501_220G2_fp, UV2501_220_fp, UV2501_220pp_fp]
     _id2 = UV2501_220pp_id
+    _fileid = [UV2501_220G3_fp,
+               UV2501_220G2_fp,
+               UV2501_220_fp,
+               UV2501_220pp_fp]
 
 
 @directory.register
 class UV5001(BTech):
     """Baofeng Tech UV5001"""
     MODEL = "UV-5001"
-    _fileid = [UV5001G22_fp, UV5001G2_fp, UV5001alpha_fp, UV5001pp_fp]
+    _fileid = [UV5001G3_fp,
+               UV5001G22_fp,
+               UV5001G2_fp,
+               UV5001alpha_fp,
+               UV5001pp_fp]
 
 
 @directory.register
