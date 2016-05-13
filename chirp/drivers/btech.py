@@ -466,7 +466,12 @@ def _do_ident(radio, status, upload=False):
 
     # open the radio into program mode
     if _start_clone_mode(radio, status) is False:
-        raise errors.RadioError("Radio didn't entered in the clone mode")
+        msg = "Radio did not enter clone mode"
+        # warning about old versions of QYT KT8900
+        if radio.MODEL == "KT8900":
+            msg += ". You may want to try it as a WACCOM MINI-8900, there is a"
+            msg += " known variant of this radios that is a clone of it."
+        raise errors.RadioError(msg)
 
     # Ok, get the ident string
     ident = _rawrecv(radio, 49)
