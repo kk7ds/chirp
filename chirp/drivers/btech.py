@@ -286,6 +286,8 @@ UV5001G22_fp = "V2G204"
 # B-TECH UV-5001 third generation (3G)
 UV5001G3_fp = "BTG304"
 
+# special var to know when we found a BTECH Gen 3
+BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
 
 # WACCOM Mini-8900
 MINI8900_fp = "M28854"
@@ -490,7 +492,12 @@ def _do_ident(radio, status, upload=False):
     itis = False
     for fp in radio._fileid:
         if fp in ident:
+            # got it!
             itis = True
+            # checking if we are dealing with a Gen 3 BTECH
+            if radio.VENDOR == "BTECH" and fp in BTECH3:
+                radio.btech3 = True
+
             break
 
     if itis is False:
@@ -709,6 +716,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     _magic = MSTRING
     _fileid = None
     _id2 = False
+    btech3 = False
 
     @classmethod
     def get_prompts(cls):
