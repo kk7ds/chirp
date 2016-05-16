@@ -160,7 +160,7 @@ struct {
   u8 uhf_high[3];
 } ranges;
 
-// the 2501+220 has a different zone for storing ranges
+// the UV-2501+220 & KT8900R has different zones for storing ranges
 
 #seekto 0x3CD0;
 struct {
@@ -306,14 +306,18 @@ KT8900_fp3 = "M2G2F4"
 # this radio has an extra ID
 KT8900_id = "      303688"
 
+# KT8900R
+KT8900R_fp = "M3G214"
+KT8900R_id = "      280528"
 
 #### MAGICS
 # for the Waccom Mini-8900
 MSTRING_MINI8900 = "\x55\xA5\xB5\x45\x55\x45\x4d\x02"
 # for the B-TECH UV-2501+220 (including pre production ones)
 MSTRING_220 = "\x55\x20\x15\x12\x12\x01\x4d\x02"
-# for the QYT KT8900
+# for the QYT KT8900 & R
 MSTRING_KT8900 = "\x55\x20\x15\x09\x16\x45\x4D\x02"
+MSTRING_KT8900R = "\x55\x20\x15\x09\x25\x01\x4D\x02"
 # magic string for all other models
 MSTRING = "\x55\x20\x15\x09\x20\x45\x4d\x02"
 
@@ -796,8 +800,8 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # bands
         rf.valid_bands = [self._vhf_range, self._uhf_range]
 
-        # 2501+220
-        if self.MODEL == "UV-2501+220":
+        # 2501+220 & KT8900R
+        if self.MODEL in ["UV-2501+220", "KT8900R"]:
             rf.valid_bands.append(self._220_range)
 
         return rf
@@ -823,9 +827,10 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         ranges"""
 
         # setting the correct ranges for each radio type
-        if "+220" in self.MODEL:
+        if self.MODEL in ["UV-2501+220", "KT8900R"]:
             # the model 2501+220 has a segment in 220
             # and a different position in the memmap
+            # also the QYT KT8900R
             ranges = self._memobj.ranges220
         else:
             ranges = self._memobj.ranges
@@ -838,8 +843,8 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         LOG.info("Radio ranges: VHF %d to %d" % vhf)
         LOG.info("Radio ranges: UHF %d to %d" % uhf)
 
-        # 220Mhz case
-        if "+220" in self.MODEL:
+        # 220Mhz radios case
+        if self.MODEL in ["UV-2501+220", "KT8900R"]:
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
             self._220_range = vhf2
@@ -1277,7 +1282,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     break
             return limit
 
-        if "+220" in self.MODEL:
+        if self.MODEL in ["UV-2501+220", "KT8900R"]:
             _ranges = self._memobj.ranges220
             ranges = "ranges220"
         else:
@@ -1296,7 +1301,7 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         vhf_high = RadioSetting("%s.vhf_high" % ranges, "VHF high", val)
         other.append(vhf_high)
 
-        if "+220" in self.MODEL:
+        if self.MODEL in ["UV-2501+220", "KT8900R"]:
             _limit = convert_bytes_to_limit(_ranges.vhf2_low)
             val = RadioSettingValueString(0, 3, _limit)
             val.set_mutable(False)
@@ -1622,3 +1627,16 @@ class KT9800(BTech):
     _magic = MSTRING_KT8900
     _fileid = [KT8900_fp, KT8900_fp1, KT8900_fp2, KT8900_fp3]
     _id2 = KT8900_id
+
+
+@directory.register
+class KT9800R(BTech):
+    """QYT KT8900R"""
+    VENDOR = "QYT"
+    MODEL = "KT8900R"
+    _vhf_range = (136000000, 175000000)
+    _220_range = (240000000, 271000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = MSTRING_KT8900R
+    _fileid = [KT8900R_fp]
+    _id2 = KT8900R_id
