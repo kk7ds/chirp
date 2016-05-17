@@ -1364,14 +1364,21 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         def my_validate(value):
             value = chirp_common.parse_freq(value)
-            if 180000000 <= value and value < 210000000:
-                msg = ("Can't be between 180.00000-210.00000")
-                raise InvalidValueError(msg)
-            elif 231000000 <= value and value < 400000000:
-                msg = ("Can't be between 231.00000-400.00000")
-                raise InvalidValueError(msg)
-            elif 210000000 <= value and value < 231000000 \
-                and "+220" not in self.MODEL:
+            if "+220" in self.MODEL:
+                if 180000000 <= value and value < 210000000:
+                    msg = ("Can't be between 180.00000-210.00000")
+                    raise InvalidValueError(msg)
+                elif 231000000 <= value and value < 400000000:
+                    msg = ("Can't be between 231.00000-400.00000")
+                    raise InvalidValueError(msg)
+            elif "8900R" in self.MODEL:
+                if 180000000 <= value and value < 240000000:
+                    msg = ("Can't be between 180.00000-240.00000")
+                    raise InvalidValueError(msg)
+                elif 271000000 <= value and value < 400000000:
+                    msg = ("Can't be between 271.00000-400.00000")
+                    raise InvalidValueError(msg)
+            elif 180000000 <= value and value < 400000000:
                 msg = ("Can't be between 180.00000-400.00000")
                 raise InvalidValueError(msg)
             return chirp_common.format_freq(value)
