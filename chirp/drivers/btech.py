@@ -96,6 +96,8 @@ struct {
   u8 ste;
   u8 rpste;
   u8 rptdl;
+  u8 mgain;
+  u8 dtmfg;
 } settings;
 
 #seekto 0x0E80;
@@ -1235,6 +1237,18 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                  RadioSettingValueList(LIST_RPTDL, LIST_RPTDL[
                                      _mem.settings.rptdl]))
             basic.append(rptdl)
+
+        if str(_mem.fingerprint.fp) in BTECH3:
+
+            mgain = RadioSetting("settings.mgain", "Mic gain",
+                                 RadioSettingValueInteger(0, 120, 
+                                     _mem.settings.mgain))
+            basic.append(mgain)
+
+            dtmfg = RadioSetting("settings.dtmfg", "DTMF gain",
+                                 RadioSettingValueInteger(0, 60, 
+                                     _mem.settings.dtmfg))
+            basic.append(dtmfg)
 
         # Advanced
         def _filter(name):
