@@ -1164,7 +1164,6 @@ of file.
 
     def do_export(self):
         types = [(_("CSV Files") + " (*.csv)", "csv"),
-                 (_("CHIRP Files") + " (*.chirp)", "chirp"),
                  ]
 
         eset = self.get_current_editorset()
