@@ -1423,6 +1423,7 @@ class MemoryEditor(common.Editor):
         result = pickle.dumps((self._features, selection))
         clipboard = gtk.Clipboard(selection="PRIMARY")
         clipboard.set_text(result)
+        clipboard.store()
 
         return cut  # Only changed if we did a cut
 
