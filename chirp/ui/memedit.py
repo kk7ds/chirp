@@ -1421,7 +1421,7 @@ class MemoryEditor(common.Editor):
                 self._set_memory(iter, mem)
 
         result = pickle.dumps((self._features, selection))
-        clipboard = gtk.Clipboard(selection="PRIMARY")
+        clipboard = gtk.Clipboard(selection="CLIPBOARD")
         clipboard.set_text(result)
         clipboard.store()
 
@@ -1516,7 +1516,7 @@ class MemoryEditor(common.Editor):
             self.rthread.submit(job)
 
     def paste_selection(self):
-        clipboard = gtk.Clipboard(selection="PRIMARY")
+        clipboard = gtk.Clipboard(selection="CLIPBOARD")
         clipboard.request_text(self._paste_selection)
 
     def select_all(self):
