@@ -309,7 +309,9 @@ KT8900_fp3 = "M2G2F4"
 KT8900_id = "      303688"
 
 # KT8900R
-KT8900R_fp = "M3G214"
+KT8900R_fp = "M3G1F4"
+# Second Generation
+KT8900R_fp1 = "M3G214"
 KT8900R_id = "      280528"
 
 #### MAGICS
@@ -1659,5 +1661,5 @@ class KT9800R(BTech):
     _220_range = (240000000, 271000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900R
-    _fileid = [KT8900R_fp]
+    _fileid = [KT8900R_fp, KT8900R_fp1]
     _id2 = KT8900R_id
