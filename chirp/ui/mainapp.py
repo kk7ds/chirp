@@ -24,6 +24,7 @@ import time
 import logging
 import gtk
 import gobject
+import sys
 
 from chirp.ui import inputdialog, common
 from chirp import platform, directory, util
@@ -39,7 +40,6 @@ gobject.threads_init()
 LOG = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    import sys
     sys.path.insert(0, "..")
 
 try:
@@ -1538,6 +1538,11 @@ of file.
   </menubar>
 </ui>
 """
+        ALT_KEY = "<Alt>"
+        CTRL_KEY = "<Ctrl>"
+        if sys.platform == 'darwin':
+            ALT_KEY = "<Meta>"
+            CTRL_KEY = "<Meta>"
         actions = [
             ('file', None, _("_File"), None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
@@ -1550,34 +1555,36 @@ of file.
             ('close', gtk.STOCK_CLOSE, None, None, None, self.mh),
             ('quit', gtk.STOCK_QUIT, None, None, None, self.mh),
             ('edit', None, _("_Edit"), None, None, self.mh),
-            ('cut', None, _("_Cut"), "<Ctrl>x", None, self.mh),
-            ('copy', None, _("_Copy"), "<Ctrl>c", None, self.mh),
-            ('paste', None, _("_Paste"), "<Ctrl>v", None, self.mh),
+            ('cut', None, _("_Cut"), "%sx" % CTRL_KEY, None, self.mh),
+            ('copy', None, _("_Copy"), "%sc" % CTRL_KEY, None, self.mh),
+            ('paste', None, _("_Paste"),
+             "%sv" % CTRL_KEY, None, self.mh),
             ('delete', None, _("_Delete"), "Delete", None, self.mh),
             ('all', None, _("Select _All"), None, None, self.mh),
             ('move_up', None, _("Move _Up"),
-             "<Control>Up", None, self.mh),
+             "%sUp" % CTRL_KEY, None, self.mh),
             ('move_dn', None, _("Move Dow_n"),
-             "<Control>Down", None, self.mh),
+             "%sDown" % CTRL_KEY, None, self.mh),
             ('exchange', None, _("E_xchange"),
-             "<Control><Shift>x", None, self.mh),
+             "%s<Shift>x" % CTRL_KEY, None, self.mh),
             ('properties', None, _("P_roperties"), None, None, self.mh),
             ('view', None, _("_View"), None, None, self.mh),
             ('columns', None, _("Columns"), None, None, self.mh),
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
             ('devshowraw', None, _('Show raw memory'),
-             "<Control><Shift>r", None, self.mh),
+             "%s<Shift>r" % CTRL_KEY, None, self.mh),
             ('devdiffraw', None, _("Diff raw memories"),
-             "<Control><Shift>d", None, self.mh),
+             "%s<Shift>d" % CTRL_KEY, None, self.mh),
             ('devdifftab', None, _("Diff tabs"),
-             "<Control><Shift>t", None, self.mh),
+             "%s<Shift>t" % CTRL_KEY, None, self.mh),
             ('language', None, _("Change language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
             ('download', None, _("Download From Radio"),
-             "<Alt>d", None, self.mh),
-            ('upload', None, _("Upload To Radio"), "<Alt>u", None, self.mh),
-            ('import', None, _("Import"), "<Alt>i", None, self.mh),
-            ('export', None, _("Export"), "<Alt>x", None, self.mh),
+             "%sd" % ALT_KEY, None, self.mh),
+            ('upload', None, _("Upload To Radio"),
+             "%su" % ALT_KEY, None, self.mh),
+            ('import', None, _("Import"), "%si" % ALT_KEY, None, self.mh),
+            ('export', None, _("Export"), "%se" % ALT_KEY, None, self.mh),
             ('importsrc', None, _("Import from data source"),
              None, None, self.mh),
             ('iradioreference', None, _("RadioReference.com"),
