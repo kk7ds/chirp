@@ -1181,7 +1181,7 @@ class MemoryEditor(common.Editor):
         lostart = self._config.is_defined(lokey) and \
             self._config.get_int(lokey) or min
         histart = self._config.is_defined(hikey) and \
-            self._config.get_int(hikey) or 25
+            self._config.get_int(hikey) or 999
 
         self.lo_limit_adj = gtk.Adjustment(lostart, min, max-1, 1, 10)
         lo = gtk.SpinButton(self.lo_limit_adj)
