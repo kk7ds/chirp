@@ -47,8 +47,6 @@ class ShiftDialog(gtk.Dialog):
 
         self.thread = None
 
-        self.set_response_sensitive(gtk.RESPONSE_OK, False)
-
     def _status(self, msg, prog):
         self.__labl.set_text(msg)
         self.__prog.set_fraction(prog)
