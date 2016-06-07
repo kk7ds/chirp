@@ -206,6 +206,63 @@ class RadioSettingValueString(RadioSettingValue):
         return self._current
 
 
+class RadioSettingValueMap(RadioSettingValueList):
+    """Map User Options to Radio Memory Values
+
+    Provides User Option list for GUI, maintains state, verifies new values,
+    and allows {setting,getting} by User Option OR Memory Value.  External
+    conversions not needed.
+
+    """
+    def __init__(self, map_entries, mem_val=None, user_option=None):
+        """Create new map
+
+        Pass in list of 2 member tuples, typically of type (str, int),
+        for each Radio Setting.  First member of each tuple is the
+        User Option Name, second is the Memory Value that corresponds.
+        An example is APO: ("Off", 0), ("0.5", 5), ("1.0", 10).
+
+        """
+        # Catch bugs early by testing tuple geometry
+        for map_entry in map_entries:
+            if not len(map_entry) == 2:
+                raise InvalidValueError("map_entries must be 2 el tuples "
+                                        "instead of: %s" % str(map_entry))
+        user_options = [e[0] for e in map_entries]
+        self._mem_vals = [e[1] for e in map_entries]
+        RadioSettingValueList.__init__(self, user_options, user_options[0])
+        if mem_val is not None:
+            self.set_mem_val(mem_val)
+        elif user_option is not None:
+            self.set_value(user_option)
+
+    def set_mem_val(self, mem_val):
+        """Change setting to User Option that corresponds to 'mem_val'"""
+        if mem_val in self._mem_vals:
+            index = self._mem_vals.index(mem_val)
+            self.set_value(self._options[index])
+        else:
+            raise InvalidValueError("%s is not valid for this setting" % value)
+
+    def __trunc__(self):
+        """Return memory value that matches current user option"""
+        index = self._options.index(self._current)
+        value = self._mem_vals[index]
+        return value
+
+
+def zero_indexed_seq_map(user_options):
+    """RadioSettingValueMap factory method
+
+    Radio Setting Maps commonly use a list of strings that map to a sequence
+    that starts with 0.  Pass in a list of User Options and this function
+    returns a list of tuples of form (str, int).
+
+    """
+    mem_vals = range(0, len(user_options))
+    return zip(user_options, mem_vals)
+
+
 class RadioSettings(list):
     def __init__(self, *groups):
         list.__init__(self, groups)
