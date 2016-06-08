@@ -195,7 +195,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         return rf
 
     def sync_in(self):
-        self.pipe.setParity("E")
+        self.pipe.parity = "E"
         start = time.time()
         try:
             self._mmap = _download(self)
@@ -208,7 +208,7 @@ class FT2800Radio(YaesuCloneModeRadio):
 
     def sync_out(self):
         self.pipe.timeout = 1
-        self.pipe.setParity("E")
+        self.pipe.parity = "E"
         start = time.time()
         try:
             _upload(self)

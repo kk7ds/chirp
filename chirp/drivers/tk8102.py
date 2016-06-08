@@ -99,7 +99,7 @@ def do_ident(radio):
 
 
 def do_download(radio):
-    radio.pipe.setParity("E")
+    radio.pipe.parity = "E"
     radio.pipe.timeout = 1
     do_ident(radio)
 
@@ -129,7 +129,7 @@ def do_download(radio):
 
 
 def do_upload(radio):
-    radio.pipe.setParity("E")
+    radio.pipe.parity = "E"
     radio.pipe.timeout = 1
     do_ident(radio)
 

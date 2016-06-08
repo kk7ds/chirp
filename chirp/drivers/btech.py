@@ -332,7 +332,7 @@ def _clean_buffer(radio):
 
     # touching the serial timeout to optimize the flushing
     # restored at the end to the default value
-    radio.pipe.setTimeout(0.1)
+    radio.pipe.timeout = 0.1
     dump = "1"
     datacount = 0
 
@@ -347,7 +347,7 @@ def _clean_buffer(radio):
                 raise errors.RadioError(seriale)
 
         # restore the default serial timeout
-        radio.pipe.setTimeout(STIMEOUT)
+        radio.pipe.timeout = STIMEOUT
 
     except Exception:
         raise errors.RadioError("Unknown error cleaning the serial buffer")
@@ -477,8 +477,8 @@ def _start_clone_mode(radio, status):
 def _do_ident(radio, status, upload=False):
     """Put the radio in PROGRAM mode & identify it"""
     #  set the serial discipline
-    radio.pipe.setBaudrate(9600)
-    radio.pipe.setParity("N")
+    radio.pipe.baudrate = 9600
+    radio.pipe.parity = "N"
 
     # open the radio into program mode
     if _start_clone_mode(radio, status) is False:
@@ -516,7 +516,7 @@ def _do_ident(radio, status, upload=False):
     # has the check value in the _id2 var, others simply False
     if radio._id2 is not False:
         # lower the timeout here as this radios are reseting due to timeout
-        radio.pipe.setTimeout(0.05)
+        radio.pipe.timeout = 0.05
 
         # query & receive the extra ID
         _send(radio, _make_frame("S", 0x3DF0, 16))
@@ -561,7 +561,7 @@ def _do_ident(radio, status, upload=False):
                 raise errors.RadioError("Radio didn't ACK the upload")
 
             # restore the default serial timeout
-            radio.pipe.setTimeout(STIMEOUT)
+            radio.pipe.timeout = STIMEOUT
 
     # DEBUG
     LOG.info("Positive ident, this is a %s %s" % (radio.VENDOR, radio.MODEL))

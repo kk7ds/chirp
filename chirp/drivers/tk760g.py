@@ -441,8 +441,8 @@ def _recv(radio):
 def _open_radio(radio, status):
     """Open the radio into program mode and check if it's the correct model"""
     # linux min is 0.13, win min is 0.25; set to bigger to be safe
-    radio.pipe.setTimeout(0.25)
-    radio.pipe.setParity("E")
+    radio.pipe.timeout = 0.25
+    radio.pipe.parity = "E"
 
     # DEBUG
     LOG.debug("Entering program mode.")
@@ -525,17 +525,17 @@ def do_download(radio):
     # set the timeout and if windows keep it bigger
     if sys.platform in ["win32", "cygwin"]:
         # bigger timeout
-        radio.pipe.setTimeout(0.55)
+        radio.pipe.timeout = 0.55
     else:
         # Linux can keep up, MAC?
-        radio.pipe.setTimeout(0.05)
+        radio.pipe.timeout = 0.05
 
     # DEBUG
     LOG.debug("Starting the download from radio")
 
     for addr in MEM_BLOCKS:
         # send request, but before flush the rx buffer
-        radio.pipe.flushInput()
+        radio.pipe.flush()
         _send(radio, _make_frame("R", addr))
 
         # now we get the data
@@ -574,7 +574,7 @@ def do_upload(radio):
     radio.status_fn(status)
 
     # the default for the original soft as measured
-    radio.pipe.setTimeout(0.5)
+    radio.pipe.timeout = 0.5
 
     # DEBUG
     LOG.debug("Starting the upload to the radio")

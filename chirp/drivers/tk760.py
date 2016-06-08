@@ -188,10 +188,9 @@ def open_radio(radio):
     """Open the radio into program mode and check if it's the correct model"""
     # Set serial discipline
     try:
-        radio.pipe.setParity("N")
-        radio.pipe.setTimeout(TIMEOUT)
-        radio.pipe.flushOutput()
-        radio.pipe.flushInput()
+        radio.pipe.parity = "N"
+        radio.pipe.timeout = TIMEOUT
+        radio.pipe.flush()
         LOG.debug("Serial port open successful")
     except:
         msg = "Serial error: Can't set serial line discipline"

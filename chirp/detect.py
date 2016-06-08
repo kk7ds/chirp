@@ -39,7 +39,7 @@ def _detect_icom_radio(ser):
     # ICOM VHF/UHF Clone-type radios @ 9600 baud
 
     try:
-        ser.setBaudrate(9600)
+        ser.baudrate = 9600
         md = icf.get_model_data(ser)
         return _icom_model_data_to_rclass(md)
     except errors.RadioError, e:
@@ -47,7 +47,7 @@ def _detect_icom_radio(ser):
 
     # ICOM IC-91/92 Live-mode radios @ 4800/38400 baud
 
-    ser.setBaudrate(4800)
+    ser.baudrate = 4800
     try:
         ic9x_ll.send_magic(ser)
         return _icom_model_data_to_rclass("ic9x")
@@ -58,7 +58,7 @@ def _detect_icom_radio(ser):
 
     for rate in [9600, 4800, 19200]:
         try:
-            ser.setBaudrate(rate)
+            ser.baudrate = rate
             return icomciv.probe_model(ser)
         except errors.RadioError:
             pass

@@ -231,7 +231,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     def _detect_baud(self):
         for baud in [9600, 19200, 38400, 57600]:
-            self.pipe.setBaudrate(baud)
+            self.pipe.baudrate = baud
             try:
                 self.pipe.write("\r\r")
             except:
@@ -422,9 +422,11 @@ class THD72Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError("No response from self")
 
         allblocks = range(self._memsize/256)
-        self.pipe.setBaudrate(57600)
-        self.pipe.getCTS()
-        self.pipe.setRTS()
+        self.pipe.baudrate = 57600
+        try:
+            self.pipe.setRTS()
+        except AttributeError:
+            self.pipe.rts = True
         self.pipe.read(1)
         data = ""
         LOG.debug("reading blocks %d..%d" % (blocks[0], blocks[-1]))
@@ -458,9 +460,11 @@ class THD72Radio(chirp_common.CloneModeRadio):
         if self.command("0M PROGRAM") != "0M":
             raise errors.RadioError("No response from self")
 
-        self.pipe.setBaudrate(57600)
-        self.pipe.getCTS()
-        self.pipe.setRTS()
+        self.pipe.baudrate = 57600
+        try:
+            self.pipe.setRTS()
+        except AttributeError:
+            self.pipe.rts = True
         self.pipe.read(1)
         LOG.debug("writing blocks %d..%d" % (blocks[0], blocks[-1]))
         total = len(blocks)

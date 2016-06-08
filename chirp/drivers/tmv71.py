@@ -36,7 +36,7 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
 
     def _detect_baud(self):
         for baud in [9600, 19200, 38400, 57600]:
-            self.pipe.setBaudrate(baud)
+            self.pipe.baudrate = baud
             self.pipe.write("\r\r")
             self.pipe.read(32)
             try:

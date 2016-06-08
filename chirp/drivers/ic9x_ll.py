@@ -439,31 +439,31 @@ def _send_magic_38400(pipe):
 
 def send_magic(pipe):
     """Send the magic incantation to wake up an ic9x radio"""
-    if pipe.getBaudrate() == 38400:
+    if pipe.baudrate == 38400:
         resp = _send_magic_38400(pipe)
         if resp:
             return
         LOG.info("Switching from 38400 to 4800")
-        pipe.setBaudrate(4800)
+        pipe.baudrate = 4800
         resp = _send_magic_4800(pipe)
-        pipe.setBaudrate(38400)
+        pipe.baudrate = 38400
         if resp:
             return
         raise errors.RadioError("Radio not responding")
-    elif pipe.getBaudrate() == 4800:
+    elif pipe.baudrate == 4800:
         resp = _send_magic_4800(pipe)
         if resp:
             return
         LOG.info("Switching from 4800 to 38400")
-        pipe.setBaudrate(38400)
+        pipe.baudrate = 38400
         resp = _send_magic_38400(pipe)
         if resp:
             return
-        pipe.setBaudrate(4800)
+        pipe.baudrate = 4800
         raise errors.RadioError("Radio not responding")
     else:
         raise errors.InvalidDataError("Radio in unknown state (%i)" %
-                                      pipe.getBaudrate())
+                                      pipe.baudrate)
 
 
 def get_memory_frame(pipe, vfo, number):

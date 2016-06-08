@@ -103,7 +103,7 @@ def get_id(ser):
             LAST_DELIMITER = delimiter
             LOG.info("Trying ID at baud %i with delimiter \"%s\"" %
                      (i, repr(delimiter)))
-            ser.setBaudrate(i)
+            ser.baudrate = i
             ser.write(LAST_DELIMITER[0])
             ser.read(25)
             resp = command(ser, "ID")

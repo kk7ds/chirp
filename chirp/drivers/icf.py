@@ -251,7 +251,7 @@ def start_hispeed_clone(radio, cmd):
     LOG.debug("Response:\n%s" % util.hexprint(resp))
 
     LOG.info("Switching to 38400 baud")
-    radio.pipe.setBaudrate(38400)
+    radio.pipe.baudrate = 38400
 
     buf = ("\xFE" * 14) + \
         "\xEE\xEF" + \
