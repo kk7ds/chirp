@@ -312,6 +312,9 @@ KT8900_id = "      303688"
 KT8900R_fp = "M3G1F4"
 # Second Generation
 KT8900R_fp1 = "M3G214"
+# another model
+KT8900R_fp2 = "M3C234"
+# this radio has an extra ID
 KT8900R_id = "      280528"
 
 #### MAGICS
@@ -1243,12 +1246,12 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         if str(_mem.fingerprint.fp) in BTECH3:
 
             mgain = RadioSetting("settings.mgain", "Mic gain",
-                                 RadioSettingValueInteger(0, 120, 
+                                 RadioSettingValueInteger(0, 120,
                                      _mem.settings.mgain))
             basic.append(mgain)
 
             dtmfg = RadioSetting("settings.dtmfg", "DTMF gain",
-                                 RadioSettingValueInteger(0, 60, 
+                                 RadioSettingValueInteger(0, 60,
                                      _mem.settings.dtmfg))
             basic.append(dtmfg)
 
@@ -1661,5 +1664,5 @@ class KT9800R(BTech):
     _220_range = (240000000, 271000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900R
-    _fileid = [KT8900R_fp, KT8900R_fp1]
+    _fileid = [KT8900R_fp, KT8900R_fp1, KT8900R_fp2]
     _id2 = KT8900R_id
