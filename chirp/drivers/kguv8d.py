@@ -311,6 +311,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     def _read_record(self):
         # read 4 chars for the header
         _header = self.pipe.read(4)
+        if len(_header) != 4:
+            raise errors.RadioError('Radio did not respond')
         _length = ord(_header[3])
         _packet = self.pipe.read(_length)
         _cs = self._checksum(_header[1:])
@@ -391,6 +393,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         except errors.RadioError:
             raise
         except Exception, e:
+            LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def _do_download(self, start, end, blocksize):
