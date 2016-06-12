@@ -757,7 +757,18 @@ class TYTTH9800Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return len(filedata) == cls._memsize
+        if len(filedata) != cls._memsize:
+            return False
+        # TYT set this model for TH-7800 _AND_ TH-9800
+        if not filedata[0xfe18:0xfe1e] == "TH9800":
+            return False
+        # TH-9800 bandlimits differ from TH-7800.  First band is used
+        # (non-zero).
+        first_bandlimit = struct.unpack("BBBBBBBBBBBBBBBB",
+                                        filedata[0xfe40:0xfe50])
+        if all(v == 0 for v in first_bandlimit):
+            return False
+        return True
 
     @classmethod
     def get_prompts(cls):

@@ -696,7 +696,21 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return len(filedata) == cls._memsize
+        if len(filedata) != cls._memsize:
+            return False
+        # TYT used TH9800 as model for TH-7800 _AND_ TH-9800.  Check
+        # for TH7800 in case they fix it or if users update the model
+        # in their own radio.
+        if not (filedata[0xfe18:0xfe1e] == "TH9800" or
+                filedata[0xfe18:0xfe1e] == "TH7800"):
+            return False
+        # TH-7800 bandlimits differ from TH-9800.  First band Invalid
+        # (zero).
+        first_bandlimit = struct.unpack("BBBBBBBBBBBBBBBB",
+                                        filedata[0xfe40:0xfe50])
+        if not all(v == 0 for v in first_bandlimit):
+            return False
+        return True
 
     @classmethod
     def get_prompts(cls):
