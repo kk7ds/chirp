@@ -315,7 +315,7 @@ KT8900R_fp1 = "M3G214"
 # another model
 KT8900R_fp2 = "M3C234"
 # this radio has an extra ID
-KT8900R_id = "      280528"
+KT8900R_id = "280528"
 
 #### MAGICS
 # for the Waccom Mini-8900
