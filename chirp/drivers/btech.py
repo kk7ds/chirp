@@ -1590,6 +1590,28 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             return False
 
 
+# Declaring Aliases (Clones of the real radios)
+class JT2705M(chirp_common.Alias):
+    VENDOR = "Jetstream"
+    MODEL = "JT2705M"
+
+
+class JT6188Mini(chirp_common.Alias):
+    VENDOR = "Juentai"
+    MODEL = "JT-6188 Mini"
+
+
+class JT6188Plus(chirp_common.Alias):
+    VENDOR = "Juentai"
+    MODEL = "JT-6188 Plus"
+
+
+class SSGT890(chirp_common.Alias):
+    VENDOR = "Sainsonic"
+    MODEL = "GT-890"
+
+
+# real radios
 @directory.register
 class UV2501(BTech):
     """Baofeng Tech UV2501"""
@@ -1630,6 +1652,8 @@ class MINI8900(BTech):
     MODEL = "MINI-8900"
     _magic = MSTRING_MINI8900
     _fileid = [MINI8900_fp, ]
+    # Clones
+    ALIASES = [JT6188Plus, ]
 
 
 @directory.register
@@ -1641,8 +1665,11 @@ class KTUV980(BTech):
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_MINI8900
     _fileid = [KTUV980_fp, ]
+    # Clones
+    ALIASES = [JT2705M, ]
 
-
+# Please note that there is a version of this radios that is a clone of the
+# Waccom Mini8900, maybe an early version?
 @directory.register
 class KT9800(BTech):
     """QYT KT8900"""
@@ -1651,8 +1678,13 @@ class KT9800(BTech):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900
-    _fileid = [KT8900_fp, KT8900_fp1, KT8900_fp2, KT8900_fp3]
+    _fileid = [KT8900_fp,
+               KT8900_fp1,
+               KT8900_fp2,
+               KT8900_fp3]
     _id2 = KT8900_id
+    # Clones
+    ALIASES = [JT6188Mini, SSGT890]
 
 
 @directory.register
@@ -1664,5 +1696,7 @@ class KT9800R(BTech):
     _220_range = (240000000, 271000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900R
-    _fileid = [KT8900R_fp, KT8900R_fp1, KT8900R_fp2]
+    _fileid = [KT8900R_fp,
+               KT8900R_fp1,
+               KT8900R_fp2]
     _id2 = KT8900R_id
