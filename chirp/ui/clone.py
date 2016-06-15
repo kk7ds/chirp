@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import collections
 import threading
 import logging
 import os
@@ -72,16 +73,15 @@ class CloneSettingsDialog(gtk.Dialog):
         return miscwidgets.make_choice([], False)
 
     def __make_vendor(self, model):
-        vendors = {}
+        vendors = collections.defaultdict(list)
         for rclass in sorted(directory.DRV_TO_RADIO.values()):
             if not issubclass(rclass, chirp_common.CloneModeRadio) and \
                     not issubclass(rclass, chirp_common.LiveRadio):
                 continue
 
-            if rclass.VENDOR not in vendors:
-                vendors[rclass.VENDOR] = []
-
             vendors[rclass.VENDOR].append(rclass)
+            for alias in rclass.ALIASES:
+                vendors[alias.VENDOR].append(alias)
 
         self.__vendors = vendors
 
@@ -186,6 +186,17 @@ class CloneSettingsDialog(gtk.Dialog):
             for rclass in directory.DRV_TO_RADIO.values():
                 if rclass.MODEL == model:
                     cs.radio_class = rclass
+                    break
+                alias_match = None
+                for alias in rclass.ALIASES:
+                    if alias.MODEL == model:
+                        alias_match = rclass
+                        break
+                if alias_match:
+                    cs.radio_class = rclass
+                    LOG.debug(
+                        'Chose %s alias for %s because model %s selected' % (
+                            alias_match, cs.radio_class, model))
                     break
             if not cs.radio_class:
                 common.show_error(

@@ -572,8 +572,6 @@ UV5R_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
 
 
-# Uncomment this to actually register this radio in CHIRP
-@directory.register
 class BaofengUV5R(chirp_common.CloneModeRadio,
                   chirp_common.ExperimentalRadio):
     """Baofeng UV-5R"""
@@ -1569,6 +1567,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             except Exception, e:
                 LOG.debug(element.get_name())
                 raise
+
+
+class UV5XAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-5X"
+
+
+@directory.register
+class BaofengUV5RGeneric(BaofengUV5R):
+    ALIASES = [UV5XAlias]
 
 
 @directory.register

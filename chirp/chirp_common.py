@@ -987,13 +987,17 @@ class ValidationError(ValidationMessage):
     pass
 
 
-class Radio(object):
-    """Base class for all Radio drivers"""
-    BAUD_RATE = 9600
-    HARDWARE_FLOW = False
+class Alias(object):
     VENDOR = "Unknown"
     MODEL = "Unknown"
     VARIANT = ""
+
+
+class Radio(Alias):
+    """Base class for all Radio drivers"""
+    BAUD_RATE = 9600
+    HARDWARE_FLOW = False
+    ALIASES = []
 
     def status_fn(self, status):
         """Deliver @status to the UI"""
