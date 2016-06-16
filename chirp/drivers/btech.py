@@ -263,7 +263,6 @@ UV2501G2_fp = "BTG214"
 # B-TECH UV-2501 third generation (3G) radios
 UV2501G3_fp = "BTG324"
 
-
 # B-TECH UV-2501+220 pre-production units
 UV2501_220pp_fp = "M3C281"
 # extra block read for the 2501+220 pre-production units
@@ -275,7 +274,6 @@ UV2501_220_fp = "M3G201"
 UV2501_220G2_fp = "BTG211"
 # B-TECH UV-2501+220 third generation (3G)
 UV2501_220G3_fp = "BTG311"
-
 
 # B-TECH UV-5001 pre-production units + 1st Gen radios
 UV5001pp_fp = "V19204"
@@ -291,15 +289,15 @@ UV5001G3_fp = "BTG304"
 # special var to know when we found a BTECH Gen 3
 BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
 
+
 # WACCOM Mini-8900
 MINI8900_fp = "M28854"
 
 
-# QYT KT-UV980 & JetStream JT2705M
+# QYT KT-UV980
 KTUV980_fp = "H28854"
 
-
-# QYT KT8900 & Juentai JT-6188
+# QYT KT8900
 KT8900_fp = "M29154"
 # New generations KT8900
 KT8900_fp1 = "M2C234"
@@ -316,6 +314,11 @@ KT8900R_fp1 = "M3G214"
 KT8900R_fp2 = "M3C234"
 # this radio has an extra ID
 KT8900R_id = "280528"
+
+
+# LUITON LT-588UV
+LT588UV_fp = "V2G1F4"
+
 
 #### MAGICS
 # for the Waccom Mini-8900
@@ -1700,3 +1703,14 @@ class KT9800R(BTech):
                KT8900R_fp1,
                KT8900R_fp2]
     _id2 = KT8900R_id
+
+
+@directory.register
+class LT588UV(BTech):
+    """LUITON LT-588UV"""
+    VENDOR = "LUITON"
+    MODEL = "LT-588UV"
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = MSTRING_KT8900
+    _fileid = [LT588UV_fp, ]
