@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 import os
 import tempfile
 import urllib
@@ -433,6 +434,13 @@ of file.
             vendor=eset.radio.VENDOR,
             model=eset.radio.MODEL)
 
+        defname_format = CONF.get("default_filename", "global") or \
+            "{vendor}_{model}_{date}"
+        defname = defname_format.format(
+            vendor=eset.radio.VENDOR,
+            model=eset.radio.MODEL,
+            date=datetime.now().strftime('%Y%m%d'))
+
         types = [(label + " (*.%s)" % eset.radio.FILE_EXTENSION,
                  eset.radio.FILE_EXTENSION)]
 
@@ -445,7 +453,8 @@ of file.
             types += [(_("VX5 Commander") + " (*.vx5)", "vx5")]
 
         while True:
-            fname = platform.get_platform().gui_save_file(types=types)
+            fname = platform.get_platform().gui_save_file(default_name=defname,
+                                                          types=types)
             if not fname:
                 return
 
