@@ -1232,7 +1232,8 @@ class FT2900Radio(YaesuCloneModeRadio):
 # the FT2900E is the European version of the radio, almost identical
 # to the R (USA) version, except for the model number and ID Block.  We
 # create and register a class for it, with only the needed overrides
-@directory.register
+# NOTE: Disabled until detection is fixed
+#@directory.register
 class FT2900ERadio(FT2900Radio):
     """Yaesu FT-2900E"""
     MODEL = "FT-2900E/1900E"
