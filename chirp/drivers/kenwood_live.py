@@ -1189,7 +1189,7 @@ class THK2Radio(KenwoodLiveRadio):
         rf.valid_bands = [(136000000, 173990000)]
         rf.valid_skips = ["", "S"]
         rf.valid_tuning_steps = [5.0]
-        rf.memory_bounds = (1, 50)
+        rf.memory_bounds = (0, 49)
         return rf
 
     def _cmd_get_memory(self, number):
