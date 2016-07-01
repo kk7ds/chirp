@@ -1614,6 +1614,11 @@ class SSGT890(chirp_common.Alias):
     MODEL = "GT-890"
 
 
+class ZastoneMP300(chirp_common.Alias):
+    VENDOR = "Zastone"
+    MODEL = "MP-300"
+
+
 # real radios
 @directory.register
 class UV2501(BTech):
@@ -1687,7 +1692,7 @@ class KT9800(BTech):
                KT8900_fp3]
     _id2 = KT8900_id
     # Clones
-    ALIASES = [JT6188Mini, SSGT890]
+    ALIASES = [JT6188Mini, SSGT890, ZastoneMP300]
 
 
 @directory.register
