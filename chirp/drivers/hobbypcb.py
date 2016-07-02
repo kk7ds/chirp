@@ -55,9 +55,10 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
 
     def __init__(self, *args, **kwargs):
         super(HobbyPCBRSUV3Radio, self).__init__(*args, **kwargs)
-        baud = detect_baudrate(self)
-        if not baud:
-            errors.RadioError('Radio did not respond')
+        if self.pipe:
+            baud = detect_baudrate(self)
+            if not baud:
+                errors.RadioError('Radio did not respond')
 
     def _cmd(self, command, rsize=None):
         LOG.debug('> %s' % command)
@@ -285,13 +286,22 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
                                                    int(_get('VU'))))
         general.append(vu)
 
+        rc = RadioSetting('RC%i', 'Current Channel',
+                          RadioSettingValueInteger(0, 9, 0))
+        rc.set_doc('Choosing one of these values causes the radio '
+                   'to change to the selected channel. The radio '
+                   'cannot tell CHIRP what channel is selected.')
+        general.append(rc)
+
         return RadioSettings(general, cw, io, dtmf)
 
     def set_settings(self, settings):
         def _set(thing):
             # Try to only set something if it's new
             query = '%s?' % thing[:2]
-            cur = self._cmd(query, 0).split(':')[1].strip()
+            cur = self._cmd(query, 0)
+            if cur.strip():
+                cur = cur.split()[1].strip()
             new = thing[2:].strip()
             if cur in ['ON', 'OFF']:
                 cur = int(cur == 'ON')
