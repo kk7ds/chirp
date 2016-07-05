@@ -439,7 +439,8 @@ of file.
         defname = defname_format.format(
             vendor=eset.radio.VENDOR,
             model=eset.radio.MODEL,
-            date=datetime.now().strftime('%Y%m%d'))
+            date=datetime.now().strftime('%Y%m%d')
+        ).replace('/', '_')
 
         types = [(label + " (*.%s)" % eset.radio.FILE_EXTENSION,
                  eset.radio.FILE_EXTENSION)]
