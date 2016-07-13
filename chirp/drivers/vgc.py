@@ -241,6 +241,75 @@ NAME_LENGTH = 6
 DTMF_CHARS = list("0123456789ABCD*#")
 STIMEOUT = 1
 
+# Basic settings lists
+LIST_AFTONE = ["Low-3", "Low-2", "Low-1", "Normal", "High-1", "High-2"]
+LIST_SPKR = ["Off", "Front", "Rear", "Front + Rear"]
+LIST_AUDIO = ["Monaural", "Stereo"]
+LIST_SBMUTE = ["Off", "TX", "RX", "Both"]
+LIST_MLNHM = ["Min", "Low", "Normal", "High", "Max"]
+LIST_PTT = ["Momentary", "Toggle"]
+LIST_RXEXP = ["General", "Wide coverage"]
+LIST_VOX = ["Off", "Internal mic", "Front hand-mic", "Rear hand-mic"]
+LIST_DISPLAY = ["Frequency", "Timer/Clock"]
+LIST_MINMAX = ["Min"] + ["%s" % x for x in range(2, 8)] + ["Max"]
+LIST_COLOR = ["White-Blue", "Sky-Blue", "Marine-Blue", "Green",
+              "Yellow-Green", "Orange", "Amber", "White"]
+LIST_BTIME = ["Continuous"] + ["%s" % x for x in range(1, 61)]
+LIST_MRSCAN = ["All", "Selected"]
+LIST_DWSTOP = ["Auto", "Hold"]
+LIST_SCAND = ["Down", "Up"]
+LIST_SCANR = ["Busy", "Hold", "1 sec", "3 sec", "5 sec"]
+LIST_APO = ["Off", ".5", "1", "1.5"] + ["%s" % x for x in range(2, 13)]
+LIST_BEEP = ["Off", "Low", "High"]
+LIST_FKEY = ["MHz/AD-F", "AF Dual 1(line-in)", "AF Dual 2(AM)", "AF Dual 3(FM)",
+             "PA", "SQL off", "T-call", "WX"]
+LIST_PFKEY = ["Off", "SQL off", "TX power", "Scan", "RPT shift", "Reverse",
+              "T-Call"]
+LIST_AB = ["A", "B"]
+LIST_COVERAGE = ["In band", "All"]
+LIST_TOT = ["Off"] + ["%s" % x for x in range(5, 25, 5)] + ["30"]
+LIST_DATEFMT = ["yyyy/mm/dd", "yyyy/dd/mm", "mm/dd/yyyy", "dd/mm/yyyy"]
+LIST_TIMEFMT = ["24H", "12H"]
+LIST_TZ = ["-12 INT DL W",
+           "-11 MIDWAY",
+           "-10 HAST",
+           "-9 AKST",
+           "-8 PST",
+           "-7 MST",
+           "-6 CST",
+           "-5 EST",
+           "-4:30 CARACAS",
+           "-4 AST",
+           "-3:30 NST",
+           "-3 BRASILIA",
+           "-2 MATLANTIC",
+           "-1 AZORES",
+           "-0 LONDON",
+           "+0 LONDON",
+           "+1 ROME",
+           "+2 ATHENS",
+           "+3 MOSCOW",
+           "+3:30 REHRW",
+           "+4 ABUDNABI",
+           "+4:30 KABUL",
+           "+5 ISLMABAD",
+           "+5:30 NEWDELHI",
+           "+6 DHAKA",
+           "+6:30 YANGON",
+           "+7 BANKOK",
+           "+8 BEIJING",
+           "+9 TOKYO",
+           "+10 ADELAIDE",
+           "+10 SYDNET",
+           "+11 NWCLDNIA",
+           "+12 FIJI",
+           "+13 NUKALOFA"
+           ]
+LIST_BELL = ["Off", "1 time", "3 times", "5 times", "8 times", "Continuous"]
+LIST_DATABND = ["Main band", "Sub band", "Left band-fixed", "Right band-fixed"]
+LIST_DATASPD = ["1200 bps", "9600 bps"]
+LIST_DATASQL = ["Busy/TX", "Busy", "TX"]
+
 # valid chars on the LCD
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
@@ -508,7 +577,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.has_settings = False
+        rf.has_settings = True
         rf.has_bank = False
         rf.has_tuning_step = False
         rf.can_odd_split = True
@@ -791,6 +860,232 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             _mem.bcl = 0
             _mem.revert = 0
             _mem.dname = 1
+
+
+    def get_settings(self):
+        """Translate the bit in the mem_struct into settings in the UI"""
+        _mem = self._memobj
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        top = RadioSettings(basic)
+
+        # Basic
+
+        # Audio: A01-A04
+
+        aftone = RadioSetting("settings.aftone", "AF tone control",
+                              RadioSettingValueList(LIST_AFTONE, LIST_AFTONE[
+                                  _mem.settings.aftone]))
+        basic.append(aftone)
+
+        spkr = RadioSetting("settings.spkr", "Speaker",
+                            RadioSettingValueList(LIST_SPKR,LIST_SPKR[
+                                _mem.settings.spkr]))
+        basic.append(spkr)
+
+        audio = RadioSetting("settings.audio", "Stereo/Mono",
+                             RadioSettingValueList(LIST_AUDIO, LIST_AUDIO[
+                                 _mem.settings.audio]))
+        basic.append(audio)
+
+        sbmute = RadioSetting("settings.sbmute", "Sub band mute",
+                              RadioSettingValueList(LIST_SBMUTE, LIST_SBMUTE[
+                                  _mem.settings.sbmute]))
+        basic.append(sbmute)
+
+        # TX/RX: B01-B08
+
+        mgain = RadioSetting("settings.mgain", "Mic gain",
+                             RadioSettingValueList(LIST_MLNHM, LIST_MLNHM[
+                                 _mem.settings.mgain]))
+        basic.append(mgain)
+
+        ptt = RadioSetting("settings.ptt", "PTT mode",
+                           RadioSettingValueList(LIST_PTT,LIST_PTT[
+                               _mem.settings.ptt]))
+        basic.append(ptt)
+
+        # B03 (per channel)
+        # B04 (per channel)
+
+        rxexp = RadioSetting("settings.rxexp", "RX expansion",
+                             RadioSettingValueList(LIST_RXEXP,LIST_RXEXP[
+                                 _mem.settings.rxexp]))
+        basic.append(rxexp)
+
+        vox = RadioSetting("settings.vox", "Vox",
+                           RadioSettingValueList(LIST_VOX, LIST_VOX[
+                               _mem.settings.vox]))
+        basic.append(vox)
+
+        voxs = RadioSetting("settings.voxs", "Vox sensitivity",
+                            RadioSettingValueList(LIST_MLNHM, LIST_MLNHM[
+                                _mem.settings.voxs]))
+        basic.append(voxs)
+
+        # B08 (per channel)
+
+        # Display: C01-C06
+
+        display = RadioSetting("settings.display", "Display select",
+                               RadioSettingValueList(LIST_DISPLAY,
+                                   LIST_DISPLAY[_mem.settings.display]))
+        basic.append(display)
+
+        lcdb = RadioSetting("settings.lcdb", "LCD brightness",
+                            RadioSettingValueList(LIST_MINMAX, LIST_MINMAX[
+                                _mem.settings.lcdb]))
+        basic.append(lcdb)
+
+        color = RadioSetting("settings.color", "LCD color",
+                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
+                                 _mem.settings.color]))
+        basic.append(color)
+
+        lcdc = RadioSetting("settings.lcdc", "LCD contrast",
+                            RadioSettingValueList(LIST_MINMAX, LIST_MINMAX[
+                                _mem.settings.lcdc]))
+        basic.append(lcdc)
+
+        btime = RadioSetting("settings.btime", "LCD backlight time",
+                             RadioSettingValueList(LIST_BTIME, LIST_BTIME[
+                                 _mem.settings.btime]))
+        basic.append(btime)
+
+        keyb = RadioSetting("settings.keyb", "Key brightness",
+                            RadioSettingValueList(LIST_MINMAX, LIST_MINMAX[
+                                _mem.settings.keyb]))
+        basic.append(keyb)
+
+        # Memory: D01-D04
+
+        # D01 (per channel)
+        # D02 (per channel)
+
+        mrscan = RadioSetting("settings.mrscan", "Memory scan type",
+                              RadioSettingValueList(LIST_MRSCAN, LIST_MRSCAN[
+                                  _mem.settings.mrscan]))
+        basic.append(mrscan)
+
+        # D04 (per channel)
+
+        # Scan: E01-E04
+
+        dwstop = RadioSetting("settings.dwstop", "Dual watch stop",
+                              RadioSettingValueList(LIST_DWSTOP, LIST_DWSTOP[
+                                  _mem.settings.dwstop]))
+        basic.append(dwstop)
+
+        scand = RadioSetting("settings.scand", "Scan direction",
+                             RadioSettingValueList(LIST_SCAND,LIST_SCAND[
+                                 _mem.settings.scand]))
+        basic.append(scand)
+
+        scanr = RadioSetting("settings.scanr", "Scan resume",
+                             RadioSettingValueList(LIST_SCANR,LIST_SCANR[
+                                 _mem.settings.scanr]))
+        basic.append(scanr)
+
+        scansb = RadioSetting("settings.scansb", "Scan stop beep",
+                              RadioSettingValueBoolean(_mem.settings.scansb))
+        basic.append(scansb)
+
+        # System: F01-F09
+
+        apo = RadioSetting("settings.apo", "Automatic power off [hours]",
+                           RadioSettingValueList(LIST_APO, LIST_APO[
+                               _mem.settings.apo]))
+        basic.append(apo)
+
+        ars = RadioSetting("settings.ars", "Automatic repeater shift",
+                           RadioSettingValueBoolean(_mem.settings.ars))
+        basic.append(ars)
+
+        beep = RadioSetting("settings.beep", "Beep volume",
+                            RadioSettingValueList(LIST_BEEP,LIST_BEEP[
+                                _mem.settings.beep]))
+        basic.append(beep)
+
+        fkey = RadioSetting("settings.fkey", "F key",
+                            RadioSettingValueList(LIST_FKEY,LIST_FKEY[
+                                _mem.settings.fkey]))
+        basic.append(fkey)
+
+        pfkey1 = RadioSetting("settings.pfkey1", "Mic P1 key",
+                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
+                                  _mem.settings.pfkey1]))
+        basic.append(pfkey1)
+
+        pfkey2 = RadioSetting("settings.pfkey2", "Mic P2 key",
+                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
+                                  _mem.settings.pfkey2]))
+        basic.append(pfkey2)
+
+        pfkey3 = RadioSetting("settings.pfkey3", "Mic P3 key",
+                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
+                                  _mem.settings.pfkey3]))
+        basic.append(pfkey3)
+
+        pfkey4 = RadioSetting("settings.pfkey4", "Mic P4 key",
+                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
+                                  _mem.settings.pfkey4]))
+        basic.append(pfkey4)
+
+        omode = RadioSetting("settings.omode", "Operation mode",
+                             RadioSettingValueList(LIST_AB,LIST_AB[
+                                 _mem.settings.omode]))
+        basic.append(omode)
+
+        rxcoverm = RadioSetting("settings.rxcoverm", "RX coverage - memory",
+                                RadioSettingValueList(LIST_COVERAGE, 
+                                    LIST_COVERAGE[_mem.settings.rxcoverm]))
+        basic.append(rxcoverm)
+
+        rxcoverv = RadioSetting("settings.rxcoverv", "RX coverage - VFO",
+                                RadioSettingValueList(LIST_COVERAGE, 
+                                    LIST_COVERAGE[_mem.settings.rxcoverv]))
+        basic.append(rxcoverv)
+
+        tot = RadioSetting("settings.tot", "Time out timer [min]",
+                           RadioSettingValueList(LIST_TOT, LIST_TOT[
+                               _mem.settings.tot]))
+        basic.append(tot)
+
+        return top
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        _mem = self._memobj
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        LOG.debug("Using apply callback")
+                        element.run_apply_callback()
+                    elif element.value.get_mutable():
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    LOG.debug(element.get_name())
+                    raise
 
 
     @classmethod
