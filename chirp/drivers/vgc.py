@@ -313,6 +313,16 @@ LIST_DATASQL = ["Busy/TX", "Busy", "TX"]
 # Other settings lists
 LIST_CPUCLK = ["Clock frequency 1", "Clock frequency 2"]
 
+# Work mode settings lists
+LIST_WORK = ["VFO", "Memory System"]
+LIST_WBANDB = ["Air", "H-V", "GR1-V", "GR1-U", "H-U", "GR2"]
+LIST_WBANDA = ["Line-in", "AM", "FM"] + LIST_WBANDB
+LIST_SQL = ["Open"] + ["%s" % x for x in range(1, 10)]
+LIST_STEP = ["Auto", "2.50 KHz", "5.00 KHz", "6.25 KHz", "8.33 KHz",
+             "9.00 KHz", "10.00 KHz", "12.50 KHz", "15.00 KHz", "20.00 KHz",
+             "25.00 KHz", "50.00 KHz", "100.00 KHz", "200.00 KHz"]
+LIST_SMODE = ["F-1", "F-2"]
+
 # valid chars on the LCD
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
@@ -870,7 +880,8 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
         other = RadioSettingGroup("other", "Other Settings")
-        top = RadioSettings(basic, other)
+        work = RadioSettingGroup("work", "Work Mode Settings")
+        top = RadioSettings(basic, other, work)
 
         # Basic
 
@@ -1084,6 +1095,83 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                                   _mem.embedded_msg.line32)))
         other.append(line32)
 
+        # Work
+
+        workmoda = RadioSetting("settings.workmoda", "Work mode A",
+                                RadioSettingValueList(LIST_WORK,LIST_WORK[
+                                    _mem.settings.workmoda]))
+        work.append(workmoda)
+
+        workmodb = RadioSetting("settings.workmodb", "Work mode B",
+                                RadioSettingValueList(LIST_WORK,LIST_WORK[
+                                    _mem.settings.workmodb]))
+        work.append(workmodb)
+
+        wbanda = RadioSetting("settings.wbanda", "Work band A",
+                              RadioSettingValueList(LIST_WBANDA, LIST_WBANDA[
+                                  (_mem.settings.wbanda) - 1]))
+        work.append(wbanda)
+
+        wbandb = RadioSetting("settings.wbandb", "Work band B",
+                              RadioSettingValueList(LIST_WBANDB, LIST_WBANDB[
+                                  (_mem.settings.wbandb) - 4]))
+        work.append(wbandb)
+
+        sqla = RadioSetting("settings.sqla", "Squelch A",
+                            RadioSettingValueList(LIST_SQL, LIST_SQL[
+                                _mem.settings.sqla]))
+        work.append(sqla)
+
+        sqlb = RadioSetting("settings.sqlb", "Squelch B",
+                            RadioSettingValueList(LIST_SQL, LIST_SQL[
+                                _mem.settings.sqlb]))
+        work.append(sqlb)
+
+        stepa = RadioSetting("settings.stepa", "Auto step A",
+                             RadioSettingValueList(LIST_STEP,LIST_STEP[
+                                 _mem.settings.stepa]))
+        work.append(stepa)
+
+        stepb = RadioSetting("settings.stepb", "Auto step B",
+                             RadioSettingValueList(LIST_STEP,LIST_STEP[
+                                 _mem.settings.stepb]))
+        work.append(stepb)
+
+        mrcha = RadioSetting("settings.mrcha", "Current channel A",
+                             RadioSettingValueInteger(0, 499,
+                                 _mem.settings.mrcha))
+        work.append(mrcha)
+
+        mrchb = RadioSetting("settings.mrchb", "Current channel B",
+                             RadioSettingValueInteger(0, 499,
+                                 _mem.settings.mrchb))
+        work.append(mrchb)
+
+        val = _mem.settings.offseta / 100.00
+        offseta = RadioSetting("settings.offseta", "Offset A (0-37.95)",
+                               RadioSettingValueFloat(0, 38.00, val, 0.05, 2))
+        work.append(offseta)
+
+        val = _mem.settings.offsetb / 100.00
+        offsetb = RadioSetting("settings.offsetb", "Offset B (0-79.95)",
+                               RadioSettingValueFloat(0, 80.00, val, 0.05, 2))
+        work.append(offsetb)
+
+        wpricha = RadioSetting("settings.wpricha", "Priority channel A",
+                               RadioSettingValueInteger(0, 499,
+                                   _mem.settings.wpricha))
+        work.append(wpricha)
+
+        wprichb = RadioSetting("settings.wprichb", "Priority channel B",
+                               RadioSettingValueInteger(0, 499,
+                                   _mem.settings.wprichb))
+        work.append(wprichb)
+
+        smode = RadioSetting("settings.smode", "Smart function mode",
+                             RadioSettingValueList(LIST_SMODE,LIST_SMODE[
+                                 _mem.settings.smode]))
+        work.append(smode)
+
         return top
 
     def set_settings(self, settings):
@@ -1120,9 +1208,17 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     elif setting == "line32":
                         setattr(obj, setting, str(element.value).rstrip(
                             " ").ljust(32, "\xFF"))
+                    elif setting == "wbanda":
+                        setattr(obj, setting, int(element.value) + 1)
+                    elif setting == "wbandb":
+                        setattr(obj, setting, int(element.value) + 4)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
+                    elif setting in ["offseta", "offsetb"]:
+                        val = element.value
+                        value = int(val.get_value() * 100)
+                        setattr(obj, setting, value)
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
