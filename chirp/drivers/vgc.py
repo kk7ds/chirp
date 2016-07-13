@@ -1095,6 +1095,75 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                                _mem.settings.tot]))
         basic.append(tot)
 
+        # Timer/Clock: G01-G04
+
+        # G01
+        datefmt = RadioSetting("settings.datefmt", "Date format",
+                               RadioSettingValueList(LIST_DATEFMT,
+                                   LIST_DATEFMT[_mem.settings.datefmt]))
+        basic.append(datefmt)
+
+        timefmt = RadioSetting("settings.timefmt", "Time format",
+                               RadioSettingValueList(LIST_TIMEFMT,
+                                   LIST_TIMEFMT[_mem.settings.timefmt]))
+        basic.append(timefmt)
+
+        timesig = RadioSetting("settings.timesig", "Time signal",
+                               RadioSettingValueBoolean(_mem.settings.timesig))
+        basic.append(timesig)
+
+        tz = RadioSetting("settings.tz", "Time zone",
+                          RadioSettingValueList(LIST_TZ, LIST_TZ[
+                              _mem.settings.tz]))
+        basic.append(tz)
+
+        # Signaling: H01-H06
+
+        bell = RadioSetting("settings.bell", "Bell ringer",
+                            RadioSettingValueList(LIST_BELL, LIST_BELL[
+                                _mem.settings.bell]))
+        basic.append(bell)
+
+        # H02 (per channel)
+
+        dtmfmodenc = RadioSetting("settings.dtmfmodenc", "DTMF mode encode",
+                                  RadioSettingValueBoolean(
+                                      _mem.settings.dtmfmodenc))
+        basic.append(dtmfmodenc)
+
+        dtmfmoddec = RadioSetting("settings.dtmfmoddec", "DTMF mode decode",
+                                  RadioSettingValueBoolean(
+                                      _mem.settings.dtmfmoddec))
+        basic.append(dtmfmoddec)
+
+        # H04 (per channel)
+
+        decbandsel = RadioSetting("settings.decbandsel", "DTMF band select",
+                                  RadioSettingValueList(LIST_AB,LIST_AB[
+                                      _mem.settings.decbandsel]))
+        basic.append(decbandsel)
+
+        sqlexp = RadioSetting("settings.sqlexp", "SQL expansion",
+                              RadioSettingValueBoolean(_mem.settings.sqlexp))
+        basic.append(sqlexp)
+
+        # Pkt: I01-I03
+
+        databnd = RadioSetting("settings.databnd", "Packet data band",
+                               RadioSettingValueList(LIST_DATABND,LIST_DATABND[
+                                   _mem.settings.databnd]))
+        basic.append(databnd)
+
+        dataspd = RadioSetting("settings.dataspd", "Packet data speed",
+                               RadioSettingValueList(LIST_DATASPD,LIST_DATASPD[
+                                   _mem.settings.dataspd]))
+        basic.append(dataspd)
+
+        datasql = RadioSetting("settings.datasql", "Packet data squelch",
+                               RadioSettingValueList(LIST_DATASQL,LIST_DATASQL[
+                                   _mem.settings.datasql]))
+        basic.append(datasql)
+
         # Other
 
         dw = RadioSetting("settings.dw", "Dual watch",
