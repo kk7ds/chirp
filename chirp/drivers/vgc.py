@@ -323,6 +323,18 @@ LIST_STEP = ["Auto", "2.50 KHz", "5.00 KHz", "6.25 KHz", "8.33 KHz",
              "25.00 KHz", "50.00 KHz", "100.00 KHz", "200.00 KHz"]
 LIST_SMODE = ["F-1", "F-2"]
 
+# DTMF settings lists
+LIST_TTDKEY = ["D code"] + ["Send delay %s s" % x for x in range(1, 17)]
+LIST_TT200 = ["%s ms" % x for x in range(50, 210, 10)]
+LIST_TT1000 = ["%s ms" % x for x in range(100, 1050, 50)]
+LIST_TTSIG = ["Code squelch", "Select call"]
+LIST_TTAUTORST = ["Off"] + ["%s s" % x for x in range(1, 16)]
+LIST_TTGRPCODE = ["Off"] + list("ABCD*#")
+LIST_TTINTCODE = DTMF_CHARS
+LIST_TTALERT = ["Off", "Alert tone", "Transpond", "Transpond-ID code",
+                "Transpond-transpond code"]
+LIST_TTAUTOD = ["%s" % x for x in range(1, 10)]
+
 # valid chars on the LCD
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
@@ -874,6 +886,23 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             _mem.revert = 0
             _mem.dname = 1
 
+    def _bbcd2dtmf(self, bcdarr, strlen=16):
+        # doing bbcd, but with support for ABCD*#
+        LOG.debug(bcdarr.get_value())
+        string = ''.join("%02X" % b for b in bcdarr)
+        LOG.debug("@_bbcd2dtmf, received: %s" % string)
+        string = string.replace('E', '*').replace('F', '#')
+        if strlen <= 16:
+            string = string[:strlen]
+        return string
+
+    def _dtmf2bbcd(self, value):
+        dtmfstr = value.get_value()
+        dtmfstr = dtmfstr.replace('*', 'E').replace('#', 'F')
+        dtmfstr = str.ljust(dtmfstr.strip(), 16, "F")
+        bcdarr = list(bytearray.fromhex(dtmfstr))
+        LOG.debug("@_dtmf2bbcd, sending: %s" % bcdarr)
+        return bcdarr
 
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
@@ -881,7 +910,8 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic = RadioSettingGroup("basic", "Basic Settings")
         other = RadioSettingGroup("other", "Other Settings")
         work = RadioSettingGroup("work", "Work Mode Settings")
-        top = RadioSettings(basic, other, work)
+        dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
+        top = RadioSettings(basic, other, work, dtmf)
 
         # Basic
 
@@ -1172,6 +1202,87 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                                  _mem.settings.smode]))
         work.append(smode)
 
+        # dtmf
+
+        ttdkey = RadioSetting("dtmf.ttdkey", "D key function",
+                              RadioSettingValueList(LIST_TTDKEY, LIST_TTDKEY[
+                                  _mem.dtmf.ttdkey]))
+        dtmf.append(ttdkey)
+
+        ttdgt = RadioSetting("dtmf.ttdgt", "Digit time",
+                              RadioSettingValueList(LIST_TT200, LIST_TT200[
+                                  (_mem.dtmf.ttdgt) - 5]))
+        dtmf.append(ttdgt)
+
+        ttint = RadioSetting("dtmf.ttint", "Interval time",
+                              RadioSettingValueList(LIST_TT200, LIST_TT200[
+                                  (_mem.dtmf.ttint) - 5]))
+        dtmf.append(ttint)
+
+        tt1stdgt = RadioSetting("dtmf.tt1stdgt", "1st digit time",
+                                RadioSettingValueList(LIST_TT200, LIST_TT200[
+                                    (_mem.dtmf.tt1stdgt) - 5]))
+        dtmf.append(tt1stdgt)
+
+        tt1stdly = RadioSetting("dtmf.tt1stdly", "1st digit delay time",
+                                RadioSettingValueList(LIST_TT1000, LIST_TT1000[
+                                    (_mem.dtmf.tt1stdly) - 2]))
+        dtmf.append(tt1stdly)
+
+        ttdlyqt = RadioSetting("dtmf.ttdlyqt", "Digit delay when use qt",
+                               RadioSettingValueList(LIST_TT1000, LIST_TT1000[
+                                   (_mem.dtmf.ttdlyqt) - 2]))
+        dtmf.append(ttdlyqt)
+
+        ttsig = RadioSetting("dtmf2.ttsig", "Signal",
+                             RadioSettingValueList(LIST_TTSIG, LIST_TTSIG[
+                                 _mem.dtmf2.ttsig]))
+        dtmf.append(ttsig)
+
+        ttautorst = RadioSetting("dtmf2.ttautorst", "Auto reset time",
+                                 RadioSettingValueList(LIST_TTAUTORST,
+                                     LIST_TTAUTORST[_mem.dtmf2.ttautorst]))
+        dtmf.append(ttautorst)
+
+        if _mem.dtmf2.ttgrpcode > 0x06:
+            val = 0x00
+        else:
+            val = _mem.dtmf2.ttgrpcode
+        ttgrpcode = RadioSetting("dtmf2.ttgrpcode", "Group code",
+                                 RadioSettingValueList(LIST_TTGRPCODE,
+                                     LIST_TTGRPCODE[val]))
+        dtmf.append(ttgrpcode)
+
+        ttintcode = RadioSetting("dtmf2.ttintcode", "Interval code",
+                                 RadioSettingValueList(LIST_TTINTCODE,
+                                     LIST_TTINTCODE[_mem.dtmf2.ttintcode]))
+        dtmf.append(ttintcode)
+
+        if _mem.dtmf2.ttalert > 0x04:
+            val = 0x00
+        else:
+            val = _mem.dtmf2.ttalert
+        ttalert = RadioSetting("dtmf2.ttalert", "Alert tone/transpond",
+                               RadioSettingValueList(LIST_TTALERT,
+                                   LIST_TTALERT[val]))
+        dtmf.append(ttalert)
+
+        ttautod = RadioSetting("dtmf.ttautod", "Auto dial group",
+                               RadioSettingValueList(LIST_TTAUTOD,
+                                   LIST_TTAUTOD[_mem.dtmf.ttautod]))
+        dtmf.append(ttautod)
+
+        # setup 9 dtmf autodial entries
+        for i in map(str, range(1, 10)):
+            objname = "code" + i
+            strname = "Code " + str(i)
+            dtmfsetting = getattr(_mem.dtmfcode, objname)
+            dtmflen = getattr(_mem.dtmfcode, objname + "_len")
+            dtmfstr = self._bbcd2dtmf(dtmfsetting, dtmflen)
+            code = RadioSettingValueString(0, 16, dtmfstr)
+            code.set_charset(DTMF_CHARS + list(" "))
+            rs = RadioSetting("dtmfcode." + objname, strname, code)
+            dtmf.append(rs)
         return top
 
     def set_settings(self, settings):
@@ -1212,13 +1323,23 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                         setattr(obj, setting, int(element.value) + 1)
                     elif setting == "wbandb":
                         setattr(obj, setting, int(element.value) + 4)
-                    elif element.value.get_mutable():
-                        LOG.debug("Setting %s = %s" % (setting, element.value))
-                        setattr(obj, setting, element.value)
                     elif setting in ["offseta", "offsetb"]:
                         val = element.value
                         value = int(val.get_value() * 100)
                         setattr(obj, setting, value)
+                    elif setting in ["ttdgt", "ttint", "tt1stdgt"]:
+                        setattr(obj, setting, int(element.value) + 5)
+                    elif setting == ["tt1stdly", "ttdlyqt"]:
+                        setattr(obj, setting, int(element.value) + 2)
+                    elif re.match('code\d', setting):
+                        # set dtmf length field and then get bcd dtmf
+                        dtmfstrlen = len(str(element.value).strip())
+                        setattr(_mem.dtmfcode, setting + "_len", dtmfstrlen)
+                        dtmfstr = self._dtmf2bbcd(element.value)
+                        setattr(_mem.dtmfcode, setting, dtmfstr)
+                    elif element.value.get_mutable():
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
+                        setattr(obj, setting, element.value)
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
