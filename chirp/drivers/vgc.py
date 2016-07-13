@@ -310,6 +310,9 @@ LIST_DATABND = ["Main band", "Sub band", "Left band-fixed", "Right band-fixed"]
 LIST_DATASPD = ["1200 bps", "9600 bps"]
 LIST_DATASQL = ["Busy/TX", "Busy", "TX"]
 
+# Other settings lists
+LIST_CPUCLK = ["Clock frequency 1", "Clock frequency 2"]
+
 # valid chars on the LCD
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
@@ -866,7 +869,8 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
-        top = RadioSettings(basic)
+        other = RadioSettingGroup("other", "Other Settings")
+        top = RadioSettings(basic, other)
 
         # Basic
 
@@ -1050,6 +1054,36 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                                _mem.settings.tot]))
         basic.append(tot)
 
+        # Other
+
+        dw = RadioSetting("settings.dw", "Dual watch",
+                          RadioSettingValueBoolean(_mem.settings.dw))
+        other.append(dw)
+
+        cpuclk = RadioSetting("settings.cpuclk", "CPU clock frequency",
+                              RadioSettingValueList(LIST_CPUCLK,LIST_CPUCLK[
+                                  _mem.settings.cpuclk]))
+        other.append(cpuclk)
+
+        def _filter(name):
+            filtered = ""
+            for char in str(name):
+                if char in VALID_CHARS:
+                    filtered += char
+                else:
+                    filtered += " "
+            return filtered
+
+        line16 = RadioSetting("poweron_msg.line16", "Power-on message",
+                              RadioSettingValueString(0, 16, _filter(
+                                  _mem.poweron_msg.line16)))
+        other.append(line16)
+
+        line32 = RadioSetting("embedded_msg.line32", "Embedded message",
+                              RadioSettingValueString(0, 32, _filter(
+                                  _mem.embedded_msg.line32)))
+        other.append(line32)
+
         return top
 
     def set_settings(self, settings):
@@ -1080,6 +1114,12 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
+                    elif setting == "line16":
+                        setattr(obj, setting, str(element.value).rstrip(
+                            " ").ljust(16, "\xFF"))
+                    elif setting == "line32":
+                        setattr(obj, setting, str(element.value).rstrip(
+                            " ").ljust(32, "\xFF"))
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
