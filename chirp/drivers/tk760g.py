@@ -717,8 +717,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio):
              'and raise and issue on the chirp site about it and maybe'
              'it will be implemented in the future.'
              ''
-             'A detail: this driver is slow reading from the radio in'
-             'Windows, due to the way windows serial works.'
+             'The band limits of some variants in this radio family are widen'
+             'than the OEM to cover the ham bands, be careful with this.'
              )
         rp.pre_download = _(dedent("""\
             Follow this instructions to download your info:
@@ -1519,17 +1519,27 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio):
 # Mobiles VHF TK-760/762/768
 # Mobiles VHF TK-860/862/868
 #
-# Just dealing with VHF models at moment,
-# this are the radios I can get in hand
 
-# WARNING !!!! Radios With Password in the data section <=###############
+# WARNING !!!! Radios With Password in the data section ###############
 #
 # when a radio has a data password (aka to program it) the last byte (#8)
 # in the id code change from \xf1 to \xb1; so we remove this last byte
 # from the identification procedures and variants.
 #
-# this effectively render the data password USELESS even if set.
-# this can change if user request it with high priority
+# this effectively render the data password USELESS even if set using Chirp ;-)
+# this can change if user/dealer request it with high priority
+
+# WARNING !!!! the band limits on some of this radios are set here far from the
+# vendor limits to cover most of the ham bands. It's a known fact that this
+# radios can work safely outside the OEM limits, but each radio is different,
+# you may find in trouble with some particular radios, but this is also
+# possible with the OEM software, as usual YMMV.
+#
+# Thanks to Stephen (GN5SWP) with is work characterizing some of the members of
+# this family about the safe band limits.
+#
+# in the radios with mod band limits you will find a comment next to it with
+# the OEM limits just for the record.
 
 @directory.register
 class TK868G_Radios(Kenwood_Serie_60G):
@@ -1539,8 +1549,8 @@ class TK868G_Radios(Kenwood_Serie_60G):
     VARIANTS = {
         "M8680\x18\xff":    (8, 400, 490, "M"),
         "M8680;\xff":       (128, 350, 390, "C1"),
-        "M86808\xff":       (128, 400, 440, "C2"),   # 400-430Mhz original
-        "M86806\xff":       (128, 450, 490, "C3"),
+        "M86808\xff":       (128, 400, 450, "C2"),   # 400-430Mhz original
+        "M86806\xff":       (128, 430, 490, "C3"),   # 450-490Mhz original
         }
 
 
@@ -1552,8 +1562,8 @@ class TK862G_Radios(Kenwood_Serie_60G):
     VARIANTS = {
         "M8620\x06\xff":    (8, 450, 490, "K"),
         "M8620\x07\xff":    (8, 485, 512, "K2"),
-        "M8620&\xff":       (8, 440, 470, "E"),
-        "M8620V\xff":       (8, 440, 470, "(N)E"),
+        "M8620&\xff":       (8, 430, 470, "E"),     # 440-470Mhz original
+        "M8620V\xff":       (8, 430, 470, "(N)E"),  # 440-470Mhz original
         }
 
 
@@ -1563,11 +1573,11 @@ class TK860G_Radios(Kenwood_Serie_60G):
     MODEL = "TK-860G"
     TYPE = "M8600"
     VARIANTS = {
-        "M8600\x08\xff":    (128, 400, 440, "K"),   # 400-430Mhz original
-        "M8600\x06\xff":    (128, 450, 490, "K1"),
+        "M8600\x08\xff":    (128, 400, 450, "K"),   # 400-430Mhz original
+        "M8600\x06\xff":    (128, 430, 490, "K1"),  # 450-490Mhz original
         "M8600\x07\xff":    (128, 485, 512, "K2"),
-        "M8600\x18\xff":    (128, 400, 440, "M"),   # 400-430Mhz original
-        "M8600\x16\xff":    (128, 450, 490, "M1"),
+        "M8600\x18\xff":    (128, 400, 450, "M"),   # 400-430Mhz original
+        "M8600\x16\xff":    (128, 430, 490, "M1"),  # 450-490Mhz original
         "M8600\x17\xff":    (128, 485, 520, "M2"),
         }
 
@@ -1607,9 +1617,9 @@ class TK760G_Radios(Kenwood_Serie_60G):
     TYPE = "M7600"
     VARIANTS = {
         "M7600\x05\xff": (128, 136, 162, "K2"),
-        "M7600\x04\xff": (128, 144, 174, "K"),   # 148-174 original
-        "M7600\x14\xff": (128, 144, 174, "M"),   # 148-174 original
-        "M7600T\xff":    (128, 144, 174, "NE")   # 148-174 original
+        "M7600\x04\xff": (128, 138, 174, "K"),   # 148-174 original
+        "M7600\x14\xff": (128, 138, 174, "M"),   # 148-174 original
+        "M7600T\xff":    (128, 138, 174, "NE")   # 148-174 original
         }
 
 
@@ -1621,9 +1631,9 @@ class TK278G_Radios(Kenwood_Serie_60G):
     # Note that 16 CH don't have banks
     VARIANTS = {
         "P27805\xff":    (128, 136, 150, "C1"),
-        "P27804\xff":    (128, 150, 174, "C"),
+        "P27804\xff":    (128, 144, 174, "C"),   # 150-174 original
         "P2780\x15\xff": (16,  136, 150, "M1"),
-        "P2780\x14\xff": (16,  150, 174, "M")
+        "P2780\x14\xff": (16,  144, 174, "M")    # 150-174 original
         }
 
 
@@ -1634,7 +1644,7 @@ class TK272G_Radios(Kenwood_Serie_60G):
     TYPE = "P2720"
     VARIANTS = {
         "P2720\x05\xfb": (32, 136, 150, "K1"),
-        "P2720\x04\xfb": (32, 150, 174, "K")
+        "P2720\x04\xfb": (32, 144, 174, "K")     # 150-174 original
         }
 
 
@@ -1646,9 +1656,9 @@ class TK270G_Radios(Kenwood_Serie_60G):
     VARIANTS = {
         "P2700T\xff":    (128, 144, 174, "NE/NT"),   # 146-174 original
         "P2700$\xff":    (128, 144, 174, "E"),       # 146-174 original
-        "P2700\x14\xff": (128, 150, 174, "M"),
+        "P2700\x14\xff": (128, 144, 174, "M"),       # 150-174 original
         "P2700\x05\xff": (128, 136, 150, "K1"),
-        "P2700\x04\xff": (128, 150, 174, "K"),
+        "P2700\x04\xff": (128, 144, 174, "K")        # 150-174 original
         }
 
 
@@ -1662,7 +1672,7 @@ class TK260G_Radios(Kenwood_Serie_60G):
         "P2600U\xff":    (8, 136, 150, "N1"),
         "P2600T\xff":    (8, 144, 174, "N"),   # 146-174 original
         "P2600$\xff":    (8, 144, 174, "E"),   # 144-174 original
-        "P2600\x14\xff": (8, 150, 174, "M"),
+        "P2600\x14\xff": (8, 144, 174, "M"),   # 150-174 original
         "P2600\x05\xff": (8, 136, 150, "K1"),
-        "P2600\x04\xff": (8, 150, 174, "K")
+        "P2600\x04\xff": (8, 144, 174, "K")    # 150-174 original
         }
