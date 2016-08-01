@@ -356,11 +356,18 @@ def finish(radio):
     ack = radio.pipe.read(8)
 
 
+# Declaring Aliases
+class LT898UV(chirp_common.Alias):
+    VENDOR = "LUITON"
+    MODEL = "LT-898UV"
+
+
 @directory.register
 class LeixenVV898Radio(chirp_common.CloneModeRadio):
     """Leixen VV-898"""
     VENDOR = "Leixen"
     MODEL = "VV-898"
+    ALIASES = [LT898UV, ]
     BAUD_RATE = 9600
 
     _file_ident = "Leixen"
