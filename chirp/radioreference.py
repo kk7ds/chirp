@@ -98,7 +98,10 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
             for cat in agency.cats:
                 LOG.debug("Fetching category:", cat.cName)
                 for subcat in cat.subcats:
-                    LOG.debug("\t", subcat.scName)
+                    try:
+                        LOG.debug("\t", subcat.scName)
+                    except AttributeError:
+                        pass
                     result = self._client.service.getSubcatFreqs(subcat.scid,
                                                                  self._auth)
                     self._freqs += result
