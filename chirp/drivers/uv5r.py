@@ -284,7 +284,7 @@ BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS", "D5R2"]
 BASETYPE_F11 = ["USA"]
 BASETYPE_UV82 = ["US2S", "B82S", "BF82", "N82-2", "N822"]
 BASETYPE_BJ55 = ["BJ55"]  # needed for for the Baojie UV-55 in bjuv55.py
-BASETYPE_UV6 = ["BF1"]
+BASETYPE_UV6 = ["BF1", "UV6"]
 BASETYPE_KT980HP = ["BFP3V3 B"]
 BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3", "BFT"]
 BASETYPE_UV82HP = ["N82-3", "N823"]
@@ -411,9 +411,40 @@ def _do_ident(radio, magic):
         raise errors.RadioError("Radio did not respond")
 
     serial.write("\x02")
-    ident = serial.read(8)
 
-    LOG.info("Ident: %s" % util.hexprint(ident))
+    # Until recently, the "ident" returned by the radios supported by this
+    # driver have always been 8 bytes long. The image sturcture is the 8 byte
+    # "ident" followed by the downloaded memory data. So all of the settings
+    # structures are offset by 8 bytes. The ident returned from a UV-6 radio
+    # can be 8 bytes (original model) or now 12 bytes.
+    #
+    # To accomodate this, the "ident" is now read one byte at a time until the
+    # last byte ("\xdd") is encountered. The bytes containing the value "\x01"
+    # are discarded to shrink the "ident" length down to 8 bytes to keep the
+    # image data aligned with the existing settings structures.
+
+    # Ok, get the response
+    ident = ""
+    for i in range(1, 13):
+        response = serial.read(1)
+        # discard any bytes containing "\x01" and keep the rest
+        if response != "\x01":
+            ident += response
+        # stop reading once the last byte ("\xdd") is encountered
+        if response == "\xdd":
+            break
+
+    # check if response is OK
+    if len(ident) != 8 or not ident.startswith("\xaa"):
+        # bad response
+        msg = "Unexpected response, got this:"
+        msg += util.hexprint(ident)
+        LOG.debug(msg)
+        raise errors.RadioError("Unexpected response from radio.")
+
+    # DEBUG
+    LOG.info("Valid response, got this:")
+    LOG.debug(util.hexprint(ident))
 
     serial.write("\x06")
     ack = serial.read(1)
