@@ -114,7 +114,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
     MODES = ["FM", "NFM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
         "!@#$%^&*()+-=[]:\";'<>?,./"
-    LENGTH_NAME = 7
+    LENGTH_NAME = 6
     SKIP_VALUES = ["", "S"]
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
@@ -281,8 +281,8 @@ class UV6R(baofeng_common.BaofengCommonHT):
 
     #seekto 0x1000;
     struct {
-      char name[7];
-      u8 unknown[9];
+      char name[6];
+      u8 unknown[10];
     } names[128];
 
     #seekto 0x1F40;
