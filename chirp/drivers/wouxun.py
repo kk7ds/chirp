@@ -887,6 +887,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and \
                 filedata[0x60:0x64] != "2009" and \
+                filedata[0x170:0x173] != "LX-" and \
                 filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
                 filedata[0x0d70:0x0d80] == "\xff\xff\xff\xff\xff\xff\xff\xff" \
                                            "\xff\xff\xff\xff\xff\xff\xff\xff":
