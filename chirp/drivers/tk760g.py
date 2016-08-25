@@ -1,4 +1,4 @@
-# Copyright 2016 Pavel Milanes CO7WT, <co7wt@frcuba.co.cu> <pavelmc@gmail.com>
+# Copyright 2016 Pavel Milanes, CO7WT, <pavelmc@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -295,6 +295,9 @@ SQL = ["off"] + ["%s" % x for x in range(1, 10)]
 ## BOT = 0, EOT = 1, Both = 2, NONE = 3
 #PTTID = ["BOT", "EOT", "Both", "none"]
 
+# For debugging purposes
+debug = False
+
 KEYS = {
     0x33: "Display character",
     0x35: "Home Channel",                   # Posible portable only, chek it
@@ -336,6 +339,10 @@ def _raw_recv(radio, amount):
     except:
         raise errors.RadioError("Error reading data from radio")
 
+    # DEBUG
+    if debug is True:
+        LOG.debug("<== (%d) bytes:\n\n%s" % (len(data), util.hexprint(data)))
+
     return data
 
 
@@ -345,6 +352,10 @@ def _raw_send(radio, data):
         radio.pipe.write(data)
     except:
         raise errors.RadioError("Error sending data to radio")
+
+    # DEBUG
+    if debug is True:
+        LOG.debug("==> (%d) bytes:\n\n%s" % (len(data), util.hexprint(data)))
 
 
 def _close_radio(radio):
@@ -441,7 +452,7 @@ def _recv(radio):
 def _open_radio(radio, status):
     """Open the radio into program mode and check if it's the correct model"""
     # linux min is 0.13, win min is 0.25; set to bigger to be safe
-    radio.pipe.timeout = 0.25
+    radio.pipe.timeout = 0.4
     radio.pipe.parity = "E"
 
     # DEBUG
@@ -462,7 +473,7 @@ def _open_radio(radio, status):
 
         if ack != ACK_CMD:
             # DEBUG
-            LOG.debug("Try %s failed, traying again...")
+            LOG.debug("Try %s failed, traying again..." % i)
             time.sleep(0.25)
         else:
             exito = True
@@ -474,7 +485,7 @@ def _open_radio(radio, status):
 
     if exito is False:
         _close_radio(radio)
-        LOG.debug("Radio did not accepted PROGRAM command in five atempts")
+        LOG.debug("Radio did not accepted PROGRAM command in %s atempts" % tries)
         raise errors.RadioError("The radio doesn't accept program mode")
 
     # DEBUG
@@ -717,8 +728,15 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio):
              'and raise and issue on the chirp site about it and maybe'
              'it will be implemented in the future.'
              ''
-             'The band limits of some variants in this radio family are widen'
-             'than the OEM to cover the ham bands, be careful with this.'
+             'The band limits on some of this radios are set here far from'
+             'the vendor limits to cover most of the ham bands. It is a'
+             'known fact that this radios can work safely outside the OEM'
+             'limits, but each radio is different, you may find in trouble'
+             'with some particular radios, but this is also possible with'
+             'the OEM software; as usual YMMV.'
+             ''
+             'A detail: this driver is slow reading from the radio in'
+             'Windows, due to the way windows serial works.'
              )
         rp.pre_download = _(dedent("""\
             Follow this instructions to download your info:
@@ -1513,33 +1531,33 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio):
 # This kenwwood family is known as "60-G Serie"
 # all this radios ending in G are compatible:
 #
-# Portables VHF TK-260/270/272/278
-# Portables UHF TK-360/370/372/378/388
+# Portables VHF TK-260G/270G/272G/278G
+# Portables UHF TK-360G/370G/372G/378G/388G
 #
-# Mobiles VHF TK-760/762/768
-# Mobiles VHF TK-860/862/868
+# Mobiles VHF TK-760G/762G/768G
+# Mobiles VHF TK-860G/862G/868G
 #
-
 # WARNING !!!! Radios With Password in the data section ###############
 #
 # when a radio has a data password (aka to program it) the last byte (#8)
 # in the id code change from \xf1 to \xb1; so we remove this last byte
 # from the identification procedures and variants.
 #
-# this effectively render the data password USELESS even if set using Chirp ;-)
-# this can change if user/dealer request it with high priority
-
+# This effectively render the data password USELESS even if set.
+# This can change if user request it with high priority
+#
 # WARNING !!!! the band limits on some of this radios are set here far from the
 # vendor limits to cover most of the ham bands. It's a known fact that this
 # radios can work safely outside the OEM limits, but each radio is different,
 # you may find in trouble with some particular radios, but this is also
 # possible with the OEM software, as usual YMMV.
 #
-# Thanks to Stephen (GN5SWP) with is work characterizing some of the members of
+# Thanks to Stephen (GN5SWP) with his work characterizing some of the members of
 # this family about the safe band limits.
 #
-# in the radios with mod band limits you will find a comment next to it with
+# In the radios with mod band limits you will find a comment next to it with
 # the OEM limits just for the record.
+
 
 @directory.register
 class TK868G_Radios(Kenwood_Serie_60G):
@@ -1624,6 +1642,81 @@ class TK760G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
+class TK388G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-388 Radio [K/E/M/NE]"""
+    MODEL = "TK-388G"
+    TYPE = "P3880"
+    VARIANTS = {
+        "P3880\x1b\xff": (128, 350, 370, "M")
+        }
+
+
+@directory.register
+class TK378G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-378 Radio [K/E/M/NE]"""
+    MODEL = "TK-378G"
+    TYPE = "P3780"
+    VARIANTS = {
+        "P3780\x16\xff": (16, 440, 470, "M"),          # 450-470 Mhz original
+        "P3780\x17\xff": (16, 400, 430, "M1"),         # 400-420 Mhz original
+        "P3780\x36\xff": (128, 490, 512, "C"),
+        "P3780\x39\xff": (128, 403, 440, "C1")         # 403-430 Mhz original
+        }
+
+
+@directory.register
+class TK372G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-372 Radio [K/E/M/NE]"""
+    MODEL = "TK-372G"
+    TYPE = "P3720"
+    VARIANTS = {
+        "P3720\x06\xff": (32, 440, 470, "K"),        # 450-470 Mhz original
+        "P3720\x07\xff": (32, 470, 490, "K1"),
+        "P3720\x08\xff": (32, 490, 512, "K2"),
+        "P3720\x09\xff": (32, 403, 440, "K3")        # 403-430 Mhz original
+        }
+
+
+@directory.register
+class TK370G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-370 Radio [K/E/M/NE]"""
+    MODEL = "TK-370G"
+    TYPE = "P3700"
+    VARIANTS = {
+        "P3700\x06\xff": (128, 440, 470, "K"),      # 450-470 Mhz original
+        "P3700\x07\xff": (128, 470, 490, "K1"),
+        "P3700\x08\xff": (128, 490, 512, "K2"),
+        "P3700\x09\xff": (128, 403, 440, "K3"),     # 403-430 Mhz original
+        "P3700\x16\xff": (128, 440, 470, "M"),      # 450-470 Mhz original
+        "P3700\x17\xff": (128, 470, 490, "M1"),
+        "P3700\x18\xff": (128, 490, 520, "M2"),
+        "P3700\x19\xff": (128, 403, 440, "M3"),     # 403-430 Mhz original
+        "P3700&\xff": (128, 430, 470, "E"),         # 440-470 Mhz original
+        "P3700V\xff": (128, 430, 470, "NE")         # 440-470 Mhz original
+        }
+
+
+@directory.register
+class TK360G_Radios(Kenwood_Serie_60G):
+    """Kenwood TK-360 Radio [K/E/M/NE]"""
+    MODEL = "TK-360G"
+    TYPE = "P3600"
+    VARIANTS = {
+        "P3600\x06\xff": (8, 440, 470, "K"),        # 450-470 Mhz original
+        "P3600\x07\xff": (8, 470, 490, "K1"),
+        "P3600\x08\xff": (8, 490, 512, "K2"),
+        "P3600\x09\xff": (8, 403, 440, "K3"),       # 403-430 Mhz original
+        "P3600&\xff": (8, 430, 470, "E"),           # 440-470 Mhz original
+        "P3600)\xff": (8, 406, 440, "E1"),          # 403-430 Mhz original
+        "P3600\x16\xff": (8, 440, 470, "M"),        # 450-470 Mhz original
+        "P3600\x17\xff": (8, 470, 490, "M1"),
+        "P3600\x19\xff": (8, 403, 440, "M2"),       # 403-430 Mhz original
+        "P3600V\xff": (8, 430, 470, "NE"),          # 440-470 Mhz original
+        "P3600Y\xff": (8, 403, 440, "NE1")          # 403-430 Mhz original
+        }
+
+
+@directory.register
 class TK278G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-278G Radio C/C1/M/M1"""
     MODEL = "TK-278G"
@@ -1631,9 +1724,9 @@ class TK278G_Radios(Kenwood_Serie_60G):
     # Note that 16 CH don't have banks
     VARIANTS = {
         "P27805\xff":    (128, 136, 150, "C1"),
-        "P27804\xff":    (128, 144, 174, "C"),   # 150-174 original
+        "P27804\xff":    (128, 144, 174, "C"),      # 150-174 original
         "P2780\x15\xff": (16,  136, 150, "M1"),
-        "P2780\x14\xff": (16,  144, 174, "M")    # 150-174 original
+        "P2780\x14\xff": (16,  144, 174, "M")       # 150-174 original
         }
 
 
@@ -1644,7 +1737,7 @@ class TK272G_Radios(Kenwood_Serie_60G):
     TYPE = "P2720"
     VARIANTS = {
         "P2720\x05\xfb": (32, 136, 150, "K1"),
-        "P2720\x04\xfb": (32, 144, 174, "K")     # 150-174 original
+        "P2720\x04\xfb": (32, 144, 174, "K")        # 150-174 original
         }
 
 
@@ -1670,9 +1763,9 @@ class TK260G_Radios(Kenwood_Serie_60G):
     TYPE = "P2600"
     VARIANTS = {
         "P2600U\xff":    (8, 136, 150, "N1"),
-        "P2600T\xff":    (8, 144, 174, "N"),   # 146-174 original
-        "P2600$\xff":    (8, 144, 174, "E"),   # 144-174 original
-        "P2600\x14\xff": (8, 144, 174, "M"),   # 150-174 original
+        "P2600T\xff":    (8, 144, 174, "N"),        # 146-174 original
+        "P2600$\xff":    (8, 144, 174, "E"),        # 144-174 original
+        "P2600\x14\xff": (8, 144, 174, "M"),        # 150-174 original
         "P2600\x05\xff": (8, 136, 150, "K1"),
-        "P2600\x04\xff": (8, 144, 174, "K")    # 150-174 original
+        "P2600\x04\xff": (8, 144, 174, "K")         # 150-174 original
         }
