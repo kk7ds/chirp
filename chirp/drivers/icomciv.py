@@ -51,6 +51,35 @@ u8   dtcs_polarity_tx;
 bbcd dtcs_tx[2];
 char name[9];
 """
+
+MEM_IC7100_FORMAT = """
+u8   bank;                 // 1 bank number
+bbcd number[2];            // 2,3
+u8   splitSelect;          // 4 split and select memory settings
+lbcd freq[5];              // 5-9 operating freq
+u8   mode;                 // 10 operating mode
+u8   filter;               // 11 filter
+u8   dataMode;             // 12 data mode setting (on or off)
+u8   duplex:4,             // 13 duplex on/-/+
+     tmode:4;              // 13 tone
+u8   dsql:4,               // 14 digital squelch
+     unknown1:4;           // 14 zero
+bbcd rtone[3];             // 15-17 repeater tone freq
+bbcd ctone[3];             // 18-20 tone squelch setting
+u8   dtcsPolarity;         // 21 DTCS polarity
+u8   unknown2:4,           // 22 zero
+     firstDtcs:4;          // 22 first digit of DTCS code
+u8   secondDtcs:4,         // 23 second digit DTCS
+     thirdDtcs:4;          // 23 third digit DTCS
+u8   digitalSquelch;       // 24 Digital code squelch setting
+u8   duplexOffset[3];      // 25-27 duplex offset freq
+char destCall[8];          // 28-35 destination call sign
+char accessRepeaterCall[8];// 36-43 access repeater call sign
+char linkRepeaterCall[8];  // 44-51 gateway/link repeater call sign
+bbcd duplexSettings[47];   // repeat of 5-51 for duplex
+char name[16];             // 52-60 Name of station
+"""
+
 mem_duptone_format = """
 bbcd number[2];
 u8   unknown1;
@@ -169,6 +198,7 @@ class MemFrame(Frame):
 
 class BankMemFrame(MemFrame):
     """A memory frame for radios with multiple banks"""
+    FORMAT = MEM_IC7000_FORMAT
     _bnk = 0
 
     def set_location(self, loc, bank=1):
@@ -185,7 +215,11 @@ class BankMemFrame(MemFrame):
 
     def get_obj(self):
         self._data = MemoryMap(str(self._data))  # Make sure we're assignable
-        return bitwise.parse(MEM_IC7000_FORMAT, self._data)
+        return bitwise.parse(self.FORMAT, self._data)
+
+
+class IC7100MemFrame(BankMemFrame):
+    FORMAT = MEM_IC7100_FORMAT
 
 
 class DupToneMemFrame(MemFrame):
@@ -204,8 +238,12 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     # complete list of modes from CI-V documentation
     # each radio supports a subset
     # WARNING: "S-AM" and "PSK" are not valid (yet) for chirp
-    _MODES = ["LSB", "USB", "AM", "CW", "RTTY",
-              "FM", "WFM", "CWR", "RTTYR", "S-AM", "PSK"]
+    _MODES = [
+        "LSB", "USB", "AM", "CW", "RTTY", "FM", "WFM", "CWR"
+        "RTTYR", "S-AM", "PSK", None, None, None, None, None,
+        None, None, None, None, None, None, None, None,
+        "DV",
+    ]
 
     def mem_to_ch_bnk(self, mem):
         l, h = self._bank_index_bounds
@@ -332,7 +370,24 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             pass
 
         mem.freq = int(memobj.freq)
-        mem.mode = self._MODES[memobj.mode]
+        try:
+            mem.mode = self._MODES[memobj.mode]
+
+            # We do not know what a variety of the positions between
+            # PSK and DV mean, so let's behave as if those values
+            # are not set to maintain consistency between known-unknown
+            # values and unknown-unknown ones.
+            if mem.mode is None:
+                raise IndexError(memobj.mode)
+        except IndexError:
+            LOG.error(
+                "Bank %s location %s is set for mode %s, but no known "
+                "mode matches that value.",
+                int(memobj.bank),
+                int(memobj.number),
+                repr(memobj.mode),
+            )
+            raise
 
         if self._rf.has_name:
             mem.name = str(memobj.name).rstrip()
@@ -435,7 +490,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         memobj.freq = int(mem.freq)
         memobj.mode = self._MODES.index(mem.mode)
         if self._rf.has_name:
-            memobj.name = mem.name.ljust(9)[:9]
+            name_length = len(memobj.name.get_value())
+            memobj.name = mem.name.ljust(name_length)[:name_length]
 
         if self._rf.valid_tmodes:
             memobj.tmode = self._rf.valid_tmodes.index(mem.tmode)
@@ -541,6 +597,41 @@ class Icom7000Radio(IcomCIVRadio):
 
 
 @directory.register
+class Icom7100Radio(IcomCIVRadio):
+    """Icom IC-7100"""
+    MODEL = "IC-7100"
+    _model = "\x88"
+    _template = 102
+
+    _num_banks = 5
+    _bank_index_bounds = (1, 99)
+    _bank_class = icf.IcomBank
+
+    def _initialize(self):
+        self._classes["mem"] = IC7100MemFrame
+        self._rf.has_bank = True
+        self._rf.has_bank_index = False
+        self._rf.has_bank_names = False
+        self._rf.has_dtcs_polarity = False
+        self._rf.has_dtcs = False
+        self._rf.has_ctone = True
+        self._rf.has_offset = False
+        self._rf.has_name = True
+        self._rf.has_tuning_step = False
+        self._rf.valid_modes = [
+            "LSB", "USB", "AM", "CW", "RTTY", "FM", "WFM", "CWR", "RTTYR", "DV"
+        ]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        self._rf.valid_duplexes = ["", "-", "+"]
+        self._rf.valid_bands = [(30000, 199999999), (400000000, 470000000)]
+        self._rf.valid_tuning_steps = []
+        self._rf.valid_skips = []
+        self._rf.valid_name_length = 16
+        self._rf.valid_characters = chirp_common.CHARSET_ASCII
+        self._rf.memory_bounds = (0, 99 * self._num_banks - 1)
+
+
+@directory.register
 class Icom746Radio(IcomCIVRadio):
     """Icom IC-746"""
     MODEL = "746"
@@ -571,6 +662,7 @@ class Icom746Radio(IcomCIVRadio):
 
 CIV_MODELS = {
     (0x76, 0xE0): Icom7200Radio,
+    (0x88, 0xE0): Icom7100Radio,
     (0x70, 0xE0): Icom7000Radio,
     (0x46, 0xE0): Icom746Radio,
 }
