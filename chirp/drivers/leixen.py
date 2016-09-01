@@ -521,11 +521,12 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               opts, opts[_mem.tailcut]))
         mem.extra.append(rs)
+        apro = _mem.apro if _mem.apro < 0x5 else 0
         opts = ["Off", "Compander", "Scrambler", "TX Scrambler",
                 "RX Scrambler"]
         rs = RadioSetting("apro", "Audio Processing",
                           RadioSettingValueList(
-                              opts, opts[_mem.apro]))
+                              opts, opts[apro]))
         mem.extra.append(rs)
         opts = ["On", "Off"]
         rs = RadioSetting("voxoff", "VOX",
