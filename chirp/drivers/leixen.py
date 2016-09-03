@@ -356,15 +356,6 @@ def finish(radio):
     ack = radio.pipe.read(8)
 
 
-class LeixenMemory(chirp_common.Memory):
-    '''Leixen memory which supports non-standard tones and codes'''
-    def __init__(self):
-        chirp_common.Memory.__init__(self)
-
-        self._valid_map["rtone"] = TONES
-        self._valid_map["ctone"] = TONES
-
-
 # Declaring Aliases
 class LT898UV(chirp_common.Alias):
     VENDOR = "LUITON"
@@ -475,7 +466,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[number - 1]
         _name = self._memobj.name[number - 1]
 
-        mem = LeixenMemory()
+        mem = chirp_common.Memory()
         mem.number = number
 
         if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
