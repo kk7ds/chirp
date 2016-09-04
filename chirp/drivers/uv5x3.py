@@ -50,12 +50,14 @@ LIST_AB = ["A", "B"]
 LIST_ALMOD = ["Site", "Tone", "Code"]
 LIST_BANDWIDTH = ["Wide", "Narrow"]
 LIST_COLOR = ["Off", "Blue", "Orange", "Purple"]
+LIST_DELAYPROCTIME = ["%s ms" % x for x in range(100, 4100, 100)]
 LIST_DTMFSPEED = ["%s ms" % x for x in range(50, 2010, 10)]
 LIST_DTMFST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
 LIST_MODE = ["Channel", "Name", "Frequency"]
 LIST_OFF1TO9 = ["Off"] + list("123456789")
 LIST_OFF1TO10 = LIST_OFF1TO9 + ["10"]
 LIST_OFFAB = ["Off"] + LIST_AB
+LIST_RESETTIME = ["%s ms" % x for x in range(100, 16100, 100)]
 LIST_RESUME = ["TO", "CO", "SE"]
 LIST_PONMSG = ["Full", "Message"]
 LIST_PTTID = ["Off", "BOT", "EOT", "Both"]
@@ -145,6 +147,53 @@ class UV5X3(baofeng_common.BaofengCommonHT):
          scan:1,
          pttid:2;
     } memory[128];
+
+    #seekto 0x0B00;
+    struct {
+      u8 code[16];
+    } pttid[15];
+
+    #seekto 0x0C80;
+    struct {
+      u8 inspection[8];
+      u8 monitor[8];        
+      u8 alarmcode[8];      
+      u8 stun[8];           
+      u8 kill[8];           
+      u8 revive[8];         
+      u8 code[7];           
+      u8 unknown06;
+      u8 dtmfon;            
+      u8 dtmfoff;           
+      u8 unused00:6,        
+         aniid:2;
+      u8 unknown07[5];
+      u8 masterid[5];       
+      u8 unknown08[3];
+      u8 viceid[5];
+      u8 unknown09[3];
+      u8 unused01:7,
+         mastervice:1;
+      u8 unused02:3,     
+         mrevive:1,
+         mkill:1,
+         mstun:1,
+         mmonitor:1,
+         minspection:1;
+      u8 unused03:3,     
+         vrevive:1,
+         vkill:1,
+         vstun:1,
+         vmonitor:1,
+         vinspection:1;
+      u8 unused04:6,
+         txdisable:1,
+         rxdisable:1;
+      u8 groupcode;
+      u8 spacecode;
+      u8 delayproctime;
+      u8 resettime;
+    } ani;
 
     #seekto 0x0E20;
     struct {
@@ -368,8 +417,11 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         other = RadioSettingGroup("other", "Other Settings")
         work = RadioSettingGroup("work", "Work Mode Settings")
         fm_preset = RadioSettingGroup("fm_preset", "FM Preset")
+        dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
+        dtmfd = RadioSettingGroup("dtmfd", "DTMF Decode Settings")
         service = RadioSettingGroup("service", "Service Settings")
-        top = RadioSettings(basic, advanced, other, work, fm_preset, service)
+        top = RadioSettings(basic, advanced, other, work, fm_preset, dtmfe,
+                            dtmfd, service)
 
         # Basic settings
         if _mem.settings.squelch > 0x09:
@@ -825,6 +877,259 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("fm_presets", "FM Preset(MHz)",
                           RadioSettingValueFloat(65, 108.0, preset, 0.1, 1))
         fm_preset.append(rs)
+
+        # DTMF encode settings
+        for i in range(0, 15):
+            _codeobj = self._memobj.pttid[i].code
+            _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+            val = RadioSettingValueString(0, 16, _code, False)
+            val.set_charset(DTMF_CHARS)
+            rs = RadioSetting("pttid/%i.code" % i,
+                              "Signal Code %i" % (i + 1), val)
+
+            def apply_code(setting, obj):
+                code = []
+                for j in range(0, 16):
+                    try:
+                        code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                    except IndexError:
+                        code.append(0xFF)
+                obj.code = code
+            rs.set_apply_callback(apply_code, self._memobj.pttid[i])
+            dtmfe.append(rs)
+
+        if _mem.ani.dtmfon > 0xC3:
+            val = 0x03
+        else:
+            val = _mem.ani.dtmfon
+        rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
+                          RadioSettingValueList(LIST_DTMFSPEED,
+                                                LIST_DTMFSPEED[val]))
+        dtmfe.append(rs)
+
+        if _mem.ani.dtmfoff > 0xC3:
+            val = 0x03
+        else:
+            val = _mem.ani.dtmfoff
+        rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
+                          RadioSettingValueList(LIST_DTMFSPEED,
+                                                LIST_DTMFSPEED[val]))
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.ani.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 7, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.code", "ANI Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 7):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.code = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfe.append(rs)
+
+        rs = RadioSetting("ani.aniid", "When to send ANI ID",
+                          RadioSettingValueList(LIST_PTTID,
+                                                LIST_PTTID[_mem.ani.aniid]))
+        dtmfe.append(rs)
+
+        # DTMF decode settings
+        rs = RadioSetting("ani.mastervice", "Master and Vice ID",
+                          RadioSettingValueBoolean(_mem.ani.mastervice))
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.masterid
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.masterid", "Master Control ID", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 5):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.masterid = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.minspection", "Master Inspection",
+                          RadioSettingValueBoolean(_mem.ani.minspection))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.mmonitor", "Master Monitor",
+                          RadioSettingValueBoolean(_mem.ani.mmonitor))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.mstun", "Master Stun",
+                          RadioSettingValueBoolean(_mem.ani.mstun))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.mkill", "Master Kill",
+                          RadioSettingValueBoolean(_mem.ani.mkill))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.mrevive", "Master Revive",
+                          RadioSettingValueBoolean(_mem.ani.mrevive))
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.viceid
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.viceid", "Vice Control ID", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 5):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.viceid = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.vinspection", "Vice Inspection",
+                          RadioSettingValueBoolean(_mem.ani.vinspection))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.vmonitor", "Vice Monitor",
+                          RadioSettingValueBoolean(_mem.ani.vmonitor))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.vstun", "Vice Stun",
+                          RadioSettingValueBoolean(_mem.ani.vstun))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.vkill", "Vice Kill",
+                          RadioSettingValueBoolean(_mem.ani.vkill))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.vrevive", "Vice Revive",
+                          RadioSettingValueBoolean(_mem.ani.vrevive))
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.inspection
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 8, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.inspection", "Inspection Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 8):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.inspection = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.monitor
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 8, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.monitor", "Monitor Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 8):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.monitor = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.alarmcode
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 8, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.alarm", "Alarm Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 8):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.alarmcode = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.stun
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 8, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.stun", "Stun Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 8):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.stun = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.kill
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 8, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.kill", "Kill Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 8):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.kill = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        _codeobj = _mem.ani.revive
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 8, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.revive", "Revive Code", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 8):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.revive = code
+        rs.set_apply_callback(apply_code, self._memobj.ani)
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.resettime", "Reset Time",
+                          RadioSettingValueList(LIST_RESETTIME,
+                                                LIST_RESETTIME[
+                                                _mem.ani.resettime]))
+        dtmfd.append(rs)
+
+        rs = RadioSetting("ani.delayproctime", "Delay Processing Time",
+                          RadioSettingValueList(LIST_DELAYPROCTIME,
+                                                LIST_DELAYPROCTIME[
+                                                _mem.ani.delayproctime]))
+        dtmfd.append(rs)
 
         # Service settings
         for band in ["vhf", "uhf"]:
