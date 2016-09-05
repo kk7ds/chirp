@@ -135,14 +135,13 @@ struct channel {
   u8 unknown5;
   u8 pttidoff:1,
      dtmfoff:1,
-     unknown6:1,
+     %(unknownormode)s,
      tailcut:1,
      aliasop:1,
      talkaroundoff:1,
      voxoff:1,
      skip:1;
-  u8 power:1,
-     mode:1
+  u8 %(modeorpower)s,
      reverseoff:1,
      blckoff:1,
      unknown7:1,
@@ -223,8 +222,6 @@ PFKEYSHORT_LIST = ["OFF",
                    "Reverse"
                    ]
 
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=4),
-                chirp_common.PowerLevel("High", watts=10)]
 MODES = ["NFM", "FM"]
 WTFTONES = map(float, xrange(56, 64))
 TONES = WTFTONES + chirp_common.TONES
@@ -326,7 +323,8 @@ def do_upload(radio):
     _ranges = [(0x0d00, 0x2000)]
 
     image_ident = _image_ident_from_image(radio)
-    if image_ident.startswith(radio._file_ident) and "LX-" in image_ident:
+    if image_ident.startswith(radio._file_ident) and \
+       radio._model_ident in image_ident:
         _ranges = radio._ranges
 
     do_ident(radio)
@@ -371,6 +369,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
 
     _file_ident = "Leixen"
+    _model_ident = 'LX-\x89\x85\x63'
+
     _memsize = 0x2000
     _ranges = [
         (0x0000, 0x013f),
@@ -381,6 +381,11 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         (0x0920, 0x0927),
         (0x0d00, 0x2000),
     ]
+
+    _mem_formatter = {'unknownormode': 'unknown6:1',
+                      'modeorpower': 'mode:1, power:1'}
+    _power_levels = [chirp_common.PowerLevel("Low", watts=4),
+                     chirp_common.PowerLevel("High", watts=10)]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -402,7 +407,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             "DTCS->DTCS"]
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 7
-        rf.valid_power_levels = POWER_LEVELS
+        rf.valid_power_levels = self._power_levels
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_skips = ["", "S"]
         rf.valid_bands = [(136000000, 174000000),
@@ -419,7 +424,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_formatter, self._mmap)
 
     def sync_out(self):
         try:
@@ -492,12 +497,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
         self._get_tone(mem, _mem)
         mem.mode = MODES[_mem.mode]
-        mem.power = POWER_LEVELS[_mem.power]
-        mem.skip = _mem.skip and "S" or ""
-
-        self._get_tone(mem, _mem)
-        mem.mode = MODES[_mem.mode]
-        mem.power = POWER_LEVELS[_mem.power]
+        powerindex = _mem.power if _mem.power < len(self._power_levels) else -1
+        mem.power = self._power_levels[powerindex]
         mem.skip = _mem.skip and "S" or ""
 
         mem.extra = RadioSettingGroup("Extra", "extra")
@@ -595,7 +596,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
         self._set_tone(mem, _mem)
 
-        _mem.power = mem.power and POWER_LEVELS.index(mem.power) or 0
+        _mem.power = mem.power and self._power_levels.index(mem.power) or 0
         _mem.mode = MODES.index(mem.mode)
         _mem.skip = mem.skip == "S"
         _name.name = mem.name.ljust(7)
@@ -934,9 +935,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         if filedata[0x168:0x170].startswith(cls._file_ident) and \
-                               filedata[0x170:0x178].startswith("LX-\x89\x85"):
-            return True
-        elif filedata[0x900:0x906] == cls.MODEL:
+           filedata[0x170:0x178].startswith(cls._model_ident):
             return True
         else:
             return False
@@ -949,3 +948,4 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     MODEL = "JT270M"
 
     _file_ident = "JET"
+    _model_ident = 'LX-\x89\x85\x53'
