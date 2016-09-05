@@ -949,3 +949,24 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
 
     _file_ident = "JET"
     _model_ident = 'LX-\x89\x85\x53'
+
+
+class VV898E(chirp_common.Alias):
+    '''Leixen has called this radio both 898E and S historically, ident is identical'''
+    VENDOR = "Leixen"
+    MODEL = "VV-898E"
+
+
+@directory.register
+class LeixenVV898SRadio(LeixenVV898Radio):
+    """Leixen VV-898S, also VV-898E which is identical"""
+    VENDOR = "Leixen"
+    MODEL = "VV-898S"
+    ALIASES = [VV898E, ]
+
+    _model_ident = 'LX-\x89\x85\x75'
+    _mem_formatter = {'unknownormode': 'mode:1',
+                      'modeorpower': 'power:2'}
+    _power_levels = [chirp_common.PowerLevel("Low", watts=5),
+                     chirp_common.PowerLevel("Med", watts=10),
+                     chirp_common.PowerLevel("High", watts=25)]
