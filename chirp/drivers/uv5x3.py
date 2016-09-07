@@ -1119,16 +1119,22 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_code, self._memobj.ani)
         dtmfd.append(rs)
 
+        if _mem.ani.resettime > 0x9F:
+            val = 0x4F
+        else:
+            val = _mem.ani.resettime
         rs = RadioSetting("ani.resettime", "Reset Time",
                           RadioSettingValueList(LIST_RESETTIME,
-                                                LIST_RESETTIME[
-                                                _mem.ani.resettime]))
+                                                LIST_RESETTIME[val]))
         dtmfd.append(rs)
 
+        if _mem.ani.delayproctime > 0x27:
+            val = 0x04
+        else:
+            val = _mem.ani.delayproctime
         rs = RadioSetting("ani.delayproctime", "Delay Processing Time",
                           RadioSettingValueList(LIST_DELAYPROCTIME,
-                                                LIST_DELAYPROCTIME[
-                                                _mem.ani.delayproctime]))
+                                                LIST_DELAYPROCTIME[val]))
         dtmfd.append(rs)
 
         # Service settings
