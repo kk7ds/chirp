@@ -313,6 +313,8 @@ KT8900R_fp = "M3G1F4"
 KT8900R_fp1 = "M3G214"
 # another model
 KT8900R_fp2 = "M3C234"
+# another model G4?
+KT8900R_fp3 = "M39164"
 # this radio has an extra ID
 KT8900R_id = "280528"
 
@@ -1708,7 +1710,8 @@ class KT9800R(BTech):
     _magic = MSTRING_KT8900R
     _fileid = [KT8900R_fp,
                KT8900R_fp1,
-               KT8900R_fp2]
+               KT8900R_fp2,
+               KT8900R_fp3]
     _id2 = KT8900R_id
 
 
