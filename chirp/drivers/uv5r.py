@@ -1605,9 +1605,14 @@ class UV5XAlias(chirp_common.Alias):
     MODEL = "UV-5X"
 
 
+class RT5RAlias(chirp_common.Alias):
+    VENDOR = "Retevis"
+    MODEL = "RT-5R"
+
+
 @directory.register
 class BaofengUV5RGeneric(BaofengUV5R):
-    ALIASES = [UV5XAlias]
+    ALIASES = [UV5XAlias, RT5RAlias]
 
 
 @directory.register
