@@ -242,7 +242,7 @@ class RadioSettingValueMap(RadioSettingValueList):
             index = self._mem_vals.index(mem_val)
             self.set_value(self._options[index])
         else:
-            raise InvalidValueError("%s is not valid for this setting" % value)
+            raise InvalidValueError("%s is not valid for this setting" % mem_val)
 
     def __trunc__(self):
         """Return memory value that matches current user option"""
