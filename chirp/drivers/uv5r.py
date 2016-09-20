@@ -426,25 +426,27 @@ def _do_ident(radio, magic):
     # Ok, get the response
     ident = ""
     for i in range(1, 13):
-        response = serial.read(1)
-        # discard any bytes containing "\x01" and keep the rest
-        if response != "\x01":
-            ident += response
+        byte = serial.read(1)
+        response += byte
         # stop reading once the last byte ("\xdd") is encountered
-        if response == "\xdd":
+        if byte == "\xdd":
             break
 
     # check if response is OK
-    if len(ident) != 8 or not ident.startswith("\xaa"):
+    if len(response) in [8, 12]:
+        # DEBUG
+        LOG.info("Valid response, got this:")
+        LOG.debug(util.hexprint(response))
+        if len(response) == 12:
+            ident = response[0] + response[3] + response[5] + response[7:]
+        else:
+            ident = response
+    else:
         # bad response
         msg = "Unexpected response, got this:"
-        msg += util.hexprint(ident)
+        msg += util.hexprint(response)
         LOG.debug(msg)
         raise errors.RadioError("Unexpected response from radio.")
-
-    # DEBUG
-    LOG.info("Valid response, got this:")
-    LOG.debug(util.hexprint(ident))
 
     serial.write("\x06")
     ack = serial.read(1)
