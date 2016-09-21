@@ -357,7 +357,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
      radio on.
 4. Rotate the DIAL job to select "F8 CLONE".
 5. Press the [F/W] key momentarily.
-6. <b>After clicking OK</b>, press the [PTT] switch to send image."""))
+6. <b>After clicking OK</b>, hold the [PTT] switch
+     for one second to send image."""))
         rp.pre_upload = _(dedent("""\
 1. Turn radio off.
 2. Connect cable to MIC/SP jack.
