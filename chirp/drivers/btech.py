@@ -21,6 +21,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+from time import sleep
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -396,6 +397,15 @@ def _send(radio, data):
     try:
         for byte in data:
             radio.pipe.write(byte)
+            # Some OS (mainly Linux ones) are too fast on the serial and
+            # get the MCU inside the radio stuck in the early stages, this
+            # hits some models more than others.
+            #
+            # To cope with that we introduce a delay on the writes.
+            # Many option have been tested (delaying only after error occures, after short reads, only for linux, ...)
+            # Finally, a static delay was chosen as simplest of all solutions (Michael Wagner, OE4AMW)
+            # (for details, see issue 3993)
+            sleep(0.002)
 
         # DEBUG
         if debug is True:
