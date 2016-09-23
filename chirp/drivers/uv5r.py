@@ -424,7 +424,7 @@ def _do_ident(radio, magic):
     # image data aligned with the existing settings structures.
 
     # Ok, get the response
-    ident = ""
+    response = ""
     for i in range(1, 13):
         byte = serial.read(1)
         response += byte
