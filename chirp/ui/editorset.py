@@ -70,6 +70,7 @@ class EditorSet(gtk.VBox):
                 members.connect("changed", lambda x: names.mappings_changed())
                 names.connect("changed", lambda x: members.mappings_changed())
                 names.connect("changed", self.editor_changed)
+            sub_index += 1
 
     def _make_device_editors(self, device, devrthread, index):
         if isinstance(device, chirp_common.IcomDstarSupport):
