@@ -122,7 +122,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
     VALID_BANDS = [(130000000, 180000000),
-                   (222000000, 226000000),
+                   (220000000, 226000000),
                    (400000000, 521000000)]
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
@@ -682,7 +682,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
             lower = 200
             upper = 230
         else:
-            lower = 222
+            lower = 220
             upper = 225
         rs = RadioSetting("limits.vhf2.lower", "VHF2 Lower Limit (MHz)",
                           RadioSettingValueInteger(
