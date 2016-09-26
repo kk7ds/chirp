@@ -27,7 +27,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettings, InvalidValueError
+    RadioSettingValueFloat, RadioSettings, InvalidValueError
 from textwrap import dedent
 
 MEM_FORMAT = """
@@ -154,6 +154,13 @@ struct {
   char name[6];
   u8 unknown1[10];
 } names[200];
+
+#seekto 0x3000;
+struct {
+  u8 freq[8];
+  char broadcast_station_name[6];
+  u8 unknown[2];
+} fm_radio_preset[16];
 
 #seekto 0x3C90;
 struct {
@@ -1110,7 +1117,8 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
         other = RadioSettingGroup("other", "Other Settings")
         work = RadioSettingGroup("work", "Work Mode Settings")
-        top = RadioSettings(basic, advanced, other, work)
+        fm_presets = RadioSettingGroup("fm_presets", "FM Presets")
+        top = RadioSettings(basic, advanced, other, work, fm_presets)
 
         # Basic
         tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -1547,6 +1555,47 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                  PTTID_LIST[_mem.settings.pttid]))
         work.append(pttid)
 
+        #FM presets
+        def fm_validate(value):
+            if value == 0:
+                return chirp_common.format_freq(value)
+            if not (87.5 <= value and value <= 108.0):  # 87.5-108MHz
+                msg = ("FM-Preset-Frequency: Must be between 87.5 and 108 MHz")
+                raise InvalidValueError(msg)
+            return value
+
+        def apply_fm_preset_name(setting, obj):
+            valstring = str (setting.value)
+            for i in range(0,6):
+                if valstring[i] in VALID_CHARS:
+                    obj[i] = valstring[i]
+                else:
+                    obj[i] = '0xff'
+
+        def apply_fm_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            for i in range(7, -1, -1):
+                obj.freq[i] = value % 10
+                value /= 10
+        
+        _presets = self._memobj.fm_radio_preset
+        i = 1
+        for preset in _presets:
+            line = RadioSetting("fm_presets_"+ str(i), "Station name " + str(i),
+                                RadioSettingValueString(0, 6, _filter(
+                                    preset.broadcast_station_name)))
+            line.set_apply_callback(apply_fm_preset_name, 
+                                    preset.broadcast_station_name)
+            
+            val = RadioSettingValueFloat(0, 108, convert_bytes_to_freq(preset.freq))
+            fmfreq = RadioSetting("fm_presets_"+ str(i) + "_freq", "Frequency "+ str(i), val)
+            val.set_validate_callback(fm_validate)
+            fmfreq.set_apply_callback(apply_fm_freq, preset)
+            fm_presets.append(line)
+            fm_presets.append(fmfreq)
+            
+            i = i + 1
+            
         return top
 
     def set_settings(self, settings):
