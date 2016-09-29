@@ -822,7 +822,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             mem.power = levels[_mem.lowpower]
         except IndexError:
             LOG.error("Radio reported invalid power level %s (in %s)" %
-                      (_mem.power, levels))
+                      (_mem.lowpower, levels))
             mem.power = levels[0]
 
         mem.mode = _mem.wide and "FM" or "NFM"
