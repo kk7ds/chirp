@@ -425,6 +425,7 @@ class TestCaseBruteForce(TestCase):
                     return True
             return False
 
+        successes = 0
         for mode in rf.valid_modes:
             if mode not in chirp_common.MODES:
                 continue
@@ -442,7 +443,18 @@ class TestCaseBruteForce(TestCase):
                 m.freq += 100000000
 
             m.mode = mode
+
+            if rf.validate_memory(m):
+                # A result (of error messages) from validate means the radio
+                # thinks this is invalid, so don't fail the test
+                continue
+
             self.set_and_compare(m)
+            successes += 1
+
+        if (not successes) and rf.valid_modes:
+            raise TestFailedError("All modes were skipped, "
+                                  "something went wrong")
 
     def run(self):
         rf = self._wrapper.do("get_features")
@@ -450,6 +462,10 @@ class TestCaseBruteForce(TestCase):
         def clean_mem():
             m = chirp_common.Memory()
             m.number = rf.memory_bounds[0]
+            try:
+                m.mode = rf.valid_modes[0]
+            except IndexError:
+                pass
             if rf.valid_bands:
                 m.freq = rf.valid_bands[0][0] + 600000
             else:
@@ -489,6 +505,11 @@ class TestCaseEdges(TestCase):
         m.freq = rf.valid_bands[0][0] + 1000000
         if m.freq < 30000000 and "AM" in rf.valid_modes:
             m.mode = "AM"
+        else:
+            try:
+                m.mode = rf.valid_modes[0]
+            except IndexError:
+                pass
         return m
 
     def do_longname(self, rf):
