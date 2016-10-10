@@ -33,13 +33,13 @@ from textwrap import dedent
 
 ##### MAGICS #########################################################
 
-# BTECH GMRS-UV1 magic string
-MSTRING_GMRSUV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
+# BTECH GMRS-V1 magic string
+MSTRING_GMRSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
 
 ##### ID strings #####################################################
 
-# BTECH GMRS-UV1
-GMRSUV1_fp1 = "US32411"
+# BTECH GMRS-V1
+GMRSV1_fp1 = "US32411"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -93,14 +93,14 @@ class MyRadioFeatures(chirp_common.RadioFeatures):
 
 
 @directory.register
-class GMRSUV1(baofeng_common.BaofengCommonHT):
-    """BTech GMRS-UV1"""
+class GMRSV1(baofeng_common.BaofengCommonHT):
+    """BTech GMRS-V1"""
     VENDOR = "BTECH"
-    MODEL = "GMRS-UV1"
+    MODEL = "GMRS-V1"
 
-    _fileid = [GMRSUV1_fp1, ]
+    _fileid = [GMRSV1_fp1, ]
 
-    _magic = [MSTRING_GMRSUV1, ]
+    _magic = [MSTRING_GMRSV1, ]
     _magic_response_length = 8
     _fw_ver_start = 0x1EF0
     _recv_block_size = 0x40
@@ -376,7 +376,7 @@ class GMRSUV1(baofeng_common.BaofengCommonHT):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('The BTech GMRS-UV1 driver is a beta version.\n'
+            ('The BTech GMRS-V1 driver is a beta version.\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.'
