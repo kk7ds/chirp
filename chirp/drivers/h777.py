@@ -259,6 +259,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.has_rx_dtcs = True
         rf.has_ctone = True
         rf.has_cross = True
@@ -334,7 +335,10 @@ class H777Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if int(_mem.rxfreq) == int(_mem.txfreq):
+        if _mem.txfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+            mem.duplex = "off"
+            mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
         else:
@@ -393,6 +397,13 @@ class H777Radio(chirp_common.CloneModeRadio):
         for setting in mem.extra:
             # NOTE: Only two settings right now, both are inverted
             setattr(_mem, setting.get_name(), not int(setting.value))
+
+        # When set to one, official programming software (BF-480) shows always
+        # "WFM", even if we choose "NFM". Therefore, for compatibility
+        # purposes, we will set these to zero.
+        _mem.unknown1 = 0;
+        _mem.unknown2 = 0;
+        _mem.unknown3 = 0;
 
     def get_settings(self):
         _settings = self._memobj.settings
