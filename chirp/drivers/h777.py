@@ -260,6 +260,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        rf.can_odd_split = True
         rf.has_rx_dtcs = True
         rf.has_ctone = True
         rf.has_cross = True
