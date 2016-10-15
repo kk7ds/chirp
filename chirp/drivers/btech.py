@@ -1043,6 +1043,13 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         _mem = self._memobj.memory[mem.number]
         _names = self._memobj.names[mem.number]
 
+        mem_was_empty = False
+        # same method as used in get_memory for determining if mem is empty
+        # doing this BEFORE overwriting it with new values ...
+        if _mem.get_raw()[0] == "\xFF":
+            LOG.debug("This mem was empty before")
+            mem_was_empty = True
+        
         # if empty memmory
         if mem.empty:
             # the channel itself
@@ -1100,16 +1107,24 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # extra settings
         if len(mem.extra) > 0:
             # there are setting, parse
+            LOG.debug("Extra-Setting supplied. Setting them.")
             for setting in mem.extra:
                 setattr(_mem, setting.get_name(), setting.value)
         else:
-            # there is no extra settings, load defaults
-            _mem.spmute = 0
-            _mem.optsig = 0
-            _mem.scramble = 0
-            _mem.bcl = 0
-            _mem.pttid = 0
-            _mem.scode = 0
+            if mem.empty:
+                LOG.debug("New mem is empty.")
+            else:
+                LOG.debug("New mem is NOT empty")
+                # set extra-settings to default ONLY when apreviously empty or
+                # deleted memory was edited to prevent errors such as #4121
+                if mem_was_empty :
+                    LOG.debug("old mem was empty. Setting default for extras.")
+                    _mem.spmute = 0
+                    _mem.optsig = 0
+                    _mem.scramble = 0
+                    _mem.bcl = 0
+                    _mem.pttid = 0
+                    _mem.scode = 0
 
         return mem
 
