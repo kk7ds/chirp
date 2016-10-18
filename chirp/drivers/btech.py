@@ -155,6 +155,44 @@ struct {
   u8 unknown1[10];
 } names[200];
 
+#seekto 0x2400;
+struct {
+  u8 period; // one out of LIST_5TONE_STANDARD_PERIODS
+  u8 group_tone;
+  u8 repeat_tone;
+  u8 unused[13];
+} _5tone_std_settings[15];
+
+#seekto 0x2500;
+struct {
+  u8 frame1[5];
+  u8 frame2[5];
+  u8 frame3[5];
+  u8 standard;   // one out of LIST_5TONE_STANDARDS
+} _5tone_codes[15];
+
+#seekto 0x25F0;
+struct {
+  u8 _5tone_delay1; // * 10ms
+  u8 _5tone_delay2; // * 10ms
+  u8 _5tone_delay3; // * 10ms
+  u8 _5tone_first_digit_ext_length;
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  u8 unknown4;
+  u8 decode_standard;
+  u8 unknown5:5,
+     _5tone_decode_call_frame3:1,
+     _5tone_decode_call_frame2:1,
+     _5tone_decode_call_frame1:1;
+  u8 unknown6:5,
+     _5tone_decode_disp_frame3:1,
+     _5tone_decode_disp_frame2:1,
+     _5tone_decode_disp_frame1:1;
+  u8 decode_reset_time; // * 100 + 100ms
+} _5tone_settings;
+
 #seekto 0x3000;
 struct {
   u8 freq[8];
@@ -237,6 +275,19 @@ LIST_TXP = ["High", "Low"]
 LIST_WIDE = ["Wide", "Narrow"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 LIST_STEP = [str(x) for x in STEPS]
+LIST_5TONE_STANDARDS = ["CCIR1", "CCIR2", "PCCIR", "ZVEI1", "ZVEI2", "ZVEI3",
+                        "PZVEI", "DZVEI", "PDZVEI", "EEA", "EIA", "EURO",
+                        "CCITT", "NATEL", "MODAT", "none"]
+LIST_5TONE_STANDARDS_without_none = ["CCIR1", "CCIR2", "PCCIR", "ZVEI1",
+                                     "ZVEI2", "ZVEI3",
+                                     "PZVEI", "DZVEI", "PDZVEI", "EEA", "EIA", "EURO",
+                                     "CCITT", "NATEL", "MODAT"]
+LIST_5TONE_STANDARD_PERIODS = ["20", "30", "40", "50", "60", "70", "80", "90",
+                               "100", "110", "120", "130", "140", "150", "160",
+                               "170", "180", "190", "200"]
+LIST_5TONE_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+LIST_5TONE_DELAY = ["%s ms" % x for x in range(0, 1010, 10)]
+LIST_5TONE_RESET = ["%s ms" % x for x in range(100, 8100, 100)]
 
 # This is a general serial timeout for all serial read functions.
 # Practice has show that about 0.7 sec will be enough to cover all radios.
@@ -1136,7 +1187,11 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         other = RadioSettingGroup("other", "Other Settings")
         work = RadioSettingGroup("work", "Work Mode Settings")
         fm_presets = RadioSettingGroup("fm_presets", "FM Presets")
-        top = RadioSettings(basic, advanced, other, work, fm_presets)
+        stds_5tone = RadioSettingGroup ("stds_5tone", "5 Tone Standard Settings")
+        codes_5tone = RadioSettingGroup ("codes_5tone", "5 Tone Codes")
+        settings_5tone = RadioSettingGroup ("settings_5tone", "5 Tone Settings")
+        top = RadioSettings(basic, advanced, other, work, fm_presets, 
+                            stds_5tone, codes_5tone, settings_5tone )
 
         # Basic
         tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -1613,7 +1668,206 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             fm_presets.append(fmfreq)
             
             i = i + 1
+        
+        # 5 Tone Settings
+        def my_apply_list_value(setting, obj):
+            options = setting.value.get_options()
+            obj.set_value ( options.index(str(setting.value)) )
+        
+        _5tone_standards = self._memobj._5tone_std_settings
+        i = 0
+        for standard in _5tone_standards:
+            line = RadioSetting("_5tone_std_settings_" + str(i) + "_period", 
+                                LIST_5TONE_STANDARDS[i] + " Period (ms)",
+                                RadioSettingValueList
+                                (LIST_5TONE_STANDARD_PERIODS,
+                                 LIST_5TONE_STANDARD_PERIODS[standard.period]))
+            line.set_apply_callback(my_apply_list_value, standard.period)
+            stds_5tone.append(line)
+            line = RadioSetting("_5tone_std_settings_" + str(i) + "_grouptone",
+                                LIST_5TONE_STANDARDS[i] + " Group Tone",
+                                RadioSettingValueList(LIST_5TONE_DIGITS,
+                                     LIST_5TONE_DIGITS[standard.group_tone]))
+            line.set_apply_callback(my_apply_list_value, standard.group_tone)
+            stds_5tone.append(line)
+            line = RadioSetting("_5tone_std_settings_" + str(i) + "_repttone",
+                                LIST_5TONE_STANDARDS[i] + " Repeat Tone",
+                                RadioSettingValueList(LIST_5TONE_DIGITS,
+                                     LIST_5TONE_DIGITS[standard.repeat_tone]))
+            line.set_apply_callback(my_apply_list_value, standard.repeat_tone)
+            stds_5tone.append(line)
+            i = i + 1
+
+        def my_apply_5tonestdlist_value(setting, obj):
+            if LIST_5TONE_STANDARDS.index(str(setting.value)) == 15:
+                obj.set_value(0xFF)
+            else:
+                obj.set_value( LIST_5TONE_STANDARDS.index(str(setting.value)) )
+
+        def apply_5tone_frame(setting, obj):
+            LOG.debug("Setting 5Tone: " + str(setting.value) )
+            valstring = str(setting.value)
+            if len(valstring) == 0:
+                for i in range(0,5):
+                    obj[i] = 255
+            else:
+                validFrame = True
+                for i in range(0,5):
+                    currentChar = valstring[i].upper()
+                    if currentChar in LIST_5TONE_DIGITS:
+                        obj[i] = LIST_5TONE_DIGITS.index(currentChar)
+                    else:
+                        validFrame = False
+                        LOG.debug("invalid char: " + str(currentChar))
+                if not validFrame:
+                    LOG.debug("setting whole frame to FF" )
+                    for i in range(0,5):
+                        obj[i] = 255
+
+        def validate_5tone_frame(value):
+            if (len(str(value)) != 5) and (len(str(value)) != 0) :
+                msg = ("5 Tone must have 5 digits or 0 digits")
+                raise InvalidValueError(msg)
+            for digit in str(value):
+                if digit.upper() not in LIST_5TONE_DIGITS:
+                    msg = (str(digit) + " is not a valid digit for a 5-Tone")
+                    raise InvalidValueError(msg)
+            return value
+
+        def frame2string(frame):
+            frameString = ""
+            for digit in frame:
+                if digit != 255:
+                    frameString = frameString + LIST_5TONE_DIGITS[digit]
+            return frameString
+
+        _5tone_codes = self._memobj._5tone_codes
+        i = 1
+        for code in _5tone_codes:
+            if (code.standard == 255 ):
+                currentVal = 15
+            else:
+                currentVal = code.standard
+            line = RadioSetting("_5tone_code_" + str(i) + "_std", 
+                                "5-Tone-Code " + str(i) + " Standard",
+                                RadioSettingValueList(LIST_5TONE_STANDARDS,
+                                                      LIST_5TONE_STANDARDS[
+                                                          currentVal]) )
+            line.set_apply_callback(my_apply_5tonestdlist_value, code.standard)
+            codes_5tone.append(line)
             
+            val = RadioSettingValueString(0, 6,
+                                          frame2string(code.frame1), False)
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame1", 
+                                "5-Tone-Code " + str(i) + " Frame 1", val)
+            val.set_validate_callback(validate_5tone_frame)
+            line.set_apply_callback(apply_5tone_frame, code.frame1)
+            codes_5tone.append(line)
+            
+            val = RadioSettingValueString(0, 6,
+                                          frame2string(code.frame2), False)
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame2",
+                                "5-Tone-Code " + str(i) + " Frame 2", val)
+            val.set_validate_callback(validate_5tone_frame)
+            line.set_apply_callback(apply_5tone_frame, code.frame2)
+            codes_5tone.append(line)
+            
+            val = RadioSettingValueString(0, 6,
+                                          frame2string(code.frame3), False)
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame3",
+                                "5-Tone-Code " + str(i) + " Frame 3", val)
+            val.set_validate_callback(validate_5tone_frame)
+            line.set_apply_callback(apply_5tone_frame, code.frame3)
+            codes_5tone.append(line)
+            i = i + 1
+
+        _5_tone_decode1 = RadioSetting(
+            "_5tone_settings._5tone_decode_call_frame1",
+            "5Tone decode call frame 1",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_call_frame1))
+        settings_5tone.append(_5_tone_decode1)
+        
+        _5_tone_decode2 = RadioSetting(
+            "_5tone_settings._5tone_decode_call_frame2",
+            "5Tone decode call frame 2",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_call_frame2))
+        settings_5tone.append(_5_tone_decode2)
+        
+        _5_tone_decode3 = RadioSetting(
+            "_5tone_settings._5tone_decode_call_frame3",
+            "5Tone decode call frame 3",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_call_frame3))
+        settings_5tone.append(_5_tone_decode3)
+
+        _5_tone_decode_disp1 = RadioSetting(
+            "_5tone_settings._5tone_decode_disp_frame1",
+            "5Tone decode disp frame 1",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_disp_frame1))
+        settings_5tone.append(_5_tone_decode_disp1)
+        
+        _5_tone_decode_disp2 = RadioSetting(
+            "_5tone_settings._5tone_decode_disp_frame2",
+            "5Tone decode disp frame 2",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_disp_frame2))
+        settings_5tone.append(_5_tone_decode_disp2)
+        
+        _5_tone_decode_disp3 = RadioSetting(
+            "_5tone_settings._5tone_decode_disp_frame3",
+            "5Tone decode disp frame 3",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_disp_frame3))
+        settings_5tone.append(_5_tone_decode_disp3)
+        
+        line = RadioSetting("_5tone_settings.decode_standard", 
+                            "5-Tone-decode Standard",
+                            RadioSettingValueList(
+                                LIST_5TONE_STANDARDS_without_none,
+                                LIST_5TONE_STANDARDS_without_none[
+                                    _mem._5tone_settings.decode_standard]))
+        settings_5tone.append(line)
+
+        list = RadioSettingValueList(LIST_5TONE_DELAY, 
+                                     LIST_5TONE_DELAY[
+                                         _mem._5tone_settings._5tone_delay1])
+        line = RadioSetting("_5tone_settings._5tone_delay1",
+                            "5-Tone Delay Frame1", list)
+        settings_5tone.append(line)
+
+        list = RadioSettingValueList(LIST_5TONE_DELAY,
+                                     LIST_5TONE_DELAY[
+                                         _mem._5tone_settings._5tone_delay2])
+        line = RadioSetting("_5tone_settings._5tone_delay2",
+                            "5-Tone Delay Frame2", list)
+        settings_5tone.append(line)
+
+        list = RadioSettingValueList(LIST_5TONE_DELAY,
+                                     LIST_5TONE_DELAY[
+                                         _mem._5tone_settings._5tone_delay3])
+        line = RadioSetting("_5tone_settings._5tone_delay3",
+                            "5-Tone Delay Frame3", list )
+        settings_5tone.append(line)
+        
+        list = RadioSettingValueList(
+            LIST_5TONE_DELAY, 
+            LIST_5TONE_DELAY[
+                _mem._5tone_settings._5tone_first_digit_ext_length])
+        line = RadioSetting("_5tone_settings._5tone_first_digit_ext_length",
+                            "First digit extend length", list)
+        settings_5tone.append(line)
+        
+        list = RadioSettingValueList(
+            LIST_5TONE_RESET,
+            LIST_5TONE_RESET[
+                _mem._5tone_settings.decode_reset_time])
+        line = RadioSetting("_5tone_settings.decode_reset_time",
+                            "Decode reset time", list)
+        settings_5tone.append(line)
+        
         return top
 
     def set_settings(self, settings):
