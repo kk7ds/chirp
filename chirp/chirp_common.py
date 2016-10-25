@@ -30,7 +30,7 @@ TONES = [67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
          ]
 
 TONES_EXTRA = [56.0, 57.0, 58.0, 59.0, 60.0, 61.0, 62.0,
-               62.5, 63.0, 64.0 ]
+               62.5, 63.0, 64.0]
 
 OLD_TONES = list(TONES)
 [OLD_TONES.remove(x) for x in [159.8, 165.5, 171.3, 177.3, 183.5, 189.9,
@@ -48,7 +48,7 @@ DTCS_CODES = [
     465, 466, 503, 506, 516, 523, 526, 532, 546, 565, 606,
     612, 624, 627, 631, 632, 654, 662, 664, 703, 712, 723,
     731, 732, 734, 743, 754,
-    ]
+]
 
 # 512 Possible DTCS Codes
 ALL_DTCS_CODES = []
@@ -94,7 +94,7 @@ SKIP_VALUES = ["", "S", "P"]
 CHARSET_UPPER_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890"
 CHARSET_ALPHANUMERIC = \
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz 1234567890"
-CHARSET_ASCII = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
+CHARSET_ASCII = "".join([chr(x) for x in range(ord(" "), ord("~") + 1)])
 
 # http://aprs.org/aprs11/SSIDs.txt
 APRS_SSID = (
@@ -155,6 +155,7 @@ def dBm_to_watts(dBm):
 
 class PowerLevel:
     """Represents a power level supported by a radio"""
+
     def __init__(self, label, watts=0, dBm=0):
         if watts:
             dBm = watts_to_dBm(watts)
@@ -297,7 +298,7 @@ class Memory:
         "skip":           SKIP_VALUES,
         "empty":          [True, False],
         "dv_code":        [x for x in range(0, 100)],
-        }
+    }
 
     def __repr__(self):
         return "Memory[%i]" % self.number
@@ -553,6 +554,7 @@ class DVMemory(Memory):
 
 class MemoryMapping(object):
     """Base class for a memory mapping"""
+
     def __init__(self, model, index, name):
         self._model = model
         self._index = index
@@ -619,6 +621,7 @@ class Bank(MemoryMapping):
 
 class NamedBank(Bank):
     """A bank that can have a name"""
+
     def set_name(self, name):
         """Changes the user-adjustable bank name"""
         self._name = name
@@ -626,12 +629,14 @@ class NamedBank(Bank):
 
 class BankModel(MappingModel):
     """A bank model where one memory is in zero or one banks at any point"""
+
     def __init__(self, radio, name='Banks'):
         super(BankModel, self).__init__(radio, name)
 
 
 class MappingModelIndexInterface:
     """Interface for mappings with index capabilities"""
+
     def get_index_bounds(self):
         """Returns a tuple (lo,hi) of the min and max mapping indices"""
         raise NotImplementedError()
@@ -722,7 +727,7 @@ class RadioFeatures:
         # D-STAR
         "requires_call_lists":  BOOLEAN,
         "has_implicit_calls":   BOOLEAN,
-        }
+    }
 
     def __setattr__(self, name, val):
         if name.startswith("_"):
@@ -942,8 +947,8 @@ class RadioFeatures:
                     break
             if not valid:
                 msg = ValidationError(
-                        ("Tx freq {freq} is out "
-                         "of supported range").format(freq=format_freq(freq)))
+                    ("Tx freq {freq} is out "
+                     "of supported range").format(freq=format_freq(freq)))
                 msgs.append(msg)
 
         if mem.power and \
@@ -1191,6 +1196,7 @@ class LiveRadio(Radio):
 
 class NetworkSourceRadio(Radio):
     """Base class for all radios based on a network source"""
+
     def do_fetch(self):
         """Fetch the source data from the network"""
         pass

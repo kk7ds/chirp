@@ -28,6 +28,7 @@ class InternalError(Exception):
 
 class RadioSettingValue:
     """Base class for a single radio setting"""
+
     def __init__(self):
         self._current = None
         self._has_changed = False
@@ -69,6 +70,7 @@ class RadioSettingValue:
 
 class RadioSettingValueInteger(RadioSettingValue):
     """An integer setting"""
+
     def __init__(self, minval, maxval, current, step=1):
         RadioSettingValue.__init__(self)
         self._min = minval
@@ -101,6 +103,7 @@ class RadioSettingValueInteger(RadioSettingValue):
 
 class RadioSettingValueFloat(RadioSettingValue):
     """A floating-point setting"""
+
     def __init__(self, minval, maxval, current, resolution=0.001, precision=4):
         RadioSettingValue.__init__(self)
         self._min = minval
@@ -123,8 +126,8 @@ class RadioSettingValueFloat(RadioSettingValue):
             raise InvalidValueError("A floating point value is required")
         if value > self._max or value < self._min:
             raise InvalidValueError("Value %s not in range %s-%s" % (
-                    self.format(value),
-                    self.format(self._min), self.format(self._max)))
+                self.format(value),
+                self.format(self._min), self.format(self._max)))
 
         # FIXME: honor resolution
 
@@ -140,6 +143,7 @@ class RadioSettingValueFloat(RadioSettingValue):
 
 class RadioSettingValueBoolean(RadioSettingValue):
     """A boolean setting"""
+
     def __init__(self, current):
         RadioSettingValue.__init__(self)
         self.set_value(current)
@@ -157,6 +161,7 @@ class RadioSettingValueBoolean(RadioSettingValue):
 
 class RadioSettingValueList(RadioSettingValue):
     """A list-of-strings setting"""
+
     def __init__(self, options, current):
         RadioSettingValue.__init__(self)
         self._options = options
@@ -177,6 +182,7 @@ class RadioSettingValueList(RadioSettingValue):
 
 class RadioSettingValueString(RadioSettingValue):
     """A string setting"""
+
     def __init__(self, minlength, maxlength, current,
                  autopad=True, charset=chirp_common.CHARSET_ASCII):
         RadioSettingValue.__init__(self)
@@ -214,6 +220,7 @@ class RadioSettingValueMap(RadioSettingValueList):
     conversions not needed.
 
     """
+
     def __init__(self, map_entries, mem_val=None, user_option=None):
         """Create new map
 
@@ -242,7 +249,8 @@ class RadioSettingValueMap(RadioSettingValueList):
             index = self._mem_vals.index(mem_val)
             self.set_value(self._options[index])
         else:
-            raise InvalidValueError("%s is not valid for this setting" % mem_val)
+            raise InvalidValueError(
+                "%s is not valid for this setting" % mem_val)
 
     def get_mem_val(self):
         """Get the mem val corresponding to the currently selected user option"""
@@ -268,6 +276,7 @@ def zero_indexed_seq_map(user_options):
 
 
 class RadioSettings(list):
+
     def __init__(self, *groups):
         list.__init__(self, groups)
 
@@ -278,6 +287,7 @@ class RadioSettings(list):
 
 class RadioSettingGroup(object):
     """A group of settings"""
+
     def _validate(self, element):
         # RadioSettingGroup can only contain RadioSettingGroup objects
         if not isinstance(element, RadioSettingGroup):
@@ -368,6 +378,7 @@ class RadioSettingGroup(object):
 
 class RadioSetting(RadioSettingGroup):
     """A single setting, which could be an array of items like a group"""
+
     def __init__(self, *args):
         super(RadioSetting, self).__init__(*args)
         self._apply_callback = None

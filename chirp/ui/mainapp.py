@@ -81,6 +81,7 @@ class ModifiedError(Exception):
 
 
 class ChirpMain(gtk.Window):
+
     def get_current_editorset(self):
         page = self.tabs.get_current_page()
         if page is not None:
@@ -137,7 +138,7 @@ class ChirpMain(gtk.Window):
     def ev_editor_selected(self, editorset, editortype):
         mappings = {
             "memedit": ["view", "edit"],
-            }
+        }
 
         for _editortype, actions in mappings.items():
             for _action in actions:
@@ -443,7 +444,7 @@ of file.
         ).replace('/', '_')
 
         types = [(label + " (*.%s)" % eset.radio.FILE_EXTENSION,
-                 eset.radio.FILE_EXTENSION)]
+                  eset.radio.FILE_EXTENSION)]
 
         if isinstance(eset.radio, vx7.VX7Radio):
             types += [(_("VX7 Commander") + " (*.vx7)", "vx7")]
@@ -517,7 +518,7 @@ of file.
 
             file_basename = os.path.basename(fname).replace("_", "__")
             action = gtk.Action(
-                action_name, "_%i. %s" % (i+1, file_basename),
+                action_name, "_%i. %s" % (i + 1, file_basename),
                 _("Open recent file {name}").format(name=fname), "")
             action.connect("activate", lambda a, f: self.do_open(f), fname)
             mid = self.menu_uim.new_merge_id()
@@ -644,7 +645,7 @@ of file.
             _("Don't show instructions for any radio again"))
         again.show()
         again.connect("toggled", lambda action:
-            self.clonemenu.set_active(not action.get_active()))
+                      self.clonemenu.set_active(not action.get_active()))
         d.vbox.pack_start(again, 0, 0, 0)
         h_button_box = d.vbox.get_children()[2]
         try:
@@ -656,7 +657,6 @@ of file.
             pass
         d.run()
         d.destroy()
-
 
     def do_download(self, port=None, rtype=None):
         d = clone.CloneSettingsDialog(parent=self)
@@ -989,7 +989,7 @@ of file.
             "Latitude": (gtk.Entry(), lambda x: float(x.get_text())),
             "Longitude": (gtk.Entry(), lambda x: float(x.get_text())),
             "Range": (gtk.Entry(), lambda x: int(x.get_text())),
-            }
+        }
         for name in sorted(fields.keys()):
             value, fn = fields[name]
             d.add_field(name, value)
@@ -1371,7 +1371,8 @@ of file.
             devaction.set_visible(action.get_active())
 
     def do_toggle_clone_instructions(self, action):
-        CONF.set_bool("clone_instructions", not action.get_active(), "noconfirm")
+        CONF.set_bool("clone_instructions",
+                      not action.get_active(), "noconfirm")
 
     def do_change_language(self):
         langs = ["Auto", "English", "Polish", "Italian", "Dutch", "German",
@@ -1629,7 +1630,7 @@ of file.
             ('help', None, _('Help'), None, None, self.mh),
             ('about', gtk.STOCK_ABOUT, None, None, None, self.mh),
             ('gethelp', None, _("Get Help Online..."), None, None, self.mh),
-            ]
+        ]
 
         conf = config.get()
         re = not conf.get_bool("no_report")
@@ -1660,7 +1661,8 @@ of file.
 
         self.add_accel_group(self.menu_uim.get_accel_group())
 
-        self.clonemenu = self.menu_uim.get_widget("/MenuBar/help/clone_instructions")
+        self.clonemenu = self.menu_uim.get_widget(
+            "/MenuBar/help/clone_instructions")
 
         # Initialize
         self.do_toggle_developer(self.menu_ag.get_action("developer"))
@@ -1719,7 +1721,7 @@ of file.
 
         actions = [
             # ("action_name", "key", function)
-            ]
+        ]
 
         for name, key, fn in actions:
             a = gtk.Action(name, name, name, "")

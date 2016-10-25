@@ -276,7 +276,7 @@ def recv(radio, readdata=True):
         #           util.hexprint(hdr + data).replace("\n", "\n          "))
         if len(data) != length:
             raise errors.RadioError("Radio sent %i bytes (expected %i)" % (
-                    len(data), length))
+                len(data), length))
         chk = radio.pipe.read(1)
     else:
         data = ""
@@ -424,7 +424,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_formatter, self._mmap)
+        self._memobj = bitwise.parse(
+            MEM_FORMAT % self._mem_formatter, self._mmap)
 
     def sync_out(self):
         try:
@@ -437,7 +438,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.name[number - 1]) + \
-               repr(self._memobj.memory[number - 1])
+            repr(self._memobj.memory[number - 1])
 
     def _get_tone(self, mem, _mem):
         rx_tone = tx_tone = None
@@ -459,7 +460,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rx_pol = _mem.rx_tmode == 0x03 and "R" or "N"
 
         chirp_common.split_tone_decode(mem, (tx_tmode, tx_tone, tx_pol),
-                                            (rx_tmode, rx_tone, rx_pol))
+                                       (rx_tmode, rx_tone, rx_pol))
 
     def _is_txinh(self, _mem):
         raw_tx = ""
