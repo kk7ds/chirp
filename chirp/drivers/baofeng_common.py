@@ -183,6 +183,9 @@ def _download(radio):
     LOG.info("Radio firmware version:")
     LOG.debug(util.hexprint(radio_ident))
 
+    if radio_ident == "\xFF" * 16:
+        ident += radio.MODEL.ljust(8)
+
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
