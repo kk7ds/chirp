@@ -1133,16 +1133,19 @@ class TestRunner:
         testimage = tempfile.mktemp(".img", rid)
         shutil.copy(image, testimage)
 
-        tw = TestWrapper(rclass, testimage)
-        rf = tw.do("get_features")
-        if rf.has_sub_devices:
-            devices = tw.do("get_sub_devices")
-            failed = 0
-            for dev in devices:
-                failed += self.run_rclass_image(dev.__class__, image)
-            return failed
-        else:
-            return self._run_one(rclass, image)
+        try:
+            tw = TestWrapper(rclass, testimage)
+            rf = tw.do("get_features")
+            if rf.has_sub_devices:
+                devices = tw.do("get_sub_devices")
+                failed = 0
+                for dev in devices:
+                    failed += self.run_rclass_image(dev.__class__, image)
+                return failed
+            else:
+                return self._run_one(rclass, image)
+        finally:
+            os.remove(testimage)
 
     def run_list(self, run_list):
         def _key(pair):
