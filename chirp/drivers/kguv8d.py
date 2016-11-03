@@ -475,7 +475,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_name_length = 8
-        rf.valid_duplexes = ["", "+", "-", "split"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_bands = [(134000000, 175000000),  # supports 2m
                           (400000000, 520000000)]  # supports 70cm
         rf.valid_characters = chirp_common.CHARSET_ASCII
@@ -554,7 +554,11 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        if int(_mem.rxfreq) == int(_mem.txfreq):
+        if _mem.txfreq == 0xFFFFFFFF:
+            # TX freq not set
+            mem.duplex = "off"
+            mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
         elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
@@ -629,7 +633,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             return
 
         _mem.rxfreq = int(mem.freq / 10)
-        if mem.duplex == "split":
+        if mem.duplex == "off":
+            _mem.txfreq = 0xFFFFFFFF
+        elif mem.duplex == "split":
             _mem.txfreq = int(mem.offset / 10)
         elif mem.duplex == "off":
             for i in range(0, 4):
