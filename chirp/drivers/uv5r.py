@@ -860,6 +860,20 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             _nam.set_raw("\xff" * 16)
             return
 
+        was_empty = False
+        # same method as used in get_memory to find 
+        # out whether a raw memory is empty
+        if _mem.get_raw()[0] == "\xff":
+            was_empty = True
+            LOG.debug("UV5R: this mem was empty")
+        else:
+            # memorize old extra-values before erasing the whole memory
+            # used to solve issue 4121
+            LOG.debug("mem was not empty, memorize extra-settings")
+            prev_bcl = _mem.bcl.get_value()
+            prev_scode = _mem.scode.get_value()
+            prev_pttid = _mem.pttid.get_value()
+
         _mem.set_raw("\x00" * 16)
 
         _mem.rxfreq = mem.freq / 10
@@ -928,6 +942,12 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 _mem.lowpower = UV5R_POWER_LEVELS.index(mem.power)
         else:
             _mem.lowpower = 0
+
+        if not was_empty:
+            #restoring old extra-settings (issue 4121
+            _mem.bcl.set_value(prev_bcl)
+            _mem.scode.set_value(prev_scode)
+            _mem.pttid.set_value(prev_pttid)
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
