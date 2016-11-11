@@ -45,12 +45,17 @@ class SettingsEditor(common.Editor):
         # The selection tree
         self._store = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_INT)
         self._view = gtk.TreeView(self._store)
-        self._view.set_size_request(150, -1)
         self._view.get_selection().connect("changed", self._view_changed_cb)
         self._view.append_column(
             gtk.TreeViewColumn("", gtk.CellRendererText(), text=0))
         self._view.show()
-        paned.pack1(self._view)
+        scrolled_window = gtk.ScrolledWindow()
+        scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        scrolled_window.add_with_viewport(self._view)
+        scrolled_window.set_size_request(200, -1)
+        scrolled_window.show()
+        paned.pack1(scrolled_window)
+
 
         # The settings notebook
         self._notebook = gtk.Notebook()
