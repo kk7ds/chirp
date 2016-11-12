@@ -1128,14 +1128,20 @@ class UV5X3(baofeng_common.BaofengCommonHT):
             val = LIST_DTMF_SPECIAL_VALUES[index]
             obj.set_value(val)
 
-        idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.ani.groupcode)
+        if _mem.ani.groupcode in LIST_DTMF_SPECIAL_VALUES:
+            idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.ani.groupcode)
+        else:
+            idx = LIST_DTMF_SPECIAL_VALUES.index(0x0B)
         rs = RadioSetting("ani.groupcode", "Group Code",
                           RadioSettingValueList(LIST_DTMF_SPECIAL_DIGITS,
                                                 LIST_DTMF_SPECIAL_DIGITS[idx]))
         rs.set_apply_callback(apply_dmtf_listvalue, _mem.ani.groupcode)
         dtmfd.append(rs)
 
-        idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.ani.spacecode)
+        if _mem.ani.spacecode in LIST_DTMF_SPECIAL_VALUES:
+            idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.ani.spacecode)
+        else:
+            idx = LIST_DTMF_SPECIAL_VALUES.index(0x0C)
         rs = RadioSetting("ani.spacecode", "Space Code",
                           RadioSettingValueList(LIST_DTMF_SPECIAL_DIGITS,
                                                 LIST_DTMF_SPECIAL_DIGITS[idx]))
