@@ -155,6 +155,92 @@ struct {
   u8 unknown1[10];
 } names[200];
 
+#seekto 0x2400;
+struct {
+  u8 period; // one out of LIST_5TONE_STANDARD_PERIODS
+  u8 group_tone;
+  u8 repeat_tone;
+  u8 unused[13];
+} _5tone_std_settings[15];
+
+#seekto 0x2500;
+struct {
+  u8 frame1[5];
+  u8 frame2[5];
+  u8 frame3[5];
+  u8 standard;   // one out of LIST_5TONE_STANDARDS
+} _5tone_codes[15];
+
+#seekto 0x25F0;
+struct {
+  u8 _5tone_delay1; // * 10ms
+  u8 _5tone_delay2; // * 10ms
+  u8 _5tone_delay3; // * 10ms
+  u8 _5tone_first_digit_ext_length;
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  u8 unknown4;
+  u8 decode_standard;
+  u8 unknown5:5,
+     _5tone_decode_call_frame3:1,
+     _5tone_decode_call_frame2:1,
+     _5tone_decode_call_frame1:1;
+  u8 unknown6:5,
+     _5tone_decode_disp_frame3:1,
+     _5tone_decode_disp_frame2:1,
+     _5tone_decode_disp_frame1:1;
+  u8 decode_reset_time; // * 100 + 100ms
+} _5tone_settings;
+
+#seekto 0x2900;
+struct {
+  u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
+} dtmf_codes[15];
+
+#seekto 0x29F0;
+struct {
+  u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10
+  u8 dtmfspeed_off; //list with 50..2000ms in steps of 10
+  u8 unknown0[14];
+  u8 inspection[16];
+  u8 monitor[16];
+  u8 alarmcode[16];
+  u8 stun[16];
+  u8 kill[16];
+  u8 revive[16];
+  u8 unknown1[16];
+  u8 unknown2[16];
+  u8 unknown3[16];
+  u8 unknown4[16];
+  u8 unknown5[16];
+  u8 unknown6[16];
+  u8 unknown7[16];
+  u8 masterid[16];
+  u8 viceid[16];
+  u8 unused01:7,
+     mastervice:1;
+  u8 unused02:3,
+     mrevive:1,
+     mkill:1,
+     mstun:1,
+     mmonitor:1,
+     minspection:1;
+  u8 unused03:3,
+     vrevive:1,
+     vkill:1,
+     vstun:1,
+     vmonitor:1,
+     vinspection:1;
+  u8 unused04:6,
+     txdisable:1,
+     rxdisable:1;
+  u8 groupcode;
+  u8 spacecode;
+  u8 delayproctime; // * 100 + 100ms
+  u8 resettime;     // * 100 + 100ms
+} dtmf_settings;
+
 #seekto 0x3000;
 struct {
   u8 freq[8];
@@ -237,6 +323,30 @@ LIST_TXP = ["High", "Low"]
 LIST_WIDE = ["Wide", "Narrow"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 LIST_STEP = [str(x) for x in STEPS]
+LIST_5TONE_STANDARDS = ["CCIR1", "CCIR2", "PCCIR", "ZVEI1", "ZVEI2", "ZVEI3",
+                        "PZVEI", "DZVEI", "PDZVEI", "EEA", "EIA", "EURO",
+                        "CCITT", "NATEL", "MODAT", "none"]
+LIST_5TONE_STANDARDS_without_none = ["CCIR1", "CCIR2", "PCCIR", "ZVEI1",
+                                     "ZVEI2", "ZVEI3",
+                                     "PZVEI", "DZVEI", "PDZVEI", "EEA", "EIA",
+                                     "EURO", "CCITT", "NATEL", "MODAT"]
+LIST_5TONE_STANDARD_PERIODS = ["20", "30", "40", "50", "60", "70", "80", "90",
+                               "100", "110", "120", "130", "140", "150", "160",
+                               "170", "180", "190", "200"]
+LIST_5TONE_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A",
+                     "B", "C", "D", "E", "F"]
+LIST_5TONE_DELAY = ["%s ms" % x for x in range(0, 1010, 10)]
+LIST_5TONE_RESET = ["%s ms" % x for x in range(100, 8100, 100)]
+LIST_DTMF_SPEED = ["%s ms" % x for x in range(50, 2010, 10)]
+LIST_DTMF_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B",
+                    "C", "D", "#", "*"]
+LIST_DTMF_VALUES = [0x0A, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                    0x0D, 0x0E, 0x0F, 0x00, 0x0C, 0x0B ]
+LIST_DTMF_SPECIAL_DIGITS = [ "*", "#", "A", "B", "C", "D"]
+LIST_DTMF_SPECIAL_VALUES = [ 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
+LIST_DTMF_DELAY = ["%s ms" % x for x in range(100, 4100, 100)]
+CHARSET_DTMF_DIGITS = "0123456789AaBbCcDd#*"
+
 
 # This is a general serial timeout for all serial read functions.
 # Practice has show that about 0.7 sec will be enough to cover all radios.
@@ -1613,7 +1723,562 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             fm_presets.append(fmfreq)
             
             i = i + 1
+
+        # DTMF-Setting
+        dtmf_enc_settings = RadioSettingGroup ("dtmf_enc_settings",
+                                               "DTMF Encoding Settings")
+        dtmf_dec_settings = RadioSettingGroup ("dtmf_dec_settings",
+                                               "DTMF Decoding Settings")
+        top.append(dtmf_enc_settings)
+        top.append(dtmf_dec_settings)
+        txdisable = RadioSetting("dtmf_settings.txdisable", 
+                                 "TX-Disable",
+                                 RadioSettingValueBoolean(
+                                     _mem.dtmf_settings.txdisable))
+        dtmf_enc_settings.append(txdisable)
+
+        rxdisable = RadioSetting("dtmf_settings.rxdisable", 
+                                 "RX-Disable",
+                                 RadioSettingValueBoolean(
+                                     _mem.dtmf_settings.rxdisable))
+        dtmf_enc_settings.append(rxdisable)
+
+        dtmfspeed_on = RadioSetting(
+            "dtmf_settings.dtmfspeed_on",
+            "DTMF Speed (On Time)",
+            RadioSettingValueList(LIST_DTMF_SPEED,
+                                  LIST_DTMF_SPEED[
+                                      _mem.dtmf_settings.dtmfspeed_on]))
+        dtmf_enc_settings.append(dtmfspeed_on)
+
+        dtmfspeed_off = RadioSetting(
+            "dtmf_settings.dtmfspeed_off",
+            "DTMF Speed (Off Time)",
+            RadioSettingValueList(LIST_DTMF_SPEED,
+                                  LIST_DTMF_SPEED[
+                                      _mem.dtmf_settings.dtmfspeed_off]))
+        dtmf_enc_settings.append(dtmfspeed_off)
+
+        def memory2string(dmtf_mem):
+            dtmf_string = ""
+            for digit in dmtf_mem:
+                if digit != 255:
+                    index = LIST_DTMF_VALUES.index(digit)
+                    dtmf_string = dtmf_string + LIST_DTMF_DIGITS[index]
+            return dtmf_string
+
+        def apply_dmtf_frame(setting, obj):
+            LOG.debug("Setting DTMF-Code: " + str(setting.value) )
+            val_string = str(setting.value)
+            for i in range(0,16):
+                obj[i] = 255
+            i = 0
+            for current_char in val_string:
+                current_char = current_char.upper()
+                index = LIST_DTMF_DIGITS.index(current_char)
+                obj[i] = LIST_DTMF_VALUES[ index ]
+                i = i + 1
+
+        codes = self._memobj.dtmf_codes
+        i = 1
+        for dtmfcode in codes:
+            val = RadioSettingValueString(0, 16, 
+                                          memory2string(dtmfcode.code),
+                                          False, CHARSET_DTMF_DIGITS)
+            line = RadioSetting("dtmf_code_" + str(i) + "_code",
+                                "DMTF Code " + str(i), val)
+            line.set_apply_callback(apply_dmtf_frame, dtmfcode.code)
+            dtmf_enc_settings.append(line)
+            i = i + 1
+
+        line = RadioSetting("dtmf_settings.mastervice", 
+                            "Master and Vice ID",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.mastervice))
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.masterid),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.masterid",
+                            "Master Control ID ", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.masterid)
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.minspection", 
+                            "Master Inspection",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.minspection))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.mmonitor", 
+                            "Master Monitor",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.mmonitor))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.mstun", 
+                            "Master Stun",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.mstun))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.mkill", 
+                            "Master Kill",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.mkill))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.mrevive", 
+                            "Master Revive",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.mrevive))
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.viceid),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.viceid",
+                            "Vice Control ID ", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.viceid)
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.vinspection", 
+                            "Vice Inspection",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.vinspection))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.vmonitor", 
+                            "Vice Monitor",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.vmonitor))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.vstun", 
+                            "Vice Stun",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.vstun))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.vkill", 
+                            "Vice Kill",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.vkill))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting("dtmf_settings.vrevive", 
+                            "Vice Revive",
+                            RadioSettingValueBoolean(
+                                _mem.dtmf_settings.vrevive))
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.inspection),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.inspection",
+                            "Inspection", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.inspection)
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.alarmcode),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.alarmcode",
+                            "Alarm", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.alarmcode)
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.kill),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.kill",
+                            "Kill", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.kill)
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.monitor),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.monitor",
+                            "Monitor", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.monitor)
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.stun),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.stun",
+                            "Stun", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.stun)
+        dtmf_dec_settings.append(line)
+
+        val = RadioSettingValueString(0, 16, 
+                                      memory2string(
+                                          _mem.dtmf_settings.revive),
+                                          False, CHARSET_DTMF_DIGITS)
+        line = RadioSetting("dtmf_settings.revive",
+                            "Revive", val)
+        line.set_apply_callback(apply_dmtf_frame,
+                                _mem.dtmf_settings.revive)
+        dtmf_dec_settings.append(line)
+
+        def apply_dmtf_listvalue(setting, obj):
+            LOG.debug("Setting value: "+ str(setting.value) + " from list")
+            val = str(setting.value)
+            index = LIST_DTMF_SPECIAL_DIGITS.index(val)
+            val = LIST_DTMF_SPECIAL_VALUES[index]
+            obj.set_value(val)
+
+        idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.dtmf_settings.groupcode)
+        line = RadioSetting(
+            "dtmf_settings.groupcode",
+            "Group Code",
+            RadioSettingValueList(LIST_DTMF_SPECIAL_DIGITS,
+                                  LIST_DTMF_SPECIAL_DIGITS[idx]))
+        line.set_apply_callback(apply_dmtf_listvalue,
+                                _mem.dtmf_settings.groupcode)
+        dtmf_dec_settings.append(line)
+
+        idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.dtmf_settings.spacecode)
+        line = RadioSetting(
+            "dtmf_settings.spacecode",
+            "Space Code",
+            RadioSettingValueList(LIST_DTMF_SPECIAL_DIGITS,
+                                  LIST_DTMF_SPECIAL_DIGITS[idx]))
+        line.set_apply_callback(apply_dmtf_listvalue,
+                                _mem.dtmf_settings.spacecode)
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting(
+            "dtmf_settings.resettime",
+            "Reset time",
+            RadioSettingValueList(LIST_5TONE_RESET,
+                                  LIST_5TONE_RESET[
+                                      _mem.dtmf_settings.resettime]))
+        dtmf_dec_settings.append(line)
+
+        line = RadioSetting(
+            "dtmf_settings.delayproctime",
+            "Delay processing time",
+            RadioSettingValueList(LIST_DTMF_DELAY,
+                                  LIST_DTMF_DELAY[
+                                      _mem.dtmf_settings.delayproctime]))
+        dtmf_dec_settings.append(line)
+
+
+        # 5 Tone Settings
+        stds_5tone = RadioSettingGroup ("stds_5tone", "Standards")
+        codes_5tone = RadioSettingGroup ("codes_5tone", "Codes")
+
+        group_5tone = RadioSettingGroup ("group_5tone", "5 Tone Settings")
+        group_5tone.append(stds_5tone)
+        group_5tone.append(codes_5tone)
+
+        top.append(group_5tone)
+
+        def apply_list_value(setting, obj):
+            options = setting.value.get_options()
+            obj.set_value ( options.index(str(setting.value)) )
+
+        _5tone_standards = self._memobj._5tone_std_settings
+        i = 0
+        for standard in _5tone_standards:
+            std_5tone = RadioSettingGroup ("std_5tone_" + str(i), 
+                                           LIST_5TONE_STANDARDS[i])
+            stds_5tone.append(std_5tone)
+ 
+            period = standard.period
+            if period == 255:
+                LOG.debug("Period for " + LIST_5TONE_STANDARDS[i] + 
+                          " is not yet configured. Setting to 70ms.")
+                period = 5
+
+            if period <= len( LIST_5TONE_STANDARD_PERIODS ):
+                line = RadioSetting(
+                    "_5tone_std_settings_" + str(i) + "_period",
+                    "Period (ms)", RadioSettingValueList
+                    (LIST_5TONE_STANDARD_PERIODS,
+                     LIST_5TONE_STANDARD_PERIODS[period]))
+                line.set_apply_callback(apply_list_value, standard.period)
+                std_5tone.append(line)
+            else:
+                LOG.debug("Invalid value for 5tone period! Disabling.")
+
+            group_tone = standard.group_tone
+            if group_tone == 255:
+                LOG.debug("Group-Tone for " + LIST_5TONE_STANDARDS[i] +
+                          " is not yet configured. Setting to A.")
+                group_tone = 10
+
+            if group_tone <= len( LIST_5TONE_DIGITS ):
+                line = RadioSetting(
+                    "_5tone_std_settings_" + str(i) + "_grouptone",
+                    "Group Tone",
+                    RadioSettingValueList(LIST_5TONE_DIGITS,
+                                          LIST_5TONE_DIGITS[
+                                              group_tone]))
+                line.set_apply_callback(apply_list_value,
+                                        standard.group_tone)
+                std_5tone.append(line)
+            else:
+                LOG.debug("Invalid value for 5tone digit! Disabling.")
+
+            repeat_tone = standard.repeat_tone
+            if repeat_tone == 255:
+                LOG.debug("Repeat-Tone for " + LIST_5TONE_STANDARDS[i] + 
+                          " is not yet configured. Setting to E.")
+                repeat_tone = 14
+
+            if repeat_tone <= len( LIST_5TONE_DIGITS ):
+                line = RadioSetting(
+                    "_5tone_std_settings_" + str(i) + "_repttone",
+                    "Repeat Tone",
+                    RadioSettingValueList(LIST_5TONE_DIGITS,
+                                          LIST_5TONE_DIGITS[
+                                              repeat_tone]))
+                line.set_apply_callback(apply_list_value,
+                                        standard.repeat_tone)
+                std_5tone.append(line)
+            else:
+                LOG.debug("Invalid value for 5tone digit! Disabling.")
+            i = i + 1
+
+        def my_apply_5tonestdlist_value(setting, obj):
+            if LIST_5TONE_STANDARDS.index(str(setting.value)) == 15:
+                obj.set_value(0xFF)
+            else:
+                obj.set_value( LIST_5TONE_STANDARDS.
+                              index(str(setting.value)) )
+
+        def apply_5tone_frame(setting, obj):
+            LOG.debug("Setting 5 Tone: " + str(setting.value) )
+            valstring = str(setting.value)
+            if len(valstring) == 0:
+                for i in range(0,5):
+                    obj[i] = 255
+            else:
+                validFrame = True
+                for i in range(0,5):
+                    currentChar = valstring[i].upper()
+                    if currentChar in LIST_5TONE_DIGITS:
+                        obj[i] = LIST_5TONE_DIGITS.index(currentChar)
+                    else:
+                        validFrame = False
+                        LOG.debug("invalid char: " + str(currentChar))
+                if not validFrame:
+                    LOG.debug("setting whole frame to FF" )
+                    for i in range(0,5):
+                        obj[i] = 255
+
+        def validate_5tone_frame(value):
+            if (len(str(value)) != 5) and (len(str(value)) != 0) :
+                msg = ("5 Tone must have 5 digits or 0 digits")
+                raise InvalidValueError(msg)
+            for digit in str(value):
+                if digit.upper() not in LIST_5TONE_DIGITS:
+                    msg = (str(digit) + " is not a valid digit for 5tones")
+                    raise InvalidValueError(msg)
+            return value
+
+        def frame2string(frame):
+            frameString = ""
+            for digit in frame:
+                if digit != 255:
+                    frameString = frameString + LIST_5TONE_DIGITS[digit]
+            return frameString
+
+        _5tone_codes = self._memobj._5tone_codes
+        i = 1
+        for code in _5tone_codes:
+            code_5tone = RadioSettingGroup ("code_5tone_" + str(i),
+                                            "5 Tone code " + str(i))
+            codes_5tone.append(code_5tone)
+            if (code.standard == 255 ):
+                currentVal = 15
+            else:
+                currentVal = code.standard
+            line = RadioSetting("_5tone_code_" + str(i) + "_std", 
+                                " Standard",
+                                RadioSettingValueList(LIST_5TONE_STANDARDS,
+                                                      LIST_5TONE_STANDARDS[
+                                                          currentVal]) )
+            line.set_apply_callback(my_apply_5tonestdlist_value,
+                                    code.standard)
+            code_5tone.append(line)
+
+            val = RadioSettingValueString(0, 6,
+                                          frame2string(code.frame1), False)
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame1", 
+                                " Frame 1", val)
+            val.set_validate_callback(validate_5tone_frame)
+            line.set_apply_callback(apply_5tone_frame, code.frame1)
+            code_5tone.append(line)
+
+            val = RadioSettingValueString(0, 6,
+                                          frame2string(code.frame2), False)
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame2",
+                                " Frame 2", val)
+            val.set_validate_callback(validate_5tone_frame)
+            line.set_apply_callback(apply_5tone_frame, code.frame2)
+            code_5tone.append(line)
+
+            val = RadioSettingValueString(0, 6,
+                                          frame2string(code.frame3), False)
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame3",
+                                " Frame 3", val)
+            val.set_validate_callback(validate_5tone_frame)
+            line.set_apply_callback(apply_5tone_frame, code.frame3)
+            code_5tone.append(line)
+            i = i + 1
+
+        _5_tone_decode1 = RadioSetting(
+            "_5tone_settings._5tone_decode_call_frame1",
+            "5 Tone decode call Frame 1",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_call_frame1))
+        group_5tone.append(_5_tone_decode1)
+
+        _5_tone_decode2 = RadioSetting(
+            "_5tone_settings._5tone_decode_call_frame2",
+            "5 Tone decode call Frame 2",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_call_frame2))
+        group_5tone.append(_5_tone_decode2)
+
+        _5_tone_decode3 = RadioSetting(
+            "_5tone_settings._5tone_decode_call_frame3",
+            "5 Tone decode call Frame 3",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_call_frame3))
+        group_5tone.append(_5_tone_decode3)
+
+        _5_tone_decode_disp1 = RadioSetting(
+            "_5tone_settings._5tone_decode_disp_frame1",
+            "5 Tone decode disp Frame 1",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_disp_frame1))
+        group_5tone.append(_5_tone_decode_disp1)
+
+        _5_tone_decode_disp2 = RadioSetting(
+            "_5tone_settings._5tone_decode_disp_frame2",
+            "5 Tone decode disp Frame 2",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_disp_frame2))
+        group_5tone.append(_5_tone_decode_disp2)
+
+        _5_tone_decode_disp3 = RadioSetting(
+            "_5tone_settings._5tone_decode_disp_frame3",
+            "5 Tone decode disp Frame 3",
+            RadioSettingValueBoolean(
+                _mem._5tone_settings._5tone_decode_disp_frame3))
+        group_5tone.append(_5_tone_decode_disp3)
+
+        decode_standard = _mem._5tone_settings.decode_standard
+        if decode_standard == 255:
+            decode_standard = 0
+        if decode_standard <= len (LIST_5TONE_STANDARDS_without_none) :
+            line = RadioSetting("_5tone_settings.decode_standard", 
+                                "5 Tone-decode Standard",
+                                RadioSettingValueList(
+                                    LIST_5TONE_STANDARDS_without_none,
+                                    LIST_5TONE_STANDARDS_without_none[
+                                        decode_standard]))
+            group_5tone.append(line)
+        else:
+            LOG.debug("Invalid decode std...")
             
+        _5tone_delay1 = _mem._5tone_settings._5tone_delay1
+        if _5tone_delay1 == 255:
+            _5tone_delay1 = 20
+
+        if _5tone_delay1 <= len( LIST_5TONE_DELAY ):
+            list = RadioSettingValueList(LIST_5TONE_DELAY, 
+                                         LIST_5TONE_DELAY[
+                                             _5tone_delay1])
+            line = RadioSetting("_5tone_settings._5tone_delay1",
+                                "5 Tone Delay Frame 1", list)
+            group_5tone.append(line)
+        else:
+            LOG.debug("Invalid value for 5tone delay (frame1) ! Disabling.")
+
+        _5tone_delay2 = _mem._5tone_settings._5tone_delay2
+        if _5tone_delay2 == 255:
+            _5tone_delay2 = 20
+            LOG.debug("5 Tone delay unconfigured! Resetting to 200ms.")
+
+        if _5tone_delay2 <= len( LIST_5TONE_DELAY ):
+            list = RadioSettingValueList(LIST_5TONE_DELAY,
+                                         LIST_5TONE_DELAY[
+                                             _5tone_delay2])
+            line = RadioSetting("_5tone_settings._5tone_delay2",
+                                "5 Tone Delay Frame 2", list)
+            group_5tone.append(line)
+        else:
+            LOG.debug("Invalid value for 5tone delay (frame2)! Disabling.")
+
+        _5tone_delay3 = _mem._5tone_settings._5tone_delay3
+        if _5tone_delay3 == 255:
+            _5tone_delay3 = 20
+            LOG.debug("5 Tone delay unconfigured! Resetting to 200ms.")
+
+        if _5tone_delay3 <= len( LIST_5TONE_DELAY ):
+            list = RadioSettingValueList(LIST_5TONE_DELAY,
+                                         LIST_5TONE_DELAY[
+                                             _5tone_delay3])
+            line = RadioSetting("_5tone_settings._5tone_delay3",
+                                "5 Tone Delay Frame 3", list )
+            group_5tone.append(line)
+        else:
+            LOG.debug("Invalid value for 5tone delay (frame3)! Disabling.")
+
+        ext_length = _mem._5tone_settings._5tone_first_digit_ext_length
+        if ext_length == 255:
+            ext_length = 0
+            LOG.debug("1st Tone ext lenght unconfigured! Resetting to 0")
+
+        if ext_length <= len(
+            LIST_5TONE_DELAY ):
+            list = RadioSettingValueList(
+                LIST_5TONE_DELAY, 
+                LIST_5TONE_DELAY[
+                    ext_length])
+            line = RadioSetting(
+                "_5tone_settings._5tone_first_digit_ext_length",
+                "First digit extend length", list)
+            group_5tone.append(line)
+        else:
+            LOG.debug("Invalid value for 5tone ext length! Disabling.")
+
+        decode_reset_time = _mem._5tone_settings.decode_reset_time
+        if decode_reset_time == 255:
+            decode_reset_time = 59
+            LOG.debug("Decode reset time unconfigured. resetting.")
+        if decode_reset_time <= len(LIST_5TONE_RESET):
+            list = RadioSettingValueList(
+                LIST_5TONE_RESET,
+                LIST_5TONE_RESET[
+                    decode_reset_time])
+            line = RadioSetting("_5tone_settings.decode_reset_time",
+                                "Decode reset time", list)
+            group_5tone.append(line)
+        else:
+            LOG.debug("Invalid value decode reset time! Disabling.")
+
         return top
 
     def set_settings(self, settings):
