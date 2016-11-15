@@ -189,6 +189,7 @@ EXCH_W = "W\x00\x00\x00\x00"
 
 @directory.register
 class THD72Radio(chirp_common.CloneModeRadio):
+
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = "TH-D72 (clone mode)"
@@ -202,8 +203,9 @@ class THD72Radio(chirp_common.CloneModeRadio):
     _LCD_CONTRAST = ["Level %d" % x for x in range(1, 16)]
     _LAMP_CONTROL = ["Manual", "Auto"]
     _LAMP_TIMER = ["Seconds %d" % x for x in range(2, 11)]
-    _BATTERY_SAVER = ["OFF", "0.03 Seconds", "0.2 Seconds", "0.4 Seconds", "0.6 Seconds",
-                      "0.8 Seconds", "1 Seconds", "2 Seconds", "3 Seconds", "4 Seconds", "5 Seconds"]
+    _BATTERY_SAVER = ["OFF", "0.03 Seconds", "0.2 Seconds", "0.4 Seconds",
+                      "0.6 Seconds", "0.8 Seconds", "1 Seconds", "2 Seconds",
+                      "3 Seconds", "4 Seconds", "5 Seconds"]
     _APO = ["OFF", "15 Minutes", "30 Minutes", "60 Minutes"]
     _AUDIO_BALANCE = ["Center", "A +50%", "A +100%", "B +50%", "B +100%"]
     _KEY_BEEP = ["OFF", "Radio & GPS", "Radio Only", "GPS Only"]

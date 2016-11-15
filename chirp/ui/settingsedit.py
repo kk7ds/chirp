@@ -25,12 +25,14 @@ LOG = logging.getLogger(__name__)
 
 
 class RadioSettingProxy(settings.RadioSetting):
+
     def __init__(self, setting, editor):
         self._setting = setting
         self._editor = editor
 
 
 class SettingsEditor(common.Editor):
+
     def __init__(self, rthread):
         super(SettingsEditor, self).__init__(rthread)
 
@@ -55,7 +57,6 @@ class SettingsEditor(common.Editor):
         scrolled_window.set_size_request(200, -1)
         scrolled_window.show()
         paned.pack1(scrolled_window)
-
 
         # The settings notebook
         self._notebook = gtk.Notebook()

@@ -362,6 +362,7 @@ class LT898UV(chirp_common.Alias):
 
 @directory.register
 class LeixenVV898Radio(chirp_common.CloneModeRadio):
+
     """Leixen VV-898"""
     VENDOR = "Leixen"
     MODEL = "VV-898"
@@ -944,6 +945,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
 @directory.register
 class JetstreamJT270MRadio(LeixenVV898Radio):
+
     """Jetstream JT270M"""
     VENDOR = "Jetstream"
     MODEL = "JT270M"
@@ -953,13 +955,16 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
 
 
 class VV898E(chirp_common.Alias):
-    '''Leixen has called this radio both 898E and S historically, ident is identical'''
+
+    '''Leixen has called this radio both 898E and S historically, ident is
+    identical'''
     VENDOR = "Leixen"
     MODEL = "VV-898E"
 
 
 @directory.register
 class LeixenVV898SRadio(LeixenVV898Radio):
+
     """Leixen VV-898S, also VV-898E which is identical"""
     VENDOR = "Leixen"
     MODEL = "VV-898S"

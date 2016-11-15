@@ -340,6 +340,7 @@ class FT60BankModel(chirp_common.BankModel):
 
 @directory.register
 class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
+
     """Yaesu FT-60"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
@@ -487,27 +488,32 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # BELL
         opts = ["OFF", "1T", "3T", "5T", "8T", "CONT"]
         ctcss.append(RadioSetting("bell", "Bell Repetitions",
-                                  RadioSettingValueList(opts, opts[_settings.bell])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.bell])))
 
         # BSY.LED
         opts = ["ON", "OFF"]
         misc.append(RadioSetting("bsy_led", "Busy LED",
-                                 RadioSettingValueList(opts, opts[_settings.bsy_led])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.bsy_led])))
 
         # DCS.NR
         opts = ["TR/X N", "RX R", "TX R", "T/RX R"]
         ctcss.append(RadioSetting("dcs_nr", "\"Inverted\" DCS Code Decoding",
-                                  RadioSettingValueList(opts, opts[_settings.dcs_nr])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.dcs_nr])))
 
         # DT.DLY
         opts = ["50 MS", "100 MS", "250 MS", "450 MS", "750 MS", "1000 MS"]
         ctcss.append(RadioSetting("dt_dly", "DTMF Autodialer Delay Time",
-                                  RadioSettingValueList(opts, opts[_settings.dt_dly])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.dt_dly])))
 
         # DT.SPD
         opts = ["50 MS", "100 MS"]
         ctcss.append(RadioSetting("dt_spd", "DTMF Autodialer Sending Speed",
-                                  RadioSettingValueList(opts, opts[_settings.dt_spd])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.dt_spd])))
 
         # DT.WRT
         for i in range(0, 9):
@@ -535,7 +541,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # EDG.BEP
         opts = ["OFF", "ON"]
         misc.append(RadioSetting("edg_bep", "Band Edge Beeper",
-                                 RadioSettingValueList(opts, opts[_settings.edg_bep])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.edg_bep])))
 
         # I.NET
         opts = ["OFF", "COD", "MEM"]
@@ -553,7 +560,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                 "CODE 5", "CODE 6", "CODE 7", "CODE 8", "CODE 9",
                 "CODE A", "CODE B", "CODE C", "CODE D", "CODE E", "CODE F"]
         wires.append(RadioSetting("int_cd", "Access Number for WiRES(TM)",
-                                  RadioSettingValueList(opts, opts[_settings.int_cd])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.int_cd])))
 
         # INT.MR
         opts = ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9"]
@@ -564,7 +572,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # LAMP
         opts = ["KEY", "5SEC", "TOGGLE"]
         switch.append(RadioSetting("lamp", "Lamp Mode",
-                                   RadioSettingValueList(opts, opts[_settings.lamp])))
+                                   RadioSettingValueList(opts, opts[
+                                                         _settings.lamp])))
 
         # LOCK
         opts = ["LK KEY", "LKDIAL", "LK K+D", "LK PTT",
@@ -581,33 +590,39 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # M/T-CL
         opts = ["MONI", "T-CALL"]
         switch.append(RadioSetting("mt_cl", "MONI Switch Function",
-                                   RadioSettingValueList(opts, opts[_settings.mt_cl])))
+                                   RadioSettingValueList(opts, opts[
+                                                         _settings.mt_cl])))
 
         # PAG.ABK
         opts = ["OFF", "ON"]
         eai.append(RadioSetting("pag_abk", "Paging Answer Back",
-                                RadioSettingValueList(opts, opts[_settings.pag_abk])))
+                                RadioSettingValueList(opts, opts[
+                                                      _settings.pag_abk])))
 
         # RESUME
         opts = ["TIME", "HOLD", "BUSY"]
         scan.append(RadioSetting("resume", "Scan Resume Mode",
-                                 RadioSettingValueList(opts, opts[_settings.resume])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.resume])))
 
         # REV/HM
         opts = ["REV", "HOME"]
         switch.append(RadioSetting("rev_hm", "HM/RV Key Function",
-                                   RadioSettingValueList(opts, opts[_settings.rev_hm])))
+                                   RadioSettingValueList(opts, opts[
+                                                         _settings.rev_hm])))
 
         # RF.SQL
         opts = ["OFF", "S-1", "S-2", "S-3", "S-4", "S-5", "S-6",
                 "S-7", "S-8", "S-FULL"]
         misc.append(RadioSetting("rf_sql", "RF Squelch Threshold",
-                                 RadioSettingValueList(opts, opts[_settings.rf_sql])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.rf_sql])))
 
         # PRI.RVT
         opts = ["OFF", "ON"]
         scan.append(RadioSetting("pri_rvt", "Priority Revert",
-                                 RadioSettingValueList(opts, opts[_settings.pri_rvt])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.pri_rvt])))
 
         # RXSAVE
         opts = ["OFF", "200 MS", "300 MS", "500 MS", "1 S", "2 S"]
@@ -618,7 +633,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # S.SRCH
         opts = ["SINGLE", "CONT"]
         misc.append(RadioSetting("ssrch", "Smart Search Sweep Mode",
-                                 RadioSettingValueList(opts, opts[_settings.ssrch])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.ssrch])))
 
         # SCN.MD
         opts = ["MEM", "ONLY"]
@@ -629,32 +645,38 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # SCN.LMP
         opts = ["OFF", "ON"]
         scan.append(RadioSetting("scn_lmp", "Scan Lamp",
-                                 RadioSettingValueList(opts, opts[_settings.scn_lmp])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.scn_lmp])))
 
         # TOT
         opts = ["OFF"] + ["%dMIN" % (x) for x in range(1, 30 + 1)]
         misc.append(RadioSetting("tot", "Timeout Timer",
-                                 RadioSettingValueList(opts, opts[_settings.tot])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.tot])))
 
         # TX.LED
         opts = ["ON", "OFF"]
         misc.append(RadioSetting("tx_led", "TX LED",
-                                 RadioSettingValueList(opts, opts[_settings.tx_led])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.tx_led])))
 
         # TXSAVE
         opts = ["OFF", "ON"]
         power.append(RadioSetting("txsave", "Transmitter Battery Saver",
-                                  RadioSettingValueList(opts, opts[_settings.txsave])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.txsave])))
 
         # VFO.BND
         opts = ["BAND", "ALL"]
         misc.append(RadioSetting("vfo_bnd", "VFO Band Edge Limiting",
-                                 RadioSettingValueList(opts, opts[_settings.vfo_bnd])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.vfo_bnd])))
 
         # WX.ALT
         opts = ["OFF", "ON"]
         scan.append(RadioSetting("wx_alt", "Weather Alert Scan",
-                                 RadioSettingValueList(opts, opts[_settings.wx_alt])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.wx_alt])))
 
         # MBS
         for i in range(0, 10):

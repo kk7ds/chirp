@@ -17,16 +17,19 @@ from chirp import chirp_common
 
 
 class InvalidValueError(Exception):
+
     """An invalid value was specified for a given setting"""
     pass
 
 
 class InternalError(Exception):
+
     """A driver provided an invalid settings object structure"""
     pass
 
 
 class RadioSettingValue:
+
     """Base class for a single radio setting"""
 
     def __init__(self):
@@ -69,6 +72,7 @@ class RadioSettingValue:
 
 
 class RadioSettingValueInteger(RadioSettingValue):
+
     """An integer setting"""
 
     def __init__(self, minval, maxval, current, step=1):
@@ -102,6 +106,7 @@ class RadioSettingValueInteger(RadioSettingValue):
 
 
 class RadioSettingValueFloat(RadioSettingValue):
+
     """A floating-point setting"""
 
     def __init__(self, minval, maxval, current, resolution=0.001, precision=4):
@@ -142,6 +147,7 @@ class RadioSettingValueFloat(RadioSettingValue):
 
 
 class RadioSettingValueBoolean(RadioSettingValue):
+
     """A boolean setting"""
 
     def __init__(self, current):
@@ -160,6 +166,7 @@ class RadioSettingValueBoolean(RadioSettingValue):
 
 
 class RadioSettingValueList(RadioSettingValue):
+
     """A list-of-strings setting"""
 
     def __init__(self, options, current):
@@ -181,6 +188,7 @@ class RadioSettingValueList(RadioSettingValue):
 
 
 class RadioSettingValueString(RadioSettingValue):
+
     """A string setting"""
 
     def __init__(self, minlength, maxlength, current,
@@ -213,6 +221,7 @@ class RadioSettingValueString(RadioSettingValue):
 
 
 class RadioSettingValueMap(RadioSettingValueList):
+
     """Map User Options to Radio Memory Values
 
     Provides User Option list for GUI, maintains state, verifies new values,
@@ -253,7 +262,8 @@ class RadioSettingValueMap(RadioSettingValueList):
                 "%s is not valid for this setting" % mem_val)
 
     def get_mem_val(self):
-        """Get the mem val corresponding to the currently selected user option"""
+        """Get the mem val corresponding to the currently selected user
+        option"""
         return self._mem_vals[self._options.index(self.get_value())]
 
     def __trunc__(self):
@@ -286,6 +296,7 @@ class RadioSettings(list):
 
 
 class RadioSettingGroup(object):
+
     """A group of settings"""
 
     def _validate(self, element):
@@ -331,6 +342,7 @@ class RadioSettingGroup(object):
 
     def __iter__(self):
         class RSGIterator:
+
             """Iterator for a RadioSettingGroup"""
 
             def __init__(self, rsg):
@@ -377,6 +389,7 @@ class RadioSettingGroup(object):
 
 
 class RadioSetting(RadioSettingGroup):
+
     """A single setting, which could be an array of items like a group"""
 
     def __init__(self, *args):

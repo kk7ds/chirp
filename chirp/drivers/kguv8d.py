@@ -276,6 +276,7 @@ _MEM_FORMAT = """
 @directory.register
 class KGUV8DRadio(chirp_common.CloneModeRadio,
                   chirp_common.ExperimentalRadio):
+
     """Wouxun KG-UV8D"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV8D"
@@ -341,7 +342,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
 #  31:34    VHF rx upper limit
 #  35:38    VHF tx lower limit
 #  39:42    VHF tx upper limit
-##
+#
     @classmethod
     def match_model(cls, filedata, filename):
         return cls._file_ident in filedata[0x400:0x408]
@@ -695,7 +696,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("language", "Language",
                           RadioSettingValueList(LANGUAGE_LIST,
-                                                LANGUAGE_LIST[_settings.language]))
+                                                LANGUAGE_LIST[_settings.
+                                                              language]))
         cfg_grp.append(rs)
         rs = RadioSetting("timeout", "Timeout Timer",
                           RadioSettingValueInteger(15, 900,
@@ -724,11 +726,13 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("backlight", "Backlight",
                           RadioSettingValueList(BACKLIGHT_LIST,
-                                                BACKLIGHT_LIST[_settings.backlight]))
+                                                BACKLIGHT_LIST[_settings.
+                                                               backlight]))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_st", "DTMF Sidetone",
                           RadioSettingValueList(DTMFST_LIST,
-                                                DTMFST_LIST[_settings.dtmf_st]))
+                                                DTMFST_LIST[_settings.
+                                                            dtmf_st]))
         cfg_grp.append(rs)
         rs = RadioSetting("ani-id_sw", "ANI-ID Switch",
                           RadioSettingValueBoolean(_settings.ani_sw))
@@ -743,7 +747,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("scan_rev", "Scan Mode",
                           RadioSettingValueList(SCANMODE_LIST,
-                                                SCANMODE_LIST[_settings.scan_rev]))
+                                                SCANMODE_LIST[_settings.
+                                                              scan_rev]))
         cfg_grp.append(rs)
         rs = RadioSetting("vox", "VOX",
                           RadioSettingValueList(LIST_10,
@@ -757,11 +762,13 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("rpt_mode", "Radio Mode",
                           RadioSettingValueList(RPTMODE_LIST,
-                                                RPTMODE_LIST[_settings.rpt_mode]))
+                                                RPTMODE_LIST[_settings.
+                                                             rpt_mode]))
         cfg_grp.append(rs)
         rs = RadioSetting("rpt_set", "Repeater Setting",
                           RadioSettingValueList(RPTSET_LIST,
-                                                RPTSET_LIST[_settings.rpt_set]))
+                                                RPTSET_LIST[_settings.
+                                                            rpt_set]))
         cfg_grp.append(rs)
         rs = RadioSetting("rpt_spk", "Repeater Mode Speaker",
                           RadioSettingValueBoolean(_settings.rpt_spk))
@@ -771,11 +778,13 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_tx_time", "DTMF Tx Duration",
                           RadioSettingValueList(DTMF_TIMES,
-                                                DTMF_TIMES[_settings.dtmf_tx_time]))
+                                                DTMF_TIMES[_settings.
+                                                           dtmf_tx_time]))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_interval", "DTMF Interval",
                           RadioSettingValueList(DTMF_TIMES,
-                                                DTMF_TIMES[_settings.dtmf_interval]))
+                                                DTMF_TIMES[_settings.
+                                                           dtmf_interval]))
         cfg_grp.append(rs)
         rs = RadioSetting("alert", "Alert Tone",
                           RadioSettingValueList(ALERTS_LIST,
@@ -786,7 +795,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("rpt_hold", "Repeater Hold Time",
                           RadioSettingValueList(HOLD_TIMES,
-                                                HOLD_TIMES[_settings.rpt_hold]))
+                                                HOLD_TIMES[_settings.
+                                                           rpt_hold]))
         cfg_grp.append(rs)
         rs = RadioSetting("scan_det", "Scan DET",
                           RadioSettingValueBoolean(_settings.scan_det))
@@ -797,7 +807,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("smuteset", "SubFreq Mute",
                           RadioSettingValueList(SMUTESET_LIST,
-                                                SMUTESET_LIST[_settings.smuteset]))
+                                                SMUTESET_LIST[_settings.
+                                                              smuteset]))
         cfg_grp.append(rs)
         _pwd = "".join(map(chr, _settings.mode_sw_pwd))
         val = RadioSettingValueString(0, 6, _pwd)
@@ -814,7 +825,8 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         #
         rs = RadioSetting("vfoa_mode", "VFO A Workmode",
                           RadioSettingValueList(WORKMODE_LIST,
-                                                WORKMODE_LIST[_settings.workmode_a]))
+                                                WORKMODE_LIST[_settings.
+                                                              workmode_a]))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa_chan", "VFO A Channel",
                           RadioSettingValueInteger(1, 999, _settings.work_cha))

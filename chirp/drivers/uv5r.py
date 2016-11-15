@@ -289,8 +289,8 @@ BASETYPE_KT980HP = ["BFP3V3 B"]
 BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3", "BFT"]
 BASETYPE_UV82HP = ["N82-3", "N823"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
-                BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP + \
-                BASETYPE_F8HP + BASETYPE_UV82HP
+    BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP + \
+    BASETYPE_F8HP + BASETYPE_UV82HP
 
 AB_LIST = ["A", "B"]
 ALMOD_LIST = ["Site", "Tone", "Code"]
@@ -607,6 +607,7 @@ UV5R_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
 
 class BaofengUV5R(chirp_common.CloneModeRadio,
                   chirp_common.ExperimentalRadio):
+
     """Baofeng UV-5R"""
     VENDOR = "Baofeng"
     MODEL = "UV-5R"
@@ -861,7 +862,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             return
 
         was_empty = False
-        # same method as used in get_memory to find 
+        # same method as used in get_memory to find
         # out whether a raw memory is empty
         if _mem.get_raw()[0] == "\xff":
             was_empty = True
@@ -944,7 +945,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             _mem.lowpower = 0
 
         if not was_empty:
-            #restoring old extra-settings (issue 4121
+            # restoring old extra-settings (issue 4121
             _mem.bcl.set_value(prev_bcl)
             _mem.scode.set_value(prev_scode)
             _mem.pttid.set_value(prev_pttid)
@@ -1361,14 +1362,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     value /= 10
 
             val1a = RadioSettingValueString(
-                        0, 10, convert_bytes_to_offset(_vfoa.offset))
+                0, 10, convert_bytes_to_offset(_vfoa.offset))
             rs = RadioSetting("vfoa.offset",
                               "VFO A Offset (0.00-69.95)", val1a)
             rs.set_apply_callback(apply_offset, _vfoa)
             workmode.append(rs)
 
             val1b = RadioSettingValueString(
-                        0, 10, convert_bytes_to_offset(_vfob.offset))
+                0, 10, convert_bytes_to_offset(_vfob.offset))
             rs = RadioSetting("vfob.offset",
                               "VFO B Offset (0.00-69.95)", val1b)
             rs.set_apply_callback(apply_offset, _vfob)
@@ -1664,6 +1665,7 @@ class BaofengUV82Radio(BaofengUV5R):
 
 @directory.register
 class BaofengUV6Radio(BaofengUV5R):
+
     """Baofeng UV-6/UV-7"""
     VENDOR = "Baofeng"
     MODEL = "UV-6"

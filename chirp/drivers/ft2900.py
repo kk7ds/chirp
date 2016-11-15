@@ -494,6 +494,7 @@ class FT2900BankModel(chirp_common.BankModel):
 
 @directory.register
 class FT2900Radio(YaesuCloneModeRadio):
+
     """Yaesu FT-2900"""
     VENDOR = "Yaesu"
     MODEL = "FT-2900R/1900R"
@@ -778,7 +779,8 @@ class FT2900Radio(YaesuCloneModeRadio):
         # 7 BELL
         opts = ["Off", "1", "3", "5", "8", "Continuous"]
         ctcss.append(RadioSetting("bell", "Bell Repetitions",
-                                  RadioSettingValueList(opts, opts[_settings.bell])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.bell])))
 
         # 8 BNK.LNK
         for i in range(0, 8):
@@ -802,7 +804,8 @@ class FT2900Radio(YaesuCloneModeRadio):
         # 11 CW.ID
         opts = ["Off", "On"]
         arts.append(RadioSetting("cw_id", "CW ID Enable",
-                                 RadioSettingValueList(opts, opts[_settings.cw_id])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.cw_id])))
 
         cw_id_text = ""
         for i in _settings.cw_id_string:
@@ -832,14 +835,16 @@ class FT2900Radio(YaesuCloneModeRadio):
                 "10WPM", "11WPM", "12WPM", "13WPM", "15WPM", "17WPM",
                 "20WPM", "24WPM", "30WPM", "40WPM"]
         misc.append(RadioSetting("cw_trng", "CW Training",
-                                 RadioSettingValueList(opts, opts[_settings.cw_trng])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.cw_trng])))
 
         # todo: make the setting of the units here affect the display
         # of the speed.  Not critical, but would be slick.
         opts = ["CPM", "WPM"]
         misc.append(RadioSetting("cw_trng_units", "CW Training Units",
                                  RadioSettingValueList(opts,
-                                                       opts[_settings.cw_trng_units])))
+                                                       opts[_settings.
+                                                            cw_trng_units])))
 
         # 13 DC VLT - a read-only status, so nothing to do here
 
@@ -920,7 +925,8 @@ class FT2900Radio(YaesuCloneModeRadio):
         # 22 INT.CD
         opts = ["DTMF %X" % (x) for x in range(0, 16)]
         wires.append(RadioSetting("int_cd", "Access Number for WiRES(TM)",
-                                  RadioSettingValueList(opts, opts[_settings.int_cd])))
+                                  RadioSettingValueList(opts, opts[
+                                                        _settings.int_cd])))
 
         # 23 ING MD
         opts = ["Sister Radio Group", "Friends Radio Group"]
@@ -1103,24 +1109,28 @@ class FT2900Radio(YaesuCloneModeRadio):
         # 41 RESUME
         opts = ["3 Sec", "5 Sec", "10 Sec", "Busy", "Hold"]
         scan.append(RadioSetting("resume", "Scan Resume Mode",
-                                 RadioSettingValueList(opts, opts[_settings.resume])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.resume])))
 
         # 42 RF.SQL
         opts = ["Off"] + ["S-%d" % (x) for x in range(1, 10)]
         misc.append(RadioSetting("rf_sql", "RF Squelch Threshold",
-                                 RadioSettingValueList(opts, opts[_settings.rf_sql])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.rf_sql])))
 
         # 43 RPT - per channel attribute, nothing to do here
 
         # 44 RVRT
         opts = ["Off", "On"]
         misc.append(RadioSetting("revert", "Priority Revert",
-                                 RadioSettingValueList(opts, opts[_settings.revert])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.revert])))
 
         # 45 S.SRCH
         opts = ["Single", "Continuous"]
         misc.append(RadioSetting("s_search", "Smart Search Sweep Mode",
-                                 RadioSettingValueList(opts, opts[_settings.s_search])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.s_search])))
 
         # 46 SHIFT - per channel setting, nothing to do here
 
@@ -1166,12 +1176,14 @@ class FT2900Radio(YaesuCloneModeRadio):
         # 57 WX.ALT
         opts = ["Off", "On"]
         misc.append(RadioSetting("wx_alert", "Weather Alert Scan",
-                                 RadioSettingValueList(opts, opts[_settings.wx_alert])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.wx_alert])))
 
         # 58 WX.VOL
         opts = ["Normal", "Maximum"]
         misc.append(RadioSetting("wx_vol_max", "Weather Alert Volume",
-                                 RadioSettingValueList(opts, opts[_settings.wx_vol_max])))
+                                 RadioSettingValueList(opts, opts[
+                                                       _settings.wx_vol_max])))
 
         # 59 W/N DV - this is a per-channel attribute, nothing to do here
 
@@ -1235,8 +1247,9 @@ class FT2900Radio(YaesuCloneModeRadio):
 # to the R (USA) version, except for the model number and ID Block.  We
 # create and register a class for it, with only the needed overrides
 # NOTE: Disabled until detection is fixed
-#@directory.register
+# @directory.register
 class FT2900ERadio(FT2900Radio):
+
     """Yaesu FT-2900E"""
     MODEL = "FT-2900E/1900E"
     VARIANT = "E"

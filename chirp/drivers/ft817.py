@@ -33,6 +33,7 @@ CMD_ACK = 0x06
 
 @directory.register
 class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
+
     """Yaesu FT-817"""
     BAUD_RATE = 9600
     MODEL = "FT-817"
@@ -1007,7 +1008,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         antenna.append(rs)
 
         st = RadioSettingValueString(0, 7, ''.join([self._CALLSIGN_CHARSET[x]
-                                                    for x in self._memobj.callsign]))
+                                                   for x in self._memobj.
+                                                   callsign]))
         st.set_charset(self._CALLSIGN_CHARSET)
         rs = RadioSetting("callsign", "Callsign", st)
         cw.append(rs)
@@ -1084,7 +1086,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                     setting = element.get_name()
                 try:
                     LOG.debug("Setting %s(%s) <= %s" % (setting,
-                                                        getattr(obj, setting), element.value))
+                                                        getattr(obj, setting),
+                                                        element.value))
                 except AttributeError:
                     LOG.debug("Setting %s <= %s" % (setting, element.value))
                 if setting == "contrast":
@@ -1102,6 +1105,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
 @directory.register
 class FT817NDRadio(FT817Radio):
+
     """Yaesu FT-817ND"""
     MODEL = "FT-817ND"
 
@@ -1113,6 +1117,7 @@ class FT817NDRadio(FT817Radio):
 
 @directory.register
 class FT817NDUSRadio(FT817Radio):
+
     """Yaesu FT-817ND (US version)"""
     # seems that radios configured for 5MHz operations send one paket
     # more than others so we have to distinguish sub models
