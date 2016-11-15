@@ -1,4 +1,5 @@
 # Copyright 2011 Dan Smith <dsmith@danplanet.com>
+#           2016 Matt Weyland <lt-betrieb@hb9uf.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -566,3 +567,213 @@ class DJ175Radio(DRx35Radio):
             raise Exception("Radio returned less than 16 bytes")
 
         return data
+
+
+DJG7EG_MEM_FORMAT = """
+#seekto 0x200;
+ul16 bank[50];
+ul16 special_bank[7];
+#seekto 0x1200;
+struct {
+    u8   unknown;
+    ul32 freq;
+    u8   mode;
+    u8   step;
+    ul32 offset;
+    u8   duplex;
+    u8   squelch_type;
+    u8   tx_tone;
+    u8   rx_tone;
+    u8   dcs;
+#seek 3;
+    u8   skip;
+#seek 12;
+    char name[32];
+} memory[1000];
+"""
+
+@directory.register
+class AlincoDJG7EG(AlincoStyleRadio):
+    """Alinco DJ-G7EG"""
+    VENDOR = "Alinco"
+    MODEL = "DJ-G7EG"
+    BAUD_RATE = 57600
+
+    # Those are different from the other Alinco radios.
+    STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0, 125.0, 150.0, 200.0, 500.0, 1000.0]
+    DUPLEX = ["", "+", "-"]
+    MODES = ["NFM", "FM", "AM", "WFM"]
+    TMODES = ["", "??1", "Tone", "TSQL", "TSQL-R", "DTCS"]
+
+    _model = "AL~DJ-G7EG" # This is a bit of a hack to avoid overwriting _identify()
+    _memsize = 0x1a7c0
+    _range = [(500000, 1300000000)]
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.has_dtcs_polarity = False
+        rf.has_bank = False
+        rf.has_settings =  False
+
+        rf.valid_modes = self.MODES
+        rf.valid_tmodes = ["", "Tone", "TSQL", "Cross", "TSQL-R", "DTCS"]
+        rf.valid_tuning_steps = self.STEPS
+        rf.valid_bands = self._range
+        rf.valid_skips = ["", "S"]
+        rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_name_length = 16
+        rf.memory_bounds = (0, 999)
+
+        return rf
+
+    def _download_chunk(self, addr):
+        if addr % 0x40:
+            raise Exception("Addr 0x%04x not on 64-byte boundary" % addr)
+
+        cmd = "AL~F%05XR\r" % addr
+        self._send(cmd)
+
+        # Response: "\r\n[ ... data ... ]\r\n
+        # data is encoded in hex, hence we read two chars per byte
+        _data = self._read(2+2*64+2).strip()
+        if len(_data) == 0:
+            raise errors.RadioError("No response from radio")
+
+        data = ""
+        for i in range(0, len(_data), 2):
+            data += chr(int(_data[i:i+2], 16))
+
+        if len(data) != 64:
+            LOG.debug("Response was:")
+            LOG.debug("|%s|")
+            LOG.debug("Which I converted to:")
+            LOG.debug(util.hexprint(data))
+            raise Exception("Chunk from radio has wrong size")
+
+        return data
+
+    def _download(self, limit):
+        self._identify()
+
+        data = "\x00"*0x200
+
+        for addr in range(0x200, limit, 0x40):
+            data += self._download_chunk(addr)
+            # Other Alinco drivers delay here, but doesn't seem to be necessary
+            # for this model.
+
+            if self.status_fn:
+                status = chirp_common.Status()
+                status.cur = addr
+                status.max = limit
+                status.msg = "Downloading from radio"
+                self.status_fn(status)
+        return memmap.MemoryMap(data)
+
+    def _upload_chunk(self, addr):
+        if addr % 0x40:
+            raise Exception("Addr 0x%04x not on 64-byte boundary" % addr)
+
+        _data = self._mmap[addr:addr+0x40]
+        data = "".join(["%02X" % ord(x) for x in _data])
+
+        cmd = "AL~F%05XW%s\r" % (addr, data)
+        self._send(cmd)
+
+        resp = self._read(6)
+        if resp.strip() != "OK":
+            raise Exception("Unexpected response from radio: %s" % resp)
+
+    def _upload(self, limit):
+        if not self._identify():
+            raise Exception("I can't talk to this model")
+
+        for addr in range(0x200, self._memsize, 0x40):
+            self._upload_chunk(addr)
+            # Other Alinco drivers delay here, but doesn't seem to be necessary
+            # for this model.
+
+            if self.status_fn:
+                status = chirp_common.Status()
+                status.cur = addr
+                status.max = self._memsize
+                status.msg = "Uploading to radio"
+                self.status_fn(status)
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(DJG7EG_MEM_FORMAT, self._mmap)
+
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number]
+        mem = chirp_common.Memory()
+        mem.number = number
+        if _mem.unknown == 0:
+            mem.empty = True
+        else:
+            mem.freq = int(_mem.freq)
+            mem.mode = self.MODES[_mem.mode]
+            mem.tuning_step = self.STEPS[_mem.step]
+            mem.offset = int(_mem.offset)
+            mem.duplex = self.DUPLEX[_mem.duplex]
+            if self.TMODES[_mem.squelch_type] == "TSQL" and _mem.tx_tone != _mem.rx_tone:
+                mem.tmode = "Cross"
+                mem.cross_mode = "Tone->Tone"
+            else:
+                mem.tmode = self.TMODES[_mem.squelch_type]
+            mem.rtone = ALINCO_TONES[_mem.tx_tone-1]
+            mem.ctone = ALINCO_TONES[_mem.rx_tone-1]
+            mem.dtcs = DCS_CODES[self.VENDOR][_mem.dcs]
+            if _mem.skip:
+                mem.skip = "S"
+            # FIXME find out what every other byte is used for. Japanese?
+            mem.name = str(_mem.name.get_raw()[::2]).rstrip('\0')
+        return mem
+
+    def set_memory(self, mem):
+        # Get a low-level memory object mapped to the image
+        _mem = self._memobj.memory[mem.number]
+        if mem.empty:
+            _mem.unknown = 0x00 # Maybe 0 is empty, 2 is used?
+        else:
+            _mem.unknown = 0x02
+            _mem.freq = mem.freq
+            _mem.mode = self.MODES.index(mem.mode)
+            _mem.step = self.STEPS.index(mem.tuning_step)
+            _mem.offset = mem.offset
+            _mem.duplex = self.DUPLEX.index(mem.duplex)
+            if mem.tmode == "Cross":
+                _mem.squelch_type = self.TMODES.index("TSQL")
+                try:
+                    _mem.tx_tone = ALINCO_TONES.index(mem.rtone)+1
+                except ValueError:
+                    raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % mem.rtone)
+                try:
+                    _mem.rx_tone = ALINCO_TONES.index(mem.ctone)+1
+                except ValueError:
+                    raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % mem.ctone)
+            elif mem.tmode == "TSQL":
+                _mem.squelch_type = self.TMODES.index("TSQL")
+                # Note how the same TSQL tone is copied to both memory locaations
+                try:
+                    _mem.tx_tone = ALINCO_TONES.index(mem.ctone)+1
+                    _mem.rx_tone = ALINCO_TONES.index(mem.ctone)+1
+                except ValueError:
+                    raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % mem.ctone)
+            else:
+                _mem.squelch_type = self.TMODES.index(mem.tmode)
+                try:
+                    _mem.tx_tone = ALINCO_TONES.index(mem.rtone)+1
+                except ValueError:
+                    raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % mem.rtone)
+                try:
+                    _mem.rx_tone = ALINCO_TONES.index(mem.ctone)+1
+                except ValueError:
+                    raise errors.UnsupportedToneError("This radio does not support " +
+                                              "tone %.1fHz" % mem.ctone)
+            _mem.dcs = DCS_CODES[self.VENDOR].index(mem.dtcs)
+            _mem.skip = (mem.skip == "S")
+            _mem.name = "\x00".join(mem.name).ljust(32,"\x00")
