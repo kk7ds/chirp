@@ -63,7 +63,6 @@ u8 skipflags[2];  // SCAN_ADD
 """
 
 CMD_ACK = "\x06"
-BLOCK_SIZE = 0x08
 
 NC630A_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=1.00),
                        chirp_common.PowerLevel("High", watts=5.00)]
@@ -91,8 +90,6 @@ def _nc630a_enter_programming_mode(radio):
     serial = radio.pipe
 
     try:
-        serial.write("\x02")
-        time.sleep(0.1)
         serial.write("PROGRAM")
         ack = serial.read(1)
     except:
@@ -109,7 +106,7 @@ def _nc630a_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("P32073"):
+    if not ident.startswith(radio._fileid):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -123,24 +120,16 @@ def _nc630a_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
 
-def _nc630a_exit_programming_mode(radio):
-    serial = radio.pipe
-    try:
-        serial.write("E")
-    except:
-        raise errors.RadioError("Radio refused to exit programming mode")
-
-
 def _nc630a_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
+    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
     expectedresponse = "W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         serial.write(cmd)
-        response = serial.read(4 + BLOCK_SIZE)
+        response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
 
@@ -160,8 +149,8 @@ def _nc630a_read_block(radio, block_addr, block_size):
 def _nc630a_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
-    data = radio.get_mmap()[block_addr:block_addr + 8]
+    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -187,17 +176,15 @@ def do_download(radio):
     status.cur = 0
     status.max = radio._memsize
 
-    for addr in range(0, radio._memsize, BLOCK_SIZE):
-        status.cur = addr + BLOCK_SIZE
+    for addr in range(0, radio._memsize, radio._block_size):
+        status.cur = addr + radio._block_size
         radio.status_fn(status)
 
-        block = _nc630a_read_block(radio, addr, BLOCK_SIZE)
+        block = _nc630a_read_block(radio, addr, radio._block_size)
         data += block
 
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
-
-    _nc630a_exit_programming_mode(radio)
 
     return memmap.MemoryMap(data)
 
@@ -212,25 +199,30 @@ def do_upload(radio):
     status.max = radio._memsize
 
     for start_addr, end_addr in radio._ranges:
-        for addr in range(start_addr, end_addr, BLOCK_SIZE):
-            status.cur = addr + BLOCK_SIZE
+        for addr in range(start_addr, end_addr, radio._block_size):
+            status.cur = addr + radio._block_size
             radio.status_fn(status)
-            _nc630a_write_block(radio, addr, BLOCK_SIZE)
+            _nc630a_write_block(radio, addr, radio._block_size)
 
-    _nc630a_exit_programming_mode(radio)
 
+class MT700Alias(chirp_common.Alias):
+    VENDOR = "Plant-Tours"
+    MODEL = "MT-700"
 
 @directory.register
 class NC630aRadio(chirp_common.CloneModeRadio):
     """KYD NC-630A"""
     VENDOR = "KYD"
     MODEL = "NC-630A"
+    ALIASES = [MT700Alias]
     BAUD_RATE = 9600
 
     _ranges = [
-               (0x0000, 0x0338),
+               (0x0000, 0x0330),
               ]
-    _memsize = 0x0338
+    _memsize = 0x03C8
+    _block_size = 0x08
+    _fileid = "P32073"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -403,8 +395,10 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * 16)
             return
+
+        _mem.set_raw("\x00" * 14 + "\xFF" * 2)
 
         _mem.rxfreq = mem.freq / 10
 
@@ -504,3 +498,20 @@ class NC630aRadio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        match_size = match_model = False
+
+        # testing the file data size
+        if len(filedata) in [0x338, 0x3C8]:
+            match_size = True
+
+        # testing model fingerprint
+        if filedata[0x01B8:0x01BE] == cls._fileid:
+             match_model = True
+
+        if match_size and match_model:
+            return True
+        else:
+            return False
