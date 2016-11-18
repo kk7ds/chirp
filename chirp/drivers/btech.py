@@ -241,6 +241,43 @@ struct {
   u8 resettime;     // * 100 + 100ms
 } dtmf_settings;
 
+#seekto 0x2D00;
+struct {
+  struct {
+    ul16 freq1;
+    u8 unused01[6];
+    ul16 freq2;
+    u8 unused02[6];
+  } _2tone_encode[15];
+  u8 duration_1st_tone; // *10ms
+  u8 duration_2nd_tone; // *10ms
+  u8 duration_gap;      // *10ms
+  u8 unused03[13];
+  struct {
+    struct {
+      u8 dec;      // one out of LIST_2TONE_DEC
+      u8 response; // one out of LIST_2TONE_RESPONSE
+      u8 alert;    // 1-16
+    } decs[4];
+    u8 unused04[4];
+  } _2tone_decode[15];
+  u8 unused05[16];
+
+  struct {
+    ul16 freqA;
+    ul16 freqB;
+    ul16 freqC;
+    ul16 freqD;
+    // unknown what those values mean, but they are
+    // derived from configured frequencies
+    ul16 derived_from_freqA; // 2304000/freqA
+    ul16 derived_from_freqB; // 2304000/freqB
+    ul16 derived_from_freqC; // 2304000/freqC
+    ul16 derived_from_freqD; // 2304000/freqD
+  }freqs[15];
+  u8 reset_time;  // * 100 + 100ms - 100-8000ms
+} _2tone;
+
 #seekto 0x3000;
 struct {
   u8 freq[8];
@@ -346,7 +383,11 @@ LIST_DTMF_SPECIAL_DIGITS = [ "*", "#", "A", "B", "C", "D"]
 LIST_DTMF_SPECIAL_VALUES = [ 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
 LIST_DTMF_DELAY = ["%s ms" % x for x in range(100, 4100, 100)]
 CHARSET_DTMF_DIGITS = "0123456789AaBbCcDd#*"
-
+LIST_2TONE_DEC = ["A-B", "A-C", "A-D",
+                  "B-A", "B-C", "B-D",
+                  "C-A", "C-B", "C-D",
+                  "D-A", "D-B", "D-C"]
+LIST_2TONE_RESPONSE = ["None", "Alert", "Transpond", "Alert+Transpond"]
 
 # This is a general serial timeout for all serial read functions.
 # Practice has show that about 0.7 sec will be enough to cover all radios.
@@ -2278,6 +2319,216 @@ class BTech(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             group_5tone.append(line)
         else:
             LOG.debug("Invalid value decode reset time! Disabling.")
+
+        # 2 Tone
+        encode_2tone = RadioSettingGroup ("encode_2tone", "2 Tone Encode")
+        decode_2tone = RadioSettingGroup ("decode_2tone", "2 Code Decode")
+
+        top.append(encode_2tone)
+        top.append(decode_2tone)
+
+        duration_1st_tone = self._memobj._2tone.duration_1st_tone
+        if duration_1st_tone == 255:
+            LOG.debug("Duration of first 2 Tone digit is not yet " +
+                      "configured. Setting to 600ms")
+            duration_1st_tone = 60
+
+        if duration_1st_tone <= len( LIST_5TONE_DELAY ):
+            line = RadioSetting("_2tone.duration_1st_tone", 
+                                "Duration 1st Tone",
+                                RadioSettingValueList(LIST_5TONE_DELAY,
+                                                      LIST_5TONE_DELAY[
+                                                          duration_1st_tone]))
+            encode_2tone.append(line)
+
+        duration_2nd_tone = self._memobj._2tone.duration_2nd_tone
+        if duration_2nd_tone == 255:
+            LOG.debug("Duration of second 2 Tone digit is not yet " +
+                      "configured. Setting to 600ms")
+            duration_2nd_tone = 60
+
+        if duration_2nd_tone <= len( LIST_5TONE_DELAY ):
+            line = RadioSetting("_2tone.duration_2nd_tone", 
+                                "Duration 2nd Tone",
+                                RadioSettingValueList(LIST_5TONE_DELAY,
+                                                      LIST_5TONE_DELAY[
+                                                          duration_2nd_tone]))
+            encode_2tone.append(line)
+
+        duration_gap = self._memobj._2tone.duration_gap
+        if duration_gap == 255:
+            LOG.debug("Duration of gap is not yet " +
+                      "configured. Setting to 300ms")
+            duration_gap = 30
+
+        if duration_gap <= len( LIST_5TONE_DELAY ):
+            line = RadioSetting("_2tone.duration_gap", "Duration of gap",
+                                RadioSettingValueList(LIST_5TONE_DELAY,
+                                                      LIST_5TONE_DELAY[
+                                                          duration_gap]))
+            encode_2tone.append(line)
+
+        def _2tone_validate(value):
+            if value == 0:
+                return 65535
+            if value == 65535:
+                return value
+            if not (300 <= value and value <= 3000):
+                msg = ("2 Tone Frequency: Must be between 300 and 3000 Hz")
+                raise InvalidValueError(msg)
+            return value
+
+        def apply_2tone_freq(setting, obj):
+            val = int(setting.value)
+            if (val == 0) or (val == 65535):
+                obj.set_value(65535)
+            else:
+                obj.set_value(val)
+
+        i = 1
+        for code in  self._memobj._2tone._2tone_encode:
+            code_2tone = RadioSettingGroup ("code_2tone_" + str(i), 
+                                           "Encode Code " + str(i))
+            encode_2tone.append(code_2tone)
+
+            tmp = code.freq1
+            if tmp == 65535:
+                tmp = 0
+            val1 = RadioSettingValueInteger(0, 65535, tmp)
+            freq1 = RadioSetting("2tone_code_"+ str(i) + "_freq1", 
+                                 "Frequency 1", val1)
+            val1.set_validate_callback(_2tone_validate)
+            freq1.set_apply_callback(apply_2tone_freq, code.freq1)
+            code_2tone.append(freq1)
+
+            tmp = code.freq2
+            if tmp == 65535:
+                tmp = 0
+            val2 = RadioSettingValueInteger(0, 65535, tmp)
+            freq2 = RadioSetting("2tone_code_"+ str(i) + "_freq2", 
+                                 "Frequency 2", val2)
+            val2.set_validate_callback(_2tone_validate)
+            freq2.set_apply_callback(apply_2tone_freq, code.freq2)
+            code_2tone.append(freq2)
+
+            i = i + 1
+
+        decode_reset_time = _mem._2tone.reset_time
+        if decode_reset_time == 255:
+            decode_reset_time = 59
+            LOG.debug("Decode reset time unconfigured. resetting.")
+        if decode_reset_time <= len(LIST_5TONE_RESET):
+            list = RadioSettingValueList(
+                LIST_5TONE_RESET,
+                LIST_5TONE_RESET[
+                    decode_reset_time])
+            line = RadioSetting("_2tone.reset_time",
+                                "Decode reset time", list)
+            decode_2tone.append(line)
+        else:
+            LOG.debug("Invalid value decode reset time! Disabling.")
+
+        def apply_2tone_freq_pair(setting, obj):
+            val = int(setting.value)
+            derived_val = 65535
+            frqname = str(setting._name[-5:])
+            derivedname = "derived_from_" + frqname
+
+            if (val == 0):
+                val = 65535
+                derived_val = 65535
+            else:
+                derived_val = int(round(2304000.0/val))
+
+            obj[frqname].set_value( val )
+            obj[derivedname].set_value( derived_val )
+
+            LOG.debug("Apply " + frqname + ": " + str(val) + " | " 
+                      + derivedname + ": " + str(derived_val))
+
+        i = 1
+        for decode_code in  self._memobj._2tone._2tone_decode:
+            _2tone_dec_code = RadioSettingGroup ("code_2tone_" + str(i),
+                                           "Decode Code " + str(i))
+            decode_2tone.append(_2tone_dec_code)
+
+            j = 1
+            for dec in decode_code.decs:
+                val = dec.dec
+                if val == 255:
+                    LOG.debug("Dec for Code " + str(i) + " Dec " + str(j) +  
+                              " is not yet configured. Setting to 0.")
+                    val = 0
+
+                if val <= len( LIST_2TONE_DEC ):
+                    line = RadioSetting(
+                        "_2tone_dec_settings_" + str(i) + "_dec_" + str(j),
+                        "Dec " + str(j), RadioSettingValueList
+                        (LIST_2TONE_DEC,
+                         LIST_2TONE_DEC[val]))
+                    line.set_apply_callback(apply_list_value, dec.dec)
+                    _2tone_dec_code.append(line)
+                else:
+                    LOG.debug("Invalid value for 2tone dec! Disabling.")
+
+                val = dec.response
+                if val == 255:
+                    LOG.debug("Response for Code " + str(i) + " Dec " + str(j)+
+                              " is not yet configured. Setting to 0.")
+                    val = 0
+
+                if val <= len( LIST_2TONE_RESPONSE ):
+                    line = RadioSetting(
+                        "_2tone_dec_settings_" + str(i) + "_resp_" + str(j),
+                        "Response " + str(j), RadioSettingValueList
+                        (LIST_2TONE_RESPONSE,
+                         LIST_2TONE_RESPONSE[val]))
+                    line.set_apply_callback(apply_list_value, dec.response)
+                    _2tone_dec_code.append(line)
+                else:
+                    LOG.debug("Invalid value for 2tone response! Disabling.")
+
+                val = dec.alert
+                if val == 255:
+                    LOG.debug("Alert for Code " + str(i) + " Dec " + str(j) +  
+                              " is not yet configured. Setting to 0.")
+                    val = 0
+
+                if val <= len( PTTIDCODE_LIST ):
+                    line = RadioSetting(
+                        "_2tone_dec_settings_" + str(i) + "_alert_" + str(j),
+                        "Alert " + str(j), RadioSettingValueList
+                        (PTTIDCODE_LIST,
+                         PTTIDCODE_LIST[val]))
+                    line.set_apply_callback(apply_list_value, dec.alert)
+                    _2tone_dec_code.append(line)
+                else:
+                    LOG.debug("Invalid value for 2tone alert! Disabling.")
+                j = j + 1
+
+            freq = self._memobj._2tone.freqs[i-1]
+            for char in ['A', 'B', 'C', 'D']:
+                setting_name = "freq" + str(char)
+
+                tmp = freq[setting_name]
+                if tmp == 65535:
+                    tmp = 0
+                if tmp != 0:
+                    expected = int(round(2304000.0/tmp))
+                    from_mem = freq["derived_from_" + setting_name]
+                    if expected != from_mem:
+                        LOG.error("Expected " + str(expected) + 
+                                  " but read " + str(from_mem ) + 
+                                  ". Disabling 2Tone Decode Freqs!")
+                        break
+                val = RadioSettingValueInteger(0, 65535, tmp)
+                frq = RadioSetting("2tone_dec_"+ str(i) + "_freq" + str(char),
+                                         ("Decode Frequency " +str(char)), val)
+                val.set_validate_callback(_2tone_validate)
+                frq.set_apply_callback(apply_2tone_freq_pair, freq)
+                _2tone_dec_code.append(frq)
+
+            i = i + 1
 
         return top
 
