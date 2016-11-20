@@ -129,9 +129,11 @@ struct channel {
   bbcd rx_freq[4];
   bbcd tx_freq[4];
   u8 rx_tone;
-  u8 rx_tmode;
+  u8 rx_tmode_extra:6,
+     rx_tmode:2;
   u8 tx_tone;
-  u8 tx_tmode;
+  u8 tx_tmode_extra:6,
+     tx_tmode:2;
   u8 unknown5;
   u8 pttidoff:1,
      dtmfoff:1,
@@ -476,7 +478,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw()[:4] in ["\xFF\xFF\xFF\xFF", "\x20\x20\x20\x20"]:
             mem.empty = True
             return mem
 
@@ -952,6 +954,17 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
 
     _file_ident = "JET"
     _model_ident = 'LX-\x89\x85\x53'
+
+
+@directory.register
+class JetstreamJT270MHRadio(LeixenVV898Radio):
+
+    """Jetstream JT270MH"""
+    VENDOR = "Jetstream"
+    MODEL = "JT270MH"
+
+    _file_ident = "Leixen"
+    _model_ident = 'LX-\x89\x85\x85'
 
 
 class VV898E(chirp_common.Alias):
