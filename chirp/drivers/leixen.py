@@ -156,12 +156,12 @@ struct name {
     u8 pad;
 };
 
-#seekto 0x0d00;
-struct channel default[3];
+#seekto 0x%(chanstart)x;
+struct channel default[%(defaults)i];
 struct channel memory[199];
 
-#seekto 0x19b0;
-struct name defaultname[3];
+#seekto 0x%(namestart)x;
+struct name defaultname[%(defaults)i];
 struct name name[199];
 """
 
@@ -386,7 +386,10 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     ]
 
     _mem_formatter = {'unknownormode': 'unknown6:1',
-                      'modeorpower': 'mode:1, power:1'}
+                      'modeorpower': 'mode:1, power:1',
+                      'chanstart': 0x0D00,
+                      'namestart': 0x19B0,
+                      'defaults': 3}
     _power_levels = [chirp_common.PowerLevel("Low", watts=4),
                      chirp_common.PowerLevel("High", watts=10)]
 
@@ -471,9 +474,13 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             raw_tx += _mem.tx_freq[i].get_raw()
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
-    def get_memory(self, number):
+    def _get_memobjs(self, number):
         _mem = self._memobj.memory[number - 1]
         _name = self._memobj.name[number - 1]
+        return _mem, _name
+
+    def get_memory(self, number):
+        _mem, _name = self._get_memobjs(number)
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -575,8 +582,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             _mem.rx_tone = DTCS_CODES.index(rxtone) + 1
 
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number - 1]
-        _name = self._memobj.name[mem.number - 1]
+        _mem, _name = self._get_memobjs(mem.number)
 
         if mem.empty:
             _mem.set_raw("\xFF" * 16)
@@ -965,6 +971,38 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
 
     _file_ident = "Leixen"
     _model_ident = 'LX-\x89\x85\x85'
+
+    _mem_formatter = {'unknownormode': 'unknown6:1',
+                      'modeorpower': 'mode:1, power:1',
+                      'chanstart': 0x0C00,
+                      'namestart': 0x1930,
+                      'defaults': 6}
+
+    def get_features(self):
+        rf = super(JetstreamJT270MHRadio, self).get_features()
+        rf.has_sub_devices = self.VARIANT == ''
+        rf.memory_bounds = (1, 99)
+        return rf
+
+    def get_sub_devices(self):
+        return [JetstreamJT270MHRadioA(self._mmap),
+                JetstreamJT270MHRadioB(self._mmap)]
+
+    def _get_memobjs(self, number):
+        number = number * 2 - self._offset
+        _mem = self._memobj.memory[number]
+        _name = self._memobj.name[number]
+        return _mem, _name
+
+
+class JetstreamJT270MHRadioA(JetstreamJT270MHRadio):
+    VARIANT = 'A Band'
+    _offset = 1
+
+
+class JetstreamJT270MHRadioB(JetstreamJT270MHRadio):
+    VARIANT = 'B Band'
+    _offset = 2
 
 
 class VV898E(chirp_common.Alias):
