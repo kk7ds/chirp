@@ -1023,7 +1023,10 @@ class LeixenVV898SRadio(LeixenVV898Radio):
 
     _model_ident = 'LX-\x89\x85\x75'
     _mem_formatter = {'unknownormode': 'mode:1',
-                      'modeorpower': 'power:2'}
+                      'modeorpower': 'power:2',
+                      'chanstart': 0x0D00,
+                      'namestart': 0x19B0,
+                      'defaults': 3}
     _power_levels = [chirp_common.PowerLevel("Low", watts=5),
                      chirp_common.PowerLevel("Med", watts=10),
                      chirp_common.PowerLevel("High", watts=25)]
