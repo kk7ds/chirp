@@ -332,6 +332,7 @@ def do_upload(radio):
     do_ident(radio)
 
     for start, end in _ranges:
+        LOG.debug('Uploading range 0x%04X - 0x%04X' % (start, end))
         for addr in range(start, end, 0x10):
             frame = make_frame("W", addr, radio._mmap[addr:addr + 0x10])
             send(radio, frame)
@@ -443,8 +444,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError("Failed to upload to radio: %s" % e)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.name[number - 1]) + \
-            repr(self._memobj.memory[number - 1])
+        name, mem = self._get_memobjs(number)
+        return repr(name) + repr(mem)
 
     def _get_tone(self, mem, _mem):
         rx_tone = tx_tone = None
@@ -485,7 +486,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:4] in ["\xFF\xFF\xFF\xFF", "\x20\x20\x20\x20"]:
+        if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
@@ -971,7 +972,7 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
 
     _file_ident = "Leixen"
     _model_ident = 'LX-\x89\x85\x85'
-
+    _ranges = [(0x0C00, 0x2000)]
     _mem_formatter = {'unknownormode': 'unknown6:1',
                       'modeorpower': 'mode:1, power:1',
                       'chanstart': 0x0C00,
