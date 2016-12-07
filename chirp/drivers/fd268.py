@@ -1,4 +1,4 @@
-# Copyright 2015 Pavel Milanes CO7WT, <co7wt@frcuba.co.cu> <pavelmc@gmail.com>
+# Copyright 2015 Pavel Milanes CO7WT <pavelmc@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -889,7 +889,7 @@ class FD288ARadio(FeidaxinFD2x8yRadio):
 
 @directory.register
 class FD288BRadio(FeidaxinFD2x8yRadio):
-    """Feidaxin FD-288 Radio"""
+    """Feidaxin FD-288B Radio"""
     MODEL = "FD-288B"
     _range = (400000000, 470000000)
     _VFO_DEFAULT = 439000000
@@ -934,3 +934,11 @@ class FD460ARadio(FeidaxinFD2x8yRadio):
     _VFO_DEFAULT = 439000000
     _IDENT = "\xFF\xEE\x4A\xFF"
 
+
+@directory.register
+class FD460UHRadio(FeidaxinFD2x8yRadio):
+    """Feidaxin FD-460UH Radio"""
+    MODEL = "FD-460UH"
+    _range = (400000000, 480000000)
+    _VFO_DEFAULT = 439000000
+    _IDENT = "\xFF\xF4\x44\xFF"
