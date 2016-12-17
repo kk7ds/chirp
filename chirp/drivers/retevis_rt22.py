@@ -97,21 +97,26 @@ def _rt22_enter_programming_mode(radio):
     serial = radio.pipe
 
     magic = "PROGRGS"
-    try:
+    exito = False
+    for i in range(0, 5):
         for j in range(0, len(magic)):
             time.sleep(0.005)
             serial.write(magic[j])
         ack = serial.read(1)
-    except:
-        _rt22_exit_programming_mode(radio)
-        raise errors.RadioError("Error communicating with radio")
 
-    if not ack:
-        _rt22_exit_programming_mode(radio)
-        raise errors.RadioError("No response from radio")
-    elif ack != CMD_ACK:
-        _rt22_exit_programming_mode(radio)
-        raise errors.RadioError("Radio refused to enter programming mode")
+        try:
+            if ack == CMD_ACK:
+                exito = True
+                break
+        except:
+            LOG.debug("Attempt #%s, failed, trying again" % i)
+            pass
+
+    # check if we had EXITO
+    if exito is False:
+        msg = "The radio did not accept program mode after five tries.\n"
+        msg += "Check you interface cable and power cycle your radio."
+        raise errors.RadioError(msg)
 
     try:
         serial.write("\x02")
@@ -311,11 +316,31 @@ class RT22Radio(chirp_common.CloneModeRadio):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def sync_in(self):
-        self._mmap = do_download(self)
+        """Download from radio"""
+        try:
+            data = do_download(self)
+        except errors.RadioError:
+            # Pass through any real errors we raise
+            raise
+        except:
+            # If anything unexpected happens, make sure we raise
+            # a RadioError and log the problem
+            LOG.exception('Unexpected error during download')
+            raise errors.RadioError('Unexpected error communicating '
+                                    'with the radio')
+        self._mmap = data
         self.process_mmap()
 
     def sync_out(self):
-        do_upload(self)
+        """Upload to radio"""
+        try:
+            do_upload(self)
+        except:
+            # If anything unexpected happens, make sure we raise
+            # a RadioError and log the problem
+            LOG.exception('Unexpected error during upload')
+            raise errors.RadioError('Unexpected error communicating '
+                                    'with the radio')
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
