@@ -592,6 +592,7 @@ struct {
 } memory[1000];
 """
 
+
 @directory.register
 class AlincoDJG7EG(AlincoStyleRadio):
     """Alinco DJ-G7EG"""
@@ -600,12 +601,14 @@ class AlincoDJG7EG(AlincoStyleRadio):
     BAUD_RATE = 57600
 
     # Those are different from the other Alinco radios.
-    STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0, 125.0, 150.0, 200.0, 500.0, 1000.0]
+    STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
+             100.0, 125.0, 150.0, 200.0, 500.0, 1000.0]
     DUPLEX = ["", "+", "-"]
     MODES = ["NFM", "FM", "AM", "WFM"]
     TMODES = ["", "??1", "Tone", "TSQL", "TSQL-R", "DTCS"]
 
-    _model = "AL~DJ-G7EG" # This is a bit of a hack to avoid overwriting _identify()
+    # This is a bit of a hack to avoid overwriting _identify()
+    _model = "AL~DJ-G7EG"
     _memsize = 0x1a7c0
     _range = [(500000, 1300000000)]
 
@@ -613,7 +616,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_dtcs_polarity = False
         rf.has_bank = False
-        rf.has_settings =  False
+        rf.has_settings = False
 
         rf.valid_modes = self.MODES
         rf.valid_tmodes = ["", "Tone", "TSQL", "Cross", "TSQL-R", "DTCS"]
@@ -715,7 +718,8 @@ class AlincoDJG7EG(AlincoStyleRadio):
             mem.tuning_step = self.STEPS[_mem.step]
             mem.offset = int(_mem.offset)
             mem.duplex = self.DUPLEX[_mem.duplex]
-            if self.TMODES[_mem.squelch_type] == "TSQL" and _mem.tx_tone != _mem.rx_tone:
+            if self.TMODES[_mem.squelch_type] == "TSQL" and \
+                    _mem.tx_tone != _mem.rx_tone:
                 mem.tmode = "Cross"
                 mem.cross_mode = "Tone->Tone"
             else:
@@ -733,7 +737,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number]
         if mem.empty:
-            _mem.unknown = 0x00 # Maybe 0 is empty, 2 is used?
+            _mem.unknown = 0x00  # Maybe 0 is empty, 2 is used?
         else:
             _mem.unknown = 0x02
             _mem.freq = mem.freq
@@ -746,34 +750,35 @@ class AlincoDJG7EG(AlincoStyleRadio):
                 try:
                     _mem.tx_tone = ALINCO_TONES.index(mem.rtone)+1
                 except ValueError:
-                    raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % mem.rtone)
+                    raise errors.UnsupportedToneError(
+                        "This radio does not support tone %.1fHz" % mem.rtone)
                 try:
                     _mem.rx_tone = ALINCO_TONES.index(mem.ctone)+1
                 except ValueError:
-                    raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % mem.ctone)
+                    raise errors.UnsupportedToneError(
+                        "This radio does not support tone %.1fHz" % mem.ctone)
             elif mem.tmode == "TSQL":
                 _mem.squelch_type = self.TMODES.index("TSQL")
-                # Note how the same TSQL tone is copied to both memory locaations
+                # Note how the same TSQL tone is copied to both memory
+                # locaations
                 try:
                     _mem.tx_tone = ALINCO_TONES.index(mem.ctone)+1
                     _mem.rx_tone = ALINCO_TONES.index(mem.ctone)+1
                 except ValueError:
-                    raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % mem.ctone)
+                    raise errors.UnsupportedToneError(
+                        "This radio does not support tone %.1fHz" % mem.ctone)
             else:
                 _mem.squelch_type = self.TMODES.index(mem.tmode)
                 try:
                     _mem.tx_tone = ALINCO_TONES.index(mem.rtone)+1
                 except ValueError:
-                    raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % mem.rtone)
+                    raise errors.UnsupportedToneError(
+                        "This radio does not support tone %.1fHz" % mem.rtone)
                 try:
                     _mem.rx_tone = ALINCO_TONES.index(mem.ctone)+1
                 except ValueError:
-                    raise errors.UnsupportedToneError("This radio does not support " +
-                                              "tone %.1fHz" % mem.ctone)
+                    raise errors.UnsupportedToneError(
+                        "This radio does not support tone %.1fHz" % mem.ctone)
             _mem.dcs = DCS_CODES[self.VENDOR].index(mem.dtcs)
             _mem.skip = (mem.skip == "S")
-            _mem.name = "\x00".join(mem.name).ljust(32,"\x00")
+            _mem.name = "\x00".join(mem.name).ljust(32, "\x00")
