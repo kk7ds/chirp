@@ -624,3 +624,9 @@ class ZTX6(RT22Radio):
     """Zastone ZT-X6"""
     VENDOR = "Zastone"
     MODEL = "ZT-X6"
+
+@directory.register
+class LT316(RT22Radio):
+    """Luiton LT-316"""
+    VENDOR = "LUITON"
+    MODEL = "LT-316"
