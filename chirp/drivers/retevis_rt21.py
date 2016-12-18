@@ -46,6 +46,12 @@ struct {
      scramble_type2:4;
 } memory[16];
 
+#seekto 0x011D;
+struct {
+  u8 unused:4,
+     pf1:4;        // Programmable Function Key 1
+} keys;
+
 #seekto 0x012C;
 struct {
   u8 use_scramble; // Scramble Enable
@@ -82,6 +88,8 @@ TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 615, 15)]
 TOTALERT_LIST = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 17)]
+PF1_CHOICES = ["None", "Monitor", "Scan", "Scramble", "Alarm"]
+PF1_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x0C]
 
 SETTING_LISTS = {
     "bcl": BCL_LIST,
@@ -455,6 +463,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
+        _keys = self._memobj.keys
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
@@ -497,6 +506,23 @@ class RT21Radio(chirp_common.CloneModeRadio):
                               VOX_LIST, VOX_LIST[_settings.vox]))
         basic.append(rs)
 
+        def apply_pf1_listvalue(setting, obj):
+            LOG.debug("Setting value: "+ str(setting.value) + " from list")
+            val = str(setting.value)
+            index = PF1_CHOICES.index(val)
+            val = PF1_VALUES[index]
+            obj.set_value(val)
+
+        if _keys.pf1 in PF1_VALUES:
+            idx = PF1_VALUES.index(_keys.pf1)
+        else:
+            idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
+        rs = RadioSetting("keys.pf1", "PF1 Key Function",
+                          RadioSettingValueList(PF1_CHOICES,
+                                                PF1_CHOICES[idx]))
+        rs.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
+        basic.append(rs)
+
         return top
 
     def set_settings(self, settings):
@@ -516,7 +542,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
                         obj = self._memobj.settings
                         setting = element.get_name()
 
-                    if setting == "tot":
+                    if element.has_apply_callback():
+                        LOG.debug("Using apply callback")
+                        element.run_apply_callback()
+                    elif setting == "tot":
                         setattr(obj, setting, int(element.value) + 1)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
