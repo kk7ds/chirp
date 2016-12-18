@@ -209,6 +209,7 @@ class MT700Alias(chirp_common.Alias):
     VENDOR = "Plant-Tours"
     MODEL = "MT-700"
 
+
 @directory.register
 class NC630aRadio(chirp_common.CloneModeRadio):
     """KYD NC-630A"""
@@ -509,7 +510,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
 
         # testing model fingerprint
         if filedata[0x01B8:0x01BE] == cls._fileid:
-             match_model = True
+            match_model = True
 
         if match_size and match_model:
             return True
