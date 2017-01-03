@@ -316,7 +316,8 @@ of file.
 
     def do_open(self, fname=None, tempname=None):
         if not fname:
-            types = [(_("CHIRP Radio Images") + " (*.img)", "*.img"),
+            types = [(_("All files") + " (*.*)", "*"),
+                     (_("CHIRP Radio Images") + " (*.img)", "*.img"),
                      (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                      (_("CSV Files") + " (*.csv)", "*.csv"),
                      (_("DAT Files") + " (*.dat)", "*.dat"),
@@ -786,7 +787,8 @@ of file.
         return True
 
     def do_import(self):
-        types = [(_("CHIRP Files") + " (*.chirp)", "*.chirp"),
+        types = [(_("All files") + " (*.*)", "*"),
+                 (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                  (_("CHIRP Radio Images") + " (*.img)", "*.img"),
                  (_("CSV Files") + " (*.csv)", "*.csv"),
                  (_("DAT Files") + " (*.dat)", "*.dat"),
