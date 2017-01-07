@@ -483,6 +483,8 @@ KT8900R_id = "280528"
 
 # LUITON LT-588UV
 LT588UV_fp = "V2G1F4"
+# Added by rstrickoff gen 2 id
+LT588UV_fp1 = "V2G214"
 
 
 #### MAGICS
@@ -2716,4 +2718,5 @@ class LT588UV(BTech):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900
-    _fileid = [LT588UV_fp, ]
+    _fileid = [LT588UV_fp,
+               LT588UV_fp1]
