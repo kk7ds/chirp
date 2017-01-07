@@ -251,6 +251,7 @@ class RadioSettingValueMap(RadioSettingValueList):
             self.set_mem_val(mem_val)
         elif user_option is not None:
             self.set_value(user_option)
+        self._has_changed = False
 
     def set_mem_val(self, mem_val):
         """Change setting to User Option that corresponds to 'mem_val'"""
