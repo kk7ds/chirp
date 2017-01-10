@@ -302,6 +302,7 @@ class UnixPlatform(Platform):
         ports = ["/dev/ttyS*",
                  "/dev/ttyUSB*",
                  "/dev/ttyAMA*",
+                 "/dev/ttyACM*",
                  "/dev/cu.*",
                  "/dev/cuaU*",
                  "/dev/cua0*",
