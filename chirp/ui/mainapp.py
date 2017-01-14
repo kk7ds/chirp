@@ -808,6 +808,65 @@ of file.
         count = eset.do_import(filen)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
 
+    def do_dmrmarc_prompt(self):
+        fields = {"1City":      (gtk.Entry(), lambda x: x),
+                  "2State":     (gtk.Entry(), lambda x: x),
+                  "3Country":   (gtk.Entry(), lambda x: x),
+                  }
+
+        d = inputdialog.FieldDialog(title=_("DMR-MARC Repeater Database Dump"),
+                                    parent=self)
+        for k in sorted(fields.keys()):
+            d.add_field(k[1:], fields[k][0])
+            fields[k][0].set_text(CONF.get(k[1:], "dmrmarc") or "")
+
+        while d.run() == gtk.RESPONSE_OK:
+            for k in sorted(fields.keys()):
+                widget, validator = fields[k]
+                try:
+                    if validator(widget.get_text()):
+                        CONF.set(k[1:], widget.get_text(), "dmrmarc")
+                        continue
+                except Exception:
+                    pass
+
+            d.destroy()
+            return True
+
+        d.destroy()
+        return False
+
+    def do_dmrmarc(self, do_import):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_dmrmarc_prompt():
+            self.window.set_cursor(None)
+            return
+
+        city = CONF.get("city", "dmrmarc")
+        state = CONF.get("state", "dmrmarc")
+        country = CONF.get("country", "dmrmarc")
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        if do_import:
+            eset = self.get_current_editorset()
+            dmrmarcstr = "dmrmarc://%s/%s/%s" % (city, state, country)
+            eset.do_import(dmrmarcstr)
+        else:
+            try:
+                from chirp import dmrmarc
+                radio = dmrmarc.DMRMARCRadio(None)
+                radio.set_params(city, state, country)
+                self.do_open_live(radio, read_only=True)
+            except errors.RadioError, e:
+                common.show_error(e)
+
+        self.window.set_cursor(None)
+
     def do_repeaterbook_prompt(self):
         if not CONF.get_bool("has_seen_credit", "repeaterbook"):
             d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
@@ -1438,6 +1497,8 @@ of file.
             self.do_close()
         elif action == "import":
             self.do_import()
+        elif action in ["qdmrmarc", "idmrmarc"]:
+            self.do_dmrmarc(action[0] == "i")
         elif action in ["qrfinder", "irfinder"]:
             self.do_rfinder(action[0] == "i")
         elif action in ["qradioreference", "iradioreference"]:
@@ -1533,12 +1594,14 @@ of file.
       <menuitem action="download"/>
       <menuitem action="upload"/>
       <menu action="importsrc" name="importsrc">
+        <menuitem action="idmrmarc"/>
         <menuitem action="iradioreference"/>
         <menuitem action="irbook"/>
         <menuitem action="ipr"/>
         <menuitem action="irfinder"/>
       </menu>
       <menu action="querysrc" name="querysrc">
+        <menuitem action="qdmrmarc"/>
         <menuitem action="qradioreference"/>
         <menuitem action="qrbook"/>
         <menuitem action="qpr"/>
@@ -1611,12 +1674,14 @@ of file.
             ('export', None, _("Export"), "%se" % ALT_KEY, None, self.mh),
             ('importsrc', None, _("Import from data source"),
              None, None, self.mh),
+            ('idmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
             ('iradioreference', None, _("RadioReference.com"),
              None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
             ('ipr', None, _("przemienniki.net"), None, None, self.mh),
             ('querysrc', None, _("Query data source"), None, None, self.mh),
+            ('qdmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
             ('qradioreference', None, _("RadioReference.com"),
              None, None, self.mh),
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
