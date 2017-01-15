@@ -29,7 +29,7 @@ import sys
 
 from chirp.ui import inputdialog, common
 from chirp import platform, directory, util
-from chirp.drivers import generic_xml, generic_csv
+from chirp.drivers import generic_xml, generic_csv, repeaterbook
 from chirp.drivers import ic9x, kenwood_live, idrp, vx7, vx5, vx6
 from chirp.drivers import icf, ic9x_icf
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
@@ -867,7 +867,7 @@ of file.
 
         self.window.set_cursor(None)
 
-    def do_repeaterbook_prompt(self):
+    def do_repeaterbook_political_prompt(self):
         if not CONF.get_bool("has_seen_credit", "repeaterbook"):
             d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
             d.set_markup("<big><big><b>RepeaterBook</b></big>\r\n" +
@@ -943,9 +943,9 @@ of file.
 
         return True
 
-    def do_repeaterbook(self, do_import):
+    def do_repeaterbook_political(self, do_import):
         self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-        if not self.do_repeaterbook_prompt():
+        if not self.do_repeaterbook_political_prompt():
             self.window.set_cursor(None)
             return
 
@@ -973,6 +973,7 @@ of file.
         query = query % (code,
                          band and band or "%%",
                          county and county or "%%")
+        print query
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
@@ -988,24 +989,115 @@ of file.
             self.window.set_cursor(None)
             return
 
-        class RBRadio(generic_csv.CSVRadio,
-                      chirp_common.NetworkSourceRadio):
-            VENDOR = "RepeaterBook"
-            MODEL = ""
+        try:
+            # Validate CSV
+            radio = repeaterbook.RBRadio(filename)
+            if radio.errors:
+                reporting.report_misc_error("repeaterbook",
+                                            ("query=%s\n" % query) +
+                                            ("\n") +
+                                            ("\n".join(radio.errors)))
+        except errors.InvalidDataError, e:
+            common.show_error(str(e))
+            self.window.set_cursor(None)
+            return
+        except Exception, e:
+            common.log_exception()
 
-            def _clean_comment(self, headers, line, mem):
-                "Converts iso-8859-1 encoded comments to unicode for pyGTK."
-                mem.comment = unicode(mem.comment, 'iso-8859-1')
-                return mem
+        reporting.report_model_usage(radio, "import", True)
 
-            def _clean_name(self, headers, line, mem):
-                "Converts iso-8859-1 encoded names to unicode for pyGTK."
-                mem.name = unicode(mem.name, 'iso-8859-1')
-                return mem
+        self.window.set_cursor(None)
+        if do_import:
+            eset = self.get_current_editorset()
+            count = eset.do_import(filename)
+        else:
+            self.do_open_live(radio, read_only=True)
+
+    def do_repeaterbook_proximity_prompt(self):
+        default_band = "--All--"
+        try:
+            code = int(CONF.get("band", "repeaterbook"))
+            for k, v in RB_BANDS.items():
+                if code == v:
+                    default_band = k
+                    break
+        except:
+            pass
+        fields = {"1Location":  (gtk.Entry(), lambda x: x.get_text()),
+                  "2Distance":  (gtk.Entry(), lambda x: x.get_text()),
+                  "3Band":      (miscwidgets.make_choice(
+                                sorted(RB_BANDS.keys(), key=key_bands),
+                                False, default_band),
+                                lambda x: RB_BANDS[x.get_active_text()]),
+                  }
+
+        d = inputdialog.FieldDialog(title=_("RepeaterBook Query"),
+                                    parent=self)
+        for k in sorted(fields.keys()):
+            d.add_field(k[1:], fields[k][0])
+            if isinstance(fields[k][0], gtk.Entry):
+                fields[k][0].set_text(
+                    CONF.get(k[1:].lower(), "repeaterbook") or "")
+
+        while d.run() == gtk.RESPONSE_OK:
+            valid = True
+            for k, (widget, fn) in fields.items():
+                try:
+                    CONF.set(k[1:].lower(), str(fn(widget)), "repeaterbook")
+                    continue
+                except:
+                    pass
+                common.show_error("Invalid value for %s" % k[1:])
+                valid = False
+                break
+
+            if valid:
+                d.destroy()
+                return True
+
+        d.destroy()
+        return False
+
+    def do_repeaterbook_proximity(self, do_import):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_repeaterbook_proximity_prompt():
+            self.window.set_cursor(None)
+            return
+
+        loc = CONF.get("location", "repeaterbook")
+
+        try:
+            dist = int(CONF.get("distance", "repeaterbook"))
+        except:
+            dist = 20
+
+        try:
+            band = int(CONF.get("band", "repeaterbook")) or '%'
+            band = str(band)
+        except:
+            band = '%'
+
+        query = "https://www.repeaterbook.com/repeaters/downloads/CHIRP/" \
+                "app_direct.php?loc=%s&band=%s&dist=%s" % (loc, band, dist)
+        print query
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        fn = tempfile.mktemp(".csv")
+        filename, headers = urllib.urlretrieve(query, fn)
+        if not os.path.exists(filename):
+            LOG.error("Failed, headers were: %s", headers)
+            common.show_error(_("RepeaterBook query failed"))
+            self.window.set_cursor(None)
+            return
 
         try:
             # Validate CSV
-            radio = RBRadio(filename)
+            radio = repeaterbook.RBRadio(filename)
             if radio.errors:
                 reporting.report_misc_error("repeaterbook",
                                             ("query=%s\n" % query) +
@@ -1505,8 +1597,10 @@ of file.
             self.do_radioreference(action[0] == "i")
         elif action == "export":
             self.do_export()
-        elif action in ["qrbook", "irbook"]:
-            self.do_repeaterbook(action[0] == "i")
+        elif action in ["qrbookpolitical", "irbookpolitical"]:
+            self.do_repeaterbook_political(action[0] == "i")
+        elif action in ["qrbookproximity", "irbookproximity"]:
+            self.do_repeaterbook_proximity(action[0] == "i")
         elif action in ["qpr", "ipr"]:
             self.do_przemienniki(action[0] == "i")
         elif action == "about":
@@ -1596,14 +1690,20 @@ of file.
       <menu action="importsrc" name="importsrc">
         <menuitem action="idmrmarc"/>
         <menuitem action="iradioreference"/>
-        <menuitem action="irbook"/>
+        <menu action="irbook" name="irbook">
+            <menuitem action="irbookpolitical"/>
+            <menuitem action="irbookproximity"/>
+        </menu>
         <menuitem action="ipr"/>
         <menuitem action="irfinder"/>
       </menu>
       <menu action="querysrc" name="querysrc">
         <menuitem action="qdmrmarc"/>
         <menuitem action="qradioreference"/>
-        <menuitem action="qrbook"/>
+        <menu action="qrbook" name="qrbook">
+            <menuitem action="qrbookpolitical"/>
+            <menuitem action="qrbookproximity"/>
+        </menu>
         <menuitem action="qpr"/>
         <menuitem action="qrfinder"/>
       </menu>
@@ -1679,6 +1779,10 @@ of file.
              None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
+            ('irbookpolitical', None, _("RepeaterBook political query"), None,
+             None, self.mh),
+            ('irbookproximity', None, _("RepeaterBook proximity query"), None,
+             None, self.mh),
             ('ipr', None, _("przemienniki.net"), None, None, self.mh),
             ('querysrc', None, _("Query data source"), None, None, self.mh),
             ('qdmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
@@ -1687,6 +1791,10 @@ of file.
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
             ('qpr', None, _("przemienniki.net"), None, None, self.mh),
             ('qrbook', None, _("RepeaterBook"), None, None, self.mh),
+            ('qrbookpolitical', None, _("RepeaterBook political query"), None,
+             None, self.mh),
+            ('qrbookproximity', None, _("RepeaterBook proximity query"), None,
+             None, self.mh),
             ('export_chirp', None, _("CHIRP Native File"),
              None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
