@@ -18,7 +18,9 @@ from chirp import chirp_common, directory, bitwise
 
 MEM_FORMAT = """
 struct {
-  u24  freq;
+  u24  rxmult:3,
+       txmult:3,
+       freq:18;
   u16  offset;
   u16  rtone:6,
        ctone:6,
@@ -84,6 +86,7 @@ DTCSP = ["NN", "NR", "RN", "RR"]
 MODES = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
 STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
          100.0, 125.0, 200.0]
+FREQ_MULTIPLIER = [5000, 6250, 6250, 8333, 9000]
 
 
 def decode_call(sevenbytes):
@@ -136,28 +139,15 @@ def encode_call(call):
     return "".join([chr(x) for x in buf[:7]])
 
 
-def _get_freq(_mem):
-    val = int(_mem.freq)
-
-    if val & 0x00200000:
-        mult = 6250
-    else:
-        mult = 5000
-
-    val &= 0x0003FFFF
-
-    return (val * mult)
+def _decode_freq(freq, mult):
+    return int(freq) * FREQ_MULTIPLIER[mult]
 
 
-def _set_freq(_mem, freq):
-    if chirp_common.is_fractional_step(freq):
-        mult = 6250
-        flag = 0x00200000
-    else:
-        mult = 5000
-        flag = 0x00000000
-
-    _mem.freq = (freq / mult) | flag
+def _encode_freq(freq):
+    for i, step in reversed(list(enumerate(FREQ_MULTIPLIER))):
+        if freq % step == 0:
+            return freq / step, i
+    raise ValueError("%d cannot be factored by multiplier table." % freq)
 
 
 def _wipe_memory(mem, char):
@@ -279,8 +269,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.empty = True
             return mem
 
-        mem.freq = _get_freq(_mem)
-        mem.offset = (_mem.offset * 5) * 1000
+        mem.freq = _decode_freq(_mem.freq, _mem.rxmult)
+        mem.offset = _decode_freq(_mem.offset, _mem.txmult)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -317,8 +307,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if was_empty:
             _wipe_memory(_mem, "\x00")
 
-        _set_freq(_mem, mem.freq)
-        _mem.offset = int((mem.offset / 1000) / 5)
+        _mem.freq, _mem.rxmult = _encode_freq(mem.freq)
+        _mem.offset, _mem.txmult = _encode_freq(mem.offset)
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
