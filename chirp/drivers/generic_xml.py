@@ -24,10 +24,7 @@ LOG = logging.getLogger(__name__)
 
 def validate_doc(doc):
     """Validate the document"""
-    basepath = platform.get_platform().executable_path()
-    path = os.path.abspath(os.path.join(basepath, "chirp.xsd"))
-    if not os.path.exists(path):
-        path = "/usr/share/chirp/chirp.xsd"
+    path = platform.get_platform().find_resource("chirp.xsd")
 
     try:
         ctx = libxml2.schemaNewParserCtxt(path)

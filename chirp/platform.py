@@ -243,6 +243,23 @@ class Platform:
             return os.path.dirname(os.path.abspath(os.path.join(_find_me(),
                                                                 "..")))
 
+    def find_resource(self, filename):
+        """Searches for files installed to a share/ prefix."""
+        execpath = self.executable_path()
+        share_candidates = [
+            os.path.join(execpath, "share"),
+            os.path.join(sys.prefix, "share"),
+            "/usr/local/share",
+            "/usr/share",
+        ]
+        pkgshare_candidates = [os.path.join(i, "chirp") for i in share_candidates]
+        search_paths = [execpath] + pkgshare_candidates + share_candidates
+        for path in search_paths:
+            candidate = os.path.join(path, filename)
+            if os.path.exists(candidate):
+                return candidate
+        return ""
+
 
 def _unix_editor():
     macos_textedit = "/Applications/TextEdit.app/Contents/MacOS/TextEdit"

@@ -545,10 +545,7 @@ of file.
         count = eset.do_import(config)
 
     def copy_shipped_stock_configs(self, stock_dir):
-        execpath = platform.get_platform().executable_path()
-        basepath = os.path.abspath(os.path.join(execpath, "stock_configs"))
-        if not os.path.exists(basepath):
-            basepath = "/usr/share/chirp/stock_configs"
+        basepath = platform.get_platform().find_resource("stock_configs")
 
         files = glob(os.path.join(basepath, "*.csv"))
         for fn in files:
@@ -1907,11 +1904,9 @@ of file.
             a.connect_accelerator()
 
     def _set_icon(self):
-        execpath = platform.get_platform().executable_path()
-        path = os.path.abspath(os.path.join(execpath, "share", "chirp.png"))
-        if not os.path.exists(path):
-            path = "/usr/share/pixmaps/chirp.png"
-
+        this_platform = platform.get_platform()
+        path = (this_platform.find_resource("chirp.png") or
+                this_platform.find_resource(os.path.join("pixmaps", "chirp.png")))
         if os.path.exists(path):
             self.set_icon_from_file(path)
         else:

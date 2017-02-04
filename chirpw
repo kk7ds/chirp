@@ -34,10 +34,7 @@ import logging
 LOG = logging.getLogger("chirpw")
 
 
-execpath = platform.get_platform().executable_path()
-localepath = os.path.abspath(os.path.join(execpath, "locale"))
-if not os.path.exists(localepath):
-    localepath = "/usr/share/chirp/locale"
+localepath = platform.get_platform().find_resource("locale")
 
 conf = config.get()
 manual_language = conf.get("language", "state")
