@@ -1945,10 +1945,23 @@ of file.
         d.destroy()
 
     def _init_macos(self, menu_bar):
+        macapp = None
+
+        # for KK7DS runtime <= R10
         try:
             import gtk_osxapplication
             macapp = gtk_osxapplication.OSXApplication()
-        except ImportError, e:
+        except ImportError:
+            pass
+
+        # for gtk-mac-integration >= 2.0.7
+        try:
+            import gtkosx_application
+            macapp = gtkosx_application.Application()
+        except ImportError:
+            pass
+
+        if macapp is None:
             LOG.error("No MacOS support: %s" % e)
             return
 
