@@ -1965,6 +1965,13 @@ of file.
             LOG.error("No MacOS support: %s" % e)
             return
 
+        this_platform = platform.get_platform()
+        icon = (this_platform.find_resource("chirp.png") or
+                this_platform.find_resource(os.path.join("pixmaps", "chirp.png")))
+        if os.path.exists(icon):
+            icon_pixmap = gtk.gdk.pixbuf_new_from_file(icon)
+            macapp.set_dock_icon_pixbuf(icon_pixmap)
+
         menu_bar.hide()
         macapp.set_menu_bar(menu_bar)
 
