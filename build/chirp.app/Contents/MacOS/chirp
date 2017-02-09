@@ -2,14 +2,18 @@
 
 LOCATION=$(dirname "${BASH_SOURCE}")
 
-PYTHON=/opt/kk7ds//Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
+PYTHON=/opt/kk7ds/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
 
-if [ -x $PYTHON ]; then
+not_translocated () {
+    security translocate-status-check "${LOCATION}" 2>&1 | grep -q -e NOT -e unknown -e "not found"
+}
+
+if [ ! -x $PYTHON ]; then
+    PYTHON=/opt/kk7ds/bin/python2.7
+elif not_translocated; then
     ln -s $PYTHON "${LOCATION}/../CHIRP"
     PYTHON=${LOCATION}/../CHIRP
-    export PYTHONPATH="/opt/kk7ds//Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/"
-else
-    PYTHON=/opt/kk7ds/bin/python2.7
+    export PYTHONPATH=/opt/kk7ds/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
 fi
 
 exec "$PYTHON" "${LOCATION}/../Resources/chirp/chirpw"
