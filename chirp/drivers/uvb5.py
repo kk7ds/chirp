@@ -238,7 +238,16 @@ def do_upload(radio):
         radio.pipe.write(frame)
         ack = radio.pipe.read(1)
         if ack != "\x06":
-            raise errors.RadioError("Radio NAK'd block at address 0x%04x" % i)
+            # UV-B5/UV-B6 radios with 27 menus do not support service settings
+            # and will stop ACKing when the upload reaches 0x0F10
+            if i == 0x0F10:
+                # must be a radio with 27 menus detected - stop upload
+                break
+            else:
+                LOG.debug("Radio NAK'd block at address 0x%04x" % i)
+                raise errors.RadioError(
+                    "Radio NAK'd block at address 0x%04x" % i)
+        LOG.debug("Radio ACK'd block at address 0x%04x" % i)
         do_status(radio, "to", i)
 
 DUPLEX = ["", "-", "+", 'off', "split"]
