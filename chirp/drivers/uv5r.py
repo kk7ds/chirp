@@ -395,7 +395,7 @@ def _firmware_version_from_image(radio):
     return version
 
 
-def _do_ident(radio, magic):
+def _do_ident(radio, magic, secondack=True):
     serial = radio.pipe
     serial.timeout = 1
 
@@ -448,10 +448,11 @@ def _do_ident(radio, magic):
         LOG.debug(msg)
         raise errors.RadioError("Unexpected response from radio.")
 
-    serial.write("\x06")
-    ack = serial.read(1)
-    if ack != "\x06":
-        raise errors.RadioError("Radio refused clone")
+    if secondack:
+        serial.write("\x06")
+        ack = serial.read(1)
+        if ack != "\x06":
+            raise errors.RadioError("Radio refused clone")
 
     return ident
 
@@ -501,6 +502,11 @@ def _get_radio_firmware_version(radio):
     return version
 
 
+IDENT_BLACKLIST = {
+    "\x50\x0D\x0C\x20\x16\x03\x28": "Radio identifies as BTECH UV-5X3",
+}
+
+
 def _ident_radio(radio):
     for magic in radio._idents:
         error = None
@@ -511,6 +517,22 @@ def _ident_radio(radio):
             LOG.error(e)
             error = e
             time.sleep(2)
+
+    for magic, reason in IDENT_BLACKLIST.items():
+        try:
+            _do_ident(radio, magic, secondack=False)
+        except errors.RadioError as e:
+            # No match, try the next one
+            continue
+
+        # If we got here, it means we identified the radio as
+        # something other than one of our valid idents. Warn
+        # the user so they can do the right thing.
+        LOG.warning(('Identified radio as a blacklisted model '
+                     '(details: %s)') % reason)
+        raise errors.RadioError(('%s. Please choose the proper vendor/'
+                                 'model and try again.') % reason)
+
     if error:
         raise error
     raise errors.RadioError("Radio did not respond")
