@@ -273,6 +273,24 @@ def model_match(cls, data):
     else:
         return False
 
+class TDM8(chirp_common.Alias):
+    VENDOR = "TID"
+    MODEL = "TD-M8"
+
+class KDC1(chirp_common.Alias):
+    """WLN KD-C1"""
+    VENDOR = "WLN"
+    MODEL = "KD-C1"
+
+class ZTX6(chirp_common.Alias):
+    """Zastone ZT-X6"""
+    VENDOR = "Zastone"
+    MODEL = "ZT-X6"
+
+class LT316(chirp_common.Alias):
+    """Luiton LT-316"""
+    VENDOR = "LUITON"
+    MODEL = "LT-316"
 
 @directory.register
 class RT22Radio(chirp_common.CloneModeRadio):
@@ -280,6 +298,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT22"
     BAUD_RATE = 9600
+    ALIASES = [TDM8, KDC1, ZTX6, LT316]
 
     _ranges = [
                (0x0000, 0x0180, 0x10),
@@ -612,21 +631,3 @@ class RT22Radio(chirp_common.CloneModeRadio):
             return True
         else:
             return False
-
-@directory.register
-class KDC1(RT22Radio):
-    """WLN KD-C1"""
-    VENDOR = "WLN"
-    MODEL = "KD-C1"
-
-@directory.register
-class ZTX6(RT22Radio):
-    """Zastone ZT-X6"""
-    VENDOR = "Zastone"
-    MODEL = "ZT-X6"
-
-@directory.register
-class LT316(RT22Radio):
-    """Luiton LT-316"""
-    VENDOR = "LUITON"
-    MODEL = "LT-316"
