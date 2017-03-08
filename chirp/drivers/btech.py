@@ -3537,7 +3537,7 @@ class BTechColor(BTechMobileCommon):
         LOG.info("Radio ranges: UHF %d to %d" % uhf)
 
         # the additional bands
-        if self.MODEL in ["KT8900D", ]:
+        if self.MODEL in ["KT7900D", ]:
             # 200Mhz band
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
