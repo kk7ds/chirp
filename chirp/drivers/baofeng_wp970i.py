@@ -840,11 +840,16 @@ class WP970I(baofeng_common.BaofengCommonHT):
         else:
             return False
 
+class RH5XAlias(chirp_common.Alias):
+    VENDOR = "Rugged"
+    MODEL = "RH5X"
+
 @directory.register
 class BFA58(WP970I):
     """Baofeng BF-A58"""
     VENDOR = "Baofeng"
     MODEL = "BF-A58"
+    ALIASES = [RH5XAlias]
 
     _fileid = ["BFT515 ", "BFT517 "]
 
