@@ -634,7 +634,7 @@ class LT316(RT22Radio):
     VENDOR = "LUITON"
     MODEL = "LT-316"
 
-
+@directory.register
 class TDM8(RT22Radio):
     VENDOR = "TID"
     MODEL = "TD-M8"
