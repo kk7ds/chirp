@@ -358,30 +358,33 @@ class NC630aRadio(chirp_common.CloneModeRadio):
                 val += 0x8000
             return val
 
-        if mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-        elif mem.tmode == "Tone":
-            tx_mode = mem.tmode
+        rx_mode = tx_mode = None
+        rx_tone = tx_tone = 0xFFFF
+
+        if mem.tmode == "Tone":
+            tx_mode = "Tone"
             rx_mode = None
-        else:
-            tx_mode = rx_mode = mem.tmode
+            tx_tone = int(mem.rtone * 10)
+        elif mem.tmode == "TSQL":
+            rx_mode = tx_mode = "Tone"
+            rx_tone = tx_tone = int(mem.ctone * 10)
+        elif mem.tmode == "DTCS":
+            tx_mode = rx_mode = "DTCS"
+            tx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+            rx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
+        elif mem.tmode == "Cross":
+            tx_mode, rx_mode = mem.cross_mode.split("->")
+            if tx_mode == "DTCS":
+                tx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+            elif tx_mode == "Tone":
+                tx_tone = int(mem.rtone * 10)
+            if rx_mode == "DTCS":
+                rx_tone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
+            elif rx_mode == "Tone":
+                rx_tone = int(mem.ctone * 10)
 
-        if tx_mode == "DTCS":
-            _mem.tx_tone = mem.tmode != "DTCS" and \
-                           _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or \
-                           _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
-        elif tx_mode:
-            _mem.tx_tone = tx_mode == "Tone" and \
-                int(mem.rtone * 10) or int(mem.ctone * 10)
-        else:
-            _mem.tx_tone = 0xFFFF
-
-        if rx_mode == "DTCS":
-            _mem.rx_tone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-        elif rx_mode:
-            _mem.rx_tone = int(mem.ctone * 10)
-        else:
-            _mem.rx_tone = 0xFFFF
+        _mem.rx_tone = rx_tone
+        _mem.tx_tone = tx_tone
 
         LOG.debug("Set TX %s (%i) RX %s (%i)" %
                   (tx_mode, _mem.tx_tone, rx_mode, _mem.rx_tone))
