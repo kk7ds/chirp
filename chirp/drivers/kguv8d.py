@@ -589,34 +589,33 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                 val += 0x8000
             return val
 
-        if mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-        elif mem.tmode == "Tone":
-            tx_mode = mem.tmode
+        rx_mode = tx_mode = None
+        rxtone = txtone = 0xFFFF
+
+        if mem.tmode == "Tone":
+            tx_mode = "Tone"
             rx_mode = None
-        else:
-            tx_mode = rx_mode = mem.tmode
+            txtone = int(mem.rtone * 10)
+        elif mem.tmode == "TSQL":
+            rx_mode = tx_mode = "Tone"
+            rxtone = txtone = int(mem.ctone * 10)
+        elif mem.tmode == "DTCS":
+            tx_mode = rx_mode = "DTCS"
+            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+            rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
+        elif mem.tmode == "Cross":
+            tx_mode, rx_mode = mem.cross_mode.split("->")
+            if tx_mode == "DTCS":
+                txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
+            elif tx_mode == "Tone":
+                txtone = int(mem.rtone * 10)
+            if rx_mode == "DTCS":
+                rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
+            elif rx_mode == "Tone":
+                rxtone = int(mem.ctone * 10)
 
-        if tx_mode == "DTCS":
-            _mem.txtone = mem.tmode != "DTCS" and \
-                _set_dcs(mem.dtcs, mem.dtcs_polarity[0]) or \
-                _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[0])
-            _mem.txtone += 0x4000
-        elif tx_mode:
-            _mem.txtone = tx_mode == "Tone" and \
-                int(mem.rtone * 10) or int(mem.ctone * 10)
-            _mem.txtone += 0x8000
-        else:
-            _mem.txtone = 0
-
-        if rx_mode == "DTCS":
-            _mem.rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            _mem.rxtone += 0x4000
-        elif rx_mode:
-            _mem.rxtone = int(mem.ctone * 10)
-            _mem.rxtone += 0x8000
-        else:
-            _mem.rxtone = 0
+        _mem.rxtone = rxtone
+        _mem.txtone = txtone
 
         LOG.debug("Set TX %s (%i) RX %s (%i)" %
                   (tx_mode, _mem.txtone, rx_mode, _mem.rxtone))
