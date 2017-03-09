@@ -179,7 +179,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
             rx_mode = tx_mode = "Tone"
             rx_tone = tx_tone = _tone(mem.ctone)
         elif mem.tmode == "DTCS":
-            rx_tone = tx_tone = "DTCS"
+            rx_mode = tx_mode = "DTCS"
             tx_tone = _dcs(mem.dtcs, mem.dtcs_polarity[0])
             rx_tone = _dcs(mem.dtcs, mem.dtcs_polarity[1])
         elif mem.tmode == "Cross":
