@@ -6,3 +6,6 @@ dist
 build/bdist
 tools/cpep8.venv/
 tests/logs/
+ignored/
+patch_queue/
+archived_builds/
