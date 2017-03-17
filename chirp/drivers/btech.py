@@ -167,6 +167,15 @@ UV5001G22_fp = "V2G204"
 # B-TECH UV-5001 third generation (3G)
 UV5001G3_fp = "BTG304"
 
+# B-TECH UV-25X2
+UV25X2_fp = "UC2012"
+
+# B-TECH UV-25X4
+UV25X4_fp = "UC4014"
+
+# B-TECH UV-50X2
+UV50X2_fp = "UC2M12"
+
 # special var to know when we found a BTECH Gen 3
 BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
 
@@ -226,6 +235,10 @@ MSTRING_KT8900R = "\x55\x20\x15\x09\x25\x01\x4D\x02"
 MSTRING = "\x55\x20\x15\x09\x20\x45\x4d\x02"
 # for the QYT KT7900D & KT8900D
 MSTRING_KT8900D = "\x55\x20\x16\x08\x01\xFF\xDC\x02"
+# for the BTECH UV-25X2 and UV-50X2
+MSTRING_UV25X2 = "\x55\x20\x16\x12\x28\xFF\xDC\x02"
+# for the BTECH UV-25X4
+MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
 
 
 def _clean_buffer(radio):
@@ -852,10 +865,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         # Extra
         mem.extra = RadioSettingGroup("extra", "Extra")
 
-        scramble = RadioSetting("scramble", "Scramble",
-                                RadioSettingValueBoolean(bool(
-                                    _mem.scramble)))
-        mem.extra.append(scramble)
+        if not self.COLOR_LCD or \
+            (self.COLOR_LCD and not self.VENDOR == "BTECH"):
+            scramble = RadioSetting("scramble", "Scramble",
+                                    RadioSettingValueBoolean(bool(
+                                        _mem.scramble)))
+            mem.extra.append(scramble)
 
         bcl = RadioSetting("bcl", "Busy channel lockout",
                            RadioSettingValueBoolean(bool(_mem.bcl)))
@@ -1061,11 +1076,18 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                  _mem.settings.pttlt))
         basic.append(pttlt)
 
-        emctp = RadioSetting("settings.emctp", "Alarm mode",
-                             RadioSettingValueList(
-                                 LIST_EMCTP,
-                                 LIST_EMCTP[_mem.settings.emctp]))
-        basic.append(emctp)
+        if self.VENDOR == "BTECH" and self.COLOR_LCD:
+            emctp = RadioSetting("settings.emctp", "Alarm mode",
+                                 RadioSettingValueList(
+                                     LIST_EMCTPX,
+                                     LIST_EMCTPX[_mem.settings.emctp]))
+            basic.append(emctp)
+        else:
+            emctp = RadioSetting("settings.emctp", "Alarm mode",
+                                 RadioSettingValueList(
+                                     LIST_EMCTP,
+                                     LIST_EMCTP[_mem.settings.emctp]))
+            basic.append(emctp)
 
         emcch = RadioSetting("settings.emcch", "Alarm channel",
                              RadioSettingValueInteger(0, 199,
@@ -1119,10 +1141,17 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             basic.append(langua)
 
         if self.VENDOR == "BTECH":
-            sync = RadioSetting("settings.sync", "A/B channel sync",
-                                RadioSettingValueBoolean(
-                                    _mem.settings.sync))
-            basic.append(sync)
+            if self.COLOR_LCD:
+                sync = RadioSetting("settings.sync", "Channel display sync",
+                                    RadioSettingValueList(
+                                        LIST_SYNC,
+                                        LIST_SYNC[_mem.settings.sync]))
+                basic.append(sync)
+            else:
+                sync = RadioSetting("settings.sync", "A/B channel sync",
+                                    RadioSettingValueBoolean(
+                                        _mem.settings.sync))
+                basic.append(sync)
         else:
             autolk = RadioSetting("settings.sync", "Auto keylock",
                                   RadioSettingValueBoolean(
@@ -1288,6 +1317,24 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                  RadioSettingValueInteger(0, 60,
                                      _mem.settings.dtmfg))
             basic.append(dtmfg)
+
+        if self.VENDOR == "BTECH" and self.COLOR_LCD:
+            mgain = RadioSetting("settings.mgain", "Mic gain",
+                                 RadioSettingValueInteger(0, 120,
+                                     _mem.settings.mgain))
+            basic.append(mgain)
+
+            skiptx = RadioSetting("settings.skiptx", "Skip TX",
+                                  RadioSettingValueList(
+                                      LIST_SKIPTX,
+                                      LIST_SKIPTX[_mem.settings.skiptx]))
+            basic.append(skiptx)
+
+            scmode = RadioSetting("settings.scmode", "Scan mode",
+                                  RadioSettingValueList(
+                                      LIST_SCMODE,
+                                      LIST_SCMODE[_mem.settings.scmode]))
+            basic.append(scmode)
 
         # Advanced
         def _filter(name):
@@ -1802,17 +1849,19 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                           SPMUTE_LIST[_mem.vfo.d.spmute]))
             work.append(vfodspmute)
 
-        vfoascr = RadioSetting("vfo.a.scramble", "VFO A scramble",
-                               RadioSettingValueBoolean(
-                                   _mem.vfo.a.scramble))
-        work.append(vfoascr)
+        if not self.COLOR_LCD or \
+            (self.COLOR_LCD and not self.VENDOR == "BTECH"):
+            vfoascr = RadioSetting("vfo.a.scramble", "VFO A scramble",
+                                   RadioSettingValueBoolean(
+                                       _mem.vfo.a.scramble))
+            work.append(vfoascr)
 
-        vfobscr = RadioSetting("vfo.b.scramble", "VFO B scramble",
-                               RadioSettingValueBoolean(
-                                   _mem.vfo.b.scramble))
-        work.append(vfobscr)
+            vfobscr = RadioSetting("vfo.b.scramble", "VFO B scramble",
+                                   RadioSettingValueBoolean(
+                                       _mem.vfo.b.scramble))
+            work.append(vfobscr)
 
-        if self.COLOR_LCD:
+        if self.COLOR_LCD and not self.VENDOR == "BTECH":
             vfocscr = RadioSetting("vfo.c.scramble", "VFO C scramble",
                                    RadioSettingValueBoolean(
                                        _mem.vfo.c.scramble))
@@ -3537,7 +3586,7 @@ class BTechColor(BTechMobileCommon):
         LOG.info("Radio ranges: UHF %d to %d" % uhf)
 
         # the additional bands
-        if self.MODEL in ["KT7900D", ]:
+        if self.MODEL in ["UV-25X4", "KT7900D"]:
             # 200Mhz band
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
@@ -3552,6 +3601,43 @@ class BTechColor(BTechMobileCommon):
         self._vhf_range = vhf
         self._uhf_range = uhf
     
+
+@directory.register
+class UV25X2(BTechColor):
+    """Baofeng Tech UV25X2"""
+    MODEL = "UV-25X2"
+    BANDS = 2
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
+    _magic = MSTRING_UV25X2
+    _fileid = [UV25X2_fp, ]
+
+
+@directory.register
+class UV25X4(BTechColor):
+    """Baofeng Tech UV25X4"""
+    MODEL = "UV-25X4"
+    BANDS = 4
+    _vhf_range = (130000000, 180000000)
+    _220_range = (200000000, 271000000)
+    _uhf_range = (400000000, 521000000)
+    _350_range = (350000000, 391000000)
+    _magic = MSTRING_UV25X4
+    _fileid = [UV25X4_fp, ]
+
+
+@directory.register
+class UV50X2(BTechColor):
+    """Baofeng Tech UV50X2"""
+    MODEL = "UV-50X2"
+    BANDS = 2
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
+    _magic = MSTRING_UV25X2
+    _fileid = [UV50X2_fp, ]
+    _power_levels = [chirp_common.PowerLevel("High", watts=50),
+                     chirp_common.PowerLevel("Low", watts=10)]
+
 
 @directory.register
 class KT7900D(BTechColor):
