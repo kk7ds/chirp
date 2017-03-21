@@ -69,6 +69,12 @@ struct {
   u8   passwd[6];
 } frontmatter;
 
+#seekto 0x02c0;
+struct {
+  ul32 start_freq;
+  ul32 end_freq;
+} prog_vfo[6];
+
 #seekto 0x0300;
 struct {
   char power_on_msg[8];
@@ -89,8 +95,8 @@ struct {
 
 #seekto 0x0c00;
 struct {
-  u8 disabled:7,
-     unknown0:1;
+  u8 disabled:4,
+     prog_vfo:4;
   u8 skip;
 } flag[1032];
 
@@ -183,8 +189,23 @@ DUPLEX_REV = {
 EXCH_R = "R\x00\x00\x00\x00"
 EXCH_W = "W\x00\x00\x00\x00"
 
-# Uploads result in "MCP Error" and garbage data in memory
-# Clone driver disabled in favor of error-checking live driver.
+DEFAULT_PROG_VFO = (
+    (136000000, 174000000),
+    (410000000, 470000000),
+    (118000000, 136000000),
+    (136000000, 174000000),
+    (320000000, 400000000),
+    (400000000, 524000000),
+)
+# index of PROG_VFO used for setting memory.unknown1 and memory.unknown2
+# see http://chirp.danplanet.com/issues/1611#note-9
+UNKNOWN_LOOKUP = (0, 7, 4, 0, 4, 7)
+
+def get_prog_vfo(frequency):
+    for i, (start, end) in enumerate(DEFAULT_PROG_VFO):
+        if start <= frequency < end:
+            return i
+    raise ValueError("Frequency is out of range.")
 
 
 @directory.register
@@ -283,7 +304,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number]) + \
-            repr(self._memobj.flag[(number)])
+            repr(self._memobj.flag[number])
 
     def get_memory(self, number):
         if isinstance(number, str):
@@ -305,7 +326,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
         if number > 999:
             mem.extd_number = THD72_SPECIAL_REV[number]
-        if flag.disabled == 0x7f:
+        if flag.disabled == 0xf:
             mem.empty = True
             return mem
 
@@ -348,9 +369,9 @@ class THD72Radio(chirp_common.CloneModeRadio):
         self.add_dirty_block(self._memobj.flag[mem.number])
 
         # only delete non-WX channels
-        was_empty = flag.disabled == 0x7f
+        was_empty = flag.disabled == 0xf
         if mem.empty:
-            flag.disabled = 0x7f
+            flag.disabled = 0xf
             return
         flag.disabled = 0
 
@@ -372,6 +393,10 @@ class THD72Radio(chirp_common.CloneModeRadio):
         _mem.duplex = DUPLEX_REV[mem.duplex]
         _mem.offset = mem.offset
         _mem.mode = MODES_REV[mem.mode]
+
+        prog_vfo = get_prog_vfo(mem.freq)
+        flag.prog_vfo = prog_vfo
+        _mem.unknown1 = _mem.unknown2 = UNKNOWN_LOOKUP[prog_vfo]
 
         if mem.number < 999:
             flag.skip = chirp_common.SKIP_VALUES.index(mem.skip)
@@ -509,9 +534,8 @@ class THD72Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError("No response to ID command")
 
     def initialize(self, mmap):
-        mmap[0] = \
-            "\x80\xc8\xb3\x08\x00\x01\x00\x08" + \
-            "\x08\x00\xc0\x27\x09\x00\x00\xff"
+        mmap.set_raw("\x00\xc8\xb3\x08\x00\x01\x00\x08"
+                     "\x08\x00\xc0\x27\x09\x00\x00\x00")
 
     def _get_settings(self):
         top = RadioSettings(self._get_display_settings(),
