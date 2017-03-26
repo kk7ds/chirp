@@ -188,7 +188,8 @@ class SettingsEditor(common.Editor):
                     widget = gtk.Entry()
                     widget.set_width_chars(32)
                     widget.set_text(str(value).rstrip())
-                    widget.connect("changed", self._save_setting, value)
+                    widget.connect("focus-out-event", lambda w, e, v:
+                                   self._save_setting(w, v), value)
                 else:
                     LOG.error("Unsupported widget type: %s" % value.__class__)
 
