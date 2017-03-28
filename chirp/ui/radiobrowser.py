@@ -202,7 +202,7 @@ class CharArrayEditor(BitwiseEditor):
 
     def _build_ui(self):
         ent = FixedEntry(len(self._element))
-        ent.set_text(str(self._element))
+        ent.set_text(str(self._element).rstrip("\x00"))
         ent.connect('changed', self._changed)
         ent.show()
         self.pack_start(ent, 1, 1, 1)
