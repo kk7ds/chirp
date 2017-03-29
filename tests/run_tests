@@ -535,9 +535,10 @@ class TestCaseEdges(TestCase):
 
     def do_bandedges(self, rf):
         m = self._mem(rf)
+        min_step = min(rf.valid_tuning_steps or chirp_common.TUNING_STEPS)
 
-        for limits in rf.valid_bands:
-            for freq in limits:
+        for low, high in rf.valid_bands:
+            for freq in (low, high - int(min_step * 1000)):
                 m.freq = freq
                 self._wrapper.do("set_memory", m)
                 n = self._wrapper.do("get_memory", m.number)
