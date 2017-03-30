@@ -201,6 +201,7 @@ DEFAULT_PROG_VFO = (
 # see http://chirp.danplanet.com/issues/1611#note-9
 UNKNOWN_LOOKUP = (0, 7, 4, 0, 4, 7)
 
+
 def get_prog_vfo(frequency):
     for i, (start, end) in enumerate(DEFAULT_PROG_VFO):
         if start <= frequency < end:
