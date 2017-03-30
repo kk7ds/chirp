@@ -75,8 +75,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_modes = ["FM", "NFM", "DV"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+"]
-        rf.valid_tuning_steps = [x for x in chirp_common.TUNING_STEPS
-                                 if x != 6.25]
+        rf.valid_tuning_steps = [5., 10., 12.5, 15., 20., 25., 30., 50.]
         if self._isuhf:
             rf.valid_bands = [(420000000, 470000000)]
         else:

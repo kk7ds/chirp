@@ -70,12 +70,7 @@ u8 current_bank;
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "AM", "WFM"]
-STEPS = list(chirp_common.TUNING_STEPS)
-STEPS.remove(6.25)
-STEPS.remove(30.0)
-STEPS.append(100.0)
-STEPS.append(9.0)
-
+STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
                 chirp_common.PowerLevel("L2", watts=1.00),
@@ -177,6 +172,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_dtcs_polarity = False
         rf.valid_modes = MODES + ["NFM"]
         rf.valid_tmodes = TMODES
+        rf.valid_tuning_steps = STEPS
         rf.valid_duplexes = DUPLEX
         rf.memory_bounds = (1, 220)
         rf.valid_bands = [(500000,    16000000),

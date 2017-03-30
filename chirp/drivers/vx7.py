@@ -81,11 +81,7 @@ DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "AM", "WFM", "Auto"]
 TMODES = ["", "Tone", "TSQL", "DTCS", "Cross"]
 CROSS_MODES = ["DTCS->", "Tone->DTCS", "DTCS->Tone"]
-STEPS = list(chirp_common.TUNING_STEPS)
-STEPS.remove(6.25)
-STEPS.remove(30.0)
-STEPS.append(100.0)
-STEPS.append(9.0)
+STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0, 9.0]
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [" "] + \
