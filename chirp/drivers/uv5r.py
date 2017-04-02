@@ -282,7 +282,7 @@ vhf_220_radio = "\x02"
 
 BASETYPE_UV5R = ["BFS", "BFB", "N5R-2", "N5R2", "N5RV", "BTS", "D5R2"]
 BASETYPE_F11 = ["USA"]
-BASETYPE_UV82 = ["US2S", "B82S", "BF82", "N82-2", "N822"]
+BASETYPE_UV82 = ["US2S2", "B82S", "BF82", "N82-2", "N822"]
 BASETYPE_BJ55 = ["BJ55"]  # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6 = ["BF1", "UV6"]
 BASETYPE_KT980HP = ["BFP3V3 B"]
@@ -544,8 +544,29 @@ def _do_download(radio):
     radio_version = _get_radio_firmware_version(radio)
     LOG.info("Radio Version is %s" % repr(radio_version))
 
-    if not any(type in radio_version for type in radio._basetype):
+    if "HN5RV" in radio_version:
+        # A radio with HN5RV firmware has been detected. It could be a
+        # UV-5R style radio with HIGH/LOW power levels or it could be a
+        # BF-F8HP style radio with HIGH/MID/LOW power levels.
+        # We are going to count on the user to make the right choice and
+        # then append that model type to the end of the image so it can
+        # be properly detected when loaded.
+        append_model = True
+    elif "\xFF" * 14 in radio_version:
+        # A radio UV-5R style radio that reports no firmware version has
+        # been detected.
+        # We are going to count on the user to make the right choice and
+        # then append that model type to the end of the image so it can
+        # be properly detected when loaded.
+        append_model = True
+    elif not any(type in radio_version for type in radio._basetype):
+        # This radio can't be properly detected by parsing its firmware
+        # version.
         raise errors.RadioError("Incorrect 'Model' selected.")
+    else:
+        # This radio can be properly detected by parsing its firmware version.
+        # There is no need to append its model type to the end of the image.
+        append_model = False
 
     # Main block
     LOG.debug("downloading main block...")
@@ -558,6 +579,10 @@ def _do_download(radio):
     # Auxiliary block starts at 0x1ECO (?)
     for i in range(0x1EC0, 0x2000, 0x40):
         data += _read_block(radio, i, 0x40, False)
+
+    if append_model:
+        data += radio.MODEL.ljust(8)
+
     LOG.debug("done.")
     return memmap.MemoryMap(data)
 
@@ -586,33 +611,67 @@ def _do_upload(radio):
     LOG.info("Image Version is %s" % repr(image_version))
     LOG.info("Radio Version is %s" % repr(radio_version))
 
-    if image_version != radio_version:
+    # default ranges
+    _ranges_main_default = [
+        (0x0008, 0x0CF8),
+        (0x0D08, 0x0DF8),
+        (0x0E08, 0x1808)
+        ]
+    _ranges_aux_default = [
+        (0x1EC0, 0x1EF0),
+        ]
+
+    # extra aux ranges
+    _ranges_aux_extra = [
+        (0x1F60, 0x1F70),
+        (0x1F80, 0x1F90),
+        (0x1FC0, 0x1FD0)
+        ]
+
+    if image_version == radio_version:
+        image_matched_radio = True
+        if image_version.startswith("HN5RV"):
+            ranges_main = _ranges_main_default
+            ranges_aux = _ranges_aux_default + _ranges_aux_extra
+        elif image_version == 0xFF * 14:
+            ranges_main = _ranges_main_default
+            ranges_aux = _ranges_aux_default + _ranges_aux_extra
+        else:
+            ranges_main = radio._ranges_main
+            ranges_aux = radio._ranges_aux
+    elif any(type in radio_version for type in radio._basetype):
+        image_matched_radio = False
+        ranges_main = _ranges_main_default
+        ranges_aux = _ranges_aux_default
+    else:
         msg = ("The upload was stopped because the firmware "
                "version of the image (%s) does not match that "
                "of the radio (%s).")
         raise errors.RadioError(msg % (image_version, radio_version))
 
     # Main block
-    for i in range(0x08, 0x1808, 0x10):
-        _send_block(radio, i - 0x08, radio.get_mmap()[i:i + 0x10])
-        _do_status(radio, i)
-    _do_status(radio, radio.get_memsize())
+    for start_addr, end_addr in ranges_main:
+        for i in range(start_addr, end_addr, 0x10):
+            _send_block(radio, i - 0x08, radio.get_mmap()[i:i + 0x10])
+            _do_status(radio, i)
+        _do_status(radio, radio.get_memsize())
 
     if len(radio.get_mmap().get_packed()) == 0x1808:
         LOG.info("Old image, not writing aux block")
         return  # Old image, no aux block
 
-    if image_version != radio_version:
+    # Auxiliary block at radio address 0x1EC0, our offset 0x1808
+    for start_addr, end_addr in ranges_aux:
+        for i in range(start_addr, end_addr, 0x10):
+            addr = 0x1808 + (i - 0x1EC0)
+            _send_block(radio, i, radio.get_mmap()[addr:addr + 0x10])
+
+    if image_matched_radio == False:
         msg = ("Upload finished, but the 'Other Settings' "
                "could not be sent because the firmware "
                "version of the image (%s) does not match "
                "that of the radio (%s).")
         raise errors.RadioError(msg % (image_version, radio_version))
-
-    # Auxiliary block at radio address 0x1EC0, our offset 0x1808
-    for i in range(0x1EC0, 0x2000, 0x10):
-        addr = 0x1808 + (i - 0x1EC0)
-        _send_block(radio, i, radio.get_mmap()[addr:addr + 0x10])
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
@@ -625,6 +684,20 @@ UV5R_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
 UV5R_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
+
+
+def model_match(cls, data):
+    """Match the opened/downloaded image to the correct version"""
+
+    if len(data) == 0x1950:
+        rid = data[0x1948:0x1950]
+        return rid.startswith(cls.MODEL)
+    elif len(data) == 0x1948:
+        rid = data[cls._fw_ver_file_start:cls._fw_ver_file_stop]
+        if any(type in rid for type in cls._basetype):
+            return True
+    else:
+        return False
 
 
 class BaofengUV5R(chirp_common.CloneModeRadio,
@@ -648,6 +721,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     # offset of fw version in image file
     _fw_ver_file_start = 0x1838
     _fw_ver_file_stop = 0x1846
+
+    _ranges_main = [
+                    (0x0008, 0x1808),
+                   ]
+    _ranges_aux = [
+                   (0x1EC0, 0x2000),
+                  ]
 
     @classmethod
     def get_prompts(cls):
@@ -709,13 +789,10 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     def match_model(cls, filedata, filename):
         match_size = False
         match_model = False
-        if len(filedata) in [0x1808, 0x1948]:
+        if len(filedata) in [0x1808, 0x1948, 0x1950]:
             match_size = True
-        fwdata = _firmware_version_from_data(filedata,
-                                             cls._fw_ver_file_start,
-                                             cls._fw_ver_file_stop)
-        if any(type in fwdata for type in cls._basetype):
-            match_model = True
+        match_model = model_match(cls, filedata)
+
         if match_size and match_model:
             return True
         else:
@@ -1189,8 +1266,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         if self.MODEL == "UV-82HP":
             # this is a UV-82HP only feature
-            rs = RadioSetting("vfomrlock", "VFO/MR Switching",
-                              RadioSettingValueBoolean(_settings.vfomrlock))
+            rs = RadioSetting(
+                "vfomrlock", "VFO/MR Switching (BTech UV-82HP only)",
+                RadioSettingValueBoolean(_settings.vfomrlock))
             advanced.append(rs)
 
         if self.MODEL == "UV-82":
@@ -1201,15 +1279,15 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
 
         if self.MODEL == "UV-82HP":
             # this is an UV-82HP only feature
-            rs = RadioSetting("singleptt", "Single PTT",
+            rs = RadioSetting("singleptt", "Single PTT (BTech UV-82HP only)",
                               RadioSettingValueBoolean(_settings.singleptt))
             advanced.append(rs)
 
         if self.MODEL == "UV-82HP":
             # this is an UV-82HP only feature
-            rs = RadioSetting("tdrch", "Tone Burst Frequency",
-                              RadioSettingValueList(
-                                  RTONE_LIST, RTONE_LIST[_settings.tdrch]))
+            rs = RadioSetting(
+                "tdrch", "Tone Burst Frequency (BTech UV-82HP only)",
+                RadioSettingValueList(RTONE_LIST, RTONE_LIST[_settings.tdrch]))
             advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
