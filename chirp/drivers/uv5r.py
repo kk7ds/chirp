@@ -666,7 +666,7 @@ def _do_upload(radio):
             addr = 0x1808 + (i - 0x1EC0)
             _send_block(radio, i, radio.get_mmap()[addr:addr + 0x10])
 
-    if image_matched_radio == False:
+    if not image_matched_radio:
         msg = ("Upload finished, but the 'Other Settings' "
                "could not be sent because the firmware "
                "version of the image (%s) does not match "
