@@ -3602,6 +3602,13 @@ class BTechColor(BTechMobileCommon):
         self._uhf_range = uhf
     
 
+# Declaring Aliases (Clones of the real radios)
+class SKT8900D(chirp_common.Alias):
+    VENDOR = "Surecom"
+    MODEL = "S-KT8900D"
+
+
+# real radios
 @directory.register
 class UV25X2(BTechColor):
     """Baofeng Tech UV25X2"""
@@ -3651,6 +3658,8 @@ class KT7900D(BTechColor):
     _350_range = (350000000, 371000000)
     _magic = MSTRING_KT8900D
     _fileid = [KT7900D_fp, ]
+    # Clones
+    ALIASES = [SKT8900D, ]
 
 
 @directory.register
