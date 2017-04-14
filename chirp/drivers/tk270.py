@@ -292,21 +292,16 @@ def do_upload(radio):
         handshake(radio, "Rx error in block %03i" % addr)
 
 
-def get_rid(data):
+def get_radio_id(data):
     """Extract the radio identification from the firmware"""
-    rid = data[0x03d0:0x03d8]
-    # we have to invert rid
-    nrid = ""
-    for i in range(1, len(rid) + 1):
-        nrid += rid[-i]
-    rid = nrid
-
-    return rid
+    # Reverse the radio id string. MemoryMap does not support the step/stride
+    # slice argument, so it is first sliced to a str then reversed.
+    return data[0x03d0:0x03d8][::-1]
 
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
-    rid = get_rid(data)
+    rid = get_radio_id(data)
 
     # DEBUG
     #print("Full ident string is %s" % util.hexprint(rid))
@@ -408,7 +403,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     def set_variant(self):
         """Select and set the correct variables for the class acording
         to the correct variant of the radio"""
-        rid = get_rid(self._mmap)
+        rid = get_radio_id(self._mmap)
 
         # indentify the radio variant and set the enviroment to it's values
         try:
