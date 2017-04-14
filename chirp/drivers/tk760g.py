@@ -1261,13 +1261,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio):
         basic.append(pom)
 
         # dealer
-        mstr = ""
-        valid_chars = [32, 44, 45, 47, 58, 91, 93] + range(48, 58) + \
-            range(65, 91) + range(97, 123)
-
-        for i in range(0, len(self._VARIANT)):
-            if ord(self._VARIANT[i]) in valid_chars:
-                mstr += self._VARIANT[i]
+        valid_chars = ",-/:[]" + chirp_common.CHARSET_ALPHANUMERIC
+        mstr = "".join([c for c in self._VARIANT if c in valid_chars])
 
         val = RadioSettingValueString(0, 35, mstr)
         val.set_mutable(False)
