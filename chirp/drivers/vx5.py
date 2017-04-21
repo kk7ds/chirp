@@ -16,6 +16,7 @@
 
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, directory, errors, bitwise
+from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x002A;
@@ -162,7 +163,7 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_size = 8
 
     def _checksums(self):
-        return [yaesu_clone.YaesuChecksum(0x0000, 0x1FB9)]
+        return [yaesu_clone.YaesuChecksum(0x0000, 0x1FB9, 0x1FBA)]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -271,6 +272,26 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
 
         _flg.skip = mem.skip == "S"
         _flg.pskip = mem.skip == "P"
+
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/EAR jack.
+            3. Press and hold in the [F/W] key while turning the radio on
+                ("CLONE" will appear on the display).
+            4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive
+                the image from the radio."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to MIC/EAR jack.
+            3. Press and hold in the [F/W] key while turning the radio on
+                ("CLONE" will appear on the display).
+            4. Press the [MR(SKP)SC] key ("CLONE WAIT" will appear
+                on the LCD).
+            5. Click OK to send image to radio."""))
+        return rp
 
     @classmethod
     def match_model(cls, filedata, filename):
