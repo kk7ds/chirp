@@ -98,6 +98,7 @@ class ICP7Radio(icf.IcomCloneModeRadio):
 
     _num_banks = 18
     _bank_class = ICP7Bank
+    _can_hispeed = True
 
     def _get_bank(self, loc):
         _bank = self._memobj.banks[loc]
@@ -131,6 +132,7 @@ class ICP7Radio(icf.IcomCloneModeRadio):
         rf.valid_skips = ["", "S", "P"]
         rf.valid_tuning_steps = TUNING_STEPS
         rf.valid_name_length = 6
+        rf.has_settings = True
         rf.has_ctone = True
         rf.has_bank = True
         rf.has_bank_index = True
