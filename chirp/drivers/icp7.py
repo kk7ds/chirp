@@ -187,8 +187,6 @@ class ICP7Radio(icf.IcomCloneModeRadio):
         _skp = self._memobj.skips[byte]
         _psk = self._memobj.pskips[byte]
 
-        _mem.set_raw("\x00" * (_mem.size() / 8))
-
         if mem.empty:
             _usd |= bit
 
