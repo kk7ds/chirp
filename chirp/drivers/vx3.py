@@ -141,10 +141,17 @@ struct {
 u8  banks_unk1;
 
 #seekto 0x0356;
-u32 banks_unk2;
+struct {
+    u32 unmask;
+} banks_unmask1;
 
 #seekto 0x0409;
 u8  banks_unk3;
+
+#seekto 0x0416;
+struct {
+    u32 unmask;
+} banks_unmask2;
 
 #seekto 0x04CA;
 struct {
@@ -300,7 +307,11 @@ class VX3BankModel(chirp_common.BankModel):
         channels_in_bank.add(memory.number)
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
         _bank_used = self._radio._memobj.bank_used[bank.index]
-        _bank_used.in_use = 0x0000
+        _bank_used.in_use = ((len(channels_in_bank) - 1) * 2)
+        _banks_unmask1 = self._radio._memobj.banks_unmask1
+        _banks_unmask2 = self._radio._memobj.banks_unmask2
+        _banks_unmask1.unmask = 0x0017FFFF
+        _banks_unmask2.unmask = 0x0017FFFF
 
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
@@ -311,8 +322,10 @@ class VX3BankModel(chirp_common.BankModel):
                             (memory.number, bank))
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
-        if not channels_in_bank:
-            _bank_used = self._radio._memobj.bank_used[bank.index]
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if channels_in_bank:
+            _bank_used.in_use = ((len(channels_in_bank) - 1) * 2)
+        else:
             _bank_used.in_use = 0xFFFF
 
     def get_mapping_memories(self, bank):
