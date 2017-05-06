@@ -434,7 +434,8 @@ def _finish(radio):
     endframe = "\x45\x4E\x44"
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
-    if result != "\x06":
+    # TYT radios acknowledge the "endframe" command, Luiton radios do not.
+    if result != "" and result != "\x06":  
         LOG.error( "Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
@@ -813,6 +814,17 @@ class Th9000Radio(chirp_common.CloneModeRadio,
 
         return False
 
+# Declaring Aliases (Clones of the real radios)
+class LT580VHF(chirp_common.Alias):
+    VENDOR = "LUITON"
+    MODEL = "LT-580_VHF"
+
+
+class LT580UHF(chirp_common.Alias):
+    VENDOR = "LUITON"
+    MODEL = "LT-580_UHF"
+
+
 @directory.register
 class Th9000220Radio(Th9000Radio):
     """TYT TH-9000 220"""
@@ -828,6 +840,7 @@ class Th9000144Radio(Th9000220Radio):
     MODEL = "TH9000_144" 
     BAUD_RATE = 9600 
     valid_freq = [(136000000, 174000000)]
+    ALIASES = [LT580VHF, ]
 
 @directory.register
 class Th9000440Radio(Th9000220Radio):
@@ -836,3 +849,4 @@ class Th9000440Radio(Th9000220Radio):
     MODEL = "TH9000_440" 
     BAUD_RATE = 9600 
     valid_freq = [(400000000, 490000000)]
+    ALIASES = [LT580UHF, ]
