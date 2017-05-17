@@ -635,7 +635,7 @@ def _split(rf, f1, f2):
             return False
 
     # if you get here is because the freq pairs are split
-    return False
+    return True
 
 
 class BTechMobileCommon(chirp_common.CloneModeRadio,
