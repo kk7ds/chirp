@@ -322,7 +322,7 @@ class LT725UV(chirp_common.CloneModeRadio,
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('The UV-50X3 driver is a beta version.\n'
+            ('The LT725UV driver is a beta version.\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.'
