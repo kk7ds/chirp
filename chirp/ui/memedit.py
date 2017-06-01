@@ -496,7 +496,7 @@ class MemoryEditor(common.Editor):
         to_remove = []
         for path in paths:
             iter = self.store.get_iter(path)
-            cur_pos, = self.store.get(iter, self.col("Loc"))
+            cur_pos, = self.store.get(iter, self.col(_("Loc")))
             to_remove.append(cur_pos)
             self.store.set(iter, self.col("_filled"), False)
             job = common.RadioJob(None, "erase_memory", cur_pos)
@@ -972,7 +972,7 @@ class MemoryEditor(common.Editor):
             LOG.error(e)
             col_order = default_col_order
 
-        non_editable = ["Loc"]
+        non_editable = [_("Loc")]
 
         unsupported_cols = self.get_unsupported_columns()
         visible_cols = self.get_columns_visible()
