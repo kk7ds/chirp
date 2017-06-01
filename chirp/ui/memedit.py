@@ -935,9 +935,13 @@ class MemoryEditor(common.Editor):
 
     def cell_editing_started(self, rend, event, path):
         self._in_editing = True
+        self._edit_path = self.view.get_cursor()
 
     def cell_editing_stopped(self, *args):
         self._in_editing = False
+        print 'Would activate %s' % str(self._edit_path)
+        self.view.grab_focus()
+        self.view.set_cursor(*self._edit_path)
 
     def make_editor(self):
         types = tuple([x[1] for x in self.cols])
