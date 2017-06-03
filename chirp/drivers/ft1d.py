@@ -392,6 +392,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
 
+
 class FT1Bank(chirp_common.NamedBank):
     """A FT1D bank"""
 
@@ -1481,136 +1482,148 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _get_backtrack_settings(self):
 
-        menu = RadioSettingGroup( "backtrack", "Backtrack")
+        menu = RadioSettingGroup("backtrack", "Backtrack")
 
         for i in range(3):
             prefix = ''
-            if i == 0 :
+            if i == 0:
                 prefix = "Star "
-            if i == 1 :
+            if i == 1:
                 prefix = "L1 "
-            if i == 2 :
+            if i == 2:
                 prefix = "L2 "
 
             bt_idx = "backtrack[%d]" % i
-            
+
             bt = self._memobj.backtrack[i]
 
             val = RadioSettingValueInteger(0, 16, bt.status)
-            rs = RadioSetting("%s.status" % bt_idx,
-                              prefix + "status", val)
+            rs = RadioSetting(
+                    "%s.status" % bt_idx,
+                    prefix + "status", val)
             menu.append(rs)
-            
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueInteger(0, 99, bt.year)
-            else :
+            else:
                 val = RadioSettingValueInteger(0, 99, 0)
-            rs = RadioSetting("%s.year" % bt_idx,
-                              prefix + "year", val)
+            rs = RadioSetting(
+                    "%s.year" % bt_idx,
+                    prefix + "year", val)
             menu.append(rs)
-        
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueInteger(0, 12, bt.mon)
-            else :
+            else:
                 val = RadioSettingValueInteger(0, 12, 0)
-            rs = RadioSetting("%s.mon" % bt_idx,
-                                  prefix + "month", val)
+            rs = RadioSetting(
+                    "%s.mon" % bt_idx,
+                    prefix + "month", val)
             menu.append(rs)
-            
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueInteger(0, 31, bt.day)
-            else :
+            else:
                 val = RadioSettingValueInteger(0, 31, 0)
-            rs = RadioSetting("%s.day" % bt_idx, 
-                                  prefix + "day", val)
+            rs = RadioSetting(
+                    "%s.day" % bt_idx,
+                    prefix + "day", val)
             menu.append(rs)
 
-            if bt.status == 1 :
+            if bt.status == 1:
                 val = RadioSettingValueInteger(0, 23, bt.hour)
-            else :
+            else:
                 val = RadioSettingValueInteger(0, 23, 0)
-            rs = RadioSetting("%s.hour" % bt_idx,
-                                  prefix + "hour", val)
+            rs = RadioSetting(
+                    "%s.hour" % bt_idx,
+                    prefix + "hour", val)
             menu.append(rs)
-            
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueInteger(0, 59, bt.min)
-            else :
+            else:
                 val = RadioSettingValueInteger(0, 59, 0)
-            rs = RadioSetting("%s.min" % bt_idx,
-                                  prefix + "min", val)
+            rs = RadioSetting(
+                    "%s.min" % bt_idx,
+                    prefix + "min", val)
             menu.append(rs)
 
-            if bt.status == 1 :
-                val = RadioSettingValueString( 0, 1, str(bt.NShemi))
-            else :
-                val = RadioSettingValueString( 0, 1, ' ')
-            rs = RadioSetting("%s.NShemi" % bt_idx, prefix + "NS hemisphere", val)
-            rs.set_apply_callback(self.apply_NShemi, bt )
+            if bt.status == 1:
+                val = RadioSettingValueString(0, 1, str(bt.NShemi))
+            else:
+                val = RadioSettingValueString(0, 1, ' ')
+            rs = RadioSetting(
+                    "%s.NShemi" % bt_idx,
+                    prefix + "NS hemisphere", val)
+            rs.set_apply_callback(self.apply_NShemi, bt)
             menu.append(rs)
 
-            if bt.status == 1 :
-                val = RadioSettingValueString( 0, 3, str(bt.lat))
-            else :
-                val = RadioSettingValueString( 0, 3, '   ')
+            if bt.status == 1:
+                val = RadioSettingValueString(0, 3, str(bt.lat))
+            else:
+                val = RadioSettingValueString(0, 3, '   ')
             rs = RadioSetting("%s.lat" % bt_idx, prefix + "Latitude", val)
-            #rs.set_apply_callback(self.apply_NShemi, bt )
             menu.append(rs)
-    
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueString(
                     0, 2, str(bt.lat_min))
-            else :
-                val = RadioSettingValueString( 0, 2, '  ')
-            rs = RadioSetting("%s.lat_min" % bt_idx, prefix + "Latitude Minutes", val)
-            #rs.set_apply_callback(self.apply_NShemi, bt )
-            menu.append(rs)
-    
-            if bt.status == 1 :
-                val = RadioSettingValueString(
-                    0, 4, str(bt.lat_dec_sec))
-            else :
-                val = RadioSettingValueString( 0, 4, '    ')
-            rs = RadioSetting("%s.lat_dec_sec" % bt_idx, prefix + "Latitude Decimal Seconds", val)
-            #rs.set_apply_callback(self.apply_NShemi, bt )
-            menu.append(rs)
-    
-            if bt.status == 1 :
-                val = RadioSettingValueString(
-                    0, 1, str(bt.WEhemi))
-            else :
-                val = RadioSettingValueString( 0, 1, ' ')
-            rs = RadioSetting("%s.WEhemi" % bt_idx, prefix + "WE hemisphere", val)
-            rs.set_apply_callback(self.apply_WEhemi, bt )
+            else:
+                val = RadioSettingValueString(0, 2, '  ')
+            rs = RadioSetting(
+                    "%s.lat_min" % bt_idx,
+                    prefix + "Latitude Minutes", val)
             menu.append(rs)
 
-            if bt.status == 1 :
+            if bt.status == 1:
+                val = RadioSettingValueString(
+                    0, 4, str(bt.lat_dec_sec))
+            else:
+                val = RadioSettingValueString(0, 4, '    ')
+            rs = RadioSetting(
+                    "%s.lat_dec_sec" % bt_idx,
+                    prefix + "Latitude Decimal Seconds", val)
+            menu.append(rs)
+
+            if bt.status == 1:
+                val = RadioSettingValueString(
+                    0, 1, str(bt.WEhemi))
+            else:
+                val = RadioSettingValueString(0, 1, ' ')
+            rs = RadioSetting(
+                    "%s.WEhemi" % bt_idx,
+                    prefix + "WE hemisphere", val)
+            rs.set_apply_callback(self.apply_WEhemi, bt)
+            menu.append(rs)
+
+            if bt.status == 1:
                 val = RadioSettingValueString(
                     0, 3, str(bt.lon))
-            else :
-                val = RadioSettingValueString( 0, 3, '   ')
+            else:
+                val = RadioSettingValueString(0, 3, '   ')
             rs = RadioSetting("%s.lon" % bt_idx, prefix + "Longitude", val)
-            #rs.set_apply_callback(self.apply_NShemi, bt )
             menu.append(rs)
-    
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueString(
                     0, 2, str(bt.lon_min))
-            else :
-                val = RadioSettingValueString( 0, 2, '  ')
-            rs = RadioSetting("%s.lon_min" % bt_idx, prefix + "Longitude Minutes", val)
-            #rs.set_apply_callback(self.apply_NShemi, bt )
+            else:
+                val = RadioSettingValueString(0, 2, '  ')
+            rs = RadioSetting(
+                    "%s.lon_min" % bt_idx,
+                    prefix + "Longitude Minutes", val)
             menu.append(rs)
-    
-            if bt.status == 1 :
+
+            if bt.status == 1:
                 val = RadioSettingValueString(
                     0, 4, str(bt.lon_dec_sec))
-            else :
-                val = RadioSettingValueString( 0, 4, '    ')
-            rs = RadioSetting("%s.lon_dec_sec" % bt_idx, prefix + "Longitude Decimal Seconds", val)
-            #rs.set_apply_callback(self.apply_NShemi, bt )
+            else:
+                val = RadioSettingValueString(0, 4, '    ')
+            rs = RadioSetting(
+                "%s.lon_dec_sec" % bt_idx,
+                prefix + "Longitude Decimal Seconds", val)
             menu.append(rs)
-    
+
         return menu
 
     def _get_scan_settings(self):
@@ -1850,16 +1863,16 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             val.append(0xFF)
         cls._memobj.dtmf[i].memory = val
 
-    def apply_NShemi(cls, setting, obj ):
+    def apply_NShemi(cls, setting, obj):
         hemi = setting.value.get_value().upper()
 
-        if hemi != 'N' and hemi != 'S' :
+        if hemi != 'N' and hemi != 'S':
             hemi = ' '
-        setattr(obj, "NShemi", hemi )
+        setattr(obj, "NShemi", hemi)
 
-    def apply_WEhemi(cls, setting, obj ):
+    def apply_WEhemi(cls, setting, obj):
         hemi = setting.value.get_value().upper()
 
-        if hemi != 'W' and hemi != 'E' :
+        if hemi != 'W' and hemi != 'E':
             hemi = ' '
-        setattr(obj, "WEhemi", hemi )
+        setattr(obj, "WEhemi", hemi)
