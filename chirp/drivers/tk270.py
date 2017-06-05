@@ -326,13 +326,16 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('This driver is experimental and for personal use only.'
-             'It has a limited set of features, but the most used.\n'
+            ('This driver is experimental; not all features have been '
+            'implemented, but it has those features most used by hams.\n'
              '\n'
-             'This is a first release, so it will contains bugs, use it'
-             'on your own risk, keep a mem backup with the original '
-             'software at hand\n'
+             'This radios are able to work slightly outside the OEM '
+             'frequency limits. After testing, the limit in Chirp has '
+             'been set 4% outside the OEM limit. This allows you to use '
+             'some models on the ham bands.\n'
              '\n'
+             'Nevertheless, each radio has its own hardware limits and '
+             'your mileage may vary.\n'
              )
         rp.pre_download = _(dedent("""\
             Follow this instructions to read your radio:
@@ -408,14 +411,18 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # indentify the radio variant and set the enviroment to it's values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
-            self._range = [low * 1000000, high * 1000000]
+
+            # Frequency ranges: some model/variants are able to work the near
+            # ham bands, even if they are outside the OEM ranges.
+            # By experimentation we found that a +/- 4% at the edges is in most
+            # cases safe and will cover the near ham band in full
+            self._range = [low * 1000000 * 0.96, high * 1000000 * 1.04]
 
             # put the VARIANT in the class, clean the model / CHs / Type
             # in the same layout as the KPG program
             self._VARIANT = self.MODEL + " [" + str(self._upper) + "CH]: "
-            self._VARIANT += self._kind + ", "
-            self._VARIANT += str(self._range[0]/1000000) + "-"
-            self._VARIANT += str(self._range[1]/1000000) + " Mhz"
+            # In the OEM string we show the real OEM ranges
+            self._VARIANT += self._kind + ", %d - %d MHz" % (low, high)
 
             # DEBUG
             #print self._VARIANT
@@ -464,9 +471,6 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         bit = chan % 8
         res = self._memobj.active[byte] & (pow(2, bit))
         res = not bool(res)
-
-        # DEBUG
-        #print("GET Chan %s, Byte %s, Bit %s, Active %s" % (chan, byte, bit, int(res)))
 
         return res
 
@@ -937,4 +941,3 @@ class TK378_Radio(Kenwood_P60_Radio):
         "P0378\x04\x00\x00": (32, 370, 470, "SP1"),
         "P0378\x02\x00\x00": (32, 350, 427, "SP2"),
         }
-
