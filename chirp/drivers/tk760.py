@@ -333,10 +333,10 @@ def model_match(cls, data):
         return False
 
 
-class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
+class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """Kenwood Mobile Family 60 Radios"""
     VENDOR = "Kenwood"
-    _range = [136000000, 500000000]  # don't mind, it will be overited
+    _range = [136000000, 500000000]  # don't mind, it will be overwritten
     _upper = 32
     VARIANT = ""
     MODEL = ""
@@ -345,18 +345,16 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('This driver is experimental and for personal use only.'
-             'It has a limited set of features, but the most used.\n'
+            ('This driver is experimental; not all features have been '
+            'implemented, but it has those features most used by hams.\n'
              '\n'
-             'The most notorius missing features are this:\n'
-             '=> PTT ID, in fact it is disabled if detected\n'
-             '=> Priority / Home channel\n'
-             '=> DTMF/2-Tone\n'
-             '=> Others\n'
+             'This radios are able to work slightly outside the OEM '
+             'frequency limits. After testing, the limit in Chirp has '
+             'been set 4% outside the OEM limit. This allows you to use '
+             'some models on the ham bands.\n'
              '\n'
-             'If you need one of this, get your official software to do it'
-             'and raise and issue on the chirp site about it; maybe'
-             'it will be implemented in the future.'
+             'Nevertheless, each radio has its own hardware limits and '
+             'your mileage may vary.\n'
              )
         rp.pre_download = _(dedent("""\
             Follow this instructions to read your radio:
@@ -432,14 +430,18 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio):
         # indentify the radio variant and set the enviroment to it's values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
-            self._range = [low * 1000000, high * 1000000]
+
+            # Frequency ranges: some model/variants are able to work the near
+            # ham bands, even if they are outside the OEM ranges.
+            # By experimentation we found that a +/- 4% at the edges is in most
+            # cases safe and will cover the near ham band in full
+            self._range = [low * 1000000 * 0.96, high * 1000000 * 1.04]
 
             # put the VARIANT in the class, clean the model / CHs / Type
             # in the same layout as the KPG program
             self._VARIANT = self.MODEL + " [" + str(self._upper) + "CH]: "
-            self._VARIANT += self._kind + ", "
-            self._VARIANT += str(self._range[0]/1000000) + "-"
-            self._VARIANT += str(self._range[1]/1000000) + " Mhz"
+            # In the OEM string we show the real OEM ranges
+            self._VARIANT += self._kind + ", %d - %d MHz" % (low, high)
 
         except KeyError:
             LOG.debug("Wrong Kenwood radio, ID or unknown variant")
@@ -814,7 +816,7 @@ class TK760_Radio(Kenwood_M60_Radio):
     TYPE = "M0760"
     VARIANTS = {
         "M0760\x01\x00\x00": (32, 136, 156, "K2"),
-        "M0760\x00\x00\x00": (32, 144, 174, "K")   # 148-147 Original
+        "M0760\x00\x00\x00": (32, 148, 174, "K")
         }
 
 
@@ -825,7 +827,7 @@ class TK762_Radio(Kenwood_M60_Radio):
     TYPE = "M0762"
     VARIANTS = {
         "M0762\x01\x00\x00": (2, 136, 156, "K2"),
-        "M0762\x00\x00\x00": (2, 144, 174, "K")   # 148-147 Original
+        "M0762\x00\x00\x00": (2, 148, 174, "K")
         }
 
 
@@ -836,7 +838,7 @@ class TK768_Radio(Kenwood_M60_Radio):
     TYPE = "M0768"
     VARIANTS = {
         "M0768\x21\x00\x00": (32, 136, 156, "K2"),
-        "M0768\x20\x00\x00": (32, 144, 174, "K")   # 148-147 Original
+        "M0768\x20\x00\x00": (32, 148, 174, "K")
         }
 
 
@@ -846,7 +848,7 @@ class TK860_Radio(Kenwood_M60_Radio):
     MODEL = "TK-860"
     TYPE = "M0860"
     VARIANTS = {
-        "M0860\x05\x00\x00": (32, 406, 440, "F4"),   # 406-430 Original
+        "M0860\x05\x00\x00": (32, 406, 430, "F4"),
         "M0860\x04\x00\x00": (32, 488, 512, "F3"),
         "M0860\x03\x00\x00": (32, 470, 496, "F2"),
         "M0860\x02\x00\x00": (32, 450, 476, "F1")
@@ -859,7 +861,7 @@ class TK862_Radio(Kenwood_M60_Radio):
     MODEL = "TK-862"
     TYPE = "M0862"
     VARIANTS = {
-        "M0862\x05\x00\x00": (2, 406, 440, "F4"),   # 406-430 Original
+        "M0862\x05\x00\x00": (2, 406, 430, "F4"),
         "M0862\x04\x00\x00": (2, 488, 512, "F3"),
         "M0862\x03\x00\x00": (2, 470, 496, "F2"),
         "M0862\x02\x00\x00": (2, 450, 476, "F1")
@@ -872,7 +874,7 @@ class TK868_Radio(Kenwood_M60_Radio):
     MODEL = "TK-868"
     TYPE = "M0868"
     VARIANTS = {
-        "M0868\x25\x00\x00": (32, 406, 440, "F4"),   # 406-430 Original
+        "M0868\x25\x00\x00": (32, 406, 430, "F4"),
         "M0868\x24\x00\x00": (32, 488, 512, "F3"),
         "M0868\x23\x00\x00": (32, 470, 496, "F2"),
         "M0868\x22\x00\x00": (32, 450, 476, "F1")
