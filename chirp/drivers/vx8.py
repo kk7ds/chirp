@@ -496,8 +496,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu VX-8"""
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
-    MODEL = "VX-8"
-    VARIANT = "R"
+    MODEL = "VX-8R"
 
     _model = "AH029"
     _memsize = 65227
@@ -658,13 +657,13 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 @directory.register
 class VX8DRadio(VX8Radio):
     """Yaesu VX-8DR"""
+    MODEL = "VX-8DR"
     _model = "AH29D"
     _mem_params = (0xC24A,  # APRS beacon metadata address.
                    50,      # Number of beacons stored.
                    0xC6FA,  # APRS beacon content address.
                    146,     # Length of beacon data stored.
                    50)      # Number of beacons stored.
-    VARIANT = "DR"
 
     _SG_RE = re.compile(r"(?P<sign>[-+NESW]?)(?P<d>[\d]+)[\s\.,]*"
                         "(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
@@ -1552,7 +1551,7 @@ class VX8DRadio(VX8Radio):
 @directory.register
 class VX8GERadio(VX8DRadio):
     """Yaesu VX-8GE"""
+    MODEL = "VX-8GE"
     _model = "AH041"
-    VARIANT = "GE"
     _has_vibrate = True
     _has_af_dual = False
