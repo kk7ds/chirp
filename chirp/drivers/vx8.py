@@ -243,9 +243,15 @@ struct {
     } entry[8];
   } digi_path_7;
   u8 unknown22[2];
-  struct {
+} aprs;
+
+#seekto 0x%04X;
+struct {
     char padded_string[16];
-  } message_macro[7];
+} aprs_msg_macro[%d];
+
+#seekto 0x%0X;
+struct {
   u8 unknown23:5,
      selected_msg_group:3;
   u8 unknown24;
@@ -285,7 +291,7 @@ struct {
      vibrate_grp:6;
   u8 unknown34:2,
      vibrate_bln:6;
-} aprs;
+} aprs2;
 
 #seekto 0x%04X;
 struct {
@@ -502,7 +508,10 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     _memsize = 65227
     _block_lengths = [10, 65217]
     _block_size = 32
-    _mem_params = (0xC24A,  # APRS beacon metadata address.
+    _mem_params = (0xC128,  # APRS message macros
+                   5,       # Number of message macros
+                   0xC178,  # APRS2
+                   0xC24A,  # APRS beacon metadata address.
                    40,      # Number of beacons stored.
                    0xC60A,  # APRS beacon content address.
                    194,     # Length of beacon data stored.
@@ -732,6 +741,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def _get_aprs_general_settings(self):
         menu = RadioSettingGroup("aprs_general", "APRS General")
         aprs = self._memobj.aprs
+        aprs2 = self._memobj.aprs2
 
         val = RadioSettingValueString(
                 0, 6, str(aprs.my_callsign.callsign).rstrip("\xFF"))
@@ -746,8 +756,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         menu.append(rs)
 
         val = RadioSettingValueList(self._MY_SYMBOL,
-                                    self._MY_SYMBOL[aprs.selected_my_symbol])
-        rs = RadioSetting("aprs.selected_my_symbol", "My Symbol", val)
+                                    self._MY_SYMBOL[aprs2.selected_my_symbol])
+        rs = RadioSetting("aprs2.selected_my_symbol", "My Symbol", val)
         menu.append(rs)
 
         symbols = list(chirp_common.APRS_SYMBOLS)
@@ -874,6 +884,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def _get_aprs_rx_settings(self):
         menu = RadioSettingGroup("aprs_rx", "APRS Receive")
         aprs = self._memobj.aprs
+        aprs2 = self._memobj.aprs2
 
         val = RadioSettingValueList(self._RX_BAUD, self._RX_BAUD[aprs.rx_baud])
         rs = RadioSetting("aprs.rx_baud", "Modem RX", val)
@@ -897,55 +908,55 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         menu.append(rs)
 
         val = RadioSettingValueList(self._FLASH,
-                                    self._FLASH[aprs.flash_msg])
-        rs = RadioSetting("aprs.flash_msg", "Flash on personal message", val)
+                                    self._FLASH[aprs2.flash_msg])
+        rs = RadioSetting("aprs2.flash_msg", "Flash on personal message", val)
         menu.append(rs)
 
         if self._has_vibrate:
             val = RadioSettingValueList(self._FLASH,
-                                        self._FLASH[aprs.vibrate_msg])
-            rs = RadioSetting("aprs.vibrate_msg",
+                                        self._FLASH[aprs2.vibrate_msg])
+            rs = RadioSetting("aprs2.vibrate_msg",
                               "Vibrate on personal message", val)
             menu.append(rs)
 
         val = RadioSettingValueList(self._FLASH[:10],
-                                    self._FLASH[aprs.flash_bln])
-        rs = RadioSetting("aprs.flash_bln", "Flash on bulletin message", val)
+                                    self._FLASH[aprs2.flash_bln])
+        rs = RadioSetting("aprs2.flash_bln", "Flash on bulletin message", val)
         menu.append(rs)
 
         if self._has_vibrate:
             val = RadioSettingValueList(self._FLASH[:10],
-                                        self._FLASH[aprs.vibrate_bln])
-            rs = RadioSetting("aprs.vibrate_bln",
+                                        self._FLASH[aprs2.vibrate_bln])
+            rs = RadioSetting("aprs2.vibrate_bln",
                               "Vibrate on bulletin message", val)
             menu.append(rs)
 
         val = RadioSettingValueList(self._FLASH[:10],
-                                    self._FLASH[aprs.flash_grp])
-        rs = RadioSetting("aprs.flash_grp", "Flash on group message", val)
+                                    self._FLASH[aprs2.flash_grp])
+        rs = RadioSetting("aprs2.flash_grp", "Flash on group message", val)
         menu.append(rs)
 
         if self._has_vibrate:
             val = RadioSettingValueList(self._FLASH[:10],
-                                        self._FLASH[aprs.vibrate_grp])
-            rs = RadioSetting("aprs.vibrate_grp",
+                                        self._FLASH[aprs2.vibrate_grp])
+            rs = RadioSetting("aprs2.vibrate_grp",
                               "Vibrate on group message", val)
             menu.append(rs)
 
-        filter_val = [m.padded_string for m in aprs.msg_group]
+        filter_val = [m.padded_string for m in aprs2.msg_group]
         filter_val = self._strip_ff_pads(filter_val)
         for index, filter_text in enumerate(filter_val):
             val = RadioSettingValueString(0, 9, filter_text)
-            rs = RadioSetting("aprs.msg_group_%d" % index,
+            rs = RadioSetting("aprs2.msg_group_%d" % index,
                               "Message Group %d" % (index + 1), val)
             menu.append(rs)
             rs.set_apply_callback(self.apply_ff_padded_string,
-                                  aprs.msg_group[index])
+                                  aprs2.msg_group[index])
         # TODO: Use filter_val as the list entries and update it on edit.
         val = RadioSettingValueList(
             self._MSG_GROUP_NAMES,
-            self._MSG_GROUP_NAMES[aprs.selected_msg_group])
-        rs = RadioSetting("aprs.selected_msg_group", "Selected Message Group",
+            self._MSG_GROUP_NAMES[aprs2.selected_msg_group])
+        rs = RadioSetting("aprs2.selected_msg_group", "Selected Message Group",
                           val)
         menu.append(rs)
 
@@ -984,6 +995,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def _get_aprs_tx_settings(self):
         menu = RadioSettingGroup("aprs_tx", "APRS Transmit")
         aprs = self._memobj.aprs
+        aprs2 = self._memobj.aprs2
 
         beacon_type = (aprs.tx_smartbeacon << 1) | aprs.tx_interval_beacon
         val = RadioSettingValueList(
@@ -1019,39 +1031,39 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
                           "Beacon Status Text", val)
         menu.append(rs)
 
-        message_macro = [m.padded_string for m in aprs.message_macro]
+        message_macro = [m.padded_string for m in self._memobj.aprs_msg_macro]
         message_macro = self._strip_ff_pads(message_macro)
         for index, msg_text in enumerate(message_macro):
             val = RadioSettingValueString(0, 16, msg_text)
-            rs = RadioSetting("aprs.message_macro_%d" % index,
+            rs = RadioSetting("aprs_msg_macro_%d" % index,
                               "Message Macro %d" % (index + 1), val)
             rs.set_apply_callback(self.apply_ff_padded_string,
-                                  aprs.message_macro[index])
+                                  self._memobj.aprs_msg_macro[index])
             menu.append(rs)
 
         path_str = list(self._DIGI_PATHS)
-        path_str[3] = self._digi_path_to_str(aprs.digi_path_3_6[0])
+        path_str[3] = self._digi_path_to_str(aprs2.digi_path_3_6[0])
         val = RadioSettingValueString(0, 22, path_str[3])
-        rs = RadioSetting("aprs.digi_path_3", "Digi Path 4 (2 entries)", val)
-        rs.set_apply_callback(self.apply_digi_path, aprs.digi_path_3_6[0])
+        rs = RadioSetting("aprs2.digi_path_3", "Digi Path 4 (2 entries)", val)
+        rs.set_apply_callback(self.apply_digi_path, aprs2.digi_path_3_6[0])
         menu.append(rs)
 
-        path_str[4] = self._digi_path_to_str(aprs.digi_path_3_6[1])
+        path_str[4] = self._digi_path_to_str(aprs2.digi_path_3_6[1])
         val = RadioSettingValueString(0, 22, path_str[4])
-        rs = RadioSetting("aprs.digi_path_4", "Digi Path 5 (2 entries)", val)
-        rs.set_apply_callback(self.apply_digi_path, aprs.digi_path_3_6[1])
+        rs = RadioSetting("aprs2.digi_path_4", "Digi Path 5 (2 entries)", val)
+        rs.set_apply_callback(self.apply_digi_path, aprs2.digi_path_3_6[1])
         menu.append(rs)
 
-        path_str[5] = self._digi_path_to_str(aprs.digi_path_3_6[2])
+        path_str[5] = self._digi_path_to_str(aprs2.digi_path_3_6[2])
         val = RadioSettingValueString(0, 22, path_str[5])
-        rs = RadioSetting("aprs.digi_path_5", "Digi Path 6 (2 entries)", val)
-        rs.set_apply_callback(self.apply_digi_path, aprs.digi_path_3_6[2])
+        rs = RadioSetting("aprs2.digi_path_5", "Digi Path 6 (2 entries)", val)
+        rs.set_apply_callback(self.apply_digi_path, aprs2.digi_path_3_6[2])
         menu.append(rs)
 
-        path_str[6] = self._digi_path_to_str(aprs.digi_path_3_6[3])
+        path_str[6] = self._digi_path_to_str(aprs2.digi_path_3_6[3])
         val = RadioSettingValueString(0, 22, path_str[6])
-        rs = RadioSetting("aprs.digi_path_6", "Digi Path 7 (2 entries)", val)
-        rs.set_apply_callback(self.apply_digi_path, aprs.digi_path_3_6[3])
+        rs = RadioSetting("aprs2.digi_path_6", "Digi Path 7 (2 entries)", val)
+        rs.set_apply_callback(self.apply_digi_path, aprs2.digi_path_3_6[3])
         menu.append(rs)
 
         path_str[7] = self._digi_path_to_str(aprs.digi_path_7)
@@ -1073,8 +1085,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         path_str[6] = self._DIGI_PATHS[6]
         path_str[7] = self._DIGI_PATHS[7]
         val = RadioSettingValueList(path_str,
-                                    path_str[aprs.selected_digi_path])
-        rs = RadioSetting("aprs.selected_digi_path", "Selected Digi Path", val)
+                                    path_str[aprs2.selected_digi_path])
+        rs = RadioSetting("aprs2.selected_digi_path", "Selected Digi Path", val)
         menu.append(rs)
 
         return menu
@@ -1397,7 +1409,10 @@ class VX8DRadio(VX8Radio):
     """Yaesu VX-8DR"""
     MODEL = "VX-8DR"
     _model = "AH29D"
-    _mem_params = (0xC24A,  # APRS beacon metadata address.
+    _mem_params = (0xC128,  # APRS message macros
+                   7,       # Number of message macros
+                   0xC198,  # APRS2
+                   0xC24A,  # APRS beacon metadata address.
                    50,      # Number of beacons stored.
                    0xC6FA,  # APRS beacon content address.
                    146,     # Length of beacon data stored.
@@ -1477,18 +1492,19 @@ class VX8DRadio(VX8Radio):
     def _get_aprs_smartbeacon(self):
         menu = RadioSettingGroup("aprs_smartbeacon", "APRS SmartBeacon")
         aprs = self._memobj.aprs
+        aprs2 = self._memobj.aprs2
 
         val = RadioSettingValueList(
             self._SMARTBEACON_PROFILE,
-            self._SMARTBEACON_PROFILE[aprs.active_smartbeaconing])
-        rs = RadioSetting("aprs.active_smartbeaconing", "SmartBeacon profile",
+            self._SMARTBEACON_PROFILE[aprs2.active_smartbeaconing])
+        rs = RadioSetting("aprs2.active_smartbeaconing", "SmartBeacon profile",
                           val)
         menu.append(rs)
 
         for profile in range(3):
             pfx = "type%d" % (profile + 1)
-            path = "aprs.smartbeaconing_profile[%d]" % profile
-            prof = aprs.smartbeaconing_profile[profile]
+            path = "aprs2.smartbeaconing_profile[%d]" % profile
+            prof = aprs2.smartbeaconing_profile[profile]
 
             low_val = RadioSettingValueInteger(2, 30, prof.low_speed_mph)
             high_val = RadioSettingValueInteger(3, 70, prof.high_speed_mph)
