@@ -250,7 +250,7 @@ struct {
     char padded_string[16];
 } aprs_msg_macro[%d];
 
-#seekto 0x%0X;
+#seekto 0x%04X;
 struct {
   u8 unknown23:5,
      selected_msg_group:3;
@@ -1086,7 +1086,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         path_str[7] = self._DIGI_PATHS[7]
         val = RadioSettingValueList(path_str,
                                     path_str[aprs2.selected_digi_path])
-        rs = RadioSetting("aprs2.selected_digi_path", "Selected Digi Path", val)
+        rs = RadioSetting("aprs2.selected_digi_path", 
+                          "Selected Digi Path", val)
         menu.append(rs)
 
         return menu
