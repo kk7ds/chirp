@@ -196,7 +196,7 @@ KT8900_fp3 = "M2G2F4"
 KT8900_fp4 = "M2G304"
 KT8900_fp5 = "M2G314"
 # this radio has an extra ID
-KT8900_id = "      303688"
+KT8900_id = "303688"
 
 # KT8900R
 KT8900R_fp = "M3G1F4"
