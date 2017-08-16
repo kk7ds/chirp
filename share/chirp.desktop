@@ -1,13 +1,13 @@
 [Desktop Entry]
-Version=0.1
-Encoding=UTF-8
 Type=Application
-Exec=chirpw
-Icon=chirp.png
-StartupNotify=true
-Terminal=false
-Categories=Application;HamRadio
-MimeType=inode/directory
+Version=1.0
 Name=CHIRP
-Comment=CHIRP Radio Programming Tool
-GenericName=CHIRP Radio Programming Tool
+GenericName=Radio Programming Tool
+Comment=Program amateur radios
+Icon=chirp
+Exec=chirpw %F
+Terminal=false
+MimeType=inode/directory
+Categories=Utility;HamRadio
+Keywords=Hamradio;Programming;Handheld;Radio;Amateur;Programmer
+StartupNotify=true
