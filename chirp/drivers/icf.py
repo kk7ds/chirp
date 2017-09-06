@@ -198,8 +198,6 @@ def send_clone_frame(pipe, cmd, data, raw=False, checksum=False):
         pass
 
     pipe.write(frame)
-    pipe.flush()
-    pipe.read(len(frame))  # discard echoback
 
     return frame
 
@@ -263,7 +261,6 @@ def start_hispeed_clone(radio, cmd):
     LOG.debug("Starting HiSpeed Clone:\n%s" % util.hexprint(buf))
     radio.pipe.write(buf)
     radio.pipe.flush()
-    radio.pipe.read(len(buf))  # discard echoback
 
 
 def _clone_from_radio(radio):
