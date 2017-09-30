@@ -214,6 +214,9 @@ KT8900R_id = "280528"
 # KT7900D (quad band)
 KT7900D_fp = "VC4004"
 
+# QB25 (quad band) - a clone of KT7900D
+QB25_fp = "QB-25"
+
 # KT8900D (dual band)
 KT8900D_fp = "VC2002"
 
@@ -3608,6 +3611,11 @@ class SKT8900D(chirp_common.Alias):
     MODEL = "S-KT8900D"
 
 
+class QB25(chirp_common.Alias):
+    VENDOR = "Radioddity"
+    MODEL = "QB25"
+
+
 # real radios
 @directory.register
 class UV25X2(BTechColor):
@@ -3657,9 +3665,9 @@ class KT7900D(BTechColor):
     _uhf_range = (400000000, 481000000)
     _350_range = (350000000, 371000000)
     _magic = MSTRING_KT8900D
-    _fileid = [KT7900D_fp, ]
+    _fileid = [KT7900D_fp, QB25_fp, ]
     # Clones
-    ALIASES = [SKT8900D, ]
+    ALIASES = [SKT8900D, QB25, ]
 
 
 @directory.register
