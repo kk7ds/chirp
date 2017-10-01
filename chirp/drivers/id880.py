@@ -144,7 +144,7 @@ def _decode_freq(freq, mult):
 
 
 def _encode_freq(freq):
-    for i, step in reversed(list(enumerate(FREQ_MULTIPLIER))):
+    for i, step in list(enumerate(FREQ_MULTIPLIER)):
         if freq % step == 0:
             return freq / step, i
     raise ValueError("%d cannot be factored by multiplier table." % freq)
