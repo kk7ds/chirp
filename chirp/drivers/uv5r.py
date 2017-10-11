@@ -728,6 +728,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     _ranges_aux = [
                    (0x1EC0, 0x2000),
                   ]
+    _valid_chars = UV5R_CHARSET
 
     @classmethod
     def get_prompts(cls):
@@ -764,7 +765,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_name_length = 7
-        rf.valid_characters = UV5R_CHARSET
+        rf.valid_characters = self._valid_chars
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
@@ -1777,6 +1778,7 @@ class BaofengUV82Radio(BaofengUV5R):
     _idents = [UV5R_MODEL_UV82]
     _vhf_range = (130000000, 176000000)
     _uhf_range = (400000000, 521000000)
+    _valid_chars = chirp_common.CHARSET_ASCII
 
     def _is_orig(self):
         # Override this for UV82 to always return False
