@@ -252,7 +252,8 @@ class Platform:
             "/usr/local/share",
             "/usr/share",
         ]
-        pkgshare_candidates = [os.path.join(i, "chirp") for i in share_candidates]
+        pkgshare_candidates = [os.path.join(i, "chirp")
+                               for i in share_candidates]
         search_paths = [execpath] + pkgshare_candidates + share_candidates
         for path in search_paths:
             candidate = os.path.join(path, filename)
