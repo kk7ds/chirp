@@ -134,6 +134,12 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         return (repr(self._memobj.memory[number]) +
                 repr(self._memobj.flags[number]))
 
+    def validate_memory(self, mem):
+        if mem.freq < 30000000 and mem.mode != 'AM':
+            return [chirp_common.ValidationError(
+                'Only AM is allowed below 30MHz')]
+        return icf.IcomCloneModeRadio.validate_memory(self, mem)
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _flag = self._memobj.flags[number]
