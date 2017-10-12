@@ -125,7 +125,7 @@ def default_build():
         name="chirp",
         packages=["chirp", "chirp.drivers", "chirp.ui"],
         version=CHIRP_VERSION,
-        scripts=["chirpw"],
+        scripts=["chirpw", "rpttool"],
         data_files=[('share/applications', desktop_files),
                     ('share/chirp/images', image_files),
                     ('share/chirp', xsd_files),
@@ -134,18 +134,6 @@ def default_build():
                     ('share/man/man1', ["share/chirpw.1"]),
                     ('share/chirp/stock_configs', stock_configs),
                     ] + locale_files)
-
-
-def rpttool_build():
-    from distutils.core import setup
-
-    setup(name="rpttool",
-          packages=["chirp"],
-          version="0.3",
-          scripts=["rpttool"],
-          description="A frequency tool for ICOM D-STAR Repeaters",
-          data_files=[('/usr/sbin', ["tools/icomsio.sh"])],
-          )
 
 
 def nuke_manifest(*files):
@@ -167,14 +155,4 @@ if sys.platform == "darwin":
 elif sys.platform == "win32":
     win32_build()
 else:
-    if os.path.exists("rpttool"):
-        nuke_manifest("include tools/icomsio.sh", "include README.rpttool")
-        rpttool_build()
-    if os.path.exists("chirp/ui"):
-        nuke_manifest("include *.xsd",
-                      "include share/*.desktop",
-                      "include share/chirp.png",
-                      "include share/*.1",
-                      "include stock_configs/*",
-                      "include COPYING")
-        default_build()
+    default_build()
