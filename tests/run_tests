@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
 import traceback
 import sys
 import os
@@ -308,12 +309,11 @@ class TestCaseBruteForce(TestCase):
 
     def set_and_compare(self, m):
         msgs = self._wrapper.do("validate_memory", m)
+        print('%s Setting %s' % (msgs and 'X' or ' ', m))
         if msgs:
-
-            raise TestFailedError("Radio did not validate a valid memory",
-                                  os.linesep.join(["%s:%s" % (k, v) for k, v
-                                                   in m.__dict__.items()]) +
-                                  os.linesep + os.linesep.join(msgs))
+            # If the radio correctly refuses memories it can't
+            # store, don't fail
+            return
 
         self._wrapper.do("set_memory", m)
         ret_m = self._wrapper.do("get_memory", m.number)
@@ -427,29 +427,27 @@ class TestCaseBruteForce(TestCase):
 
         successes = 0
         for mode in rf.valid_modes:
+            tmp = copy.deepcopy(m)
             if mode not in chirp_common.MODES:
                 continue
             if mode == "DV":
-                _m = m
-                m = chirp_common.DVMemory()
-                m.number = _m.number
-                m.freq = _m.freq
-                ensure_urcall(m.dv_urcall)
-                ensure_rptcall(m.dv_rpt1call)
-                ensure_rptcall(m.dv_rpt2call)
-            if mode == "FM" and freq_is_ok(m.freq + 100000000):
+                tmp = chirp_common.DVMemory()
+                ensure_urcall(tmp.dv_urcall)
+                ensure_rptcall(tmp.dv_rpt1call)
+                ensure_rptcall(tmp.dv_rpt2call)
+            if mode == "FM" and freq_is_ok(tmp.freq + 100000000):
                 # Some radios don't support FM below approximately 30MHz,
                 # so jump up by 100MHz, if they support that
-                m.freq += 100000000
+                tmp.freq += 100000000
 
-            m.mode = mode
+            tmp.mode = mode
 
-            if rf.validate_memory(m):
+            if rf.validate_memory(tmp):
                 # A result (of error messages) from validate means the radio
                 # thinks this is invalid, so don't fail the test
                 continue
 
-            self.set_and_compare(m)
+            self.set_and_compare(tmp)
             successes += 1
 
         if (not successes) and rf.valid_modes:
@@ -474,12 +472,17 @@ class TestCaseBruteForce(TestCase):
                 m.mode = "AM"
             return m
 
-        self.do_tone(clean_mem(), rf)
-        self.do_dtcs(clean_mem(), rf)
-        self.do_cross(clean_mem(), rf)
-        self.do_duplex(clean_mem(), rf)
-        self.do_skip(clean_mem(), rf)
-        self.do_mode(clean_mem(), rf)
+        tests = [
+            self.do_tone,
+            self.do_dtcs,
+            self.do_cross,
+            self.do_duplex,
+            self.do_skip,
+            self.do_mode,
+        ]
+        for test in tests:
+            print('Running %s' % test)
+            test(clean_mem(), rf)
 
         if 12.5 in rf.valid_tuning_steps and \
                 "split" in rf.valid_duplexes:
