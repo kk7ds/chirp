@@ -310,7 +310,6 @@ class TestCaseBruteForce(TestCase):
 
     def set_and_compare(self, m):
         msgs = self._wrapper.do("validate_memory", m)
-        print('%s Setting %s' % (msgs and 'X' or ' ', m))
         if msgs:
             # If the radio correctly refuses memories it can't
             # store, don't fail
@@ -482,7 +481,6 @@ class TestCaseBruteForce(TestCase):
             self.do_mode,
         ]
         for test in tests:
-            print('Running %s' % test)
             test(clean_mem(), rf)
 
         if 12.5 in rf.valid_tuning_steps and \
