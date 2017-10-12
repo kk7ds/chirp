@@ -86,8 +86,9 @@ class Logger(object):
         # set CHIRP_DEBUG_LOG in the environment.
         console_stream = None
         console_format = '%(levelname)s: %(message)s'
-        if hasattr(sys, "frozen") or not os.isatty(0) \
-                or os.getenv("CHIRP_DEBUG_LOG"):
+        if 'CHIRP_TESTENV' not in os.environ and (
+                hasattr(sys, "frozen") or not os.isatty(0) or
+                os.getenv("CHIRP_DEBUG_LOG")):
             p = platform.get_platform()
             log = file(p.config_file("debug.log"), "w", 0)
             sys.stdout = log

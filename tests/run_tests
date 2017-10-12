@@ -33,6 +33,7 @@ if scriptdir:
 
 sys.path.insert(0, "../")
 
+os.environ['CHIRP_TESTENV'] = 'sigh'
 import logging
 from chirp import logger
 
