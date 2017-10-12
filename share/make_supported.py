@@ -88,7 +88,16 @@ def header_row():
     return row
 
 
-print """
+dest = sys.stdout
+if len(sys.argv) > 1:
+    dest = open(sys.argv[1], 'w')
+
+
+def output(string):
+    dest.write(string + '\n')
+
+
+output("""
 <style>
 td {
   white-space: nowrap;
@@ -115,7 +124,7 @@ span.false {
 }
 </style>
 <table>
-"""
+""")
 
 models = {"Icom": [],
           "Kenwood": [],
@@ -136,13 +145,13 @@ for radio in directory.DRV_TO_RADIO.values():
 
 count = 0
 for vendor, radios in sorted(models.items(), key=lambda t: t[0]):
-    print header_row()
+    output(header_row())
     for radio in sorted(radios, key=lambda r: r.VENDOR+r.MODEL):
         _radio = radio(None)
         if _radio.get_features().has_sub_devices:
             for __radio in _radio.get_sub_devices():
-                print supported_row(__radio, count % 2)
+                output(supported_row(__radio, count % 2))
                 count += 1
         else:
-            print supported_row(_radio, count % 2)
+            output(supported_row(_radio, count % 2))
             count += 1
