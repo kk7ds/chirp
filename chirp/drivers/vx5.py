@@ -19,6 +19,40 @@ from chirp import chirp_common, directory, errors, bitwise
 from textwrap import dedent
 
 MEM_FORMAT = """
+struct mem_struct {
+  u8 unknown1:2,
+     half_deviation:1,
+     cpu_shift:1,
+     unknown2:1,
+     sp_rx1:1,
+     unknown3:1,
+     sp_rx2:1;
+  u8 unknown4:4,
+     tuning_step:4;
+  bbcd freq[3];
+  u8 icon:6,
+     mode:2;
+  char name[8];
+  bbcd offset[3];
+  u8 tmode:4,
+     power:2,
+     duplex:2;
+  u8 unknown5:2,
+     tone:6;
+  u8 unknown6:1,
+     dtcs:7;
+  u8 unknown7;
+  u8 unknown8;
+};
+
+struct flag_struct {
+  u8 zeros:4,
+     pskip:1,
+     skip:1,
+     visible:1,
+     used:1;
+};
+
 #seekto 0x002A;
 struct {
   u8 current_member;
@@ -33,36 +67,12 @@ struct {
 } bank_groups[5];
 
 #seekto 0x012A;
-struct {
-  u8 zeros:4,
-     pskip: 1,
-     skip: 1,
-     visible: 1,
-     used: 1;
-} flag[220];
+struct flag_struct flag[220];
+struct flag_struct specialflag[20];
 
-#seekto 0x0269;
-struct {
-  u8 unknown1;
-  u8 unknown2:2,
-     half_deviation:1,
-     unknown3:5;
-  u8 unknown4:4,
-     tuning_step:4;
-  bbcd freq[3];
-  u8 icon:6,
-     mode:2;
-  char name[8];
-  bbcd offset[3];
-  u8 tmode:4,
-     power:2,
-     duplex:2;
-  u8 unknown7:2,
-     tone:6;
-  u8 unknown8:1,
-     dtcs:7;
-  u8 unknown9;
-} memory[220];
+#seekto 0x026A;
+struct mem_struct memory[220];
+struct mem_struct special[50];
 
 #seekto 0x1D03;
 u8 current_bank;
@@ -76,6 +86,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
+SPECIALS = ["%s%d" % (c, i + 1) for i in range(0, 10) for c in ('L', 'U')]
 
 
 class VX5BankModel(chirp_common.BankModel):
@@ -183,6 +194,8 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_name_length = 8
         rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_special_chans = SPECIALS
+
         return rf
 
     def process_mmap(self):
@@ -192,11 +205,25 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         return repr(self._memobj.memory[number-1])
 
     def get_memory(self, number):
-        _mem = self._memobj.memory[number-1]
-        _flg = self._memobj.flag[number-1]
-
         mem = chirp_common.Memory()
-        mem.number = number
+        if isinstance(number, str):
+            mem.number = len(self._memobj.memory) + SPECIALS.index(number) + 1
+            mem.extd_number = number
+            _mem = self._memobj.special[mem.number -
+                                        len(self._memobj.memory) - 1]
+            _flg = self._memobj.specialflag[mem.number -
+                                            len(self._memobj.memory) - 1]
+        elif number > len(self._memobj.memory):
+            mem.number = number
+            mem.extd_number = SPECIALS[number - len(self._memobj.memory) - 1]
+            _mem = self._memobj.special[mem.number -
+                                        len(self._memobj.memory) - 1]
+            _flg = self._memobj.specialflag[mem.number -
+                                            len(self._memobj.memory) - 1]
+        else:
+            mem.number = number
+            _mem = self._memobj.memory[mem.number - 1]
+            _flg = self._memobj.flag[mem.number - 1]
 
         if not _flg.visible:
             mem.empty = True
@@ -224,20 +251,31 @@ class VX5Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number-1]
-        _flg = self._memobj.flag[mem.number-1]
+        if mem.number > len(self._memobj.memory):
+            _mem = self._memobj.special[mem.number -
+                                        len(self._memobj.memory) - 1]
+            _flg = self._memobj.specialflag[mem.number -
+                                            len(self._memobj.memory) - 1]
+        else:
+            _mem = self._memobj.memory[mem.number - 1]
+            _flg = self._memobj.flag[mem.number - 1]
 
         # initialize new channel to safe defaults
         if not mem.empty and not _flg.used:
             _flg.used = True
             _mem.unknown1 = 0x00
-            _mem.unknown2 = 0x00
-            _mem.unknown3 = 0x00
-            _mem.unknown4 = 0x00
-            _mem.icon = 12  # file cabinet icon
+            _mem.unknown2 = 0x0
+            _mem.unknown3 = 0x0
+            _mem.unknown4 = 0x0000
+            _mem.unknown5 = 0x0
+            _mem.unknown6 = 0x0
             _mem.unknown7 = 0x00
             _mem.unknown8 = 0x00
-            _mem.unknown9 = 0x00
+            _mem.cpu_shift = 0x0
+            _mem.sp_rx1 = 0x0
+            _mem.sp_rx2 = 0x0
+
+            _mem.icon = 12  # file cabinet icon
 
         if mem.empty and _flg.used and not _flg.visible:
             _flg.used = False
