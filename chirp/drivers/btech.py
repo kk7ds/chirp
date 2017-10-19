@@ -927,6 +927,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             _names.set_raw("\xFF" * 16)
             return
 
+        if mem_was_empty:
+            # Zero the whole memory if we're making it unempty for
+            # the first time
+            LOG.debug('Zeroing new memory')
+            _mem.set_raw('\x00' * 16)
+
         # frequency
         _mem.rxfreq = mem.freq / 10
 
@@ -973,10 +979,25 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         _mem.unknown5 = 0
         _mem.unknown6 = 0
 
+        def _zero_settings():
+            _mem.spmute = 0
+            _mem.optsig = 0
+            _mem.scramble = 0
+            _mem.bcl = 0
+            _mem.pttid = 0
+            _mem.scode = 0
+
+        if self.COLOR_LCD and _mem.scramble:
+            LOG.info('Resetting scramble bit for BTECH COLOR_LCD variant')
+            _mem.scramble = 0
+
         # extra settings
         if len(mem.extra) > 0:
             # there are setting, parse
             LOG.debug("Extra-Setting supplied. Setting them.")
+            # Zero them all first so any not provided by model don't
+            # stay set
+            _zero_settings()
             for setting in mem.extra:
                 setattr(_mem, setting.get_name(), setting.value)
         else:
@@ -986,14 +1007,9 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 LOG.debug("New mem is NOT empty")
                 # set extra-settings to default ONLY when apreviously empty or
                 # deleted memory was edited to prevent errors such as #4121
-                if mem_was_empty :
+                if mem_was_empty:
                     LOG.debug("old mem was empty. Setting default for extras.")
-                    _mem.spmute = 0
-                    _mem.optsig = 0
-                    _mem.scramble = 0
-                    _mem.bcl = 0
-                    _mem.pttid = 0
-                    _mem.scode = 0
+                    _zero_settings()
 
         return mem
 
