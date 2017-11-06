@@ -213,6 +213,7 @@ KT8900R_id = "280528"
 
 # KT7900D (quad band)
 KT7900D_fp = "VC4004"
+KT7900D_fp1 = "VC4284"
 
 # QB25 (quad band) - a clone of KT7900D
 QB25_fp = "QB-25"
@@ -3681,7 +3682,7 @@ class KT7900D(BTechColor):
     _uhf_range = (400000000, 481000000)
     _350_range = (350000000, 371000000)
     _magic = MSTRING_KT8900D
-    _fileid = [KT7900D_fp, QB25_fp, ]
+    _fileid = [KT7900D_fp, KT7900D_fp1, QB25_fp, ]
     # Clones
     ALIASES = [SKT8900D, QB25, ]
 
