@@ -961,15 +961,19 @@ class MemoryEditor(common.Editor):
 
         default_col_order = [x for x, y, z in self.cols if z]
         try:
-            col_order = self._config.get("column_order_%s" %
-                                         self.__class__.__name__).split(",")
-            if len(col_order) != len(default_col_order):
-                raise Exception()
-            for i in col_order:
-                if i not in default_col_order:
+            config_setting = self._config.get("column_order_%s" %
+                                              self.__class__.__name__)
+            if config_setting is None:
+                col_order = default_col_order
+            else:
+                col_order = config_setting.split(",")
+                if len(col_order) != len(default_col_order):
                     raise Exception()
+                for i in col_order:
+                    if i not in default_col_order:
+                        raise Exception()
         except Exception, e:
-            LOG.error(e)
+            LOG.error("column order setting: %s", e)
             col_order = default_col_order
 
         non_editable = [_("Loc")]
