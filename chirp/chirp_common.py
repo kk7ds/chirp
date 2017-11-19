@@ -321,7 +321,7 @@ class Memory:
                   "rToneFreq", "cToneFreq", "DtcsCode",
                   "DtcsPolarity", "Mode", "TStep",
                   "Skip", "Comment",
-                  "URCALL", "RPT1CALL", "RPT2CALL"]
+                  "URCALL", "RPT1CALL", "RPT2CALL", "DVCODE"]
 
     def __setattr__(self, name, val):
         if not hasattr(self, name):

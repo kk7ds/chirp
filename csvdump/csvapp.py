@@ -119,7 +119,9 @@ class CsvDumpApp:
 
         print >>f, chirp.chirp_common.Memory.CSV_FORMAT
         for m in self.radio.get_memories():
-            print >>f, m.to_csv()
+            csv = m.to_csv()
+            assert len(csv) == len(chirp.chirp_common.Memory.CSV_FORMAT)
+            print >>f, csv
             count += 1
         f.close()
 
@@ -145,7 +147,9 @@ class CsvDumpApp:
 
             try:
                 m = self.radio.get_memory(i)
-                print >>f, m.to_csv()
+                csv = m.to_csv()
+                assert len(csv) == len(chirp.chirp_common.Memory.CSV_FORMAT)
+                print >>f, csv
             except chirp.errors.InvalidMemoryLocation:
                 pass
 
