@@ -179,7 +179,7 @@ class MemoryEditor(common.Editor):
         try:
             new = chirp_common.parse_freq(new)
         except ValueError, e:
-            LOG.error(e)
+            LOG.error("chirp_common.parse_freq error: %s", e)
             new = None
 
         if not self._features.has_nostep_tuning:
@@ -969,7 +969,7 @@ class MemoryEditor(common.Editor):
                 if i not in default_col_order:
                     raise Exception()
         except Exception, e:
-            LOG.error(e)
+            LOG.error("column order setting: %s", e)
             col_order = default_col_order
 
         non_editable = [_("Loc")]

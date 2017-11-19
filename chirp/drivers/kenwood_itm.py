@@ -129,7 +129,7 @@ class ITMRadio(generic_csv.CSVRadio):
 
         if not good:
             for e in errors:
-                LOG.error(e)
+                LOG.error("kenwood_itm: %s", e)
             raise errors.InvalidDataError("No channels found")
 
     @classmethod

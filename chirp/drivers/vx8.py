@@ -1398,7 +1398,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
                     try:
                         element.run_apply_callback()
                     except NotImplementedError as e:
-                        LOG.error(e)
+                        LOG.error("vx8.set_settings: %s", e)
                     continue
 
                 # Find the object containing setting.

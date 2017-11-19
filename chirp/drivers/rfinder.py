@@ -262,7 +262,7 @@ class RFinderParser:
                 import traceback
                 LOG.error(traceback.format_exc())
                 LOG.error("Error in received data, cannot continue")
-                LOG.error(e)
+                LOG.error("rfinder.parse_data: %s", e)
                 LOG.error(self.__cheat)
                 LOG.error(line)
 

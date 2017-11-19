@@ -558,7 +558,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
                     try:
                         element.run_apply_callback()
                     except NotImplementedError as e:
-                        LOG.error(e)
+                        LOG.error("thd72: %s", e)
                     continue
 
                 # Find the object containing setting.

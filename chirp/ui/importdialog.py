@@ -266,7 +266,7 @@ class ImportDialog(gtk.Dialog):
                                                "name":    name,
                                                "comment": comm})
             except import_logic.ImportError, e:
-                LOG.error(e)
+                LOG.error("Import error: %s", e)
                 error_messages[new] = str(e)
                 continue
 

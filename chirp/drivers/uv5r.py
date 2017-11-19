@@ -514,7 +514,7 @@ def _ident_radio(radio):
             data = _do_ident(radio, magic)
             return data
         except errors.RadioError, e:
-            LOG.error(e)
+            LOG.error("uv5r._ident_radio: %s", e)
             error = e
             time.sleep(2)
 

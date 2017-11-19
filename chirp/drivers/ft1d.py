@@ -1844,7 +1844,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     try:
                         element.run_apply_callback()
                     except NotImplementedError as e:
-                        LOG.error(e)
+                        LOG.error("ft1d.set_settings: %s", e)
                     continue
 
                 # Find the object containing setting.
