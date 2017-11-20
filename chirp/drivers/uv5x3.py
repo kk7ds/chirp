@@ -116,6 +116,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
     _ranges = [(0x0000, 0x0DF0),
                (0x0E00, 0x1800),
                (0x1EE0, 0x1EF0),
+               (0x1F60, 0x1F70),
                (0x1F80, 0x1F90),
                (0x1FA0, 0x1FB0),
                (0x1FE0, 0x2000)]
@@ -357,11 +358,14 @@ class UV5X3(baofeng_common.BaofengCommonHT):
       u8 sql9;
     };
     
-    #seekto 0x1F80;
+    #seekto 0x1F60;
     struct {
       struct squelch vhf;
       u8 unknown0[6];
       u8 unknown1[16];
+      struct squelch vhf2;
+      u8 unknown2[6];
+      u8 unknown3[16];
       struct squelch uhf;
     } squelch;
 
@@ -1174,18 +1178,23 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         dtmfd.append(rs)
 
         # Service settings
-        for band in ["vhf", "uhf"]:
+        for band in ["vhf", "vhf2", "uhf"]:
             for index in range(0, 10):
                 key = "squelch.%s.sql%i" % (band, index)
                 if band == "vhf":
                     _obj = self._memobj.squelch.vhf
+                    _name = "VHF"
+                elif band == "vhf2":
+                    _obj = self._memobj.squelch.vhf2
+                    _name = "220"
                 elif band == "uhf":
                     _obj = self._memobj.squelch.uhf
+                    _name = "UHF"
                 val = RadioSettingValueInteger(0, 123,
                           getattr(_obj, "sql%i" % (index)))
                 if index == 0:
                     val.set_mutable(False)
-                name = "%s Squelch %i" % (band.upper(), index)
+                name = "%s Squelch %i" % (_name, index)
                 rs = RadioSetting(key, name, val)
                 service.append(rs)
 
