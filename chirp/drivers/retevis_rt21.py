@@ -232,6 +232,13 @@ def do_upload(radio):
     _rt21_exit_programming_mode(radio)
 
 
+def model_match(cls, data):
+    """Match the opened/downloaded image to the correct version"""
+    rid = data[0x01B8:0x01BE]
+
+    return rid.startswith("P3207")
+
+
 @directory.register
 class RT21Radio(chirp_common.CloneModeRadio):
     """RETEVIS RT21"""
@@ -556,3 +563,21 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
+                    
+    @classmethod
+    def match_model(cls, filedata, filename):
+        match_size = False
+        match_model = False
+
+        # testing the file data size
+        if len(filedata) in [0x0400, ]:
+            match_size = True
+
+        # testing the model fingerprint
+        match_model = model_match(cls, filedata)
+
+        if match_size and match_model:
+            return True
+        else:
+            return False
+
