@@ -530,7 +530,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             "DTCS->DTCS"]
         rf.valid_skips = SKIP_VALUES
         rf.valid_dtcs_codes = DTCS
-        rf.memory_bounds = (0, self._upper)
+        rf.memory_bounds = (1, self._upper)
 
         # normal dual bands
         rf.valid_bands = [self._vhf_range, self._uhf_range]
@@ -830,7 +830,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # callbacks for the FM VFO
         def apply_fm_freq(setting, obj):
             setattr(obj, setting.get_name(),
-                (float(str(setting.value)) - 65) * 10)
+                int(setting.get_value() * 10) - 650)
 
         _fm_vfo = int(_settings.fm_vfo) * 0.1 + 65
         rs = RadioSetting("fm_vfo", "FM Station",
