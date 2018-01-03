@@ -830,7 +830,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # callbacks for the FM VFO
         def apply_fm_freq(setting, obj):
             setattr(obj, setting.get_name(),
-                int(setting.get_value() * 10) - 650)
+                int(setting.value.get_value() * 10) - 650)
 
         _fm_vfo = int(_settings.fm_vfo) * 0.1 + 65
         rs = RadioSetting("fm_vfo", "FM Station",
