@@ -605,7 +605,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         return data
 
     def get_payload(self, data, checksum):
-        """Returns the data with optional checksum BCD-encoded for the radio."""
+        """Returns the data with optional checksum BCD-encoded for the radio"""
         payload = ""
         for byte in data:
             payload += "%02X" % ord(byte)
