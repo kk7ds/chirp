@@ -6,6 +6,12 @@ dist
 build/bdist
 tools/cpep8.venv/
 tests/logs/
+logs/
 ignored/
 patch_queue/
 archived_builds/
+.tox/
+.*\.mo$
+.*\.pot$
+locale/.files
+MANIFEST
