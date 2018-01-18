@@ -34,8 +34,8 @@ struct {
        rtone:6;
   u8   unknown7:2,
        ctone:6;
+  u8   unknown8;
   u8   dtcs;
-  u8   dtcs1;
   u8   tmode:4,
        duplex:2,
        dtcs_polarity:2;
