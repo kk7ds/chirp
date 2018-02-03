@@ -137,7 +137,7 @@ class RadioStream:
 
 def get_model_data(radio, mdata="\x00\x00\x00\x00"):
     """Query the @radio for its model data"""
-    send_clone_frame(radio, 0xe0, mdata)
+    send_clone_frame(radio, 0xe0, mdata, raw=True)
 
     stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
@@ -165,9 +165,9 @@ def get_clone_resp(pipe, length=None):
     return resp
 
 
-def send_clone_frame(radio, cmd, data, checksum=False):
+def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
     """Send a clone frame with @cmd and @data to the @radio"""
-    payload = radio.get_payload(data, checksum)
+    payload = radio.get_payload(data, raw, checksum)
 
     frame = "\xfe\xfe\xee\xef%s%s\xfd" % (chr(cmd), payload)
 
@@ -243,7 +243,7 @@ def _clone_from_radio(radio):
     if radio.is_hispeed():
         start_hispeed_clone(radio, CMD_CLONE_OUT)
     else:
-        send_clone_frame(radio, CMD_CLONE_OUT, radio.get_model())
+        send_clone_frame(radio, CMD_CLONE_OUT, radio.get_model(), raw=True)
 
     LOG.debug("Sent clone frame")
 
@@ -313,6 +313,7 @@ def send_mem_chunk(radio, start, stop, bs=32):
         send_clone_frame(radio,
                          CMD_CLONE_DAT,
                          chunk,
+                         raw=False,
                          checksum=True)
 
         if radio.status_fn:
@@ -343,7 +344,7 @@ def _clone_to_radio(radio):
     if radio.is_hispeed():
         start_hispeed_clone(radio, CMD_CLONE_IN)
     else:
-        send_clone_frame(radio, CMD_CLONE_IN, radio.get_model())
+        send_clone_frame(radio, CMD_CLONE_IN, radio.get_model(), raw=True)
 
     frames = []
 
@@ -352,7 +353,7 @@ def _clone_to_radio(radio):
             break
         frames += stream.get_frames()
 
-    send_clone_frame(radio, CMD_CLONE_END, radio.get_endframe())
+    send_clone_frame(radio, CMD_CLONE_END, radio.get_endframe(), raw=True)
 
     if SAVE_PIPE:
         SAVE_PIPE.close()
@@ -604,8 +605,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
         return data
 
-    def get_payload(self, data, checksum):
+    def get_payload(self, data, raw, checksum):
         """Returns the data with optional checksum BCD-encoded for the radio"""
+        if raw:
+            return data
         payload = ""
         for byte in data:
             payload += "%02X" % ord(byte)
@@ -685,7 +688,7 @@ class IcomRawCloneModeRadio(IcomCloneModeRadio):
         """Payloads from a raw-clone-mode radio are already in raw format."""
         return unescape_raw_bytes(payload)
 
-    def get_payload(self, data, checksum):
+    def get_payload(self, data, raw, checksum):
         """Returns the data with optional checksum in raw format."""
         if checksum:
             cs = chr(compute_checksum(data))
