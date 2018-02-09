@@ -185,6 +185,13 @@ def _download(radio):
 
     if radio_ident == "\xFF" * 16:
         ident += radio.MODEL.ljust(8)
+    elif radio.MODEL in ("GMRS-V1", "MURS-V1"):
+        # check if radio_ident is OK
+        if not radio_ident[:7] in radio._fileid:
+            msg = "Incorrect model ID, got this:\n\n"
+            msg += util.hexprint(radio_ident)
+            LOG.debug(msg)
+            raise errors.RadioError("Incorrect 'Model' selected.")
 
     # UI progress
     status = chirp_common.Status()
@@ -241,6 +248,14 @@ def _upload(radio):
     image_ident = _get_image_firmware_version(radio)
     LOG.info("Image firmware version:")
     LOG.debug(util.hexprint(image_ident))
+
+    if radio.MODEL in ("GMRS-V1", "MURS-V1"):
+        # check if radio_ident is OK
+        if radio_ident != image_ident:
+            msg = "Incorrect model ID, got this:\n\n"
+            msg += util.hexprint(radio_ident)
+            LOG.debug(msg)
+            raise errors.RadioError("Image not supported by radio")
 
     if radio_ident != "0xFF" * 16 and image_ident == radio_ident:
         _ranges = radio._ranges
@@ -319,7 +334,9 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         """Upload to radio"""
         try:
             _upload(self)
-        except:
+        except errors.RadioError:
+            raise
+        except Exception, e:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')
