@@ -503,7 +503,6 @@ class TestCaseEdges(TestCase):
 
     def _mem(self, rf):
         m = chirp_common.Memory()
-        m.number = rf.memory_bounds[0]
         m.freq = rf.valid_bands[0][0] + 1000000
         if m.freq < 30000000 and "AM" in rf.valid_modes:
             m.mode = "AM"
@@ -512,7 +511,13 @@ class TestCaseEdges(TestCase):
                 m.mode = rf.valid_modes[0]
             except IndexError:
                 pass
-        return m
+
+        for i in range(*rf.memory_bounds):
+            m.number = i
+            if not self._wrapper.do("validate_memory", m):
+                return m
+
+        raise TestSkippedError("No mutable memory locations found")
 
     def do_longname(self, rf):
         m = self._mem(rf)
@@ -526,7 +531,6 @@ class TestCaseEdges(TestCase):
 
     def do_badname(self, rf):
         m = self._mem(rf)
-        m.freq = rf.valid_bands[0][0] + 1000000
 
         ascii = "".join([chr(x) for x in range(ord(" "), ord("~")+1)])
         for i in range(0, len(ascii), 4):
@@ -542,6 +546,10 @@ class TestCaseEdges(TestCase):
         for low, high in rf.valid_bands:
             for freq in (low, high - int(min_step * 1000)):
                 m.freq = freq
+                if self._wrapper.do("validate_memory", m):
+                    # Radio doesn't like it, so skip
+                    continue
+
                 self._wrapper.do("set_memory", m)
                 n = self._wrapper.do("get_memory", m.number)
                 self.compare_mem(m, n)

@@ -458,19 +458,22 @@ class MURSV1(baofeng_common.BaofengCommonHT):
     def _set_nam(self, number):
         return self._memobj.names[number - 1]
 
+    def validate_memory(self, mem):
+        msgs = baofeng_common.BaofengCommonHT.validate_memory(self, mem)
+
+        if mem.freq != int(MURS_FREQS[mem.number - 1] * 1000000):
+            msgs.append(chirp_common.ValidationError(
+                'Memory location cannot change frequency'))
+
+        if mem.mode == "FM" and (mem.number - 1) not in FM_MODE:
+            msgs.append(chirp_common.ValidationError(
+                'Memory location only supports NFM'))
+
+        return msgs
+
     def set_memory(self, mem):
         _mem = self._set_mem(mem.number)
         _nam = self._set_nam(mem.number)
-
-        if mem.freq != int(MURS_FREQS[mem.number - 1] * 1000000):
-            msg = 'Memory location cannot change frequency'
-            raise errors.InvalidDataError(msg)
-            return MURSV1.set_memory(self, mem)
-
-        if mem.mode == "FM" and (mem.number - 1) not in FM_MODE:
-            msg = 'Memory location only supports NFM'
-            raise errors.InvalidDataError(msg)
-            return
 
         _namelength = self.get_features().valid_name_length
         for i in range(_namelength):
