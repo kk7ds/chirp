@@ -577,7 +577,7 @@ ul16 bank[50];
 ul16 special_bank[7];
 #seekto 0x1200;
 struct {
-    u8   unknown;
+    u8   empty;
     ul32 freq;
     u8   mode;
     u8   step;
@@ -587,9 +587,11 @@ struct {
     u8   tx_tone;
     u8   rx_tone;
     u8   dcs;
-#seek 3;
+    ul24 unknown1;
     u8   skip;
-#seek 12;
+    ul32 unknown2;
+    ul32 unknown3;
+    ul32 unknown4;
     char name[32];
 } memory[1000];
 """
@@ -740,14 +742,49 @@ class AlincoDJG7EG(AlincoStyleRadio):
                 status.msg = "Uploading to radio"
                 self.status_fn(status)
 
+    def _get_empty_flag(self, freq, mode):
+        # Returns flag used to hide a channel from the main band. This occurs
+        # when the mode is anything but NFM or FM (main band can only do those)
+        # or when the frequency is outside of the range supported by the main
+        # band.
+        if mode not in ("NFM", "FM"):
+            return 0x01
+        if     (freq >=  136000000 and freq <  174000000) or \
+               (freq >=  400000000 and freq <  470000000) or \
+               (freq >= 1240000000 and freq < 1300000000):
+            return 0x02
+        else:
+            return 0x01
+
+    def _check_channel_consistency(self, number):
+        _mem = self._memobj.memory[number]
+        if _mem.empty != 0x00:
+            if _mem.unknown1 == 0xffffff:
+                # Previous versions of this code have skipped the unknown
+                # fields. They contain bytes of value if the channel is empty and
+                # thus those bytes remain 0xff when the channel is put to use.
+                # The radio is totally fine with this but the Alinco programming
+                # software is not (see #5275). Here, we check for this and
+                # report if it is encountered.
+                LOG.warning("Channel %d is inconsistent: Found 0xff in non-empty channel. Touch channel to fix." % number)
+
+            if _mem.empty != self._get_empty_flag(_mem.freq, self.MODES[_mem.mode]):
+                LOG.warning("Channel %d is inconsistent: Found out of band frequency. Touch channel to fix." % number)
+
     def process_mmap(self):
         self._memobj = bitwise.parse(DJG7EG_MEM_FORMAT, self._mmap)
+        # We check all channels for corruption (see bug #5275) but we don't fix
+        # it automatically because it would be unpolite to modify something on a
+        # read operation. A log message is emitted though for the user to take
+        # actions.
+        for number in range(len(self._memobj.memory)):
+            self._check_channel_consistency(number)
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         mem = chirp_common.Memory()
         mem.number = number
-        if _mem.unknown == 0:
+        if _mem.empty == 0:
             mem.empty = True
         else:
             mem.freq = int(_mem.freq)
@@ -774,9 +811,10 @@ class AlincoDJG7EG(AlincoStyleRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number]
         if mem.empty:
-            _mem.unknown = 0x00  # Maybe 0 is empty, 2 is used?
+            _mem.set_raw("\xff" * (_mem.size()/8))
+            _mem.empty = 0x00
         else:
-            _mem.unknown = 0x02
+            _mem.empty = self._get_empty_flag(mem.freq, mem.mode)
             _mem.freq = mem.freq
             _mem.mode = self.MODES.index(mem.mode)
             _mem.step = self.STEPS.index(mem.tuning_step)
@@ -819,3 +857,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
             _mem.dcs = DCS_CODES[self.VENDOR].index(mem.dtcs)
             _mem.skip = (mem.skip == "S")
             _mem.name = "\x00".join(mem.name).ljust(32, "\x00")
+            _mem.unknown1 = 0x3e001c
+            _mem.unknown2 = 0x0000000a
+            _mem.unknown3 = 0x00000000
+            _mem.unknown4 = 0x00000000
