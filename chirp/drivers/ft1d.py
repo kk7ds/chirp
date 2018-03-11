@@ -624,6 +624,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _BACKTRACK_STATUS = ("Valid", "Invalid")
     _NS_HEMI = ("N", "S")
     _WE_HEMI = ("W", "E")
+    _APRS_HIGH_SPEED_MAX = 70
 
     @classmethod
     def get_prompts(cls):
@@ -1350,7 +1351,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             prof = aprs.smartbeaconing_profile[profile]
 
             low_val = RadioSettingValueInteger(2, 30, prof.low_speed_mph)
-            high_val = RadioSettingValueInteger(3, 70, prof.high_speed_mph)
+            high_val = RadioSettingValueInteger(3, self._APRS_HIGH_SPEED_MAX, \
+                    prof.high_speed_mph)
             low_val.get_max = lambda: min(30, int(high_val.get_value()) - 1)
 
             rs = RadioSetting("%s.low_speed_mph" % path,
@@ -1470,6 +1472,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                           val)
         menu.append(rs)
 
+        rs = self._decode_opening_message(opening_message)
+        menu.append(rs)
+
+        return menu
+
+    def _decode_opening_message(self, opening_message):
         msg = ""
         for i in opening_message.message.padded_yaesu:
             if i == 0xFF:
@@ -1480,9 +1488,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                           "Opening Message", val)
         rs.set_apply_callback(self.apply_ff_padded_yaesu,
                               opening_message.message)
-        menu.append(rs)
-
-        return menu
+        return rs
 
     def backtrack_ll_validate(self, number, min, max):
         if str(number).lstrip('0').strip().isdigit() and \

@@ -20,7 +20,8 @@ from textwrap import dedent
 
 from chirp.drivers import yaesu_clone, ft1d
 from chirp import chirp_common, directory, bitwise
-from chirp.settings import RadioSettings
+from chirp.settings import RadioSetting, RadioSettings
+from chirp.settings import RadioSettingValueString
 
 # Differences from Yaesu FT1D
 #  999 memories, but 901-999 are only for skipping VFO frequencies
@@ -75,6 +76,7 @@ class FT2D(ft1d.FT1Radio):
                    0x1064A,        # APRS beacon content address.
                    134,            # Length of beacon data stored.
                    60)             # Number of beacons stored.
+    _APRS_HIGH_SPEED_MAX = 90
 
     @classmethod
     def get_prompts(cls):
@@ -126,3 +128,30 @@ class FT2D(ft1d.FT1Radio):
             flag.skip = True
             mem.skip = "S"
         super(FT2D, self).set_memory(mem)
+
+    def _decode_opening_message(self, opening_message):
+        msg = ""
+        for i in opening_message.message.padded_yaesu:
+            if i == 0xFF:
+                break
+            msg += chr(int(i))
+        val = RadioSettingValueString(0, 16, msg)
+        rs = RadioSetting("opening_message.message.padded_yaesu",
+                          "Opening Message", val)
+        rs.set_apply_callback(self._apply_opening_message,
+                              opening_message.message.padded_yaesu)
+        return rs
+
+    def _apply_opening_message(self, setting, obj):
+        data = self._add_ff_pad(setting.value.get_value().rstrip(), 16)
+        val = []
+        for i in data:
+            val.append(ord(i))
+        self._memobj.opening_message.message.padded_yaesu = val
+
+@directory.register
+class FT2Dv2(FT2D):
+    """Yaesu FT-2D v2 firwmare"""
+    VARIANT = "Rv2"
+
+    _model = "AH60G"
