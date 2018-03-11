@@ -40,6 +40,8 @@ MSTRING_GMRSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
 
 # BTECH GMRS-V1
 GMRSV1_fp1 = "US32411"
+GMRSV1_fp2 = "US32416"
+GMRSV1_fp3 = "US32418"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -69,6 +71,15 @@ LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
+GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+               462.6875, 462.7125]
+GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+               467.6875, 467.7125]
+GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+               462.6750, 462.7000, 462.7250]
+GMRS_FREQS_ORIG = GMRS_FREQS1 + GMRS_FREQS3 * 2
+GMRS_FREQS_2017 = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
+
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x1EF0:0x1EF7]
@@ -79,26 +90,14 @@ def model_match(cls, data):
     return False
 
 
-class MyRadioFeatures(chirp_common.RadioFeatures):
-    def validate_memory(self, mem):
-        # Run the normal validation
-        msgs = chirp_common.RadioFeatures.validate_memory(self, mem)
-
-        # Run my validation
-        if mem.number <= 6 and mem.mode != "NFM":
-            msgs.append(chirp_common.ValidationError(
-                        'Only NFM is supported on this channel'))
-
-        return msgs
-
-
 @directory.register
 class GMRSV1(baofeng_common.BaofengCommonHT):
     """BTech GMRS-V1"""
     VENDOR = "BTECH"
     MODEL = "GMRS-V1"
 
-    _fileid = [GMRSV1_fp1, ]
+    _fileid = [GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
+    _is_orig = [GMRSV1_fp2, GMRSV1_fp1, ]
 
     _magic = [MSTRING_GMRSV1, ]
     _magic_response_length = 8
@@ -132,7 +131,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
     def get_features(self):
         """Get the radio's features"""
 
-        rf = MyRadioFeatures()
+        rf = chirp_common.RadioFeatures()
         rf.has_settings = True
         rf.has_bank = False
         rf.has_tuning_step = False
@@ -148,7 +147,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         rf.valid_modes = self.MODES
         rf.valid_characters = self.VALID_CHARS
         rf.valid_name_length = self.LENGTH_NAME
-        rf.valid_duplexes = []
+        rf.valid_duplexes = ["", "-", "+"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = [
             "Tone->Tone",
@@ -402,6 +401,226 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
     def process_mmap(self):
         """Process the mem map into the mem object"""
         self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
+
+    def validate_memory(self, mem):
+        msgs = baofeng_common.BaofengCommonHT.validate_memory(self, mem)
+
+        _mem = self._memobj.memory[mem.number]
+        _msg_freq = 'Memory location cannot change frequency'
+        _msg_nfm = 'Memory location only supports NFM'
+        _msg_txp = 'Memory location only supports Low'
+
+        # Original GMRS-V1 models
+        if str(self._memobj.firmware_msg.line1) in self._is_orig:
+            # range of memories with values permanently set by FCC rules
+            if mem.number <= 22:
+                if mem.freq != int(GMRS_FREQS_ORIG[mem.number] * 1000000):
+                    # warn user can't change frequency
+                    msgs.append(chirp_common.ValidationError(_msg_freq))
+
+                if mem.number <= 6:
+                    if mem.mode == "FM":
+                        # warn user can't change mode
+                        msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+        # GMRS-V1 models supporting 2017 GMRS rules
+        else:
+            # range of memories with values permanently set by FCC rules
+            if mem.number >= 1 and mem.number <= 30:
+                if mem.freq != int(GMRS_FREQS_2017[mem.number - 1] * 1000000):
+                    # warn user can't change frequency
+                    msgs.append(chirp_common.ValidationError(_msg_freq))
+
+                if mem.number >= 8 and mem.number <= 14:
+                    if mem.mode == "FM":
+                        # warn user can't change mode
+                        msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+                    if str(mem.power) == "High":
+                        # warn user can't change power level
+                        msgs.append(chirp_common.ValidationError(_msg_txp))
+
+        return msgs
+
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number]
+        _nam = self._memobj.names[number]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+
+        if _mem.get_raw()[0] == "\xff":
+            mem.empty = True
+            return mem
+
+        mem.freq = int(_mem.rxfreq) * 10
+
+        # TX freq set
+        offset = (int(_mem.txfreq) * 10) - mem.freq
+        if offset != 0:
+            if offset > 0:
+                mem.offset = offset
+                mem.duplex = "+"
+        else:
+            mem.offset = 0
+
+        for char in _nam.name:
+            if str(char) == "\xFF":
+                char = " "  # The OEM software may have 0xFF mid-name
+            mem.name += str(char)
+        mem.name = mem.name.rstrip()
+
+        dtcs_pol = ["N", "N"]
+
+        if _mem.txtone in [0, 0xFFFF]:
+            txmode = ""
+        elif _mem.txtone >= 0x0258:
+            txmode = "Tone"
+            mem.rtone = int(_mem.txtone) / 10.0
+        elif _mem.txtone <= 0x0258:
+            txmode = "DTCS"
+            if _mem.txtone > 0x69:
+                index = _mem.txtone - 0x6A
+                dtcs_pol[0] = "R"
+            else:
+                index = _mem.txtone - 1
+            mem.dtcs = self.DTCS_CODES[index]
+        else:
+            LOG.warn("Bug: txtone is %04x" % _mem.txtone)
+
+        if _mem.rxtone in [0, 0xFFFF]:
+            rxmode = ""
+        elif _mem.rxtone >= 0x0258:
+            rxmode = "Tone"
+            mem.ctone = int(_mem.rxtone) / 10.0
+        elif _mem.rxtone <= 0x0258:
+            rxmode = "DTCS"
+            if _mem.rxtone >= 0x6A:
+                index = _mem.rxtone - 0x6A
+                dtcs_pol[1] = "R"
+            else:
+                index = _mem.rxtone - 1
+            mem.rx_dtcs = self.DTCS_CODES[index]
+        else:
+            LOG.warn("Bug: rxtone is %04x" % _mem.rxtone)
+
+        if txmode == "Tone" and not rxmode:
+            mem.tmode = "Tone"
+        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
+            mem.tmode = "TSQL"
+        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
+            mem.tmode = "DTCS"
+        elif rxmode or txmode:
+            mem.tmode = "Cross"
+            mem.cross_mode = "%s->%s" % (txmode, rxmode)
+
+        mem.dtcs_polarity = "".join(dtcs_pol)
+
+        if not _mem.scan:
+            mem.skip = "S"
+
+        levels = self.POWER_LEVELS
+        try:
+            mem.power = levels[_mem.lowpower]
+        except IndexError:
+            LOG.error("Radio reported invalid power level %s (in %s)" %
+                      (_mem.power, levels))
+            mem.power = levels[0]
+
+        mem.mode = _mem.wide and "FM" or "NFM"
+
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        rs = RadioSetting("bcl", "BCL",
+                          RadioSettingValueBoolean(_mem.bcl))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueList(self.PTTID_LIST,
+                                                self.PTTID_LIST[_mem.pttid]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("scode", "S-CODE",
+                          RadioSettingValueList(self.SCODE_LIST,
+                                                self.SCODE_LIST[_mem.scode]))
+        mem.extra.append(rs)
+
+        return mem
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number]
+        _nam = self._memobj.names[mem.number]
+
+        if mem.empty:
+            _mem.set_raw("\xff" * 16)
+            _nam.set_raw("\xff" * 16)
+            return
+
+        _mem.set_raw("\x00" * 16)
+
+        _mem.rxfreq = mem.freq / 10
+
+        if str(self._memobj.firmware_msg.line1) in self._is_orig:
+            if mem.number > 22:
+                _mem.txfreq = mem.freq / 10
+        else:
+            if mem.number < 1 or mem.number > 22:
+                _mem.txfreq = mem.freq / 10
+
+        _namelength = self.get_features().valid_name_length
+        for i in range(_namelength):
+            try:
+                _nam.name[i] = mem.name[i]
+            except IndexError:
+                _nam.name[i] = "\xFF"
+
+        rxmode = txmode = ""
+        if mem.tmode == "Tone":
+            _mem.txtone = int(mem.rtone * 10)
+            _mem.rxtone = 0
+        elif mem.tmode == "TSQL":
+            _mem.txtone = int(mem.ctone * 10)
+            _mem.rxtone = int(mem.ctone * 10)
+        elif mem.tmode == "DTCS":
+            rxmode = txmode = "DTCS"
+            _mem.txtone = self.DTCS_CODES.index(mem.dtcs) + 1
+            _mem.rxtone = self.DTCS_CODES.index(mem.dtcs) + 1
+        elif mem.tmode == "Cross":
+            txmode, rxmode = mem.cross_mode.split("->", 1)
+            if txmode == "Tone":
+                _mem.txtone = int(mem.rtone * 10)
+            elif txmode == "DTCS":
+                _mem.txtone = self.DTCS_CODES.index(mem.dtcs) + 1
+            else:
+                _mem.txtone = 0
+            if rxmode == "Tone":
+                _mem.rxtone = int(mem.ctone * 10)
+            elif rxmode == "DTCS":
+                _mem.rxtone = self.DTCS_CODES.index(mem.rx_dtcs) + 1
+            else:
+                _mem.rxtone = 0
+        else:
+            _mem.rxtone = 0
+            _mem.txtone = 0
+
+        if txmode == "DTCS" and mem.dtcs_polarity[0] == "R":
+            _mem.txtone += 0x69
+        if rxmode == "DTCS" and mem.dtcs_polarity[1] == "R":
+            _mem.rxtone += 0x69
+
+        _mem.scan = mem.skip != "S"
+        _mem.wide = mem.mode == "FM"
+
+        if mem.power:
+            _mem.lowpower = self.POWER_LEVELS.index(mem.power)
+        else:
+            _mem.lowpower = 0
+
+        # extra settings
+        if len(mem.extra) > 0:
+            # there are setting, parse
+            for setting in mem.extra:
+                setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
