@@ -1351,8 +1351,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             prof = aprs.smartbeaconing_profile[profile]
 
             low_val = RadioSettingValueInteger(2, 30, prof.low_speed_mph)
-            high_val = RadioSettingValueInteger(3, self._APRS_HIGH_SPEED_MAX, \
-                    prof.high_speed_mph)
+            high_val = RadioSettingValueInteger(3, self._APRS_HIGH_SPEED_MAX,
+                                                prof.high_speed_mph)
             low_val.get_max = lambda: min(30, int(high_val.get_value()) - 1)
 
             rs = RadioSetting("%s.low_speed_mph" % path,
