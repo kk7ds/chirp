@@ -62,6 +62,8 @@ MEM_SETTINGS_FORMAT = """
 // MYCALL and Opening Message errors if not 10 characters
 // Values greater than one sometimes stored as whole bytes, these need to be refactored into bit fields
 // to prevent accidental overwriting of adjacent values  
+// Bank Name length not checked on gui input - but first 6 characters are saved correctly. 
+// Extended characters entered as bank names on radio are corrupted in Chirp
 
 // Missing
 // 50 SCV.WTH Set the VFO scan frequency range. BAND / ALL - NOT FOUND
@@ -127,7 +129,7 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown2_1;
     u8 mic_gain;                        // 31 MCGAIN    Adjust the microphone gain level
     u8 unknown2_3;
-    u8 dw_interval;                     // 21 DW INT Set the priority memory channel monitoring interval during Dual Receive. 0.1S - 5.0S - 10.0S
+    u8 dw_interval;                     // 21 DW INT Set the priority memory ch mon int during Dual RX 0.1S-5.0S-10.0S
     u8 ptt_delay;                       // 42 PTT.DLY   Set the PTT delay time. OFF / 20 MS / 50 MS / 100 MS / 200 MS
     u8 rx_save;                         // 48 RX.SAVE   Set the battery save time. OFF / 0.2 S - 60.0 S    
     u8 scan_restart;                    // 53 SCN.STR   Set the scanning restart time.  0.1 S - 2.0 S - 10.0 S
@@ -136,7 +138,7 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown4[5];
     u8 tot;                             // 56 TOT       Set the transmission timeout timer 
     u8 unknown5[3];          // 26                                                
-    u8 vfo_mode:1,                      // 60 VFO.MOD   Set the frequency setting range in the VFO mode by DIAL knob. ALL / BAND
+    u8 vfo_mode:1,                      // 60 VFO.MOD   Set freq setting range in the VFO mode by DIAL knob. ALL / BAND
     unknown7:1,
     scan_lamp:1,                        // 51 SCN.LMP   Set the scan lamp ON or OFF when scanning stops On/Off
     unknown8:1,
@@ -160,7 +162,7 @@ MEM_SETTINGS_FORMAT = """
     password:1,                         // Placeholder location
     home_rev:1,                         // 26 HOME/REV   Select the function of the [HOME/REV] key.
     moni:1;                             // 32 Mon/T-Call Select the function of the [MONI/T-CALL] switch.
-    u8 gm_interval:4,       // 30       // 25 GM INT Set the transmission interval of digital GM information. OFF / NORMAL / LONG 
+    u8 gm_interval:4,       // 30       // 25 GM INT Set tx interval of digital GM information. OFF / NORMAL / LONG 
     unknown10:4;
     u8 unknown11;          
     u8 unknown12:1,
@@ -170,7 +172,7 @@ MEM_SETTINGS_FORMAT = """
     home_vfo:1,                         // 27 HOME->VFO  Turn transfer VFO to the Home channel ON or OFF.
     unknown12_6:1, 
     unknown12_7:1,
-    dw_rt:1;                // 32       // 23 DW RVT     Turn the "Priority Channel Revert" feature ON or OFF during Dual Receive.
+    dw_rt:1;                // 32       // 23 DW RVT Turn "Priority Channel Revert" feature ON or OFF during Dual Rx.
     u8 unknown33;
     u8 unknown34;
     u8 unknown35;
@@ -220,51 +222,7 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown[48];
     u8 unknown1[16];
     } vfo_backup_info_1;      
-       
-    #seekto 0x064a;         // Unknown (From FT1D) For reference only
-    struct {
-    u8 unknown0[4];
-    u8 frequency_band;
-    u8 unknown1:6,
-    manual_or_mr:2;
-    u8 unknown2:7,
-    mr_banks:1;
-    u8 unknown3;
-    u16 mr_index;
-    u16 bank_index;
-    u16 bank_enable;
-    u8 unknown4[5];
-    u8 unknown5:6,
-    power:2;                // 3 - High, 2 - Mid, 1 - Low
-    u8 unknown6:4,
-    tune_step:4;
-    u8 unknown7:6,
-    duplex:2;
-    u8 unknown8:6,
-    tone_mode:2;
-    u8 unknown9:2,
-    tone:6;
-    u8 unknown10;
-    u8 unknown11:6,
-    mode:2;
-    bbcd freq0[4];
-    bbcd offset_freq[4];
-    u8 unknown12[2];
-    char label[16];
-    u8 unknown13[6];
-    bbcd band_lower[4];
-    bbcd band_upper[4];
-    bbcd rx_freq[4];
-    u8 unknown14[22];
-    bbcd freq1[4];
-    u8 unknown15[11];
-    u8 unknown16:3,
-    volume:5;
-    u8 unknown17[18];
-    u8 active_menu_item;
-    u8 checksum;
-    } vfo_info[6];
-    
+   
     #seekto 0x047e;
     struct {
     u8 unknown1;
@@ -273,7 +231,7 @@ MEM_SETTINGS_FORMAT = """
     struct {
     char padded_string[6];              // 36 OPN.MSG   Select MSG then key vm to edit it
     } message;
-    } opening_message;                  // 36 OPN.MSG   Select the Opening Message when the transceiver is ON. OFF / MSG / DC    
+    } opening_message;                  // 36 OPN.MSG   Select the Opening Message when transceiver is ON. OFF/MSG/DC    
  
     #seekto 0x094a;                     // DTMF Memories
     struct {
@@ -318,7 +276,7 @@ MEM_SETTINGS_FORMAT = """
     standby_beep:1;                     // 07 BEP.STB   Standby Beep in the digital C4FM mode. On/Off
     u8 unknown3; 
     u8 unknown4:6,
-    gm_ring:2;                          // 24 GM RNG Select the beep option while receiving digital GM information. OFF / IN RNG /ALWAYS
+    gm_ring:2;                          // 24 GM RNG Select beep option while rx digital GM info. OFF/IN RNG/ALWAYS
     u8 unknown5;
     u8 rx_dg_id;                        // RX DG-ID     Long Press Mode Key, Mode Key to select, Dial
     u8 tx_dg_id;                        // TX DG-ID     Long Press Mode Key, Dial                  
@@ -456,48 +414,6 @@ class FT70BankModel(chirp_common.BankModel):
         _members = self._radio._memobj.bank_members[bank.index]
         return set([int(ch) + 1 for ch in _members.channel if ch != 0xFFFF])
 
-    def update_vfo(self):
-        chosen_bank = [None, None]
-        chosen_mr = [None, None]
-
-        flags = self._radio._memobj.flag
-
-        # Find a suitable bank and MR for VFO A and B.  # From FT1D for ref only
-        for bank in self.get_mappings():
-            for channel in self._channel_numbers_in_bank(bank):
-                chosen_bank[0] = bank.index
-                chosen_mr[0] = channel
-                if not flags[channel].nosubvfo:
-                    chosen_bank[1] = bank.index
-                    chosen_mr[1] = channel
-                    break
-            if chosen_bank[1]:
-                break
-
-        for vfo_index in (0, 1):        # From FT1D for ref only
-            # 3 VFO info structs are stored as 3 pairs of (master, backup)
-            vfo = self._radio._memobj.vfo_info[vfo_index * 2]
-            vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
-
-            if vfo.checksum != vfo_bak.checksum:
-                LOG.warn("VFO settings are inconsistent with backup")
-            else:
-                if ((chosen_bank[vfo_index] is None) and (vfo.bank_index !=
-                                                          0xFFFF)):
-                    LOG.info("Disabling banks for VFO %d" % vfo_index)
-                    vfo.bank_index = 0xFFFF
-                    vfo.mr_index = 0xFFFF
-                    vfo.bank_enable = 0xFFFF
-                elif ((chosen_bank[vfo_index] is not None) and
-                      (vfo.bank_index == 0xFFFF)):
-                    LOG.info("Enabling banks for VFO %d" % vfo_index)
-                    vfo.bank_index = chosen_bank[vfo_index]
-                    vfo.mr_index = chosen_mr[vfo_index]
-                    vfo.bank_enable = 0x0000
-                vfo_bak.bank_index = vfo.bank_index
-                vfo_bak.mr_index = vfo.mr_index
-                vfo_bak.bank_enable = vfo.bank_enable
-
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
         _members = self._radio._memobj.bank_members[bank.index]
         if len(channels_in_bank) > len(_members.channel):
@@ -518,8 +434,6 @@ class FT70BankModel(chirp_common.BankModel):
         _bank_used = self._radio._memobj.bank_used[bank.index]
         _bank_used.in_use = 0x06
 
-        self.update_vfo()
-
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._channel_numbers_in_bank(bank)
         try:
@@ -532,8 +446,6 @@ class FT70BankModel(chirp_common.BankModel):
         if not channels_in_bank:
             _bank_used = self._radio._memobj.bank_used[bank.index]
             _bank_used.in_use = 0xFFFF
-
-        self.update_vfo()
 
     def get_mapping_memories(self, bank):
         memories = []
@@ -704,16 +616,6 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.skip = flag.pskip and "P" or flag.skip and "S" or ""
         mem.name = self._decode_label(_mem)
 
-        mem.extra = RadioSettingGroup("extra", "Extra Settings")
-
-        rs = RadioSetting("display_tag", "Display Name/Frequency",
-                          RadioSettingValueBoolean(_mem.display_tag))
-        mem.extra.append(rs)
-
-        rs = RadioSetting("ams", "AMS",
-                          RadioSettingValueBoolean(_mem.ams))
-        mem.extra.append(rs)
-
         return mem
 
     def _decode_label(self, mem):
@@ -726,7 +628,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         # We only speak english here in chirpville
         return [0x00, 0x00]
 
-    def _decode_power_level(self, mem):             # 3 High 2 Mid 1 Low
+    def _decode_power_level(self, mem):  # 3 High 2 Mid 1 Low
         return POWER_LEVELS[3 - mem.power]
 
     def _encode_power_level(self, mem):
@@ -880,25 +782,6 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("opening_message.flag", "Opening Msg Mode", val)
         menu.append(rs)
 
-        val = RadioSettingValueString(0, 6, str(opening_message.message.padded_string).rstrip("\xFF"))
-        rs = RadioSetting("opening_message.message.padded_string", "Opening Message", val)
-        rs.set_apply_callback(self.apply_ff_padded_string, opening_message.message)
-        menu.append(rs)
-
-        # Indicates the current temperature inside the transceiver.
-        # Displays the internal temperature sensor F or C.
-        # Press the [V/M] key to toggle the measurement units between F or C.
-        # In this setting, press and hold the [F] key to return to normal operation.
-
-        # Only seems to change the radio display, back to C when radio powered off
-
-        # first_settings = self._memobj.first_settings
-        # val = RadioSettingValueList(
-        #    self._TEMP_CF,
-        #    self._TEMP_CF[first_settings.temp_cf])
-        # rs = RadioSetting("first_settings.temp_cf", "Temperature unit", val)
-        # menu.append(rs)
-
         return menu
 
     def _get_config_settings(self):
@@ -954,16 +837,6 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
             self._ON_OFF[scan_settings.busy_led])
         rs = RadioSetting("scan_settings.busy_led", "Busy LED", val)
         menu.append(rs)
-
-        # 40 Password   Turn the password function ON or OFF.
-
-        # val = RadioSettingValueList(
-        #    self._OFF_ON,
-        #    self._OFF_ON[scan_settings.password])
-        # rs = RadioSetting("scan_settings.password", "Password", val)
-        # menu.append(rs)
-
-        # 41 PSWDWT     Input the password.
 
         # 26 HOME/REV   Select the function of the [HOME/REV] key.
 
@@ -1037,30 +910,6 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("scan_settings.tot", "Transmit Timeout (TOT)", val)
         menu.append(rs)
 
-        # P1 Set Mode Items to the Programmable Key
-        # 1-12 Maps directly to setting
-        # 14 setting 13
-        # 15-17 setting 14 - 16
-        # 24 setting 17
-        # 26-31 setting 18 - 23
-        # 33-40 setting 24 - 31
-
-        # Further checking required
-
-        # val = RadioSettingValueList(
-        #    self._SET_MODE,
-        #    self._SET_MODE[scan_settings.prog_key1])
-        # rs = RadioSetting("scan_settings.prog_key1", "P1 Key", val)
-        # menu.append(rs)
-
-        # P2 Set Mode Items to the Programmable Key
-
-        # val = RadioSettingValueList(
-        #    self._SET_MODE,
-        #    self._SET_MODE[scan_settings.prog_key2])
-        # rs = RadioSetting("scan_settings.prog_key2", "P2 Key", val)
-        # menu.append(rs)
-
         # 31 MCGAIN     Adjust the microphone gain level
 
         val = RadioSettingValueList(
@@ -1087,27 +936,10 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("squelch_settings.squelch", "Squelch", val)
         menu.append(rs)
 
-        # Power Level   F key, TX PO, Dial to adjust power level
-
-        # scan_settings_2 = self._memobj.scan_settings_2
-        # val = RadioSettingValueList(
-        #     self._VOLUME,
-        #     self._VOLUME[scan_settings_2.volume])
-        # rs = RadioSetting("scan_settings_2.volume", "Volume", val)
-        # menu.append(rs)
-
         return menu
 
     def _get_digital_settings(self):
         menu = RadioSettingGroup("digital_settings", "Digital")
-
-        # 63  MYCALL    Set the call sign.
-
-        my_call = self._memobj.my_call
-        val = RadioSettingValueString(0, 10, str(my_call.padded_string).rstrip("\xFF"))
-        rs = RadioSetting("my_call.padded_string", "My Call", val)
-        rs.set_apply_callback(self.apply_ff_padded_string, my_call)
-        menu.append(rs)
 
         # Short Press AMS button AMS TX Mode
 
@@ -1248,21 +1080,6 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # 50 SCV.WTH Set the VFO scan frequency range. BAND / ALL  - NOT FOUND!
 
-        # scan_settings_1 = self._memobj.scan_settings_1
-        # val = RadioSettingValueList(
-        #    self._VFO_SCAN_MODE,
-        #    self._VFO_SCAN_MODE[scan_settings_1.vfo_scan_width])
-        # rs = RadioSetting("scan_settings_1.vfo_scan_width", "VFO Scan Width", val)
-        # menu.append(rs)
-
-        # 49 SCM.WTH Set the memory scan frequency range. ALL / BAND - NOT FOUND!
-
-        # val = RadioSettingValueList(
-        #    self._MEMORY_SCAN_MODE,
-        #    self._MEMORY_SCAN_MODE[scan_settings_1.memory_scan_width])
-        # rs = RadioSetting("scan_settings_1.memory_scan_width", "Memory Scan Width", val)
-        # menu.append(rs)
-
         # Scan Resume Section
 
         # 52 SCN.RSM    Configure the scan stop mode settings. 2.0 S - 5.0 S - 10.0 S / BUSY / HOLD
@@ -1356,4 +1173,3 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rawval = setting.value.get_value()
         val = 0 if cls._DIG_POP_UP.index(rawval) == 0 else cls._DIG_POP_UP.index(rawval) + 9
         obj.digital_popup = val
-
