@@ -749,9 +749,9 @@ class AlincoDJG7EG(AlincoStyleRadio):
         # band.
         if mode not in ("NFM", "FM"):
             return 0x01
-        if     (freq >=  136000000 and freq <  174000000) or \
-               (freq >=  400000000 and freq <  470000000) or \
-               (freq >= 1240000000 and freq < 1300000000):
+        if (freq >= 136000000 and freq < 174000000) or \
+           (freq >= 400000000 and freq < 470000000) or \
+           (freq >= 1240000000 and freq < 1300000000):
             return 0x02
         else:
             return 0x01
@@ -761,22 +761,26 @@ class AlincoDJG7EG(AlincoStyleRadio):
         if _mem.empty != 0x00:
             if _mem.unknown1 == 0xffffff:
                 # Previous versions of this code have skipped the unknown
-                # fields. They contain bytes of value if the channel is empty and
-                # thus those bytes remain 0xff when the channel is put to use.
-                # The radio is totally fine with this but the Alinco programming
-                # software is not (see #5275). Here, we check for this and
-                # report if it is encountered.
-                LOG.warning("Channel %d is inconsistent: Found 0xff in non-empty channel. Touch channel to fix." % number)
+                # fields. They contain bytes of value if the channel is empty
+                # and thus those bytes remain 0xff when the channel is put to
+                # use. The radio is totally fine with this but the Alinco
+                # programming software is not (see #5275). Here, we check for
+                # this and report if it is encountered.
+                LOG.warning("Channel %d is inconsistent: Found 0xff in "
+                            "non-empty channel. Touch channel to fix."
+                            % number)
 
-            if _mem.empty != self._get_empty_flag(_mem.freq, self.MODES[_mem.mode]):
-                LOG.warning("Channel %d is inconsistent: Found out of band frequency. Touch channel to fix." % number)
+            if _mem.empty != self._get_empty_flag(_mem.freq,
+                                                  self.MODES[_mem.mode]):
+                LOG.warning("Channel %d is inconsistent: Found out of band "
+                            "frequency. Touch channel to fix." % number)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(DJG7EG_MEM_FORMAT, self._mmap)
         # We check all channels for corruption (see bug #5275) but we don't fix
-        # it automatically because it would be unpolite to modify something on a
-        # read operation. A log message is emitted though for the user to take
-        # actions.
+        # it automatically because it would be unpolite to modify something on
+        # a read operation. A log message is emitted though for the user to
+        # take actions.
         for number in range(len(self._memobj.memory)):
             self._check_channel_consistency(number)
 
