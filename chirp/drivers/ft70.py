@@ -700,10 +700,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         flag.skip = mem.skip == "S"
         flag.pskip = mem.skip == "P"
 
-        # Set Display Memory as Label bit`
-        for element in mem.extra:
-            # setattr(_mem, element.get_name(), element.value)
-            setattr(_mem, element.get_name(), 1)
+        _mem.display_tag = 1    # Always Display Memory Name (For the moment..)
 
     @classmethod
     def _wipe_memory(cls, mem):
