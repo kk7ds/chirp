@@ -1,6 +1,6 @@
 # Copyright 2016:
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
-#
+# Modified for Baojie BJ-218: 2018 by Rick DeWitt (RJD), <aa0rd@yahoo.com>#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
@@ -26,15 +26,15 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings
+    RadioSettingValueFloat, RadioSettings,InvalidValueError
 from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x0200;
 struct {
-  u8  unknown1;
+  u8  init_bank;
   u8  volume;
-  u8  unknown2[2];
+  u16 fm_freq;
   u8  wtled;
   u8  rxled;
   u8  txled;
@@ -43,16 +43,87 @@ struct {
   u8  ring;
   u8  bcl;
   u8  tot;
+  u16 sig_freq;
+  u16 dtmf_txms;
+  u8  init_sql;
+  u8  rptr_mode;
 } settings;
 
+#seekto 0x0240;
+struct {
+  u8  dtmf1_cnt;
+  u8  dtmf1[7];
+  u8  dtmf2_cnt;
+  u8  dtmf2[7];
+  u8  dtmf3_cnt;
+  u8  dtmf3[7];
+  u8  dtmf4_cnt;
+  u8  dtmf4[7];
+  u8  dtmf5_cnt;
+  u8  dtmf5[7];
+  u8  dtmf6_cnt;
+  u8  dtmf6[7];
+  u8  dtmf7_cnt;
+  u8  dtmf7[7];
+  u8  dtmf8_cnt;
+  u8  dtmf8[7];
+} dtmf_tab;
+
+#seekto 0x0280;
+struct {
+  u8  native_id_cnt;
+  u8  native_id_code[7];
+  u8  master_id_cnt;
+  u8  master_id_code[7];
+  u8  alarm_cnt;
+  u8  alarm_code[5];
+  u8  id_disp_cnt;
+  u8  id_disp_code[5];
+  u8  revive_cnt;
+  u8  revive_code[5];
+  u8  stun_cnt;
+  u8  stun_code[5];
+  u8  kill_cnt;
+  u8  kill_code[5];
+  u8  monitor_cnt;
+  u8  monitor_code[5];
+  u8  state_now;
+} codes;
+
+#seekto 0x02d0;
+struct {
+  u8  hello1_cnt;
+  char  hello1[7];
+  u8  hello2_cnt;
+  char  hello2[7];
+  u32  vhf_low;
+  u32  vhf_high;
+  u32  uhf_low;
+  u32  uhf_high;
+  u8  lims_on;
+} hello_lims;
+
 struct vfo {
-  u8  unknown1[2];
+  u8  frq_chn_mode;
+  u8  chan_num;
   u32 rxfreq;
-  u8  unknown2[8];
-  u8  power;
-  u8  unknown3[3];
-  u24 offset;
-  u32 step;
+  u16 is_rxdigtone:1,
+      rxdtcs_pol:1,
+      rx_tone:14;
+  u8  rx_mode;
+  u8  unknown_ff;
+  u16 is_txdigtone:1,
+      txdtcs_pol:1,
+      tx_tone:14;
+  u8  launch_sig;
+  u8  tx_end_sig;
+  u8  bpower;
+  u8  fm_bw;
+  u8  cmp_nder;
+  u8  scrm_blr;
+  u8  shift;
+  u32 offset;
+  u16 step;
   u8  sql;
 };
 
@@ -84,8 +155,7 @@ struct mem {
       scrambler:1
       unknown:4;
   u8  namelen;
-  u8  name[6];
-  u8  unused;
+  u8  name[7];
 };
 
 #seekto 0x0400;
@@ -94,22 +164,70 @@ struct mem upper_memory[128];
 #seekto 0x1000;
 struct mem lower_memory[128];
 
+#seekto 0x1C00;
+struct {
+  char  mod_num[6];
+} mod_id;
 """
 
 MEM_SIZE = 0x1C00
 BLOCK_SIZE = 0x40
 STIMEOUT = 2
+# Channel power: 2 levels
+POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
+                chirp_common.PowerLevel("High", watts=30.00)]
 
-LIST_RECVMODE = ["", "QT/DQT", "QT/DQT + Signaling"]
+LIST_RECVMODE = ["QT/DQT", "QT/DQT + Signaling"]
 LIST_SIGNAL = ["Off"] + ["DTMF%s" % x for x in range(1, 9)] + \
               ["DTMF%s + Identity" % x for x in range(1, 9)] + \
               ["Identity code"]
-LIST_POWER = ["Low", "Mid", "High"]
+# Band Power settings, can be different than channel power
+LIST_BPOWER = ["Low", "Mid", "High"]    # Tri-power models
 LIST_COLOR = ["Off", "Orange", "Blue", "Purple"]
 LIST_LEDSW = ["Auto", "On"]
-LIST_RING = ["Off"] + ["%s seconds" % x for x in range(1, 10)]
-LIST_TIMEOUT = ["Off"] + ["%s seconds" % x for x in range(30, 630, 30)]
+LIST_RING = ["Off"] + ["%s" % x for x in range(1, 10)]
+LIST_TDR_DEF = ["A-Upper", "B-Lower"]
+LIST_TIMEOUT = ["Off"] + ["%s" % x for x in range(30, 630, 30)]
+LIST_VFOMODE = ["Frequency Mode", "Channel Mode"]
+# Tones are numeric, Defined in \chirp\chirp_common.py
+TONES_CTCSS = sorted(chirp_common.TONES)
+# Converted to strings
+LIST_CTCSS = ["Off"] + [str(x) for x in TONES_CTCSS]
+# Now append the DxxxN and DxxxI DTCS codes from chirp_common
+for x in chirp_common.DTCS_CODES:
+    LIST_CTCSS.append("D{:03d}N".format(x))
+for x in chirp_common.DTCS_CODES:
+    LIST_CTCSS.append("D{:03d}R".format(x))
+LIST_BW = ["Narrow", "Wide"]
+LIST_SHIFT = ["Off"," + ", " - "]
+STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+LIST_STEPS = [str(x) for x in STEPS]
+LIST_STATE = ["Normal", "Stun", "Kill"]
+LIST_SSF = ["1000", "1450", "1750", "2100"]
+LIST_DTMFTX = ["50", "100", "150", "200", "300","500"]
 
+SETTING_LISTS = {
+"init_bank": LIST_TDR_DEF ,
+"tot": LIST_TIMEOUT,
+"wtled": LIST_COLOR,
+"rxled": LIST_COLOR,
+"txled": LIST_COLOR,
+"sig_freq": LIST_SSF,
+"dtmf_txms": LIST_DTMFTX,
+"ledsw": LIST_LEDSW,
+"frq_chn_mode": LIST_VFOMODE,
+"rx_tone": LIST_CTCSS,
+"tx_tone": LIST_CTCSS,
+"rx_mode": LIST_RECVMODE,
+"launch_sig": LIST_SIGNAL,
+"tx_end_sig": LIST_SIGNAL,
+"bpower":LIST_BPOWER,
+"fm_bw": LIST_BW,
+"shift": LIST_SHIFT,
+"step": LIST_STEPS,
+"ring": LIST_RING,
+"state_now": LIST_STATE
+}
 
 def _clean_buffer(radio):
     radio.pipe.timeout = 0.005
@@ -131,7 +249,7 @@ def _rawrecv(radio, amount):
 
     if len(data) != amount:
         _exit_program_mode(radio)
-        msg = "Error reading data from radio: not the amount of data we want."
+        msg = "Error reading from radio: not the amount of data we want."
         raise errors.RadioError(msg)
 
     return data
@@ -148,10 +266,10 @@ def _rawsend(radio, data):
 def _make_frame(cmd, addr, length, data=""):
     """Pack the info in the headder format"""
     frame = struct.pack(">4sHH", cmd, addr, length)
-    # add the data if set
+    # Add the data if set
     if len(data) != 0:
         frame += data
-    # return the data
+    # Return the data
     return frame
 
 
@@ -169,12 +287,12 @@ def _recv(radio, addr, length):
 
 def _do_ident(radio):
     """Put the radio in PROGRAM mode & identify it"""
-    #  set the serial discipline
+    # Set the serial discipline
     radio.pipe.baudrate = 19200
     radio.pipe.parity = "N"
     radio.pipe.timeout = STIMEOUT
 
-    # flush input buffer
+    # Flush input buffer
     _clean_buffer(radio)
 
     magic = "PROM_LIN"
@@ -199,7 +317,7 @@ def _exit_program_mode(radio):
 def _download(radio):
     """Get the memory map"""
 
-    # put radio in program mode and identify it
+    # Put radio in program mode and identify it
     _do_ident(radio)
 
     # UI progress
@@ -216,13 +334,13 @@ def _download(radio):
         LOG.info("Request sent:")
         LOG.debug(util.hexprint(frame))
 
-        # sending the read request
+        # Sending the read request
         _rawsend(radio, frame)
 
-        # now we read
+        # Now we read
         d = _recv(radio, addr, BLOCK_SIZE)
 
-        # aggregate the data
+        # Aggregate the data
         data += d
 
         # UI Update
@@ -232,7 +350,7 @@ def _download(radio):
 
     _exit_program_mode(radio)
 
-    data += "LT-725UV"
+    data += radio.MODEL.ljust(8)
 
     return data
 
@@ -240,7 +358,7 @@ def _download(radio):
 def _upload(radio):
     """Upload procedure"""
 
-    # put radio in program mode and identify it
+    # Put radio in program mode and identify it
     _do_ident(radio)
 
     # UI progress
@@ -250,16 +368,16 @@ def _upload(radio):
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
-    # the fun starts here
+    # The fun starts here
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
-        # sending the data
+        # Sending the data
         data = radio.get_mmap()[addr:addr + BLOCK_SIZE]
 
         frame = _make_frame("WRIE", addr, BLOCK_SIZE, data)
 
         _rawsend(radio, frame)
 
-        # receiving the response
+        # Receiving the response
         ack = _rawrecv(radio, 1)
         if ack != "\x06":
             _exit_program_mode(radio)
@@ -276,26 +394,25 @@ def _upload(radio):
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
-    rid = data[0x1C00:0x1C08]
-
-    if rid == cls.MODEL:
-        return True
-
-    return False
+    if len(data) == 0x1C08:
+        rid = data[0x1C00:0x1C08]
+        return rid.startswith(cls.MODEL)
+    else:
+        return False
 
 
 def _split(rf, f1, f2):
     """Returns False if the two freqs are in the same band (no split)
     or True otherwise"""
 
-    # determine if the two freqs are in the same band
+    # Determine if the two freqs are in the same band
     for low, high in rf.valid_bands:
         if f1 >= low and f1 <= high and \
                 f2 >= low and f2 <= high:
-            # if the two freqs are on the same Band this is not a split
+            # If the two freqs are on the same Band this is not a split
             return False
 
-    # if you get here is because the freq pairs are split
+    # If you get here is because the freq pairs are split
     return True
 
 
@@ -308,13 +425,13 @@ class LT725UV(chirp_common.CloneModeRadio,
     MODES = ["NFM", "FM"]
     TONES = chirp_common.TONES
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
-    NAME_LENGTH = 6
+    NAME_LENGTH = 7
     DTMF_CHARS = list("0123456789ABCD*#")
 
     VALID_BANDS = [(136000000, 176000000),
                    (400000000, 480000000)]
 
-    # valid chars on the LCD
+    # Valid chars on the LCD
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
         "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 
@@ -322,11 +439,20 @@ class LT725UV(chirp_common.CloneModeRadio,
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('The LT725UV driver is a beta version.\n'
-             '\n'
-             'Please save an unedited copy of your first successful\n'
-             'download to a CHIRP Radio Images(*.img) file.'
+            ('Some notes about POWER settings:\n'
+             '- The individual channel power settings are ignored'
+             ' by the radio.\n'
+             '  They are allowed to be set (and downloaded) in hopes of'
+             ' a future firmware update.\n'
+             '- Power settings done \'Live\' in the radio apply to the'
+             ' entire upper or lower band.\n'
+             '- Tri-power radio models will set and download the three'
+             ' band-power'
+             ' levels, but they are\n  converted to just Low and High at'
+             ' upload.'
+             ' The Mid setting reverts to Low.'
              )
+
         rp.pre_download = _(dedent("""\
             Follow this instructions to download your info:
 
@@ -373,6 +499,7 @@ class LT725UV(chirp_common.CloneModeRadio,
             "->Tone",
             "DTCS->DTCS"]
         rf.valid_skips = []
+        rf.valid_power_levels = POWER_LEVELS
         rf.valid_name_length = self.NAME_LENGTH
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_bands = self.VALID_BANDS
@@ -459,11 +586,11 @@ class LT725UV(chirp_common.CloneModeRadio,
         if _mem.rxtone == 0x3FFF:
             rxmode = ""
         elif _mem.is_rxdigtone == 0:
-            # ctcss
+            # CTCSS
             rxmode = "Tone"
             mem.ctone = int(_mem.rxtone) / 10.0
         else:
-            # digital
+            # Digital
             rxmode = "DTCS"
             mem.rx_dtcs = self._get_dcs(_mem.rxtone)
             if _mem.rxdtcs_pol == 1:
@@ -472,11 +599,11 @@ class LT725UV(chirp_common.CloneModeRadio,
         if _mem.txtone == 0x3FFF:
             txmode = ""
         elif _mem.is_txdigtone == 0:
-            # ctcss
+            # CTCSS
             txmode = "Tone"
             mem.rtone = int(_mem.txtone) / 10.0
         else:
-            # digital
+            # Digital
             txmode = "DTCS"
             mem.dtcs = self._get_dcs(_mem.txtone)
             if _mem.txdtcs_pol == 1:
@@ -494,7 +621,9 @@ class LT725UV(chirp_common.CloneModeRadio,
 
         mem.dtcs_polarity = "".join(dtcs_pol)
 
-        mem.mode = self.MODES[_mem.wide]
+        mem.mode = _mem.wide and "FM" or "NFM"
+
+        mem.power = POWER_LEVELS[_mem.power]
 
         # Extra
         mem.extra = RadioSettingGroup("extra", "Extra")
@@ -504,8 +633,8 @@ class LT725UV(chirp_common.CloneModeRadio,
         else:
             val = _mem.recvmode
         recvmode = RadioSetting("recvmode", "Receiving mode",
-                                 RadioSettingValueList(LIST_RECVMODE,
-                                     LIST_RECVMODE[val]))
+                                RadioSettingValueList(LIST_RECVMODE,
+                                    LIST_RECVMODE[val]))
         mem.extra.append(recvmode)
 
         if _mem.botsignal == 0xFF:
@@ -521,17 +650,17 @@ class LT725UV(chirp_common.CloneModeRadio,
             val = 0x00
         else:
             val = _mem.eotsignal
-        eotsignal = RadioSetting("eotsignal", "Transmit end signaling",
-                                 RadioSettingValueList(LIST_SIGNAL,
-                                     LIST_SIGNAL[val]))
+
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[val])
+        eotsignal = RadioSetting("eotsignal", "Transmit end signaling", rx)
         mem.extra.append(eotsignal)
 
-        compandor = RadioSetting("compandor", "Compandor",
-                                 RadioSettingValueBoolean(bool(_mem.compandor)))
+        rx = RadioSettingValueBoolean(bool(_mem.compandor))
+        compandor = RadioSetting("compandor", "Compandor", rx)
         mem.extra.append(compandor)
 
-        scrambler = RadioSetting("scrambler", "Scrambler",
-                                 RadioSettingValueBoolean(bool(_mem.scrambler)))
+        rx = RadioSettingValueBoolean(bool(_mem.scrambler))
+        scrambler = RadioSetting("scrambler", "Scrambler", rx)
         mem.extra.append(scrambler)
 
         return mem
@@ -615,89 +744,623 @@ class LT725UV(chirp_common.CloneModeRadio,
             _mem.txtone = self._set_dcs(mem.dtcs)
 
         _mem.wide = self.MODES.index(mem.mode)
+        _mem.power = mem.power == POWER_LEVELS[1]
 
-        # extra settings
+        # Extra settings
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
-        _mem = self._memobj
-        basic = RadioSettingGroup("basic", "Basic Settings")
-        top = RadioSettings(basic)
+        # Define mem struct write-back shortcuts
+        _sets = self._memobj.settings
+        _vfoa = self._memobj.upper.vfoa
+        _vfob = self._memobj.lower.vfob
+        _lims = self._memobj.hello_lims
+        _codes = self._memobj.codes
+        _dtmf = self._memobj.dtmf_tab
 
-        # Basic
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        a_band = RadioSettingGroup("a_band", "VFO A-Upper Settings")
+        b_band = RadioSettingGroup("b_band", "VFO B-Lower Settings")
+        codes = RadioSettingGroup("codes", "Codes & DTMF Groups")
+        lims = RadioSettingGroup("lims", "PowerOn & Freq Limits")
+        group = RadioSettings(basic, a_band, b_band, lims, codes)
+
+        # Basic Settings
+        bnd_mode = RadioSetting("settings.init_bank", "TDR Band Default",
+                                RadioSettingValueList(LIST_TDR_DEF,
+                                    LIST_TDR_DEF[ _sets.init_bank]))
+        basic.append(bnd_mode)
 
         volume = RadioSetting("settings.volume", "Volume",
-                              RadioSettingValueInteger(0, 20,
-                                  _mem.settings.volume))
+                              RadioSettingValueInteger(0, 20, _sets.volume))
         basic.append(volume)
 
-        powera = RadioSetting("upper.vfoa.power", "Power (Upper)",
-                              RadioSettingValueList(LIST_POWER, LIST_POWER[
-                                  _mem.upper.vfoa.power]))
+        val = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
+        rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val])
+        powera = RadioSetting("upper.vfoa.bpower", "Power (Upper)", rx)
         basic.append(powera)
 
-        powerb = RadioSetting("lower.vfob.power", "Power (Lower)",
-                              RadioSettingValueList(LIST_POWER, LIST_POWER[
-                                  _mem.lower.vfob.power]))
+        val = _vfob.bpower
+        rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val])
+        powerb = RadioSetting("lower.vfob.bpower", "Power (Lower)", rx)
         basic.append(powerb)
+
+        def my_word2raw(setting, obj, atrb, mlt=10):
+            """Callback function to convert UI floating value to u16 int"""
+            if str(setting.value) == "Off":
+               frq = 0x0FFFF
+            else:
+                frq = int(float(str(setting.value)) * float(mlt))
+            if frq == 0:
+                frq = 0xFFFF
+            setattr(obj, atrb, frq)
+            return
+
+        def my_adjraw(setting, obj, atrb, fix):
+            """Callback: add or subtract fix from value."""
+            vx = int(str(setting.value))
+            value = vx  + int(fix)
+            if value < 0:
+                value = 0
+            if atrb == "frq_chn_mode" and int(str(setting.value)) == 2:
+                value = vx * 2         # Special handling for frq_chn_mode
+            setattr(obj, atrb, value)
+            return
+
+        def my_dbl2raw(setting, obj, atrb, flg=1):
+            """Callback: convert from freq 146.7600 to 14760000 U32."""
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            # flg=1 means 0 becomes ff, else leave as possible 0
+            if flg == 1 and value == 0:
+                value = 0xFFFFFFFF
+            setattr(obj, atrb, value)
+            return
+
+        def my_val_list(setting, obj, atrb):
+            """Callback:from ValueList with non-sequential, actual values."""
+            value = int(str(setting.value))            # Get the integer value
+            if atrb == "tot":
+                value = int(value / 30)    # 30 second increments
+            setattr(obj, atrb, value)
+            return
+
+        def my_spcl(setting, obj, atrb):
+            """Callback: Special handling based on atrb."""
+            if atrb == "frq_chn_mode":
+                idx = LIST_VFOMODE.index (str(setting.value))  # Returns 0 or 1
+                value = idx * 2            # Set bit 1
+            setattr(obj, atrb, value)
+            return
+
+        def my_tone_strn(obj, is_atr, pol_atr, tone_atr):
+            """Generate the CTCS/DCS tone code string."""
+            vx = int(getattr(obj, tone_atr))
+            if vx == 16383 or vx == 0:
+                return "Off"                 # 16383 is all bits set
+            if getattr(obj, is_atr) == 0:             # Simple CTCSS code
+                tstr = str(vx / 10.0)
+            else:        # DCS
+                if getattr(obj, pol_atr) == 0:
+                    tstr = "D{:03x}R".format(vx)
+                else:
+                    tstr = "D{:03x}N".format(vx)
+            return tstr
+
+        def my_set_tone(setting, obj, is_atr, pol_atr, tone_atr):
+            """Callback- create the tone setting from string code."""
+            sx = str(setting.value)        # '131.8'  or 'D231N' or 'Off'
+            if sx == "Off":
+                isx = 1
+                polx = 1
+                tonx = 0x3FFF
+            elif sx[0] == "D":         # DCS
+                isx = 1
+                if sx[4] == "N":
+                    polx = 1
+                else:
+                    polx = 0
+                tonx = int(sx[1:4], 16)
+            else:                                     # CTCSS
+                isx = 0
+                polx = 0
+                tonx = int(float(sx) * 10.0)
+            setattr(obj, is_atr, isx)
+            setattr(obj, pol_atr, polx)
+            setattr(obj, tone_atr, tonx)
+            return
+
+        val = _sets.fm_freq / 10.0
+        if val == 0:
+            val = 88.9            # 0 is not valid
+        rx = RadioSettingValueFloat(65, 108.0, val, 0.1, 1)
+        rs = RadioSetting("settings.fm_freq", "FM Broadcast Freq (MHz)", rx)
+        rs.set_apply_callback(my_word2raw, _sets, "fm_freq")
+        basic.append(rs)
 
         wtled = RadioSetting("settings.wtled", "Standby LED Color",
                              RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _mem.settings.wtled]))
+                                 _sets.wtled]))
         basic.append(wtled)
 
         rxled = RadioSetting("settings.rxled", "RX LED Color",
                              RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _mem.settings.rxled]))
+                                 _sets.rxled]))
         basic.append(rxled)
 
         txled = RadioSetting("settings.txled", "TX LED Color",
                              RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _mem.settings.txled]))
+                                 _sets.txled]))
         basic.append(txled)
 
         ledsw = RadioSetting("settings.ledsw", "Back light mode",
                              RadioSettingValueList(LIST_LEDSW, LIST_LEDSW[
-                                 _mem.settings.ledsw]))
+                                 _sets.ledsw]))
         basic.append(ledsw)
 
         beep = RadioSetting("settings.beep", "Beep",
-                            RadioSettingValueBoolean(bool(_mem.settings.beep)))
+                            RadioSettingValueBoolean(bool(_sets.beep)))
         basic.append(beep)
 
         ring = RadioSetting("settings.ring", "Ring",
                             RadioSettingValueList(LIST_RING, LIST_RING[
-                                _mem.settings.ring]))
+                                _sets.ring]))
         basic.append(ring)
 
         bcl = RadioSetting("settings.bcl", "Busy channel lockout",
-                           RadioSettingValueBoolean(bool(_mem.settings.bcl)))
+                           RadioSettingValueBoolean(bool(_sets.bcl)))
         basic.append(bcl)
 
-        tot = RadioSetting("settings.tot", "Timeout Timer",
-                           RadioSettingValueList(LIST_TIMEOUT, LIST_TIMEOUT[
-                               _mem.settings.tot]))
-        basic.append(tot)
-
-        if _mem.upper.vfoa.sql == 0xFF:
+        if _vfoa.sql == 0xFF:
             val = 0x04
         else:
-            val = _mem.upper.vfoa.sql
+            val = _vfoa.sql
         sqla = RadioSetting("upper.vfoa.sql", "Squelch (Upper)",
                             RadioSettingValueInteger(0, 9, val))
         basic.append(sqla)
 
-        if _mem.lower.vfob.sql == 0xFF:
+        if _vfob.sql == 0xFF:
             val = 0x04
         else:
-            val = _mem.lower.vfob.sql
+            val = _vfob.sql
         sqlb = RadioSetting("lower.vfob.sql", "Squelch (Lower)",
                             RadioSettingValueInteger(0, 9, val))
         basic.append(sqlb)
 
-        return top
+        tmp = str(int(_sets.tot) * 30)     # 30 sec step counter
+        rs = RadioSetting("settings.tot", "Transmit Timeout (Secs)",
+                           RadioSettingValueList(LIST_TIMEOUT, tmp))
+        rs.set_apply_callback(my_val_list, _sets, "tot")
+        basic.append(rs)
+
+        tmp = str(int(_sets.sig_freq))
+        rs = RadioSetting("settings.sig_freq", "Single Signaling Tone (Htz)",
+                          RadioSettingValueList(LIST_SSF, tmp))
+        rs.set_apply_callback(my_val_list, _sets, "sig_freq")
+        basic.append(rs)
+
+        tmp = str(int(_sets.dtmf_txms))
+        rs = RadioSetting("settings.dtmf_txms", "DTMF Tx Duration (mSecs)",
+                          RadioSettingValueList(LIST_DTMFTX, tmp))
+        rs.set_apply_callback(my_val_list, _sets, "dtmf_txms")
+        basic.append(rs)
+
+        rs = RadioSetting("settings.rptr_mode", "Repeater Mode",
+                          RadioSettingValueBoolean(bool(_sets.rptr_mode)))
+        basic.append(rs)
+
+        # UPPER BAND SETTINGS
+
+        # Freq Mode, convert bit 1 state to index pointer
+        val = _vfoa.frq_chn_mode / 2
+
+        rx = RadioSettingValueList(LIST_VFOMODE, LIST_VFOMODE[val])
+        rs = RadioSetting("upper.vfoa.frq_chn_mode", "Default Mode", rx)
+        rs.set_apply_callback(my_spcl, _vfoa, "frq_chn_mode")
+        a_band.append(rs)
+
+        val =_vfoa.chan_num + 1                  # Add 1 for 1-128 displayed
+        rs = RadioSetting("upper.vfoa.chan_num", "Initial Chan",
+                          RadioSettingValueInteger(1, 128, val))
+        rs.set_apply_callback(my_adjraw, _vfoa, "chan_num", -1)
+        a_band.append(rs)
+
+        val = _vfoa.rxfreq / 100000.0
+        if (val < 136.0 or val > 176.0):
+            val = 146.520            # 2m calling
+        rs = RadioSetting("upper.vfoa.rxfreq ", "Default Recv Freq (MHz)",
+                          RadioSettingValueFloat(136.0, 176.0, val, 0.001, 5))
+        rs.set_apply_callback(my_dbl2raw, _vfoa, "rxfreq")
+        a_band.append(rs)
+
+        tmp = my_tone_strn(_vfoa, "is_rxdigtone", "rxdtcs_pol", "rx_tone")
+        rs = RadioSetting("rx_tone", "Default Recv CTCSS (Htz)",
+                          RadioSettingValueList(LIST_CTCSS, tmp))
+        rs.set_apply_callback(my_set_tone, _vfoa, "is_rxdigtone",
+                              "rxdtcs_pol", "rx_tone")
+        a_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_RECVMODE,
+                                   LIST_RECVMODE[_vfoa.rx_mode])
+        rs = RadioSetting("upper.vfoa.rx_mode", "Default Recv Mode", rx)
+        a_band.append(rs)
+
+        tmp = my_tone_strn(_vfoa, "is_txdigtone", "txdtcs_pol", "tx_tone")
+        rs = RadioSetting("tx_tone", "Default Xmit CTCSS (Htz)",
+                          RadioSettingValueList(LIST_CTCSS, tmp))
+        rs.set_apply_callback(my_set_tone, _vfoa, "is_txdigtone",
+                              "txdtcs_pol", "tx_tone")
+        a_band.append(rs)
+
+        rs = RadioSetting("upper.vfoa.launch_sig", "Launch Signaling",
+                          RadioSettingValueList(LIST_SIGNAL,
+                              LIST_SIGNAL[_vfoa.launch_sig]))
+        a_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfoa.tx_end_sig])
+        rs = RadioSetting("upper.vfoa.tx_end_sig", "Xmit End Signaling", rx)
+        a_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_BW, LIST_BW[_vfoa.fm_bw])
+        rs = RadioSetting("upper.vfoa.fm_bw", "Wide/Narrow Band", rx)
+        a_band.append(rs)
+
+        rx = RadioSettingValueBoolean(bool(_vfoa.cmp_nder))
+        rs = RadioSetting("upper.vfoa.cmp_nder", "Compandor", rx)
+        a_band.append(rs)
+
+        rs = RadioSetting("upper.vfoa.scrm_blr", "Scrambler",
+                          RadioSettingValueBoolean(bool(_vfoa.scrm_blr)))
+        a_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[_vfoa.shift])
+        rs = RadioSetting("upper.vfoa.shift", "Xmit Shift", rx)
+        a_band.append(rs)
+
+        val = _vfoa.offset / 100000.0
+        rs = RadioSetting("upper.vfoa.offset", "Xmit Offset (MHz)",
+                          RadioSettingValueFloat(0, 100.0, val, 0.001, 3))
+        # Allow zero value
+        rs.set_apply_callback(my_dbl2raw, _vfoa, "offset", 0)
+        a_band.append(rs)
+
+        tmp = str(_vfoa.step / 100.0)
+        rs = RadioSetting("step", "Freq step (KHz)",
+                          RadioSettingValueList(LIST_STEPS, tmp))
+        rs.set_apply_callback(my_word2raw, _vfoa,"step", 100)
+        a_band.append(rs)
+
+        # LOWER BAND SETTINGS
+
+        val = _vfob.frq_chn_mode / 2
+        rx = RadioSettingValueList(LIST_VFOMODE, LIST_VFOMODE[val])
+        rs = RadioSetting("lower.vfob.frq_chn_mode", "Default Mode", rx)
+        rs.set_apply_callback(my_spcl, _vfob, "frq_chn_mode")
+        b_band.append(rs)
+
+        val = _vfob.chan_num + 1
+        rs = RadioSetting("lower.vfob.chan_num", "Initial Chan",
+                          RadioSettingValueInteger(0, 127, val))
+        rs.set_apply_callback(my_adjraw, _vfob, "chan_num", -1)
+        b_band.append(rs)
+
+        val = _vfob.rxfreq / 100000.0
+        if (val < 400.0 or val > 480.0):
+            val = 446.0          # UHF calling
+        rs = RadioSetting("lower.vfob.rxfreq ", "Default Recv Freq (MHz)",
+                          RadioSettingValueFloat(400.0, 480.0, val, 0.001, 5))
+        rs.set_apply_callback(my_dbl2raw, _vfob, "rxfreq")
+        b_band.append(rs)
+
+        tmp = my_tone_strn(_vfob, "is_rxdigtone", "rxdtcs_pol", "rx_tone")
+        rs = RadioSetting("rx_tone", "Default Recv CTCSS (Htz)",
+                          RadioSettingValueList(LIST_CTCSS, tmp))
+        rs.set_apply_callback(my_set_tone, _vfob, "is_rxdigtone",
+                              "rxdtcs_pol", "rx_tone")
+        b_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_RECVMODE, LIST_RECVMODE[_vfob.rx_mode])
+        rs = RadioSetting("lower.vfob.rx_mode", "Default Recv Mode", rx)
+        b_band.append(rs)
+
+        tmp = my_tone_strn(_vfob, "is_txdigtone", "txdtcs_pol", "tx_tone")
+        rs = RadioSetting("tx_tone", "Default Xmit CTCSS (Htz)",
+                          RadioSettingValueList(LIST_CTCSS, tmp))
+        rs.set_apply_callback(my_set_tone, _vfob, "is_txdigtone",
+                              "txdtcs_pol", "tx_tone")
+        b_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfob.launch_sig])
+        rs = RadioSetting("lower.vfob.launch_sig", "Launch Signaling", rx)
+        b_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfob.tx_end_sig])
+        rs = RadioSetting("lower.vfob.tx_end_sig", "Xmit End Signaling", rx)
+        b_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_BW, LIST_BW[_vfob.fm_bw])
+        rs = RadioSetting("lower.vfob.fm_bw", "Wide/Narrow Band", rx)
+        b_band.append(rs)
+
+        rs = RadioSetting("lower.vfob.cmp_nder", "Compandor",
+                          RadioSettingValueBoolean(bool(_vfob.cmp_nder)))
+        b_band.append(rs)
+
+        rs = RadioSetting("lower.vfob.scrm_blr", "Scrambler",
+                          RadioSettingValueBoolean(bool(_vfob.scrm_blr)))
+        b_band.append(rs)
+
+        rx = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[_vfob.shift])
+        rs = RadioSetting("lower.vfob.shift", "Xmit Shift", rx)
+        b_band.append(rs)
+
+        val = _vfob.offset / 100000.0
+        rs = RadioSetting("lower.vfob.offset", "Xmit Offset (MHz)",
+                          RadioSettingValueFloat(0, 100.0, val, 0.001, 3))
+        rs.set_apply_callback(my_dbl2raw, _vfob, "offset", 0)
+        b_band.append(rs)
+
+        tmp = str(_vfob.step / 100.0)
+        rs = RadioSetting("step", "Freq step (KHz)",
+                          RadioSettingValueList(LIST_STEPS, tmp))
+        rs.set_apply_callback(my_word2raw, _vfob, "step", 100)
+        b_band.append(rs)
+
+        # PowerOn & Freq Limits Settings
+
+        def chars2str(cary, knt):
+            """Convert raw memory char array to a string: NOT a callback."""
+            stx = ""
+            for char in cary[:knt]:
+                stx += chr(char)
+            return stx
+
+        def my_str2ary(setting, obj, atrba, atrbc):
+            """Callback: convert 7-char string to char array with count."""
+            ary = ""
+            knt = 7
+            for j in range (6, -1, -1):       # Strip trailing spaces
+                if str(setting.value)[j] == "" or str(setting.value)[j] == " ":
+                    knt = knt - 1
+                else:
+                    break
+            for j in range(0, 7, 1):
+                if j < knt: ary += str(setting.value)[j]
+                else: ary += chr(0xFF)
+            setattr(obj, atrba, ary)
+            setattr(obj, atrbc, knt)
+            return
+
+        tmp = chars2str(_lims.hello1, _lims.hello1_cnt)
+        rs = RadioSetting("hello_lims.hello1", "Power-On Message 1",
+                          RadioSettingValueString(0, 7, tmp))
+        rs.set_apply_callback(my_str2ary, _lims, "hello1", "hello1_cnt")
+        lims.append(rs)
+
+        tmp = chars2str(_lims.hello2, _lims.hello2_cnt)
+        rs = RadioSetting("hello_lims.hello2", "Power-On Message 2",
+                          RadioSettingValueString(0, 7, tmp))
+        rs.set_apply_callback(my_str2ary, _lims,"hello2", "hello2_cnt")
+        lims.append(rs)
+
+        # VALID_BANDS = [(136000000, 176000000),400000000, 480000000)]
+
+        lval = _lims.vhf_low / 100000.0
+        uval = _lims.vhf_high / 100000.0
+        if lval >= uval:
+            lval = 144.0
+            uval = 158.0
+
+        rs = RadioSetting("hello_lims.vhf_low", "Lower VHF Band Limit (MHz)",
+                          RadioSettingValueFloat(136.0, 176.0, lval, 0.001, 3))
+        rs.set_apply_callback(my_dbl2raw, _lims, "vhf_low")
+        lims.append(rs)
+
+        rs = RadioSetting("hello_lims.vhf_high", "Upper VHF Band Limit (MHz)",
+                          RadioSettingValueFloat(136.0, 176.0, uval, 0.001, 3))
+        rs.set_apply_callback(my_dbl2raw, _lims, "vhf_high")
+        lims.append(rs)
+
+        lval = _lims.uhf_low / 100000.0
+        uval = _lims.uhf_high / 100000.0
+        if lval >= uval:
+            lval = 420.0
+            uval = 470.0
+
+        rs = RadioSetting("hello_lims.uhf_low", "Lower UHF Band Limit (MHz)",
+                          RadioSettingValueFloat(400.0, 480.0, lval, 0.001, 3))
+        rs.set_apply_callback(my_dbl2raw, _lims, "uhf_low")
+        lims.append(rs)
+
+        rs = RadioSetting("hello_lims.uhf_high", "Upper UHF Band Limit (MHz)",
+                          RadioSettingValueFloat(400.0, 480.0, uval, 0.001, 3))
+        rs.set_apply_callback(my_dbl2raw, _lims, "uhf_high")
+        lims.append(rs)
+
+        # Codes and DTMF Groups Settings
+
+        def make_dtmf(ary, knt):
+            """Generate the DTMF code 1-8, NOT a callback."""
+            tmp = ""
+            if knt > 0 and knt != 0xff:
+                for  val in ary[:knt]:
+                    if val > 0 and val <= 9:
+                        tmp += chr(val + 48)
+                    elif val == 0x0a:
+                        tmp += "0"
+                    elif val == 0x0d:
+                        tmp += "A"
+                    elif val == 0x0e:
+                        tmp += "B"
+                    elif val == 0x0f:
+                        tmp += "C"
+                    elif val == 0x00:
+                        tmp += "D"
+                    elif val == 0x0b:
+                        tmp += "*"
+                    elif val == 0x0c:
+                        tmp += "#"
+                    else:
+                        msg = ("Invalid Character. Must be: 0-9,A,B,C,D,*,#")
+                        raise InvalidValueError(msg)
+            return tmp
+
+        def my_dtmf2raw(setting, obj, atrba, atrbc, syz=7):
+            """Callback: DTMF Code; sends 5 or 7-byte string."""
+            draw = []
+            knt = syz
+            for j in range (syz - 1, -1, -1):       # Strip trailing spaces
+                if str(setting.value)[j] == "" or str(setting.value)[j] == " ":
+                    knt = knt - 1
+                else:
+                    break
+            for j in range(0, syz):
+                bx = str(setting.value)[j]
+                obx = ord(bx)
+                dig = 0x0ff
+                if j < knt and knt > 0:      # (Else) is pads
+                    if  bx == "0":
+                        dig = 0x0a
+                    elif  bx == "A":
+                        dig = 0x0d
+                    elif  bx == "B":
+                        dig = 0x0e
+                    elif  bx == "C":
+                        dig = 0x0f
+                    elif  bx == "D":
+                        dig = 0x00
+                    elif  bx == "*":
+                        dig = 0x0b
+                    elif  bx == "#":
+                        dig = 0x0c
+                    elif obx >= 49 and obx <= 57:
+                        dig = obx - 48
+                    else:
+                        msg = ("Must be: 0-9,A,B,C,D,*,#")
+                        raise InvalidValueError(msg)
+                    # - End if/elif/else for bx
+                # - End if J<=knt
+                draw.append(dig)         # Generate string of bytes
+            # - End for j
+            setattr(obj, atrba, draw)
+            setattr(obj, atrbc, knt)
+            return
+
+        tmp = make_dtmf(_codes.native_id_code, _codes.native_id_cnt)
+        rs = RadioSetting("codes.native_id_code", "Native ID Code",
+                          RadioSettingValueString(0, 7, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes, "native_id_code",
+                              "native_id_cnt", 7)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.master_id_code, _codes.master_id_cnt)
+        rs = RadioSetting("codes.master_id_code", "Master Control ID Code",
+                          RadioSettingValueString(0, 7, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes, "master_id_code",
+                              "master_id_cnt",7)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.alarm_code, _codes.alarm_cnt)
+        rs = RadioSetting("codes.alarm_code", "Alarm Code",
+                            RadioSettingValueString(0, 5, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes, "alarm_code",
+                            "alarm_cnt", 5)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.id_disp_code, _codes.id_disp_cnt)
+        rs = RadioSetting("codes.id_disp_code", "Identify Display Code",
+                          RadioSettingValueString(0, 5, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes, "id_disp_code",
+                              "id_disp_cnt", 5)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.revive_code, _codes.revive_cnt)
+        rs = RadioSetting("codes.revive_code", "Revive Code",
+                          RadioSettingValueString(0, 5, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes,"revive_code",
+                              "revive_cnt", 5)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.stun_code, _codes.stun_cnt)
+        rs = RadioSetting("codes.stun_code", "Remote Stun Code",
+                          RadioSettingValueString(0, 5, tmp))
+        rs.set_apply_callback(my_dtmf2raw,  _codes, "stun_code",
+                              "stun_cnt", 5)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.kill_code, _codes.kill_cnt)
+        rs = RadioSetting("codes.kill_code", "Remote KILL Code",
+                          RadioSettingValueString(0, 5, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes, "kill_code",
+                              "kill_cnt", 5)
+        codes.append(rs)
+
+        tmp = make_dtmf(_codes.monitor_code, _codes.monitor_cnt)
+        rs = RadioSetting("codes.monitor_code", "Monitor Code",
+                          RadioSettingValueString(0, 5, tmp))
+        rs.set_apply_callback(my_dtmf2raw, _codes, "monitor_code",
+                              "monitor_cnt", 5)
+        codes.append(rs)
+
+        val = _codes.state_now
+        if val > 2:
+            val = 0
+
+        rx = RadioSettingValueList(LIST_STATE, LIST_STATE[val])
+        rs = RadioSetting("codes.state_now", "Current State", rx)
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf1, _dtmf.dtmf1_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf1", "DTMF1 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf1", "dtmf1_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf2, _dtmf.dtmf2_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf2", "DTMF2 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf2", "dtmf2_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf3, _dtmf.dtmf3_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf3", "DTMF3 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf3", "dtmf3_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf4, _dtmf.dtmf4_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf4", "DTMF4 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf4", "dtmf4_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf5, _dtmf.dtmf5_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf5", "DTMF5 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf5", "dtmf5_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf6, _dtmf.dtmf6_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf6", "DTMF6 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf6", "dtmf6_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf7, _dtmf.dtmf7_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf7", "DTMF7 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf7", "dtmf7_cnt")
+        codes.append(rs)
+
+        dtm = make_dtmf(_dtmf.dtmf8, _dtmf.dtmf8_cnt)
+        rs = RadioSetting("dtmf_tab.dtmf8", "DTMF8 String",
+                          RadioSettingValueString(0, 7, dtm))
+        rs.set_apply_callback(my_dtmf2raw, _dtmf, "dtmf8", "dtmf8_cnt")
+        codes.append(rs)
+
+        return group       # END get_settings()
+
 
     def set_settings(self, settings):
         _settings = self._memobj.settings
@@ -740,11 +1403,11 @@ class LT725UV(chirp_common.CloneModeRadio,
         match_size = False
         match_model = False
 
-        # testing the file data size
+        # Testing the file data size
         if len(filedata) == MEM_SIZE + 8:
             match_size = True
 
-        # testing the firmware model fingerprint
+        # Testing the firmware model fingerprint
         match_model = model_match(cls, filedata)
 
         if match_size and match_model:
@@ -761,3 +1424,23 @@ class LT725UVUpper(LT725UV):
 class LT725UVLower(LT725UV):
     VARIANT = "Lower"
     _vfo = "lower"
+
+
+class Zastone(chirp_common.Alias):
+    """Declare BJ-218 alias for Zastone BJ-218."""
+    VENDOR = "Zastone"
+    MODEL = "BJ-218"
+
+
+class Hesenate(chirp_common.Alias):
+    """Declare BJ-218 alias for Hesenate BJ-218."""
+    VENDOR = "Hesenate"
+    MODEL = "BJ-218"
+
+
+@directory.register
+class Baojie218(LT725UV):
+    """Baojie BJ-218"""
+    VENDOR = "Baojie"
+    MODEL = "BJ-218"
+    ALIASES = [Zastone, Hesenate, ]
