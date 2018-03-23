@@ -466,14 +466,14 @@ class FT70BankModel(chirp_common.BankModel):
 @directory.register
 class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FT-70DE"""
-    BAUD_RATE = 115200
+    BAUD_RATE = 38400
     VENDOR = "Yaesu"
     MODEL = "FT-70D"
 
     _model = "AH51G"
 
-    _memsize = 65227  # 65227 read from dump ?
-    _block_lengths = [10, 65555]  # ????? Not sure why this works to match _memsize
+    _memsize = 65227  # 65227 read from dump
+    _block_lengths = [10, 65217]
     _block_size = 32
     _mem_params = (900,  # size of memories array
                    900,  # size of flags array

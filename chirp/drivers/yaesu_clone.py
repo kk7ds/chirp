@@ -43,14 +43,22 @@ def _safe_read(pipe, count):
 
 
 def _chunk_read(pipe, count, status_fn):
+    timer = time.time()
     block = 32
     data = ""
-    for _i in range(0, count, block):
-        data += pipe.read(block)
-        if data:
+    while len(data) < count:
+        # Don't read past the end of our block if we're not on a 32-byte boundary
+        chunk_size = min(block, count - len(data))
+        chunk = pipe.read(chunk_size)
+        if chunk:
+            timer = time.time()
+            data += chunk
             if data[0] == chr(CMD_ACK):
                 data = data[1:]  # Chew an echo'd ack if using a 2-pin cable
-                # LOG.debug("Chewed an ack")
+        # LOG.debug("Chewed an ack")
+        if time.time() - timer > 2:
+            # It's been two seconds since we last saw data from the radio, so it's time to give up.
+            raise errors.RadioError("Timed out reading from radio")
         status = chirp_common.Status()
         status.msg = "Cloning from radio"
         status.max = count
