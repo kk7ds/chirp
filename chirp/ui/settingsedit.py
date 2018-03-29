@@ -194,6 +194,8 @@ class SettingsEditor(common.Editor):
                     LOG.error("Unsupported widget type: %s" % value.__class__)
 
                 widget.set_sensitive(value.get_mutable())
+                label.set_mnemonic_widget(widget)
+                widget.get_accessible().set_name(element.get_shortname())
                 widget.show()
 
                 box.pack_start(widget, 1, 1, 1)
