@@ -2063,7 +2063,12 @@ of file.
         CONF.set_bool("warned_about_reporting", True)
 
         self.update_recent_files()
-        self.update_stock_configs()
+        try:
+            self.update_stock_configs()
+        except UnicodeDecodeError:
+            LOG.exception('We hit bug #272 while working with unicode paths. '
+                          'Not copying stock configs so we can continue '
+                          'startup.')
         self.setup_extra_hotkeys()
 
         def updates_callback(ver):
