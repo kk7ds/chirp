@@ -23,7 +23,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueList, RadioSettingValueBoolean, \
     InvalidValueError
 from textwrap import dedent
-
+import string
 LOG = logging.getLogger(__name__)
 
 # Testing
@@ -339,7 +339,8 @@ MEM_FORMAT = """
 MEM_CALLSIGN_FORMAT = """
 #seekto 0x0ced0;
     struct {
-    char padded_string[10];              // 63 MYCALL    Set the call sign. (up to 10 characters)
+    char callsign[10];              // 63 MYCALL    Set the call sign. (up to 10 characters)
+    u16 charset;                    // character set ID
     } my_call;
     """
 
@@ -526,6 +527,8 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     _DG_ID = ["%d" % x for x in range(0, 100)]
     _GM_RING = ("OFF", "IN RING", "AlWAYS")
     _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
+
+    _MYCALL_CHR_SET = list(string.uppercase) + list(string.digits) + ['-','/' ]
 
     @classmethod
     def get_prompts(cls):
@@ -938,6 +941,15 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     def _get_digital_settings(self):
         menu = RadioSettingGroup("digital_settings", "Digital")
 
+        # MYCALL
+        mycall = self._memobj.my_call
+        mycallstr = str(mycall.callsign).rstrip("\xFF")
+    
+        mycallentry = RadioSettingValueString(0, 10, mycallstr, False, charset=self._MYCALL_CHR_SET)
+        rs = RadioSetting('mycall.callsign', 'MYCALL', mycallentry)
+        rs.set_apply_callback(self.apply_mycall, mycall)
+        menu.append(rs)
+        
         # Short Press AMS button AMS TX Mode
 
         digital_settings = self._memobj.digital_settings
@@ -1170,3 +1182,10 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rawval = setting.value.get_value()
         val = 0 if cls._DIG_POP_UP.index(rawval) == 0 else cls._DIG_POP_UP.index(rawval) + 9
         obj.digital_popup = val
+
+    def apply_mycall(cls, setting, obj):
+        cs = setting.value.get_value()
+        if cs[0] in ('-', '/'):
+            raise InvalidValueError("First character of call sign can't be - or /:  {0:s}".format(cs))
+        else:
+            obj.callsign = cls._add_ff_pad(cs.rstrip(), 10)
