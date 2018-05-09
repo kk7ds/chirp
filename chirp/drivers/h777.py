@@ -227,6 +227,16 @@ def do_upload(radio):
     _h777_exit_programming_mode(radio)
 
 
+class ArcshellAR5(chirp_common.Alias):
+    VENDOR = 'Arcshell'
+    MODEL = 'AR-5'
+
+
+class ArcshellAR6(chirp_common.Alias):
+    VENDOR = 'Arcshell'
+    MODEL = 'AR-6'
+
+
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -235,6 +245,8 @@ class H777Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-888"
     BAUD_RATE = 9600
+
+    ALIASES = [ArcshellAR5, ArcshellAR6]
 
     # This code currently requires that ranges start at 0x0000
     # and are continious. In the original program 0x0388 and 0x03C8
