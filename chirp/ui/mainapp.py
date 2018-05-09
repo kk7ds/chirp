@@ -1935,8 +1935,8 @@ of file.
         d.label.set_markup(
             _('A new version of CHIRP is available: ' +
               '{ver}. '.format(ver=version) +
-              'It is recommended that you upgrade as soon as possible. Please ' +
-              'go to: \r\n\r\n<a href="http://chirp.danplanet.com">' +
+              'It is recommended that you upgrade as soon as possible. '
+              'Please go to: \r\n\r\n<a href="http://chirp.danplanet.com">' +
               'http://chirp.danplanet.com</a>'))
         response = d.run()
         d.destroy()
