@@ -1922,23 +1922,27 @@ of file.
 
         LOG.info("Server reports version %s is available" % version)
 
-        # Report new updates every seven days
-        intv = 3600 * 24 * 7
+        # Report new updates every three days
+        intv = 3600 * 24 * 3
 
         if CONF.is_defined("last_update_check", "state") and \
            (time.time() - CONF.get_int("last_update_check", "state")) < intv:
             return
 
         CONF.set_int("last_update_check", int(time.time()), "state")
-        d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK, parent=self,
+        d = gtk.MessageDialog(buttons=gtk.BUTTONS_OK_CANCEL, parent=self,
                               type=gtk.MESSAGE_INFO)
-        d.set_property("text",
-                       _("A new version of CHIRP is available: " +
-                         "{ver}. ".format(ver=version) +
-                         "It is recommended that you upgrade, so " +
-                         "go to http://chirp.danplanet.com soon!"))
-        d.run()
+        d.label.set_markup(
+            _('A new version of CHIRP is available: ' +
+              '{ver}. '.format(ver=version) +
+              'It is recommended that you upgrade as soon as possible. Please ' +
+              'go to: \r\n\r\n<a href="http://chirp.danplanet.com">' +
+              'http://chirp.danplanet.com</a>'))
+        response = d.run()
         d.destroy()
+        if response == gtk.RESPONSE_OK:
+            webbrowser.open('http://chirp.danplanet.com/'
+                            'projects/chirp/wiki/Download')
 
     def _init_macos(self, menu_bar):
         macapp = None
