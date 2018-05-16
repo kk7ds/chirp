@@ -214,7 +214,7 @@ def do_program(radio):
     send(radio, "\x02")
     ident = raw_recv(radio, 8)
 
-    ################# WARNING ##########################################
+    # ################ WARNING ##########################################
     # Feidaxin radios has a "send id" procedure in the initial handshake
     # but it's worthless, once you do a hardware reset the ident area
     # get all 0xFF.
@@ -223,7 +223,7 @@ def do_program(radio):
     # mean, so I detected on a few images that the 3 first bytes are
     # unique to each radio model, so for now we use that method untill
     # proven otherwise
-    ####################################################################
+    # ###################################################################
 
     LOG.debug("Radio's ID string:")
     LOG.debug(util.hexprint(ident))
@@ -354,7 +354,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS"]
         # Power levels are golbal and no per channel, so disabled
-        #rf.valid_power_levels = POWER_LEVELS
+        # rf.valid_power_levels = POWER_LEVELS
         # this radio has no skips
         rf.valid_skips = []
         # this radio modes are global and not per channel, so just FM
@@ -529,14 +529,9 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                                _mem.settings.tot]))
         basic.append(tot)
 
-        power = RadioSetting("settings.power", "Actual Power",
-                             RadioSettingValueList(POWER_LEVELS,
-                                 POWER_LEVELS[_mem.settings.power]))
-        basic.append(power)
-
         key_lock = RadioSetting("settings.key", "Keyboard Lock",
-                                RadioSettingValueList(KEY_LOCK,
-                                    KEY_LOCK[_mem.settings.key]))
+                                RadioSettingValueList(KEY_LOCK, KEY_LOCK[
+                                    _mem.settings.key]))
         basic.append(key_lock)
 
         bw = RadioSetting("settings.bw", "Bandwidth",
@@ -544,8 +539,8 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         basic.append(bw)
 
         powerrank = RadioSetting("settings.powerrank", "Power output adjust",
-                                 RadioSettingValueList(POWER_RANK,
-                                     POWER_RANK[_mem.settings.powerrank]))
+                                 RadioSettingValueList(POWER_RANK, POWER_RANK[
+                                    _mem.settings.powerrank]))
         basic.append(powerrank)
 
         lamp = RadioSetting("settings.lamp", "LCD Lamp",
@@ -575,24 +570,36 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                                  W_MODE, W_MODE[_mem.settings.wmem]))
         work.append(wmset)
 
+        power = RadioSetting("settings.power", "Actual Power",
+                             RadioSettingValueList(POWER_LEVELS, POWER_LEVELS[
+                                 _mem.settings.power]))
+        work.append(power)
+
         active_ch = RadioSetting("settings.active_ch", "Work Channel",
-                                 RadioSettingValueList(ACTIVE_CH,
-                                     ACTIVE_CH[_mem.settings.active_ch]))
+                                 RadioSettingValueList(ACTIVE_CH, ACTIVE_CH[
+                                     _mem.settings.active_ch]))
         work.append(active_ch)
 
         # vfo rx validation
         if _mem.vfo.vrx_freq.get_raw()[0] == "\xFF":
             # if the vfo is not set, the UI cares about the
             # length of the field, so set a default
-            LOG.debug("VFO freq not set, setting it to default %s" %
-                self._VFO_DEFAULT)
+            LOG.debug("Setting VFO to default %s" % self._VFO_DEFAULT)
             vfo = self._VFO_DEFAULT
         else:
             vfo = int(_mem.vfo.vrx_freq) * 10
 
-        vf_freq = RadioSetting("vfo.vrx_freq", "VFO frequency",
-                               RadioSettingValueString(0, 10,
-                                   chirp_common.format_freq(vfo)))
+        # frecuency apply_callback
+        def apply_freq(setting, obj):
+            """Setting is the UI returned value, obj is the memmap object"""
+            value = chirp_common.parse_freq(str(setting.value))
+            obj.set_value(value / 10)
+
+        # preparing for callback on vrxfreq (handled also in a special )
+        vf_freq = RadioSetting("none.vrx_freq", "VFO frequency",
+                               RadioSettingValueString(0, 10, chirp_common.
+                               format_freq(vfo)))
+        vf_freq.set_apply_callback(apply_freq, _mem.vfo.vrx_freq)
         work.append(vf_freq)
 
         # shift works
@@ -603,7 +610,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         elif bool(_mem.vfo.shift_plus) is True:
             sset = 2
 
-        shift = RadioSetting("shift", "VFO Shift",
+        shift = RadioSetting("none.shift", "VFO Shift",
                              RadioSettingValueList(VSHIFT, VSHIFT[sset]))
         work.append(shift)
 
@@ -616,33 +623,21 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         else:
             vfo_shift = int(_mem.settings.vfo_shift) * 10
 
-        offset = RadioSetting("settings.vfo_shift", "VFO Offset",
-                              RadioSettingValueString(0, 9,
-                                 chirp_common.format_freq(vfo_shift)))
+        offset = RadioSetting("none.vfo_shift", "VFO Offset",
+                              RadioSettingValueString(0, 9, chirp_common.
+                              format_freq(vfo_shift)))
         work.append(offset)
 
-        step = RadioSetting("settings.step", "VFO step",
-                            RadioSettingValueList(STEPF,
-                                STEPF[_mem.settings.step]))
+        step = RadioSetting("settings", "VFO step",
+                            RadioSettingValueList(STEPF, STEPF[
+                                _mem.settings.step]))
         work.append(step)
-
-        # at least for FD-268A/B it doesn't work as stated, so disabled
-        # by now
-        #scamble = RadioSetting("vfo.scramble", "Scramble",
-                                #RadioSettingValueList(ONOFF,
-                                        #ONOFF[int(_mem.vfo.scramble)]))
-        #work.append(scamble)
-
-        #busy_lock = RadioSetting("vfo.busy_lock", "Busy Lock out",
-                                #RadioSettingValueList(ONOFF,
-                                        #ONOFF[int(_mem.vfo.busy_lock)]))
-        #work.append(busy_lock)
 
         # FD-288 Family ANI settings
         if "FD-288" in self.MODEL:
-            ani_mode = RadioSetting("settings.ani_mode", "ANI ID",
-                                    RadioSettingValueList(ANI,
-                                        ANI[_mem.settings.ani_mode]))
+            ani_mode = RadioSetting("ani_mode", "ANI ID",
+                                    RadioSettingValueList(ANI, ANI[
+                                        _mem.settings.ani_mode]))
             work.append(ani_mode)
 
             # it can't be \xFF
@@ -650,189 +645,158 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
             if ani_value == "\xFF\xFF\xFF":
                 ani_value = "200"
 
-            ani_value = "".join(x for x in ani_value
-                            if (int(x) >= 2 and int(x) <= 9))
+            ani_value = "".join(x for x in ani_value if (int(x) >= 2 and
+                        int(x) <= 9))
 
-            ani = RadioSetting("settings.ani", "ANI (200-999)",
+            ani = RadioSetting("ani", "ANI (200-999)",
                                RadioSettingValueString(0, 3, ani_value))
             work.append(ani)
 
         return top
 
     def set_settings(self, settings):
-        """Translate the settings in the UI into bit in the mem_struct
-        I don't understand well the method used in many drivers
-        so, I used mine, ugly but works ok"""
-        def _get_shift(obj):
-            """Get the amount of offset in the memmap"""
-            shift = 0
-            sf = str(obj.settings.vfo_shift)
-            if sf[0] != "\xFF":
-                shift = int(mobj.settings.vfo_shift) * 10
-            return shift
+        """Set settings in the Chirp way."""
 
-        def _get_vrx(obj):
-            """Get the vfo rx freq"""
-            return int(obj.vfo.vrx_freq) * 10
+        # special case: shift handling
+        def handle_shift(_vfo, settings):
+            """_vfo is mmap obj for vfo, settings is for all UI settings"""
 
-        def _update_vtx(o, rx, offset):
-            """Update the Vfo TX mem from the value of rx & the offset"""
-            # check the shift sign
-            plus = bool(getattr(o, "shift_plus"))
-            minus = bool(getattr(o, "shift_minus"))
+            # reset the shift in the memmap
+            _vfo.shift_minus = 0
+            _vfo.shift_plus = 0
 
-            if plus:
-                o.vtx_freq = (rx + offset) / 10
-            elif minus:
-                o.vtx_freq = (rx - offset) / 10
+            # parse and set if needed
+            rx = chirp_common.parse_freq(
+                str(settings["none.vrx_freq"]).split(":")[1])
+
+            offset = chirp_common.parse_freq(
+                str(settings["none.vfo_shift"]).split(":")[1])
+
+            shift = str(settings["none.shift"]).split(":")[1]
+
+            if shift == "None" or shift == "":
+                # no shift
+                _vfo.vtx_freq = rx / 10
+            if shift == "-":
+                # minus shift
+                _vfo.vtx_freq = (rx - offset) / 10
+            if shift == "+":
+                # plus shift
+                _vfo.vtx_freq = (rx + offset) / 10
+
+        # special case: narrow/wide at radio level and display icon
+        def handle_width(_settings, settings):
+            """_settings is mmap obj for settings,
+            settings is all the UI settings"""
+
+            value = str(settings["settings.bw"]).split(":")[1]
+
+            # set bw in settings
+            if value == "Wide":
+                _settings.bw.set_value(1)
+                _settings.bw1.set_value(0)
             else:
-                o.vtx_freq = rx / 10
+                _settings.bw.set_value(0)
+                _settings.bw1.set_value(1)
 
-        mobj = self._memobj
-        flag = False
+        # special case: battery save and display icon
+        def handle_bsave(_settings, settings):
+            """_settings is mmap obj for settings,
+            settings is all the UI settings"""
+
+            value = str(settings["settings.bs"]).split(":")[1]
+
+            # set bs in settings
+            if value == "True":
+                _settings.bs.set_value(1)
+                _settings.bs1.set_value(0)
+            else:
+                _settings.bs.set_value(0)
+                _settings.bs1.set_value(1)
+
+        # special case: warning tones and display icon
+        def handle_warning(_settings, settings):
+            """_settings is mmap obj for settings,
+            settings is all the UI settings"""
+
+            value = str(settings["settings.warning"]).split(":")[1]
+
+            # set warning in settings
+            if value == "True":
+                _settings.warning.set_value(1)
+                _settings.warning1.set_value(0)
+            else:
+                _settings.warning.set_value(0)
+                _settings.warning1.set_value(1)
+
+        _mem = self._memobj
         for element in settings:
+            name = element.get_name()
+
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
                 continue
 
-            # Let's roll the ball
-            if "." in element.get_name():
-                # real properties, more or less mapeable
-                inter, setting = element.get_name().split(".")
-                obj = getattr(mobj, inter)
-                value = element.value
+            if not element.changed():
+                continue
 
-                # test on this cases .......
-                if setting in ["sql", "tot", "powerrank", "active_ch",
-                        "ani_mode"]:
-                    value = int(value)
+            sett, name = name.split(".")
 
-                # test on this cases .......
-                if setting in ["lamp", "lamp_auto", "bs", "warning",
-                        "monitor"]:
-                    value = bool(value)
-                    # warning and bs have a sister setting in LCD
-                    if setting == "warning" or setting == "bs":
-                        # aditional setting
-                        setattr(obj, setting + "1", value)
+            try:
+                # special cases
+                if name in ["vrx_freq", "vfo_shift", "shift"]:
+                    # call local callback
+                    print("Calling local callback for shift handling")
+                    handle_shift(self._memobj.vfo, settings)
+                    continue
 
-                    # monitorval: monitor = 0 > monitorval = 0
-                    # monitorval: monitor = 1 > monitorval = x30
-                    if setting == "monitor":
-                        # sister setting in LCD
-                        if value:
-                            setattr(obj, "monitorval", 0x30)
-                        else:
-                            setattr(obj, "monitorval", 0)
+                if name == "bw":
+                    # call local callback
+                    print("Calling local callback for bw handling")
+                    handle_width(self._memobj.settings, settings)
+                    continue
 
-                # case power
-                if setting == "power":
-                    value = str(value) == "High" and True or False
+                if name == "bs":
+                    # call local callback
+                    print("Calling local callback for bs handling")
+                    handle_bsave(self._memobj.settings, settings)
+                    continue
 
-                # case key
-                # key => auto = 0, manu = 1
-                if setting == "key":
-                    value = str(value) == "Manual" and True or False
+                if name == "warning":
+                    # call local callback
+                    print("Calling local callback for warning handling")
+                    handle_warning(self._memobj.settings, settings)
+                    continue
 
-                # case bandwidth
-                # bw: 0 = nar, 1 = Wide & must equal bw1
-                if setting == "bw":
-                    value = str(value) == "Wide" and True or False
-                    # sister attr
-                    setattr(obj, "bw1", value)
-
-                # work mem wmem/wvfo
-                if setting == "wmem":
-                    if str(value) == "Memory":
-                        value = True
-                        # sister attr
-                        setattr(obj, "wvfo", not value)
-                    else:
-                        value = False
-                        # sister attr
-                        setattr(obj, "wvfo", not value)
-
-                # case step
-                # STEPF = ["5", "10", "6.25", "12.5", "25"]
-                if setting == "step":
-                    value = STEPF.index(str(value))
-
-                # case vrx_freq
-                if setting == "vrx_freq":
-                    value = chirp_common.parse_freq(str(value)) / 10
-                    # you must calculate the apropiate txfreq from
-                    # shift and offset
-                    shift = _get_shift(mobj)
-                    # update the tx vfo freq
-                    _update_vtx(obj, value * 10, shift)
-
-                # vfo_shift = offset
-                if setting == "vfo_shift":
-                    value = chirp_common.parse_freq(str(value)) / 10
-                    # you must calculate the apropiate txfreq from
-                    # shift and offset
-                    # get vfo rx
-                    vrx = _get_vrx(mobj)
-                    # update the tx vfo freq
-                    _update_vtx(mobj.vfo, vrx, value * 10)
-
-                # at least for FD-268A/B it doesn't work as stated, so disabled
-                # by now, does this work on the fd-288s?
-
-                ## case scramble & busy_lock
-                #if setting == "scramble" or setting == "busy_lock":
-                    #value = bool(ONOFF.index(str(value)))
-
-                # ani value, only for FD-288
-                if setting == "ani":
-                    if "FD-268" in self.MODEL:
-                        # 268 doesn't have ani setting
+                if element.has_apply_callback():
+                    try:
+                        element.run_apply_callback()
                         continue
-                    else:
-                        # 288 models, validate the input [200-999] | ""
-                        # we will left adjust and zero pad to avoid errors
-                        # between inputs in the UI
-                        value = str(value).strip().ljust(3, "0")
-                        value = int(value)
-                        if value == 0:
-                            value = 200
-                        else:
-                            if value > 999 or value < 200:
-                                raise errors.InvalidValueError(
-                                    "The ANI value must be between \
-                                    200 and 999, not %03i" % value)
+                    except NotImplementedError as e:
+                        raise
 
-                        value = str(value)
+                elif sett == "none":
+                    LOG.debug("Setting %sett.%s is ignored" % (sett, name))
+                    continue
 
-            else:
-                # Others that are artifact for real values, not than mapeables
-                # selecting the values to work
-                setting = str(element.get_name())
-                value = str(element.value)
+                elif element.value.get_mutable():
+                    # value is mutable, find it on the mem space
 
-                # vfo_shift
-                if setting == "shift":
-                    # get shift
-                    offset = _get_shift(mobj)
-                    # get vfo rx
-                    vrx = _get_vrx(mobj)
+                    LOG.debug("Setting %s.%s = %s" % (sett, name, str(
+                              element.value)))
 
-                    # VSHIFT = ["None", "-", "+"]
-                    if value == "+":
-                        mobj.vfo.shift_plus = True
-                        mobj.vfo.shift_minus = False
-                    elif value == "-":
-                        mobj.vfo.shift_plus = False
-                        mobj.vfo.shift_minus = True
-                    else:
-                        mobj.vfo.shift_plus = False
-                        mobj.vfo.shift_minus = False
+                    # process it
+                    try:
+                        obj = getattr(_mem, sett)
+                        setattr(obj, name, element.value)
 
-                    # update the tx vfo freq
-                    _update_vtx(mobj.vfo, vrx, offset)
+                    except AttributeError, e:
+                        m = "Setting %s is not in this setting block" % name
+                        LOG.debug(m)
 
-            if setting != "shift":
-                setattr(obj, setting, value)
+            except Exception, e:
+                LOG.debug(element.get_name())
+                raise
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -851,9 +815,10 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         else:
             return False
 
-## FD-268 family: this are the original tested models, FD-268B UHF
-## was tested "remotely" with images thanks to AG5M
-## I just have the 268A in hand to test
+# ##########################################################################3
+# FD-268 family: this are the original tested models, FD-268B UHF
+# was tested "remotely" with images thanks to AG5M
+# I just have the 268A in hand to test
 
 
 @directory.register
@@ -873,9 +838,11 @@ class FD268BRadio(FeidaxinFD2x8yRadio):
     _VFO_DEFAULT = 439000000
     _IDENT = "\xFF\xEE\x47\xFF"
 
-## FD-288 Family: the only difference from this family to the FD-268's
-## are the ANI settings
-## Tested hacking the FD-268A memmory
+
+# #####################################################################
+# FD-288 Family: the only difference from this family to the FD-268's
+# are the ANI settings
+# Tested hacking the FD-268A memmory
 
 
 @directory.register
@@ -895,8 +862,11 @@ class FD288BRadio(FeidaxinFD2x8yRadio):
     _VFO_DEFAULT = 439000000
     _IDENT = "\xFF\xEE\x4C\xFF"
 
-## the following radios was tested hacking the FD-268A memmory with
-## the software and found to be clones of FD-268 ones
+
+# #####################################################################
+# The following radios was tested hacking the FD-268A memmory with
+# the software and found to be clones of FD-268 ones
+# please report any problems to driver author (see head of this file)
 
 
 @directory.register
