@@ -1,6 +1,6 @@
 # Copyright 2017 Pavel Milanes, CO7WT, <pavelmc@gmail.com>
 #
-# This driver is a community effort as I don have the radio on my hands, so
+# This driver is a community effort as I don't have the radio on my hands, so
 # I was only the director of the orchestra, without the players this may never
 # came true, so special thanks to the following hams for their contribution:
 # - Henk van der Laan, PA3CQN
@@ -25,12 +25,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import struct
-import logging
-
-LOG = logging.getLogger(__name__)
-
 from time import sleep
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -39,6 +33,11 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
+
+import struct
+import logging
+
+LOG = logging.getLogger(__name__)
 
 # A note about the memmory in these radios
 #
@@ -49,8 +48,8 @@ from textwrap import dedent
 # Later investigations by Harold Hankins found that the eeprom extend up to 2k
 # consistent with a hardware chip K24C16 a 2k x 8 bit serial eeprom
 
-MEM_SIZE = 0x0800 # 2048 bytes
-WRITE_SIZE = 0x0180 # 384 bytes
+MEM_SIZE = 0x0800  # 2048 bytes
+WRITE_SIZE = 0x0180  # 384 bytes
 BLOCK_SIZE = 0x10
 ACK_CMD = "\x06"
 MODES = ["NFM", "FM"]
@@ -82,7 +81,7 @@ STIMEOUT = 0.07
 # make it True and you will to get a very verbose debug.log
 debug = False
 
-##### ID strings #####################################################
+# #### ID strings #####################################################
 
 # BF-T1 handheld
 BFT1_magic = "\x05PROGRAM"
@@ -110,7 +109,7 @@ def _clean_buffer(radio):
         raise errors.RadioError("Unknown error cleaning the serial buffer")
 
 
-def _rawrecv(radio, amount = 0):
+def _rawrecv(radio, amount=0):
     """Raw read from the radio device"""
 
     # var to hold the data to return
@@ -178,7 +177,6 @@ def _recv(radio, addr):
     # long answer
     if len(block) > (BLOCK_SIZE + 4):
         raise errors.RadioError("Wrong block length (long) at 0x%04x" % addr)
-
 
     # header validation
     c, a, l = struct.unpack(">cHB", block[0:4])
@@ -261,7 +259,7 @@ def _do_ident(radio, status):
     _send(radio, ACK_CMD)
     ack = _rawrecv(radio, 1)
 
-    #checking handshake
+    # checking handshake
     if len(ack) == 1 and ack == ACK_CMD:
         # DEBUG
         LOG.info("ID ACK received")
@@ -359,7 +357,7 @@ def _upload(radio):
         if ack != ACK_CMD:
             raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
 
-         # UI Update
+        # UI Update
         status.cur = addr / BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
@@ -455,6 +453,7 @@ struct {
 struct channel rly;
 
 """
+
 
 @directory.register
 class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
@@ -616,7 +615,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
-    def _get_special(self,number):
+    def _get_special(self, number):
         if isinstance(number, str):
             return (getattr(self._memobj, number.lower()))
         elif number < 0:
@@ -683,7 +682,6 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         rxtone = self._decode_tone(_mem.rxtone, _mem.rtondinv)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-
         return mem
 
     def set_memory(self, mem):
@@ -745,7 +743,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         adv = RadioSettingGroup("adv", "Advanced Settings")
         group = RadioSettings(basic, fm, adv)
 
-        ### Basic Settings
+        # ## Basic Settings
         rs = RadioSetting("tx_pwr", "TX Power",
                           RadioSettingValueList(
                             POWER_LIST, POWER_LIST[_settings.tx_pwr]))
@@ -772,8 +770,8 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         basic.append(rs)
 
         rs = RadioSetting("scantype", "Scan Type",
-                          RadioSettingValueList(
-                            SCAN_TYPE_LIST, SCAN_TYPE_LIST[_settings.scantype]))
+                          RadioSettingValueList(SCAN_TYPE_LIST, SCAN_TYPE_LIST[
+                              _settings.scantype]))
         basic.append(rs)
 
         rs = RadioSetting("timeout", "Time Out Timer (seconds)",
@@ -817,7 +815,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                           RadioSettingValueBoolean(_settings.beep))
         basic.append(rs)
 
-        ### FM Settings
+        # ## FM Settings
         rs = RadioSetting("fm_funct", "FM Function",
                           RadioSettingValueBoolean(_settings.fm_funct))
         fm.append(rs)
@@ -829,8 +827,8 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # callbacks for the FM VFO
         def apply_fm_freq(setting, obj):
-            setattr(obj, setting.get_name(),
-                int(setting.value.get_value() * 10) - 650)
+            setattr(obj, setting.get_name(), int(setting.value.
+                get_value() * 10) - 650)
 
         _fm_vfo = int(_settings.fm_vfo) * 0.1 + 65
         rs = RadioSetting("fm_vfo", "FM Station",
@@ -838,37 +836,37 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         rs.set_apply_callback(apply_fm_freq, _settings)
         fm.append(rs)
 
-        ### Advanced
+        # ## Advanced
         def apply_limit(setting, obj):
             setattr(obj, setting.get_name(), int(setting.value) * 10)
 
         rs = RadioSetting("vhfl", "VHF Low Limit",
-                          RadioSettingValueInteger(136, 174,
-                            int(_settings.vhfl) / 10))
+                          RadioSettingValueInteger(136, 174, int(
+                              _settings.vhfl) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("vhfh", "VHF High Limit",
-                          RadioSettingValueInteger(136, 174,
-                            int(_settings.vhfh) / 10))
+                          RadioSettingValueInteger(136, 174, int(
+                              _settings.vhfh) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("uhfl", "UHF Low Limit",
-                          RadioSettingValueInteger(400, 470,
-                            int(_settings.uhfl) / 10))
+                          RadioSettingValueInteger(400, 470, int(
+                              _settings.uhfl) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("uhfh", "UHF High Limit",
-                          RadioSettingValueInteger(400, 470,
-                            int(_settings.uhfh) / 10))
+                          RadioSettingValueInteger(400, 470, int(
+                              _settings.uhfh) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("relaym", "Relay Mode",
-                          RadioSettingValueList(
-                            RELAY_MODE_LIST, RELAY_MODE_LIST[_settings.relaym]))
+                          RadioSettingValueList(RELAY_MODE_LIST,
+                              RELAY_MODE_LIST[_settings.relaym]))
         adv.append(rs)
 
         return group
