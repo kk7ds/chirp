@@ -973,11 +973,14 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
     _file_ident = "Leixen"
     _model_ident = 'LX-\x89\x85\x85'
     _ranges = [(0x0C00, 0x2000)]
-    _mem_formatter = {'unknownormode': 'unknown6:1',
-                      'modeorpower': 'mode:1, power:1',
+    _mem_formatter = {'unknownormode': 'mode:1',
+                      'modeorpower': 'power:2',
                       'chanstart': 0x0C00,
-                      'namestart': 0x1930,
+                      'namestart': 0x1900,
                       'defaults': 6}
+    _power_levels = [chirp_common.PowerLevel("Low", watts=5),
+                     chirp_common.PowerLevel("Mid", watts=10),
+                     chirp_common.PowerLevel("High", watts=25)]
 
     def get_features(self):
         rf = super(JetstreamJT270MHRadio, self).get_features()
