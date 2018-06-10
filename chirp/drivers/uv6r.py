@@ -40,6 +40,7 @@ MSTRING_UV6R = "\x50\xBB\xFF\x20\x14\x11\x22"
                                                                              
 # Baofeng UV-6R                                                              
 UV6R_fp1 = " BF230#1"
+UV6R_fp2 = " BF230#2"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -96,7 +97,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
     VENDOR = "Baofeng"
     MODEL = "UV-6R"
 
-    _fileid = [UV6R_fp1, ]
+    _fileid = [UV6R_fp2, UV6R_fp1, ]
 
     _magic = [MSTRING_UV6R, ]
     _magic_response_length = 8
@@ -859,7 +860,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
         match_model = False
 
         # testing the file data size
-        if len(filedata) == 0x2008:
+        if len(filedata) == 0x2008 or 0x2010:
             match_size = True
 
         # testing the firmware model fingerprint
