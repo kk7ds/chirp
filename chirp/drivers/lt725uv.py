@@ -417,8 +417,7 @@ def _split(rf, f1, f2):
 
 
 @directory.register
-class LT725UV(chirp_common.CloneModeRadio,
-              chirp_common.ExperimentalRadio):
+class LT725UV(chirp_common.CloneModeRadio):
     """LUITON LT-725UV Radio"""
     VENDOR = "LUITON"
     MODEL = "LT-725UV"
@@ -438,7 +437,7 @@ class LT725UV(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = \
+        rp.info = \
             ('Some notes about POWER settings:\n'
              '- The individual channel power settings are ignored'
              ' by the radio.\n'
@@ -448,7 +447,7 @@ class LT725UV(chirp_common.CloneModeRadio,
              ' entire upper or lower band.\n'
              '- Tri-power radio models will set and download the three'
              ' band-power'
-             ' levels, but they are\n  converted to just Low and High at'
+             ' levels, but they are converted to just Low and High at'
              ' upload.'
              ' The Mid setting reverts to Low.'
              )
