@@ -385,6 +385,7 @@ of file.
                 num=len(eset.rthread.radio.errors))
             common.show_error_text(msg,
                                    "\r\n".join(eset.rthread.radio.errors))
+        self._show_information(radio)
 
     def do_live_warning(self, radio):
         d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
@@ -626,6 +627,37 @@ of file.
             CONF.set_bool(sql_key, not squelch, "state")
         return resp == gtk.RESPONSE_YES
 
+    def _show_information(self, radio):
+        message = radio.get_prompts().info
+        if message is None:
+            return
+
+        if CONF.get_bool("clone_information", "noconfirm"):
+            return
+
+        d = gtk.MessageDialog(parent=self, buttons=gtk.BUTTONS_OK)
+        d.set_markup("<big><b>" + _("{name} Information").format(
+                 name=radio.get_name()) + "</b></big>")
+        msg = _("{information}").format(information=message)
+        d.format_secondary_markup(msg)
+
+        again = gtk.CheckButton(
+            _("Don't show information for any radio again"))
+        again.show()
+        again.connect("toggled", lambda action:
+                      self.infomenu.set_active(not action.get_active()))
+        d.vbox.pack_start(again, 0, 0, 0)
+        h_button_box = d.vbox.get_children()[2]
+        try:
+            ok_button = h_button_box.get_children()[0]
+            ok_button.grab_default()
+            ok_button.grab_focus()
+        except AttributeError:
+            # don't grab focus on GTK+ 2.0
+            pass
+        d.run()
+        d.destroy()
+
     def _show_instructions(self, radio, message):
         if message is None:
             return
@@ -695,6 +727,7 @@ of file.
             ct.start()
         else:
             self.do_open_live(radio)
+        self._show_information(rclass)          # show Info prompt now
 
     def do_upload(self, port=None, rtype=None):
         eset = self.get_current_editorset()
@@ -1520,6 +1553,10 @@ of file.
             devaction = self.menu_ag.get_action(name)
             devaction.set_visible(action.get_active())
 
+    def do_toggle_clone_information(self, action):
+        CONF.set_bool("clone_information",
+                      not action.get_active(), "noconfirm")
+
     def do_toggle_clone_instructions(self, action):
         CONF.set_bool("clone_instructions",
                       not action.get_active(), "noconfirm")
@@ -1620,6 +1657,8 @@ of file.
             self.do_toggle_no_smart_tmode(_action)
         elif action == "developer":
             self.do_toggle_developer(_action)
+        elif action == "clone_information":
+            self.do_toggle_clone_information(_action)
         elif action == "clone_instructions":
             self.do_toggle_clone_instructions(_action)
         elif action in ["cut", "copy", "paste", "delete",
@@ -1714,6 +1753,7 @@ of file.
       <menuitem action="gethelp"/>
       <separator/>
       <menuitem action="report"/>
+      <menuitem action="clone_information"/>
       <menuitem action="clone_instructions"/>
       <menuitem action="developer"/>
       <separator/>
@@ -1809,6 +1849,7 @@ of file.
         re = not conf.get_bool("no_report")
         hu = conf.get_bool("hide_unused", "memedit", default=True)
         dv = conf.get_bool("developer", "state")
+        cf = not conf.get_bool("clone_information", "noconfirm")
         ci = not conf.get_bool("clone_instructions", "noconfirm")
         st = not conf.get_bool("no_smart_tmode", "memedit")
 
@@ -1818,6 +1859,8 @@ of file.
                     None, None, self.mh, hu),
                    ('no_smart_tmode', None, _("Smart Tone Modes"),
                     None, None, self.mh, st),
+                   ('clone_information', None, _("Show Information"),
+                    None, None, self.mh, cf),
                    ('clone_instructions', None, _("Show Instructions"),
                     None, None, self.mh, ci),
                    ('developer', None, _("Enable Developer Functions"),
@@ -1833,6 +1876,9 @@ of file.
         self.menu_uim.add_ui_from_string(menu_xml)
 
         self.add_accel_group(self.menu_uim.get_accel_group())
+
+        self.infomenu = self.menu_uim.get_widget(
+            "/MenuBar/help/clone_information")
 
         self.clonemenu = self.menu_uim.get_widget(
             "/MenuBar/help/clone_instructions")
