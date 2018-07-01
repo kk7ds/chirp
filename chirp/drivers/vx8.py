@@ -336,7 +336,7 @@ MODES = ["FM", "AM", "WFM"]
 STEPS = list(chirp_common.TUNING_STEPS)
 STEPS.remove(30.0)
 STEPS.append(100.0)
-STEPS.insert(2, 0.0)  # There is a skipped tuning step at index 2 (?)
+STEPS.insert(2, 8.33)  # Index 2 is 8.33kHz airband step
 SKIPS = ["", "S", "P"]
 VX8_DTMF_CHARS = list("0123456789ABCD*#-")
 

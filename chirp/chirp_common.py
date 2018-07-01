@@ -1286,6 +1286,11 @@ def is_2_5(freq):
     return (freq % 2500) == 0
 
 
+def is_8_33(freq):
+    """Returns True if @freq is reachable by a 8.33kHz step"""
+    return (freq % 25000) in [ 0, 8330, 16660 ]
+
+
 def required_step(freq):
     """Returns the simplest tuning step that is required to reach @freq"""
     if is_5_0(freq):
@@ -1296,6 +1301,8 @@ def required_step(freq):
         return 6.25
     elif is_2_5(freq):
         return 2.5
+    elif is_8_33(freq):
+        return 8.33
     else:
         raise errors.InvalidDataError("Unable to calculate the required " +
                                       "tuning step for %i.%5i" %
@@ -1326,6 +1333,18 @@ def fix_rounded_step(freq):
     try:
         required_step(freq + 750)
         return float(freq + 750)
+    except errors.InvalidDataError:
+        pass
+
+    try:
+        required_step(freq + 330)
+        return float(freq + 330)
+    except errors.InvalidDataError:
+        pass
+
+    try:
+        required_step(freq + 660)
+        return float(freq + 660)
     except errors.InvalidDataError:
         pass
 
