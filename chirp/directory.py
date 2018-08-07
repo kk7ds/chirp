@@ -137,9 +137,26 @@ def get_radio_by_image(image_file):
     else:
         filedata = ""
 
+    data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
+
     for rclass in DRV_TO_RADIO.values():
         if not issubclass(rclass, chirp_common.FileBackedRadio):
             continue
-        if rclass.match_model(filedata, image_file):
+
+        # If no metadata, we do the old thing
+        if not metadata and rclass.match_model(filedata, image_file):
             return rclass(image_file)
+
+        # If metadata, then it has to match one of the aliases or the parent
+        for alias in rclass.ALIASES + [rclass]:
+            if (alias.VENDOR == metadata.get('vendor') and
+                    alias.MODEL == metadata.get('model')):
+
+                class DynamicRadioAlias(rclass):
+                    VENDOR = metadata.get('vendor')
+                    MODEL = metadata.get('model')
+                    VARIANT = metadata.get('variant')
+
+                return DynamicRadioAlias(image_file)
+
     raise errors.ImageDetectFailed("Unknown file format")

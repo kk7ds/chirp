@@ -13,8 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import base64
+import json
+import logging
 import math
 from chirp import errors, memmap
+
+LOG = logging.getLogger(__name__)
 
 SEPCHAR = ","
 
@@ -1104,6 +1109,7 @@ class Radio(Alias):
 class FileBackedRadio(Radio):
     """A file-backed radio stores its data in a file"""
     FILE_EXTENSION = "img"
+    MAGIC = '\x00\xffchirp\xeeimg\x00\x01'
 
     def __init__(self, *args, **kwargs):
         Radio.__init__(self, *args, **kwargs)
@@ -1121,10 +1127,45 @@ class FileBackedRadio(Radio):
         """Process a newly-loaded or downloaded memory map"""
         pass
 
+    @classmethod
+    def _strip_metadata(cls, raw_data):
+        try:
+            idx = raw_data.index(cls.MAGIC)
+        except ValueError:
+            LOG.debug('Image data has no metadata blob')
+            return raw_data, {}
+
+        # Find the beginning of the base64 blob
+        raw_metadata = raw_data[idx + len(cls.MAGIC):]
+        metadata = {}
+        try:
+            metadata = json.loads(base64.b64decode(raw_metadata))
+        except ValueError as e:
+            LOG.error('Failed to parse decoded metadata blob: %s' % e)
+        except TypeError as e:
+            LOG.error('Failed to decode metadata blob: %s' % e)
+
+        if metadata:
+            LOG.debug('Loaded metadata: %s' % metadata)
+
+        return raw_data[:idx], metadata
+
+    @classmethod
+    def _make_metadata(cls):
+        return base64.b64encode(json.dumps(
+            {'rclass': cls.__name__,
+             'vendor': cls.VENDOR,
+             'model': cls.MODEL,
+             'variant': cls.VARIANT,
+             }))
+
     def load_mmap(self, filename):
         """Load the radio's memory map from @filename"""
         mapfile = file(filename, "rb")
-        self._mmap = memmap.MemoryMap(mapfile.read())
+        data = mapfile.read()
+        if self.MAGIC in data:
+            data, metadata = self._strip_metadata(data)
+        self._mmap = memmap.MemoryMap(data)
         mapfile.close()
         self.process_mmap()
 
@@ -1136,6 +1177,9 @@ class FileBackedRadio(Radio):
         try:
             mapfile = file(filename, "wb")
             mapfile.write(self._mmap.get_packed())
+            if filename.lower().endswith(".img"):
+                mapfile.write(self.MAGIC)
+                mapfile.write(self._make_metadata())
             mapfile.close()
         except IOError:
             raise Exception("File Access Error")

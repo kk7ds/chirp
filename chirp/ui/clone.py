@@ -191,9 +191,16 @@ class CloneSettingsDialog(gtk.Dialog):
                 for alias in rclass.ALIASES:
                     if alias.MODEL == model:
                         alias_match = rclass
+                        alias_class = alias
                         break
                 if alias_match:
-                    cs.radio_class = rclass
+
+                    class DynamicRadioAlias(rclass):
+                        VENDOR = alias.VENDOR
+                        MODEL = alias.MODEL
+                        VARIANT = alias.VARIANT
+
+                    cs.radio_class = DynamicRadioAlias
                     LOG.debug(
                         'Chose %s alias for %s because model %s selected' % (
                             alias_match, cs.radio_class, model))
