@@ -1579,9 +1579,12 @@ of file.
             conf.set("language", d.choice.get_active_text(), "state")
         d.destroy()
 
-    def load_module(self):
-        types = [(_("Python Modules") + "*.py", "*.py")]
-        filen = platform.get_platform().gui_open_file(types=types)
+    def load_module(self, filen=None):
+        types = [(_("Python Modules") + " *.py", "*.py"),
+                 (_("Modules") + " *.mod", "*.mod")]
+
+        if filen is None:
+            filen = platform.get_platform().gui_open_file(types=types)
         if not filen:
             return
 
@@ -1590,10 +1593,11 @@ of file.
         # its normal better judgement
         directory.enable_reregistrations()
 
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color('#ea6262'))
+
         try:
-            module = file(filen)
-            code = module.read()
-            module.close()
+            with file(filen) as module:
+                code = module.read()
             pyc = compile(code, filen, 'exec')
             # See this for why:
             # http://stackoverflow.com/questions/2904274/globals-and-locals-in-python-exec
