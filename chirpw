@@ -112,7 +112,8 @@ else:
 
 parser = argparse.ArgumentParser()
 parser.add_argument("files", metavar="file", nargs='*', help="File to open")
-parser.add_argument("--module", metavar="module", help="Load module on startup")
+parser.add_argument("--module", metavar="module",
+                    help="Load module on startup")
 logger.add_version_argument(parser)
 parser.add_argument("--profile", action="store_true",
                     help="Enable profiling")

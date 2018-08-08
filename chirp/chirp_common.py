@@ -1332,7 +1332,7 @@ def is_2_5(freq):
 
 def is_8_33(freq):
     """Returns True if @freq is reachable by a 8.33kHz step"""
-    return (freq % 25000) in [ 0, 8330, 16660 ]
+    return (freq % 25000) in [0, 8330, 16660]
 
 
 def required_step(freq):
