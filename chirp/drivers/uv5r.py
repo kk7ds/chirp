@@ -1876,3 +1876,20 @@ class BaofengUV82HPRadio(BaofengUV5R):
     def _is_orig(self):
         # Override this for UV82HP to always return False
         return False
+
+
+@directory.register
+class RadioddityUV5RX3Radio(BaofengUV5R):
+    VENDOR = "Radioddity"
+    MODEL = "UV-5RX3"
+
+    def get_features(self):
+        rf = BaofengUV5R.get_features(self)
+        rf.valid_bands = [self._vhf_range,
+                          (200000000, 260000000),
+                          self._uhf_range]
+        return rf
+
+    @classmethod
+    def match_model(cls, filename, filedata):
+        return False
