@@ -1754,9 +1754,15 @@ class RH5RAlias(chirp_common.Alias):
     MODEL = "RH5R"
 
 
+class ROUV5REXAlias(chirp_common.Alias):
+    VENDOR = "Radioddity"
+    MODEL = "UV-5R EX"
+
+
 @directory.register
 class BaofengUV5RGeneric(BaofengUV5R):
-    ALIASES = [UV5XAlias, RT5RAlias, RT5RVAlias, RT5Alias, RH5RAlias]
+    ALIASES = [UV5XAlias, RT5RAlias, RT5RVAlias, RT5Alias, RH5RAlias,
+               ROUV5REXAlias]
 
 
 @directory.register
@@ -1837,11 +1843,16 @@ class IntekKT980Radio(BaofengUV5R):
         return False
 
 
+class ROGA5SAlias(chirp_common.Alias):
+    VENDOR = "Radioddity"
+    MODEL = "GA-5S"
+
+
 @directory.register
 class BaofengBFF8HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP"
-    ALIASES = [RT5_TPAlias]
+    ALIASES = [RT5_TPAlias, ROGA5SAlias]
     _basetype = BASETYPE_F8HP
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_A58
