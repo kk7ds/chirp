@@ -6,6 +6,7 @@ import tempfile
 import mock
 
 from tests.unit import base
+from chirp import CHIRP_VERSION
 from chirp import chirp_common
 from chirp import errors
 
@@ -54,6 +55,17 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(chirp_common.format_freq(1800000), "1.800000")
         self.assertEqual(chirp_common.format_freq(1), "0.000001")
         self.assertEqual(chirp_common.format_freq(1250000000), "1250.000000")
+
+    @mock.patch('chirp.CHIRP_VERSION', new='daily-20151021')
+    def test_compare_version_to_current(self):
+        self.assertTrue(chirp_common.is_version_newer('daily-20180101'))
+        self.assertFalse(chirp_common.is_version_newer('daily-20140101'))
+        self.assertFalse(chirp_common.is_version_newer('0.3.0'))
+        self.assertFalse(chirp_common.is_version_newer('0.3.0dev'))
+
+    @mock.patch('chirp.CHIRP_VERSION', new='0.3.0dev')
+    def test_compare_version_to_current_dev(self):
+        self.assertTrue(chirp_common.is_version_newer('daily-20180101'))
 
 
 class TestSplitTone(base.BaseTest):
@@ -276,6 +288,7 @@ class TestImageMetadata(base.BaseTest):
             'model': 'Foomaster 9000',
             'variant': 'R',
             'rclass': 'TestRadio',
+            'chirp_version': CHIRP_VERSION,
         }
         self.assertEqual(expected, metadata)
 
@@ -295,6 +308,7 @@ class TestImageMetadata(base.BaseTest):
             'model': 'Foomaster 9000',
             'variant': 'R',
             'rclass': 'TestRadio',
+            'chirp_version': CHIRP_VERSION,
         }
         self.assertEqual(expected, metadata)
 
@@ -341,6 +355,7 @@ class TestImageMetadata(base.BaseTest):
             'model': 'Foomaster 9000',
             'variant': 'R',
             'rclass': 'TestRadio',
+            'chirp_version': CHIRP_VERSION,
         }
         self.assertEqual(expected, metadata)
 
@@ -364,3 +379,27 @@ class TestImageMetadata(base.BaseTest):
         data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
         self.assertEqual('thisisrawdata', data)
         self.assertEqual({}, metadata)
+
+    def test_load_mmap_saves_metadata_on_radio(self):
+        class TestRadio(chirp_common.FileBackedRadio):
+            VENDOR = 'Dan'
+            MODEL = 'Foomaster 9000'
+            VARIANT = 'R'
+
+        with tempfile.NamedTemporaryFile(suffix='.img') as f:
+            fn = f.name
+        r = TestRadio(None)
+        r._mmap = mock.Mock()
+        r._mmap.get_packed.return_value = 'thisisrawdata'
+        r.save_mmap(fn)
+
+        newr = TestRadio(None)
+        newr.load_mmap(fn)
+        expected = {
+            'vendor': 'Dan',
+            'model': 'Foomaster 9000',
+            'variant': 'R',
+            'rclass': 'TestRadio',
+            'chirp_version': CHIRP_VERSION,
+        }
+        self.assertEqual(expected, newr.metadata)

@@ -42,3 +42,8 @@ class UnsupportedToneError(Exception):
 class ImageDetectFailed(Exception):
     """The driver for the supplied image could not be determined"""
     pass
+
+
+class ImageMetadataInvalidModel(Exception):
+    """The image contains metadata but no suitable driver is found"""
+    pass

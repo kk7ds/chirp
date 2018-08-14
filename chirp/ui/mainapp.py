@@ -351,6 +351,24 @@ of file.
         else:
             try:
                 radio = directory.get_radio_by_image(fname)
+            except errors.ImageMetadataInvalidModel as e:
+                version = e.metadata.get('chirp_version')
+                if version:
+                    newer = chirp_common.is_version_newer(version)
+                    LOG.error('Image is from newer CHIRP with a model we '
+                              'do not support')
+                    common.show_error(
+                        _('Unable to open this image. It was generated '
+                          'with a newer version of CHIRP and thus may '
+                          'be for a radio model that is not supported '
+                          'by this version. Please update to the latest '
+                          'version of CHIRP and try again.'))
+                else:
+                    LOG.error('Image has metadata but has no chirp_version '
+                              'and we do not support the model')
+                    common.show_error(
+                        _('Unable to open this image: unsupported model'))
+                return
             except errors.ImageDetectFailed:
                 radio = self._do_manual_select(fname)
                 if not radio:

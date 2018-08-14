@@ -17,7 +17,7 @@ import base64
 import json
 import logging
 import math
-from chirp import errors, memmap
+from chirp import errors, memmap, CHIRP_VERSION
 
 LOG = logging.getLogger(__name__)
 
@@ -1114,6 +1114,7 @@ class FileBackedRadio(Radio):
     def __init__(self, *args, **kwargs):
         Radio.__init__(self, *args, **kwargs)
         self._memobj = None
+        self._metadata = {}
 
     def save(self, filename):
         """Save the radio's memory map to @filename"""
@@ -1157,6 +1158,7 @@ class FileBackedRadio(Radio):
              'vendor': cls.VENDOR,
              'model': cls.MODEL,
              'variant': cls.VARIANT,
+             'chirp_version': CHIRP_VERSION,
              }))
 
     def load_mmap(self, filename):
@@ -1164,7 +1166,11 @@ class FileBackedRadio(Radio):
         mapfile = file(filename, "rb")
         data = mapfile.read()
         if self.MAGIC in data:
-            data, metadata = self._strip_metadata(data)
+            data, self._metadata = self._strip_metadata(data)
+            if ('chirp_version' in self._metadata and
+                    is_version_newer(self._metadata.get('chirp_version'))):
+                LOG.warning('Image is from version %s but we are %s' % (
+                    self._metadata.get('chirp_version'), CHIRP_VERSION))
         self._mmap = memmap.MemoryMap(data)
         mapfile.close()
         self.process_mmap()
@@ -1187,6 +1193,14 @@ class FileBackedRadio(Radio):
     def get_mmap(self):
         """Return the radio's memory map object"""
         return self._mmap
+
+    @property
+    def metadata(self):
+        return dict(self._metadata)
+
+    @metadata.setter
+    def metadata(self, value):
+        self._metadata.update(values)
 
 
 class CloneModeRadio(FileBackedRadio):
@@ -1547,3 +1561,33 @@ def sanitize_string(astring, validcharset=CHARSET_ASCII, replacechar='*'):
             for x in xrange(256)
         ])
     return astring.translate(myfilter)
+
+
+def is_version_newer(version):
+    """Return True if version is newer than ours"""
+
+    def get_version(v):
+        if v.startswith('daily-'):
+            _, stamp = v.split('-', 1)
+            ver = (int(stamp),)
+        elif '.' in v:
+            ver = tuple(int(p) for p in v.split('.'))
+        else:
+            ver = (0,)
+        LOG.debug('Parsed version %r to %r' % (v, ver))
+        return ver
+
+    from chirp import CHIRP_VERSION
+
+    try:
+        version = get_version(version)
+    except ValueError as e:
+        LOG.error('Failed to parse version %r: %s' % (version, e))
+        version = (0,)
+    try:
+        my_version = get_version(CHIRP_VERSION)
+    except ValueError as e:
+        LOG.error('Failed to parse my version %r: %s' % (CHIRP_VERSION, e))
+        my_version = (0,)
+
+    return version > my_version
