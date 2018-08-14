@@ -23,6 +23,8 @@ RADIO_TYPES = {
 }
 
 
+counter = 0
+
 def radio_type(radio):
     for k, v in RADIO_TYPES.items():
         if isinstance(radio, v):
@@ -30,12 +32,19 @@ def radio_type(radio):
     return ""
 
 
-def supported_row(radio, odd):
+def supported_row(radio):
+    global counter
+    counter += 1
+    odd = counter % 2
+
     row = '<tr class="%s" title="%s %s %s">' % (odd and "odd" or "even",
                                                 radio.VENDOR,
                                                 radio.MODEL,
                                                 radio.VARIANT)
-    row += "<td>%s %s %s</td>\n" % (radio.VENDOR, radio.MODEL, radio.VARIANT)
+    row += "<td><a href=\"#%s\" name=\"%s\">%s %s %s</a></td>\n" % (
+        'row%04i' % counter,
+        'row%04i' % counter,
+        radio.VENDOR, radio.MODEL, radio.VARIANT)
     rf = radio.get_features()
     for key in KEYS:
         value = rf.__dict__[key]
@@ -122,6 +131,10 @@ th {
 span.false {
   color: grey;
 }
+a {
+  text-decoration: none;
+  color: inherit;
+}
 </style>
 <table>
 """)
@@ -154,15 +167,12 @@ for radio in directory.DRV_TO_RADIO.values():
 def get_key(rc):
     return '%s %s %s' % (rc.VENDOR, rc.MODEL, rc.VARIANT)
 
-count = 0
 for radio in sorted(models, cmp=lambda a, b: get_key(a) < get_key(b) and -1 or 1):
-    if count % 10 == 0:
+    if counter % 10 == 0:
         output(header_row())
     _radio = radio(None)
     if _radio.get_features().has_sub_devices:
         for __radio in _radio.get_sub_devices():
-            output(supported_row(__radio, count % 2))
-            count += 1
+            output(supported_row(__radio))
     else:
-        output(supported_row(_radio, count % 2))
-        count += 1
+        output(supported_row(_radio))
