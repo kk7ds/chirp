@@ -817,6 +817,8 @@ class TestCaseDetect(TestCase):
 
         if issubclass(self._wrapper._dstclass, radio.__class__):
             pass
+        elif issubclass(radio.__class__, self._wrapper._dstclass):
+            pass
         elif radio.__class__ != self._wrapper._dstclass:
             raise TestFailedError("%s detected as %s" %
                                   (self._wrapper._dstclass, radio.__class__))
