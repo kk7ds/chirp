@@ -458,7 +458,7 @@ class FT1BankModel(chirp_common.BankModel):
             for channel in self._channel_numbers_in_bank(bank):
                 chosen_bank[0] = bank.index
                 chosen_mr[0] = channel
-                if channel & 0x7000 <> 0:
+                if channel & 0x7000 != 0:
                     # Ignore preset channels without comment DAR
                     break
                 if not flags[channel].nosubvfo:
@@ -500,8 +500,10 @@ class FT1BankModel(chirp_common.BankModel):
         empty = 0
         for index, channel_number in enumerate(sorted(channels_in_bank)):
             _members.channel[index] = channel_number - 1
-            if channel_number & 0x7000 <> 0:
-                LOG.warn ("Bank %d uses Yaesu preset frequency id=%04X. Chirp cannot see or change that entry." % (bank.index, channel_number))
+            if channel_number & 0x7000 != 0:
+                LOG.warn("Bank %d uses Yaesu preset frequency id=%04X. "
+                         "Chirp cannot see or change that entry." % (
+                             bank.index, channel_number))
             empty = index + 1
         for index in range(empty, len(_members.channel)):
             _members.channel[index] = 0xFFFF
