@@ -69,7 +69,8 @@ class FT2D(ft1d.FT1Radio):
 
     _model = "AH60M" # Get this from chirp .img file after saving once
     _has_vibrate = True
-    _mem_params = (999,            # size of memories array
+    _mem_params = (0x94a,         # Location of DTMF storage
+                   999,            # size of memories array
                    999,            # size of flags array
                    0xFECA,         # APRS beacon metadata address.
                    60,             # Number of beacons stored.

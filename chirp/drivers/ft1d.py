@@ -122,7 +122,7 @@ struct {
   } message;
 } opening_message;
 
-#seekto 0x0e4a;
+#seekto 0x%04X; // FT-1D:0e4a, FT2D:094a
 struct {
   u8 memory[16];
 } dtmf[10];
@@ -562,7 +562,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _memsize = 130507
     _block_lengths = [10, 130497]
     _block_size = 32
-    _mem_params = (900,            # size of memories array
+    _mem_params = (0xe4a,          # location of DTMF storage
+                   900,            # size of memories array
                    900,            # size of flags array
                    0xFECA,         # APRS beacon metadata address.
                    60,             # Number of beacons stored.
