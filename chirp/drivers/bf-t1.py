@@ -841,25 +841,25 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             setattr(obj, setting.get_name(), int(setting.value) * 10)
 
         rs = RadioSetting("vhfl", "VHF Low Limit",
-                          RadioSettingValueInteger(136, 174, int(
+                          RadioSettingValueInteger(130, 174, int(
                               _settings.vhfl) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("vhfh", "VHF High Limit",
-                          RadioSettingValueInteger(136, 174, int(
+                          RadioSettingValueInteger(130, 174, int(
                               _settings.vhfh) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("uhfl", "UHF Low Limit",
-                          RadioSettingValueInteger(400, 470, int(
+                          RadioSettingValueInteger(400, 520, int(
                               _settings.uhfl) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
 
         rs = RadioSetting("uhfh", "UHF High Limit",
-                          RadioSettingValueInteger(400, 470, int(
+                          RadioSettingValueInteger(400, 520, int(
                               _settings.uhfh) / 10))
         rs.set_apply_callback(apply_limit, _settings)
         adv.append(rs)
