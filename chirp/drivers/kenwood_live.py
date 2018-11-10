@@ -45,14 +45,19 @@ KENWOOD_TONES.remove(199.5)
 
 THF6_MODES = ["FM", "WFM", "AM", "LSB", "USB", "CW"]
 
+RADIO_IDS = {
+    "ID019": "TS-2000",
+    "ID009": "TS-850",
+}
+
 LOCK = threading.Lock()
 COMMAND_RESP_BUFSIZE = 8
-LAST_BAUD = 9600
+LAST_BAUD = 4800
 LAST_DELIMITER = ("\r", " ")
 
-# The Kenwood TS-2000 uses ";" as a CAT command message delimiter, and all
-# others use "\n". Also, TS-2000 doesn't space delimite the command fields,
-# but others do.
+# The Kenwood TS-2000 & TS-850 uses ";" as a CAT command message delimiter,
+# and all others use "\n". Also, TS-2000 doesn't space delimite the command
+# fields, but others do.
 
 
 def command(ser, cmd, *args):
@@ -91,7 +96,7 @@ def command(ser, cmd, *args):
 def get_id(ser):
     """Get the ID of the radio attached to @ser"""
     global LAST_BAUD
-    bauds = [9600, 19200, 38400, 57600]
+    bauds = [4800, 9600, 19200, 38400, 57600]
     bauds.remove(LAST_BAUD)
     bauds.insert(0, LAST_BAUD)
 
@@ -113,10 +118,9 @@ def get_id(ser):
                 LAST_BAUD = i
                 return resp.split(" ")[1]
 
-            # TS-2000
-            if "ID019" == resp:
-                LAST_BAUD = i
-                return "TS-2000"
+            # Kenwood radios that return ID numbers
+            if resp in RADIO_IDS.keys():
+                return RADIO_IDS[resp]
 
     raise errors.RadioError("No response from radio")
 
