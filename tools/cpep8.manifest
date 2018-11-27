@@ -120,10 +120,6 @@
 ./chirp/xml_ll.py
 ./chirpc
 ./chirpw
-./csvdump.py
-./csvdump/__init__.py
-./csvdump/csvapp.py
-./csvdump/csvdump.py
 ./locale/check_parameters.py
 ./rpttool
 ./setup.py
