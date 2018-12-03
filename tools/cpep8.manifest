@@ -24,6 +24,7 @@
 ./chirp/drivers/ft60.py
 ./chirp/drivers/ft7800.py
 ./chirp/drivers/ft817.py
+./chirp/drivers/ft818.py
 ./chirp/drivers/ft857.py
 ./chirp/drivers/ft90.py
 ./chirp/drivers/ftm350.py
