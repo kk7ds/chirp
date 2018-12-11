@@ -977,6 +977,8 @@ class FT8900Radio(FT8800Radio):
 
     MODES = ["FM", "NFM", "AM"]
 
+    del FT8800Radio.get_bank_model
+
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_8900, self._mmap)
 
