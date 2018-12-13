@@ -250,3 +250,16 @@ class FT818Radio(ft817.FT817Radio):
 
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
                                     SPECIAL_MEMORIES.keys()))
+
+@directory.register
+class FT818NDUSRadio(FT818Radio):
+
+    """Yaesu FT-818ND (US version)"""
+    MODEL = "FT-818ND (US)"
+
+    _model = ""
+    _US_model = True
+    _memsize = 6703
+
+    _block_lengths = [2, 40, 208, 208, 208, 208, 198, 53, 130, 118, 130, 130]
+
