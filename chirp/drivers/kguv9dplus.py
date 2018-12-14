@@ -979,7 +979,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                (op, CMD_WCONF)
                     if addr != ack:
                         msg += "ack error %x != %x, " % (addr, ack)
-                    raise Exception("Radio did not ack block: %s error" %  msg)
+                    raise Exception("Radio did not ack block: %s error" % msg)
                 if self.status_fn:
                     status = chirp_common.Status()
                     status.cur = addr
@@ -1028,8 +1028,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = ("This radio driver is currently under development.  "
-                           "There are no known issues with it, but you should  "
+        rp.experimental = ("This radio driver is currently under development. "
+                           "There are no known issues with it, but you should "
                            "proceed with caution.")
         return rp
 
@@ -1887,4 +1887,4 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                 except Exception, e:
                     LOG.debug("set_settings: Exception with %s" %
                               element.get_name())
-                    raise 
+                    raise
