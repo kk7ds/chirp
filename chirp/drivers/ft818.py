@@ -263,3 +263,80 @@ class FT818NDUSRadio(FT818Radio):
 
     _block_lengths = [2, 40, 208, 208, 208, 208, 198, 53, 130, 118, 130, 130]
 
+    SPECIAL_60M = {
+        "M-601": -42,
+        "M-602": -41,
+        "M-603": -40,
+        "M-604": -39,
+        "M-605": -38,
+    }
+    LAST_SPECIAL60M_INDEX = -42
+
+    SPECIAL_MEMORIES = dict(FT818Radio.SPECIAL_MEMORIES)
+    SPECIAL_MEMORIES.update(SPECIAL_60M)
+
+    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
+                                    SPECIAL_MEMORIES.keys()))
+
+    def _get_special_60m(self, number):
+        mem = chirp_common.Memory()
+        mem.number = self.SPECIAL_60M[number]
+        mem.extd_number = number
+
+        _mem = self._memobj.sixtymeterchannels[-self.LAST_SPECIAL60M_INDEX +
+                                               mem.number]
+
+        mem = self._get_memory(mem, _mem)
+
+        mem.immutable = ["number", "rtone", "ctone",
+                         "extd_number", "name", "dtcs", "tmode", "cross_mode",
+                         "dtcs_polarity", "power", "duplex", "offset",
+                         "comment", "empty"]
+
+        return mem
+
+    def _set_special_60m(self, mem):
+        if mem.empty:
+            # can't delete 60M memories!
+            raise Exception("Sorry, 60M memory can't be deleted")
+
+        cur_mem = self._get_special_60m(self.SPECIAL_MEMORIES_REV[mem.number])
+
+        for key in cur_mem.immutable:
+            if cur_mem.__dict__[key] != mem.__dict__[key]:
+                raise errors.RadioError("Editing field `%s' " % key +
+                                        "is not supported on M-60x channels")
+
+        if mem.mode not in ["USB", "LSB", "CW", "CWR", "NCW", "NCWR", "DIG"]:
+            raise errors.RadioError("Mode {mode} is not valid "
+                                    "in 60m channels".format(mode=mem.mode))
+        _mem = self._memobj.sixtymeterchannels[-self.LAST_SPECIAL60M_INDEX +
+                                               mem.number]
+        self._set_memory(mem, _mem)
+
+    def get_memory(self, number):
+        if number in self.SPECIAL_60M.keys():
+            return self._get_special_60m(number)
+        elif number < 0 and \
+                self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
+            # I can't stop delete operation from loosing extd_number but
+            # I know how to get it back
+            return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
+        else:
+            return FT818Radio.get_memory(self, number)
+
+    def set_memory(self, memory):
+        if memory.number in self.SPECIAL_60M.values():
+            return self._set_special_60m(memory)
+        else:
+            return FT818Radio.set_memory(self, memory)
+
+    def get_settings(self):
+        top = FT818Radio.get_settings(self)
+        basic = top[0]
+        rs = RadioSetting("emergency", "Emergency",
+                          RadioSettingValueBoolean(
+                              self._memobj.settings.emergency))
+        basic.append(rs)
+        return top
+
