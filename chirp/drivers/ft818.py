@@ -264,13 +264,13 @@ class FT818NDUSRadio(FT818Radio):
     _block_lengths = [2, 40, 208, 208, 208, 208, 198, 53, 130, 118, 130, 130]
 
     SPECIAL_60M = {
-        "M-601": -42,
-        "M-602": -41,
-        "M-603": -40,
-        "M-604": -39,
-        "M-605": -38,
+        "M-601": -44,
+        "M-602": -43,
+        "M-603": -42,
+        "M-604": -41,
+        "M-605": -40,
     }
-    LAST_SPECIAL60M_INDEX = -42
+    LAST_SPECIAL60M_INDEX = -44
 
     SPECIAL_MEMORIES = dict(FT818Radio.SPECIAL_MEMORIES)
     SPECIAL_MEMORIES.update(SPECIAL_60M)
