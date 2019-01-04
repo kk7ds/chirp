@@ -210,6 +210,8 @@ KT8900R_fp3 = "M39164"
 KT8900R_fp4 = "M3G314"
 # this radio has an extra ID
 KT8900R_id = "280528"
+# another extra ID in dec/2018
+KT8900R_id2 = "\x05\x58\x3d\xf0\x10"
 
 # KT7900D (quad band)
 KT7900D_fp = "VC4004"
@@ -461,9 +463,15 @@ def _do_ident(radio, status, upload=False):
             raise errors.RadioError("The extra ID is short, aborting.")
 
         # ok, the correct string must be in the received data
-        if radio._id2 not in id2:
+        # the radio._id2 var will be always a list
+        flag2 = False
+        for _id2 in radio._id2:
+            if _id2 in id2:
+                flag2 = True
+
+        if not flag2:
             LOG.debug("Full *BAD* extra ID on the %s is: \n%s" %
-                      (radio.MODEL, util.hexprint(id2)))
+                    (radio.MODEL, util.hexprint(id2)))
             raise errors.RadioError("The extra ID is wrong, aborting.")
 
         # this radios need a extra request/answer here on the upload
@@ -3181,7 +3189,7 @@ class UV2501_220(BTech):
     MODEL = "UV-2501+220"
     BANDS = 3
     _magic = MSTRING_220
-    _id2 = UV2501_220pp_id
+    _id2 = [UV2501_220pp_id, ]
     _fileid = [UV2501_220G3_fp,
                UV2501_220G2_fp,
                UV2501_220_fp,
@@ -3240,7 +3248,7 @@ class KT9800(BTech):
                KT8900_fp3,
                KT8900_fp4,
                KT8900_fp5]
-    _id2 = KT8900_id
+    _id2 = [KT8900_id, ]
     # Clones
     ALIASES = [JT6188Mini, SSGT890, ZastoneMP300]
 
@@ -3260,7 +3268,7 @@ class KT9800R(BTech):
                KT8900R_fp2,
                KT8900R_fp3,
                KT8900R_fp4]
-    _id2 = KT8900R_id
+    _id2 = [KT8900R_id, KT8900R_id2]
 
 
 @directory.register
