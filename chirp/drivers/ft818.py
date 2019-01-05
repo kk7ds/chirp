@@ -226,13 +226,13 @@ class FT818Radio(ft817.FT817Radio):
         "VFOb-50M": -11,
         "VFOb-FM": -10,
         "VFOb-AIR": -9,
-        "VFOb-144M": -8,
-        "VFOb-430M": -7,
+        "VFOb-144": -8,
+        "VFOb-430": -7,
         "VFOb-HF": -6,
         "HOME HF": -5,
         "HOME 50M": -4,
-        "HOME 144M": -3,
-        "HOME 430M": -2,
+        "HOME 144": -3,
+        "HOME 430": -2,
         "QMB": -1,
     }
     FIRST_VFOB_INDEX = -6
