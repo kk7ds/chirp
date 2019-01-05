@@ -19,7 +19,6 @@
 
 import time
 import logging
-import copy
 
 from chirp import util, memmap, chirp_common, bitwise, directory, errors
 from chirp.drivers.yaesu_clone import YaesuCloneModeRadio
@@ -35,27 +34,32 @@ ACK = "\x06"
 NB_OF_BLOCKS = 248
 BLOCK_LEN = 32
 
+
 def _send(pipe, data):
     time.sleep(0.035)   # Same delay as "FT7100 Programmer" from RT Systems
-    #pipe.write(data) --> It seems, that the single bytes are sent too fast
+    # pipe.write(data) --> It seems, that the single bytes are sent too fast
+    # so send character per character with a delay
     for ch in data:
         pipe.write(ch)
-        time.sleep(0.0012)      # Ok
-        #time.sleep(0.0011) Too short. No ACK after a few packets
+        time.sleep(0.0012)  # 0.0011 is to short. No ACK after a few packets
     echo = pipe.read(len(data))
     if data == "":
-        raise Exception("Failed to read echo. Maybe serial hardware not connected."
+        raise Exception("Failed to read echo."
+                        " Maybe serial hardware not connected."
                         " Maybe radio not powered or not in receiving mode.")
     if data != echo:
         LOG.debug("expecting echo\n%s\n", util.hexprint(data))
         LOG.debug("got echo\n%s\n", util.hexprint(echo))
         raise Exception("Got false echo. Expected: '{}', got: '{}'."
-            .format(data, echo))
+                        .format(data, echo))
+
 
 def _send_ack(pipe):
-    time.sleep(0.01) # Wait for radio input buffer ready
-    #time.sleep(0.0003) Absolute working minimum
+    time.sleep(0.01)  # Wait for radio input buffer ready
+    # time.sleep(0.0003) is the absolute working minimum.
+    # This delay is not critical for the transfer as there are not many ACKs.
     _send(pipe, ACK)
+
 
 def _wait_for_ack(pipe):
     echo = pipe.read(1)
@@ -63,45 +67,41 @@ def _wait_for_ack(pipe):
         raise Exception("Failed to read ACK. No response from radio.")
     if echo != ACK:
         raise Exception("Failed to read ACK.  Expected: '{}', got: '{}'."
-            .format(util.hexprint(ACK), util.hexprint(echo)))
+                        .format(util.hexprint(ACK), util.hexprint(echo)))
+
 
 def _download(radio):
     LOG.debug("in _download\n")
-
-#    import ipdb; ipdb.set_trace()
-
     data = ""
     for _i in range(0, 60):
         data = radio.pipe.read(BLOCK_LEN)
         LOG.debug("Header:\n%s", util.hexprint(data))
         LOG.debug("len(header) = %s\n", len(data))
-
         if data == radio.IDBLOCK:
             break
-
     if data == "":
         raise Exception("Got no data from radio.")
     if data != radio.IDBLOCK:
         raise Exception("Got false header. Expected: '{}', got: '{}'."
-            .format(radio.IDBLOCK, data))
-
+                        .format(radio.IDBLOCK, data))
     _send_ack(radio.pipe)
 
     # read 16 Byte block
+    # and ignore it because it is constant. This might be a bug.
+    # It was built in at the very beginning and discovered very late that the
+    # data might be necessary later to write to the radio.
+    # Now the data is hardcoded in _upload(radio)
     data = radio.pipe.read(16)
-    #LOG.debug("16 Byte bloc:\n%s", util.hexprint(data))
-    #LOG.debug("len(data) = %s\n", len(data))
     _send_ack(radio.pipe)
 
     # initialize data, the big var that holds all memory
     data = ""
-
     for block_nr in range(NB_OF_BLOCKS):
         chunk = radio.pipe.read(BLOCK_LEN)
-        #LOG.debug("Block %i ", (block_nr))
-        #LOG.debug("Got: %i:\n%s", (len(chunk), util.hexprint(chunk)))
         if len(chunk) != BLOCK_LEN:
-            LOG.debug("len chunk is %i\n", (len(chunk)))
+            LOG.debug("Block %i ", block_nr)
+            LOG.debug("Got: %i:\n%s", len(chunk), util.hexprint(chunk))
+            LOG.debug("len chunk is %i\n", len(chunk))
             raise Exception("Failed to get full data block")
         else:
             data += chunk
@@ -127,23 +127,20 @@ def _download(radio):
 
 
 def _upload(radio):
-
-#    import ipdb; ipdb.set_trace()
-
-    data = radio.pipe.read(256) # Clear buffer
+    data = radio.pipe.read(256)  # Clear buffer
     _send(radio.pipe, radio.IDBLOCK)
     _wait_for_ack(radio.pipe)
 
     # write 16 Byte block
+    # If there should be a problem, see remarks in _download(radio)
     _send(radio.pipe, "\xCC\x77\x01\x00\x0C\x07\x0C\x07"
                       "\x00\x00\x00\x00\x00\x00\x00\x00")
     _wait_for_ack(radio.pipe)
 
     for block_nr in range(NB_OF_BLOCKS):
-        data = radio.get_mmap()[block_nr * BLOCK_LEN:(block_nr + 1) * BLOCK_LEN]
-
+        data = radio.get_mmap()[block_nr * BLOCK_LEN:
+                                (block_nr + 1) * BLOCK_LEN]
         LOG.debug("Writing block_nr %i:\n%s", block_nr, util.hexprint(data))
-
         _send(radio.pipe, data)
         _wait_for_ack(radio.pipe)
 
@@ -503,11 +500,12 @@ MODES_UHF = ["FM"]      # AM can be set but is ignored by the radio
 DUPLEX = ["", "-", "+", "split"]
 TONE_MODES_RADIO = ["", "Tone", "TSQL", "CTCSS Bell", "DTCS"]
 TONE_MODES = ["", "Tone", "TSQL", "DTCS"]
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
-                chirp_common.PowerLevel("Low2", watts=10),
-                chirp_common.PowerLevel("Low3", watts=20),
-                chirp_common.PowerLevel("High", watts=35),
-               ]
+POWER_LEVELS = [
+    chirp_common.PowerLevel("Low", watts=5),
+    chirp_common.PowerLevel("Low2", watts=10),
+    chirp_common.PowerLevel("Low3", watts=20),
+    chirp_common.PowerLevel("High", watts=35),
+    ]
 TUNING_STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
 SKIP_VALUES = ["", "S"]
 CHARSET = r"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^ _"
@@ -515,9 +513,11 @@ DTMF_CHARSET = "0123456789*# "
 SPECIAL_CHANS = ['VFO-VHF', 'VFO-UHF', 'Home-VHF', 'Home-UHF', 'VFO', 'Home']
 SCAN_LIMITS = ["L1", "U1", "L2", "U2", "L3", "U3", "L4", "U4", "L5", "U5"]
 
+
 def do_download(radio):
     """This is your download function"""
     return _download(radio)
+
 
 @directory.register
 class FT7100Radio(YaesuCloneModeRadio):
@@ -532,16 +532,16 @@ class FT7100Radio(YaesuCloneModeRadio):
     # how many memories it has, what bands it supports, etc
     def get_features(self):
         LOG.debug("get_features")
-
-#        import ipdb; ipdb.set_trace()
-
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
 
-        rf.memory_bounds = (0, 259)  # This radio supports 120 + 10 + 120 + 10 = 260 memories, zero based for chirpc
-        rf.valid_bands = [(108000000, 180000000),  # Supports 2-meters tx
-                          (320000000, 999990000),  # Supports 70-centimeters tx
-                         ]
+        rf.memory_bounds = (0, 259)
+        # This radio supports 120 + 10 + 120 + 10 = 260 memories
+        # These are zero based for chirpc
+        rf.valid_bands = [
+            (108000000, 180000000),  # Supports 2-meters tx
+            (320000000, 999990000),  # Supports 70-centimeters tx
+            ]
         rf.can_odd_split = True
         rf.has_ctone = True
         rf.has_rx_dtcs = True
@@ -554,14 +554,12 @@ class FT7100Radio(YaesuCloneModeRadio):
         rf.valid_tuning_steps = TUNING_STEPS
         rf.valid_modes = MODES_VHF
         rf.valid_tmodes = TONE_MODES
-        #rf.valid_cross_modes = CROSS_MODES
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_duplexes = DUPLEX
         rf.valid_skips = SKIP_VALUES
         rf.valid_name_length = 6
         rf.valid_characters = CHARSET
         rf.valid_special_chans = SPECIAL_CHANS
-
         return rf
 
     def sync_in(self):
@@ -650,9 +648,6 @@ class FT7100Radio(YaesuCloneModeRadio):
         else:
             mem.tmode = tmode_radio
 
-        #mem.cross_mode = "Tone->Tone"
-        #mem.dtcs_polarity = "NN"
-
         mem.duplex = ""
         if _mem.is_offset_plus:
             mem.duplex = "+"
@@ -680,7 +675,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         else:
             mem.skip = ""
 
-        #mem.comment = ""
+        # mem.comment = ""
 
         mem.empty = not _mem.is_used
 
@@ -714,7 +709,8 @@ class FT7100Radio(YaesuCloneModeRadio):
             elif number == 'Home-UHF':
                 _mem = self._memobj.home_vhf_uhf[1].mem_struct
             else:
-                raise errors.RadioError("Unexpected Memory Number: {}".format(mem.number))
+                raise errors.RadioError("Unexpected Memory Number: {}"
+                                        .format(mem.number))
         else:
             _mem = self._memobj.memory[mem.number]
 
@@ -759,7 +755,6 @@ class FT7100Radio(YaesuCloneModeRadio):
         # if name not empty: show name
         _mem.show_name = mem.name.strip() != ""
 
-
         # In testmode there is no setting in mem.extra
         # This is why the following line is not located in the else part of
         # the if structure below
@@ -769,8 +764,6 @@ class FT7100Radio(YaesuCloneModeRadio):
             if setting.get_name() == "is_ctcss_bell":
                 if mem.tmode == "TSQL" and setting.value:
                     _mem.tone_mode_index = TONE_MODES_RADIO.index("CTCSS Bell")
-                #else:
-                    #_mem.tone_mode_index = TONE_MODES_RADIO.index(mem.tmode)
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
@@ -780,7 +773,8 @@ class FT7100Radio(YaesuCloneModeRadio):
     def get_settings(self):
         common = RadioSettingGroup("common", "Common Settings")
         band = RadioSettingGroup("band", "Band dependent Settings")
-        arts = RadioSettingGroup("arts", "Auto Range Transponder System (ARTS)")
+        arts = RadioSettingGroup("arts",
+                                 "Auto Range Transponder System (ARTS)")
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
         mic_button = RadioSettingGroup("mic_button", "Microphone Buttons")
         setmode = RadioSettings(common, band, arts, dtmf, mic_button)
@@ -792,20 +786,21 @@ class FT7100Radio(YaesuCloneModeRadio):
         # page 49 of the manual
 
         # 1 Automatic Power Off
-        opts = ["Off", "30 Min",
-                "1 Hour", "1.5 Hours",
-                "2 Hours", "2.5 Hours",
-                "3 Hours", "3.5 Hours",
-                "4 Hours", "4.5 Hours",
-                "5 Hours", "5.5 Hours",
-                "6 Hours", "6.5 Hours",
-                "7 Hours", "7.5 Hours",
-                "8 Hours", "8.5 Hours",
-                "9 Hours", "9.5 Hours",
-                "10 Hours", "10.5 Hours",
-                "11 Hours", "11.5 Hours",
-                "12 Hours",
-               ]
+        opts = [
+            "Off", "30 Min",
+            "1 Hour", "1.5 Hours",
+            "2 Hours", "2.5 Hours",
+            "3 Hours", "3.5 Hours",
+            "4 Hours", "4.5 Hours",
+            "5 Hours", "5.5 Hours",
+            "6 Hours", "6.5 Hours",
+            "7 Hours", "7.5 Hours",
+            "8 Hours", "8.5 Hours",
+            "9 Hours", "9.5 Hours",
+            "10 Hours", "10.5 Hours",
+            "11 Hours", "11.5 Hours",
+            "12 Hours",
+            ]
         common.append(
             RadioSetting(
                 "apo", "Automatic Power Off",
@@ -823,16 +818,7 @@ class FT7100Radio(YaesuCloneModeRadio):
                 RadioSettingValueList(opts, opts[_overlay.ars_uhf])))
 
         # 3  Selects the ARTS mode.
-        # -> Only useful to set it on radio directly
-        #opts = ["Off", "Range", "All"]
-        #arts.append(
-            #RadioSetting(
-                #"arts_vhf", "ARTS Mode VHF",
-                #RadioSettingValueList(opts, opts[_overlay.arts_vhf])))
-        #arts.append(
-            #RadioSetting(
-                #"arts_uhf", "ARTS Mode UHF",
-                #RadioSettingValueList(opts, opts[_overlay.arts_uhf])))
+        # -> Only useful to set it on the radio directly
 
         # 4 Enables/disables the key/button beeper.
         opts = ["Off", "On"]
@@ -853,8 +839,8 @@ class FT7100Radio(YaesuCloneModeRadio):
         cwidw = cwidw.rstrip('\x00')
         val = RadioSettingValueString(0, 6, cwidw)
         val.set_charset(CHARSET)
-        rs = RadioSetting(
-                "cwidw", "CW Identifier Callsign", val)
+        rs = RadioSetting("cwidw", "CW Identifier Callsign", val)
+
         def apply_cwid(setting):
             value_string = setting.value.get_value()
             _overlay.cwidw.set_value(value_string)
@@ -887,7 +873,8 @@ class FT7100Radio(YaesuCloneModeRadio):
                 RadioSettingValueList(opts, opts[_overlay.dcsnr_uhf])))
 
         # 11 Selects the 'sub' band display format
-        opts = ["Frequency", "Off / Sub Band disabled", "DC Input Voltage", "CW ID"]
+        opts = ["Frequency", "Off / Sub Band disabled",
+                "DC Input Voltage", "CW ID"]
         common.append(
             RadioSetting(
                 "disp", "Sub Band Display Format",
@@ -908,9 +895,9 @@ class FT7100Radio(YaesuCloneModeRadio):
                 RadioSettingValueList(opts, opts[_overlay.dtmfs])))
 
         # 14 Current DTMF Autodialer memory
-        rs = RadioSetting(
-                "dtmfw", "Current Autodialer memory",
-                RadioSettingValueInteger(1, 16, _overlay.dtmfw + 1))
+        rs = RadioSetting("dtmfw", "Current Autodialer memory",
+                          RadioSettingValueInteger(1, 16, _overlay.dtmfw + 1))
+
         def apply_dtmfw(setting):
             _overlay.dtmfw = setting.value.get_value() - 1
         rs.set_apply_callback(apply_dtmfw)
@@ -931,11 +918,13 @@ class FT7100Radio(YaesuCloneModeRadio):
                 elif dtmf_int == 255:
                     break
                 dtmf_string += dtmf_char
-            radio_setting_value_string = RadioSettingValueString(0, 16, dtmf_string)
+            radio_setting_value_string = RadioSettingValueString(0, 16,
+                                                                 dtmf_string)
             radio_setting_value_string.set_charset(DTMF_CHARSET)
             rs = RadioSetting("dtmf_{0:02d}".format(i),
                               "DTMF Mem " + str(i+1),
                               radio_setting_value_string)
+
             def apply_dtmf(setting, index):
                 radio_setting_value_string = setting.value.get_value().rstrip()
                 j = 0
@@ -969,7 +958,8 @@ class FT7100Radio(YaesuCloneModeRadio):
                 "mic", "Microphone type",
                 RadioSettingValueList(opts, opts[_overlay.mic])))
 
-        # 18 Reduces the audio level on the sub receiver when the main receiver is active
+        # 18 Reduces the audio level on the sub receiver when the
+        #    main receiver is active
         opts = ["Off", "On"]
         common.append(
             RadioSetting(
@@ -977,17 +967,21 @@ class FT7100Radio(YaesuCloneModeRadio):
                 RadioSettingValueList(opts, opts[_overlay.mute])))
 
         # 20 - 23 Programming the microphones button assignment
-        buttons = ["ACC / P1",
-                   "P / P2",
-                   "P1 / P3",
-                   "P2 / P4",
-                  ]
-        opts_button = ["Low", "Tone", "MHz", "Rev", "Home", "Band", "VFO / Memory",
-                       "Sql Off", "1750 Hz Tone Call", "Repeater", "Priority"]
+        buttons = [
+            "ACC / P1",
+            "P / P2",
+            "P1 / P3",
+            "P2 / P4",
+            ]
+        opts_button = ["Low", "Tone", "MHz", "Rev", "Home", "Band",
+                       "VFO / Memory", "Sql Off", "1750 Hz Tone Call",
+                       "Repeater", "Priority"]
         for i, button in enumerate(buttons):
             rs = RadioSetting(
                 "button" + str(i), button,
-                RadioSettingValueList(opts_button, opts_button[_overlay.button[i]]))
+                RadioSettingValueList(opts_button,
+                                      opts_button[_overlay.button[i]]))
+
             def apply_button(setting, index):
                 value_string = setting.value.get_value()
                 value_int = opts_button.index(value_string)
@@ -1064,11 +1058,13 @@ class FT7100Radio(YaesuCloneModeRadio):
                 RadioSettingValueList(opts, opts[_overlay.current_band])))
 
         # Show number of VHF and UHF channels
-        val = RadioSettingValueString(0, 7, str(int(self._memobj.nb_mem_used_vhf)))
+        val = RadioSettingValueString(0, 7,
+                                      str(int(self._memobj.nb_mem_used_vhf)))
         val.set_mutable(False)
         rs = RadioSetting("num_chan_vhf", "Number of VHF channels", val)
         common.append(rs)
-        val = RadioSettingValueString(0, 7, str(int(self._memobj.nb_mem_used_uhf)))
+        val = RadioSettingValueString(0, 7,
+                                      str(int(self._memobj.nb_mem_used_uhf)))
         val.set_mutable(False)
         rs = RadioSetting("num_chan_uhf", "Number of UHF channels", val)
         common.append(rs)
@@ -1092,7 +1088,6 @@ class FT7100Radio(YaesuCloneModeRadio):
                     LOG.debug("Using apply callback")
                     element.run_apply_callback()
                 else:
-                    obj = getattr(_overlay, name)
                     setattr(_overlay, name, value)
 
                 LOG.debug("Setting %s: %s", name, value)
@@ -1101,7 +1096,7 @@ class FT7100Radio(YaesuCloneModeRadio):
                 raise
 
     def _get_upper_vhf_limit(self):
-        if self._memobj == None:
+        if self._memobj is None:
             # test with tox has no _memobj
             upper_vhf_limit = 130
         else:
@@ -1109,7 +1104,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         return upper_vhf_limit
 
     def _get_upper_uhf_limit(self):
-        if self._memobj == None:
+        if self._memobj is None:
             # test with tox has no _memobj
             upper_uhf_limit = 130
         else:
@@ -1118,7 +1113,6 @@ class FT7100Radio(YaesuCloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        #return len(filedata) == 7936 --> Filelength changed due to MAGIC appended at end of file
         return filedata[0x1ec0:0x1ec0+len(cls.IDBLOCK)] == cls.IDBLOCK
 
     @classmethod
@@ -1142,6 +1136,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         return [FT7100RadioVHF(self._mmap),
                 FT7100RadioUHF(self._mmap)]
 
+
 class FT7100RadioVHF(FT7100Radio):
     VARIANT = "VHF Band"
 
@@ -1149,7 +1144,8 @@ class FT7100RadioVHF(FT7100Radio):
         LOG.debug("VHF get_features")
         upper_vhf_limit = self._get_upper_vhf_limit()
         rf = FT7100Radio.get_features(self)
-        rf.memory_bounds = (1, upper_vhf_limit)  # Normally this band supports 120 + 10 memories. 1 based for chirpw
+        rf.memory_bounds = (1, upper_vhf_limit)
+        # Normally this band supports 120 + 10 memories. 1 based for chirpw
         rf.valid_bands = [(108000000, 180000000)]  # Supports 2-meters tx
         rf.valid_modes = MODES_VHF
         rf.valid_special_chans = ['VFO', 'Home']
@@ -1166,7 +1162,6 @@ class FT7100RadioVHF(FT7100Radio):
         else:
             mem = FT7100Radio.get_memory(self, number + '-VHF')
             mem.extd_number = number
-            #TODO immutable does not work
             mem.immutable = ["number", "extd_number", "skip"]
         return mem
 
@@ -1184,6 +1179,7 @@ class FT7100RadioVHF(FT7100Radio):
         mem.number = _number
         return
 
+
 class FT7100RadioUHF(FT7100Radio):
     VARIANT = "UHF Band"
 
@@ -1191,7 +1187,8 @@ class FT7100RadioUHF(FT7100Radio):
         LOG.debug("UHF get_features")
         upper_uhf_limit = self._get_upper_uhf_limit()
         rf = FT7100Radio.get_features(self)
-        rf.memory_bounds = (1, upper_uhf_limit)  # Normally this band supports 120 + 10 memories. 1 based for chirpw
+        rf.memory_bounds = (1, upper_uhf_limit)
+        # Normally this band supports 120 + 10 memories. 1 based for chirpw
         rf.valid_bands = [(320000000, 999990000)]  # Supports 70-centimeters tx
         rf.valid_modes = MODES_UHF
         rf.valid_special_chans = ['VFO', 'Home']
@@ -1202,14 +1199,14 @@ class FT7100RadioUHF(FT7100Radio):
         upper_vhf_limit = self._get_upper_vhf_limit()
         if isinstance(number, int):
             if number >= 0:
-                mem = FT7100Radio.get_memory(self, number + upper_vhf_limit - 1)
+                mem = FT7100Radio.get_memory(self, number +
+                                             upper_vhf_limit - 1)
             else:
                 mem = FT7100Radio.get_memory(self, number)
             mem.number = number
         else:
             mem = FT7100Radio.get_memory(self, number + '-UHF')
             mem.extd_number = number
-            #TODO immutable does not work
             mem.immutable = ["number", "extd_number", "skip"]
         return mem
 
@@ -1227,4 +1224,3 @@ class FT7100RadioUHF(FT7100Radio):
         # Restore modified members
         mem.number = _number
         return
-
