@@ -251,6 +251,7 @@ class FT818Radio(ft817.FT817Radio):
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
                                     SPECIAL_MEMORIES.keys()))
 
+
 @directory.register
 class FT818NDUSRadio(FT818Radio):
 
@@ -339,4 +340,3 @@ class FT818NDUSRadio(FT818Radio):
                               self._memobj.settings.emergency))
         basic.append(rs)
         return top
-
