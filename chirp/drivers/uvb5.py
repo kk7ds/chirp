@@ -253,10 +253,6 @@ def do_upload(radio):
 DUPLEX = ["", "-", "+"]
 UVB5_STEPS = [5.00, 6.25, 10.0, 12.5, 20.0, 25.0]
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ/_+*"
-SPECIALS = {
-    "VFO1": -2,
-    "VFO2": -1,
-    }
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 
@@ -268,6 +264,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     VENDOR = "Baofeng"
     MODEL = "UV-B5"
     BAUD_RATE = 9600
+    SPECIALS = {
+        "VFO1": -2,
+        "VFO2": -1,
+    }
 
     _memsize = 0x1000
 
@@ -314,7 +314,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                           (220000000, 269000000),
                           (400000000, 520000000)]
         rf.valid_modes = ["FM", "NFM"]
-        rf.valid_special_chans = SPECIALS.keys()
+        rf.valid_special_chans = self.SPECIALS.keys()
         rf.valid_power_levels = POWER_LEVELS
         rf.has_ctone = True
         rf.has_bank = False
@@ -345,7 +345,13 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.channels[number - 1])
 
-    def _decode_tone(self, value, flag):
+    def _decode_tone(self, _mem, which):
+        def _get(field):
+            return getattr(_mem, "%s%s" % (which, field))
+
+        value = _get('tone')
+        flag = _get('pol')
+
         if value > 155:
             mode = val = pol = None
         elif value > 50:
@@ -389,7 +395,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _mem, _nam = self._get_memobjs(number)
         mem = chirp_common.Memory()
         if isinstance(number, str):
-            mem.number = SPECIALS[number]
+            mem.number = self.SPECIALS[number]
             mem.extd_number = number
         else:
             mem.number = number
@@ -403,10 +409,10 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
 
         chirp_common.split_tone_decode(
             mem,
-            self._decode_tone(_mem.txtone, _mem.txpol),
-            self._decode_tone(_mem.rxtone, _mem.rxpol))
+            self._decode_tone(_mem, "tx"),
+            self._decode_tone(_mem, "rx"))
 
-        if _mem.step > 0x05:
+        if 'step' in _mem and _mem.step > 0x05:
             _mem.step = 0x00
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = _mem.isnarrow and "NFM" or "FM"

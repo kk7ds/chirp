@@ -67,6 +67,7 @@
 ./chirp/drivers/radioddity_r2.py
 ./chirp/drivers/rfinder.py
 ./chirp/drivers/template.py
+./chirp/drivers/th350.py
 ./chirp/drivers/th9800.py
 ./chirp/drivers/th_uv3r.py
 ./chirp/drivers/th_uv3r25.py
