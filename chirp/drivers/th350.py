@@ -242,6 +242,7 @@ def do_upload(radio):
         LOG.debug("Radio ACK'd block at address 0x%04x" % i)
         do_status(radio, "to", i)
 
+
 DUPLEX = ["", "-", "+"]
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ/_+*"
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
@@ -268,7 +269,8 @@ class Th350Radio(BaofengUVB5):
         rp.experimental = \
             ("This TYT TH-350 driver is an alpha version. "
              "Proceed with Caution and backup your data. "
-             "Always confirm the correctness of your settings with the official programmer.")
+             "Always confirm the correctness of your settings with the "
+             "official programmer.")
         return rp
 
     def get_features(self):
@@ -337,17 +339,17 @@ class Th350Radio(BaofengUVB5):
             else:
                 mode = 'DTCS'
                 val = (tonea % 16) * 100 + \
-                      toneb / 16 * 10 + \
-                      (toneb % 16)
+                    toneb / 16 * 10 + \
+                    (toneb % 16)
                 pol = 'N' if pold == 8 else 'R'
         else:
             # Tone
             # 107.2 -> 0x10 0x72. Seriously.
             mode = 'Tone'
             val = tonea / 16 * 100 + \
-                   (tonea % 16) * 10 + \
-                   toneb / 16 + \
-                   float(toneb % 16) / 10
+                (tonea % 16) * 10 + \
+                toneb / 16 + \
+                float(toneb % 16) / 10
             pol = None
 
         return mode, val, pol
@@ -358,18 +360,18 @@ class Th350Radio(BaofengUVB5):
 
         if mode == "Tone":
             tonea = int(
-                        floor(val / 100) * 16 + \
+                        floor(val / 100) * 16 +
                         floor(val / 10) % 10
                     )
             toneb = int(
-                        floor(val % 10) * 16 + \
+                        floor(val % 10) * 16 +
                         floor(val * 10) % 10
                     )
         elif mode == "DTCS":
             tonea = (0x80 if pol == 'N' else 0xc0) + \
-                    val / 100
+                val / 100
             toneb = (val / 10) % 10 * 16 + \
-                    val % 10
+                val % 10
         else:
             tonea = toneb = 0xff
 
