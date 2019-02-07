@@ -178,7 +178,7 @@ class MemoryEditor(common.Editor):
 
         try:
             new = chirp_common.parse_freq(new)
-        except ValueError, e:
+        except ValueError as e:
             LOG.error("chirp_common.parse_freq error: %s", e)
             new = None
 
@@ -939,7 +939,6 @@ class MemoryEditor(common.Editor):
 
     def cell_editing_stopped(self, *args):
         self._in_editing = False
-        print 'Would activate %s' % str(self._edit_path)
         self.view.grab_focus()
         self.view.set_cursor(*self._edit_path)
 
@@ -972,7 +971,7 @@ class MemoryEditor(common.Editor):
                 for i in col_order:
                     if i not in default_col_order:
                         raise Exception()
-        except Exception, e:
+        except Exception as e:
             LOG.error("column order setting: %s", e)
             col_order = default_col_order
 

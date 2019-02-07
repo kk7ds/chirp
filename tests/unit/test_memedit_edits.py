@@ -1,12 +1,26 @@
-import mox
+try:
+    import mox
+except ImportError:
+    from mox3 import mox
 from tests.unit import base
 
 __builtins__["_"] = lambda s: s
 
-from chirp.ui import memedit
+memedit = None
 
 
 class TestEdits(base.BaseTest):
+    def setUp(self):
+        global memedit
+        super(TestEdits, self).setUp()
+        base.mock_gtk()
+        from chirp.ui import memedit as memedit_module
+        memedit = memedit_module
+
+    def tearDown(self):
+        super(TestEdits, self).tearDown()
+        base.unmock_gtk()
+
     def _test_tone_column_change(self, col,
                                  ini_tmode='', ini_cmode='',
                                  exp_tmode=None, exp_cmode=None):

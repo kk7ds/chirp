@@ -34,7 +34,7 @@ class Band(object):
                 for tone in tones:
                     assert tone in chirp_common.TONES, (
                         "tone %s not one of %s" % (tone, chirp_common.TONES))
-        except AssertionError, e:
+        except AssertionError as e:
             raise ValueError("%s %s: %s" % (name, limits, e))
 
         self.name = name

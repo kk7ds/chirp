@@ -130,7 +130,7 @@ class KeyedListWidget(gtk.HBox):
         try:
             (store, iter) = self.__view.get_selection().get_selected()
             return store.get(iter, 0)[0]
-        except Exception, e:
+        except Exception as e:
             LOG.error("Unable to find selected: %s" % e)
             return None
 
@@ -300,7 +300,7 @@ class ListWidget(gtk.HBox):
         try:
             (lst, iter) = self._view.get_selection().get_selected()
             lst.remove(iter)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Unable to remove selected: %s" % e)
 
     def get_selected(self, take_default=False):
@@ -322,7 +322,7 @@ class ListWidget(gtk.HBox):
                 target = lst.get_iter(pos-1)
             elif delta < 0:
                 target = lst.get_iter(pos+1)
-        except Exception, e:
+        except Exception as e:
             return False
 
         if target:
@@ -588,7 +588,7 @@ class LatLonEntry(gtk.Entry):
             except:
                 try:
                     return self.parse_dms(string)
-                except Exception, e:
+                except Exception as e:
                     LOG.error("DMS: %s" % e)
 
         raise Exception("Invalid format")
@@ -737,9 +737,9 @@ def test():
 
     def print_val(entry):
         if entry.validate():
-            print "Valid: %s" % entry.value()
+            print("Valid: %s" % entry.value())
         else:
-            print "Invalid"
+            print("Invalid")
     lle.connect("activate", print_val)
 
     lle.set_text("45 13 12")
@@ -749,7 +749,7 @@ def test():
     except KeyboardInterrupt:
         pass
 
-    print lst.get_values()
+    print(lst.get_values())
 
 
 if __name__ == "__main__":

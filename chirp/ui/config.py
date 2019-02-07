@@ -14,7 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp import platform
-from ConfigParser import ConfigParser
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 import os
 
 

@@ -61,24 +61,24 @@ class ValueEditor:
 
         try:
             newval = self._get_value()
-        except ValueError, e:
+        except ValueError as e:
             self._errfn(self._name, str(e))
             return str(e)
 
         if self._name.startswith("extra_"):
             try:
                 self._memory.extra[self._name.split("_", 1)[1]].value = newval
-            except settings.InternalError, e:
+            except settings.InternalError as e:
                 self._errfn(self._name, str(e))
                 return str(e)
         else:
             try:
                 setattr(self._memory, self._name, newval)
-            except chirp_common.ImmutableValueError, e:
+            except chirp_common.ImmutableValueError as e:
                 if getattr(self._memory, self._name) != self._get_value():
                     self._errfn(self._name, str(e))
                     return str(e)
-            except ValueError, e:
+            except ValueError as e:
                 self._errfn(self._name, str(e))
                 return str(e)
 
