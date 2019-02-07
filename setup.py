@@ -1,30 +1,44 @@
-import sys
+from __future__ import print_function
 
+import sys
+import glob
 import os
 
 from chirp import CHIRP_VERSION
-from chirp.drivers import *
+# FIXME: Not all drivers are py3 compatible in syntax, so punt on this
+# until that time, and defer to the safe import loop below.
+# from chirp.drivers import *
 import chirp
+
+# Safe import of everything in chirp/drivers
+driver_files = glob.glob('chirp/drivers/*.py')
+for driver_file in driver_files:
+    module, _ = os.path.splitext(driver_file)
+    module = 'chirp.drivers.%s' % module
+    try:
+        __import__(module)
+    except ImportError as e:
+        print('Failed to import %s: %s' % (module, e))
 
 
 def staticify_chirp_module():
     import chirp
 
-    with file("chirp/__init__.py", "w") as init:
-        print >>init, "CHIRP_VERSION = \"%s\"" % CHIRP_VERSION
-        print >>init, "__all__ = %s\n" % str(chirp.__all__)
+    with open("chirp/__init__.py", "w") as init:
+        print("CHIRP_VERSION = \"%s\"" % CHIRP_VERSION, file=init)
+        print("__all__ = %s\n" % str(chirp.__all__), file=init)
 
-    print "Set chirp/__init__.py::__all__ = %s" % str(chirp.__all__)
+    print("Set chirp/__init__.py::__all__ = %s" % str(chirp.__all__))
 
 
 def staticify_drivers_module():
     import chirp.drivers
 
     with file("chirp/drivers/__init__.py", "w") as init:
-        print >>init, "__all__ = %s\n" % str(chirp.drivers.__all__)
+        print("__all__ = %s\n" % str(chirp.drivers.__all__), file=init)
 
-    print "Set chirp/drivers/__init__.py::__all__ = %s" % str(
-        chirp.drivers.__all__)
+    print("Set chirp/drivers/__init__.py::__all__ = %s" % str(
+        chirp.drivers.__all__))
 
 
 def win32_build():
@@ -117,7 +131,7 @@ def default_build():
     for f in _locale_files:
         locale_files.append(("share/chirp/%s" % os.path.dirname(f), [f]))
 
-    print "LOC: %s" % str(locale_files)
+    print("LOC: %s" % str(locale_files))
 
     xsd_files = glob("chirp*.xsd")
 
@@ -146,7 +160,7 @@ def nuke_manifest(*files):
 
     f = file("MANIFEST.in", "w")
     for fn in files:
-        print >>f, fn
+        print(fn, file=f)
     f.close()
 
 
