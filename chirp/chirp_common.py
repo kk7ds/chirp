@@ -1130,7 +1130,6 @@ class FileBackedRadio(Radio):
 
     @classmethod
     def _strip_metadata(cls, raw_data):
-        print('magic: %r rawdata: %r' % (cls.MAGIC, raw_data))
         try:
             idx = raw_data.index(cls.MAGIC)
         except ValueError:
