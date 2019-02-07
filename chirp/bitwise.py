@@ -294,6 +294,9 @@ class intDataElement(DataElement):
     def __int__(self):
         return self.get_value()
 
+    def __nonzero__(self):
+        return int(self) != 0
+
     def __invert__(self):
         return ~self.get_value()
 

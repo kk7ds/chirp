@@ -13,7 +13,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
+
 from chirp import util
+
+
+def py2_byte_string(list_of_ints):
+    return ''.join(chr(x) for x in list_of_ints)
+
+
+if six.PY3:
+    data_type = bytes
+else:
+    data_type = py2_byte_string
 
 
 class MemoryMap:
@@ -24,8 +36,11 @@ class MemoryMap:
     def __init__(self, data):
         assert isinstance(data, bytes)
 
-        # This is a list of integers
-        self._data = list(data)
+        if six.PY3:
+            # This is a list of integers
+            self._data = list(data)
+        else:
+            self._data = [ord(byte) for byte in data]
 
     def printable(self, start=None, end=None):
         """Return a printable representation of the memory map"""
@@ -42,21 +57,23 @@ class MemoryMap:
     def get(self, start, length=1):
         """Return a chunk of memory of @length bytes from @start"""
         if start == -1:
-            return bytes(self._data[start:])
+            return data_type(self._data[start:])
         else:
             end = start + length
-            return bytes(self._data[start:end])
+            return data_type(self._data[start:end])
 
     def set(self, pos, value):
         """Set a chunk of memory at @pos to @value"""
         if isinstance(value, int):
             self._data[pos] = value & 0xFF
-        elif isinstance(value, bytes):
+        elif isinstance(value, bytes) and six.PY3:
             for byte in value:
                 self._data[pos] = byte
                 pos += 1
         elif isinstance(value, str):
-            for byte in value.encode():
+            if six.PY3:
+                value = value.encode()
+            for byte in value:
                 self._data[pos] = ord(byte)
                 pos += 1
         else:
@@ -65,7 +82,7 @@ class MemoryMap:
 
     def get_packed(self):
         """Return the entire memory map as raw data"""
-        return bytes(self._data)
+        return data_type(self._data)
 
     def __len__(self):
         return len(self._data)
