@@ -90,8 +90,8 @@ class CloneSettingsDialog(gtk.Dialog):
             conf.set("last_vendor", sorted(vendors.keys())[0])
 
         last_vendor = conf.get("last_vendor")
-        if last_vendor not in vendors.keys():
-            last_vendor = vendors.keys()[0]
+        if last_vendor not in list(vendors.keys()):
+            last_vendor = list(vendors.keys())[0]
 
         v = miscwidgets.make_choice(sorted(vendors.keys()), False, last_vendor)
 
@@ -177,13 +177,13 @@ class CloneSettingsDialog(gtk.Dialog):
                     raise Exception(
                         _("Unable to detect radio on {port}").format(
                             port=cs.port))
-            except Exception, e:
+            except Exception as e:
                 d = inputdialog.ExceptionDialog(e)
                 d.run()
                 d.destroy()
                 return None
         else:
-            for rclass in directory.DRV_TO_RADIO.values():
+            for rclass in list(directory.DRV_TO_RADIO.values()):
                 if rclass.MODEL == model:
                     cs.radio_class = rclass
                     break
@@ -256,7 +256,7 @@ class CloneThread(threading.Thread):
                 self.__radio.sync_in()
 
             emsg = None
-        except Exception, e:
+        except Exception as e:
             common.log_exception()
             LOG.error(_("Clone failed: {error}").format(error=e))
             emsg = e
@@ -275,4 +275,4 @@ class CloneThread(threading.Thread):
 if __name__ == "__main__":
     d = CloneSettingsDialog("/dev/ttyUSB0")
     r = d.run()
-    print r
+    print(r)

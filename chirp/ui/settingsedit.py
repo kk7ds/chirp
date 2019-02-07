@@ -109,7 +109,7 @@ class SettingsEditor(common.Editor):
     def _save_setting(self, widget, value):
         try:
             self._do_save_setting(widget, value)
-        except settings.InvalidValueError, e:
+        except settings.InvalidValueError as e:
             common.show_error(_("Invalid setting value: %s") % e)
 
     def _build_ui_tab(self, group):
@@ -155,7 +155,7 @@ class SettingsEditor(common.Editor):
                          xoptions=gtk.FILL, yoptions=0,
                          xpadding=12, ypadding=3)
 
-            for i in element.keys():
+            for i in list(element.keys()):
                 value = element[i]
                 if isinstance(value, settings.RadioSettingValueInteger):
                     widget = gtk.SpinButton()
