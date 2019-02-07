@@ -210,12 +210,13 @@ class TestBitwiseCharTypes(BaseTest):
     def test_string_invalid_chars(self):
         data = memmap.MemoryMap(b"\xFFoobar1")
         obj = bitwise.parse("struct {char foo[7];} bar;", data)
+
         if six.PY3:
-            self.assertIn('[0xff]oobar1', repr(obj.bar))
+            expected = '\xffoobar1'
         else:
-            # The format that py2 generates is ugly for reasons
-            # so just make sure this doesn't crash
-            pass
+            expected = '\\xffoobar1'
+
+        self.assertIn(expected, repr(obj.bar))
 
     def test_string_wrong_length(self):
         data = memmap.MemoryMap(b"foobar")

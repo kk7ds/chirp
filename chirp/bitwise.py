@@ -565,26 +565,40 @@ class charDataElement(DataElement):
         return ord(self.get_value())
 
     def _get_value(self, data):
-        try:
-            return data.decode()
-        except UnicodeDecodeError:
-            if six.PY2:
-                # Nearly all drivers set strings with binary in them.
-                # So if we are on py2 let that continue
-                return data
-            else:
-                return '[0x%x]' % data[0]
+        # Normally, we would want to decode bytes() to str() for py3.
+        # However...chirp drivers are currently using strings with
+        # hex escapes for setting binary byte values in memories.
+        # Technically, this is char, which is a little more like bytes()
+        # in py3, but until every driver has converted its strings to
+        # bytes(), this is massively simpler. Since set_value() is
+        # doing the inverse, we can do this here. If something sets
+        # a char to '\xFF' it will arrive below as the unicode character,
+        # and be converted to the integer/bytes value. When it is read out
+        # here, we will return that same unicode character and the driver
+        # will detect '\xFF' properly.
+        # FIXMEPY3: Remove this and the hack below when drivers convert to
+        # bytestrings.
+        return chr(ord(data))
 
     def set_value(self, value):
-        try:
-            self._data[self._offset] = value.encode()
-        except UnicodeDecodeError:
-            if six.PY2:
-                # Nearly all drivers set strings with binary in them.
-                # So if we are on py2 let that continue
-                self._data[self._offset] = value
-            else:
-                raise
+        if six.PY3:
+            # So, there are a lot of py2-thinking chirp drivers that
+            # will do something like this:
+            #
+            #   memobj.name = 'foo\xff'
+            #
+            # because they need the string to be stored in radio memory
+            # with a 0xFF byte terminating the string. If they do that in
+            # py3 we will get the unicode equivalent, which is a non-ASCII
+            # character. Conventional unicode wisdom would tell us we need
+            # to encode() the string to get UTF-8 bytes, but that's not
+            # what we want here (the radio doesn't support UTF-8 and we need
+            # specific binary values in memory). Ideally we would have
+            # written all of chirp with bytes() for these values, but alas.
+            # We can get the intended string here by doing bytes([ord(char)]).
+            value = bytes(ord(b) for b in value)
+
+        self._data[self._offset] = value
 
 
 class bcdDataElement(DataElement):
