@@ -22,6 +22,9 @@ class MemoryMap:
     """
 
     def __init__(self, data):
+        assert isinstance(data, bytes)
+
+        # This is a list of integers
         self._data = list(data)
 
     def printable(self, start=None, end=None):
@@ -39,17 +42,22 @@ class MemoryMap:
     def get(self, start, length=1):
         """Return a chunk of memory of @length bytes from @start"""
         if start == -1:
-            return "".join(self._data[start:])
+            return bytes(self._data[start:])
         else:
-            return "".join(self._data[start:start+length])
+            end = start + length
+            return bytes(self._data[start:end])
 
     def set(self, pos, value):
         """Set a chunk of memory at @pos to @value"""
         if isinstance(value, int):
-            self._data[pos] = chr(value)
-        elif isinstance(value, str):
+            self._data[pos] = value & 0xFF
+        elif isinstance(value, bytes):
             for byte in value:
                 self._data[pos] = byte
+                pos += 1
+        elif isinstance(value, str):
+            for byte in value.encode():
+                self._data[pos] = ord(byte)
                 pos += 1
         else:
             raise ValueError("Unsupported type %s for value" %
@@ -57,7 +65,7 @@ class MemoryMap:
 
     def get_packed(self):
         """Return the entire memory map as raw data"""
-        return "".join(self._data)
+        return bytes(self._data)
 
     def __len__(self):
         return len(self._data)
@@ -66,7 +74,10 @@ class MemoryMap:
         return self.get(start, end-start)
 
     def __getitem__(self, pos):
-        return self.get(pos)
+        if isinstance(pos, slice):
+            return self.get(pos.start, pos.stop - pos.start)
+        else:
+            return self.get(pos)
 
     def __setitem__(self, pos, value):
         """
