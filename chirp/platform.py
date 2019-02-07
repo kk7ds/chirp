@@ -45,7 +45,7 @@ def win32_comports_bruteforce():
             ports.append((portname, "Unknown", "Serial"))
             win32file.CloseHandle(port)
             port = None
-        except Exception, e:
+        except Exception as e:
             pass
 
     return ports
@@ -236,7 +236,7 @@ class Platform:
 
         if we_are_frozen():
             # Win32, find the directory of the executable
-            return os.path.dirname(unicode(sys.executable,
+            return os.path.dirname(str(sys.executable,
                                            sys.getfilesystemencoding()))
         else:
             # UNIX: Find the parent directory of this module
@@ -374,7 +374,7 @@ class Win32Platform(Platform):
     def list_serial_ports(self):
         try:
             ports = list(comports())
-        except Exception, e:
+        except Exception as e:
             if comports != win32_comports_bruteforce:
                 LOG.error("Failed to detect win32 serial ports: %s" % e)
                 ports = win32_comports_bruteforce()
@@ -391,7 +391,7 @@ class Win32Platform(Platform):
 
         try:
             fname, _, _ = win32gui.GetOpenFileNameW(Filter=typestrs)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Failed to get filename: %s" % e)
             return None
 
@@ -422,7 +422,7 @@ class Win32Platform(Platform):
                                                     CustomFilter=custom,
                                                     DefExt=def_ext,
                                                     Filter=typestrs)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Failed to get filename: %s" % e)
             return None
 
@@ -434,7 +434,7 @@ class Win32Platform(Platform):
         try:
             pidl, _, _ = shell.SHBrowseForFolder()
             fname = shell.SHGetPathFromIDList(pidl)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Failed to get directory: %s" % e)
             return None
 
@@ -476,16 +476,16 @@ def get_platform(basepath=None):
 def _do_test():
     __pform = get_platform()
 
-    print "Config dir: %s" % __pform.config_dir()
-    print "Default dir: %s" % __pform.default_dir()
-    print "Log file (foo): %s" % __pform.log_file("foo")
-    print "Serial ports: %s" % __pform.list_serial_ports()
-    print "OS Version: %s" % __pform.os_version_string()
+    print("Config dir: %s" % __pform.config_dir())
+    print("Default dir: %s" % __pform.default_dir())
+    print("Log file (foo): %s" % __pform.log_file("foo"))
+    print("Serial ports: %s" % __pform.list_serial_ports())
+    print("OS Version: %s" % __pform.os_version_string())
     # __pform.open_text_file("d-rats.py")
 
     # print "Open file: %s" % __pform.gui_open_file()
     # print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
-    print "Open folder: %s" % __pform.gui_select_dir("/tmp")
+    print("Open folder: %s" % __pform.gui_select_dir("/tmp"))
 
 if __name__ == "__main__":
     _do_test()
