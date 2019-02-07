@@ -18,7 +18,7 @@ import os
 import tempfile
 import logging
 
-from chirp.drivers import icf, rfinder
+from chirp.drivers import icf  #, rfinder
 from chirp import chirp_common, util, radioreference, errors
 
 LOG = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def register(cls):
     """Register radio @cls with the directory"""
     global DRV_TO_RADIO
     ident = radio_class_id(cls)
-    if ident in DRV_TO_RADIO.keys():
+    if ident in list(DRV_TO_RADIO.keys()):
         if ALLOW_DUPS:
             LOG.warn("Replacing existing driver id `%s'" % ident)
         else:
@@ -93,7 +93,7 @@ def icf_to_image(icf_file, img_file):
     mdata, mmap = icf.read_file(icf_file)
     img_data = None
 
-    for model in DRV_TO_RADIO.values():
+    for model in list(DRV_TO_RADIO.values()):
         try:
             if model._model == mdata:
                 img_data = mmap.get_packed()[:model._memsize]
@@ -118,7 +118,8 @@ def get_radio_by_image(image_file):
         rr.set_params(zipcode, username, password)
         return rr
 
-    if image_file.startswith("rfinder://"):
+    # FIXME: Disable rfinder until the module is fixed
+    if image_file.startswith("rfinder://") and False:
         _, _, email, passwd, lat, lon, miles = image_file.split("/")
         rf = rfinder.RFinderRadio(None)
         rf.set_params((float(lat), float(lon)), int(miles), email, passwd)
@@ -139,7 +140,7 @@ def get_radio_by_image(image_file):
 
     data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
 
-    for rclass in DRV_TO_RADIO.values():
+    for rclass in list(DRV_TO_RADIO.values()):
         if not issubclass(rclass, chirp_common.FileBackedRadio):
             continue
 

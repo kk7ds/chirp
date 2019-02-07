@@ -7,7 +7,8 @@ import unittest
 
 from chirp import directory
 
-import run_tests
+# FIXME: run_tests needs converting
+# from tests import run_tests
 
 
 class TestAdapterMeta(type):

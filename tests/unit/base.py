@@ -1,5 +1,8 @@
 import unittest
-import mox
+try:
+    import mox
+except ImportError:
+    from mox3 import mox
 
 import warnings
 warnings.simplefilter('ignore', Warning)

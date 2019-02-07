@@ -72,7 +72,7 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
             service = self._client.service
             zipcode = service.getZipcodeInfo(self._zip, self._auth)
             county = service.getCountyInfo(zipcode.ctid, self._auth)
-        except WebFault, err:
+        except WebFault as err:
             raise errors.RadioError(err)
 
         status = chirp_common.Status()
@@ -185,8 +185,8 @@ def main():
                    username=sys.argv[2],
                    password=sys.argv[3])
     rrr.do_fetch()
-    print rrr.get_raw_memory(0)
-    print rrr.get_memory(0)
+    print(rrr.get_raw_memory(0))
+    print(rrr.get_memory(0))
 
 if __name__ == "__main__":
     main()
