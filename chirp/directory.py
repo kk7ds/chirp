@@ -132,9 +132,8 @@ def get_radio_by_image(image_file):
         image_file = tempf
 
     if os.path.exists(image_file):
-        f = file(image_file, "rb")
-        filedata = f.read()
-        f.close()
+        with open(image_file, "rb") as f:
+            filedata = f.read()
     else:
         filedata = ""
 

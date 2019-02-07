@@ -451,10 +451,13 @@ def is_9x_icf(filename):
 
 def is_icf_file(filename):
     """Returns True if @filename is an ICF file"""
-    f = file(filename)
-    data = f.readline()
-    data += f.readline()
-    f.close()
+    try:
+        with open(filename) as f:
+            data = f.readline()
+            data += f.readline()
+    except UnicodeDecodeError:
+        # ICF files are ASCII, so any unicode failure means no.
+        return False
 
     data = data.replace("\n", "").replace("\r", "")
 
