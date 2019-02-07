@@ -442,9 +442,8 @@ def read_file(filename):
 
 def is_9x_icf(filename):
     """Returns True if @filename is an IC9x ICF file"""
-    f = file(filename)
-    mdata = f.read(8)
-    f.close()
+    with open(filename) as f:
+        mdata = f.read(8)
 
     return mdata in ["30660000", "28880000"]
 

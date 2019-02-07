@@ -176,10 +176,12 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
 
         self._blank()
 
-        f = file(self._filename, "rU")
-        header = f.readline().strip()
+        with open(self._filename, "rU") as f:
+            header = f.readline().strip()
+            f.seek(0, 0)
+            return self._load(f)
 
-        f.seek(0, 0)
+    def _load(self, f):
         reader = csv.reader(f, delimiter=chirp_common.SEPCHAR, quotechar='"')
 
         good = 0
@@ -279,6 +281,11 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
     @classmethod
     def match_model(cls, filedata, filename):
         """Match files ending in .CSV"""
+        try:
+            filedata = filedata.decode()
+        except UnicodeDecodeError:
+            # CSV files are text
+            return False
         return filename.lower().endswith("." + cls.FILE_EXTENSION) and \
             (filedata.startswith("Location,") or filedata == "")
 
@@ -453,6 +460,11 @@ class RTCSVRadio(CSVRadio):
         # RT Systems provides a different set of columns for each radio.
         # We attempt to match only the first few columns, hoping they are
         # consistent across radio models.
+        try:
+            filedata = filedata.decode()
+        except UnicodeDecodeError:
+            # CSV files are text
+            return False
         return filename.lower().endswith("." + cls.FILE_EXTENSION) and \
             filedata.startswith("Channel Number,Receive Frequency,"
                                 "Transmit Frequency,Offset Frequency,"
