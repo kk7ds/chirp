@@ -61,6 +61,8 @@ import struct
 import os
 import logging
 
+import six
+
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
 
@@ -212,7 +214,11 @@ class arrayDataElement(DataElement):
 
     def __str__(self):
         if isinstance(self.__items[0], charDataElement):
-            return "".join([x.get_value() for x in self.__items])
+            # NOTE: All the values should be strings coming out of py3.
+            # and on py2 they could be a mix of unicode and str, the latter
+            # for non-ASCII values. On py2 we can just coerce all of these
+            # types to a string for compatbility.
+            return "".join([str(x.get_value()) for x in self.__items])
         else:
             return str(self.__items)
 
@@ -562,10 +568,23 @@ class charDataElement(DataElement):
         try:
             return data.decode()
         except UnicodeDecodeError:
-            return '[0x%x]' % data[0]
+            if six.PY2:
+                # Nearly all drivers set strings with binary in them.
+                # So if we are on py2 let that continue
+                return data
+            else:
+                return '[0x%x]' % data[0]
 
     def set_value(self, value):
-        self._data[self._offset] = value.encode()
+        try:
+            self._data[self._offset] = value.encode()
+        except UnicodeDecodeError:
+            if six.PY2:
+                # Nearly all drivers set strings with binary in them.
+                # So if we are on py2 let that continue
+                self._data[self._offset] = value
+            else:
+                raise
 
 
 class bcdDataElement(DataElement):
