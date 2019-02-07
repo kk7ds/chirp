@@ -354,6 +354,9 @@ class RadioSettingGroup(object):
                 return self
 
             def next(self):
+                return self.__next__()
+
+            def __next__(self):
                 """Next Iterator Interface"""
                 if self.__i >= len(self.__rsg.keys()):
                     raise StopIteration()
