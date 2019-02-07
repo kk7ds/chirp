@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
 import copy
 import traceback
 import sys
@@ -48,9 +49,23 @@ if not os.path.exists("logs"):
 logger.handle_options(LoggerOpts())
 
 from chirp import CHIRP_VERSION
-from chirp.drivers import *
+# FIXME: Not all drivers are py3 compatible in syntax, so punt on this
+# until that time, and defer to the safe import loop below.
+# from chirp.drivers import *
 from chirp import chirp_common, directory
 from chirp import import_logic, memmap, settings, errors
+
+# Safe import of everything in chirp/drivers
+driver_files = glob.glob('chirp/drivers/*.py')
+for driver_file in driver_files:
+    module, _ = os.path.splitext(driver_file)
+    module = module.replace('/', '.')
+    try:
+        __import__(module)
+    except Exception as e:
+        print('Failed to import %s: %s' % (module, e))
+
+from chirp.drivers import generic_csv
 
 TESTS = {}
 
@@ -131,7 +146,7 @@ class TestWrapper:
         if self._make_reload:
             try:
                 self.open()
-            except Exception, e:
+            except Exception as e:
                 raise TestCrashError(get_tb(), e, "[Loading]")
 
         try:
@@ -141,7 +156,7 @@ class TestWrapper:
 
         try:
             ret = fn(*args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             if type(e) in self._ignored_exceptions:
                 raise e
             details = str(args) + str(kwargs)
@@ -149,13 +164,13 @@ class TestWrapper:
                 if isinstance(arg, chirp_common.Memory):
                     details += os.linesep + \
                         os.linesep.join(["%s:%s" % (k, v) for k, v
-                                         in arg.__dict__.items()])
+                                         in list(arg.__dict__.items())])
             raise TestCrashError(get_tb(), e, details)
 
         if self._make_reload:
             try:
                 self.close()
-            except Exception, e:
+            except Exception as e:
                 raise TestCrashError(get_tb(), e, "[Saving]")
 
         return ret
@@ -189,7 +204,7 @@ class TestCase:
         if a.tmode == "Cross":
             tx_mode, rx_mode = a.cross_mode.split("->")
 
-        for k, v in a.__dict__.items():
+        for k, v in list(a.__dict__.items()):
             if k == "power":
                 continue  # FIXME
             elif k == "immutable":
@@ -239,14 +254,14 @@ class TestCase:
                     details = msg
                     details += os.linesep + "### Wanted:" + os.linesep
                     details += os.linesep.join(["%s:%s" % (k, v) for k, v
-                                                in a.__dict__.items()])
+                                                in list(a.__dict__.items())])
                     details += os.linesep + "### Got:" + os.linesep
                     details += os.linesep.join(["%s:%s" % (k, v) for k, v
-                                                in b.__dict__.items()])
+                                                in list(b.__dict__.items())])
                     raise TestFailedError(msg, details)
-            except KeyError, e:
-                print sorted(a.__dict__.keys())
-                print sorted(b.__dict__.keys())
+            except KeyError as e:
+                print(sorted(a.__dict__.keys()))
+                print(sorted(b.__dict__.keys()))
                 raise
 
 
@@ -284,11 +299,11 @@ class TestCaseCopyAll(TestCase):
                                          src_mem)
             except import_logic.DestNotCompatible:
                 continue
-            except import_logic.ImportError, e:
+            except import_logic.ImportError as e:
                 failures.append(TestFailedError("<%i>: Import Failed: %s" %
                                                 (dst_number, e)))
                 continue
-            except Exception, e:
+            except Exception as e:
                 raise TestCrashError(get_tb(), e, "[Import]")
 
             self._wrapper.do("set_memory", dst_mem)
@@ -296,7 +311,7 @@ class TestCaseCopyAll(TestCase):
 
             try:
                 self.compare_mem(dst_mem, ret_mem)
-            except TestFailedError, e:
+            except TestFailedError as e:
                 failures.append(
                     TestFailedError("<%i>: %s" % (number, e), e.get_detail()))
 
@@ -351,7 +366,7 @@ class TestCaseBruteForce(TestCase):
 
                 try:
                     self.set_and_compare(m)
-                except errors.UnsupportedToneError, e:
+                except errors.UnsupportedToneError as e:
                     # If a radio doesn't support a particular tone value,
                     # don't punish it
                     pass
@@ -564,7 +579,7 @@ class TestCaseEdges(TestCase):
         m = self._mem(rf)
 
         for low, high in rf.valid_bands:
-            for band, totest in odd_steps.items():
+            for band, totest in list(odd_steps.items()):
                 if band < low or band > high:
                     continue
                 for testfreq in totest:
@@ -606,12 +621,12 @@ class TestCaseSettings(TestCase):
         o = self._wrapper.do("get_settings")
         self._wrapper.do("set_settings", o)
         n = self._wrapper.do("get_settings")
-        map(self.compare_settings, o, n)
+        list(map(self.compare_settings, o, n))
 
     @staticmethod
     def compare_settings(a, b):
         try:
-            map(TestCaseSettings.compare_settings, a, b)
+            list(map(TestCaseSettings.compare_settings, a, b))
         except TypeError:
             if a.get_value() != b.get_value():
                 msg = "Field is `%s', " % b + \
@@ -647,7 +662,7 @@ class TestCaseBanks(TestCase):
                 bank.set_name(testname)
             except AttributeError:
                 return [], []
-            except Exception, e:
+            except Exception as e:
                 if str(e) == "Not implemented":
                     return [], []
                 else:
@@ -776,7 +791,7 @@ class TestCaseBanks(TestCase):
                 raise TestFailedError("Bank index not persisted")
 
         suggested_index = model.get_next_mapping_index(banks[0])
-        if suggested_index not in range(*index_bounds):
+        if suggested_index not in list(range(*index_bounds)):
             raise TestFailedError("Suggested bank index not in valid range",
                                   "Got %i, range is %s" % (suggested_index,
                                                            index_bounds))
@@ -812,7 +827,7 @@ class TestCaseDetect(TestCase):
 
         try:
             radio = directory.get_radio_by_image(filename)
-        except Exception, e:
+        except Exception as e:
             raise TestFailedError("Failed to detect", str(e))
 
         if issubclass(self._wrapper._dstclass, radio.__class__):
@@ -873,7 +888,7 @@ class TestCaseClone(TestCase):
         live = isinstance(self._wrapper._dst, chirp_common.LiveRadio)
         try:
             radio = self._wrapper._dst.__class__(serial)
-        except Exception, e:
+        except Exception as e:
             error = e
 
         radio.status_fn = lambda s: True
@@ -891,7 +906,7 @@ class TestCaseClone(TestCase):
         error = None
         try:
             radio.sync_in()
-        except Exception, e:
+        except Exception as e:
             error = e
 
         if error is None:
@@ -910,7 +925,7 @@ class TestCaseClone(TestCase):
         error = None
         try:
             radio.sync_out()
-        except Exception, e:
+        except Exception as e:
             error = e
 
         if error is None:
@@ -948,7 +963,7 @@ class TestOutput:
         pass
 
     def _print(self, string):
-        print >>self._out, string
+        print(string, file=self._out)
 
     def report(self, rclass, tc, msg, e):
         name = ("%s %s" % (rclass.MODEL, rclass.VARIANT))[:13]
@@ -991,7 +1006,7 @@ class TestOutputANSI(TestOutput):
         self._print("-" * 70)
         self._print("Results:")
         self._print("  %-7s: %i" % ("TOTAL", self.__total))
-        for t, c in self.__counts.items():
+        for t, c in list(self.__counts.items()):
             self._print("  %-7s: %i" % (t, c))
 
 
@@ -1000,7 +1015,7 @@ class TestOutputHTML(TestOutput):
         self._filename = filename
 
     def prepare(self):
-        print "Writing to %s" % self._filename,
+        print("Writing to %s" % self._filename, end=' ')
         sys.stdout.flush()
         self._out = file(self._filename, "w")
         s = """
@@ -1044,12 +1059,12 @@ td.SKIPPED {
   <th>Status</th><th>Message</th>
 </tr>
 """ % (CHIRP_VERSION, CHIRP_VERSION, time.strftime("%x at %X"), os.name)
-        print >>self._out, s
+        print(s, file=self._out)
 
     def cleanup(self):
-        print >>self._out, "</table></body>"
+        print("</table></body>", file=self._out)
         self._out.close()
-        print "Done"
+        print("Done")
 
     def report(self, rclass, tc, msg, e):
         s = ("<tr class='%s'>" % msg) + \
@@ -1060,7 +1075,7 @@ td.SKIPPED {
             ("<td class='%s'>%s</td>" % (msg, msg)) + \
             ("<td class='error'>%s</td>" % e) + \
             "</tr>"
-        print >>self._out, s
+        print(s, file=self._out)
         sys.stdout.write(".")
         sys.stdout.flush()
 
@@ -1087,10 +1102,10 @@ class TestRunner:
     def log(self, rclass, tc, e):
         fn = "logs/%s_%s.log" % (directory.get_driver(rclass), tc)
         log = file(fn, "a")
-        print >>log, "---- Begin test %s ----" % tc
+        print("---- Begin test %s ----" % tc, file=log)
         log.write(e.get_detail())
-        print >>log
-        print >>log, "---- End test %s ----" % tc
+        print(file=log)
+        print("---- End test %s ----" % tc, file=log)
         log.close()
 
     def nuke_log(self, rclass, tc):
@@ -1117,18 +1132,18 @@ class TestRunner:
                         self.log(rclass, tc, e)
                     nfailed += 1
                     nprinted += 1
-            except TestFailedError, e:
+            except TestFailedError as e:
                 self.report(rclass, tc, "FAILED", e)
                 if e.get_detail():
                     self.log(rclass, tc, e)
                 nfailed += 1
                 nprinted += 1
-            except TestCrashError, e:
+            except TestCrashError as e:
                 self.report(rclass, tc, "CRASHED", e)
                 self.log(rclass, tc, e)
                 nfailed += 1
                 nprinted += 1
-            except TestSkippedError, e:
+            except TestSkippedError as e:
                 self.report(rclass, tc, "SKIPPED", e)
                 self.log(rclass, tc, e)
                 nprinted += 1
@@ -1235,11 +1250,11 @@ Available tests:
     if options.test:
         tr = TestRunner("images", [TESTS[options.test]], test_out)
     else:
-        tr = TestRunner("images", TESTS.values(), test_out)
+        tr = TestRunner("images", list(TESTS.values()), test_out)
 
     if options.live:
         if not options.driver:
-            print "Live mode requires a driver to be specified"
+            print("Live mode requires a driver to be specified")
             sys.exit(1)
         failed = tr.run_one_live(options.driver, options.live)
     elif options.driver:

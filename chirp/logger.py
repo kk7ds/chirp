@@ -121,7 +121,7 @@ class Logger(object):
         if self.logfile is None:
             self.logname = name
             # always truncate the log file
-            with file(name, "w") as fh:
+            with open(name, "w") as fh:
                 pass
             self.logfile = logging.FileHandler(name)
             format_str = self.log_format
