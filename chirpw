@@ -15,13 +15,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import glob
 import os
+import six
+
+if six.PY3:
+    from gi import pygtkcompat
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
 
 from chirp import logger
 from chirp import elib_intl
 from chirp import platform
-from chirp.drivers import *
 from chirp.ui import config
+
+# Safe import of everything in chirp/drivers
+driver_files = glob.glob('chirp/drivers/*.py')
+for driver_file in driver_files:
+    module, _ = os.path.splitext(driver_file)
+    module = module.replace('/', '.')
+    try:
+        __import__(module)
+    except Exception as e:
+        print('Failed to import %s: %s' % (module, e))
 
 
 import sys
@@ -99,7 +115,7 @@ except:
     vmaj, vmin = pyver.split(".", 2)
     vrel = 0
 
-if int(vmaj) < 2 or int(vmin) < 6:
+if int(vmaj) == 2 and int(vmin) < 6:
     # Python <2.6, emulate str.format()
     import __builtin__
 

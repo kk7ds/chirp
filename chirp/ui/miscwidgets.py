@@ -21,6 +21,7 @@ import os
 import logging
 
 from chirp import platform
+from chirp.ui import compat
 
 LOG = logging.getLogger(__name__)
 
@@ -186,9 +187,10 @@ class KeyedListWidget(gtk.HBox):
 
     def set_editable(self, column, is_editable):
         col = self.__view.get_column(column)
-        rend = col.get_cell_renderers()[0]
-        rend.set_property("editable", True)
-        rend.connect("edited", self._edited, column + 1)
+        with compat.py3safe():
+            rend = col.get_cell_renderers()[0]
+            rend.set_property("editable", True)
+            rend.connect("edited", self._edited, column + 1)
 
     def set_sort_column(self, column, value=None):
         if not value:
@@ -197,7 +199,8 @@ class KeyedListWidget(gtk.HBox):
         col.set_sort_column_id(value)
 
     def get_renderer(self, colnum):
-        return self.__view.get_column(colnum).get_cell_renderers()[0]
+        with compat.py3safe():
+            return self.__view.get_column(colnum).get_cell_renderers()[0]
 
 
 class ListWidget(gtk.HBox):

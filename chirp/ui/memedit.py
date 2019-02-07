@@ -29,7 +29,10 @@ import pickle
 import os
 import logging
 
+import six
+
 from chirp.ui import common, shiftdialog, miscwidgets, config, memdetail
+from chirp.ui import compat
 from chirp.ui import bandplans
 from chirp import chirp_common, errors, directory, import_logic
 
@@ -423,7 +426,7 @@ class MemoryEditor(common.Editor):
             if extd:
                 val = extd
 
-        return val
+        return str(val)
 
     def render(self, _, rend, model, iter, colnum):
         val, hide = model.get(iter, colnum, self.col("_hide_cols"))
@@ -1001,18 +1004,29 @@ class MemoryEditor(common.Editor):
                 else:
                     choices = gtk.ListStore(TYPE_STRING, TYPE_STRING)
                     for choice in self.choices[_cap]:
-                        choices.append([choice, self._render(i, choice)])
+                        choices.append([str(choice), self._render(i, choice)])
                 rend.set_property("model", choices)
                 rend.set_property("text-column", 1)
                 rend.set_property("editable", True)
                 rend.set_property("has-entry", False)
                 rend.connect("edited", self.edited, _cap)
-                col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
+                if six.PY3:
+                    # FIXMEPY3: we can't set sensitive on the column without
+                    # it affecting the whole column (which makes sense).
+                    # Setting it on the renderer doesn't seem to work like
+                    # we want either.
+                    col = gtk.TreeViewColumn(_cap, rend, text=i)
+                else:
+                    col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
             else:
                 rend.set_property("editable", _cap not in non_editable)
                 rend.connect("edited", self.edited, _cap)
-                col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
+                if six.PY3:
+                    # FIXMEPY3: See above
+                    col = gtk.TreeViewColumn(_cap, rend, text=i)
+                else:
+                    col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
 
             col.set_reorderable(True)
@@ -1191,7 +1205,7 @@ class MemoryEditor(common.Editor):
             self._config.get_int(hikey) or 999
 
         self.lo_limit_adj = gtk.Adjustment(lostart, min, max-1, 1, 10)
-        lo = gtk.SpinButton(self.lo_limit_adj)
+        lo = compat.SpinButton(self.lo_limit_adj)
         lo.connect("value-changed", self._store_limit, "lo")
         lo.show()
         hbox.pack_start(lo, 0, 0, 0)
@@ -1201,7 +1215,7 @@ class MemoryEditor(common.Editor):
         hbox.pack_start(lab, 0, 0, 0)
 
         self.hi_limit_adj = gtk.Adjustment(histart, min+1, max, 1, 10)
-        hi = gtk.SpinButton(self.hi_limit_adj)
+        hi = compat.SpinButton(self.hi_limit_adj)
         hi.connect("value-changed", self._store_limit, "hi")
         hi.show()
         hbox.pack_start(hi, 0, 0, 0)
@@ -1640,13 +1654,15 @@ class DstarMemoryEditor(MemoryEditor):
                 if i not in self.choices:
                     continue
                 column = self.view.get_column(self.col(i))
-                rend = column.get_cell_renderers()[0]
-                rend.set_property("has-entry", True)
+                with compat.py3safe():
+                    rend = column.get_cell_renderers()[0]
+                    rend.set_property("has-entry", True)
 
         for i in _dv_columns:
             col = self.view.get_column(self.col(i))
-            rend = col.get_cell_renderers()[0]
-            rend.set_property("family", "Monospace")
+            with compat.py3safe():
+                rend = col.get_cell_renderers()[0]
+                rend.set_property("family", "Monospace")
 
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]
