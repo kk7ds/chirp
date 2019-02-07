@@ -135,7 +135,7 @@ def get_radio_by_image(image_file):
         with open(image_file, "rb") as f:
             filedata = f.read()
     else:
-        filedata = ""
+        filedata = b""
 
     data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
 
@@ -144,8 +144,12 @@ def get_radio_by_image(image_file):
             continue
 
         # If no metadata, we do the old thing
-        if not metadata and rclass.match_model(filedata, image_file):
-            return rclass(image_file)
+        try:
+            if not metadata and rclass.match_model(filedata, image_file):
+                return rclass(image_file)
+        except Exception as e:
+            LOG.error('Radio class %s failed during detection: %s' % (
+                rclass.__name__, e))
 
         # If metadata, then it has to match one of the aliases or the parent
         for alias in rclass.ALIASES + [rclass]:
