@@ -119,7 +119,7 @@ def get_id(ser):
                 return resp.split(" ")[1]
 
             # Kenwood radios that return ID numbers
-            if resp in RADIO_IDS.keys():
+            if resp in list(RADIO_IDS.keys()):
                 return RADIO_IDS[resp]
 
     raise errors.RadioError("No response from radio")
@@ -398,7 +398,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_modes = MODES.values()
+        rf.valid_modes = list(MODES.values())
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_characters = \
             chirp_common.CHARSET_ALPHANUMERIC + "/.-+*)('&%$#! ~}|{"
@@ -819,7 +819,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_tuning_steps = list(THF6A_STEPS)
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
-        rf.valid_duplexes = THF6A_DUPLEX.values()
+        rf.valid_duplexes = list(THF6A_DUPLEX.values())
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 8
         rf.memory_bounds = (0, self._upper)

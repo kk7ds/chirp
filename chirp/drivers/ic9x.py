@@ -181,7 +181,7 @@ class IC9xRadio(icf.IcomLiveRadio):
                 LOG.debug("Done: %s" % mem)
             except errors.InvalidMemoryLocation:
                 pass
-            except errors.InvalidDataError, e:
+            except errors.InvalidDataError as e:
                 LOG.error("Error talking to radio: %s" % e)
                 break
 
@@ -223,7 +223,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         self.__memcache[memory.number] = memory
 
     def _ic9x_get_banks(self):
-        if len(self.__bankcache.keys()) == 26:
+        if len(list(self.__bankcache.keys())) == 26:
             return [self.__bankcache[k] for k in
                     sorted(self.__bankcache.keys())]
 
@@ -246,10 +246,10 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def _ic9x_set_banks(self, banks):
 
-        if len(banks) != len(self.__bankcache.keys()):
+        if len(banks) != len(list(self.__bankcache.keys())):
             raise errors.InvalidDataError("Invalid bank list length (%i:%i)" %
                                           (len(banks),
-                                           len(self.__bankcache.keys())))
+                                           len(list(self.__bankcache.keys()))))
 
         cached_names = [str(self.__bankcache[x])
                         for x in sorted(self.__bankcache.keys())]
@@ -279,7 +279,7 @@ class IC9xRadio(icf.IcomLiveRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_sub_devices = True
-        rf.valid_special_chans = IC9X_SPECIAL[self.vfo].keys()
+        rf.valid_special_chans = list(IC9X_SPECIAL[self.vfo].keys())
 
         return rf
 
@@ -417,8 +417,8 @@ def _test():
     import serial
     ser = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
                                    baudrate=38400, timeout=0.1))
-    print ser.get_urcall_list()
-    print "-- FOO --"
+    print(ser.get_urcall_list())
+    print("-- FOO --")
     ser.set_urcall_list(["K7TAY", "FOOBAR", "BAZ"])
 
 

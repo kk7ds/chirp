@@ -60,7 +60,7 @@ def _ic9x_parse_frames(buf):
         try:
             start = buf.index("\xfe\xfe")
             end = buf[start:].index("\xfd") + start + 1
-        except Exception, e:
+        except Exception as e:
             LOG.error("No trailing bit")
             break
 
@@ -71,7 +71,7 @@ def _ic9x_parse_frames(buf):
             frame = IC92Frame()
             frame.from_raw(framedata[2:-1])
             frames.append(frame)
-        except errors.InvalidDataError, e:
+        except errors.InvalidDataError as e:
             LOG.error("Broken frame: %s" % e)
 
         # LOG.debug("Parsed %i frames" % len(frames))

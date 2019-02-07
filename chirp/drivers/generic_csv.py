@@ -160,9 +160,9 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                     val = typ(val)
                 if hasattr(mem, attr):
                     setattr(mem, attr, val)
-            except OmittedHeaderError, e:
+            except OmittedHeaderError as e:
                 pass
-            except Exception, e:
+            except Exception as e:
                 raise Exception("[%s] %s" % (attr, e))
 
         return self._clean(headers, line, mem)
@@ -203,7 +203,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
                 mem = self._parse_csv_data_line(header, line)
                 if mem.number is None:
                     raise Exception("Invalid Location field" % lineno)
-            except Exception, e:
+            except Exception as e:
                 LOG.error("Line %i: %s", lineno, e)
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
