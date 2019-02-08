@@ -1,13 +1,19 @@
 import glob
+import logging
 import os
 import shutil
 import sys
 import tempfile
 import unittest
 
+import six
+
 from chirp import directory
 
 from tests import run_tests
+
+
+LOG = logging.getLogger('testadapter')
 
 
 class TestAdapterMeta(type):
@@ -78,6 +84,11 @@ def _get_sub_devices(rclass, testimage):
         return [rclass]
 
 
+class RadioSkipper(unittest.TestCase):
+    def test_is_supported_by_environment(self):
+        raise unittest.SkipTest('Running in py3 and driver is not supported')
+
+
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
 
@@ -86,11 +97,17 @@ def load_tests(loader, tests, pattern):
 
     for test in tests:
         image = os.path.join('tests', 'images', '%s.img' % test)
-        rclass = directory.get_radio(test)
+        try:
+            rclass = directory.get_radio(test)
+        except Exception:
+            if six.PY3 and 'CHIRP_DEBUG' in os.environ:
+                LOG.error('Failed to load %s' % test)
+                continue
+            raise
         for device in _get_sub_devices(rclass, image):
             class_name = 'TestCase_%s' % (
-                filter(lambda c: c.isalnum(),
-                       device.get_name()))
+                ''.join(filter(lambda c: c.isalnum(),
+                               device.get_name())))
             tc = TestAdapterMeta(
                 class_name, (TestAdapter,), dict(RADIO_CLASS=device,
                                                  SOURCE_IMAGE=image))

@@ -920,7 +920,7 @@ class TestCaseClone(TestCase):
                                   (error.__class__.__name__,
                                    error, get_tb()))
 
-        radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
+        radio._mmap = memmap.MemoryMap(b"\x00" * (1024 * 128))
 
         error = None
         try:

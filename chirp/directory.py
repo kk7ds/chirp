@@ -18,6 +18,8 @@ import os
 import tempfile
 import logging
 
+import six
+
 from chirp.drivers import icf  #, rfinder
 from chirp import chirp_common, util, radioreference, errors
 
@@ -139,17 +141,40 @@ def get_radio_by_image(image_file):
 
     data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
 
+    # NOTE: See warning below
+    if six.PY3:
+        filestring = ''.join(chr(c) for c in filedata)
+    else:
+        filestring = filedata
+
     for rclass in list(DRV_TO_RADIO.values()):
         if not issubclass(rclass, chirp_common.FileBackedRadio):
             continue
 
-        # If no metadata, we do the old thing
-        try:
-            if not metadata and rclass.match_model(filedata, image_file):
-                return rclass(image_file)
-        except Exception as e:
-            LOG.error('Radio class %s failed during detection: %s' % (
-                rclass.__name__, e))
+        if not metadata:
+            # If no metadata, we do the old thing
+            error = None
+            try:
+                if rclass.match_model(filedata, image_file):
+                    return rclass(image_file)
+            except Exception as e:
+                error = e
+
+            # NOTE: For compatibility, try a straight up conversion to
+            # string and log a warning
+            if six.PY3:
+                try:
+                    if rclass.match_model(filestring, image_file):
+                        LOG.warning(('Radio driver %s needs py3 '
+                                     'match_model conversion!') % (
+                                         rclass.__name__))
+                        return rclass(image_file)
+                except Exception as e:
+                    error = e
+
+            if error:
+                LOG.error('Radio class %s failed during detection: %s' % (
+                    rclass.__name__, error))
 
         # If metadata, then it has to match one of the aliases or the parent
         for alias in rclass.ALIASES + [rclass]:
