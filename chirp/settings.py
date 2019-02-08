@@ -219,6 +219,12 @@ class RadioSettingValueString(RadioSettingValue):
     def __str__(self):
         return self._current
 
+    def __len__(self):
+        return len(self._current)
+
+    def __getitem__(self, i):
+        return self._current[i]
+
 
 class RadioSettingValueMap(RadioSettingValueList):
 

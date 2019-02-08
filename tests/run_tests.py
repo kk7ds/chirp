@@ -54,12 +54,14 @@ from chirp import CHIRP_VERSION
 # from chirp.drivers import *
 from chirp import chirp_common, directory
 from chirp import import_logic, memmap, settings, errors
+from chirp import settings
 
 # Safe import of everything in chirp/drivers
-driver_files = glob.glob('chirp/drivers/*.py')
+driver_files = (glob.glob('../chirp/drivers/*.py') +
+                glob.glob('chirp/drivers/*.py'))
 for driver_file in driver_files:
     module, _ = os.path.splitext(driver_file)
-    module = module.replace('/', '.')
+    module = module.replace('/', '.').replace('...', '')
     try:
         __import__(module)
     except Exception as e:
@@ -626,6 +628,8 @@ class TestCaseSettings(TestCase):
     @staticmethod
     def compare_settings(a, b):
         try:
+            if isinstance(a, settings.RadioSettingValue):
+                raise TypeError('Hit bottom')
             list(map(TestCaseSettings.compare_settings, a, b))
         except TypeError:
             if a.get_value() != b.get_value():
