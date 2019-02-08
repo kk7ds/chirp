@@ -348,7 +348,7 @@ class MappingMembershipEditor(common.Editor):
             self._store.set(iter,
                             self.C_FILLED, False,
                             self.C_LOC, i,
-                            self.C_FREQ, 0,
+                            self.C_FREQ, "",
                             self.C_NAME, "",
                             self.C_INDEX, 0)
 
