@@ -119,3 +119,16 @@ def safe_charset_string(indexes, charset, safechar=" "):
         except IndexError:
             _string += safechar
     return _string
+
+
+class StringStruct(object):
+    """String-compatible struct module."""
+    @staticmethod
+    def pack(*args):
+        from chirp import bitwise
+        return bitwise.string_straight_decode(struct.pack(*args))
+
+    @staticmethod
+    def unpack(fmt, data):
+        from chirp import bitwise
+        return struct.unpack(fmt, bitwise.string_straight_encode(data))
