@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 import struct
 
 
@@ -23,15 +24,26 @@ def hexprint(data, addrfmt=None):
 
     block_size = 8
 
-    lines = len(data) / block_size
+    lines = len(data) // block_size
+
+    if six.PY3 and isinstance(data, bytes):
+        pad = bytes([0])
+    else:
+        pad = '\x00'
+
 
     if (len(data) % block_size) != 0:
         lines += 1
-        data += "\x00" * ((lines * block_size) - len(data))
+        data += pad * ((lines * block_size) - len(data))
 
     out = ""
 
-    for block in range(0, (len(data)/block_size)):
+    if six.PY3 and isinstance(data, bytes):
+        byte_to_int = lambda b: b
+    else:
+        byte_to_int = ord
+
+    for block in range(0, (len(data) // block_size)):
         addr = block * block_size
         try:
             out += addrfmt % locals()
@@ -46,14 +58,14 @@ def hexprint(data, addrfmt=None):
             limit = block_size
 
         for j in range(0, limit):
-            out += "%02x " % ord(data[(block * block_size) + j])
+            out += "%02x " % byte_to_int(data[(block * block_size) + j])
 
         out += "  "
 
         for j in range(0, limit):
             char = data[(block * block_size) + j]
-
-            if ord(char) > 0x20 and ord(char) < 0x7E:
+            byte = byte_to_int(char)
+            if byte > 0x20 and byte < 0x7E:
                 out += "%s" % char
             else:
                 out += "."
