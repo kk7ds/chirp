@@ -224,6 +224,16 @@ class TestBitwiseCharTypes(BaseTest):
         self.assertRaises(ValueError, setattr, obj, "foo", "bazfo")
         self.assertRaises(ValueError, setattr, obj, "foo", "bazfooo")
 
+    def test_string_with_various_input_types(self):
+        data = memmap.MemoryMap(b"foobar")
+        obj = bitwise.parse("char foo[6];", data)
+        self.assertEqual('foobar', str(obj.foo))
+        self.assertEqual(6, len(b'barfoo'))
+        obj.foo = b'barfoo'
+        self.assertEqual('barfoo', str(obj.foo))
+        obj.foo = [ord(c) for c in 'fffbbb']
+        self.assertEqual('fffbbb', str(obj.foo))
+
 
 class TestBitwiseStructTypes(BaseTest):
     def _test_def(self, definition, data, primitive):

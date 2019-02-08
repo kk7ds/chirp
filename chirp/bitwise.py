@@ -74,6 +74,44 @@ class ParseError(Exception):
     pass
 
 
+def string_straight_encode(string):
+    # So, there are a lot of py2-thinking chirp drivers that
+    # will do something like this:
+    #
+    #   memobj.name = 'foo\xff'
+    #
+    # because they need the string to be stored in radio memory
+    # with a 0xFF byte terminating the string. If they do that in
+    # py3 we will get the unicode equivalent, which is a non-ASCII
+    # character. Conventional unicode wisdom would tell us we need
+    # to encode() the string to get UTF-8 bytes, but that's not
+    # what we want here (the radio doesn't support UTF-8 and we need
+    # specific binary values in memory). Ideally we would have
+    # written all of chirp with bytes() for these values, but alas.
+    # We can get the intended string here by doing bytes([ord(char)]).
+    if six.PY3:
+        return bytes(ord(b) for b in string)
+    else:
+        return string
+
+
+def string_straight_decode(string):
+    # Normally, we would want to decode bytes() to str() for py3.
+    # However...chirp drivers are currently using strings with
+    # hex escapes for setting binary byte values in memories.
+    # Technically, this is char, which is a little more like bytes()
+    # in py3, but until every driver has converted its strings to
+    # bytes(), this is massively simpler. Since set_value() is
+    # doing the inverse, we can do this here. If something sets
+    # a char to '\xFF' it will arrive below as the unicode character,
+    # and be converted to the integer/bytes value. When it is read out
+    # here, we will return that same unicode character and the driver
+    # will detect '\xFF' properly.
+    # FIXMEPY3: Remove this and the hack below when drivers convert to
+    # bytestrings.
+    return chr(ord(string))
+
+
 def format_binary(nbits, value, pad=8):
     s = ""
     for i in range(0, nbits):
@@ -165,6 +203,8 @@ class DataElement:
         return self._data[self._offset:self._offset+self._size]
 
     def set_raw(self, data):
+        if isinstance(data, str):
+            data = string_straight_encode(data)
         self._data[self._offset] = data[:self._size]
 
     def __getattr__(self, name):
@@ -207,7 +247,7 @@ class arrayDataElement(DataElement):
         self.__items[index].set_value(val)
 
     def __getitem__(self, index):
-        return self.__items[index]
+        return self.__items[int(index)]
 
     def __len__(self):
         return len(self.__items)
@@ -250,8 +290,8 @@ class arrayDataElement(DataElement):
 
     def __set_value_char(self, value):
         if len(value) != len(self.__items):
-            raise ValueError("String expects exactly %i characters" %
-                             len(self.__items))
+            raise ValueError("String expects exactly %i characters, not %i" % (
+                             len(self.__items), len(value)))
         for i in range(0, len(self.__items)):
             self.__items[i].set_value(value[i])
 
@@ -261,7 +301,7 @@ class arrayDataElement(DataElement):
         elif isinstance(self.__items[0], lbcdDataElement):
             self.__set_value_lbcd(int(value))
         elif isinstance(self.__items[0], charDataElement):
-            self.__set_value_char(str(value))
+            self.__set_value_char(value)
         elif len(value) != len(self.__items):
             raise ValueError("Array cardinality mismatch")
         else:
@@ -565,40 +605,15 @@ class charDataElement(DataElement):
         return ord(self.get_value())
 
     def _get_value(self, data):
-        # Normally, we would want to decode bytes() to str() for py3.
-        # However...chirp drivers are currently using strings with
-        # hex escapes for setting binary byte values in memories.
-        # Technically, this is char, which is a little more like bytes()
-        # in py3, but until every driver has converted its strings to
-        # bytes(), this is massively simpler. Since set_value() is
-        # doing the inverse, we can do this here. If something sets
-        # a char to '\xFF' it will arrive below as the unicode character,
-        # and be converted to the integer/bytes value. When it is read out
-        # here, we will return that same unicode character and the driver
-        # will detect '\xFF' properly.
-        # FIXMEPY3: Remove this and the hack below when drivers convert to
-        # bytestrings.
-        return chr(ord(data))
+        return string_straight_decode(data)
 
     def set_value(self, value):
-        if six.PY3:
-            # So, there are a lot of py2-thinking chirp drivers that
-            # will do something like this:
-            #
-            #   memobj.name = 'foo\xff'
-            #
-            # because they need the string to be stored in radio memory
-            # with a 0xFF byte terminating the string. If they do that in
-            # py3 we will get the unicode equivalent, which is a non-ASCII
-            # character. Conventional unicode wisdom would tell us we need
-            # to encode() the string to get UTF-8 bytes, but that's not
-            # what we want here (the radio doesn't support UTF-8 and we need
-            # specific binary values in memory). Ideally we would have
-            # written all of chirp with bytes() for these values, but alas.
-            # We can get the intended string here by doing bytes([ord(char)]).
-            value = bytes(ord(b) for b in value)
-
-        self._data[self._offset] = value
+        if isinstance(value, int):
+            # This is the case if bytes() are passed in to arrayDataElement
+            # to set a string
+            self._data[self._offset] = value
+        else:
+            self._data[self._offset] = string_straight_encode(value)
 
 
 class bcdDataElement(DataElement):
@@ -619,7 +634,7 @@ class bcdDataElement(DataElement):
         if isinstance(data, int):
             self._data[self._offset] = data & 0xFF
         elif isinstance(data, str):
-            self._data[self._offset] = data[0]
+            self._data[self._offset] = string_straight_encode(data[0])
         else:
             raise TypeError("Unable to set bcdDataElement from type %s" %
                             type(data))
@@ -751,6 +766,8 @@ class structDataElement(DataElement):
     def set_raw(self, buffer):
         if len(buffer) != (self.size() / 8):
             raise ValueError("Struct size mismatch during set_raw()")
+        if isinstance(buffer, str):
+            buffer = string_straight_encode(buffer)
         self._data[self._offset] = buffer
 
     def __iter__(self):
