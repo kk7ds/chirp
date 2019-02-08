@@ -16,6 +16,7 @@
 
 import threading
 
+import base64
 import gtk
 import pango
 from gobject import TYPE_INT, \
@@ -1452,9 +1453,15 @@ class MemoryEditor(common.Editor):
 
                 self._set_memory(iter, mem)
 
-        result = pickle.dumps((self._features, selection))
-        clipboard = gtk.Clipboard(selection="CLIPBOARD")
-        clipboard.set_text(result)
+        result = base64.b64encode(pickle.dumps((self._features, selection))).decode()
+        if hasattr(gtk.Clipboard, 'get'):
+            # GTK3
+            clipboard = gtk.Clipboard.get(gtk.gdk.SELECTION_CLIPBOARD)
+            clipboard.set_text(result, len(result))
+        else:
+            # GTK2
+            clipboard = gtk.Clipboard(selection="CLIPBOARD")
+            clipboard.set_text(result)
         clipboard.store()
 
         return cut  # Only changed if we did a cut
@@ -1473,7 +1480,7 @@ class MemoryEditor(common.Editor):
         always = False
 
         try:
-            src_features, mem_list = pickle.loads(text)
+            src_features, mem_list = pickle.loads(base64.b64decode(text))
         except Exception:
             LOG.error("Paste failed to unpickle")
             return
@@ -1548,8 +1555,15 @@ class MemoryEditor(common.Editor):
             self.rthread.submit(job)
 
     def paste_selection(self):
-        clipboard = gtk.Clipboard(selection="CLIPBOARD")
-        clipboard.request_text(self._paste_selection)
+        if hasattr(gtk.Clipboard, 'get'):
+            # GTK3
+            clipboard = gtk.Clipboard.get(gtk.gdk.SELECTION_CLIPBOARD)
+            text = clipboard.wait_for_text()
+            self._paste_selection(clipboard, text, None)
+        else:
+            # GTK2
+            clipboard = gtk.Clipboard(selection="CLIPBOARD")
+            clipboard.request_text(self._paste_selection)
 
     def select_all(self):
         self.view.get_selection().select_all()
