@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
 import re
 import time
 import logging
@@ -21,6 +20,7 @@ import logging
 from chirp import chirp_common, errors, util, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettings
+from chirp.util import StringStruct as struct
 
 LOG = logging.getLogger(__name__)
 
@@ -190,13 +190,19 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
 def process_data_frame(radio, frame, _mmap):
     """Process a data frame, adding the payload to @_mmap"""
     _data = radio.process_frame_payload(frame.payload)
+
+    # NOTE: On the _data[N:N+1] below. Because:
+    #  - on py2 bytes[N] is a bytes
+    #  - on py3 bytes[N] is an int
+    #  - on both bytes[N:M] is a bytes
+    # So we do a slice so we get consistent behavior
     if len(_mmap) >= 0x10000:
         saddr, = struct.unpack(">I", _data[0:4])
-        length, = struct.unpack("B", _data[4])
+        length, = struct.unpack("B", _data[4:5])
         data = _data[5:5+length]
     else:
         saddr, = struct.unpack(">H", _data[0:2])
-        length, = struct.unpack("B", _data[2])
+        length, = struct.unpack("B", _data[2:3])
         data = _data[3:3+length]
 
     try:
