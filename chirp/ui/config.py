@@ -36,9 +36,8 @@ class ChirpConfig:
 
     def save(self):
         cfg = os.path.join(self.__basepath, self.__name)
-        cfg_file = file(cfg, "w")
-        self.__config.write(cfg_file)
-        cfg_file.close()
+        with open(cfg, "w") as cfg_file:
+            self.__config.write(cfg_file)
 
     def get(self, key, section, raw=False):
         if not self.__config.has_section(section):
