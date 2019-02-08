@@ -64,6 +64,9 @@ class MemoryMap:
 
     def set(self, pos, value):
         """Set a chunk of memory at @pos to @value"""
+
+        pos = int(pos)
+
         if isinstance(value, int):
             self._data[pos] = value & 0xFF
         elif isinstance(value, bytes) and six.PY3:
