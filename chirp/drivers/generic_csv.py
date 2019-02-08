@@ -225,14 +225,12 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         if filename:
             self._filename = filename
 
-        f = file(self._filename, "wb")
-        writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
-        writer.writerow(chirp_common.Memory.CSV_FORMAT)
+        with open(self._filename, "w") as f:
+            writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
+            writer.writerow(chirp_common.Memory.CSV_FORMAT)
 
-        for mem in self.memories:
-            write_memory(writer, mem)
-
-        f.close()
+            for mem in self.memories:
+                write_memory(writer, mem)
 
     # MMAP compatibility
     def save_mmap(self, filename):
