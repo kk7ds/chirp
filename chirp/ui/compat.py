@@ -7,11 +7,12 @@ LOG = logging.getLogger('uicompat')
 
 
 @contextlib.contextmanager
-def py3safe():
+def py3safe(quiet=False):
     try:
         yield
     except Exception as e:
-        LOG.exception('FIXMEPY3: %s' % e)
+        if not quiet:
+            LOG.exception('FIXMEPY3: %s' % e)
 
 
 def SpinButton(adj):

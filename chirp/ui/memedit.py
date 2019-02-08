@@ -983,12 +983,14 @@ class MemoryEditor(common.Editor):
         unsupported_cols = self.get_unsupported_columns()
         visible_cols = self.get_columns_visible()
 
+        self._renderers = {}
         cols = {}
         i = 0
         for _cap, _type, _rend in self.cols:
             if not _rend:
                 continue
             rend = _rend()
+            self._renderers[_cap] = rend
             rend.connect('editing-started', self.cell_editing_started)
             rend.connect('editing-canceled', self.cell_editing_stopped)
             rend.connect('edited', self.cell_editing_stopped)
@@ -1061,6 +1063,15 @@ class MemoryEditor(common.Editor):
             raise Exception(
                 _("Internal Error: Column {name} not found").format(
                     name=caption))
+
+    def rend(self, caption):
+        try:
+            return self._renderers[caption]
+        except KeyError:
+            print(self._renderers)
+            raise Exception(
+                _('Internal Error: Renderer for column %s not found') % (
+                    caption))
 
     def prefill(self):
         self.store.clear()
@@ -1653,16 +1664,12 @@ class DstarMemoryEditor(MemoryEditor):
             for i in _dv_columns:
                 if i not in self.choices:
                     continue
-                column = self.view.get_column(self.col(i))
-                with compat.py3safe():
-                    rend = column.get_cell_renderers()[0]
-                    rend.set_property("has-entry", True)
+                rend = self.rend(i)
+                rend.set_property("has-entry", True)
 
         for i in _dv_columns:
-            col = self.view.get_column(self.col(i))
-            with compat.py3safe():
-                rend = col.get_cell_renderers()[0]
-                rend.set_property("family", "Monospace")
+            rend = self.rend(i)
+            rend.set_property("family", "Monospace")
 
     def set_urcall_list(self, urcalls):
         store = self.choices["URCALL"]

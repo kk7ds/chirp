@@ -1429,12 +1429,6 @@ of file.
         d.set_version(CHIRP_VERSION)
         d.set_copyright("Copyright 2015 Dan Smith (KK7DS)")
         d.set_website("http://chirp.danplanet.com")
-        d.set_authors(("Dan Smith KK7DS <dsmith@danplanet.com>",
-                       _("With significant contributions from:"),
-                       "Tom KD7LXL",
-                       "Marco IZ3GME",
-                       "Jim KC9HI"
-                       ))
         d.set_translator_credits("Polish: Grzegorz SQ2RBY" +
                                  os.linesep +
                                  "Italian: Fabio IZ2QDH" +
@@ -1941,7 +1935,9 @@ of file.
         self.sb_radio.show()
         box.pack_start(self.sb_radio, 1, 1, 1)
 
-        with compat.py3safe():
+        with compat.py3safe(quiet=True):
+            # Gtk2 had resize grips on the status bars, so remove them
+            # if we can
             self.sb_general.set_has_resize_grip(False)
             self.sb_radio.set_has_resize_grip(True)
 
@@ -2063,12 +2059,15 @@ of file.
     def __init__(self, *args, **kwargs):
         gtk.Window.__init__(self, *args, **kwargs)
 
-        def expose(window, event):
+        def expose(window, event=None):
             allocation = window.get_allocation()
             CONF.set_int("window_w", allocation.width, "state")
             CONF.set_int("window_h", allocation.height, "state")
 
-        with compat.py3safe():
+        with compat.py3safe(quiet=True):
+            # GTK3 does not have 'expose_event' and I am not sure which
+            # is a suitable replacement. We only need this to save window
+            # size in the config, so don't warn about it.
             self.connect("expose_event", expose)
 
         def state_change(window, event):
