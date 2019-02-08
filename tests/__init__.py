@@ -1,6 +1,7 @@
 import glob
 import logging
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -95,6 +96,10 @@ def load_tests(loader, tests, pattern):
     images = glob.glob("tests/images/*.img")
     tests = [os.path.splitext(os.path.basename(img))[0] for img in images]
 
+    if pattern == 'test*.py':
+        # This default is meaningless for us
+        pattern = None
+
     for test in tests:
         image = os.path.join('tests', 'images', '%s.img' % test)
         try:
@@ -111,6 +116,13 @@ def load_tests(loader, tests, pattern):
             tc = TestAdapterMeta(
                 class_name, (TestAdapter,), dict(RADIO_CLASS=device,
                                                  SOURCE_IMAGE=image))
-        suite.addTests(loader.loadTestsFromTestCase(tc))
+            tests = loader.loadTestsFromTestCase(tc)
+
+            if pattern:
+                tests = [t for t in tests
+                         if re.search(pattern, '%s.%s' % (class_name,
+                                                          t._testMethodName))]
+
+            suite.addTests(tests)
 
     return suite
