@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import glob
 import serial
 import os
 import sys
@@ -23,8 +23,20 @@ import argparse
 import logging
 
 from chirp import logger
-from chirp.drivers import *
+#from chirp.drivers import *
 from chirp import chirp_common, errors, directory, util
+from chirp.ui import compat
+
+# Safe import of everything in chirp/drivers
+driver_files = glob.glob('chirp/drivers/*.py')
+for driver_file in driver_files:
+    module, _ = os.path.splitext(driver_file)
+    module = module.replace('/', '.')
+    try:
+        __import__(module)
+    except Exception as e:
+        print('Failed to import %s: %s' % (module, e))
+
 
 LOG = logging.getLogger("chirpc")
 RADIOS = directory.DRV_TO_RADIO
@@ -192,21 +204,21 @@ if __name__ == "__main__":
     logger.handle_options(options)
 
     if options.list_radios:
-        print "Supported Radios:\n\t", "\n\t".join(sorted(RADIOS.keys()))
+        print("Supported Radios:\n\t", "\n\t".join(sorted(RADIOS.keys())))
         sys.exit(0)
 
     if options.id:
         from chirp import icf
         s = serial.Serial(port=options.serial, baudrate=9600, timeout=0.5)
         md = icf.get_model_data(s)
-        print "Model:\n%s" % util.hexprint(md)
+        print("Model:\n%s" % util.hexprint(md))
         sys.exit(0)
 
     if not options.radio:
         if options.mmap:
             rclass = directory.get_radio_by_image(options.mmap).__class__
         else:
-            print "You must specify a radio model.  See --list-radios."
+            print("You must specify a radio model.  See --list-radios.")
             sys.exit(1)
     else:
         rclass = directory.get_radio(options.radio)
@@ -221,14 +233,15 @@ if __name__ == "__main__":
             sys.exit(1)
     else:
         LOG.info("opening %s at %i" % (options.serial, rclass.BAUD_RATE))
-        s = serial.Serial(port=options.serial,
-                          baudrate=rclass.BAUD_RATE,
-                          timeout=0.5)
+        s = compat.CompatSerial.get(rclass.NEEDS_COMPAT_SERIAL,
+                                    port=options.serial,
+                                    baudrate=rclass.BAUD_RATE,
+                                    timeout=0.5)
 
     radio = rclass(s)
 
     if options.list_settings:
-        print radio.get_settings()
+        print(radio.get_settings())
         sys.exit(0)
 
     if options.list_mem:
@@ -238,7 +251,7 @@ if __name__ == "__main__":
             mem = radio.get_memory(i)
             if mem.empty and not logger.is_visible(logging.INFO):
                 continue
-            print mem
+            print(mem)
         sys.exit(0)
 
     if options.list_special_mem:
@@ -247,7 +260,7 @@ if __name__ == "__main__":
             mem = radio.get_memory(i)
             if mem.empty and not logger.is_visible(logging.INFO):
                 continue
-            print mem
+            print(mem)
         sys.exit(0)
 
     if options.copy_mem:
@@ -255,7 +268,7 @@ if __name__ == "__main__":
         dst = parse_memory_number(radio, args[1:])
         try:
             mem = radio.get_memory(src)
-        except errors.InvalidMemoryLocation, e:
+        except errors.InvalidMemoryLocation as e:
             LOG.exception(e)
             sys.exit(1)
         LOG.info("copying memory %s to %s", src, dst)
@@ -266,7 +279,7 @@ if __name__ == "__main__":
         memnum = parse_memory_number(radio, args)
         try:
             mem = radio.get_memory(memnum)
-        except errors.InvalidMemoryLocation, e:
+        except errors.InvalidMemoryLocation as e:
             LOG.exception(e)
             sys.exit(1)
         if mem.empty:
@@ -279,10 +292,10 @@ if __name__ == "__main__":
         data = radio.get_raw_memory(memnum)
         for i in data:
             if ord(i) > 0x7F:
-                print "Memory location %s (%i):\n%s" % \
-                      (memnum, len(data), util.hexprint(data))
+                print("Memory location %s (%i):\n%s" % \
+                      (memnum, len(data), util.hexprint(data)))
                 sys.exit(0)
-        print data
+        print(data)
         sys.exit(0)
 
     if options.set_mem_dup is not None:
@@ -318,7 +331,7 @@ if __name__ == "__main__":
         memnum = parse_memory_number(radio, args)
         try:
             mem = radio.get_memory(memnum)
-        except errors.InvalidMemoryLocation, e:
+        except errors.InvalidMemoryLocation as e:
             LOG.exception(e)
             sys.exit(1)
 
@@ -359,11 +372,11 @@ if __name__ == "__main__":
         pos = parse_memory_number(radio, args)
         try:
             mem = radio.get_memory(pos)
-        except errors.InvalidMemoryLocation, e:
+        except errors.InvalidMemoryLocation as e:
             mem = chirp_common.Memory()
             mem.number = pos
 
-        print mem
+        print(mem)
         sys.exit(0)
 
     if options.download_mmap:
@@ -376,7 +389,7 @@ if __name__ == "__main__":
         try:
             radio.sync_in()
             radio.save_mmap(options.mmap)
-        except Exception, e:
+        except Exception as e:
             LOG.exception(e)
         sys.exit(1)
 
@@ -390,8 +403,8 @@ if __name__ == "__main__":
         try:
             radio.load_mmap(options.mmap)
             radio.sync_out()
-            print "Upload successful"
-        except Exception, e:
+            print("Upload successful")
+        except Exception as e:
             LOG.exception(e)
         sys.exit(1)
 

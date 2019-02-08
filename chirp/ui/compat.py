@@ -3,7 +3,12 @@ import logging
 import serial as base_serial
 import six
 
-import gtk
+try:
+    import gtk
+except ImportError:
+    # FIXME
+    # For chirpc
+    gtk = None
 
 from chirp import bitwise
 

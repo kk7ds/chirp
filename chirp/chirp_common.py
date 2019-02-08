@@ -1311,7 +1311,7 @@ class Status:
     def __str__(self):
         try:
             pct = (self.cur / float(self.max)) * 100
-            nticks = int(pct) / 10
+            nticks = int(pct) // 10
             ticks = "=" * nticks
         except ValueError:
             pct = 0.0
