@@ -14,10 +14,10 @@ import chirp
 driver_files = glob.glob('chirp/drivers/*.py')
 for driver_file in driver_files:
     module, _ = os.path.splitext(driver_file)
-    module = 'chirp.drivers.%s' % module
+    module = module.replace('/', '.')
     try:
         __import__(module)
-    except ImportError as e:
+    except Exception as e:
         print('Failed to import %s: %s' % (module, e))
 
 
