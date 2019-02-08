@@ -1010,6 +1010,7 @@ class Radio(Alias):
     BAUD_RATE = 9600
     HARDWARE_FLOW = False
     ALIASES = []
+    NEEDS_COMPAT_SERIAL = True
 
     def status_fn(self, status):
         """Deliver @status to the UI"""
