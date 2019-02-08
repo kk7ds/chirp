@@ -286,3 +286,13 @@ class TestBitwiseComments(BaseTest):
     def test_comment_cppstyle(self):
         obj = bitwise.parse('// Test this\nu8 foo;', b'\x10')
         self.assertEqual(16, obj.foo)
+
+
+class TestBitwiseStringEncoders(BaseTest):
+    def test_encode_bytes(self):
+        self.assertEqual(b'foobar\x00',
+                         bitwise.string_straight_encode('foobar\x00'))
+
+    def test_decode_bytes(self):
+        self.assertEqual('foobar\x00',
+                         bitwise.string_straight_decode(b'foobar\x00'))
