@@ -814,6 +814,10 @@ class Processor:
         }
 
     def __init__(self, data, offset):
+        if hasattr(data, 'get_byte_compatible'):
+            # bitwise uses the byte-compatible interface of MemoryMap,
+            # if that is what was passed in
+            data = data.get_byte_compatible()
         self._data = data
         self._offset = offset
         self._obj = None

@@ -33,7 +33,7 @@ class BaseTest(unittest.TestCase):
 
 class TestBitwiseBaseIntTypes(BaseTest):
     def _test_type(self, datatype, _data, value):
-        data = memmap.MemoryMap(_data)
+        data = memmap.MemoryMapBytes(_data)
         obj = bitwise.parse("%s foo;" % datatype, data)
         self.assertEqual(int(obj.foo), value)
         self.assertEqual(obj.foo.size(), len(data) * 8)
@@ -68,7 +68,7 @@ class TestBitwiseBaseIntTypes(BaseTest):
         self._test_type("ul32", b"\x00\x00\x00\x80", 2**31)
 
     def test_int_array(self):
-        data = memmap.MemoryMap(b'\x00\x01\x02\x03')
+        data = memmap.MemoryMapBytes(b'\x00\x01\x02\x03')
         obj = bitwise.parse('u8 foo[4];', data)
         for i in range(4):
             self.assertEqual(i, obj.foo[i])
@@ -76,7 +76,7 @@ class TestBitwiseBaseIntTypes(BaseTest):
         self.assertEqual(b'\x00\x02\x04\x06', data.get_packed())
 
     def test_int_array(self):
-        data = memmap.MemoryMap(b'\x00\x01\x02\x03')
+        data = memmap.MemoryMapBytes(b'\x00\x01\x02\x03')
         obj = bitwise.parse('u8 foo[4];', data)
         for i in range(4):
             self.assertEqual(i, obj.foo[i])
@@ -87,7 +87,7 @@ class TestBitwiseBaseIntTypes(BaseTest):
 class TestBitfieldTypes(BaseTest):
     def test_bitfield_u8(self):
         defn = "u8 foo:4, bar:4;"
-        data = memmap.MemoryMap(b"\x12")
+        data = memmap.MemoryMapBytes(b"\x12")
         obj = bitwise.parse(defn, data)
         self.assertEqual(obj.foo, 1)
         self.assertEqual(obj.bar, 2)
@@ -99,7 +99,7 @@ class TestBitfieldTypes(BaseTest):
 
     def _test_bitfield_16(self, variant, data):
         defn = "u%s16 foo:4, bar:8, baz:4;" % variant
-        data = memmap.MemoryMap(data)
+        data = memmap.MemoryMapBytes(data)
         obj = bitwise.parse(defn, data)
         self.assertEqual(int(obj.foo), 1)
         self.assertEqual(int(obj.bar), 0x23)
@@ -123,7 +123,7 @@ class TestBitfieldTypes(BaseTest):
 
     def _test_bitfield_24(self, variant, data):
         defn = "u%s24 foo:12, bar:6, baz:6;" % variant
-        data = memmap.MemoryMap(data)
+        data = memmap.MemoryMapBytes(data)
         obj = bitwise.parse(defn, data)
         self.assertEqual(int(obj.foo), 4)
         self.assertEqual(int(obj.bar), 3)
@@ -149,7 +149,7 @@ class TestBitfieldTypes(BaseTest):
 class TestBitType(BaseTest):
     def test_bit_array(self):
         defn = "bit foo[24];"
-        data = memmap.MemoryMap(b"\x00\x80\x01")
+        data = memmap.MemoryMapBytes(b"\x00\x80\x01")
         obj = bitwise.parse(defn, data)
         for i, v in [(0, False), (8, True), (23, True)]:
             self.assertEqual(bool(obj.foo[i]), v)
@@ -163,7 +163,7 @@ class TestBitType(BaseTest):
 
 class TestBitwiseBCDTypes(BaseTest):
     def _test_def(self, definition, name, _data, value):
-        data = memmap.MemoryMap(_data)
+        data = memmap.MemoryMapBytes(_data)
         obj = bitwise.parse(definition, data)
         self.assertEqual(int(getattr(obj, name)), value)
         self.assertEqual(getattr(obj, name).size(), len(_data) * 8)
@@ -192,7 +192,7 @@ class TestBitwiseBCDTypes(BaseTest):
 
 class TestBitwiseCharTypes(BaseTest):
     def test_char(self):
-        data = memmap.MemoryMap(b"c")
+        data = memmap.MemoryMapBytes(b"c")
         obj = bitwise.parse("char foo;", data)
         self.assertEqual(str(obj.foo), "c")
         self.assertEqual(obj.foo.size(), 8)
@@ -200,7 +200,7 @@ class TestBitwiseCharTypes(BaseTest):
         self.assertEqual(data.get_packed(), b"d")
 
     def test_string(self):
-        data = memmap.MemoryMap(b"foobar")
+        data = memmap.MemoryMapBytes(b"foobar")
         obj = bitwise.parse("char foo[6];", data)
         self.assertEqual(str(obj.foo), "foobar")
         self.assertEqual(obj.foo.size(), 8 * 6)
@@ -208,7 +208,7 @@ class TestBitwiseCharTypes(BaseTest):
         self.assertEqual(data.get_packed(), b"bazfoo")
 
     def test_string_invalid_chars(self):
-        data = memmap.MemoryMap(b"\xFFoobar1")
+        data = memmap.MemoryMapBytes(b"\xFFoobar1")
         obj = bitwise.parse("struct {char foo[7];} bar;", data)
 
         if six.PY3:
@@ -219,13 +219,13 @@ class TestBitwiseCharTypes(BaseTest):
         self.assertIn(expected, repr(obj.bar))
 
     def test_string_wrong_length(self):
-        data = memmap.MemoryMap(b"foobar")
+        data = memmap.MemoryMapBytes(b"foobar")
         obj = bitwise.parse("char foo[6];", data)
         self.assertRaises(ValueError, setattr, obj, "foo", "bazfo")
         self.assertRaises(ValueError, setattr, obj, "foo", "bazfooo")
 
     def test_string_with_various_input_types(self):
-        data = memmap.MemoryMap(b"foobar")
+        data = memmap.MemoryMapBytes(b"foobar")
         obj = bitwise.parse("char foo[6];", data)
         self.assertEqual('foobar', str(obj.foo))
         self.assertEqual(6, len(b'barfoo'))
@@ -252,7 +252,7 @@ class TestBitwiseStructTypes(BaseTest):
         self._test_def(defn, b"\x80\x01\x00", value)
 
     def test_struct_writes(self):
-        data = memmap.MemoryMap(b"..")
+        data = memmap.MemoryMapBytes(b"..")
         defn = "struct { u8 bar; u8 baz; } foo;"
         obj = bitwise.parse(defn, data)
         obj.foo.bar = 0x12

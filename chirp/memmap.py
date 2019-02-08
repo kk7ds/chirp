@@ -28,9 +28,10 @@ else:
     data_type = py2_byte_string
 
 
-class MemoryMap:
+class MemoryMapBytes(object):
     """
-    A pythonic memory map interface
+    This is the proper way for MemoryMap to work, which is
+    in terms of bytes always.
     """
 
     def __init__(self, data):
@@ -115,3 +116,42 @@ class MemoryMap:
     def truncate(self, size):
         """Truncate the memory map to @size"""
         self._data = self._data[:size]
+
+    def get_byte_compatible(self):
+        return self
+
+
+class MemoryMap(MemoryMapBytes):
+    """Compatibility version of MemoryMapBytes
+
+    This deals in strings for compatibility with drivers that do.
+    """
+    def __init__(self, data):
+        # Fix circular dependency
+        from chirp import bitwise
+        self._bitwise = bitwise
+
+        if six.PY3 and isinstance(data, bytes):
+            # Be graceful if py3-enabled code uses this,
+            # just don't encode it
+            encode = lambda d: d
+        else:
+            encode = self._bitwise.string_straight_encode
+        super(MemoryMap, self).__init__(encode(data))
+
+    def get(self, pos, length=1):
+        return self._bitwise.string_straight_decode(
+            super(MemoryMap, self).get(pos, length=length))
+
+    def set(self, pos, value):
+        super(MemoryMap, self).set(
+            pos, self._bitwise.string_straight_encode(value))
+
+    def get_packed(self):
+        return self._bitwise.string_straight_decode(
+            super(MemoryMap, self).get_packed())
+
+    def get_byte_compatible(self):
+        mmb = MemoryMapBytes(super(MemoryMap, self).get_packed())
+        self._data = mmb._data
+        return mmb
