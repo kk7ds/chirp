@@ -22,6 +22,7 @@ import logging
 
 from chirp import platform
 from chirp.ui import compat
+from chirp.ui import common
 
 LOG = logging.getLogger(__name__)
 
@@ -619,23 +620,84 @@ class YesNoDialog(gtk.Dialog):
         self._label.set_text(text)
 
 
+class EditableChoiceGTK3(object):
+    def __init__(self, options, editable, default):
+        self.store = gtk.ListStore(str)
+        for option in options:
+            self.store.append([option])
+        if editable:
+            self.sel = gtk.ComboBox.new_with_model_and_entry(self.store)
+            self.sel.set_entry_text_column(0)
+        else:
+            self.sel = gtk.ComboBox.new_with_model_and_entry(self.store)
+            self.sel.set_entry_text_column(0)
+        if default:
+            self.value = default
+
+    @property
+    def widget(self):
+        return self.sel
+
+    @property
+    def value(self):
+        modeliter = self.sel.get_active_iter()
+        if modeliter:
+            return self.store[modeliter][0]
+
+    @value.setter
+    def value(self, val):
+        modeliter = self.store.get_iter_first()
+        while modeliter is not None:
+            row = self.store[modeliter]
+            if row[0] == val:
+                self.sel.set_active_iter(modeliter)
+                break
+            modeliter = self.store.iter_next(modeliter)
+
+    def get_model(self):
+        return self.store
+
+
+class EditableChoiceGTK2(object):
+    def __init__(self, options, editable, default):
+        if editable:
+            self.sel = gtk.combo_box_entry_new_text()
+        else:
+            self.sel = gtk.combo_box_new_text()
+
+        for opt in options:
+            self.sel.append_text(opt)
+
+        if default:
+            try:
+                idx = options.index(default)
+                self.sel.set_active(idx)
+            except Exception as e:
+                pass
+
+    @property
+    def widget(self):
+        return self.sel
+
+    @property
+    def value(self):
+        store = self.sel.get_model()
+        modeliter = self.sel.get_active_iter()
+        return store[modeliter][0]
+
+    @value.setter
+    def value(self, val):
+        common.combo_select(self.sel, val)
+
+    def get_model(self):
+        return self.sel.get_model()
+
+
 def make_choice(options, editable=True, default=None):
-    if editable:
-        sel = gtk.combo_box_entry_new_text()
+    if hasattr(gtk.ComboBox, 'new_with_entry'):
+        return EditableChoiceGTK3(options, editable, default)
     else:
-        sel = gtk.combo_box_new_text()
-
-    for opt in options:
-        sel.append_text(opt)
-
-    if default:
-        try:
-            idx = options.index(default)
-            sel.set_active(idx)
-        except:
-            pass
-
-    return sel
+        return EditableChoiceGTK2(options, editable, default)
 
 
 class FilenameBox(gtk.HBox):
