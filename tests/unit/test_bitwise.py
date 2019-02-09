@@ -241,6 +241,12 @@ class TestBitwiseCharTypes(BaseTest):
         obj.foo = [ord(c) for c in 'fffbbb']
         self.assertEqual('fffbbb', str(obj.foo))
 
+    def test_string_get_raw(self):
+        data = memmap.MemoryMapBytes(b"foobar")
+        obj = bitwise.parse("char foo[6];", data)
+        self.assertEqual('foobar', obj.foo.get_raw())
+        self.assertEqual(b'foobar', obj.foo.get_raw(asbytes=True))
+
 
 class TestBitwiseStructTypes(BaseTest):
     def _test_def(self, definition, data, primitive):
@@ -270,7 +276,15 @@ class TestBitwiseStructTypes(BaseTest):
         data = memmap.MemoryMapBytes(b"..")
         defn = "struct { u8 bar; u8 baz; } foo;"
         obj = bitwise.parse(defn, data)
-        self.assertEqual(b'..', obj.get_raw())
+        self.assertEqual('..', obj.get_raw())
+        self.assertEqual(b'..', obj.get_raw(asbytes=True))
+
+    def test_struct_get_raw_small(self):
+        data = memmap.MemoryMapBytes(b".")
+        defn = "struct { u8 bar; } foo;"
+        obj = bitwise.parse(defn, data)
+        self.assertEqual('.', obj.get_raw())
+        self.assertEqual(b'.', obj.get_raw(asbytes=True))
 
 
 class TestBitwiseSeek(BaseTest):

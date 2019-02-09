@@ -212,8 +212,12 @@ class DataElement:
     def set_value(self, value):
         raise Exception("Not implemented for %s" % self.__class__)
 
-    def get_raw(self):
-        return self._data[self._offset:self._offset+self._size]
+    def get_raw(self, asbytes=False):
+        raw = self._data[self._offset:self._offset+self._size]
+        if asbytes:
+            return raw
+        else:
+            return string_straight_decode(raw)
 
     def set_raw(self, data):
         if isinstance(data, str):
@@ -253,8 +257,12 @@ class arrayDataElement(DataElement):
     def get_value(self):
         return list(self.__items)
 
-    def get_raw(self):
-        return "".join([item.get_raw() for item in self.__items])
+    def get_raw(self, asbytes=False):
+        raw = [item.get_raw(asbytes=asbytes) for item in self.__items]
+        if asbytes:
+            return b''.join(raw)
+        else:
+            return "".join(raw)
 
     def __setitem__(self, index, val):
         self.__items[index].set_value(val)
@@ -781,9 +789,13 @@ class structDataElement(DataElement):
                 size += el.size()
         return size
 
-    def get_raw(self):
+    def get_raw(self, asbytes=False):
         size = self.size() // 8
-        return self._data[self._offset:self._offset+size]
+        raw = self._data[self._offset:self._offset+size]
+        if asbytes:
+            return raw
+        else:
+            return string_straight_decode(raw)
 
     def set_raw(self, buffer):
         if len(buffer) != (self.size() / 8):
