@@ -1133,8 +1133,11 @@ class FT7100Radio(YaesuCloneModeRadio):
         return rp
 
     def get_sub_devices(self):
-        return [FT7100RadioVHF(self._mmap),
-                FT7100RadioUHF(self._mmap)]
+        if not self.VARIANT:
+            return [FT7100RadioVHF(self._mmap),
+                    FT7100RadioUHF(self._mmap)]
+        else:
+            return []
 
 
 class FT7100RadioVHF(FT7100Radio):
