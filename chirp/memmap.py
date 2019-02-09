@@ -144,6 +144,10 @@ class MemoryMap(MemoryMapBytes):
             super(MemoryMap, self).get(pos, length=length))
 
     def set(self, pos, value):
+        if isinstance(value, int):
+            # Apparently this is a thing that drivers do, so
+            # be compatible here
+            value = chr(value)
         super(MemoryMap, self).set(
             pos, self._bitwise.string_straight_encode(value))
 

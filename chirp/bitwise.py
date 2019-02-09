@@ -260,7 +260,10 @@ class arrayDataElement(DataElement):
         self.__items[index].set_value(val)
 
     def __getitem__(self, index):
-        return self.__items[int(index)]
+        if isinstance(index, slice):
+            return self.__items[int(index.start):int(index.stop)]
+        else:
+            return self.__items[int(index)]
 
     def __len__(self):
         return len(self.__items)
