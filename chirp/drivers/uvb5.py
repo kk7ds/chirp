@@ -177,21 +177,21 @@ struct {
 
 def do_ident(radio):
     radio.pipe.timeout = 3
-    radio.pipe.write("\x05PROGRAM")
+    radio.pipe.write(b"\x05PROGRAM")
     for x in range(10):
         ack = radio.pipe.read(1)
-        if ack == '\x06':
+        if ack == b'\x06':
             break
     else:
         raise errors.RadioError("Radio did not ack programming mode")
-    radio.pipe.write("\x02")
+    radio.pipe.write(b"\x02")
     ident = radio.pipe.read(8)
     LOG.debug(util.hexprint(ident))
-    if not ident.startswith('HKT511'):
+    if not ident.startswith(b'HKT511'):
         raise errors.RadioError("Unsupported model")
-    radio.pipe.write("\x06")
+    radio.pipe.write(b"\x06")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise errors.RadioError("Radio did not ack ident")
 
 
@@ -205,8 +205,8 @@ def do_status(radio, direction, addr):
 
 def do_download(radio):
     do_ident(radio)
-    data = "KT511 Radio Program data v1.08\x00\x00"
-    data += ("\x00" * 16)
+    data = b"KT511 Radio Program data v1.08\x00\x00"
+    data += (b"\x00" * 16)
     firstack = None
     for i in range(0, 0x1000, 16):
         frame = struct.pack(">cHB", "R", i, 16)
@@ -215,7 +215,7 @@ def do_download(radio):
         if frame[1:4] != result[1:4]:
             LOG.debug(util.hexprint(result))
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
-        radio.pipe.write("\x06")
+        radio.pipe.write(b"\x06")
         ack = radio.pipe.read(1)
         if not firstack:
             firstack = ack
@@ -227,19 +227,19 @@ def do_download(radio):
         data += result[4:]
         do_status(radio, "from", i)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
     do_ident(radio)
-    data = radio._mmap[0x0030:]
+    data = radio._mmap.get_byte_compatible()[0x0030:]
 
     for i in range(0, 0x1000, 16):
-        frame = struct.pack(">cHB", "W", i, 16)
+        frame = struct.pack(">cHB", b"W", i, 16)
         frame += data[i:i + 16]
         radio.pipe.write(frame)
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             # UV-B5/UV-B6 radios with 27 menus do not support service settings
             # and will stop ACKing when the upload reaches 0x0F10
             if i == 0x0F10:
@@ -266,6 +266,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     VENDOR = "Baofeng"
     MODEL = "UV-B5"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     SPECIALS = {
         "VFO1": -2,
         "VFO2": -1,
