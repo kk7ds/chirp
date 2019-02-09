@@ -55,7 +55,7 @@ def _get_freq(bcd_array):
 
 def _set_freq(bcd_array, freq):
     bitwise.int_to_bcd(bcd_array, freq / 1000)
-    bcd_array[2].set_raw(bcd_array[2].get_bits(0xF0) + freq % 10000 / 500)
+    bcd_array[2].set_raw(bcd_array[2].get_bits(0xF0) + freq % 10000 // 500)
 
 
 @directory.register

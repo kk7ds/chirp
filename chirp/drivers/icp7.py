@@ -161,8 +161,8 @@ class ICP7Radio(icf.IcomCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = _mem.freq / 3
-        mem.offset = _mem.offset / 3
+        mem.freq = _mem.freq // 3
+        mem.offset = _mem.offset // 3
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.tuning_step = TUNING_STEPS[_mem.tuning_step]

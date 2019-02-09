@@ -151,7 +151,7 @@ def _encode_freq(freq):
 
 
 def _wipe_memory(mem, char):
-    mem.set_raw(char * (mem.size() / 8))
+    mem.set_raw(char * (mem.size() // 8))
 
 
 class ID880Bank(icf.IcomNamedBank):
