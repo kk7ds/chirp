@@ -57,7 +57,7 @@ class MemoryMapBytes(object):
 
     def get(self, start, length=1):
         """Return a chunk of memory of @length bytes from @start"""
-        if start == -1:
+        if length == -1:
             return data_type(self._data[start:])
         else:
             end = start + length
@@ -96,6 +96,9 @@ class MemoryMapBytes(object):
 
     def __getitem__(self, pos):
         if isinstance(pos, slice):
+            if pos.stop is None:
+                return self.get(pos.start, -1)
+
             return self.get(pos.start, pos.stop - pos.start)
         else:
             return self.get(pos)
