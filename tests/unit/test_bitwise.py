@@ -46,6 +46,13 @@ class TestBitwiseBaseIntTypes(BaseTest):
         self.assertEqual(int(obj.foo), value)
         self.assertEqual(data.get_packed(), _data)
 
+        obj.foo = 7
+        # Compare against the equivalent real division so we get consistent
+        # results on py2 and py3
+        self.assertEqual(7 // 2, obj.foo // 2)
+        self.assertEqual(7 / 2, obj.foo / 2)
+        self.assertEqual(7 / 2.0, obj.foo / 2.0)
+
     def test_type_u8(self):
         self._test_type("u8", b"\x80", 128)
 
