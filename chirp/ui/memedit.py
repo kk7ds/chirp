@@ -1122,7 +1122,7 @@ class MemoryEditor(common.Editor):
                        self.col(_("Duplex")), memory.duplex,
                        self.col(_("Offset")), memory.offset,
                        self.col(_("Mode")), memory.mode,
-                       self.col(_("Power")), memory.power or "",
+                       self.col(_("Power")), str(memory.power) or "",
                        self.col(_("Tune Step")), memory.tuning_step,
                        self.col(_("Skip")), memory.skip,
                        self.col(_("Comment")), memory.comment)
