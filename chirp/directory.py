@@ -20,7 +20,7 @@ import logging
 
 import six
 
-from chirp.drivers import icf  #, rfinder
+from chirp.drivers import icf  # , rfinder
 from chirp import chirp_common, util, radioreference, errors
 
 LOG = logging.getLogger(__name__)

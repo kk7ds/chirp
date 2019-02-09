@@ -1425,7 +1425,8 @@ of file.
 
         # Set url hook to handle user activating a URL link in the about dialog
         with compat.py3safe():
-            gtk.about_dialog_set_url_hook(lambda dlg, url: webbrowser.open(url))
+            gtk.about_dialog_set_url_hook(
+                lambda dlg, url: webbrowser.open(url))
 
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)

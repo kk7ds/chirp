@@ -31,7 +31,6 @@ def hexprint(data, addrfmt=None):
     else:
         pad = '\x00'
 
-
     if (len(data) % block_size) != 0:
         lines += 1
         data += pad * ((lines * block_size) - len(data))

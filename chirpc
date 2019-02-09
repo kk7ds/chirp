@@ -23,7 +23,7 @@ import argparse
 import logging
 
 from chirp import logger
-#from chirp.drivers import *
+# from chirp.drivers import *
 from chirp import chirp_common, errors, directory, util
 from chirp.ui import compat
 
@@ -292,7 +292,7 @@ if __name__ == "__main__":
         data = radio.get_raw_memory(memnum)
         for i in data:
             if ord(i) > 0x7F:
-                print("Memory location %s (%i):\n%s" % \
+                print("Memory location %s (%i):\n%s" %
                       (memnum, len(data), util.hexprint(data)))
                 sys.exit(0)
         print(data)

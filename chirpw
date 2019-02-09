@@ -19,6 +19,13 @@ import glob
 import os
 import six
 
+import sys
+import os
+import locale
+import gettext
+import argparse
+import logging
+
 if six.PY3:
     from gi import pygtkcompat
     pygtkcompat.enable()
@@ -39,13 +46,6 @@ for driver_file in driver_files:
     except Exception as e:
         print('Failed to import %s: %s' % (module, e))
 
-
-import sys
-import os
-import locale
-import gettext
-import argparse
-import logging
 
 LOG = logging.getLogger("chirpw")
 

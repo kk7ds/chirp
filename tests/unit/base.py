@@ -44,6 +44,7 @@ def mock_gtk():
         module, base_class = path.split('.')
         setattr(sys.modules[module], base_class, DummyBase)
 
+
 def unmock_gtk():
     for module in pygtk_mocks:
         del sys.modules[module]

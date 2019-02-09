@@ -5,7 +5,6 @@
 import re
 import sys
 import codecs
-#import exceptions
 import collections
 
 import six

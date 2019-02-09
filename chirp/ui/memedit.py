@@ -1020,7 +1020,8 @@ class MemoryEditor(common.Editor):
                     # we want either.
                     col = gtk.TreeViewColumn(_cap, rend, text=i)
                 else:
-                    col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
+                    col = gtk.TreeViewColumn(_cap, rend, text=i,
+                                             sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
             else:
                 rend.set_property("editable", _cap not in non_editable)
@@ -1029,7 +1030,8 @@ class MemoryEditor(common.Editor):
                     # FIXMEPY3: See above
                     col = gtk.TreeViewColumn(_cap, rend, text=i)
                 else:
-                    col = gtk.TreeViewColumn(_cap, rend, text=i, sensitive=filled)
+                    col = gtk.TreeViewColumn(_cap, rend, text=i,
+                                             sensitive=filled)
                 col.set_cell_data_func(rend, self.render, i)
 
             col.set_reorderable(True)
@@ -1453,7 +1455,8 @@ class MemoryEditor(common.Editor):
 
                 self._set_memory(iter, mem)
 
-        result = base64.b64encode(pickle.dumps((self._features, selection))).decode()
+        result = base64.b64encode(pickle.dumps((self._features,
+                                                selection))).decode()
         if hasattr(gtk.Clipboard, 'get'):
             # GTK3
             clipboard = gtk.Clipboard.get(gtk.gdk.SELECTION_CLIPBOARD)
