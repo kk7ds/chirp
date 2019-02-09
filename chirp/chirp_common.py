@@ -1183,7 +1183,7 @@ class FileBackedRadio(Radio):
         """
         try:
             mapfile = open(filename, "wb")
-            mapfile.write(self._mmap.get_packed())
+            mapfile.write(self._mmap.get_byte_compatible().get_packed())
             if filename.lower().endswith(".img"):
                 mapfile.write(self.MAGIC)
                 mapfile.write(self._make_metadata())
