@@ -259,6 +259,12 @@ class TestBitwiseStructTypes(BaseTest):
         obj.foo.baz = 0x34
         self.assertEqual(data.get_packed(), b"\x12\x34")
 
+    def test_struct_get_raw(self):
+        data = memmap.MemoryMapBytes(b"..")
+        defn = "struct { u8 bar; u8 baz; } foo;"
+        obj = bitwise.parse(defn, data)
+        self.assertEqual(b'..', obj.get_raw())
+
 
 class TestBitwiseSeek(BaseTest):
     def test_seekto(self):

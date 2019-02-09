@@ -776,7 +776,7 @@ class structDataElement(DataElement):
         return size
 
     def get_raw(self):
-        size = self.size() / 8
+        size = self.size() // 8
         return self._data[self._offset:self._offset+size]
 
     def set_raw(self, buffer):
