@@ -374,8 +374,14 @@ class intDataElement(DataElement):
     def __mul__(self, val):
         return self.get_value() * val
 
+    def __truediv__(self, val):
+        return self.get_value() / val
+
     def __div__(self, val):
         return self.get_value() / val
+
+    def __floordiv__(self, val):
+        return self.get_value() // val
 
     def __add__(self, val):
         return self.get_value() + val
