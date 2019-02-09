@@ -1152,6 +1152,7 @@ class FT7100RadioVHF(FT7100Radio):
         rf.valid_bands = [(108000000, 180000000)]  # Supports 2-meters tx
         rf.valid_modes = MODES_VHF
         rf.valid_special_chans = ['VFO', 'Home']
+        rf.has_sub_devices = False
         return rf
 
     def get_memory(self, number):
@@ -1195,6 +1196,7 @@ class FT7100RadioUHF(FT7100Radio):
         rf.valid_bands = [(320000000, 999990000)]  # Supports 70-centimeters tx
         rf.valid_modes = MODES_UHF
         rf.valid_special_chans = ['VFO', 'Home']
+        rf.has_sub_devices = False
         return rf
 
     def get_memory(self, number):
