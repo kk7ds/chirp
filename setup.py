@@ -5,20 +5,10 @@ import glob
 import os
 
 from chirp import CHIRP_VERSION
-# FIXME: Not all drivers are py3 compatible in syntax, so punt on this
-# until that time, and defer to the safe import loop below.
-# from chirp.drivers import *
 import chirp
+from chirp import directory
 
-# Safe import of everything in chirp/drivers
-driver_files = glob.glob('chirp/drivers/*.py')
-for driver_file in driver_files:
-    module, _ = os.path.splitext(driver_file)
-    module = module.replace('/', '.')
-    try:
-        __import__(module)
-    except Exception as e:
-        print('Failed to import %s: %s' % (module, e))
+directory.safe_import_drivers()
 
 
 def staticify_chirp_module():

@@ -31,21 +31,13 @@ if six.PY3:
     pygtkcompat.enable()
     pygtkcompat.enable_gtk(version='3.0')
 
+from chirp import directory
 from chirp import logger
 from chirp import elib_intl
 from chirp import platform
 from chirp.ui import config
 
-# Safe import of everything in chirp/drivers
-driver_files = glob.glob('chirp/drivers/*.py')
-for driver_file in driver_files:
-    module, _ = os.path.splitext(driver_file)
-    module = module.replace('/', '.')
-    try:
-        __import__(module)
-    except Exception as e:
-        print('Failed to import %s: %s' % (module, e))
-
+directory.safe_import_drivers()
 
 LOG = logging.getLogger("chirpw")
 

@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import glob
 import os
 import tempfile
 import logging
@@ -195,3 +196,20 @@ def get_radio_by_image(image_file):
         raise e
     else:
         raise errors.ImageDetectFailed("Unknown file format")
+
+
+def safe_import_drivers():
+    # Safe import of everything in chirp/drivers. We need to import them
+    # to get them to register, but should not abort if one import fails
+    chirp_module_base = os.path.dirname(os.path.abspath(__file__))
+    driver_files = glob.glob(os.path.join(chirp_module_base,
+                                          'drivers',
+                                          '*.py'))
+    for driver_file in driver_files:
+        module, ext = os.path.splitext(driver_file)
+        driver_module = os.path.basename(module)
+        module = 'chirp.drivers.%s' % driver_module
+        try:
+            __import__(module)
+        except Exception as e:
+            print('Failed to import %s: %s' % (module, e))

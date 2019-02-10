@@ -56,16 +56,7 @@ from chirp import chirp_common, directory
 from chirp import import_logic, memmap, settings, errors
 from chirp import settings
 
-# Safe import of everything in chirp/drivers
-driver_files = (glob.glob('../chirp/drivers/*.py') +
-                glob.glob('chirp/drivers/*.py'))
-for driver_file in driver_files:
-    module, _ = os.path.splitext(driver_file)
-    module = module.replace('/', '.').replace('...', '')
-    try:
-        __import__(module)
-    except Exception as e:
-        print('Failed to import %s: %s' % (module, e))
+directory.safe_import_drivers()
 
 from chirp.drivers import generic_csv
 
