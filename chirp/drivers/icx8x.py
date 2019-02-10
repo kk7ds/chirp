@@ -21,9 +21,9 @@ from chirp import chirp_common, errors, directory
 LOG = logging.getLogger(__name__)
 
 
-def _isuhf(pipe):
+def _isuhf(radio):
     try:
-        md = icf.get_model_data(pipe)
+        md = icf.get_model_data(radio)
         val = ord(md[20])
         uhf = val & 0x10
     except:
@@ -87,7 +87,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def _get_type(self):
-        flag = (_isuhf(self.pipe) != 0)
+        flag = (_isuhf(self) != 0)
 
         if self._isuhf is not None and (self._isuhf != flag):
             raise errors.RadioError("VHF/UHF model mismatch")
