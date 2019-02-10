@@ -18,6 +18,7 @@ import glob
 import os
 import tempfile
 import logging
+import sys
 
 import six
 
@@ -199,6 +200,14 @@ def get_radio_by_image(image_file):
 
 
 def safe_import_drivers():
+    if sys.platform == 'win32':
+        # Assume we are in a frozen win32 build, so we can not glob
+        # the driver files, but we do not need to anyway
+        import chirp.drivers
+        for module in chirp.drivers.__all__:
+            __import__('chirp.drivers.%s' % module)
+        return
+
     # Safe import of everything in chirp/drivers. We need to import them
     # to get them to register, but should not abort if one import fails
     chirp_module_base = os.path.dirname(os.path.abspath(__file__))
