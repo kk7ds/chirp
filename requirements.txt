@@ -1,3 +1,4 @@
 six
 PyGObject
 pyserial
+future

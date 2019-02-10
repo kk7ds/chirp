@@ -62,6 +62,7 @@ import os
 import logging
 
 import six
+from builtins import bytes
 
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
@@ -215,7 +216,7 @@ class DataElement:
     def get_raw(self, asbytes=False):
         raw = self._data[self._offset:self._offset+self._size]
         if asbytes:
-            return raw
+            return bytes(raw)
         else:
             return string_straight_decode(raw)
 
@@ -260,7 +261,7 @@ class arrayDataElement(DataElement):
     def get_raw(self, asbytes=False):
         raw = [item.get_raw(asbytes=asbytes) for item in self.__items]
         if asbytes:
-            return b''.join(raw)
+            return bytes(b''.join(raw))
         else:
             return "".join(raw)
 
@@ -793,7 +794,7 @@ class structDataElement(DataElement):
         size = self.size() // 8
         raw = self._data[self._offset:self._offset+size]
         if asbytes:
-            return raw
+            return bytes(raw)
         else:
             return string_straight_decode(raw)
 
