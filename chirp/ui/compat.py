@@ -66,3 +66,17 @@ class CompatSerial(base_serial.Serial):
             return cls(*args, **kwargs)
         else:
             return base_serial.Serial(*args, **kwargs)
+
+
+class CompatTooltips(object):
+    def __init__(self):
+        try:
+            self.tips = gtk.Tooltips()
+        except AttributeError:
+            self.tips = None
+
+    def set_tip(self, widget, tip):
+        if self.tips:
+            self.tips.set_tip(widget, tip)
+        else:
+            widget.set_tooltip_text(tip)

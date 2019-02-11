@@ -19,6 +19,7 @@ import logging
 
 from chirp import chirp_common, settings
 from chirp.ui import miscwidgets, common
+from chirp.ui import compat
 
 LOG = logging.getLogger(__name__)
 
@@ -95,7 +96,11 @@ class ValueEditor:
 
 class StringEditor(ValueEditor):
     def _init(self, data):
-        self._widget = gtk.Entry(int(data))
+        try:
+            self._widget = gtk.Entry(int(data))
+        except TypeError:
+            self._widget = gtk.Entry()
+            self._widget.set_max_length(int(data))
         self._widget.set_text(str(self._mem_value()))
         self._widget.connect("changed", self.changed)
 
@@ -108,13 +113,15 @@ class StringEditor(ValueEditor):
 
 class ChoiceEditor(ValueEditor):
     def _init(self, data):
-        self._widget = miscwidgets.make_choice([str(x) for x in data],
+        self._choice = miscwidgets.make_choice([str(x) for x in data],
                                                False,
                                                str(self._mem_value()))
+        self._widget = self._choice.widget
+
         self._widget.connect("changed", self.changed)
 
     def _get_value(self):
-        return self._widget.get_active_text()
+        return self._choice.value
 
     def changed(self, _widget):
         self.update()
@@ -295,7 +302,7 @@ class MemoryDetailEditor(gtk.Dialog):
                             buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
                                      gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
         self.set_size_request(-1, 500)
-        self._tips = gtk.Tooltips()
+        self._tips = compat.CompatTooltips()
 
         self._features = features
 
