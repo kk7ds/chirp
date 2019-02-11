@@ -57,15 +57,19 @@ def hexprint(data, addrfmt=None):
             limit = block_size
 
         for j in range(0, limit):
-            out += "%02x " % byte_to_int(data[(block * block_size) + j])
+            byte = data[(block * block_size) + j]
+            if isinstance(byte, str):
+                byte = ord(byte)
+            out += "%02x " % byte
 
         out += "  "
 
         for j in range(0, limit):
-            char = data[(block * block_size) + j]
-            byte = byte_to_int(char)
+            byte = data[(block * block_size) + j]
+            if isinstance(byte, str):
+                byte = ord(byte)
             if byte > 0x20 and byte < 0x7E:
-                out += "%s" % char
+                out += "%s" % chr(byte)
             else:
                 out += "."
 
