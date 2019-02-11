@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 def _isuhf(radio):
     try:
         md = icf.get_model_data(radio)
-        val = ord(md[20])
+        val = md[20]
         uhf = val & 0x10
     except:
         raise errors.RadioError("Unable to probe radio band")

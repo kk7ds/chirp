@@ -13,14 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import bytes
+
 import re
 import time
 import logging
+import struct
 
+from chirp import bitwise
 from chirp import chirp_common, errors, util, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettings
-from chirp.util import StringStruct as struct
 
 LOG = logging.getLogger(__name__)
 
@@ -63,13 +66,16 @@ def parse_frame_generic(data):
     """Parse an ICF frame of unknown type from the beginning of @data"""
     frame = IcfFrame()
 
-    frame.src = ord(data[2])
-    frame.dst = ord(data[3])
-    frame.cmd = ord(data[4])
+    assert isinstance(data, bytes), ('parse_frame_generic() expected bytes, '
+                                     'but got %s' % data.__class__)
+
+    frame.src = data[2]
+    frame.dst = data[3]
+    frame.cmd = data[4]
 
     try:
-        end = data.index("\xFD")
-    except ValueError:
+        end = data.index(0xFD)
+    except ValueError as e:
         return None, data
 
     frame.payload = data[5:end]
@@ -81,10 +87,10 @@ class RadioStream:
     """A class to make reading a stream of IcfFrames easier"""
     def __init__(self, pipe):
         self.pipe = pipe
-        self.data = ""
+        self.data = bytes()
 
     def _process_frames(self):
-        if not self.data.startswith("\xFE\xFE"):
+        if not self.data.startswith(b"\xFE\xFE"):
             LOG.error("Out of sync with radio:\n%s" % util.hexprint(self.data))
             raise errors.InvalidDataError("Out of sync with radio")
         elif len(self.data) < 5:
@@ -94,7 +100,7 @@ class RadioStream:
 
         while self.data:
             try:
-                cmd = ord(self.data[4])
+                cmd = self.data[4]
             except IndexError:
                 break  # Out of data
 
@@ -108,7 +114,7 @@ class RadioStream:
                 else:
                     frames.append(frame)
 
-                self.data = rest
+                self.data = bytes(rest)
             except errors.InvalidDataError as e:
                 LOG.error("Failed to parse frame (cmd=%i): %s" % (cmd, e))
                 return []
@@ -124,7 +130,7 @@ class RadioStream:
             else:
                 self.data += _data
 
-            if not nolimit and len(self.data) > 128 and "\xFD" in self.data:
+            if not nolimit and len(self.data) > 128 and 0xFD in self.data:
                 break  # Give us a chance to do some status
             if len(self.data) > 1024:
                 break  # Avoid an endless loop of chewing garbage
@@ -135,7 +141,7 @@ class RadioStream:
         return self._process_frames()
 
 
-def get_model_data(radio, mdata="\x00\x00\x00\x00"):
+def get_model_data(radio, mdata=bytes(b"\x00\x00\x00\x00")):
     """Query the @radio for its model data"""
     send_clone_frame(radio, 0xe0, mdata, raw=True)
 
@@ -167,9 +173,12 @@ def get_clone_resp(pipe, length=None):
 
 def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
     """Send a clone frame with @cmd and @data to the @radio"""
-    payload = radio.get_payload(data, raw, checksum)
+    payload = radio.get_payload(bytes(data), raw, checksum)
 
-    frame = "\xfe\xfe\xee\xef%s%s\xfd" % (chr(cmd), payload)
+    frame = (bytes(b"\xfe\xfe\xee\xef") +
+             bytes([cmd]) +
+             payload +
+             bytes(b"\xfd"))
 
     if SAVE_PIPE:
         LOG.debug("Saving data...")
@@ -209,16 +218,16 @@ def process_data_frame(radio, frame, _mmap):
         _mmap[saddr] = data
     except IndexError:
         LOG.error("Error trying to set %i bytes at %05x (max %05x)" %
-                  (bytes, saddr, len(_mmap)))
+                  (length, saddr, len(_mmap)))
     return saddr, saddr + length
 
 
 def start_hispeed_clone(radio, cmd):
     """Send the magic incantation to the radio to go fast"""
-    buf = ("\xFE" * 20) + \
-        "\xEE\xEF\xE8" + \
-        radio.get_model() + \
-        "\x00\x00\x02\x01\xFD"
+    buf = ((bytes(b"\xFE") * 20) +
+           bytes(b"\xEE\xEF\xE8") +
+           radio.get_model() +
+           bytes(b"\x00\x00\x02\x01\xFD"))
     LOG.debug("Starting HiSpeed:\n%s" % util.hexprint(buf))
     radio.pipe.write(buf)
     radio.pipe.flush()
@@ -228,11 +237,11 @@ def start_hispeed_clone(radio, cmd):
     LOG.info("Switching to 38400 baud")
     radio.pipe.baudrate = 38400
 
-    buf = ("\xFE" * 14) + \
-        "\xEE\xEF" + \
-        chr(cmd) + \
-        radio.get_model()[:3] + \
-        "\x00\xFD"
+    buf = ((bytes(b"\xFE") * 14) +
+           bytes(b"\xEE\xEF") +
+           bytes([cmd]) +
+           radio.get_model()[:3] +
+           bytes(b"\x00\xFD"))
     LOG.debug("Starting HiSpeed Clone:\n%s" % util.hexprint(buf))
     radio.pipe.write(buf)
     radio.pipe.flush()
@@ -249,14 +258,16 @@ def _clone_from_radio(radio):
     if radio.is_hispeed():
         start_hispeed_clone(radio, CMD_CLONE_OUT)
     else:
-        send_clone_frame(radio, CMD_CLONE_OUT, radio.get_model(), raw=True)
+        send_clone_frame(radio, CMD_CLONE_OUT,
+                         radio.get_model(),
+                         raw=True)
 
     LOG.debug("Sent clone frame")
 
     stream = RadioStream(radio.pipe)
 
     addr = 0
-    _mmap = memmap.MemoryMap(chr(0x00) * radio.get_memsize())
+    _mmap = memmap.MemoryMapBytes(bytes(b'\x00') * radio.get_memsize())
     last_size = 0
     while True:
         frames = stream.get_frames()
@@ -350,7 +361,9 @@ def _clone_to_radio(radio):
     if radio.is_hispeed():
         start_hispeed_clone(radio, CMD_CLONE_IN)
     else:
-        send_clone_frame(radio, CMD_CLONE_IN, radio.get_model(), raw=True)
+        send_clone_frame(radio, CMD_CLONE_IN,
+                         radio.get_model(),
+                         raw=True)
 
     frames = []
 
@@ -359,7 +372,9 @@ def _clone_to_radio(radio):
             break
         frames += stream.get_frames()
 
-    send_clone_frame(radio, CMD_CLONE_END, radio.get_endframe(), raw=True)
+    send_clone_frame(radio, CMD_CLONE_END,
+                     radio.get_endframe(),
+                     raw=True)
 
     if SAVE_PIPE:
         SAVE_PIPE.close()
@@ -376,7 +391,7 @@ def _clone_to_radio(radio):
     if len(frames) == 0:
         raise errors.RadioError("Did not get clone result from radio")
 
-    return result.payload[0] == '\x00'
+    return result.payload[0] == bytes(b'\x00')
 
 
 def clone_to_radio(radio):
@@ -564,7 +579,7 @@ class IcomIndexedBankModel(IcomBankModel,
 def compute_checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return ((cs ^ 0xFFFF) + 1) & 0xFF
 
 
@@ -572,6 +587,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     """Base class for Icom clone-mode radios"""
     VENDOR = "Icom"
     BAUDRATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     _model = "\x00\x00\x00\x00"  # 4-byte model string
     _endframe = ""               # Model-unique ending frame
@@ -589,12 +605,12 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     @classmethod
     def get_model(cls):
         """Returns the Icom model data for this radio"""
-        return cls._model
+        return bytes([ord(x) for x in cls._model])
 
     @classmethod
     def get_endframe(cls):
         """Returns the magic clone end frame for this radio"""
-        return cls._endframe
+        return bytes([ord(x) for x in cls._endframe])
 
     @classmethod
     def get_ranges(cls):
@@ -604,15 +620,17 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     def process_frame_payload(self, payload):
         """Convert BCD-encoded data to raw"""
         bcddata = payload
-        data = ""
+        data = bytes()
         i = 0
         while i+1 < len(bcddata):
             try:
-                val = int("%s%s" % (bcddata[i], bcddata[i+1]), 16)
+                val = int("%s%s" % (chr(bcddata[i]), chr(bcddata[i+1])), 16)
                 i += 2
                 data += struct.pack("B", val)
-            except ValueError as e:
-                LOG.error("Failed to parse byte: %s" % e)
+            except (ValueError, TypeError) as e:
+                LOG.error("Failed to parse byte %i (%r): %s" % (i,
+                                                                bcddata[i:i+2],
+                                                                e))
                 break
 
         return data
@@ -621,11 +639,11 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         """Returns the data with optional checksum BCD-encoded for the radio"""
         if raw:
             return data
-        payload = ""
+        payload = bytes()
         for byte in data:
-            payload += "%02X" % ord(byte)
+            payload += bytes(b"%02X" % byte)
         if checksum:
-            payload += "%02X" % compute_checksum(data)
+            payload += bytes(b"%02X" % compute_checksum(data))
         return payload
 
     def sync_in(self):
@@ -671,30 +689,31 @@ def escape_raw_byte(byte):
     # Certain bytes are used as control characters to the radio, so if one of
     # these bytes is present in the stream to the radio, it gets escaped as
     # 0xff followed by (byte & 0x0f)
-    if ord(byte) > 0xf9:
-        return "\xff%s" % (chr(ord(byte) & 0xf))
-    return byte
+    if byte > 0xf9:
+        return bytes([0xff, byte & 0xf])
+    return bytes([byte])
 
 
 def unescape_raw_bytes(escaped_data):
     """Unescapes raw bytes from the radio."""
-    data = ""
+    data = b""
     i = 0
     while i < len(escaped_data):
         byte = escaped_data[i]
-        if byte == '\xff':
+        if byte == 0xff:
             if i + 1 >= len(escaped_data):
                 raise errors.InvalidDataError(
                     "Unexpected escape character at end of data")
             i += 1
-            byte = chr(0xf0 | ord(escaped_data[i]))
-        data += byte
+            byte = 0xf0 | escaped_data[i]
+        data += bytes([byte])
         i += 1
     return data
 
 
 class IcomRawCloneModeRadio(IcomCloneModeRadio):
     """Subclass for Icom clone-mode radios using the raw data protocol."""
+    NEEDS_COMPAT_SERIAL = True
 
     def process_frame_payload(self, payload):
         """Payloads from a raw-clone-mode radio are already in raw format."""
@@ -702,14 +721,12 @@ class IcomRawCloneModeRadio(IcomCloneModeRadio):
 
     def get_payload(self, data, raw, checksum):
         """Returns the data with optional checksum in raw format."""
+        payload = data
         if checksum:
-            cs = chr(compute_checksum(data))
-        else:
-            cs = ""
-        payload = "%s%s" % (data, cs)
+            payload += bytes([compute_checksum(data)])
         # Escape control characters.
-        escaped_payload = [escape_raw_byte(b) for b in payload]
-        return "".join(escaped_payload)
+        escaped_payload = b''.join([escape_raw_byte(b) for b in payload])
+        return escaped_payload
 
     def sync_in(self):
         # The radio returns all the bytes with the high-order bit flipped.
