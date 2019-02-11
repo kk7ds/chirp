@@ -76,7 +76,7 @@ class ParseError(Exception):
 
 
 def byte_to_int(b):
-    if six.PY3:
+    if six.PY3 or isinstance(b, int):
         return b
     else:
         return ord(b)
@@ -105,7 +105,7 @@ def string_straight_encode(string):
     # specific binary values in memory). Ideally we would have
     # written all of chirp with bytes() for these values, but alas.
     # We can get the intended string here by doing bytes([ord(char)]).
-    return b''.join(int_to_byte(ord(b)) for b in string)
+    return bytes(b''.join(int_to_byte(ord(b)) for b in string))
 
 
 def string_straight_decode(string):

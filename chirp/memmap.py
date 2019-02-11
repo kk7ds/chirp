@@ -13,19 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import bytes
+
 import six
 
 from chirp import util
-
-
-def py2_byte_string(list_of_ints):
-    return ''.join(chr(x) for x in list_of_ints)
-
-
-if six.PY3:
-    data_type = bytes
-else:
-    data_type = py2_byte_string
 
 
 class MemoryMapBytes(object):
@@ -37,11 +29,7 @@ class MemoryMapBytes(object):
     def __init__(self, data):
         assert isinstance(data, bytes)
 
-        if six.PY3:
-            # This is a list of integers
-            self._data = list(data)
-        else:
-            self._data = [ord(byte) for byte in data]
+        self._data = list(data)
 
     def printable(self, start=None, end=None):
         """Return a printable representation of the memory map"""
@@ -58,10 +46,11 @@ class MemoryMapBytes(object):
     def get(self, start, length=1):
         """Return a chunk of memory of @length bytes from @start"""
         if length == -1:
-            return data_type(self._data[start:])
+            return bytes(self._data[start:])
         else:
             end = start + length
-            return data_type(self._data[start:end])
+            d = self._data[start:end]
+            return bytes(d)
 
     def set(self, pos, value):
         """Set a chunk of memory at @pos to @value"""
@@ -70,8 +59,8 @@ class MemoryMapBytes(object):
 
         if isinstance(value, int):
             self._data[pos] = value & 0xFF
-        elif isinstance(value, bytes) and six.PY3:
-            for byte in value:
+        elif isinstance(value, bytes):
+            for byte in bytes(value):
                 self._data[pos] = byte
                 pos += 1
         elif isinstance(value, str):
@@ -86,7 +75,7 @@ class MemoryMapBytes(object):
 
     def get_packed(self):
         """Return the entire memory map as raw data"""
-        return data_type(self._data)
+        return bytes(self._data)
 
     def __len__(self):
         return len(self._data)
@@ -159,6 +148,6 @@ class MemoryMap(MemoryMapBytes):
             super(MemoryMap, self).get_packed())
 
     def get_byte_compatible(self):
-        mmb = MemoryMapBytes(super(MemoryMap, self).get_packed())
+        mmb = MemoryMapBytes(bytes(self._data))
         self._data = mmb._data
         return mmb
