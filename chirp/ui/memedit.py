@@ -1227,6 +1227,7 @@ class MemoryEditor(common.Editor):
 
         self.lo_limit_adj = gtk.Adjustment(lostart, min, max-1, 1, 10)
         lo = compat.SpinButton(self.lo_limit_adj)
+        lo.set_value(lostart)
         lo.connect("value-changed", self._store_limit, "lo")
         lo.show()
         hbox.pack_start(lo, 0, 0, 0)
@@ -1237,6 +1238,7 @@ class MemoryEditor(common.Editor):
 
         self.hi_limit_adj = gtk.Adjustment(histart, min+1, max, 1, 10)
         hi = compat.SpinButton(self.hi_limit_adj)
+        hi.set_value(histart)
         hi.connect("value-changed", self._store_limit, "hi")
         hi.show()
         hbox.pack_start(hi, 0, 0, 0)
