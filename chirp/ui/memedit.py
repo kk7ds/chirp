@@ -926,7 +926,12 @@ class MemoryEditor(common.Editor):
                 if (not sel.path_is_selected(path)):
                     view.set_cursor(path, col)
                 menu = self.make_context_menu()
-                menu.popup(None, None, None, event.button, event.time)
+                try:
+                    menu.popup(None, None, None, event.button, event.time)
+                except TypeError:
+                    # GTK3
+                    menu.popup(None, None, None, None, event.button,
+                               event.time)
             return True
 
     def get_column_visible(self, col):
