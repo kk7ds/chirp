@@ -917,23 +917,41 @@ class MemoryEditor(common.Editor):
 
         return uim.get_widget("/Menu")
 
+    def double_click_empty_memory(self, treeiter, path, col):
+        loc = self.store.get(treeiter, self.col(_('Loc')))
+        # Make this filled=True, thus sensitive=True
+        self.store.set(treeiter, self.col(_('_filled')), True)
+        # Set the cursor and stat editing
+        self.view.set_cursor(path, col, True)
+
     def click_cb(self, view, event):
         self.emit("usermsg", "")
-        if event.button == 3:
-            pathinfo = view.get_path_at_pos(int(event.x), int(event.y))
-            if pathinfo is not None:
-                path, col, x, y = pathinfo
-                view.grab_focus()
-                sel = view.get_selection()
-                if (not sel.path_is_selected(path)):
-                    view.set_cursor(path, col)
-                menu = self.make_context_menu()
-                try:
-                    menu.popup(None, None, None, event.button, event.time)
-                except TypeError:
-                    # GTK3
-                    menu.popup(None, None, None, None, event.button,
-                               event.time)
+
+        pathinfo = view.get_path_at_pos(int(event.x), int(event.y))
+        if pathinfo is None:
+            return
+        path, col, x, y = pathinfo
+        treeiter = self.store.get_iter(path)
+
+        if hasattr(gtk.gdk.EventType, '_2BUTTON_PRESS'):
+            double_click = event.type == gtk.gdk.EventType._2BUTTON_PRESS
+        else:
+            double_click = False
+
+        if event.button == 1 and double_click:
+            filled, = self.store.get(treeiter, self.col(_('_filled')))
+            if not filled:
+                self.double_click_empty_memory(treeiter, path, col)
+            return True
+        elif event.button == 3:
+            view.set_cursor(path, col)
+            menu = self.make_context_menu()
+            try:
+                menu.popup(None, None, None, event.button, event.time)
+            except TypeError:
+                # GTK3
+                menu.popup(None, None, None, None, event.button,
+                           event.time)
             return True
 
     def get_column_visible(self, col):
