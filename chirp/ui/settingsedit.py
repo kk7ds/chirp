@@ -96,7 +96,7 @@ class SettingsEditor(common.Editor):
         elif isinstance(value, settings.RadioSettingValueBoolean):
             value.set_value(widget.get_active())
         elif isinstance(value, settings.RadioSettingValueList):
-            value.set_value(widget.get_active_text())
+            value.set_value(widget.value)
         elif isinstance(value, settings.RadioSettingValueString):
             value.set_value(widget.get_text())
         else:
@@ -175,15 +175,14 @@ class SettingsEditor(common.Editor):
                     widget.set_active(value.get_value())
                     widget.connect("toggled", self._save_setting, value)
                 elif isinstance(value, settings.RadioSettingValueList):
-                    widget = miscwidgets.make_choice([], editable=False)
-                    model = widget.get_model()
+                    choice = miscwidgets.make_choice([], editable=False)
+                    model = choice.get_model()
                     model.clear()
                     for option in value.get_options():
-                        widget.append_text(option)
-                    current = value.get_value()
-                    index = value.get_options().index(current)
-                    widget.set_active(index)
-                    widget.connect("changed", self._save_setting, value)
+                        choice.append_text(option)
+                    choice.value = value.get_value()
+                    widget = choice.widget
+                    choice.connect("changed", self._save_setting, value)
                 elif isinstance(value, settings.RadioSettingValueString):
                     widget = gtk.Entry()
                     widget.set_width_chars(32)

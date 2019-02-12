@@ -13,12 +13,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import abc
 import gtk
 import gobject
 import pango
 
 import os
 import logging
+
+import six
 
 from chirp import platform
 from chirp.ui import compat
@@ -620,7 +623,51 @@ class YesNoDialog(gtk.Dialog):
         self._label.set_text(text)
 
 
-class EditableChoiceGTK3(object):
+@six.add_metaclass(abc.ABCMeta)
+class EditableChoiceBase(object):
+    def __init__(self, options, editable, default):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def widget(self):
+        raise NotImplementedError()
+
+    @property
+    @abc.abstractmethod
+    def value(self):
+        pass
+
+    @value.setter
+    @abc.abstractmethod
+    def value(self):
+        pass
+
+    @abc.abstractmethod
+    def get_model(self):
+        pass
+
+    @abc.abstractmethod
+    def append_text(self, text):
+        """Add a choice option"""
+        pass
+
+    def set_active(self, text):
+        """Legacy compat"""
+        self.value = text
+
+    def get_active_text(self):
+        """Legacy compat"""
+        return self.value
+
+    def set_sensitive(self, sensitive):
+        self.widget.set_sensitive(sensitive)
+
+    def connect(self, signal, fn, data):
+        self.widget.connect(signal, lambda *a: fn(self, data))
+
+
+class EditableChoiceGTK3(EditableChoiceBase):
     def __init__(self, options, editable, default):
         self.store = gtk.ListStore(str)
         for option in options:
@@ -657,8 +704,11 @@ class EditableChoiceGTK3(object):
     def get_model(self):
         return self.store
 
+    def append_text(self, text):
+        self.store.append([text])
 
-class EditableChoiceGTK2(object):
+
+class EditableChoiceGTK2(EditableChoiceBase):
     def __init__(self, options, editable, default):
         if editable:
             self.sel = gtk.combo_box_entry_new_text()
@@ -691,6 +741,9 @@ class EditableChoiceGTK2(object):
 
     def get_model(self):
         return self.sel.get_model()
+
+    def append_text(self, text):
+        self.sel.append_text(text)
 
 
 def make_choice(options, editable=True, default=None):
