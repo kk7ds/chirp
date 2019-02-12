@@ -430,9 +430,11 @@ class MemoryEditor(common.Editor):
         return str(val)
 
     def render(self, _, rend, model, iter, colnum):
-        val, hide = model.get(iter, colnum, self.col("_hide_cols"))
+        val, hide, filled = model.get(iter, colnum, self.col("_hide_cols"),
+                                      self.col('_filled'))
         val = self._render(colnum, val, iter, hide or [])
         rend.set_property("text", "%s" % val)
+        rend.set_sensitive(filled)
 
     def insert_new(self, iter, loc=None):
         line = []
@@ -1018,25 +1020,12 @@ class MemoryEditor(common.Editor):
                 rend.set_property("editable", True)
                 rend.set_property("has-entry", False)
                 rend.connect("edited", self.edited, _cap)
-                if six.PY3:
-                    # FIXMEPY3: we can't set sensitive on the column without
-                    # it affecting the whole column (which makes sense).
-                    # Setting it on the renderer doesn't seem to work like
-                    # we want either.
-                    col = gtk.TreeViewColumn(_cap, rend, text=i)
-                else:
-                    col = gtk.TreeViewColumn(_cap, rend, text=i,
-                                             sensitive=filled)
+                col = gtk.TreeViewColumn(_cap, rend, text=i)
                 col.set_cell_data_func(rend, self.render, i)
             else:
                 rend.set_property("editable", _cap not in non_editable)
                 rend.connect("edited", self.edited, _cap)
-                if six.PY3:
-                    # FIXMEPY3: See above
-                    col = gtk.TreeViewColumn(_cap, rend, text=i)
-                else:
-                    col = gtk.TreeViewColumn(_cap, rend, text=i,
-                                             sensitive=filled)
+                col = gtk.TreeViewColumn(_cap, rend, text=i)
                 col.set_cell_data_func(rend, self.render, i)
 
             col.set_reorderable(True)
