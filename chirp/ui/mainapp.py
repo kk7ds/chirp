@@ -2030,8 +2030,15 @@ of file.
         except ImportError:
             pass
 
+        # for gtk-mac-integration 2.1.3 in brew
+        try:
+            from gi.repository import GtkosxApplication
+            macapp = GtkosxApplication.Application()
+        except ImportError:
+            pass
+
         if macapp is None:
-            LOG.error("No MacOS support: %s" % e)
+            LOG.error("No MacOS support")
             return
 
         this_platform = platform.get_platform()
