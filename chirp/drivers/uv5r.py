@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
 import time
 import os
 import logging
@@ -24,6 +23,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
+from chirp.util import StringStruct as struct
 from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
@@ -513,12 +513,12 @@ def _ident_radio(radio):
         try:
             data = _do_ident(radio, magic)
             return data
-        except errors.RadioError, e:
+        except errors.RadioError as e:
             LOG.error("uv5r._ident_radio: %s", e)
             error = e
             time.sleep(2)
 
-    for magic, reason in IDENT_BLACKLIST.items():
+    for magic, reason in list(IDENT_BLACKLIST.items()):
         try:
             _do_ident(radio, magic, secondack=False)
         except errors.RadioError as e:
@@ -807,7 +807,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             self._mmap = _do_download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -816,7 +816,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             _do_upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def get_raw_memory(self, number):
@@ -1705,7 +1705,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1719,7 +1719,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                     value = int(val.get_value() * 10)
                 LOG.debug("Setting fm_presets = %s" % (value))
                 self._memobj.fm_presets = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
