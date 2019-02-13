@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+from builtins import bytes
 import copy
 import traceback
 import sys
@@ -839,10 +840,28 @@ TESTS["Detect"] = TestCaseDetect
 
 class TestCaseClone(TestCase):
     class SerialNone:
+        def __init__(self, isbytes):
+            self.isbytes = isbytes
+            self.mismatch = False
+            self.mismatch_at = None
+
         def read(self, size):
-            return ""
+            if self.isbytes:
+                return b""
+            else:
+                return ""
 
         def write(self, data):
+            expected = self.isbytes and bytes or str
+            if six.PY2:
+                # One driver uses bytearray() which will trigger this
+                # check even though it works fine on py2. So, only
+                # do this check for PY3 which is where it matters
+                # anyway.
+                pass
+            elif not self.mismatch and not isinstance(data, expected):
+                self.mismatch = True
+                self.mismatch_at = ''.join(traceback.format_stack())
             pass
 
         def setBaudrate(self, rate):
@@ -866,14 +885,23 @@ class TestCaseClone(TestCase):
 
     class SerialGarbage(SerialNone):
         def read(self, size):
-            buf = ""
-            for i in range(0, size):
-                buf += chr(i % 256)
-            return buf
+            if self.isbytes:
+                buf = []
+                for i in range(0, size):
+                    buf += i % 256
+                return bytes(buf)
+            else:
+                buf = ""
+                for i in range(0, size):
+                    buf += chr(i % 256)
+                return buf
 
     class SerialShortGarbage(SerialNone):
         def read(self, size):
-            return "\x00" * (size - 1)
+            if self.isbytes:
+                return b'\x00' * (size - 1)
+            else:
+                return "\x00" * (size - 1)
 
     def __str__(self):
         return "Clone"
@@ -915,7 +943,10 @@ class TestCaseClone(TestCase):
                                   (error.__class__.__name__,
                                    error, get_tb()))
 
-        radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
+        if radio.NEEDS_COMPAT_SERIAL:
+            radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
+        else:
+            radio._mmap = memmap.MemoryMapBytes(b"\x00" * (1024 * 128))
 
         error = None
         try:
@@ -933,13 +964,22 @@ class TestCaseClone(TestCase):
                                   "sync_out(): Got: %s (%s)" %
                                   (error.__class__.__name__, error))
 
+        if serial.mismatch:
+            raise TestFailedError("Radio tried to write the wrong "
+                                  "type of data to the %s pipe." % (
+                                      serial.__class__.__name__),
+                                  "TestClone:%s\n%s" % (
+                                      serial.__class__.__name__,
+                                      serial.mismatch_at))
+
         return []
 
     def run(self):
-        self._run(self.SerialError())
-        self._run(self.SerialNone())
-        self._run(self.SerialGarbage())
-        self._run(self.SerialShortGarbage())
+        isbytes = not self._wrapper._dst.NEEDS_COMPAT_SERIAL
+        self._run(self.SerialError(isbytes))
+        self._run(self.SerialNone(isbytes))
+        self._run(self.SerialGarbage(isbytes))
+        self._run(self.SerialShortGarbage(isbytes))
         return []
 
 TESTS["Clone"] = TestCaseClone

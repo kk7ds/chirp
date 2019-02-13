@@ -713,8 +713,6 @@ def unescape_raw_bytes(escaped_data):
 
 class IcomRawCloneModeRadio(IcomCloneModeRadio):
     """Subclass for Icom clone-mode radios using the raw data protocol."""
-    NEEDS_COMPAT_SERIAL = True
-
     def process_frame_payload(self, payload):
         """Payloads from a raw-clone-mode radio are already in raw format."""
         return unescape_raw_bytes(payload)
