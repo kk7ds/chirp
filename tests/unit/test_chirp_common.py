@@ -67,6 +67,13 @@ class TestUtilityFunctions(base.BaseTest):
     def test_compare_version_to_current_dev(self):
         self.assertTrue(chirp_common.is_version_newer('daily-20180101'))
 
+    def test_from_Hz(self):
+        # FIXME: These are wrong! Adding them here purely to test the
+        # python3 conversion, but they should be fixed.
+        self.assertEqual(140, chirp_common.from_GHz(14000000001))
+        self.assertEqual(140, chirp_common.from_MHz(14000001))
+        self.assertEqual(140, chirp_common.from_kHz(14001))
+
 
 class TestSplitTone(base.BaseTest):
     def _test_split_tone_decode(self, tx, rx, **vals):
