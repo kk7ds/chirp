@@ -73,11 +73,11 @@ def command(ser, cmd, *args):
     cmd += LAST_DELIMITER[0]
 
     LOG.debug("PC->RADIO: %s" % cmd.strip())
-    ser.write(cmd)
+    ser.write(cmd.encode())
 
     result = ""
     while not result.endswith(LAST_DELIMITER[0]):
-        result += ser.read(COMMAND_RESP_BUFSIZE)
+        result += ser.read(COMMAND_RESP_BUFSIZE).decode()
         if (time.time() - start) > 0.5:
             LOG.error("Timeout waiting for data")
             break
@@ -109,7 +109,7 @@ def get_id(ser):
             LOG.info("Trying ID at baud %i with delimiter \"%s\"" %
                      (i, repr(delimiter)))
             ser.baudrate = i
-            ser.write(LAST_DELIMITER[0])
+            ser.write(LAST_DELIMITER[0].encode())
             ser.read(25)
             resp = command(ser, "ID")
 
@@ -147,6 +147,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = ""
+    NEEDS_COMPAT_SERIAL = False
 
     _vfo = 0
     _upper = 200
