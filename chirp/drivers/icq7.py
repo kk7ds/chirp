@@ -190,7 +190,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         _mem.set_raw("\x00" * 8)
 
         if mem.freq > to_GHz(1):
-            _mem.freq = (mem.freq / 1000) - to_GHz(1)
+            _mem.freq = (mem.freq // 1000) - to_GHz(1)
             upper = from_GHz(mem.freq) << 4
             _mem.freq[0].clr_bits(0xF0)
             _mem.freq[0].set_bits(upper)
@@ -344,6 +344,6 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
