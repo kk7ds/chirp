@@ -129,9 +129,18 @@ class StringStruct(object):
     @staticmethod
     def pack(*args):
         from chirp import bitwise
-        return bitwise.string_straight_decode(struct.pack(*args))
+        fmt = args[0]
+        # Encode any string arguments to bytes
+        newargs = (bitwise.string_straight_encode(x) if isinstance(x, str)
+                   else x
+                   for x in args[1:])
+        return bitwise.string_straight_decode(struct.pack(fmt, *newargs))
 
     @staticmethod
     def unpack(fmt, data):
         from chirp import bitwise
-        return struct.unpack(fmt, bitwise.string_straight_encode(data))
+        result = struct.unpack(fmt, bitwise.string_straight_encode(data))
+        # Decode any string results
+        return tuple(bitwise.string_straight_decode(x) if isinstance(x, bytes)
+                     else x
+                     for x in result)

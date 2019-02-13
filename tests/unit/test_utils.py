@@ -12,10 +12,10 @@ class TestUtils(base.BaseTest):
     def test_struct_pack(self):
         struct = util.StringStruct
 
-        self.assertEqual('\x00',
-                         struct.pack('b', 0))
+        self.assertEqual('\x00c',
+                         struct.pack('bc', 0, 'c'))
 
     def test_struct_unpack(self):
         struct = util.StringStruct
 
-        self.assertEqual((1,), struct.unpack('b', '\x01'))
+        self.assertEqual((1, 'c'), struct.unpack('bc', '\x01c'))
