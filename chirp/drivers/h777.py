@@ -16,6 +16,7 @@
 
 import time
 import os
+import struct
 import unittest
 import logging
 
@@ -24,7 +25,6 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettings
-from chirp.util import StringStruct as struct
 
 LOG = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ struct {
 } settings2;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 BLOCK_SIZE = 0x08
 UPLOAD_BLOCKS = [list(range(0x0000, 0x0110, 8)),
                  list(range(0x02b0, 0x02c0, 8)),
@@ -98,9 +98,9 @@ def _h777_enter_programming_mode(radio):
     serial = radio.pipe
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         time.sleep(0.1)
-        serial.write("PROGRAM")
+        serial.write(b"PROGRAM")
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -111,12 +111,12 @@ def _h777_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("P3107"):
+    if not ident.startswith(b"P3107"):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -133,7 +133,7 @@ def _h777_enter_programming_mode(radio):
 def _h777_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -141,8 +141,8 @@ def _h777_exit_programming_mode(radio):
 def _h777_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, BLOCK_SIZE)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -167,8 +167,8 @@ def _h777_read_block(radio, block_addr, block_size):
 def _h777_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
-    data = radio.get_mmap()[block_addr:block_addr + 8]
+    cmd = struct.pack(">cHb", b'W', block_addr, BLOCK_SIZE)
+    data = radio.get_mmap().get_byte_compatible()[block_addr:block_addr + 8]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -186,7 +186,7 @@ def do_download(radio):
     LOG.debug("download")
     _h777_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -206,7 +206,7 @@ def do_download(radio):
 
     _h777_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -245,6 +245,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-888"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     ALIASES = [ArcshellAR5, ArcshellAR6]
 
