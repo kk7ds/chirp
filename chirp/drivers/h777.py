@@ -16,7 +16,6 @@
 
 import time
 import os
-import struct
 import unittest
 import logging
 
@@ -25,6 +24,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettings
+from chirp.util import StringStruct as struct
 
 LOG = logging.getLogger(__name__)
 
@@ -74,9 +74,9 @@ struct {
 
 CMD_ACK = "\x06"
 BLOCK_SIZE = 0x08
-UPLOAD_BLOCKS = [range(0x0000, 0x0110, 8),
-                 range(0x02b0, 0x02c0, 8),
-                 range(0x0380, 0x03e0, 8)]
+UPLOAD_BLOCKS = [list(range(0x0000, 0x0110, 8)),
+                 list(range(0x02b0, 0x02c0, 8)),
+                 list(range(0x0380, 0x03e0, 8))]
 
 # TODO: Is it 1 watt?
 H777_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
@@ -537,7 +537,7 @@ class H777Radio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
