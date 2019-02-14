@@ -44,7 +44,7 @@ class FT857Radio(ft817.FT817Radio):
         0xff: "Cross",
         0x00: "",
     }
-    TMODES_REV = dict(zip(TMODES.values(), TMODES.keys()))
+    TMODES_REV = dict(list(zip(list(TMODES.values()), list(TMODES.keys()))))
 
     CROSS_MODES = {
         0x01: "->Tone",
@@ -56,7 +56,7 @@ class FT857Radio(ft817.FT817Radio):
         0x09: "DTCS->Tone",
         0x0a: "DTCS->DTCS",
     }
-    CROSS_MODES_REV = dict(zip(CROSS_MODES.values(), CROSS_MODES.keys()))
+    CROSS_MODES_REV = dict(list(zip(list(CROSS_MODES.values()), list(CROSS_MODES.keys()))))
 
     _memsize = 7341
     # block 9 (140 Bytes long) is to be repeted 40 times
@@ -314,13 +314,13 @@ class FT857Radio(ft817.FT817Radio):
 
     """
 
-    _CALLSIGN_CHARSET = [chr(x) for x in range(ord("0"), ord("9") + 1) +
-                         range(ord("A"), ord("Z") + 1)] + [" ", "/"]
-    _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
-                                 range(0, len(_CALLSIGN_CHARSET))))
+    _CALLSIGN_CHARSET = [chr(x) for x in list(range(ord("0"), ord("9") + 1)) +
+                         list(range(ord("A"), ord("Z") + 1))] + [" ", "/"]
+    _CALLSIGN_CHARSET_REV = dict(list(zip(_CALLSIGN_CHARSET,
+                                 list(range(0, len(_CALLSIGN_CHARSET))))))
     _BEACON_CHARSET = _CALLSIGN_CHARSET + ["+", "."]
-    _BEACON_CHARSET_REV = dict(zip(_BEACON_CHARSET,
-                               range(0, len(_BEACON_CHARSET))))
+    _BEACON_CHARSET_REV = dict(list(zip(_BEACON_CHARSET,
+                               list(range(0, len(_BEACON_CHARSET))))))
 
     # WARNING Index are hard wired in memory management code !!!
     SPECIAL_MEMORIES = {
@@ -383,8 +383,8 @@ class FT857Radio(ft817.FT817Radio):
 
     SPECIAL_MEMORIES.update(SPECIAL_PMS)
 
-    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
-                                    SPECIAL_MEMORIES.keys()))
+    SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
+                                    list(SPECIAL_MEMORIES.keys()))))
 
     FILTERS = ["CFIL", "FIL1", "FIL2"]
     PROGRAMMABLEOPTIONS = [
@@ -461,8 +461,8 @@ class FT857Radio(ft817.FT817Radio):
         rf.has_cross = True
         rf.has_ctone = True
         rf.has_rx_dtcs = True
-        rf.valid_tmodes = self.TMODES_REV.keys()
-        rf.valid_cross_modes = self.CROSS_MODES_REV.keys()
+        rf.valid_tmodes = list(self.TMODES_REV.keys())
+        rf.valid_cross_modes = list(self.CROSS_MODES_REV.keys())
         return rf
 
     def _get_duplex(self, mem, _mem):
@@ -1132,8 +1132,8 @@ class FT857USRadio(FT857Radio):
     SPECIAL_MEMORIES = dict(FT857Radio.SPECIAL_MEMORIES)
     SPECIAL_MEMORIES.update(SPECIAL_60M)
 
-    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
-                                    SPECIAL_MEMORIES.keys()))
+    SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
+                                    list(SPECIAL_MEMORIES.keys()))))
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
     def _get_special_60m(self, number):
@@ -1174,10 +1174,10 @@ class FT857USRadio(FT857Radio):
         self._set_memory(mem, _mem)
 
     def get_memory(self, number):
-        if number in self.SPECIAL_60M.keys():
+        if number in list(self.SPECIAL_60M.keys()):
             return self._get_special_60m(number)
         elif number < 0 and \
-                self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
+                self.SPECIAL_MEMORIES_REV[number] in list(self.SPECIAL_60M.keys()):
             # I can't stop delete operation from loosing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
@@ -1185,7 +1185,7 @@ class FT857USRadio(FT857Radio):
             return FT857Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.number in self.SPECIAL_60M.values():
+        if memory.number in list(self.SPECIAL_60M.values()):
             return self._set_special_60m(memory)
         else:
             return FT857Radio.set_memory(self, memory)
