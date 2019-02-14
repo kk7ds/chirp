@@ -75,11 +75,11 @@ for i in range(1, 6):
     IC208_SPECIAL.append("%iA" % i)
     IC208_SPECIAL.append("%iB" % i)
 
-CHARSET = dict(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f], " ()*+-/") +
-               zip(range(0x10, 0x1a), "0123456789") +
+CHARSET = dict(list(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f], " ()*+-/")) +
+               list(zip(list(range(0x10, 0x1a)), "0123456789")) +
                [(0x1c, '|'), (0x1d, '=')] +
-               zip(range(0x21, 0x3b), "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
-CHARSET_REV = dict(zip(CHARSET.values(), CHARSET.keys()))
+               list(zip(list(range(0x21, 0x3b)), "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
+CHARSET_REV = dict(list(zip(list(CHARSET.values()), list(CHARSET.keys()))))
 
 
 def get_name(_mem):
@@ -150,7 +150,7 @@ class IC208Radio(icf.IcomCloneModeRadio):
                           (230000000, 550000000),
                           (810000000, 999995000)]
         rf.valid_special_chans = ["C1", "C2"] + sorted(IC208_SPECIAL)
-        rf.valid_characters = "".join(CHARSET.values())
+        rf.valid_characters = "".join(list(CHARSET.values()))
         return rf
 
     def get_raw_memory(self, number):
