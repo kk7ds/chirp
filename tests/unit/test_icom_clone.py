@@ -52,7 +52,7 @@ class BaseIcomCloneTest():
 
 
     def test_sync_in(self):
-        test_file = '%s.img' % self.RADIO_IDENT
+        test_file = self.IMAGE_FILE
         self.load_from_test_image(test_file)
         self.radio.sync_in()
 
@@ -95,7 +95,7 @@ class TestAdapterMeta(type):
 
 
 test_file_glob = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'images',
+                              '..', 'images',
                               'Icom_*.img')
 import sys
 for image_file in glob.glob(test_file_glob):
@@ -114,4 +114,4 @@ for image_file in glob.glob(test_file_glob):
     sys.modules[__name__].__dict__[class_name] = \
         TestAdapterMeta(class_name,
                         (BaseIcomCloneTest, unittest.TestCase),
-                        dict(RADIO_IDENT=base))
+                        dict(RADIO_IDENT=base, IMAGE_FILE=image_file))
