@@ -90,10 +90,13 @@ class RadioSkipper(unittest.TestCase):
         raise unittest.SkipTest('Running in py3 and driver is not supported')
 
 
-def load_tests(loader, tests, pattern):
-    suite = unittest.TestSuite()
+def load_tests(loader, tests, pattern, suite=None):
+    if not suite:
+        suite = unittest.TestSuite()
 
-    images = glob.glob("tests/images/*.img")
+    base = os.path.dirname(os.path.abspath(__file__))
+    base = os.path.join(base, 'images')
+    images = glob.glob(os.path.join(base, "*.img"))
     tests = [os.path.splitext(os.path.basename(img))[0] for img in images]
 
     if pattern == 'test*.py':
@@ -101,7 +104,7 @@ def load_tests(loader, tests, pattern):
         pattern = None
 
     for test in tests:
-        image = os.path.join('tests', 'images', '%s.img' % test)
+        image = os.path.join(base, '%s.img' % test)
         try:
             rclass = directory.get_radio(test)
         except Exception:

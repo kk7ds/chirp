@@ -217,8 +217,7 @@ def safe_import_drivers():
     for driver_file in driver_files:
         module, ext = os.path.splitext(driver_file)
         driver_module = os.path.basename(module)
-        module = 'chirp.drivers.%s' % driver_module
         try:
-            __import__(module)
+            __import__('chirp.drivers.%s' % driver_module)
         except Exception as e:
             print('Failed to import %s: %s' % (module, e))
