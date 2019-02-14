@@ -217,8 +217,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     """
     _CALLSIGN_CHARSET = [chr(x) for x in list(range(ord("0"), ord("9") + 1)) +
                          list(range(ord("A"), ord("Z") + 1)) + [ord(" ")]]
-    _CALLSIGN_CHARSET_REV = dict(list(zip(_CALLSIGN_CHARSET,
-                                     list(range(0, len(_CALLSIGN_CHARSET))))))
+    _CALLSIGN_CHARSET_REV = dict(
+        list(zip(_CALLSIGN_CHARSET,
+                 list(range(0, len(_CALLSIGN_CHARSET))))))
 
     # WARNING Index are hard wired in memory management code !!!
     SPECIAL_MEMORIES = {
@@ -272,7 +273,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     SPECIAL_MEMORIES.update(SPECIAL_PMS)
 
     SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
-                                    list(SPECIAL_MEMORIES.keys()))))
+                                         list(SPECIAL_MEMORIES.keys()))))
 
     @classmethod
     def get_prompts(cls):
@@ -627,8 +628,10 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         if not wasvalid:
             _mem.set_raw("\x00" * (_mem.size() / 8))    # clean up
 
-        self._memobj.visible[(mem.number - 1) // 8] |= 1 << (mem.number - 1) % 8
-        self._memobj.filled[(mem.number - 1) // 8] |= 1 << (mem.number - 1) % 8
+        self._memobj.visible[(mem.number - 1) // 8] |= (
+            1 << (mem.number - 1) % 8)
+        self._memobj.filled[(mem.number - 1) // 8] |= (
+            1 << (mem.number - 1) % 8)
         self._set_memory(mem, _mem)
 
     def _get_memory(self, mem, _mem):
@@ -1142,7 +1145,7 @@ class FT817NDUSRadio(FT817Radio):
     SPECIAL_MEMORIES.update(SPECIAL_60M)
 
     SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
-                                    list(SPECIAL_MEMORIES.keys()))))
+                                         list(SPECIAL_MEMORIES.keys()))))
 
     def _get_special_60m(self, number):
         mem = chirp_common.Memory()
@@ -1183,8 +1186,9 @@ class FT817NDUSRadio(FT817Radio):
     def get_memory(self, number):
         if number in list(self.SPECIAL_60M.keys()):
             return self._get_special_60m(number)
-        elif number < 0 and \
-                self.SPECIAL_MEMORIES_REV[number] in list(self.SPECIAL_60M.keys()):
+        elif (number < 0 and
+              self.SPECIAL_MEMORIES_REV[number] in
+              list(self.SPECIAL_60M.keys())):
             # I can't stop delete operation from loosing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])

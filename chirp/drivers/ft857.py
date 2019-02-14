@@ -56,7 +56,8 @@ class FT857Radio(ft817.FT817Radio):
         0x09: "DTCS->Tone",
         0x0a: "DTCS->DTCS",
     }
-    CROSS_MODES_REV = dict(list(zip(list(CROSS_MODES.values()), list(CROSS_MODES.keys()))))
+    CROSS_MODES_REV = dict(list(zip(list(CROSS_MODES.values()),
+                                    list(CROSS_MODES.keys()))))
 
     _memsize = 7341
     # block 9 (140 Bytes long) is to be repeted 40 times
@@ -384,7 +385,7 @@ class FT857Radio(ft817.FT817Radio):
     SPECIAL_MEMORIES.update(SPECIAL_PMS)
 
     SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
-                                    list(SPECIAL_MEMORIES.keys()))))
+                                         list(SPECIAL_MEMORIES.keys()))))
 
     FILTERS = ["CFIL", "FIL1", "FIL2"]
     PROGRAMMABLEOPTIONS = [
@@ -1133,7 +1134,7 @@ class FT857USRadio(FT857Radio):
     SPECIAL_MEMORIES.update(SPECIAL_60M)
 
     SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
-                                    list(SPECIAL_MEMORIES.keys()))))
+                                         list(SPECIAL_MEMORIES.keys()))))
 
     # this is identical to the one in FT817ND_US_Radio but we inherit from 857
     def _get_special_60m(self, number):
@@ -1176,8 +1177,9 @@ class FT857USRadio(FT857Radio):
     def get_memory(self, number):
         if number in list(self.SPECIAL_60M.keys()):
             return self._get_special_60m(number)
-        elif number < 0 and \
-                self.SPECIAL_MEMORIES_REV[number] in list(self.SPECIAL_60M.keys()):
+        elif number < 0 and (
+                self.SPECIAL_MEMORIES_REV[number] in
+                list(self.SPECIAL_60M.keys())):
             # I can't stop delete operation from loosing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
