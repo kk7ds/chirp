@@ -25,23 +25,28 @@ class TestAdapterMeta(type):
 class TestAdapter(unittest.TestCase):
     RADIO_CLASS = None
     SOURCE_IMAGE = None
+    testwrapper = None
 
     def shortDescription(self):
         test = self.id().split('.')[-1].replace('test_', '').replace('_', ' ')
         return 'Testing %s %s' % (self.RADIO_CLASS.get_name(), test)
 
-    def setUp(self):
-        self._out = run_tests.TestOutputANSI()
-        self.testimage = tempfile.mktemp('.img')
-        shutil.copy(self.SOURCE_IMAGE, self.testimage)
+    @classmethod
+    def setUpClass(cls):
+        if not cls.testwrapper:
+            # Initialize the radio once per class invocation to save
+            # bitwise parse time
+            cls.testimage = tempfile.mktemp('.img')
+            shutil.copy(cls.SOURCE_IMAGE, cls.testimage)
+            cls.testwrapper = run_tests.TestWrapper(cls.RADIO_CLASS,
+                                                    cls.testimage)
 
-    def tearDown(self):
-        os.remove(self.testimage)
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.testimage)
 
     def _runtest(self, test):
-        tw = run_tests.TestWrapper(self.RADIO_CLASS,
-                                   self.testimage)
-        testcase = test(tw)
+        testcase = test(self.testwrapper)
         testcase.prepare()
         try:
             testcase.run()
@@ -74,7 +79,7 @@ class TestAdapter(unittest.TestCase):
 
 def _get_sub_devices(rclass, testimage):
     try:
-        tw = run_tests.TestWrapper(rclass, '/etc/localtime')
+        tw = run_tests.TestWrapper(rclass, None)
     except Exception as e:
         tw = run_tests.TestWrapper(rclass, testimage)
 
