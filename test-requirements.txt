@@ -1,3 +1,4 @@
 mock
 mox3
 pytest
+pytest-xdist
