@@ -199,6 +199,8 @@ class TestCase:
             tx_mode, rx_mode = a.cross_mode.split("->")
 
         for k, v in list(a.__dict__.items()):
+            if ignore and k in ignore:
+                continue
             if k == "power":
                 continue  # FIXME
             elif k == "immutable":
