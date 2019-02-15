@@ -13,11 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import bytes
 import time
 import os
 import logging
 from textwrap import dedent
 
+from chirp import bitwise
 from chirp import chirp_common, util, memmap, errors
 
 LOG = logging.getLogger(__name__)
@@ -180,19 +182,40 @@ class YaesuChecksum:
         else:
             self._address = stop + 1
 
+    @staticmethod
+    def _asbytes(mmap):
+        if hasattr(mmap, 'get_byte_compatible'):
+            return mmap.get_byte_compatible()
+        elif isinstance(mmap, bytes):
+            # NOTE: this won't work for update(), but nothing should be calling
+            # this with a literal expecting that to work
+            return memmap.MemoryMapBytes(bytes(mmap))
+        elif isinstance(mmap, str):
+            # NOTE: this won't work for update(), but nothing should be calling
+            # this with a literal expecting that to work
+            return memmap.MemoryMap(
+                bitwise.string_straight_encode(mmap)).get_byte_compatible()
+        else:
+            raise TypeError('Unable to convert %s to bytes' % (
+                type(mmap).__name__))
+
     def get_existing(self, mmap):
         """Return the existing checksum in mmap"""
-        return ord(mmap[self._address])
+        return self._asbytes(mmap)[self._address][0]
 
     def get_calculated(self, mmap):
         """Return the calculated value of the checksum"""
+        mmap = self._asbytes(mmap)
         cs = 0
         for i in range(self._start, self._stop+1):
-            cs += ord(mmap[i])
+            # NOTE: mmap[i] returns a slice'd bytes, not an int like a
+            # bytes does
+            cs += mmap[i][0]
         return cs % 256
 
     def update(self, mmap):
         """Update the checksum with the data in @mmap"""
+        mmap = self._asbytes(mmap)
         mmap[self._address] = self.get_calculated(mmap)
 
     def __str__(self):
