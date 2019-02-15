@@ -493,7 +493,7 @@ class VX8BankModel(chirp_common.BankModel):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\x00" * (mem.size() / 8))
+    mem.set_raw("\x00" * (mem.size() // 8))
     mem.unknown1 = 0x05
 
 
@@ -1421,7 +1421,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
