@@ -16,6 +16,7 @@
 
 """FT817 - FT817ND - FT817ND/US management module"""
 
+from builtins import bytes
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, util, memmap, errors, directory, bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -37,6 +38,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FT-817"""
     BAUD_RATE = 9600
     MODEL = "FT-817"
+    NEEDS_COMPAT_SERIAL = False
     _model = ""
     _US_model = False
 
@@ -305,7 +307,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             if data:
                 break
             time.sleep(0.5)
-        if len(data) == block + 2 and data[0] == chr(blocknum):
+        if len(data) == block + 2 and data[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, block)
             if checksum.get_existing(data) != \
                     checksum.get_calculated(data):
@@ -334,7 +336,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         start = time.time()
 
-        data = ""
+        data = bytes(b"")
         blocks = 0
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
@@ -348,7 +350,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 repeat = 1
             for _i in range(0, repeat):
                 data += self._read(block, blocks, blocks == nblocks - 1)
-                self.pipe.write(chr(CMD_ACK))
+                self.pipe.write(bytes([CMD_ACK]))
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
@@ -366,7 +368,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         LOG.info("Clone completed in %i seconds" % (time.time() - start))
 
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
         delay = 0.5
@@ -377,6 +379,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         status = chirp_common.Status()
         status.msg = _("Cloning to radio")
         status.max = len(self._block_lengths) + 39
+        mmap = self.get_mmap().get_byte_compatible()
         for block in self._block_lengths:
             if blocks == 8:
                 # repeated read of 40 block same size (memory area)
@@ -390,16 +393,16 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                           (blocks, pos, pos + block))
                 LOG.debug(util.hexprint(chr(blocks)))
                 LOG.debug(util.hexprint(self.get_mmap()[pos:pos + block]))
-                LOG.debug(util.hexprint(chr(checksum.get_calculated(
-                    self.get_mmap()))))
-                self.pipe.write(chr(blocks))
-                self.pipe.write(self.get_mmap()[pos:pos + block])
-                self.pipe.write(chr(checksum.get_calculated(self.get_mmap())))
+                LOG.debug(util.hexprint(chr(checksum.get_calculated(mmap))))
+                self.pipe.write(bytes([blocks]))
+                self.pipe.write(mmap[pos:pos + block])
+                self.pipe.write(bytes([checksum.get_calculated(
+                    self.get_mmap())]))
                 buf = self.pipe.read(1)
-                if not buf or buf[0] != chr(CMD_ACK):
+                if not buf or buf[0] != CMD_ACK:
                     time.sleep(delay)
                     buf = self.pipe.read(1)
-                if not buf or buf[0] != chr(CMD_ACK):
+                if not buf or buf[0] != CMD_ACK:
                     LOG.debug(util.hexprint(buf))
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
