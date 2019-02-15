@@ -28,13 +28,13 @@ CMD_ACK = 0x06
 
 
 def _safe_read(pipe, count):
-    buf = ""
+    buf = bytes(b"")
     first = True
     for _i in range(0, 60):
         buf += pipe.read(count - len(buf))
         # LOG.debug("safe_read: %i/%i\n" % (len(buf), count))
         if buf:
-            if first and buf[0] == chr(CMD_ACK):
+            if first and buf[0] == CMD_ACK:
                 # LOG.debug("Chewed an ack")
                 buf = buf[1:]  # Chew an echo'd ack if using a 2-pin cable
             first = False
@@ -47,7 +47,7 @@ def _safe_read(pipe, count):
 def _chunk_read(pipe, count, status_fn):
     timer = time.time()
     block = 32
-    data = ""
+    data = bytes(b"")
     while len(data) < count:
         # Don't read past the end of our block if we're not on a 32-byte
         # boundary
@@ -56,7 +56,7 @@ def _chunk_read(pipe, count, status_fn):
         if chunk:
             timer = time.time()
             data += chunk
-            if data[0] == chr(CMD_ACK):
+            if data[0] == CMD_ACK:
                 data = data[1:]  # Chew an echo'd ack if using a 2-pin cable
         # LOG.debug("Chewed an ack")
         if time.time() - timer > 2:
@@ -81,7 +81,7 @@ def __clone_in(radio):
 
     start = time.time()
 
-    data = ""
+    data = bytes(b"")
     blocks = 0
     for block in radio._block_lengths:
         blocks += 1
@@ -89,7 +89,7 @@ def __clone_in(radio):
             chunk = _chunk_read(pipe, block, radio.status_fn)
         else:
             chunk = _safe_read(pipe, block)
-            pipe.write(chr(CMD_ACK))
+            pipe.write(bytes([CMD_ACK]))
         if not chunk:
             raise errors.RadioError("No response from radio")
         if radio.status_fn:
@@ -102,7 +102,7 @@ def __clone_in(radio):
 
     LOG.debug("Clone completed in %i seconds" % (time.time() - start))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _clone_in(radio):
@@ -145,18 +145,19 @@ def __clone_out(radio):
 
     blocks = 0
     pos = 0
+    mmap = radio.get_mmap().get_byte_compatible()
     for block in radio._block_lengths:
         blocks += 1
         if blocks != len(radio._block_lengths):
             LOG.debug("Sending %i-%i" % (pos, pos+block))
-            pipe.write(radio.get_mmap()[pos:pos+block])
+            pipe.write(mmap[pos:pos+block])
             buf = pipe.read(1)
-            if buf and buf[0] != chr(CMD_ACK):
+            if buf and buf[0] != CMD_ACK:
                 buf = pipe.read(block)
-            if not buf or buf[-1] != chr(CMD_ACK):
+            if not buf or buf[-1] != CMD_ACK:
                 raise Exception("Radio did not ack block %i" % blocks)
         else:
-            _chunk_write(pipe, radio.get_mmap()[pos:],
+            _chunk_write(pipe, mmap[pos:],
                          radio.status_fn, radio._block_size)
         pos += block
 
@@ -230,6 +231,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     _block_size = 8
 
     VENDOR = "Yaesu"
+    NEEDS_COMPAT_SERIAL = False
     _model = "ABCDE"
 
     @classmethod
