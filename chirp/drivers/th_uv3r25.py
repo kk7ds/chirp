@@ -159,7 +159,7 @@ class TYTUV3R25Radio(TYTUV3RRadio):
 
         if mem.empty:
             self._memobj.emptyflags[byte] |= bit
-            _mem.set_raw("\xFF" * 16)
+            _mem.set_raw("\xFF" * 20)
             return
 
         self._memobj.emptyflags[byte] &= ~bit
