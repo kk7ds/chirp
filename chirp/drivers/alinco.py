@@ -281,6 +281,7 @@ class DRx35Radio(AlincoStyleRadio):
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_dtcs_polarity = False
+        rf.can_delete = False
         rf.valid_tuning_steps = STEPS
         rf.valid_name_length = 7
         rf.valid_power_levels = self._power_levels
