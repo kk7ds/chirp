@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
 import os
 import logging
 
@@ -22,6 +21,7 @@ from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.settings import RadioSettingValueString, RadioSettings
+from chirp.util import StringStruct as struct
 
 LOG = logging.getLogger(__name__)
 
@@ -188,7 +188,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         except errors.RadioError:
             self.pipe.write("\x45")
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to download from radio: %s" % e)
         self.process_mmap()
 
@@ -201,7 +201,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         except errors.RadioError:
             self.pipe.write("\x45")
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to upload to radio: %s" % e)
 
     def get_raw_memory(self, number):
