@@ -93,6 +93,9 @@ TUNING_STEPS = [
     # Need to fix drivers using this list as an index!
     9.0, 1.0, 2.5,
 ]
+# These are the default for RadioFeatures.valid_tuning_steps
+COMMON_TUNING_STEPS = [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+
 
 SKIP_VALUES = ["", "S", "P"]
 
@@ -828,7 +831,7 @@ class RadioFeatures:
                   "Supported tone squelch modes")
         self.init("valid_duplexes", ["", "+", "-"],
                   "Supported duplex modes")
-        self.init("valid_tuning_steps", list(TUNING_STEPS),
+        self.init("valid_tuning_steps", list(COMMON_TUNING_STEPS),
                   "Supported tuning steps")
         self.init("valid_bands", [],
                   "Supported frequency ranges")
