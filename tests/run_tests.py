@@ -192,7 +192,7 @@ class TestCase:
     def cleanup(self):
         pass
 
-    def compare_mem(self, a, b):
+    def compare_mem(self, a, b, ignore=None):
         rf = self._wrapper.do("get_features")
 
         if a.tmode == "Cross":
@@ -565,9 +565,9 @@ class TestCaseEdges(TestCase):
 
     def do_oddsteps(self, rf):
         odd_steps = {
-            145: [145.85625, 145.86250],
-            445: [445.85625, 445.86250],
-            862: [862.73125, 862.73750],
+            145000000: [145856250, 145862500],
+            445000000: [445856250, 445862500],
+            862000000: [862731250, 862737500],
             }
 
         m = self._mem(rf)
@@ -577,14 +577,15 @@ class TestCaseEdges(TestCase):
                 if band < low or band > high:
                     continue
                 for testfreq in totest:
-                    if chirp_common.required_step(testfreq) not in\
-                            rf.valid_tuning_steps:
+                    step = chirp_common.required_step(testfreq)
+                    if step not in rf.valid_tuning_steps:
                         continue
 
                     m.freq = testfreq
+                    m.tuning_step = step
                     self._wrapper.do("set_memory", m)
                     n = self._wrapper.do("get_memory", m.number)
-                    self.compare_mem(m, n)
+                    self.compare_mem(m, n, ignore=['tuning_step'])
 
     def do_empty_to_not(self, rf):
         firstband = rf.valid_bands[0]
