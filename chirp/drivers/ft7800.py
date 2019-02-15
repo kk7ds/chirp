@@ -30,7 +30,7 @@ from collections import defaultdict
 
 LOG = logging.getLogger(__name__)
 
-ACK = chr(0x06)
+ACK = 0x06
 
 MEM_FORMAT = """
 #seekto 0x002A;
@@ -164,7 +164,7 @@ DTMFCHARSET = list("0123456789ABCD*#")
 
 def _send(ser, data):
     for i in data:
-        ser.write(i)
+        ser.write(bytes([i]))
         time.sleep(0.002)
     echo = ser.read(len(data))
     if echo != data:
@@ -172,9 +172,9 @@ def _send(ser, data):
 
 
 def _download(radio):
-    data = ""
+    data = bytes(b"")
 
-    chunk = ""
+    chunk = bytes(b"")
     for i in range(0, 30):
         chunk += radio.pipe.read(radio._block_lengths[0])
         if chunk:
@@ -184,7 +184,7 @@ def _download(radio):
         raise Exception("Failed to read header (%i)" % len(chunk))
     data += chunk
 
-    _send(radio.pipe, ACK)
+    _send(radio.pipe, bytes([ACK]))
 
     for i in range(0, radio._block_lengths[1], radio._block_size):
         chunk = radio.pipe.read(radio._block_size)
@@ -201,19 +201,20 @@ def _download(radio):
             radio.status_fn(status)
 
     data += radio.pipe.read(1)
-    _send(radio.pipe, ACK)
+    _send(radio.pipe, bytes([ACK]))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
     cur = 0
+    mmap = radio.get_mmap().get_byte_compatible()
     for block in radio._block_lengths:
         for _i in range(0, block, radio._block_size):
             length = min(radio._block_size, block)
             # LOG.debug("i=%i length=%i range: %i-%i" %
             #           (i, length, cur, cur+length))
-            _send(radio.pipe, radio.get_mmap()[cur:cur+length])
+            _send(radio.pipe, mmap[cur:cur+length])
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
             cur += length
@@ -257,6 +258,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODES = list(MODES)
+    NEEDS_COMPAT_SERIAL = False
     _block_size = 64
 
     POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
