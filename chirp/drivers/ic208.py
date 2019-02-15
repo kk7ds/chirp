@@ -75,10 +75,12 @@ for i in range(1, 6):
     IC208_SPECIAL.append("%iA" % i)
     IC208_SPECIAL.append("%iB" % i)
 
-CHARSET = dict(list(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f], " ()*+-/")) +
+CHARSET = dict(list(zip([0x00, 0x08, 0x09, 0x0a, 0x0b, 0x0d, 0x0f],
+                        " ()*+-/")) +
                list(zip(list(range(0x10, 0x1a)), "0123456789")) +
                [(0x1c, '|'), (0x1d, '=')] +
-               list(zip(list(range(0x21, 0x3b)), "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
+               list(zip(list(range(0x21, 0x3b)),
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 CHARSET_REV = dict(list(zip(list(CHARSET.values()), list(CHARSET.keys()))))
 
 
