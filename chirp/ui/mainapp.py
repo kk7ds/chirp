@@ -503,7 +503,7 @@ of file.
         if not emsg:
             self.do_open_live(radio, tempname="(" + _("Untitled") + ")")
         else:
-            d = inputdialog.ExceptionDialog(emsg)
+            d = inputdialog.ExceptionDialog(emsg, parent=self)
             d.run()
             d.destroy()
 
@@ -733,7 +733,7 @@ of file.
                                           timeout=0.25)
             ser.flushInput()
         except serial.SerialException as e:
-            d = inputdialog.ExceptionDialog(e)
+            d = inputdialog.ExceptionDialog(e, parent=self)
             d.run()
             d.destroy()
             return
