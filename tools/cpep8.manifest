@@ -31,7 +31,6 @@
 ./chirp/drivers/ftm350.py
 ./chirp/drivers/generic_csv.py
 ./chirp/drivers/generic_tpe.py
-./chirp/drivers/generic_xml.py
 ./chirp/drivers/h777.py
 ./chirp/drivers/ic208.py
 ./chirp/drivers/ic2100.py
@@ -121,7 +120,6 @@
 ./chirp/ui/settingsedit.py
 ./chirp/ui/shiftdialog.py
 ./chirp/util.py
-./chirp/xml_ll.py
 ./chirpc
 ./chirpw
 ./locale/check_parameters.py
