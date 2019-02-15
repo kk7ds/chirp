@@ -984,7 +984,7 @@ class TestCaseClone(TestCase):
         if radio.NEEDS_COMPAT_SERIAL:
             radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
         else:
-            radio._mmap = memmap.MemoryMapBytes(b"\x00" * (1024 * 128))
+            radio._mmap = memmap.MemoryMapBytes(bytes(b"\x00") * (1024 * 128))
 
         error = None
         try:
