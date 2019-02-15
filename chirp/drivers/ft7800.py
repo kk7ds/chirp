@@ -321,7 +321,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Download finished in %i seconds" % (time.time() - start))
         self.check_checksums()
@@ -337,7 +337,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Upload finished in %i seconds" % (time.time() - start))
 
@@ -480,7 +480,7 @@ class FT7800BankModel(chirp_common.BankModel):
         index = memory.number - 1
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
-        _bitmap.bitmap[index / 32] |= (1 << ishft)
+        _bitmap.bitmap[index // 32] |= (1 << ishft)
         self.__m2b_cache[memory.number].append(bank.index)
         self.__b2m_cache[bank.index].append(memory.number)
 
@@ -490,11 +490,11 @@ class FT7800BankModel(chirp_common.BankModel):
         index = memory.number - 1
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
-        if not (_bitmap.bitmap[index / 32] & (1 << ishft)):
+        if not (_bitmap.bitmap[index // 32] & (1 << ishft)):
             raise Exception("Memory {num} is " +
                             "not in bank {bank}".format(num=memory.number,
                                                         bank=bank))
-        _bitmap.bitmap[index / 32] &= ~(1 << ishft)
+        _bitmap.bitmap[index // 32] &= ~(1 << ishft)
         self.__b2m_cache[bank.index].remove(memory.number)
         self.__m2b_cache[memory.number].remove(bank.index)
 
@@ -503,7 +503,7 @@ class FT7800BankModel(chirp_common.BankModel):
         upper = self._radio.get_features().memory_bounds[1]
         c = self._radio._memobj.bank_channels[bank.index]
         for i in range(0, upper):
-            _bitmap = c.bitmap[i / 32]
+            _bitmap = c.bitmap[i // 32]
             ishft = 31 - (i % 32)
             if _bitmap & (1 << ishft):
                 memories.append(i + 1)
@@ -766,7 +766,7 @@ class FT7800Radio(FTx800Radio):
                 oldval = getattr(_settings, setting)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -897,8 +897,8 @@ class FT8800Radio(FTx800Radio):
             set_freq(mem.offset, _mem, "split")
             return
 
-        val = int(mem.offset / 10000) / 5
-        for i in reversed(range(2, 6)):
+        val = int(mem.offset / 10000) // 5
+        for i in reversed(list(range(2, 6))):
             _mem.name[i] = (_mem.name[i] & 0x3F) | ((val & 0x03) << 6)
             val >>= 2
 
