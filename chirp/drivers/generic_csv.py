@@ -103,6 +103,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         rf.has_infinite_number = True
         rf.has_nostep_tuning = True
         rf.has_comment = True
+        rf.can_odd_split = True
 
         rf.valid_modes = list(chirp_common.MODES)
         rf.valid_tmodes = list(chirp_common.TONE_MODES)

@@ -36,7 +36,9 @@ class TestAdapter(unittest.TestCase):
         if not cls.testwrapper:
             # Initialize the radio once per class invocation to save
             # bitwise parse time
-            cls.testimage = tempfile.mktemp('.img')
+            # Do this for things like Generic_CSV, that demand it
+            _base, ext = os.path.splitext(cls.SOURCE_IMAGE)
+            cls.testimage = tempfile.mktemp(ext)
             shutil.copy(cls.SOURCE_IMAGE, cls.testimage)
             cls.testwrapper = run_tests.TestWrapper(cls.RADIO_CLASS,
                                                     cls.testimage)
@@ -101,15 +103,14 @@ def load_tests(loader, tests, pattern, suite=None):
 
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'images')
-    images = glob.glob(os.path.join(base, "*.img"))
-    tests = [os.path.splitext(os.path.basename(img))[0] for img in images]
+    images = glob.glob(os.path.join(base, "*"))
+    tests = {img: os.path.splitext(os.path.basename(img))[0] for img in images}
 
     if pattern == 'test*.py':
         # This default is meaningless for us
         pattern = None
 
-    for test in tests:
-        image = os.path.join(base, '%s.img' % test)
+    for image, test in tests.items():
         try:
             rclass = directory.get_radio(test)
         except Exception:

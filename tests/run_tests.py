@@ -268,7 +268,7 @@ class TestCaseCopyAll(TestCase):
         return "CopyAll"
 
     def prepare(self):
-        self._src = generic_csv.CSVRadio("images/csv.csv")
+        self._src = generic_csv.CSVRadio("images/Generic_CSV.csv")
 
     def run(self):
         src_rf = self._src.get_features()
@@ -443,9 +443,17 @@ class TestCaseBruteForce(TestCase):
                 continue
             if mode == "DV":
                 tmp = chirp_common.DVMemory()
-                ensure_urcall(tmp.dv_urcall)
-                ensure_rptcall(tmp.dv_rpt1call)
-                ensure_rptcall(tmp.dv_rpt2call)
+                try:
+                    ensure_urcall(tmp.dv_urcall)
+                    ensure_rptcall(tmp.dv_rpt1call)
+                    ensure_rptcall(tmp.dv_rpt2call)
+                except IndexError:
+                    if rf.requires_call_lists:
+                        raise
+                    else:
+                        # This radio may not do call lists at all,
+                        # so let it slide
+                        pass
             if mode == "FM" and freq_is_ok(tmp.freq + 100000000):
                 # Some radios don't support FM below approximately 30MHz,
                 # so jump up by 100MHz, if they support that
@@ -950,6 +958,11 @@ class TestCaseClone(TestCase):
     def _run(self, serial):
         error = None
         live = isinstance(self._wrapper._dst, chirp_common.LiveRadio)
+        clone = isinstance(self._wrapper._dst, chirp_common.CloneModeRadio)
+
+        if not clone and not live:
+            raise TestSkippedError('Does not support clone')
+
         try:
             radio = self._wrapper._dst.__class__(serial)
         except Exception as e:
@@ -1234,7 +1247,9 @@ class TestRunner:
     def run_rclass_image(self, rclass, image):
         rid = "%s_%s_" % (rclass.VENDOR, rclass.MODEL)
         rid = rid.replace("/", "_")
-        testimage = tempfile.mktemp(".img", rid)
+        # Do this for things like Generic_CSV, that demand it
+        _base, ext = os.path.splitext(image)
+        testimage = tempfile.mktemp(ext, rid)
         shutil.copy(image, testimage)
 
         try:
