@@ -313,7 +313,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
         rmem = self._memobj.memory[memory.number - 1]
 
         if memory.empty:
-            rmem.set_raw('\xFF' * (rmem.size() / 8))
+            rmem.set_raw('\xFF' * (rmem.size() // 8))
             return
 
         rmem.rxfreq = memory.freq / 10
