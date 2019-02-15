@@ -271,7 +271,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
         mem.freq = int(rmem.rxfreq) * 10
 
         # A blank (0MHz) or 0xFFFFFFFF frequency is considered empty
-        if mem.freq == 0 and rmem.rxfreq.get_raw() == '\xFF\xFF\xFF\xFF':
+        if mem.freq == 0 or rmem.rxfreq.get_raw() == '\xFF\xFF\xFF\xFF':
             LOG.debug('empty channel %d', number)
             mem.freq = 0
             mem.empty = True
