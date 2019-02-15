@@ -397,6 +397,9 @@ class RadioSettingGroup(object):
         """Returns the list of elements"""
         return [self._elements[name] for name in self._element_order]
 
+    def __lt__(self, other):
+        return self._name < other._name
+
 
 class RadioSetting(RadioSettingGroup):
 
