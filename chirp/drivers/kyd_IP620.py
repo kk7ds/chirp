@@ -488,6 +488,8 @@ class IP620Radio(chirp_common.CloneModeRadio,
         self._set_tone(mem, _mem)
         _mem.power = mem.power == POWER_LEVELS[1]
 
+        for setting in ('lout', 'busy_loc', 'scan_add'):
+            setattr(_mem, setting, 0)
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
 

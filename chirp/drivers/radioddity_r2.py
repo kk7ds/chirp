@@ -331,6 +331,10 @@ class RadioddityR2Radio(chirp_common.CloneModeRadio):
         rf.has_ctone = True
         rf.has_cross = True
         rf.can_odd_split = False
+        # FIXME: Is this right? The get_memory() has no checking for
+        # deleted memories, but set_memory() used to reference a missing
+        # variable likely copied from another driver
+        rf.can_delete = False
         rf.valid_modes = MODE_LIST
         rf.valid_duplexes = ["", "-", "+", "off"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
@@ -496,10 +500,7 @@ class RadioddityR2Radio(chirp_common.CloneModeRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number - 1]
 
-        if mem.empty:
-            LOG.debug("initializing memory channel %d" % mem.number)
-            _mem.set_raw(BLANK_MEMORY)
-
+        LOG.warning('This driver may be broken for deleted memories')
         if mem.empty:
             return
 

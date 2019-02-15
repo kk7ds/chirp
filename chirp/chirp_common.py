@@ -729,6 +729,7 @@ class RadioFeatures:
         "has_sub_devices":      BOOLEAN,
         "memory_bounds":        (0, 0),
         "can_odd_split":        BOOLEAN,
+        "can_delete":           BOOLEAN,
 
         # D-STAR
         "requires_call_lists":  BOOLEAN,
@@ -857,7 +858,8 @@ class RadioFeatures:
         self.init("can_odd_split", False,
                   "Indicates that the radio can store an independent " +
                   "transmit frequency")
-
+        self.init("can_delete", True,
+                  "Indicates that the radio can delete memories")
         self.init("requires_call_lists", True,
                   "[D-STAR] Indicates that the radio requires all callsigns " +
                   "to be in the master list and cannot be stored " +

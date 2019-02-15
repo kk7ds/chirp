@@ -586,6 +586,41 @@ class TestCaseEdges(TestCase):
                     n = self._wrapper.do("get_memory", m.number)
                     self.compare_mem(m, n)
 
+    def do_empty_to_not(self, rf):
+        firstband = rf.valid_bands[0]
+        testfreq = firstband[0]
+        for loc in range(*rf.memory_bounds):
+            m = self._wrapper.do('get_memory', loc)
+            if m.empty:
+                m.empty = False
+                m.freq = testfreq
+                self._wrapper.do('set_memory', m)
+                m = self._wrapper.do('get_memory', loc)
+                if m.freq == testfreq:
+                    return
+                else:
+                    raise TestFailedError('Radio failed to set an empty '
+                                          'location (%i)' % loc)
+
+    def do_delete_memory(self, rf):
+        firstband = rf.valid_bands[0]
+        testfreq = firstband[0]
+        for loc in range(*rf.memory_bounds):
+            if loc == rf.memory_bounds[0]:
+                # Some radios will not allow you to delete the first memory
+                # /me glares at yaesu
+                continue
+            m = self._wrapper.do('get_memory', loc)
+            if not m.empty:
+                m.empty = True
+                self._wrapper.do('set_memory', m)
+                m = self._wrapper.do('get_memory', loc)
+                if not m.empty:
+                    raise TestFailedError('Radio refused to delete a memory '
+                                          'location (%i)' % loc)
+                else:
+                    return
+
     def run(self):
         rf = self._wrapper.do("get_features")
 
@@ -596,6 +631,9 @@ class TestCaseEdges(TestCase):
         self.do_bandedges(rf)
         self.do_oddsteps(rf)
         self.do_badname(rf)
+        if rf.can_delete:
+            self.do_empty_to_not(rf)
+            self.do_delete_memory(rf)
 
         return []
 

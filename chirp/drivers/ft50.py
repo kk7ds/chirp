@@ -281,7 +281,6 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
 
         if mem.empty:
             _flg.used = False
-            self._wipe_memory_banks(mem)
             return
 
         if (len(mem.name) == 0):
