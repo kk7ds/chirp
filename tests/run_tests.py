@@ -268,7 +268,9 @@ class TestCaseCopyAll(TestCase):
         return "CopyAll"
 
     def prepare(self):
-        self._src = generic_csv.CSVRadio("images/Generic_CSV.csv")
+        testbase = os.path.dirname(os.path.abspath(__file__))
+        source = os.path.join(testbase, 'images', 'Generic_CSV.csv')
+        self._src = generic_csv.CSVRadio(source)
 
     def run(self):
         src_rf = self._src.get_features()

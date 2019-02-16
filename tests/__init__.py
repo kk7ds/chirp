@@ -51,7 +51,11 @@ class TestAdapter(unittest.TestCase):
         testcase = test(self.testwrapper)
         testcase.prepare()
         try:
-            testcase.run()
+            failures = testcase.run()
+            if failures:
+                raise failures[0]
+        except run_tests.TestCrashError as e:
+            raise e.get_original_exception()
         except run_tests.TestSkippedError as e:
             raise unittest.SkipTest(str(e))
         finally:
