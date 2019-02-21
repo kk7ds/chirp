@@ -740,6 +740,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             "DTCS->DTCS"]
         rf.valid_skips = SKIP_VALUES
         rf.valid_dtcs_codes = DTCS
+        rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (0, self._upper)
 
         # power levels

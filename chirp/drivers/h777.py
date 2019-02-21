@@ -293,6 +293,8 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, 16)
         rf.valid_bands = [(400000000, 470000000)]
         rf.valid_power_levels = H777_POWER_LEVELS
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0,
+                                 50.0, 100.0]
 
         return rf
 

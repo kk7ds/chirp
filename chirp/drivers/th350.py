@@ -52,7 +52,7 @@ struct memory {
 char ident[32];
 u8 blank[16];
 struct memory vfo1;
-struct memory channels[99];
+struct memory channels[128];
 #seekto 0x0840;
 struct memory vfo3;
 struct memory vfo2;
@@ -63,7 +63,7 @@ u16 fm_presets[16];
 #seekto 0x0A30;
 struct {
   u8 name[5];
-} names[99];
+} names[128];
 
 #seekto 0x0D30;
 struct {
@@ -298,7 +298,7 @@ class Th350Radio(BaofengUVB5):
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_tuning_step = False
-        rf.memory_bounds = (1, 99)
+        rf.memory_bounds = (1, 128)
         return rf
 
     def sync_in(self):

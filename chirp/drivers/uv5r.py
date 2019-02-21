@@ -780,6 +780,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         rf.valid_power_levels = UV5R_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
+        rf.valid_tuning_steps = STEPS
 
         normal_bands = [self._vhf_range, self._uhf_range]
         rax_bands = [self._vhf_range, self._220_range]

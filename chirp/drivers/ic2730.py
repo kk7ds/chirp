@@ -25,11 +25,12 @@ from chirp import chirp_common, util, directory, bitwise, memmap
 # - weather channel alert
 MEM_FORMAT = """
 struct {
-  u24  freq;
+  u24  freq_flags:6
+       freq:18;
   u16  offset;
   u8   tune_step:4,
-       unknown5:3,
-       mode:1;
+       unknown5:2,
+       mode:2;
   u8   unknown6:2,
        rtone:6;
   u8   unknown7:2,
@@ -86,7 +87,7 @@ u16  mem_writes_count;
 TMODES = ["", "Tone", "??0", "TSQL", "??1", "DTCS", "TSQL-R", "DTCS-R",
        "DTC.OFF", "TON.DTC", "DTC.TSQ", "TON.TSQ"]
 DUPLEX = ["", "-", "+"]
-MODES = ["FM", "NFM"]
+MODES = ["FM", "NFM", "AM", "NAM"]
 DTCSP = ["NN", "NR", "RN", "RR"]
 
 AUTOREPEATER = ["OFF", "DUP", "DUP.TON"]
@@ -209,9 +210,19 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             mem.empty = True
             return mem
 
-        # Frequencies are stored as kHz/5
-        mem.freq = int(_mem.freq) * 5000
-        mem.offset = int(_mem.offset) * 5000
+        # _mem.freq is stored as a multiple of a tuning step
+        frequency_flags = int(_mem.freq_flags)
+        frequency_multiplier = 5000
+        offset_multiplier = 5000
+        if frequency_flags & 0x08:
+          frequency_multiplier = 6250
+        if frequency_flags & 0x01:
+          offset_multiplier = 6250
+        # flag of 0x10 is related to tuning step of 25./3, but it is not exact,
+        # so skip this for now
+
+        mem.freq = int(_mem.freq) * frequency_multiplier
+        mem.offset = int(_mem.offset) * offset_multiplier
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.tmode = TMODES[_mem.tmode]
@@ -257,8 +268,18 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         if was_empty:
             _wipe_memory(_mem, "\x00")
 
-        _mem.freq = mem.freq / 5000
-        _mem.offset = mem.offset / 5000
+        frequency_flags = 0x00
+        frequency_multiplier = 5000
+        offset_multiplier = 5000
+        if mem.freq % 5000 != 0 and mem.freq % 6250 == 0:
+          frequency_flags |= 0x08
+          frequency_multiplier = 6250
+        if mem.offset % 5000 != 0 and mem.offset % 6250 == 0:
+          frequency_flags |= 0x01
+          offset_multiplier = 6250
+        _mem.freq = mem.freq / frequency_multiplier
+        _mem.offset = mem.offset / offset_multiplier
+        _mem.freq_flags = frequency_flags
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)

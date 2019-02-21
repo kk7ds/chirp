@@ -162,6 +162,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         rf.memory_bounds = (0, 127)
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_bands = self.VALID_BANDS
+        rf.valid_tuning_steps = STEPS
 
         return rf
 
