@@ -331,6 +331,11 @@ class WP970I(baofeng_common.BaofengCommonHT):
             """))
         return rp
 
+    def get_features(self):
+        rf = baofeng_common.BaofengCommonHT.get_features(self)
+        rf.valid_tuning_steps = STEPS
+        return rf
+
     def process_mmap(self):
         """Process the mem map into the mem object"""
         self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
