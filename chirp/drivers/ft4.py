@@ -23,11 +23,9 @@ older Yaesu models.
 """
 import logging
 import struct
-from chirp import chirp_common, directory, memmap, bitwise, errors,  util
+from chirp import chirp_common, directory, memmap, bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueList, \
-    RadioSettingValueString, \
-    RadioSettings
+    RadioSettingValueList, RadioSettingValueString, RadioSettings
 
 LOG = logging.getLogger(__name__)
 
@@ -39,7 +37,7 @@ LOG = logging.getLogger(__name__)
 # each with a different purpose and format. Five groups consist of slots.
 # A slot describes a radio channel, and all slots have the same internal
 # format. Three of the groups consist of bitmaps, which all have the same
-# internal mapping. Name group, misc group, and DTMF digit group,
+# internal mapping. also groups for Name, misc, DTMF digits, and prog,
 # plus some unused groups.
 
 # Define the structures for each type of group here, but do not associate them
@@ -75,8 +73,9 @@ struct txfreq {
  bbcd freq[4];
 };
 
-//miscellaneous params. One 4-block group. (could be treated as 4 separate.)
+//miscellaneous params. One 4-block group.
 //"SMI": "Set Mode Index" of the radio keypad function used to set a parameter.
+//"SMI numbers on the FT-65 are different but the names in mem are the same.
 struct misc {
   u8  apo;        //SMI 01. 0==off, (1-24) is the number of half-hours.
   u8  arts_beep;  //SMI 02. 0==off, 1==inrange, 2==always
@@ -103,7 +102,7 @@ struct misc {
   u8  scan_lamp;  //SMI 33  0==off,1==on
   u8  unknown2;
   u8  use_cwid;   //SMI 7. 0==no, 1==yes
-  u8  unused1;    // possibly compander on FT_65
+  u8  compander;  // compander on FT_65
   // addr 2020
   u8  unknown3;
   u8  tx_save;    //SMI 41. 0==off, 1==on (addr==2021)
@@ -126,12 +125,13 @@ struct misc {
 };
 
 struct dtmfset {
- u8 digit[16];    //ASCII (*,#,0-9,A-D). (null terminated??)
+ u8 digit[16];    //ASCII (*,#,-,0-9,A-D). (dash-filled)
 };
 
 //one block with stuff for the programmable keys
+//supports 4 keys. FT-4 has only 2 keys. FT-65 has all 4.
 struct progs {
- u8 modes[8];     //should be array of 2-byte structs, but bitwise.py objects
+ u8 modes[8];     //should be array of 2-byte structs, but bitwise.py refuses
  u8 ndx[4];
  u8 unused[8];
 };
@@ -234,7 +234,7 @@ def sendcmd(pipe, cmd, response_len):
 
 def getblock(pipe, addr, _mmap):
     """
-    read a single 16-byte block from the radio
+    read a single 16-byte block from the radio.
     send the command and check the response
     returns the 16-byte bytearray
     """
@@ -403,10 +403,6 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 STEPS = [0, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 TONE_MODES = ["", "Tone", "TSQL",  "DTCS",  "DTCS-R",  "TSQL-R",   "Cross"]
 CROSS_MODES = ["DTCS->",  "DTCS->DTCS"]   # only the extras we need
-# The radio and the code support the additional cross modes, but
-# they are redundant with the extended tone modes, and they cause
-# the "BruteForce" unit test to fail.
-# CROSS_MODES += ["Tone->Tone", "->DTCS", "->Tone", "DTCS->DTCS", "Tone->"]
 
 DTMF_CHARS = "0123456789ABCD*#- "
 CW_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ "
@@ -484,7 +480,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = (
-            'Tested only by the developer and only on a single radio.'
+            'Tested only by the developer and only on a single radio.\n'
             ' Proceed at your own risk!'
             )
 
@@ -548,8 +544,10 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
-    # functions to handle complicated settings.
-    # callback for settng  byte arrays (DTMF[0-9], passwd, and CW_ID)
+    # There are about 40 settings and most are handled generically below.
+    # The few that are more complicated use these handlers instead.
+
+    # callback for setting  byte arrays (DTMF[0-9], passwd, and CW_ID)
     def apply_str_to_bytearray(self,  element, obj):
         lng = len(obj)
         strng = (element.value.get_value() + "                ")[:lng]
@@ -558,7 +556,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             obj[x] = bytes[x]
         return
 
-    def get_string_setting(self,  obj, valid_chars,  desc1, desc2, group):
+    def get_string_setting(self, obj, valid_chars, desc1, desc2, group):
         content = ''
         maxlen = len(obj)
         for x in range(0, maxlen):
@@ -568,8 +566,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rs.set_apply_callback(self.apply_str_to_bytearray, obj)
         group.append(rs)
 
-    def get_strset(self,   group, parm):
-        #   parm =(paramname, paramtitle,( handler,[handler params])).
+    def get_strset(self, group, parm):
+        #   parm =(paramname, paramtitle,(handler,[handler params])).
         objname, title, fparms = parm
         myparms = fparms[1]
         obj = getattr(self._memobj.settings,  objname)
@@ -585,36 +583,34 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 "dtmf_%i" % i, "DTMF Autodialer Memory %i" % i, group)
 
     def apply_P(self, element, pnum):
-        value = element.value
-        self.memobj.progkeys.modes[pnum * 2] = [0, 2][value]
+        self.memobj.progkeys.modes[pnum * 2] = [0, 2][element.value]
 
     def apply_Pmode(self, element, pnum):
-        value = element.value
-        self.memobj.progkeys.modes[pnum * 2 + 1] = value
+        self.memobj.progkeys.modes[pnum * 2 + 1] = element.value
 
     def apply_Pmem(self, element, pnum):
-        value = element.value
-        self.memobj.progkeys.ndx[pnum].func = value
+        self.memobj.progkeys.ndx[pnum] = element.value
 
     MEMLIST = ["%d" % i for i in range(1, MAX_MEM_SLOT)] + PMSNAMES
 
-    # return the setting for the programmable keys (P1 or P2)
+    # return the setting for the programmable keys (P1-P4)
     def get_progs(self, group, parm):
         _progkeys = self._memobj.progkeys
 
-        def get_prog(i, val_list, valndx, sname,  longname, apply):
+        def get_prog(i, val_list, valndx, sname, longname, apply):
             val = val_list[valndx]
             valuelist = RadioSettingValueList(val_list, val)
-            rs = RadioSetting(sname + str(i), longname + str(i),  valuelist)
+            rs = RadioSetting(sname + str(i), longname + str(i), valuelist)
             rs.set_apply_callback(apply, i)
             group.append(rs)
         for i in range(0, self.Pkeys):
-            get_prog(i + 1, ["unused",  "in use"],  _progkeys.modes[i * 2],
+            get_prog(i + 1, ["unused", "in use"],  _progkeys.modes[i * 2],
                      "P", "Programmable key ",  self.apply_P)
             get_prog(i + 1, SETMODES, _progkeys.modes[i * 2 + 1], "modeP",
                      "mode for Programmable key",  self.apply_Pmode)
             get_prog(i + 1, self.MEMLIST, _progkeys.ndx[i], "memP",
                      "mem for Programmable key",  self.apply_Pmem)
+    # ------------ End of special settings handlers.
 
     # list of group description tuples: (groupame,group title, [param list]).
     # A param is a tuple:
@@ -680,10 +676,10 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         ]
     # ----------------end of group_descriptions
 
-    # returns the current values of all the settings in the radio memory image,
-    # in the form of a RadioSettings list. First, use the group_descriptions
-    # list to create the groups and most of the params. Then, add params that
-    # require extra stuff.
+    # list of group description tuples: (groupame,group title, [param list]).
+    # A param is a tuple:
+    #  for a simple param: (paramname, paramtitle,[valuename list])
+    #  for a handler param: (paramname, paramtitle,( handler,[handler params]))
     def get_settings(self):
         _settings = self._memobj.settings
         groups = RadioSettings()
@@ -815,7 +811,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
 
     def encode_sql(self, mem, chan):
         """
-        examine CHIRP CSV columns tmode, cross_mode, and dcts_polarity
+        examine CHIRP CSV columns tmode and cross_mode
         and set the correct values for the radio sql_type, dcs codes,
         and ctcss codes. We set all four codes, and then zero out
         a code if needed when Tone or DCS is one-way
