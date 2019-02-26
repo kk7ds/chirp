@@ -1003,7 +1003,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
 class YaesuFT4Radio(YaesuSC35GenericRadio):
     MODEL = "FT-4XR"
     _basetype = BASETYPE_FT4
-#   _idents = [FT4_MODEL_FT4XR, FT4XE]  fixme:ignore validation check for now
     valid_bands = [
         (65000000, 108000000),    # broadcast FM, receive only
         (144000000, 148000000),    # VHF, US version, TX and RX
@@ -1018,6 +1017,8 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     Pkeys = 2     # number of programmable keys on the FT-4
     namelen = 6   # length of the mem name display on the FT-4 front-panel
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
+    legal_steps = list(STEP_CODE)
+    legal_steps.remove(6.25)       #should not remove if euro version
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1032,15 +1033,12 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
         "tx pwr", "tx save", "vfo.spl", "vox", "wfm.rcv",       #40-44
         "w/n.dev", "wx.alert"                                   #45-46
         ]
-    legal_steps = list(STEP_CODE)
-    legal_steps.remove(6.25)       #should not remove if euro version
 
 # don't register the FT-65 in the production version until it is tested
 # @directory.register
 class YaesuFT65Radio(YaesuSC35GenericRadio):
     MODEL = "FT-65R"
     _basetype = BASETYPE_FT65
-#   _idents = []  fixme:ignore validation check for now
     valid_bands = [
         (65000000, 108000000),    # broadcast FM, receive only
         (144000000, 148000000),    # VHF, US version, TX and RX
@@ -1055,6 +1053,8 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     Pkeys = 4     # number of programmable keys on the FT-65
     namelen = 8   # length of the mem name display on the FT-65 front panel
     id_str=b'IH-420\x00\x00\x00V100\x00\x00'
+    legal_steps = list(STEP_CODE)
+    legal_steps.remove(6.25)       #should not remove if euro version
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1067,8 +1067,6 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
         "step", "tot", "tx pwr", "tx save", "vfo.spl",             # 30-34
         "vox", "wfm.rcv", "wide/nar", "wx alert", "scramble"       # 35-39
         ]
-    legal_steps = list(STEP_CODE)
-    legal_steps.remove(6.25)       #should not remove if euro version
     def __init__(self):
         self.add_paramdesc("misc", ("compander", "Compander", ["ON", "OFF"]))
 
