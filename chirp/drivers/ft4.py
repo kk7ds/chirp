@@ -442,7 +442,11 @@ BASETYPE_FT65 = ["FT-65R"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
                 chirp_common.PowerLevel("Mid", watts=2.5),
                 chirp_common.PowerLevel("Low", watts=0.5)]
-STEPS = [0, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+
+# these steps encode to 0-9 on all radios, but encoding #2 is disallowed
+# on the US versions (FT-4XR)
+STEP_CODE = [0, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+
 TONE_MODES = ["", "Tone", "TSQL",  "DTCS",  "DTCS-R",  "TSQL-R",   "Cross"]
 CROSS_MODES = ["DTCS->",  "DTCS->DTCS"]   # only the extras we need
 
@@ -489,21 +493,6 @@ DTCS_MAP = [
     ]
 EPCS_CODES = [format(flt) for flt in [0] + TONE_MAP[1:]]
 
-# names for the setmode function for the programmable keys.  Mode zero means
-# that the key is programmed for a memory not a setmode.
-SETMODES = [
-    "mem", "apo", "ar bep", "ar int", "beclo",
-    "beep", "bell", "cw id", "cw wrt", "de vlt",
-    "dcs cod", "dtc dly", "dtc_set", "dtc spd", "edg bep",
-    "lamp", "ledbsy", "led tx", "lock", "m/t-cl",
-    "mem.del", "mem.tag", "pag.abk", "pag.cdr", "pag.cdt",
-    "pri rvt", "pswd.on", "pswdwt", "rf sql", "rpt ars",
-    "rpt frq", "rpt sft", "rxsave", "scan.lamp", "scan.rs",
-    "skip", "sql.typ", "step", "tn freq", "tot",
-    "tx pwr", "tx save", "vfo spl", "vox", "wfm.rcv",
-    "wx.alert"
-    ]
-
 
 class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                             chirp_common.ExperimentalRadio):
@@ -523,7 +512,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rp = chirp_common.RadioPrompts()
         rp.experimental = (
             'Tested only by the developer and only on a single radio.\n'
-            ' Proceed at your own risk!'
+            'Proceed at your own risk!'
             )
 
         rp.pre_download = "".join([
@@ -548,7 +537,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rf.valid_tmodes = TONE_MODES
         rf.valid_cross_modes = CROSS_MODES
         rf.valid_power_levels = POWER_LEVELS
-        rf.valid_tuning_steps = STEPS
+        rf.valid_tuning_steps = self.legal_steps
         rf.valid_skips = SKIPS
         rf.valid_characters = CHARSET
         rf.valid_name_length = self.namelen
@@ -578,8 +567,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def sync_out(self):
         try:
             do_upload(self)
-        except errors.RadioError:
-            raise
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
@@ -590,7 +577,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     # The few that are more complicated use these handlers instead.
 
     # callback for setting  byte arrays (DTMF[0-9], passwd, and CW_ID)
-    def apply_str_to_bytearray(self,  element, obj):
+    def apply_str_to_bytearray(self, element, obj):
         lng = len(obj)
         strng = (element.value.get_value() + "                ")[:lng]
         bytes = bytearray(strng, "ascii")
@@ -646,12 +633,13 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             rs.set_apply_callback(apply, i)
             group.append(rs)
         for i in range(0, self.Pkeys):
-            get_prog(i + 1, ["unused", "in use"],  _progkeys.modes[i * 2],
+            i1 = i + 1
+            get_prog(i1, ["unused", "in use"],  _progkeys.modes[i * 2],
                      "P", "Programmable key ",  self.apply_P)
-            get_prog(i + 1, SETMODES, _progkeys.modes[i * 2 + 1], "modeP",
-                     "mode for Programmable key",  self.apply_Pmode)
-            get_prog(i + 1, self.MEMLIST, _progkeys.ndx[i], "memP",
-                     "mem for Programmable key",  self.apply_Pmem)
+            get_prog(i1, self.SETMODES, _progkeys.modes[i * 2 + 1], "modeP",
+                     "mode for Programmable key ",  self.apply_Pmode)
+            get_prog(i1, self.MEMLIST, _progkeys.ndx[i], "memP",
+                     "mem for Programmable key ",  self.apply_Pmem)
     # ------------ End of special settings handlers.
 
     # list of group description tuples: (groupame,group title, [param list]).
@@ -718,10 +706,18 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         ]
     # ----------------end of group_descriptions
 
-    # list of group description tuples: (groupame,group title, [param list]).
-    # A param is a tuple:
-    #  for a simple param: (paramname, paramtitle,[valuename list])
-    #  for a handler param: (paramname, paramtitle,( handler,[handler params]))
+    # allow a child class to add a param.
+    def add_paramdesc(self,group, param):
+        for description in self.group_descriptions:
+            groupname, title, parms = description
+            if group == groupname:
+                description[2] += param
+                return
+
+    # returns the current values of all the settings in the radio memory image,
+    # in the form of a RadioSettings list. Uses the group_descriptions
+    # list to create the groups and params. Simple valuelist params are handled
+    # inline. More complex params are built by calling the special handlers.
     def get_settings(self):
         _settings = self._memobj.settings
         groups = RadioSettings()
@@ -1015,7 +1011,6 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
                                    # VHF, RX (136000000, 174000000)
                                    # UHF, RX (400000000, 480000000)
         ]
-    valid_bands = [(108000000, 520000000), (700000000, 999990000)]
     _valid_chars = chirp_common.CHARSET_ASCII
     numblocks = 0x215      # number of 16-byte blocks in the radio
     _memsize = 16 * numblocks   # used by CHIRP file loader to guess radio type
@@ -1023,7 +1018,22 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     Pkeys = 2     # number of programmable keys on the FT-4
     namelen = 6   # length of the mem name display on the FT-4 front-panel
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
-
+    # names for the setmode function for the programmable keys. Mode zero means
+    # that the key is programmed for a memory not a setmode.
+    SETMODES = [
+        "mem", "apo", "ar bep", "ar int", "beclo",              #00-04
+        "beep", "bell", "cw id", "cw wrt", "dc vlt",            #05-09
+        "dcs cod", "dt dly", "dt set", "dtc spd", "edg.bep",    #10-14
+        "lamp", "led.bsy", "led.tx", "lock", "m/t-cl",          #15-19
+        "mem.del", "mem.tag", "pag.abk", "pag.cdr", "pag.cdt",  #20-24
+        "pri.rvt", "pswd", "pswdwt", "rf sql", "rpt.ars",       #25-29
+        "rpt.frq", "rpt.sft", "rxsave", "scn.lmp", "scn.rsm",   #30-34
+        "skip", "sql.typ", "step", "tn frq", "tot",             #35-39
+        "tx pwr", "tx save", "vfo.spl", "vox", "wfm.rcv",       #40-44
+        "w/n.dev", "wx.alert"                                   #45-46
+        ]
+    legal_steps = list(STEP_CODE)
+    legal_steps.remove(6.25)       #should not remove if euro version
 
 # don't register the FT-65 in the production version until it is tested
 # @directory.register
@@ -1038,7 +1048,6 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
                                    # VHF, RX (136000000, 174000000)
                                    # UHF, RX (400000000, 480000000)
         ]
-    valid_bands = [(108000000, 520000000), (700000000, 999990000)]
     _valid_chars = chirp_common.CHARSET_ASCII
     numblocks = 0x215      # number of 16-byte blocks in the radio
     _memsize = 16 * numblocks   # used by CHIRP file loader to guess radio type
@@ -1046,4 +1055,20 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     Pkeys = 4     # number of programmable keys on the FT-65
     namelen = 8   # length of the mem name display on the FT-65 front panel
     id_str=b'IH-420\x00\x00\x00V100\x00\x00'
+    # names for the setmode function for the programmable keys. Mode zero means
+    # that the key is programmed for a memory not a setmode.
+    SETMODES = [
+        "mem", "apo", "arts", "battsave", "b-ch.l/o",              # 00-04
+        "beep", "bell", "compander", "ctcss", "cw id",             # 05-09
+        "dc volt", "dcs code", "dtmf set", "dtmf wrt", "edg bep",  # 10-14
+        "key lock", "lamp", "ledbsy", "mem del", "mon/t-cl",       # 15-19
+        "name tag", "pager", "password", "pri.rvt", "repeater",    # 20-24
+        "resume", "rf.sql", "scn.lamp", "skip", "sql type",        # 25-29 
+        "step", "tot", "tx pwr", "tx save", "vfo.spl",             # 30-34
+        "vox", "wfm.rcv", "wide/nar", "wx alert", "scramble"       # 35-39
+        ]
+    legal_steps = list(STEP_CODE)
+    legal_steps.remove(6.25)       #should not remove if euro version
+    def __init__(self):
+        self.add_paramdesc("misc", ("compander", "Compander", ["ON", "OFF"]))
 
