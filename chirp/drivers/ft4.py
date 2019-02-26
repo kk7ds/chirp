@@ -74,7 +74,7 @@ struct txfreq {
 };
 
 //miscellaneous params. One 4-block group.
-//"SMI": "Set Mode Index" of the radio keypad function used to set a parameter.
+//"SMI": "Set Mode Index" of the FT-4 radio keypad function to set parameter.
 //"SMI numbers on the FT-65 are different but the names in mem are the same.
 struct misc {
   u8  apo;        //SMI 01. 0==off, (1-24) is the number of half-hours.
@@ -193,6 +193,21 @@ struct unknown notused6[3];   //2110
 # constructs could be better optimized for one or the other, but not both.
 
 
+def get_mmap_data(radio):
+    """
+    horrible kludge needed until we convert entirely to Python 3 OR we add a
+    slightly less horrible kludge to the Py2 or Py3 versions of memmap.py.
+    The minimal change have Py3 code return a bytestring instead of a string.
+    This is the only function in this module that must explicitly test for the
+    data string type. It is used only in the do_upload function.
+    returns the memobj data as a byte-like object.
+    """
+    data = radio.get_mmap().get_packed()
+    if isinstance(data, bytes):
+        return data
+    return bytearray(radio.get_mmap()._data)
+
+
 def checkSum8(data):
     """
     Calculate the 8 bit checksum of buffer
@@ -202,13 +217,34 @@ def checkSum8(data):
     return sum(x for x in bytearray(data)) & 0xFF
 
 
+def variable_len_resp(pipe):
+    """
+    when length of expected reply is not known, read byte at a time
+    until the ack character is found.
+    """
+    response = b""
+    i = 0
+    toolong = 256        # arbitrary
+    while True:
+        b = pipe.read(1)
+        if b == b'\x06':
+            break
+        else:
+            response += b
+            i += 1
+            if i > toolong:
+                LOG.debug("Response too long. got" + util.hexprint(response))
+                raise errors.RadioError("Response too long.")
+    return(response)
+
+
 def sendcmd(pipe, cmd, response_len):
     """
     send a command bytelist to radio,receive and return the resulting bytelist.
     Input: pipe         - serial port object to use
            cmd          - bytes to send
            response_len - number of bytes of expected response,
-                           not including the ACK.
+                           not including the ACK. (if None, read until ack)
     This cable is "two-wire": The TxD and RxD are "or'ed" so we receive
     whatever we send and then whatever response the radio sends. We check the
     echo and strip it, returning only the radio's response.
@@ -221,6 +257,8 @@ def sendcmd(pipe, cmd, response_len):
         msg += "Received:" + util.hexprint(echo)
         LOG.debug(msg)
         raise errors.RadioError("Incorrect echo on serial port.")
+    if response_len is None:
+        return variable_len_resp(pipe)
     if response_len > 0:
         response = pipe.read(response_len)
     else:
@@ -232,11 +270,35 @@ def sendcmd(pipe, cmd, response_len):
     return response
 
 
-def getblock(pipe, addr, _mmap):
+def startcomms(radio):
+    """
+    For either upload or download, put the radio into PROGRAM mode
+    and check the radio's id. In this preliminary version of the driver,
+    the exact nature of the ID has been inferred from a single test case.
+        send "PROGRAM" to command the radio into clone mode
+        read the initial string (version?)
+    """
+    if b"QX" != sendcmd(radio.pipe, b"PROGRAM", 2):
+        raise errors.RadioError("expected QX from radio.")
+    id_response = sendcmd(radio.pipe, b'\x02', None)
+    if id_response != radio.id_str:
+        substr0=radio.id_str[:radio.id_str.find('\x00')]
+        if id_response[:id_response.find('\x00')] != substr0:
+            msg = "ID mismatch. Expected" + util.hexprint(radio.id_str)
+            msg += ", Received:" + util.hexprint(id_response)
+            LOG.warning(msg)
+            raise errors.RadioError("Incorrect ID.")
+        else:
+            msg = "ID suspect. Expected" + util.hexprint(radio.id_str)
+            msg += ", Received:" + util.hexprint(id_response)
+            LOG.warning(msg)
+
+
+def getblock(pipe, addr, image):
     """
     read a single 16-byte block from the radio.
     send the command and check the response
-    returns the 16-byte bytearray
+    places the response into the correct offset in the supplied bytearray
     """
     cmd = struct.pack(">cHb", b"R", addr, 16)
     response = sendcmd(pipe, cmd, 21)
@@ -248,41 +310,24 @@ def getblock(pipe, addr, _mmap):
     if checkSum8(response[1:20]) != bytearray(response)[20]:
         LOG.debug(b"Bad checksum: " + util.hexprint(response))
         raise errors.RadioError("bad block checksum.")
-    _mmap[addr:addr+16] = response[4:20]
-
-
-expected_id = b'IFT-35R\x00\x00V100\x00\x00'
+    image[addr:addr+16] = response[4:20]
 
 
 def do_download(radio):
     """
     Read memory from the radio.
-      send "PROGRAM" to command the radio into clone mode,
-      read the initial string (version?)
+      call startcomms to go into program mode and check version
       create an mmap
       read the memory blocks and place the data into the mmap
       send "END"
     """
-    _mmap = bytearray(radio.get_memsize())
+    image = bytearray(radio.get_memsize())
     pipe = radio.pipe  # Get the serial port connection
-
-    if b"QX" != sendcmd(pipe, b"PROGRAM", 2):
-        raise errors.RadioError("expected QX from radio.")
-    id_response = sendcmd(pipe, b'\x02', 15)
-    if id_response != expected_id:
-        if id_response[0:8] != expected_id[0:8]:
-            msg = "ID mismatch. Expected" + util.hexprint(expected_id)
-            msg += ", Received:" + util.hexprint(id_response)
-            LOG.debug(msg)
-            raise errors.RadioError("Incorrect ID.")
-        else:
-            msg = "ID suspect. Expected" + util.hexprint(expected_id)
-            msg += ", Received:" + util.hexprint(id_response)
-            LOG.debug(msg)
+    startcomms(radio)
     for _i in range(radio.numblocks):
-        getblock(pipe, 16 * _i, _mmap)
+        getblock(pipe, 16 * _i, image)
     sendcmd(pipe, b"END", 0)
-    return memmap.MemoryMap(bytes(_mmap))
+    return memmap.MemoryMap(bytes(image))
 
 
 def putblock(pipe, addr, data):
@@ -298,16 +343,13 @@ def putblock(pipe, addr, data):
 def do_upload(radio):
     """
     Write memory image to radio
-      send "PROGRAM" to command the radio into clone mode,
+      call startcomms to go into program mode and check version
       write the memory blocks. Skip the first block
       send "END"
     """
     pipe = radio.pipe  # Get the serial port connection
-
-    if b"QX" != sendcmd(pipe, b"PROGRAM", 2):
-        raise errors.RadioError("expected QX from radio.")
-    data = radio.get_mmap()
-    sendcmd(pipe, b'\x02', 15)
+    startcomms(radio)
+    data = get_mmap_data(radio)
     for _i in range(1, radio.numblocks):
         putblock(pipe, 16*_i, data[16*_i:16*(_i+1)])
     sendcmd(pipe, b"END", 0)
@@ -907,7 +949,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         self.decode_sql(mem, _mem)
         mem.power = POWER_LEVELS[_mem.tx_pwr]
         mem.mode = ["FM", "NFM"][_mem.tx_width]
-        mem.tuning_step = STEPS[_mem.step]
+        mem.tuning_step = STEP_CODE[_mem.step]
 
         if regtype == "pms":
             mem.extd_number = sname
@@ -941,7 +983,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         if mem.power:
             _mem.tx_pwr = POWER_LEVELS.index(mem.power)
         _mem.tx_width = mem.mode == "NFM"
-        _mem.step = STEPS.index(mem.tuning_step)
+        _mem.step = STEP_CODE.index(mem.tuning_step)
 
         _mem.offset = mem.offset / 25000
         duplex = mem.duplex
@@ -980,6 +1022,7 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     MAX_MEM_SLOT = 200
     Pkeys = 2     # number of programmable keys on the FT-4
     namelen = 6   # length of the mem name display on the FT-4 front-panel
+    id_str = b'IFT-35R\x00\x00V100\x00\x00'
 
 
 # don't register the FT-65 in the production version until it is tested
@@ -1002,3 +1045,5 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     MAX_MEM_SLOT = 200
     Pkeys = 4     # number of programmable keys on the FT-65
     namelen = 8   # length of the mem name display on the FT-65 front panel
+    id_str=b'IH-420\x00\x00\x00V100\x00\x00'
+
