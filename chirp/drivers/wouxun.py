@@ -327,6 +327,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         rf.valid_characters = "".join(self.CHARSET)
         rf.valid_name_length = 6
         rf.valid_duplexes = ["", "+", "-", "split", "off"]
+        rf.valid_tuning_steps = [5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
         rf.has_ctone = True
         rf.has_rx_dtcs = True
         rf.has_cross = True
