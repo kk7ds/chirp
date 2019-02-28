@@ -20,6 +20,7 @@
 ./chirp/drivers/ft1d.py
 ./chirp/drivers/ft2800.py
 ./chirp/drivers/ft2900.py
+./chirp/drivers/ft4.py
 ./chirp/drivers/ft50.py
 ./chirp/drivers/ft60.py
 ./chirp/drivers/ft7100.py
