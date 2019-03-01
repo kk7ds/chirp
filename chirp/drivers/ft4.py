@@ -282,7 +282,7 @@ def startcomms(radio):
         raise errors.RadioError("expected QX from radio.")
     id_response = sendcmd(radio.pipe, b'\x02', None)
     if id_response != radio.id_str:
-        substr0=radio.id_str[:radio.id_str.find('\x00')]
+        substr0 = radio.id_str[:radio.id_str.find('\x00')]
         if id_response[:id_response.find('\x00')] != substr0:
             msg = "ID mismatch. Expected" + util.hexprint(radio.id_str)
             msg += ", Received:" + util.hexprint(id_response)
@@ -447,8 +447,62 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 # on the US versions (FT-4XR)
 STEP_CODE = [0, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 
-TONE_MODES = ["", "Tone", "TSQL",  "DTCS",  "DTCS-R",  "TSQL-R",   "Cross"]
-CROSS_MODES = ["DTCS->",  "DTCS->DTCS"]   # only the extras we need
+# Map the radio image sql_type (0-6) to the CHIRP mem values.
+# Types "TSQL" and "DCS" each map to different CHIRP values depending
+# on the radio values on the tx and rx tone codes.
+# This is a list of rows, one per Yaesu sql_type (0-5). 6 is separate.
+# Each row is a tuple. Its first member is a list of [tmode,cross] or
+# [tmode, cross, suppress]. "Suppress" is used only when encoding UI-->radio.
+# When decoding radio-->UI, two of the sql_types each result in 5 possibible
+# UI decodings depending on the tx and rx codes, and the list in each of these
+# rows has five members. These two row tuples each have two additional members
+# to specify which of the radio fields to examine.
+# The map from CHIRP UI to radio image types is also built from this table.
+RADIO_TMODES = [
+        ([["", None], ], ),            # sql_type= 0. off
+        ([["Cross", "->Tone"], ], ),   # sql_type= 1. R-TONE
+        ([["Tone", None], ], ),        # sql_type= 2. T-TONE
+        ([                             # sql_type= 3. TSQL:
+          ["", None],                       # tx==0, rx==0 : invalid
+          ["TSQL", None],                   # tx==0
+          ["Tone", None],                   # rx==0
+          ["Cross", "Tone->Tone"],        # tx!=rx
+          ["TSQL", None]                    # tx==rx
+         ], "tx_ctcss", "rx_ctcss"),     # tx and rx fields to check
+        ([["TSQL-R", None], ], ),        # sql_type= 4. REV TN
+        ([                             # sql_type= 5.DCS:
+          ["", None],                       # tx==0, rx==0 : invalid
+          ["Cross", "->DTCS", "tx_dcs"],  # tx==0. suppress tx
+          ["Cross", "DTCS->", "rx_dcs"],  # rx==0. suppress rx
+          ["Cross", "DTCS->DTCS"],        # tx!=rx
+          ["DTCS", None]                    # tx==rx
+         ], "tx_dcs", "rx_dcs"),        # tx and rx fields to check
+        #                              # sql_type= 6. PAGER is a CHIRP "extra"
+        ]
+
+
+# Find all legal values for the tmode and cross fields for the UI.
+# We build a list of two dictionaries to do the lookups when encoding.
+# The reversed range is a Kludge: by happenstance, earlier duplicates
+# in the above table are the preferred mapping, they override the
+# later ones when we process the table backwards.
+# The keys will be passed to RadioFeatures as lists
+def build_modedicts():
+    tone_dict = {}
+    cross_dict = {}
+    for sql_type in reversed(range(0, len(RADIO_TMODES))):
+        sql_type_row = RADIO_TMODES[sql_type]
+        for decode_row in sql_type_row[0]:
+            suppress = None
+            if len(decode_row) == 3:
+                suppress = decode_row[2]
+            tone_dict[decode_row[0]] = (sql_type, suppress)
+            if decode_row[1]:
+                cross_dict[decode_row[1]] = (sql_type, suppress)
+    return tone_dict, cross_dict
+
+TONE_DICT, CROSS_DICT = build_modedicts()
+
 
 DTMF_CHARS = "0123456789ABCD*#- "
 CW_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ "
@@ -534,8 +588,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rf.valid_special_chans = specials
         rf.memory_bounds = (1, self.MAX_MEM_SLOT)
         rf.valid_duplexes = DUPLEX
-        rf.valid_tmodes = TONE_MODES
-        rf.valid_cross_modes = CROSS_MODES
+        rf.valid_tmodes = list(TONE_DICT.keys())
+        rf.valid_cross_modes = list(CROSS_DICT.keys())
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = self.legal_steps
         rf.valid_skips = SKIPS
@@ -707,7 +761,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     # ----------------end of group_descriptions
 
     # allow a child class to add a param.
-    def add_paramdesc(self,group, param):
+    def add_paramdesc(self, group, param):
         for description in self.group_descriptions:
             groupname, title, parms = description
             if group == groupname:
@@ -770,44 +824,31 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 LOG.debug(element.get_name())
                 raise
 
-    RADIO_TMODES = [
-        ("(None)", ["", ""]),         # off
-        ("(None)", ["TSQL-R", ""]),  # R-TONE
-        ("(None)", ["Tone", ""]),   # T-TONE
-        ("(None)", None, "tx_ctcss", "rx_ctcss", [    # TSQL
-          ["", None],                 # x==0, r==0 : not valid
-          ["TSQL-R", ""],      # x==0
-          ["Tone", ""],             # r==0
-          ["TSQL", ""],        # x!=r
-          ["TSQL", ""]               # x==r
-         ]),
-        ("REV-TN", ["TSQL-R", ""]),
-        ("(None)", None, "tx_dcs", "rx_dcs", [    # DCS
-          ["", None],                 # x==0, r==0 : not valid
-          ["DTCS-R", ""],           # x==0
-          ["Cross", "DTCS->"],      # r==0
-          ["Cross", "DTCS->DTCS"],  # x!=r
-          ["DTCS", ""]      # x==r
-         ]),
-        ("PAGER", ["", None])  # handled as a CHIRP "extra"
-        ]
     LOOKUP = [[True, True], [True, False], [False, True], [False, False]]
 
     def decode_sql(self, mem, chan):
         """
         examine the radio channel fields and determine the correct
-        CHIRP CSV values for tmode, cross_mode, and dcts_polarity
+        CHIRP CSV values for tmode, cross_mode, and sql_override
         """
-        mode = self.RADIO_TMODES[chan.sql_type]
-        chirpvals = mode[1]
-        if not chirpvals:
-            x = getattr(chan, mode[2])
-            r = getattr(chan, mode[3])
+        mem.extra = RadioSettingGroup("Extra", "extra")
+        extra_modes = ["(None)", "PAGER"]
+        value = extra_modes[chan.sql_type == 6]
+        valuelist = RadioSettingValueList(extra_modes, value)
+        rs = RadioSetting("sql_override", "Squelch override", valuelist)
+        mem.extra.append(rs)
+        if chan.sql_type == 6:
+            return
+        sql_map = RADIO_TMODES[chan.sql_type]
+        ndx = 0
+        if len(sql_map[0]) > 1:
+            x = getattr(chan, sql_map[1])
+            r = getattr(chan, sql_map[2])
             ndx = self.LOOKUP.index([x == 0, r == 0])
             if ndx == 3 and x == r:
                 ndx = 4
-            chirpvals = mode[4][ndx]
-        mem.tmode, cross = chirpvals
+        mem.tmode = sql_map[0][ndx][0]
+        cross = sql_map[0][ndx][1]
         if cross:
             mem.cross_mode = cross
         if chan.rx_ctcss:
@@ -818,62 +859,35 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             mem.dtcs = DTCS_MAP[chan.tx_dcs]
         if chan.rx_dcs:
             mem.rx_dtcs = DTCS_MAP[chan.rx_dcs]
-        LOG.debug(" setting sql_override to <%s>" % mode[0])
-        mem.extra = RadioSettingGroup("Extra", "extra")
-        extra_modes = ["(None)", "REV-TN", "PAGER"]
-        valuelist = RadioSettingValueList(extra_modes,  mode[0])
-        rs = RadioSetting("sql_override", "Squelch override", valuelist)
-        mem.extra.append(rs)
-    # Yaesu sql_type field codes
-    SQL_TYPE = ["off", "R-TONE", "T-TONE", "TSQL",  "REV-TN", "DCS", "PAGER"]
-    # map a  CHIRP tone mode to a FT-4 sql and which if any code to set to 0.
-    MODE_TONE = {
-        "":       ("off",  None),
-        "Tone":   ("T-TONE", "rx_ctcss"),
-        "TSQL":   ("TSQL", None),
-        "DTCS":   ("DCS",  None),          # must set rx_dcs to tx_dcs?
-        "DTCS-R": ("DCS",  "tx_dcs"),
-        "TSQL-R": ("R-TONE", "tx_ctcss"),    # not documented on wiki
-        "Cross":  ()                       # not used in lookup
-        }
-
-    # map a CHIRP Cross type if the CHIRP sql type is "cross"
-    MODE_CROSS = {
-        "DTCS->": ("DCS", "rx_dcs"),
-        "DTCS->DTCS": ("DCS", None)
-        # "Tone->Tone": ("TSQL", None),
-        # "->DTCS": ("DCS", "tx_dcs"),
-        # "->Tone": ("R-TONE", None),
-        # "Tone->": ("T-Tone", None)
-        }
 
     def encode_sql(self, mem, chan):
         """
-        examine CHIRP CSV columns tmode and cross_mode
-        and set the correct values for the radio sql_type, dcs codes,
-        and ctcss codes. We set all four codes, and then zero out
-        a code if needed when Tone or DCS is one-way
+        examine CHIRP's mem.tmode and mem.cross_mode and set the values
+        for the radio sql_type, dcs codes, and ctcss codes. We set all four
+        codes, and then zero out a code if needed when Tone or DCS is one-way
         """
         chan.tx_ctcss = TONE_MAP.index(mem.rtone)
         chan.tx_dcs = DTCS_MAP.index(mem.dtcs)
         chan.rx_ctcss = TONE_MAP.index(mem.ctone)
         chan.rx_dcs = DTCS_MAP.index(mem.rx_dtcs)
-        tbl, ndx = [
-            (self.MODE_TONE, mem.tmode),
-            (self.MODE_CROSS, mem.cross_mode)
+        if mem.tmode == "TSQL":
+            chan.tx_ctcss = chan.rx_ctcss  # CHIRP uses ctone for TSQL
+        if mem.tmode == "DTCS":
+            chan.tx_dcs = chan.rx_dcs     # CHIRP uses rx_dtcs for DTCS
+        # select the correct internal dictionary and key
+        mode_dict, key = [
+            (TONE_DICT, mem.tmode),
+            (CROSS_DICT, mem.cross_mode)
             ][mem.tmode == "Cross"]
-        row = tbl[ndx]
-        if ndx == "DTCS":
-            chan.rx_dcs = chan.tx_dcs
-        chan.sql_type = self.SQL_TYPE.index(row[0])
-        if row[1]:
-            setattr(chan, row[1], 0)
+        # now look up that key in that dictionary.
+        chan.sql_type, suppress = mode_dict[key]
+        if suppress:
+            setattr(chan, suppress, 0)
         for setting in mem.extra:
             if (setting.get_name() == 'sql_override'):
                 value = str(setting.value)
-                if value != "(None)":
-                    chan.sql_type = self.SQL_TYPE.index(value)
-
+                if value == "PAGER":
+                    chan.sql_type = 6
         return
 
     # given a CHIRP memory ref, get the radio memobj for it.
@@ -1018,21 +1032,22 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     namelen = 6   # length of the mem name display on the FT-4 front-panel
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
     legal_steps = list(STEP_CODE)
-    legal_steps.remove(6.25)       #should not remove if euro version
+    legal_steps.remove(6.25)       # should not remove if euro version
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
-        "mem", "apo", "ar bep", "ar int", "beclo",              #00-04
-        "beep", "bell", "cw id", "cw wrt", "dc vlt",            #05-09
-        "dcs cod", "dt dly", "dt set", "dtc spd", "edg.bep",    #10-14
-        "lamp", "led.bsy", "led.tx", "lock", "m/t-cl",          #15-19
-        "mem.del", "mem.tag", "pag.abk", "pag.cdr", "pag.cdt",  #20-24
-        "pri.rvt", "pswd", "pswdwt", "rf sql", "rpt.ars",       #25-29
-        "rpt.frq", "rpt.sft", "rxsave", "scn.lmp", "scn.rsm",   #30-34
-        "skip", "sql.typ", "step", "tn frq", "tot",             #35-39
-        "tx pwr", "tx save", "vfo.spl", "vox", "wfm.rcv",       #40-44
-        "w/n.dev", "wx.alert"                                   #45-46
+        "mem", "apo", "ar bep", "ar int", "beclo",              # 00-04
+        "beep", "bell", "cw id", "cw wrt", "dc vlt",            # 05-09
+        "dcs cod", "dt dly", "dt set", "dtc spd", "edg.bep",    # 10-14
+        "lamp", "led.bsy", "led.tx", "lock", "m/t-cl",          # 15-19
+        "mem.del", "mem.tag", "pag.abk", "pag.cdr", "pag.cdt",  # 20-24
+        "pri.rvt", "pswd", "pswdwt", "rf sql", "rpt.ars",       # 25-29
+        "rpt.frq", "rpt.sft", "rxsave", "scn.lmp", "scn.rsm",   # 30-34
+        "skip", "sql.typ", "step", "tn frq", "tot",             # 35-39
+        "tx pwr", "tx save", "vfo.spl", "vox", "wfm.rcv",       # 40-44
+        "w/n.dev", "wx.alert"                                   # 45-46
         ]
+
 
 # don't register the FT-65 in the production version until it is tested
 # @directory.register
@@ -1052,9 +1067,9 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     MAX_MEM_SLOT = 200
     Pkeys = 4     # number of programmable keys on the FT-65
     namelen = 8   # length of the mem name display on the FT-65 front panel
-    id_str=b'IH-420\x00\x00\x00V100\x00\x00'
+    id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     legal_steps = list(STEP_CODE)
-    legal_steps.remove(6.25)       #should not remove if euro version
+    legal_steps.remove(6.25)       # should not remove if euro version
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1063,10 +1078,10 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
         "dc volt", "dcs code", "dtmf set", "dtmf wrt", "edg bep",  # 10-14
         "key lock", "lamp", "ledbsy", "mem del", "mon/t-cl",       # 15-19
         "name tag", "pager", "password", "pri.rvt", "repeater",    # 20-24
-        "resume", "rf.sql", "scn.lamp", "skip", "sql type",        # 25-29 
+        "resume", "rf.sql", "scn.lamp", "skip", "sql type",        # 25-29
         "step", "tot", "tx pwr", "tx save", "vfo.spl",             # 30-34
         "vox", "wfm.rcv", "wide/nar", "wx alert", "scramble"       # 35-39
         ]
+
     def __init__(self):
         self.add_paramdesc("misc", ("compander", "Compander", ["ON", "OFF"]))
-
