@@ -210,6 +210,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS"]
+        rf.valid_tuning_steps = STEPS
         rf.has_ctone = True
         rf.has_cross = True
         rf.has_tuning_step = False
