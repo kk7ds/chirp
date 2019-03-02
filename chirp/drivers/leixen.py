@@ -171,7 +171,8 @@ APO_LIST = ["OFF", "10M", "20M", "30M", "40M", "50M", "60M", "90M",
 SQL_LIST = ["%s" % x for x in range(0, 10)]
 SCANM_LIST = ["CO", "TO"]
 TOT_LIST = ["OFF"] + ["%s seconds" % x for x in range(10, 130, 10)]
-STEP_LIST = ["2.5 KHz", "5 KHz", "6.25 KHz", "10 KHz", "12.5 KHz", "25 KHz"]
+_STEP_LIST = [2.5, 5., 6.25, 10., 12.5, 25.]
+STEP_LIST = ["{} KHz".format(x) for x in _STEP_LIST]
 MONITOR_LIST = ["CTC/DCS", "DTMF", "CTC/DCS and DTMF", "CTC/DCS or DTMF"]
 VFOMR_LIST = ["MR", "VFO"]
 MRCHA_LIST = ["MR CHA", "Freq. MR"]
@@ -417,6 +418,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = self._power_levels
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_skips = ["", "S"]
+        rf.valid_tuning_steps = _STEP_LIST
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 470000000)]
         rf.memory_bounds = (1, 199)
