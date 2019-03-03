@@ -551,6 +551,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         #rf.valid_dtcs_codes = self.DTCS_CODES
         rf.memory_bounds = (1, 128)
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_tuning_steps = STEPS
         rf.valid_bands = VALID_BANDS
 
         return rf
