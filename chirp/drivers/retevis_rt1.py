@@ -369,6 +369,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
         rf.memory_bounds = (1, 16)
+        rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         if self._mmap is None:
             rf.valid_bands = [self._vhf_range, self._uhf_range]
         elif self._my_band() == RT1_VHF_fp:
