@@ -172,8 +172,8 @@ LIST_SCANS = ["Time Operated", "Carrier Operated", "Search"]
 LIST_SIGNALING = ["No", "DTMF"]
 LIST_TOT = ["OFF"] + ["%s seconds" % x for x in range(30, 300, 30)]
 LIST_TXSEL = ["Edit", "Busy"]
-LIST_STEP = ["2.50K", "5.00K", "6.25K", "10.00K", "12,50K", "20.00K", "25.00K",
-             "50.00K"]
+_STEP_LIST = [2.5, 5., 6.25, 10., 12.5, 20., 25., 50.]
+LIST_STEP = ["{0:.2f}K".format(x) for x in _STEP_LIST]
 LIST_VFOMR = ["VFO", "MR(Frequency)", "MR(Channel #/Name)"]
 LIST_VFOMRFM = ["VFO", "Channel"]
 LIST_VOICE = ["Off", "Chinese", "English"]
@@ -387,6 +387,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]  # 25 KHz, 12.5 KHz.
         rf.memory_bounds = (1, 128)
+        rf.valid_tuning_steps = _STEP_LIST
         rf.valid_bands = [
             (136000000, 174000000),
             (400000000, 480000000)]
