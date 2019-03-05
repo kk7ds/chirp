@@ -23,6 +23,7 @@ older Yaesu models.
 """
 import logging
 import struct
+import copy
 from chirp import chirp_common, directory, memmap, bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueString, RadioSettings
@@ -448,6 +449,8 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 # these steps encode to 0-9 on all radios, but encoding #2 is disallowed
 # on the US versions (FT-4XR)
 STEP_CODE = [0, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+US_LEGAL_STEPS = list(STEP_CODE)  # copy to pass to UI on US radios
+US_LEGAL_STEPS.remove(6.25)       # euro radios just use STEP_CODE
 
 # Map the radio image sql_type (0-6) to the CHIRP mem values.
 # Yaesu "TSQL" and "DCS" each map to different CHIRP values depending on the
@@ -558,6 +561,17 @@ DTCS_MAP = [
 # The legal PAGER codes are the same as the CTCSS codes, but we
 # pass them to the UI as a list of strings
 EPCS_CODES = [format(flt) for flt in [0] + TONE_MAP[1:]]
+
+
+# allow a child class to add a param to its class
+# description list. used when a specific radio class has
+# a param that is not in the generic list.
+def add_paramdesc(desc_list, group, param):
+    for description in desc_list:
+        groupname, title, parms = description
+        if group == groupname:
+            description[2].append(param)
+            return
 
 
 class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
@@ -779,14 +793,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         ]
     # ----------------end of group_descriptions
 
-    # allow a child class to add a param.
-    def add_paramdesc(self, group, param):
-        for description in self.group_descriptions:
-            groupname, title, parms = description
-            if group == groupname:
-                description[2] += param
-                return
-
     # returns the current values of all the settings in the radio memory image,
     # in the form of a RadioSettings list. Uses the class_group_descs
     # list to create the groups and params. Valuelist scalars are handled
@@ -794,7 +800,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def get_settings(self):
         _settings = self._memobj.settings
         groups = RadioSettings()
-        for description in self.group_descriptions:
+        for description in self.class_group_descs:
             groupname, title, parms = description
             group = RadioSettingGroup(groupname, title)
             groups.append(group)
@@ -1052,8 +1058,8 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     Pkeys = 2     # number of programmable keys on the FT-4
     namelen = 6   # length of the mem name display on the FT-4 front-panel
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
-    legal_steps = list(STEP_CODE)
-    legal_steps.remove(6.25)       # should not remove if euro version
+    legal_steps = US_LEGAL_STEPS
+    class_group_descs = YaesuSC35GenericRadio.group_descriptions
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1089,8 +1095,10 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     Pkeys = 4     # number of programmable keys on the FT-65
     namelen = 8   # length of the mem name display on the FT-65 front panel
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
-    legal_steps = list(STEP_CODE)
-    legal_steps.remove(6.25)       # should not remove if euro version
+    legal_steps = US_LEGAL_STEPS
+    class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
+    add_paramdesc(
+        class_group_descs, "misc", ("compander", "Compander", ["OFF", "ON"]))
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1103,6 +1111,3 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
         "step", "tot", "tx pwr", "tx save", "vfo.spl",             # 30-34
         "vox", "wfm.rcv", "wide/nar", "wx alert", "scramble"       # 35-39
         ]
-
-    def __init__(self):
-        self.add_paramdesc("misc", ("compander", "Compander", ["ON", "OFF"]))
