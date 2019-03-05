@@ -487,21 +487,30 @@ RADIO_TMODES = [
 # The reversed range is a kludge: by happenstance, earlier duplicates
 # in the above table are the preferred mapping, they override the
 # later ones when we process the table backwards.
-def build_modedicts():
-    tone_dict = {}
-    cross_dict = {}
-    for sql_type in reversed(range(0, len(RADIO_TMODES))):
-        sql_type_row = RADIO_TMODES[sql_type]
-        for decode_row in sql_type_row[0]:
-            suppress = None
-            if len(decode_row) == 3:
-                suppress = decode_row[2]
-            tone_dict[decode_row[0]] = (sql_type, suppress)
-            if decode_row[1]:
-                cross_dict[decode_row[1]] = (sql_type, suppress)
-    return tone_dict, cross_dict
+TONE_DICT = {}          # encode sql_type.
+CROSS_DICT = {}         # encode sql_type.
 
-TONE_DICT, CROSS_DICT = build_modedicts()
+for sql_type in reversed(range(0, len(RADIO_TMODES))):
+    sql_type_row = RADIO_TMODES[sql_type]
+    for decode_row in sql_type_row[0]:
+        suppress = None
+        if len(decode_row) == 3:
+            suppress = decode_row[2]
+        TONE_DICT[decode_row[0]] = (sql_type, suppress)
+        if decode_row[1]:
+            CROSS_DICT[decode_row[1]] = (sql_type, suppress)
+
+# The keys are added to the "VALID" lists using code that puts those lists
+# in the same order as the UI's default order instead of the random dict
+# order or the arbitrary build order.
+VALID_TONE_MODES = []   # list for UI.
+VALID_CROSS_MODES = []  # list for UI.
+for name in chirp_common.TONE_MODES:
+    if name in TONE_DICT:
+        VALID_TONE_MODES += [name]
+for name in chirp_common.CROSS_MODES:
+    if name in CROSS_DICT:
+        VALID_CROSS_MODES += [name]
 
 
 DTMF_CHARS = "0123456789ABCD*#- "
@@ -591,8 +600,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rf.valid_special_chans = specials
         rf.memory_bounds = (1, self.MAX_MEM_SLOT)
         rf.valid_duplexes = DUPLEX
-        rf.valid_tmodes = list(TONE_DICT.keys())
-        rf.valid_cross_modes = list(CROSS_DICT.keys())
+        rf.valid_tmodes = VALID_TONE_MODES
+        rf.valid_cross_modes = VALID_CROSS_MODES
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = self.legal_steps
         rf.valid_skips = SKIPS
