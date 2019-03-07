@@ -980,7 +980,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         _mem, ndx, num, regtype, sname = self.slotloc(memref)
         mem.number = num
         mem.freq = int(_mem.freq) * 10
-        mem.offset = int(_mem.offset) * 25000
+        mem.offset = int(_mem.offset) * self.freq_offset_scale
         mem.duplex = DUPLEX[_mem.duplex]
 
         self.decode_sql(mem, _mem)
@@ -1022,7 +1022,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         _mem.tx_width = mem.mode == "NFM"
         _mem.step = STEP_CODE.index(mem.tuning_step)
 
-        _mem.offset = mem.offset / 25000
+        _mem.offset = mem.offset / self.freq_offset_scale
         duplex = mem.duplex
         if regtype in ["memory", "pms"]:
             ndx = num - 1
@@ -1058,6 +1058,7 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     Pkeys = 2     # number of programmable keys on the FT-4
     namelen = 6   # length of the mem name display on the FT-4 front-panel
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
+    freq_offset_scale = 25000
     legal_steps = US_LEGAL_STEPS
     class_group_descs = YaesuSC35GenericRadio.group_descriptions
     # names for the setmode function for the programmable keys. Mode zero means
@@ -1095,6 +1096,7 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     Pkeys = 4     # number of programmable keys on the FT-65
     namelen = 8   # length of the mem name display on the FT-65 front panel
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
+    freq_offset_scale = 50000
     legal_steps = US_LEGAL_STEPS
     class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
     add_paramdesc(
