@@ -25,3 +25,11 @@ for i in glob(os.path.join(module_dir, "*.py")):
     name = os.path.basename(i)[:-3]
     if not name.startswith("__"):
         __all__.append(name)
+
+
+def http_user_agent():
+    ver = sys.version_info
+    return 'chirp/%s (Python %i.%i.%i on %s)' % (
+        CHIRP_VERSION,
+        ver.major, ver.minor, ver.micro,
+        sys.platform)
