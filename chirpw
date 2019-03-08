@@ -17,9 +17,9 @@
 
 import os
 
+from chirp import chirp_common
 from chirp import logger
 from chirp import elib_intl
-from chirp import http_user_agent
 from chirp import platform
 from chirp.drivers import *
 from chirp.ui import config
@@ -36,7 +36,7 @@ import urllib
 LOG = logging.getLogger("chirpw")
 
 
-urllib.URLopener.version = http_user_agent
+urllib.URLopener.version = chirp_common.http_user_agent()
 
 localepath = platform.get_platform().find_resource("locale")
 
