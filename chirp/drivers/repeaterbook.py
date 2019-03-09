@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
+
 from chirp import chirp_common
 from chirp.drivers import generic_csv
 
@@ -23,10 +25,12 @@ class RBRadio(generic_csv.CSVRadio, chirp_common.NetworkSourceRadio):
 
     def _clean_comment(self, headers, line, mem):
         "Converts iso-8859-1 encoded comments to unicode for pyGTK."
-        mem.comment = unicode(mem.comment, 'iso-8859-1')
+        if six.PY2:
+            mem.comment = six.text_type(mem.comment, 'iso-8859-1')
         return mem
 
     def _clean_name(self, headers, line, mem):
         "Converts iso-8859-1 encoded names to unicode for pyGTK."
-        mem.name = unicode(mem.name, 'iso-8859-1')
+        if six.PY2:
+            mem.name = six.text_type(mem.name, 'iso-8859-1')
         return mem
