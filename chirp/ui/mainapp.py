@@ -17,7 +17,6 @@
 from datetime import datetime
 import os
 import tempfile
-import urllib
 import webbrowser
 from glob import glob
 import shutil
@@ -966,28 +965,31 @@ of file.
         band = miscwidgets.make_choice(sorted(RB_BANDS.keys(), key=key_bands),
                                        False, default_band)
 
-        def _changed(box, county):
-            state = fips.FIPS_STATES[box.get_active_text()]
+        def _changed(box, state, county):
+            state = fips.FIPS_STATES[state.get_active_text()]
             county.get_model().clear()
             for fips_county in sorted(fips.FIPS_COUNTIES[state].keys()):
                 county.append_text(fips_county)
-            county.set_active(0)
+            county.value = list(sorted(fips.FIPS_COUNTIES[state].keys()))[0]
 
-        state.connect("changed", _changed, county)
+        state.widget.connect("changed", _changed, state, county)
 
         d = inputdialog.FieldDialog(title=_("RepeaterBook Query"), parent=self)
-        d.add_field("State", state)
-        d.add_field("County", county)
-        d.add_field("Band", band)
+        d.add_field("State", state.widget)
+        d.add_field("County", county.widget)
+        d.add_field("Band", band.widget)
 
         r = d.run()
+        chose_state = state.get_active_text()
+        chose_county = county.get_active_text()
+        chose_band = band.get_active_text()
         d.destroy()
         if r != gtk.RESPONSE_OK:
             return False
 
-        code = fips.FIPS_STATES[state.get_active_text()]
-        county_id = fips.FIPS_COUNTIES[code][county.get_active_text()]
-        freq = RB_BANDS[band.get_active_text()]
+        code = fips.FIPS_STATES[chose_state]
+        county_id = fips.FIPS_COUNTIES[code][chose_county]
+        freq = RB_BANDS[chose_band]
         CONF.set("state", str(code), "repeaterbook")
         CONF.set("county", str(county_id), "repeaterbook")
         CONF.set("band", str(freq), "repeaterbook")
@@ -1027,21 +1029,24 @@ of file.
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
-        gtk.gdk.window_process_all_updates()
-        while gtk.events_pending():
-            gtk.main_iteration(False)
+        with compat.py3safe():
+            gtk.gdk.window_process_all_updates()
+            while gtk.events_pending():
+                gtk.main_iteration(False)
 
         fn = tempfile.mktemp(".csv")
-        filename, headers = urllib.urlretrieve(query, fn)
-        if not os.path.exists(filename):
-            LOG.error("Failed, headers were: %s", headers)
+        try:
+            chirp_common.urlretrieve(query, fn)
+        except Exception as e:
+            LOG.error('Failed to fetch %s: %s' % (query, e))
+        if not os.path.exists(fn):
             common.show_error(_("RepeaterBook query failed"))
             self.window.set_cursor(None)
             return
 
         try:
             # Validate CSV
-            radio = repeaterbook.RBRadio(filename)
+            radio = repeaterbook.RBRadio(fn)
             if radio.errors:
                 reporting.report_misc_error("repeaterbook",
                                             ("query=%s\n" % query) +
@@ -1059,7 +1064,7 @@ of file.
         self.window.set_cursor(None)
         if do_import:
             eset = self.get_current_editorset()
-            count = eset.do_import(filename)
+            count = eset.do_import(fn)
         else:
             self.do_open_live(radio, read_only=True)
 
@@ -1084,7 +1089,10 @@ of file.
         d = inputdialog.FieldDialog(title=_("RepeaterBook Query"),
                                     parent=self)
         for k in sorted(fields.keys()):
-            d.add_field(k[1:], fields[k][0])
+            widget = fields[k][0]
+            if isinstance(widget, miscwidgets.EditableChoiceBase):
+                widget = widget.widget
+            d.add_field(k[1:], widget)
             if isinstance(fields[k][0], gtk.Entry):
                 fields[k][0].set_text(
                     CONF.get(k[1:].lower(), "repeaterbook") or "")
@@ -1132,21 +1140,24 @@ of file.
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
-        gtk.gdk.window_process_all_updates()
-        while gtk.events_pending():
-            gtk.main_iteration(False)
+        with compat.py3safe():
+            gtk.gdk.window_process_all_updates()
+            while gtk.events_pending():
+                gtk.main_iteration(False)
 
         fn = tempfile.mktemp(".csv")
-        filename, headers = urllib.urlretrieve(query, fn)
-        if not os.path.exists(filename):
-            LOG.error("Failed, headers were: %s", headers)
+        try:
+            chirp_common.urlretrieve(query, fn)
+        except Exception as e:
+            LOG.error('Failed to fetch %s: %s' % (query, e))
+        if not os.path.exists(fn):
             common.show_error(_("RepeaterBook query failed"))
             self.window.set_cursor(None)
             return
 
         try:
             # Validate CSV
-            radio = repeaterbook.RBRadio(filename)
+            radio = repeaterbook.RBRadio(fn)
             if radio.errors:
                 reporting.report_misc_error("repeaterbook",
                                             ("query=%s\n" % query) +
@@ -1164,7 +1175,7 @@ of file.
         self.window.set_cursor(None)
         if do_import:
             eset = self.get_current_editorset()
-            count = eset.do_import(filename)
+            count = eset.do_import(fn)
         else:
             self.do_open_live(radio, read_only=True)
 
@@ -1227,9 +1238,11 @@ of file.
             return
 
         fn = tempfile.mktemp(".csv")
-        filename, headers = urllib.urlretrieve(url, fn)
-        if not os.path.exists(filename):
-            LOG.error("Failed, headers were: %s", str(headers))
+        try:
+            chirp_common.urlretrieve(url, fn)
+        except Exception as e:
+            LOG.error('Failed to fetch %s: %s' % (url, e))
+        if not os.path.exists(fn):
             common.show_error(_("Query failed"))
             return
 
@@ -1239,14 +1252,14 @@ of file.
             MODEL = ""
 
         try:
-            radio = PRRadio(filename)
+            radio = PRRadio(fn)
         except Exception as e:
             common.show_error(str(e))
             return
 
         if do_import:
             eset = self.get_current_editorset()
-            count = eset.do_import(filename)
+            count = eset.do_import(fn)
         else:
             self.do_open_live(radio, read_only=True)
 

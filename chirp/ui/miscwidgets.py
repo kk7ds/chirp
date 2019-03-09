@@ -670,14 +670,16 @@ class EditableChoiceBase(object):
 class EditableChoiceGTK3(EditableChoiceBase):
     def __init__(self, options, editable, default):
         self.store = gtk.ListStore(str)
-        for option in options:
+        for i, option in enumerate(options):
             self.store.append([option])
         if editable:
             self.sel = gtk.ComboBox.new_with_model_and_entry(self.store)
             self.sel.set_entry_text_column(0)
         else:
-            self.sel = gtk.ComboBox.new_with_model_and_entry(self.store)
-            self.sel.set_entry_text_column(0)
+            self.sel = gtk.ComboBox.new_with_model(self.store)
+            renderer_text = gtk.CellRendererText()
+            self.sel.pack_start(renderer_text, True)
+            self.sel.add_attribute(renderer_text, "text", 0)
         if default:
             self.value = default
 
@@ -690,6 +692,8 @@ class EditableChoiceGTK3(EditableChoiceBase):
         modeliter = self.sel.get_active_iter()
         if modeliter:
             return self.store[modeliter][0]
+        else:
+            LOG.warning('No active iter')
 
     @value.setter
     def value(self, val):
