@@ -13,11 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from future import standard_library
+
 import base64
 import json
 import logging
 import math
 import sys
+
 from chirp import errors, memmap, CHIRP_VERSION
 
 LOG = logging.getLogger(__name__)
@@ -1606,3 +1609,19 @@ def http_user_agent():
         CHIRP_VERSION,
         ver.major, ver.minor, ver.micro,
         sys.platform)
+
+
+def urlretrieve(url, fn):
+    """Grab an URL and save it in a specified file"""
+
+    standard_library.install_aliases()
+    import urllib.request
+    import urllib.error
+
+    headers = {
+        'User-Agent': http_user_agent(),
+    }
+    req = urllib.request.Request(url, headers=headers)
+    resp = urllib.request.urlopen(req)
+    with open(fn, 'wb') as f:
+        f.write(resp.read())
