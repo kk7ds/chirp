@@ -313,6 +313,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         rf.valid_skips = ["", "S"]
         rf.valid_characters = CHARSET
         rf.valid_name_length = 5
+        rf.valid_tuning_steps = UVB5_STEPS
         rf.valid_bands = [(130000000, 175000000),
                           (220000000, 269000000),
                           (400000000, 520000000)]

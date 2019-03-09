@@ -17,6 +17,7 @@ import base64
 import json
 import logging
 import math
+import sys
 from chirp import errors, memmap, CHIRP_VERSION
 
 LOG = logging.getLogger(__name__)
@@ -1597,3 +1598,11 @@ def is_version_newer(version):
         my_version = (0,)
 
     return version > my_version
+
+
+def http_user_agent():
+    ver = sys.version_info
+    return 'chirp/%s (Python %i.%i.%i on %s)' % (
+        CHIRP_VERSION,
+        ver.major, ver.minor, ver.micro,
+        sys.platform)

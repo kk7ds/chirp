@@ -318,9 +318,9 @@ LIST_WORK = ["VFO", "Memory System"]
 LIST_WBANDB = ["Air", "H-V", "GR1-V", "GR1-U", "H-U", "GR2"]
 LIST_WBANDA = ["Line-in", "AM", "FM"] + LIST_WBANDB
 LIST_SQL = ["Open"] + ["%s" % x for x in range(1, 10)]
-LIST_STEP = ["Auto", "2.50 KHz", "5.00 KHz", "6.25 KHz", "8.33 KHz",
-             "9.00 KHz", "10.00 KHz", "12.50 KHz", "15.00 KHz", "20.00 KHz",
-             "25.00 KHz", "50.00 KHz", "100.00 KHz", "200.00 KHz"]
+_STEP_LIST = [2.5, 5., 6.25, 8.33, 9., 10., 12.5, 15., 20., 25., 50., 100.,
+              200.]
+LIST_STEP = ["Auto"] + ["{0:.2f} KHz".format(x) for x in _STEP_LIST]
 LIST_SMODE = ["F-1", "F-2"]
 
 # DTMF settings lists
@@ -631,6 +631,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         rf.valid_skips = SKIP_VALUES
         rf.valid_name_length = NAME_LENGTH
         rf.valid_dtcs_codes = DTCS_CODES
+        rf.valid_tuning_steps = _STEP_LIST
         rf.valid_bands = [self._air_range,
                           self._vhf_range,
                           self._vhf2_range,

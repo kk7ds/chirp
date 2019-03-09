@@ -393,6 +393,7 @@ class RT26Radio(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
         rf.memory_bounds = (1, 16)
+        rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = [(400000000, 520000000)]
 
         return rf

@@ -39,9 +39,10 @@ MSTRING_GMRSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
 ##### ID strings #####################################################
 
 # BTECH GMRS-V1
-GMRSV1_fp1 = "US32411"
-GMRSV1_fp2 = "US32416"
-GMRSV1_fp3 = "US32418"
+GMRSV1_fp1 = "US32411" # original
+GMRSV1_fp2 = "US32416" # original
+GMRSV1_fp3 = "US32418" # new rules
+GMRSV1_fp4 = "US32412" # original
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -97,7 +98,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
     MODEL = "GMRS-V1"
 
     _fileid = [GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
-    _is_orig = [GMRSV1_fp2, GMRSV1_fp1, ]
+    _is_orig = [GMRSV1_fp2, GMRSV1_fp1, GMRSV1_fp4, ]
 
     _magic = [MSTRING_GMRSV1, ]
     _magic_response_length = 8

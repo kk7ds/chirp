@@ -377,6 +377,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         rf.memory_bounds = (0, 127)
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_bands = self.VALID_BANDS
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 
         return rf
         

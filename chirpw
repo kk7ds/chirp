@@ -25,12 +25,14 @@ import locale
 import gettext
 import argparse
 import logging
+import urllib
 
 if six.PY3:
     from gi import pygtkcompat
     pygtkcompat.enable()
     pygtkcompat.enable_gtk(version='3.0')
 
+from chirp import chirp_common
 from chirp import directory
 from chirp import logger
 from chirp import elib_intl
@@ -41,6 +43,8 @@ directory.safe_import_drivers()
 
 LOG = logging.getLogger("chirpw")
 
+# Does not work with python3 chirpw
+# urllib.URLopener.version = chirp_common.http_user_agent()
 
 localepath = platform.get_platform().find_resource("locale")
 

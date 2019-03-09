@@ -530,6 +530,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         rf.valid_skips = SKIP_VALUES
         rf.valid_dtcs_codes = DTCS
         rf.memory_bounds = (1, self._upper)
+        rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
 
         # normal dual bands
         rf.valid_bands = [self._vhf_range, self._uhf_range]
