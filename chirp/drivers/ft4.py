@@ -237,7 +237,7 @@ def variable_len_resp(pipe):
             i += 1
             if i > toolong:
                 LOG.debug("Response too long. got" + util.hexprint(response))
-                raise errors.RadioError("Response too long.")
+                raise errors.RadioError("Response from radio too long.")
     return(response)
 
 
@@ -273,14 +273,18 @@ def sendcmd(pipe, cmd, response_len):
     return response
 
 
-def startcomms(radio):
+def startcomms(radio, way):
     """
     For either upload or download, put the radio into PROGRAM mode
     and check the radio's ID. In this preliminary version of the driver,
     the exact nature of the ID has been inferred from a single test case.
+        set up the progress bar
         send "PROGRAM" to command the radio into clone mode
         read the initial string (version?)
     """
+    progressbar = chirp_common.Status()
+    progressbar.msg = "Cloning " + way + " radio"
+    progressbar.max = radio.numblocks
     if b"QX" != sendcmd(radio.pipe, b"PROGRAM", 2):
         raise errors.RadioError("expected QX from radio.")
     id_response = sendcmd(radio.pipe, b'\x02', None)
@@ -290,11 +294,12 @@ def startcomms(radio):
             msg = "ID mismatch. Expected" + util.hexprint(radio.id_str)
             msg += ", Received:" + util.hexprint(id_response)
             LOG.warning(msg)
-            raise errors.RadioError("Incorrect ID.")
+            raise errors.RadioError("Incorrect ID read from radio.")
         else:
             msg = "ID suspect. Expected" + util.hexprint(radio.id_str)
             msg += ", Received:" + util.hexprint(id_response)
             LOG.warning(msg)
+    return progressbar
 
 
 def getblock(pipe, addr, image):
@@ -312,7 +317,7 @@ def getblock(pipe, addr, image):
         raise errors.RadioError("Incorrect response to read.")
     if checkSum8(response[1:20]) != bytearray(response)[20]:
         LOG.debug(b"Bad checksum: " + util.hexprint(response))
-        raise errors.RadioError("bad block checksum.")
+        raise errors.RadioError("bad block checksum on read from radio.")
     image[addr:addr+16] = response[4:20]
 
 
@@ -326,9 +331,11 @@ def do_download(radio):
     """
     image = bytearray(radio.get_memsize())
     pipe = radio.pipe  # Get the serial port connection
-    startcomms(radio)
+    progressbar = startcomms(radio, "from")
     for _i in range(radio.numblocks):
         getblock(pipe, 16 * _i, image)
+        progressbar.cur = _i
+        radio.status_fn(progressbar)
     sendcmd(pipe, b"END", 0)
     return memmap.MemoryMap(bytes(image))
 
@@ -351,10 +358,12 @@ def do_upload(radio):
       send "END"
     """
     pipe = radio.pipe  # Get the serial port connection
-    startcomms(radio)
+    progressbar = startcomms(radio, "to")
     data = get_mmap_data(radio)
     for _i in range(1, radio.numblocks):
         putblock(pipe, 16*_i, data[16*_i:16*(_i+1)])
+        progressbar.cur = _i
+        radio.status_fn(progressbar)
     sendcmd(pipe, b"END", 0)
     return
 # End serial transfer utilities
