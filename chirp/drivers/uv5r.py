@@ -1760,10 +1760,15 @@ class ROUV5REXAlias(chirp_common.Alias):
     MODEL = "UV-5R EX"
 
 
+class A5RAlias(chirp_common.Alias):
+    VENDOR = "Ansoko"
+    MODEL = "A-5R"
+
+
 @directory.register
 class BaofengUV5RGeneric(BaofengUV5R):
     ALIASES = [UV5XAlias, RT5RAlias, RT5RVAlias, RT5Alias, RH5RAlias,
-               ROUV5REXAlias]
+               ROUV5REXAlias, A5RAlias]
 
 
 @directory.register

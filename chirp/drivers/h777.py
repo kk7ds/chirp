@@ -237,6 +237,21 @@ class ArcshellAR6(chirp_common.Alias):
     MODEL = 'AR-6'
 
 
+class GV8SAlias(chirp_common.Alias):
+    VENDOR = 'Greaval'
+    MODEL = 'GV-8S'
+
+
+class GV9SAlias(chirp_common.Alias):
+    VENDOR = 'Greaval'
+    MODEL = 'GV-9S'
+
+
+class A8SAlias(chirp_common.Alias):
+    VENDOR = 'Ansoko'
+    MODEL = 'A-8S'
+
+
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -246,7 +261,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     MODEL = "BF-888"
     BAUD_RATE = 9600
 
-    ALIASES = [ArcshellAR5, ArcshellAR6]
+    ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias]
 
     # This code currently requires that ranges start at 0x0000
     # and are continious. In the original program 0x0388 and 0x03C8
