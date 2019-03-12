@@ -54,7 +54,8 @@ struct slot {
  u8 tx_dcs;     //see dcs table, but radio code = CHIRP code+1. 0==off
  u8 rx_dcs;     //see dcs table, but radio code = CHIRP code+1. 0==off
  u8 duplex;     //(auto,offset). (0,2,4,5)= (+,-,0, auto)
- ul16 offset;   //little-endian binary *25 kHz, +- per duplex
+ ul16 offset;   //little-endian binary * scaler, +- per duplex
+                   //scaler is 25 kHz for FT-4, 50 kHz for FT-65.
  u8 tx_width;   //0=wide, 1=narrow
  u8 step;       //STEPS (0-9)=(auto,5,6.25,10,12.5,15,20,25,50,100) kHz
  u8 sql_type;   //(0-6)==(off,r-tone,t-tone,tsql,rev tn,dcs,pager)
@@ -606,7 +607,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
 
         rp.pre_download = "".join([
             "1. Turn radio off.\n",
-            "2. Connect cable to SP jack.\n",
+            "2. Connect cable to MIC jack.\n",
             "3. Turn radio on.\n",
             "4. Press OK within 3 seconds"
             ]
@@ -1107,6 +1108,7 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     freq_offset_scale = 50000
     legal_steps = US_LEGAL_STEPS
+    # we need a deep copy here because we are adding deeper than the top level.
     class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
     add_paramdesc(
         class_group_descs, "misc", ("compander", "Compander", ["OFF", "ON"]))
