@@ -1040,7 +1040,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 store_bit(self._memobj.enable, ndx, False)
                 return
 
-        _mem.freq = mem.freq / 10
+        txfreq = mem.freq / 10     # really. RX freq is used for TX base
+        _mem.freq = txfreq
         self.encode_sql(mem, _mem)
         if mem.power:
             _mem.tx_pwr = POWER_LEVELS.index(mem.power)
@@ -1055,7 +1056,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             store_bit(self._memobj.scan, ndx, SKIPS.index(mem.skip))
             nametrim = (mem.name + "        ")[:8]
             self._memobj.names[ndx].chrs = bytearray(nametrim, "ascii")
-            txfreq = 0
             if mem.duplex == "split":
                 txfreq = mem.offset / 10
                 duplex = "off"    # radio ignores when tx != rx
