@@ -132,14 +132,6 @@ struct dtmfset {
  u8 digit[16];    //ASCII (*,#,-,0-9,A-D). (dash-filled)
 };
 
-//one block with stuff for the programmable keys
-//supports 4 keys. FT-4 has only 2 keys. FT-65 has all 4.
-struct progs {
- u8 modes[8];     //should be array of 2-byte structs, but bitwise.py refuses
- u8 ndx[4];
- u8 unused[8];
-};
-
 // area to be filled with 0xff, or just ignored
 struct notused {
   u8 unused[16];
@@ -147,6 +139,12 @@ struct notused {
 // areas we are still analyzing
 struct unknown {
   u8 notknown[16];
+};
+
+struct progc {
+  u8 usage;          //P key is (0-2) == unused, use P channel, use parm
+  u8 submode:2,      //if parm!=0 submode 0-3 of mode
+     parm:6;         //if usage == 2: if 0, use m-channel, else  mode
 };
 """
 # Actual memory layout. 0x215 blocks, in 20 groups.
@@ -170,8 +168,11 @@ struct misc  settings;        //2000  4-block collection of misc params
 struct notused notused4[2];   //2040
 struct dtmfset dtmf[9];       //2060  sets 1-9
 struct notused notused5;      //20f0
-struct progs progkeys;        //2100
-struct unknown notused6[3];   //2110
+//struct progs progkeys;      //2100  not a struct. bitwise.py refuses
+struct progc  progctl[4];        //2100 8 bytes. 1 2-byte struct per P key
+u8 pmemndx[4];                   //2108 4 bytes, 1 per P key
+u8 notused6[4];                  //210c fill out the block
+struct slot  prog[4];         //2110  P key "channel" array
 //---------------- end of FT-4 mem?
 """
 # The remaining mem is (apparently) not available on the FT4 but is
@@ -534,11 +535,18 @@ PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 
 # Three separate arrays of special channel mems.
 # Each special has unique constrants: band, name yes/no, and pms L/U
+# The FT-65 class replaces the "prog" entry in this list.
+# The name field must be the name of a slot array in MEM_FORMAT
 SPECIALS = [
     ("pms", PMSNAMES),
     ("vfo", ["VFO A UHF", "VFO A VHF", "VFO B UHF", "VFO B UHF", "VFO B FM"]),
-    ("home", ["HOME UHF", "HOME VHF", "HOME FM"])
+    ("home", ["HOME UHF", "HOME VHF", "HOME FM"]),
+    ("prog", ["P1", "P2"])
     ]
+FT65_PROGS = ("prog", ["P1", "P2", "P3", "P4"])
+FT65_SPECIALS = list(SPECIALS)    # a shallow copy works here
+FT65_SPECIALS[-1] = FT65_PROGS    # replace the last entry (P key names)
+
 
 # None, and 50 Tones. Use this explicit array because the
 # one in chirp_common could change and no longer describe our radio
@@ -620,7 +628,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def get_features(self):
 
         rf = chirp_common.RadioFeatures()
-        specials = [name for s in SPECIALS for name in s[1]]
+        specials = [name for s in self.class_specials for name in s[1]]
         rf.valid_special_chans = specials
         rf.memory_bounds = (1, self.MAX_MEM_SLOT)
         rf.valid_duplexes = DUPLEX
@@ -704,35 +712,42 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 dtmf_digits, DTMF_CHARS,
                 "dtmf_%i" % i, "DTMF Autodialer Memory %i" % i, group)
 
-    def apply_P(self, element, pnum):
-        self.memobj.progkeys.modes[pnum * 2] = [0, 2][element.value]
+    def apply_P(self, element, pnum, memobj):
+        memobj.progctl[pnum].usage = element.value
 
-    def apply_Pmode(self, element, pnum):
-        self.memobj.progkeys.modes[pnum * 2 + 1] = element.value
+    def apply_Pmode(self, element, pnum, memobj):
+        memobj.progctl[pnum].parm = element.value
 
-    def apply_Pmem(self, element, pnum):
-        self.memobj.progkeys.ndx[pnum] = element.value
+    def apply_Psubmode(self, element, pnum, memobj):
+        memobj.progctl[pnum].submode = element.value
 
-    MEMLIST = ["%d" % i for i in range(1, MAX_MEM_SLOT)] + PMSNAMES
+    def apply_Pmem(self, element, pnum, memobj):
+        memobj.pmemndx[pnum] = element.value
+
+    MEMLIST = ["%d" % i for i in range(1, MAX_MEM_SLOT + 1)] + PMSNAMES
+    USAGE_LIST = ["unused", "P channel", "mode or M channel"]
 
     # called when found in the group_descriptions table
     # returns the settings for the programmable keys (P1-P4)
     def get_progs(self, group, parm):
-        _progkeys = self._memobj.progkeys
+        _progctl = self._memobj.progctl
+        _progndx = self._memobj.pmemndx
 
-        def get_prog(i, val_list, valndx, sname, longname, apply):
+        def get_prog(i, val_list, valndx, sname, longname, f_apply):
+            k = str(i + 1)
             val = val_list[valndx]
             valuelist = RadioSettingValueList(val_list, val)
-            rs = RadioSetting(sname + str(i), longname + str(i), valuelist)
-            rs.set_apply_callback(apply, i)
+            rs = RadioSetting(sname + k, longname + k, valuelist)
+            rs.set_apply_callback(f_apply, i, self._memobj)
             group.append(rs)
         for i in range(0, self.Pkeys):
-            i1 = i + 1
-            get_prog(i1, ["unused", "in use"],  _progkeys.modes[i * 2],
+            get_prog(i, self.USAGE_LIST,  _progctl[i].usage,
                      "P", "Programmable key ",  self.apply_P)
-            get_prog(i1, self.SETMODES, _progkeys.modes[i * 2 + 1], "modeP",
+            get_prog(i, self.SETMODES, _progctl[i].parm, "modeP",
                      "mode for Programmable key ",  self.apply_Pmode)
-            get_prog(i1, self.MEMLIST, _progkeys.ndx[i], "memP",
+            get_prog(i, ["0", "1", "2", "3"], _progctl[i].submode, "submodeP",
+                     "submode for Programmable key ",  self.apply_Psubmode)
+            get_prog(i, self.MEMLIST, _progndx[i], "memP",
                      "mem for Programmable key ",  self.apply_Pmem)
     # ------------ End of special settings handlers.
 
@@ -937,7 +952,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         sname = memref
         if isinstance(memref, str):   # named special?
             num = self.MAX_MEM_SLOT + 1
-            for x in SPECIALS:
+            for x in self.class_specials:
                 try:
                     ndx = x[1].index(memref)
                     array = x[0]
@@ -950,7 +965,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             num += ndx
         elif memref > self.MAX_MEM_SLOT:    # numbered special?
             ndx = memref - self.MAX_MEM_SLOT
-            for x in SPECIALS:
+            for x in self.class_specials:
                 if ndx < len(x[1]):
                     array = x[0]
                     sname = x[1][ndx]
@@ -1071,6 +1086,7 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     freq_offset_scale = 25000
     legal_steps = US_LEGAL_STEPS
     class_group_descs = YaesuSC35GenericRadio.group_descriptions
+    class_specials = SPECIALS
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1112,6 +1128,7 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
     add_paramdesc(
         class_group_descs, "misc", ("compander", "Compander", ["OFF", "ON"]))
+    class_specials = FT65_SPECIALS
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
