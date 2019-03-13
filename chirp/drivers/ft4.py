@@ -1103,8 +1103,7 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
         ]
 
 
-# don't register the FT-65 in the production version until it is tested
-# @directory.register
+@directory.register
 class YaesuFT65Radio(YaesuSC35GenericRadio):
     MODEL = "FT-65R"
     _basetype = BASETYPE_FT65
