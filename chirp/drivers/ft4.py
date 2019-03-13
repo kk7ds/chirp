@@ -453,9 +453,9 @@ SKIPS = ["", "S"]
 
 BASETYPE_FT4 = ["FT-4XR", "FT-4XE"]
 BASETYPE_FT65 = ["FT-65R"]
-POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
+POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.5),
                 chirp_common.PowerLevel("Mid", watts=2.5),
-                chirp_common.PowerLevel("Low", watts=0.5)]
+                chirp_common.PowerLevel("High", watts=5.0)]
 
 # these steps encode to 0-9 on all radios, but encoding #2 is disallowed
 # on the US versions (FT-4XR)
