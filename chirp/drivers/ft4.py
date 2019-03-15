@@ -533,14 +533,14 @@ PASSWD_CHARS = "0123456789"
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurtuvwxyz*# "
 PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 
-# Three separate arrays of special channel mems.
+# Four separate arrays of special channel mems.
 # Each special has unique constrants: band, name yes/no, and pms L/U
 # The FT-65 class replaces the "prog" entry in this list.
 # The name field must be the name of a slot array in MEM_FORMAT
 SPECIALS = [
     ("pms", PMSNAMES),
-    ("vfo", ["VFO A UHF", "VFO A VHF", "VFO B UHF", "VFO B UHF", "VFO B FM"]),
-    ("home", ["HOME UHF", "HOME VHF", "HOME FM"]),
+    ("vfo", ["VFO A UHF", "VFO A VHF", "VFO B FM", "VFO B VHF", "VFO B UHF"]),
+    ("home", ["HOME FM", "HOME VHF", "HOME UHF"]),
     ("prog", ["P1", "P2"])
     ]
 FT65_PROGS = ("prog", ["P1", "P2", "P3", "P4"])
