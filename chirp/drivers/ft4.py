@@ -261,7 +261,7 @@ def sendcmd(pipe, cmd, response_len):
         msg = "Bad echo. Sent:" + util.hexprint(cmd) + ", "
         msg += "Received:" + util.hexprint(echo)
         LOG.debug(msg)
-        raise errors.RadioError("Incorrect echo on serial port.")
+        raise errors.RadioError("Incorrect echo on serial port. Bad cable?")
     if response_len is None:
         return variable_len_resp(pipe)
     if response_len > 0:
@@ -273,6 +273,23 @@ def sendcmd(pipe, cmd, response_len):
         LOG.debug("missing ack: expected 0x06, got" + util.hexprint(ack))
         raise errors.RadioError("Incorrect ACK on serial port.")
     return response
+
+
+def enter_clonemode(radio):
+    """
+    Send the PROGRAM command and check the response. Retry if
+    needed. After 3 tries, send an "END" and try some more if
+    it is acknowledged.
+    """
+    for use_end in range(0, 3):
+        for i in range(0, 3):
+            try:
+                if b"QX" == sendcmd(radio.pipe, b"PROGRAM", 2):
+                    return
+            except:
+                continue
+        sendcmd(radio.pipe, b"END", 0)
+    raise errors.RadioError("expected QX from radio.")
 
 
 def startcomms(radio, way):
@@ -287,8 +304,7 @@ def startcomms(radio, way):
     progressbar = chirp_common.Status()
     progressbar.msg = "Cloning " + way + " radio"
     progressbar.max = radio.numblocks
-    if b"QX" != sendcmd(radio.pipe, b"PROGRAM", 2):
-        raise errors.RadioError("expected QX from radio.")
+    enter_clonemode(radio)
     id_response = sendcmd(radio.pipe, b'\x02', None)
     if id_response != radio.id_str:
         substr0 = radio.id_str[:radio.id_str.find('\x00')]
@@ -309,6 +325,7 @@ def getblock(pipe, addr, image):
     read a single 16-byte block from the radio.
     send the command and check the response
     places the response into the correct offset in the supplied bytearray
+    returns True if successful, False if error.
     """
     cmd = struct.pack(">cHb", b"R", addr, 16)
     response = sendcmd(pipe, cmd, 21)
@@ -316,11 +333,12 @@ def getblock(pipe, addr, image):
         msg = "Bad response. Sent:" + util.hexprint(cmd) + ", "
         msg += b"Received:" + util.hexprint(response)
         LOG.debug(msg)
-        raise errors.RadioError("Incorrect response to read.")
+        return False
     if checkSum8(response[1:20]) != bytearray(response)[20]:
         LOG.debug(b"Bad checksum: " + util.hexprint(response))
-        raise errors.RadioError("bad block checksum on read from radio.")
+        return False
     image[addr:addr+16] = response[4:20]
+    return True
 
 
 def do_download(radio):
@@ -334,9 +352,14 @@ def do_download(radio):
     image = bytearray(radio.get_memsize())
     pipe = radio.pipe  # Get the serial port connection
     progressbar = startcomms(radio, "from")
-    for _i in range(radio.numblocks):
-        getblock(pipe, 16 * _i, image)
-        progressbar.cur = _i
+    for blocknum in range(radio.numblocks):
+        for i in range(0, 3):
+            if getblock(pipe, 16 * blocknum, image):
+                break
+            if i == 2:
+                raise errors.RadioError(
+                   "read block from radio failed 3 times")
+        progressbar.cur = blocknum
         radio.status_fn(progressbar)
     sendcmd(pipe, b"END", 0)
     return memmap.MemoryMap(bytes(image))
@@ -614,10 +637,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             )
 
         rp.pre_download = "".join([
-            "1. Turn radio off.\n",
-            "2. Connect cable to MIC jack.\n",
-            "3. Turn radio on.\n",
-            "4. Press OK within 3 seconds"
+            "1. Connect programming cable to MIC jack.\n",
+            "2. Press OK."
             ]
             )
         rp.pre_upload = rp.pre_download
