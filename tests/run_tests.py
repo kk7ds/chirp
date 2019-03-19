@@ -237,7 +237,8 @@ class TestCase:
                     msg = "Field `%s' " % k + \
                         "is `%s', " % b.__dict__[k] + \
                         "expected `%s' " % v
-
+                    if k == "duplex" and b.__dict__[k] == "off":
+                        continue
                     details = msg
                     details += os.linesep + "### Wanted:" + os.linesep
                     details += os.linesep.join(["%s:%s" % (k, v) for k, v
