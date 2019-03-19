@@ -553,7 +553,7 @@ for name in chirp_common.CROSS_MODES:
 DTMF_CHARS = "0123456789ABCD*#- "
 CW_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ "
 PASSWD_CHARS = "0123456789"
-CHARSET = CW_ID_CHARS + "abcdefghijklmnopqurtuvwxyz*#+-/"
+CHARSET = CW_ID_CHARS + "abcdefghijklmnopqrstuvwxyz*+-/@"
 PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 
 # Four separate arrays of special channel mems.
