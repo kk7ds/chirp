@@ -237,6 +237,9 @@ class TestCase:
                     msg = "Field `%s' " % k + \
                         "is `%s', " % b.__dict__[k] + \
                         "expected `%s' " % v
+                    # If we set a channel that came back with a duplex
+                    # of 'off', we may have been outside the transmit range of
+                    # the radio, so we should not fail.
                     if k == "duplex" and b.__dict__[k] == "off":
                         continue
                     details = msg
