@@ -566,6 +566,7 @@ SPECIALS = [
     ("home", ["HOME FM", "HOME VHF", "HOME UHF"]),
     ("prog", ["P1", "P2"])
     ]
+BAND_ASSIGNMENTS = [2, 1, 0, 1, 2, 0, 1, 2]  # bands for the vfos and homes
 FT65_PROGS = ("prog", ["P1", "P2", "P3", "P4"])
 FT65_SPECIALS = list(SPECIALS)    # a shallow copy works here
 FT65_SPECIALS[-1] = FT65_PROGS    # replace the last entry (P key names)
@@ -985,7 +986,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 raise
             num += ndx
         elif memref > self.MAX_MEM_SLOT:    # numbered special?
-            ndx = memref - self.MAX_MEM_SLOT
+            ndx = memref - (self.MAX_MEM_SLOT + 1)
             for x in self.class_specials:
                 if ndx < len(x[1]):
                     array = x[0]
@@ -1052,6 +1053,21 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
 
         return mem
 
+    def enforce_band(self, memloc, freq, mem_num, sname):
+        """
+        vfo and home channels are each restricted to a particular band.
+        If the frequency is not in the band, use the lower bound
+        Raise an exception to cause UI to pop up an error message
+        """
+        first_vfo_num = self.MAX_MEM_SLOT + len(PMSNAMES) + 1
+        band = BAND_ASSIGNMENTS[mem_num - first_vfo_num]
+        frange = self.valid_bands[band]
+        if freq >= frange[0] and freq <= frange[1]:
+            memloc.freq = freq / 10
+            return freq
+        memloc.freq = frange[0] / 10
+        raise Exception("freq out of range for %s" % sname)
+
     # modify a radio channel in memobj based on info in CHIRP canonical form
     def set_memory(self, mem):
         _mem, ndx, num, regtype, sname = self.slotloc(mem.number)
@@ -1082,6 +1098,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 duplex = "off"    # radio ignores when tx != rx
             self._memobj.txfreqs[num-1].freq = txfreq
         _mem.duplex = DUPLEX.index(duplex)
+        if regtype in ["vfo", "home"]:
+            self.enforce_band(_mem, mem.freq, num, sname)
 
         return
 
