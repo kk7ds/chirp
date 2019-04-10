@@ -1015,7 +1015,7 @@ of file.
         except:
             band = 14  # 2m default
 
-        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php" + \
+        query = "http://chirp.danplanet.com/query/rb/1.0/chirp" + \
             "?func=default&state_id=%s&band=%s&freq=%%&band6=%%&loc=%%" + \
             "&county_id=%s&status_id=%%&features=%%&coverage=%%&use=%%"
         query = query % (code,
@@ -1125,7 +1125,7 @@ of file.
         except:
             band = '%'
 
-        query = "https://www.repeaterbook.com/repeaters/downloads/CHIRP/" \
+        query = "http://chirp.danplanet.com/query/rb/1.0/app_default" \
                 "app_direct.php?loc=%s&band=%s&dist=%s" % (loc, band, dist)
         print query
 
