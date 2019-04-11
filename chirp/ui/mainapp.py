@@ -1125,8 +1125,8 @@ of file.
         except:
             band = '%'
 
-        query = "http://chirp.danplanet.com/query/rb/1.0/app_default" \
-                "app_direct.php?loc=%s&band=%s&dist=%s" % (loc, band, dist)
+        query = "http://chirp.danplanet.com/query/rb/1.0/app_direct" \
+                "?loc=%s&band=%s&dist=%s" % (loc, band, dist)
         print query
 
         # Do this in case the import process is going to take a while
