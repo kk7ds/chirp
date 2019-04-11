@@ -464,6 +464,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         rf.can_odd_split = True
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        rf.valid_tuning_steps = STEPS
         rf.valid_cross_modes = [
             "Tone->Tone",
             "Tone->DTCS",
