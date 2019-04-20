@@ -503,6 +503,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_bands = self.VALID_BANDS
         rf.memory_bounds = (1, 128)
+        rf.valid_tuning_steps = STEPS
         return rf
 
     def get_sub_devices(self):
