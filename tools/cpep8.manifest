@@ -16,6 +16,7 @@
 ./chirp/drivers/ap510.py
 ./chirp/drivers/baofeng_uv3r.py
 ./chirp/drivers/bjuv55.py
+./chirp/drivers/btech.py
 ./chirp/drivers/ft1802.py
 ./chirp/drivers/ft1d.py
 ./chirp/drivers/ft2800.py
