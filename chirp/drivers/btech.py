@@ -79,9 +79,15 @@ LIST_SKIPTX = ["Off", "Skip 1", "Skip 2"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 LIST_STEP = [str(x) for x in STEPS]
 LIST_SYNC = ["Off", "AB", "CD", "AB+CD"]
-LIST_TMR = ["OFF", "M+A", "M+B", "M+C", "M+D", "M+A+B", "M+A+C", "M+A+D",
-            "M+B+C", "M+B+D", "M+C+D", "M+A+B+C", "M+A+B+D", "M+A+C+D",
-            "M+B+C+D", "A+B+C+D"]
+# the first 12 TMR choices common to all color display mobile radios
+LIST_TMR12 = ["OFF", "M+A", "M+B", "M+C", "M+D", "M+A+B", "M+A+C", "M+A+D",
+              "M+B+C", "M+B+D", "M+C+D", "M+A+B+C"]
+# the 16 choice list for color display mobile radios that correctly implement
+# the full 16 TMR choices
+LIST_TMR16 = LIST_TMR12 + ["M+A+B+D", "M+A+C+D", "M+B+C+D", "A+B+C+D"]
+# the 15 choice list for color mobile radios that are missing the M+A+B+D
+# choice in the TMR menu
+LIST_TMR15 = LIST_TMR12 + ["M+A+C+D", "M+B+C+D", "A+B+C+D"]
 LIST_TOT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXDISP = ["Power", "Mic Volume"]
 LIST_TXP = ["High", "Low"]
@@ -1038,8 +1044,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         if self.COLOR_LCD:
             tmr = RadioSetting("settings.tmr", "Transceiver multi-receive",
                                RadioSettingValueList(
-                                   LIST_TMR,
-                                   LIST_TMR[_mem.settings.tmr]))
+                                   self.LIST_TMR,
+                                   self.LIST_TMR[_mem.settings.tmr]))
             basic.append(tmr)
         else:
             tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -3581,6 +3587,7 @@ class BTechColor(BTechMobileCommon):
     """BTECH's Color LCD Mobile and alike radios"""
     COLOR_LCD = True
     NAME_LENGTH = 8
+    LIST_TMR = LIST_TMR16
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -3679,6 +3686,7 @@ class KT7900D(BTechColor):
     VENDOR = "QYT"
     MODEL = "KT7900D"
     BANDS = 4
+    LIST_TMR = LIST_TMR15
     _vhf_range = (136000000, 175000000)
     _220_range = (200000000, 271000000)
     _uhf_range = (400000000, 481000000)
@@ -3695,6 +3703,7 @@ class KT8900D(BTechColor):
     VENDOR = "QYT"
     MODEL = "KT8900D"
     BANDS = 2
+    LIST_TMR = LIST_TMR15
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
