@@ -3850,8 +3850,8 @@ struct {
      optsig:2;
   u8 unknown3:3,
      scramble:1,
-     unknown4:3,
-     power:1;
+     unknown4:2,
+     power:2;
   u8 unknown5:1,
      wide:1,
      unknown6:2,
