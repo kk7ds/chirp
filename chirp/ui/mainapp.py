@@ -1427,7 +1427,7 @@ of file.
 
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)
-        d.set_copyright("Copyright 2015 Dan Smith (KK7DS)")
+        d.set_copyright("Copyright 2019 CHIRP Software LLC")
         d.set_website("http://chirp.danplanet.com")
         d.set_authors(("Dan Smith KK7DS <dsmith@danplanet.com>",
                        _("With significant contributions from:"),
