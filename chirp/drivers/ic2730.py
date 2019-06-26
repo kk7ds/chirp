@@ -85,7 +85,7 @@ u16  mem_writes_count;
 # Guessing some of these intermediate values are with the Pocket Beep function,
 # but I haven't reliably reproduced these.
 TMODES = ["", "Tone", "??0", "TSQL", "??1", "DTCS", "TSQL-R", "DTCS-R",
-       "DTC.OFF", "TON.DTC", "DTC.TSQ", "TON.TSQ"]
+          "DTC.OFF", "TON.DTC", "DTC.TSQ", "TON.TSQ"]
 DUPLEX = ["", "-", "+"]
 MODES = ["FM", "NFM", "AM", "NAM"]
 DTCSP = ["NN", "NR", "RN", "RR"]
@@ -128,7 +128,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
     MODEL = "IC-2730A"
 
     _model = "\x35\x98\x00\x01"
-    _memsize = 21312 # 0x5340
+    _memsize = 21312  # 0x5340
     _endframe = "Icom Inc\x2e4E"
 
     _ranges = [(0x0000, 0x5300, 64),
@@ -215,9 +215,9 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         frequency_multiplier = 5000
         offset_multiplier = 5000
         if frequency_flags & 0x08:
-          frequency_multiplier = 6250
+            frequency_multiplier = 6250
         if frequency_flags & 0x01:
-          offset_multiplier = 6250
+            offset_multiplier = 6250
         # flag of 0x10 is related to tuning step of 25./3, but it is not exact,
         # so skip this for now
 
@@ -272,11 +272,11 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         frequency_multiplier = 5000
         offset_multiplier = 5000
         if mem.freq % 5000 != 0 and mem.freq % 6250 == 0:
-          frequency_flags |= 0x08
-          frequency_multiplier = 6250
+            frequency_flags |= 0x08
+            frequency_multiplier = 6250
         if mem.offset % 5000 != 0 and mem.offset % 6250 == 0:
-          frequency_flags |= 0x01
-          offset_multiplier = 6250
+            frequency_flags |= 0x01
+            offset_multiplier = 6250
         _mem.freq = mem.freq / frequency_multiplier
         _mem.offset = mem.offset / offset_multiplier
         _mem.freq_flags = frequency_flags

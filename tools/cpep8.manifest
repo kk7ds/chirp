@@ -39,6 +39,7 @@
 ./chirp/drivers/ic2100.py
 ./chirp/drivers/ic2200.py
 ./chirp/drivers/ic2720.py
+./chirp/drivers/ic2730.py
 ./chirp/drivers/ic2820.py
 ./chirp/drivers/ic9x.py
 ./chirp/drivers/ic9x_icf.py
