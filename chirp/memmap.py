@@ -84,3 +84,10 @@ class MemoryMap:
     def truncate(self, size):
         """Truncate the memory map to @size"""
         self._data = self._data[:size]
+
+
+# Py3 branch compatibility
+class MemoryMapBytes(MemoryMap):
+    def __init__(self, data):
+        # Expects data is a newbytes
+        MemoryMap.__init__(self, ''.join(chr(b) for b in data))
