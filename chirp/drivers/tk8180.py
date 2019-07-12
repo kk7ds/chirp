@@ -13,12 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from builtins import bytes
-
 import struct
 import os
 import time
 import logging
+from collections import OrderedDict
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
@@ -28,6 +27,18 @@ from chirp.settings import RadioSettingValueString, RadioSettingValueInteger
 from chirp.settings import RadioSettings
 
 LOG = logging.getLogger(__name__)
+
+# Gross hack to handle missing future module on un-updatable
+# platforms like MacOS. Just avoid registering these radio
+# classes for now.
+try:
+    from builtins import bytes
+    has_future = True
+except ImportError:
+    has_future = False
+    LOG.warning('python-future package is not '
+                'available; %s requires it' % __name__)
+
 
 HEADER_FORMAT = """
 #seekto 0x0100;
@@ -41,21 +52,75 @@ struct {
   u8 unknown3[11];
 } header;
 
-#seekto 0x0160;
+#seekto 0x0140;
 struct {
+  // 0x0140
+  u8 unknown1;
+  u8 sublcd;
+  u8 unknown2[30];
+
+  // 0x0160
   char pon_msgtext[12];
-  u8 unknown1[4];
-  u8 unknown2[35];
+  u8 min_volume;
+  u8 max_volume;
+  u8 lo_volume;
+  u8 hi_volume;
+
+  // 0x0170
+  u8 tone_volume_offset;
+  u8 poweron_tone;
+  u8 control_tone;
+  u8 warning_tone;
+  u8 alert_tone;
+  u8 sidetone;
+  u8 locator_tone;
+  u8 unknown3[2];
+  u8 ignition_mode;
+  u8 ignition_time;  // In tens of minutes (6 = 1h)
+  u8 micsense;
+  ul16 modereset;
+  u8 min_vol_preset;
+  u8 unknown4;
+
+  // 0x0180
+  u8 unknown5[16];
+
+  // 0x0190
+  u8 unknown6[3];
   u8 pon_msgtype;
+  u8 unknown7[8];
+  u8 unknown8_1:2,
+     ssi:1,
+     busy_led:1,
+     power_switch_memory:1,
+     scrambler_memory:1,
+     unknown8_2:1,
+     off_hook_decode:1;
+  u8 unknown9_1:5,
+     clockfmt:1,
+     datefmt:1,
+     ignition_sense:1;
+  u8 unknownA[2];
+
+  // 0x01A0
+  u8 unknownB[8];
+  u8 ptt_timer;
+  u8 unknownB2[3];
+  u8 ptt_proceed:1,
+     unknownC_1:3,
+     tone_off:1,
+     ost_memory:1,
+     unknownC_2:1,
+     ptt_release:1;
+  u8 unknownD[3];
 } settings;
 
 #seekto 0x01E0;
 struct {
-  char name[8];
-  u8 unknown[4];
-  ul16 rxtone[2];
-  ul16 txtone[2];
-} ost_tones[39];
+  char name[12];
+  ul16 rxtone;
+  ul16 txtone;
+} ost_tones[40];
 
 #seekto 0x0A00;
 ul16 zone_starts[128];
@@ -66,7 +131,16 @@ struct zoneinfo {
   u8 unknown1[2];
   u8 count;
   char name[12];
-  u8 unknown2[15];
+  u8 unknown2[2];
+  ul16 timeout;    // 15-1200
+  ul16 tot_alert;  // 10
+  ul16 tot_rekey;  // 60
+  ul16 tot_reset;  // 15
+  u8 unknown3[3];
+  u8 unknown21:2,
+     bcl_override:1,
+     unknown22:5;
+  u8 unknown5;
 };
 
 struct memory {
@@ -99,11 +173,41 @@ struct {
 } zone%(index)i;
 """
 
-STARTUP_MODES = {0xFF: 'Off',
-                 0x30: 'Text',
-                 0x31: 'Clock'}
+STARTUP_MODES = ['Text', 'Clock']
+
+VOLUMES = OrderedDict([(str(x), x) for x in range(0, 30)])
+VOLUMES.update({'Selectable': 0x30,
+                'Current': 0xFF})
+VOLUMES_REV = {v: k for k, v in VOLUMES.items()}
+
+MIN_VOL_PRESET = {'Preset': 0x30,
+                  'Lowest Limit': 0x31}
+MIN_VOL_PRESET_REV = {v: k for k, v in MIN_VOL_PRESET.items()}
+
+SUBLCD = ['Zone Number', 'CH/GID Number', 'OSD List Number']
+CLOCKFMT = ['12H', '24H']
+DATEFMT = ['Day/Month', 'Month/Day']
+MICSENSE = ['On']
+
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
+
+
+def set_choice(setting, obj, key, choices, default='Off'):
+    settingstr = str(setting.value)
+    if settingstr == default:
+        val = 0xFF
+    else:
+        val = choices.index(settingstr) + 0x30
+    setattr(obj, key, val)
+
+
+def get_choice(obj, key, choices, default='Off'):
+    val = getattr(obj, key)
+    if val == 0xFF:
+        return default
+    else:
+        return choices[val - 0x30]
 
 
 def make_frame(cmd, addr, data=b""):
@@ -362,6 +466,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                     'count': max(count, 2),   # bitwise bug, one-element array
                     'index': index})
 
+        print(mem_format)
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def expand_mmap(self, zone_sizes):
@@ -648,9 +753,216 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         else:
             skipbyte &= ~(1 << (mem.number - 1) % 8)
 
-    def get_settings(self):
-        zones = RadioSettingGroup('zones', 'Zones')
+    def _pure_choice_setting(self, settings_key, name, choices, default='Off'):
+        if default is not None:
+            choices = [default] + choices
+        s = RadioSetting(
+            settings_key, name,
+            RadioSettingValueList(
+                choices,
+                get_choice(self._memobj.settings, settings_key,
+                           choices, default)))
+        s.set_apply_callback(set_choice, self._memobj.settings,
+                             settings_key, choices, default)
+        return s
+
+    def _inverted_flag_setting(self, key, name, obj=None):
+        if obj is None:
+            obj = self._memobj.settings
+
+        def apply_inverted(setting, key):
+            setattr(obj, key, not int(setting.value))
+
+        v = not getattr(obj, key)
+        s = RadioSetting(
+                key, name,
+                RadioSettingValueBoolean(v))
+        s.set_apply_callback(apply_inverted, key)
+        return s
+
+    def _get_common1(self):
+        settings = self._memobj.settings
+        common1 = RadioSettingGroup('common1', 'Common 1')
+
+        common1.append(self._pure_choice_setting('sublcd',
+                                                 'Sub LCD Display',
+                                                 SUBLCD))
+
+        def apply_clockfmt(setting):
+            settings.clockfmt = CLOCKFMT.index(str(setting.value))
+
+        clockfmt = RadioSetting(
+            'clockfmt', 'Clock Format',
+            RadioSettingValueList(CLOCKFMT,
+                                  CLOCKFMT[settings.clockfmt]))
+        clockfmt.set_apply_callback(apply_clockfmt)
+        common1.append(clockfmt)
+
+        def apply_datefmt(setting):
+            settings.datefmt = DATEFMT.index(str(setting.value))
+
+        datefmt = RadioSetting(
+            'datefmt', 'Date Format',
+            RadioSettingValueList(DATEFMT,
+                                  DATEFMT[settings.datefmt]))
+        datefmt.set_apply_callback(apply_datefmt)
+        common1.append(datefmt)
+
+        common1.append(self._pure_choice_setting('micsense',
+                                                 'Mic Sense High',
+                                                 MICSENSE))
+
+        def apply_modereset(setting):
+            val = int(setting.value)
+            if val == 0:
+                val = 0xFFFF
+            settings.modereset = val
+
+        _modereset = int(settings.modereset)
+        if _modereset == 0xFFFF:
+            _modereset = 0
+        modereset = RadioSetting(
+            'modereset', 'Mode Reset Timer',
+            RadioSettingValueInteger(0, 300, _modereset))
+        modereset.set_apply_callback(apply_modereset)
+        common1.append(modereset)
+
+        inverted_flags = [('power_switch_memory', 'Power Switch Memory'),
+                          ('scrambler_memory', 'Scrambler Memory'),
+                          ('off_hook_decode', 'Off-Hook Decode'),
+                          ('ssi', 'Signal Strength Indicator'),
+                          ('ignition_sense', 'Ingnition Sense')]
+        for key, name in inverted_flags:
+            common1.append(self._inverted_flag_setting(key, name))
+
+        common1.append(self._pure_choice_setting('ignition_mode',
+                                                 'Ignition Mode',
+                                                 ['Ignition & SW',
+                                                  'Ignition Only'],
+                                                 None))
+
+        def apply_it(setting):
+            settings.ignition_time = int(setting.value) / 600
+
+        _it = int(settings.ignition_time) * 600
+        it = RadioSetting(
+            'it', 'Ignition Timer (s)',
+            RadioSettingValueInteger(10, 28800, _it))
+        it.set_apply_callback(apply_it)
+        common1.append(it)
+
+        return common1
+
+    def _get_common2(self):
+        settings = self._memobj.settings
         common2 = RadioSettingGroup('common2', 'Common 2')
+
+        def apply_ponmsgtext(setting):
+            settings.pon_msgtext = (
+                str(setting.value)[:12].strip().ljust(12, '\x00'))
+
+        common2.append(
+            self._pure_choice_setting('pon_msgtype', 'Power On Message Type',
+                                      STARTUP_MODES))
+
+        _text = str(settings.pon_msgtext).rstrip('\x00')
+        text = RadioSetting('settings.pon_msgtext',
+                            'Power On Text',
+                            RadioSettingValueString(
+                                0, 12, _text))
+        text.set_apply_callback(apply_ponmsgtext)
+        common2.append(text)
+
+        def apply_volume(setting, key):
+            setattr(settings, key, VOLUMES[str(setting.value)])
+
+        volumes = {'poweron_tone': 'Power-on Tone',
+                   'control_tone': 'Control Tone',
+                   'warning_tone': 'Warning Tone',
+                   'alert_tone': 'Alert Tone',
+                   'sidetone': 'Sidetone',
+                   'locator_tone': 'Locator Tone'}
+        for value, name in volumes.items():
+            setting = getattr(settings, value)
+            volume = RadioSetting('settings.%s' % value, name,
+                                  RadioSettingValueList(
+                                      VOLUMES.keys(),
+                                      VOLUMES_REV.get(int(setting), 0)))
+            volume.set_apply_callback(apply_volume, value)
+            common2.append(volume)
+
+        def apply_vol_level(setting, key):
+            setattr(settings, key, int(setting.value))
+
+        levels = {'lo_volume': 'Low Volume Level (Fixed Volume)',
+                  'hi_volume': 'High Volume Level (Fixed Volume)',
+                  'min_volume': 'Minimum Volume',
+                  'max_volume': 'Maximum Volume'}
+        for value, name in levels.items():
+            setting = getattr(settings, value)
+            volume = RadioSetting(
+                'settings.%s' % value, name,
+                RadioSettingValueInteger(1, 31, int(setting)))
+            volume.set_apply_callback(apply_vol_level, value)
+            common2.append(volume)
+
+        def apply_vo(setting):
+            val = int(setting.value)
+            if val < 0:
+                val = abs(val) | 0x80
+            settings.tone_volume_offset = val
+
+        _voloffset = int(settings.tone_volume_offset)
+        if _voloffset & 0x80:
+            _voloffset = abs(_voloffset & 0x7F) * -1
+        voloffset = RadioSetting(
+            'tvo', 'Tone Volume Offset',
+            RadioSettingValueInteger(
+                -5, 5,
+                _voloffset))
+        voloffset.set_apply_callback(apply_vo)
+        common2.append(voloffset)
+
+        def apply_mvp(setting):
+            settings.min_vol_preset = MIN_VOL_PRESET[str(setting.value)]
+
+        _volpreset = int(settings.min_vol_preset)
+        volpreset = RadioSetting(
+            'mvp', 'Minimum Volume Preset',
+            RadioSettingValueList(MIN_VOL_PRESET.keys(),
+                                  MIN_VOL_PRESET_REV[_volpreset]))
+        volpreset.set_apply_callback(apply_mvp)
+        common2.append(volpreset)
+
+        return common2
+
+    def _get_conventional(self):
+        settings = self._memobj.settings
+
+        conv = RadioSettingGroup('conv', 'Conventional')
+        inverted_flags = [('busy_led', 'Busy LED'),
+                          ('ost_memory', 'OST Status Memory'),
+                          ('tone_off', 'Tone Off'),
+                          ('ptt_release', 'PTT Release tone'),
+                          ('ptt_proceed', 'PTT Proceed Tone')]
+        for key, name in inverted_flags:
+            conv.append(self._inverted_flag_setting(key, name))
+
+        def apply_pttt(setting):
+            settings.ptt_timer = int(setting.value)
+
+        pttt = RadioSetting(
+            'pttt', 'PTT Proceed Tone Timer (ms)',
+            RadioSettingValueInteger(0, 6000, int(settings.ptt_timer)))
+        pttt.set_apply_callback(apply_pttt)
+        conv.append(pttt)
+
+        self._get_ost(conv)
+
+        return conv
+
+    def _get_zones(self):
+        zones = RadioSettingGroup('zones', 'Zones')
 
         zone_count = RadioSetting('_zonecount',
                                   'Number of Zones',
@@ -662,21 +974,120 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                            'will DELETE memories in affected zones!')
         zones.append(zone_count)
 
-        mode = int(self._memobj.settings.pon_msgtype)
-        common2.append(
-            RadioSetting('settings.pon_msgtype',
-                         'Power On Message Type',
-                         RadioSettingValueList(
-                             STARTUP_MODES.values(),
-                             STARTUP_MODES.get(mode, 0xFF))))
-        text = str(self._memobj.settings.pon_msgtext).rstrip('\x00')
-        common2.append(
-            RadioSetting('settings.pon_msgtext',
-                         'Power On Text',
-                         RadioSettingValueString(
-                             0, 12, text)))
+        for i in range(len(self._zones)):
+            zone = RadioSettingGroup('zone%i' % i, 'Zone %i' % (i + 1))
 
-        top = RadioSettings(zones, common2)
+            _zone = getattr(self._memobj, 'zone%i' % i).zoneinfo
+            _name = str(_zone.name).rstrip('\x00')
+            name = RadioSetting('name%i' % i, 'Name',
+                                RadioSettingValueString(0, 12, _name))
+            zone.append(name)
+
+            def apply_timer(setting, key):
+                val = int(setting.value)
+                if val == 0:
+                    val = 0xFFFF
+                setattr(_zone, key, val)
+
+            def collapse(val):
+                val = int(val)
+                if val == 0xFFFF:
+                    val = 0
+                return val
+
+            timer = RadioSetting(
+                'timeout', 'Time-out Timer',
+                RadioSettingValueInteger(15, 1200, collapse(_zone.timeout)))
+            timer.set_apply_callback(apply_timer, 'timeout')
+            zone.append(timer)
+
+            timer = RadioSetting(
+                'tot_alert', 'TOT Pre-Alert',
+                RadioSettingValueInteger(0, 10, collapse(_zone.tot_alert)))
+            timer.set_apply_callback(apply_timer, 'tot_alert')
+            zone.append(timer)
+
+            timer = RadioSetting(
+                'tot_rekey', 'TOT Re-Key Time',
+                RadioSettingValueInteger(0, 60, collapse(_zone.tot_rekey)))
+            timer.set_apply_callback(apply_timer, 'tot_rekey')
+            zone.append(timer)
+
+            timer = RadioSetting(
+                'tot_reset', 'TOT Reset Time',
+                RadioSettingValueInteger(0, 15, collapse(_zone.tot_reset)))
+            timer.set_apply_callback(apply_timer, 'tot_reset')
+            zone.append(timer)
+
+            zone.append(self._inverted_flag_setting(
+                'bcl_override', 'BCL Override',
+                _zone))
+
+            zones.append(zone)
+
+        return zones
+
+    def _get_ost(self, parent):
+        tones = chirp_common.TONES[:]
+
+        def apply_tone(setting, index, which):
+            if str(setting.value) == 'Off':
+                val = 0xFFFF
+            else:
+                val = int(float(str(setting.value)) * 10)
+            setattr(self._memobj.ost_tones[index], '%stone' % which, val)
+
+        def _tones():
+            return ['Off'] + [str(x) for x in tones]
+
+        for i in range(0, 40):
+            _ost = self._memobj.ost_tones[i]
+            ost = RadioSettingGroup('ost%i' % i,
+                                    'OST %i' % (i + 1))
+
+            cur = str(_ost.name).rstrip('\x00')
+            name = RadioSetting('name%i' % i, 'Name',
+                                RadioSettingValueString(0, 12, cur))
+            ost.append(name)
+
+            if _ost.rxtone == 0xFFFF:
+                cur = 'Off'
+            else:
+                cur = round(int(_ost.rxtone) / 10.0, 1)
+                if cur not in tones:
+                    LOG.debug('Non-standard OST rx tone %i %s' % (i, cur))
+                    tones.append(cur)
+                    tones.sort()
+            rx = RadioSetting('rxtone%i' % i, 'RX Tone',
+                              RadioSettingValueList(_tones(),
+                                                    str(cur)))
+            rx.set_apply_callback(apply_tone, i, 'rx')
+            ost.append(rx)
+
+            if _ost.txtone == 0xFFFF:
+                cur = 'Off'
+            else:
+                cur = round(int(_ost.txtone) / 10.0, 1)
+                if cur not in tones:
+                    LOG.debug('Non-standard OST tx tone %i %s' % (i, cur))
+                    tones.append(cur)
+                    tones.sort()
+            tx = RadioSetting('txtone%i' % i, 'TX Tone',
+                              RadioSettingValueList(_tones(),
+                                                    str(cur)))
+            tx.set_apply_callback(apply_tone, i, 'tx')
+            ost.append(tx)
+
+            parent.append(ost)
+
+    def get_settings(self):
+        settings = self._memobj.settings
+
+        zones = self._get_zones()
+        common1 = self._get_common1()
+        common2 = self._get_common2()
+        conv = self._get_conventional()
+        top = RadioSettings(zones, common1, common2, conv)
         return top
 
     def set_settings(self, settings):
@@ -692,6 +1103,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                 elif len(self._zones) < new_zone_count:
                     self.expand_mmap(zone_sizes + (
                         [0] * (new_zone_count - len(self._zones))))
+            elif element.has_apply_callback():
+                element.run_apply_callback()
 
     def get_sub_devices(self):
         zones = []
@@ -739,6 +1152,7 @@ class KenwoodTKx180RadioZone(KenwoodTKx180Radio):
         return []
 
 
-@directory.register
-class KenwoodTK8180Radio(KenwoodTKx180Radio):
-    MODEL = 'TK-8180'
+if has_future:
+    @directory.register
+    class KenwoodTK8180Radio(KenwoodTKx180Radio):
+        MODEL = 'TK-8180'
