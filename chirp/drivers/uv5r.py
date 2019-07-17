@@ -1217,7 +1217,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                                   COLOR_LIST, COLOR_LIST[_settings.txled]))
             basic.append(rs)
 
-        if self.MODEL == "UV-82":
+        if isinstance(self, BaofengUV82Radio):
             rs = RadioSetting("roger", "Roger Beep (TX)",
                               RadioSettingValueBoolean(_settings.roger))
             basic.append(rs)
@@ -1260,7 +1260,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                               RadioSettingValueBoolean(_settings.vfomrlock))
             advanced.append(rs)
 
-        if self.MODEL == "UV-82":
+        if isinstance(self, BaofengUV82Radio):
             # this is a UV-82C only feature
             rs = RadioSetting("vfomrlock", "VFO/MR Switching (UV-82C only)",
                               RadioSettingValueBoolean(_settings.vfomrlock))
@@ -1273,7 +1273,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
                 RadioSettingValueBoolean(_settings.vfomrlock))
             advanced.append(rs)
 
-        if self.MODEL == "UV-82":
+        if isinstance(self, BaofengUV82Radio):
             # this is an UV-82C only feature
             rs = RadioSetting("singleptt", "Single PTT (UV-82C only)",
                               RadioSettingValueBoolean(_settings.singleptt))
@@ -1795,6 +1795,18 @@ class BaofengUV82Radio(BaofengUV5R):
     def _is_orig(self):
         # Override this for UV82 to always return False
         return False
+
+
+@directory.register
+class Baofeng82X3Radio(BaofengUV82Radio):
+    MODEL = "82X3"
+
+    def get_features(self):
+        rf = BaofengUV5R.get_features(self)
+        rf.valid_bands = [self._vhf_range,
+                          (200000000, 260000000),
+                          self._uhf_range]
+        return rf
 
 
 @directory.register
