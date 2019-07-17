@@ -1799,7 +1799,7 @@ class BaofengUV82Radio(BaofengUV5R):
 
 @directory.register
 class Baofeng82X3Radio(BaofengUV82Radio):
-    MODEL = "82X3"
+    MODEL = "UV-82X3"
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
