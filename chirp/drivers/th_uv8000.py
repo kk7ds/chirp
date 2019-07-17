@@ -554,7 +554,8 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         rf.has_settings = True
         rf.has_bank = False
         rf.has_comment = False
-        rf.has_tuning_step = False  # Not as chan feature
+        rf.has_nostep_tuning = True     # Radio accepts any entered freq
+        rf.has_tuning_step = False      # Not as chan feature
         rf.can_odd_split = False
         rf.has_name = True
         rf.has_offset = True
