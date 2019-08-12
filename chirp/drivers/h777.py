@@ -252,6 +252,11 @@ class A8SAlias(chirp_common.Alias):
     MODEL = 'A-8S'
 
 
+class TenwayTW325Alias(chirp_common.Alias):
+    VENDOR = 'Tenway'
+    MODEL = 'TW-325'
+
+
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -261,7 +266,8 @@ class H777Radio(chirp_common.CloneModeRadio):
     MODEL = "BF-888"
     BAUD_RATE = 9600
 
-    ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias]
+    ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
+               TenwayTW325Alias]
 
     # This code currently requires that ranges start at 0x0000
     # and are continious. In the original program 0x0388 and 0x03C8

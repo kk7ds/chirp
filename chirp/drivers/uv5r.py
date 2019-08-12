@@ -1765,10 +1765,15 @@ class A5RAlias(chirp_common.Alias):
     MODEL = "A-5R"
 
 
+class TenwayUV5RPro(chirp_common.Alias):
+    VENDOR = 'Tenway'
+    MODEL = 'UV-5R Pro'
+
+
 @directory.register
 class BaofengUV5RGeneric(BaofengUV5R):
     ALIASES = [UV5XAlias, RT5RAlias, RT5RVAlias, RT5Alias, RH5RAlias,
-               ROUV5REXAlias, A5RAlias]
+               ROUV5REXAlias, A5RAlias, TenwayUV5RPro]
 
 
 @directory.register
