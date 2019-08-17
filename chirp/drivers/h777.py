@@ -624,4 +624,3 @@ class ROGA2SRadio(H777Radio):
     def match_model(cls, filedata, filename):
         # This model is only ever matched via metadata
         return False
-
