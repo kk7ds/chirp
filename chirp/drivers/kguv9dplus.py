@@ -1096,7 +1096,9 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
         _valid = _mem.state
-        if _valid != MEM_VALID:
+        if _valid != MEM_VALID and _valid != 0 and _valid != 2:
+            # In Issue #6995 we can find _valid values of 0 and 2 in the IMG
+            # so these values should be treated like MEM_VALID.
             mem.empty = True
             return mem
         else:
