@@ -519,6 +519,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         rf.valid_bands = [(134000000, 175000000),  # supports 2m
                           (400000000, 520000000)]  # supports 70cm
         rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (1, 999)  # 999 memories
         return rf
 
