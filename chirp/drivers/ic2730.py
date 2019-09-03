@@ -312,6 +312,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
 
     def _get_bank(self, loc):
         _bank = self._memobj.bank_info[loc]
+        _bank.bank = _bank.bank & 0x1F      # Bad index filter, fix issue #7031
         if _bank.bank == 0x1F:
             return None
         else:
