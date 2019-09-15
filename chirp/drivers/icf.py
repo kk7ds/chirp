@@ -190,15 +190,35 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
 def process_data_frame(radio, frame, _mmap):
     """Process a data frame, adding the payload to @_mmap"""
     _data = radio.process_frame_payload(frame.payload)
-    if len(_mmap) >= 0x10000:
+    # Checksum logic added by Rick DeWitt, 9/2019, issue # 7075
+    if len(_mmap) >= 0x10000:   # This map size not tested for checksum
         saddr, = struct.unpack(">I", _data[0:4])
         length, = struct.unpack("B", _data[4])
         data = _data[5:5+length]
-    else:
+        sumc, = struct.unpack("B", _data[5+length])
+        addr1, = struct.unpack("B", _data[0])
+        addr2, = struct.unpack("B", _data[1])
+        addr3, = struct.unpack("B", _data[2])
+        addr4, = struct.unpack("B", _data[3])
+    else:   # But this one has been tested for raw mode radio (IC-2730)
         saddr, = struct.unpack(">H", _data[0:2])
         length, = struct.unpack("B", _data[2])
         data = _data[3:3+length]
+        sumc, = struct.unpack("B", _data[3+length])
+        addr1, = struct.unpack("B", _data[0])
+        addr2, = struct.unpack("B", _data[1])
+        addr3 = 0
+        addr4 = 0
 
+    cs = addr1 + addr2 + addr3 + addr4 + length
+    for byte in data:
+        cs += ord(byte)
+    vx = ((cs ^ 0xFFFF) + 1) & 0xFF
+    if sumc != vx:
+        LOG.error("Bad checksum in address %04X frame: %02x "
+              "calculated, %02x sent!" % (saddr, vx, sumc))
+        raise errors.InvalidDataError("Checksum error in download! "
+              "Try disabling High Speed Clone option in Settings.")
     try:
         _mmap[saddr] = data
     except IndexError:
