@@ -108,8 +108,10 @@ class WP970I(baofeng_common.BaofengCommonHT):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Med",  watts=3.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
-    VALID_BANDS = [(130000000, 180000000),
-                   (400000000, 521000000)]
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
+    VALID_BANDS = [_vhf_range,
+                   _uhf_range]
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
 
@@ -852,6 +854,11 @@ class RH5XAlias(chirp_common.Alias):
     MODEL = "RH5X"
 
 
+class UV82IIIAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-82III"
+
+
 @directory.register
 class BFA58(WP970I):
     """Baofeng BF-A58"""
@@ -881,3 +888,17 @@ class RT6(WP970I):
     """Retevis RT6"""
     VENDOR = "Retevis"
     MODEL = "RT6"
+
+
+@directory.register
+class BFA58S(WP970I):
+    VENDOR = "Baofeng"
+    MODEL = "BF-A58S"
+    ALIASES = [UV82IIIAlias]
+
+    def get_features(self):
+        rf = WP970I.get_features(self)
+        rf.valid_bands = [self._vhf_range,
+                          (200000000, 260000000),
+                          self._uhf_range]
+        return rf
