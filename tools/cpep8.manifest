@@ -83,6 +83,8 @@
 ./chirp/drivers/tk8180.py
 ./chirp/drivers/tmv71.py
 ./chirp/drivers/tmv71_ll.py
+./chirp/drivers/ts480.py
+./chirp/drivers/ts590.py
 ./chirp/drivers/uv5r.py
 ./chirp/drivers/uvb5.py
 ./chirp/drivers/vx170.py
