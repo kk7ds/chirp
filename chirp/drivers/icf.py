@@ -223,9 +223,10 @@ def process_data_frame(radio, frame, _mmap):
     vx = ((cs ^ 0xFFFF) + 1) & 0xFF
     if sumc != vx:
         LOG.error("Bad checksum in address %04X frame: %02x "
-              "calculated, %02x sent!" % (saddr, vx, sumc))
-        raise errors.InvalidDataError("Checksum error in download! "
-              "Try disabling High Speed Clone option in Settings.")
+                  "calculated, %02x sent!" % (saddr, vx, sumc))
+        raise errors.InvalidDataError(
+            "Checksum error in download! "
+            "Try disabling High Speed Clone option in Settings.")
     try:
         _mmap[saddr] = data
     except IndexError:
