@@ -288,9 +288,10 @@ BASETYPE_UV6 = ["BF1", "UV6"]
 BASETYPE_KT980HP = ["BFP3V3 B"]
 BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3", "BFT"]
 BASETYPE_UV82HP = ["N82-3", "N823", "N5R2"]
+BASETYPE_UV82X3 = ["HN5RV01"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
     BASETYPE_BJ55 + BASETYPE_UV6 + BASETYPE_KT980HP + \
-    BASETYPE_F8HP + BASETYPE_UV82HP
+    BASETYPE_F8HP + BASETYPE_UV82HP + BASETYPE_UV82X3
 
 AB_LIST = ["A", "B"]
 ALMOD_LIST = ["Site", "Tone", "Code"]
@@ -1806,6 +1807,7 @@ class BaofengUV82Radio(BaofengUV5R):
 class Radioddity82X3Radio(BaofengUV82Radio):
     VENDOR = "Radioddity"
     MODEL = "UV-82X3"
+    _basetype = BASETYPE_UV82X3
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
