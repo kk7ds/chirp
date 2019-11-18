@@ -634,7 +634,7 @@ def _do_upload(radio):
         if image_version.startswith("HN5RV"):
             ranges_main = _ranges_main_default
             ranges_aux = _ranges_aux_default + _ranges_aux_extra
-        elif image_version == 0xFF * 14:
+        elif image_version == 0xFF * 7:
             ranges_main = _ranges_main_default
             ranges_aux = _ranges_aux_default + _ranges_aux_extra
         else:
