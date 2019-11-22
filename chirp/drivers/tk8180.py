@@ -335,7 +335,6 @@ def do_upload(radio):
         status.max = radio._memsize
         status.msg = "Cloning to radio"
         radio.status_fn(status)
-        LOG.debug('Radio address 0x%04x' % len(data))
 
     for block in range(0, 0xBF + 1):
         addr = block * 0x100
