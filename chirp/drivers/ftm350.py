@@ -265,6 +265,9 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
                           (76000000, 250000000),
                           (30000000, 1000000000)]
         rf.can_odd_split = True
+        rf.valid_tuning_steps = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 
+                                 25.0, 50.0, 100.0, 200.0]
+
         return rf
 
     def get_sub_devices(self):
