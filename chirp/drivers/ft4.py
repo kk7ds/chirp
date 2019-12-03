@@ -669,6 +669,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rf.has_dtcs_polarity = False    # REV TN reverses the tone, not the dcs
         rf.has_cross = True
         rf.has_settings = True
+        rf.valid_tuning_steps = self.legal_steps
 
         return rf
 
