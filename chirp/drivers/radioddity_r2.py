@@ -350,6 +350,7 @@ class RadioddityR2Radio(chirp_common.CloneModeRadio):
         rf.valid_skips = []
         rf.valid_bands = [self._range]
         rf.memory_bounds = (1, self._upper)
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
         return rf
 
     def process_mmap(self):
