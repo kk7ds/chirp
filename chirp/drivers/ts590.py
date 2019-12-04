@@ -562,7 +562,8 @@ def _write_sets(radio):
     return
 
 
-@directory.register
+# Bug #7409
+# @directory.register
 class TS590Radio(chirp_common.CloneModeRadio):
     """Kenwood TS-590"""
     VENDOR = "Kenwood"
