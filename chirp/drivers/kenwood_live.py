@@ -431,6 +431,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         rf.valid_characters = \
             chirp_common.CHARSET_ALPHANUMERIC + "/.-+*)('&%$#! ~}|{"
         rf.valid_name_length = 7
+        rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -634,6 +635,7 @@ class TMD700Radio(THD7Radio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
+        rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -701,6 +703,7 @@ class TMV7Radio(KenwoodOldLiveRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 7
+        rf.valid_tuning_steps = STEPS
         rf.has_sub_devices = True
         rf.memory_bounds = (1, self._upper)
         return rf
