@@ -626,11 +626,11 @@ class TMD700Radio(THD7Radio):
         rf.has_dtcs = True
         rf.has_dtcs_polarity = False
         rf.has_bank = False
-        rf.has_mode = False
+        rf.has_mode = True
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_modes = ["FM"]
+        rf.valid_modes = ["FM", "AM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
