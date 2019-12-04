@@ -73,11 +73,13 @@ def command(ser, cmd, *args):
 
     LOCK.acquire()
 
+    # TODO: This global use of LAST_DELIMITER breaks reentrancy
+    # and needs to be fixed.
     if args:
         cmd += LAST_DELIMITER[1] + LAST_DELIMITER[1].join(args)
     cmd += LAST_DELIMITER[0]
 
-    LOG.debug("PC->RADIO: %s" % cmd.strip())
+    LOG.debug("PC->RADIO: %r" % cmd.strip())
     ser.write(cmd)
 
     result = ""
@@ -88,7 +90,7 @@ def command(ser, cmd, *args):
             break
 
     if result.endswith(LAST_DELIMITER[0]):
-        LOG.debug("RADIO->PC: %s" % result.strip())
+        LOG.debug("RADIO->PC: %r" % result.strip())
         result = result[:-1]
     else:
         LOG.error("Giving up")
@@ -103,13 +105,16 @@ def get_id(ser):
     global LAST_BAUD
     bauds = [4800, 9600, 19200, 38400, 57600, 115200]
     bauds.remove(LAST_BAUD)
-    bauds.insert(0, LAST_BAUD)
+    # Make sure LAST_BAUD is last so that it is tried first below
+    bauds.append(LAST_BAUD)
 
     global LAST_DELIMITER
     command_delimiters = [("\r", " "), (";", "")]
 
-    for i in bauds:
-        for delimiter in command_delimiters:
+    for delimiter in command_delimiters:
+        # Process the baud options in reverse order so that we try the
+        # last one first, and then start with the high-speed ones next
+        for i in reversed(bauds):
             LAST_DELIMITER = delimiter
             LOG.info("Trying ID at baud %i with delimiter \"%s\"" %
                      (i, repr(delimiter)))
@@ -122,6 +127,16 @@ def get_id(ser):
             if " " in resp:
                 LAST_BAUD = i
                 return resp.split(" ")[1]
+
+            # Radio responded in the right baud rate,
+            # but threw an error because of all the crap
+            # we have been hurling at it. Retry the ID at this
+            # baud rate, which will almost definitely work.
+            if "?" in resp:
+                resp = command(ser, "ID")
+                LAST_BAUD = i
+                if " " in resp:
+                    return resp.split(" ")[1]
 
             # Kenwood radios that return ID numbers
             if resp in RADIO_IDS.keys():
