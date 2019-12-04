@@ -342,9 +342,14 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             if isinstance(element.value, RadioSettingValueBoolean):
                 self._kenwood_set_bool(element.get_name(), element.value)
             elif isinstance(element.value, RadioSettingValueList):
-                options = self._SETTINGS_OPTIONS[element.get_name()]
+                options = self._get_setting_options(element.get_name())
+                if len(options) > 9:
+                    digits = 2
+                else:
+                    digits = 1
                 self._kenwood_set_int(element.get_name(),
-                                      options.index(str(element.value)))
+                                      options.index(str(element.value)),
+                                      digits)
             elif isinstance(element.value, RadioSettingValueInteger):
                 if element.value.get_max() > 9:
                     digits = 2
@@ -381,9 +386,13 @@ class THD7Radio(KenwoodOldLiveRadio):
 
     _kenwood_split = True
 
+    _BEP_OPTIONS = ["Off", "Key", "Key+Data", "All"]
+    _POSC_OPTIONS = ["Off Duty", "Enroute", "In Service", "Returning",
+                     "Committed", "Special", "Priority", "Emergency"]
+
     _SETTINGS_OPTIONS = {
         "BAL": ["4:0", "3:1", "2:2", "1:3", "0:4"],
-        "BEP": ["Off", "Key", "Key+Data", "All"],
+        "BEP": None,
         "BEPT": ["Off", "Mine", "All New"],  # D700 has fourth "All"
         "DS": ["Data Band", "Both Bands"],
         "DTB": ["A", "B"],
@@ -393,8 +402,7 @@ class THD7Radio(KenwoodOldLiveRadio):
                 "Plane", "Speedboat", "Car", "Bicycle"],
         "MNF": ["Name", "Frequency"],
         "PKSA": ["1200", "9600"],
-        "POSC": ["Off Duty", "Enroute", "In Service", "Returning",
-                 "Committed", "Special", "Priority", "Emergency"],
+        "POSC": None,
         "PT": ["100ms", "200ms", "500ms", "750ms",
                "1000ms", "1500ms", "2000ms"],
         "SCR": ["Time", "Carrier", "Seek"],
@@ -474,6 +482,22 @@ class THD7Radio(KenwoodOldLiveRadio):
 
         return mem
 
+    EXTRA_BOOL_SETTINGS = {
+        'main': [("LMP", "Lamp")],
+        'dtmf': [("TXH", "TX Hold")],
+    }
+    EXTRA_LIST_SETTINGS = {
+        'main': [("BAL", "Balance"),
+                 ("MNF", "Memory Display Mode")],
+        'save': [("SV", "Battery Save")],
+    }
+
+    def _get_setting_options(self, setting):
+        opts = self._SETTINGS_OPTIONS[setting]
+        if opts is None:
+            opts = getattr(self, '_%s_OPTIONS' % setting)
+        return opts
+
     def get_settings(self):
         main = RadioSettingGroup("main", "Main")
         aux = RadioSettingGroup("aux", "Aux")
@@ -496,9 +520,7 @@ class THD7Radio(KenwoodOldLiveRadio):
                  # ("DIG", aprs, "APRS Digipeater"),
                  ("DL", main, "Dual"),
                  ("LK", main, "Lock"),
-                 ("LMP", main, "Lamp"),
                  ("TSP", dtmf, "DTMF Fast Transmission"),
-                 ("TXH", dtmf, "TX Hold"),
                  ]
 
         for setting, group, name in bools:
@@ -507,19 +529,16 @@ class THD7Radio(KenwoodOldLiveRadio):
                               RadioSettingValueBoolean(value))
             group.append(rs)
 
-        lists = [("BAL", main, "Balance"),
-                 ("BEP", aux, "Beep"),
+        lists = [("BEP", aux, "Beep"),
                  ("BEPT", aprs, "APRS Beep"),
                  ("DS", tnc, "Data Sense"),
                  ("DTB", tnc, "Data Band"),
                  ("DTBA", aprs, "APRS Data Band"),
                  ("DTX", aprs, "APRS Data TX"),
                  # ("ICO", aprs, "APRS Icon"),
-                 ("MNF", main, "Memory Display Mode"),
                  ("PKSA", aprs, "APRS Packet Speed"),
                  ("POSC", aprs, "APRS Position Comment"),
                  ("PT", dtmf, "DTMF Speed"),
-                 ("SV", save, "Battery Save"),
                  ("TEMP", aprs, "APRS Temperature Units"),
                  ("TXI", aprs, "APRS Transmit Interval"),
                  # ("UNIT", aprs, "APRS Display Units"),
@@ -528,11 +547,28 @@ class THD7Radio(KenwoodOldLiveRadio):
 
         for setting, group, name in lists:
             value = self._kenwood_get_int(setting)
-            options = self._SETTINGS_OPTIONS[setting]
+            options = self._get_setting_options(setting)
             rs = RadioSetting(setting, name,
                               RadioSettingValueList(options,
                                                     options[value]))
             group.append(rs)
+
+        for group_name, settings in self.EXTRA_BOOL_SETTINGS.items():
+            group = locals()[group_name]
+            for setting, name in settings:
+                value = self._kenwood_get_bool(setting)
+                rs = RadioSetting(setting, name,
+                                  RadioSettingValueBoolean(value))
+                group.append(rs)
+
+        for group_name, settings in self.EXTRA_LIST_SETTINGS.items():
+            group = locals()[group_name]
+            for setting, name in settings:
+                value = self._kenwood_get_int(setting)
+                options = self._get_setting_options(setting)
+                rs = RadioSetting(setting, name,
+                                  RadioSettingValueBoolean(value))
+                group.append(rs)
 
         ints = [("CNT", display, "Contrast", 1, 16),
                 ]
@@ -570,14 +606,23 @@ class THD7GRadio(THD7Radio):
 
 
 @directory.register
-class TMD700Radio(KenwoodOldLiveRadio):
+class TMD700Radio(THD7Radio):
     """Kenwood TH-D700"""
     MODEL = "TM-D700"
 
     _kenwood_split = True
 
+    _BEP_OPTIONS = ["Off", "Key"]
+    _POSC_OPTIONS = ["Off Duty", "Enroute", "In Service", "Returning",
+                     "Committed", "Special", "Priority", "CUSTOM 0",
+                     "CUSTOM 1", "CUSTOM 2", "CUSTOM 4", "CUSTOM 5",
+                     "CUSTOM 6", "Emergency"]
+    EXTRA_BOOL_SETTINGS = {}
+    EXTRA_LIST_SETTINGS = {}
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_dtcs = True
         rf.has_dtcs_polarity = False
         rf.has_bank = False
