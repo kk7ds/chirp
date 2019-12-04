@@ -382,6 +382,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         rf.valid_dtcs_codes = DTCS_CODES
         rf.valid_bands = [self._range]
         rf.memory_bounds = (1, self._upper)
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
         return rf
 
     def sync_in(self):
