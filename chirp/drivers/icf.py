@@ -332,7 +332,6 @@ def clone_from_radio(radio):
     try:
         return _clone_from_radio(radio)
     except Exception as e:
-        raise
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 
