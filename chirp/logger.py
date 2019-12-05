@@ -90,7 +90,7 @@ class Logger(object):
                 hasattr(sys, "frozen") or not os.isatty(0) or
                 os.getenv("CHIRP_DEBUG_LOG")):
             p = platform.get_platform()
-            log = file(p.config_file("debug.log"), "w", 0)
+            log = open(p.config_file("debug.log"), "w")
             sys.stdout = log
             sys.stderr = log
             console_stream = log
