@@ -114,11 +114,12 @@ def get_tb():
 
 
 class TestWrapper:
-    def __init__(self, dstclass, filename):
+    def __init__(self, dstclass, filename, dst=None):
         self._ignored_exceptions = []
         self._dstclass = dstclass
         self._filename = filename
         self._make_reload = False
+        self._dst = dst
         self.open()
 
     def pass_exception_type(self, et):
@@ -131,7 +132,10 @@ class TestWrapper:
         self._make_reload = True
 
     def open(self):
-        self._dst = self._dstclass(self._filename)
+        if self._dst:
+            self._dst.load_mmap(self._filename)
+        else:
+            self._dst = self._dstclass(self._filename)
 
     def close(self):
         self._dst.save_mmap(self._filename)
@@ -246,7 +250,11 @@ class TestCase:
                     msg = "Field `%s' " % k + \
                         "is `%s', " % b.__dict__[k] + \
                         "expected `%s' " % v
-
+                    # If we set a channel that came back with a duplex
+                    # of 'off', we may have been outside the transmit range of
+                    # the radio, so we should not fail.
+                    if k == "duplex" and b.__dict__[k] == "off":
+                        continue
                     details = msg
                     details += os.linesep + "### Wanted:" + os.linesep
                     details += os.linesep.join(["%s:%s" % (k, v) for k, v
@@ -466,6 +474,7 @@ class TestCaseBruteForce(TestCase):
             if rf.validate_memory(tmp):
                 # A result (of error messages) from validate means the radio
                 # thinks this is invalid, so don't fail the test
+                print('Failed to validate %s: %s' % (tmp, rf.validate_memory(tmp)))
                 continue
 
             self.set_and_compare(tmp)
@@ -877,7 +886,11 @@ class TestCaseDetect(TestCase):
         except Exception as e:
             raise TestFailedError("Failed to detect", str(e))
 
-        if issubclass(self._wrapper._dstclass, radio.__class__):
+        if radio.__class__.__name__ == 'DynamicRadioAlias':
+            # This was detected via metadata and wrapped, which means
+            # we found the appropriate class.
+            pass
+        elif issubclass(self._wrapper._dstclass, radio.__class__):
             pass
         elif issubclass(radio.__class__, self._wrapper._dstclass):
             pass
@@ -967,10 +980,9 @@ class TestCaseClone(TestCase):
 
         try:
             radio = self._wrapper._dst.__class__(serial)
+            radio.status_fn = lambda s: True
         except Exception as e:
             error = e
-
-        radio.status_fn = lambda s: True
 
         if not live:
             if error is not None:
@@ -1191,7 +1203,7 @@ class TestRunner:
         self._test_out.report(rclass, tc, msg, e)
 
     def log(self, rclass, tc, e):
-        fn = "logs/%s_%s.log" % (directory.get_driver(rclass), tc)
+        fn = "logs/%s_%s.log" % (directory.radio_class_id(rclass), tc)
         log = file(fn, "a")
         print("---- Begin test %s ----" % tc, file=log)
         log.write(e.get_detail())
@@ -1200,15 +1212,15 @@ class TestRunner:
         log.close()
 
     def nuke_log(self, rclass, tc):
-        fn = "logs/%s_%s.log" % (directory.get_driver(rclass), tc)
+        fn = "logs/%s_%s.log" % (directory.radio_class_id(rclass), tc)
         if os.path.exists(fn):
             os.remove(fn)
 
-    def _run_one(self, rclass, parm):
+    def _run_one(self, rclass, parm, dst=None):
         nfailed = 0
         for tcclass in self._test_list:
             nprinted = 0
-            tw = TestWrapper(rclass, parm)
+            tw = TestWrapper(rclass, parm, dst=dst)
             tc = tcclass(tw)
 
             self.nuke_log(rclass, tc)
@@ -1246,7 +1258,7 @@ class TestRunner:
 
         return nfailed
 
-    def run_rclass_image(self, rclass, image):
+    def run_rclass_image(self, rclass, image, dst=None):
         rid = "%s_%s_" % (rclass.VENDOR, rclass.MODEL)
         rid = rid.replace("/", "_")
         # Do this for things like Generic_CSV, that demand it
@@ -1255,16 +1267,16 @@ class TestRunner:
         shutil.copy(image, testimage)
 
         try:
-            tw = TestWrapper(rclass, testimage)
+            tw = TestWrapper(rclass, testimage, dst=dst)
             rf = tw.do("get_features")
             if rf.has_sub_devices:
                 devices = tw.do("get_sub_devices")
                 failed = 0
                 for dev in devices:
-                    failed += self.run_rclass_image(dev.__class__, image)
+                    failed += self.run_rclass_image(dev.__class__, image, dst=dev)
                 return failed
             else:
-                return self._run_one(rclass, image)
+                return self._run_one(rclass, image, dst=dst)
         finally:
             os.remove(testimage)
 

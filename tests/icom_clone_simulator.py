@@ -78,12 +78,18 @@ class FakeIcomRadio(object):
             #LOG.debug('Header for %02x@%04x: %r' % (
             #    size, addr, header))
             chunk = []
+            cs = 0
             for byte in header:
                 chunk.extend(x for x in bytes(b'%02X' % byte))
+                cs += byte
             #LOG.debug('Chunk so far: %r' % chunk)
             for byte in self._memory[addr:addr + size]:
                 chunk.extend(x for x in bytes(b'%02X' % byte))
+                cs += byte
             #LOG.debug('Chunk is %r' % chunk)
+
+            vx = ((cs ^ 0xFFFF) + 1) & 0xFF
+            chunk.extend(x for x in bytes(b'%02X' % vx))
             self.queue(self.make_response(icf.CMD_CLONE_DAT, bytes(chunk)))
             #LOG.debug('Stopping after first frame')
             #break

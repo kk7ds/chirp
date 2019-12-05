@@ -21,8 +21,6 @@ import struct
 import time
 import logging
 
-LOG = logging.getLogger(__name__)
-
 from time import sleep
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -31,6 +29,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 # A note about the memmory in these radios
 #
@@ -61,8 +61,9 @@ LIST_ABCD = LIST_AB + ["C", "D"]
 LIST_ANIL = ["3", "4", "5"]
 LIST_APO = ["Off"] + ["%s minutes" % x for x in range(30, 330, 30)]
 LIST_COLOR4 = ["Off", "Blue", "Orange", "Purple"]
-LIST_COLOR8 = ["Black", "White", "Red", "Blue", "Green", "Yellow", "Indego",
+LIST_COLOR7 = ["White", "Red", "Blue", "Green", "Yellow", "Indego",
                "Purple", "Gray"]
+LIST_COLOR8 = ["Black"] + LIST_COLOR7
 LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboad + ANI"]
 LIST_EMCTP = ["TX alarm sound", "TX ANI", "Both"]
 LIST_EMCTPX = ["Off"] + LIST_EMCTP
@@ -81,12 +82,19 @@ LIST_SKIPTX = ["Off", "Skip 1", "Skip 2"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 LIST_STEP = [str(x) for x in STEPS]
 LIST_SYNC = ["Off", "AB", "CD", "AB+CD"]
-LIST_TMR = ["OFF", "M+A", "M+B", "M+C", "M+D", "M+A+B", "M+A+C", "M+A+D",
-            "M+B+C", "M+B+D", "M+C+D", "M+A+B+C", "M+A+B+D", "M+A+C+D",
-            "M+B+C+D", "A+B+C+D"]
+# the first 12 TMR choices common to all color display mobile radios
+LIST_TMR12 = ["OFF", "M+A", "M+B", "M+C", "M+D", "M+A+B", "M+A+C", "M+A+D",
+              "M+B+C", "M+B+D", "M+C+D", "M+A+B+C"]
+# the 16 choice list for color display mobile radios that correctly implement
+# the full 16 TMR choices
+LIST_TMR16 = LIST_TMR12 + ["M+A+B+D", "M+A+C+D", "M+B+C+D", "A+B+C+D"]
+# the 15 choice list for color mobile radios that are missing the M+A+B+D
+# choice in the TMR menu
+LIST_TMR15 = LIST_TMR12 + ["M+A+C+D", "M+B+C+D", "A+B+C+D"]
 LIST_TOT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXDISP = ["Power", "Mic Volume"]
 LIST_TXP = ["High", "Low"]
+LIST_TXP3 = ["High", "Mid", "Low"]
 LIST_SCREV = ["TO (timeout)", "CO (carrier operated)", "SE (search)"]
 LIST_VFOMR = ["Frequency", "Channel"]
 LIST_WIDE = ["Wide", "Narrow"]
@@ -111,9 +119,9 @@ LIST_DTMF_SPEED = ["%s ms" % x for x in range(50, 2010, 10)]
 LIST_DTMF_DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B",
                     "C", "D", "#", "*"]
 LIST_DTMF_VALUES = [0x0A, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-                    0x0D, 0x0E, 0x0F, 0x00, 0x0C, 0x0B ]
-LIST_DTMF_SPECIAL_DIGITS = [ "*", "#", "A", "B", "C", "D"]
-LIST_DTMF_SPECIAL_VALUES = [ 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
+                    0x0D, 0x0E, 0x0F, 0x00, 0x0C, 0x0B]
+LIST_DTMF_SPECIAL_DIGITS = ["*", "#", "A", "B", "C", "D"]
+LIST_DTMF_SPECIAL_VALUES = [0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
 LIST_DTMF_DELAY = ["%s ms" % x for x in range(100, 4100, 100)]
 CHARSET_DTMF_DIGITS = "0123456789AaBbCcDd#*"
 LIST_2TONE_DEC = ["A-B", "A-C", "A-D",
@@ -135,7 +143,7 @@ VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 
 
-##### ID strings #####################################################
+# #### ID strings #####################################################
 
 # BTECH UV2501 pre-production units
 UV2501pp_fp = b"M2C294"
@@ -177,6 +185,10 @@ UV25X4_fp = b"UC4014"
 
 # B-TECH UV-50X2
 UV50X2_fp = b"UC2M12"
+
+# B-TECH GMRS-50X1
+GMRS50X1_fp = "NC1802"
+GMRS50X1_fp1 = "NC1932"
 
 # special var to know when we found a BTECH Gen 3
 BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
@@ -232,7 +244,7 @@ LT588UV_fp = b"V2G1F4"
 LT588UV_fp1 = b"V2G214"
 
 
-#### MAGICS
+# ### MAGICS
 # for the Waccom Mini-8900
 MSTRING_MINI8900 = b"\x55\xA5\xB5\x45\x55\x45\x4d\x02"
 # for the B-TECH UV-2501+220 (including pre production ones)
@@ -247,7 +259,9 @@ MSTRING_KT8900D = b"\x55\x20\x16\x08\x01\xFF\xDC\x02"
 # for the BTECH UV-25X2 and UV-50X2
 MSTRING_UV25X2 = b"\x55\x20\x16\x12\x28\xFF\xDC\x02"
 # for the BTECH UV-25X4
-MSTRING_UV25X4 = b"\x55\x20\x16\x11\x18\xFF\xDC\x02"
+MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
+# for the BTECH GMRS-50X1
+MSTRING_GMRS50X1 = "\x55\x20\x18\x10\x18\xFF\xDC\x02"
 
 
 def _clean_buffer(radio):
@@ -316,7 +330,7 @@ def _send(radio, data):
             # hits some models more than others.
             #
             # To cope with that we introduce a delay on the writes.
-            # Many option have been tested (delaying only after error occures, 
+            # Many option have been tested (delaying only after error occures,
             # after short reads, only for linux, ...)
             # Finally, a static delay was chosen as simplest of all solutions
             # (Michael Wagner, OE4AMW)
@@ -473,7 +487,7 @@ def _do_ident(radio, status, upload=False):
 
         if not flag2:
             LOG.debug("Full *BAD* extra ID on the %s is: \n%s" %
-                    (radio.MODEL, util.hexprint(id2)))
+                      (radio.MODEL, util.hexprint(id2)))
             raise errors.RadioError("The extra ID is wrong, aborting.")
 
         # this radios need a extra request/answer here on the upload
@@ -561,7 +575,7 @@ def _upload(radio):
 
     # The UPLOAD mem is restricted to lower than 0x3100,
     # so we will overide that here localy
-    MEM_SIZE = 0x3100
+    MEM_SIZE = radio.UPLOAD_MEM_SIZE
 
     # UI progress
     status = chirp_common.Status()
@@ -608,10 +622,10 @@ def _upload(radio):
         if len(ack) != 1:
             raise errors.RadioError("No ACK when writing block 0x%04x" % addr)
 
-        if not ack in bytes(b"\x06\x05"):
+        if ack not in bytes(b"\x06\x05"):
             raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
 
-         # UI Update
+        # UI Update
         status.cur = addr / TX_BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
@@ -661,8 +675,10 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     IDENT = ""
     BANDS = 2
     COLOR_LCD = False
+    COLOR_LCD2 = False
     NAME_LENGTH = 6
     NEEDS_COMPAT_SERIAL = False
+    UPLOAD_MEM_SIZE = 0X3100
     _power_levels = [chirp_common.PowerLevel("High", watts=25),
                      chirp_common.PowerLevel("Low", watts=10)]
     _vhf_range = (130000000, 180000000)
@@ -849,7 +865,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             # TX freq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset != 0:
-                if _split(self.get_features(), mem.freq, int(_mem.txfreq) * 10):
+                if _split(self.get_features(), mem.freq, int(
+                          _mem.txfreq) * 10):
                     mem.duplex = "split"
                     mem.offset = int(_mem.txfreq) * 10
                 elif offset < 0:
@@ -883,7 +900,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         mem.extra = RadioSettingGroup("extra", "Extra")
 
         if not self.COLOR_LCD or \
-            (self.COLOR_LCD and not self.VENDOR == "BTECH"):
+                (self.COLOR_LCD and not self.VENDOR == "BTECH"):
             scramble = RadioSetting("scramble", "Scramble",
                                     RadioSettingValueBoolean(bool(
                                         _mem.scramble)))
@@ -932,7 +949,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         if _mem.get_raw()[0] == "\xFF":
             LOG.debug("This mem was empty before")
             mem_was_empty = True
-        
+
         # if empty memmory
         if mem.empty:
             # the channel itself
@@ -1040,8 +1057,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         if self.COLOR_LCD:
             tmr = RadioSetting("settings.tmr", "Transceiver multi-receive",
                                RadioSettingValueList(
-                                   LIST_TMR,
-                                   LIST_TMR[_mem.settings.tmr]))
+                                   self.LIST_TMR,
+                                   self.LIST_TMR[_mem.settings.tmr]))
             basic.append(tmr)
         else:
             tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
@@ -1051,6 +1068,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         sql = RadioSetting("settings.sql", "Squelch level",
                            RadioSettingValueInteger(0, 9, _mem.settings.sql))
         basic.append(sql)
+
+        if self.MODEL == "GMRS-50X1":
+            autolk = RadioSetting("settings.autolk", "Auto keylock",
+                                  RadioSettingValueBoolean(
+                                      _mem.settings.autolk))
+            basic.append(autolk)
 
         tot = RadioSetting("settings.tot", "Time out timer",
                            RadioSettingValueList(
@@ -1067,7 +1090,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         else:
             toa = RadioSetting("settings.apo", "Time out alert timer",
                                RadioSettingValueList(
-                                   LIST_OFF1TO10, 
+                                   LIST_OFF1TO10,
                                    LIST_OFF1TO10[_mem.settings.apo]))
             basic.append(toa)
 
@@ -1094,8 +1117,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             basic.append(prisc)
 
             prich = RadioSetting("settings.prich", "Priority channel",
-                                 RadioSettingValueInteger(0, 199,
-                                     _mem.settings.prich))
+                                 RadioSettingValueInteger(0, self._upper,
+                                                          _mem.settings.prich))
             basic.append(prich)
 
         screv = RadioSetting("settings.screv", "Scan resume method",
@@ -1106,7 +1129,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         pttlt = RadioSetting("settings.pttlt", "PTT transmit delay",
                              RadioSettingValueInteger(0, 30,
-                                 _mem.settings.pttlt))
+                                                      _mem.settings.pttlt))
         basic.append(pttlt)
 
         if self.VENDOR == "BTECH" and self.COLOR_LCD:
@@ -1123,8 +1146,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             basic.append(emctp)
 
         emcch = RadioSetting("settings.emcch", "Alarm channel",
-                             RadioSettingValueInteger(0, 199,
-                                 _mem.settings.emcch))
+                             RadioSettingValueInteger(0, self._upper,
+                                                      _mem.settings.emcch))
         basic.append(emcch)
 
         if self.COLOR_LCD:
@@ -1132,7 +1155,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 val = 0x00
             else:
                 val = _mem.settings.sigbp
-            sigbp = RadioSetting("settings.sigbp", "Roger beep",
+            sigbp = RadioSetting("settings.sigbp", "Signal beep",
                                  RadioSettingValueBoolean(val))
             basic.append(sigbp)
         else:
@@ -1198,19 +1221,19 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       LIST_PONMSG[_mem.settings.ponmsg]))
             basic.append(ponmsg)
 
-        if self.COLOR_LCD:
-            mainfc = RadioSetting("settings.mainfc", 
+        if self.COLOR_LCD and not self.COLOR_LCD2:
+            mainfc = RadioSetting("settings.mainfc",
                                   "Main LCD foreground color",
-                                      RadioSettingValueList(
-                                          LIST_COLOR8,
-                                          LIST_COLOR8[_mem.settings.mainfc]))
+                                  RadioSettingValueList(
+                                      LIST_COLOR8,
+                                      LIST_COLOR8[_mem.settings.mainfc]))
             basic.append(mainfc)
 
             mainbc = RadioSetting("settings.mainbc",
                                   "Main LCD background color",
-                                      RadioSettingValueList(
-                                          LIST_COLOR8,
-                                          LIST_COLOR8[_mem.settings.mainbc]))
+                                  RadioSettingValueList(
+                                      LIST_COLOR8,
+                                      LIST_COLOR8[_mem.settings.mainbc]))
             basic.append(mainbc)
 
             menufc = RadioSetting("settings.menufc", "Menu foreground color",
@@ -1227,30 +1250,30 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
             stafc = RadioSetting("settings.stafc",
                                  "Top status foreground color",
-                                     RadioSettingValueList(
-                                         LIST_COLOR8,
-                                         LIST_COLOR8[_mem.settings.stafc]))
+                                 RadioSettingValueList(
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.stafc]))
             basic.append(stafc)
 
             stabc = RadioSetting("settings.stabc",
                                  "Top status background color",
-                                     RadioSettingValueList(
-                                         LIST_COLOR8,
-                                         LIST_COLOR8[_mem.settings.stabc]))
+                                 RadioSettingValueList(
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.stabc]))
             basic.append(stabc)
 
             sigfc = RadioSetting("settings.sigfc",
                                  "Bottom status foreground color",
-                                     RadioSettingValueList(
-                                         LIST_COLOR8,
-                                         LIST_COLOR8[_mem.settings.sigfc]))
+                                 RadioSettingValueList(
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sigfc]))
             basic.append(sigfc)
 
             sigbc = RadioSetting("settings.sigbc",
                                  "Bottom status background color",
-                                     RadioSettingValueList(
-                                         LIST_COLOR8,
-                                         LIST_COLOR8[_mem.settings.sigbc]))
+                                 RadioSettingValueList(
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sigbc]))
             basic.append(sigbc)
 
             rxfc = RadioSetting("settings.rxfc", "Receiving character color",
@@ -1261,16 +1284,107 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
             txfc = RadioSetting("settings.txfc",
                                 "Transmitting character color",
-                                    RadioSettingValueList(
-                                        LIST_COLOR8,
-                                        LIST_COLOR8[_mem.settings.txfc]))
+                                RadioSettingValueList(
+                                    LIST_COLOR8,
+                                    LIST_COLOR8[_mem.settings.txfc]))
             basic.append(txfc)
 
             txdisp = RadioSetting("settings.txdisp",
                                   "Transmitting status display",
-                                      RadioSettingValueList(
-                                          LIST_TXDISP,
-                                          LIST_TXDISP[_mem.settings.txdisp]))
+                                  RadioSettingValueList(
+                                      LIST_TXDISP,
+                                      LIST_TXDISP[_mem.settings.txdisp]))
+            basic.append(txdisp)
+        elif self.COLOR_LCD2:
+            stfc = RadioSetting("settings.stfc",
+                                "ST-FC",
+                                RadioSettingValueList(
+                                    LIST_COLOR7,
+                                    LIST_COLOR7[_mem.settings.stfc]))
+            basic.append(stfc)
+
+            mffc = RadioSetting("settings.mffc",
+                                "MF-FC",
+                                RadioSettingValueList(
+                                    LIST_COLOR7,
+                                    LIST_COLOR7[_mem.settings.mffc]))
+            basic.append(mffc)
+
+            sfafc = RadioSetting("settings.sfafc",
+                                 "SFA-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.sfafc]))
+            basic.append(sfafc)
+
+            sfbfc = RadioSetting("settings.sfbfc",
+                                 "SFB-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.sfbfc]))
+            basic.append(sfbfc)
+
+            sfcfc = RadioSetting("settings.sfcfc",
+                                 "SFC-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.sfcfc]))
+            basic.append(sfcfc)
+
+            sfdfc = RadioSetting("settings.sfdfc",
+                                 "SFD-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.sfdfc]))
+            basic.append(sfdfc)
+
+            subfc = RadioSetting("settings.subfc",
+                                 "SUB-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.subfc]))
+            basic.append(subfc)
+
+            fmfc = RadioSetting("settings.fmfc",
+                                "FM-FC",
+                                RadioSettingValueList(
+                                    LIST_COLOR7,
+                                    LIST_COLOR7[_mem.settings.fmfc]))
+            basic.append(fmfc)
+
+            sigfc = RadioSetting("settings.sigfc",
+                                 "SIG-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.sigfc]))
+            basic.append(sigfc)
+
+            modfc = RadioSetting("settings.modfc",
+                                 "MOD-FC",
+                                 RadioSettingValueList(
+                                     LIST_COLOR7,
+                                     LIST_COLOR7[_mem.settings.modfc]))
+            basic.append(modfc)
+
+            menufc = RadioSetting("settings.menufc",
+                                  "MENUFC",
+                                  RadioSettingValueList(
+                                      LIST_COLOR7,
+                                      LIST_COLOR7[_mem.settings.menufc]))
+            basic.append(menufc)
+
+            txfc = RadioSetting("settings.txfc",
+                                "TX-FC",
+                                RadioSettingValueList(
+                                    LIST_COLOR7,
+                                    LIST_COLOR7[_mem.settings.txfc]))
+            basic.append(txfc)
+
+            txdisp = RadioSetting("settings.txdisp",
+                                  "Transmitting status display",
+                                  RadioSettingValueList(
+                                      LIST_TXDISP,
+                                      LIST_TXDISP[_mem.settings.txdisp]))
             basic.append(txdisp)
         else:
             wtled = RadioSetting("settings.wtled", "Standby backlight Color",
@@ -1303,11 +1417,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                 LIST_REPS[_mem.settings.reps]))
         basic.append(reps)
 
-        repm = RadioSetting("settings.repm", "Relay condition",
-                            RadioSettingValueList(
-                                LIST_REPM,
-                                LIST_REPM[_mem.settings.repm]))
-        basic.append(repm)
+        if not self.MODEL == "GMRS-50X1":
+            repm = RadioSetting("settings.repm", "Relay condition",
+                                RadioSettingValueList(
+                                    LIST_REPM,
+                                    LIST_REPM[_mem.settings.repm]))
+            basic.append(repm)
 
         if self.VENDOR == "BTECH" or self.COLOR_LCD:
             if self.COLOR_LCD:
@@ -1319,7 +1434,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             else:
                 tdrab = RadioSetting("settings.tdrab", "TDR return time",
                                      RadioSettingValueList(
-                                         LIST_OFF1TO50, 
+                                         LIST_OFF1TO50,
                                          LIST_OFF1TO50[_mem.settings.tdrab]))
                 basic.append(tdrab)
 
@@ -1342,19 +1457,19 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         if str(_mem.fingerprint.fp) in BTECH3:
             mgain = RadioSetting("settings.mgain", "Mic gain",
                                  RadioSettingValueInteger(0, 120,
-                                     _mem.settings.mgain))
+                                                          _mem.settings.mgain))
             basic.append(mgain)
 
         if str(_mem.fingerprint.fp) in BTECH3 or self.COLOR_LCD:
             dtmfg = RadioSetting("settings.dtmfg", "DTMF gain",
                                  RadioSettingValueInteger(0, 60,
-                                     _mem.settings.dtmfg))
+                                                          _mem.settings.dtmfg))
             basic.append(dtmfg)
 
         if self.VENDOR == "BTECH" and self.COLOR_LCD:
             mgain = RadioSetting("settings.mgain", "Mic gain",
                                  RadioSettingValueInteger(0, 120,
-                                     _mem.settings.mgain))
+                                                          _mem.settings.mgain))
             basic.append(mgain)
 
             skiptx = RadioSetting("settings.skiptx", "Skip TX",
@@ -1379,57 +1494,64 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     filtered += " "
             return filtered
 
-        _msg = self._memobj.poweron_msg
-        if self.COLOR_LCD:
+        if self.COLOR_LCD and not self.COLOR_LCD2:
+            _msg = self._memobj.poweron_msg
             line1 = RadioSetting("poweron_msg.line1",
                                  "Power-on message line 1",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line1)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line1)))
             advanced.append(line1)
             line2 = RadioSetting("poweron_msg.line2",
                                  "Power-on message line 2",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line2)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line2)))
             advanced.append(line2)
             line3 = RadioSetting("poweron_msg.line3",
                                  "Power-on message line 3",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line3)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line3)))
             advanced.append(line3)
             line4 = RadioSetting("poweron_msg.line4",
                                  "Power-on message line 4",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line4)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line4)))
             advanced.append(line4)
             line5 = RadioSetting("poweron_msg.line5",
                                  "Power-on message line 5",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line5)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line5)))
             advanced.append(line5)
             line6 = RadioSetting("poweron_msg.line6",
                                  "Power-on message line 6",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line6)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line6)))
             advanced.append(line6)
             line7 = RadioSetting("poweron_msg.line7",
                                  "Power-on message line 7",
-                                     RadioSettingValueString(0, 8, _filter(
-                                         _msg.line7)))
+                                 RadioSettingValueString(0, 8, _filter(
+                                                         _msg.line7)))
             advanced.append(line7)
             line8 = RadioSetting("poweron_msg.line8", "Static message",
                                  RadioSettingValueString(0, 8, _filter(
-                                     _msg.line8)))
+                                                         _msg.line8)))
             advanced.append(line8)
+        elif self.COLOR_LCD2:
+            _msg = self._memobj.static_msg
+            line = RadioSetting("static_msg.line", "Static message",
+                                RadioSettingValueString(0, 16, _filter(
+                                    _msg.line)))
+            advanced.append(line)
         else:
+            _msg = self._memobj.poweron_msg
             line1 = RadioSetting("poweron_msg.line1",
                                  "Power-on message line 1",
-                                     RadioSettingValueString(0, 6, _filter(
-                                         _msg.line1)))
+                                 RadioSettingValueString(0, 6, _filter(
+                                                         _msg.line1)))
             advanced.append(line1)
             line2 = RadioSetting("poweron_msg.line2",
                                  "Power-on message line 2",
-                                     RadioSettingValueString(0, 6, _filter(
-                                         _msg.line2)))
+                                 RadioSettingValueString(0, 6, _filter(
+                                                         _msg.line2)))
             advanced.append(line2)
 
         if self.MODEL in ("UV-2501", "UV-5001"):
@@ -1520,7 +1642,6 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         fp = RadioSetting("fingerprint.fp", "Fingerprint", val)
         other.append(fp)
 
-
         # Work
         if self.COLOR_LCD:
             dispab = RadioSetting("settings2.dispab", "Display",
@@ -1566,30 +1687,30 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                      LIST_VFOMR[_mem.settings2.vfomr]))
             work.append(vfomr)
 
-
         keylock = RadioSetting("settings2.keylock", "Keypad lock",
-                           RadioSettingValueBoolean(_mem.settings2.keylock))
+                               RadioSettingValueBoolean(
+                                   _mem.settings2.keylock))
         work.append(keylock)
 
         mrcha = RadioSetting("settings2.mrcha", "MR A channel",
-                             RadioSettingValueInteger(0, 199,
-                                 _mem.settings2.mrcha))
+                             RadioSettingValueInteger(0, self._upper,
+                                                      _mem.settings2.mrcha))
         work.append(mrcha)
 
         mrchb = RadioSetting("settings2.mrchb", "MR B channel",
-                             RadioSettingValueInteger(0, 199,
-                                 _mem.settings2.mrchb))
+                             RadioSettingValueInteger(0, self._upper,
+                                                      _mem.settings2.mrchb))
         work.append(mrchb)
 
         if self.COLOR_LCD:
             mrchc = RadioSetting("settings2.mrchc", "MR C channel",
-                                 RadioSettingValueInteger(0, 199,
-                                     _mem.settings2.mrchc))
+                                 RadioSettingValueInteger(
+                                     0, self._upper, _mem.settings2.mrchc))
             work.append(mrchc)
 
             mrchd = RadioSetting("settings2.mrchd", "MR D channel",
-                                 RadioSettingValueInteger(0, 199,
-                                     _mem.settings2.mrchd))
+                                 RadioSettingValueInteger(
+                                     0, self._upper, _mem.settings2.mrchd))
             work.append(mrchd)
 
         def convert_bytes_to_freq(bytes):
@@ -1617,24 +1738,24 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             msg = ("Can't be betweeb %i.9975-%i.0000")
             if self.BANDS == 2:
                 if (_vhf_upper + 1) * 1000000 <= value and \
-                    value < _uhf_lower * 1000000:
+                        value < _uhf_lower * 1000000:
                     raise InvalidValueError(msg % (_vhf_upper, _uhf_lower))
             if self.BANDS == 3:
                 if (_vhf_upper + 1) * 1000000 <= value and \
-                    value < _vhf2_lower * 1000000:
+                        value < _vhf2_lower * 1000000:
                     raise InvalidValueError(msg % (_vhf_upper, _vhf2_lower))
                 if (_vhf2_upper + 1) * 1000000 <= value and \
-                    value < _uhf_lower * 1000000:
+                        value < _uhf_lower * 1000000:
                     raise InvalidValueError(msg % (_vhf2_upper, _uhf_lower))
             if self.BANDS == 4:
                 if (_vhf_upper + 1) * 1000000 <= value and \
-                    value < _vhf2_lower * 1000000:
+                        value < _vhf2_lower * 1000000:
                     raise InvalidValueError(msg % (_vhf_upper, _vhf2_lower))
                 if (_vhf2_upper + 1) * 1000000 <= value and \
-                    value < _uhf2_lower * 1000000:
+                        value < _uhf2_lower * 1000000:
                     raise InvalidValueError(msg % (_vhf2_upper, _uhf2_lower))
                 if (_uhf2_upper + 1) * 1000000 <= value and \
-                    value < _uhf_lower * 1000000:
+                        value < _uhf_lower * 1000000:
                     raise InvalidValueError(msg % (_uhf2_upper, _uhf_lower))
             msg = ("Can't be greater then %i.9975")
             if value > 99000000 and value >= _uhf_upper * 1000000:
@@ -1676,30 +1797,31 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             vfodfreq.set_apply_callback(apply_freq, _mem.vfo.d)
             work.append(vfodfreq)
 
-        vfoashiftd = RadioSetting("vfo.a.shiftd", "VFO A shift",
-                                  RadioSettingValueList(
-                                      LIST_SHIFT,
-                                      LIST_SHIFT[_mem.vfo.a.shiftd]))
-        work.append(vfoashiftd)
-
-        vfobshiftd = RadioSetting("vfo.b.shiftd", "VFO B shift",
-                                  RadioSettingValueList(
-                                      LIST_SHIFT,
-                                      LIST_SHIFT[_mem.vfo.b.shiftd]))
-        work.append(vfobshiftd)
-
-        if self.COLOR_LCD:
-            vfocshiftd = RadioSetting("vfo.c.shiftd", "VFO C shift",
+        if not self.MODEL == "GMRS-50X1":
+            vfoashiftd = RadioSetting("vfo.a.shiftd", "VFO A shift",
                                       RadioSettingValueList(
                                           LIST_SHIFT,
-                                          LIST_SHIFT[_mem.vfo.c.shiftd]))
-            work.append(vfocshiftd)
+                                          LIST_SHIFT[_mem.vfo.a.shiftd]))
+            work.append(vfoashiftd)
 
-            vfodshiftd = RadioSetting("vfo.d.shiftd", "VFO D shift",
+            vfobshiftd = RadioSetting("vfo.b.shiftd", "VFO B shift",
                                       RadioSettingValueList(
                                           LIST_SHIFT,
-                                          LIST_SHIFT[_mem.vfo.d.shiftd]))
-            work.append(vfodshiftd)
+                                          LIST_SHIFT[_mem.vfo.b.shiftd]))
+            work.append(vfobshiftd)
+
+            if self.COLOR_LCD:
+                vfocshiftd = RadioSetting("vfo.c.shiftd", "VFO C shift",
+                                          RadioSettingValueList(
+                                              LIST_SHIFT,
+                                              LIST_SHIFT[_mem.vfo.c.shiftd]))
+                work.append(vfocshiftd)
+
+                vfodshiftd = RadioSetting("vfo.d.shiftd", "VFO D shift",
+                                          RadioSettingValueList(
+                                              LIST_SHIFT,
+                                              LIST_SHIFT[_mem.vfo.d.shiftd]))
+                work.append(vfodshiftd)
 
         def convert_bytes_to_offset(bytes):
             real_offset = 0
@@ -1713,99 +1835,105 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 obj.offset[i] = value % 10
                 value /= 10
 
-        if self.COLOR_LCD:
-            val1a = RadioSettingValueString(0, 10, convert_bytes_to_offset(
-                                            _mem.vfo.a.offset))
-            vfoaoffset = RadioSetting("vfo.a.offset",
-                                      "VFO A offset (0.000-999.999)", val1a)
-            vfoaoffset.set_apply_callback(apply_offset, _mem.vfo.a)
-            work.append(vfoaoffset)
+        if not self.MODEL == "GMRS-50X1":
+            if self.COLOR_LCD:
+                val1a = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                                _mem.vfo.a.offset))
+                vfoaoffset = RadioSetting("vfo.a.offset",
+                                          "VFO A offset (0.000-999.999)",
+                                          val1a)
+                vfoaoffset.set_apply_callback(apply_offset, _mem.vfo.a)
+                work.append(vfoaoffset)
 
-            val1b = RadioSettingValueString(0, 10, convert_bytes_to_offset(
-                                            _mem.vfo.b.offset))
-            vfoboffset = RadioSetting("vfo.b.offset",
-                                      "VFO B offset (0.000-999.999)", val1b)
-            vfoboffset.set_apply_callback(apply_offset, _mem.vfo.b)
-            work.append(vfoboffset)
+                val1b = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                                _mem.vfo.b.offset))
+                vfoboffset = RadioSetting("vfo.b.offset",
+                                          "VFO B offset (0.000-999.999)",
+                                          val1b)
+                vfoboffset.set_apply_callback(apply_offset, _mem.vfo.b)
+                work.append(vfoboffset)
 
-            val1c = RadioSettingValueString(0, 10, convert_bytes_to_offset(
-                                            _mem.vfo.c.offset))
-            vfocoffset = RadioSetting("vfo.c.offset",
-                                      "VFO C offset (0.000-999.999)", val1c)
-            vfocoffset.set_apply_callback(apply_offset, _mem.vfo.c)
-            work.append(vfocoffset)
+                val1c = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                                _mem.vfo.c.offset))
+                vfocoffset = RadioSetting("vfo.c.offset",
+                                          "VFO C offset (0.000-999.999)",
+                                          val1c)
+                vfocoffset.set_apply_callback(apply_offset, _mem.vfo.c)
+                work.append(vfocoffset)
 
-            val1d = RadioSettingValueString(0, 10, convert_bytes_to_offset(
-                                            _mem.vfo.d.offset))
-            vfodoffset = RadioSetting("vfo.d.offset",
-                                      "VFO D offset (0.000-999.999)", val1d)
-            vfodoffset.set_apply_callback(apply_offset, _mem.vfo.d)
-            work.append(vfodoffset)
-        else:
-            val1a = RadioSettingValueString(0, 10, convert_bytes_to_offset(
-                                            _mem.vfo.a.offset))
-            vfoaoffset = RadioSetting("vfo.a.offset",
-                                      "VFO A offset (0.000-99.999)", val1a)
-            vfoaoffset.set_apply_callback(apply_offset, _mem.vfo.a)
-            work.append(vfoaoffset)
+                val1d = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                                _mem.vfo.d.offset))
+                vfodoffset = RadioSetting("vfo.d.offset",
+                                          "VFO D offset (0.000-999.999)",
+                                          val1d)
+                vfodoffset.set_apply_callback(apply_offset, _mem.vfo.d)
+                work.append(vfodoffset)
+            else:
+                val1a = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                                _mem.vfo.a.offset))
+                vfoaoffset = RadioSetting("vfo.a.offset",
+                                          "VFO A offset (0.000-99.999)", val1a)
+                vfoaoffset.set_apply_callback(apply_offset, _mem.vfo.a)
+                work.append(vfoaoffset)
 
-            val1b = RadioSettingValueString(0, 10, convert_bytes_to_offset(
-                                            _mem.vfo.b.offset))
-            vfoboffset = RadioSetting("vfo.b.offset",
-                                      "VFO B offset (0.000-99.999)", val1b)
-            vfoboffset.set_apply_callback(apply_offset, _mem.vfo.b)
-            work.append(vfoboffset)
+                val1b = RadioSettingValueString(0, 10, convert_bytes_to_offset(
+                                                _mem.vfo.b.offset))
+                vfoboffset = RadioSetting("vfo.b.offset",
+                                          "VFO B offset (0.000-99.999)", val1b)
+                vfoboffset.set_apply_callback(apply_offset, _mem.vfo.b)
+                work.append(vfoboffset)
 
-
-        vfoatxp = RadioSetting("vfo.a.power", "VFO A power",
-                               RadioSettingValueList(
-                                   LIST_TXP,
-                                   LIST_TXP[_mem.vfo.a.power]))
-        work.append(vfoatxp)
-
-        vfobtxp = RadioSetting("vfo.b.power", "VFO B power",
-                               RadioSettingValueList(
-                                   LIST_TXP,
-                                   LIST_TXP[_mem.vfo.b.power]))
-        work.append(vfobtxp)
-
-        if self.COLOR_LCD:
-            vfoctxp = RadioSetting("vfo.c.power", "VFO C power",
+        if not self.MODEL == "GMRS-50X1":
+            vfoatxp = RadioSetting("vfo.a.power", "VFO A power",
                                    RadioSettingValueList(
                                        LIST_TXP,
-                                       LIST_TXP[_mem.vfo.c.power]))
-            work.append(vfoctxp)
+                                       LIST_TXP[_mem.vfo.a.power]))
+            work.append(vfoatxp)
 
-            vfodtxp = RadioSetting("vfo.d.power", "VFO D power",
+            vfobtxp = RadioSetting("vfo.b.power", "VFO B power",
                                    RadioSettingValueList(
                                        LIST_TXP,
-                                       LIST_TXP[_mem.vfo.d.power]))
-            work.append(vfodtxp)
+                                       LIST_TXP[_mem.vfo.b.power]))
+            work.append(vfobtxp)
 
-        vfoawide = RadioSetting("vfo.a.wide", "VFO A bandwidth",
-                                RadioSettingValueList(
-                                    LIST_WIDE,
-                                    LIST_WIDE[_mem.vfo.a.wide]))
-        work.append(vfoawide)
+            if self.COLOR_LCD:
+                vfoctxp = RadioSetting("vfo.c.power", "VFO C power",
+                                       RadioSettingValueList(
+                                           LIST_TXP,
+                                           LIST_TXP[_mem.vfo.c.power]))
+                work.append(vfoctxp)
 
-        vfobwide = RadioSetting("vfo.b.wide", "VFO B bandwidth",
-                                RadioSettingValueList(
-                                    LIST_WIDE,
-                                    LIST_WIDE[_mem.vfo.b.wide]))
-        work.append(vfobwide)
+                vfodtxp = RadioSetting("vfo.d.power", "VFO D power",
+                                       RadioSettingValueList(
+                                           LIST_TXP,
+                                           LIST_TXP[_mem.vfo.d.power]))
+                work.append(vfodtxp)
 
-        if self.COLOR_LCD:
-            vfocwide = RadioSetting("vfo.c.wide", "VFO C bandwidth",
+        if not self.MODEL == "GMRS-50X1":
+            vfoawide = RadioSetting("vfo.a.wide", "VFO A bandwidth",
                                     RadioSettingValueList(
                                         LIST_WIDE,
-                                        LIST_WIDE[_mem.vfo.c.wide]))
-            work.append(vfocwide)
+                                        LIST_WIDE[_mem.vfo.a.wide]))
+            work.append(vfoawide)
 
-            vfodwide = RadioSetting("vfo.d.wide", "VFO D bandwidth",
+            vfobwide = RadioSetting("vfo.b.wide", "VFO B bandwidth",
                                     RadioSettingValueList(
                                         LIST_WIDE,
-                                        LIST_WIDE[_mem.vfo.d.wide]))
-            work.append(vfodwide)
+                                        LIST_WIDE[_mem.vfo.b.wide]))
+            work.append(vfobwide)
+
+            if self.COLOR_LCD:
+                vfocwide = RadioSetting("vfo.c.wide", "VFO C bandwidth",
+                                        RadioSettingValueList(
+                                            LIST_WIDE,
+                                            LIST_WIDE[_mem.vfo.c.wide]))
+                work.append(vfocwide)
+
+                vfodwide = RadioSetting("vfo.d.wide", "VFO D bandwidth",
+                                        RadioSettingValueList(
+                                            LIST_WIDE,
+                                            LIST_WIDE[_mem.vfo.d.wide]))
+                work.append(vfodwide)
 
         vfoastep = RadioSetting("vfo.a.step", "VFO A step",
                                 RadioSettingValueList(
@@ -1883,7 +2011,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             work.append(vfodspmute)
 
         if not self.COLOR_LCD or \
-            (self.COLOR_LCD and not self.VENDOR == "BTECH"):
+                (self.COLOR_LCD and not self.VENDOR == "BTECH"):
             vfoascr = RadioSetting("vfo.a.scramble", "VFO A scramble",
                                    RadioSettingValueBoolean(
                                        _mem.vfo.a.scramble))
@@ -1905,39 +2033,41 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                        _mem.vfo.d.scramble))
             work.append(vfodscr)
 
-        vfoascode = RadioSetting("vfo.a.scode", "VFO A PTT-ID",
-                                 RadioSettingValueList(
-                                     PTTIDCODE_LIST,
-                                     PTTIDCODE_LIST[_mem.vfo.a.scode]))
-        work.append(vfoascode)
-
-        vfobscode = RadioSetting("vfo.b.scode", "VFO B PTT-ID",
-                                 RadioSettingValueList(
-                                     PTTIDCODE_LIST,
-                                     PTTIDCODE_LIST[_mem.vfo.b.scode]))
-        work.append(vfobscode)
-
-        if self.COLOR_LCD:
-            vfocscode = RadioSetting("vfo.c.scode", "VFO C PTT-ID",
+        if not self.MODEL == "GMRS-50X1":
+            vfoascode = RadioSetting("vfo.a.scode", "VFO A PTT-ID",
                                      RadioSettingValueList(
                                          PTTIDCODE_LIST,
-                                         PTTIDCODE_LIST[_mem.vfo.c.scode]))
-            work.append(vfocscode)
+                                         PTTIDCODE_LIST[_mem.vfo.a.scode]))
+            work.append(vfoascode)
 
-            vfodscode = RadioSetting("vfo.d.scode", "VFO D PTT-ID",
+            vfobscode = RadioSetting("vfo.b.scode", "VFO B PTT-ID",
                                      RadioSettingValueList(
                                          PTTIDCODE_LIST,
-                                         PTTIDCODE_LIST[_mem.vfo.d.scode]))
-            work.append(vfodscode)
+                                         PTTIDCODE_LIST[_mem.vfo.b.scode]))
+            work.append(vfobscode)
 
-        pttid = RadioSetting("settings.pttid", "PTT ID",
-                             RadioSettingValueList(
-                                 PTTID_LIST,
-                                 PTTID_LIST[_mem.settings.pttid]))
-        work.append(pttid)
+            if self.COLOR_LCD:
+                vfocscode = RadioSetting("vfo.c.scode", "VFO C PTT-ID",
+                                         RadioSettingValueList(
+                                             PTTIDCODE_LIST,
+                                             PTTIDCODE_LIST[_mem.vfo.c.scode]))
+                work.append(vfocscode)
+
+                vfodscode = RadioSetting("vfo.d.scode", "VFO D PTT-ID",
+                                         RadioSettingValueList(
+                                             PTTIDCODE_LIST,
+                                             PTTIDCODE_LIST[_mem.vfo.d.scode]))
+                work.append(vfodscode)
+
+        if not self.MODEL == "GMRS-50X1":
+            pttid = RadioSetting("settings.pttid", "PTT ID",
+                                 RadioSettingValueList(
+                                     PTTID_LIST,
+                                     PTTID_LIST[_mem.settings.pttid]))
+            work.append(pttid)
 
         if not self.COLOR_LCD:
-            #FM presets
+            # FM presets
             fm_presets = RadioSettingGroup("fm_presets", "FM Presets")
             top.append(fm_presets)
 
@@ -1945,13 +2075,14 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 if value == 0:
                     return chirp_common.format_freq(value)
                 if not (87.5 <= value and value <= 108.0):  # 87.5-108MHz
-                    msg = ("FM-Preset-Frequency: Must be between 87.5 and 108 MHz")
+                    msg = ("FM-Preset-Frequency: " +
+                           "Must be between 87.5 and 108 MHz")
                     raise InvalidValueError(msg)
                 return value
 
             def apply_fm_preset_name(setting, obj):
-                valstring = str (setting.value)
-                for i in range(0,6):
+                valstring = str(setting.value)
+                for i in range(0, 6):
                     if valstring[i] in VALID_CHARS:
                         obj[i] = valstring[i]
                     else:
@@ -1962,43 +2093,43 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 for i in range(7, -1, -1):
                     obj.freq[i] = value % 10
                     value /= 10
-        
+
             _presets = self._memobj.fm_radio_preset
             i = 1
             for preset in _presets:
-                line = RadioSetting("fm_presets_"+ str(i), 
+                line = RadioSetting("fm_presets_" + str(i),
                                     "Station name " + str(i),
-                                        RadioSettingValueString(0, 6, _filter(
-                                            preset.broadcast_station_name)))
-                line.set_apply_callback(apply_fm_preset_name, 
+                                    RadioSettingValueString(0, 6, _filter(
+                                        preset.broadcast_station_name)))
+                line.set_apply_callback(apply_fm_preset_name,
                                         preset.broadcast_station_name)
-            
+
                 val = RadioSettingValueFloat(0, 108,
                                              convert_bytes_to_freq(
                                                  preset.freq))
-                fmfreq = RadioSetting("fm_presets_"+ str(i) + "_freq",
-                                      "Frequency "+ str(i), val)
+                fmfreq = RadioSetting("fm_presets_" + str(i) + "_freq",
+                                      "Frequency " + str(i), val)
                 val.set_validate_callback(fm_validate)
                 fmfreq.set_apply_callback(apply_fm_freq, preset)
                 fm_presets.append(line)
                 fm_presets.append(fmfreq)
-            
+
                 i = i + 1
 
-         # DTMF-Setting
-        dtmf_enc_settings = RadioSettingGroup ("dtmf_enc_settings",
-                                               "DTMF Encoding Settings")
-        dtmf_dec_settings = RadioSettingGroup ("dtmf_dec_settings",
-                                               "DTMF Decoding Settings")
+        # DTMF-Setting
+        dtmf_enc_settings = RadioSettingGroup("dtmf_enc_settings",
+                                              "DTMF Encoding Settings")
+        dtmf_dec_settings = RadioSettingGroup("dtmf_dec_settings",
+                                              "DTMF Decoding Settings")
         top.append(dtmf_enc_settings)
         top.append(dtmf_dec_settings)
-        txdisable = RadioSetting("dtmf_settings.txdisable", 
+        txdisable = RadioSetting("dtmf_settings.txdisable",
                                  "TX-Disable",
                                  RadioSettingValueBoolean(
                                      _mem.dtmf_settings.txdisable))
         dtmf_enc_settings.append(txdisable)
 
-        rxdisable = RadioSetting("dtmf_settings.rxdisable", 
+        rxdisable = RadioSetting("dtmf_settings.rxdisable",
                                  "RX-Disable",
                                  RadioSettingValueBoolean(
                                      _mem.dtmf_settings.rxdisable))
@@ -2029,22 +2160,22 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             return dtmf_string
 
         def apply_dmtf_frame(setting, obj):
-            LOG.debug("Setting DTMF-Code: " + str(setting.value) )
+            LOG.debug("Setting DTMF-Code: " + str(setting.value))
             val_string = str(setting.value)
-            for i in range(0,16):
+            for i in range(0, 16):
                 obj[i] = 255
             i = 0
             for current_char in val_string:
                 current_char = current_char.upper()
                 index = LIST_DTMF_DIGITS.index(current_char)
-                obj[i] = LIST_DTMF_VALUES[ index ]
+                obj[i] = LIST_DTMF_VALUES[index]
                 i = i + 1
 
         codes = self._memobj.dtmf_codes
         i = 1
         for dtmfcode in codes:
-            val = RadioSettingValueString(0, 16, 
-                                          memory2string(dtmfcode.code),
+            val = RadioSettingValueString(0, 16, memory2string(
+                                              dtmfcode.code),
                                           False, CHARSET_DTMF_DIGITS)
             line = RadioSetting("dtmf_code_" + str(i) + "_code",
                                 "DMTF Code " + str(i), val)
@@ -2052,146 +2183,138 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             dtmf_enc_settings.append(line)
             i = i + 1
 
-        line = RadioSetting("dtmf_settings.mastervice", 
+        line = RadioSetting("dtmf_settings.mastervice",
                             "Master and Vice ID",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.mastervice))
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.masterid),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.masterid",
                             "Master Control ID ", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.masterid)
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.minspection", 
+        line = RadioSetting("dtmf_settings.minspection",
                             "Master Inspection",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.minspection))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.mmonitor", 
+        line = RadioSetting("dtmf_settings.mmonitor",
                             "Master Monitor",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.mmonitor))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.mstun", 
+        line = RadioSetting("dtmf_settings.mstun",
                             "Master Stun",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.mstun))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.mkill", 
+        line = RadioSetting("dtmf_settings.mkill",
                             "Master Kill",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.mkill))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.mrevive", 
+        line = RadioSetting("dtmf_settings.mrevive",
                             "Master Revive",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.mrevive))
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.viceid),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.viceid",
                             "Vice Control ID ", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.viceid)
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.vinspection", 
+        line = RadioSetting("dtmf_settings.vinspection",
                             "Vice Inspection",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.vinspection))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.vmonitor", 
+        line = RadioSetting("dtmf_settings.vmonitor",
                             "Vice Monitor",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.vmonitor))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.vstun", 
+        line = RadioSetting("dtmf_settings.vstun",
                             "Vice Stun",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.vstun))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.vkill", 
+        line = RadioSetting("dtmf_settings.vkill",
                             "Vice Kill",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.vkill))
         dtmf_dec_settings.append(line)
 
-        line = RadioSetting("dtmf_settings.vrevive", 
+        line = RadioSetting("dtmf_settings.vrevive",
                             "Vice Revive",
                             RadioSettingValueBoolean(
                                 _mem.dtmf_settings.vrevive))
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.inspection),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.inspection",
                             "Inspection", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.inspection)
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.alarmcode),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.alarmcode",
                             "Alarm", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.alarmcode)
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.kill),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.kill",
                             "Kill", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.kill)
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.monitor),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.monitor",
                             "Monitor", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.monitor)
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.stun),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.stun",
                             "Stun", val)
         line.set_apply_callback(apply_dmtf_frame,
                                 _mem.dtmf_settings.stun)
         dtmf_dec_settings.append(line)
 
-        val = RadioSettingValueString(0, 16, 
-                                      memory2string(
+        val = RadioSettingValueString(0, 16, memory2string(
                                           _mem.dtmf_settings.revive),
-                                          False, CHARSET_DTMF_DIGITS)
+                                      False, CHARSET_DTMF_DIGITS)
         line = RadioSetting("dtmf_settings.revive",
                             "Revive", val)
         line.set_apply_callback(apply_dmtf_frame,
@@ -2199,7 +2322,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         dtmf_dec_settings.append(line)
 
         def apply_dmtf_listvalue(setting, obj):
-            LOG.debug("Setting value: "+ str(setting.value) + " from list")
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
             val = str(setting.value)
             index = LIST_DTMF_SPECIAL_DIGITS.index(val)
             val = LIST_DTMF_SPECIAL_VALUES[index]
@@ -2250,12 +2373,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       _mem.dtmf_settings.delayproctime]))
         dtmf_dec_settings.append(line)
 
-
         # 5 Tone Settings
-        stds_5tone = RadioSettingGroup ("stds_5tone", "Standards")
-        codes_5tone = RadioSettingGroup ("codes_5tone", "Codes")
+        stds_5tone = RadioSettingGroup("stds_5tone", "Standards")
+        codes_5tone = RadioSettingGroup("codes_5tone", "Codes")
 
-        group_5tone = RadioSettingGroup ("group_5tone", "5 Tone Settings")
+        group_5tone = RadioSettingGroup("group_5tone", "5 Tone Settings")
         group_5tone.append(stds_5tone)
         group_5tone.append(codes_5tone)
 
@@ -2263,22 +2385,22 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         def apply_list_value(setting, obj):
             options = setting.value.get_options()
-            obj.set_value ( options.index(str(setting.value)) )
+            obj.set_value(options.index(str(setting.value)))
 
         _5tone_standards = self._memobj._5tone_std_settings
         i = 0
         for standard in _5tone_standards:
-            std_5tone = RadioSettingGroup ("std_5tone_" + str(i), 
-                                           LIST_5TONE_STANDARDS[i])
+            std_5tone = RadioSettingGroup("std_5tone_" + str(i),
+                                          LIST_5TONE_STANDARDS[i])
             stds_5tone.append(std_5tone)
- 
+
             period = standard.period
             if period == 255:
-                LOG.debug("Period for " + LIST_5TONE_STANDARDS[i] + 
+                LOG.debug("Period for " + LIST_5TONE_STANDARDS[i] +
                           " is not yet configured. Setting to 70ms.")
                 period = 5
 
-            if period <= len( LIST_5TONE_STANDARD_PERIODS ):
+            if period <= len(LIST_5TONE_STANDARD_PERIODS):
                 line = RadioSetting(
                     "_5tone_std_settings_" + str(i) + "_period",
                     "Period (ms)", RadioSettingValueList
@@ -2295,7 +2417,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                           " is not yet configured. Setting to A.")
                 group_tone = 10
 
-            if group_tone <= len( LIST_5TONE_DIGITS ):
+            if group_tone <= len(LIST_5TONE_DIGITS):
                 line = RadioSetting(
                     "_5tone_std_settings_" + str(i) + "_grouptone",
                     "Group Tone",
@@ -2310,11 +2432,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
             repeat_tone = standard.repeat_tone
             if repeat_tone == 255:
-                LOG.debug("Repeat-Tone for " + LIST_5TONE_STANDARDS[i] + 
+                LOG.debug("Repeat-Tone for " + LIST_5TONE_STANDARDS[i] +
                           " is not yet configured. Setting to E.")
                 repeat_tone = 14
 
-            if repeat_tone <= len( LIST_5TONE_DIGITS ):
+            if repeat_tone <= len(LIST_5TONE_DIGITS):
                 line = RadioSetting(
                     "_5tone_std_settings_" + str(i) + "_repttone",
                     "Repeat Tone",
@@ -2332,18 +2454,18 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             if LIST_5TONE_STANDARDS.index(str(setting.value)) == 15:
                 obj.set_value(0xFF)
             else:
-                obj.set_value( LIST_5TONE_STANDARDS.
-                              index(str(setting.value)) )
+                obj.set_value(LIST_5TONE_STANDARDS.
+                              index(str(setting.value)))
 
         def apply_5tone_frame(setting, obj):
-            LOG.debug("Setting 5 Tone: " + str(setting.value) )
+            LOG.debug("Setting 5 Tone: " + str(setting.value))
             valstring = str(setting.value)
             if len(valstring) == 0:
-                for i in range(0,5):
+                for i in range(0, 5):
                     obj[i] = 255
             else:
                 validFrame = True
-                for i in range(0,5):
+                for i in range(0, 5):
                     currentChar = valstring[i].upper()
                     if currentChar in LIST_5TONE_DIGITS:
                         obj[i] = LIST_5TONE_DIGITS.index(currentChar)
@@ -2351,12 +2473,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                         validFrame = False
                         LOG.debug("invalid char: " + str(currentChar))
                 if not validFrame:
-                    LOG.debug("setting whole frame to FF" )
-                    for i in range(0,5):
+                    LOG.debug("setting whole frame to FF")
+                    for i in range(0, 5):
                         obj[i] = 255
 
         def validate_5tone_frame(value):
-            if (len(str(value)) != 5) and (len(str(value)) != 0) :
+            if (len(str(value)) != 5) and (len(str(value)) != 0):
                 msg = ("5 Tone must have 5 digits or 0 digits")
                 raise InvalidValueError(msg)
             for digit in str(value):
@@ -2375,25 +2497,25 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         _5tone_codes = self._memobj._5tone_codes
         i = 1
         for code in _5tone_codes:
-            code_5tone = RadioSettingGroup ("code_5tone_" + str(i),
-                                            "5 Tone code " + str(i))
+            code_5tone = RadioSettingGroup("code_5tone_" + str(i),
+                                           "5 Tone code " + str(i))
             codes_5tone.append(code_5tone)
-            if (code.standard == 255 ):
+            if (code.standard == 255):
                 currentVal = 15
             else:
                 currentVal = code.standard
-            line = RadioSetting("_5tone_code_" + str(i) + "_std", 
+            line = RadioSetting("_5tone_code_" + str(i) + "_std",
                                 " Standard",
                                 RadioSettingValueList(LIST_5TONE_STANDARDS,
                                                       LIST_5TONE_STANDARDS[
-                                                          currentVal]) )
+                                                          currentVal]))
             line.set_apply_callback(my_apply_5tonestdlist_value,
                                     code.standard)
             code_5tone.append(line)
 
             val = RadioSettingValueString(0, 6,
                                           frame2string(code.frame1), False)
-            line = RadioSetting("_5tone_code_" + str(i) + "_frame1", 
+            line = RadioSetting("_5tone_code_" + str(i) + "_frame1",
                                 " Frame 1", val)
             val.set_validate_callback(validate_5tone_frame)
             line.set_apply_callback(apply_5tone_frame, code.frame1)
@@ -2461,8 +2583,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         decode_standard = _mem._5tone_settings.decode_standard
         if decode_standard == 255:
             decode_standard = 0
-        if decode_standard <= len (LIST_5TONE_STANDARDS_without_none) :
-            line = RadioSetting("_5tone_settings.decode_standard", 
+        if decode_standard <= len(LIST_5TONE_STANDARDS_without_none):
+            line = RadioSetting("_5tone_settings.decode_standard",
                                 "5 Tone-decode Standard",
                                 RadioSettingValueList(
                                     LIST_5TONE_STANDARDS_without_none,
@@ -2471,13 +2593,13 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             group_5tone.append(line)
         else:
             LOG.debug("Invalid decode std...")
-            
+
         _5tone_delay1 = _mem._5tone_settings._5tone_delay1
         if _5tone_delay1 == 255:
             _5tone_delay1 = 20
 
-        if _5tone_delay1 <= len( LIST_5TONE_DELAY ):
-            list = RadioSettingValueList(LIST_5TONE_DELAY, 
+        if _5tone_delay1 <= len(LIST_5TONE_DELAY):
+            list = RadioSettingValueList(LIST_5TONE_DELAY,
                                          LIST_5TONE_DELAY[
                                              _5tone_delay1])
             line = RadioSetting("_5tone_settings._5tone_delay1",
@@ -2491,7 +2613,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             _5tone_delay2 = 20
             LOG.debug("5 Tone delay unconfigured! Resetting to 200ms.")
 
-        if _5tone_delay2 <= len( LIST_5TONE_DELAY ):
+        if _5tone_delay2 <= len(LIST_5TONE_DELAY):
             list = RadioSettingValueList(LIST_5TONE_DELAY,
                                          LIST_5TONE_DELAY[
                                              _5tone_delay2])
@@ -2506,12 +2628,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             _5tone_delay3 = 20
             LOG.debug("5 Tone delay unconfigured! Resetting to 200ms.")
 
-        if _5tone_delay3 <= len( LIST_5TONE_DELAY ):
+        if _5tone_delay3 <= len(LIST_5TONE_DELAY):
             list = RadioSettingValueList(LIST_5TONE_DELAY,
                                          LIST_5TONE_DELAY[
                                              _5tone_delay3])
             line = RadioSetting("_5tone_settings._5tone_delay3",
-                                "5 Tone Delay Frame 3", list )
+                                "5 Tone Delay Frame 3", list)
             group_5tone.append(line)
         else:
             LOG.debug("Invalid value for 5tone delay (frame3)! Disabling.")
@@ -2521,10 +2643,9 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             ext_length = 0
             LOG.debug("1st Tone ext lenght unconfigured! Resetting to 0")
 
-        if ext_length <= len(
-            LIST_5TONE_DELAY ):
+        if ext_length <= len(LIST_5TONE_DELAY):
             list = RadioSettingValueList(
-                LIST_5TONE_DELAY, 
+                LIST_5TONE_DELAY,
                 LIST_5TONE_DELAY[
                     ext_length])
             line = RadioSetting(
@@ -2550,8 +2671,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             LOG.debug("Invalid value decode reset time! Disabling.")
 
         # 2 Tone
-        encode_2tone = RadioSettingGroup ("encode_2tone", "2 Tone Encode")
-        decode_2tone = RadioSettingGroup ("decode_2tone", "2 Code Decode")
+        encode_2tone = RadioSettingGroup("encode_2tone", "2 Tone Encode")
+        decode_2tone = RadioSettingGroup("decode_2tone", "2 Code Decode")
 
         top.append(encode_2tone)
         top.append(decode_2tone)
@@ -2562,8 +2683,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                       "configured. Setting to 600ms")
             duration_1st_tone = 60
 
-        if duration_1st_tone <= len( LIST_5TONE_DELAY ):
-            line = RadioSetting("_2tone.duration_1st_tone", 
+        if duration_1st_tone <= len(LIST_5TONE_DELAY):
+            line = RadioSetting("_2tone.duration_1st_tone",
                                 "Duration 1st Tone",
                                 RadioSettingValueList(LIST_5TONE_DELAY,
                                                       LIST_5TONE_DELAY[
@@ -2576,8 +2697,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                       "configured. Setting to 600ms")
             duration_2nd_tone = 60
 
-        if duration_2nd_tone <= len( LIST_5TONE_DELAY ):
-            line = RadioSetting("_2tone.duration_2nd_tone", 
+        if duration_2nd_tone <= len(LIST_5TONE_DELAY):
+            line = RadioSetting("_2tone.duration_2nd_tone",
                                 "Duration 2nd Tone",
                                 RadioSettingValueList(LIST_5TONE_DELAY,
                                                       LIST_5TONE_DELAY[
@@ -2590,7 +2711,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                       "configured. Setting to 300ms")
             duration_gap = 30
 
-        if duration_gap <= len( LIST_5TONE_DELAY ):
+        if duration_gap <= len(LIST_5TONE_DELAY):
             line = RadioSetting("_2tone.duration_gap", "Duration of gap",
                                 RadioSettingValueList(LIST_5TONE_DELAY,
                                                       LIST_5TONE_DELAY[
@@ -2615,8 +2736,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 obj.set_value(val)
 
         i = 1
-        for code in  self._memobj._2tone._2tone_encode:
-            code_2tone = RadioSettingGroup ("code_2tone_" + str(i), 
+        for code in self._memobj._2tone._2tone_encode:
+            code_2tone = RadioSettingGroup("code_2tone_" + str(i),
                                            "Encode Code " + str(i))
             encode_2tone.append(code_2tone)
 
@@ -2624,7 +2745,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             if tmp == 65535:
                 tmp = 0
             val1 = RadioSettingValueInteger(0, 65535, tmp)
-            freq1 = RadioSetting("2tone_code_"+ str(i) + "_freq1", 
+            freq1 = RadioSetting("2tone_code_" + str(i) + "_freq1",
                                  "Frequency 1", val1)
             val1.set_validate_callback(_2tone_validate)
             freq1.set_apply_callback(apply_2tone_freq, code.freq1)
@@ -2634,7 +2755,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             if tmp == 65535:
                 tmp = 0
             val2 = RadioSettingValueInteger(0, 65535, tmp)
-            freq2 = RadioSetting("2tone_code_"+ str(i) + "_freq2", 
+            freq2 = RadioSetting("2tone_code_" + str(i) + "_freq2",
                                  "Frequency 2", val2)
             val2.set_validate_callback(_2tone_validate)
             freq2.set_apply_callback(apply_2tone_freq, code.freq2)
@@ -2669,27 +2790,27 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             else:
                 derived_val = int(round(2304000.0/val))
 
-            obj[frqname].set_value( val )
-            obj[derivedname].set_value( derived_val )
+            obj[frqname].set_value(val)
+            obj[derivedname].set_value(derived_val)
 
-            LOG.debug("Apply " + frqname + ": " + str(val) + " | " 
-                      + derivedname + ": " + str(derived_val))
+            LOG.debug("Apply " + frqname + ": " + str(val) + " | " +
+                      derivedname + ": " + str(derived_val))
 
         i = 1
-        for decode_code in  self._memobj._2tone._2tone_decode:
-            _2tone_dec_code = RadioSettingGroup ("code_2tone_" + str(i),
-                                           "Decode Code " + str(i))
+        for decode_code in self._memobj._2tone._2tone_decode:
+            _2tone_dec_code = RadioSettingGroup("code_2tone_" + str(i),
+                                                "Decode Code " + str(i))
             decode_2tone.append(_2tone_dec_code)
 
             j = 1
             for dec in decode_code.decs:
                 val = dec.dec
                 if val == 255:
-                    LOG.debug("Dec for Code " + str(i) + " Dec " + str(j) +  
+                    LOG.debug("Dec for Code " + str(i) + " Dec " + str(j) +
                               " is not yet configured. Setting to 0.")
                     val = 0
 
-                if val <= len( LIST_2TONE_DEC ):
+                if val <= len(LIST_2TONE_DEC):
                     line = RadioSetting(
                         "_2tone_dec_settings_" + str(i) + "_dec_" + str(j),
                         "Dec " + str(j), RadioSettingValueList
@@ -2702,11 +2823,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
                 val = dec.response
                 if val == 255:
-                    LOG.debug("Response for Code " + str(i) + " Dec " + str(j)+
-                              " is not yet configured. Setting to 0.")
+                    LOG.debug("Response for Code " + str(i) + " Dec " +
+                              str(j) + " is not yet configured. Setting to 0.")
                     val = 0
 
-                if val <= len( LIST_2TONE_RESPONSE ):
+                if val <= len(LIST_2TONE_RESPONSE):
                     line = RadioSetting(
                         "_2tone_dec_settings_" + str(i) + "_resp_" + str(j),
                         "Response " + str(j), RadioSettingValueList
@@ -2719,11 +2840,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
                 val = dec.alert
                 if val == 255:
-                    LOG.debug("Alert for Code " + str(i) + " Dec " + str(j) +  
+                    LOG.debug("Alert for Code " + str(i) + " Dec " + str(j) +
                               " is not yet configured. Setting to 0.")
                     val = 0
 
-                if val <= len( PTTIDCODE_LIST ):
+                if val <= len(PTTIDCODE_LIST):
                     line = RadioSetting(
                         "_2tone_dec_settings_" + str(i) + "_alert_" + str(j),
                         "Alert " + str(j), RadioSettingValueList
@@ -2746,13 +2867,13 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     expected = int(round(2304000.0/tmp))
                     from_mem = freq["derived_from_" + setting_name]
                     if expected != from_mem:
-                        LOG.error("Expected " + str(expected) + 
-                                  " but read " + str(from_mem ) + 
+                        LOG.error("Expected " + str(expected) +
+                                  " but read " + str(from_mem) +
                                   ". Disabling 2Tone Decode Freqs!")
                         break
                 val = RadioSettingValueInteger(0, 65535, tmp)
-                frq = RadioSetting("2tone_dec_"+ str(i) + "_freq" + str(char),
-                                         ("Decode Frequency " +str(char)), val)
+                frq = RadioSetting("2tone_dec_" + str(i) + "_freq" + str(char),
+                                   ("Decode Frequency " + str(char)), val)
                 val.set_validate_callback(_2tone_validate)
                 frq.set_apply_callback(apply_2tone_freq_pair, freq)
                 _2tone_dec_code.append(frq)
@@ -3238,6 +3359,8 @@ class KTUV980(BTech):
 
 # Please note that there is a version of this radios that is a clone of the
 # Waccom Mini8900, maybe an early version?
+
+
 @directory.register
 class KT9800(BTech):
     """QYT KT8900"""
@@ -3317,44 +3440,44 @@ struct {
 #seekto 0x0E00;
 struct {
   u8 tmr;
-  u8 unknown1;      
-  u8 sql;           
-  u8 unknown2[2];   
-  u8 tot;           
-  u8 apo;           
-  u8 unknown3;      
-  u8 abr;           
-  u8 beep;          
-  u8 unknown4[4];   
-  u8 dtmfst;        
-  u8 unknown5[2];   
-  u8 screv;         
+  u8 unknown1;
+  u8 sql;
+  u8 unknown2[2];
+  u8 tot;
+  u8 apo;
+  u8 unknown3;
+  u8 abr;
+  u8 beep;
+  u8 unknown4[4];
+  u8 dtmfst;
+  u8 unknown5[2];
+  u8 screv;
   u8 unknown6[2];
   u8 pttid;
   u8 pttlt;
   u8 unknown7;
-  u8 emctp;         
-  u8 emcch;         
-  u8 sigbp;         
+  u8 emctp;
+  u8 emcch;
+  u8 sigbp;
   u8 unknown8;
-  u8 camdf;         
-  u8 cbmdf;         
-  u8 ccmdf;         
-  u8 cdmdf;         
+  u8 camdf;
+  u8 cbmdf;
+  u8 ccmdf;
+  u8 cdmdf;
   u8 langua;
   u8 sync;          // BTech radios use this as the display sync
                     // setting, other radios use this as the auto
                     // keypad lock setting
   u8 mainfc;
-  u8 mainbc;        
-  u8 menufc;        
-  u8 menubc;        
-  u8 stafc;         
-  u8 stabc;         
-  u8 sigfc;         
-  u8 sigbc;         
-  u8 rxfc;          
-  u8 txfc;          
+  u8 mainbc;
+  u8 menufc;
+  u8 menubc;
+  u8 stafc;
+  u8 stabc;
+  u8 sigfc;
+  u8 sigbc;
+  u8 rxfc;
+  u8 txfc;
   u8 txdisp;
   u8 unknown9[5];
   u8 anil;
@@ -3382,17 +3505,17 @@ struct {
      reseten:1,
      menuen:1;
   u8 unknown5[11];
-  u8 dispab;        
-  u8 unknown6[2];   
-  u8 menu;          
-  u8 unknown7[7];   
-  u8 vfomra;        
-  u8 vfomrb;        
-  u8 vfomrc;        
-  u8 vfomrd;        
-  u8 mrcha;         
-  u8 mrchb;         
-  u8 mrchc;         
+  u8 dispab;
+  u8 unknown6[2];
+  u8 menu;
+  u8 unknown7[7];
+  u8 vfomra;
+  u8 vfomrb;
+  u8 vfomrc;
+  u8 vfomrd;
+  u8 mrcha;
+  u8 mrchb;
+  u8 mrchc;
   u8 mrchd;
 } settings2;
 
@@ -3592,6 +3715,7 @@ class BTechColor(BTechMobileCommon):
     """BTECH's Color LCD Mobile and alike radios"""
     COLOR_LCD = True
     NAME_LENGTH = 8
+    LIST_TMR = LIST_TMR16
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -3633,7 +3757,7 @@ class BTechColor(BTechMobileCommon):
         # set the class with the real data
         self._vhf_range = vhf
         self._uhf_range = uhf
-    
+
 
 # Declaring Aliases (Clones of the real radios)
 class SKT8900D(chirp_common.Alias):
@@ -3690,6 +3814,7 @@ class KT7900D(BTechColor):
     VENDOR = "QYT"
     MODEL = "KT7900D"
     BANDS = 4
+    LIST_TMR = LIST_TMR15
     _vhf_range = (136000000, 175000000)
     _220_range = (200000000, 271000000)
     _uhf_range = (400000000, 481000000)
@@ -3706,7 +3831,364 @@ class KT8900D(BTechColor):
     VENDOR = "QYT"
     MODEL = "KT8900D"
     BANDS = 2
+    LIST_TMR = LIST_TMR15
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
     _fileid = [KT8900D_fp, KT8900D_fp1]
+
+
+GMRS_MEM_FORMAT = """
+#seekto 0x0000;
+struct {
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unknown0:4,
+     scode:4;
+  u8 unknown1:2,
+     spmute:1,
+     unknown2:3,
+     optsig:2;
+  u8 unknown3:3,
+     scramble:1,
+     unknown4:2,
+     power:2;
+  u8 unknown5:1,
+     wide:1,
+     unknown6:2,
+     bcl:1,
+     add:1,
+     pttid:2;
+} memory[256];
+
+#seekto 0x1000;
+struct {
+  char name[7];
+  u8 unknown1[9];
+} names[256];
+
+#seekto 0x2400;
+struct {
+  u8 period; // one out of LIST_5TONE_STANDARD_PERIODS
+  u8 group_tone;
+  u8 repeat_tone;
+  u8 unused[13];
+} _5tone_std_settings[15];
+
+#seekto 0x2500;
+struct {
+  u8 frame1[5];
+  u8 frame2[5];
+  u8 frame3[5];
+  u8 standard;   // one out of LIST_5TONE_STANDARDS
+} _5tone_codes[15];
+
+#seekto 0x25F0;
+struct {
+  u8 _5tone_delay1; // * 10ms
+  u8 _5tone_delay2; // * 10ms
+  u8 _5tone_delay3; // * 10ms
+  u8 _5tone_first_digit_ext_length;
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  u8 unknown4;
+  u8 decode_standard;
+  u8 unknown5:5,
+     _5tone_decode_call_frame3:1,
+     _5tone_decode_call_frame2:1,
+     _5tone_decode_call_frame1:1;
+  u8 unknown6:5,
+     _5tone_decode_disp_frame3:1,
+     _5tone_decode_disp_frame2:1,
+     _5tone_decode_disp_frame1:1;
+  u8 decode_reset_time; // * 100 + 100ms
+} _5tone_settings;
+
+#seekto 0x2900;
+struct {
+  u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
+} dtmf_codes[15];
+
+#seekto 0x29F0;
+struct {
+  u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10
+  u8 dtmfspeed_off; //list with 50..2000ms in steps of 10
+  u8 unknown0[14];
+  u8 inspection[16];
+  u8 monitor[16];
+  u8 alarmcode[16];
+  u8 stun[16];
+  u8 kill[16];
+  u8 revive[16];
+  u8 unknown1[16];
+  u8 unknown2[16];
+  u8 unknown3[16];
+  u8 unknown4[16];
+  u8 unknown5[16];
+  u8 unknown6[16];
+  u8 unknown7[16];
+  u8 masterid[16];
+  u8 viceid[16];
+  u8 unused01:7,
+     mastervice:1;
+  u8 unused02:3,
+     mrevive:1,
+     mkill:1,
+     mstun:1,
+     mmonitor:1,
+     minspection:1;
+  u8 unused03:3,
+     vrevive:1,
+     vkill:1,
+     vstun:1,
+     vmonitor:1,
+     vinspection:1;
+  u8 unused04:6,
+     txdisable:1,
+     rxdisable:1;
+  u8 groupcode;
+  u8 spacecode;
+  u8 delayproctime; // * 100 + 100ms
+  u8 resettime;     // * 100 + 100ms
+} dtmf_settings;
+
+#seekto 0x2D00;
+struct {
+  struct {
+    ul16 freq1;
+    u8 unused01[6];
+    ul16 freq2;
+    u8 unused02[6];
+  } _2tone_encode[15];
+  u8 duration_1st_tone; // *10ms
+  u8 duration_2nd_tone; // *10ms
+  u8 duration_gap;      // *10ms
+  u8 unused03[13];
+  struct {
+    struct {
+      u8 dec;      // one out of LIST_2TONE_DEC
+      u8 response; // one out of LIST_2TONE_RESPONSE
+      u8 alert;    // 1-16
+    } decs[4];
+    u8 unused04[4];
+  } _2tone_decode[15];
+  u8 unused05[16];
+
+  struct {
+    ul16 freqA;
+    ul16 freqB;
+    ul16 freqC;
+    ul16 freqD;
+    // unknown what those values mean, but they are
+    // derived from configured frequencies
+    ul16 derived_from_freqA; // 2304000/freqA
+    ul16 derived_from_freqB; // 2304000/freqB
+    ul16 derived_from_freqC; // 2304000/freqC
+    ul16 derived_from_freqD; // 2304000/freqD
+  }freqs[15];
+  u8 reset_time;  // * 100 + 100ms - 100-8000ms
+} _2tone;
+
+#seekto 0x3000;
+struct {
+  u8 freq[8];
+  char broadcast_station_name[6];
+  u8 unknown[2];
+} fm_radio_preset[16];
+
+#seekto 0x3200;
+struct {
+  u8 tmr;
+  u8 unknown1;
+  u8 sql;
+  u8 unknown2;
+  u8 autolk;
+  u8 tot;
+  u8 apo;
+  u8 unknown3;
+  u8 abr;
+  u8 beep;
+  u8 unknown4[4];
+  u8 dtmfst;
+  u8 unknown5[2];
+  u8 screv;
+  u8 unknown6[2];
+  u8 pttid;
+  u8 pttlt;
+  u8 unknown7;
+  u8 emctp;
+  u8 emcch;
+  u8 sigbp;
+  u8 unknown8;
+  u8 camdf;
+  u8 cbmdf;
+  u8 ccmdf;
+  u8 cdmdf;
+  u8 langua;
+  u8 sync;
+
+
+  u8 stfc;
+  u8 mffc;
+  u8 sfafc;
+  u8 sfbfc;
+  u8 sfcfc;
+  u8 sfdfc;
+  u8 subfc;
+  u8 fmfc;
+  u8 sigfc;
+  u8 modfc;
+  u8 menufc;
+  u8 txfc;
+  u8 txdisp;
+  u8 unknown9[5];
+  u8 anil;
+  u8 reps;
+  u8 repm;
+  u8 tmrmr;
+  u8 ste;
+  u8 rpste;
+  u8 rptdl;
+  u8 dtmfg;
+  u8 mgain;
+  u8 skiptx;
+  u8 scmode;
+} settings;
+
+#seekto 0x3280;
+struct {
+  u8 unknown1;
+  u8 vfomr;
+  u8 keylock;
+  u8 unknown2;
+  u8 unknown3:4,
+     vfomren:1,
+     unknown4:1,
+     reseten:1,
+     menuen:1;
+  u8 unknown5[11];
+  u8 dispab;
+  u8 unknown6[2];
+  u8 smenu;
+  u8 unknown7[7];
+  u8 vfomra;
+  u8 vfomrb;
+  u8 vfomrc;
+  u8 vfomrd;
+  u8 mrcha;
+  u8 mrchb;
+  u8 mrchc;
+  u8 mrchd;
+} settings2;
+
+struct settings_vfo {
+  u8 freq[8];
+  u8 offset[6];
+  u8 unknown2[2];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 scode;
+  u8 spmute;
+  u8 optsig;
+  u8 scramble;
+  u8 wide;
+  u8 power;
+  u8 shiftd;
+  u8 step;
+  u8 unknown3[4];
+};
+
+#seekto 0x3300;
+struct {
+  struct settings_vfo a;
+  struct settings_vfo b;
+  struct settings_vfo c;
+  struct settings_vfo d;
+} vfo;
+
+#seekto 0x3D80;
+struct {
+  u8 vhf_low[3];
+  u8 vhf_high[3];
+  u8 unknown1[4];
+  u8 unknown2[6];
+  u8 vhf2_low[3];
+  u8 vhf2_high[3];
+  u8 unknown3[4];
+  u8 unknown4[6];
+  u8 uhf_low[3];
+  u8 uhf_high[3];
+  u8 unknown5[4];
+  u8 unknown6[6];
+  u8 uhf2_low[3];
+  u8 uhf2_high[3];
+} ranges;
+
+#seekto 0x33B0;
+struct {
+  char line[16];
+} static_msg;
+
+#seekto 0x3F70;
+struct {
+  char fp[6];
+} fingerprint;
+
+"""
+
+
+class BTechGMRS(BTechMobileCommon):
+    """BTECH's GMRS Mobile"""
+    COLOR_LCD = True
+    COLOR_LCD2 = True
+    NAME_LENGTH = 7
+    UPLOAD_MEM_SIZE = 0X3400
+
+    def process_mmap(self):
+        """Process the mem map into the mem object"""
+
+        # Get it
+        self._memobj = bitwise.parse(GMRS_MEM_FORMAT, self._mmap)
+
+        # load specific parameters from the radio image
+        self.set_options()
+
+    def set_options(self):
+        """This is to read the options from the image and set it in the
+        environment, for now just the limits of the freqs in the VHF/UHF
+        ranges"""
+
+        # setting the correct ranges for each radio type
+        ranges = self._memobj.ranges
+
+        # the normal dual bands
+        vhf = _decode_ranges(ranges.vhf_low, ranges.vhf_high)
+        uhf = _decode_ranges(ranges.uhf_low, ranges.uhf_high)
+
+        # DEBUG
+        LOG.info("Radio ranges: VHF %d to %d" % vhf)
+        LOG.info("Radio ranges: UHF %d to %d" % uhf)
+
+        # set the class with the real data
+        self._vhf_range = vhf
+        self._uhf_range = uhf
+
+
+# real radios
+@directory.register
+class GMRS50X1(BTechGMRS):
+    """Baofeng Tech GMRS50X1"""
+    MODEL = "GMRS-50X1"
+    BANDS = 2
+    LIST_TMR = LIST_TMR16
+    _power_levels = [chirp_common.PowerLevel("High", watts=50),
+                     chirp_common.PowerLevel("Mid", watts=10),
+                     chirp_common.PowerLevel("Low", watts=5)]
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 521000000)
+    _upper = 255
+    _magic = MSTRING_GMRS50X1
+    _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]

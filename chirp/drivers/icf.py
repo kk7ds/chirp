@@ -154,20 +154,24 @@ def get_model_data(radio, mdata=bytes(b"\x00\x00\x00\x00")):
     return frames[0].payload
 
 
-def get_clone_resp(pipe, length=None):
+def get_clone_resp(pipe, length=None, max_count=None):
     """Read the response to a clone frame"""
-    def exit_criteria(buf, length):
+    def exit_criteria(buf, length, cnt, max_count):
         """Stop reading a clone response if we have enough data or encounter
         the end of a frame"""
+        if max_count is not None:
+            if cnt >= max_count:
+                return True
         if length is None:
             return buf.endswith("\xfd")
         else:
             return len(buf) == length
 
     resp = ""
-    while not exit_criteria(resp, length):
+    cnt = 0
+    while not exit_criteria(resp, length, cnt, max_count):
         resp += pipe.read(1)
-
+        cnt += 1
     return resp
 
 
@@ -192,6 +196,9 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
         pass
 
     radio.pipe.write(frame)
+    if radio.MUNCH_CLONE_RESP:
+        # Do max 2*len(frame) read(1) calls
+        get_clone_resp(radio.pipe, max_count=2*len(frame))
 
     return frame
 
@@ -205,15 +212,36 @@ def process_data_frame(radio, frame, _mmap):
     #  - on py3 bytes[N] is an int
     #  - on both bytes[N:M] is a bytes
     # So we do a slice so we get consistent behavior
-    if len(_mmap) >= 0x10000:
+    # Checksum logic added by Rick DeWitt, 9/2019, issue # 7075
+    if len(_mmap) >= 0x10000:   # This map size not tested for checksum
         saddr, = struct.unpack(">I", _data[0:4])
         length, = struct.unpack("B", _data[4:5])
         data = _data[5:5+length]
-    else:
+        sumc, = struct.unpack("B", _data[5+length:])
+        addr1, = struct.unpack("B", _data[0:1])
+        addr2, = struct.unpack("B", _data[1:2])
+        addr3, = struct.unpack("B", _data[2:3])
+        addr4, = struct.unpack("B", _data[3:4])
+    else:   # But this one has been tested for raw mode radio (IC-2730)
         saddr, = struct.unpack(">H", _data[0:2])
         length, = struct.unpack("B", _data[2:3])
         data = _data[3:3+length]
+        sumc, = struct.unpack("B", _data[3+length:])
+        addr1, = struct.unpack("B", _data[0:1])
+        addr2, = struct.unpack("B", _data[1:2])
+        addr3 = 0
+        addr4 = 0
 
+    cs = addr1 + addr2 + addr3 + addr4 + length
+    for byte in data:
+        cs += byte
+    vx = ((cs ^ 0xFFFF) + 1) & 0xFF
+    if sumc != vx:
+        LOG.error("Bad checksum in address %04X frame: %02x "
+                  "calculated, %02x sent!" % (saddr, vx, sumc))
+        raise errors.InvalidDataError(
+            "Checksum error in download! "
+            "Try disabling High Speed Clone option in Settings.")
     try:
         _mmap[saddr] = data
     except IndexError:
@@ -304,6 +332,7 @@ def clone_from_radio(radio):
     try:
         return _clone_from_radio(radio)
     except Exception as e:
+        raise
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 
@@ -588,6 +617,15 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
     BAUDRATE = 9600
     NEEDS_COMPAT_SERIAL = False
+    # Ideally, the driver should read clone response after each clone frame
+    # is sent, but for some reason it hasn't behaved this way for years.
+    # So not to break the existing tested drivers the MUNCH_CLONE_RESP flag
+    # was added. It's False by default which brings the old behavior,
+    # i.e. clone response is not read. The expectation is that new Icom
+    # drivers will use MUNCH_CLONE_RESP = True and old drivers will be
+    # gradually migrated to this. Once all Icom drivers will use
+    # MUNCH_CLONE_RESP = True, this flag will be removed.
+    MUNCH_CLONE_RESP = False
 
     _model = "\x00\x00\x00\x00"  # 4-byte model string
     _endframe = ""               # Model-unique ending frame

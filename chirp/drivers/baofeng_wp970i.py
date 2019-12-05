@@ -19,8 +19,6 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -31,7 +29,9 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     InvalidValueError
 from textwrap import dedent
 
-##### MAGICS #########################################################
+LOG = logging.getLogger(__name__)
+
+# #### MAGICS #########################################################
 
 # Baofeng WP970I magic string
 MSTRING_WP970I = "\x50\xBB\xFF\x20\x14\x04\x13"
@@ -63,6 +63,7 @@ LIST_TIMEOUT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXPOWER = ["High", "Mid", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
+
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
@@ -107,11 +108,12 @@ class WP970I(baofeng_common.BaofengCommonHT):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Med",  watts=3.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
-    VALID_BANDS = [(130000000, 180000000),
-                   (400000000, 521000000)]
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
+    VALID_BANDS = [_vhf_range,
+                   _uhf_range]
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
-
 
     MEM_FORMAT = """
     #seekto 0x0000;
@@ -141,19 +143,19 @@ class WP970I(baofeng_common.BaofengCommonHT):
       u8 code[5];
       u8 unused[11];
     } pttid[15];
-    
+
     #seekto 0x0CAA;
     struct {
-      u8 code[5];      
-      u8 unused1:6,    
-         aniid:2;      
-      u8 unknown[2];   
-      u8 dtmfon;       
-      u8 dtmfoff;      
-    } ani;             
+      u8 code[5];
+      u8 unused1:6,
+         aniid:2;
+      u8 unknown[2];
+      u8 dtmfon;
+      u8 dtmfoff;
+    } ani;
 
-    #seekto 0x0E20;    
-    struct {           
+    #seekto 0x0E20;
+    struct {
       u8 squelch;
       u8 step;
       u8 unknown1;
@@ -206,17 +208,17 @@ class WP970I(baofeng_common.BaofengCommonHT):
       u8 keylock;
     } settings;
 
-    #seekto 0x0E76;    
-    struct {           
-      u8 unused1:1,    
-         mrcha:7;      
-      u8 unused2:1,    
-         mrchb:7;      
-    } wmchannel;       
-                       
-    struct vfo {       
-      u8 unknown0[8];  
-      u8 freq[8];      
+    #seekto 0x0E76;
+    struct {
+      u8 unused1:1,
+         mrcha:7;
+      u8 unused2:1,
+         mrchb:7;
+    } wmchannel;
+
+    struct vfo {
+      u8 unknown0[8];
+      u8 freq[8];
       u8 offset[6];
       ul16 rxtone;
       ul16 txtone;
@@ -224,45 +226,45 @@ class WP970I(baofeng_common.BaofengCommonHT):
          band:1;
       u8 unknown3;
       u8 unused2:2,
-         sftd:2,       
+         sftd:2,
          scode:4;
-      u8 unknown4;     
+      u8 unknown4;
       u8 unused3:1
-         step:3,       
-         unused4:4;    
+         step:3,
+         unused4:4;
       u8 unused5:1,
          widenarr:1,
-         unused6:4,   
-         txpower3:2;   
-    };                 
-                       
-    #seekto 0x0F00;    
-    struct {           
+         unused6:4,
+         txpower3:2;
+    };
+
+    #seekto 0x0F00;
+    struct {
       struct vfo a;
       struct vfo b;
     } vfo;
-    
+
     #seekto 0x0F4E;
     u16 fm_presets;
-    
+
     #seekto 0x1000;
     struct {
       char name[7];
       u8 unknown1[9];
     } names[128];
-    
+
     #seekto 0x1ED0;
     struct {
       char line1[7];
       char line2[7];
     } sixpoweron_msg;
-    
+
     #seekto 0x1EE0;
     struct {
       char line1[7];
       char line2[7];
     } poweron_msg;
-    
+
     #seekto 0x1EF0;
     struct {
       char line1[7];
@@ -281,7 +283,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
       u8 sql8;
       u8 sql9;
     };
-    
+
     #seekto 0x1F60;
     struct {
       struct squelch vhf;
@@ -395,7 +397,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
         basic.append(rs)
 
         rs = RadioSetting("settings.beep", "Beep",
-                           RadioSettingValueBoolean(_mem.settings.beep))
+                          RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(rs)
 
         if _mem.settings.timeout > 0x27:
@@ -497,7 +499,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
             val = _mem.settings.rpste
         rs = RadioSetting("settings.rpste",
                           "Squelch Tail Eliminate (repeater)",
-                              RadioSettingValueList(
+                          RadioSettingValueList(
                               LIST_RPSTE, LIST_RPSTE[val]))
         basic.append(rs)
 
@@ -619,12 +621,12 @@ class WP970I(baofeng_common.BaofengCommonHT):
 
         rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrcha))
+                                                   _mem.wmchannel.mrcha))
         work.append(rs)
 
         rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrchb))
+                                                   _mem.wmchannel.mrchb))
         work.append(rs)
 
         def convert_bytes_to_freq(bytes):
@@ -819,7 +821,8 @@ class WP970I(baofeng_common.BaofengCommonHT):
                 elif band == "uhf":
                     _obj = self._memobj.squelch.uhf
                 val = RadioSettingValueInteger(0, 123,
-                          getattr(_obj, "sql%i" % (index)))
+                                               getattr(
+                                                   _obj, "sql%i" % (index)))
                 if index == 0:
                     val.set_mutable(False)
                 name = "%s Squelch %i" % (band.upper(), index)
@@ -845,9 +848,16 @@ class WP970I(baofeng_common.BaofengCommonHT):
         else:
             return False
 
+
 class RH5XAlias(chirp_common.Alias):
     VENDOR = "Rugged"
     MODEL = "RH5X"
+
+
+class UV82IIIAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-82III"
+
 
 @directory.register
 class BFA58(WP970I):
@@ -858,11 +868,13 @@ class BFA58(WP970I):
 
     _fileid = ["BFT515 ", "BFT517 "]
 
+
 @directory.register
 class UV82WP(WP970I):
     """Baofeng UV82-WP"""
     VENDOR = "Baofeng"
     MODEL = "UV-82WP"
+
 
 @directory.register
 class GT3WP(WP970I):
@@ -870,8 +882,23 @@ class GT3WP(WP970I):
     VENDOR = "Baofeng"
     MODEL = "GT-3WP"
 
+
 @directory.register
 class RT6(WP970I):
     """Retevis RT6"""
     VENDOR = "Retevis"
     MODEL = "RT6"
+
+
+@directory.register
+class BFA58S(WP970I):
+    VENDOR = "Baofeng"
+    MODEL = "BF-A58S"
+    ALIASES = [UV82IIIAlias]
+
+    def get_features(self):
+        rf = WP970I.get_features(self)
+        rf.valid_bands = [self._vhf_range,
+                          (200000000, 260000000),
+                          self._uhf_range]
+        return rf

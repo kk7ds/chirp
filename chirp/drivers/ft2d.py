@@ -87,7 +87,7 @@ class FT2D(ft1d.FT1Radio):
          2. Connect cable to DATA terminal.
          3. Press and hold [DISP] key while turning on radio
               ("CLONE" will appear on the display).
-         4. <b>After clicking OK here in chirp</b>, 
+         4. <b>After clicking OK here in chirp</b>,
               press the [Send] screen button."""))
         rp.pre_upload = _(dedent("""\
          1. Turn radio off.
@@ -156,3 +156,11 @@ class FT2Dv2(FT2D):
     VARIANT = "Rv2"
 
     _model = "AH60G"
+
+@directory.register
+class FT3D(FT2D):
+    """Yaesu FT-3D"""
+    MODEL = "FT3D"
+    VARIANT = "R"
+
+    _model = "AH72M"

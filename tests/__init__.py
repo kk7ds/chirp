@@ -25,6 +25,7 @@ class TestAdapterMeta(type):
 class TestAdapter(unittest.TestCase):
     RADIO_CLASS = None
     SOURCE_IMAGE = None
+    RADIO_INST = None
     testwrapper = None
 
     def shortDescription(self):
@@ -48,7 +49,10 @@ class TestAdapter(unittest.TestCase):
         os.remove(cls.testimage)
 
     def _runtest(self, test):
-        testcase = test(self.testwrapper)
+        tw = run_tests.TestWrapper(self.RADIO_CLASS,
+                                   self.testimage,
+                                   dst=self.RADIO_INST)
+        testcase = test(tw)
         testcase.prepare()
         try:
             failures = testcase.run()
@@ -91,7 +95,7 @@ def _get_sub_devices(rclass, testimage):
 
     rf = tw.do("get_features")
     if rf.has_sub_devices:
-        return [r.__class__ for r in tw.do("get_sub_devices")]
+        return tw.do("get_sub_devices")
     else:
         return [rclass]
 
@@ -126,9 +130,15 @@ def load_tests(loader, tests, pattern, suite=None):
             class_name = 'TestCase_%s' % (
                 ''.join(filter(lambda c: c.isalnum(),
                                device.get_name())))
+            if isinstance(device, type):
+                dst = None
+            else:
+                dst = device
+                device = device.__class__
             tc = TestAdapterMeta(
                 class_name, (TestAdapter,), dict(RADIO_CLASS=device,
-                                                 SOURCE_IMAGE=image))
+                                                 SOURCE_IMAGE=image,
+                                                 RADIO_INST=dst))
             tests = loader.loadTestsFromTestCase(tc)
 
             if pattern:

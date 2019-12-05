@@ -54,7 +54,8 @@ struct slot {
  u8 tx_dcs;     //see dcs table, but radio code = CHIRP code+1. 0==off
  u8 rx_dcs;     //see dcs table, but radio code = CHIRP code+1. 0==off
  u8 duplex;     //(auto,offset). (0,2,4,5)= (+,-,0, auto)
- ul16 offset;   //little-endian binary *25 kHz, +- per duplex
+ ul16 offset;   //little-endian binary * scaler, +- per duplex
+                   //scaler is 25 kHz for FT-4, 50 kHz for FT-65.
  u8 tx_width;   //0=wide, 1=narrow
  u8 step;       //STEPS (0-9)=(auto,5,6.25,10,12.5,15,20,25,50,100) kHz
  u8 sql_type;   //(0-6)==(off,r-tone,t-tone,tsql,rev tn,dcs,pager)
@@ -131,14 +132,6 @@ struct dtmfset {
  u8 digit[16];    //ASCII (*,#,-,0-9,A-D). (dash-filled)
 };
 
-//one block with stuff for the programmable keys
-//supports 4 keys. FT-4 has only 2 keys. FT-65 has all 4.
-struct progs {
- u8 modes[8];     //should be array of 2-byte structs, but bitwise.py refuses
- u8 ndx[4];
- u8 unused[8];
-};
-
 // area to be filled with 0xff, or just ignored
 struct notused {
   u8 unused[16];
@@ -146,6 +139,12 @@ struct notused {
 // areas we are still analyzing
 struct unknown {
   u8 notknown[16];
+};
+
+struct progc {
+  u8 usage;          //P key is (0-2) == unused, use P channel, use parm
+  u8 submode:2,      //if parm!=0 submode 0-3 of mode
+     parm:6;         //if usage == 2: if 0, use m-channel, else  mode
 };
 """
 # Actual memory layout. 0x215 blocks, in 20 groups.
@@ -169,8 +168,11 @@ struct misc  settings;        //2000  4-block collection of misc params
 struct notused notused4[2];   //2040
 struct dtmfset dtmf[9];       //2060  sets 1-9
 struct notused notused5;      //20f0
-struct progs progkeys;        //2100
-struct unknown notused6[3];   //2110
+//struct progs progkeys;      //2100  not a struct. bitwise.py refuses
+struct progc  progctl[4];        //2100 8 bytes. 1 2-byte struct per P key
+u8 pmemndx[4];                   //2108 4 bytes, 1 per P key
+u8 notused6[4];                  //210c fill out the block
+struct slot  prog[4];         //2110  P key "channel" array
 //---------------- end of FT-4 mem?
 """
 # The remaining mem is (apparently) not available on the FT4 but is
@@ -237,7 +239,7 @@ def variable_len_resp(pipe):
             i += 1
             if i > toolong:
                 LOG.debug("Response too long. got" + util.hexprint(response))
-                raise errors.RadioError("Response too long.")
+                raise errors.RadioError("Response from radio too long.")
     return(response)
 
 
@@ -259,7 +261,7 @@ def sendcmd(pipe, cmd, response_len):
         msg = "Bad echo. Sent:" + util.hexprint(cmd) + ", "
         msg += "Received:" + util.hexprint(echo)
         LOG.debug(msg)
-        raise errors.RadioError("Incorrect echo on serial port.")
+        raise errors.RadioError("Incorrect echo on serial port. Bad cable?")
     if response_len is None:
         return variable_len_resp(pipe)
     if response_len > 0:
@@ -273,16 +275,36 @@ def sendcmd(pipe, cmd, response_len):
     return response
 
 
-def startcomms(radio):
+def enter_clonemode(radio):
+    """
+    Send the PROGRAM command and check the response. Retry if
+    needed. After 3 tries, send an "END" and try some more if
+    it is acknowledged.
+    """
+    for use_end in range(0, 3):
+        for i in range(0, 3):
+            try:
+                if b"QX" == sendcmd(radio.pipe, b"PROGRAM", 2):
+                    return
+            except:
+                continue
+        sendcmd(radio.pipe, b"END", 0)
+    raise errors.RadioError("expected QX from radio.")
+
+
+def startcomms(radio, way):
     """
     For either upload or download, put the radio into PROGRAM mode
     and check the radio's ID. In this preliminary version of the driver,
     the exact nature of the ID has been inferred from a single test case.
+        set up the progress bar
         send "PROGRAM" to command the radio into clone mode
         read the initial string (version?)
     """
-    if b"QX" != sendcmd(radio.pipe, b"PROGRAM", 2):
-        raise errors.RadioError("expected QX from radio.")
+    progressbar = chirp_common.Status()
+    progressbar.msg = "Cloning " + way + " radio"
+    progressbar.max = radio.numblocks
+    enter_clonemode(radio)
     id_response = sendcmd(radio.pipe, b'\x02', None)
     if id_response != radio.id_str:
         substr0 = radio.id_str[:radio.id_str.find('\x00')]
@@ -290,11 +312,12 @@ def startcomms(radio):
             msg = "ID mismatch. Expected" + util.hexprint(radio.id_str)
             msg += ", Received:" + util.hexprint(id_response)
             LOG.warning(msg)
-            raise errors.RadioError("Incorrect ID.")
+            raise errors.RadioError("Incorrect ID read from radio.")
         else:
             msg = "ID suspect. Expected" + util.hexprint(radio.id_str)
             msg += ", Received:" + util.hexprint(id_response)
             LOG.warning(msg)
+    return progressbar
 
 
 def getblock(pipe, addr, image):
@@ -302,6 +325,7 @@ def getblock(pipe, addr, image):
     read a single 16-byte block from the radio.
     send the command and check the response
     places the response into the correct offset in the supplied bytearray
+    returns True if successful, False if error.
     """
     cmd = struct.pack(">cHb", b"R", addr, 16)
     response = sendcmd(pipe, cmd, 21)
@@ -309,11 +333,12 @@ def getblock(pipe, addr, image):
         msg = "Bad response. Sent:" + util.hexprint(cmd) + ", "
         msg += b"Received:" + util.hexprint(response)
         LOG.debug(msg)
-        raise errors.RadioError("Incorrect response to read.")
+        return False
     if checkSum8(response[1:20]) != bytearray(response)[20]:
         LOG.debug(b"Bad checksum: " + util.hexprint(response))
-        raise errors.RadioError("bad block checksum.")
+        return False
     image[addr:addr+16] = response[4:20]
+    return True
 
 
 def do_download(radio):
@@ -326,9 +351,16 @@ def do_download(radio):
     """
     image = bytearray(radio.get_memsize())
     pipe = radio.pipe  # Get the serial port connection
-    startcomms(radio)
-    for _i in range(radio.numblocks):
-        getblock(pipe, 16 * _i, image)
+    progressbar = startcomms(radio, "from")
+    for blocknum in range(radio.numblocks):
+        for i in range(0, 3):
+            if getblock(pipe, 16 * blocknum, image):
+                break
+            if i == 2:
+                raise errors.RadioError(
+                   "read block from radio failed 3 times")
+        progressbar.cur = blocknum
+        radio.status_fn(progressbar)
     sendcmd(pipe, b"END", 0)
     return memmap.MemoryMap(bytes(image))
 
@@ -351,10 +383,12 @@ def do_upload(radio):
       send "END"
     """
     pipe = radio.pipe  # Get the serial port connection
-    startcomms(radio)
+    progressbar = startcomms(radio, "to")
     data = get_mmap_data(radio)
     for _i in range(1, radio.numblocks):
         putblock(pipe, 16*_i, data[16*_i:16*(_i+1)])
+        progressbar.cur = _i
+        radio.status_fn(progressbar)
     sendcmd(pipe, b"END", 0)
     return
 # End serial transfer utilities
@@ -442,9 +476,9 @@ SKIPS = ["", "S"]
 
 BASETYPE_FT4 = ["FT-4XR", "FT-4XE"]
 BASETYPE_FT65 = ["FT-65R"]
-POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
+POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.5),
                 chirp_common.PowerLevel("Mid", watts=2.5),
-                chirp_common.PowerLevel("Low", watts=0.5)]
+                chirp_common.PowerLevel("High", watts=5.0)]
 
 # these steps encode to 0-9 on all radios, but encoding #2 is disallowed
 # on the US versions (FT-4XR)
@@ -519,16 +553,24 @@ for name in chirp_common.CROSS_MODES:
 DTMF_CHARS = "0123456789ABCD*#- "
 CW_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ "
 PASSWD_CHARS = "0123456789"
-CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurtuvwxyz*# "
+CHARSET = CW_ID_CHARS + "abcdefghijklmnopqrstuvwxyz*+-/@"
 PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 
-# Three separate arrays of special channel mems.
+# Four separate arrays of special channel mems.
 # Each special has unique constrants: band, name yes/no, and pms L/U
+# The FT-65 class replaces the "prog" entry in this list.
+# The name field must be the name of a slot array in MEM_FORMAT
 SPECIALS = [
     ("pms", PMSNAMES),
-    ("vfo", ["VFO A UHF", "VFO A VHF", "VFO B UHF", "VFO B UHF", "VFO B FM"]),
-    ("home", ["HOME UHF", "HOME VHF", "HOME FM"])
+    ("vfo", ["VFO A UHF", "VFO A VHF", "VFO B FM", "VFO B VHF", "VFO B UHF"]),
+    ("home", ["HOME FM", "HOME VHF", "HOME UHF"]),
+    ("prog", ["P1", "P2"])
     ]
+BAND_ASSIGNMENTS = [2, 1, 0, 1, 2, 0, 1, 2]  # bands for the vfos and homes
+FT65_PROGS = ("prog", ["P1", "P2", "P3", "P4"])
+FT65_SPECIALS = list(SPECIALS)    # a shallow copy works here
+FT65_SPECIALS[-1] = FT65_PROGS    # replace the last entry (P key names)
+
 
 # None, and 50 Tones. Use this explicit array because the
 # one in chirp_common could change and no longer describe our radio
@@ -596,10 +638,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             )
 
         rp.pre_download = "".join([
-            "1. Turn radio off.\n",
-            "2. Connect cable to SP jack.\n",
-            "3. Turn radio on.\n",
-            "4. Press OK within 3 seconds"
+            "1. Connect programming cable to MIC jack.\n",
+            "2. Press OK."
             ]
             )
         rp.pre_upload = rp.pre_download
@@ -610,7 +650,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def get_features(self):
 
         rf = chirp_common.RadioFeatures()
-        specials = [name for s in SPECIALS for name in s[1]]
+        specials = [name for s in self.class_specials for name in s[1]]
         rf.valid_special_chans = specials
         rf.memory_bounds = (1, self.MAX_MEM_SLOT)
         rf.valid_duplexes = DUPLEX
@@ -629,6 +669,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rf.has_dtcs_polarity = False    # REV TN reverses the tone, not the dcs
         rf.has_cross = True
         rf.has_settings = True
+        rf.valid_tuning_steps = self.legal_steps
 
         return rf
 
@@ -694,35 +735,42 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 dtmf_digits, DTMF_CHARS,
                 "dtmf_%i" % i, "DTMF Autodialer Memory %i" % i, group)
 
-    def apply_P(self, element, pnum):
-        self.memobj.progkeys.modes[pnum * 2] = [0, 2][element.value]
+    def apply_P(self, element, pnum, memobj):
+        memobj.progctl[pnum].usage = element.value
 
-    def apply_Pmode(self, element, pnum):
-        self.memobj.progkeys.modes[pnum * 2 + 1] = element.value
+    def apply_Pmode(self, element, pnum, memobj):
+        memobj.progctl[pnum].parm = element.value
 
-    def apply_Pmem(self, element, pnum):
-        self.memobj.progkeys.ndx[pnum] = element.value
+    def apply_Psubmode(self, element, pnum, memobj):
+        memobj.progctl[pnum].submode = element.value
 
-    MEMLIST = ["%d" % i for i in range(1, MAX_MEM_SLOT)] + PMSNAMES
+    def apply_Pmem(self, element, pnum, memobj):
+        memobj.pmemndx[pnum] = element.value
+
+    MEMLIST = ["%d" % i for i in range(1, MAX_MEM_SLOT + 1)] + PMSNAMES
+    USAGE_LIST = ["unused", "P channel", "mode or M channel"]
 
     # called when found in the group_descriptions table
     # returns the settings for the programmable keys (P1-P4)
     def get_progs(self, group, parm):
-        _progkeys = self._memobj.progkeys
+        _progctl = self._memobj.progctl
+        _progndx = self._memobj.pmemndx
 
-        def get_prog(i, val_list, valndx, sname, longname, apply):
+        def get_prog(i, val_list, valndx, sname, longname, f_apply):
+            k = str(i + 1)
             val = val_list[valndx]
             valuelist = RadioSettingValueList(val_list, val)
-            rs = RadioSetting(sname + str(i), longname + str(i), valuelist)
-            rs.set_apply_callback(apply, i)
+            rs = RadioSetting(sname + k, longname + k, valuelist)
+            rs.set_apply_callback(f_apply, i, self._memobj)
             group.append(rs)
         for i in range(0, self.Pkeys):
-            i1 = i + 1
-            get_prog(i1, ["unused", "in use"],  _progkeys.modes[i * 2],
+            get_prog(i, self.USAGE_LIST,  _progctl[i].usage,
                      "P", "Programmable key ",  self.apply_P)
-            get_prog(i1, self.SETMODES, _progkeys.modes[i * 2 + 1], "modeP",
+            get_prog(i, self.SETMODES, _progctl[i].parm, "modeP",
                      "mode for Programmable key ",  self.apply_Pmode)
-            get_prog(i1, self.MEMLIST, _progkeys.ndx[i], "memP",
+            get_prog(i, ["0", "1", "2", "3"], _progctl[i].submode, "submodeP",
+                     "submode for Programmable key ",  self.apply_Psubmode)
+            get_prog(i, self.MEMLIST, _progndx[i], "memP",
                      "mem for Programmable key ",  self.apply_Pmem)
     # ------------ End of special settings handlers.
 
@@ -927,7 +975,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         sname = memref
         if isinstance(memref, str):   # named special?
             num = self.MAX_MEM_SLOT + 1
-            for x in SPECIALS:
+            for x in self.class_specials:
                 try:
                     ndx = x[1].index(memref)
                     array = x[0]
@@ -939,8 +987,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 raise
             num += ndx
         elif memref > self.MAX_MEM_SLOT:    # numbered special?
-            ndx = memref - self.MAX_MEM_SLOT
-            for x in SPECIALS:
+            ndx = memref - (self.MAX_MEM_SLOT + 1)
+            for x in self.class_specials:
                 if ndx < len(x[1]):
                     array = x[0]
                     sname = x[1][ndx]
@@ -1006,6 +1054,21 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
 
         return mem
 
+    def enforce_band(self, memloc, freq, mem_num, sname):
+        """
+        vfo and home channels are each restricted to a particular band.
+        If the frequency is not in the band, use the lower bound
+        Raise an exception to cause UI to pop up an error message
+        """
+        first_vfo_num = self.MAX_MEM_SLOT + len(PMSNAMES) + 1
+        band = BAND_ASSIGNMENTS[mem_num - first_vfo_num]
+        frange = self.valid_bands[band]
+        if freq >= frange[0] and freq <= frange[1]:
+            memloc.freq = freq / 10
+            return freq
+        memloc.freq = frange[0] / 10
+        raise Exception("freq out of range for %s" % sname)
+
     # modify a radio channel in memobj based on info in CHIRP canonical form
     def set_memory(self, mem):
         _mem, ndx, num, regtype, sname = self.slotloc(mem.number)
@@ -1015,7 +1078,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 store_bit(self._memobj.enable, ndx, False)
                 return
 
-        _mem.freq = mem.freq / 10
+        txfreq = mem.freq / 10     # really. RX freq is used for TX base
+        _mem.freq = txfreq
         self.encode_sql(mem, _mem)
         if mem.power:
             _mem.tx_pwr = POWER_LEVELS.index(mem.power)
@@ -1030,12 +1094,13 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             store_bit(self._memobj.scan, ndx, SKIPS.index(mem.skip))
             nametrim = (mem.name + "        ")[:8]
             self._memobj.names[ndx].chrs = bytearray(nametrim, "ascii")
-            txfreq = 0
             if mem.duplex == "split":
                 txfreq = mem.offset / 10
                 duplex = "off"    # radio ignores when tx != rx
             self._memobj.txfreqs[num-1].freq = txfreq
         _mem.duplex = DUPLEX.index(duplex)
+        if regtype in ["vfo", "home"]:
+            self.enforce_band(_mem, mem.freq, num, sname)
 
         return
 
@@ -1061,6 +1126,7 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
     freq_offset_scale = 25000
     legal_steps = US_LEGAL_STEPS
     class_group_descs = YaesuSC35GenericRadio.group_descriptions
+    class_specials = SPECIALS
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1077,8 +1143,7 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
         ]
 
 
-# don't register the FT-65 in the production version until it is tested
-# @directory.register
+@directory.register
 class YaesuFT65Radio(YaesuSC35GenericRadio):
     MODEL = "FT-65R"
     _basetype = BASETYPE_FT65
@@ -1098,9 +1163,11 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     freq_offset_scale = 50000
     legal_steps = US_LEGAL_STEPS
+    # we need a deep copy here because we are adding deeper than the top level.
     class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
     add_paramdesc(
         class_group_descs, "misc", ("compander", "Compander", ["OFF", "ON"]))
+    class_specials = FT65_SPECIALS
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [

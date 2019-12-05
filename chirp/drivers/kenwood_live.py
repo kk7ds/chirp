@@ -45,9 +45,13 @@ KENWOOD_TONES.remove(199.5)
 
 THF6_MODES = ["FM", "WFM", "AM", "LSB", "USB", "CW"]
 
+
 RADIO_IDS = {
     "ID019": "TS-2000",
     "ID009": "TS-850",
+    "ID020": "TS-480_LiveMode",
+    "ID021": "TS-590S/SG_LiveMode",         # S-model uses same class
+    "ID023": "TS-590S/SG_LiveMode"          # as SG
 }
 
 LOCK = threading.Lock()
@@ -55,8 +59,9 @@ COMMAND_RESP_BUFSIZE = 8
 LAST_BAUD = 4800
 LAST_DELIMITER = ("\r", " ")
 
-# The Kenwood TS-2000 & TS-850 uses ";" as a CAT command message delimiter,
-# and all others use "\n". Also, TS-2000 doesn't space delimite the command
+# The Kenwood TS-2000, TS-480, TS-590 & TS-850 use ";"
+# as a CAT command message delimiter, and all others use "\n".
+# Also, TS-2000 and TS-590 don't space delimite the command
 # fields, but others do.
 
 
@@ -68,6 +73,8 @@ def command(ser, cmd, *args):
 
     LOCK.acquire()
 
+    # TODO: This global use of LAST_DELIMITER breaks reentrancy
+    # and needs to be fixed.
     if args:
         cmd += LAST_DELIMITER[1] + LAST_DELIMITER[1].join(args)
     cmd += LAST_DELIMITER[0]
@@ -83,7 +90,7 @@ def command(ser, cmd, *args):
             break
 
     if result.endswith(LAST_DELIMITER[0]):
-        LOG.debug("RADIO->PC: %s" % result.strip())
+        LOG.debug("RADIO->PC: %r" % result.strip())
         result = result[:-1]
     else:
         LOG.error("Giving up")
@@ -96,15 +103,18 @@ def command(ser, cmd, *args):
 def get_id(ser):
     """Get the ID of the radio attached to @ser"""
     global LAST_BAUD
-    bauds = [4800, 9600, 19200, 38400, 57600]
+    bauds = [4800, 9600, 19200, 38400, 57600, 115200]
     bauds.remove(LAST_BAUD)
-    bauds.insert(0, LAST_BAUD)
+    # Make sure LAST_BAUD is last so that it is tried first below
+    bauds.append(LAST_BAUD)
 
     global LAST_DELIMITER
     command_delimiters = [("\r", " "), (";", "")]
 
-    for i in bauds:
-        for delimiter in command_delimiters:
+    for delimiter in command_delimiters:
+        # Process the baud options in reverse order so that we try the
+        # last one first, and then start with the high-speed ones next
+        for i in reversed(bauds):
             LAST_DELIMITER = delimiter
             LOG.info("Trying ID at baud %i with delimiter \"%s\"" %
                      (i, repr(delimiter)))
@@ -117,6 +127,16 @@ def get_id(ser):
             if " " in resp:
                 LAST_BAUD = i
                 return resp.split(" ")[1]
+
+            # Radio responded in the right baud rate,
+            # but threw an error because of all the crap
+            # we have been hurling at it. Retry the ID at this
+            # baud rate, which will almost definitely work.
+            if "?" in resp:
+                resp = command(ser, "ID")
+                LAST_BAUD = i
+                if " " in resp:
+                    return resp.split(" ")[1]
 
             # Kenwood radios that return ID numbers
             if resp in list(RADIO_IDS.keys()):
@@ -323,9 +343,14 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             if isinstance(element.value, RadioSettingValueBoolean):
                 self._kenwood_set_bool(element.get_name(), element.value)
             elif isinstance(element.value, RadioSettingValueList):
-                options = self._SETTINGS_OPTIONS[element.get_name()]
+                options = self._get_setting_options(element.get_name())
+                if len(options) > 9:
+                    digits = 2
+                else:
+                    digits = 1
                 self._kenwood_set_int(element.get_name(),
-                                      options.index(str(element.value)))
+                                      options.index(str(element.value)),
+                                      digits)
             elif isinstance(element.value, RadioSettingValueInteger):
                 if element.value.get_max() > 9:
                     digits = 2
@@ -362,9 +387,13 @@ class THD7Radio(KenwoodOldLiveRadio):
 
     _kenwood_split = True
 
+    _BEP_OPTIONS = ["Off", "Key", "Key+Data", "All"]
+    _POSC_OPTIONS = ["Off Duty", "Enroute", "In Service", "Returning",
+                     "Committed", "Special", "Priority", "Emergency"]
+
     _SETTINGS_OPTIONS = {
         "BAL": ["4:0", "3:1", "2:2", "1:3", "0:4"],
-        "BEP": ["Off", "Key", "Key+Data", "All"],
+        "BEP": None,
         "BEPT": ["Off", "Mine", "All New"],  # D700 has fourth "All"
         "DS": ["Data Band", "Both Bands"],
         "DTB": ["A", "B"],
@@ -374,8 +403,7 @@ class THD7Radio(KenwoodOldLiveRadio):
                 "Plane", "Speedboat", "Car", "Bicycle"],
         "MNF": ["Name", "Frequency"],
         "PKSA": ["1200", "9600"],
-        "POSC": ["Off Duty", "Enroute", "In Service", "Returning",
-                 "Committed", "Special", "Priority", "Emergency"],
+        "POSC": None,
         "PT": ["100ms", "200ms", "500ms", "750ms",
                "1000ms", "1500ms", "2000ms"],
         "SCR": ["Time", "Carrier", "Seek"],
@@ -404,6 +432,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         rf.valid_characters = \
             chirp_common.CHARSET_ALPHANUMERIC + "/.-+*)('&%$#! ~}|{"
         rf.valid_name_length = 7
+        rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -455,6 +484,22 @@ class THD7Radio(KenwoodOldLiveRadio):
 
         return mem
 
+    EXTRA_BOOL_SETTINGS = {
+        'main': [("LMP", "Lamp")],
+        'dtmf': [("TXH", "TX Hold")],
+    }
+    EXTRA_LIST_SETTINGS = {
+        'main': [("BAL", "Balance"),
+                 ("MNF", "Memory Display Mode")],
+        'save': [("SV", "Battery Save")],
+    }
+
+    def _get_setting_options(self, setting):
+        opts = self._SETTINGS_OPTIONS[setting]
+        if opts is None:
+            opts = getattr(self, '_%s_OPTIONS' % setting)
+        return opts
+
     def get_settings(self):
         main = RadioSettingGroup("main", "Main")
         aux = RadioSettingGroup("aux", "Aux")
@@ -477,9 +522,7 @@ class THD7Radio(KenwoodOldLiveRadio):
                  # ("DIG", aprs, "APRS Digipeater"),
                  ("DL", main, "Dual"),
                  ("LK", main, "Lock"),
-                 ("LMP", main, "Lamp"),
                  ("TSP", dtmf, "DTMF Fast Transmission"),
-                 ("TXH", dtmf, "TX Hold"),
                  ]
 
         for setting, group, name in bools:
@@ -488,19 +531,16 @@ class THD7Radio(KenwoodOldLiveRadio):
                               RadioSettingValueBoolean(value))
             group.append(rs)
 
-        lists = [("BAL", main, "Balance"),
-                 ("BEP", aux, "Beep"),
+        lists = [("BEP", aux, "Beep"),
                  ("BEPT", aprs, "APRS Beep"),
                  ("DS", tnc, "Data Sense"),
                  ("DTB", tnc, "Data Band"),
                  ("DTBA", aprs, "APRS Data Band"),
                  ("DTX", aprs, "APRS Data TX"),
                  # ("ICO", aprs, "APRS Icon"),
-                 ("MNF", main, "Memory Display Mode"),
                  ("PKSA", aprs, "APRS Packet Speed"),
                  ("POSC", aprs, "APRS Position Comment"),
                  ("PT", dtmf, "DTMF Speed"),
-                 ("SV", save, "Battery Save"),
                  ("TEMP", aprs, "APRS Temperature Units"),
                  ("TXI", aprs, "APRS Transmit Interval"),
                  # ("UNIT", aprs, "APRS Display Units"),
@@ -509,11 +549,28 @@ class THD7Radio(KenwoodOldLiveRadio):
 
         for setting, group, name in lists:
             value = self._kenwood_get_int(setting)
-            options = self._SETTINGS_OPTIONS[setting]
+            options = self._get_setting_options(setting)
             rs = RadioSetting(setting, name,
                               RadioSettingValueList(options,
                                                     options[value]))
             group.append(rs)
+
+        for group_name, settings in self.EXTRA_BOOL_SETTINGS.items():
+            group = locals()[group_name]
+            for setting, name in settings:
+                value = self._kenwood_get_bool(setting)
+                rs = RadioSetting(setting, name,
+                                  RadioSettingValueBoolean(value))
+                group.append(rs)
+
+        for group_name, settings in self.EXTRA_LIST_SETTINGS.items():
+            group = locals()[group_name]
+            for setting, name in settings:
+                value = self._kenwood_get_int(setting)
+                options = self._get_setting_options(setting)
+                rs = RadioSetting(setting, name,
+                                  RadioSettingValueBoolean(value))
+                group.append(rs)
 
         ints = [("CNT", display, "Contrast", 1, 16),
                 ]
@@ -551,25 +608,35 @@ class THD7GRadio(THD7Radio):
 
 
 @directory.register
-class TMD700Radio(KenwoodOldLiveRadio):
+class TMD700Radio(THD7Radio):
     """Kenwood TH-D700"""
     MODEL = "TM-D700"
 
     _kenwood_split = True
 
+    _BEP_OPTIONS = ["Off", "Key"]
+    _POSC_OPTIONS = ["Off Duty", "Enroute", "In Service", "Returning",
+                     "Committed", "Special", "Priority", "CUSTOM 0",
+                     "CUSTOM 1", "CUSTOM 2", "CUSTOM 4", "CUSTOM 5",
+                     "CUSTOM 6", "Emergency"]
+    EXTRA_BOOL_SETTINGS = {}
+    EXTRA_LIST_SETTINGS = {}
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.has_settings = True
         rf.has_dtcs = True
         rf.has_dtcs_polarity = False
         rf.has_bank = False
-        rf.has_mode = False
+        rf.has_mode = True
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_modes = ["FM"]
+        rf.valid_modes = ["FM", "AM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
+        rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -637,6 +704,7 @@ class TMV7Radio(KenwoodOldLiveRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 7
+        rf.valid_tuning_steps = STEPS
         rf.has_sub_devices = True
         rf.memory_bounds = (1, self._upper)
         return rf
@@ -995,6 +1063,7 @@ class THF7ERadio(THF6ARadio):
     """Kenwood TH-F7"""
     MODEL = "TH-F7"
 
+
 D710_DUPLEX = ["", "+", "-", "split"]
 D710_MODES = ["FM", "NFM", "AM"]
 D710_SKIP = ["", "S"]
@@ -1336,3 +1405,360 @@ class TM471Radio(THK2Radio):
 
     def _cmd_set_memory_name(self, number, name):
         return "MN", "%03i,%s" % (number, name)
+
+
+@directory.register
+class TS590Radio(KenwoodLiveRadio):
+    """Kenwood TS-590S/SG"""
+    MODEL = "TS-590S/SG_LiveMode"
+
+    _kenwood_valid_tones = list(KENWOOD_TONES)
+    _kenwood_valid_tones.append(1750)
+
+    _upper = 99
+    _duplex = ["", "-", "+"]
+    _skip = ["", "S"]
+    _modes = ["LSB", "USB", "CW", "FM", "AM", "FSK", "CW-R",
+              "FSK-R", "Data+LSB", "Data+USB", "Data+FM"]
+    _bands = [(1800000, 2000000),    # 160M Band
+              (3500000, 4000000),    # 80M Band
+              (5167500, 5450000),    # 60M Band
+              (7000000, 7300000),    # 40M Band
+              (10100000, 10150000),  # 30M Band
+              (14000000, 14350000),  # 20M Band
+              (18068000, 18168000),  # 17M Band
+              (21000000, 21450000),  # 15M Band
+              (24890000, 24990000),  # 12M Band
+              (28000000, 29700000),  # 10M Band
+              (50000000, 54000000)]   # 6M Band
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+
+        rf.can_odd_split = False
+        rf.has_bank = False
+        rf.has_ctone = True
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_name = True
+        rf.has_settings = False
+        rf.has_offset = True
+        rf.has_mode = True
+        rf.has_tuning_step = False
+        rf.has_nostep_tuning = True
+        rf.has_cross = True
+        rf.has_comment = False
+
+        rf.memory_bounds = (0, self._upper)
+
+        rf.valid_bands = self._bands
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "*+-/"
+        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_modes = self._modes
+        rf.valid_skips = ["", "S"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "Cross"]
+        rf.valid_cross_modes = ["Tone->Tone", "->Tone"]
+        rf.valid_name_length = 8    # 8 character channel names
+
+        return rf
+
+    def _my_val_list(setting, opts, obj, atrb):
+        """Callback:from ValueList. Set the integer index."""
+        value = opts.index(str(setting.value))
+        setattr(obj, atrb, value)
+        return
+
+    def get_memory(self, number):
+        """Convert ascii channel data spec into UI columns (mem)"""
+        mem = chirp_common.Memory()
+        mem.extra = RadioSettingGroup("extra", "Extra")
+        # Read the base and split MR strings
+        mem.number = number
+        spec0 = command(self.pipe, "MR0 %02i" % mem.number)
+        spec1 = command(self.pipe, "MR1 %02i" % mem.number)
+        mem.name = spec0[41:49]  # Max 8-Char Name if assigned
+        mem.name = mem.name.strip()
+        mem.name = mem.name.upper()
+        _p4 = int(spec0[6:17])    # Rx Frequency
+        _p4s = int(spec1[6:17])   # Offset freq (Tx)
+        _p5 = int(spec0[17])      # Mode
+        _p6 = int(spec0[18])      # Data Mode
+        _p7 = int(spec0[19])      # Tone Mode
+        _p8 = int(spec0[20:22])   # Tone Frequency Index
+        _p9 = int(spec0[22:24])   # CTCSS Frequency Index
+        _p11 = int(spec0[27])     # Filter A/B
+        _p14 = int(spec0[38:40])  # FM Mode
+        _p15 = int(spec0[40])     # Chan Lockout (Skip)
+        if _p4 == 0:
+            mem.empty = True
+            return mem
+        mem.empty = False
+        mem.freq = _p4
+        mem.duplex = self._duplex[0]    # None by default
+        mem.offset = 0
+        if _p4 < _p4s:   # + shift
+            mem.duplex = self._duplex[2]
+            mem.offset = _p4s - _p4
+        if _p4 > _p4s:   # - shift
+            mem.duplex = self._duplex[1]
+            mem.offset = _p4 - _p4s
+        mx = _p5 - 1     # CAT modes start at 1
+        if _p5 == 9:     # except CAT FSK-R is 9, there is no 8
+            mx = 7
+        if _p6:       # LSB+Data= 8, USB+Data= 9, FM+Data= 10
+            if _p5 == 1:     # CAT LSB
+                mx = 8
+            elif _p5 == 2:   # CAT USB
+                mx = 9
+            elif _p5 == 4:   # CAT FM
+                mx = 10
+        mem.mode = self._modes[mx]
+        mem.tmode = ""
+        mem.cross_mode = "Tone->Tone"
+        mem.ctone = self._kenwood_valid_tones[_p9]
+        mem.rtone = self._kenwood_valid_tones[_p8]
+        if _p7 == 1:
+            mem.tmode = "Tone"
+        elif _p7 == 2:
+            mem.tmode = "TSQL"
+        elif _p7 == 3:
+            mem.tmode = "Cross"
+        mem.skip = self._skip[_p15]
+
+        rx = RadioSettingValueBoolean(bool(_p14))
+        rset = RadioSetting("fmnrw", "FM Narrow mode (off = Wide)", rx)
+        mem.extra.append(rset)
+        return mem
+
+    def erase_memory(self, number):
+        """ Send the blank string to MW0 """
+        mem = chirp_common.Memory()
+        mem.empty = True
+        mem.freq = 0
+        mem.offset = 0
+        spx = "MW0%03i00000000000000000000000000000000000" % number
+        rx = command(self.pipe, spx)      # Send MW0
+        return mem
+
+    def set_memory(self, mem):
+        """Send UI column data (mem) to radio"""
+        pfx = "MW0%03i" % mem.number
+        xmode = 0
+        xtmode = 0
+        xrtone = 8
+        xctone = 8
+        xdata = 0
+        xfltr = 0
+        xfm = 0
+        xskip = 0
+        xfreq = mem.freq
+        if xfreq > 0:       # if empty; use those defaults
+            ix = self._modes.index(mem.mode)
+            xmode = ix + 1     # stored as CAT values, LSB= 1
+            if ix == 7:        # FSK-R
+                xmode = 9     # There is no CAT 8
+            if ix > 7:         # a Data mode
+                xdata = 1
+                if ix == 8:
+                    xmode = 1      # LSB
+                elif ix == 9:
+                    xmode = 2      # USB
+                elif ix == 10:
+                    xmode = 4      # FM
+            if mem.tmode == "Tone":
+                xtmode = 1
+                xrtone = self._kenwood_valid_tones.index(mem.rtone)
+            if mem.tmode == "TSQL" or mem.tmode == "Cross":
+                xtmode = 2
+                if mem.tmode == "Cross":
+                    xtmode = 3
+                xctone = self._kenwood_valid_tones.index(mem.ctone)
+            for setting in mem.extra:
+                if setting.get_name() == "fmnrw":
+                    xfm = setting.value
+            if mem.skip == "S":
+                xskip = 1
+        spx = "%011i%1i%1i%1i%02i%02i000%1i0000000000%02i%1i%s" \
+            % (xfreq, xmode, xdata, xtmode, xrtone,
+                xctone, xfltr, xfm, xskip, mem.name)
+        rx = command(self.pipe, pfx, spx)      # Send MW0
+        if mem.offset != 0:
+            pfx = "MW1%03i" % mem.number
+            xfreq = mem.freq - mem.offset
+            if mem.duplex == "+":
+                xfreq = mem.freq + mem.offset
+            spx = "%011i%1i%1i%1i%02i%02i000%1i0000000000%02i%1i%s" \
+                % (xfreq, xmode, xdata, xtmode, xrtone,
+                   xctone, xfltr, xfm, xskip, mem.name)
+            rx = command(self.pipe, pfx, spx)      # Send MW1
+
+
+@directory.register
+class TS480Radio(KenwoodLiveRadio):
+    """Kenwood TS-480"""
+    MODEL = "TS-480_LiveMode"
+
+    _kenwood_valid_tones = list(KENWOOD_TONES)
+    _kenwood_valid_tones.append(1750)
+
+    _upper = 99
+    _duplex = ["", "-", "+"]
+    _skip = ["", "S"]
+    _modes = ["LSB", "USB", "CW", "FM", "AM", "FSK", "CW-R", "N/A",
+              "FSK-R"]
+    _bands = [(1800000, 2000000),    # 160M Band
+              (3500000, 4000000),    # 80M Band
+              (5167500, 5450000),    # 60M Band
+              (7000000, 7300000),    # 40M Band
+              (10100000, 10150000),  # 30M Band
+              (14000000, 14350000),  # 20M Band
+              (18068000, 18168000),  # 17M Band
+              (21000000, 21450000),  # 15M Band
+              (24890000, 24990000),  # 12M Band
+              (28000000, 29700000),  # 10M Band
+              (50000000, 54000000)]   # 6M Band
+
+    _tsteps = [0.5, 1.0, 2.5, 5.0, 6.25, 10.0, 12.5,
+               15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+
+        rf.can_odd_split = False
+        rf.has_bank = False
+        rf.has_ctone = True
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_name = True
+        rf.has_settings = False
+        rf.has_offset = True
+        rf.has_mode = True
+        rf.has_tuning_step = True
+        rf.has_nostep_tuning = True
+        rf.has_cross = True
+        rf.has_comment = False
+
+        rf.memory_bounds = (0, self._upper)
+
+        rf.valid_bands = self._bands
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "*+-/"
+        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_modes = self._modes
+        rf.valid_skips = ["", "S"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "Cross"]
+        rf.valid_cross_modes = ["Tone->Tone", "->Tone"]
+        rf.valid_name_length = 8    # 8 character channel names
+        rf.valid_tuning_steps = self._tsteps
+
+        return rf
+
+    def _my_val_list(setting, opts, obj, atrb):
+        """Callback:from ValueList. Set the integer index."""
+        value = opts.index(str(setting.value))
+        setattr(obj, atrb, value)
+        return
+
+    def get_memory(self, number):
+        """Convert ascii channel data spec into UI columns (mem)"""
+        mem = chirp_common.Memory()
+        # Read the base and split MR strings
+        mem.number = number
+        spec0 = command(self.pipe, "MR0%03i" % mem.number)
+        spec1 = command(self.pipe, "MR1%03i" % mem.number)
+        # Add 1 to string idecis if refering to CAT manual
+        mem.name = spec0[41:49]  # Max 8-Char Name if assigned
+        mem.name = mem.name.strip()
+        mem.name = mem.name.upper()
+        _p4 = int(spec0[6:17])    # Rx Frequency
+        _p4s = int(spec1[6:17])   # Offset freq (Tx)
+        _p5 = int(spec0[17])      # Mode
+        _p6 = int(spec0[18])      # Chan Lockout (Skip)
+        _p7 = int(spec0[19])      # Tone Mode
+        _p8 = int(spec0[20:22])   # Tone Frequency Index
+        _p9 = int(spec0[22:24])   # CTCSS Frequency Index
+        _p14 = int(spec0[38:40])  # Tune Step
+        if _p4 == 0:
+            mem.empty = True
+            return mem
+        mem.empty = False
+        mem.freq = _p4
+        mem.duplex = self._duplex[0]    # None by default
+        mem.offset = 0
+        if _p4 < _p4s:   # + shift
+            mem.duplex = self._duplex[2]
+            mem.offset = _p4s - _p4
+        if _p4 > _p4s:   # - shift
+            mem.duplex = self._duplex[1]
+            mem.offset = _p4 - _p4s
+        mx = _p5 - 1     # CAT modes start at 1
+        mem.mode = self._modes[mx]
+        mem.tmode = ""
+        mem.cross_mode = "Tone->Tone"
+        mem.ctone = self._kenwood_valid_tones[_p9]
+        mem.rtone = self._kenwood_valid_tones[_p8]
+        if _p7 == 1:
+            mem.tmode = "Tone"
+        elif _p7 == 2:
+            mem.tmode = "TSQL"
+        elif _p7 == 3:
+            mem.tmode = "Cross"
+        mem.skip = self._skip[_p6]
+        # Tuning step depends on mode
+        options = [0.5, 1.0, 2.5, 5.0, 10.0]    # SSB/CS/FSK
+        if _p14 == 4 or _p14 == 5:   # AM/FM
+            options = self._tsteps[3:]
+        mem.tuning_step = options[_p14]
+
+        return mem
+
+    def erase_memory(self, number):
+        mem = chirp_common.Memory()
+        mem.empty = True
+        mem.freq = 0
+        mem.offset = 0
+        spx = "MW0%03i00000000000000000000000000000000000" % number
+        rx = command(self.pipe, spx)      # Send MW0
+        return mem
+
+    def set_memory(self, mem):
+        """Send UI column data (mem) to radio"""
+        pfx = "MW0%03i" % mem.number
+        xtmode = 0
+        xdata = 0
+        xrtone = 8
+        xctone = 8
+        xskip = 0
+        xstep = 0
+        xfreq = mem.freq
+        if xfreq > 0:       # if empty, use those defaults
+            ix = self._modes.index(mem.mode)
+            xmode = ix + 1     # stored as CAT values, LSB= 1
+            if ix == 7:        # FSK-R
+                xmode = 9     # There is no CAT 8
+            if mem.tmode == "Tone":
+                xtmode = 1
+                xrtone = self._kenwood_valid_tones.index(mem.rtone)
+            if mem.tmode == "TSQL" or mem.tmode == "Cross":
+                xtmode = 2
+                if mem.tmode == "Cross":
+                    xtmode = 3
+                xctone = self._kenwood_valid_tones.index(mem.ctone)
+            if mem.skip == "S":
+                xskip = 1
+            options = [0.5, 1.0, 2.5, 5.0, 10.0]    # SSB/CS/FSK
+            if xmode == 4 or xmode == 5:
+                options = self._tsteps[3:]
+            xstep = options.index(mem.tuning_step)
+        spx = "%011i%1i%1i%1i%02i%02i00000000000000%02i%s" \
+            % (xfreq, xmode, xskip, xtmode, xrtone,
+                xctone, xstep, mem.name)
+        rx = command(self.pipe, pfx, spx)      # Send MW0
+        if mem.offset != 0:             # Don't send MW1 if empty
+            pfx = "MW1%03i" % mem.number
+            xfreq = mem.freq - mem.offset
+            if mem.duplex == "+":
+                xfreq = mem.freq + mem.offset
+            spx = "%011i%1i%1i%1i%02i%02i00000000000000%02i%s" \
+                  % (xfreq, xmode, xskip, xtmode, xrtone,
+                     xctone, xstep, mem.name)
+            rx = command(self.pipe, pfx, spx)      # Send MW1

@@ -1020,7 +1020,7 @@ of file.
         except:
             band = 14  # 2m default
 
-        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php" + \
+        query = "http://chirp.danplanet.com/query/rb/1.0/chirp" + \
             "?func=default&state_id=%s&band=%s&freq=%%&band6=%%&loc=%%" + \
             "&county_id=%s&status_id=%%&features=%%&coverage=%%&use=%%"
         query = query % (code,
@@ -1135,8 +1135,9 @@ of file.
         except:
             band = '%'
 
-        query = "https://www.repeaterbook.com/repeaters/downloads/CHIRP/" \
-                "app_direct.php?loc=%s&band=%s&dist=%s" % (loc, band, dist)
+        query = "http://chirp.danplanet.com/query/rb/1.0/app_direct" \
+                "?loc=%s&band=%s&dist=%s" % (loc, band, dist)
+        print query
 
         # Do this in case the import process is going to take a while
         # to make sure we process events leading up to this
@@ -1443,7 +1444,7 @@ of file.
 
         d.set_name("CHIRP")
         d.set_version(CHIRP_VERSION)
-        d.set_copyright("Copyright 2015 Dan Smith (KK7DS)")
+        d.set_copyright("Copyright 2019 CHIRP Software LLC")
         d.set_website("http://chirp.danplanet.com")
         d.set_translator_credits("Polish: Grzegorz SQ2RBY" +
                                  os.linesep +

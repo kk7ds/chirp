@@ -165,6 +165,8 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_characters = ''.join(set(PUXING_CHARSET))
         rf.valid_name_length = 6
+        rf.valid_tuning_steps = [2.5, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0,
+                                 50.0, 100.0]
         rf.has_ctone = False
         rf.has_tuning_step = False
         rf.has_bank = False
