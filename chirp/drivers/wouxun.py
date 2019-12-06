@@ -1068,6 +1068,8 @@ class KGUV6DRadio(KGUVD1PRadio):
     def get_features(self):
         rf = KGUVD1PRadio.get_features(self)
         rf.memory_bounds = (1, 199)
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0,
+                                 100.0]
         return rf
 
     def get_settings(self):
