@@ -205,7 +205,10 @@ def safe_import_drivers():
         # the driver files, but we do not need to anyway
         import chirp.drivers
         for module in chirp.drivers.__all__:
-            __import__('chirp.drivers.%s' % module)
+            try:
+                __import__('chirp.drivers.%s' % module)
+            except Exception as e:
+                print('Failed to import %s: %s' % (module, e))
         return
 
     # Safe import of everything in chirp/drivers. We need to import them
