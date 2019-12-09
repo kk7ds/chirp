@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import bytes
 from future import standard_library
 
 import base64
@@ -1181,7 +1182,10 @@ class FileBackedRadio(Radio):
                     is_version_newer(self._metadata.get('chirp_version'))):
                 LOG.warning('Image is from version %s but we are %s' % (
                     self._metadata.get('chirp_version'), CHIRP_VERSION))
-        self._mmap = memmap.MemoryMap(data)
+        if self.NEEDS_COMPAT_SERIAL:
+            self._mmap = memmap.MemoryMap(data)
+        else:
+            self._mmap = memmap.MemoryMapBytes(bytes(data))
         mapfile.close()
         self.process_mmap()
 

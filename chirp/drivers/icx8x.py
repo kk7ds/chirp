@@ -39,6 +39,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     """Icom IC-V/U82"""
     VENDOR = "Icom"
     MODEL = "IC-V82/U82"
+    NEEDS_COMPAT_SERIAL = True
 
     _model = "\x28\x26\x00\x01"
     _memsize = 6464
