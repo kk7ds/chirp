@@ -1,5 +1,5 @@
 # Copyright 2019 Rick DeWitt <aa0rd@yahoo.com>
-# Version 1.0: CatClone- Implementing fake memory image 
+# Version 1.0: CatClone- Implementing fake memory image
 # Version 2.0: No Live Mode library links. Implementing mem as Clone Mode
 #              Having fun with Dictionaries
 # Version 2.1: Adding match_model function to fix File>New issue #7409
