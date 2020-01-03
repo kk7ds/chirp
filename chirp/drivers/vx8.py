@@ -152,7 +152,9 @@ struct {
 
 #seekto 0x328A;
 struct {
-  u8 unknown1;
+  u8 unknown1a:2,
+     half_deviation:1,
+     unknown1b:5;
   u8 mode:2,
      duplex:2,
      tune_step:4;
@@ -167,7 +169,12 @@ struct {
      tone:6;
   u8 unknown6:1,
      dcs:7;
-  u8 unknown7[3];
+  u8 pr_frequency;
+  u8 unknown7;
+  u8 unknown8a:3,
+     unknown8b:1,
+     rx_mode_auto:1,
+     unknown8c:3;
 } memory[900];
 
 #seekto 0xC0CA;
@@ -494,7 +501,9 @@ class VX8BankModel(chirp_common.BankModel):
 
 def _wipe_memory(mem):
     mem.set_raw("\x00" * (mem.size() / 8))
-    mem.unknown1 = 0x05
+    mem.pr_frequency = 0x1d  # default PR frequency of 1600 Hz
+    mem.unknown8b = 1        # This bit must be 1, but its meaning is unknown
+    mem.rx_mode_auto = 1     # rx auto mode bit defaults to 1
 
 
 @directory.register
