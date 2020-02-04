@@ -1241,4 +1241,3 @@ class YaesuFT65RRadio(YaesuFT65GenericRadio):
     valid_bands = VALID_BANDS_US_DUAL
     legal_steps = US_LEGAL_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
-
