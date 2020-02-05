@@ -476,9 +476,10 @@ DUPLEX = ["+", "", "-", "", "off", "", "split"]  # (0,2,4,5)= (+,-,0, auto)
 
 SKIPS = ["", "S"]
 
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.5),
-                chirp_common.PowerLevel("Mid", watts=2.5),
-                chirp_common.PowerLevel("High", watts=5.0)]
+POWER_LEVELS = [
+    chirp_common.PowerLevel("High", watts=5.0),  # high must be first (0)
+    chirp_common.PowerLevel("Mid", watts=2.5),
+    chirp_common.PowerLevel("Low", watts=0.5)]
 
 # these steps encode to 0-9 on all radios, but encoding #2 is disallowed
 # on the US versions (FT-4XR)
@@ -1142,7 +1143,9 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         _mem.freq = txfreq
         self.encode_sql(mem, _mem)
         if mem.power:
-            _mem.tx_pwr = POWER_LEVELS.index(mem.power)
+            _mem.tx_pwr = 2 - POWER_LEVELS.index(mem.power)
+        else:
+            _mem.tx_pwr = 0  # set to "High" if CHIRP canonical value is None
         _mem.tx_width = mem.mode == "NFM"
         _mem.step = STEP_CODE.index(mem.tuning_step)
 
