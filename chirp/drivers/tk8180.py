@@ -239,7 +239,7 @@ def do_ident(radio):
     ack = radio.pipe.read(1)
     if ack != b'\x06':
         raise errors.RadioError('Radio refused program mode')
-    if ident[:5] not in (b'M8180',):
+    if ident[:5] not in (radio._model,):
         raise errors.RadioError('Unsupported radio model %s' % ident[:5])
 
 
@@ -568,7 +568,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         rf.has_sub_devices = True
         rf.can_odd_split = True
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS']
-        rf.valid_bands = [(400000000, 520000000)]
+        rf.valid_bands = self.VALID_BANDS
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 12.5, 10.0, 15.0, 20.0,
                                  25.0, 50.0, 100.0]
@@ -1113,6 +1113,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             class _Zone(KenwoodTKx180RadioZone):
                 VENDOR = self.VENDOR
                 MODEL = self.MODEL
+                VALID_BANDS = self.VALID_BANDS
                 VARIANT = 'Zone %s' % (
                     str(zone.zoneinfo.name).rstrip('\x00').rstrip())
 
@@ -1153,5 +1154,13 @@ class KenwoodTKx180RadioZone(KenwoodTKx180Radio):
 
 if has_future:
     @directory.register
+    class KenwoodTK7180Radio(KenwoodTKx180Radio):
+        MODEL = 'TK-7180'
+        VALID_BANDS = [(136000000, 174000000)]
+        _model = b'M7180'
+
+    @directory.register
     class KenwoodTK8180Radio(KenwoodTKx180Radio):
         MODEL = 'TK-8180'
+        VALID_BANDS = [(400000000, 520000000)]
+        _model = b'M8180'
