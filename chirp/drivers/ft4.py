@@ -1063,6 +1063,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 y = obj[x]
                 if y == 0:
                     break
+                if y == 0x7F:    # when programmed from VFO
+                    y = 0x20
                 name += chr(y)
             return name.rstrip()
 
