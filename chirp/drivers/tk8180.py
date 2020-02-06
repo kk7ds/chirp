@@ -754,11 +754,13 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
     def _pure_choice_setting(self, settings_key, name, choices, default='Off'):
         if default is not None:
-            choices = [default] + choices
+            ui_choices = [default] + choices
+        else:
+            ui_choices = choices
         s = RadioSetting(
             settings_key, name,
             RadioSettingValueList(
-                choices,
+                ui_choices,
                 get_choice(self._memobj.settings, settings_key,
                            choices, default)))
         s.set_apply_callback(set_choice, self._memobj.settings,
@@ -785,7 +787,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
         common1.append(self._pure_choice_setting('sublcd',
                                                  'Sub LCD Display',
-                                                 SUBLCD))
+                                                 SUBLCD,
+                                                 default='None'))
 
         def apply_clockfmt(setting):
             settings.clockfmt = CLOCKFMT.index(str(setting.value))
