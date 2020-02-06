@@ -571,38 +571,16 @@ SPECIALS_FT65 = SPECIALS_FT4
 FT65_PROGS = ("prog", ["P1", "P2", "P3", "P4"])
 SPECIALS_FT65[-1] = FT65_PROGS    # replace the last entry (P key names)
 
-# I wonder whether we should simply open the bands to what the radios allow
-# for RX? The radios do take care of allowing or prohibiting TX on their own.
-# In that case, the ASIA settings can be used for any region model.
-# To be discussed with Dan Clemmensen. [AE6YN]
 
-VALID_BANDS_US_DUAL = [
+VALID_BANDS_DUAL = [
     (65000000, 108000000),     # broadcast FM, receive only
-    (144000000, 148000000),    # VHF, US version, TX and RX
-    (430000000, 450000000)     # UHF, US version, TX and RX
-    ]
-VALID_BANDS_EU_DUAL = [
-    (65000000, 108000000),     # broadcast FM, receive only
-    (144000000, 146000000),    # VHF, EU version, TX and RX
-    (430000000, 440000000)     # UHF, EU version, TX and RX
-    ]
-VALID_BANDS_ASIA_DUAL = [
-    (65000000, 108000000),     # broadcast FM, receive only
-    (136000000, 174000000),    # VHF, Asia version, TX and RX
-    (400000000, 480000000)     # UHF, Asia version, TX and RX
+    (136000000, 174000000),    # VHF
+    (400000000, 480000000)     # UHF
     ]
 
-VALID_BANDS_US_VHF = [
+VALID_BANDS_VHF = [
     (65000000, 108000000),     # broadcast FM, receive only
-    (144000000, 148000000),    # VHF, US version, TX and RX
-    ]
-VALID_BANDS_EU_VHF = [
-    (65000000, 108000000),     # broadcast FM, receive only
-    (144000000, 146000000),    # VHF, EU version, TX and RX
-    ]
-VALID_BANDS_ASIA_VHF = [
-    (65000000, 108000000),     # broadcast FM, receive only
-    (136000000, 174000000),    # VHF, Asia version, TX and RX
+    (136000000, 174000000),    # VHF
     ]
 
 # bands for the five VFO and three home channel memories
@@ -1231,7 +1209,7 @@ class YaesuFT4XRRadio(YaesuFT4GenericRadio):
     """
     MODEL = "FT-4XR"
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
-    valid_bands = VALID_BANDS_US_DUAL
+    valid_bands = VALID_BANDS_DUAL
     legal_steps = US_LEGAL_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
@@ -1243,6 +1221,6 @@ class YaesuFT65RRadio(YaesuFT65GenericRadio):
     """
     MODEL = "FT-65R"
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
-    valid_bands = VALID_BANDS_US_DUAL
+    valid_bands = VALID_BANDS_DUAL
     legal_steps = US_LEGAL_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
