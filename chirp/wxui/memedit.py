@@ -8,9 +8,12 @@ import wx.grid
 import wx.propgrid
 
 from chirp import chirp_common
+from chirp.ui import config
 from chirp.wxui import common
+from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
+CONF = config.get()
 
 
 class ChirpMemoryColumn(object):
@@ -317,6 +320,23 @@ class ChirpMemEdit(common.ChirpEditor):
                   props_item)
         menu.AppendItem(props_item)
 
+        if CONF.get_bool('developer', 'state'):
+            menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
+
+            rows = self._grid.GetSelectedRows()
+            raw_item = wx.MenuItem(menu, wx.NewId(), 'Show Raw Memory')
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._mem_showraw, event.GetRow()),
+                      raw_item)
+            menu.AppendItem(raw_item)
+
+            if len(rows) == 2:
+                diff_item = wx.MenuItem(menu, wx.NewId(), 'Diff Raw Memories')
+                self.Bind(wx.EVT_MENU,
+                          functools.partial(self._mem_diff, rows),
+                          diff_item)
+                menu.AppendItem(diff_item)
+
         self.PopupMenu(menu)
         menu.Destroy()
 
@@ -327,6 +347,17 @@ class ChirpMemEdit(common.ChirpEditor):
             if d.ShowModal() == wx.ID_OK:
                 self._radio.set_memory(d._memory)
                 self.refresh_memory(d._memory)
+
+    def _mem_showraw(self, row, event):
+        mem = self._radio.get_raw_memory(row)
+        with developer.MemoryDialog(mem, self) as d:
+            d.ShowModal()
+
+    def _mem_diff(self, rows, event):
+        mem_a = self._radio.get_raw_memory(rows[0])
+        mem_b = self._radio.get_raw_memory(rows[1])
+        with developer.MemoryDialog((mem_a, mem_b), self) as d:
+            d.ShowModal()
 
     def cb_copy(self, cut=False):
         rows = self._grid.GetSelectedRows()
