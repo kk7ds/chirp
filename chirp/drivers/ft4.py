@@ -1215,6 +1215,17 @@ class YaesuFT4XRRadio(YaesuFT4GenericRadio):
 
 
 @directory.register
+class YaesuFT4XERadio(YaesuFT4GenericRadio):
+    """
+    FT-4X dual band, EU version
+    """
+    MODEL = "FT-4XE"
+    id_str = b'IFT-35R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_DUAL
+    legal_steps = STEP_CODE
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+@directory.register
 class YaesuFT65RRadio(YaesuFT65GenericRadio):
     """
     FT-65 dual band, US version
