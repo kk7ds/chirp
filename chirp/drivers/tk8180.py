@@ -465,7 +465,6 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                     'count': max(count, 2),   # bitwise bug, one-element array
                     'index': index})
 
-        print(mem_format)
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def expand_mmap(self, zone_sizes):
