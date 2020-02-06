@@ -239,7 +239,14 @@ class ChirpMemEdit(common.ChirpEditor):
 
     def refresh(self):
         for i in range(*self._features.memory_bounds):
-            m = self._radio.get_memory(i)
+            try:
+                m = self._radio.get_memory(i)
+            except Exception as e:
+                LOG.exception('Failure retreiving memory %i from %s' % (
+                    i, '%s %s %s' % (self._radio.VENDOR,
+                                     self._radio.MODEL,
+                                     self._radio.VARIANT)))
+                continue
             self.refresh_memory(m)
 
         return
