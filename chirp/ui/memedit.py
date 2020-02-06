@@ -1414,6 +1414,8 @@ class MemoryEditor(common.Editor):
         if self._features["valid_power_levels"]:
             self.defaults[_("Power")] = self._features["valid_power_levels"][0]
 
+        self.choices[_("Tune Step")] = self._features["valid_tuning_steps"]
+
         self.choices[_("Duplex")] = list(self._features.valid_duplexes)
 
         if self.defaults[_("Mode")] not in self._features.valid_modes:
