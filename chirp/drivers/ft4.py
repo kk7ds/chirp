@@ -1225,6 +1225,7 @@ class YaesuFT4XERadio(YaesuFT4GenericRadio):
     legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
+
 @directory.register
 class YaesuFT65RRadio(YaesuFT65GenericRadio):
     """
@@ -1234,4 +1235,16 @@ class YaesuFT65RRadio(YaesuFT65GenericRadio):
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
     legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+
+@directory.register
+class YaesuFT65ERadio(YaesuFT65GenericRadio):
+    """
+    FT-65 dual band, EU version
+    """
+    MODEL = "FT-65E"
+    id_str = b'IH-420\x00\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_DUAL
+    legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
