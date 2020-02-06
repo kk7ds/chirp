@@ -304,15 +304,15 @@ class ChirpMemEdit(common.ChirpEditor):
         mem.empty = True
         self._radio.set_memory(mem)
         self.refresh_memory(mem)
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    def _delete_memories_at(self, rows, event):
+        for row in rows:
+            self.delete_memory_at(row, event)
 
     def _memory_rclick(self, event):
         menu = wx.Menu()
-
-        del_item = wx.MenuItem(menu, wx.NewId(), 'Delete')
-        self.Bind(wx.EVT_MENU,
-                  functools.partial(self.delete_memory_at, event.GetRow()),
-                  del_item)
-        menu.AppendItem(del_item)
+        selected_rows = self._grid.GetSelectedRows()
 
         props_item = wx.MenuItem(menu, wx.NewId(), 'Properties')
         self.Bind(wx.EVT_MENU,
@@ -320,20 +320,31 @@ class ChirpMemEdit(common.ChirpEditor):
                   props_item)
         menu.AppendItem(props_item)
 
+        if len(selected_rows) > 1:
+            del_item = wx.MenuItem(menu, wx.NewId(),
+                                   'Delete %i Memories' % len(selected_rows))
+            to_delete = selected_rows
+        else:
+            del_item = wx.MenuItem(menu, wx.NewId(), 'Delete')
+            to_delete = [event.GetRow()]
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._delete_memories_at, to_delete),
+                  del_item)
+        menu.AppendItem(del_item)
+
         if CONF.get_bool('developer', 'state'):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
 
-            rows = self._grid.GetSelectedRows()
             raw_item = wx.MenuItem(menu, wx.NewId(), 'Show Raw Memory')
             self.Bind(wx.EVT_MENU,
                       functools.partial(self._mem_showraw, event.GetRow()),
                       raw_item)
             menu.AppendItem(raw_item)
 
-            if len(rows) == 2:
+            if len(selected_rows) == 2:
                 diff_item = wx.MenuItem(menu, wx.NewId(), 'Diff Raw Memories')
                 self.Bind(wx.EVT_MENU,
-                          functools.partial(self._mem_diff, rows),
+                          functools.partial(self._mem_diff, selected_rows),
                           diff_item)
                 menu.AppendItem(diff_item)
 
