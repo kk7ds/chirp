@@ -362,7 +362,13 @@ class ChirpMemEdit(common.ChirpEditor):
     def cb_copy(self, cut=False):
         rows = self._grid.GetSelectedRows()
         offset = self._features.memory_bounds[0]
-        mems = [self._radio.get_memory(row + offset) for row in rows]
+        mems = []
+        for row in rows:
+            mem = self._radio.get_memory(row + offset)
+            # We can't pickle settings, nor would they apply if we
+            # paste across models
+            mem.extra = []
+            mems.append(mem)
         data = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
         data.SetData(pickle.dumps(mems))
         for mem in mems:
@@ -394,6 +400,9 @@ class ChirpMemEdit(common.ChirpEditor):
             LOG.debug('FIXME: handle pasted text: %r' % data.GetText())
         else:
             LOG.warning('Unknown data format %s' % data.GetFormat().Type)
+
+    def select_all(self):
+        self._grid.SelectAll()
 
 
 class ChirpMemPropDialog(wx.Dialog):

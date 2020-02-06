@@ -80,6 +80,9 @@ class ChirpEditor(wx.Panel):
     def cb_paste(self, data):
         pass
 
+    def select_all(self):
+        pass
+
     def saved(self):
         pass
 

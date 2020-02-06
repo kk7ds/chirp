@@ -108,6 +108,9 @@ class ChirpEditorSet(wx.Panel):
     def cb_paste(self, data):
         return self.current_editor.cb_paste(data)
 
+    def select_all(self):
+        return self.current_editor.select_all()
+
 
 class ChirpMain(wx.Frame):
     def __init__(self, *args, **kwargs):
@@ -187,6 +190,9 @@ class ChirpMain(wx.Frame):
 
         paste_item = edit_menu.Append(wx.ID_PASTE)
         self.Bind(wx.EVT_MENU, self._menu_paste, paste_item)
+
+        selall_item = edit_menu.Append(wx.ID_SELECTALL)
+        self.Bind(wx.EVT_MENU, self._menu_selall, selall_item)
 
         radio_menu = wx.Menu()
 
@@ -370,6 +376,9 @@ class ChirpMain(wx.Frame):
             self.current_editorset.cb_paste(memdata)
         if got:
             self.current_editorset.cb_paste(textdata)
+
+    def _menu_selall(self, event):
+        self.current_editorset.select_all()
 
     def _menu_download(self, event):
         with clone.ChirpDownloadDialog(self) as d:
