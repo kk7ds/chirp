@@ -1273,3 +1273,27 @@ class YaesuFT65ERadio(YaesuFT65GenericRadio):
     valid_bands = VALID_BANDS_DUAL
     legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+
+@directory.register
+class YaesuFT25RRadio(YaesuFT65GenericRadio):
+    """
+    FT-25 VHF, US version
+    """
+    MODEL = "FT-25R"
+    id_str = b'IFT-25R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_VHF
+    legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
+
+
+# No image available yet
+# @directory.register
+# class YaesuFT25ERadio(YaesuFT65GenericRadio):
+#    """
+#    FT-25 VHF, EU version
+#    """
+#    MODEL = "FT-25E"
+#    id_str = b'IFT-25R\x00\x00V100\x00\x00'
+#    valid_bands = #    legal_steps = US_LEGAL_STEPS
+#    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
