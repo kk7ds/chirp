@@ -1227,6 +1227,31 @@ class YaesuFT4XERadio(YaesuFT4GenericRadio):
 
 
 @directory.register
+class YaesuFT4VRRadio(YaesuFT4GenericRadio):
+    """
+    FT-4V VHF, US version
+    """
+    MODEL = "FT-4VR"
+    id_str = b'IFT-15R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_VHF
+    legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
+
+
+# No image available yet
+# @directory.register
+# class YaesuFT4VERadio(YaesuFT4GenericRadio):
+#    """
+#    FT-4V VHF, EU version
+#    """
+#    MODEL = "FT-4VE"
+#    id_str = b'IFT-15R\x00\x00V100\x00\x00'
+#    valid_bands = VALID_BANDS_VHF
+#    legal_steps = STEP_CODE
+#    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
+
+
+@directory.register
 class YaesuFT65RRadio(YaesuFT65GenericRadio):
     """
     FT-65 dual band, US version
