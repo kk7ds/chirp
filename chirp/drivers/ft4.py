@@ -1295,5 +1295,6 @@ class YaesuFT25RRadio(YaesuFT65GenericRadio):
 #    """
 #    MODEL = "FT-25E"
 #    id_str = b'IFT-25R\x00\x00V100\x00\x00'
-#    valid_bands = #    legal_steps = US_LEGAL_STEPS
+#    valid_bands = VALID_BANDS_VHF
+#    legal_steps = STEP_CODE
 #    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
