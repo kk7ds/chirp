@@ -232,6 +232,8 @@ class ChirpMemEdit(common.ChirpEditor):
 
         if memory.extd_number:
             self._grid.SetRowLabelValue(row, memory.extd_number)
+        else:
+            self._grid.SetRowLabelValue(row, str(memory.number))
 
         for col, col_def in enumerate(self._col_defs):
             self._grid.SetCellValue(row, col, col_def.render_value(memory))
