@@ -340,7 +340,7 @@ class ChirpMemEdit(common.ChirpEditor):
 
         props_item = wx.MenuItem(menu, wx.NewId(), 'Properties')
         self.Bind(wx.EVT_MENU,
-                  functools.partial(self._mem_properties, event.GetRow()),
+                  functools.partial(self._mem_properties, selected_rows),
                   props_item)
         menu.AppendItem(props_item)
 
@@ -375,13 +375,15 @@ class ChirpMemEdit(common.ChirpEditor):
         self.PopupMenu(menu)
         menu.Destroy()
 
-    def _mem_properties(self, row, event):
-        number = row + self._features.memory_bounds[0]
-        mem = self._radio.get_memory(number)
-        with ChirpMemPropDialog(mem, self) as d:
+    def _mem_properties(self, rows, event):
+        memories = [
+            self._radio.get_memory(row + self._features.memory_bounds[0])
+            for row in rows]
+        with ChirpMemPropDialog(memories, self) as d:
             if d.ShowModal() == wx.ID_OK:
-                self._radio.set_memory(d._memory)
-                self.refresh_memory(d._memory)
+                for memory in d._memories:
+                    self._radio.set_memory(memory)
+                    self.refresh_memory(memory)
 
     def _mem_showraw(self, row, event):
         mem = self._radio.get_raw_memory(row)
@@ -441,13 +443,20 @@ class ChirpMemEdit(common.ChirpEditor):
 
 
 class ChirpMemPropDialog(wx.Dialog):
-    def __init__(self, memory, memedit, *a, **k):
+    def __init__(self, memories, memedit, *a, **k):
+        if len(memories) == 1:
+            title = 'Edit details for memory %i' % memories[0].number
+        else:
+            title = 'Edit details for %i memories' % len(memories)
+
         super(ChirpMemPropDialog, self).__init__(
-            memedit, *a,
-            title='Edit details for memory %i' % memory.number,
-            **k)
-        self._memory = memory
+            memedit, *a, title=title, **k)
+
+        self._memories = memories
         self._col_defs = memedit._col_defs
+
+        # The first memory sets the defaults
+        memory = self._memories[0]
 
         self._tabs = wx.Notebook(self)
 
@@ -481,34 +490,42 @@ class ChirpMemPropDialog(wx.Dialog):
                 return coldef
         LOG.error('No column definition for %s' % name)
 
-    def _make_memory(self):
-        mem = self._memory.dupe()
-        for prop in self._pg._Items():
-            coldef = self._col_def_by_name(prop.GetName())
-            if isinstance(prop, wx.propgrid.EnumProperty):
-                value = coldef._choices[prop.GetValue()]
-            else:
-                value = coldef._digest_value(mem, prop.GetValueAsString())
+    def _make_memories(self):
+        memories = [memory.dupe() for memory in self._memories]
 
-            LOG.debug('Value for %s is %r' % (prop.GetName(), value))
-            setattr(mem, prop.GetName(), value)
+        for mem in memories:
+            for prop in self._pg._Items():
+                name = prop.GetName()
 
-        if self._tabs.GetPageCount() == 2:
-            extra = self._tabs.GetPage(1).get_values()
-            for setting in mem.extra:
-                name = setting.get_name()
-                try:
-                    setting.value = extra[name]
-                except KeyError:
-                    raise
-                    LOG.warning('Missing setting %r' % name)
+                coldef = self._col_def_by_name(name)
+                if isinstance(prop, wx.propgrid.EnumProperty):
+                    value = coldef._choices[prop.GetValue()]
+                else:
+                    value = coldef._digest_value(mem, prop.GetValueAsString())
+
+                if (getattr(self._memories[0], name) == value):
+                    LOG.debug('Skipping unchanged field %s' % name)
                     continue
 
-        return mem
+                LOG.debug('Value for %s is %r' % (name, value))
+                setattr(mem, prop.GetName(), value)
+
+            if self._tabs.GetPageCount() == 2:
+                extra = self._tabs.GetPage(1).get_values()
+                for setting in mem.extra:
+                    name = setting.get_name()
+                    try:
+                        setting.value = extra[name]
+                    except KeyError:
+                        raise
+                        LOG.warning('Missing setting %r' % name)
+                        continue
+
+        return memories
 
     def _button(self, event):
         button_id = event.GetEventObject().GetId()
         if button_id == wx.ID_OK:
-            self._memory = self._make_memory()
+            self._memories = self._make_memories()
 
         self.EndModal(button_id)
