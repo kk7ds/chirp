@@ -195,13 +195,16 @@ class ChirpMemEdit(common.ChirpEditor):
         for col, col_def in enumerate(self._col_defs):
             if not col_def.valid:
                 self._grid.HideCol(col)
+            else:
+                self._grid.SetColLabelValue(col, col_def.label)
+                attr = wx.grid.GridCellAttr()
+                attr.SetEditor(col_def.get_editor())
+                self._grid.SetColAttr(col, attr)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self._grid, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
-        for i, col_def in enumerate(self._col_defs):
-            self._grid.SetColLabelValue(i, col_def.label)
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING,
@@ -250,10 +253,6 @@ class ChirpMemEdit(common.ChirpEditor):
 
         for col, col_def in enumerate(self._col_defs):
             self._grid.SetCellValue(row, col, col_def.render_value(memory))
-
-            # Only do this the first time
-            editor = col_def.get_editor()
-            self._grid.SetCellEditor(row, col, editor)
 
     def refresh(self):
         for i in range(*self._features.memory_bounds):
