@@ -578,8 +578,11 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         rf.has_settings = True
         rf.has_bank = False
         rf.has_sub_devices = True
+        rf.has_rx_dtcs = True
         rf.can_odd_split = True
-        rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS']
+        rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
+        rf.valid_cross_modes = ["DTCS->", "->DTCS", "Tone->DTCS",
+                                "DTCS->Tone", "->Tone", "DTCS->DTCS"]
         rf.valid_bands = self.VALID_BANDS
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 12.5, 10.0, 15.0, 20.0,
