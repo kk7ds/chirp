@@ -197,6 +197,7 @@ class ChirpMemEdit(common.ChirpEditor):
 
         for i, col_def in enumerate(self._col_defs):
             self._grid.SetColLabelValue(i, col_def.label)
+        wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING,
                         self._memory_edited)
@@ -204,6 +205,12 @@ class ChirpMemEdit(common.ChirpEditor):
                         self._memory_changed)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK,
                         self._memory_rclick)
+
+        # For resize calculations
+        font = wx.Font(pointSize=10, family=wx.DEFAULT, style=wx.NORMAL,
+                       weight=wx.NORMAL, faceName='Consolas')
+        self._dc = wx.ScreenDC()
+        self._dc.SetFont(font)
 
     def _setup_columns(self):
         defs = [
@@ -225,6 +232,7 @@ class ChirpMemEdit(common.ChirpEditor):
             ChirpMemoryColumn('comment', self._radio),
         ]
         return defs
+
     def refresh_memory(self, memory):
         self._memory_cache[memory.number] = memory
 
@@ -287,6 +295,15 @@ class ChirpMemEdit(common.ChirpEditor):
             event.Veto()
         else:
             LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
+
+        wx.CallAfter(self._resize_col_after_edit, row, col)
+
+    def _resize_col_after_edit(self, row, col):
+        """Resize the column if the text in row,col does not fit."""
+        size = self._dc.GetTextExtent(self._grid.GetCellValue(row, col))
+        padsize = size[0] + 20
+        if padsize > self._grid.GetColSize(col):
+            self._grid.SetColSize(col, padsize)
 
     def _memory_changed(self, event):
         """
