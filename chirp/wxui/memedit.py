@@ -51,7 +51,8 @@ class ChirpMemoryColumn(object):
 
     def _render_value(self, memory, value):
         if value == []:
-            raise Exception('Found empty list value for %s' % self._name)
+            raise Exception('Found empty list value for %s: %r' % (
+                self._name, value))
         return str(value)
 
     def value(self, memory):
@@ -74,25 +75,25 @@ class ChirpMemoryColumn(object):
         return wx.grid.GridCellTextEditor()
 
     def get_propeditor(self, memory):
-        class ChirpPropertyEditor(wx.propgrid.PGProperty):
-            def DoGetEditorClass(myself):
-                return wx.propgrid.PropertyGridInterface.GetEditorByName(
-                    'TextCtrl')
+        class ChirpStringProperty(wx.propgrid.StringProperty):
+            def ValidateValue(myself, value, validationInfo):
+                try:
+                    self._digest_value(memory, value)
+                    return True
+                except ValueError:
+                    validationInfo.SetFailureMessage(
+                        'Invalid value: %r' % value)
+                    return False
+                except Exception as e:
+                    LOG.exception('Failed to validate %r for property %s' % (
+                        value, self._name))
+                    validationInfo.SetFailureMessage(
+                        'Invalid value: %r' % value)
+                    return False
 
-            def ValueToString(myself, value, flags):
-                r = self._render_value(memory, value)
-                return r
-
-            def StringToValue(myself, string, *a, flags=0, **k):
-                if string == '':
-                    string = str(self.DEFAULT)
-                r = self._digest_value(memory, string)
-                return (True, r)
-
-        pe = ChirpPropertyEditor(self.label, self._name)
-        v = self.render_value(memory)
-        pe.SetValueFromString(v)
-        return pe
+        editor = ChirpStringProperty(self.label, self._name)
+        editor.SetValue(self.render_value(memory))
+        return editor
 
 
 class ChirpFrequencyColumn(ChirpMemoryColumn):
@@ -108,9 +109,13 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
         return self._name == 'offset' and not memory.duplex
 
     def _render_value(self, memory, value):
+        if not value:
+            value = 0
         return '%.5f' % (value / 1000000.0)
 
     def _digest_value(self, memory, input_value):
+        if not input_value.strip():
+            input_value = 0
         return int(chirp_common.to_MHz(float(input_value)))
 
 
@@ -479,11 +484,13 @@ class ChirpMemPropDialog(wx.Dialog):
     def _make_memory(self):
         mem = self._memory.dupe()
         for prop in self._pg._Items():
+            coldef = self._col_def_by_name(prop.GetName())
             if isinstance(prop, wx.propgrid.EnumProperty):
-                coldef = self._col_def_by_name(prop.GetName())
                 value = coldef._choices[prop.GetValue()]
             else:
-                value = prop.GetValue()
+                value = coldef._digest_value(mem, prop.GetValueAsString())
+
+            LOG.debug('Value for %s is %r' % (prop.GetName(), value))
             setattr(mem, prop.GetName(), value)
 
         if self._tabs.GetPageCount() == 2:
