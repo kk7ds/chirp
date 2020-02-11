@@ -86,6 +86,9 @@ class ChirpEditor(wx.Panel):
     def saved(self):
         pass
 
+    def selected(self):
+        pass
+
 
 class ChirpSettingGrid(wx.Panel):
     def __init__(self, settinggroup, *a, **k):
