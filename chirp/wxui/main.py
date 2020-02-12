@@ -229,10 +229,25 @@ class ChirpMain(wx.Frame):
             reload_drv_item = wx.MenuItem(radio_menu,
                                           self._reload_driver_item,
                                           'Reload Driver')
-            reload_drv_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT | wx.ACCEL_CTRL,
-                                                         ord('R')))
+            reload_drv_item.SetAccel(
+                wx.AcceleratorEntry(wx.ACCEL_ALT | wx.ACCEL_CTRL,
+                                    ord('R')))
             self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
             radio_menu.Append(reload_drv_item)
+
+            self._reload_both_item = wx.NewId()
+            reload_both_item = wx.MenuItem(radio_menu,
+                                           self._reload_both_item,
+                                           'Reload Driver and File')
+            reload_both_item.SetAccel(
+                wx.AcceleratorEntry(
+                    wx.ACCEL_ALT | wx.ACCEL_CTRL | wx.ACCEL_SHIFT,
+                    ord('R')))
+            self.Bind(
+                wx.EVT_MENU,
+                functools.partial(self._menu_reload_driver, andfile=True),
+                reload_both_item)
+            radio_menu.Append(reload_both_item)
 
             self._interact_driver_item = wx.NewId()
             interact_drv_item = wx.MenuItem(radio_menu,
@@ -426,7 +441,7 @@ class ChirpMain(wx.Frame):
             d.ShowModal()
 
     @common.error_proof()
-    def _menu_reload_driver(self, event):
+    def _menu_reload_driver(self, event, andfile=False):
         radio = self.current_editorset.radio
         try:
             # If we were loaded from a dynamic alias in directory,
@@ -447,20 +462,25 @@ class ChirpMain(wx.Frame):
         import importlib
         importlib.reload(module)
 
-        # Grab a new reference to the updated module, pick out the
-        # radio class from it and mimic the load-from-file behavior
-        # but with the memory map jammed into place first instead of
-        # calling load(file).
+        # Grab a new reference to the updated module and pick out the
+        # radio class from it.
         module = sys.modules[orig_rclass.__module__]
         rclass = getattr(module, orig_rclass.__name__)
-        new_radio = rclass(None)
-        new_radio._mmap = mmap
-        new_radio.process_mmap()
 
-        # Save a copy of the current filename in case it matters afterwards
-        # and kill the current editorset now that we know the radio loaded
-        # successfully
         filename = self.current_editorset.filename
+        if andfile:
+            # Reload the file while creating the radio
+            new_radio = rclass(filename)
+        else:
+            # Try to reload the driver in place, without
+            # re-reading the file; mimic the file loading
+            # procedure after jamming the memory back in
+            new_radio = rclass(None)
+            new_radio._mmap = mmap
+            new_radio.process_mmap()
+
+        # Kill the current editorset now that we know the radio loaded
+        # successfully
         self._menu_close(event)
 
         # Mimic the File->Open process to get a new editorset based
@@ -468,7 +488,8 @@ class ChirpMain(wx.Frame):
         editorset = ChirpEditorSet(new_radio, filename, self._editors)
         self.add_editorset(editorset, select=True)
 
-        LOG.info('Reloaded radio driver in place; good luck!')
+        LOG.info('Reloaded radio driver%s in place; good luck!' % (
+            andfile and ' (and file)' or ''))
 
     def _menu_interact_driver(self, event):
         LOG.warning('Going to interact with radio at the console')
