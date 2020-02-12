@@ -819,7 +819,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ("use_cwid", "use CW ID", ["NO", "YES"]),
          ("cw_id",  "CW ID Callsign",  (get_strset, [CW_ID_CHARS])),  # handler
          ("vfo_spl", "VFO Split", ["OFF", "ON"]),
-         ("wfm_rcv", "Enable Broadband FM", ["ON", "OFF"]),
+         ("wfm_rcv", "Enable Broadband FM", ["OFF", "ON"]),
          ("passwd", "Password",  (get_strset, [PASSWD_CHARS]))  # handler
          ]),
         ("arts", "ARTS Settings", [  # arts
