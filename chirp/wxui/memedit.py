@@ -352,6 +352,8 @@ class ChirpMemEdit(common.ChirpEditor):
             return
 
         try:
+            if col_def.label == 'Name':
+                val = self._radio.filter_name(val)
             col_def.digest_value(mem, val)
             mem.empty = False
             job = self._radio.set_memory(mem)
