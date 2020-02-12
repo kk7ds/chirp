@@ -403,7 +403,7 @@ class ChirpMemEdit(common.ChirpEditor):
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_properties, selected_rows),
                   props_item)
-        menu.AppendItem(props_item)
+        menu.Append(props_item)
 
         if len(selected_rows) > 1:
             del_item = wx.MenuItem(menu, wx.NewId(),
@@ -415,7 +415,7 @@ class ChirpMemEdit(common.ChirpEditor):
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._delete_memories_at, to_delete),
                   del_item)
-        menu.AppendItem(del_item)
+        menu.Append(del_item)
 
         if CONF.get_bool('developer', 'state'):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
@@ -424,14 +424,14 @@ class ChirpMemEdit(common.ChirpEditor):
             self.Bind(wx.EVT_MENU,
                       functools.partial(self._mem_showraw, event.GetRow()),
                       raw_item)
-            menu.AppendItem(raw_item)
+            menu.Append(raw_item)
 
             if len(selected_rows) == 2:
                 diff_item = wx.MenuItem(menu, wx.NewId(), 'Diff Raw Memories')
                 self.Bind(wx.EVT_MENU,
                           functools.partial(self._mem_diff, selected_rows),
                           diff_item)
-                menu.AppendItem(diff_item)
+                menu.Append(diff_item)
 
         self.PopupMenu(menu)
         menu.Destroy()

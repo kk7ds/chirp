@@ -213,13 +213,13 @@ class ChirpMain(wx.Frame):
                                     'Download')
         download_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('D')))
         self.Bind(wx.EVT_MENU, self._menu_download, download_item)
-        radio_menu.AppendItem(download_item)
+        radio_menu.Append(download_item)
 
         self._upload_menu_item = wx.NewId()
         upload_item = wx.MenuItem(radio_menu, self._upload_menu_item, 'Upload')
         upload_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
-        radio_menu.AppendItem(upload_item)
+        radio_menu.Append(upload_item)
 
         if CONF.get_bool('developer', 'state'):
             radio_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
@@ -231,7 +231,7 @@ class ChirpMain(wx.Frame):
             reload_drv_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT | wx.ACCEL_CTRL,
                                                          ord('R')))
             self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
-            radio_menu.AppendItem(reload_drv_item)
+            radio_menu.Append(reload_drv_item)
 
             self._interact_driver_item = wx.NewId()
             interact_drv_item = wx.MenuItem(radio_menu,
@@ -239,13 +239,13 @@ class ChirpMain(wx.Frame):
                                           'Interact with driver')
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
-            radio_menu.AppendItem(interact_drv_item)
+            radio_menu.Append(interact_drv_item)
 
         help_menu = wx.Menu()
 
         about_item = wx.MenuItem(help_menu, wx.NewId(), 'About')
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
-        help_menu.AppendItem(about_item)
+        help_menu.Append(about_item)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
