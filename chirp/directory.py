@@ -184,6 +184,7 @@ def get_radio_by_image(image_file):
                     alias.MODEL == metadata.get('model')):
 
                 class DynamicRadioAlias(rclass):
+                    _orig_rclass = rclass
                     VENDOR = metadata.get('vendor')
                     MODEL = metadata.get('model')
                     VARIANT = metadata.get('variant')

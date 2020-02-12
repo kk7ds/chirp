@@ -221,6 +221,26 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.AppendItem(upload_item)
 
+        if CONF.get_bool('developer', 'state'):
+            radio_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
+
+            self._reload_driver_item = wx.NewId()
+            reload_drv_item = wx.MenuItem(radio_menu,
+                                          self._reload_driver_item,
+                                          'Reload Driver')
+            reload_drv_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT | wx.ACCEL_CTRL,
+                                                         ord('R')))
+            self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
+            radio_menu.AppendItem(reload_drv_item)
+
+            self._interact_driver_item = wx.NewId()
+            interact_drv_item = wx.MenuItem(radio_menu,
+                                            self._interact_driver_item,
+                                          'Interact with driver')
+            self.Bind(wx.EVT_MENU, self._menu_interact_driver,
+                      interact_drv_item)
+            radio_menu.AppendItem(interact_drv_item)
+
         help_menu = wx.Menu()
 
         about_item = wx.MenuItem(help_menu, wx.NewId(), 'About')
@@ -403,6 +423,59 @@ class ChirpMain(wx.Frame):
         radio = self.current_editorset.radio
         with clone.ChirpUploadDialog(radio, self) as d:
             d.ShowModal()
+
+    @common.error_proof()
+    def _menu_reload_driver(self, event):
+        radio = self.current_editorset.radio
+        try:
+            # If we were loaded from a dynamic alias in directory,
+            # get the pointer to the original
+            orig_rclass = radio._orig_rclass
+        except AttributeError:
+            orig_rclass = radio.__class__
+
+        # Save a reference to the radio's internal mmap. If the radio does
+        # anything strange or does not follow the typical convention, this
+        # will not work
+        mmap = radio._mmap
+
+        # Save a copy of the current filename in case it matters afterwards
+        filename = self.current_editorset.filename
+
+        # Kill the current editorset
+        self._menu_close(event)
+
+        module = sys.modules[orig_rclass.__module__]
+        LOG.warning('Going to reload %s' % module)
+        directory.enable_reregistrations()
+        import importlib
+        importlib.reload(module)
+
+        # Grab a new reference to the updated module, pick out the
+        # radio class from it and mimic the load-from-file behavior
+        # but with the memory map jammed into place first instead of
+        # calling load(file).
+        module = sys.modules[orig_rclass.__module__]
+        rclass = getattr(module, orig_rclass.__name__)
+        new_radio = rclass(None)
+        new_radio._mmap = mmap
+        new_radio.process_mmap()
+
+        # Mimic the File->Open process to get a new editorset based
+        # on our franken-radio
+        editorset = ChirpEditorSet(new_radio, filename, self._editors)
+        self.add_editorset(editorset, select=True)
+
+        LOG.info('Reloaded radio driver in place; good luck!')
+
+    def _menu_interact_driver(self, event):
+        LOG.warning('Going to interact with radio at the console')
+        radio = self.current_editorset.radio
+        import code
+        locals = {'main': self,
+                  'radio': radio}
+        code.interact(banner='Locals are: %s' % (', '.join(locals.keys())),
+                      local=locals)
 
     def _menu_about(self, event):
         pyver = sys.version_info
