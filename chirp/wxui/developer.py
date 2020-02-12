@@ -58,6 +58,8 @@ class MemoryDialog(wx.Dialog):
         else:
             self._raw_memory(mem)
 
+        self.Centre()
+
     def _raw_memory(self, mem):
         self.text.WriteText(mem)
 
@@ -148,7 +150,7 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
 class ChirpRadioBrowser(common.ChirpEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpRadioBrowser, self).__init__(*a, **k)
-
+        self._loaded = False
         self._radio = radio
         self._features = radio.get_features()
 
@@ -170,8 +172,14 @@ class ChirpRadioBrowser(common.ChirpEditor):
         self.SetSizer(sizer)
 
     def selected(self):
+        if self._loaded:
+            return
+
         pd = wx.ProgressDialog('Loading', 'Building Radio Browser')
-        self._load_from_radio('root', self._radio._memobj, pd)
+        self._loaded = True
+        self._load_from_radio('%s %s' % (self._radio.VENDOR,
+                                         self._radio.MODEL),
+                              self._radio._memobj, pd)
         pd.Destroy()
 
     def page_selected(self, event):
