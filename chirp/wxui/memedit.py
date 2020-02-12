@@ -160,7 +160,8 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
         self._str_choices = [str(x) for x in choices]
 
     def _digest_value(self, memory, input_value):
-        return self._choices[self._str_choices.index(input_value)]
+        idx = self._str_choices.index(input_value)
+        return self._choices[idx]
 
     def get_editor(self):
         return wx.grid.GridCellChoiceEditor(self._str_choices)
@@ -515,6 +516,8 @@ class ChirpMemPropDialog(wx.Dialog):
         super(ChirpMemPropDialog, self).__init__(
             memedit, *a, title=title, **k)
 
+        self.Centre()
+
         self._memories = memories
         self._col_defs = memedit._col_defs
 
@@ -561,10 +564,8 @@ class ChirpMemPropDialog(wx.Dialog):
                 name = prop.GetName()
 
                 coldef = self._col_def_by_name(name)
-                if isinstance(prop, wx.propgrid.EnumProperty):
-                    value = coldef._choices[prop.GetValue()]
-                else:
-                    value = coldef._digest_value(mem, prop.GetValueAsString())
+                value = prop.GetValueAsString()
+                value = coldef._digest_value(mem, value)
 
                 if (getattr(self._memories[0], name) == value):
                     LOG.debug('Skipping unchanged field %s' % name)
