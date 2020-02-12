@@ -247,6 +247,11 @@ class ChirpMemEdit(common.ChirpEditor):
                               len(self._col_defs))
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
 
+        self._fixed_font = wx.Font(pointSize=10,
+                                   family=wx.FONTFAMILY_TELETYPE,
+                                   style=wx.FONTSTYLE_NORMAL,
+                                   weight=wx.FONTWEIGHT_NORMAL)
+
         for col, col_def in enumerate(self._col_defs):
             if not col_def.valid:
                 self._grid.HideCol(col)
@@ -254,6 +259,7 @@ class ChirpMemEdit(common.ChirpEditor):
                 self._grid.SetColLabelValue(col, col_def.label)
                 attr = wx.grid.GridCellAttr()
                 attr.SetEditor(col_def.get_editor())
+                attr.SetFont(self._fixed_font)
                 self._grid.SetColAttr(col, attr)
                 self._grid.SetColMinimalWidth(col, 75)
 
@@ -271,10 +277,8 @@ class ChirpMemEdit(common.ChirpEditor):
                         self._memory_rclick)
 
         # For resize calculations
-        font = wx.Font(pointSize=10, family=wx.DEFAULT, style=wx.NORMAL,
-                       weight=wx.NORMAL, faceName='Consolas')
         self._dc = wx.ScreenDC()
-        self._dc.SetFont(font)
+        self._dc.SetFont(self._fixed_font)
 
     def _setup_columns(self):
         defs = [
