@@ -34,6 +34,8 @@ if __name__ == '__main__':
                         help="Enable profiling")
     parser.add_argument("--onlydriver", nargs="+",
                         help="Include this driver while loading")
+    parser.add_argument("--inspect", action="store_true",
+                        help="Show wxPython inspector")
     logger.add_arguments(parser)
     args = parser.parse_args()
 
@@ -47,5 +49,9 @@ if __name__ == '__main__':
     mainwindow.Show()
     for fn in args.files:
         mainwindow.open_file(fn, select=False)
+
+    if args.inspect:
+        import wx.lib.inspection
+        wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
