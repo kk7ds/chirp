@@ -88,6 +88,26 @@ class ChirpEditor(wx.Panel):
     def set_up(self):
         pass
 
+    def __repr__(self):
+        addr = '0x%02x' % int(self._obj._offset)
+
+        def typestr(c):
+            return c.__class__.__name__.lower().replace('dataelement', '')
+
+        if isinstance(self._obj, bitwise.arrayDataElement):
+            innertype = list(self._obj.items())[0][1]
+            return '%s[%i] (%i bytes each) @ %s' % (typestr(innertype),
+                                                    len(self._obj),
+                                                    innertype.size() / 8,
+                                                    addr)
+        elif self._obj.size() % 8 == 0:
+            return '%s (%i bytes) @ %s' % (typestr(self._obj),
+                                           self._obj.size() / 8,
+                                           addr)
+        else:
+            return '%s bits @ %s' % (self._obj.size(),
+                                     addr)
+
 
 class ChirpStringEditor(ChirpEditor):
     def set_up(self):
@@ -140,6 +160,9 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
         for name, editor in self._editors.items():
             editor.set_up()
             label = wx.StaticText(self, label='%s: ' % name)
+            tt = wx.ToolTip(repr(editor))
+            label.SetToolTip(tt)
+
             self._sizer.Add(label, 0, wx.ALIGN_CENTER)
             self._sizer.Add(editor, 1, flag=wx.EXPAND)
 
