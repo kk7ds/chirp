@@ -439,12 +439,7 @@ class ChirpMain(wx.Frame):
         # will not work
         mmap = radio._mmap
 
-        # Save a copy of the current filename in case it matters afterwards
-        filename = self.current_editorset.filename
-
-        # Kill the current editorset
-        self._menu_close(event)
-
+        # Reload the actual module
         module = sys.modules[orig_rclass.__module__]
         LOG.warning('Going to reload %s' % module)
         directory.enable_reregistrations()
@@ -460,6 +455,12 @@ class ChirpMain(wx.Frame):
         new_radio = rclass(None)
         new_radio._mmap = mmap
         new_radio.process_mmap()
+
+        # Save a copy of the current filename in case it matters afterwards
+        # and kill the current editorset now that we know the radio loaded
+        # successfully
+        filename = self.current_editorset.filename
+        self._menu_close(event)
 
         # Mimic the File->Open process to get a new editorset based
         # on our franken-radio
