@@ -39,7 +39,7 @@ class ChirpMemoryColumn(object):
     def valid(self):
         if self._name in ['freq', 'rtone']:
             return True
-        to_try = ['has_%s', 'valid_%ss', 'valid_%ses']
+        to_try = ['has_%s', 'valid_%ss', 'valid_%ses', 'valid_%s_levels']
         for thing in to_try:
             try:
                 return bool(self._features[thing % self._name])
@@ -50,7 +50,7 @@ class ChirpMemoryColumn(object):
         return True
 
     def _render_value(self, memory, value):
-        if value == []:
+        if value is []:
             raise Exception('Found empty list value for %s: %r' % (
                 self._name, value))
         return str(value)
@@ -254,6 +254,7 @@ class ChirpMemEdit(common.ChirpEditor):
                 attr = wx.grid.GridCellAttr()
                 attr.SetEditor(col_def.get_editor())
                 self._grid.SetColAttr(col, attr)
+                self._grid.SetColMinimalWidth(col, 75)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self._grid, 1, wx.EXPAND)
@@ -294,6 +295,8 @@ class ChirpMemEdit(common.ChirpEditor):
             ChirpChoiceColumn('skip', self._radio,
                               self._features.valid_skips),
             ChirpCrossModeColumn('cross_mode', self._radio),
+            ChirpChoiceColumn('power', self._radio,
+                              self._features.valid_power_levels),
             ChirpMemoryColumn('comment', self._radio),
         ]
         return defs
@@ -352,6 +355,7 @@ class ChirpMemEdit(common.ChirpEditor):
             mem.empty = False
             job = self._radio.set_memory(mem)
         except Exception as e:
+            LOG.exception('Failed to edit memory')
             wx.MessageBox('Invalid edit: %s' % e, 'Error')
             event.Veto()
         else:
@@ -431,9 +435,12 @@ class ChirpMemEdit(common.ChirpEditor):
         self.PopupMenu(menu)
         menu.Destroy()
 
+    def row2mem(self, row):
+        return row + self._features.memory_bounds[0]
+
     def _mem_properties(self, rows, event):
         memories = [
-            self._radio.get_memory(row + self._features.memory_bounds[0])
+            self._radio.get_memory(self.row2mem(row))
             for row in rows]
         with ChirpMemPropDialog(memories, self) as d:
             if d.ShowModal() == wx.ID_OK:
@@ -442,13 +449,13 @@ class ChirpMemEdit(common.ChirpEditor):
                     self.refresh_memory(memory)
 
     def _mem_showraw(self, row, event):
-        mem = self._radio.get_raw_memory(row)
+        mem = self._radio.get_raw_memory(self.row2mem(row))
         with developer.MemoryDialog(mem, self) as d:
             d.ShowModal()
 
     def _mem_diff(self, rows, event):
-        mem_a = self._radio.get_raw_memory(rows[0])
-        mem_b = self._radio.get_raw_memory(rows[1])
+        mem_a = self._radio.get_raw_memory(self.row2mem(rows[0]))
+        mem_b = self._radio.get_raw_memory(self.row2mem(rows[1]))
         with developer.MemoryDialog((mem_a, mem_b), self) as d:
             d.ShowModal()
 
