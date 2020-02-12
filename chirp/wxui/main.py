@@ -430,6 +430,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_download(self, event):
         with clone.ChirpDownloadDialog(self) as d:
+            d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
                 editorset = ChirpEditorSet(radio, None, self._editors)
@@ -438,6 +439,7 @@ class ChirpMain(wx.Frame):
     def _menu_upload(self, event):
         radio = self.current_editorset.radio
         with clone.ChirpUploadDialog(radio, self) as d:
+            d.Centre()
             d.ShowModal()
 
     @common.error_proof()
