@@ -20,7 +20,6 @@ from chirp import logger
 
 from chirp.wxui import main
 
-directory.safe_import_drivers()
 
 
 if __name__ == '__main__':
@@ -33,10 +32,14 @@ if __name__ == '__main__':
     logger.add_version_argument(parser)
     parser.add_argument("--profile", action="store_true",
                         help="Enable profiling")
+    parser.add_argument("--onlydriver", nargs="+",
+                        help="Include this driver while loading")
     logger.add_arguments(parser)
     args = parser.parse_args()
 
     logger.handle_options(args)
+
+    directory.safe_import_drivers(limit=args.onlydriver)
 
     #logging.basicConfig(level=logging.DEBUG)
     app = wx.App()
