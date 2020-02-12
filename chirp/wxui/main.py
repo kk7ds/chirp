@@ -34,7 +34,8 @@ class ChirpEditorSet(wx.Panel):
 
         self._editors = wx.Notebook(self, style=wx.NB_LEFT)
 
-        self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._editor_selected)
+        self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING,
+                           self._editor_selected)
 
         sizer = wx.BoxSizer()
         sizer.Add(self._editors, 1, wx.EXPAND)
