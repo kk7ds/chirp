@@ -166,11 +166,65 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
         return wx.grid.GridCellChoiceEditor(self._str_choices)
 
     def get_propeditor(self, memory):
-        current = self.value(memory)
+        current = self._render_value(memory, self.value(memory))
+        try:
+            cur_index = self._choices.index(current)
+        except ValueError:
+            # This means the memory has some value set that the radio
+            # does not support, like the default cross_mode not being
+            # in rf.valid_cross_modes. This is likely because the memory
+            # just doesn't have that value set, so take the first choice
+            # in this case.
+            cur_index = 0
         return wx.propgrid.EnumProperty(self.label, self._name,
                                         self._str_choices,
                                         range(len(self._str_choices)),
-                                        self._choices.index(current))
+                                        cur_index)
+
+
+class ChirpDTCSColumn(ChirpChoiceColumn):
+    def __init__(self, name, radio):
+        dtcs_codes = ['%03i' % code for code in chirp_common.DTCS_CODES]
+        super(ChirpDTCSColumn, self).__init__(name, radio,
+                                              dtcs_codes)
+
+    @property
+    def label(self):
+        if self._name == 'dtcs':
+            return 'DTCS'
+        elif self._name == 'rx_dtcs':
+            return 'RX DTCS'
+        else:
+            return 'ErrDTCS'
+
+    def _digest_value(self, memory, input_value):
+        return int(input_value)
+
+    def _render_value(self, memory, value):
+        return '%03i' % value
+
+    def hidden_for(self, memory):
+        return (
+            (self._name == 'dtcs' and not (
+                memory.tmode == 'DTCS' or (memory.tmode == 'Cross' and
+                                           'DTCS->' in memory.cross_mode)))
+            or
+            (self._name == 'rx_dtcs' and not (
+                memory.tmode == 'Cross' and '>DTCS' in memory.cross_mode)))
+
+
+class ChirpCrossModeColumn(ChirpChoiceColumn):
+    def __init__(self, name, radio):
+        rf = radio.get_features()
+        super(ChirpCrossModeColumn, self).__init__(name, radio,
+                                                   rf.valid_cross_modes)
+
+    @property
+    def label(self):
+        return 'Cross mode'
+
+    def hidden_for(self, memory):
+        return memory.tmode != 'Cross'
 
 
 class ChirpMemEdit(common.ChirpEditor):
@@ -228,6 +282,8 @@ class ChirpMemEdit(common.ChirpEditor):
                               self._features.valid_tmodes),
             ChirpToneColumn('rtone', self._radio),
             ChirpToneColumn('ctone', self._radio),
+            ChirpDTCSColumn('dtcs', self._radio),
+            ChirpDTCSColumn('rx_dtcs', self._radio),
             ChirpChoiceColumn('duplex', self._radio,
                               self._features.valid_duplexes),
             ChirpFrequencyColumn('offset', self._radio),
@@ -237,6 +293,7 @@ class ChirpMemEdit(common.ChirpEditor):
                               self._features.valid_tuning_steps),
             ChirpChoiceColumn('skip', self._radio,
                               self._features.valid_skips),
+            ChirpCrossModeColumn('cross_mode', self._radio),
             ChirpMemoryColumn('comment', self._radio),
         ]
         return defs
