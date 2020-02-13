@@ -1,3 +1,5 @@
+import functools
+import logging
 import os
 
 import wx
@@ -6,6 +8,8 @@ import wx.lib.scrolledpanel
 
 from chirp import bitwise
 from chirp.wxui import common
+
+LOG = logging.getLogger(__name__)
 
 
 def simple_diff(a, b, diffsonly=False):
@@ -84,9 +88,35 @@ class ChirpEditor(wx.Panel):
     def __init__(self, parent, obj):
         super(ChirpEditor, self).__init__(parent)
         self._obj = obj
+        self._fixed_font = wx.Font(pointSize=10,
+                                   family=wx.FONTFAMILY_TELETYPE,
+                                   style=wx.FONTSTYLE_NORMAL,
+                                   weight=wx.FONTWEIGHT_NORMAL)
+        self._changed_color = wx.Colour(0, 255, 0)
+        self._error_color = wx.Colour(255, 0, 0)
 
     def set_up(self):
         pass
+
+    def _mark_changed(self, thing):
+        thing.SetBackgroundColour(self._changed_color)
+        tt = thing.GetToolTip()
+        if not tt:
+            tt = wx.ToolTip('')
+            thing.SetToolTip(tt)
+        tt.SetTip('Press enter to set this in memory')
+
+    def _mark_unchanged(self, thing):
+        thing.SetBackgroundColour(wx.NullColour)
+        thing.UnsetToolTip()
+
+    def _mark_error(self, thing, reason):
+        tt = thing.GetToolTip()
+        if not tt:
+            tt = wx.ToolTip('')
+            thing.SetToolTip(tt)
+        tt.SetTip(reason)
+        thing.SetBackgroundColour(self._error_color)
 
     def __repr__(self):
         addr = '0x%02x' % int(self._obj._offset)
@@ -112,10 +142,30 @@ class ChirpEditor(wx.Panel):
 class ChirpStringEditor(ChirpEditor):
     def set_up(self):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        entry = wx.TextCtrl(self, value=str(self._obj))
+        entry = wx.TextCtrl(self, value=str(self._obj),
+                            style=wx.TE_PROCESS_ENTER)
         entry.SetMaxLength(len(self._obj))
         self.SetSizer(sizer)
         sizer.Add(entry, 1, wx.EXPAND)
+
+        entry.Bind(wx.EVT_TEXT, self._edited)
+        entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+
+    def _edited(self, event):
+        entry = event.GetEventObject()
+        value = entry.GetValue()
+        if len(value) == len(self._obj):
+            self._mark_changed(entry)
+        else:
+            self._mark_error(entry, 'Length must be %i' % len(self._obj))
+
+    @common.error_proof()
+    def _changed(self, event):
+        entry = event.GetEventObject()
+        value = entry.GetValue()
+        self._obj.set_value(value)
+        self._mark_unchanged(entry)
+        LOG.debug('Set value: %r' % value)
 
 
 class ChirpIntegerEditor(ChirpEditor):
@@ -126,22 +176,84 @@ class ChirpIntegerEditor(ChirpEditor):
         hexdigits = (self._obj.size() / 4) + (self._obj.size() % 4 and 1 or 0)
         bindigits = self._obj.size()
 
-        editors = {'Hex': (16, '{:0%iX}' % hexdigits),
-                   'Dec': (10, '{:d}'),
-                   'Bin': (2, '{:0%ib}' % bindigits)}
-        for name, (base, fmt) in editors.items():
+        self._editors = {'Hex': (16, '{:0%iX}' % hexdigits),
+                         'Dec': (10, '{:d}'),
+                         'Bin': (2, '{:0%ib}' % bindigits)}
+        self._entries = {}
+        for name, (base, fmt) in self._editors.items():
             label = wx.StaticText(self, label=name)
-            entry = wx.TextCtrl(self, value=fmt.format(int(self._obj)))
+            entry = wx.TextCtrl(self, value=fmt.format(int(self._obj)),
+                                style=wx.TE_PROCESS_ENTER)
+            entry.SetFont(self._fixed_font)
             sizer.Add(label, 0, wx.ALIGN_CENTER)
             sizer.Add(entry, 1, flag=wx.EXPAND)
+            self._entries[name] = entry
+
+            entry.Bind(wx.EVT_TEXT, functools.partial(self._edited,
+                                                      base=base))
+            entry.Bind(wx.EVT_TEXT_ENTER, functools.partial(self._changed,
+                                                            base=base))
+
+    def _edited(self, event, base=10):
+        entry = event.GetEventObject()
+        others = {n: e for n, e in self._entries.items()
+                  if e != entry}
+
+        try:
+            val = int(entry.GetValue(), base)
+            assert val >= 0, 'Value must be zero or greater'
+            assert val < pow(2, self._obj.size()), \
+                'Value does not fit in %i bits' % self._obj.size()
+        except (ValueError, AssertionError) as e:
+            self._mark_error(entry, str(e))
+            return
+        else:
+            self._mark_changed(entry)
+
+        for name, entry in others.items():
+            base, fmt = self._editors[name]
+            entry.ChangeValue(fmt.format(val))
+
+    @common.error_proof()
+    def _changed(self, event, base=10):
+        entry = event.GetEventObject()
+        val = int(entry.GetValue(), base)
+        self._obj.set_value(val)
+        self._mark_unchanged(entry)
+        LOG.debug('Set value: %r' % val)
 
 
 class ChirpBCDEditor(ChirpEditor):
     def set_up(self):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(sizer)
-        entry = wx.TextCtrl(self, value=str(int(self._obj)))
+        entry = wx.TextCtrl(self, value=str(int(self._obj)),
+                            style=wx.TE_PROCESS_ENTER)
+        entry.SetFont(self._fixed_font)
         sizer.Add(entry, 1, wx.EXPAND)
+        entry.Bind(wx.EVT_TEXT, self._edited)
+        entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+
+    def _edited(self, event):
+        entry = event.GetEventObject()
+        try:
+            val = int(entry.GetValue())
+            digits = self._obj.size() // 4
+            assert val >= 0, 'Value must be zero or greater'
+            assert len(entry.GetValue()) == digits, \
+                   'Value must be exactly %i decimal digits' % digits
+        except (ValueError, AssertionError) as e:
+            self._mark_error(entry, str(e))
+        else:
+            self._mark_changed(entry)
+
+    @common.error_proof()
+    def _changed(self, event):
+        entry = event.GetEventObject()
+        val = int(entry.GetValue())
+        self._obj.set_value(val)
+        self._mark_unchanged(entry)
+        LOG.debug('Set Value: %r' % val)
 
 
 class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
