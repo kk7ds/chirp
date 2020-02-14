@@ -115,6 +115,13 @@ class ChirpEditorSet(wx.Panel):
     def current_editor(self):
         return self._editors.GetCurrentPage()
 
+    @property
+    def current_editor_index(self):
+        return self._editors.GetSelection()
+
+    def select_editor(self, index):
+        self._editors.SetSelection(index)
+
     def cb_copy(self, cut=False):
         return self.current_editor.cb_copy(cut=cut)
 
@@ -483,12 +490,14 @@ class ChirpMain(wx.Frame):
 
         # Kill the current editorset now that we know the radio loaded
         # successfully
+        last_editor = self.current_editorset.current_editor_index
         self._menu_close(event)
 
         # Mimic the File->Open process to get a new editorset based
         # on our franken-radio
         editorset = ChirpEditorSet(new_radio, filename, self._editors)
         self.add_editorset(editorset, select=True)
+        editorset.select_editor(last_editor)
 
         LOG.info('Reloaded radio driver%s in place; good luck!' % (
             andfile and ' (and file)' or ''))
