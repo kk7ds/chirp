@@ -214,7 +214,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
         rf.valid_cross_modes = list(self.CROSS_MODES)
         rf.valid_duplexes = list(self.DUPLEX)
         rf.has_tuning_step = False
-        # rf.valid_tuning_steps = list(self.STEPS)
+        rf.valid_tuning_steps = list(self.STEPS)
         rf.valid_bands = self.VALID_BANDS
         rf.valid_skips = [""]
         rf.valid_power_levels = self.POWER_LEVELS
