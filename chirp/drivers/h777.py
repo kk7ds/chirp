@@ -296,8 +296,8 @@ class H777Radio(chirp_common.CloneModeRadio):
 
     _ranges = [
         (0x0000, 0x0110),
-        (0x02B0, 0x02C0),
         (0x0380, 0x03E0),
+        (0x02B0, 0x02C0),
     ]
     _memsize = 0x03E0
     _has_fm = True
