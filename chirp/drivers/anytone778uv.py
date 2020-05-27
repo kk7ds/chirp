@@ -12,16 +12,31 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# TODONE change flags to use named bits, not bit type, u8 talkaround:1...
-# TODONE replace reprdata with utils.hexprint
-# TODONE read the whole image into memdata - need to re-arrange MEM_FORMAT to
-#        suit, seeking around to put things in the right places, and set
-#        default values
-# TODONE Exception as e
-# TODONE return memmap.MemoryMapBytes
-# TODONE change experimental prompt wording
-# TODONE add DTCS
+#
+# TODO use the band field from ver_response
+# TODO handle radio settings
+#
+# Supported features
+# * Read and write memory access for 200 normal memories
+# * CTCSS and DTCS for transmit and receive
+# * Scan list
+# * Tx off
+# * Duplex (+ve, -ve, odd, and off splits)
+# * Transmit power
+# * Channel width (25kHz and 12.5kHz)
+# * Retevis RT95, CRT Micron UV, and Midland DBR2500 radios
+#
+# Unsupported features
+# * VFO1, VFO2, and TRF memories
+# * custom CTCSS tones
+# * Full range of frequencies for tx and rx (limited to 144-148MHz and
+#   430-450MHz
+# * Band setting identification from radio
+# * Any non-memory radio settings
+# * Reverse, talkaround, scramble
+# * busy channel lock out
+# * probably other things too - like things encoded by the unknown bits in the
+#   memory struct
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
@@ -97,6 +112,15 @@ struct {
 } memory_status;
 '''
 
+# Format for the version messages returned by the radio
+VER_FORMAT = '''
+u8 hdr;
+char model[7];
+u8 band;
+char version[6];
+u8 ack;
+'''
+
 TXPOWER_LOW = 0x00
 TXPOWER_MED = 0x01
 TXPOWER_HIGH = 0x02
@@ -113,8 +137,6 @@ CHANNEL_WIDTH_12d5kHz = 0x00
 BUSY_CHANNEL_LOCKOUT_OFF = 0x00
 BUSY_CHANNEL_LOCKOUT_REPEATER = 0x01
 BUSY_CHANNEL_LOCKOUT_BUSY = 0x02
-
-ALLOWED_RADIO_TYPES = ['AT778UV\x01V200']
 
 MEMORY_ADDRESS_RANGE = (0x0000, 0x3290)
 MEMORY_RW_BLOCK_SIZE = 0x10
@@ -153,6 +175,15 @@ TONES_EN_TXCODE = (1 << 1)
 TONES_EN_RXCODE = (1 << 0)
 TONES_EN_NO_TONE = 0
 
+# Radio supports upper case and symbols
+CHARSET_ASCII_PLUS = chirp_common.CHARSET_UPPER_NUMERIC + '- '
+
+# Band limits as defined by the band byte in ver_response, defined in Hz, for
+# VHF and UHF, # used for RX and TX. TODO: not used yet.
+BAND_LIMITS = {0x00: ((144e6, 148e6), (430e6, 440e6)),
+               0x01: ((134e6, 174e6), (400e6, 490e6)),
+               0x02: ((144e6, 146e6), (430e6, 440e6))}
+
 # Calculate the checksum used in serial packets
 def checksum(message_bytes):
     mask = 0xFF
@@ -187,38 +218,39 @@ def send_serial_command(serial, command, expectedlen=None):
     return response
 
 
-# return pretty printed hex and ascii representation of binary data
-def reprdata(bindata):
-    hexwidth = 60
-    sepwidth = 4
-
-    line = ''
-    sepctr = 0
-    for b in bytes(bindata):
-        line += '%02x' % ord(b)
-        sepctr += 1
-        if sepctr == sepwidth:
-            line += ' '
-            sepctr = 0
-
-    line += ' ' * (hexwidth - len(line))
-
-    for b in bindata:
-        if 0x21 <= ord(b) <= 0x7E:
-            line += b
-        else:
-            line += '.'
-    return line
+# strip trailing 0x00 to convert a string returned by bitwise.parse into a
+# python string
+def cstring_to_py_string(cstring):
+    return "".join(c for c in cstring if c != '\x00')
 
 
 # Check the radio version reported to see if it's one we support
-# TODO extend this list, as I suspect there are other very similar radios
-# like the RT95
-def check_ver(ver_response):
+def check_ver(ver_response, allowed_types):
     ''' Check the returned radio version is one we approve of '''
-    ver = ver_response[1:ver_response.find(b'\x00')]
-    LOG.debug('radio version: %s' % ver)
-    return ver in ALLOWED_RADIO_TYPES
+
+    LOG.debug('ver_response = ')
+    LOG.debug(util.hexprint(ver_response))
+
+    resp = bitwise.parse(VER_FORMAT, ver_response)
+    verok = False
+
+    if resp.hdr == 0x49 and resp.ack == 0x06:
+        model, version = [cstring_to_py_string(bitwise.get_string(s)).strip()
+                          for s in (resp.model, resp.version)]
+        LOG.debug('radio model: \'%s\' version: \'%s\'' %
+                  (model, version))
+        LOG.debug('allowed_types = %s' % allowed_types)
+
+        if model in allowed_types:
+            LOG.debug('model in allowed_types')
+
+            if version in allowed_types[model]:
+                LOG.debug('version in allowed_types[model]')
+                verok = True
+    else:
+        raise errors.RadioError('Failed to parse version response')
+
+    return verok
 
 
 # Put the radio in programming mode, sending the initial command and checking
@@ -236,10 +268,11 @@ def enter_program_mode(radio):
     # read the radio ID string, make sure it matches one we know about
     ver_response = send_serial_command(serial, b'\x02')
 
-    if not check_ver(ver_response):
+    if not check_ver(ver_response, radio.ALLOWED_RADIO_TYPES):
         exit_program_mode(radio)
-        raise errors.RadioError('Radio version \'%s\' not in allowed list'
-                                % ver_response)
+        raise errors.RadioError(
+            'Radio version not in allowed list for %s-%s: %s' %
+            (radio.VENDOR, radio.MODEL, util.hexprint(ver_response)))
 
 
 # Exit programming mode
@@ -424,21 +457,20 @@ def dtcs_code_val_to_bits(code):
     return (val & 0xFF), ((val >> 8) & 0x01)
 
 
-@directory.register
-class AnyTone778UV(chirp_common.CloneModeRadio,
-                   chirp_common.ExperimentalRadio):
+class AnyTone778UVBase(chirp_common.CloneModeRadio,
+                       chirp_common.ExperimentalRadio):
     '''AnyTone 778UV and probably Retivis RT95 and others'''
-    VENDOR = "AnyTone"     # Replace this with your vendor
-    MODEL = "778UV"  # Replace this with your model
-    BAUD_RATE = 9600    # Replace this with your baud rate
+    BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
 
         rp.experimental = \
-            ('This is experimental support for the AnyTone 778UV.'
-             'Please send in bug and enhancement requests!')
+            ('This is experimental support for the %s %s.  '
+             'Please send in bug and enhancement requests!' %
+             (cls.VENDOR, cls.MODEL))
 
         return rp
 
@@ -452,7 +484,8 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
         rf.has_name = True
         rf.has_offset = True
         rf.valid_name_length = 5
-        rf.valid_duplexes = ['', '+', '-', 'split']
+        rf.valid_duplexes = ['', '+', '-', 'split', 'off']
+        rf.valid_characters = CHARSET_ASCII_PLUS
 
         rf.has_dtcs = True
         rf.has_rx_dtcs = True
@@ -470,12 +503,14 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
                                 '->Tone']
 
         rf.memory_bounds = (0, 199)  # This radio supports memories 0-199
+        # TODO update valid bands with based on radio response
         rf.valid_bands = [(144000000, 148000000),  # Supports 2-meters
                           (430000000, 450000000),  # Supports 70-centimeters
                           ]
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = [2.5, 5, 6.25, 10, 12.5, 20, 25, 30, 50]
+        rf.has_tuning_step = False
         return rf
 
     # Do a download of the radio from the serial port
@@ -536,6 +571,10 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
                 LOG.error('%s: get_mem: unhandled duplex: %02x' %
                           (mem.name, _mem.duplex))
 
+            # handle tx off
+            if _mem.tx_off:
+                mem.duplex = 'off'
+
             # Set the channel width
             if _mem.channel_width == CHANNEL_WIDTH_25kHz:
                 mem.mode = 'FM'
@@ -571,12 +610,12 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
             # check if dtcs tx is enabled
             if _mem.dtcs_encode_en:
                 txcode = dtcs_code_bits_to_val(_mem.dtcs_encode_code_highbit,
-                                     _mem.dtcs_encode_code)
+                                               _mem.dtcs_encode_code)
 
             # check if dtcs rx is enabled
             if _mem.dtcs_decode_en:
                 rxcode = dtcs_code_bits_to_val(_mem.dtcs_decode_code_highbit,
-                                     _mem.dtcs_decode_code)
+                                               _mem.dtcs_decode_code)
 
             if txcode is not None:
                 LOG.debug('%s: get_mem dtcs_enc: %d' % (mem.name, txcode))
@@ -720,8 +759,14 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
                 LOG.error('%s: set_mem: unhandled duplex: %s' %
                           (mem.name, mem.duplex))
 
+            # handle tx off
+            _mem.tx_off = 0
+            if mem.duplex == 'off':
+                _mem.tx_off = 1
+
             # Set the channel width - remember we promote 20kHz channels to FM
-            # on import, so don't handle them here
+            # on import
+            # , so don't handle them here
             if mem.mode == 'FM':
                 _mem.channel_width = CHANNEL_WIDTH_25kHz
             elif mem.mode == 'NFM':
@@ -736,7 +781,7 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
             elif mem.power == POWER_LEVELS[1]:
                 _mem.txpower = TXPOWER_MED
             elif mem.power == POWER_LEVELS[2]:
-                _mem.txpower = TXPOWER_LOW
+                _mem.txpower = TXPOWER_HIGH
             else:
                 LOG.error('%s: set_mem: unhandled power level: %s' %
                           (mem.name, mem.power))
@@ -822,11 +867,44 @@ class AnyTone778UV(chirp_common.CloneModeRadio,
                 ctcss_code_val_to_bits(mem.rtone),
                 ctcss_code_val_to_bits(mem.ctone)))
 
-            # TODO set unknown defaults - hope that fixes Run time error 6,
-            # overflow, from AT_778UV tool
+            # set unknown defaults, based on reading memory set by vendor tool
             _mem.unknown1 = 0x00
             _mem.unknown6 = 0x00
             _mem.unknown7 = 0x00
             _mem.unknown8 = 0x00
             _mem.unknown9 = 0x00
             _mem.unknown10 = 0x00
+
+
+if has_future:
+    @directory.register
+    class AnyTone778UV(AnyTone778UVBase):
+        VENDOR = "AnyTone"
+        MODEL = "778UV"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'AT778UV': ['V200']}
+
+    @directory.register
+    class RetevisRT95(AnyTone778UVBase):
+        VENDOR = "Retevis"
+        MODEL = "RT95"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'RT95': ['V100']}
+
+    @directory.register
+    class CRTMicronUV(AnyTone778UVBase):
+        VENDOR = "CRT"
+        MODEL = "Micron UV"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'MICRON': ['V100']}
+
+    @directory.register
+    class MidlandDBR2500(AnyTone778UVBase):
+        VENDOR = "Midland"
+        MODEL = "DBR2500"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'DBR2500': ['V100']}
