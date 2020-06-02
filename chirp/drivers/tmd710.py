@@ -2071,8 +2071,8 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                             cmc += chr(255) + chr(0x04b) + chr(1) + \
                                   chr(0x032) + radio.get_mmap()[4:imgadr + 256]
                         elif blkn == 1:
-                            cmc += mht1 + radio.get_mmap()[imgadr + 5:imgadr
-                                                           + 256]
+                            cmc += mht1 + radio.get_mmap()[imgadr + 5:imgadr +
+                                                           256]
                     else:       # after first packet
                         cmc += radio.get_mmap()[imgadr:imgadr + 256]
                     resp0 = _command(radio.pipe, cmc, 6, W8S)
