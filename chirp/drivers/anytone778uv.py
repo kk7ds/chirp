@@ -502,7 +502,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                                 '->DTCS',
                                 '->Tone']
 
-        rf.memory_bounds = (0, 199)  # This radio supports memories 0-199
+        rf.memory_bounds = (1, 200)  # This radio supports memories 1-200
         # TODO update valid bands with based on radio response
         rf.valid_bands = [(144000000, 148000000),  # Supports 2-meters
                           (430000000, 450000000),  # Supports 70-centimeters
@@ -529,18 +529,19 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
     # Return a raw representation of the memory object, which
     # is very helpful for development
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        return repr(self._memobj.memory[number - 1])
 
     # Extract a high-level memory object from the low-level memory map
     # This is called to populate a memory in the UI
     def get_memory(self, number):
+        number -= 1
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[number]
         _mem_status = self._memobj.memory_status
 
         # Create a high-level memory object to return to the UI
         mem = chirp_common.Memory()
-        mem.number = number                 # Set the memory number
+        mem.number = number + 1           # Set the memory number
 
         # Check if this memory is present in the occupied list
         mem.empty = get_bitfield(_mem_status.occupied_bitfield, number) == 0
@@ -718,17 +719,17 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
     # This is called when a user edits a memory in the UI
     def set_memory(self, mem):
         # Get a low-level memory object mapped to the image
-        _mem = self._memobj.memory[mem.number]
+        _mem = self._memobj.memory[mem.number - 1]
         _mem_status = self._memobj.memory_status
 
         # set the occupied bitfield
         _mem_status.occupied_bitfield = \
-            set_bitfield(_mem_status.occupied_bitfield, mem.number,
+            set_bitfield(_mem_status.occupied_bitfield, mem.number - 1,
                          not mem.empty)
 
         # set the scan add bitfield
         _mem_status.scan_enabled_bitfield = \
-            set_bitfield(_mem_status.scan_enabled_bitfield, mem.number,
+            set_bitfield(_mem_status.scan_enabled_bitfield, mem.number - 1,
                          (not mem.empty) and (mem.skip != 'S'))
 
         if mem.empty:
