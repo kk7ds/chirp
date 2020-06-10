@@ -25,13 +25,13 @@
 # * Transmit power
 # * Channel width (25kHz and 12.5kHz)
 # * Retevis RT95, CRT Micron UV, and Midland DBR2500 radios
+# * Full range of frequencies for tx and rx, supported band read from radio
+#   during download, not verified on upload.  Radio will refuse to TX if out of
+#   band.
 #
 # Unsupported features
 # * VFO1, VFO2, and TRF memories
 # * custom CTCSS tones
-# * Full range of frequencies for tx and rx (limited to 144-148MHz and
-#   430-450MHz
-# * Band setting identification from radio
 # * Any non-memory radio settings
 # * Reverse, talkaround, scramble
 # * busy channel lock out
@@ -110,13 +110,35 @@ struct {
   u8 occupied_bitfield[32];
   u8 scan_enabled_bitfield[32];
 } memory_status;
+#seekto 0x3260;
+struct {
+  u8 vfoa_current_channel; // 0
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  u8 unknown4;
+  u8 unknown5;
+  u8 unknown6;
+  u8 scan_channel;        // 7
+  u8 unknown8_0:4,     // 8
+     scan_active:1,
+     unknown8_1:3;
+  u8 unknown9;
+  u8 unknowna;
+  u8 unknownb;
+  u8 unknownc;
+  u8 bandlimit;       // d
+  u8 unknownd;
+  u8 unknowne;
+  u8 unknownf;
+} radio_settings;
 '''
 
 # Format for the version messages returned by the radio
 VER_FORMAT = '''
 u8 hdr;
 char model[7];
-u8 band;
+u8 bandlimit;
 char version[6];
 u8 ack;
 '''
@@ -179,10 +201,20 @@ TONES_EN_NO_TONE = 0
 CHARSET_ASCII_PLUS = chirp_common.CHARSET_UPPER_NUMERIC + '- '
 
 # Band limits as defined by the band byte in ver_response, defined in Hz, for
-# VHF and UHF, # used for RX and TX. TODO: not used yet.
-BAND_LIMITS = {0x00: ((144e6, 148e6), (430e6, 440e6)),
-               0x01: ((134e6, 174e6), (400e6, 490e6)),
-               0x02: ((144e6, 146e6), (430e6, 440e6))}
+# VHF and UHF, used for RX and TX.
+BAND_LIMITS = {0x00: [(144000000, 148000000), (430000000, 440000000)],
+               0x01: [(134000000, 174000000), (400000000, 490000000)],
+               0x02: [(144000000, 146000000), (430000000, 440000000)]}
+
+
+# Get band limits from a band limit value
+def get_band_limits_Hz(limit_value):
+    if limit_value not in BAND_LIMITS:
+        limit_value = 0x01
+        LOG.warning('Unknown band limit value 0x%02x, default to 0x01')
+    bandlimitfrequencies = BAND_LIMITS[limit_value]
+    return bandlimitfrequencies
+
 
 # Calculate the checksum used in serial packets
 def checksum(message_bytes):
@@ -224,7 +256,8 @@ def cstring_to_py_string(cstring):
     return "".join(c for c in cstring if c != '\x00')
 
 
-# Check the radio version reported to see if it's one we support
+# Check the radio version reported to see if it's one we support,
+# returns bool version supported, and the band index
 def check_ver(ver_response, allowed_types):
     ''' Check the returned radio version is one we approve of '''
 
@@ -250,7 +283,7 @@ def check_ver(ver_response, allowed_types):
     else:
         raise errors.RadioError('Failed to parse version response')
 
-    return verok
+    return verok, int(resp.bandlimit)
 
 
 # Put the radio in programming mode, sending the initial command and checking
@@ -268,11 +301,14 @@ def enter_program_mode(radio):
     # read the radio ID string, make sure it matches one we know about
     ver_response = send_serial_command(serial, b'\x02')
 
-    if not check_ver(ver_response, radio.ALLOWED_RADIO_TYPES):
+    verok, bandlimit = check_ver(ver_response, radio.ALLOWED_RADIO_TYPES)
+    if not verok:
         exit_program_mode(radio)
         raise errors.RadioError(
             'Radio version not in allowed list for %s-%s: %s' %
             (radio.VENDOR, radio.MODEL, util.hexprint(ver_response)))
+
+    return bandlimit
 
 
 # Exit programming mode
@@ -351,7 +387,17 @@ def make_write_data_cmd(addr, data, datalen):
 # Upload a memory map to the radio
 def do_upload(radio):
     try:
-        enter_program_mode(radio)
+        bandlimit = enter_program_mode(radio)
+
+        if bandlimit != radio._memobj.radio_settings.bandlimit:
+            LOG.warning('radio and image bandlimits differ'
+                        ' some channels many not work'
+                        ' (img:0x%02x radio:0x%02x)' %
+                        (int(bandlimit),
+                         int(radio._memobj.radio_settings.bandlimit)))
+            LOG.warning('radio bands: %s' % get_band_limits_Hz(
+                         int(radio._memobj.radio_settings.bandlimit)))
+            LOG.warning('img bands: %s' % get_band_limits_Hz(bandlimit))
 
         serial = radio.pipe
 
@@ -503,10 +549,8 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                                 '->Tone']
 
         rf.memory_bounds = (1, 200)  # This radio supports memories 1-200
-        # TODO update valid bands with based on radio response
-        rf.valid_bands = [(144000000, 148000000),  # Supports 2-meters
-                          (430000000, 450000000),  # Supports 70-centimeters
-                          ]
+        rf.valid_bands = get_band_limits_Hz(
+            int(self._memobj.radio_settings.bandlimit))
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = [2.5, 5, 6.25, 10, 12.5, 20, 25, 30, 50]
