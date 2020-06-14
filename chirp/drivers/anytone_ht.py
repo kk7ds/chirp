@@ -430,6 +430,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
         rf.has_settings = True
         rf.has_bank = False
         rf.has_cross = True
+        rf.valid_tuning_steps = [2.5, 5, 6.25, 10, 12.5, 20, 25, 30, 50]
         rf.has_tuning_step = False
         rf.has_rx_dtcs = True
         rf.valid_skips = ["", "S"]
@@ -485,6 +486,12 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
             return mem
 
         mem.freq = int(_mem.freq) * 100
+
+        # compensate for 6.25 and 12.5 kHz tuning steps, add 500 Hz if needed
+        lastdigit = int(_mem.freq) % 10
+        if (lastdigit == 2 or lastdigit == 7):
+            mem.freq += 50
+
         mem.offset = int(_mem.offset) * 100
         mem.name = self.filter_name(str(_mem.name).rstrip())
         mem.duplex = DUPLEXES[_mem.duplex]
