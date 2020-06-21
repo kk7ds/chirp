@@ -72,12 +72,25 @@ u8   unknown2:4,           // 22 zero
 u8   secondDtcs:4,         // 23 second digit DTCS
      thirdDtcs:4;          // 23 third digit DTCS
 u8   digitalSquelch;       // 24 Digital code squelch setting
-u8   duplexOffset[3];      // 25-27 duplex offset freq
+lbcd duplexOffset[3];      // 25-27 duplex offset freq
 char destCall[8];          // 28-35 destination call sign
 char accessRepeaterCall[8];// 36-43 access repeater call sign
 char linkRepeaterCall[8];  // 44-51 gateway/link repeater call sign
 bbcd duplexSettings[47];   // repeat of 5-51 for duplex
 char name[16];             // 52-60 Name of station
+"""
+
+MEM_IC910_FORMAT = """
+u8   bank;                 // 1 bank number
+bbcd number[2];            // 2,3
+lbcd freq[5];              // 4-8 operating freq
+u8   mode;                 // 9 operating mode
+u8   filter;               // 10 filter
+u8   tmode:4,              // 11 tone
+     duplex:4;             // 11 duplex off/-/+
+bbcd rtone[3];             // 12-14 repeater tone freq
+bbcd ctone[3];             // 15-17 tone squelch setting
+lbcd duplexOffset[3];      // 18-20 duplex offset freq
 """
 
 mem_duptone_format = """
@@ -222,10 +235,39 @@ class IC7100MemFrame(BankMemFrame):
     FORMAT = MEM_IC7100_FORMAT
 
 
+class IC910MemFrame(BankMemFrame):
+    FORMAT = MEM_IC910_FORMAT
+
+
 class DupToneMemFrame(MemFrame):
     def get_obj(self):
         self._data = MemoryMap(str(self._data))
         return bitwise.parse(mem_duptone_format, self._data)
+
+
+class SpecialChannel(object):
+    """Info for special (named) channels"""
+
+    def __init__(self):
+        self.name = None
+        self.location = None
+        self.channel = None
+
+    def __repr__(self):
+        s = "SpecialChannel(name=%r, location=%r, channel=%r)"
+        return s % (self.name, self.location, self.channel)
+
+
+class BankSpecialChannel(SpecialChannel):
+    """Info for special (named) channels for radios with multiple banks"""
+
+    def __init__(self):
+        super(BankSpecialChannel, self).__init__()
+        self.bank = None
+
+    def __repr__(self):
+        s = "BankSpecialChannel(name=%r, location=%r, bank=%r, channel=%r)"
+        return s % (self.name, self.location, self.bank, self.channel)
 
 
 class IcomCIVRadio(icf.IcomLiveRadio):
@@ -245,11 +287,26 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         "DV",
     ]
 
+    # Unified modes where mode and filter are combined. See note at
+    # _unified_modes.
+    _UNIFIED_MODES = {
+        'FM': 'NFM',
+        'CW': 'NCW'
+    }
+
     def mem_to_ch_bnk(self, mem):
+        if self._adjust_bank_loc_start:
+            mem -= 1
         l, h = self._bank_index_bounds
         bank_no = (mem // (h - l + 1)) + l
         channel = mem % (h - l + 1) + l
         return (channel, bank_no)
+
+    def _is_special(self, number):
+        return False
+
+    def _get_special_info(self, number):
+        raise errors.RadioError("Radio does not support special channels")
 
     def _send_frame(self, frame):
         return frame.send(ord(self._model), 0xE0, self.pipe,
@@ -296,6 +353,22 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         # self._id = f.get_data()[0]
         self._rf = chirp_common.RadioFeatures()
 
+        # On some radios, the filter field is used to signify normal versus
+        # narrow modes, rather than being a distinct passband feature. As
+        # such, mode + filter comprises a "unified mode" value that can be
+        # mapped into a Chirp mode.
+        self._unified_modes = False
+
+        # Icom live radios with bank support present their memories to the
+        # user starting from 1. For some reason, IC-7000 and IC-7100 were
+        # implemented with the Chirp location starting from 0, so that the
+        # user must mentally adjust. While adding IC-910 support, allowance
+        # was made to provide a 1-based start, using the following setting.
+        # This is not currently applied to the IC-7000 or IC-7100 due to the
+        # inability to test, and also since changing it may cause issues if
+        # location limit keys have been saved in the user's config file.
+        self._adjust_bank_loc_start = False
+
         self._initialize()
 
     def get_features(self):
@@ -309,14 +382,24 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         return f
 
     def get_raw_memory(self, number):
+        LOG.debug("Getting %s (raw)" % number)
         f = self._classes["mem"]()
-        if self._rf.has_bank:
+        if self._is_special(number):
+            info = self._get_special_info(number)
+            LOG.debug("Special info: %s" % info)
+            ch = info.channel
+            if self._rf.has_bank:
+                bnk = info.bank
+        elif self._rf.has_bank:
             ch, bnk = self.mem_to_ch_bnk(number)
+        else:
+            ch = number
+        if self._rf.has_bank:
             f.set_location(ch, bnk)
             loc = "bank %i, channel %02i" % (bnk, ch)
         else:
-            f.set_location(number)
-            loc = "number %i" % number
+            f.set_location(ch)
+            loc = "number %i" % ch
         self._send_frame(f)
         f.read(self.pipe)
         if f.get_data() and f.get_data()[-1] == "\xFF":
@@ -329,6 +412,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 # change so we use a little math to calculate what bank a location
 # is in.  We can't change the bank a location is in so we just pass.
     def _get_bank(self, loc):
+        if self._adjust_bank_loc_start:
+            loc -= 1
         l, h = self._bank_index_bounds
         return loc // (h - l + 1)
 
@@ -336,19 +421,28 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         pass
 
     def get_memory(self, number):
-        LOG.debug("Getting %i" % number)
+        LOG.debug("Getting %s" % number)
         f = self._classes["mem"]()
-        if self._rf.has_bank:
-            ch, bnk = self.mem_to_ch_bnk(number)
-            f.set_location(ch, bnk)
-            LOG.debug("Bank %i, Channel %02i" % (bnk, ch))
-        else:
-            f.set_location(number)
-        self._send_frame(f)
-
         mem = chirp_common.Memory()
-        mem.number = number
-        mem.immutable = []
+        if self._is_special(number):
+            info = self._get_special_info(number)
+            LOG.debug("Special info: %s" % info)
+            if self._rf.has_bank:
+                f.set_location(info.channel, info.bank)
+            else:
+                f.set_location(info.channel)
+            mem.number = info.location
+            mem.extd_number = info.name
+            mem.immutable = ["number", "extd_number"]
+        else:
+            if self._rf.has_bank:
+                ch, bnk = self.mem_to_ch_bnk(number)
+                f.set_location(ch, bnk)
+                LOG.debug("Bank %i, Channel %02i" % (bnk, ch))
+            else:
+                f.set_location(number)
+            mem.number = number
+        self._send_frame(f)
 
         f = self._recv_frame(f)
         if len(f.get_data()) == 0:
@@ -388,6 +482,20 @@ class IcomCIVRadio(icf.IcomLiveRadio):
                 repr(memobj.mode),
             )
             raise
+        if self._unified_modes and memobj.filter == 2:
+            try:
+                # Adjust mode to its narrow variant
+                mem.mode = self._UNIFIED_MODES[mem.mode]
+            except KeyError:
+                LOG.error(
+                    "Bank %s location %s is set for mode %s with filter %s, "
+                    "but no known mode matches that combination.",
+                    int(memobj.bank),
+                    int(memobj.number),
+                    repr(memobj.mode),
+                    int(memobj.filter),
+                )
+                raise
 
         if self._rf.has_name:
             mem.name = str(memobj.name).rstrip()
@@ -421,10 +529,11 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             mem.duplex = "split"
             mem.offset = int(memobj.freq_tx)
             mem.immutable = []
+        elif hasattr(memobj, "duplexOffset"):
+            mem.offset = int(memobj.duplexOffset) * 100
         else:
             mem.immutable = ["offset"]
 
-        mem.extra = RadioSettingGroup("extra", "Extra")
         try:
             dig = RadioSetting("dig", "Digital",
                                RadioSettingValueBoolean(bool(memobj.dig)))
@@ -432,33 +541,46 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             pass
         else:
             dig.set_doc("Enable digital mode")
+            if not mem.extra:
+                mem.extra = RadioSettingGroup("extra", "Extra")
             mem.extra.append(dig)
 
-        options = ["Wide", "Mid", "Narrow"]
-        try:
-            fil = RadioSetting(
-                "filter", "Filter",
-                RadioSettingValueList(options,
-                                      options[memobj.filter - 1]))
-        except AttributeError:
-            pass
-        else:
-            fil.set_doc("Filter settings")
-            mem.extra.append(fil)
+        if not self._unified_modes:
+            options = ["Wide", "Mid", "Narrow"]
+            try:
+                fil = RadioSetting(
+                    "filter", "Filter",
+                    RadioSettingValueList(options,
+                                          options[memobj.filter - 1]))
+            except AttributeError:
+                pass
+            else:
+                fil.set_doc("Filter settings")
+                if not mem.extra:
+                    mem.extra = RadioSettingGroup("extra", "Extra")
+                mem.extra.append(fil)
 
         return mem
 
     def set_memory(self, mem):
-        LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
-        if self._rf.has_bank:
+        LOG.debug("Setting %s(%s)" % (mem.number, mem.extd_number))
+        f = self._get_template_memory()
+        if self._is_special(mem.number):
+            info = self._get_special_info(mem.number)
+            LOG.debug("Special info: %s" % info)
+            ch = info.channel
+            if self._rf.has_bank:
+                bnk = info.bank
+        elif self._rf.has_bank:
             ch, bnk = self.mem_to_ch_bnk(mem.number)
             LOG.debug("Bank %i, Channel %02i" % (bnk, ch))
-        f = self._get_template_memory()
+        else:
+            ch = mem.number
         if mem.empty:
             if self._rf.has_bank:
                 f.set_location(ch, bnk)
             else:
-                f.set_location(mem.number)
+                f.set_location(ch)
             LOG.debug("Making %i empty" % mem.number)
             f.make_empty()
             self._send_frame(f)
@@ -479,7 +601,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             memobj.bank = bnk
             memobj.number = ch
         else:
-            memobj.number = mem.number
+            memobj.number = ch
         if mem.skip == "S":
             memobj.skip = 0
         else:
@@ -488,7 +610,16 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             except KeyError:
                 pass
         memobj.freq = int(mem.freq)
-        memobj.mode = self._MODES.index(mem.mode)
+        mode = mem.mode
+        if self._unified_modes:
+            lookup = [
+                k for k, v in self._UNIFIED_MODES.items() if v == mode]
+            if lookup:
+                mode = lookup[0]
+                memobj.filter = 2
+            else:
+                memobj.filter = 1
+        memobj.mode = self._MODES.index(mode)
         if self._rf.has_name:
             name_length = len(memobj.name.get_value())
             memobj.name = mem.name.ljust(name_length)[:name_length]
@@ -524,6 +655,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             memobj.dtcs_tx = memobj.dtcs
         elif self._rf.valid_duplexes:
             memobj.duplex = self._rf.valid_duplexes.index(mem.duplex)
+            if hasattr(memobj, "duplexOffset"):
+                memobj.duplexOffset = int(mem.offset) // 100
 
         for setting in mem.extra:
             if setting.get_name() == "filter":
@@ -660,11 +793,114 @@ class Icom746Radio(IcomCIVRadio):
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
         self._rf.memory_bounds = (1, 99)
 
+
+@directory.register
+class Icom910Radio(IcomCIVRadio):
+    """Icom IC-910"""
+    MODEL = "IC-910"
+    BAUD_RATE = 19200
+    _model = "\x60"
+    _template = 100
+
+    _num_banks = 3		# Banks for 2m, 70cm, 23cm
+    _bank_index_bounds = (1, 99)
+    _bank_class = icf.IcomBank
+
+    _SPECIAL_CHANNELS = {
+        "1A": 100,
+        "1b": 101,
+        "2A": 102,
+        "2b": 103,
+        "3A": 104,
+        "3b": 105,
+        "C":  106,
+    }
+    _SPECIAL_CHANNELS_REV = {v: k for k, v in _SPECIAL_CHANNELS.items()}
+
+    _SPECIAL_BANKS = {
+        "2m":   1,
+        "70cm": 2,
+        "23cm": 3,
+    }
+    _SPECIAL_BANKS_REV = {v: k for k, v in _SPECIAL_BANKS.items()}
+
+    def _get_special_names(self, band):
+        return sorted([band + "-" + key
+                       for key in self._SPECIAL_CHANNELS.keys()])
+
+    def _is_special(self, number):
+        return number >= 1000 or isinstance(number, str)
+
+    def _get_special_info(self, number):
+        info = BankSpecialChannel()
+        if isinstance(number, str):
+            info.name = number
+            (band_name, chan_name) = number.split("-")
+            info.bank = self._SPECIAL_BANKS[band_name]
+            info.channel = self._SPECIAL_CHANNELS[chan_name]
+            info.location = info.bank * 1000 + info.channel
+        else:
+            info.location = number
+            (info.bank, info.channel) = divmod(number, 1000)
+            band_name = self._SPECIAL_BANKS_REV[info.bank]
+            chan_name = self._SPECIAL_CHANNELS_REV[info.channel]
+            info.name = band_name + "-" + chan_name
+        return info
+
+    # The IC-910 has a bank of memories for each band. The 23cm band is only
+    # available when the optional UX-910 unit is installed, but there is no
+    # direct means of detecting its presence. Instead, attempt to access the
+    # first memory in the 23cm bank. If that's successful, the unit is there,
+    # and we can present all 3 banks to the user. Otherwise, the unit is not
+    # installed, so we present 2 banks to the user, for 2m and 70cm.
+    def _detect_23cm_unit(self):
+        f = IC910MemFrame()
+        f.set_location(1, 3)  # First memory in 23cm bank
+        self._send_frame(f)
+        f.read(self.pipe)
+        if f._cmd == 0xFA:  # Error code lands in command field
+            self._num_banks = 2
+        LOG.debug("UX-910 unit is %sinstalled" %
+                  ("not " if self._num_banks == 2 else ""))
+        return self._num_banks == 3
+
+    def _initialize(self):
+        self._classes["mem"] = IC910MemFrame
+        self._has_23cm_unit = self._detect_23cm_unit()
+        self._rf.has_bank = True
+        self._rf.has_dtcs_polarity = False
+        self._rf.has_dtcs = False
+        self._rf.has_ctone = True
+        self._rf.has_offset = True
+        self._rf.has_name = False
+        self._rf.has_tuning_step = False
+        self._rf.valid_modes = ["LSB", "USB", "CW", "NCW", "FM", "NFM"]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL"]
+        self._rf.valid_duplexes = ["", "-", "+"]
+        self._rf.valid_bands = [(136000000, 174000000),
+                                (420000000, 480000000)]
+        self._rf.valid_tuning_steps = []
+        self._rf.valid_skips = []
+        self._rf.valid_special_chans = (self._get_special_names("2m") +
+                                        self._get_special_names("70cm"))
+        self._rf.memory_bounds = (1, 99 * self._num_banks)
+
+        if self._has_23cm_unit:
+            self._rf.valid_bands.append((1240000000, 1320000000))
+            self._rf.valid_special_chans += self._get_special_names("23cm")
+
+        # Combine mode and filter into unified mode
+        self._unified_modes = True
+
+        # Use Chirp locations starting with 1
+        self._adjust_bank_loc_start = True
+
 CIV_MODELS = {
     (0x76, 0xE0): Icom7200Radio,
     (0x88, 0xE0): Icom7100Radio,
     (0x70, 0xE0): Icom7000Radio,
     (0x46, 0xE0): Icom746Radio,
+    (0x60, 0xE0): Icom910Radio,
 }
 
 
