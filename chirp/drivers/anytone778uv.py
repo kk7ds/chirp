@@ -549,8 +549,12 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                                 '->Tone']
 
         rf.memory_bounds = (1, 200)  # This radio supports memories 1-200
-        rf.valid_bands = get_band_limits_Hz(
-            int(self._memobj.radio_settings.bandlimit))
+        if self._memobj:
+            rf.valid_bands = get_band_limits_Hz(
+                int(self._memobj.radio_settings.bandlimit))
+        else:
+            # If we're asked without memory loaded, assume the most permissive
+            rf.valid_bands = get_band_limits_Hz(1)
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = [2.5, 5, 6.25, 10, 12.5, 20, 25, 30, 50]
