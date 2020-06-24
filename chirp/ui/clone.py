@@ -258,7 +258,7 @@ class CloneThread(threading.Thread):
             emsg = None
         except Exception, e:
             common.log_exception()
-            LOG.error(_("Clone failed: {error}").format(error=e))
+            LOG.error("Clone failed: {error}".format(error=e))
             emsg = e
 
         gobject.idle_add(self.__progw.hide)

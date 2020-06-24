@@ -338,7 +338,7 @@ class MemoryEditor(common.Editor):
         iter = self.store.get_iter(path)
         if not self.store.get(iter, self.col("_filled"))[0] and \
                 self.store.get(iter, self.col(_("Frequency")))[0] == 0:
-            LOG.error(_("Editing new item, taking defaults"))
+            LOG.error("Editing new item, taking defaults")
             self.insert_new(iter)
 
         colnum = self.col(cap)
@@ -360,7 +360,7 @@ class MemoryEditor(common.Editor):
             new = funcs[cap](rend, path, new, colnum)
 
         if new is None:
-            LOG.error(_("Bad value for {col}: {val}").format(col=cap, val=new))
+            LOG.error("Bad value for {col}: {val}".format(col=cap, val=new))
             return
 
         if self.store.get_column_type(colnum) == TYPE_INT:
