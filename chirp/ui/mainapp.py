@@ -537,15 +537,25 @@ of file.
                 self.menu_ag.remove_action(old_action)
 
             file_basename = os.path.basename(fname).replace("_", "__")
-            action = gtk.Action(
-                action_name, "_%i. %s" % (i + 1, file_basename),
-                _("Open recent file {name}").format(name=fname), "")
+            widget_name = action_name
+            widget_label = "_%i. %s" % (i + 1, file_basename)
+            widget_tip = _("Open recent file") + (" {name}").format(name=fname)
+            action = gtk.Action(action_name, widget_label, widget_tip, "")
+
             action.connect("activate", lambda a, f: self.do_open(f), fname)
             mid = self.menu_uim.new_merge_id()
             self.menu_uim.add_ui(mid, path,
                                  action_name, action_name,
                                  gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
+
+            widget_uim_path = path + "/" + widget_name
+            try:
+                widget_item = self.menu_uim.get_widget(widget_uim_path)
+                widget_item.set_tooltip_text(widget_tip)
+            except:
+                pass
+
             i += 1
 
     def record_recent_file(self, filename):
