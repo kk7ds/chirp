@@ -168,6 +168,7 @@ class EditorSet(gtk.VBox):
         self.modified = (tempname is not None)
         if tempname:
             self.filename = tempname
+        self.tooltip_filename = None
         self.update_tab()
 
     def make_label(self):
@@ -199,6 +200,10 @@ class EditorSet(gtk.VBox):
             text = fn
 
         self.text_label.set_text(self.radio.get_name() + ": " + text)
+        if self.filename != self.tooltip_filename:
+            self.text_label.set_tooltip_text(self.filename)
+            self.tooltip_filename = self.filename
+
 
     def save(self, fname=None):
         if not fname:
