@@ -286,7 +286,7 @@ BASETYPE_UV82 = ["US2S2", "B82S", "BF82", "N82-2", "N822"]
 BASETYPE_BJ55 = ["BJ55"]  # needed for for the Baojie UV-55 in bjuv55.py
 BASETYPE_UV6 = ["BF1", "UV6"]
 BASETYPE_KT980HP = ["BFP3V3 B"]
-BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3", "BFT"]
+BASETYPE_F8HP = ["BFP3V3 F", "N5R-3", "N5R3", "F5R3", "BFT", "N5RV"]
 BASETYPE_UV82HP = ["N82-3", "N823", "N5R2"]
 BASETYPE_UV82X3 = ["HN5RV01"]
 BASETYPE_LIST = BASETYPE_UV5R + BASETYPE_F11 + BASETYPE_UV82 + \
@@ -717,6 +717,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
     _vhf_range = (136000000, 174000000)
     _220_range = (220000000, 260000000)
     _uhf_range = (400000000, 520000000)
+    _tri_power = False
     _mem_params = (0x1828  # poweron_msg offset
                    )
     # offset of fw version in image file
@@ -917,7 +918,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         if not _mem.scan:
             mem.skip = "S"
 
-        if self.MODEL in ("KT-980HP", "BF-F8HP", "UV-82HP"):
+        if self._tri_power:
             levels = UV5R_POWER_LEVELS3
         else:
             levels = UV5R_POWER_LEVELS
@@ -1038,7 +1039,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
         _mem.wide = mem.mode == "FM"
 
         if mem.power:
-            if self.MODEL in ("KT-980HP", "BF-F8HP", "UV-82HP"):
+            if self._tri_power:
                 levels = [str(l) for l in UV5R_POWER_LEVELS3]
                 _mem.lowpower = levels.index(str(mem.power))
             else:
@@ -1478,7 +1479,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio,
             rs.set_apply_callback(apply_offset, _vfob)
             workmode.append(rs)
 
-            if self.MODEL in ("KT-980HP", "BF-F8HP", "UV-82HP"):
+            if self._tri_power:
                 rs = RadioSetting("vfoa.txpower3", "VFO A Power",
                                   RadioSettingValueList(
                                       TXPOWER3_LIST,
@@ -1858,6 +1859,7 @@ class IntekKT980Radio(BaofengUV5R):
     _idents = [UV5R_MODEL_291]
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
+    _tri_power = True
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
@@ -1874,17 +1876,23 @@ class ROGA5SAlias(chirp_common.Alias):
     MODEL = "GA-5S"
 
 
+class UV5XPAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-5XP"
+
+
 @directory.register
 class BaofengBFF8HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP"
-    ALIASES = [RT5_TPAlias, ROGA5SAlias]
+    ALIASES = [RT5_TPAlias, ROGA5SAlias, UV5XPAlias]
     _basetype = BASETYPE_F8HP
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_A58
                ]
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
+    _tri_power = True
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
@@ -1904,6 +1912,7 @@ class BaofengUV82HPRadio(BaofengUV5R):
     _idents = [UV5R_MODEL_UV82]
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 521000000)
+    _tri_power = True
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
