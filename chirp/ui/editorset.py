@@ -204,7 +204,6 @@ class EditorSet(gtk.VBox):
             self.text_label.set_tooltip_text(self.filename)
             self.tooltip_filename = self.filename
 
-
     def save(self, fname=None):
         if not fname:
             fname = self.filename
