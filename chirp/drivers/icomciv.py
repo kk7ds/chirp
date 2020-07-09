@@ -339,6 +339,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             self._willecho = self._detect_echo()
             LOG.debug("Interface echo: %s" % self._willecho)
             self.pipe.timeout = 1
+        else:
+            self._willecho = False
 
         # f = Frame()
         # f.set_command(0x19, 0x00)
@@ -854,6 +856,8 @@ class Icom910Radio(IcomCIVRadio):
     # and we can present all 3 banks to the user. Otherwise, the unit is not
     # installed, so we present 2 banks to the user, for 2m and 70cm.
     def _detect_23cm_unit(self):
+        if not self.pipe:
+            return False
         f = IC910MemFrame()
         f.set_location(1, 3)  # First memory in 23cm bank
         self._send_frame(f)
