@@ -61,8 +61,7 @@ u8 checksum;
 """
 
 
-# FIXME: This driver causes a detection conflict with ftm3200
-# @directory.register
+@directory.register
 class FTM7250Radio(ft1d.FT1Radio):
     """Yaesu FTM-7250D"""
     BAUD_RATE = 38400
@@ -70,7 +69,7 @@ class FTM7250Radio(ft1d.FT1Radio):
     MODEL = "FTM-7250D"
     VARIANT = "R"
 
-    _model = "AH52N"
+    _model = "AH75M"
     _memsize = 65227
     _block_lengths = [10, 65217]
     _has_vibrate = False
