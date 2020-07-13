@@ -109,6 +109,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
                     chirp_common.PowerLevel("Med",  watts=3.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
     _vhf_range = (130000000, 180000000)
+    _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 521000000)
     VALID_BANDS = [_vhf_range,
                    _uhf_range]
@@ -899,7 +900,7 @@ class BFA58S(WP970I):
     def get_features(self):
         rf = WP970I.get_features(self)
         rf.valid_bands = [self._vhf_range,
-                          (200000000, 260000000),
+                          self._vhf2_range,
                           self._uhf_range]
         return rf
 
