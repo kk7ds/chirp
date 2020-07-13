@@ -83,6 +83,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
     VENDOR = "Baofeng"
     MODEL = "WP970I"
 
+    _tri_band = False
     _fileid = []
     _magic = [MSTRING_WP970I, ]
     _magic_response_length = 8
@@ -303,6 +304,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
     struct {
       struct limit vhf;
       struct limit uhf;
+      struct limit vhf2;
     } limits;
 
     """
@@ -591,6 +593,19 @@ class WP970I(baofeng_common.BaofengCommonHT):
                           RadioSettingValueInteger(
                               lower, upper, _mem.limits.vhf.upper))
         other.append(rs)
+
+        if self._tri_band:
+            lower = 200
+            upper = 260
+            rs = RadioSetting("limits.vhf2.lower", "VHF2 Lower Limit (MHz)",
+                              RadioSettingValueInteger(
+                                  lower, upper, _mem.limits.vhf2.lower))
+            other.append(rs)
+
+            rs = RadioSetting("limits.vhf2.upper", "VHF2 Upper Limit (MHz)",
+                              RadioSettingValueInteger(
+                                  lower, upper, _mem.limits.vhf2.upper))
+            other.append(rs)
 
         lower = 400
         upper = 520
@@ -896,6 +911,7 @@ class BFA58S(WP970I):
     VENDOR = "Baofeng"
     MODEL = "BF-A58S"
     ALIASES = [UV82IIIAlias]
+    _tri_band = True
 
     def get_features(self):
         rf = WP970I.get_features(self)
