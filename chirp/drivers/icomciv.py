@@ -857,7 +857,7 @@ class Icom910Radio(IcomCIVRadio):
     # installed, so we present 2 banks to the user, for 2m and 70cm.
     def _detect_23cm_unit(self):
         if not self.pipe:
-            return False
+            return True
         f = IC910MemFrame()
         f.set_location(1, 3)  # First memory in 23cm bank
         self._send_frame(f)
