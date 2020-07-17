@@ -1904,10 +1904,16 @@ class BaofengBFF8HPRadio(BaofengUV5R):
         return False
 
 
+class TenwayUV82Pro(chirp_common.Alias):
+    VENDOR = 'Tenway'
+    MODEL = 'UV-82 Pro'
+
+
 @directory.register
 class BaofengUV82HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "UV-82HP"
+    ALIASES = [TenwayUV82Pro]
     _basetype = BASETYPE_UV82HP
     _idents = [UV5R_MODEL_UV82]
     _vhf_range = (136000000, 175000000)
