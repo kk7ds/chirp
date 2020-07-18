@@ -701,8 +701,7 @@ def model_match(cls, data):
         return False
 
 
-class BaofengUV5R(chirp_common.CloneModeRadio,
-                  chirp_common.ExperimentalRadio):
+class BaofengUV5R(chirp_common.CloneModeRadio):
 
     """Baofeng UV-5R"""
     VENDOR = "Baofeng"
