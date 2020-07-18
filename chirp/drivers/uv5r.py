@@ -1930,10 +1930,16 @@ class BaofengUV82HPRadio(BaofengUV5R):
         return False
 
 
+class TDUV5RRadio(chirp_common.Alias):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-UV5R TriPower"
+
+
 @directory.register
 class RadioddityUV5RX3Radio(BaofengUV5R):
     VENDOR = "Radioddity"
     MODEL = "UV-5RX3"
+    ALIASES = [TDUV5RRadio]
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)

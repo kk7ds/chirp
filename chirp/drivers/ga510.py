@@ -202,12 +202,18 @@ PTTID = ['Off', 'BOT', 'EOT', 'Both']
 SIGNAL = [str(i) for i in range(1, 16)]
 
 
+class TDH6Radio(chirp_common.Alias):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H6"
+
+
 @directory.register
 class RadioddityGA510Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Radioddity'
     MODEL = 'GA-510'
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
+    ALIASES = [TDH6Radio]
 
     def sync_in(self):
         try:
