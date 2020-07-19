@@ -487,7 +487,7 @@ DUPLEX_AUTO_EU = [
     [145600000, 145800000, 2],
     [438200000, 439425000, 2]]
 
-SKIPS = ["", "S"]
+SKIPS = ["S", ""]
 
 POWER_LEVELS = [
     chirp_common.PowerLevel("High", watts=5.0),  # high must be first (0)
