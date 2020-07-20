@@ -935,7 +935,7 @@ if has_future:
         MODEL = "778UV"
         # Allowed radio types is a dict keyed by model of a list of version
         # strings
-        ALLOWED_RADIO_TYPES = {'AT778UV': ['V200']}
+        ALLOWED_RADIO_TYPES = {'AT778UV': ['V100', 'V200']}
 
     @directory.register
     class RetevisRT95(AnyTone778UVBase):
