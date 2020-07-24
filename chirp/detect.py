@@ -16,10 +16,18 @@
 import serial
 import logging
 
-from chirp import errors, directory
+from chirp import chirp_common, errors, directory
 from chirp.drivers import ic9x_ll, icf, kenwood_live, icomciv
 
 LOG = logging.getLogger(__name__)
+
+
+class DetectorRadio(chirp_common.Radio):
+    """Minimal radio for model detection"""
+    MUNCH_CLONE_RESP = False
+
+    def get_payload(self, data, raw, checksum):
+        return data
 
 
 def _icom_model_data_to_rclass(md):
@@ -40,7 +48,7 @@ def _detect_icom_radio(ser):
 
     try:
         ser.baudrate = 9600
-        md = icf.get_model_data(ser)
+        md = icf.get_model_data(DetectorRadio(ser))
         return _icom_model_data_to_rclass(md)
     except errors.RadioError, e:
         LOG.error("_detect_icom_radio: %s", e)
