@@ -1,5 +1,6 @@
 # Copyright 2018 Rhett Robinson <rrhett@gmail.com>
 # Added Settings support, 6/2019 Rick DeWitt <aa0rd@yahoo.com>
+# 7/2020: Fixed reversed E:* / F:# DTMF codes Issue #8159
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -528,11 +529,11 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             """Convert u8 DTMF array to a string: NOT a callback."""
             stx = ""
             for i in range(0, 24):    # unpack up to ff
-                if codestr[i] != 0xff:
+                if codestr[i] != 0xff:      # Issue  8159 fix
                     if codestr[i] == 0x0E:
-                        stx += "#"
-                    elif codestr[i] == 0x0F:
                         stx += "*"
+                    elif codestr[i] == 0x0F:
+                        stx += "#"
                     else:
                         stx += format(int(codestr[i]), '0X')
             return stx
@@ -550,10 +551,10 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
                 if stx[j] in DTMF_CHARS:
                     sty += stx[j]
             for j in range(0, 24):
-                if j < len(sty):
-                    if sty[j] == "#":
+                if j < len(sty):        # Issue 8159 fix
+                    if sty[j] == "*":
                         chrv = 0xE
-                    elif sty[j] == "*":
+                    elif sty[j] == "#":
                         chrv = 0xF
                     else:
                         chrv = int(sty[j], 16)
