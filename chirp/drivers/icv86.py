@@ -63,7 +63,7 @@ struct {
      tuning_step:3;
   u8 reserved5:2,
      mode:1,
-     reserved6:1,
+     rev:1,
      duplex:2,
      reserved7:2;
   u8 reserved8:2,
@@ -224,7 +224,7 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         else:
             mem.extd_number = SPECIAL_REV[number]
             mem.immutable = ["name", "number", "extd_number", "skip"]
-            _usd = self._memobj.used[byte] if (number < 206) else None
+            _usd = self._memobj.used[byte] if (number <= 206) else None
             _skp = None
 
         if _usd is not None and (_usd & bit):
@@ -245,10 +245,15 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         mem.tmode = TMODES[_mem.tmode]
         mem.power = POWER_LEVELS[_mem.power]
 
+        # Extras
+        mem.extra = RadioSettingGroup("extra", "Extra")
+        rev = RadioSetting("rev", "Reverse duplex",
+                    RadioSettingValueBoolean(bool(_mem.rev)))
+        rev.set_doc("Reverse duplex")
+        mem.extra.append(rev)
+
         if _skp is not None:
             mem.skip = (_skp & bit) and "S" or ""
-        else:
-            mem.skip = ""
 
         return mem
 
@@ -271,7 +276,7 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         byte = int(mem.number / 8)
 
         _mem = self._memobj.memory[mem.number]
-        _usd = self._memobj.used[byte] if mem.number < 206 else None
+        _usd = self._memobj.used[byte] if mem.number <= 206 else None
         _skp = self._memobj.skips[byte] if mem.number < 200 else None
 
         assert(_mem)
@@ -310,6 +315,9 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.power = POWER_LEVELS.index(mem.power)
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
         if _skp is not None:
             if mem.skip == "S":
