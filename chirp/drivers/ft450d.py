@@ -1,4 +1,5 @@
 # Copyright 2018 by Rick DeWitt (aa0rd@yahoo.com>
+# Bug fix for issue #8183, invalid APO Off value
 # Thanks to Filippi Marco <iz3gme.marco@gmail.com> for Yaesu processes
 #
 # This program is free software: you can redistribute it and/or modify
@@ -1007,9 +1008,9 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                           RadioSettingValueBoolean(_settings.ext_mnu))
         rs.set_doc("Enables access to extended settings in the radio")
         tab.append(rs)
-
+        # Issue #8183 bugfix
         rs = RadioSetting("apo", "APO time (Hrs)",
-                          RadioSettingValueInteger(1, 12, _settings.apo))
+                          RadioSettingValueInteger(0, 12, _settings.apo))
         tab.append(rs)
 
         options = ["%i" % i for i in range(0, 21)]
