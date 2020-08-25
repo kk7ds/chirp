@@ -231,6 +231,7 @@ KT7900D_fp1 = "VC4284"
 KT7900D_fp2 = "VC4264"
 KT7900D_fp3 = "VC4114"
 KT7900D_fp4 = "VC4104"
+KT7900D_fp5 = "VC4254"
 
 # QB25 (quad band) - a clone of KT7900D
 QB25_fp = "QB-25"
@@ -3821,7 +3822,7 @@ class KT7900D(BTechColor):
     _350_range = (350000000, 371000000)
     _magic = MSTRING_KT8900D
     _fileid = [KT7900D_fp, KT7900D_fp1, KT7900D_fp2, KT7900D_fp3, KT7900D_fp4,
-               QB25_fp, ]
+               KT7900D_fp5, QB25_fp, ]
     # Clones
     ALIASES = [SKT8900D, QB25, ]
 
