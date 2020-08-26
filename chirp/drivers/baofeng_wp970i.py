@@ -897,6 +897,7 @@ class GT3WP(WP970I):
     """Baofeng GT-3WP"""
     VENDOR = "Baofeng"
     MODEL = "GT-3WP"
+    LENGTH_NAME = 7
 
 
 @directory.register
