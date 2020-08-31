@@ -576,10 +576,11 @@ def _do_download(radio):
         _do_status(radio, i)
     _do_status(radio, radio.get_memsize())
     LOG.debug("done.")
-    LOG.debug("downloading aux block...")
-    # Auxiliary block starts at 0x1ECO (?)
-    for i in range(0x1EC0, 0x2000, 0x40):
-        data += _read_block(radio, i, 0x40, False)
+    if radio._aux_block:
+        LOG.debug("downloading aux block...")
+        # Auxiliary block starts at 0x1ECO (?)
+        for i in range(0x1EC0, 0x2000, 0x40):
+            data += _read_block(radio, i, 0x40, False)
 
     if append_model:
         data += radio.MODEL.ljust(8)
@@ -650,6 +651,9 @@ def _do_upload(radio):
                "of the radio (%s).")
         raise errors.RadioError(msg % (image_version, radio_version))
 
+    if not radio._aux_block:
+        image_matched_radio = True
+
     # Main block
     for start_addr, end_addr in ranges_main:
         for i in range(start_addr, end_addr, 0x10):
@@ -716,6 +720,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _vhf_range = (136000000, 174000000)
     _220_range = (220000000, 260000000)
     _uhf_range = (400000000, 520000000)
+    _aux_block = True
     _tri_power = False
     _mem_params = (0x1828  # poweron_msg offset
                    )
@@ -1297,30 +1302,30 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             # Old image, without aux block
             return group
 
-        other = RadioSettingGroup("other", "Other Settings")
-        group.append(other)
-
-        def _filter(name):
-            filtered = ""
-            for char in str(name):
-                if char in chirp_common.CHARSET_ASCII:
-                    filtered += char
-                else:
-                    filtered += " "
-            return filtered
-
-        _msg = self._memobj.firmware_msg
-        val = RadioSettingValueString(0, 7, _filter(_msg.line1))
-        val.set_mutable(False)
-        rs = RadioSetting("firmware_msg.line1", "Firmware Message 1", val)
-        other.append(rs)
-
-        val = RadioSettingValueString(0, 7, _filter(_msg.line2))
-        val.set_mutable(False)
-        rs = RadioSetting("firmware_msg.line2", "Firmware Message 2", val)
-        other.append(rs)
-
         if self.MODEL != "UV-6":
+            other = RadioSettingGroup("other", "Other Settings")
+            group.append(other)
+
+            def _filter(name):
+                filtered = ""
+                for char in str(name):
+                    if char in chirp_common.CHARSET_ASCII:
+                        filtered += char
+                    else:
+                        filtered += " "
+                return filtered
+
+            _msg = self._memobj.firmware_msg
+            val = RadioSettingValueString(0, 7, _filter(_msg.line1))
+            val.set_mutable(False)
+            rs = RadioSetting("firmware_msg.line1", "Firmware Message 1", val)
+            other.append(rs)
+
+            val = RadioSettingValueString(0, 7, _filter(_msg.line2))
+            val.set_mutable(False)
+            rs = RadioSetting("firmware_msg.line2", "Firmware Message 2", val)
+            other.append(rs)
+
             _msg = self._memobj.sixpoweron_msg
             rs = RadioSetting("sixpoweron_msg.line1", "6+Power-On Message 1",
                               RadioSettingValueString(
@@ -1646,7 +1651,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                           RadioSettingValueInteger(0, 50, _settings.pttlt))
         dtmf.append(rs)
 
-        if not self._is_orig():
+        if not self._is_orig() and self._aux_block:
             service = RadioSettingGroup("service", "Service Settings")
             group.append(service)
 
@@ -1827,6 +1832,7 @@ class BaofengUV6Radio(BaofengUV5R):
     _idents = [UV5R_MODEL_UV6,
                UV5R_MODEL_UV6_ORIG
                ]
+    _aux_block = False
 
     def get_features(self):
         rf = BaofengUV5R.get_features(self)
