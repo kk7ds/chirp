@@ -112,8 +112,8 @@ MEM_FORMAT = """
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
-  ul16 txtone;
   ul16 rxtone;
+  ul16 txtone;
   u8 signal;
   u8 unknown1:6,
      pttid:2;
