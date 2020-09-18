@@ -286,7 +286,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "S", "P"]
 DTMF_CHARS = list("0123456789ABCD*#")
-CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
+CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ !`o$%&'()*+,-./|;/=>?@[u]^_"
 SPECIALS = ["%s%d" % (c, i + 1) for i in range(0, 50) for c in ('L', 'U')]
 
 
