@@ -152,9 +152,7 @@ struct {
 #seekto 0x0F10;
 struct {
   u8 freq[8];
-  u8 unknown1;
-  u8 offset[4];
-  u8 unknown2;
+  u8 offset[6];
   ul16 rxtone;
   ul16 txtone;
   u8 unused1:7,
@@ -176,9 +174,7 @@ struct {
 #seekto 0x0F30;
 struct {
   u8 freq[8];
-  u8 unknown1;
-  u8 offset[4];
-  u8 unknown2;
+  u8 offset[6];
   ul16 rxtone;
   ul16 txtone;
   u8 unused1:7,
@@ -1462,25 +1458,25 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 real_offset = 0
                 for byte in bytes:
                     real_offset = (real_offset * 10) + byte
-                return chirp_common.format_freq(real_offset * 10000)
+                return chirp_common.format_freq(real_offset * 1000)
 
             def apply_offset(setting, obj):
-                value = chirp_common.parse_freq(str(setting.value)) / 10000
-                for i in range(3, -1, -1):
+                value = chirp_common.parse_freq(str(setting.value)) / 1000
+                for i in range(5, -1, -1):
                     obj.offset[i] = value % 10
                     value /= 10
 
             val1a = RadioSettingValueString(
                 0, 10, convert_bytes_to_offset(_vfoa.offset))
             rs = RadioSetting("vfoa.offset",
-                              "VFO A Offset (0.00-69.95)", val1a)
+                              "VFO A Offset (0.0-999.999)", val1a)
             rs.set_apply_callback(apply_offset, _vfoa)
             workmode.append(rs)
 
             val1b = RadioSettingValueString(
                 0, 10, convert_bytes_to_offset(_vfob.offset))
             rs = RadioSetting("vfob.offset",
-                              "VFO B Offset (0.00-69.95)", val1b)
+                              "VFO B Offset (0.0-999.999)", val1b)
             rs.set_apply_callback(apply_offset, _vfob)
             workmode.append(rs)
 
