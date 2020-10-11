@@ -1768,15 +1768,10 @@ class A5RAlias(chirp_common.Alias):
     MODEL = "A-5R"
 
 
-class TenwayUV5RPro(chirp_common.Alias):
-    VENDOR = 'Tenway'
-    MODEL = 'UV-5R Pro'
-
-
 @directory.register
 class BaofengUV5RGeneric(BaofengUV5R):
     ALIASES = [UV5XAlias, RT5RAlias, RT5RVAlias, RT5Alias, RH5RAlias,
-               ROUV5REXAlias, A5RAlias, TenwayUV5RPro]
+               ROUV5REXAlias, A5RAlias]
 
 
 @directory.register
@@ -1888,11 +1883,17 @@ class TSTIF8Alias(chirp_common.Alias):
     MODEL = "TI-F8+"
 
 
+class TenwayUV5RPro(chirp_common.Alias):
+    VENDOR = 'Tenway'
+    MODEL = 'UV-5R Pro'
+
+
 @directory.register
 class BaofengBFF8HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP"
-    ALIASES = [RT5_TPAlias, ROGA5SAlias, UV5XPAlias, TSTIF8Alias]
+    ALIASES = [RT5_TPAlias, ROGA5SAlias, UV5XPAlias, TSTIF8Alias,
+               TenwayUV5RPro]
     _basetype = BASETYPE_F8HP
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_A58
