@@ -203,7 +203,7 @@ CHARSET_ASCII_PLUS = chirp_common.CHARSET_UPPER_NUMERIC + '- '
 # Band limits as defined by the band byte in ver_response, defined in Hz, for
 # VHF and UHF, used for RX and TX.
 BAND_LIMITS = {0x00: [(144000000, 148000000), (430000000, 440000000)],
-               0x01: [(134000000, 174000000), (400000000, 490000000)],
+               0x01: [(136000000, 174000000), (400000000, 490000000)],
                0x02: [(144000000, 146000000), (430000000, 440000000)]}
 
 
