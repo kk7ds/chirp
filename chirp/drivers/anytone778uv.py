@@ -739,6 +739,12 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 if rxcode == txcode:
                     mem.tmode = 'DTCS'
                     mem.rx_dtcs = rxcode
+                    # #8327 Not sure this is the correct interpretation of
+                    # DevelopersToneModes, but it seems to make it work round
+                    # tripping with the anytone software.  DTM implies that we
+                    # might not need to set mem.dtcs, but if we do it only DTCS
+                    # rx works (as if we were Cross:None->DTCS).
+                    mem.dtcs = rxcode
                 else:
                     mem.tmode = 'Cross'
                     mem.cross_mode = 'DTCS->DTCS'
@@ -757,6 +763,11 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             else:
                 LOG.error('%s: Unhandled tmode enabled = %d.' % (
                     mem.name, enabled))
+
+                # Can get here if e.g. TONE_EN_RXCODE is set and tsql isn't
+                # In that case should we perhaps store the tone and code values
+                # if they're present and then setup tmode and cross_mode as
+                # appropriate later?
 
             # set the dtcs polarity
             dtcs_pol_bit_to_str = {0: 'N', 1: 'R'}
