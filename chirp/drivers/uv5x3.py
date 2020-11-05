@@ -678,14 +678,20 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         else:
             lower = 130
             upper = 179
+        if int(_mem.limits.vhf.lower) < lower:
+            val = lower
+        else:
+            val = int(_mem.limits.vhf.lower)
         rs = RadioSetting("limits.vhf.lower", "VHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.vhf.lower))
+                          RadioSettingValueInteger(lower, upper, val))
         other.append(rs)
 
+        if int(_mem.limits.vhf.upper) > upper:
+            val = upper
+        else:
+            val = int(_mem.limits.vhf.upper)
         rs = RadioSetting("limits.vhf.upper", "VHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.vhf.upper))
+                          RadioSettingValueInteger(lower, upper, val))
         other.append(rs)
 
         if str(_mem.firmware_msg.line1) == "UVVG302":
@@ -697,14 +703,20 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         else:
             lower = 220
             upper = 225
+        if int(_mem.limits.vhf2.lower) < lower:
+            val = lower
+        else:
+            val = int(_mem.limits.vhf2.lower)
         rs = RadioSetting("limits.vhf2.lower", "VHF2 Lower Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.vhf2.lower))
+                          RadioSettingValueInteger(lower, upper, val))
         other.append(rs)
 
+        if int(_mem.limits.vhf2.upper) > upper:
+            val = upper
+        else:
+            val = int(_mem.limits.vhf2.upper)
         rs = RadioSetting("limits.vhf2.upper", "VHF2 Upper Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.vhf2.upper))
+                          RadioSettingValueInteger(lower, upper, val))
         other.append(rs)
 
         if str(_mem.firmware_msg.line1) == "UVVG302":
@@ -713,14 +725,20 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         else:
             lower = 400
             upper = 520
+        if int(_mem.limits.uhf.lower) < lower:
+            val = lower
+        else:
+            val = int(_mem.limits.uhf.lower)
         rs = RadioSetting("limits.uhf.lower", "UHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.uhf.lower))
+                          RadioSettingValueInteger(lower, upper, val))
         other.append(rs)
 
+        if int(_mem.limits.uhf.upper) > upper:
+            val = upper
+        else:
+            val = int(_mem.limits.uhf.upper)
         rs = RadioSetting("limits.uhf.upper", "UHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.uhf.upper))
+                          RadioSettingValueInteger(lower, upper, val))
         other.append(rs)
 
         # Work mode settings
