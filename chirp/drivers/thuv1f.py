@@ -176,6 +176,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 BCL_LIST = ["Off", "CSQ", "QT/DQT"]
 CODES_LIST = [x for x in range(1, 9)]
+STEPS = [5.0, 6.25, 7.5, 10.0, 12.5, 25.0, 37.5, 50.0, 100.0]
 
 
 @directory.register
@@ -202,6 +203,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_modes = ["FM", "NFM"]
+        rf.valid_tuning_steps = STEPS
         rf.valid_name_length = 7
         rf.valid_cross_modes = ["Tone->Tone", "DTCS->DTCS",
                                 "Tone->DTCS", "DTCS->Tone",
