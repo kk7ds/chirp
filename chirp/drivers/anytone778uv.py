@@ -971,3 +971,11 @@ if has_future:
         # Allowed radio types is a dict keyed by model of a list of version
         # strings
         ALLOWED_RADIO_TYPES = {'DBR2500': ['V100']}
+
+    @directory.register
+    class YedroYCM04vus(AnyTone778UVBase):
+        VENDOR = "Yedro"
+        MODEL = "YC-M04VUS"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'YCM04UV': ['V100']}
