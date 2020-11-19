@@ -271,6 +271,11 @@ class TenwayTW325Alias(chirp_common.Alias):
     MODEL = 'TW-325'
 
 
+class RetevisH777Alias(chirp_common.Alias):
+    VENDOR = 'Retevis'
+    MODEL = 'H777'
+
+
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -281,7 +286,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
 
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
-               TenwayTW325Alias]
+               TenwayTW325Alias, RetevisH777Alias]
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
 
     # This code currently requires that ranges start at 0x0000
