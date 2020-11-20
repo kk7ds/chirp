@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <a href="https://cgafehc.r.af.d.sendibt2.com/tr/cl/bwE3VMOXlieledpgOtDcBbdEYFIUrKkg1biCqDXEGyOqHnBTWu0rqRv0R6_4-GMba_-YVKFYdugXcisz_H1PqUSSuIdOKg0NPDOQ0s6SZxED34_f0-BSDqY1GVrB1IyEcH3Ysq6ugcuIYkBeGH87LOjXp8Slz2cw-gjwKgSimXyOuJH0y1OoI_C-OaAAI7dd2Xtz9_vx0XA">http://www.gnu.org/licenses/</a>.
+# along with this program.
 
 import time
 import struct
