@@ -89,12 +89,16 @@ LIST_TMR16 = LIST_TMR12 + ["M+A+B+D", "M+A+C+D", "M+B+C+D", "A+B+C+D"]
 # the 15 choice list for color mobile radios that are missing the M+A+B+D
 # choice in the TMR menu
 LIST_TMR15 = LIST_TMR12 + ["M+A+C+D", "M+B+C+D", "A+B+C+D"]
+LIST_TMRTX = ["Track", "Fixed"]
 LIST_TOT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXDISP = ["Power", "Mic Volume"]
 LIST_TXP = ["High", "Low"]
 LIST_TXP3 = ["High", "Mid", "Low"]
 LIST_SCREV = ["TO (timeout)", "CO (carrier operated)", "SE (search)"]
 LIST_VFOMR = ["Frequency", "Channel"]
+LIST_VOICE = ["Off"] + LIST_LANGUA
+LIST_VOX = ["Off"] + ["%s" % x for x in range(1, 11)]
+LIST_VOXT = ["%s seconds" % x for x in range(0, 21)]
 LIST_WIDE = ["Wide", "Narrow"]
 
 # lists related to DTMF, 2TONE and 5TONE settings
@@ -245,6 +249,10 @@ LT588UV_fp = "V2G1F4"
 # Added by rstrickoff gen 2 id
 LT588UV_fp1 = "V2G214"
 
+# QYT KT-8R (quad band ht)
+KT8R_fp = "MCB264"
+KT8R_fp1 = "MCB284"
+
 
 # ### MAGICS
 # for the Waccom Mini-8900
@@ -264,6 +272,8 @@ MSTRING_UV25X2 = "\x55\x20\x16\x12\x28\xFF\xDC\x02"
 MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
 # for the BTECH GMRS-50X1
 MSTRING_GMRS50X1 = "\x55\x20\x18\x10\x18\xFF\xDC\x02"
+# for the QYT KT-8R
+MSTRING_KT8R = "\x55\x20\x17\x07\x03\xFF\xDC\x02"
 
 
 def _clean_buffer(radio):
@@ -678,6 +688,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     BANDS = 2
     COLOR_LCD = False
     COLOR_LCD2 = False
+    COLOR_LCD3 = False
     NAME_LENGTH = 6
     UPLOAD_MEM_SIZE = 0X3100
     _power_levels = [chirp_common.PowerLevel("High", watts=25),
@@ -1082,18 +1093,25 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                LIST_TOT[_mem.settings.tot]))
         basic.append(tot)
 
-        if self.VENDOR == "BTECH" or self.COLOR_LCD:
-            apo = RadioSetting("settings.apo", "Auto power off timer",
-                               RadioSettingValueList(
-                                   LIST_APO,
-                                   LIST_APO[_mem.settings.apo]))
-            basic.append(apo)
-        else:
-            toa = RadioSetting("settings.apo", "Time out alert timer",
-                               RadioSettingValueList(
-                                   LIST_OFF1TO10,
-                                   LIST_OFF1TO10[_mem.settings.apo]))
-            basic.append(toa)
+        if self.MODEL == "KT-8R":
+                save = RadioSetting("settings.save", "Battery Save",
+                                    RadioSettingValueBoolean(
+                                        _mem.settings.save))
+                basic.append(save)
+
+        if not self.MODEL == "KT-8R":
+            if self.VENDOR == "BTECH" or self.COLOR_LCD:
+                apo = RadioSetting("settings.apo", "Auto power off timer",
+                                   RadioSettingValueList(
+                                       LIST_APO,
+                                       LIST_APO[_mem.settings.apo]))
+                basic.append(apo)
+            else:
+                toa = RadioSetting("settings.apo", "Time out alert timer",
+                                   RadioSettingValueList(
+                                       LIST_OFF1TO10,
+                                       LIST_OFF1TO10[_mem.settings.apo]))
+                basic.append(toa)
 
         abr = RadioSetting("settings.abr", "Backlight timer",
                            RadioSettingValueList(
@@ -1105,11 +1123,23 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                             RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(beep)
 
-        dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone",
-                              RadioSettingValueList(
-                                  LIST_DTMFST,
-                                  LIST_DTMFST[_mem.settings.dtmfst]))
-        basic.append(dtmfst)
+        if self.MODEL == "KT-8R":
+                dsub = RadioSetting("settings.dsub", "CTCSS/DCS code display",
+                                    RadioSettingValueBoolean(
+                                        _mem.settings.dsub))
+                basic.append(dsub)
+
+        if self.MODEL == "KT-8R":
+                dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone",
+                                      RadioSettingValueBoolean(
+                                          _mem.settings.dtmfst))
+                basic.append(dtmfst)
+        else:
+            dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone",
+                                  RadioSettingValueList(
+                                      LIST_DTMFST,
+                                      LIST_DTMFST[_mem.settings.dtmfst]))
+            basic.append(dtmfst)
 
         if not self.COLOR_LCD:
             prisc = RadioSetting("settings.prisc", "Priority scan",
@@ -1197,6 +1227,25 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       LIST_LANGUA[_mem.settings.langua]))
             basic.append(langua)
 
+        if self.MODEL == "KT-8R":
+            voice = RadioSetting("settings.voice", "Voice prompt",
+                                 RadioSettingValueList(
+                                     LIST_VOICE,
+                                     LIST_VOICE[_mem.settings.voice]))
+            basic.append(voice)
+
+            vox = RadioSetting("settings.vox", "VOX",
+                               RadioSettingValueList(
+                                   LIST_VOX,
+                                   LIST_VOX[_mem.settings.vox]))
+            basic.append(vox)
+
+            voxt = RadioSetting("settings.voxt", "VOX delay time",
+                                RadioSettingValueList(
+                                    LIST_VOXT,
+                                    LIST_VOXT[_mem.settings.voxt]))
+            basic.append(voxt)
+
         if self.VENDOR == "BTECH":
             if self.COLOR_LCD:
                 sync = RadioSetting("settings.sync", "Channel display sync",
@@ -1222,7 +1271,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       LIST_PONMSG[_mem.settings.ponmsg]))
             basic.append(ponmsg)
 
-        if self.COLOR_LCD and not self.COLOR_LCD2:
+        if self.COLOR_LCD and not (self.COLOR_LCD2 or self.COLOR_LCD3):
             mainfc = RadioSetting("settings.mainfc",
                                   "Main LCD foreground color",
                                   RadioSettingValueList(
@@ -1296,7 +1345,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       LIST_TXDISP,
                                       LIST_TXDISP[_mem.settings.txdisp]))
             basic.append(txdisp)
-        elif self.COLOR_LCD2:
+        elif self.COLOR_LCD2 or self.COLOR_LCD3:
             stfc = RadioSetting("settings.stfc",
                                 "ST-FC",
                                 RadioSettingValueList(
@@ -1360,12 +1409,13 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                      LIST_COLOR7[_mem.settings.sigfc]))
             basic.append(sigfc)
 
-            modfc = RadioSetting("settings.modfc",
-                                 "MOD-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.modfc]))
-            basic.append(modfc)
+            if not self.MODEL == "KT-8R":
+                modfc = RadioSetting("settings.modfc",
+                                     "MOD-FC",
+                                     RadioSettingValueList(
+                                         LIST_COLOR7,
+                                         LIST_COLOR7[_mem.settings.modfc]))
+                basic.append(modfc)
 
             menufc = RadioSetting("settings.menufc",
                                   "MENUFC",
@@ -1381,12 +1431,21 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                     LIST_COLOR7[_mem.settings.txfc]))
             basic.append(txfc)
 
-            txdisp = RadioSetting("settings.txdisp",
-                                  "Transmitting status display",
-                                  RadioSettingValueList(
-                                      LIST_TXDISP,
-                                      LIST_TXDISP[_mem.settings.txdisp]))
-            basic.append(txdisp)
+            if self.MODEL == "KT-8R":
+                rxfc = RadioSetting("settings.rxfc",
+                                    "RX-FC",
+                                    RadioSettingValueList(
+                                        LIST_COLOR7,
+                                        LIST_COLOR7[_mem.settings.rxfc]))
+                basic.append(rxfc)
+
+            if not self.MODEL == "KT-8R":
+                txdisp = RadioSetting("settings.txdisp",
+                                      "Transmitting status display",
+                                      RadioSettingValueList(
+                                          LIST_TXDISP,
+                                          LIST_TXDISP[_mem.settings.txdisp]))
+                basic.append(txdisp)
         else:
             wtled = RadioSetting("settings.wtled", "Standby backlight Color",
                                  RadioSettingValueList(
@@ -1418,7 +1477,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                 LIST_REPS[_mem.settings.reps]))
         basic.append(reps)
 
-        if not self.MODEL == "GMRS-50X1":
+        if not self.MODEL == "GMRS-50X1" and not self.MODEL == "KT-8R":
             repm = RadioSetting("settings.repm", "Relay condition",
                                 RadioSettingValueList(
                                     LIST_REPM,
@@ -1485,6 +1544,13 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       LIST_SCMODE[_mem.settings.scmode]))
             basic.append(scmode)
 
+        if self.MODEL == "KT-8R":
+            tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby",
+                                 RadioSettingValueList(
+                                     LIST_TMRTX,
+                                     LIST_TMRTX[_mem.settings.tmrtx]))
+            basic.append(tmrtx)
+
         # Advanced
         def _filter(name):
             filtered = ""
@@ -1495,7 +1561,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     filtered += " "
             return filtered
 
-        if self.COLOR_LCD and not self.COLOR_LCD2:
+        if self.COLOR_LCD and not (self.COLOR_LCD2 or self.COLOR_LCD3):
             _msg = self._memobj.poweron_msg
             line1 = RadioSetting("poweron_msg.line1",
                                  "Power-on message line 1",
@@ -1536,7 +1602,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                  RadioSettingValueString(0, 8, _filter(
                                                          _msg.line8)))
             advanced.append(line8)
-        elif self.COLOR_LCD2:
+        elif self.COLOR_LCD2 or self.COLOR_LCD3:
             _msg = self._memobj.static_msg
             line = RadioSetting("static_msg.line", "Static message",
                                 RadioSettingValueString(0, 16, _filter(
@@ -2136,20 +2202,28 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                      _mem.dtmf_settings.rxdisable))
         dtmf_enc_settings.append(rxdisable)
 
+        if _mem.dtmf_settings.dtmfspeed_on > 0x0F:
+            val = 0x03
+        else:
+            val = _mem.dtmf_settings.dtmfspeed_on
         dtmfspeed_on = RadioSetting(
             "dtmf_settings.dtmfspeed_on",
             "DTMF Speed (On Time)",
             RadioSettingValueList(LIST_DTMF_SPEED,
                                   LIST_DTMF_SPEED[
-                                      _mem.dtmf_settings.dtmfspeed_on]))
+                                      val]))
         dtmf_enc_settings.append(dtmfspeed_on)
 
+        if _mem.dtmf_settings.dtmfspeed_off > 0x0F:
+            val = 0x03
+        else:
+            val = _mem.dtmf_settings.dtmfspeed_off
         dtmfspeed_off = RadioSetting(
             "dtmf_settings.dtmfspeed_off",
             "DTMF Speed (Off Time)",
             RadioSettingValueList(LIST_DTMF_SPEED,
                                   LIST_DTMF_SPEED[
-                                      _mem.dtmf_settings.dtmfspeed_off]))
+                                      val]))
         dtmf_enc_settings.append(dtmfspeed_off)
 
         def memory2string(dmtf_mem):
@@ -2329,7 +2403,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             val = LIST_DTMF_SPECIAL_VALUES[index]
             obj.set_value(val)
 
-        idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.dtmf_settings.groupcode)
+        if _mem.dtmf_settings.groupcode not in LIST_DTMF_SPECIAL_VALUES:
+            val = 0x0B
+        else:
+            val = _mem.dtmf_settings.groupcode
+        idx = LIST_DTMF_SPECIAL_VALUES.index(val)
         line = RadioSetting(
             "dtmf_settings.groupcode",
             "Group Code",
@@ -2339,7 +2417,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                 _mem.dtmf_settings.groupcode)
         dtmf_dec_settings.append(line)
 
-        idx = LIST_DTMF_SPECIAL_VALUES.index(_mem.dtmf_settings.spacecode)
+        if _mem.dtmf_settings.spacecode not in LIST_DTMF_SPECIAL_VALUES:
+            val = 0x0C
+        else:
+            val = _mem.dtmf_settings.spacecode
+        idx = LIST_DTMF_SPECIAL_VALUES.index(val)
         line = RadioSetting(
             "dtmf_settings.spacecode",
             "Space Code",
@@ -2350,12 +2432,16 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         dtmf_dec_settings.append(line)
 
         if self.COLOR_LCD:
+            if _mem.dtmf_settings.resettime > 0x63:
+                val = 0x4F
+            else:
+                val = _mem.dtmf_settings.resettime
             line = RadioSetting(
                 "dtmf_settings.resettime",
                 "Reset time",
                 RadioSettingValueList(LIST_5TONE_RESET_COLOR,
                                       LIST_5TONE_RESET_COLOR[
-                                          _mem.dtmf_settings.resettime]))
+                                          val]))
             dtmf_dec_settings.append(line)
         else:
             line = RadioSetting(
@@ -2366,12 +2452,16 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                           _mem.dtmf_settings.resettime]))
             dtmf_dec_settings.append(line)
 
+        if _mem.dtmf_settings.delayproctime > 0x27:
+            val = 0x04
+        else:
+            val = _mem.dtmf_settings.delayproctime
         line = RadioSetting(
             "dtmf_settings.delayproctime",
             "Delay processing time",
             RadioSettingValueList(LIST_DTMF_DELAY,
                                   LIST_DTMF_DELAY[
-                                      _mem.dtmf_settings.delayproctime]))
+                                      val]))
         dtmf_dec_settings.append(line)
 
         # 5 Tone Settings
@@ -4194,3 +4284,363 @@ class GMRS50X1(BTechGMRS):
     _upper = 255
     _magic = MSTRING_GMRS50X1
     _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]
+
+
+COLORHT_MEM_FORMAT = """
+#seekto 0x0000;
+struct {
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unknown0:4,
+     scode:4;
+  u8 unknown1:2,
+     spmute:2,
+     unknown2:2,
+     optsig:2;
+  u8 unknown3:3,
+     scramble:1,
+     unknown4:3,
+     power:1;
+  u8 unknown5:1,
+     wide:1,
+     unknown6:2,
+     bcl:1,
+     add:1,
+     pttid:2;
+} memory[200];
+
+#seekto 0x0E00;
+struct {
+  u8 tmr;
+  u8 unknownE01;
+  u8 sql;
+  u8 unknownE03[2];
+  u8 tot;
+  u8 save;
+  u8 unknownE07;
+  u8 abr;
+  u8 beep;
+  u8 unknownE0A[4];
+  u8 dsub;
+  u8 dtmfst;
+  u8 screv;
+  u8 unknownE11[3];
+  u8 pttid;
+  u8 unknownE15;
+  u8 pttlt;
+  u8 unknownE17;
+  u8 emctp;
+  u8 emcch;
+  u8 sigbp;
+  u8 unknownE1B;
+  u8 camdf;
+  u8 cbmdf;
+  u8 ccmdf;
+  u8 cdmdf;
+  u8 langua;
+  u8 voice;
+  u8 vox;
+  u8 voxt;
+  u8 sync;          // BTech radios use this as the display sync setting
+                    // other radios use this as the auto keypad lock setting
+  u8 stfc;
+  u8 mffc;
+  u8 sfafc;
+  u8 sfbfc;
+  u8 sfcfc;
+  u8 sfdfc;
+  u8 subfc;
+  u8 fmfc;
+  u8 sigfc;
+  u8 menufc;
+  u8 txfc;
+  u8 rxfc;
+  u8 unknownE31[5];
+  u8 anil;
+  u8 reps;
+  u8 tmrmr;
+  u8 ste;
+  u8 rpste;
+  u8 rptdl;
+  u8 dtmfg;
+  u8 tmrtx;
+} settings;
+
+#seekto 0x0E80;
+struct {
+  u8 unknown1;
+  u8 vfomr;
+  u8 keylock;
+  u8 unknown2;
+  u8 unknown3:4,
+     vfomren:1,
+     unknown4:1,
+     reseten:1,
+     menuen:1;
+  u8 unknown5[11];
+  u8 dispab;
+  u8 unknown6[2];
+  u8 menu;
+  u8 unknown7[7];
+  u8 vfomra;
+  u8 vfomrb;
+  u8 vfomrc;
+  u8 vfomrd;
+  u8 mrcha;
+  u8 mrchb;
+  u8 mrchc;
+  u8 mrchd;
+} settings2;
+
+struct settings_vfo {
+  u8 freq[8];
+  u8 offset[6];
+  u8 unknown2[2];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 scode;
+  u8 spmute;
+  u8 optsig;
+  u8 scramble;
+  u8 wide;
+  u8 power;
+  u8 shiftd;
+  u8 step;
+  u8 unknown3[4];
+};
+
+#seekto 0x0F00;
+struct {
+  struct settings_vfo a;
+  struct settings_vfo b;
+  struct settings_vfo c;
+  struct settings_vfo d;
+} vfo;
+
+#seekto 0x0FE0;
+struct {
+  char line[16];
+} static_msg;
+
+#seekto 0x1000;
+struct {
+  char name[8];
+  u8 unknown1[8];
+} names[200];
+
+#seekto 0x2400;
+struct {
+  u8 period; // one out of LIST_5TONE_STANDARD_PERIODS
+  u8 group_tone;
+  u8 repeat_tone;
+  u8 unused[13];
+} _5tone_std_settings[15];
+
+#seekto 0x2500;
+struct {
+  u8 frame1[5];
+  u8 frame2[5];
+  u8 frame3[5];
+  u8 standard;   // one out of LIST_5TONE_STANDARDS
+} _5tone_codes[15];
+
+#seekto 0x25F0;
+struct {
+  u8 _5tone_delay1; // * 10ms
+  u8 _5tone_delay2; // * 10ms
+  u8 _5tone_delay3; // * 10ms
+  u8 _5tone_first_digit_ext_length;
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  u8 unknown4;
+  u8 decode_standard;
+  u8 unknown5:5,
+     _5tone_decode_call_frame3:1,
+     _5tone_decode_call_frame2:1,
+     _5tone_decode_call_frame1:1;
+  u8 unknown6:5,
+     _5tone_decode_disp_frame3:1,
+     _5tone_decode_disp_frame2:1,
+     _5tone_decode_disp_frame1:1;
+  u8 decode_reset_time; // * 100 + 100ms
+} _5tone_settings;
+
+#seekto 0x2900;
+struct {
+  u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
+} dtmf_codes[15];
+
+#seekto 0x29F0;
+struct {
+  u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10
+  u8 dtmfspeed_off; //list with 50..2000ms in steps of 10
+  u8 unknown0[14];
+  u8 inspection[16];
+  u8 monitor[16];
+  u8 alarmcode[16];
+  u8 stun[16];
+  u8 kill[16];
+  u8 revive[16];
+  u8 unknown1[16];
+  u8 unknown2[16];
+  u8 unknown3[16];
+  u8 unknown4[16];
+  u8 unknown5[16];
+  u8 unknown6[16];
+  u8 unknown7[16];
+  u8 masterid[16];
+  u8 viceid[16];
+  u8 unused01:7,
+     mastervice:1;
+  u8 unused02:3,
+     mrevive:1,
+     mkill:1,
+     mstun:1,
+     mmonitor:1,
+     minspection:1;
+  u8 unused03:3,
+     vrevive:1,
+     vkill:1,
+     vstun:1,
+     vmonitor:1,
+     vinspection:1;
+  u8 unused04:6,
+     txdisable:1,
+     rxdisable:1;
+  u8 groupcode;
+  u8 spacecode;
+  u8 delayproctime; // * 100 + 100ms
+  u8 resettime;     // * 100 + 100ms
+} dtmf_settings;
+
+#seekto 0x2D00;
+struct {
+  struct {
+    ul16 freq1;
+    u8 unused01[6];
+    ul16 freq2;
+    u8 unused02[6];
+  } _2tone_encode[15];
+  u8 duration_1st_tone; // *10ms
+  u8 duration_2nd_tone; // *10ms
+  u8 duration_gap;      // *10ms
+  u8 unused03[13];
+  struct {
+    struct {
+      u8 dec;      // one out of LIST_2TONE_DEC
+      u8 response; // one out of LIST_2TONE_RESPONSE
+      u8 alert;    // 1-16
+    } decs[4];
+    u8 unused04[4];
+  } _2tone_decode[15];
+  u8 unused05[16];
+
+  struct {
+    ul16 freqA;
+    ul16 freqB;
+    ul16 freqC;
+    ul16 freqD;
+    // unknown what those values mean, but they are
+    // derived from configured frequencies
+    ul16 derived_from_freqA; // 2304000/freqA
+    ul16 derived_from_freqB; // 2304000/freqB
+    ul16 derived_from_freqC; // 2304000/freqC
+    ul16 derived_from_freqD; // 2304000/freqD
+  }freqs[15];
+  u8 reset_time;  // * 100 + 100ms - 100-8000ms
+} _2tone;
+
+#seekto 0x3D80;
+struct {
+  u8 vhf_low[3];
+  u8 vhf_high[3];
+  u8 unknown1[4];
+  u8 unknown2[6];
+  u8 vhf2_low[3];
+  u8 vhf2_high[3];
+  u8 unknown3[4];
+  u8 unknown4[6];
+  u8 uhf_low[3];
+  u8 uhf_high[3];
+  u8 unknown5[4];
+  u8 unknown6[6];
+  u8 uhf2_low[3];
+  u8 uhf2_high[3];
+} ranges;
+
+#seekto 0x3F70;
+struct {
+  char fp[6];
+} fingerprint;
+
+"""
+
+
+class QYTColorHT(BTechMobileCommon):
+    """QTY's Color LCD Handheld and alike radios"""
+    COLOR_LCD = True
+    COLOR_LCD3 = True
+    NAME_LENGTH = 8
+    LIST_TMR = LIST_TMR15
+
+    def process_mmap(self):
+        """Process the mem map into the mem object"""
+
+        # Get it
+        self._memobj = bitwise.parse(COLORHT_MEM_FORMAT, self._mmap)
+
+        # load specific parameters from the radio image
+        self.set_options()
+
+    def set_options(self):
+        """This is to read the options from the image and set it in the
+        environment, for now just the limits of the freqs in the VHF/UHF
+        ranges"""
+
+        # setting the correct ranges for each radio type
+        ranges = self._memobj.ranges
+
+        # the normal dual bands
+        vhf = _decode_ranges(ranges.vhf_low, ranges.vhf_high)
+        uhf = _decode_ranges(ranges.uhf_low, ranges.uhf_high)
+
+        # DEBUG
+        LOG.info("Radio ranges: VHF %d to %d" % vhf)
+        LOG.info("Radio ranges: UHF %d to %d" % uhf)
+
+        # the additional bands
+        if self.MODEL in ["KT-8R"]:
+            # 200Mhz band
+            vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
+            LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
+            self._220_range = vhf2
+
+            # 350Mhz band
+            uhf2 = _decode_ranges(ranges.uhf2_low, ranges.uhf2_high)
+            LOG.info("Radio ranges: UHF(350) %d to %d" % uhf2)
+            self._350_range = uhf2
+
+        # set the class with the real data
+        self._vhf_range = vhf
+        self._uhf_range = uhf
+
+
+# real radios
+@directory.register
+class KT8R(QYTColorHT):
+    """QYT KT8R"""
+    VENDOR = "QYT"
+    MODEL = "KT-8R"
+    BANDS = 4
+    LIST_TMR = LIST_TMR15
+    _vhf_range = (136000000, 175000000)
+    _220_range = (200000000, 261000000)
+    _uhf_range = (400000000, 481000000)
+    _350_range = (350000000, 391000000)
+    _magic = MSTRING_KT8R
+    _fileid = [KT8R_fp1, KT8R_fp, ]
+    _power_levels = [chirp_common.PowerLevel("High", watts=5),
+                     chirp_common.PowerLevel("Low", watts=1)]
