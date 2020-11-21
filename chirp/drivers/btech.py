@@ -3940,8 +3940,8 @@ struct {
   u8 unknown0:4,
      scode:4;
   u8 unknown1:2,
-     spmute:1,
-     unknown2:3,
+     spmute:2,
+     unknown2:2,
      optsig:2;
   u8 unknown3:3,
      scramble:1,
