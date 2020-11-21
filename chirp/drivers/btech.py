@@ -1,4 +1,4 @@
-# Copyright 2016-2017:
+# Copyright 2016-2020:
 # * Pavel Milanes CO7WT, <pavelmc@gmail.com>
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 #
@@ -59,9 +59,9 @@ LIST_ABCD = LIST_AB + ["C", "D"]
 LIST_ANIL = ["3", "4", "5"]
 LIST_APO = ["Off"] + ["%s minutes" % x for x in range(30, 330, 30)]
 LIST_COLOR4 = ["Off", "Blue", "Orange", "Purple"]
-LIST_COLOR7 = ["White", "Red", "Blue", "Green", "Yellow", "Indego",
+LIST_COLOR8 = ["White", "Red", "Blue", "Green", "Yellow", "Indego",
                "Purple", "Gray"]
-LIST_COLOR8 = ["Black"] + LIST_COLOR7
+LIST_COLOR9 = ["Black"] + LIST_COLOR8
 LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboad + ANI"]
 LIST_EMCTP = ["TX alarm sound", "TX ANI", "Both"]
 LIST_EMCTPX = ["Off"] + LIST_EMCTP
@@ -1275,68 +1275,68 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             mainfc = RadioSetting("settings.mainfc",
                                   "Main LCD foreground color",
                                   RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.mainfc]))
+                                      LIST_COLOR9,
+                                      LIST_COLOR9[_mem.settings.mainfc]))
             basic.append(mainfc)
 
             mainbc = RadioSetting("settings.mainbc",
                                   "Main LCD background color",
                                   RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.mainbc]))
+                                      LIST_COLOR9,
+                                      LIST_COLOR9[_mem.settings.mainbc]))
             basic.append(mainbc)
 
             menufc = RadioSetting("settings.menufc", "Menu foreground color",
                                   RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.menufc]))
+                                      LIST_COLOR9,
+                                      LIST_COLOR9[_mem.settings.menufc]))
             basic.append(menufc)
 
             menubc = RadioSetting("settings.menubc", "Menu background color",
                                   RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.menubc]))
+                                      LIST_COLOR9,
+                                      LIST_COLOR9[_mem.settings.menubc]))
             basic.append(menubc)
 
             stafc = RadioSetting("settings.stafc",
                                  "Top status foreground color",
                                  RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.stafc]))
+                                     LIST_COLOR9,
+                                     LIST_COLOR9[_mem.settings.stafc]))
             basic.append(stafc)
 
             stabc = RadioSetting("settings.stabc",
                                  "Top status background color",
                                  RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.stabc]))
+                                     LIST_COLOR9,
+                                     LIST_COLOR9[_mem.settings.stabc]))
             basic.append(stabc)
 
             sigfc = RadioSetting("settings.sigfc",
                                  "Bottom status foreground color",
                                  RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sigfc]))
+                                     LIST_COLOR9,
+                                     LIST_COLOR9[_mem.settings.sigfc]))
             basic.append(sigfc)
 
             sigbc = RadioSetting("settings.sigbc",
                                  "Bottom status background color",
                                  RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sigbc]))
+                                     LIST_COLOR9,
+                                     LIST_COLOR9[_mem.settings.sigbc]))
             basic.append(sigbc)
 
             rxfc = RadioSetting("settings.rxfc", "Receiving character color",
                                 RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.rxfc]))
+                                    LIST_COLOR9,
+                                    LIST_COLOR9[_mem.settings.rxfc]))
             basic.append(rxfc)
 
             txfc = RadioSetting("settings.txfc",
                                 "Transmitting character color",
                                 RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.txfc]))
+                                    LIST_COLOR9,
+                                    LIST_COLOR9[_mem.settings.txfc]))
             basic.append(txfc)
 
             txdisp = RadioSetting("settings.txdisp",
@@ -1349,94 +1349,94 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             stfc = RadioSetting("settings.stfc",
                                 "ST-FC",
                                 RadioSettingValueList(
-                                    LIST_COLOR7,
-                                    LIST_COLOR7[_mem.settings.stfc]))
+                                    LIST_COLOR8,
+                                    LIST_COLOR8[_mem.settings.stfc]))
             basic.append(stfc)
 
             mffc = RadioSetting("settings.mffc",
                                 "MF-FC",
                                 RadioSettingValueList(
-                                    LIST_COLOR7,
-                                    LIST_COLOR7[_mem.settings.mffc]))
+                                    LIST_COLOR8,
+                                    LIST_COLOR8[_mem.settings.mffc]))
             basic.append(mffc)
 
             sfafc = RadioSetting("settings.sfafc",
                                  "SFA-FC",
                                  RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.sfafc]))
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sfafc]))
             basic.append(sfafc)
 
             sfbfc = RadioSetting("settings.sfbfc",
                                  "SFB-FC",
                                  RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.sfbfc]))
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sfbfc]))
             basic.append(sfbfc)
 
             sfcfc = RadioSetting("settings.sfcfc",
                                  "SFC-FC",
                                  RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.sfcfc]))
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sfcfc]))
             basic.append(sfcfc)
 
             sfdfc = RadioSetting("settings.sfdfc",
                                  "SFD-FC",
                                  RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.sfdfc]))
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sfdfc]))
             basic.append(sfdfc)
 
             subfc = RadioSetting("settings.subfc",
                                  "SUB-FC",
                                  RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.subfc]))
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.subfc]))
             basic.append(subfc)
 
             fmfc = RadioSetting("settings.fmfc",
                                 "FM-FC",
                                 RadioSettingValueList(
-                                    LIST_COLOR7,
-                                    LIST_COLOR7[_mem.settings.fmfc]))
+                                    LIST_COLOR8,
+                                    LIST_COLOR8[_mem.settings.fmfc]))
             basic.append(fmfc)
 
             sigfc = RadioSetting("settings.sigfc",
                                  "SIG-FC",
                                  RadioSettingValueList(
-                                     LIST_COLOR7,
-                                     LIST_COLOR7[_mem.settings.sigfc]))
+                                     LIST_COLOR8,
+                                     LIST_COLOR8[_mem.settings.sigfc]))
             basic.append(sigfc)
 
             if not self.MODEL == "KT-8R":
                 modfc = RadioSetting("settings.modfc",
                                      "MOD-FC",
                                      RadioSettingValueList(
-                                         LIST_COLOR7,
-                                         LIST_COLOR7[_mem.settings.modfc]))
+                                         LIST_COLOR8,
+                                         LIST_COLOR8[_mem.settings.modfc]))
                 basic.append(modfc)
 
             menufc = RadioSetting("settings.menufc",
                                   "MENUFC",
                                   RadioSettingValueList(
-                                      LIST_COLOR7,
-                                      LIST_COLOR7[_mem.settings.menufc]))
+                                      LIST_COLOR8,
+                                      LIST_COLOR8[_mem.settings.menufc]))
             basic.append(menufc)
 
             txfc = RadioSetting("settings.txfc",
                                 "TX-FC",
                                 RadioSettingValueList(
-                                    LIST_COLOR7,
-                                    LIST_COLOR7[_mem.settings.txfc]))
+                                    LIST_COLOR8,
+                                    LIST_COLOR8[_mem.settings.txfc]))
             basic.append(txfc)
 
             if self.MODEL == "KT-8R":
                 rxfc = RadioSetting("settings.rxfc",
                                     "RX-FC",
                                     RadioSettingValueList(
-                                        LIST_COLOR7,
-                                        LIST_COLOR7[_mem.settings.rxfc]))
+                                        LIST_COLOR8,
+                                        LIST_COLOR8[_mem.settings.rxfc]))
                 basic.append(rxfc)
 
             if not self.MODEL == "KT-8R":
