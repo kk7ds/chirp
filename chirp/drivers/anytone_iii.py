@@ -838,7 +838,13 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
         # Future: update memdetail.py to use rf.valid_dtcs_codes
         # Future: update memdetail.py to use rf.dtcs_polarity
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
-        rf.memory_bounds = (1, len(self._memobj.channels))
+        try:
+            rf.memory_bounds = (1, len(self._memobj.channels))
+        except AttributeError:
+            # This really doesn't need to be dynamic, AFAICT,
+            # and doesn't work when we don't have a memory object
+            # loaded. Default to the number defined above.
+            rf.memory_bounds = (1, 750)
         rf.valid_special_chans = LIMIT_NAMES + HYPER_NAMES
         return rf
 
