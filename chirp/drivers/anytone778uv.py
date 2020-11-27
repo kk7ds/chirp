@@ -161,10 +161,10 @@ struct {
      micKeyBrite:6;       //        hand mic key brightness
   u8 unk3213:6,           // 0x3213
      speakerSwitch:2;     //        speaker switch
-  u8 unk0x3214;
-  u8 unk0x3215;
-  u8 unk0x3216;
-  u8 unk0x3217;
+  u8 keyPA;               // 0x3214 key pa
+  u8 keyPB;               // 0x3215 key pb
+  u8 keyPC;               // 0x3216 key pc
+  u8 keyPD;               // 0x3217 key pd
   u8 unk3218:5,           // 0x3218
      steType:3;           //        ste type
   u8 unk3219:6,           // 0x3219
@@ -183,6 +183,22 @@ struct {
 struct {
   char digits[6];         // password
 } password;
+
+#seekto 0x3250;
+struct {
+  u8 keyMode1P1;          // 0x3250 key mode 1 p1
+  u8 keyMode1P2;          // 0x3251 key mode 1 p2
+  u8 keyMode1P3;          // 0x3252 key mode 1 p3
+  u8 keyMode1P4;          // 0x3253 key mode 1 p4
+  u8 keyMode1P5;          // 0x3254 key mode 1 p5
+  u8 keyMode1P6;          // 0x3255 key mode 1 p6
+  u8 keyMode2P1;          // 0x3256 key mode 2 p1
+  u8 keyMode2P2;          // 0x3257 key mode 2 p2
+  u8 keyMode2P3;          // 0x3258 key mode 2 p3
+  u8 keyMode2P4;          // 0x3259 key mode 2 p4
+  u8 keyMode2P5;          // 0x325A key mode 2 p5
+  u8 keyMode2P6;          // 0x325B key mode 2 p6
+} pfkeys;
 
 #seekto 0x3260;
 struct {
@@ -1019,6 +1035,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         _settings = self._memobj.settings
         _radio_settings = self._memobj.radio_settings
         _password = self._memobj.password
+        _pfkeys = self._memobj.pfkeys
 
         # Function Setup
         function = RadioSettingGroup("function", "Function Setup")
@@ -1255,6 +1272,115 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         rset = RadioSetting("settings.trfEnable", "TRF enable", rs)
         function.append(rset)
 
+        # Key Assignment
+        pfkeys = RadioSettingGroup("pfkeys", "Key Assignment")
+        group.append(pfkeys)
+
+        options = ["A/B", "V/M", "SQL", "VOL", "POW", "CDT", "REV", "SCN",
+                   "CAL", "TALK", "BND", "SFT", "MON", "DIR", "TRF", "RDW",
+                   "NULL"]
+
+        # Key Mode 1
+        # P1
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P1 - 1])
+        rset = RadioSetting("pfkeys.keyMode1P1",
+                            "Key mode 1 P1", rs)
+        pfkeys.append(rset)
+
+        # P2
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P2 - 1])
+        rset = RadioSetting("pfkeys.keyMode1P2",
+                            "Key mode 1 P2", rs)
+        pfkeys.append(rset)
+
+        # P3
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P3 - 1])
+        rset = RadioSetting("pfkeys.keyMode1P3",
+                            "Key mode 1 P3", rs)
+        pfkeys.append(rset)
+
+        # P4
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P4 - 1])
+        rset = RadioSetting("pfkeys.keyMode1P4",
+                            "Key mode 1 P4", rs)
+        pfkeys.append(rset)
+
+        # P5
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P5 - 1])
+        rset = RadioSetting("pfkeys.keyMode1P5",
+                            "Key mode 1 P5", rs)
+        pfkeys.append(rset)
+
+        # P6
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P6 - 1])
+        rset = RadioSetting("pfkeys.keyMode1P6",
+                            "Key mode 1 P6", rs)
+        pfkeys.append(rset)
+
+        # Key Mode 2
+        # P1
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P1 - 1])
+        rset = RadioSetting("pfkeys.keyMode2P1",
+                            "Key mode 2 P1", rs)
+        pfkeys.append(rset)
+
+        # P2
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P2 - 1])
+        rset = RadioSetting("pfkeys.keyMode2P2",
+                            "Key mode 2 P2", rs)
+        pfkeys.append(rset)
+
+        # P3
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P3 - 1])
+        rset = RadioSetting("pfkeys.keyMode2P3",
+                            "Key mode 2 P3", rs)
+        pfkeys.append(rset)
+
+        # P4
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P4 - 1])
+        rset = RadioSetting("pfkeys.keyMode2P4",
+                            "Key mode 2 P4", rs)
+        pfkeys.append(rset)
+
+        # P5
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P5 - 1])
+        rset = RadioSetting("pfkeys.keyMode2P5",
+                            "Key mode 2 P5", rs)
+        pfkeys.append(rset)
+
+        # P6
+        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P6 - 1])
+        rset = RadioSetting("pfkeys.keyMode2P6",
+                            "Key mode 2 P6", rs)
+        pfkeys.append(rset)
+
+        options = ["V/M", "SQL", "VOL", "POW", "CDT", "REV", "SCN", "CAL",
+                   "TALK", "BND", "SFT", "MON", "DIR", "TRF", "RDW"]
+
+        # PA
+        rs = RadioSettingValueList(options, options[_settings.keyPA - 2])
+        rset = RadioSetting("settings.keyPA",
+                            "Key PA", rs)
+        pfkeys.append(rset)
+
+        # PB
+        rs = RadioSettingValueList(options, options[_settings.keyPB - 2])
+        rset = RadioSetting("settings.keyPB",
+                            "Key PB", rs)
+        pfkeys.append(rset)
+
+        # PC
+        rs = RadioSettingValueList(options, options[_settings.keyPC - 2])
+        rset = RadioSetting("settings.keyPC",
+                            "Key PC", rs)
+        pfkeys.append(rset)
+
+        # PD
+        rs = RadioSettingValueList(options, options[_settings.keyPD - 2])
+        rset = RadioSetting("settings.keyPD",
+                            "Key PD", rs)
+        pfkeys.append(rset)
+
         return group
 
     def set_settings(self, settings):
@@ -1291,6 +1417,10 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                         setattr(obj, setting, int(element.value) + 1)
                     elif setting == "speakerVol":
                         setattr(obj, setting, int(element.value) + 1)
+                    elif "keyMode" in setting:
+                        setattr(obj, setting, int(element.value) + 1)
+                    elif "keyP" in setting:
+                        setattr(obj, setting, int(element.value) + 2)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
