@@ -1,4 +1,5 @@
 # Copyright 2020 Joe Milbourn <joe@milbourn.org.uk>
+# Copyright 2020 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -120,6 +121,31 @@ struct {
   char line[7];           // starting display
 } starting_display;
 
+#seekto 0x1990;
+struct {
+  u8 code[16];            // DTMF Encode M1-M16
+} pttid[16];
+
+#seekto 0x1A90;
+struct {
+  u8 pttIdStart[16];      // 0x1A90 ptt id starting
+  u8 pttIdEnd[16];        // 0x1AA0 ptt id ending
+  u8 remoteStun[16];      // 0x1AB0 remotely stun
+  u8 remoteKill[16];      // 0x1AC0 remotely kill
+  u8 intervalChar;        // 0x1AD0 dtmf interval character
+  u8 groupCode;           // 0x1AD1 group code
+  u8 unk1ad2:6,           // 0x1AD2
+     decodingResponse:2;  //        decoding response
+  u8 pretime;             // 0x1AD3 pretime
+  u8 firstDigitTime;      // 0x1AD4 first digit time
+  u8 autoResetTime;       // 0x1AD5 auto reset time
+  u8 selfID[3];           // 0x1AD6 dtmf self id
+  u8 unk1ad9:7,           // 0x1AD9
+     sideTone:1;          //        side tone
+  u8 timeLapse;           // 0x1ADA time-lapse after encode
+  u8 pauseTime;           // 0x1ADB ptt id pause time
+} dtmf;
+
 #seekto 0x3200;
 struct {
   u8 unk3200:5,           // 0x3200
@@ -169,7 +195,8 @@ struct {
      steType:3;           //        ste type
   u8 unk3219:6,           // 0x3219
      steFrequency:2;      //        ste frequency
-  u8 unk0x321A;
+  u8 unk321a:5,           // 0x321A
+     dtmfTxTime:3;        //        dtmf transmitting time
   u8 unk_bit7_6:2,        // 0x321B
      monKeyFunction:1,    //        mon key function
      channelLocked:1,     //        channel locked
@@ -1036,6 +1063,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         _radio_settings = self._memobj.radio_settings
         _password = self._memobj.password
         _pfkeys = self._memobj.pfkeys
+        _dtmf = self._memobj.dtmf
 
         # Function Setup
         function = RadioSettingGroup("function", "Function Setup")
@@ -1381,6 +1409,199 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                             "Key PD", rs)
         pfkeys.append(rset)
 
+        # DTMF
+        dtmf = RadioSettingGroup("dtmf", "DTMF")
+        group.append(dtmf)
+
+        # DTMF Transmitting Time
+        options = ["50 milliseconds", "100 milliseconds", "200 milliseconds",
+                   "300 milliseconds", "500 milliseconds"]
+        rs = RadioSettingValueList(options, options[_settings.dtmfTxTime])
+        rset = RadioSetting("settings.dtmfTxTime",
+                            "DTMF transmitting time", rs)
+        dtmf.append(rset)
+
+        # DTMF Self ID
+
+        # DTMF Interval Character
+        IC_CHOICES = ["A", "B", "C", "D", "*", "#"]
+        IC_VALUES = [0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F]
+
+        def apply_ic_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
+            val = str(setting.value)
+            index = IC_CHOICES.index(val)
+            val = IC_VALUES[index]
+            obj.set_value(val)
+
+        if _dtmf.intervalChar in IC_VALUES:
+            idx = IC_VALUES.index(_dtmf.intervalChar)
+        else:
+            idx = IC_VALUES.index(0x0E)
+        rs = RadioSetting("dtmf.intervalChar", "DTMF interval character",
+                          RadioSettingValueList(IC_CHOICES,
+                                                IC_CHOICES[idx]))
+        rs.set_apply_callback(apply_ic_listvalue, _dtmf.intervalChar)
+        dtmf.append(rs)
+
+        # Group Code
+        GC_CHOICES = ["Off", "A", "B", "C", "D", "*", "#"]
+        GC_VALUES = [0xFF, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F]
+
+        def apply_gc_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
+            val = str(setting.value)
+            index = GC_CHOICES.index(val)
+            val = GC_VALUES[index]
+            obj.set_value(val)
+
+        if _dtmf.groupCode in GC_VALUES:
+            idx = GC_VALUES.index(_dtmf.groupCode)
+        else:
+            idx = GC_VALUES.index(0x0A)
+        rs = RadioSetting("dtmf.groupCode", "DTMF interval character",
+                          RadioSettingValueList(GC_CHOICES,
+                                                GC_CHOICES[idx]))
+        rs.set_apply_callback(apply_gc_listvalue, _dtmf.groupCode)
+        dtmf.append(rs)
+
+        # Decoding Response
+        options = ["None", "Beep tone", "Beep tone & respond"]
+        rs = RadioSettingValueList(options, options[_dtmf.decodingResponse])
+        rset = RadioSetting("dtmf.decodingResponse", "Decoding response", rs)
+        dtmf.append(rset)
+
+        # First Digit Time
+        options = ["%s" % x for x in range(0, 2510, 10)]
+        rs = RadioSettingValueList(options, options[_dtmf.firstDigitTime])
+        rset = RadioSetting("dtmf.firstDigitTime", "First Digit Time(ms)", rs)
+        dtmf.append(rset)
+
+        # First Digit Time
+        options = ["%s" % x for x in range(10, 2510, 10)]
+        rs = RadioSettingValueList(options, options[_dtmf.pretime - 1])
+        rset = RadioSetting("dtmf.pretime", "Pretime(ms)", rs)
+        dtmf.append(rset)
+
+        # Auto Reset Time
+        options = ["%s" % x for x in range(0, 25100, 100)]
+        rs = RadioSettingValueList(options, options[_dtmf.autoResetTime])
+        rset = RadioSetting("dtmf.autoResetTime", "Auto Reset time(ms)", rs)
+        dtmf.append(rset)
+
+        # Time-Lapse After Encode
+        options = ["%s" % x for x in range(10, 2510, 10)]
+        rs = RadioSettingValueList(options, options[_dtmf.timeLapse - 1])
+        rset = RadioSetting("dtmf.timeLapse",
+                            "Time-lapse after encode(ms)", rs)
+        dtmf.append(rset)
+
+        # PTT ID Pause Time
+        options = ["Off", "-", "-", "-", "-"] + [
+                   "%s" % x for x in range(5, 76)]
+        rs = RadioSettingValueList(options, options[_dtmf.pauseTime])
+        rset = RadioSetting("dtmf.pauseTime", "PTT ID pause time(s)", rs)
+        dtmf.append(rset)
+
+        # Side Tone
+        rs = RadioSettingValueBoolean(_dtmf.sideTone)
+        rset = RadioSetting("dtmf.sideTone", "Side tone", rs)
+        dtmf.append(rset)
+
+        # PTT ID Starting
+        DTMF_CHARS = "0123456789ABCD*# "
+        _codeobj = _dtmf.pttIdStart
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("dtmf.pttIdStart", "PTT ID starting", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 16):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.pttIdStart = code
+        rs.set_apply_callback(apply_code, _dtmf)
+        dtmf.append(rs)
+
+        # PTT ID Ending
+        _codeobj = _dtmf.pttIdEnd
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("dtmf.pttIdEnd", "PTT ID ending", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 16):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.pttIdEnd = code
+        rs.set_apply_callback(apply_code, _dtmf)
+        dtmf.append(rs)
+
+        # Remotely Kill
+        _codeobj = _dtmf.remoteKill
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("dtmf.remoteKill", "Remotely kill", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 16):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.remoteKill = code
+        rs.set_apply_callback(apply_code, _dtmf)
+        dtmf.append(rs)
+
+        # Remotely Stun
+        _codeobj = _dtmf.remoteStun
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("dtmf.remoteStun", "Remotely stun", val)
+
+        def apply_code(setting, obj):
+            code = []
+            for j in range(0, 16):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.remoteStun = code
+        rs.set_apply_callback(apply_code, _dtmf)
+        dtmf.append(rs)
+
+        # DTMF Encode
+        # M1 - M16
+        for i in range(0, 16):
+            _codeobj = self._memobj.pttid[i].code
+            _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+            val = RadioSettingValueString(0, 16, _code, False)
+            val.set_charset(DTMF_CHARS)
+            rs = RadioSetting("pttid/%i.code" % i,
+                              "DTMF encode M%i" % (i + 1), val)
+
+            def apply_code(setting, obj):
+                code = []
+                for j in range(0, 16):
+                    try:
+                        code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                    except IndexError:
+                        code.append(0xFF)
+                obj.code = code
+            rs.set_apply_callback(apply_code, self._memobj.pttid[i])
+            dtmf.append(rs)
+
         return group
 
     def set_settings(self, settings):
@@ -1411,6 +1632,10 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
+                    elif setting == "timeLapse":
+                        setattr(obj, setting, int(element.value) + 1)
+                    elif setting == "pretime":
+                        setattr(obj, setting, int(element.value) + 1)
                     elif setting == "backlightBr":
                         setattr(obj, setting, int(element.value) + 1)
                     elif setting == "micKeyBrite":
