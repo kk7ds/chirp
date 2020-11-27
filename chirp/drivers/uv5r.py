@@ -556,6 +556,13 @@ def _do_download(radio):
         # then append that model type to the end of the image so it can
         # be properly detected when loaded.
         append_model = True
+    elif "\x20" * 14 in radio_version:
+        # A radio UV-5R style radio that reports no firmware version has
+        # been detected.
+        # We are going to count on the user to make the right choice and
+        # then append that model type to the end of the image so it can
+        # be properly detected when loaded.
+        append_model = True
     elif not any(type in radio_version for type in radio._basetype):
         # This radio can't be properly detected by parsing its firmware
         # version.
