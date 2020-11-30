@@ -1380,13 +1380,143 @@ of file.
 
         if do_import:
             eset = self.get_current_editorset()
-            rrstr = "radioreference://%s/%s/%s" % (zipcode, username, passwd)
+            rrstr = "radioreference://%s/%s/%s/%s" % (zipcode, username,
+                                                      passwd, 'US')
             count = eset.do_import(rrstr)
         else:
             try:
                 from chirp import radioreference
                 radio = radioreference.RadioReferenceRadio(None)
-                radio.set_params(zipcode, username, passwd)
+                radio.set_params(zipcode, username, passwd, 'US')
+                self.do_open_live(radio, read_only=True)
+            except errors.RadioError, e:
+                common.show_error(e)
+
+        self.window.set_cursor(None)
+
+    def do_radioreference_promptcanada(self):
+        fields = {"1Username":  (gtk.Entry(), lambda x: x),
+                  "2Password":  (gtk.Entry(), lambda x: x)
+                  }
+
+        d = inputdialog.FieldDialog(title=_("RadioReference.com Query"),
+                                    parent=self)
+        for k in sorted(fields.keys()):
+            d.add_field(k[1:], fields[k][0])
+            fields[k][0].set_text(CONF.get(k[1:], "radioreference") or "")
+            fields[k][0].set_visibility(k != "2Password")
+
+        while d.run() == gtk.RESPONSE_OK:
+            valid = True
+            for k in sorted(fields.keys()):
+                widget, validator = fields[k]
+                try:
+                    if validator(widget.get_text()):
+                        CONF.set(k[1:], widget.get_text(), "radioreference")
+                        continue
+                except Exception:
+                    pass
+                common.show_error("Invalid value for %s" % k[1:])
+                valid = False
+                break
+
+            if valid:
+                d.destroy()
+                return True
+
+        d.destroy()
+        return False
+
+    def do_radioreference_promptcounty(self, username, passwd):
+        """gotta get the fkn province list (they do change sometimes)
+        and the absurd arbitrary county list
+        """
+        from chirp import radioreference
+        provincecounty = radioreference.RadioReferenceRadio(None)
+        provincecounty.set_params(None, username, passwd, None)
+        cancounties = provincecounty.do_getcanadacounties()
+        clist = cancounties[0]
+        provinces = cancounties[1]
+        default_prov = ""
+        default_county = ""
+        try:
+            code = int(CONF.get("province", "radioreference"))
+            for k, v in provinces.items():
+                if code == v:
+                    default_prov = k
+                    break
+            code = int(CONF.get("county", "radioreference"))
+            for row in clist:
+                if code == row[2]:
+                    default_county = row[3]
+                    break
+        except:
+            pass
+        province = miscwidgets.make_choice(sorted(provinces.keys()),
+                                           False, default_prov)
+        counties = []
+        for x in clist:
+            if x[1] == default_prov:
+                counties.append(x[3])
+        county = miscwidgets.make_choice(counties, False, default_county)
+
+        def _changed(box, county):
+            selectedprov = provinces[box.get_active_text()]
+            county.get_model().clear()
+            for list_county in clist:
+                if list_county[0] == selectedprov:
+                    county.append_text(list_county[3])
+            county.set_active(0)
+        province.connect("changed", _changed, county)
+
+        d = inputdialog.FieldDialog(
+            title=_("RadioReference.com Province Query"), parent=self)
+        d.add_field("Province", province)
+        d.add_field("Region/City", county)
+        r = d.run()
+        d.destroy()
+        if r != gtk.RESPONSE_OK:
+            return False
+
+        code = provinces[province.get_active_text()]
+        for row in clist:  # this is absolutely not the right way to do this!
+            if row[3] == county.get_active_text():
+                county_id = row[2]
+        CONF.set("province", str(code), "radioreference")
+        CONF.set("county", str(county_id), "radioreference")
+
+        return True
+
+    def do_radioreferencecanada(self, do_import):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_radioreference_promptcanada():
+            self.window.set_cursor(None)
+            return
+        username = CONF.get("Username", "radioreference")
+        passwd = CONF.get("Password", "radioreference")
+
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_radioreference_promptcounty(username, passwd):
+            self.window.set_cursor(None)
+            return
+        county = CONF.get("County", "radioreference")
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        if do_import:
+            eset = self.get_current_editorset()
+            rrstr = "radioreference://%s/%s/%s/%s" % (county, username,
+                                                      passwd, 'CA')
+            count = eset.do_import(rrstr)
+        else:
+            try:
+                from chirp import radioreference
+                radio = radioreference.RadioReferenceRadio(None)
+                radio.set_params(county, username, passwd, 'CA')
                 self.do_open_live(radio, read_only=True)
             except errors.RadioError, e:
                 common.show_error(e)
@@ -1661,6 +1791,8 @@ of file.
             self.do_rfinder(action[0] == "i")
         elif action in ["qradioreference", "iradioreference"]:
             self.do_radioreference(action[0] == "i")
+        elif action in ["qradioreferencecanada", "iradioreferencecanada"]:
+            self.do_radioreferencecanada(action[0] == "i")
         elif action == "export":
             self.do_export()
         elif action in ["qrbookpolitical", "irbookpolitical"]:
@@ -1757,7 +1889,10 @@ of file.
       <menuitem action="upload"/>
       <menu action="importsrc" name="importsrc">
         <menuitem action="idmrmarc"/>
-        <menuitem action="iradioreference"/>
+        <menu action="iradioref" name="iradioref">
+            <menuitem action="iradioreferencecanada"/>
+            <menuitem action="iradioreference"/>
+        </menu>
         <menu action="irbook" name="irbook">
             <menuitem action="irbookpolitical"/>
             <menuitem action="irbookproximity"/>
@@ -1767,7 +1902,10 @@ of file.
       </menu>
       <menu action="querysrc" name="querysrc">
         <menuitem action="qdmrmarc"/>
-        <menuitem action="qradioreference"/>
+        <menu action="qradioref" name="qradioref">
+            <menuitem action="qradioreferencecanada"/>
+            <menuitem action="qradioreference"/>
+        </menu>
         <menu action="qrbook" name="qrbook">
             <menuitem action="qrbookpolitical"/>
             <menuitem action="qrbookproximity"/>
@@ -1844,7 +1982,10 @@ of file.
             ('importsrc', None, _("Import from data source"),
              None, None, self.mh),
             ('idmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
-            ('iradioreference', None, _("RadioReference.com"),
+            ('iradioref', None, _("RadioReference"), None, None, self.mh),
+            ('iradioreference', None, _("RadioReference.com US"),
+             None, None, self.mh),
+            ('iradioreferencecanada', None, _("RadioReference.com Canada"),
              None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
@@ -1855,7 +1996,10 @@ of file.
             ('ipr', None, _("przemienniki.net"), None, None, self.mh),
             ('querysrc', None, _("Query data source"), None, None, self.mh),
             ('qdmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
-            ('qradioreference', None, _("RadioReference.com"),
+            ('qradioref', None, _("RadioReference"), None, None, self.mh),
+            ('qradioreference', None, _("RadioReference.com US"),
+             None, None, self.mh),
+            ('qradioreferencecanada', None, _("RadioReference.com Canada"),
              None, None, self.mh),
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
             ('qpr', None, _("przemienniki.net"), None, None, self.mh),
