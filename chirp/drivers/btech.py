@@ -252,6 +252,7 @@ LT588UV_fp1 = "V2G214"
 # QYT KT-8R (quad band ht)
 KT8R_fp = "MCB264"
 KT8R_fp1 = "MCB284"
+KT8R_fp2 = "MC5264"
 
 
 # ### MAGICS
@@ -4641,6 +4642,6 @@ class KT8R(QYTColorHT):
     _uhf_range = (400000000, 481000000)
     _350_range = (350000000, 391000000)
     _magic = MSTRING_KT8R
-    _fileid = [KT8R_fp1, KT8R_fp, ]
+    _fileid = [KT8R_fp2, KT8R_fp1, KT8R_fp, ]
     _power_levels = [chirp_common.PowerLevel("High", watts=5),
                      chirp_common.PowerLevel("Low", watts=1)]
