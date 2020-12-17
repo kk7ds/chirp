@@ -61,6 +61,11 @@ struct {
 #seekto 0x017E;
 u8 skipflags[2];  // SCAN_ADD
 
+#seekto 0x0200;
+struct {
+  char id_0x200[8];  // Radio ID @ 0x0200
+} radio;
+
 #seekto 0x0300;
 struct {
   char line1[32];
@@ -91,6 +96,21 @@ SETTING_LISTS = {
 
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
+
+
+def _ident_from_data(data):
+    return data[0x1B8:0x1C0]
+
+
+def _ident_from_image(radio):
+    return _ident_from_data(radio.get_mmap())
+
+
+def _get_radio_model(radio):
+    block = _rt22_read_block(radio, 0x360, 0x10)
+    block = _rt22_read_block(radio, 0x1B8, 0x10)
+    version = block[0:8]
+    return version
 
 
 def _rt22_enter_programming_mode(radio):
@@ -160,6 +180,8 @@ def _rt22_enter_programming_mode(radio):
         _rt22_exit_programming_mode(radio)
         raise errors.RadioError("Radio refused to enter programming mode")
 
+    return ident
+
 
 def _rt22_exit_programming_mode(radio):
     serial = radio.pipe
@@ -201,11 +223,23 @@ def _rt22_read_block(radio, block_addr, block_size):
     return block_data
 
 
-def _rt22_write_block(radio, block_addr, block_size):
+def _rt22_write_block(radio, block_addr, block_size, _requires_patch=False,
+                      _radio_id=""):
     serial = radio.pipe
 
     cmd = struct.pack(">cHb", 'W', block_addr, block_size)
-    data = radio.get_mmap()[block_addr:block_addr + block_size]
+    if _requires_patch:
+        mmap = radio.get_mmap()
+        data = mmap[block_addr:block_addr + block_size]
+
+        # For some radios (RT-622 & RT22FRS) memory at 0x1b8 reads as 0, but
+        # radio ID should be written instead
+        if block_addr == 0x1b8:
+            for fp in _radio_id:
+                if fp in mmap[0:len(_radio_id)]:
+                    data = mmap[0:len(_radio_id)] + data[len(_radio_id):]
+    else:
+        data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -227,7 +261,8 @@ def _rt22_write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _rt22_enter_programming_mode(radio)
+    radio_ident = _rt22_enter_programming_mode(radio)
+    LOG.info("Radio Ident is %s" % repr(radio_ident))
 
     data = ""
 
@@ -258,7 +293,17 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _rt22_enter_programming_mode(radio)
+    radio_ident = _rt22_enter_programming_mode(radio)
+    LOG.info("Radio Ident is %s" % repr(radio_ident))
+
+    image_ident = _ident_from_image(radio)
+    LOG.info("Image Ident is %s" % repr(image_ident))
+
+    # Determine if upload requires patching
+    if image_ident == "\x00\x00\x00\x00\x00\x00\xFF\xFF":
+        patch_block = True
+    else:
+        patch_block = False
 
     status.cur = 0
     status.max = radio._memsize
@@ -267,7 +312,8 @@ def do_upload(radio):
         for addr in range(start_addr, end_addr, block_size):
             status.cur = addr + block_size
             radio.status_fn(status)
-            _rt22_write_block(radio, addr, block_size)
+            _rt22_write_block(radio, addr, block_size, patch_block,
+                              radio_ident)
 
     _rt22_exit_programming_mode(radio)
 
@@ -297,7 +343,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x0400
     _block_size = 0x40
-    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3"]
+    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!"]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -574,15 +620,17 @@ class RT22Radio(chirp_common.CloneModeRadio):
                     filtered += " "
             return filtered
 
-        rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
-                          RadioSettingValueString(0, 32, _filter(
-                              _message.line1)))
-        basic.append(rs)
+        val = str(self._memobj.radio.id_0x200)
+        if val == "\xFF" * 8:
+            rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
+                              RadioSettingValueString(0, 32, _filter(
+                                  _message.line1)))
+            basic.append(rs)
 
-        rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
-                          RadioSettingValueString(0, 32, _filter(
-                              _message.line2)))
-        basic.append(rs)
+            rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
+                              RadioSettingValueString(0, 32, _filter(
+                                  _message.line2)))
+            basic.append(rs)
 
         return top
 
