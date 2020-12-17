@@ -103,16 +103,6 @@ SETTING_LISTS = {
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 
-FRS_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
-             462.6625, 462.6250, 462.7250, 462.6875,
-             462.7125, 462.5500, 462.5750, 462.6000,
-             462.6500, 462.6750, 462.7000, 462.7250]
-
-PMR_FREQS = [446.00625, 446.01875, 446.03125, 446.04375,
-             446.05625, 446.06875, 446.08125, 446.09375,
-             446.10625, 446.11875, 446.13125, 446.14375,
-             446.15625, 446.16875, 446.18125, 446.19375]
-
 
 def _ident_from_data(data):
     return data[0x1B8:0x1C0]
@@ -549,19 +539,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * 13 + "\x00" * 3)
-            if self.MODEL == "RT22FRS":
-                FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
-                _mem.rxfreq = _mem.txfreq = FRS_FREQ
-                _mem.wide = False
-                _mem.highpower = True
-            elif self.MODEL == "RT622":
-                PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
-                _mem.rxfreq = _mem.txfreq = PMR_FREQ
-                _mem.wide = False
-                _mem.highpower = False
-            else:
-                _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() / 8))
             return
 
         _mem.rxfreq = mem.freq / 10
@@ -735,12 +713,8 @@ class RT22FRS(RT22Radio):
     VENDOR = "Retevis"
     MODEL = "RT22FRS"
 
-    _fileid = ["P3207!", ]
-
 
 @directory.register
 class RT622(RT22Radio):
     VENDOR = "Retevis"
     MODEL = "RT622"
-
-    _fileid = ["P3207!", ]
