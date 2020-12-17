@@ -1,4 +1,4 @@
-# Copyright 2016 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2016-2020 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -107,6 +107,11 @@ FRS_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
              462.6625, 462.6250, 462.7250, 462.6875,
              462.7125, 462.5500, 462.5750, 462.6000,
              462.6500, 462.6750, 462.7000, 462.7250]
+
+PMR_FREQS = [446.00625, 446.01875, 446.03125, 446.04375,
+             446.05625, 446.06875, 446.08125, 446.09375,
+             446.10625, 446.11875, 446.13125, 446.14375,
+             446.15625, 446.16875, 446.18125, 446.19375]
 
 
 def _ident_from_data(data):
@@ -550,6 +555,11 @@ class RT22Radio(chirp_common.CloneModeRadio):
                 _mem.rxfreq = _mem.txfreq = FRS_FREQ
                 _mem.wide = False
                 _mem.highpower = True
+            elif self.MODEL == "RT622":
+                PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
+                _mem.rxfreq = _mem.txfreq = PMR_FREQ
+                _mem.wide = False
+                _mem.highpower = False
             else:
                 _mem.set_raw("\xFF" * (_mem.size() / 8))
             return
@@ -724,5 +734,13 @@ class TDM8(RT22Radio):
 class RT22FRS(RT22Radio):
     VENDOR = "Retevis"
     MODEL = "RT22FRS"
+
+    _fileid = ["P3207!", ]
+
+
+@directory.register
+class RT622(RT22Radio):
+    VENDOR = "Retevis"
+    MODEL = "RT622"
 
     _fileid = ["P3207!", ]
