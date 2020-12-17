@@ -30,32 +30,32 @@ LOG = logging.getLogger(__name__)
 MEM_FORMAT = """
 #seekto 0x0010;
 struct {
-  lbcd rxfreq[4];                
-  lbcd txfreq[4];                
-  ul16 rx_tone;                  
-  ul16 tx_tone;                  
-  u8 unknown1;                   
-  u8 unknown3:2,                 
-     highpower:1, // Power Level 
-     wide:1,      // Bandwidth   
-     unknown4:4;                 
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  ul16 rx_tone;
+  ul16 tx_tone;
+  u8 unknown1;
+  u8 unknown3:2,
+     highpower:1, // Power Level
+     wide:1,      // Bandwidth
+     unknown4:4;
   u8 unknown5[2];
 } memory[16];
 
 #seekto 0x012F;
 struct {
   u8 voice;       // Voice Annunciation
-  u8 tot;         // Time-out Timer                   
+  u8 tot;         // Time-out Timer
   u8 unknown1[3];
   u8 squelch;     // Squelch Level
-  u8 save;        // Battery Saver                    
-  u8 beep;        // Beep                             
+  u8 save;        // Battery Saver
+  u8 beep;        // Beep
   u8 unknown2[2];
   u8 vox;         // VOX
   u8 voxgain;     // VOX Gain
-  u8 voxdelay;    // VOX Delay                        
+  u8 voxdelay;    // VOX Delay
   u8 unknown3[2];
-  u8 pf2key;      // PF2 Key                          
+  u8 pf2key;      // PF2 Key
 } settings;
 
 #seekto 0x017E;
@@ -617,7 +617,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         # testing the file data size
         if len(filedata) in [0x0408, ]:
             match_size = True
-        
+
         # testing the model fingerprint
         match_model = model_match(cls, filedata)
 
@@ -626,11 +626,13 @@ class RT22Radio(chirp_common.CloneModeRadio):
         else:
             return False
 
+
 @directory.register
 class KDC1(RT22Radio):
     """WLN KD-C1"""
     VENDOR = "WLN"
     MODEL = "KD-C1"
+
 
 @directory.register
 class ZTX6(RT22Radio):
@@ -638,11 +640,13 @@ class ZTX6(RT22Radio):
     VENDOR = "Zastone"
     MODEL = "ZT-X6"
 
+
 @directory.register
 class LT316(RT22Radio):
     """Luiton LT-316"""
     VENDOR = "LUITON"
     MODEL = "LT-316"
+
 
 @directory.register
 class TDM8(RT22Radio):
