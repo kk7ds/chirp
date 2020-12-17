@@ -81,10 +81,16 @@ RT22_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=2.00),
 RT22_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
 PF2KEY_LIST = ["Scan", "Local Alarm", "Remote Alarm"]
-TIMEOUTTIMER_LIST = [""] + ["%s seconds" % x for x in range(15, 615, 15)]
+TIMEOUTTIMER_LIST = ["Off"] + ["%s seconds" % x for x in range(15, 615, 15)]
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 17)]
-VOXDELAY_LIST = ["0.5", "1.0", "1.5", "2.0", "2.5", "3.0"]
+VOXDELAY_LIST = ["0.5 | Off",
+                 "1.0 | 0",
+                 "1.5 | 1",
+                 "2.0 | 2",
+                 "2.5 | 3",
+                 "3.0 | 4",
+                 "--- | 5"]
 
 SETTING_LISTS = {
     "pf2key": PF2KEY_LIST,
@@ -96,6 +102,11 @@ SETTING_LISTS = {
 
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
+
+FRS_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
+             462.6625, 462.6250, 462.7250, 462.6875,
+             462.7125, 462.5500, 462.5750, 462.6000,
+             462.6500, 462.6750, 462.7000, 462.7250]
 
 
 def _ident_from_data(data):
@@ -533,7 +544,14 @@ class RT22Radio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * 13 + "\x00" * 3)
+            if self.MODEL == "RT22FRS":
+                FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
+                _mem.rxfreq = _mem.txfreq = FRS_FREQ
+                _mem.wide = False
+                _mem.highpower = True
+            else:
+                _mem.set_raw("\xFF" * (_mem.size() / 8))
             return
 
         _mem.rxfreq = mem.freq / 10
@@ -597,7 +615,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
                               VOX_LIST, VOX_LIST[_settings.voxgain]))
         basic.append(rs)
 
-        rs = RadioSetting("voxdelay", "VOX Delay Time",
+        rs = RadioSetting("voxdelay", "VOX Delay Time (Old | New)",
                           RadioSettingValueList(
                               VOXDELAY_LIST,
                               VOXDELAY_LIST[_settings.voxdelay]))
@@ -700,3 +718,11 @@ class LT316(RT22Radio):
 class TDM8(RT22Radio):
     VENDOR = "TID"
     MODEL = "TD-M8"
+
+
+@directory.register
+class RT22FRS(RT22Radio):
+    VENDOR = "Retevis"
+    MODEL = "RT22FRS"
+
+    _fileid = ["P3207!", ]
