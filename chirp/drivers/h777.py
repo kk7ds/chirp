@@ -642,6 +642,7 @@ class ROGA2SRadio(H777Radio):
         # This model is only ever matched via metadata
         return False
 
+
 @directory.register
 class H777PlusRadio(H777Radio):
     VENDOR = "Retevis"
