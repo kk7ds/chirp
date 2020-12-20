@@ -301,6 +301,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     _memsize = 0x03E0
     _has_fm = True
     _has_sidekey = True
+    _has_scanmodes = True
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -479,11 +480,13 @@ class H777Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.scan))
         basic.append(rs)
 
-        rs = RadioSetting("settings2.scanmode", "Scan mode",
-                          RadioSettingValueList(
-                              SCANMODE_LIST,
-                              SCANMODE_LIST[self._memobj.settings2.scanmode]))
-        basic.append(rs)
+        if self._has_scanmodes:
+            rs = RadioSetting("settings2.scanmode", "Scan mode",
+                              RadioSettingValueList(
+                                  SCANMODE_LIST,
+                                  SCANMODE_LIST[
+                                      self._memobj.settings2.scanmode]))
+            basic.append(rs)
 
         rs = RadioSetting("vox", "VOX",
                           RadioSettingValueBoolean(_settings.vox))
@@ -633,6 +636,18 @@ class ROGA2SRadio(H777Radio):
     MODEL = "GA-2S"
     _has_fm = False
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Unused", "Alarm"]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+@directory.register
+class H777PlusRadio(H777Radio):
+    VENDOR = "Retevis"
+    MODEL = "H777 Plus"
+    _has_fm = False
+    _has_scanmodes = False
 
     @classmethod
     def match_model(cls, filedata, filename):
