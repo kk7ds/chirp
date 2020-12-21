@@ -1,5 +1,6 @@
 # Copyright 2019: Rick DeWitt (RJD), <aa0rd@yahoo.com>
 # Version 1.0 for TYT-UV8000D/E
+#         1.1 Fixes issue #8339, Priority chan OFF (0)
 # Thanks to Damon Schaefer (K9CQB) and the Loudoun County, VA ARES
 #    club for the donated radio.
 # And thanks to Ian Harris (VA3IHX) for decoding the memory map.
@@ -1250,10 +1251,8 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         scn.append(rset)
 
         val = _sets.prichan
-        if val <= 0:
-            val = 1
-        rx = RadioSettingValueInteger(1, 128, val)
-        rset = RadioSetting("setstuf.prichan", "Priority Channel", rx)
+        rx = RadioSettingValueInteger(0, 128, val)
+        rset = RadioSetting("setstuf.prichan", "Priority Channel (0:Off)", rx)
         scn.append(rset)
 
         # FM Broadcast Settings
