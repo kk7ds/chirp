@@ -166,6 +166,14 @@ struct {
   u8 name2[6];            // 0x117A unused
 } basicsettings;
 
+#seekto 0x191E;
+struct {
+  u8 region;              // 0x191E Radio Region (read only)
+                          // 0 = Unlocked  TX: 136-174 MHz / 400-480 MHz
+                          // 3 = EU        TX: 144-146 MHz / 430-440 MHz
+                          // 4 = US        TX: 144-148 MHz / 420-450 MHz
+} settings2;
+
 #seekto 0x1940;
 struct {
   char name1[15];         // Intro Screen Line 1 (16 alpha text characters)
@@ -461,7 +469,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.info = \
-            ('TYT UV-88\n')
+            (cls.VENDOR + ' ' + cls.MODEL + '\n')
 
         rp.pre_download = _(dedent("""\
             This is an early stage beta driver
@@ -758,6 +766,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         """Translate the MEM_FORMAT structs into setstuf in the UI"""
         _settings = self._memobj.basicsettings
+        _settings2 = self._memobj.settings2
         _workmode = self._memobj.workmodesettings
 
         basic = RadioSettingGroup("basic", "Basic Settings")
@@ -863,6 +872,12 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("openradioname.name2", "Intro Line 2", rx)
         advanced.append(rset)
 
+        options = ['Unlocked', 'Unknown 1', 'Unknown 2', 'EU', 'US']
+        rx = RadioSettingValueList(options, options[_settings2.region])
+        rx.set_mutable(False)
+        rset = RadioSetting("settings2.region", "Region", rx)
+        advanced.append(rset)
+
         workmode = RadioSettingGroup("workmode", "Work Mode Settings")
         group.append(workmode)
 
@@ -916,3 +931,9 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
+
+
+@directory.register
+class RT85(THUV88Radio):
+    VENDOR = "Retevis"
+    MODEL = "RT85"
