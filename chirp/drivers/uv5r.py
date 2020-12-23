@@ -1748,12 +1748,12 @@ class UV5XAlias(chirp_common.Alias):
 
 class RT5RAlias(chirp_common.Alias):
     VENDOR = "Retevis"
-    MODEL = "RT-5R"
+    MODEL = "RT5R"
 
 
 class RT5RVAlias(chirp_common.Alias):
     VENDOR = "Retevis"
-    MODEL = "RT-5RV"
+    MODEL = "RT5RV"
 
 
 class RT5Alias(chirp_common.Alias):

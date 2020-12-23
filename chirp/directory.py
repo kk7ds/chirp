@@ -115,6 +115,8 @@ def icf_to_image(icf_file, img_file):
 # as the wrong model name, or a model has to be split, we need to be able
 # to open older files and do something intelligent with them.
 MODEL_COMPAT = {
+    ('Retevis', 'RT-5R'): ('Retevis', 'RT5R'),
+    ('Retevis', 'RT-5RV'): ('Retevis', 'RT5RV'),
 }
 
 
