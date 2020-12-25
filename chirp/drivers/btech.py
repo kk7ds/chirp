@@ -254,6 +254,9 @@ KT8R_fp = "MCB264"
 KT8R_fp1 = "MCB284"
 KT8R_fp2 = "MC5264"
 
+# QYT KT5800 (dual band)
+KT5800_fp = "VCB222"
+
 
 # ### MAGICS
 # for the Waccom Mini-8900
@@ -3929,6 +3932,19 @@ class KT8900D(BTechColor):
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
     _fileid = [KT8900D_fp, KT8900D_fp1]
+
+
+@directory.register
+class KT5800(BTechColor):
+    """QYT KT5800"""
+    VENDOR = "QYT"
+    MODEL = "KT5800"
+    BANDS = 2
+    LIST_TMR = LIST_TMR15
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = MSTRING_KT8900D
+    _fileid = [KT5800_fp, ]
 
 
 GMRS_MEM_FORMAT = """
