@@ -140,7 +140,7 @@ def _do_ident(radio, magic):
     if not ident.startswith("\xaa") or not ident.endswith("\xdd"):
         # bad response
         msg = "Unexpected response, got this:"
-        msg +=  util.hexprint(ident)
+        msg += util.hexprint(ident)
         LOG.debug(msg)
         raise errors.RadioError("Unexpected response from radio.")
 
@@ -307,6 +307,7 @@ def _split(rf, f1, f2):
     # if you get here is because the freq pairs are split
     return True
 
+
 class BaofengCommonHT(chirp_common.CloneModeRadio,
                       chirp_common.ExperimentalRadio):
     """Baofeng HT Sytle Radios"""
@@ -342,7 +343,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             LOG.exception('Unexpected error during upload')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-                                    
+
     def get_features(self):
         """Get the radio's features"""
 
@@ -380,7 +381,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 
         return rf
-        
+
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
@@ -408,7 +409,8 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             # TX freq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset != 0:
-                if _split(self.get_features(), mem.freq, int(_mem.txfreq) * 10):
+                if _split(self.get_features(), mem.freq, int(
+                          _mem.txfreq) * 10):
                     mem.duplex = "split"
                     mem.offset = int(_mem.txfreq) * 10
                 elif offset < 0:

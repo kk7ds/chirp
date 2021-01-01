@@ -15,6 +15,7 @@
 ./chirp/drivers/anytone.py
 ./chirp/drivers/anytone_ht.py
 ./chirp/drivers/ap510.py
+./chirp/drivers/baofeng_common.py
 ./chirp/drivers/baofeng_uv3r.py
 ./chirp/drivers/baofeng_wp970i.py
 ./chirp/drivers/bjuv55.py
