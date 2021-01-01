@@ -19,8 +19,6 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -31,14 +29,16 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     InvalidValueError
 from textwrap import dedent
 
-##### MAGICS #########################################################
-                                                                             
+LOG = logging.getLogger(__name__)
+
+# #### MAGICS #########################################################
+
 # Baofeng UV-6R magic string
-MSTRING_UV6R = "\x50\xBB\xFF\x20\x14\x11\x22"                                
-                                                                             
-##### ID strings #####################################################       
-                                                                             
-# Baofeng UV-6R                                                              
+MSTRING_UV6R = "\x50\xBB\xFF\x20\x14\x11\x22"
+
+# #### ID strings #####################################################
+
+# Baofeng UV-6R
 UV6R_fp1 = " BF230#1"
 UV6R_fp2 = " BF230#2"
 
@@ -69,6 +69,7 @@ LIST_TIMEOUT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
+
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
@@ -124,7 +125,6 @@ class UV6R(baofeng_common.BaofengCommonHT):
                    (400000000, 520000000)]
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
-
 
     MEM_FORMAT = """
     #seekto 0x0000;
@@ -418,7 +418,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
         basic.append(rs)
 
         rs = RadioSetting("settings.beep", "Beep",
-                           RadioSettingValueBoolean(_mem.settings.beep))
+                          RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(rs)
 
         if _mem.settings.timeout > 0x27:
@@ -523,7 +523,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
             val = _mem.settings.rpste
         rs = RadioSetting("settings.rpste",
                           "Squelch Tail Eliminate (repeater)",
-                              RadioSettingValueList(
+                          RadioSettingValueList(
                               LIST_RPSTE, LIST_RPSTE[val]))
         basic.append(rs)
 
@@ -645,12 +645,12 @@ class UV6R(baofeng_common.BaofengCommonHT):
 
         rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrcha))
+                                                   _mem.wmchannel.mrcha))
         work.append(rs)
 
         rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrchb))
+                                                   _mem.wmchannel.mrchb))
         work.append(rs)
 
         def convert_bytes_to_freq(bytes):
@@ -845,7 +845,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
             key = "squelch.sql%i" % (index)
             _obj = self._memobj.squelch
             val = RadioSettingValueInteger(0, 123,
-                      getattr(_obj, "sql%i" % (index)))
+                                           getattr(_obj, "sql%i" % (index)))
             if index == 0:
                 val.set_mutable(False)
             name = "Squelch %i" % (index)
