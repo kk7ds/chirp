@@ -38,6 +38,7 @@
 ./chirp/drivers/generic_csv.py
 ./chirp/drivers/generic_tpe.py
 ./chirp/drivers/generic_xml.py
+./chirp/drivers/gmrsuv1.py
 ./chirp/drivers/h777.py
 ./chirp/drivers/ic208.py
 ./chirp/drivers/ic2100.py
