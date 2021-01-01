@@ -38,7 +38,7 @@ struct {
      unknown2:3;
   u8 unknown3:2,
      highpower:1, // Power Level
-     wide:1,      // Bandwidth   
+     wide:1,      // Bandwidth
      unknown4:4;
   u8 scramble_type:4,
      unknown5:4;
@@ -57,14 +57,14 @@ struct {
   u8 use_scramble; // Scramble Enable
   u8 unknown1[2];
   u8 voice;        // Voice Annunciation
-  u8 tot;          // Time-out Timer              
-  u8 totalert;     // Time-out Timer Pre-alert    
+  u8 tot;          // Time-out Timer
+  u8 totalert;     // Time-out Timer Pre-alert
   u8 unknown2[2];
-  u8 squelch;      // Squelch Level               
-  u8 save;         // Battery Saver               
+  u8 squelch;      // Squelch Level
+  u8 save;         // Battery Saver
   u8 unknown3[3];
-  u8 use_vox;      // VOX Enable                  
-  u8 vox;          // VOX Gain                    
+  u8 use_vox;      // VOX Enable
+  u8 vox;          // VOX Gain
 } settings;
 
 #seekto 0x017E;
@@ -78,7 +78,7 @@ RT21_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
                      chirp_common.PowerLevel("High", watts=2.50)]
 
 
-RT21_DTCS = sorted(chirp_common.DTCS_CODES + 
+RT21_DTCS = sorted(chirp_common.DTCS_CODES +
                    [17, 50, 55, 135, 217, 254, 305, 645, 765])
 
 BCL_LIST = ["Off", "Carrier", "QT/DQT"]
@@ -382,7 +382,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("scramble_type", "Scramble Type",
                           RadioSettingValueList(SCRAMBLE_LIST,
-                              SCRAMBLE_LIST[_mem.scramble_type - 8]))
+                                                SCRAMBLE_LIST[
+                                                    _mem.scramble_type - 8]))
         mem.extra.append(rs)
 
         return mem
@@ -518,7 +519,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         def apply_pf1_listvalue(setting, obj):
-            LOG.debug("Setting value: "+ str(setting.value) + " from list")
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
             val = str(setting.value)
             index = PF1_CHOICES.index(val)
             val = PF1_VALUES[index]
@@ -564,7 +565,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
-                    
+
     @classmethod
     def match_model(cls, filedata, filename):
         match_size = False
@@ -581,4 +582,3 @@ class RT21Radio(chirp_common.CloneModeRadio):
             return True
         else:
             return False
-
