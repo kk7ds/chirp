@@ -103,6 +103,7 @@
 ./chirp/drivers/uv5X3.py
 ./chirp/drivers/uv6r.py
 ./chirp/drivers/uvb5.py
+./chirp/drivers/vgc.py
 ./chirp/drivers/vx170.py
 ./chirp/drivers/vx2.py
 ./chirp/drivers/vx3.py
