@@ -500,7 +500,8 @@ class RT23Radio(chirp_common.CloneModeRadio):
             # TX freq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset != 0:
-                if _split(self.get_features(), mem.freq, int(_mem.txfreq) * 10):
+                if _split(self.get_features(), mem.freq, int(
+                          _mem.txfreq) * 10):
                     mem.duplex = "split"
                     mem.offset = int(_mem.txfreq) * 10
                 elif offset < 0:
@@ -543,7 +544,8 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("signaling", "Optional Signaling",
                           RadioSettingValueList(LIST_SIGNALING,
-                              LIST_SIGNALING[_mem.signaling]))
+                                                LIST_SIGNALING[
+                                                    _mem.signaling]))
         mem.extra.append(rs)
 
         return mem
@@ -645,8 +647,9 @@ class RT23Radio(chirp_common.CloneModeRadio):
                             RadioSettingValueBoolean(_settings.beep))
         basic.append(beep)
 
-        color = RadioSetting("color", "Background Color", RadioSettingValueList(
-                             LIST_COLOR, LIST_COLOR[_settings.color - 1]))
+        color = RadioSetting("color", "Background Color",
+                             RadioSettingValueList(
+                                 LIST_COLOR, LIST_COLOR[_settings.color - 1]))
         basic.append(color)
 
         vot = RadioSetting("vot", "VOX Delay Time", RadioSettingValueList(
@@ -693,7 +696,6 @@ class RT23Radio(chirp_common.CloneModeRadio):
                                   0, 7, _filter(_msg.line1)))
         basic.append(ponmsg)
 
-
         scans = RadioSetting("scans", "Scan Mode", RadioSettingValueList(
                              LIST_SCANS, LIST_SCANS[_settings.scans]))
         basic.append(scans)
@@ -706,7 +708,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
                             RadioSettingValueBoolean(_settings.name))
         basic.append(name)
 
-        rptrl = RadioSetting("rptrl", "Repeater TX Delay", 
+        rptrl = RadioSetting("rptrl", "Repeater TX Delay",
                              RadioSettingValueList(LIST_RPTRL, LIST_RPTRL[
                                  _settings.rptrl]))
         basic.append(rptrl)
@@ -716,7 +718,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
         basic.append(rptspk)
 
         rptptt = RadioSetting("rptptt", "Repeater PTT Switch",
-                            RadioSettingValueBoolean(_settings.rptptt))
+                              RadioSettingValueBoolean(_settings.rptptt))
         basic.append(rptptt)
 
         rptmod = RadioSetting("rptmod", "Repeater Mode",
@@ -730,7 +732,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
         basic.append(volmod)
 
         dst = RadioSetting("dst", "DTMF Side Tone",
-                            RadioSettingValueBoolean(_settings.dst))
+                           RadioSettingValueBoolean(_settings.dst))
         basic.append(dst)
 
         txsel = RadioSetting("txsel", "Priority TX Channel",
@@ -742,7 +744,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
                            RadioSettingValueBoolean(_settings.ste))
         basic.append(ste)
 
-        #advanced
+        # advanced
         if _settings.pf1 > 0x0A:
             val = 0x00
         else:
@@ -786,7 +788,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("limits.uhf.upper", "UHF high", val)
         other.append(rs)
 
-        #work mode
+        # work mode
         vfomr_a = RadioSetting("vfomr_a", "Display Mode A",
                                RadioSettingValueList(
                                    LIST_VFOMR, LIST_VFOMR[_settings.vfomr_a]))
@@ -807,7 +809,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
                                  1, 128, _settings.mrchb))
         workmode.append(mrchb)
 
-        #fm radio
+        # fm radio
         vfomr_fm = RadioSetting("vfomr_fm", "FM Radio Display Mode",
                                 RadioSettingValueList(
                                     LIST_VFOMRFM, LIST_VFOMRFM[
