@@ -13,6 +13,7 @@
 ./chirp/drivers/__init__.py
 ./chirp/drivers/alinco.py
 ./chirp/drivers/anytone.py
+./chirp/drivers/anytone_ht.py
 ./chirp/drivers/ap510.py
 ./chirp/drivers/baofeng_uv3r.py
 ./chirp/drivers/baofeng_wp970i.py

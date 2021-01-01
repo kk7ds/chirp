@@ -34,36 +34,36 @@ LOG = logging.getLogger(__name__)
 mem_format = """
 struct memory {
   bbcd freq[4];
-  bbcd offset[4];     
-  u8 unknown1:4,      
+  bbcd offset[4];
+  u8 unknown1:4,
      tune_step:4;
-  u8 unknown2:2,      
+  u8 unknown2:2,
      txdcsextra:1,
      txinv:1,
      channel_width:2,
      unknown3:1,
      tx_off:1;
-  u8 unknown4:2,      
+  u8 unknown4:2,
      rxdcsextra:1,
      rxinv:1,
      power:2,
      duplex:2;
-  u8 unknown5:4,      
+  u8 unknown5:4,
      rxtmode:2,
      txtmode:2;
-  u8 unknown6:2,      
+  u8 unknown6:2,
      txtone:6;
-  u8 unknown7:2,      
+  u8 unknown7:2,
      rxtone:6;
-  u8 txcode;          
-  u8 rxcode;          
-  u8 unknown8[3];     
-  char name[6];       
-  u8 squelch:4,       
+  u8 txcode;
+  u8 rxcode;
+  u8 unknown8[3];
+  char name[6];
+  u8 squelch:4,
      unknown9:2,
      bcl:2;
-  u8 unknownA;        
-  u8 unknownB:7,      
+  u8 unknownA;
+  u8 unknownB:7,
      sqlmode:1;
   u8 unknownC[4];
 };
@@ -71,22 +71,22 @@ struct memory {
 #seekto 0x0010;
 struct {
     u8 unknown1;
-    u8 unknown2:5,     
+    u8 unknown2:5,
        bands1:3;
-    char model[7];     
-    u8 unknown3:5,     
+    char model[7];
+    u8 unknown3:5,
        bands2:3;
-    u8 unknown4[6];    
-    u8 unknown5[16];   
-    char date[9];      
-    u8 unknown6[7];    
-    u8 unknown7[16];   
-    u8 unknown8[16];   
-    char dealer[16];   
-    char stockdate[9]; 
-    u8 unknown9[7];    
-    char selldate[9];  
-    u8 unknownA[7];    
+    u8 unknown4[6];
+    u8 unknown5[16];
+    char date[9];
+    u8 unknown6[7];
+    u8 unknown7[16];
+    u8 unknown8[16];
+    char dealer[16];
+    char stockdate[9];
+    u8 unknown9[7];
+    char selldate[9];
+    u8 unknownA[7];
     char seller[16];
 } oem_info;
 
@@ -405,7 +405,7 @@ WORKMODE = ["Channel", "Bank"]
 
 @directory.register
 class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
-                         chirp_common.ExperimentalRadio):
+                          chirp_common.ExperimentalRadio):
     """AnyTone TERMN-8R"""
     VENDOR = "AnyTone"
     MODEL = "TERMN-8R"
@@ -448,7 +448,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
         rf.can_odd_split = True
         rf.memory_bounds = (0, 199)
         return rf
-                        
+
     def sync_in(self):
         self._mmap = _download(self)
         self.process_mmap()
@@ -497,7 +497,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
         mem.duplex = DUPLEXES[_mem.duplex]
         mem.mode = MODES[_mem.channel_width]
 
-        if _mem.tx_off == True:
+        if _mem.tx_off is True:
             mem.duplex = "off"
             mem.offset = 0
 
@@ -712,7 +712,8 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("backlight", "Backlight",
                           RadioSettingValueList(BACKLIGHT,
-                                                BACKLIGHT[_settings.backlight]))
+                                                BACKLIGHT[
+                                                    _settings.backlight]))
         cfg_grp.append(rs)
 
         rs = RadioSetting("color", "Backlight Color",
@@ -944,6 +945,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
     @classmethod
     def match_model(cls, filedata, filename):
         return cls._file_ident in filedata[0x10:0x20]
+
 
 @directory.register
 class AnyToneOBLTR8RRadio(AnyToneTERMN8RRadio):
