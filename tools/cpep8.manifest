@@ -72,6 +72,7 @@
 ./chirp/drivers/kyd.py
 ./chirp/drivers/leixen.py
 ./chirp/drivers/lt725uv.py
+./chirp/drivers/mursv1.py
 ./chirp/drivers/puxing.py
 ./chirp/drivers/radioddity_r2.py
 ./chirp/drivers/retevis_rt22.py

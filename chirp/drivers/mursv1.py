@@ -19,8 +19,6 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -31,12 +29,14 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     InvalidValueError
 from textwrap import dedent
 
-##### MAGICS #########################################################
+LOG = logging.getLogger(__name__)
+
+# #### MAGICS #########################################################
 
 # BTECH MURS-V1 magic string
 MSTRING_MURSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
 
-##### ID strings #####################################################
+# #### ID strings #####################################################
 
 # BTECH MURS-V1
 MURSV1_fp1 = "USM2402"
@@ -69,6 +69,7 @@ LIST_WORKMODE = ["Frequency", "Channel"]
 
 MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600] * 3
 FM_MODE = [3, 4, 8, 9, 13, 14]
+
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
@@ -149,7 +150,6 @@ class MURSV1(baofeng_common.BaofengCommonHT):
         rf.valid_bands = self.VALID_BANDS
 
         return rf
-
 
     MEM_FORMAT = """
     #seekto 0x0010;
@@ -590,7 +590,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
         basic.append(rs)
 
         rs = RadioSetting("settings.beep", "Beep",
-                           RadioSettingValueBoolean(_mem.settings.beep))
+                          RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(rs)
 
         if _mem.settings.timeout > 0x27:
@@ -698,7 +698,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("settings.rogerrx", "Roger Beep (RX)",
                           RadioSettingValueList(
                              LIST_OFFAB, LIST_OFFAB[
-                             _mem.settings.rogerrx]))
+                                 _mem.settings.rogerrx]))
         basic.append(rs)
 
         # Advanced settings
@@ -771,12 +771,12 @@ class MURSV1(baofeng_common.BaofengCommonHT):
 
         rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
                           RadioSettingValueInteger(1, 15,
-                                                      _mem.wmchannel.mrcha))
+                                                   _mem.wmchannel.mrcha))
         work.append(rs)
 
         rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
                           RadioSettingValueInteger(1, 15,
-                                                      _mem.wmchannel.mrchb))
+                                                   _mem.wmchannel.mrchb))
         work.append(rs)
 
         # broadcast FM settings
@@ -847,7 +847,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
             key = "squelch.vhf.sql%i" % (index)
             _obj = self._memobj.squelch.vhf
             val = RadioSettingValueInteger(0, 123,
-                      getattr(_obj, "sql%i" % (index)))
+                                           getattr(_obj, "sql%i" % (index)))
             if index == 0:
                 val.set_mutable(False)
             name = "Squelch %i" % (index)
