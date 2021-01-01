@@ -19,15 +19,15 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings,InvalidValueError
+    RadioSettingValueFloat, RadioSettings, InvalidValueError
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0200;
@@ -199,35 +199,36 @@ for x in chirp_common.DTCS_CODES:
 for x in chirp_common.DTCS_CODES:
     LIST_CTCSS.append("D{:03d}R".format(x))
 LIST_BW = ["Narrow", "Wide"]
-LIST_SHIFT = ["Off"," + ", " - "]
+LIST_SHIFT = ["Off", " + ", " - "]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 LIST_STEPS = [str(x) for x in STEPS]
 LIST_STATE = ["Normal", "Stun", "Kill"]
 LIST_SSF = ["1000", "1450", "1750", "2100"]
-LIST_DTMFTX = ["50", "100", "150", "200", "300","500"]
+LIST_DTMFTX = ["50", "100", "150", "200", "300", "500"]
 
 SETTING_LISTS = {
-"init_bank": LIST_TDR_DEF ,
-"tot": LIST_TIMEOUT,
-"wtled": LIST_COLOR,
-"rxled": LIST_COLOR,
-"txled": LIST_COLOR,
-"sig_freq": LIST_SSF,
-"dtmf_txms": LIST_DTMFTX,
-"ledsw": LIST_LEDSW,
-"frq_chn_mode": LIST_VFOMODE,
-"rx_tone": LIST_CTCSS,
-"tx_tone": LIST_CTCSS,
-"rx_mode": LIST_RECVMODE,
-"launch_sig": LIST_SIGNAL,
-"tx_end_sig": LIST_SIGNAL,
-"bpower":LIST_BPOWER,
-"fm_bw": LIST_BW,
-"shift": LIST_SHIFT,
-"step": LIST_STEPS,
-"ring": LIST_RING,
-"state_now": LIST_STATE
+    "init_bank": LIST_TDR_DEF,
+    "tot": LIST_TIMEOUT,
+    "wtled": LIST_COLOR,
+    "rxled": LIST_COLOR,
+    "txled": LIST_COLOR,
+    "sig_freq": LIST_SSF,
+    "dtmf_txms": LIST_DTMFTX,
+    "ledsw": LIST_LEDSW,
+    "frq_chn_mode": LIST_VFOMODE,
+    "rx_tone": LIST_CTCSS,
+    "tx_tone": LIST_CTCSS,
+    "rx_mode": LIST_RECVMODE,
+    "launch_sig": LIST_SIGNAL,
+    "tx_end_sig": LIST_SIGNAL,
+    "bpower": LIST_BPOWER,
+    "fm_bw": LIST_BW,
+    "shift": LIST_SHIFT,
+    "step": LIST_STEPS,
+    "ring": LIST_RING,
+    "state_now": LIST_STATE
 }
+
 
 def _clean_buffer(radio):
     radio.pipe.timeout = 0.005
@@ -634,7 +635,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             val = _mem.recvmode
         recvmode = RadioSetting("recvmode", "Receiving mode",
                                 RadioSettingValueList(LIST_RECVMODE,
-                                    LIST_RECVMODE[val]))
+                                                      LIST_RECVMODE[val]))
         mem.extra.append(recvmode)
 
         if _mem.botsignal == 0xFF:
@@ -643,7 +644,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             val = _mem.botsignal
         botsignal = RadioSetting("botsignal", "Launch signaling",
                                  RadioSettingValueList(LIST_SIGNAL,
-                                     LIST_SIGNAL[val]))
+                                                       LIST_SIGNAL[val]))
         mem.extra.append(botsignal)
 
         if _mem.eotsignal == 0xFF:
@@ -770,7 +771,8 @@ class LT725UV(chirp_common.CloneModeRadio):
         # Basic Settings
         bnd_mode = RadioSetting("settings.init_bank", "TDR Band Default",
                                 RadioSettingValueList(LIST_TDR_DEF,
-                                    LIST_TDR_DEF[ _sets.init_bank]))
+                                                      LIST_TDR_DEF[
+                                                          _sets.init_bank]))
         basic.append(bnd_mode)
 
         volume = RadioSetting("settings.volume", "Volume",
@@ -790,7 +792,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         def my_word2raw(setting, obj, atrb, mlt=10):
             """Callback function to convert UI floating value to u16 int"""
             if str(setting.value) == "Off":
-               frq = 0x0FFFF
+                frq = 0x0FFFF
             else:
                 frq = int(float(str(setting.value)) * float(mlt))
             if frq == 0:
@@ -801,7 +803,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         def my_adjraw(setting, obj, atrb, fix):
             """Callback: add or subtract fix from value."""
             vx = int(str(setting.value))
-            value = vx  + int(fix)
+            value = vx + int(fix)
             if value < 0:
                 value = 0
             if atrb == "frq_chn_mode" and int(str(setting.value)) == 2:
@@ -829,7 +831,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         def my_spcl(setting, obj, atrb):
             """Callback: Special handling based on atrb."""
             if atrb == "frq_chn_mode":
-                idx = LIST_VFOMODE.index (str(setting.value))  # Returns 0 or 1
+                idx = LIST_VFOMODE.index(str(setting.value))  # Returns 0 or 1
                 value = idx * 2            # Set bit 1
             setattr(obj, atrb, value)
             return
@@ -930,7 +932,7 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         tmp = str(int(_sets.tot) * 30)     # 30 sec step counter
         rs = RadioSetting("settings.tot", "Transmit Timeout (Secs)",
-                           RadioSettingValueList(LIST_TIMEOUT, tmp))
+                          RadioSettingValueList(LIST_TIMEOUT, tmp))
         rs.set_apply_callback(my_val_list, _sets, "tot")
         basic.append(rs)
 
@@ -960,7 +962,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         rs.set_apply_callback(my_spcl, _vfoa, "frq_chn_mode")
         a_band.append(rs)
 
-        val =_vfoa.chan_num + 1                  # Add 1 for 1-128 displayed
+        val = _vfoa.chan_num + 1                  # Add 1 for 1-128 displayed
         rs = RadioSetting("upper.vfoa.chan_num", "Initial Chan",
                           RadioSettingValueInteger(1, 128, val))
         rs.set_apply_callback(my_adjraw, _vfoa, "chan_num", -1)
@@ -995,10 +997,10 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("upper.vfoa.launch_sig", "Launch Signaling",
                           RadioSettingValueList(LIST_SIGNAL,
-                              LIST_SIGNAL[_vfoa.launch_sig]))
+                                                LIST_SIGNAL[_vfoa.launch_sig]))
         a_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfoa.tx_end_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfoa.tx_end_sig])
         rs = RadioSetting("upper.vfoa.tx_end_sig", "Xmit End Signaling", rx)
         a_band.append(rs)
 
@@ -1028,7 +1030,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         tmp = str(_vfoa.step / 100.0)
         rs = RadioSetting("step", "Freq step (KHz)",
                           RadioSettingValueList(LIST_STEPS, tmp))
-        rs.set_apply_callback(my_word2raw, _vfoa,"step", 100)
+        rs.set_apply_callback(my_word2raw, _vfoa, "step", 100)
         a_band.append(rs)
 
         # LOWER BAND SETTINGS
@@ -1071,11 +1073,11 @@ class LT725UV(chirp_common.CloneModeRadio):
                               "txdtcs_pol", "tx_tone")
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfob.launch_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfob.launch_sig])
         rs = RadioSetting("lower.vfob.launch_sig", "Launch Signaling", rx)
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfob.tx_end_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfob.tx_end_sig])
         rs = RadioSetting("lower.vfob.tx_end_sig", "Xmit End Signaling", rx)
         b_band.append(rs)
 
@@ -1120,14 +1122,16 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Callback: convert 7-char string to char array with count."""
             ary = ""
             knt = 7
-            for j in range (6, -1, -1):       # Strip trailing spaces
+            for j in range(6, -1, -1):       # Strip trailing spaces
                 if str(setting.value)[j] == "" or str(setting.value)[j] == " ":
                     knt = knt - 1
                 else:
                     break
             for j in range(0, 7, 1):
-                if j < knt: ary += str(setting.value)[j]
-                else: ary += chr(0xFF)
+                if j < knt:
+                    ary += str(setting.value)[j]
+                else:
+                    ary += chr(0xFF)
             setattr(obj, atrba, ary)
             setattr(obj, atrbc, knt)
             return
@@ -1141,7 +1145,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         tmp = chars2str(_lims.hello2, _lims.hello2_cnt)
         rs = RadioSetting("hello_lims.hello2", "Power-On Message 2",
                           RadioSettingValueString(0, 7, tmp))
-        rs.set_apply_callback(my_str2ary, _lims,"hello2", "hello2_cnt")
+        rs.set_apply_callback(my_str2ary, _lims, "hello2", "hello2_cnt")
         lims.append(rs)
 
         # VALID_BANDS = [(136000000, 176000000),400000000, 480000000)]
@@ -1184,7 +1188,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Generate the DTMF code 1-8, NOT a callback."""
             tmp = ""
             if knt > 0 and knt != 0xff:
-                for  val in ary[:knt]:
+                for val in ary[:knt]:
                     if val > 0 and val <= 9:
                         tmp += chr(val + 48)
                     elif val == 0x0a:
@@ -1210,7 +1214,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Callback: DTMF Code; sends 5 or 7-byte string."""
             draw = []
             knt = syz
-            for j in range (syz - 1, -1, -1):       # Strip trailing spaces
+            for j in range(syz - 1, -1, -1):       # Strip trailing spaces
                 if str(setting.value)[j] == "" or str(setting.value)[j] == " ":
                     knt = knt - 1
                 else:
@@ -1220,19 +1224,19 @@ class LT725UV(chirp_common.CloneModeRadio):
                 obx = ord(bx)
                 dig = 0x0ff
                 if j < knt and knt > 0:      # (Else) is pads
-                    if  bx == "0":
+                    if bx == "0":
                         dig = 0x0a
-                    elif  bx == "A":
+                    elif bx == "A":
                         dig = 0x0d
-                    elif  bx == "B":
+                    elif bx == "B":
                         dig = 0x0e
-                    elif  bx == "C":
+                    elif bx == "C":
                         dig = 0x0f
-                    elif  bx == "D":
+                    elif bx == "D":
                         dig = 0x00
-                    elif  bx == "*":
+                    elif bx == "*":
                         dig = 0x0b
-                    elif  bx == "#":
+                    elif bx == "#":
                         dig = 0x0c
                     elif obx >= 49 and obx <= 57:
                         dig = obx - 48
@@ -1258,14 +1262,14 @@ class LT725UV(chirp_common.CloneModeRadio):
         rs = RadioSetting("codes.master_id_code", "Master Control ID Code",
                           RadioSettingValueString(0, 7, tmp))
         rs.set_apply_callback(my_dtmf2raw, _codes, "master_id_code",
-                              "master_id_cnt",7)
+                              "master_id_cnt", 7)
         codes.append(rs)
 
         tmp = make_dtmf(_codes.alarm_code, _codes.alarm_cnt)
         rs = RadioSetting("codes.alarm_code", "Alarm Code",
-                            RadioSettingValueString(0, 5, tmp))
+                          RadioSettingValueString(0, 5, tmp))
         rs.set_apply_callback(my_dtmf2raw, _codes, "alarm_code",
-                            "alarm_cnt", 5)
+                              "alarm_cnt", 5)
         codes.append(rs)
 
         tmp = make_dtmf(_codes.id_disp_code, _codes.id_disp_cnt)
@@ -1278,7 +1282,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         tmp = make_dtmf(_codes.revive_code, _codes.revive_cnt)
         rs = RadioSetting("codes.revive_code", "Revive Code",
                           RadioSettingValueString(0, 5, tmp))
-        rs.set_apply_callback(my_dtmf2raw, _codes,"revive_code",
+        rs.set_apply_callback(my_dtmf2raw, _codes, "revive_code",
                               "revive_cnt", 5)
         codes.append(rs)
 
@@ -1361,7 +1365,6 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         return group       # END get_settings()
 
-
     def set_settings(self, settings):
         _settings = self._memobj.settings
         _mem = self._memobj
@@ -1396,7 +1399,6 @@ class LT725UV(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
-
 
     @classmethod
     def match_model(cls, filedata, filename):
