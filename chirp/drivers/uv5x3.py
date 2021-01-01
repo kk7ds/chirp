@@ -270,8 +270,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
          dani:1;
       u8 unused28:2,
          dtmfg:6;
-      u8 unknown08:6,
-         reset:1,
+      u8 unknown08:7,
          unknown09:1;
       u8 unknown10[3];
       u8 cht;
@@ -280,7 +279,8 @@ class UV5X3(baofeng_common.BaofengCommonHT):
          unknown12:2,
          fmradio:1,
          alarm:1,
-         unknown13:2,                                          
+         unknown13:1,
+         reset:1,
          menu:1;
       u8 unknown14;
       u8 unused29:7,
