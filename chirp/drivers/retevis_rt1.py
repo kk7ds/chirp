@@ -304,7 +304,7 @@ def do_upload(radio):
 
     bands = ["VHF", "UHF"]
     image_band = radio_band = "unknown"
-    for i in range(0,2):
+    for i in range(0, 2):
         if image_model == MODELS[i]:
             image_band = bands[i]
         if radio_model == MODELS[i]:
@@ -672,8 +672,8 @@ class RT1Radio(chirp_common.CloneModeRadio):
             val = _settings.scanspeed
         rs = RadioSetting("scanspeed", "Scan Speed[ms]",
                           RadioSettingValueList(
-                          LIST_SCANSPEED,
-                          LIST_SCANSPEED[val]))
+                              LIST_SCANSPEED,
+                              LIST_SCANSPEED[val]))
         basic.append(rs)
 
         if _settings.scandelay > 27:
@@ -738,7 +738,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         # testing the file data size
         if len(filedata) in [0x0400, ]:
             match_size = True
-        
+
         # testing the model fingerprint
         match_model = model_match(cls, filedata)
 
