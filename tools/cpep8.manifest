@@ -81,6 +81,7 @@
 ./chirp/drivers/retevis_rt23.py
 ./chirp/drivers/retevis_rt26.py
 ./chirp/drivers/rfinder.py
+./chirp/drivers/tdxone_tdq8a.py
 ./chirp/drivers/template.py
 ./chirp/drivers/th350.py
 ./chirp/drivers/th9800.py
