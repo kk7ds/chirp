@@ -119,12 +119,12 @@ NUMERIC_CHARSET = list("0123456789")
 DTMF_CHARSET = NUMERIC_CHARSET + list("ABCD*#")
 
 RT26_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=5.00),
-                    chirp_common.PowerLevel("High", watts=10.00)]
+                     chirp_common.PowerLevel("High", watts=10.00)]
 
 RT26_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
 LIST_PTTID = ["Off", "BOT", "EOT", "Both"]
-LIST_SHORT_PRESS = ["Off", "Monitor On/Off", "", "Scan", "Alarm", 
+LIST_SHORT_PRESS = ["Off", "Monitor On/Off", "", "Scan", "Alarm",
                     "Power High/Low"]
 LIST_LONG_PRESS = ["Off", "Monitor On/Off", "Monitor(momentary)",
                    "Scan", "Alarm", "Power High/Low"]
@@ -159,18 +159,18 @@ SETTING_LISTS = {
     "scandelay": LIST_SCANDELAY,
     "digtime": LIST_DIGTIME,
     "digdelay": LIST_DIGDELAY,
-    "starhash" : LIST_STARHASH,
-    "codespace" : LIST_CODESPACE,
-    "groupcode" : LIST_GROUPCODE,
-    "resettime" : LIST_RESETTIME,
-    "decodeto" : LIST_DECODETO,
-    "stuntype" : LIST_STUNTYPE,
+    "starhash": LIST_STARHASH,
+    "codespace": LIST_CODESPACE,
+    "groupcode": LIST_GROUPCODE,
+    "resettime": LIST_RESETTIME,
+    "decodeto": LIST_DECODETO,
+    "stuntype": LIST_STUNTYPE,
     }
 
 # Retevis RT26 fingerprints
 RT26_UHF_fp = "PDK80" + "\xF3\x00\x00"   # RT26 UHF model
 
-MODELS = [RT26_UHF_fp,]
+MODELS = [RT26_UHF_fp, ]
 
 
 def _model_from_data(data):
@@ -710,8 +710,8 @@ class RT26Radio(chirp_common.CloneModeRadio):
             val = _settings.scanspeed
         rs = RadioSetting("scanspeed", "Scan Speed[ms]",
                           RadioSettingValueList(
-                          LIST_SCANSPEED,
-                          LIST_SCANSPEED[val]))
+                              LIST_SCANSPEED,
+                              LIST_SCANSPEED[val]))
         basic.append(rs)
 
         if _settings.scandelay > 27:
@@ -842,7 +842,7 @@ class RT26Radio(chirp_common.CloneModeRadio):
                               LIST_STUNTYPE[_mem.dtmf.stuntype]))
         dtmf.append(rs)
 
-        ## setup stun entry
+        # setup stun entry
         objname = "code3"
         strname = "Stun Code"
         dtmfsetting = getattr(_mem.dtmf, objname)
