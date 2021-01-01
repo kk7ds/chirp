@@ -19,8 +19,6 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -31,7 +29,9 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     InvalidValueError
 from textwrap import dedent
 
-##### MAGICS #########################################################
+LOG = logging.getLogger(__name__)
+
+# #### MAGICS #########################################################
 
 # BTECH UV-5X3 magic string
 MSTRING_UV5X3 = "\x50\x0D\x0C\x20\x16\x03\x28"
@@ -39,7 +39,7 @@ MSTRING_UV5X3 = "\x50\x0D\x0C\x20\x16\x03\x28"
 # MTC UV-5R-3 magic string
 MSTRING_UV5R3 = "\x50\x0D\x0C\x20\x17\x09\x19"
 
-##### ID strings #####################################################
+# #### ID strings #####################################################
 
 # BTECH UV-5X3
 UV5X3_fp1 = "UVVG302"  # BFB300 original
@@ -77,8 +77,9 @@ LIST_TIMEOUT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
-LIST_DTMF_SPECIAL_DIGITS = [ "*", "#", "A", "B", "C", "D"]
-LIST_DTMF_SPECIAL_VALUES = [ 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
+LIST_DTMF_SPECIAL_DIGITS = ["*", "#", "A", "B", "C", "D"]
+LIST_DTMF_SPECIAL_VALUES = [0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
+
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
@@ -136,7 +137,6 @@ class UV5X3(baofeng_common.BaofengCommonHT):
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
 
-
     MEM_FORMAT = """
     #seekto 0x0000;
     struct {
@@ -165,31 +165,31 @@ class UV5X3(baofeng_common.BaofengCommonHT):
     #seekto 0x0C80;
     struct {
       u8 inspection[8];
-      u8 monitor[8];        
-      u8 alarmcode[8];      
-      u8 stun[8];           
-      u8 kill[8];           
-      u8 revive[8];         
-      u8 code[7];           
+      u8 monitor[8];
+      u8 alarmcode[8];
+      u8 stun[8];
+      u8 kill[8];
+      u8 revive[8];
+      u8 code[7];
       u8 unknown06;
-      u8 dtmfon;            
-      u8 dtmfoff;           
-      u8 unused00:6,        
+      u8 dtmfon;
+      u8 dtmfoff;
+      u8 unused00:6,
          aniid:2;
       u8 unknown07[5];
-      u8 masterid[5];       
+      u8 masterid[5];
       u8 unknown08[3];
       u8 viceid[5];
       u8 unknown09[3];
       u8 unused01:7,
          mastervice:1;
-      u8 unused02:3,     
+      u8 unused02:3,
          mrevive:1,
          mkill:1,
          mstun:1,
          mmonitor:1,
          minspection:1;
-      u8 unused03:3,     
+      u8 unused03:3,
          vrevive:1,
          vkill:1,
          vstun:1,
@@ -208,26 +208,26 @@ class UV5X3(baofeng_common.BaofengCommonHT):
     struct {
       u8 unused00:4,
          squelch:4;
-      u8 unused01:5,     
+      u8 unused01:5,
          step:3;
-      u8 unknown00;      
+      u8 unknown00;
       u8 unused02:5,
          save:3;
       u8 unused03:4,
          vox:4;
-      u8 unknown01;      
-      u8 unused04:4,     
+      u8 unknown01;
+      u8 unused04:4,
          abr:4;
-      u8 unused05:7,     
+      u8 unused05:7,
          tdr:1;
-      u8 unused06:7,     
+      u8 unused06:7,
          beep:1;
-      u8 unused07:2,     
+      u8 unused07:2,
          timeout:6;
       u8 unknown02[4];
       u8 unused09:6,
          voice:2;
-      u8 unknown03;      
+      u8 unknown03;
       u8 unused10:6,
          dtmfst:2;
       u8 unknown04;
@@ -270,25 +270,25 @@ class UV5X3(baofeng_common.BaofengCommonHT):
          dani:1;
       u8 unused28:2,
          dtmfg:6;
-      u8 unknown08:6,    
+      u8 unknown08:6,
          reset:1,
          unknown09:1;
-      u8 unknown10[3];   
-      u8 cht;            
-      u8 unknown11[13];  
+      u8 unknown10[3];
+      u8 cht;
+      u8 unknown11[13];
       u8 displayab:1,
          unknown12:2,
          fmradio:1,
          alarm:1,
-         unknown13:2,
+         unknown13:2,                                          
          menu:1;
-      u8 unknown14;      
+      u8 unknown14;
       u8 unused29:7,
          workmode:1;
       u8 unused30:7,
          keylock:1;
     } settings;
-    
+
     #seekto 0x0E76;
     struct {
       u8 unused0:1,
@@ -296,7 +296,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
       u8 unused1:1,
          mrchb:7;
     } wmchannel;
-    
+
     struct vfo {
       u8 unknown0[8];
       u8 freq[8];
@@ -317,13 +317,13 @@ class UV5X3(baofeng_common.BaofengCommonHT):
          widenarr:1,
          unknown8:6;
     };
-    
+
     #seekto 0x0F00;
     struct {
       struct vfo a;
       struct vfo b;
     } vfo;
-    
+
     #seekto 0x0F4E;
     u16 fm_presets;
 
@@ -332,19 +332,19 @@ class UV5X3(baofeng_common.BaofengCommonHT):
       char name[7];
       u8 unknown[9];
     } names[128];
-    
+
     #seekto 0x1ED0;
     struct {
       char line1[7];
       char line2[7];
     } sixpoweron_msg;
-    
+
     #seekto 0x1EF0;
     struct {
       char line1[7];
       char line2[7];
     } firmware_msg;
-    
+
     struct squelch {
       u8 sql0;
       u8 sql1;
@@ -357,7 +357,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
       u8 sql8;
       u8 sql9;
     };
-    
+
     #seekto 0x1F60;
     struct {
       struct squelch vhf;
@@ -374,7 +374,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
       char line1[7];
       char line2[7];
     } poweron_msg;
-    
+
     struct limit {
       u8 enable;
       bbcd lower[2];
@@ -475,7 +475,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         basic.append(rs)
 
         rs = RadioSetting("settings.beep", "Beep",
-                           RadioSettingValueBoolean(_mem.settings.beep))
+                          RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(rs)
 
         if _mem.settings.timeout > 0x27:
@@ -580,7 +580,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
             val = _mem.settings.rpste
         rs = RadioSetting("settings.rpste",
                           "Squelch Tail Eliminate (repeater)",
-                              RadioSettingValueList(
+                          RadioSettingValueList(
                               LIST_RPSTE, LIST_RPSTE[val]))
         basic.append(rs)
 
@@ -759,12 +759,12 @@ class UV5X3(baofeng_common.BaofengCommonHT):
 
         rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrcha))
+                                                   _mem.wmchannel.mrcha))
         work.append(rs)
 
         rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrchb))
+                                                   _mem.wmchannel.mrchb))
         work.append(rs)
 
         def convert_bytes_to_freq(bytes):
@@ -786,10 +786,10 @@ class UV5X3(baofeng_common.BaofengCommonHT):
                 raise InvalidValueError(msg % (_vhf_lower))
             msg = ("Can't be between %i.9975-%i.0000")
             if (_vhf_upper + 1) * 1000000 <= value and \
-                value < _vhf2_lower * 1000000:
+                    value < _vhf2_lower * 1000000:
                 raise InvalidValueError(msg % (_vhf_upper, _vhf2_lower))
             if (_vhf2_upper + 1) * 1000000 <= value and \
-                value < _uhf_lower * 1000000:
+                    value < _uhf_lower * 1000000:
                 raise InvalidValueError(msg % (_vhf2_upper, _uhf_lower))
             msg = ("Can't be greater than %i.9975")
             if value > 99000000 and value >= (_uhf_upper + 1) * 1000000:
@@ -1151,7 +1151,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         dtmfd.append(rs)
 
         def apply_dmtf_listvalue(setting, obj):
-            LOG.debug("Setting value: "+ str(setting.value) + " from list")
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
             val = str(setting.value)
             index = LIST_DTMF_SPECIAL_DIGITS.index(val)
             val = LIST_DTMF_SPECIAL_VALUES[index]
@@ -1209,7 +1209,8 @@ class UV5X3(baofeng_common.BaofengCommonHT):
                     _obj = self._memobj.squelch.uhf
                     _name = "UHF"
                 val = RadioSettingValueInteger(0, 123,
-                          getattr(_obj, "sql%i" % (index)))
+                                               getattr(_obj, "sql%i" % (
+                                                       index)))
                 if index == 0:
                     val.set_mutable(False)
                 name = "%s Squelch %i" % (_name, index)

@@ -90,6 +90,7 @@
 ./chirp/drivers/ts480.py
 ./chirp/drivers/ts590.py
 ./chirp/drivers/uv5r.py
+./chirp/drivers/uv5X3.py
 ./chirp/drivers/uvb5.py
 ./chirp/drivers/vx170.py
 ./chirp/drivers/vx2.py
