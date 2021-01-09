@@ -30,8 +30,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
 
-from chirp.ui.memdetail import MemoryDetailEditor
-
 
 class ATBankModel(chirp_common.BankModel):
     """Anytone Banks A-J, Each chan in zero or one bank"""
