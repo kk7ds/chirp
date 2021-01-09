@@ -110,6 +110,14 @@ def icf_to_image(icf_file, img_file):
         raise Exception("Unsupported model")
 
 
+# This is a mapping table of radio models that have changed in the past.
+# ideally we would never do this, but in the case where a radio was added
+# as the wrong model name, or a model has to be split, we need to be able
+# to open older files and do something intelligent with them.
+MODEL_COMPAT = {
+}
+
+
 def get_radio_by_image(image_file):
     """Attempt to get the radio class that owns @image_file"""
     if image_file.startswith("radioreference://"):
@@ -147,14 +155,19 @@ def get_radio_by_image(image_file):
         if not metadata and rclass.match_model(filedata, image_file):
             return rclass(image_file)
 
+        meta_vendor = metadata.get('vendor')
+        meta_model = metadata.get('model')
+
+        meta_vendor, meta_model = MODEL_COMPAT.get((meta_vendor, meta_model),
+                                                   (meta_vendor, meta_model))
+
         # If metadata, then it has to match one of the aliases or the parent
         for alias in rclass.ALIASES + [rclass]:
-            if (alias.VENDOR == metadata.get('vendor') and
-                    alias.MODEL == metadata.get('model')):
+            if (alias.VENDOR == meta_vendor and alias.MODEL == meta_model):
 
                 class DynamicRadioAlias(rclass):
-                    VENDOR = metadata.get('vendor')
-                    MODEL = metadata.get('model')
+                    VENDOR = meta_vendor
+                    MODEL = meta_model
                     VARIANT = metadata.get('variant')
 
                 return DynamicRadioAlias(image_file)
