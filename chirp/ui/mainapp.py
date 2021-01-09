@@ -1480,7 +1480,8 @@ of file.
 
         code = provinces[province.get_active_text()]
         for row in clist:  # this is absolutely not the right way to do this!
-            if row[3] == county.get_active_text():
+            if row[3] == county.get_active_text() and \
+                    row[1] == province.get_active_text():
                 county_id = row[2]
         CONF.set("province", str(code), "radioreference")
         CONF.set("county", str(county_id), "radioreference")
