@@ -15,3 +15,8 @@ archived_builds/
 .*\.pot$
 locale/.files
 MANIFEST
+
+
+# for visual studio and visual studio code editors
+.vs/
+.vscode/
