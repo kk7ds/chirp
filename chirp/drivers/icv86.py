@@ -65,13 +65,17 @@ struct {
      mode:1,
      rev:1,
      duplex:2,
-     reserved7:2;
-  u8 reserved8:2,
+     reserved6:2;
+  u8 reserved7:2,
      dtcs_polarity:2,
      tmode:4;
-  u8 reserved9:6,
+  u8 reserved8:5,
+     tx:1,
      power:2;
-  u8 reserved10[4];
+  u8 reserved9;
+  u8 reserved10;
+  u8 reserved11;
+  u8 reserved12;
 } memory[207];
 
 """
@@ -251,6 +255,11 @@ class ICV86Radio(icf.IcomCloneModeRadio):
                     RadioSettingValueBoolean(bool(_mem.rev)))
         rev.set_doc("Reverse duplex")
         mem.extra.append(rev)
+        
+        tx = RadioSetting("tx", "Tx permission",
+                    RadioSettingValueBoolean(bool(_mem.tx)))
+        tx.set_doc("Tx permission")
+        mem.extra.append(tx)
 
         if _skp is not None:
             mem.skip = (_skp & bit) and "S" or ""
@@ -271,6 +280,39 @@ class ICV86Radio(icf.IcomCloneModeRadio):
 
         return self._get_memory(number)
 
+    def _fill_memory(self, number):
+        _mem = self._memobj.memory[number]
+
+        assert(_mem)
+
+        # zero-fill
+        _mem.freq = 146010000
+        _mem.offset = 146010000
+        _mem.name =  str("").ljust(5)
+        _mem.reserved1 = 0x0
+        _mem.rtone = 0x8
+        _mem.reserved2 = 0x0
+        _mem.ctone = 0x8
+        _mem.reserved3 = 0x0
+        _mem.dtcs = 0x0
+        _mem.reserved4 = 0x0
+        _mem.tuning_step = 0x0
+        _mem.reserved5 = 0x0
+        _mem.mode = 0x0
+        _mem.rev = 0x0
+        _mem.duplex = 0x0
+        _mem.reserved6 = 0x0
+        _mem.reserved7 = 0x0
+        _mem.dtcs_polarity = 0x0
+        _mem.tmode = 0x0
+        _mem.tx = 0x1
+        _mem.reserved8 = 0x0
+        _mem.power = 0x0
+        _mem.reserved9 = 0x0 
+        _mem.reserved10 = 0x0
+        _mem.reserved11 = 0x0
+        _mem.reserved12 = 0x0
+
     def _set_memory(self, mem):
         bit = 1 << (mem.number % 8)
         byte = int(mem.number / 8)
@@ -282,26 +324,13 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         assert(_mem)
 
         if mem.empty:
-            # Non zero-fill
-            _mem.freq = 146010000
-            _mem.offset = 146010000
-            _mem.name =  str("").ljust(5)
-            _mem.rtone = 0x8
-            _mem.ctone = 0x8
-            _mem.dtcs = 0x0
-            _mem.tuning_step = 0x0
-            _mem.mode = 0x0
-            _mem.duplex = 0x0
-            _mem.dtcs_polarity = 0x0
-            _mem.tmode = 0x0
-            _mem.power = 0x0
-
+            self._fill_memory(mem.number)
             if _usd is not None:
                 _usd |= bit
             return
 
-        if _usd is not None:
-            _usd &= ~bit
+        if _usd is None or (_usd & bit):
+            self._fill_memory(mem.number)
 
         _mem.freq = mem.freq
         _mem.offset = int(mem.offset)
@@ -318,6 +347,9 @@ class ICV86Radio(icf.IcomCloneModeRadio):
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
+
+        if _usd is not None:
+            _usd &= ~bit
 
         if _skp is not None:
             if mem.skip == "S":
