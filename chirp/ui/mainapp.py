@@ -160,10 +160,14 @@ class ChirpMain(gtk.Window):
         for i in range(0, self.tabs.get_n_pages()):
             esets.append(self.tabs.get_nth_page(i))
 
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         d = gtk.Dialog(title="Diff Radios",
-                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
+                       buttons=buttons,
                        parent=self)
+        d.set_default_response(gtk.RESPONSE_OK)
+        d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                        gtk.RESPONSE_CANCEL])
 
         label = gtk.Label("")
         label.set_markup("<b>-1</b> for either Mem # does a full-file hex " +
@@ -295,9 +299,13 @@ of file.
         lab.show()
         choice = miscwidgets.make_choice(sorted(radiolist.keys()), False,
                                          sorted(radiolist.keys())[0])
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         d = gtk.Dialog(title="Detection Failed",
-                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                       buttons=buttons)
+        d.set_default_response(gtk.RESPONSE_OK)
+        d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                        gtk.RESPONSE_CANCEL])
         d.vbox.pack_start(lab, 0, 0, 0)
         d.vbox.pack_start(choice, 0, 0, 0)
         d.vbox.set_spacing(5)
@@ -811,11 +819,16 @@ of file.
             return False
 
         if eset.is_modified():
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_NO, gtk.RESPONSE_NO,
+                       gtk.STOCK_YES, gtk.RESPONSE_YES)
             dlg = miscwidgets.YesNoDialog(
                 title=_("Save Changes?"), parent=self,
-                buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
-                         gtk.STOCK_NO, gtk.RESPONSE_NO,
-                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                buttons=buttons)
+            dlg.set_default_response(gtk.RESPONSE_YES)
+            dlg.set_alternative_button_order([gtk.RESPONSE_YES,
+                                              gtk.RESPONSE_NO,
+                                              gtk.RESPONSE_CANCEL])
             dlg.set_text(_("File is modified, save changes before closing?"))
             res = dlg.run()
             dlg.destroy()
@@ -1603,10 +1616,14 @@ of file.
         radio_name = "%s %s %s" % (eset.rthread.radio.VENDOR,
                                    eset.rthread.radio.MODEL,
                                    eset.rthread.radio.VARIANT)
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         d = gtk.Dialog(title=_("Select Columns"),
                        parent=self,
-                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                       buttons=buttons)
+        d.set_default_response(gtk.RESPONSE_OK)
+        d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                        gtk.RESPONSE_CANCEL])
 
         vbox = gtk.VBox()
         vbox.show()

@@ -578,12 +578,15 @@ class ImportDialog(gtk.Dialog):
     ACTION = _("Import")
 
     def __init__(self, src_radio, dst_radio, parent=None):
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self,
-                            buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
+                            buttons=buttons,
                             title=self.TITLE,
                             parent=parent)
-
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_alternative_button_order([gtk.RESPONSE_OK,
+                                           gtk.RESPONSE_CANCEL])
         self.col_import = 0
         self.col_nloc = 1
         self.col_oloc = 2

@@ -57,6 +57,7 @@ def handle_ed(_, iter, new, store, col):
 class ValueErrorDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
+        self.set_default_response(gtk.RESPONSE_OK)
         self.set_property("text", _("Invalid value for this field"))
         self.format_secondary_text(str(exception))
 
@@ -1471,20 +1472,27 @@ class MemoryEditor(common.Editor):
             loc, filled = store.get(iter,
                                     self.col(_("Loc")), self.col("_filled"))
             if filled and not always:
+                buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                           gtk.STOCK_NO, gtk.RESPONSE_NO,
+                           _("Yes to All"), gtk.RESPONSE_ACCEPT,
+                           gtk.STOCK_YES, gtk.RESPONSE_YES)
                 d = miscwidgets.YesNoDialog(title=_("Overwrite?"),
-                                            buttons=(gtk.STOCK_YES, 1,
-                                                     gtk.STOCK_NO, 2,
-                                                     gtk.STOCK_CANCEL, 3,
-                                                     "All", 4))
+                                            parent=None,
+                                            buttons=buttons)
+                d.set_default_response(gtk.RESPONSE_YES)
+                d.set_alternative_button_order([gtk.RESPONSE_YES,
+                                                gtk.RESPONSE_ACCEPT,
+                                                gtk.RESPONSE_NO,
+                                                gtk.RESPONSE_CANCEL])
                 d.set_text(
                     _("Overwrite location {number}?").format(number=loc))
                 r = d.run()
                 d.destroy()
-                if r == 4:
+                if r == gtk.RESPONSE_ACCEPT:
                     always = True
-                elif r == 3:
+                elif r == gtk.RESPONSE_CANCEL:
                     break
-                elif r == 2:
+                elif r == gtk.RESPONSE_NO:
                     iter = store.iter_next(iter)
                     continue
 
@@ -1502,16 +1510,20 @@ class MemoryEditor(common.Editor):
                 errs = [x for x in msgs
                         if isinstance(x, chirp_common.ValidationError)]
                 if errs:
+                    buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                               gtk.STOCK_OK, gtk.RESPONSE_OK)
                     d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
-                                                buttons=(gtk.STOCK_OK, 1,
-                                                         gtk.STOCK_CANCEL, 2))
+                                                buttons=buttons)
+                    d.set_default_response(gtk.RESPONSE_OK)
+                    d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                                    gtk.RESPONSE_CANCEL])
                     d.set_text(
                         _("Pasted memory {number} is not compatible with "
                           "this radio because:").format(number=src_number) +
                         os.linesep + os.linesep.join(msgs))
                     r = d.run()
                     d.destroy()
-                    if r == 2:
+                    if r == gtk.RESPONSE_CANCEL:
                         break
                     else:
                         iter = store.iter_next(iter)

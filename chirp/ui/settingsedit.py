@@ -135,7 +135,7 @@ class SettingsEditor(common.Editor):
 
             # Label
             label = gtk.Label(element.get_shortname() + ":")
-            label.set_alignment(0.0, 0.5)
+            label.set_alignment(1.0, 0.5)
             label.show()
 
             table.attach(label, 0, 1, row, row + 1,

@@ -33,6 +33,8 @@ class TextInputDialog(gtk.Dialog):
 
         self.label = gtk.Label()
         self.label.set_size_request(300, 100)
+        self.label.set_alignment(0.0, 0.5)
+
         # pylint: disable-msg=E1101
         self.vbox.pack_start(self.label, 1, 1, 0)
 
@@ -53,8 +55,13 @@ class ChoiceDialog(gtk.Dialog):
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, buttons=buttons, **args)
 
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_alternative_button_order([gtk.RESPONSE_OK,
+                                           gtk.RESPONSE_CANCEL])
+
         self.label = gtk.Label()
         self.label.set_size_request(300, 100)
+        self.label.set_alignment(0.0, 0.5)
         # pylint: disable-msg=E1101
         self.vbox.pack_start(self.label, 1, 1, 0)
         self.label.show()
@@ -68,8 +75,6 @@ class ChoiceDialog(gtk.Dialog):
         # pylint: disable-msg=E1101
         self.vbox.pack_start(self.choice, 1, 1, 0)
         self.choice.show()
-
-        self.set_default_response(gtk.RESPONSE_OK)
 
 
 class EditableChoiceDialog(ChoiceDialog):
@@ -85,6 +90,7 @@ class ExceptionDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK,
                                    type=gtk.MESSAGE_ERROR, **args)
+        self.set_default_response(gtk.RESPONSE_OK)
         self.set_property("text", _("An error has occurred"))
         self.format_secondary_text(str(exception))
 
@@ -97,15 +103,17 @@ class ExceptionDialog(gtk.MessageDialog):
 
 
 class FieldDialog(gtk.Dialog):
-    def __init__(self, **kwargs):
-        if "buttons" not in kwargs.keys():
-            kwargs["buttons"] = (gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                 gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+    def __init__(self, **args):
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
+
+        gtk.Dialog.__init__(self, buttons=buttons, **args)
+
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_alternative_button_order([gtk.RESPONSE_OK,
+                                           gtk.RESPONSE_CANCEL])
 
         self.__fields = {}
-        self.set_default_response(gtk.RESPONSE_OK)
-
-        gtk.Dialog.__init__(self, **kwargs)
 
     def response(self, _):
         LOG.debug("Blocking response")
@@ -114,7 +122,8 @@ class FieldDialog(gtk.Dialog):
     def add_field(self, label, widget, validator=None):
         box = gtk.HBox(True, 2)
 
-        lab = gtk.Label(label)
+        lab = gtk.Label(label + ":")
+        lab.set_alignment(1.0, 0.5)
         lab.show()
 
         widget.set_size_request(150, -1)
@@ -135,9 +144,12 @@ class FieldDialog(gtk.Dialog):
 
 class OverwriteDialog(gtk.MessageDialog):
     def __init__(self, filename):
-        gtk.Dialog.__init__(self,
-                            buttons=(_("Overwrite"), gtk.RESPONSE_OK,
-                                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
+        gtk.Dialog.__init__(self, buttons=buttons)
+        self.set_alternative_button_order([gtk.RESPONSE_OK,
+                                           gtk.RESPONSE_CANCEL])
 
         self.set_property("text", _("File Exists"))
 
@@ -146,12 +158,3 @@ class OverwriteDialog(gtk.MessageDialog):
               "Do you want to overwrite it?").format(name=filename)
 
         self.format_secondary_text(text)
-
-if __name__ == "__main__":
-    # pylint: disable-msg=C0103
-    d = FieldDialog(buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
-    d.add_field("Foo", gtk.Entry())
-    d.add_field("Bar", make_choice(["A", "B"]))
-    d.run()
-    gtk.main()
-    d.destroy()
