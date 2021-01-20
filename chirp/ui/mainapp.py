@@ -548,7 +548,9 @@ of file.
             widget_name = action_name
             widget_label = "_%i. %s" % (i + 1, file_basename)
             widget_tip = _("Open recent file") + (" {name}").format(name=fname)
-            action = gtk.Action(action_name, widget_label, widget_tip, "")
+            widget_icon = ""
+            action = gtk.Action(widget_name, widget_label,
+                                widget_tip, widget_icon)
 
             action.connect("activate", lambda a, f: self.do_open(f), fname)
             mid = self.menu_uim.new_merge_id()
