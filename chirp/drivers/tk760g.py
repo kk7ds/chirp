@@ -774,6 +774,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         rf.valid_bands = [self._range]
         rf.valid_name_length = 8
         rf.memory_bounds = (1, self._upper)
+        rf.valid_tuning_steps = [1., 2.5, 5., 6.25, 12.5]
         return rf
 
     def _fill(self, offset, data):
