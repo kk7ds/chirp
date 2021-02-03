@@ -102,7 +102,7 @@ class CloneSettingsDialog(gtk.Dialog):
             added_models = []
 
             model.get_model().clear()
-            for rclass in sorted(models, key=lambda c: c.__name__):
+            for rclass in sorted(models, key=lambda c: c.MODEL):
                 if rclass.MODEL not in added_models:
                     model.append_text(rclass.MODEL)
                     added_models.append(rclass.MODEL)
