@@ -486,7 +486,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rf.has_comment = False
         rf.has_tuning_step = False      # Not as chan feature
         rf.valid_tuning_steps = STEPS
-        rf.can_odd_split = False
+        rf.can_odd_split = True
         rf.has_name = True
         rf.has_offset = True
         rf.has_mode = True
@@ -499,7 +499,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rf.valid_name_length = self.NAME_LENGTH
         rf.valid_modes = self.MODES
         rf.valid_characters = self.VALID_CHARS
-        rf.valid_duplexes = ["-", "+", "off", ""]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = ["Tone->Tone", "DTCS->", "->DTCS",
                                 "Tone->DTCS", "DTCS->Tone", "->Tone",
@@ -599,6 +599,9 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             # TX freq not set
             mem.duplex = "off"
             mem.offset = 0
+        elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 25000000:
+            mem.duplex = "split"
+            mem.offset = int(_mem.txfreq) * 10
         elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
@@ -694,6 +697,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         _mem.rxfreq = mem.freq / 10
         if mem.duplex == "off":
             _mem.txfreq = 0xFFFFFFFF
+        elif mem.duplex == "split":
+            _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
             _mem.txfreq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
