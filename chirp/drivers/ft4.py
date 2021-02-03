@@ -1289,7 +1289,7 @@ class YaesuFT65RRadio(YaesuFT65GenericRadio):
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
     DUPLEX_AUTO = DUPLEX_AUTO_US
-    legal_steps = US_LEGAL_STEPS
+    legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
 
