@@ -579,7 +579,7 @@ class ImportDialog(gtk.Dialog):
 
     def __init__(self, src_radio, dst_radio, parent=None):
         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                    gtk.STOCK_OK, gtk.RESPONSE_OK)
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self,
                             buttons=buttons,
                             title=self.TITLE,
