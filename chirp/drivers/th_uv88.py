@@ -168,10 +168,13 @@ struct {
 
 #seekto 0x191E;
 struct {
-  u8 region;              // 0x191E Radio Region (read only)
+  u8 unknown191e:4,       //
+     region:4;            // 0x191E Radio Region (read only)
                           // 0 = Unlocked  TX: 136-174 MHz / 400-480 MHz
+                          // 2-3 = Unknown
                           // 3 = EU        TX: 144-146 MHz / 430-440 MHz
                           // 4 = US        TX: 144-148 MHz / 420-450 MHz
+                          // 5-15 = Unknown
 } settings2;
 
 #seekto 0x1940;
@@ -878,6 +881,14 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         advanced.append(rset)
 
         options = ['Unlocked', 'Unknown 1', 'Unknown 2', 'EU', 'US']
+        # extend option list with unknown description for values 5 - 15.
+        for ix in range(len(options), _settings2.region + 1):
+            item_to_add = 'Unknown {region_code}'.format(region_code=ix)
+            options.append(item_to_add)
+        # log unknown region codes greater than 4
+        if _settings2.region > 4:
+            LOG.debug("Unknown region code: {value}".
+                      format(value=_settings2.region))
         rx = RadioSettingValueList(options, options[_settings2.region])
         rx.set_mutable(False)
         rset = RadioSetting("settings2.region", "Region", rx)
