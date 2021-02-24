@@ -1488,16 +1488,24 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             workmode.append(rs)
 
             if self._tri_power:
+                if _vfoa.txpower3 > 0x02:
+                    val = 0x00
+                else:
+                    val = _vfoa.txpower3
                 rs = RadioSetting("vfoa.txpower3", "VFO A Power",
                                   RadioSettingValueList(
                                       TXPOWER3_LIST,
-                                      TXPOWER3_LIST[_vfoa.txpower3]))
+                                      TXPOWER3_LIST[val]))
                 workmode.append(rs)
 
+                if _vfob.txpower3 > 0x02:
+                    val = 0x00
+                else:
+                    val = _vfob.txpower3
                 rs = RadioSetting("vfob.txpower3", "VFO B Power",
                                   RadioSettingValueList(
                                       TXPOWER3_LIST,
-                                      TXPOWER3_LIST[_vfob.txpower3]))
+                                      TXPOWER3_LIST[val]))
                 workmode.append(rs)
             else:
                 rs = RadioSetting("vfoa.txpower", "VFO A Power",
