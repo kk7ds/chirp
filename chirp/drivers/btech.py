@@ -3457,6 +3457,11 @@ class KTUV980(BTech):
 # Waccom Mini8900, maybe an early version?
 
 
+class OTGRadioV1(chirp_common.Alias):
+    VENDOR = 'OTGSTUFF'
+    MODEL = 'OTG Radio v1'
+
+
 @directory.register
 class KT9800(BTech):
     """QYT KT8900"""
@@ -3933,6 +3938,9 @@ class KT8900D(BTechColor):
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
     _fileid = [KT8900D_fp, KT8900D_fp1]
+
+    # Clones
+    ALIASES = [OTGRadioV1]
 
 
 @directory.register
