@@ -62,7 +62,7 @@ struct {
        duplex:2,
        unknown3:1,
        reverse_duplex:1,
-       unknown4:1,
+       tx_inhibit:1,
        display_style:1;
 } memory[200];
 #seekto 0x1340; // channel memory flags
@@ -187,6 +187,12 @@ class IC2300Radio(icf.IcomCloneModeRadio):
                            RadioSettingValueBoolean(bool(_mem.reverse_duplex)))
         rev.set_doc("Reverse duplex")
         mem.extra.append(rev)
+
+        # Tx inhibit
+        tx_inhibit = RadioSetting("tx_inhibit", "TX inhibit",
+                           RadioSettingValueBoolean(bool(_mem.tx_inhibit)))
+        tx_inhibit.set_doc("TX inhibit")
+        mem.extra.append(tx_inhibit)
 
         # Memory display style
         opt = ["Frequency", "Label"]
