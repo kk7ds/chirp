@@ -1,5 +1,5 @@
 # Copyright 2020 Joe Milbourn <joe@milbourn.org.uk>
-# Copyright 2020 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2021 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -106,8 +106,9 @@ struct {
   u8 unknown7;
   u8 unknown8;
   u8 unknown9;
-  u8 unknown10;
-  char name[5];
+  char name[6];           // the VOX models have 6-character names
+                          // the original models only have 5-character names
+                          // the 1st byte is not used and will always be 0x00
   ul16 customctcss;
 } memory[200];
 #seekto 0x1940;
@@ -204,6 +205,10 @@ struct {
      powerOnReset:1,      //        power on reset
      trfEnable:1,         //        trf enable
      knobMode:1;          //        knob mode
+  u8 unk321c:7,           // 0x321C
+     voxOnOff:1;          //        vox on/off
+  u8 voxLevel;            // 0x321D vox level
+  u8 voxDelay;            // 0x321E vox delay
 } settings;
 
 #seekto 0x3240;
@@ -627,6 +632,8 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
     '''AnyTone 778UV and probably Retivis RT95 and others'''
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
+    NAME_LENGTH = 5
+    HAS_VOX = False
 
     @classmethod
     def get_prompts(cls):
@@ -648,7 +655,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         rf.can_odd_split = True
         rf.has_name = True
         rf.has_offset = True
-        rf.valid_name_length = 5
+        rf.valid_name_length = self.NAME_LENGTH
         rf.valid_duplexes = ['', '+', '-', 'split', 'off']
         rf.valid_characters = CHARSET_ASCII_PLUS
 
@@ -723,7 +730,14 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 mem.skip = 'S'
 
             # set the name
-            mem.name = str(_mem.name).rstrip()  # Set the alpha tag
+            if self.NAME_LENGTH == 5:
+                # original models with 5-character name length
+                temp_name = str(_mem.name)
+                # Strip the first character and set the alpha tag
+                mem.name = str(temp_name[1:6]).rstrip()
+            else:
+                # new VOX models with 6-character name length
+                mem.name = str(_mem.name).rstrip()  # Set the alpha tag
 
             # Convert your low-level frequency and offset to Hertz
             mem.freq = int(_mem.freq) * 10
@@ -922,7 +936,15 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             _mem.freq = int(mem.freq / 10)
             _mem.offset = int(mem.offset / 10)
 
-            _mem.name = mem.name.ljust(5)[:5]  # Store the alpha tag
+            # Store the alpha tag
+            if self.NAME_LENGTH == 5:
+                # original models with 5-character name length
+                temp_name = mem.name.ljust(self.NAME_LENGTH)[:self.NAME_LENGTH]
+                # prefix the 5-character name with 0x00 to fit structure
+                _mem.name = temp_name.rjust(6, chr(00))
+            else:
+                # new VOX models with 6-character name length
+                _mem.name = mem.name.ljust(self.NAME_LENGTH)[:self.NAME_LENGTH]
 
             # TODO support busy channel lockout - disabled for now
             _mem.busy_channel_lockout = BUSY_CHANNEL_LOCKOUT_OFF
@@ -1055,7 +1077,6 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             _mem.unknown7 = 0x00
             _mem.unknown8 = 0x00
             _mem.unknown9 = 0x00
-            _mem.unknown10 = 0x00
 
     def get_settings(self):
         """Translate the MEM_FORMAT structs into setstuf in the UI"""
@@ -1171,39 +1192,42 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         function.append(rset)
 
         # ON/OFF SET
-        # Power-on Password
-        rs = RadioSettingValueBoolean(_settings.powerOnPasswd)
-        rset = RadioSetting("settings.powerOnPasswd", "Power-on Password", rs)
-        function.append(rset)
+        # The Power-on Password feature is not available on models with VOX
+        if not self.HAS_VOX:
+            # Power-on Password
+            rs = RadioSettingValueBoolean(_settings.powerOnPasswd)
+            rset = RadioSetting("settings.powerOnPasswd", "Power-on Password",
+                                rs)
+            function.append(rset)
 
-        # Password
-        def _char_to_str(chrx):
-            """ Remove ff pads from char array """
-            #  chrx is char array
-            str1 = ""
-            for sx in chrx:
-                if int(sx) > 31 and int(sx) < 127:
-                    str1 += chr(sx)
-            return str1
+            # Password
+            def _char_to_str(chrx):
+                """ Remove ff pads from char array """
+                #  chrx is char array
+                str1 = ""
+                for sx in chrx:
+                    if int(sx) > 31 and int(sx) < 127:
+                        str1 += chr(sx)
+                return str1
 
-        def _pswd_vfy(setting, obj, atrb):
-            """ Verify password is 1-6 chars, numbers 1-5 """
-            str1 = str(setting.value).strip()   # initial
-            str2 = filter(lambda c: c in '0123456789', str1)    # valid chars
-            if str1 != str2:
-                # Two lines due to python 73 char limit
-                sx = "Bad characters in Password"
-                raise errors.RadioError(sx)
-            str2 = str1.ljust(6, chr(00))      # pad to 6 with 00's
-            setattr(obj, atrb, str2)
-            return
+            def _pswd_vfy(setting, obj, atrb):
+                """ Verify password is 1-6 chars, numbers 1-5 """
+                str1 = str(setting.value).strip()  # initial
+                str2 = filter(lambda c: c in '0123456789', str1)  # valid chars
+                if str1 != str2:
+                    # Two lines due to python 73 char limit
+                    sx = "Bad characters in Password"
+                    raise errors.RadioError(sx)
+                str2 = str1.ljust(6, chr(00))  # pad to 6 with 00's
+                setattr(obj, atrb, str2)
+                return
 
-        sx = _char_to_str(_password.digits).strip()
-        rx = RadioSettingValueString(0, 6, sx)
-        sx = "Password (numerals 0-9)"
-        rset = RadioSetting("password.digits", sx, rx)
-        rset.set_apply_callback(_pswd_vfy, _password, "digits")
-        function.append(rset)
+            sx = _char_to_str(_password.digits).strip()
+            rx = RadioSettingValueString(0, 6, sx)
+            sx = "Password (numerals 0-9)"
+            rset = RadioSetting("password.digits", sx, rx)
+            rset.set_apply_callback(_pswd_vfy, _password, "digits")
+            function.append(rset)
 
         # Menu 9 - Auto Power On
         rs = RadioSettingValueBoolean(_settings.autoPowerOn)
@@ -1300,6 +1324,26 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         rset = RadioSetting("settings.trfEnable", "TRF enable", rs)
         function.append(rset)
 
+        if self.HAS_VOX:
+            # VOX On/Off
+            rs = RadioSettingValueBoolean(_settings.voxOnOff)
+            rset = RadioSetting("settings.voxOnOff",
+                                "VOX", rs)
+            function.append(rset)
+
+            # VOX Delay
+            options = ["0.5 S", "1.0 S", "1.5 S", "2.0 S", "2.5 S",
+                       "3.0 S", "3.5 S", "4.0 S", "4.5 S"]
+            rs = RadioSettingValueList(options, options[_settings.voxDelay])
+            rset = RadioSetting("settings.voxDelay", "VOX delay", rs)
+            function.append(rset)
+
+            # VOX Level
+            options = ["%s" % x for x in range(1, 10)]
+            rs = RadioSettingValueList(options, options[_settings.voxLevel])
+            rset = RadioSetting("settings.voxLevel", "VOX Level", rs)
+            function.append(rset)
+
         # Key Assignment
         pfkeys = RadioSettingGroup("pfkeys", "Key Assignment")
         group.append(pfkeys)
@@ -1307,6 +1351,9 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         options = ["A/B", "V/M", "SQL", "VOL", "POW", "CDT", "REV", "SCN",
                    "CAL", "TALK", "BND", "SFT", "MON", "DIR", "TRF", "RDW",
                    "NULL"]
+
+        if self.HAS_VOX:
+            options.insert(16, "VOX")
 
         # Key Mode 1
         # P1
@@ -1384,6 +1431,9 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         options = ["V/M", "SQL", "VOL", "POW", "CDT", "REV", "SCN", "CAL",
                    "TALK", "BND", "SFT", "MON", "DIR", "TRF", "RDW"]
+
+        if self.HAS_VOX:
+            options.insert(15, "VOX")
 
         # PA
         rs = RadioSettingValueList(options, options[_settings.keyPA - 2])
@@ -1653,6 +1703,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     LOG.debug(element.get_name())
                     raise
 
+# Original non-VOX models
 if has_future:
     @directory.register
     class AnyTone778UV(AnyTone778UVBase):
@@ -1693,3 +1744,27 @@ if has_future:
         # Allowed radio types is a dict keyed by model of a list of version
         # strings
         ALLOWED_RADIO_TYPES = {'YCM04UV': ['V100']}
+
+
+class AnyTone778UVvoxBase(AnyTone778UVBase):
+    '''AnyTone 778UV VOX, Retivis RT95 VOX and others'''
+    NAME_LENGTH = 6
+    HAS_VOX = True
+
+# New VOX models
+if has_future:
+    @directory.register
+    class AnyTone778UVvox(AnyTone778UVvoxBase):
+        VENDOR = "AnyTone"
+        MODEL = "778UV VOX"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'778UV-P': ['V100']}
+
+    @directory.register
+    class RetevisRT95vox(AnyTone778UVvoxBase):
+        VENDOR = "Retevis"
+        MODEL = "RT95 VOX"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'RT95-P': ['V100']}
