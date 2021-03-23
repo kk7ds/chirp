@@ -1,4 +1,4 @@
-
+# Latest update: March, 2021 RJ DeWitt added IC-7300
 import struct
 import logging
 from chirp.drivers import icf
@@ -112,6 +112,31 @@ u8   dtcs_polarity;
 bbcd dtcs[2];
 u8   unknown[11];
 char name[9];
+"""
+
+MEM_IC7300_FORMAT = """
+bbcd number[2];            // 1,2
+u8   spl:4,                // 3 split and select memory settings
+     select:4;
+lbcd freq[5];              // 4-8 receive freq
+u8   mode;                 // 9 operating mode
+u8   filter;               // 10 filter 1-3 (undocumented)
+u8   dataMode:4,           // 11 data mode setting (on or off)
+     tmode:4;              // 11 tone type
+char pad1;
+bbcd rtone[2];             // 12-14 tx tone freq
+char pad2;
+bbcd ctone[2];             // 15-17 tone rx squelch setting
+lbcd freq_tx[5];           // 4-8 transmit freq
+u8   mode_tx;              // 9 tx operating mode
+u8   filter_tx;            // 10
+u8   dataMode_tx:4,        // 11 tx data mode setting (on or off)
+     tmode_tx:4;           // 11 tx tone type
+char pad3;
+bbcd rtone_tx[2];          // 12-14 repeater tone freq
+char pad4;
+bbcd ctone_tx[2];          // 15-17 tone squelch setting
+char name[10];             // 18-27 Callsign
 """
 
 SPLIT = ["", "spl"]
@@ -243,6 +268,14 @@ class DupToneMemFrame(MemFrame):
     def get_obj(self):
         self._data = MemoryMap(str(self._data))
         return bitwise.parse(mem_duptone_format, self._data)
+
+
+class IC7300MemFrame(MemFrame):
+    FORMAT = MEM_IC7300_FORMAT
+
+    def get_obj(self):
+        self._data = MemoryMap(str(self._data))
+        return bitwise.parse(self.FORMAT, self._data)
 
 
 class SpecialChannel(object):
@@ -648,13 +681,15 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         if self._rf.can_odd_split and mem.duplex == "split":
             memobj.spl = 1
-            memobj.duplex = 0
+            if hasattr(memobj, "duplex"):
+                memobj.duplex = 0
             memobj.freq_tx = int(mem.offset)
             memobj.tmode_tx = memobj.tmode
             memobj.ctone_tx = memobj.ctone
             memobj.rtone_tx = memobj.rtone
-            memobj.dtcs_polarity_tx = memobj.dtcs_polarity
-            memobj.dtcs_tx = memobj.dtcs
+            if self._rf.has_dtcs:
+                memobj.dtcs_polarity_tx = memobj.dtcs_polarity
+                memobj.dtcs_tx = memobj.dtcs
         elif self._rf.valid_duplexes:
             memobj.duplex = self._rf.valid_duplexes.index(mem.duplex)
             if hasattr(memobj, "duplexOffset"):
@@ -899,12 +934,67 @@ class Icom910Radio(IcomCIVRadio):
         # Use Chirp locations starting with 1
         self._adjust_bank_loc_start = True
 
+
+@directory.register
+class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
+    """Icom IC-7300"""
+    MODEL = "IC-7300"
+    _model = "\x94"
+    _template = 100              # Use P1 as blank template
+
+    _SPECIAL_CHANNELS = {
+        "P1": 100,
+        "P2": 101,
+    }
+    _SPECIAL_CHANNELS_REV = dict(zip(_SPECIAL_CHANNELS.values(),
+                                     _SPECIAL_CHANNELS.keys()))
+
+    def _is_special(self, number):
+        return number > 99 or isinstance(number, str)
+
+    def _get_special_info(self, number):
+        info = SpecialChannel()
+        if isinstance(number, str):
+            info.name = number
+            info.channel = self._SPECIAL_CHANNELS[number]
+            info.location = info.channel
+        else:
+            info.location = number
+            info.name = self._SPECIAL_CHANNELS_REV[number]
+            info.channel = info.location
+        return info
+
+    def _initialize(self):
+        self._classes["mem"] = IC7300MemFrame
+        self._rf.has_name = True
+        self._rf.has_dtcs = False
+        self._rf.has_dtcs_polarity = False
+        self._rf.has_bank = False
+        self._rf.has_tuning_step = False
+        self._rf.has_nostep_tuning = True
+        self._rf.can_odd_split = True
+        self._rf.memory_bounds = (1, 99)
+        self._rf.valid_modes = [
+            "LSB", "USB", "AM", "CW", "RTTY", "FM", "CWR", "RTTYR",
+            "Data+LSB", "Data+USB", "Data+AM", "N/A", "N/A", "Data+FM"
+        ]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL"]
+        # self._rf.valid_duplexes = ["", "-", "+", "split"]
+        self._rf.valid_duplexes = []     # To prevent using memobj.duplex
+        self._rf.valid_bands = [(1800000, 70500000)]
+        self._rf.valid_skips = []
+        self._rf.valid_name_length = 10
+        self._rf.valid_characters = chirp_common.CHARSET_ASCII
+        self._rf.valid_special_chans = sorted(self._SPECIAL_CHANNELS.keys())
+
+
 CIV_MODELS = {
     (0x76, 0xE0): Icom7200Radio,
     (0x88, 0xE0): Icom7100Radio,
     (0x70, 0xE0): Icom7000Radio,
     (0x46, 0xE0): Icom746Radio,
     (0x60, 0xE0): Icom910Radio,
+    (0x94, 0xE0): Icom7300Radio,
 }
 
 
