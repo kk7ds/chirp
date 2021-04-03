@@ -1,4 +1,4 @@
-# Copyright 2016 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2021 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,72 +18,75 @@ import os
 import struct
 import logging
 
-from chirp import chirp_common, directory, memmap
-from chirp import bitwise, errors, util
-from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettings
+from chirp import (
+    bitwise,
+    chirp_common,
+    directory,
+    errors,
+    memmap,
+    util,
+)
+from chirp.settings import (
+    RadioSetting,
+    RadioSettingGroup,
+    RadioSettings,
+    RadioSettingValueBoolean,
+    RadioSettingValueInteger,
+    RadioSettingValueList,
+    RadioSettingValueString,
+)
 
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0010;
 struct {
-  lbcd rxfreq[4];
-  lbcd txfreq[4];
-  ul16 rx_tone;
-  ul16 tx_tone;
-  u8 unknown1:3,
-     bcl:2,       // Busy Lock
+  lbcd rxfreq[4];       // RX Frequency           0-3
+  lbcd txfreq[4];       // TX Frequency           4-7
+  ul16 rx_tone;         // PL/DPL Decode          8-9
+  ul16 tx_tone;         // PL/DPL Encode          A-B
+  u8 unknown1:3,        //                        C
+     bcl:2,             // Busy Lock
      unknown2:3;
-  u8 unknown3:2,
-     highpower:1, // Power Level
-     wide:1,      // Bandwidth
+  u8 unknown3:2,        //                        D
+     highpower:1,       // Power Level
+     wide:1,            // Bandwidth
      unknown4:4;
-  u8 scramble_type:4,
+  u8 scramble_type:4,   // Scramble Type          E
      unknown5:4;
   u8 unknown6:4,
-     scramble_type2:4;
+     scramble_type2:4;  // Scramble Type 2        F
 } memory[16];
 
 #seekto 0x011D;
 struct {
   u8 unused:4,
-     pf1:4;        // Programmable Function Key 1
+     pf1:4;             // Programmable Function Key 1
 } keys;
 
 #seekto 0x012C;
 struct {
-  u8 use_scramble; // Scramble Enable
+  u8 use_scramble;      // Scramble Enable
   u8 unknown1[2];
-  u8 voice;        // Voice Annunciation
-  u8 tot;          // Time-out Timer
-  u8 totalert;     // Time-out Timer Pre-alert
+  u8 voice;             // Voice Annunciation
+  u8 tot;               // Time-out Timer
+  u8 totalert;          // Time-out Timer Pre-alert
   u8 unknown2[2];
-  u8 squelch;      // Squelch Level
-  u8 save;         // Battery Saver
+  u8 squelch;           // Squelch Level
+  u8 save;              // Battery Saver
   u8 unknown3[3];
-  u8 use_vox;      // VOX Enable
-  u8 vox;          // VOX Gain
+  u8 use_vox;           // VOX Enable
+  u8 vox;               // VOX Gain
 } settings;
 
 #seekto 0x017E;
-u8 skipflags[2];  // SCAN_ADD
+u8 skipflags[2];       // SCAN_ADD
 """
 
 CMD_ACK = "\x06"
-BLOCK_SIZE = 0x10
-
-RT21_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
-                     chirp_common.PowerLevel("High", watts=2.50)]
-
-
-RT21_DTCS = sorted(chirp_common.DTCS_CODES +
-                   [17, 50, 55, 135, 217, 254, 305, 645, 765])
 
 BCL_LIST = ["Off", "Carrier", "QT/DQT"]
-SCRAMBLE_LIST = ["Scramble 1", "Scramble 2", "Scramble 3", "Scramble 4",
-                 "Scramble 5", "Scramble 6", "Scramble 7", "Scramble 8"]
+SCRAMBLE_LIST = ["%s" % x for x in range(1, 9)]
 TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 615, 15)]
 TOTALERT_LIST = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
 VOICE_LIST = ["Off", "Chinese", "English"]
@@ -101,19 +104,27 @@ SETTING_LISTS = {
     }
 
 
-def _rt21_enter_programming_mode(radio):
+def _enter_programming_mode(radio):
     serial = radio.pipe
 
-    try:
-        serial.write("PRMZUNE")
+    exito = False
+    for i in range(0, 5):
+        serial.write(radio._magic)
         ack = serial.read(1)
-    except:
-        raise errors.RadioError("Error communicating with radio")
 
-    if not ack:
-        raise errors.RadioError("No response from radio")
-    elif ack != CMD_ACK:
-        raise errors.RadioError("Radio refused to enter programming mode")
+        try:
+            if ack == CMD_ACK:
+                exito = True
+                break
+        except:
+            LOG.debug("Attempt #%s, failed, trying again" % i)
+            pass
+
+    # check if we had EXITO
+    if exito is False:
+        msg = "The radio did not accept program mode after five tries.\n"
+        msg += "Check you interface cable and power cycle your radio."
+        raise errors.RadioError(msg)
 
     try:
         serial.write("\x02")
@@ -121,7 +132,7 @@ def _rt21_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("P3207"):
+    if not ident == radio._fingerprint:
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -135,7 +146,7 @@ def _rt21_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
 
-def _rt21_exit_programming_mode(radio):
+def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write("E")
@@ -143,16 +154,16 @@ def _rt21_exit_programming_mode(radio):
         raise errors.RadioError("Radio refused to exit programming mode")
 
 
-def _rt21_read_block(radio, block_addr, block_size):
+def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
+    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
     expectedresponse = "W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         serial.write(cmd)
-        response = serial.read(4 + BLOCK_SIZE)
+        response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
 
@@ -169,11 +180,11 @@ def _rt21_read_block(radio, block_addr, block_size):
     return block_data
 
 
-def _rt21_write_block(radio, block_addr, block_size):
+def _write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
-    data = radio.get_mmap()[block_addr:block_addr + BLOCK_SIZE]
+    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -189,7 +200,7 @@ def _rt21_write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _rt21_enter_programming_mode(radio)
+    _enter_programming_mode(radio)
 
     data = ""
 
@@ -199,17 +210,17 @@ def do_download(radio):
     status.cur = 0
     status.max = radio._memsize
 
-    for addr in range(0, radio._memsize, BLOCK_SIZE):
-        status.cur = addr + BLOCK_SIZE
+    for addr in range(0, radio._memsize, radio.BLOCK_SIZE):
+        status.cur = addr + radio.BLOCK_SIZE
         radio.status_fn(status)
 
-        block = _rt21_read_block(radio, addr, BLOCK_SIZE)
+        block = _read_block(radio, addr, radio.BLOCK_SIZE)
         data += block
 
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    _rt21_exit_programming_mode(radio)
+    _exit_programming_mode(radio)
 
     return memmap.MemoryMap(data)
 
@@ -218,18 +229,18 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _rt21_enter_programming_mode(radio)
+    _enter_programming_mode(radio)
 
     status.cur = 0
     status.max = radio._memsize
 
     for start_addr, end_addr in radio._ranges:
-        for addr in range(start_addr, end_addr, BLOCK_SIZE):
-            status.cur = addr + BLOCK_SIZE
+        for addr in range(start_addr, end_addr, radio.BLOCK_SIZE_UP):
+            status.cur = addr + radio.BLOCK_SIZE_UP
             radio.status_fn(status)
-            _rt21_write_block(radio, addr, BLOCK_SIZE)
+            _write_block(radio, addr, radio.BLOCK_SIZE_UP)
 
-    _rt21_exit_programming_mode(radio)
+    _exit_programming_mode(radio)
 
 
 def model_match(cls, data):
@@ -245,6 +256,18 @@ class RT21Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT21"
     BAUD_RATE = 9600
+    BLOCK_SIZE = 0x10
+    BLOCK_SIZE_UP = 0x10
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                    chirp_common.PowerLevel("High", watts=2.50)]
+
+    _magic = "PRMZUNE"
+    _fingerprint = "P3207s\xF8\xFF"
+    _upper = 16
+    _skipflags = True
+    _reserved = False
+    _gmrs = False
 
     _ranges = [
                (0x0000, 0x0400),
@@ -265,10 +288,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
-        rf.valid_power_levels = RT21_POWER_LEVELS
+        rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
-        rf.memory_bounds = (1, 16)
+        rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = [(400000000, 480000000)]
 
@@ -278,11 +301,31 @@ class RT21Radio(chirp_common.CloneModeRadio):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def sync_in(self):
-        self._mmap = do_download(self)
+        """Download from radio"""
+        try:
+            data = do_download(self)
+        except errors.RadioError:
+            # Pass through any real errors we raise
+            raise
+        except:
+            # If anything unexpected happens, make sure we raise
+            # a RadioError and log the problem
+            LOG.exception('Unexpected error during download')
+            raise errors.RadioError('Unexpected error communicating '
+                                    'with the radio')
+        self._mmap = data
         self.process_mmap()
 
     def sync_out(self):
-        do_upload(self)
+        """Upload to radio"""
+        try:
+            do_upload(self)
+        except:
+            # If anything unexpected happens, make sure we raise
+            # a RadioError and log the problem
+            LOG.exception('Unexpected error during upload')
+            raise errors.RadioError('Unexpected error communicating '
+                                    'with the radio')
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
@@ -330,13 +373,14 @@ class RT21Radio(chirp_common.CloneModeRadio):
                   (txmode, _mem.tx_tone, rxmode, _mem.rx_tone))
 
     def get_memory(self, number):
-        bitpos = (1 << ((number - 1) % 8))
-        bytepos = ((number - 1) / 8)
-        LOG.debug("bitpos %s" % bitpos)
-        LOG.debug("bytepos %s" % bytepos)
+        if self._skipflags:
+            bitpos = (1 << ((number - 1) % 8))
+            bytepos = ((number - 1) / 8)
+            LOG.debug("bitpos %s" % bitpos)
+            LOG.debug("bytepos %s" % bytepos)
+            _skp = self._memobj.skipflags[bytepos]
 
         _mem = self._memobj.memory[number - 1]
-        _skp = self._memobj.skipflags[bytepos]
 
         mem = chirp_common.Memory()
 
@@ -368,23 +412,22 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         self._get_tone(_mem, mem)
 
-        mem.power = RT21_POWER_LEVELS[_mem.highpower]
+        mem.power = self.POWER_LEVELS[_mem.highpower]
 
         mem.skip = "" if (_skp & bitpos) else "S"
         LOG.debug("mem.skip %s" % mem.skip)
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
-        rs = RadioSetting("bcl", "Busy Channel Lockout",
-                          RadioSettingValueList(
-                              BCL_LIST, BCL_LIST[_mem.bcl]))
-        mem.extra.append(rs)
+        if self.MODEL == "RT21":
+            rs = RadioSettingValueList(BCL_LIST, BCL_LIST[_mem.bcl])
+            rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
+            mem.extra.append(rset)
 
-        rs = RadioSetting("scramble_type", "Scramble Type",
-                          RadioSettingValueList(SCRAMBLE_LIST,
-                                                SCRAMBLE_LIST[
-                                                    _mem.scramble_type - 8]))
-        mem.extra.append(rs)
+            rs = RadioSettingValueList(SCRAMBLE_LIST,
+                                       SCRAMBLE_LIST[_mem.scramble_type - 8])
+            rset = RadioSetting("scramble_type", "Scramble Type", rs)
+            mem.extra.append(rset)
 
         return mem
 
@@ -427,13 +470,14 @@ class RT21Radio(chirp_common.CloneModeRadio):
                   (tx_mode, _mem.tx_tone, rx_mode, _mem.rx_tone))
 
     def set_memory(self, mem):
-        bitpos = (1 << ((mem.number - 1) % 8))
-        bytepos = ((mem.number - 1) / 8)
-        LOG.debug("bitpos %s" % bitpos)
-        LOG.debug("bytepos %s" % bytepos)
+        if self._skipflags:
+            bitpos = (1 << ((mem.number - 1) % 8))
+            bytepos = ((mem.number - 1) / 8)
+            LOG.debug("bitpos %s" % bitpos)
+            LOG.debug("bytepos %s" % bytepos)
+            _skp = self._memobj.skipflags[bytepos]
 
         _mem = self._memobj.memory[mem.number - 1]
-        _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
             _mem.set_raw("\xFF" * (_mem.size() / 8))
@@ -459,7 +503,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         self._set_tone(mem, _mem)
 
-        _mem.highpower = mem.power == RT21_POWER_LEVELS[1]
+        _mem.highpower = mem.power == self.POWER_LEVELS[1]
 
         if mem.skip != "S":
             _skp |= bitpos
@@ -475,65 +519,63 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
-        _keys = self._memobj.keys
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
 
-        rs = RadioSetting("tot", "Time-out timer",
-                          RadioSettingValueList(
-                              TIMEOUTTIMER_LIST,
-                              TIMEOUTTIMER_LIST[_settings.tot - 1]))
-        basic.append(rs)
+        if self.MODEL == "RT21":
+            _keys = self._memobj.keys
 
-        rs = RadioSetting("totalert", "TOT Pre-alert",
-                          RadioSettingValueList(
-                              TOTALERT_LIST,
-                              TOTALERT_LIST[_settings.totalert]))
-        basic.append(rs)
+            rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
+                                       TIMEOUTTIMER_LIST[_settings.tot - 1])
+            rset = RadioSetting("tot", "Time-out timer", rs)
+            basic.append(rset)
 
-        rs = RadioSetting("squelch", "Squelch Level",
-                          RadioSettingValueInteger(0, 9, _settings.squelch))
-        basic.append(rs)
+            rs = RadioSettingValueList(TOTALERT_LIST,
+                                       TOTALERT_LIST[_settings.totalert])
+            rset = RadioSetting("totalert", "TOT Pre-alert", rs)
+            basic.append(rset)
 
-        rs = RadioSetting("voice", "Voice Annumciation",
-                          RadioSettingValueList(
-                              VOICE_LIST, VOICE_LIST[_settings.voice]))
-        basic.append(rs)
+            rs = RadioSettingValueInteger(0, 9, _settings.squelch)
+            rset = RadioSetting("squelch", "Squelch Level", rs)
+            basic.append(rset)
 
-        rs = RadioSetting("save", "Battery Saver",
-                          RadioSettingValueBoolean(_settings.save))
-        basic.append(rs)
+            rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
+            rset = RadioSetting("voice", "Voice Annumciation", rs)
+            basic.append(rset)
 
-        rs = RadioSetting("use_scramble", "Scramble",
-                          RadioSettingValueBoolean(_settings.use_scramble))
-        basic.append(rs)
+            rs = RadioSettingValueBoolean(_settings.save)
+            rset = RadioSetting("save", "Battery Saver", rs)
+            basic.append(rset)
 
-        rs = RadioSetting("use_vox", "VOX",
-                          RadioSettingValueBoolean(_settings.use_vox))
-        basic.append(rs)
+            rs = RadioSettingValueBoolean(_settings.use_scramble)
+            rset = RadioSetting("use_scramble", "Scramble", rs)
+            basic.append(rset)
 
-        rs = RadioSetting("vox", "VOX Gain",
-                          RadioSettingValueList(
-                              VOX_LIST, VOX_LIST[_settings.vox]))
-        basic.append(rs)
+            rs = RadioSettingValueBoolean(_settings.use_vox)
+            rset = RadioSetting("use_vox", "VOX", rs)
+            basic.append(rset)
 
-        def apply_pf1_listvalue(setting, obj):
-            LOG.debug("Setting value: " + str(setting.value) + " from list")
-            val = str(setting.value)
-            index = PF1_CHOICES.index(val)
-            val = PF1_VALUES[index]
-            obj.set_value(val)
+            rs = RadioSettingValueList(VOX_LIST, VOX_LIST[_settings.vox])
+            rset = RadioSetting("vox", "VOX Gain", rs)
+            basic.append(rset)
 
-        if _keys.pf1 in PF1_VALUES:
-            idx = PF1_VALUES.index(_keys.pf1)
-        else:
-            idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
-        rs = RadioSetting("keys.pf1", "PF1 Key Function",
-                          RadioSettingValueList(PF1_CHOICES,
-                                                PF1_CHOICES[idx]))
-        rs.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
-        basic.append(rs)
+            def apply_pf1_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(
+                          setting.value) + " from list")
+                val = str(setting.value)
+                index = PF1_CHOICES.index(val)
+                val = PF1_VALUES[index]
+                obj.set_value(val)
+
+            if _keys.pf1 in PF1_VALUES:
+                idx = PF1_VALUES.index(_keys.pf1)
+            else:
+                idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
+            rs = RadioSettingValueList(PF1_CHOICES, PF1_CHOICES[idx])
+            rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
+            rset.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
+            basic.append(rset)
 
         return top
 
@@ -568,17 +610,23 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        match_size = False
-        match_model = False
+        if cls.MODEL == "RT21":
+            # The RT21 is pre-metadata, so do old-school detection
+            match_size = False
+            match_model = False
 
-        # testing the file data size
-        if len(filedata) in [0x0400, ]:
-            match_size = True
+            # testing the file data size
+            if len(filedata) in [0x0400, ]:
+                match_size = True
 
-        # testing the model fingerprint
-        match_model = model_match(cls, filedata)
+            # testing the model fingerprint
+            match_model = model_match(cls, filedata)
 
-        if match_size and match_model:
-            return True
+            if match_size and match_model:
+                return True
+            else:
+                return False
         else:
+            # Radios that have always been post-metadata, so never do
+            # old-school detection
             return False
