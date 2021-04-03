@@ -83,9 +83,63 @@ struct {
 u8 skipflags[2];       // SCAN_ADD
 """
 
+MEM_FORMAT_RB17A = """
+struct memory {
+  lbcd rxfreq[4];      // 0-3
+  lbcd txfreq[4];      // 4-7
+  ul16 rx_tone;        // 8-9
+  ul16 tx_tone;        // A-B
+  u8 unknown1:1,       // C
+     compander:1,      // Compand
+     bcl:2,            // Busy Channel Lock-out
+     cdcss:1,          // Cdcss Mode
+     scramble_type:3;  // Scramble Type
+  u8 unknown2:4,       // D
+     middlepower:1,    // Power Level-Middle
+     unknown3:1,       //
+     highpower:1,      // Power Level-High/Low
+     wide:1;           // Bandwidth
+  u8 unknown4;         // E
+  u8 unknown5;         // F
+};
+
+#seekto 0x0010;
+  struct memory lomems[16];
+
+#seekto 0x0200;
+  struct memory himems[14];
+
+#seekto 0x011D;
+struct {
+  u8 pf1;              // 011D PF1 Key
+  u8 topkey;           // 011E Top Key
+} keys;
+
+#seekto 0x012C;
+struct {
+  u8 use_scramble;     // 012C Scramble Enable
+  u8 channel;          // 012D Channel Number
+  u8 alarm;            // 012E Alarm Type
+  u8 voice;            // 012F Voice Annunciation
+  u8 tot;              // 0130 Time-out Timer
+  u8 totalert;         // 0131 Time-out Timer Pre-alert
+  u8 unknown2[2];
+  u8 squelch;          // 0134 Squelch Level
+  u8 save;             // 0135 Battery Saver
+  u8 unknown3[3];
+  u8 use_vox;          // 0139 VOX Enable
+  u8 vox;              // 013A VOX Gain
+} settings;
+
+#seekto 0x017E;
+u8 skipflags[4];       // Scan Add
+"""
+
 CMD_ACK = "\x06"
 
+ALARM_LIST = ["Local Alarm", "Remote Alarm"]
 BCL_LIST = ["Off", "Carrier", "QT/DQT"]
+CDCSS_LIST = ["Normal Code", "Special Code 2", "Special Code 1"]
 SCRAMBLE_LIST = ["%s" % x for x in range(1, 9)]
 TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 615, 15)]
 TOTALERT_LIST = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
@@ -93,15 +147,27 @@ VOICE_LIST = ["Off", "Chinese", "English"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 17)]
 PF1_CHOICES = ["None", "Monitor", "Scan", "Scramble", "Alarm"]
 PF1_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x0C]
+TOPKEY_CHOICES = ["None", "Alarming"]
+TOPKEY_VALUES = [0xFF, 0x0C]
 
 SETTING_LISTS = {
+    "alarm": ALARM_LIST,
     "bcl": BCL_LIST,
+    "cdcss": CDCSS_LIST,
     "scramble": SCRAMBLE_LIST,
     "tot": TIMEOUTTIMER_LIST,
     "totalert": TOTALERT_LIST,
     "voice": VOICE_LIST,
     "vox": VOX_LIST,
     }
+
+GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+               462.6875, 462.7125]
+GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+               467.6875, 467.7125]
+GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+               462.6750, 462.7000, 462.7250]
+GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
 
 def _enter_programming_mode(radio):
@@ -300,6 +366,52 @@ class RT21Radio(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
+    def validate_memory(self, mem):
+        msgs = ""
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        _msg_freq = 'Memory location cannot change frequency'
+        _msg_simplex = 'Memory location only supports Duplex:(None)'
+        _msg_duplex = 'Memory location only supports Duplex: +'
+        _msg_offset = 'Memory location only supports Offset: 5.000000'
+        _msg_nfm = 'Memory location only supports Mode: NFM'
+        _msg_txp = 'Memory location only supports Power: Low'
+
+        # GMRS models
+        if self._gmrs:
+            # range of memories with values set by FCC rules
+            if mem.freq != int(GMRS_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+
+            # channels 1 - 22 are simplex only
+            if mem.number <= 22:
+                if str(mem.duplex) != "":
+                    # warn user can't change duplex
+                    msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            # channels 23 - 30 are +5 MHz duplex only
+            if mem.number >= 23:
+                if str(mem.duplex) != "+":
+                    # warn user can't change duplex
+                    msgs.append(chirp_common.ValidationError(_msg_duplex))
+
+                if str(mem.offset) != "5000000":
+                    # warn user can't change offset
+                    msgs.append(chirp_common.ValidationError(_msg_offset))
+
+            # channels 8 - 14 are low power NFM only
+            if mem.number >= 8 and mem.number <= 14:
+                if mem.mode != "NFM":
+                    # warn user can't change mode
+                    msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+                if mem.power != "Low":
+                    # warn user can't change power
+                    msgs.append(chirp_common.ValidationError(_msg_txp))
+
+        return msgs
+
     def sync_in(self):
         """Download from radio"""
         try:
@@ -380,11 +492,18 @@ class RT21Radio(chirp_common.CloneModeRadio):
             LOG.debug("bytepos %s" % bytepos)
             _skp = self._memobj.skipflags[bytepos]
 
-        _mem = self._memobj.memory[number - 1]
-
         mem = chirp_common.Memory()
 
         mem.number = number
+
+        if self.MODEL == "RB17A":
+            if mem.number < 17:
+                _mem = self._memobj.lomems[number - 1]
+            else:
+                _mem = self._memobj.himems[number - 17]
+        else:
+            _mem = self._memobj.memory[number - 1]
+
         mem.freq = int(_mem.rxfreq) * 10
 
         # We'll consider any blank (i.e. 0MHz frequency) to be empty
@@ -399,7 +518,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         if _mem.get_raw() == ("\xFF" * 16):
             LOG.debug("Initializing empty memory")
-            _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
+            if self.MODEL == "RB17A":
+                _mem.set_raw("\x00" * 13 + "\x04\xFF\xFF")
+            else:
+                _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
 
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
@@ -419,7 +541,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
-        if self.MODEL == "RT21":
+        if self.MODEL == "RT21" or self.MODEL == "RB17A":
             rs = RadioSettingValueList(BCL_LIST, BCL_LIST[_mem.bcl])
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
             mem.extra.append(rset)
@@ -428,6 +550,18 @@ class RT21Radio(chirp_common.CloneModeRadio):
                                        SCRAMBLE_LIST[_mem.scramble_type - 8])
             rset = RadioSetting("scramble_type", "Scramble Type", rs)
             mem.extra.append(rset)
+
+            if self.MODEL == "RB17A":
+                rs = RadioSettingValueList(CDCSS_LIST, CDCSS_LIST[_mem.cdcss])
+                rset = RadioSetting("cdcss", "Cdcss Mode", rs)
+                mem.extra.append(rset)
+
+        if self._gmrs:
+            GMRS_IMMUTABLE = ["freq", "duplex", "offset"]
+            if mem.number >= 8 and mem.number <= 14:
+                mem.immutable = GMRS_IMMUTABLE + ["power", "mode"]
+            else:
+                mem.immutable = GMRS_IMMUTABLE
 
         return mem
 
@@ -477,13 +611,41 @@ class RT21Radio(chirp_common.CloneModeRadio):
             LOG.debug("bytepos %s" % bytepos)
             _skp = self._memobj.skipflags[bytepos]
 
-        _mem = self._memobj.memory[mem.number - 1]
+        if self.MODEL == "RB17A":
+            if mem.number < 17:
+                _mem = self._memobj.lomems[mem.number - 1]
+            else:
+                _mem = self._memobj.himems[mem.number - 17]
+        else:
+            _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            if self.MODEL == "RB17A":
+                _mem.set_raw("\xFF" * 12 + "\x00\x00\xFF\xFF")
+            else:
+                _mem.set_raw("\xFF" * (_mem.size() / 8))
+
+            if self._gmrs:
+                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 100000)
+                if mem.number > 22:
+                    _mem.rxfreq = GMRS_FREQ
+                    _mem.txfreq = int(_mem.rxfreq) + 500000
+                    _mem.wide = True
+                else:
+                    _mem.rxfreq = _mem.txfreq = GMRS_FREQ
+                if mem.number >= 8 and mem.number <= 14:
+                    _mem.wide = False
+                    _mem.highpower = False
+                else:
+                    _mem.wide = True
+                    _mem.highpower = True
+
             return
 
-        _mem.set_raw("\x00" * 13 + "\x00\x8F\xF8")
+        if self.MODEL == "RB17A":
+            _mem.set_raw("\x00" * 13 + "\x00\xFF\xFF")
+        else:
+            _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
 
         _mem.rxfreq = mem.freq / 10
 
@@ -523,7 +685,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
 
-        if self.MODEL == "RT21":
+        if self.MODEL == "RT21" or self.MODEL == "RB17A":
             _keys = self._memobj.keys
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
@@ -543,6 +705,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
             rset = RadioSetting("voice", "Voice Annumciation", rs)
             basic.append(rset)
+
+            if self.MODEL == "RB17A":
+                rs = RadioSettingValueList(ALARM_LIST,
+                                           ALARM_LIST[_settings.alarm])
+                rset = RadioSetting("alarm", "Alarm Type", rs)
+                basic.append(rset)
 
             rs = RadioSettingValueBoolean(_settings.save)
             rset = RadioSetting("save", "Battery Saver", rs)
@@ -577,6 +745,24 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
             basic.append(rset)
 
+            def apply_topkey_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(setting.value) +
+                          " from list")
+                val = str(setting.value)
+                index = TOPKEY_CHOICES.index(val)
+                val = TOPKEY_VALUES[index]
+                obj.set_value(val)
+
+            if self.MODEL == "RB17A":
+                if _keys.topkey in TOPKEY_VALUES:
+                    idx = TOPKEY_VALUES.index(_keys.topkey)
+                else:
+                    idx = TOPKEY_VALUES.index(0x0C)
+                rs = RadioSettingValueList(TOPKEY_CHOICES, TOPKEY_CHOICES[idx])
+                rset = RadioSetting("keys.topkey", "Top Key Function", rs)
+                rset.set_apply_callback(apply_topkey_listvalue, _keys.topkey)
+                basic.append(rset)
+
         return top
 
     def set_settings(self, settings):
@@ -599,6 +785,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
+                    elif setting == "channel":
+                        setattr(obj, setting, int(element.value) - 1)
                     elif setting == "tot":
                         setattr(obj, setting, int(element.value) + 1)
                     elif element.value.get_mutable():
@@ -607,6 +795,34 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
+
+
+@directory.register
+class RB17ARadio(RT21Radio):
+    """RETEVIS RB17A"""
+    VENDOR = "Retevis"
+    MODEL = "RB17A"
+    BAUD_RATE = 9600
+    BLOCK_SIZE = 0x40
+    BLOCK_SIZE_UP = 0x10
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("High", watts=5.00)]
+
+    _magic = "PROA8US"
+    _fingerprint = "P3217s\xF8\xFF"
+    _upper = 30
+    _skipflags = True
+    _reserved = False
+    _gmrs = True
+
+    _ranges = [
+               (0x0000, 0x0300),
+              ]
+    _memsize = 0x0300
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RB17A, self._mmap)
 
     @classmethod
     def match_model(cls, filedata, filename):
