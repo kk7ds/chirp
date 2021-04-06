@@ -1083,6 +1083,29 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     LOG.debug(element.get_name())
                     raise
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if cls.MODEL == "RT21":
+            # The RT21 is pre-metadata, so do old-school detection
+            match_size = False
+            match_model = False
+
+            # testing the file data size
+            if len(filedata) in [0x0400, ]:
+                match_size = True
+
+            # testing the model fingerprint
+            match_model = model_match(cls, filedata)
+
+            if match_size and match_model:
+                return True
+            else:
+                return False
+        else:
+            # Radios that have always been post-metadata, so never do
+            # old-school detection
+            return False
+
 
 @directory.register
 class RB17ARadio(RT21Radio):
@@ -1166,26 +1189,3 @@ class RT76Radio(RT21Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT76, self._mmap)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        if cls.MODEL == "RT21":
-            # The RT21 is pre-metadata, so do old-school detection
-            match_size = False
-            match_model = False
-
-            # testing the file data size
-            if len(filedata) in [0x0400, ]:
-                match_size = True
-
-            # testing the model fingerprint
-            match_model = model_match(cls, filedata)
-
-            if match_size and match_model:
-                return True
-            else:
-                return False
-        else:
-            # Radios that have always been post-metadata, so never do
-            # old-school detection
-            return False
