@@ -875,8 +875,9 @@ class TestCaseDetect(TestCase):
         elif issubclass(radio.__class__, self._wrapper._dstclass):
             pass
         elif radio.__class__ != self._wrapper._dstclass:
-            raise TestFailedError("%s detected as %s" %
-                                  (self._wrapper._dstclass, radio.__class__))
+            raise TestFailedError("%s detected as %s for %s" %
+                                  (self._wrapper._dstclass, radio.__class__,
+                                   filename))
         return []
 
 TESTS["Detect"] = TestCaseDetect

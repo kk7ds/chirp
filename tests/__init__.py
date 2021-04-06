@@ -26,7 +26,9 @@ class TestAdapter(unittest.TestCase):
 
     def setUp(self):
         self._out = run_tests.TestOutputANSI()
-        self.testimage = tempfile.mktemp('.img')
+        rid = "%s_%s_" % (self.RADIO_CLASS.VENDOR, self.RADIO_CLASS.MODEL)
+        rid = rid.replace("/", "_")
+        self.testimage = tempfile.mktemp('.img', rid)
         shutil.copy(self.SOURCE_IMAGE, self.testimage)
 
     def tearDown(self):
