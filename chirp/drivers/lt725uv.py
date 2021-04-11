@@ -1043,7 +1043,7 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         val = _vfob.chan_num + 1
         rs = RadioSetting("lower.vfob.chan_num", "Initial Chan",
-                          RadioSettingValueInteger(0, 127, val))
+                          RadioSettingValueInteger(1, 128, val))
         rs.set_apply_callback(my_adjraw, _vfob, "chan_num", -1)
         b_band.append(rs)
 
