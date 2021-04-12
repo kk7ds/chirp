@@ -1,4 +1,4 @@
-# Copyright 2016:
+# Copyright 2016-2021:
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 # Modified for Baojie BJ-218: 2018 by Rick DeWitt (RJD), <aa0rd@yahoo.com>#
 # This program is free software: you can redistribute it and/or modify
@@ -173,9 +173,6 @@ struct {
 MEM_SIZE = 0x1C00
 BLOCK_SIZE = 0x40
 STIMEOUT = 2
-# Channel power: 2 levels
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
-                chirp_common.PowerLevel("High", watts=30.00)]
 
 LIST_RECVMODE = ["QT/DQT", "QT/DQT + Signaling"]
 LIST_SIGNAL = ["Off"] + ["DTMF%s" % x for x in range(1, 9)] + \
@@ -428,6 +425,10 @@ class LT725UV(chirp_common.CloneModeRadio):
     NAME_LENGTH = 7
     DTMF_CHARS = list("0123456789ABCD*#")
 
+    # Channel power: 2 levels
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
+                    chirp_common.PowerLevel("High", watts=30.00)]
+
     VALID_BANDS = [(136000000, 176000000),
                    (400000000, 480000000)]
 
@@ -499,7 +500,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS"]
         rf.valid_skips = []
-        rf.valid_power_levels = POWER_LEVELS
+        rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_name_length = self.NAME_LENGTH
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_bands = self.VALID_BANDS
@@ -624,7 +625,7 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         mem.mode = _mem.wide and "FM" or "NFM"
 
-        mem.power = POWER_LEVELS[_mem.power]
+        mem.power = self.POWER_LEVELS[_mem.power]
 
         # Extra
         mem.extra = RadioSettingGroup("extra", "Extra")
@@ -745,7 +746,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             _mem.txtone = self._set_dcs(mem.dtcs)
 
         _mem.wide = self.MODES.index(mem.mode)
-        _mem.power = mem.power == POWER_LEVELS[1]
+        _mem.power = mem.power == self.POWER_LEVELS[1]
 
         # Extra settings
         for setting in mem.extra:
@@ -1440,9 +1441,22 @@ class Hesenate(chirp_common.Alias):
     MODEL = "BJ-218"
 
 
+class Baojie218Upper(LT725UVUpper):
+    VENDOR = "Baojie"
+    MODEL = "BJ-218"
+
+
+class Baojie218Lower(LT725UVLower):
+    VENDOR = "Baojie"
+    MODEL = "BJ-218"
+
+
 @directory.register
 class Baojie218(LT725UV):
     """Baojie BJ-218"""
     VENDOR = "Baojie"
     MODEL = "BJ-218"
     ALIASES = [Zastone, Hesenate, ]
+
+    def get_sub_devices(self):
+        return [Baojie218Upper(self._mmap), Baojie218Lower(self._mmap)]
