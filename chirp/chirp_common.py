@@ -1243,7 +1243,7 @@ class CloneModeRadio(FileBackedRadio):
         # Ideally, each radio would perform an intelligent analysis to
         # make this determination to avoid model conflicts with
         # memories of the same size.
-        return len(filedata) == cls._memsize
+        return cls._memsize and len(filedata) == cls._memsize
 
     def sync_in(self):
         "Initiate a radio-to-PC clone operation"
