@@ -285,6 +285,7 @@ class DRx35Radio(AlincoStyleRadio):
         rf.valid_tuning_steps = STEPS
         rf.valid_name_length = 7
         rf.valid_power_levels = self._power_levels
+        rf.valid_dtcs_codes = DCS_CODES[self.VENDOR]
         return rf
 
     def _get_used(self, number):
