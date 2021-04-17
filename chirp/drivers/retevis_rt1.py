@@ -368,6 +368,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = RT1_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
+        rf.valid_dtcs_codes = RT1_DTCS
         rf.memory_bounds = (1, 16)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         if self._mmap is None:
