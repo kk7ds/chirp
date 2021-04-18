@@ -386,6 +386,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = RT23_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]  # 25 KHz, 12.5 KHz.
+        rf.valid_dtcs_codes = RT23_DTCS
         rf.memory_bounds = (1, 128)
         rf.valid_tuning_steps = _STEP_LIST
         rf.valid_bands = [
