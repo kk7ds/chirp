@@ -783,6 +783,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
+        rf.valid_dtcs_codes = UV5R_DTCS
 
         normal_bands = [self._vhf_range, self._uhf_range]
         rax_bands = [self._vhf_range, self._220_range]
