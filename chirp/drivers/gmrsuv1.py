@@ -98,7 +98,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
     VENDOR = "BTECH"
     MODEL = "GMRS-V1"
 
-    _fileid = [GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
+    _fileid = [GMRSV1_fp4, GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
     _is_orig = [GMRSV1_fp2, GMRSV1_fp1, GMRSV1_fp4, ]
 
     _magic = [MSTRING_GMRSV1, ]
