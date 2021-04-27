@@ -1246,14 +1246,15 @@ class FT2900Radio(YaesuCloneModeRadio):
 # the FT2900E is the European version of the radio, almost identical
 # to the R (USA) version, except for the model number and ID Block.  We
 # create and register a class for it, with only the needed overrides
-#Currently disabled - Unable to test
-#@directory.register
+# NOTE: Disabled until detection is fixed
+# @directory.register
 class FT2900ERadio(FT2900Radio):
 
     """Yaesu FT-2900E"""
     MODEL = "FT-2900E/1900E"
     VARIANT = "E"
     IDBLOCK = "\x56\x43\x32\x33\x00\x02\x41\x02\x01\x01"
+
 
 # This class is for the TX Modified FT-1900/FT-2900 (MARS/CAP Mod).
 # Enabling out of band TX changes the header received by CHIRP
@@ -1264,3 +1265,7 @@ class FT2900ModRadio(FT2900Radio):
     MODEL = "FT-2900R/1900R(TXMod)"
     VARIANT = "Opened Xmit"
     IDBLOCK = "\x56\x43\x32\x33\x00\x02\xc7\x01\x01\x01"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
