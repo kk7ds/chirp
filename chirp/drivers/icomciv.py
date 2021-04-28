@@ -1,4 +1,4 @@
-# Latest update: March, 2021 RJ DeWitt added IC-7300
+# Latest update: April, 2021 Add hasattr test at line 564
 import struct
 import logging
 from chirp.drivers import icf
@@ -561,7 +561,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             mem.duplex = self._rf.valid_duplexes[memobj.duplex]
 
         if self._rf.can_odd_split and memobj.spl:
-            mem.duplex = "split"
+            if hasattr(memobj, "duplex"):
+                mem.duplex = "split"
             mem.offset = int(memobj.freq_tx)
             mem.immutable = []
         elif hasattr(memobj, "duplexOffset"):
