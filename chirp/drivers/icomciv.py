@@ -989,31 +989,28 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
         self._rf.valid_special_chans = sorted(self._SPECIAL_CHANNELS.keys())
 
 
-CIV_MODELS = {
-    (0x76, 0xE0): Icom7200Radio,
-    (0x88, 0xE0): Icom7100Radio,
-    (0x70, 0xE0): Icom7000Radio,
-    (0x46, 0xE0): Icom746Radio,
-    (0x60, 0xE0): Icom910Radio,
-    (0x94, 0xE0): Icom7300Radio,
-}
-
-
 def probe_model(ser):
     """Probe the radio attatched to @ser for its model"""
     f = Frame()
     f.set_command(0x19, 0x00)
 
-    for model, controller in CIV_MODELS.keys():
-        f.send(model, controller, ser)
+    models = {}
+    for rclass in directory.DRV_TO_RADIO.values():
+        if issubclass(rclass, IcomCIVRadio):
+            models[rclass.MODEL] = rclass
+
+    for rclass in models.values():
+        model = ord(rclass._model)
+        f.send(model, 0xE0, ser)
         try:
             f.read(ser)
         except errors.RadioError:
             continue
 
         if len(f.get_data()) == 1:
-            model = ord(f.get_data()[0])
-            return CIV_MODELS[(model, controller)]
+            md = ord(f.get_data()[0])
+            if (md == model):
+                return rclass
 
         if f.get_data():
             LOG.debug("Got data, but not 1 byte:")
