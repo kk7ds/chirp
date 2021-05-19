@@ -1981,3 +1981,23 @@ class RadioddityUV5RX3Radio(BaofengUV5R):
     @classmethod
     def match_model(cls, filename, filedata):
         return False
+
+
+@directory.register
+class RadioddityGT5RRadio(BaofengUV5R):
+    VENDOR = 'Baofeng'
+    MODEL = 'GT-5R'
+
+    vhftx = [144000000, 148000000]
+    uhftx = [420000000, 450000000]
+
+    def set_memory(self, mem):
+        # If memory is outside the TX limits, the radio will refuse
+        # transmit. Radioddity asked for us to enforce this behavior
+        # in chirp for consistency.
+        if mem.freq not in self.vhftx and mem.freq not in self.uhftx:
+            LOG.info('Memory frequency outside TX limits of radio; '
+                     'forcing duplex=off')
+            mem.duplex = 'off'
+            mem.offset = 0
+        BaofengUV5R.set_memory(self, mem)
