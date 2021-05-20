@@ -2001,3 +2001,7 @@ class RadioddityGT5RRadio(BaofengUV5R):
             mem.duplex = 'off'
             mem.offset = 0
         BaofengUV5R.set_memory(self, mem)
+
+    @classmethod
+    def match_model(cls, filename, filedata):
+        return False
