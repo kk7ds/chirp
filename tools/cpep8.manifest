@@ -19,6 +19,7 @@
 ./chirp/drivers/baofeng_common.py
 ./chirp/drivers/baofeng_uv3r.py
 ./chirp/drivers/baofeng_wp970i.py
+./chirp/drivers/bf-t8.py
 ./chirp/drivers/bjuv55.py
 ./chirp/drivers/btech.py
 ./chirp/drivers/ft1500m.py
