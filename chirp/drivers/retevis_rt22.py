@@ -38,7 +38,9 @@ struct {
   u8 unknown3:2,
      highpower:1, // Power Level
      wide:1,      // Bandwidth
-     unknown4:4;
+     unknown4:2,
+     signal:1,    // Signal
+     bcl:1;       // BCL
   u8 unknown5[2];
 } memory[16];
 
@@ -491,6 +493,17 @@ class RT22Radio(chirp_common.CloneModeRadio):
         mem.skip = "" if (_skp & bitpos) else "S"
         LOG.debug("mem.skip %s" % mem.skip)
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        if self.MODEL == "RT22FRS" or self.MODEL == "RT622":
+            rs = RadioSettingValueBoolean(_mem.bcl)
+            rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
+            mem.extra.append(rset)
+
+            rs = RadioSettingValueBoolean(_mem.signal)
+            rset = RadioSetting("signal", "Signal", rs)
+            mem.extra.append(rset)
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -569,6 +582,9 @@ class RT22Radio(chirp_common.CloneModeRadio):
         else:
             _skp &= ~bitpos
         LOG.debug("_skp %s" % _skp)
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
         _settings = self._memobj.settings
