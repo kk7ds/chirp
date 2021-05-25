@@ -216,6 +216,7 @@ def _rt22_read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
+        time.sleep(0.005)
         serial.write(CMD_ACK)
         ack = serial.read(1)
     except:
