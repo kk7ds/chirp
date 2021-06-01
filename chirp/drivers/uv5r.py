@@ -1995,7 +1995,8 @@ class RadioddityGT5RRadio(BaofengUV5R):
         # If memory is outside the TX limits, the radio will refuse
         # transmit. Radioddity asked for us to enforce this behavior
         # in chirp for consistency.
-        if mem.freq not in self.vhftx and mem.freq not in self.uhftx:
+        if not (mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) and \
+           not (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1]):
             LOG.info('Memory frequency outside TX limits of radio; '
                      'forcing duplex=off')
             mem.duplex = 'off'
