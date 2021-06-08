@@ -639,15 +639,16 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset.set_apply_callback(myset_freq, _settings, "fmcur", 10)
         basic.append(rset)
 
-        rs = RadioSettingValueList(WORKMODE_LIST,
-                                   WORKMODE_LIST[_settings.workmode])
-        rset = RadioSetting("workmode", "Work Mode", rs)
-        basic.append(rset)
+        if not self._frs:
+            rs = RadioSettingValueList(WORKMODE_LIST,
+                                       WORKMODE_LIST[_settings.workmode])
+            rset = RadioSetting("workmode", "Work Mode", rs)
+            basic.append(rset)
 
-        rs = RadioSettingValueList(AREA_LIST, AREA_LIST[_settings.area])
-        rs.set_mutable(False)
-        rset = RadioSetting("area", "Area", rs)
-        basic.append(rset)
+            rs = RadioSettingValueList(AREA_LIST, AREA_LIST[_settings.area])
+            rs.set_mutable(False)
+            rset = RadioSetting("area", "Area", rs)
+            basic.append(rset)
 
         return top
 
@@ -700,3 +701,12 @@ class AR8Alias(chirp_common.Alias):
 @directory.register
 class BaofengBFT8Generic(BFT8Radio):
     ALIASES = [BFU9Alias, AR8Alias, ]
+
+
+@directory.register
+class RetevisRT16(BFT8Radio):
+    VENDOR = "Retevis"
+    MODEL = "RT16"
+
+    _upper = 22
+    _frs = _upper == 22
