@@ -43,7 +43,7 @@ struct {
        unknown2:1,
        bcl:1;
     u8 unknown3[3];
-} memory[16];
+} memory[%d];
 #seekto 0x03C0;
 struct {
     u8 unknown1:1,
@@ -90,7 +90,7 @@ def _t18_enter_programming_mode(radio):
     try:
         serial.write("\x02")
         time.sleep(0.1)
-        serial.write("1ROGRAM")
+        serial.write(radio._magic)
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -106,7 +106,7 @@ def _t18_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("SMP558"):
+    if not ident.startswith(radio._fingerprint):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -150,13 +150,13 @@ def _t18_exit_programming_mode(radio):
 def _t18_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
+    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
     expectedresponse = "W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         serial.write(cmd)
-        response = serial.read(4 + BLOCK_SIZE)
+        response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
 
@@ -176,7 +176,7 @@ def _t18_read_block(radio, block_addr, block_size):
 def _t18_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
+    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + 8]
 
     LOG.debug("Writing Data:")
@@ -253,6 +253,13 @@ class T18Radio(chirp_common.CloneModeRadio):
     MODEL = "T18"
     BAUD_RATE = 9600
 
+    _magic = "1ROGRAM"
+    _fingerprint = "SMP558" + "\x00\x00"
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs = False
+
     _ranges = [
         (0x0000, 0x03F0),
     ]
@@ -280,13 +287,13 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.has_tuning_step = False
         rf.has_bank = False
         rf.has_name = False
-        rf.memory_bounds = (1, 16)
+        rf.memory_bounds = (1, self._upper)
         rf.valid_bands = [(400000000, 470000000)]
 
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
     def sync_in(self):
         self._mmap = do_download(self)
@@ -485,17 +492,22 @@ class T18Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        match_size = False
-        match_model = False
+        if cls.MODEL == "T18":
+            match_size = False
+            match_model = False
 
-        # testing the file data size
-        if len(filedata) == cls._memsize:
-            match_size = True
+            # testing the file data size
+            if len(filedata) == cls._memsize:
+                match_size = True
 
-        # testing the model fingerprint
-        match_model = model_match(cls, filedata)
+            # testing the model fingerprint
+            match_model = model_match(cls, filedata)
 
-        if match_size and match_model:
-            return True
+            if match_size and match_model:
+                return True
+            else:
+                return False
         else:
+            # Radios that have always been post-metadata, so never do
+            # old-school detection
             return False
