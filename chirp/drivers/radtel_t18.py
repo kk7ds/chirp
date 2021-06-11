@@ -53,7 +53,7 @@ struct {
        batterysaver:1,
        beep:1;
     u8 squelchlevel;
-    u8 unused2;
+    u8 sidekey2;         // Retevis RT22S setting
     u8 timeouttimer;
     u8 voxlevel;
     u8 unknown3;
@@ -74,14 +74,24 @@ SCANMODE_LIST = ["Carrier", "Time"]
 VOXLEVEL_LIST = ["Off", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 VOXDELAY_LIST = ["0.5 seconds", "1.0 seconds", "1.5 seconds",
                  "2.0 seconds", "2.5 seconds", "3.0 seconds"]
+SIDEKEY2_LIST = ["Off", "Scan", "Emergency Alarm", "Display Battery"]
 
 SETTING_LISTS = {
     "voice": VOICE_LIST,
     "timeouttimer": TIMEOUTTIMER_LIST,
     "scanmode": SCANMODE_LIST,
     "voxlevel": VOXLEVEL_LIST,
-    "voxdelay": VOXDELAY_LIST
+    "voxdelay": VOXDELAY_LIST,
+    "sidekey2": SIDEKEY2_LIST
 }
+
+FRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+              462.6875, 462.7125]
+FRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+              467.6875, 467.7125]
+FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+              462.6750, 462.7000, 462.7250]
+FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
 
 def _t18_enter_programming_mode(radio):
@@ -162,13 +172,15 @@ def _t18_read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
-        serial.write(CMD_ACK)
-        ack = serial.read(1)
+        if radio.MODEL != "RT22S":
+            serial.write(CMD_ACK)
+            ack = serial.read(1)
     except:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
 
-    if ack != CMD_ACK:
-        raise Exception("No ACK reading block %04x." % (block_addr))
+    if not radio.MODEL == "RT22S":
+        if ack != CMD_ACK:
+            raise Exception("No ACK reading block %04x." % (block_addr))
 
     return block_data
 
@@ -295,6 +307,40 @@ class T18Radio(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
+    def validate_memory(self, mem):
+        msgs = ""
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        _msg_freq = 'Memory location cannot change frequency'
+        _msg_simplex = 'Memory location only supports Duplex:(None)'
+        _msg_nfm = 'Memory location only supports Mode: NFM'
+        _msg_txp = 'Memory location only supports Power: Low'
+
+        # FRS only models
+        if self._frs:
+            # range of memories with values set by FCC rules
+            if mem.freq != int(FRS_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+
+            # channels 1 - 22 are simplex only
+            if str(mem.duplex) != "":
+                # warn user can't change duplex
+                msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            # channels 1 - 22 are NFM only
+            if str(mem.mode) != "NFM":
+                # warn user can't change mode
+                msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+            # channels 8 - 14 are low power NFM only
+            if mem.number >= 8 and mem.number <= 14:
+                if str(mem.power) != "Low":
+                    # warn user can't change power
+                    msgs.append(chirp_common.ValidationError(_msg_txp))
+
+        return msgs
+
     def sync_in(self):
         self._mmap = do_download(self)
         self.process_mmap()
@@ -365,6 +411,13 @@ class T18Radio(chirp_common.CloneModeRadio):
         rxtone = self._decode_tone(_mem.rxtone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
+        if self._frs:
+            FRS_IMMUTABLE = ["freq", "duplex", "offset", "mode"]
+            if mem.number >= 8 and mem.number <= 14:
+                mem.immutable = FRS_IMMUTABLE + ["power"]
+            else:
+                mem.immutable = FRS_IMMUTABLE
+
         mem.extra = RadioSettingGroup("Extra", "extra")
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
@@ -383,7 +436,18 @@ class T18Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            if self._frs:
+                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
+                FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
+                _mem.rxfreq = _mem.txfreq = FRS_FREQ
+                _mem.narrow = True
+                if mem.number >= 8 and mem.number <= 14:
+                    _mem.highpower = False
+                else:
+                    _mem.highpower = True
+            else:
+                _mem.set_raw("\xFF" * (_mem.size() / 8))
+
             return
 
         _mem.rxfreq = mem.freq / 10
@@ -460,6 +524,13 @@ class T18Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.beep))
         basic.append(rs)
 
+        if self.MODEL == "RT22S":
+            rs = RadioSetting("sidekey2", "Side Key 2(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY2_LIST,
+                                  SIDEKEY2_LIST[_settings.sidekey2]))
+            basic.append(rs)
+
         return top
 
     def set_settings(self, settings):
@@ -511,3 +582,17 @@ class T18Radio(chirp_common.CloneModeRadio):
             # Radios that have always been post-metadata, so never do
             # old-school detection
             return False
+
+
+@directory.register
+class RT22SRadio(T18Radio):
+    """RETEVIS RT22S"""
+    VENDOR = "Retevis"
+    MODEL = "RT22S"
+
+    _magic = "9COGRAM"
+    _fingerprint = "SMP558" + "\x02"
+    _upper = 22
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs = True
