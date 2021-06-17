@@ -20,6 +20,8 @@ except ImportError:
     LOG.warning('python-future package is not available; '
                 '%s requires it' % __name__)
 
+# GA510 also has DTCS code 645
+DTCS_CODES = list(sorted(chirp_common.DTCS_CODES + [645]))
 
 POWER_LEVELS = [
     chirp_common.PowerLevel('H', watts=10),
@@ -256,6 +258,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 12.5, 10.0, 15.0, 20.0,
                                  25.0, 50.0, 100.0]
+        rf.valid_dtcs_codes = DTCS_CODES
         rf.valid_duplexes = ['', '-', '+', 'split', 'off']
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_name_length = 10
@@ -277,13 +280,13 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             return '', None, None
         elif toneval < 670:
             toneval = toneval - 1
-            index = toneval % len(chirp_common.DTCS_CODES)
+            index = toneval % len(DTCS_CODES)
             if index != int(toneval):
                 pol = 'R'
                 #index -= 1
             else:
                 pol = 'N'
-            return 'DTCS', chirp_common.DTCS_CODES[index], pol
+            return 'DTCS', DTCS_CODES[index], pol
         else:
             return 'Tone', toneval / 10.0, 'N'
 
@@ -294,9 +297,9 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         elif mode == 'Tone':
             return int(val * 10)
         elif mode == 'DTCS':
-            index = chirp_common.DTCS_CODES.index(val)
+            index = DTCS_CODES.index(val)
             if pol == 'R':
-                index += len(chirp_common.DTCS_CODES)
+                index += len(DTCS_CODES)
             index += 1
             LOG.debug('Encoded dtcs %s/%s to %04x' % (val, pol, index))
             return index
