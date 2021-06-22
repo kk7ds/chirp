@@ -99,7 +99,7 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         rf.has_bank = False
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
-        rf.memory_bounds = (0, len(self.memories))
+        rf.memory_bounds = (0, len(self.memories)-1)
         rf.has_infinite_number = True
         rf.has_nostep_tuning = True
         rf.has_comment = True
