@@ -386,19 +386,6 @@ class EditorSet(gtk.VBox):
                                 "export: {error}").format(error=e),
                               self)
 
-    def prime(self):
-        # NOTE: this is only called to prime new CSV files, so assume
-        # only one memory editor for now
-        mem = chirp_common.Memory()
-        mem.freq = 146010000
-
-        def cb(*args):
-            gobject.idle_add(self.editors["memedit0"].prefill)
-
-        job = common.RadioJob(cb, "set_memory", mem)
-        job.set_desc(_("Priming memory"))
-        self.rthread.submit(job)
-
     def tab_selected(self, notebook, foo, pagenum):
         widget = notebook.get_nth_page(pagenum)
         for k, v in self.editors.items():

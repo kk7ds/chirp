@@ -70,14 +70,12 @@ class CSVRadio(chirp_common.FileBackedRadio):
         "Comment":       (str,   "comment"),
         }
 
-    def _blank(self):
+    def _blank(self, setDefault=False):
         self.errors = []
-        self.memories = []
-        for i in range(0, 1000):
-            mem = chirp_common.Memory()
-            mem.number = i
-            mem.empty = True
-            self.memories.append(mem)
+        self.memories = [chirp_common.Memory(i, True) for i in range(0, 1000)]
+        if (setDefault):
+            self.memories[0].empty = False
+            self.memories[0].freq = 146010000
 
     def __init__(self, pipe):
         chirp_common.FileBackedRadio.__init__(self, None)
@@ -89,7 +87,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
         if self._filename and os.path.exists(self._filename):
             self.load()
         else:
-            self._blank()
+            self._blank(True)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

@@ -268,11 +268,11 @@ class Memory:
     # or an empty list if none
     extra = []
 
-    def __init__(self):
+    def __init__(self, number=0, empty=False, name=""):
         self.freq = 0
-        self.number = 0
+        self.number = number
         self.extd_number = ""
-        self.name = ""
+        self.name = name
         self.vfo = 0
         self.rtone = 88.5
         self.ctone = 88.5
@@ -290,7 +290,7 @@ class Memory:
 
         self.comment = ""
 
-        self.empty = False
+        self.empty = empty
 
         self.immutable = []
 

@@ -271,7 +271,6 @@ class ChirpMain(gtk.Window):
     def do_new(self):
         eset = editorset.EditorSet(_("Untitled") + ".csv", self)
         self._connect_editorset(eset)
-        eset.prime()
         eset.show()
 
         tab = self.tabs.append_page(eset, eset.get_tab_label())

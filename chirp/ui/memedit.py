@@ -1062,10 +1062,7 @@ class MemoryEditor(common.Editor):
                 if not mem.empty or self.show_empty:
                     gobject.idle_add(self.set_memory, mem)
             else:
-                mem = chirp_common.Memory()
-                mem.number = number
-                mem.name = "ERROR"
-                mem.empty = True
+                mem = chirp_common.Memory(number, True, "Error")
                 gobject.idle_add(self.set_memory, mem)
 
         for i in range(lo, hi+1):
