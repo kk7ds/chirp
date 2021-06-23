@@ -47,7 +47,7 @@ def write_memory(writer, mem):
 
 
 @directory.register
-class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
+class CSVRadio(chirp_common.FileBackedRadio):
     """A driver for Generic CSV files"""
     VENDOR = "Generic"
     MODEL = "CSV"
@@ -67,9 +67,6 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         "Mode":          (str,   "mode"),
         "TStep":         (float, "tuning_step"),
         "Skip":          (str,   "skip"),
-        "URCALL":        (str,   "dv_urcall"),
-        "RPT1CALL":      (str,   "dv_rpt1call"),
-        "RPT2CALL":      (str,   "dv_rpt2call"),
         "Comment":       (str,   "comment"),
         }
 
