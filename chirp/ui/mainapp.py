@@ -338,6 +338,10 @@ of file.
             if not fname:
                 return
 
+        if not os.path.exists(fname):
+            LOG.error("Unable to find file %s" % fname)
+            return
+
         self.record_recent_file(fname)
 
         if icf.is_icf_file(fname):
@@ -530,53 +534,60 @@ of file.
         return recent
 
     def _set_recent_list(self, recent):
-        for fn in recent:
-            CONF.set("recent%i" % recent.index(fn), fn, "state")
+        for index in range(0, KEEP_RECENT):
+            key = "recent%i" % index
+            if (index < len(recent)):
+                fn = recent[index]
+                CONF.set(key, fn, "state")
+            else:
+                CONF.remove_option(key, "state")
 
     def update_recent_files(self):
-        i = 0
-        for fname in self._get_recent_list():
-            action_name = "recent%i" % i
+        recent_files = self._get_recent_list()
+        for index in range(0, KEEP_RECENT):
+            action_name = "recent%i" % index
             path = "/MenuBar/file/recent"
 
             old_action = self.menu_ag.get_action(action_name)
             if old_action:
+                old_action.set_visible(False)
                 self.menu_ag.remove_action(old_action)
 
-            file_basename = os.path.basename(fname).replace("_", "__")
-            widget_name = action_name
-            widget_label = "_%i. %s" % (i + 1, file_basename)
-            widget_tip = _("Open recent file") + (" {name}").format(name=fname)
-            widget_icon = ""
-            action = gtk.Action(widget_name, widget_label,
-                                widget_tip, widget_icon)
+            if (index < len(recent_files)):
+                fname = recent_files[index]
+                widget_label = os.path.basename(fname).replace("_", "__")
+                widget_tip = _("Open recent file") + (" {name}").format(name=fname)
+                widget_path = path + "/" + action_name
 
-            action.connect("activate", lambda a, f: self.do_open(f), fname)
-            mid = self.menu_uim.new_merge_id()
-            self.menu_uim.add_ui(mid, path,
-                                 action_name, action_name,
-                                 gtk.UI_MANAGER_MENUITEM, False)
-            self.menu_ag.add_action(action)
+                action = gtk.Action(action_name, widget_label, widget_tip, "")
+                action.connect("activate", lambda a, f: self.do_open(f), fname)
 
-            widget_uim_path = path + "/" + widget_name
-            try:
-                widget_item = self.menu_uim.get_widget(widget_uim_path)
-                widget_item.set_tooltip_text(widget_tip)
-            except:
-                pass
+                mid = self.menu_uim.new_merge_id()
+                self.menu_uim.add_ui(mid, path,
+                                     action_name, action_name,
+                                     gtk.UI_MANAGER_MENUITEM, True)
+                self.menu_ag.add_action(action)
 
-            i += 1
+                try:
+                    widget = self.menu_uim.get_widget(widget_path)
+                    widget.set_tooltip_text(tip)
+                except:
+                    pass
 
-    def record_recent_file(self, filename):
-
+    def record_recent_file(self, fname):
         recent_files = self._get_recent_list()
-        if filename not in recent_files:
-            if len(recent_files) == KEEP_RECENT:
-                del recent_files[-1]
-            recent_files.insert(0, filename)
-            self._set_recent_list(recent_files)
+        if fname in recent_files:
+            recent_files.remove(fname)
+        if len(recent_files) == KEEP_RECENT:
+            recent_files.pop(0)
+        recent_files.append(fname)
 
+        self._set_recent_list(recent_files)
         self.update_recent_files()
+
+    def clear_recent_files(self):
+        self._set_recent_list([])
+        self.update_recent_files();
 
     def import_stock_config(self, action, config):
         eset = self.get_current_editorset()
@@ -620,9 +631,9 @@ of file.
                                 "")
             action.connect("activate", self.import_stock_config, config)
             mid = self.menu_uim.new_merge_id()
-            mid = self.menu_uim.add_ui(mid, path,
-                                       action_name, action_name,
-                                       gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_uim.add_ui(mid, path,
+                                 action_name, action_name,
+                                 gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
 
         def _do_open_action(config):
@@ -636,9 +647,9 @@ of file.
                                 "")
             action.connect("activate", lambda a, c: self.do_open(c), config)
             mid = self.menu_uim.new_merge_id()
-            mid = self.menu_uim.add_ui(mid, path,
-                                       action_name, action_name,
-                                       gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_uim.add_ui(mid, path,
+                                 action_name, action_name,
+                                 gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
 
         configs = glob(os.path.join(stock_dir, "*.csv"))
@@ -879,6 +890,9 @@ of file.
         eset = self.get_current_editorset()
         count = eset.do_import(filen)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
+
+    def do_clear_recently_opened(self):
+        self.clear_recent_files()
 
     def do_dmrmarc_prompt(self):
         fields = {"1City":      (gtk.Entry(), lambda x: x),
@@ -1804,6 +1818,8 @@ of file.
             self.do_close()
         elif action == "import":
             self.do_import()
+        elif action == "clearrecent":
+            self.do_clear_recently_opened()
         elif action in ["qdmrmarc", "idmrmarc"]:
             self.do_dmrmarc(action[0] == "i")
         elif action in ["qrfinder", "irfinder"]:
@@ -1867,7 +1883,10 @@ of file.
       <menuitem action="new"/>
       <menuitem action="open"/>
       <menu action="openstock" name="openstock"/>
-      <menu action="recent" name="recent"/>
+      <menu action="recent" name="recent">
+        <separator/>
+        <menuitem action="clearrecent"/>
+      </menu>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <menuitem action="loadmod"/>
@@ -1960,8 +1979,9 @@ of file.
             ('file', None, _("_File"), None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
-            ('openstock', None, _("Open stock config"), None, None, self.mh),
-            ('recent', None, _("_Recent"), None, None, self.mh),
+            ('openstock', None, _("Open Stock Config"), None, None, self.mh),
+            ('recent', None, _("Open _Recent"), None, None, self.mh),
+            ('clearrecent', None, _("Clear Recently Opened"), None, None, self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('loadmod', None, _("Load Module"), None, None, self.mh),
@@ -1984,13 +2004,13 @@ of file.
             ('view', None, _("_View"), None, None, self.mh),
             ('columns', None, _("Columns"), None, None, self.mh),
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
-            ('devshowraw', None, _('Show raw memory'),
+            ('devshowraw', None, _('Show Raw Memory'),
              "%s<Shift>r" % CTRL_KEY, None, self.mh),
-            ('devdiffraw', None, _("Diff raw memories"),
+            ('devdiffraw', None, _("Diff Raw Memories"),
              "%s<Shift>d" % CTRL_KEY, None, self.mh),
-            ('devdifftab', None, _("Diff tabs"),
+            ('devdifftab', None, _("Diff Tabs"),
              "%s<Shift>t" % CTRL_KEY, None, self.mh),
-            ('language', None, _("Change language"), None, None, self.mh),
+            ('language', None, _("Change Language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
             ('download', None, _("Download From Radio"),
              "%sd" % ALT_KEY, None, self.mh),
@@ -1998,7 +2018,7 @@ of file.
              "%su" % ALT_KEY, None, self.mh),
             ('import', None, _("Import"), "%si" % ALT_KEY, None, self.mh),
             ('export', None, _("Export"), "%se" % ALT_KEY, None, self.mh),
-            ('importsrc', None, _("Import from data source"),
+            ('importsrc', None, _("Import From Data Source"),
              None, None, self.mh),
             ('idmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
             ('iradioref', None, _("RadioReference"), None, None, self.mh),
@@ -2008,12 +2028,12 @@ of file.
              None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
-            ('irbookpolitical', None, _("RepeaterBook political query"), None,
+            ('irbookpolitical', None, _("RepeaterBook Political Query"), None,
              None, self.mh),
-            ('irbookproximity', None, _("RepeaterBook proximity query"), None,
+            ('irbookproximity', None, _("RepeaterBook Proximity Query"), None,
              None, self.mh),
             ('ipr', None, _("przemienniki.net"), None, None, self.mh),
-            ('querysrc', None, _("Query data source"), None, None, self.mh),
+            ('querysrc', None, _("Query Data Source"), None, None, self.mh),
             ('qdmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
             ('qradioref', None, _("RadioReference"), None, None, self.mh),
             ('qradioreference', None, _("RadioReference.com US"),
@@ -2023,16 +2043,16 @@ of file.
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
             ('qpr', None, _("przemienniki.net"), None, None, self.mh),
             ('qrbook', None, _("RepeaterBook"), None, None, self.mh),
-            ('qrbookpolitical', None, _("RepeaterBook political query"), None,
+            ('qrbookpolitical', None, _("RepeaterBook Political Query"), None,
              None, self.mh),
-            ('qrbookproximity', None, _("RepeaterBook proximity query"), None,
+            ('qrbookproximity', None, _("RepeaterBook Proximity Query"), None,
              None, self.mh),
             ('export_chirp', None, _("CHIRP Native File"),
              None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
-            ('stock', None, _("Import from stock config"),
+            ('stock', None, _("Import From Stock Config"),
              None, None, self.mh),
-            ('channel_defaults', None, _("Channel defaults"),
+            ('channel_defaults', None, _("Channel Defaults"),
              None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
@@ -2252,8 +2272,6 @@ of file.
             platform.get_platform().set_last_dir(d)
 
         vbox = gtk.VBox(False, 2)
-
-        self._recent = []
 
         self.menu_ag = None
         mbar = self.make_menubar()
