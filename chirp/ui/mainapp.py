@@ -556,7 +556,8 @@ of file.
             if (index < len(recent_files)):
                 fname = recent_files[index]
                 widget_label = os.path.basename(fname).replace("_", "__")
-                widget_tip = _("Open recent file") + (" {name}").format(name=fname)
+                widget_tip = _("Open recent file") + (" {name}").format(
+                    name=fname)
                 widget_path = path + "/" + action_name
 
                 action = gtk.Action(action_name, widget_label, widget_tip, "")
@@ -587,7 +588,7 @@ of file.
 
     def clear_recent_files(self):
         self._set_recent_list([])
-        self.update_recent_files();
+        self.update_recent_files()
 
     def import_stock_config(self, action, config):
         eset = self.get_current_editorset()
@@ -1981,7 +1982,8 @@ of file.
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
             ('openstock', None, _("Open Stock Config"), None, None, self.mh),
             ('recent', None, _("Open _Recent"), None, None, self.mh),
-            ('clearrecent', None, _("Clear Recently Opened"), None, None, self.mh),
+            ('clearrecent', None, _("Clear Recently Opened"), None, None,
+             self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('loadmod', None, _("Load Module"), None, None, self.mh),
