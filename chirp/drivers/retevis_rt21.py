@@ -297,9 +297,9 @@ def _enter_programming_mode(radio):
     exito = False
     for i in range(0, 5):
         serial.write(radio._magic)
-        if radio.MODEL == "RB26" or radio.MODEL == "RT76":
-            serial.read(1)
         ack = serial.read(1)
+        if ack == "\x00":
+            ack = serial.read(1)
 
         try:
             if ack == CMD_ACK:
