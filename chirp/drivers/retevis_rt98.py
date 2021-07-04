@@ -754,7 +754,16 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         return rp
 
     def get_features(self):
-        _embedded = self._memobj.embedded_msg
+        class FakeEmbedded(object):
+            mode = 0
+            radio_type = 'RT98U'
+
+        if self._memobj:
+            _embedded = self._memobj.embedded_msg
+        else:
+            # If we have no memory object, take defaults for unit
+            # test, make_supported, etc
+            _embedded = FakeEmbedded()
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
         rf.has_bank = False
