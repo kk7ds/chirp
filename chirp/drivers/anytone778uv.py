@@ -1768,3 +1768,11 @@ if has_future:
         # Allowed radio types is a dict keyed by model of a list of version
         # strings
         ALLOWED_RADIO_TYPES = {'RT95-P': ['V100']}
+
+    @directory.register
+    class CRTMicronUVvox(AnyTone778UVvoxBase):
+        VENDOR = "CRT"
+        MODEL = "Micron UV V2"
+        # Allowed radio types is a dict keyed by model of a list of version
+        # strings
+        ALLOWED_RADIO_TYPES = {'MICRONP': ['V100']}
