@@ -354,6 +354,14 @@ SETTING_LISTS = {
     "wtled": COLOR_LIST
 }
 
+GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+               462.6875, 462.7125]
+GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+               467.6875, 467.7125]
+GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+               462.6750, 462.7000, 462.7250]
+GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
+
 
 def _do_status(radio, block):
     status = chirp_common.Status()
@@ -369,6 +377,7 @@ UV5R_MODEL_UV82 = "\x50\xBB\xFF\x20\x13\x01\x05"
 UV5R_MODEL_UV6 = "\x50\xBB\xFF\x20\x12\x08\x23"
 UV5R_MODEL_UV6_ORIG = "\x50\xBB\xFF\x12\x03\x98\x4D"
 UV5R_MODEL_A58 = "\x50\xBB\xFF\x20\x14\x04\x13"
+UV5R_MODEL_UV5G = "\x50\xBB\xFF\x20\x12\x06\x25"
 
 
 def _upper_band_from_data(data):
@@ -501,6 +510,7 @@ def _get_radio_firmware_version(radio):
 
 IDENT_BLACKLIST = {
     "\x50\x0D\x0C\x20\x16\x03\x28": "Radio identifies as BTECH UV-5X3",
+    "\x50\xBB\xFF\x20\x12\x06\x25": "Radio identifies as Radioddity UV-5G",
 }
 
 
@@ -725,6 +735,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _uhf_range = (400000000, 520000000)
     _aux_block = True
     _tri_power = False
+    _gmrs = False
     _mem_params = (0x1828  # poweron_msg offset
                    )
     # offset of fw version in image file
@@ -987,6 +998,23 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             prev_pttid = _mem.pttid.get_value()
 
         _mem.set_raw("\x00" * 16)
+
+        if self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.mode = "NFM"
+                        mem.power = UV5R_POWER_LEVELS[1]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 500000
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
@@ -2002,6 +2030,20 @@ class RadioddityGT5RRadio(BaofengUV5R):
             mem.duplex = 'off'
             mem.offset = 0
         BaofengUV5R.set_memory(self, mem)
+
+    @classmethod
+    def match_model(cls, filename, filedata):
+        return False
+
+
+@directory.register
+class RadioddityUV5GRadio(BaofengUV5R):
+    VENDOR = 'Radioddity'
+    MODEL = 'UV-5G'
+
+    _basetype = BASETYPE_UV5R
+    _idents = [UV5R_MODEL_UV5G]
+    _gmrs = True
 
     @classmethod
     def match_model(cls, filename, filedata):
