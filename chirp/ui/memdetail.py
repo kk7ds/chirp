@@ -68,8 +68,10 @@ class ValueEditor:
 
         if self._name.startswith("extra_"):
             try:
-                self._memory.extra[self._name.split("_", 1)[1]].value = newval
-            except settings.InternalError as e:
+                extra_name = self._name.split("_", 1)[1]
+                LOG.debug('Setting extra %s=%r' % (extra_name, newval))
+                self._memory.extra[extra_name].value = newval
+            except settings.InternalError, e:
                 self._errfn(self._name, str(e))
                 return str(e)
         else:
@@ -109,6 +111,22 @@ class StringEditor(ValueEditor):
 
     def changed(self, _widget):
         self.update()
+
+
+class IntegerEditor(ValueEditor):
+    def _init(self, data):
+        self._widget = gtk.SpinButton()
+        adj = self._widget.get_adjustment()
+        adj.configure(data.get_value(),
+                      data.get_min(), data.get_max(),
+                      data.get_step(), 1, 0)
+        self._widget.connect('value-changed', self.changed)
+
+    def changed(self, _widget):
+        self.update()
+
+    def _get_value(self):
+        return int(self._widget.get_value())
 
 
 class ChoiceEditor(ValueEditor):
@@ -288,6 +306,12 @@ class MemoryDetailEditor(gtk.Dialog):
                     self._add(table, row, name, editor,
                               setting.get_shortname())
                     self._set_doc(name, setting.__doc__)
+                elif isinstance(setting.value,
+                                settings.RadioSettingValueInteger):
+                    editor = IntegerEditor(self._features, self._memory,
+                                           _err, name, setting.value)
+                    self._add(table, row, name, editor,
+                              setting.get_shortname())
                 row += 1
                 self._order.append(name)
 
