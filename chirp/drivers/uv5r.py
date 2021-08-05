@@ -1011,7 +1011,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                         mem.power = UV5R_POWER_LEVELS[1]
                 if mem.number > 22:
                     mem.duplex = '+'
-                    mem.offset = 500000
+                    mem.offset = 5000000
             else:
                 mem.duplex = 'off'
                 mem.offset = 0
