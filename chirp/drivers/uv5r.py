@@ -824,6 +824,25 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
+    def validate_memory(self, mem):
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        _msg_duplex2 = 'Memory location only supports "(None)" or "off"'
+        _msg_duplex3 = 'Memory location only supports "(None)", "+" or "off"'
+
+        if mem.number < 1 or mem.number > 30:
+            if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                if mem.duplex not in ['', 'off']:
+                    # warn user wrong Duplex
+                    msgs.append(chirp_common.ValidationError(_msg_duplex2))
+
+            if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                if mem.duplex not in ['', '+', 'off']:
+                    # warn user wrong Duplex
+                    msgs.append(chirp_common.ValidationError(_msg_duplex3))
+
+        return msgs
+
     def sync_in(self):
         try:
             self._mmap = _do_download(self)
@@ -1012,6 +1031,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 if mem.number > 22:
                     mem.duplex = '+'
                     mem.offset = 5000000
+            elif float(mem.freq) / 1000000 in GMRS_FREQS:
+                if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = UV5R_POWER_LEVELS[1]
+                if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.offset = 0
             else:
                 mem.duplex = 'off'
                 mem.offset = 0
