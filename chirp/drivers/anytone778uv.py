@@ -388,6 +388,8 @@ def check_ver(ver_response, allowed_types):
     LOG.debug('ver_response = ')
     LOG.debug(util.hexprint(ver_response))
 
+    global HAS_VOX
+
     resp = bitwise.parse(VER_FORMAT, ver_response)
     verok = False
 
@@ -397,6 +399,8 @@ def check_ver(ver_response, allowed_types):
         LOG.debug('radio model: \'%s\' version: \'%s\'' %
                   (model, version))
         LOG.debug('allowed_types = %s' % allowed_types)
+
+        HAS_VOX = "P" == model[-1:]
 
         if model in allowed_types:
             LOG.debug('model in allowed_types')
@@ -428,9 +432,17 @@ def enter_program_mode(radio):
     verok, bandlimit = check_ver(ver_response, radio.ALLOWED_RADIO_TYPES)
     if not verok:
         exit_program_mode(radio)
-        raise errors.RadioError(
-            'Radio version not in allowed list for %s-%s: %s' %
-            (radio.VENDOR, radio.MODEL, util.hexprint(ver_response)))
+        ver = "V2" if radio.VENDOR == "CRT" else "VOX"
+        if HAS_VOX and ("V2" and "VOX") not in radio.MODEL:
+            raise errors.RadioError(
+                'Radio identified as model with VOX\n'
+                'Try %s-%s %s' %
+                (radio.VENDOR, radio.MODEL, ver))
+        else:
+            raise errors.RadioError(
+                'Radio version not in allowed list for %s-%s:\n'
+                '%s' %
+                (radio.VENDOR, radio.MODEL, util.hexprint(ver_response)))
 
     return bandlimit
 
