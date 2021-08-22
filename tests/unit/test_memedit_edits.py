@@ -3,10 +3,13 @@ from tests.unit import base
 
 __builtins__["_"] = lambda s: s
 
-from chirp.ui import memedit
+try:
+    from chirp.ui import memedit
+except ImportError:
+    memedit = None
 
 
-class TestEdits(base.BaseTest):
+class TestEdits(base.BaseGTKTest):
     def _test_tone_column_change(self, col,
                                  ini_tmode='', ini_cmode='',
                                  exp_tmode=None, exp_cmode=None):

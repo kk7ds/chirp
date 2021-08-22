@@ -13,3 +13,12 @@ class BaseTest(unittest.TestCase):
     def tearDown(self):
         self.mox.UnsetStubs()
         self.mox.VerifyAll()
+
+
+class BaseGTKTest(BaseTest):
+    def setUp(self):
+        super(BaseGTKTest, self).setUp()
+        try:
+            import gtk
+        except ImportError:
+            self.skipTest('pygtk not available')
