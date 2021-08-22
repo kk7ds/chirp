@@ -15,18 +15,10 @@ jobs:
           curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
           python get-pip.py
           pip --version
-          python -m pip install --upgrade --no-deps --force-reinstall lxml pep8 pyserial
-      - run: python tools/cpep8.py
-      - name: wtf
-        run: |
-          # the test fails with these present
-          rm -fv \
-            tests/images/AnyTone_778UV.img \
-            tests/images/CRT_Micron_UV.img \
-            tests/images/Kenwood_TK-3180K2.img \
-            tests/images/Kenwood_TK-8180.img \
-            tests/images/Kenwood_TM-D710G_CloneMode.img \
-            tests/images/Kenwood_TM-D710_CloneMode.img \
-            tests/images/Midland_DBR2500.img \
-            tests/images/Retevis_RT95.img
-      - run: python tests/run_tests.py
+          python -m pip install --upgrade --no-deps --force-reinstall lxml
+          python -m pip install \
+            future \
+            pep8 \
+            pyserial \
+            tox
+      - run: tox
