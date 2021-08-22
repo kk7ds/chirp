@@ -1,0 +1,25 @@
+name: Sync from d-rats.com/hg/chirp.hg
+on:
+  schedule:
+    - cron: '47 * * * *'
+  workflow_dispatch:
+jobs:
+  sync:
+    name: Sync
+    if: github.repository == 'kk7ds/chirp'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: install git-remote-hg
+        run: |
+          wget https://raw.github.com/felipec/git-remote-hg/master/git-remote-hg -O /usr/local/bin/git-remote-hg
+          chmod +x /usr/local/bin/git-remote-hg
+      - name: pull
+        run: |
+          git remote add upstream hg::http://d-rats.com/hg/chirp.hg
+          git pull --ff-only upstream branches/default
+      - name: push
+        run: |
+          git push
