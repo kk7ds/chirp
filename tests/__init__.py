@@ -79,14 +79,22 @@ def _get_sub_devices(rclass, testimage):
     except Exception as e:
         tw = run_tests.TestWrapper(rclass, testimage)
 
-    rf = tw.do("get_features")
+    try:
+        rf = tw.do("get_features")
+    except Exception as e:
+        print('Failed to get features for %s: %s' % (rclass, e))
+        # FIXME: If the driver fails to run get_features with no memobj
+        # we should not arrest the test load. This appears to happen for
+        # the Puxing777 for some reason, and not all the time. Figure that
+        # out, but until then, assume crash means "no sub devices".
+        return [rclass]
     if rf.has_sub_devices:
         return tw.do("get_sub_devices")
     else:
         return [rclass]
 
 
-def load_tests(loader, tests, pattern):
+def _load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
 
     images = glob.glob("tests/images/*.img")
@@ -111,3 +119,13 @@ def load_tests(loader, tests, pattern):
         suite.addTests(loader.loadTestsFromTestCase(tc))
 
     return suite
+
+
+def load_tests(loader, tests, pattern):
+    try:
+        return _load_tests(loader, tests, pattern)
+    except Exception as e:
+        import traceback
+        print('Failed to load: %s' % e)
+        print(traceback.format_exc())
+        raise
