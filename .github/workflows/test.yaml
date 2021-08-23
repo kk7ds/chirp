@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '2.7'
+          python-version: ${{ github.event.pull_request.base.ref == 'py3' && '3.x' || '2.7' }}
       - name: Install dependencies
         run: |
           python -m pip install \
