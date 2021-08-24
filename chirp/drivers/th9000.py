@@ -554,6 +554,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = self.valid_freq
+        rf.valid_tuning_steps = TUNING_STEPS
         return rf
 
     # Do a download of the radio from the serial port
@@ -606,6 +607,12 @@ class Th9000Radio(chirp_common.CloneModeRadio,
             return mem
 
         mem.freq = int(_mem.freq) * 100
+
+        # compensate for 6.25 and 12.5 kHz tuning steps, add 500 Hz if needed
+        lastdigit = int(_mem.freq) % 10
+        if (lastdigit == 2 or lastdigit == 7):
+            mem.freq += 50
+
         mem.offset = int(_mem.offset) * 100
         mem.name = str(_mem.name).rstrip()  # Set the alpha tag
         mem.duplex = DUPLEXES[_mem.duplex]
