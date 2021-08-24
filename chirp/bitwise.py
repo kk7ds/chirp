@@ -174,7 +174,7 @@ def bcd_to_int(bcd_array):
 
 def int_to_bcd(bcd_array, value):
     """Convert an int like 1234 into bcdDataElements like "\x12\x34" """
-    for i in reversed(list(range(0, len(bcd_array)))):
+    for i in reversed(range(0, len(bcd_array))):
         bcd_array[i].set_value(value % 100)
         value /= 100
 
@@ -732,7 +732,7 @@ class structDataElement(DataElement):
         self._generators = {}
         self._keys = []
         self._count = 1
-        if "name" in list(kwargs.keys()):
+        if "name" in kwargs.keys():
             self._name = kwargs["name"]
             del kwargs["name"]
         else:
@@ -742,7 +742,7 @@ class structDataElement(DataElement):
 
     def _value(self, data, generators):
         result = {}
-        for name, gen in list(generators.items()):
+        for name, gen in generators.items():
             result[name] = gen.get_value(data)
         return result
 
@@ -780,7 +780,7 @@ class structDataElement(DataElement):
 
     def size(self):
         size = 0
-        for name, gen in list(self._generators.items()):
+        for name, gen in self._generators.items():
             if not isinstance(gen, list):
                 gen = [gen]
 
@@ -806,7 +806,7 @@ class structDataElement(DataElement):
         self._data[self._offset] = buffer
 
     def __iter__(self):
-        for item in list(self._generators.values()):
+        for item in self._generators.values():
             yield item
 
     def items(self):
