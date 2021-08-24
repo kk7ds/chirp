@@ -852,25 +852,34 @@ class Th9000Radio(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        if MMAPSIZE == len(filedata):
-            (flow, fhigh) = cls.valid_freq[0]
-            flow /= 1000000
-            fhigh /= 1000000
-
-            txmin = ord(filedata[0x200]) * 100 + (ord(filedata[0x201]) >> 4) \
-                * 10 + ord(filedata[0x201]) % 16
-            txmax = ord(filedata[0x204]) * 100 + (ord(filedata[0x205]) >> 4) \
-                * 10 + ord(filedata[0x205]) % 16
-            rxmin = ord(filedata[0x208]) * 100 + (ord(filedata[0x209]) >> 4) \
-                * 10 + ord(filedata[0x209]) % 16
-            rxmax = ord(filedata[0x20C]) * 100 + (ord(filedata[0x20D]) >> 4) \
-                * 10 + ord(filedata[0x20D]) % 16
-
-            if (rxmin >= flow and rxmax <= fhigh and txmin >= flow and
-                    txmax <= fhigh):
-                return True
-
         return False
+
+
+def match_orig_model(cls, filedata, filename):
+    # This old-style file detection should only be used for the
+    # original TYT TH9000 classes for compatibility
+    if cls.VENDOR != 'TYT' or 'TH9000_' not in cls.MODEL:
+        return False
+
+    if MMAPSIZE == len(filedata):
+        (flow, fhigh) = cls.valid_freq[0]
+        flow /= 1000000
+        fhigh /= 1000000
+
+        txmin = ord(filedata[0x200]) * 100 + (ord(filedata[0x201]) >> 4) \
+            * 10 + ord(filedata[0x201]) % 16
+        txmax = ord(filedata[0x204]) * 100 + (ord(filedata[0x205]) >> 4) \
+            * 10 + ord(filedata[0x205]) % 16
+        rxmin = ord(filedata[0x208]) * 100 + (ord(filedata[0x209]) >> 4) \
+            * 10 + ord(filedata[0x209]) % 16
+        rxmax = ord(filedata[0x20C]) * 100 + (ord(filedata[0x20D]) >> 4) \
+            * 10 + ord(filedata[0x20D]) % 16
+
+        if (rxmin >= flow and rxmax <= fhigh and txmin >= flow and
+                txmax <= fhigh):
+            return True
+
+    return False
 
 
 @directory.register
@@ -881,6 +890,10 @@ class Th9000220Radio(Th9000Radio):
     BAUD_RATE = 9600
     valid_freq = [(220000000, 260000000)]
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return match_orig_model(cls, filedata, filename)
+
 
 @directory.register
 class Th9000144Radio(Th9000220Radio):
@@ -890,6 +903,10 @@ class Th9000144Radio(Th9000220Radio):
     BAUD_RATE = 9600
     valid_freq = [(136000000, 174000000)]
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return match_orig_model(cls, filedata, filename)
+
 
 @directory.register
 class Th9000440Radio(Th9000220Radio):
@@ -898,6 +915,10 @@ class Th9000440Radio(Th9000220Radio):
     MODEL = "TH9000_440"
     BAUD_RATE = 9600
     valid_freq = [(400000000, 490000000)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return match_orig_model(cls, filedata, filename)
 
 
 @directory.register
