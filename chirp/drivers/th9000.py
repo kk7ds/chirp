@@ -912,3 +912,35 @@ class Lt580UHFRadio(Th9000440Radio):
     """Luiton LT-580 UHF"""
     VENDOR = "LUITON"
     MODEL = "LT-580_UHF"
+
+
+@directory.register
+class RT9000DVHFRadio(Th9000Radio):
+    """Retevis RT9000D VHF"""
+    VENDOR = "Retevis"
+    MODEL = "RT9000D_136-174"
+    valid_freq = [(136000000, 174000000)]
+
+
+@directory.register
+class RT9000D220Radio(Th9000Radio):
+    """Retevis RT9000D 220"""
+    VENDOR = "Retevis"
+    MODEL = "RT9000D_220-260"
+    valid_freq = [(220000000, 260000000)]
+
+
+@directory.register
+class RT9000DUHFRadio(Th9000Radio):
+    """Retevis RT9000D UHF"""
+    VENDOR = "Retevis"
+    MODEL = "RT9000D_400-490"
+    valid_freq = [(400000000, 490000000)]
+
+
+@directory.register
+class RT9000D6688Radio(Th9000Radio):
+    """Retevis RT9000D 66-88"""
+    VENDOR = "Retevis"
+    MODEL = "RT9000D_66-88"
+    valid_freq = [(66000000, 88000000)]
