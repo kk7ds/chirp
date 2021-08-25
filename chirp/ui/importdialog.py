@@ -19,7 +19,6 @@ import pango
 import logging
 
 from chirp import errors, chirp_common, import_logic
-from chirp.drivers import generic_xml
 from chirp.ui import common
 
 LOG = logging.getLogger(__name__)
@@ -238,8 +237,7 @@ class ImportDialog(gtk.Dialog):
             LOG.error("One or more of the radios doesn't support banks")
             return
 
-        if not isinstance(self.dst_radio, generic_xml.XMLRadio) and \
-                len(dst_banks) != len(src_banks):
+        if len(dst_banks) != len(src_banks):
             LOG.warn("Source and destination radios have "
                      "a different number of banks")
         else:

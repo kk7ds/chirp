@@ -29,7 +29,7 @@ import sys
 
 from chirp.ui import inputdialog, common
 from chirp import platform, directory, util
-from chirp.drivers import generic_xml, generic_csv, repeaterbook
+from chirp.drivers import generic_csv, repeaterbook
 from chirp.drivers import ic9x, kenwood_live, idrp, vx7, vx5, vx6
 from chirp.drivers import icf, ic9x_icf
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
@@ -325,7 +325,6 @@ of file.
         if not fname:
             types = [(_("All files") + " (*.*)", "*"),
                      (_("CHIRP Radio Images") + " (*.img)", "*.img"),
-                     (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                      (_("CSV Files") + " (*.csv)", "*.csv"),
                      (_("DAT Files") + " (*.dat)", "*.dat"),
                      (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
@@ -872,7 +871,6 @@ of file.
 
     def do_import(self):
         types = [(_("All files") + " (*.*)", "*"),
-                 (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                  (_("CHIRP Radio Images") + " (*.img)", "*.img"),
                  (_("CSV Files") + " (*.csv)", "*.csv"),
                  (_("DAT Files") + " (*.dat)", "*.dat"),
