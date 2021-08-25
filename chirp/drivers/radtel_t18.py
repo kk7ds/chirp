@@ -301,6 +301,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.has_name = False
         rf.memory_bounds = (1, self._upper)
         rf.valid_bands = [(400000000, 470000000)]
+        rf.valid_tuning_steps = chirp_common.TUNING_STEPS
 
         return rf
 
