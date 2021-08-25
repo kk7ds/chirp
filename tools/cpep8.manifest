@@ -76,6 +76,7 @@
 ./chirp/drivers/mursv1.py
 ./chirp/drivers/puxing.py
 ./chirp/drivers/radioddity_r2.py
+./chirp/drivers/radtel_t18.py
 ./chirp/drivers/retevis_rt1.py
 ./chirp/drivers/retevis_rt21.py
 ./chirp/drivers/retevis_rt22.py

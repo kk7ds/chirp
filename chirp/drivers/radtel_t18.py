@@ -560,7 +560,6 @@ class T18Radio(chirp_common.CloneModeRadio):
                     LOG.debug(element.get_name())
                     raise
 
-
     @classmethod
     def match_model(cls, filedata, filename):
         if cls.MODEL == "T18":
