@@ -1,6 +1,8 @@
 # Copyright 2019 Rick DeWitt <aa0rd@yahoo.com>
+# Version 1.0: CatClone- Implementing fake memory image
 # Version 2.0: No Live Mode library links. Implementing mem as Clone Mode
 #              Having fun with Dictionaries
+# Version 2.1: Adding match_model function to fix File>New issue #7409
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -562,8 +564,7 @@ def _write_sets(radio):
     return
 
 
-# Bug #7409
-# @directory.register
+@directory.register
 class TS590Radio(chirp_common.CloneModeRadio):
     """Kenwood TS-590"""
     VENDOR = "Kenwood"
@@ -1646,6 +1647,11 @@ class TS590Radio(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
+
+    @classmethod
+    def match_model(cls, fdata, fyle):
+        """ Included to prevent 'File > New' error """
+        return False
 
 
 @directory.register

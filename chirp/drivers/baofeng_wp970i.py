@@ -902,3 +902,11 @@ class BFA58S(WP970I):
                           (200000000, 260000000),
                           self._uhf_range]
         return rf
+
+
+@directory.register
+class UV9R(WP970I):
+    """Baofeng UV-9R"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-9R"
+    LENGTH_NAME = 7

@@ -109,11 +109,19 @@ def _h777_enter_programming_mode(radio):
     elif ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 
+    original_timeout = serial.timeout
     try:
         serial.write(b"\x02")
+        # At least one version of the Baofeng BF-888S has a consistent
+        # ~0.33s delay between sending the first five bytes of the
+        # version data and the last three bytes. We need to raise the
+        # timeout so that the read doesn't finish early.
+        serial.timeout = 0.5
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
+    finally:
+        serial.timeout = original_timeout
 
     if not ident.startswith(b"P3107"):
         LOG.debug(util.hexprint(ident))
@@ -172,13 +180,20 @@ def _h777_write_block(radio, block_addr, block_size):
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
 
+    original_timeout = serial.timeout
     try:
         serial.write(cmd + data)
+        # Time required to write data blocks varies between individual
+        # radios of the Baofeng BF-888S model. The longest seen is
+        # ~0.31s.
+        serial.timeout = 0.5
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
     except:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
+    finally:
+        serial.timeout = original_timeout
 
 
 def do_download(radio):

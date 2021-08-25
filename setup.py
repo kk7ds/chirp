@@ -127,7 +127,8 @@ def default_build():
 
     setup(
         name="chirp",
-        packages=["chirp", "chirp.drivers", "chirp.ui", "tests", "tests.unit", "chirp.wxui"],
+        packages=["chirp", "chirp.drivers", "chirp.ui", "tests", "tests.unit",
+                  "chirp.wxui"],
         version=CHIRP_VERSION,
         scripts=["chirpw", "rpttool", "chirpwx.py"],
         data_files=[('share/applications', desktop_files),
