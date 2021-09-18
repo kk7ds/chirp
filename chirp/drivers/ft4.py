@@ -2,6 +2,7 @@
 #    Derives loosely from two sources released under GPLv2:
 #      ./template.py, Copyright 2012 Dan Smith <dsmith@danplanet.com>
 #      ./ft60.py, Copyright 2011 Dan Smith <dsmith@danplanet.com>
+#    Edited 2020 Bernhard Hailer AE6YN <ham73tux@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,8 +19,8 @@
 
 """
 CHIRP driver for Yaesu radios that use the SCU-35 cable. This includes at
-least the FT-4, FT-25, FT-35, and FT-65. This driver will not work with
-older Yaesu models.
+least the FT-4X, FT-4V, FT-65, and FT-25. This driver will not work with older
+Yaesu models.
 """
 import logging
 import struct
@@ -261,7 +262,8 @@ def sendcmd(pipe, cmd, response_len):
         msg = "Bad echo. Sent:" + util.hexprint(cmd) + ", "
         msg += "Received:" + util.hexprint(echo)
         LOG.debug(msg)
-        raise errors.RadioError("Incorrect echo on serial port. Bad cable?")
+        raise errors.RadioError(
+            "Incorrect echo on serial port. Radio off? Bad cable?")
     if response_len is None:
         return variable_len_resp(pipe)
     if response_len > 0:
@@ -474,11 +476,10 @@ DUPLEX = ["+", "", "-", "", "off", "", "split"]  # (0,2,4,5)= (+,-,0, auto)
 
 SKIPS = ["", "S"]
 
-BASETYPE_FT4 = ["FT-4XR", "FT-4XE"]
-BASETYPE_FT65 = ["FT-65R"]
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.5),
-                chirp_common.PowerLevel("Mid", watts=2.5),
-                chirp_common.PowerLevel("High", watts=5.0)]
+POWER_LEVELS = [
+    chirp_common.PowerLevel("High", watts=5.0),  # high must be first (0)
+    chirp_common.PowerLevel("Mid", watts=2.5),
+    chirp_common.PowerLevel("Low", watts=0.5)]
 
 # these steps encode to 0-9 on all radios, but encoding #2 is disallowed
 # on the US versions (FT-4XR)
@@ -560,16 +561,31 @@ PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 # Each special has unique constrants: band, name yes/no, and pms L/U
 # The FT-65 class replaces the "prog" entry in this list.
 # The name field must be the name of a slot array in MEM_FORMAT
-SPECIALS = [
+SPECIALS_FT4 = [
     ("pms", PMSNAMES),
     ("vfo", ["VFO A UHF", "VFO A VHF", "VFO B FM", "VFO B VHF", "VFO B UHF"]),
     ("home", ["HOME FM", "HOME VHF", "HOME UHF"]),
     ("prog", ["P1", "P2"])
     ]
-BAND_ASSIGNMENTS = [2, 1, 0, 1, 2, 0, 1, 2]  # bands for the vfos and homes
+SPECIALS_FT65 = SPECIALS_FT4
 FT65_PROGS = ("prog", ["P1", "P2", "P3", "P4"])
-FT65_SPECIALS = list(SPECIALS)    # a shallow copy works here
-FT65_SPECIALS[-1] = FT65_PROGS    # replace the last entry (P key names)
+SPECIALS_FT65[-1] = FT65_PROGS    # replace the last entry (P key names)
+
+
+VALID_BANDS_DUAL = [
+    (65000000, 108000000),     # broadcast FM, receive only
+    (136000000, 174000000),    # VHF
+    (400000000, 480000000)     # UHF
+    ]
+
+VALID_BANDS_VHF = [
+    (65000000, 108000000),     # broadcast FM, receive only
+    (136000000, 174000000),    # VHF
+    ]
+
+# bands for the five VFO and three home channel memories
+BAND_ASSIGNMENTS_DUALBAND = [2, 1, 0, 1, 2, 0, 1, 2]  # all locations used
+BAND_ASSIGNMENTS_MONO_VHF = [1, 1, 0, 1, 1, 0, 1, 1]  # UHF locations unused
 
 
 # None, and 50 Tones. Use this explicit array because the
@@ -620,14 +636,20 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                             chirp_common.ExperimentalRadio):
     """
     Base class for all Yaesu radios using the SCU-35 programming cable
-    and its protocol. Classes for specific radios extend this class and
-    are found at the end of this file.
+    and its protocol. Classes for sub families extend this class and
+    are found towards the end of this file.
     """
     VENDOR = "Yaesu"
     MODEL = "SCU-35Generic"  # No radio directly uses the base class
     BAUD_RATE = 9600
     MAX_MEM_SLOT = 200
     NEEDS_COMPAT_SERIAL = False
+
+    # These settings are common to all radios in this family.
+    _valid_chars = chirp_common.CHARSET_ASCII
+    numblocks = 0x215           # number of 16-byte blocks in the radio
+    _memsize = 16 * numblocks   # used by CHIRP file loader to guess radio type
+    MAX_MEM_SLOT = 200
 
     @classmethod
     def get_prompts(cls):
@@ -669,7 +691,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         rf.has_dtcs_polarity = False    # REV TN reverses the tone, not the dcs
         rf.has_cross = True
         rf.has_settings = True
-        rf.valid_tuning_steps = self.legal_steps
 
         return rf
 
@@ -798,7 +819,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ("use_cwid", "use CW ID", ["NO", "YES"]),
          ("cw_id",  "CW ID Callsign",  (get_strset, [CW_ID_CHARS])),  # handler
          ("vfo_spl", "VFO Split", ["OFF", "ON"]),
-         ("wfm_rcv", "Enable Broadband FM", ["ON", "OFF"]),
+         ("wfm_rcv", "Enable Broadband FM", ["OFF", "ON"]),
          ("passwd", "Password",  (get_strset, [PASSWD_CHARS]))  # handler
          ]),
         ("arts", "ARTS Settings", [  # arts
@@ -1021,20 +1042,19 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 y = obj[x]
                 if y == 0:
                     break
+                if y == 0x7F:    # when programmed from VFO
+                    y = 0x20
                 name += chr(y)
             return name.rstrip()
 
         mem = chirp_common.Memory()
         _mem, ndx, num, regtype, sname = self.slotloc(memref)
         mem.number = num
-        mem.freq = int(_mem.freq) * 10
-        mem.offset = int(_mem.offset) * self.freq_offset_scale
-        mem.duplex = DUPLEX[_mem.duplex]
 
-        self.decode_sql(mem, _mem)
-        mem.power = POWER_LEVELS[_mem.tx_pwr]
-        mem.mode = ["FM", "NFM"][_mem.tx_width]
-        mem.tuning_step = STEP_CODE[_mem.step]
+        # First, we need to know whether a channel is enabled,
+        # then we can process any channel parameters.
+        # It was found (at least on an FT-25) that channels might be
+        # uninitialized and memory is just completely filled with 0xFF.
 
         if regtype == "pms":
             mem.extd_number = sname
@@ -1043,15 +1063,34 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             mem.name = clean_name(self._memobj.names[ndx].chrs)
             mem.empty = not retrieve_bit(self._memobj.enable, ndx)
             mem.skip = SKIPS[retrieve_bit(self._memobj.scan, ndx)]
-            txfreq = int(self._memobj.txfreqs[ndx].freq) * 10
-            if (txfreq != 0) and (txfreq != mem.freq):
-                    mem.duplex = "split"
-                    mem.offset = txfreq
         else:
             mem.empty = False
             mem.extd_number = sname
             mem.immutable = ["number", "extd_number", "name", "skip"]
 
+        # So, now if channel is not empty, we can do the evaluation of
+        # all parameters. Otherwise we set them to defaults.
+
+        if mem.empty:
+            mem.freq = 0
+            mem.offset = 0
+            mem.duplex = "off"
+            mem.power = POWER_LEVELS[0]  # "High"
+            mem.mode = "FM"
+            mem.tuning_step = 0
+        else:
+            mem.freq = int(_mem.freq) * 10
+            txfreq = int(self._memobj.txfreqs[ndx].freq) * 10
+            if (txfreq != 0) and (txfreq != mem.freq):
+                mem.duplex = "split"
+                mem.offset = txfreq
+            else:
+                mem.offset = int(_mem.offset) * self.freq_offset_scale
+                mem.duplex = DUPLEX[_mem.duplex]
+            self.decode_sql(mem, _mem)
+            mem.power = POWER_LEVELS[2 - _mem.tx_pwr]
+            mem.mode = ["FM", "NFM"][_mem.tx_width]
+            mem.tuning_step = STEP_CODE[_mem.step]
         return mem
 
     def enforce_band(self, memloc, freq, mem_num, sname):
@@ -1082,7 +1121,9 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         _mem.freq = txfreq
         self.encode_sql(mem, _mem)
         if mem.power:
-            _mem.tx_pwr = POWER_LEVELS.index(mem.power)
+            _mem.tx_pwr = 2 - POWER_LEVELS.index(mem.power)
+        else:
+            _mem.tx_pwr = 0  # set to "High" if CHIRP canonical value is None
         _mem.tx_width = mem.mode == "NFM"
         _mem.step = STEP_CODE.index(mem.tuning_step)
 
@@ -1105,28 +1146,16 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         return
 
 
-@directory.register
-class YaesuFT4Radio(YaesuSC35GenericRadio):
-    MODEL = "FT-4XR"
-    _basetype = BASETYPE_FT4
-    valid_bands = [
-        (65000000, 108000000),     # broadcast FM, receive only
-        (144000000, 148000000),    # VHF, US version, TX and RX
-        (430000000, 450000000)     # UHF, US version, TX and RX
-                                   # VHF, RX (136000000, 174000000)
-                                   # UHF, RX (400000000, 480000000)
-        ]
-    _valid_chars = chirp_common.CHARSET_ASCII
-    numblocks = 0x215      # number of 16-byte blocks in the radio
-    _memsize = 16 * numblocks   # used by CHIRP file loader to guess radio type
-    MAX_MEM_SLOT = 200
-    Pkeys = 2     # number of programmable keys on the FT-4
-    namelen = 6   # length of the mem name display on the FT-4 front-panel
-    id_str = b'IFT-35R\x00\x00V100\x00\x00'
+class YaesuFT4GenericRadio(YaesuSC35GenericRadio):
+    """
+    FT-4 sub family class. Classes for individual radios extend
+    these classes and are found at the end of this file.
+    """
+    class_specials = SPECIALS_FT4
+    Pkeys = 2     # number of programmable keys
+    namelen = 6   # length of the mem name display on the front-panel
     freq_offset_scale = 25000
-    legal_steps = US_LEGAL_STEPS
     class_group_descs = YaesuSC35GenericRadio.group_descriptions
-    class_specials = SPECIALS
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1143,31 +1172,19 @@ class YaesuFT4Radio(YaesuSC35GenericRadio):
         ]
 
 
-@directory.register
-class YaesuFT65Radio(YaesuSC35GenericRadio):
-    MODEL = "FT-65R"
-    _basetype = BASETYPE_FT65
-    valid_bands = [
-        (65000000, 108000000),     # broadcast FM, receive only
-        (144000000, 148000000),    # VHF, US version, TX and RX
-        (430000000, 450000000)     # UHF, US version, TX and RX
-                                   # VHF, RX (136000000, 174000000)
-                                   # UHF, RX (400000000, 480000000)
-        ]
-    _valid_chars = chirp_common.CHARSET_ASCII
-    numblocks = 0x215      # number of 16-byte blocks in the radio
-    _memsize = 16 * numblocks   # used by CHIRP file loader to guess radio type
-    MAX_MEM_SLOT = 200
-    Pkeys = 4     # number of programmable keys on the FT-65
-    namelen = 8   # length of the mem name display on the FT-65 front panel
-    id_str = b'IH-420\x00\x00\x00V100\x00\x00'
+class YaesuFT65GenericRadio(YaesuSC35GenericRadio):
+    """
+    FT-65 sub family class. Classes for individual radios extend
+    these classes and are found at the end of this file.
+    """
+    class_specials = SPECIALS_FT65
+    Pkeys = 4     # number of programmable keys
+    namelen = 8   # length of the mem name display on the front-panel
     freq_offset_scale = 50000
-    legal_steps = US_LEGAL_STEPS
     # we need a deep copy here because we are adding deeper than the top level.
     class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
     add_paramdesc(
         class_group_descs, "misc", ("compander", "Compander", ["OFF", "ON"]))
-    class_specials = FT65_SPECIALS
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
     SETMODES = [
@@ -1180,3 +1197,104 @@ class YaesuFT65Radio(YaesuSC35GenericRadio):
         "step", "tot", "tx pwr", "tx save", "vfo.spl",             # 30-34
         "vox", "wfm.rcv", "wide/nar", "wx alert", "scramble"       # 35-39
         ]
+
+
+# Classes for each individual radio.
+
+
+@directory.register
+class YaesuFT4XRRadio(YaesuFT4GenericRadio):
+    """
+    FT-4X dual band, US version
+    """
+    MODEL = "FT-4XR"
+    id_str = b'IFT-35R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_DUAL
+    legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+
+@directory.register
+class YaesuFT4XERadio(YaesuFT4GenericRadio):
+    """
+    FT-4X dual band, EU version
+    """
+    MODEL = "FT-4XE"
+    id_str = b'IFT-35R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_DUAL
+    legal_steps = STEP_CODE
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+
+@directory.register
+class YaesuFT4VRRadio(YaesuFT4GenericRadio):
+    """
+    FT-4V VHF, US version
+    """
+    MODEL = "FT-4VR"
+    id_str = b'IFT-15R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_VHF
+    legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
+
+
+# No image available yet
+# @directory.register
+# class YaesuFT4VERadio(YaesuFT4GenericRadio):
+#    """
+#    FT-4V VHF, EU version
+#    """
+#    MODEL = "FT-4VE"
+#    id_str = b'IFT-15R\x00\x00V100\x00\x00'
+#    valid_bands = VALID_BANDS_VHF
+#    legal_steps = STEP_CODE
+#    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
+
+
+@directory.register
+class YaesuFT65RRadio(YaesuFT65GenericRadio):
+    """
+    FT-65 dual band, US version
+    """
+    MODEL = "FT-65R"
+    id_str = b'IH-420\x00\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_DUAL
+    legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+
+@directory.register
+class YaesuFT65ERadio(YaesuFT65GenericRadio):
+    """
+    FT-65 dual band, EU version
+    """
+    MODEL = "FT-65E"
+    id_str = b'IH-420\x00\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_DUAL
+    legal_steps = STEP_CODE
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
+
+
+@directory.register
+class YaesuFT25RRadio(YaesuFT65GenericRadio):
+    """
+    FT-25 VHF, US version
+    """
+    MODEL = "FT-25R"
+    id_str = b'IFT-25R\x00\x00V100\x00\x00'
+    valid_bands = VALID_BANDS_VHF
+    legal_steps = US_LEGAL_STEPS
+    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
+
+
+# No image available yet
+# @directory.register
+# class YaesuFT25ERadio(YaesuFT65GenericRadio):
+#    """
+#    FT-25 VHF, EU version
+#    """
+#    MODEL = "FT-25E"
+#    id_str = b'IFT-25R\x00\x00V100\x00\x00'
+#    valid_bands = VALID_BANDS_VHF
+#    legal_steps = STEP_CODE
+#    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF

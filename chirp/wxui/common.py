@@ -1,3 +1,4 @@
+import functools
 import logging
 
 import wx
@@ -80,7 +81,13 @@ class ChirpEditor(wx.Panel):
     def cb_paste(self, data):
         pass
 
+    def select_all(self):
+        pass
+
     def saved(self):
+        pass
+
+    def selected(self):
         pass
 
 
@@ -194,3 +201,72 @@ class ChirpSettingGrid(wx.Panel):
     def saved(self):
         for prop in self.pg._Items():
             prop.SetModifiedStatus(False)
+
+
+def _error_proof(*expected_errors):
+    """Decorate a method and display an error if it raises.
+
+    If the method raises something in expected_errors, then
+    log an error, otherwise log exception.
+    """
+
+    def show_error(msg):
+        d = wx.MessageDialog(None, str(msg), 'An error has occurred',
+                             style=wx.OK | wx.ICON_ERROR)
+        d.ShowModal()
+
+    def wrap(fn):
+        @functools.wraps(fn)
+        def inner(*args, **kwargs):
+            try:
+                return fn(*args, **kwargs)
+            except expected_errors as e:
+                LOG.error('%s: %s' % (fn, e))
+                show_error(e)
+            except Exception as e:
+                LOG.exception('%s raised unexpected exception' % fn)
+                show_error(e)
+
+        return inner
+    return wrap
+
+
+class error_proof(object):
+    def __init__(self, *expected_exceptions):
+        self._expected = expected_exceptions
+
+    @staticmethod
+    def show_error(msg):
+        d = wx.MessageDialog(None, str(msg), 'An error has occurred',
+                             style=wx.OK | wx.ICON_ERROR)
+        d.ShowModal()
+
+    def run_safe(self, fn, args, kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except self._expected as e:
+            LOG.error('%s: %s' % (fn, e))
+            self.show_error(e)
+        except Exception as e:
+            LOG.exception('%s raised unexpected exception' % fn)
+            self.show_error(e)
+
+    def __call__(self, fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            return self.run_safe(fn, args, kwargs)
+        return wrapper
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, traceback):
+        if exc_type:
+            if exc_type in self._expected:
+                LOG.error('%s: %s: %s' % (fn, exc_type, exc_val))
+                self.show_error(exc_val)
+                return True
+            else:
+                LOG.exception('Context raised unexpected_exception',
+                              exc_info=(exc_type, exc_val, traceback))
+                self.show_error(exc_val)

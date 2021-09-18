@@ -73,6 +73,13 @@ class FakeIcomRadio(object):
         LOG.debug('Clone from radio started')
         size = 16
         for addr in range(0, self._radio.get_memsize(), size):
+            if len(self._memory[addr:]) < 4:
+                # IC-W32E has an off-by-one hack for detection,
+                # which will cause us to send a short one-byte
+                # block of garbage, unlike the real radio. So,
+                # if we get to the end and have a few bytes
+                # left, don't be stupid.
+                break
             header = bytes(struct.pack('>%sB' % self.address_fmt,
                                        addr, size))
             #LOG.debug('Header for %02x@%04x: %r' % (

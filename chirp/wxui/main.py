@@ -12,6 +12,7 @@ from chirp import directory
 from chirp.ui import config
 from chirp.wxui import common
 from chirp.wxui import clone
+from chirp.wxui import developer
 from chirp.wxui import memedit
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
@@ -35,6 +36,9 @@ class ChirpEditorSet(wx.Panel):
         self._modified = not os.path.exists(filename)
 
         self._editors = wx.Notebook(self, style=wx.NB_LEFT)
+
+        self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING,
+                           self._editor_selected)
 
         sizer = wx.BoxSizer()
         sizer.Add(self._editors, 1, wx.EXPAND)
@@ -64,9 +68,18 @@ class ChirpEditorSet(wx.Panel):
                                                                self._editors)
             self._editors.AddPage(settings, 'Settings')
 
+        if CONF.get_bool('developer', 'state'):
+            browser = developer.ChirpRadioBrowser(radio, self._editors)
+            self._editors.AddPage(browser, 'Browser')
+
     def _editor_changed(self, event):
         self._modified = True
         wx.PostEvent(self, EditorSetChanged(self.GetId(), editorset=self))
+
+    def _editor_selected(self, event):
+        page_index = event.GetSelection()
+        page = self._editors.GetPage(page_index)
+        page.selected()
 
     def save(self, filename=None):
         if filename is None:
@@ -105,11 +118,21 @@ class ChirpEditorSet(wx.Panel):
     def current_editor(self):
         return self._editors.GetCurrentPage()
 
+    @property
+    def current_editor_index(self):
+        return self._editors.GetSelection()
+
+    def select_editor(self, index):
+        self._editors.SetSelection(index)
+
     def cb_copy(self, cut=False):
         return self.current_editor.cb_copy(cut=cut)
 
     def cb_paste(self, data):
         return self.current_editor.cb_paste(data)
+
+    def select_all(self):
+        return self.current_editor.select_all()
 
 
 class ChirpMain(wx.Frame):
@@ -209,6 +232,9 @@ class ChirpMain(wx.Frame):
         paste_item = edit_menu.Append(wx.ID_PASTE)
         self.Bind(wx.EVT_MENU, self._menu_paste, paste_item)
 
+        selall_item = edit_menu.Append(wx.ID_SELECTALL)
+        self.Bind(wx.EVT_MENU, self._menu_selall, selall_item)
+
         radio_menu = wx.Menu()
 
         self._download_menu_item = wx.NewId()
@@ -216,19 +242,54 @@ class ChirpMain(wx.Frame):
                                     'Download')
         download_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('D')))
         self.Bind(wx.EVT_MENU, self._menu_download, download_item)
-        radio_menu.AppendItem(download_item)
+        radio_menu.Append(download_item)
 
         self._upload_menu_item = wx.NewId()
         upload_item = wx.MenuItem(radio_menu, self._upload_menu_item, 'Upload')
         upload_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
-        radio_menu.AppendItem(upload_item)
+        radio_menu.Append(upload_item)
+
+        if CONF.get_bool('developer', 'state'):
+            radio_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
+
+            self._reload_driver_item = wx.NewId()
+            reload_drv_item = wx.MenuItem(radio_menu,
+                                          self._reload_driver_item,
+                                          'Reload Driver')
+            reload_drv_item.SetAccel(
+                wx.AcceleratorEntry(wx.ACCEL_ALT | wx.ACCEL_CTRL,
+                                    ord('R')))
+            self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
+            radio_menu.Append(reload_drv_item)
+
+            self._reload_both_item = wx.NewId()
+            reload_both_item = wx.MenuItem(radio_menu,
+                                           self._reload_both_item,
+                                           'Reload Driver and File')
+            reload_both_item.SetAccel(
+                wx.AcceleratorEntry(
+                    wx.ACCEL_ALT | wx.ACCEL_CTRL | wx.ACCEL_SHIFT,
+                    ord('R')))
+            self.Bind(
+                wx.EVT_MENU,
+                functools.partial(self._menu_reload_driver, andfile=True),
+                reload_both_item)
+            radio_menu.Append(reload_both_item)
+
+            self._interact_driver_item = wx.NewId()
+            interact_drv_item = wx.MenuItem(radio_menu,
+                                            self._interact_driver_item,
+                                          'Interact with driver')
+            self.Bind(wx.EVT_MENU, self._menu_interact_driver,
+                      interact_drv_item)
+            radio_menu.Append(interact_drv_item)
 
         help_menu = wx.Menu()
 
         about_item = wx.MenuItem(help_menu, wx.NewId(), 'About')
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
-        help_menu.AppendItem(about_item)
+        help_menu.Append(about_item)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
@@ -437,8 +498,12 @@ class ChirpMain(wx.Frame):
         if got:
             self.current_editorset.cb_paste(textdata)
 
+    def _menu_selall(self, event):
+        self.current_editorset.select_all()
+
     def _menu_download(self, event):
         with clone.ChirpDownloadDialog(self) as d:
+            d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
                 editorset = ChirpEditorSet(radio, None, self._editors)
@@ -447,7 +512,70 @@ class ChirpMain(wx.Frame):
     def _menu_upload(self, event):
         radio = self.current_editorset.radio
         with clone.ChirpUploadDialog(radio, self) as d:
+            d.Centre()
             d.ShowModal()
+
+    @common.error_proof()
+    def _menu_reload_driver(self, event, andfile=False):
+        radio = self.current_editorset.radio
+        try:
+            # If we were loaded from a dynamic alias in directory,
+            # get the pointer to the original
+            orig_rclass = radio._orig_rclass
+        except AttributeError:
+            orig_rclass = radio.__class__
+
+        # Save a reference to the radio's internal mmap. If the radio does
+        # anything strange or does not follow the typical convention, this
+        # will not work
+        mmap = radio._mmap
+
+        # Reload the actual module
+        module = sys.modules[orig_rclass.__module__]
+        LOG.warning('Going to reload %s' % module)
+        directory.enable_reregistrations()
+        import importlib
+        importlib.reload(module)
+
+        # Grab a new reference to the updated module and pick out the
+        # radio class from it.
+        module = sys.modules[orig_rclass.__module__]
+        rclass = getattr(module, orig_rclass.__name__)
+
+        filename = self.current_editorset.filename
+        if andfile:
+            # Reload the file while creating the radio
+            new_radio = rclass(filename)
+        else:
+            # Try to reload the driver in place, without
+            # re-reading the file; mimic the file loading
+            # procedure after jamming the memory back in
+            new_radio = rclass(None)
+            new_radio._mmap = mmap
+            new_radio.process_mmap()
+
+        # Kill the current editorset now that we know the radio loaded
+        # successfully
+        last_editor = self.current_editorset.current_editor_index
+        self._menu_close(event)
+
+        # Mimic the File->Open process to get a new editorset based
+        # on our franken-radio
+        editorset = ChirpEditorSet(new_radio, filename, self._editors)
+        self.add_editorset(editorset, select=True)
+        editorset.select_editor(last_editor)
+
+        LOG.info('Reloaded radio driver%s in place; good luck!' % (
+            andfile and ' (and file)' or ''))
+
+    def _menu_interact_driver(self, event):
+        LOG.warning('Going to interact with radio at the console')
+        radio = self.current_editorset.radio
+        import code
+        locals = {'main': self,
+                  'radio': radio}
+        code.interact(banner='Locals are: %s' % (', '.join(locals.keys())),
+                      local=locals)
 
     def _menu_about(self, event):
         pyver = sys.version_info
