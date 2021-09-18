@@ -20,6 +20,9 @@ EditorSetChanged, EVT_EDITORSET_CHANGED = wx.lib.newevent.NewCommandEvent()
 CONF = config.get()
 LOG = logging.getLogger(__name__)
 
+EMPTY_MENU_LABEL = '(none)'
+KEEP_RECENT = 8
+OPEN_RECENT_MENU = None
 
 class ChirpEditorSet(wx.Panel):
     def __init__(self, radio, filename, *a, **k):
@@ -143,6 +146,7 @@ class ChirpMain(wx.Frame):
             CSVRadio = directory.get_radio('Generic_CSV')
             radio = CSVRadio(None)
 
+        self.adj_menu_open_recent(filename)
         editorset = ChirpEditorSet(radio, filename, self._editors)
         self.add_editorset(editorset, select=select)
 
@@ -161,6 +165,23 @@ class ChirpMain(wx.Frame):
 
         open_item = file_menu.Append(wx.ID_OPEN)
         self.Bind(wx.EVT_MENU, self._menu_open, open_item)
+
+        self.OPEN_RECENT_MENU = wx.Menu()
+        i = 0
+        fn = CONF.get("recent%i" % i, "state")
+        while fn:
+            submenu_item = self.OPEN_RECENT_MENU.Append(wx.ID_ANY, fn)
+            self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
+            i += 1
+            if i >= KEEP_RECENT:
+                break
+            fn = CONF.get("recent%i" % i, "state")
+        if self.OPEN_RECENT_MENU.GetMenuItemCount() <= 0:
+            submenu_item = self.OPEN_RECENT_MENU.Append(wx.ID_ANY,
+                                                        EMPTY_MENU_LABEL)
+            submenu_item.Enable(False)
+            self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
+        file_menu.Append(wx.ID_ANY, 'Open Recent', self.OPEN_RECENT_MENU)
 
         save_item = file_menu.Append(wx.ID_SAVE)
         self.Bind(wx.EVT_MENU, self._menu_save, save_item)
@@ -237,6 +258,46 @@ class ChirpMain(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self._menu_open, tbopen)
         tb.Realize()
+
+    def adj_menu_open_recent(self, filename):
+        ### Travel the Open Recent menu looking for filename
+        found_mi = None
+        empty_mi = None
+        for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
+            menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
+            fn = menu_item.GetLabel()
+            if fn == filename:
+                found_mi = menu_item
+            if fn == EMPTY_MENU_LABEL:
+                empty_mi = menu_item
+
+        ### Move filename to top of menu or add it to top if it wasn't found
+        if found_mi:
+            self.OPEN_RECENT_MENU.Remove(found_mi)
+            self.OPEN_RECENT_MENU.Prepend(found_mi)
+        else:
+            submenu_item = self.OPEN_RECENT_MENU.Prepend(wx.ID_ANY, filename)
+            self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
+
+        ### Get rid of the place holder used in an empty menu
+        if empty_mi:
+            self.OPEN_RECENT_MENU.Delete(empty_mi)
+
+        ### Trim the menu length
+        if self.OPEN_RECENT_MENU.GetMenuItemCount() > KEEP_RECENT:
+            for i in range(self.OPEN_RECENT_MENU.GetMenuItemCount() - 1,
+                           KEEP_RECENT - 1, -1):
+                extra_mi = self.OPEN_RECENT_MENU.FindItemByPosition(i)
+                self.OPEN_RECENT_MENU.Delete(extra_mi)
+
+        ### Travel the Open Recent menu and save file names to config.
+        for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
+            if i >= KEEP_RECENT:
+                break
+            menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
+            fn = menu_item.GetLabel()
+            CONF.set("recent%i" % i, fn, "state")
+        config._CONFIG.save()
 
     def _editor_page_changed(self, event):
         self._editors.GetPage(event.GetSelection())
@@ -318,6 +379,10 @@ class ChirpMain(wx.Frame):
             filename = fd.GetPath()
             self.open_file(str(filename))
 
+    def _menu_open_recent(self, event):
+        filename = self.OPEN_RECENT_MENU.FindItemById(event.GetId()).GetLabel()
+        self.open_file(filename)
+
     def _menu_save_as(self, event):
         eset = self.current_editorset
         wildcard = 'CHIRP %(vendor)s %(model)s Files (*.%(ext)s)|*.%(ext)s' % {
@@ -333,6 +398,7 @@ class ChirpMain(wx.Frame):
                 return
             filename = fd.GetPath()
             eset.save(filename)
+            self.adj_menu_open_recent(filename)
             self._update_editorset_title(eset)
 
     def _menu_save(self, event):
