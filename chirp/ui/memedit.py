@@ -44,6 +44,7 @@ if __name__ == "__main__":
 def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]
 
+
 class ValueErrorDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
