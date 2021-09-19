@@ -214,6 +214,8 @@ KT8900_fp5 = "M2G314"
 KT8900_fp6 = "M2G424"
 # this radio has an extra ID
 KT8900_id = "303688"
+# another extra ID in sep/2021
+KT8900_id2 = "\x05\x58\x3d\xf0\x10"
 
 # KT8900R
 KT8900R_fp = "M3G1F4"
@@ -3480,7 +3482,7 @@ class KT9800(BTech):
                KT8900_fp4,
                KT8900_fp5,
                KT8900_fp6]
-    _id2 = [KT8900_id, ]
+    _id2 = [KT8900_id, KT8900_id2]
     # Clones
     ALIASES = [JT6188Mini, SSGT890, ZastoneMP300]
 
