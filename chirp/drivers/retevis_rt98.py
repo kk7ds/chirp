@@ -84,6 +84,8 @@ LIST_DISPLAY_MODE = ["Channel", "Frequency", "Name"]
 LIST_AOP = ["Manual", "Auto"]
 LIST_STE_TYPE = ["Off", "Silent", "120 Degree", "180 Degree", "240 Degree"]
 LIST_STE_FREQ = ["Off", "55.2 Hz", "259.2 Hz"]
+LIST_VFOMR = ["MR", "VFO"]
+LIST_SCAN = ["TO", "CO", "SE"]
 
 LIST_PRIORITY_CH = ["Off", "Priority Channel 1", "Priority Channel 2",
                     "Priority Channel 1 + Priority Channel 2"]
@@ -130,7 +132,9 @@ SETTING_LISTS = {
         "settings2.dropout_delay_time": LIST_TIME50,
         "settings2.dwell_time": LIST_TIME50,
         "settings2.look_back_time_a": LIST_TIME46,
-        "settings2.look_back_time_b": LIST_TIME46
+        "settings2.look_back_time_b": LIST_TIME46,
+        "settings3.vfomr": LIST_VFOMR,
+        "settings.scan": LIST_SCAN
 }
 
 #  RT98  memory map
@@ -286,6 +290,10 @@ struct {
 #                           01 COM     Rx(400 - 470 MHz) Tx(400 - 470 MHz)
 #                           02 COMII   Rx(450 - 470 MHz) Tx(450 - 470 MHz)
 #  1          u8 ch_number;        channel number, range 1-199
+#  1          u8
+#   :7        unknown_3312:7
+#   :1        vfomr:1              vfo/mr mode, range 0-1, 0=mr, 1=vfo
+#                                  only S/N:1907***********
 #
 # description of function setup options, starting at 0x3340 (settings)
 #
@@ -312,7 +320,11 @@ struct {
 #  1          u8
 #   :3        unknown_3345:3
 #   :5        volume:5               volume level, range 1-30 (no zero)
-#  1          u8 unknown_3346
+#  1          u8
+#   :6        unknown_3346:6
+#   :2        scan_revive:2          scan revive method, range 0-2, 0=to,
+#                                    1=co, 2=se
+#                                    only S/N:1907***********
 #  1          u8 unknown_3347
 #  1          u8   0x3348 [12]
 #   :6        unknown_3348:6
@@ -377,6 +389,8 @@ MEM_FORMAT = MEM_FORMAT + """
 struct {
     u8 bandlimit;
     u8 ch_number;
+    u8 unknown_3312:7,
+       vfomr:1;
 } settings3;
 """
 
@@ -395,7 +409,8 @@ struct {
      squelch:4;
   u8 unknown_3345:3,
      volume:5;
-  u8 unknown_3346;
+  u8 unknown_3346:6,
+     scan_resume:2;
   u8 unknown_3347;
   u8 unknown_3348:6,
      display_mode:2;
@@ -458,8 +473,7 @@ struct {
 MEM_FORMAT = MEM_FORMAT + """
 #seekto 0x3D00;
 struct {
-char radio_type[5];
-u8 unknown1[2];
+char radio_type[7];
 char mcu_version[4];
 u8 unknown2[2];
 u8 mode;
@@ -476,8 +490,7 @@ char date_mfg[10];
 # Format for the version messages returned by the radio
 VER_FORMAT = '''
 u8 hdr;
-char model[5];
-u8 unknown[2];
+char model[7];
 u8 bandlimit;
 char version[6];
 u8 ack;
@@ -500,12 +513,12 @@ RT98U_BAND_LIMITS = {0x00: [(446000000, 446200000)],
 
 # Get band limits from a band limit value
 def get_band_limits_Hz(radio_type, limit_value):
-    if radio_type == "RT98U":
+    if str(radio_type).rstrip("\00") in ["RT98U", "AT-779U"]:
         if limit_value not in RT98U_BAND_LIMITS:
             limit_value = 0x01
             LOG.warning('Unknown band limit value 0x%02x, default to 0x01')
         bandlimitfrequencies = RT98U_BAND_LIMITS[limit_value]
-    elif radio_type == "RT98V":
+    elif str(radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
         if limit_value not in RT98V_BAND_LIMITS:
             limit_value = 0x01
             LOG.warning('Unknown band limit value 0x%02x, default to 0x01')
@@ -694,13 +707,13 @@ def do_upload(radio):
         raise errors.RadioError(msg % (str(_embedded.radio_type), str(model)))
 
     if bandlimit != int(_embedded.mode):
-        if str(_embedded.radio_type) == "RT98U":
+        if str(_embedded.radio_type).rstrip("\00") in ["RT98U", "AT-779U"]:
             image_band_limits = LIST_RT98U_FREQS[int(_embedded.mode)]
-        if str(_embedded.radio_type) == "RT98V":
+        if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             image_band_limits = LIST_RT98V_FREQS[int(_embedded.mode)]
-        if model == "RT98U":
+        if model in ["RT98U", "AT-779U"]:
             radio_band_limits = LIST_RT98U_FREQS[int(bandlimit)]
-        if model == "RT98V":
+        if model in ["RT98V", "AT-779V"]:
             radio_band_limits = LIST_RT98V_FREQS[int(bandlimit)]
 
         LOG.warning('radio and image band limits differ')
@@ -794,9 +807,9 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = CROSS_MODES
         if _embedded.mode == 0:  # PMR or FreeNet
-            if str(_embedded.radio_type) == "RT98U":
+            if str(_embedded.radio_type).rstrip("\00") == "RT98U":
                 rf.valid_power_levels = PMR_POWER_LEVELS
-            if str(_embedded.radio_type) == "RT98V":
+            if str(_embedded.radio_type).rstrip("\00") == "RT98V":
                 rf.valid_power_levels = FREENET_POWER_LEVELS
         else:
             rf.valid_power_levels = POWER_LEVELS
@@ -826,14 +839,14 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             freq = float(mem.freq) / 1000000
 
             # FreeNet
-            if str(_embedded.radio_type) == "RT98V":
+            if str(_embedded.radio_type).rstrip("\00") == "RT98V":
                 if freq not in FREENET_FREQS:
                     _msg_freq = 'Memory location not a valid FreeNet frequency'
                     # warn user invalid frequency
                     msgs.append(chirp_common.ValidationError(_msg_freq))
 
             # PMR
-            if str(_embedded.radio_type) == "RT98U":
+            if str(_embedded.radio_type).rstrip("\00") == "RT98U":
                 if freq not in PMR_FREQS:
                     _msg_freq = 'Memory location not a valid PMR frequency'
                     # warn user invalid frequency
@@ -942,10 +955,10 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         # set the power level
         if _embedded.mode == 0:  # PMR or FreeNet
-            if str(_embedded.radio_type) == "RT98U":
+            if str(_embedded.radio_type).rstrip("\00") == "RT98U":
                 LOG.info('using PMR power levels')
                 _levels = PMR_POWER_LEVELS
-            if str(_embedded.radio_type) == "RT98V":
+            if str(_embedded.radio_type).rstrip("\00") == "RT98V":
                 LOG.info('using FreeNet power levels')
                 _levels = FREENET_POWER_LEVELS
         else:  # COM or COMII
@@ -1134,6 +1147,12 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         rset = RadioSetting("display_mode", "Display Mode", rs)
         function.append(rset)
 
+        if "AT-779" in str(_embedded.radio_type):
+            rs = RadioSettingValueList(LIST_VFOMR,
+                                       LIST_VFOMR[_settings3.vfomr])
+            rset = RadioSetting("settings3.vfomr", "VFO/MR", rs)
+            function.append(rset)
+
         rs = RadioSettingValueInteger(1, 199, _settings3.ch_number + 1)
         rset = RadioSetting("settings3.ch_number", "Channel Number", rs)
         function.append(rset)
@@ -1195,6 +1214,12 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
                                    LIST_SQUELCH[_settings.squelch])
         rset = RadioSetting("squelch", "Squelch Level", rs)
         function.append(rset)
+
+        if "AT-779" in str(_embedded.radio_type):
+            rs = RadioSettingValueList(LIST_SCAN,
+                                       LIST_SCAN[_settings.scan_resume])
+            rset = RadioSetting("scan_resume", "Frequency Scan", rs)
+            function.append(rset)
 
         rs = RadioSettingValueBoolean(bool(_settings.sql_key_function))
         rset = RadioSetting("sql_key_function", "SQL Key Function", rs)
@@ -1275,12 +1300,12 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         embedded = RadioSettingGroup("embedded", "Embedded Message")
         group.append(embedded)
 
-        rs = RadioSettingValueString(0, 5, _filter(_embedded.radio_type))
+        rs = RadioSettingValueString(0, 7, _filter(_embedded.radio_type))
         rs.set_mutable(False)
         rset = RadioSetting("embedded_msg.radio_type", "Radio Type", rs)
         embedded.append(rset)
 
-        if str(_embedded.radio_type) == "RT98V":
+        if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             options = LIST_RT98V_MODES
         else:
             options = LIST_RT98U_MODES
@@ -1290,7 +1315,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         embedded.append(rset)
 
         # frequency
-        if str(_embedded.radio_type) == "RT98V":
+        if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             options = LIST_RT98V_FREQS
         else:
             options = LIST_RT98U_FREQS
@@ -1370,4 +1395,6 @@ class Rt98Radio(Rt98BaseRadio):
     # Allowed radio types is a dict keyed by model of a list of version
     # strings
     ALLOWED_RADIO_TYPES = {'RT98V': ['V100'],
-                           'RT98U': ['V100']}
+                           'RT98U': ['V100'],
+                           'AT-779V': ['V100'],
+                           'AT-779U': ['V100']}
