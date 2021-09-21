@@ -2212,14 +2212,14 @@ of file.
         try:
             import gtk_osxapplication
             macapp = gtk_osxapplication.OSXApplication()
-        except ImportError:
+        except ImportError as e:
             pass
 
         # for gtk-mac-integration >= 2.0.7
         try:
             import gtkosx_application
             macapp = gtkosx_application.Application()
-        except ImportError:
+        except ImportError as e:
             pass
 
         if macapp is None:
