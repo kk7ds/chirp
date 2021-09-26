@@ -326,7 +326,7 @@ class ChirpMain(wx.Frame):
         empty_mi = None
         for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
             menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
-            fn = menu_item.GetLabel()
+            fn = menu_item.GetItemLabelText()
             if fn == filename:
                 found_mi = menu_item
             if fn == EMPTY_MENU_LABEL:
@@ -356,7 +356,7 @@ class ChirpMain(wx.Frame):
             if i >= KEEP_RECENT:
                 break
             menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
-            fn = menu_item.GetLabel()
+            fn = menu_item.GetItemLabelText()
             CONF.set("recent%i" % i, fn, "state")
         config._CONFIG.save()
 
@@ -441,7 +441,8 @@ class ChirpMain(wx.Frame):
             self.open_file(str(filename))
 
     def _menu_open_recent(self, event):
-        filename = self.OPEN_RECENT_MENU.FindItemById(event.GetId()).GetLabel()
+        filename = self.OPEN_RECENT_MENU.FindItemById(
+            event.GetId()).GetItemLabelText()
         self.open_file(filename)
 
     def _menu_save_as(self, event):
