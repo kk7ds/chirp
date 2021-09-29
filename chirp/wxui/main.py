@@ -209,7 +209,7 @@ class ChirpMain(wx.Frame):
                                                         EMPTY_MENU_LABEL)
             submenu_item.Enable(False)
             self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
-        file_menu.Append(wx.ID_ANY, 'Open Recent', self.OPEN_RECENT_MENU)
+        file_menu.AppendSubMenu(self.OPEN_RECENT_MENU, 'Open Recent')
 
         save_item = file_menu.Append(wx.ID_SAVE)
         self.Bind(wx.EVT_MENU, self._menu_save, save_item)
