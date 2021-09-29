@@ -9,6 +9,7 @@ import wx.aui
 import wx.lib.newevent
 
 from chirp import directory
+from chirp import platform
 from chirp.ui import config
 from chirp.wxui import common
 from chirp.wxui import clone
@@ -141,6 +142,10 @@ class ChirpMain(wx.Frame):
 
         self.SetSize(int(CONF.get('window_w', 'state') or 1024),
                      int(CONF.get('window_h', 'state') or 768))
+
+        d = CONF.get('last_dir', 'state')
+        if d and os.path.isdir(d):
+            platform.get_platform().set_last_dir(d)
 
         self.SetMenuBar(self.make_menubar())
 
@@ -433,11 +438,17 @@ class ChirpMain(wx.Frame):
         wildcard = '|'.join(['Chirp Image Files (*.img)|*.img',
                              'CSV Files (*.csv)|*.csv',
                              'All Files (*.*)|*.*'])
-        with wx.FileDialog(self, 'Open a file', wildcard=wildcard,
+        with wx.FileDialog(self, 'Open a file',
+                           platform.get_platform().get_last_dir(),
+                           wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
             if fd.ShowModal() == wx.ID_CANCEL:
                 return
             filename = fd.GetPath()
+            d = fd.GetDirectory()
+            platform.get_platform().set_last_dir(d)
+            CONF.set('last_dir', d, 'state')
+            config._CONFIG.save()
             self.open_file(str(filename))
 
     def _menu_open_recent(self, event):
