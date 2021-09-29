@@ -36,8 +36,8 @@ try:                         # PY3 compliance
     from builtins import bytes
 except ImportError:
     HAS_FUTURE = False
-    LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
+    LOG.debug('python-future package is not '
+              'available; %s requires it' % __name__)
 
 BAUD = 0
 STIMEOUT = 0.2

@@ -60,8 +60,8 @@ try:
     has_future = True
 except ImportError:
     has_future = False
-    LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
+    LOG.debug('python-future package is not '
+              'available; %s requires it' % __name__)
 
 
 # Here is where we define the memory map for the radio. Since

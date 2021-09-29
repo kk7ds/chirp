@@ -36,8 +36,8 @@ try:
     has_future = True
 except ImportError:
     has_future = False
-    LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
+    LOG.debug('python-future package is not '
+              'available; %s requires it' % __name__)
 
 
 HEADER_FORMAT = """

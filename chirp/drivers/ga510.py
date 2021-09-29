@@ -17,8 +17,8 @@ try:
     has_future = True
 except ImportError:
     has_future = False
-    LOG.warning('python-future package is not available; '
-                '%s requires it' % __name__)
+    LOG.debug('python-future package is not available; '
+              '%s requires it' % __name__)
 
 # GA510 also has DTCS code 645
 DTCS_CODES = list(sorted(chirp_common.DTCS_CODES + [645]))
