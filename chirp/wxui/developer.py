@@ -316,7 +316,8 @@ class ChirpRadioBrowser(common.ChirpEditor):
                                          self._radio.MODEL),
                               self._radio._memobj, pd)
         pd.Destroy()
-        self._treebook.ExpandNode(0)
+        if self._treebook.GetPageCount():
+            self._treebook.ExpandNode(0)
 
     def page_selected(self, event):
         page = self._treebook.GetPage(event.GetSelection())

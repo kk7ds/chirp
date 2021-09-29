@@ -404,6 +404,8 @@ class ChirpMemEdit(common.ChirpEditor):
     def _memory_rclick(self, event):
         menu = wx.Menu()
         selected_rows = self._grid.GetSelectedRows()
+        if not selected_rows:
+            selected_rows = [event.GetRow()]
 
         props_item = wx.MenuItem(menu, wx.NewId(), 'Properties')
         self.Bind(wx.EVT_MENU,
@@ -547,6 +549,7 @@ class ChirpMemPropDialog(wx.Dialog):
         for coldef in memedit._col_defs:
             if coldef.valid:
                 self._pg.Append(coldef.get_propeditor(memory))
+        self._pg.FitColumns()
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         hbox.Add(wx.Button(self, wx.ID_OK))
@@ -579,6 +582,7 @@ class ChirpMemPropDialog(wx.Dialog):
 
                 LOG.debug('Value for %s is %r' % (name, value))
                 setattr(mem, prop.GetName(), value)
+                mem.empty = False
 
             if self._tabs.GetPageCount() == 2:
                 extra = self._tabs.GetPage(1).get_values()
