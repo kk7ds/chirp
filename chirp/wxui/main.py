@@ -18,6 +18,8 @@ from chirp.wxui import memedit
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
+from fnmatch import fnmatch
+
 EditorSetChanged, EVT_EDITORSET_CHANGED = wx.lib.newevent.NewCommandEvent()
 CONF = config.get()
 LOG = logging.getLogger(__name__)
@@ -25,6 +27,7 @@ LOG = logging.getLogger(__name__)
 EMPTY_MENU_LABEL = '(none)'
 KEEP_RECENT = 8
 OPEN_RECENT_MENU = None
+OPEN_STOCK_CONFIG_MENU = None
 
 class ChirpEditorSet(wx.Panel):
     def __init__(self, radio, filename, *a, **k):
@@ -194,6 +197,24 @@ class ChirpMain(wx.Frame):
         open_item = file_menu.Append(wx.ID_OPEN)
         self.Bind(wx.EVT_MENU, self._menu_open, open_item)
 
+        stock_dir = platform.get_platform().config_file("stock_configs")
+        sconfigs = []
+        if os.path.isdir(stock_dir):
+            for fn in os.listdir(stock_dir):
+                if fnmatch(fn, "*.csv"):
+                    config, ext = os.path.splitext(fn)
+                    sconfigs.append(config)
+            sconfigs.sort()
+            if len(sconfigs):
+                self.OPEN_STOCK_CONFIG_MENU = wx.Menu()
+                for fn in sconfigs:
+                    submenu_item = self.OPEN_STOCK_CONFIG_MENU.Append(
+                                       wx.ID_ANY, fn)
+                    self.Bind(wx.EVT_MENU,
+                              self._menu_open_stock_config, submenu_item)
+                file_menu.AppendSubMenu(self.OPEN_STOCK_CONFIG_MENU,
+                                        "Open Stock Config")
+
         self.OPEN_RECENT_MENU = wx.Menu()
         i = 0
         fn = CONF.get("recent%i" % i, "state")
@@ -326,6 +347,13 @@ class ChirpMain(wx.Frame):
         tb.Realize()
 
     def adj_menu_open_recent(self, filename):
+        ### Don't add stock config files to the recent files list
+        stock_dir = platform.get_platform().config_file("stock_configs")
+        this_dir = os.path.dirname(filename)
+        if (stock_dir and os.path.exists(stock_dir) and
+                this_dir and os.path.samefile(stock_dir, this_dir)):
+            return
+
         ### Travel the Open Recent menu looking for filename
         found_mi = None
         empty_mi = None
@@ -450,6 +478,13 @@ class ChirpMain(wx.Frame):
             CONF.set('last_dir', d, 'state')
             config._CONFIG.save()
             self.open_file(str(filename))
+
+    def _menu_open_stock_config(self, event):
+        stock_dir = platform.get_platform().config_file("stock_configs")
+        fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(event.GetId()).GetLabel()
+        fn += ".csv"
+        filename = os.path.join(stock_dir, fn)
+        self.open_file(filename)
 
     def _menu_open_recent(self, event):
         filename = self.OPEN_RECENT_MENU.FindItemById(
