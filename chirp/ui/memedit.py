@@ -1394,7 +1394,7 @@ class MemoryEditor(common.Editor):
 
         # Run low priority jobs to get the rest of the memories
         hi = int(self.hi_limit_adj.get_value())
-        for i in range(hi, max+1):
+        for i in range(hi+1, max+1):
             job = common.RadioJob(None, "get_memory", i)
             job.set_desc(_("Getting memory {number}").format(number=i))
             self.rthread.submit(job, 10)
