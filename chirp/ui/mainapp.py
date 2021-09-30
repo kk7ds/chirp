@@ -540,9 +540,13 @@ of file.
                 CONF.set(key, fn, "state")
             else:
                 CONF.remove_option(key, "state")
+        self.recent_files = None
 
     def update_recent_files(self):
-        recent_files = self._get_recent_list()
+        if (not self.recent_files == None):
+            return
+
+        self.recent_files = self._get_recent_list()
         for index in range(0, KEEP_RECENT):
             action_name = "recent%i" % index
             path = "/MenuBar/file/recent"
@@ -552,8 +556,8 @@ of file.
                 old_action.set_visible(False)
                 self.menu_ag.remove_action(old_action)
 
-            if (index < len(recent_files)):
-                fname = recent_files[index]
+            if (index < len(self.recent_files)):
+                fname = self.recent_files[index]
                 widget_label = os.path.basename(fname).replace("_", "__")
                 widget_tip = _("Open recent file") + (" {name}").format(
                     name=fname)
@@ -583,11 +587,9 @@ of file.
         recent_files.append(fname)
 
         self._set_recent_list(recent_files)
-        self.update_recent_files()
 
     def clear_recent_files(self):
         self._set_recent_list([])
-        self.update_recent_files()
 
     def import_stock_config(self, action, config):
         eset = self.get_current_editorset()
@@ -2092,6 +2094,9 @@ of file.
 
         self.add_accel_group(self.menu_uim.get_accel_group())
 
+        self.recentmenu = self.menu_uim.get_widget(
+            "/MenuBar/file/recent")
+
         self.infomenu = self.menu_uim.get_widget(
             "/MenuBar/help/clone_information")
 
@@ -2100,6 +2105,7 @@ of file.
 
         # Initialize
         self.do_toggle_developer(self.menu_ag.get_action("developer"))
+        self.recentmenu.connect("activate", lambda a: self.update_recent_files())
 
         return self.menu_uim.get_widget("/MenuBar")
 
@@ -2325,6 +2331,7 @@ of file.
             d.destroy()
         CONF.set_bool("warned_about_reporting", True)
 
+        self.recent_files = None
         self.update_recent_files()
         try:
             self.update_stock_configs()
