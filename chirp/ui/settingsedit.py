@@ -48,8 +48,9 @@ class SettingsEditor(common.Editor):
         self._store = gtk.TreeStore(gobject.TYPE_STRING, gobject.TYPE_INT)
         self._view = gtk.TreeView(self._store)
         self._view.get_selection().connect("changed", self._view_changed_cb)
-        self._view.append_column(
-            gtk.TreeViewColumn("", gtk.CellRendererText(), text=0))
+        column = gtk.TreeViewColumn("", gtk.CellRendererText(), text=0)
+        column.set_widget(gtk.Label())
+        self._view.append_column(column)
         self._view.show()
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
