@@ -543,7 +543,7 @@ of file.
         self.recent_files = None
 
     def update_recent_files(self):
-        if (not self.recent_files == None):
+        if self.recent_files is not None:
             return
 
         self.recent_files = self._get_recent_list()
@@ -2105,7 +2105,8 @@ of file.
 
         # Initialize
         self.do_toggle_developer(self.menu_ag.get_action("developer"))
-        self.recentmenu.connect("activate", lambda a: self.update_recent_files())
+        self.recentmenu.connect("activate",
+                                lambda a: self.update_recent_files())
 
         return self.menu_uim.get_widget("/MenuBar")
 
