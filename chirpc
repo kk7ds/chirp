@@ -201,7 +201,7 @@ if __name__ == "__main__":
     if options.id:
         from chirp import detect
         md = detect.detect_icom_radio(options.serial)
-        print "Model:\n%s" % md.MODEL
+        print("Model:\n%s" % md.MODEL)
         sys.exit(0)
 
     if not options.radio:
