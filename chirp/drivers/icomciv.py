@@ -1014,7 +1014,7 @@ def probe_model(ser):
             continue
 
         if len(f.get_data()) == 1:
-            md = ord(f.get_data()[0])
+            md = f.get_data()[0]
             if (md == model):
                 return rclass
 
