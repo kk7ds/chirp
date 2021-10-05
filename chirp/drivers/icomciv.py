@@ -873,7 +873,7 @@ class Icom910Radio(IcomCIVRadio):
                        for key in self._SPECIAL_CHANNELS.keys()])
 
     def _is_special(self, number):
-        return number >= 1000 or isinstance(number, str)
+        return isinstance(number, str) or number >= 1000
 
     def _get_special_info(self, number):
         info = BankSpecialChannel()
@@ -1014,7 +1014,7 @@ def probe_model(ser):
             continue
 
         if len(f.get_data()) == 1:
-            md = ord(f.get_data()[0])
+            md = f.get_data()[0]
             if (md == model):
                 return rclass
 
