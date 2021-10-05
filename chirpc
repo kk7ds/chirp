@@ -199,10 +199,9 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.id:
-        from chirp import icf
-        s = serial.Serial(port=options.serial, baudrate=9600, timeout=0.5)
-        md = icf.get_model_data(s)
-        print("Model:\n%s" % util.hexprint(md))
+        from chirp import detect
+        md = detect.detect_icom_radio(options.serial)
+        print("Model:\n%s" % md.MODEL)
         sys.exit(0)
 
     if not options.radio:
