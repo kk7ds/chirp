@@ -41,29 +41,30 @@ def fail_missing_mmap():
 
 
 class ToneAction(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        if value in chirp_common.TONES:
-            raise argparse.ArgumentError("Invalid tone valeu: %.1f" % value)
+    def __call__(self, parser, namespace, values, option_string=None):
+        value = values[0]
+        if value not in chirp_common.TONES:
+            raise argparse.ArgumentError(
+                self, "Invalid tone value: %.1f" % value)
         setattr(namespace, self.dest, value)
 
 
 class DTCSAction(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        try:
-            value = int(value, 10)
-        except ValueError:
-            raise argparse.ArgumentError("Invalid DTCS value: %s" % value)
-
+    def __call__(self, parser, namespace, values, option_string=None):
+        value = values[0]
         if value not in chirp_common.DTCS_CODES:
-            raise argparse.ArgumentError("Invalid DTCS value: %03i" % value)
+            raise argparse.ArgumentError(
+                self, "Invalid DTCS value: %03i" % value)
         setattr(namespace, self.dest, value)
 
 
 class DTCSPolarityAction(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
+    def __call__(self, parser, namespace, values, option_string=None):
+        value = values[0]
         if value not in ["NN", "RN", "NR", "RR"]:
-            raise optparse.OptionValueError("Invaid DTCS polarity: %s" % value)
-        setattr(parser.values, option.dest, value)
+            raise argparse.ArgumentError(
+                self, "Invaid DTCS polarity: %s" % value)
+        setattr(namespace, self.dest, value)
 
 
 def parse_memory_number(radio, args):
