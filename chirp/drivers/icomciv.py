@@ -167,7 +167,11 @@ class Frame:
         """Send the frame over @serial, using @src and @dst addresses"""
         hdr = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
         raw = bytearray(hdr)
-        raw.extend(self._data)
+        if isinstance(self._data, MemoryMapBytes):
+            data = self._data.get_packed()
+        else:
+            data = self._data
+        raw.extend(data)
         raw.append(0xFD)
 
         LOG.debug("%02x -> %02x (%i):\n%s" %
