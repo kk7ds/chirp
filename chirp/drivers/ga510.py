@@ -283,7 +283,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             index = toneval % len(DTCS_CODES)
             if index != int(toneval):
                 pol = 'R'
-                #index -= 1
+                # index -= 1
             else:
                 pol = 'N'
             return 'DTCS', DTCS_CODES[index], pol
@@ -618,7 +618,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         else:
             setattr(self._memobj.anicode, name, int(setting.value))
 
-
     def _set_dtmfcode(self, setting):
         index = int(setting.get_name().split('@', 1)[1]) - 1
         val = [DTMFCHARS.index(c) for c in str(setting.value)]
@@ -628,4 +627,3 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             except IndexError:
                 value = 0xFF
             self._memobj.dtmfgroup[index].code[i] = value
-

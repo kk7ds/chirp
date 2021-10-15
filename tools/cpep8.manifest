@@ -37,6 +37,7 @@
 ./chirp/drivers/ft857.py
 ./chirp/drivers/ft90.py
 ./chirp/drivers/ftm350.py
+./chirp/drivers/ga510.py
 ./chirp/drivers/generic_csv.py
 ./chirp/drivers/generic_tpe.py
 ./chirp/drivers/gmrsuv1.py
