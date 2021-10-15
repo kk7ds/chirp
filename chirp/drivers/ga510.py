@@ -337,6 +337,12 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         _mem.pttid = int(mem.extra['pttid'].value)
         _mem.signal = int(mem.extra['signal'].value)
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def get_memory(self, num):
         _mem = self._memobj.memories[num]
         mem = chirp_common.Memory()
@@ -349,7 +355,10 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                             if ord(str(c)) < 127]).rstrip()
         mem.freq = int(_mem.rxfreq) * 10
         offset = (int(_mem.txfreq) - int(_mem.rxfreq)) * 10
-        if offset == 0:
+        if self._is_txinh(_mem):
+            mem.duplex = 'off'
+            mem.offset = 0
+        elif offset == 0:
             mem.duplex = ''
         elif abs(offset) < 100000000:
             mem.duplex = offset < 0 and '-' or '+'
@@ -394,7 +403,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         elif mem.duplex == 'split':
             _mem.txfreq = mem.offset // 10
         elif mem.duplex == 'off':
-            _mem.txfreq.set_raw(b'\xff\xff\xff\xff')
+            for i in range(0, 4):
+                _mem.txfreq[i].set_raw(b'\xFF')
         elif mem.duplex == '-':
             _mem.txfreq = (mem.freq - mem.offset) // 10
         elif mem.duplex == '+':
