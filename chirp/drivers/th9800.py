@@ -538,9 +538,9 @@ class TYTTH9800Base(chirp_common.Radio):
         basic.append(RadioSetting(
                 "p4", "P4 Function",
                 RadioSettingValueList(MICKEYFUNC, MICKEYFUNC[_settings.p4])))
-#      opts = ["0", "1"]
-#      basic.append(RadioSetting("x", "Desc",
-#            RadioSettingValueList(opts, opts[_settings.x])))
+        # opts = ["0", "1"]
+        # basic.append(RadioSetting("x", "Desc",
+        #       RadioSettingValueList(opts, opts[_settings.x])))
 
         def _filter(name):
             filtered = ""

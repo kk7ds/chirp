@@ -97,6 +97,7 @@
 ./chirp/drivers/th_uv88.py
 ./chirp/drivers/th_uvf8d.py
 ./chirp/drivers/th9000.py
+./chirp/drivers/th9800.py
 ./chirp/drivers/thd72.py
 ./chirp/drivers/thuv1f.py
 ./chirp/drivers/tk760.py
