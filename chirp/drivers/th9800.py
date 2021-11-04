@@ -170,6 +170,33 @@ STEPS = [2.5, 5.0, 6.25, 7.5, 8.33, 10.0, 12.5,
          15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
 
+def isValidDate(month, day, year):
+    today = date.today()
+
+    monthlist1 = [1, 3, 5, 7, 8, 10, 12] ## monthlist for months with 31 days.
+    monthlist2 = [4, 6, 9, 11] ## monthlist for months with 30 days.
+    monthlist3 = [2, ] ## monthlist for month with 28 days.
+
+    if month in monthlist1:
+        max1 = 31
+    elif month in monthlist2:
+        max1 = 30
+    elif month in monthlist3:
+        if ((yy % 4) == 0 and (yy % 100) != 0 or (yy % 400) == 0):
+            max1 = 29
+        else:
+            max1 = 28
+    if(month < 1 or month > 12):
+        LOG.debug("Invalid 'Last Program Date: Month'")
+        return False
+    elif(day < 1 or day > max1):
+        LOG.debug("Invalid 'Last Program Date: Day'")
+        return False
+    elif(year < 2014 or year > today.year):
+        LOG.debug("Invalid 'Last Program Date: Year'")
+        return False
+    return True
+
 class TYTTH9800Base(chirp_common.Radio):
     """Base class for TYT TH-9800"""
     VENDOR = "TYT"
@@ -539,8 +566,16 @@ class TYTTH9800Base(chirp_common.Radio):
         rs = RadioSetting("code", "Model Code", rsvs)
         info.append(rs)
 
-        progdate = "%d/%d/%d" % (_info.prog_mon, _info.prog_day,
-                                 _info.prog_yr)
+        mm = int(_info.prog_mon)
+        dd = int(_info.prog_day)
+        yy = int(_info.prog_yr)
+
+        Valid_Date = isValidDate(mm, dd, yy)
+
+        if Valid_Date:
+            progdate = "%d/%d/%d" % (mm, dd, yy)
+        else:
+            progdate = "Invalid"
         rsvs = RadioSettingValueString(0, 10, progdate)
         rsvs.set_mutable(False)
         rs = RadioSetting("progdate", "Last Program Date", rsvs)
@@ -704,10 +739,16 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
     d = today.day
     _info = radio._memobj.info
 
-    ly = _info.prog_yr
-    lm = _info.prog_mon
-    ld = _info.prog_day
-    LOG.debug("Updating last program date:%d/%d/%d" % (lm, ld, ly))
+    ly = int(_info.prog_yr)
+    lm = int(_info.prog_mon)
+    ld = int(_info.prog_day)
+
+    Valid_Date = isValidDate(lm, ld, ly)
+
+    if Valid_Date:
+        LOG.debug("Updating last program date:%d/%d/%d" % (lm, ld, ly))
+    else:
+        LOG.debug("Updating last program date: Invalid")
     LOG.debug("                  to today:%d/%d/%d" % (m, d, y))
 
     _info.prog_yr = y
