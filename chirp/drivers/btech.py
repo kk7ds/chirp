@@ -264,6 +264,10 @@ KT8R_fp2 = "MC5264"
 # QYT KT5800 (dual band)
 KT5800_fp = "VCB222"
 
+# QYT KT980Plus (dual band)
+KT980PLUS_fp = "VC2002"
+KT980PLUS_fp1 = "VC6042"
+
 
 # ### MAGICS
 # for the Waccom Mini-8900
@@ -3962,6 +3966,26 @@ class KT5800(BTechColor):
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
     _fileid = [KT5800_fp, ]
+
+
+@directory.register
+class KT980PLUS(BTechColor):
+    """QYT KT980PLUS"""
+    VENDOR = "QYT"
+    MODEL = "KT980PLUS"
+    BANDS = 2
+    LIST_TMR = LIST_TMR15
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = MSTRING_KT8900D
+    _fileid = [KT980PLUS_fp1, KT980PLUS_fp]
+    _power_levels = [chirp_common.PowerLevel("High", watts=75),
+                     chirp_common.PowerLevel("Low", watts=55)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
 
 
 GMRS_MEM_FORMAT = """
