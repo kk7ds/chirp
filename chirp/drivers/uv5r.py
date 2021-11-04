@@ -830,16 +830,22 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         _msg_duplex2 = 'Memory location only supports "(None)" or "off"'
         _msg_duplex3 = 'Memory location only supports "(None)", "+" or "off"'
 
-        if mem.number < 1 or mem.number > 30:
-            if float(mem.freq) / 1000000 in GMRS_FREQS2:
-                if mem.duplex not in ['', 'off']:
-                    # warn user wrong Duplex
-                    msgs.append(chirp_common.ValidationError(_msg_duplex2))
+        if self._gmrs:
+            if mem.number < 1 or mem.number > 30:
+                if float(mem.freq) / 1000000 in GMRS_FREQS1:
+                    if mem.duplex not in ['', 'off']:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex2))
 
-            if float(mem.freq) / 1000000 in GMRS_FREQS3:
-                if mem.duplex not in ['', '+', 'off']:
-                    # warn user wrong Duplex
-                    msgs.append(chirp_common.ValidationError(_msg_duplex3))
+                if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                    if mem.duplex not in ['', 'off']:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex2))
+
+                if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                    if mem.duplex not in ['', '+', 'off']:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex3))
 
         return msgs
 
