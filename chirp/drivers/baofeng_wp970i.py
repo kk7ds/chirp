@@ -911,6 +911,7 @@ class RT6(WP970I):
 class BFA58S(WP970I):
     VENDOR = "Baofeng"
     MODEL = "BF-A58S"
+    LENGTH_NAME = 7
     ALIASES = [UV82IIIAlias]
     _tri_band = True
 
