@@ -173,9 +173,9 @@ STEPS = [2.5, 5.0, 6.25, 7.5, 8.33, 10.0, 12.5,
 def isValidDate(month, day, year):
     today = date.today()
 
-    monthlist1 = [1, 3, 5, 7, 8, 10, 12] ## monthlist for months with 31 days.
-    monthlist2 = [4, 6, 9, 11] ## monthlist for months with 30 days.
-    monthlist3 = [2, ] ## monthlist for month with 28 days.
+    monthlist1 = [1, 3, 5, 7, 8, 10, 12]  # monthlist for months with 31 days.
+    monthlist2 = [4, 6, 9, 11]  # monthlist for months with 30 days.
+    monthlist3 = [2, ]  # monthlist for month with 28 days.
 
     if month in monthlist1:
         max1 = 31
@@ -196,6 +196,7 @@ def isValidDate(month, day, year):
         LOG.debug("Invalid 'Last Program Date: Year'")
         return False
     return True
+
 
 class TYTTH9800Base(chirp_common.Radio):
     """Base class for TYT TH-9800"""
