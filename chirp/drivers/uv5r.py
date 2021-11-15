@@ -1235,16 +1235,16 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                               TIMEOUT_LIST, TIMEOUT_LIST[_settings.timeout]))
         basic.append(rs)
 
-        if self._is_orig() and self._my_version() < 251:
+        if ((self._is_orig() and self._my_version() < 251) or
+                (self.MODEL in ["TI-F8+", "TS-T9+"])):
             rs = RadioSetting("voice", "Voice",
                               RadioSettingValueBoolean(_settings.voice))
             advanced.append(rs)
         else:
-            if self.MODEL != "TI-F8+":
-                rs = RadioSetting("voice", "Voice",
-                                  RadioSettingValueList(
-                                      VOICE_LIST, VOICE_LIST[_settings.voice]))
-                advanced.append(rs)
+            rs = RadioSetting("voice", "Voice",
+                              RadioSettingValueList(
+                                  VOICE_LIST, VOICE_LIST[_settings.voice]))
+            advanced.append(rs)
 
         rs = RadioSetting("screv", "Scan Resume",
                           RadioSettingValueList(
@@ -1973,12 +1973,17 @@ class TenwayUV5RPro(chirp_common.Alias):
     MODEL = 'UV-5R Pro'
 
 
+class TSTST9Alias(chirp_common.Alias):
+    VENDOR = "TechSide"
+    MODEL = "TS-T9+"
+
+
 @directory.register
 class BaofengBFF8HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP"
     ALIASES = [RT5_TPAlias, ROGA5SAlias, UV5XPAlias, TSTIF8Alias,
-               TenwayUV5RPro]
+               TenwayUV5RPro, TSTST9Alias]
     _basetype = BASETYPE_F8HP
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_A58
