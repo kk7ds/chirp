@@ -144,6 +144,14 @@ debug = False
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 
+GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+               462.6875, 462.7125]
+GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+               467.6875, 467.7125]
+GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+               462.6750, 462.7000, 462.7250]
+GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
+
 
 # #### ID strings #####################################################
 
@@ -267,6 +275,9 @@ KT5800_fp = "VCB222"
 # QYT KT980Plus (dual band)
 KT980PLUS_fp = "VC2002"
 KT980PLUS_fp1 = "VC6042"
+
+# Radioddity DB25-G (gmrs)
+DB25G_fp = "VC6182"
 
 
 # ### MAGICS
@@ -803,6 +814,35 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         return rf
 
+    def validate_memory(self, mem):
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        _msg_duplex1 = 'Memory location only supports "Low"'
+        _msg_duplex2 = 'Memory location only supports "off"'
+        _msg_duplex3 = 'Memory location only supports "(None)", "+" or "off"'
+
+        if self._gmrs:
+            if mem.number < 1 or mem.number > 30:
+                if float(mem.freq) / 1000000 in GMRS_FREQS1:
+                    if mem.duplex not in ['', 'off']:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex2))
+                    if mem.power != self._power_levels[2]:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex1))
+
+                if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                    if mem.duplex not in ['off', ]:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex2))
+
+                if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                    if mem.duplex not in ['', '+', 'off']:
+                        # warn user wrong Duplex
+                        msgs.append(chirp_common.ValidationError(_msg_duplex3))
+
+        return msgs
+
     def sync_in(self):
         """Download from radio"""
         data = _download(self)
@@ -991,6 +1031,41 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             LOG.debug('Zeroing new memory')
             _mem.set_raw('\x00' * 16)
 
+        if self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number <= 7:
+                        mem.power = self._power_levels[2]
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.duplex = 'off'
+                        mem.mode = "NFM"
+                        mem.power = self._power_levels[2]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
+            elif float(mem.freq) / 1000000 in GMRS_FREQS:
+                if float(mem.freq) / 1000000 in GMRS_FREQS1:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    mem.power = self._power_levels[2]
+                if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self._power_levels[2]
+                if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
+
         # frequency
         _mem.rxfreq = mem.freq / 10
 
@@ -1101,6 +1176,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                   RadioSettingValueBoolean(
                                       _mem.settings.autolk))
             basic.append(autolk)
+
+        if self.MODEL == "DB25-G":
+            rs = RadioSettingValueInteger(0, 127, _mem.settings.mgain2)
+            mgain2 = RadioSetting("settings.mgain2", "Mic gain", rs)
+            basic.append(mgain2)
 
         tot = RadioSetting("settings.tot", "Time out timer",
                            RadioSettingValueList(
@@ -1528,6 +1608,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                      LIST_RPTDL,
                                      LIST_RPTDL[_mem.settings.rptdl]))
             basic.append(rptdl)
+
+        if self.MODEL == "DB25-G":
+            mgain = RadioSetting("settings.mgain", "Auto power-on",
+                                 RadioSettingValueBoolean(_mem.settings.mgain))
+            basic.append(mgain)
 
         if str(_mem.fingerprint.fp) in BTECH3:
             mgain = RadioSetting("settings.mgain", "Mic gain",
@@ -3540,8 +3625,8 @@ struct {
      optsig:2;
   u8 unknown3:3,
      scramble:1,
-     unknown4:3,
-     power:1;
+     unknown4:2,
+     power:2;
   u8 unknown5:1,
      wide:1,
      unknown6:2,
@@ -3555,7 +3640,8 @@ struct {
   u8 tmr;
   u8 unknown1;
   u8 sql;
-  u8 unknown2[2];
+  u8 unknown2;
+  u8 mgain2;
   u8 tot;
   u8 apo;
   u8 unknown3;
@@ -3601,7 +3687,7 @@ struct {
   u8 rpste;
   u8 rptdl;
   u8 dtmfg;
-  u8 mgain;
+  u8 mgain;         // used by db25-g for ponyey
   u8 skiptx;
   u8 scmode;
 } settings;
@@ -3829,6 +3915,7 @@ class BTechColor(BTechMobileCommon):
     COLOR_LCD = True
     NAME_LENGTH = 8
     LIST_TMR = LIST_TMR16
+    _gmrs = False
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -3981,6 +4068,28 @@ class KT980PLUS(BTechColor):
     _fileid = [KT980PLUS_fp1, KT980PLUS_fp]
     _power_levels = [chirp_common.PowerLevel("High", watts=75),
                      chirp_common.PowerLevel("Low", watts=55)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class DB25G(BTechColor):
+    """Radioddity DB25-G"""
+    VENDOR = "Radioddity"
+    MODEL = "DB25-G"
+    BANDS = 2
+    LIST_TMR = LIST_TMR15
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 481000000)
+    _magic = MSTRING_KT8900D
+    _fileid = [DB25G_fp, ]
+    _gmrs = True
+    _power_levels = [chirp_common.PowerLevel("High", watts=25),
+                     chirp_common.PowerLevel("Mid", watts=15),
+                     chirp_common.PowerLevel("Low", watts=5)]
 
     @classmethod
     def match_model(cls, filedata, filename):
