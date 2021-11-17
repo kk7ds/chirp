@@ -728,6 +728,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     _fileid = None
     _id2 = False
     btech3 = False
+    _gmrs = False
 
     @classmethod
     def get_prompts(cls):
@@ -3915,7 +3916,6 @@ class BTechColor(BTechMobileCommon):
     COLOR_LCD = True
     NAME_LENGTH = 8
     LIST_TMR = LIST_TMR16
-    _gmrs = False
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
