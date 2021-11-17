@@ -4802,7 +4802,7 @@ class KT8R(QYTColorHT):
     VENDOR = "QYT"
     MODEL = "KT-8R"
     BANDS = 4
-    LIST_TMR = LIST_TMR15
+    LIST_TMR = LIST_TMR16
     _vhf_range = (136000000, 175000000)
     _220_range = (200000000, 261000000)
     _uhf_range = (400000000, 481000000)
