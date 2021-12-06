@@ -103,11 +103,12 @@ struct {
 #seekto 0x1140;
 struct {
   u8 autoKeylock:1,       // 0x1140 [18] *OFF, On
-     unk_bit6_5:2,        //
+     unk_bit6_5:1,        //
+     vfomrmodeb:1,        //        *VFO B, MR B
      vfomrmode:1,         //        *VFO, MR
      unk_bit3_0:4;        //
-  u8 unk_1141;            // 0x1141
-  u8 unk_1142;            // 0x1142
+  u8 mrAch;               // 0x1141 MR A Channel #
+  u8 mrBch;               // 0x1142 MR B Channel #
   u8 unk_bit7_3:5,        //
      ab:1,                //        * A, B
      unk_bit1_0:2;        //
@@ -134,7 +135,7 @@ struct {
   u8 unk_bit7:1,          // 0x116F
      roger:1,             //        [14] *OFF, On
      dailDef:1,           //        Unknown - 'Volume, Frequency'
-     language:1,          //        ?Chinese, English
+     language:1,          //        ?Chinese, English (English only FW BQ1.38+)
      unk_bit3:1,          //
      endToneElim:1,       //        *OFF, Frequency
      unkCheckBox1:1,      //
@@ -148,8 +149,8 @@ struct {
                           // enabled (bits 16,64,128)
   u8 unk;                 // 0x1173
   u8 swAudio : 1,         // 0x1174 [19] *OFF, On
-     radioMoni : 1,       //        [34]*OFF, On
-     keylock : 1,         //        *OFF, Auto
+     radioMoni : 1,       //        [34] *OFF, On
+     keylock : 1,         //        [18] *OFF, On
      dualWait : 1,        //        [06] *OFF, On
      unk_bit3 : 1,        //
      light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
@@ -844,20 +845,52 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("basicsettings.saveMode", "Battery Save Mode", rx)
         basic.append(rset)
 
+        # Menu 17 - Scan Type
+        options = ["CO", "TO", "SE"]
+        rx = RadioSettingValueList(options, options[_settings.scanType])
+        rset = RadioSetting("basicsettings.scanType", "Scan Type", rx)
+        basic.append(rset)
+
+        # Menu 18 - Key Lock
+        rx = RadioSettingValueBoolean(_settings.keylock)
+        rset = RadioSetting("basicsettings.keylock", "Auto Key Lock", rx)
+        basic.append(rset)
+
+        # Menu 19 - SW Audio
+        rx = RadioSettingValueBoolean(_settings.swAudio)
+        rset = RadioSetting("basicsettings.swAudio", "Voice Prompts", rx)
+        basic.append(rset)
+
+        # Menu 20 - Intro Screen
+        options = ["Off", "Voltage", "Character String"]
+        rx = RadioSettingValueList(options, options[_settings.introScreen])
+        rset = RadioSetting("basicsettings.introScreen", "Intro Screen", rx)
+        basic.append(rset)
+
+        # Menu 32 - Key Mode
+        options = ["ALL", "PTT", "KEY", "Key & Side Key"]
+        rx = RadioSettingValueList(options, options[_settings.keyMode])
+        rset = RadioSetting("basicsettings.keyMode", "Key Lock Mode", rx)
+        basic.append(rset)
+
         # Menu 33 - Display Mode
-        options = ['Frequency', 'Channel', 'Name']
+        options = ['Frequency', 'Channel #', 'Name']
         rx = RadioSettingValueList(options, options[_settings.disMode])
-        rset = RadioSetting("basicsettings.disMode", "LED Display Mode", rx)
+        rset = RadioSetting("basicsettings.disMode", "Display Mode", rx)
+        basic.append(rset)
+
+        # Menu 34 - FM Dual Wait
+        rx = RadioSettingValueBoolean(_settings.radioMoni)
+        rset = RadioSetting("basicsettings.radioMoni", "Radio Monitor", rx)
         basic.append(rset)
 
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
         group.append(advanced)
 
         # software only
-        options = ['0.5S', '1.0S', '1.5S', '2.0S', '2.5S', '3.0S', '3.5S',
-                   '4.0S', '4.5S', '5.0S']
-        rx = RadioSettingValueList(options, options[_settings.voxDelay])
-        rset = RadioSetting("basicsettings.voxDelay", "VOX Delay", rx)
+        options = ['Off', 'Frequency']
+        rx = RadioSettingValueList(options, options[_settings.endToneElim])
+        rset = RadioSetting("basicsettings.endToneElim", "End Tone Elim", rx)
         advanced.append(rset)
 
         # software only
@@ -878,6 +911,13 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         rx = RadioSettingValueString(0, 15, name)
         rset = RadioSetting("openradioname.name2", "Intro Line 2", rx)
+        advanced.append(rset)
+
+        # software only
+        options = ['0.5S', '1.0S', '1.5S', '2.0S', '2.5S', '3.0S', '3.5S',
+                   '4.0S', '4.5S', '5.0S']
+        rx = RadioSettingValueList(options, options[_settings.voxDelay])
+        rset = RadioSetting("basicsettings.voxDelay", "VOX Delay", rx)
         advanced.append(rset)
 
         options = ['Unlocked', 'Unknown 1', 'Unknown 2', 'EU', 'US']
@@ -903,10 +943,25 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("workmodesettings.vfomrmode", "VFO/MR Mode", rx)
         workmode.append(rset)
 
+        # Toggle with [#] key
+        options = ["Frequency", "Channel"]
+        rx = RadioSettingValueList(options, options[_workmode.vfomrmodeb])
+        rset = RadioSetting("workmodesettings.vfomrmodeb",
+                            "VFO/MR Mode B (BQ1.41+)", rx)
+        workmode.append(rset)
+
         # Toggle with [A/B] key
-        options = ["A", "B"]
+        options = ["B", "A"]
         rx = RadioSettingValueList(options, options[_workmode.ab])
         rset = RadioSetting("workmodesettings.ab", "A/B Select", rx)
+        workmode.append(rset)
+
+        rx = RadioSettingValueInteger(1, 199, _workmode.mrAch + 1)
+        rset = RadioSetting("workmodesettings.mrAch", "MR A Channel #", rx)
+        workmode.append(rset)
+
+        rx = RadioSettingValueInteger(1, 199, _workmode.mrBch + 1)
+        rset = RadioSetting("workmodesettings.mrBch", "MR B Channel #", rx)
         workmode.append(rset)
 
         return group       # END get_settings()
@@ -939,6 +994,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
+                    elif setting == "mrAch" or setting == "mrBch":
+                        setattr(obj, setting, int(element.value) - 1)
                     elif setting == "voxLevel":
                         setattr(obj, setting, int(element.value) + 1)
                     elif element.value.get_mutable():
