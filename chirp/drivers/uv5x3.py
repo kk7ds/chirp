@@ -116,6 +116,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
 
     _ranges = [(0x0000, 0x0DF0),
                (0x0E00, 0x1800),
+               (0x1E00, 0x1E70),
                (0x1EE0, 0x1EF0),
                (0x1F60, 0x1F70),
                (0x1F80, 0x1F90),
@@ -332,6 +333,25 @@ class UV5X3(baofeng_common.BaofengCommonHT):
       char name[7];
       u8 unknown[9];
     } names[128];
+
+    struct subvfo {
+      u8 freq[8];
+      u8 unknown0[8];
+    };
+
+    #seekto 0x1E00;
+    struct {
+      struct subvfo vhf;
+      struct subvfo vhf2;
+      struct subvfo uhf;
+    } subvfoa;
+
+    #seekto 0x1E40;
+    struct {
+      struct subvfo vhf;
+      struct subvfo vhf2;
+      struct subvfo uhf;
+    } subvfob;
 
     #seekto 0x1ED0;
     struct {
@@ -796,6 +816,36 @@ class UV5X3(baofeng_common.BaofengCommonHT):
                 raise InvalidValueError(msg % (_uhf_upper))
             return chirp_common.format_freq(value)
 
+        def my_vhf_validate(value):
+            _vhf_lower = int(_mem.limits.vhf.lower)
+            _vhf_upper = int(_mem.limits.vhf.upper)
+            value = chirp_common.parse_freq(value)
+            msg = ("Must be between %i.0000-%i.9975")
+            if (_vhf_upper + 1) * 1000000 <= value or \
+                    value < _vhf_lower * 1000000:
+                raise InvalidValueError(msg % (_vhf_lower, _vhf_upper))
+            return chirp_common.format_freq(value)
+
+        def my_vhf2_validate(value):
+            _vhf2_lower = int(_mem.limits.vhf2.lower)
+            _vhf2_upper = int(_mem.limits.vhf2.upper)
+            value = chirp_common.parse_freq(value)
+            msg = ("Must be between %i.0000-%i.9975")
+            if (_vhf2_upper + 1) * 1000000 <= value or \
+                    value < _vhf2_lower * 1000000:
+                raise InvalidValueError(msg % (_vhf2_lower, _vhf2_upper))
+            return chirp_common.format_freq(value)
+
+        def my_uhf_validate(value):
+            _uhf_lower = int(_mem.limits.uhf.lower)
+            _uhf_upper = int(_mem.limits.uhf.upper)
+            value = chirp_common.parse_freq(value)
+            msg = ("Must be between %i.0000-%i.9975")
+            if (_uhf_upper + 1) * 1000000 <= value or \
+                    value < _uhf_lower * 1000000:
+                raise InvalidValueError(msg % (_uhf_lower, _uhf_upper))
+            return chirp_common.format_freq(value)
+
         def apply_freq(setting, obj):
             value = chirp_common.parse_freq(str(setting.value)) / 10
             for i in range(7, -1, -1):
@@ -814,6 +864,48 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, _mem.vfo.b)
+        work.append(rs)
+
+        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                            _mem.subvfoa.vhf.freq))
+        val1a.set_validate_callback(my_vhf_validate)
+        rs = RadioSetting("subvfoa.vhf.freq", "VFO A VHF (Saved)", val1a)
+        rs.set_apply_callback(apply_freq, _mem.subvfoa.vhf)
+        work.append(rs)
+
+        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                            _mem.subvfob.vhf.freq))
+        val1b.set_validate_callback(my_vhf_validate)
+        rs = RadioSetting("subvfob.vhf.freq", "VFO B VHF (Saved)", val1b)
+        rs.set_apply_callback(apply_freq, _mem.subvfob.vhf)
+        work.append(rs)
+
+        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                            _mem.subvfoa.vhf2.freq))
+        val1a.set_validate_callback(my_vhf2_validate)
+        rs = RadioSetting("subvfoa.vhf2.freq", "VFO A VHF2 (Saved)", val1a)
+        rs.set_apply_callback(apply_freq, _mem.subvfoa.vhf2)
+        work.append(rs)
+
+        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                            _mem.subvfob.vhf2.freq))
+        val1b.set_validate_callback(my_vhf2_validate)
+        rs = RadioSetting("subvfob.vhf2.freq", "VFO B VHF2 (Saved)", val1b)
+        rs.set_apply_callback(apply_freq, _mem.subvfob.vhf2)
+        work.append(rs)
+
+        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                            _mem.subvfoa.uhf.freq))
+        val1a.set_validate_callback(my_uhf_validate)
+        rs = RadioSetting("subvfoa.uhf.freq", "VFO A UHF (Saved)", val1a)
+        rs.set_apply_callback(apply_freq, _mem.subvfoa.uhf)
+        work.append(rs)
+
+        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
+                                            _mem.subvfob.uhf.freq))
+        val1b.set_validate_callback(my_uhf_validate)
+        rs = RadioSetting("subvfob.uhf.freq", "VFO B UHF (Saved)", val1b)
+        rs.set_apply_callback(apply_freq, _mem.subvfob.uhf)
         work.append(rs)
 
         rs = RadioSetting("vfo.a.sftd", "VFO A Shift",
