@@ -141,6 +141,11 @@ FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
               462.6750, 462.7000, 462.7250]
 FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
+FRS16_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
+               462.6625, 462.6250, 462.7250, 462.6875,
+               462.7125, 462.5500, 462.5750, 462.6000,
+               462.6500, 462.6750, 462.7000, 462.7250]
+
 PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
               446.06875, 446.08125, 446.09375]
 PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
@@ -360,25 +365,28 @@ class T18Radio(chirp_common.CloneModeRadio):
         # FRS only models
         if self._frs:
             # range of memories with values set by FCC rules
-            if mem.freq != int(FRS_FREQS[mem.number - 1] * 1000000):
-                # warn user can't change frequency
-                msgs.append(chirp_common.ValidationError(_msg_freq))
+            if self._upper == 22:
+                if mem.freq != int(FRS_FREQS[mem.number - 1] * 1000000):
+                    # warn user can't change frequency
+                    msgs.append(chirp_common.ValidationError(_msg_freq))
+                if mem.number >= 8 and mem.number <= 14:
+                    if str(mem.power) != "Low":
+                        # warn user can't change power
+                        msgs.append(chirp_common.ValidationError(_msg_txp))
+            else:
+                if mem.freq != int(FRS16_FREQS[mem.number - 1] * 1000000):
+                    # warn user can't change frequency
+                    msgs.append(chirp_common.ValidationError(_msg_freq))
 
-            # channels 1 - 22 are simplex only
+            # channels 1 - 16/22 are simplex only
             if str(mem.duplex) != "":
                 # warn user can't change duplex
                 msgs.append(chirp_common.ValidationError(_msg_simplex))
 
-            # channels 1 - 22 are NFM only
+            # channels 1 - 16/22 are NFM only
             if str(mem.mode) != "NFM":
                 # warn user can't change mode
                 msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-            # channels 8 - 14 are low power NFM only
-            if mem.number >= 8 and mem.number <= 14:
-                if str(mem.power) != "Low":
-                    # warn user can't change power
-                    msgs.append(chirp_common.ValidationError(_msg_txp))
 
         # PMR only models
         if self._pmr:
@@ -474,10 +482,11 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         if self._frs:
             FRS_IMMUTABLE = ["freq", "duplex", "offset", "mode"]
-            if mem.number >= 8 and mem.number <= 14:
-                mem.immutable = FRS_IMMUTABLE + ["power"]
-            else:
-                mem.immutable = FRS_IMMUTABLE
+            if self._upper == 22:
+                if mem.number >= 8 and mem.number <= 14:
+                    FRS_IMMUTABLE = FRS_IMMUTABLE + ["power"]
+
+            mem.immutable = FRS_IMMUTABLE
 
         if self._pmr:
             PMR_IMMUTABLE = ["freq", "duplex", "offset", "mode", "power"]
@@ -504,13 +513,16 @@ class T18Radio(chirp_common.CloneModeRadio):
         if mem.empty:
             if self._frs:
                 _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
-                FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
+                if self._upper == 22:
+                    FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
+                else:
+                    FRS_FREQ = int(FRS16_FREQS[mem.number - 1] * 100000)
                 _mem.rxfreq = _mem.txfreq = FRS_FREQ
                 _mem.narrow = True
-                if mem.number >= 8 and mem.number <= 14:
-                    _mem.highpower = False
-                else:
-                    _mem.highpower = True
+                _mem.highpower = True
+                if self._upper == 22:
+                    if mem.number >= 8 and mem.number <= 14:
+                        _mem.highpower = False
             elif self._pmr:
                 _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
                 PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
@@ -769,3 +781,29 @@ class RB618Radio(RB18Radio):
                    )
     _frs = False
     _pmr = True
+
+
+@directory.register
+class RT68Radio(T18Radio):
+    """RETEVIS RT68"""
+    VENDOR = "Retevis"
+    MODEL = "RT68"
+    ACK_BLOCK = False
+    CMD_EXIT = ""
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
+                    chirp_common.PowerLevel("High", watts=2.00)]
+
+    _magic = "83OGRAM"
+    _fingerprint = "\x06\x00\x00\x00\x00\x00\x00\x00"
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs = True
+    _pmr = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False
