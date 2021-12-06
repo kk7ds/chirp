@@ -10,6 +10,23 @@ from chirp import directory
 import run_tests
 
 
+def if_enabled(fn):
+    name = fn.__name__.replace('test_', '')
+    if 'CHIRP_TESTS' in os.environ:
+        tests_enabled = os.environ['CHIRP_TESTS'].split(',')
+        enabled = name in tests_enabled
+    else:
+        enabled = True
+
+    def wrapper(*a, **k):
+        if enabled:
+            return fn(*a, **k)
+        else:
+            raise unittest.SkipTest('%s not enabled' % name)
+
+    return wrapper
+
+
 class TestAdapterMeta(type):
     def __new__(cls, name, parents, dct):
         return super(TestAdapterMeta, cls).__new__(cls, name, parents, dct)
@@ -51,24 +68,31 @@ class TestAdapter(unittest.TestCase):
         finally:
             testcase.cleanup()
 
+    @if_enabled
     def test_copy_all(self):
         self._runtest(run_tests.TestCaseCopyAll)
 
+    @if_enabled
     def test_brute_force(self):
         self._runtest(run_tests.TestCaseBruteForce)
 
+    @if_enabled
     def test_edges(self):
         self._runtest(run_tests.TestCaseEdges)
 
+    @if_enabled
     def test_settings(self):
         self._runtest(run_tests.TestCaseSettings)
 
+    @if_enabled
     def test_banks(self):
         self._runtest(run_tests.TestCaseBanks)
 
+    @if_enabled
     def test_detect(self):
         self._runtest(run_tests.TestCaseDetect)
 
+    @if_enabled
     def test_clone(self):
         self._runtest(run_tests.TestCaseClone)
 
@@ -97,7 +121,10 @@ def _get_sub_devices(rclass, testimage):
 def _load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
 
-    images = glob.glob("tests/images/*.img")
+    if 'CHIRP_TESTIMG' in os.environ:
+        images = os.environ['CHIRP_TESTIMG'].split()
+    else:
+        images = glob.glob("tests/images/*.img")
     tests = [os.path.splitext(os.path.basename(img))[0] for img in images]
 
     for test in tests:
