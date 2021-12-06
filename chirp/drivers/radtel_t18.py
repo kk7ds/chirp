@@ -807,3 +807,13 @@ class RT68Radio(T18Radio):
         # This radio has always been post-metadata, so never do
         # old-school detection
         return False
+
+
+@directory.register
+class RT668Radio(RT68Radio):
+    """RETEVIS RT668"""
+    VENDOR = "Retevis"
+    MODEL = "RT668"
+
+    _frs = False
+    _pmr = True
