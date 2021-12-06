@@ -174,26 +174,6 @@ def _t18_enter_programming_mode(radio):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
-    if radio.MODEL != "RB18" and radio.MODEL != "RB618":
-        try:
-            serial.write(CMD_ACK)
-            ack = serial.read(1)
-        except:
-            raise errors.RadioError("Error communicating with radio")
-
-        if ack != CMD_ACK:
-            raise errors.RadioError("Radio refused to enter programming mode")
-
-        try:
-            serial.write("\x05")
-            response = serial.read(6)
-        except:
-            raise errors.RadioError("Error communicating with radio")
-
-        if not response == ("\xFF" * 6):
-            LOG.debug(util.hexprint(response))
-            raise errors.RadioError("Radio returned unexpected response")
-
     try:
         serial.write(CMD_ACK)
         ack = serial.read(1)
@@ -233,7 +213,7 @@ def _t18_read_block(radio, block_addr, block_size):
     except:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
 
-    if not radio.MODEL == "RT22S":
+    if radio.ACK_BLOCK:
         if ack != CMD_ACK:
             raise Exception("No ACK reading block %04x." % (block_addr))
 
@@ -321,6 +301,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     BLOCK_SIZE = 0x08
     CMD_EXIT = "b"
+    ACK_BLOCK = True
 
     _magic = "1ROGRAM"
     _fingerprint = "SMP558" + "\x00\x00"
@@ -728,6 +709,7 @@ class RT22SRadio(T18Radio):
     """RETEVIS RT22S"""
     VENDOR = "Retevis"
     MODEL = "RT22S"
+    ACK_BLOCK = False
 
     POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
                     chirp_common.PowerLevel("High", watts=2.00)]
