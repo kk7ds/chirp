@@ -62,9 +62,57 @@ struct {
 } settings;
 """
 
+MEM_FORMAT_RB18 = """
+#seekto 0x0000;
+struct {
+    lbcd rxfreq[4];
+    lbcd txfreq[4];
+    lbcd rxtone[2];
+    lbcd txtone[2];
+    u8 jumpcode:1,
+       unknown1:2,
+       skip:1,
+       highpower:1,
+       narrow:1,
+       unknown2:1,
+       bcl:1;
+    u8 unknown3[3];
+} memory[22];
+#seekto 0x0630;
+struct {
+    u8 unk630:7,
+       voice:1;
+    u8 unk631:7,
+       language:1;
+    u8 unk632:7,
+       scan:1;
+    u8 unk633:7,
+       vox:1;
+    u8 unk634:5,
+       vox_level:3;
+    u8 unk635;
+    u8 unk636:7,
+       lovoltnotx:1;
+    u8 unk637:7,
+       hivoltnotx:1;
+    u8 unknown2[8];
+    u8 unk640:5,
+       rogerbeep:1,
+       batterysaver:1,
+       beep:1;
+    u8 squelchlevel;
+    u8 unk642;
+    u8 timeouttimer;
+    u8 unk644:7,
+       tail:1;
+    u8 channel;
+} settings;
+"""
+
 CMD_ACK = "\x06"
 
 VOICE_LIST = ["Off", "Chinese", "English"]
+VOICE_LIST2 = ["English", "Chinese"]
 TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
@@ -77,6 +125,7 @@ SIDEKEY2_LIST = ["Off", "Scan", "Emergency Alarm", "Display Battery"]
 
 SETTING_LISTS = {
     "voiceprompt": VOICE_LIST,
+    "language": VOICE_LIST2,
     "timeouttimer": TIMEOUTTIMER_LIST,
     "scanmode": SCANMODE_LIST,
     "voxlevel": VOXLEVEL_LIST,
@@ -98,7 +147,7 @@ def _t18_enter_programming_mode(radio):
 
     try:
         serial.write("\x02")
-        time.sleep(0.1)
+        time.sleep(0.01)
         serial.write(radio._magic)
         ack = serial.read(1)
     except:
@@ -119,24 +168,25 @@ def _t18_enter_programming_mode(radio):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
-    try:
-        serial.write(CMD_ACK)
-        ack = serial.read(1)
-    except:
-        raise errors.RadioError("Error communicating with radio")
+    if radio.MODEL != "RB18":
+        try:
+            serial.write(CMD_ACK)
+            ack = serial.read(1)
+        except:
+            raise errors.RadioError("Error communicating with radio")
 
-    if ack != CMD_ACK:
-        raise errors.RadioError("Radio refused to enter programming mode")
+        if ack != CMD_ACK:
+            raise errors.RadioError("Radio refused to enter programming mode")
 
-    try:
-        serial.write("\x05")
-        response = serial.read(6)
-    except:
-        raise errors.RadioError("Error communicating with radio")
+        try:
+            serial.write("\x05")
+            response = serial.read(6)
+        except:
+            raise errors.RadioError("Error communicating with radio")
 
-    if not response == ("\xFF" * 6):
-        LOG.debug(util.hexprint(response))
-        raise errors.RadioError("Radio returned unexpected response")
+        if not response == ("\xFF" * 6):
+            LOG.debug(util.hexprint(response))
+            raise errors.RadioError("Radio returned unexpected response")
 
     try:
         serial.write(CMD_ACK)
@@ -429,12 +479,13 @@ class T18Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
         mem.extra.append(rs)
-        rs = RadioSetting("scramble", "Scramble",
-                          RadioSettingValueBoolean(not _mem.scramble))
-        mem.extra.append(rs)
-        rs = RadioSetting("compander", "Compander",
-                          RadioSettingValueBoolean(not _mem.compander))
-        mem.extra.append(rs)
+        if self.MODEL != "RB18":
+            rs = RadioSetting("scramble", "Scramble",
+                              RadioSettingValueBoolean(not _mem.scramble))
+            mem.extra.append(rs)
+            rs = RadioSetting("compander", "Compander",
+                              RadioSettingValueBoolean(not _mem.compander))
+            mem.extra.append(rs)
 
         return mem
 
@@ -502,29 +553,48 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   _settings.timeouttimer]))
         basic.append(rs)
 
-        rs = RadioSetting("scanmode", "Scan mode",
-                          RadioSettingValueList(
-                              SCANMODE_LIST,
-                              SCANMODE_LIST[_settings.scanmode]))
-        basic.append(rs)
+        if self.MODEL == "RB18":
+            rs = RadioSetting("scan", "Scan",
+                              RadioSettingValueBoolean(_settings.scan))
+            basic.append(rs)
 
-        rs = RadioSetting("voiceprompt", "Voice prompt",
-                          RadioSettingValueList(
-                              VOICE_LIST,
-                              VOICE_LIST[_settings.voiceprompt]))
-        basic.append(rs)
+            rs = RadioSetting("voice", "Voice prompts",
+                              RadioSettingValueBoolean(_settings.voice))
+            basic.append(rs)
 
-        rs = RadioSetting("voxlevel", "Vox level",
-                          RadioSettingValueList(
-                              VOXLEVEL_LIST,
-                              VOXLEVEL_LIST[_settings.voxlevel]))
-        basic.append(rs)
+            rs = RadioSetting("language", "Language",
+                              RadioSettingValueList(
+                                  VOICE_LIST2,
+                                  VOICE_LIST2[_settings.language]))
+            basic.append(rs)
 
-        rs = RadioSetting("voxdelay", "VOX delay",
-                          RadioSettingValueList(
-                              VOXDELAY_LIST,
-                              VOXDELAY_LIST[_settings.voxdelay]))
-        basic.append(rs)
+            rs = RadioSetting("tail", "Tail",
+                              RadioSettingValueBoolean(_settings.tail))
+            basic.append(rs)
+        else:
+            rs = RadioSetting("scanmode", "Scan mode",
+                              RadioSettingValueList(
+                                  SCANMODE_LIST,
+                                  SCANMODE_LIST[_settings.scanmode]))
+            basic.append(rs)
+
+            rs = RadioSetting("voiceprompt", "Voice prompt",
+                              RadioSettingValueList(
+                                  VOICE_LIST,
+                                  VOICE_LIST[_settings.voiceprompt]))
+            basic.append(rs)
+
+            rs = RadioSetting("voxlevel", "Vox level",
+                              RadioSettingValueList(
+                                  VOXLEVEL_LIST,
+                                  VOXLEVEL_LIST[_settings.voxlevel]))
+            basic.append(rs)
+
+            rs = RadioSetting("voxdelay", "VOX delay",
+                              RadioSettingValueList(
+                                  VOXDELAY_LIST,
+                                  VOXDELAY_LIST[_settings.voxdelay]))
+            basic.append(rs)
 
         rs = RadioSetting("batterysaver", "Battery saver",
                           RadioSettingValueBoolean(_settings.batterysaver))
@@ -539,6 +609,31 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueList(
                                   SIDEKEY2_LIST,
                                   SIDEKEY2_LIST[_settings.sidekey2]))
+            basic.append(rs)
+
+        if self.MODEL == "RB18":
+            rs = RadioSetting("hivoltnotx", "High voltage no TX",
+                              RadioSettingValueBoolean(_settings.hivoltnotx))
+            basic.append(rs)
+
+            rs = RadioSetting("lovoltnotx", "Low voltage no TX",
+                              RadioSettingValueBoolean(_settings.lovoltnotx))
+            basic.append(rs)
+
+            rs = RadioSetting("vox", "VOX",
+                              RadioSettingValueBoolean(_settings.vox))
+            basic.append(rs)
+
+            if _settings.vox_level > 4:
+                val = 1
+            else:
+                val = _settings.vox_level + 1
+            rs = RadioSetting("vox_level", "VOX level",
+                              RadioSettingValueInteger(1, 5, val))
+            basic.append(rs)
+
+            rs = RadioSetting("rogerbeep", "Roger beep",
+                              RadioSettingValueBoolean(_settings.rogerbeep))
             basic.append(rs)
 
         return top
@@ -563,6 +658,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
+                    elif setting == "vox_level":
+                        setattr(obj, setting, int(element.value) - 1)
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
@@ -608,3 +705,34 @@ class RT22SRadio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _frs = True
+
+
+@directory.register
+class RB18Radio(T18Radio):
+    """RETEVIS RB18"""
+    VENDOR = "Retevis"
+    MODEL = "RB18"
+    BLOCK_SIZE = 0x10
+    CMD_EXIT = "E"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
+                    chirp_common.PowerLevel("High", watts=2.00)]
+
+    _magic = "PROGRAL"
+    _fingerprint = "P3107" + "\xF7"
+    _upper = 22
+    _frs = True
+
+    _ranges = [
+        (0x0000, 0x0660),
+    ]
+    _memsize = 0x0660
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RB18, self._mmap)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False
