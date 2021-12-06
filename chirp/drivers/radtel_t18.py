@@ -77,7 +77,7 @@ struct {
        unknown2:1,
        bcl:1;
     u8 unknown3[3];
-} memory[22];
+} memory[%d];
 #seekto 0x0630;
 struct {
     u8 unk630:7,
@@ -141,6 +141,12 @@ FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
               462.6750, 462.7000, 462.7250]
 FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
+PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
+              446.06875, 446.08125, 446.09375]
+PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
+              446.16875, 446.18125, 446.19375]
+PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
+
 
 def _t18_enter_programming_mode(radio):
     serial = radio.pipe
@@ -168,7 +174,7 @@ def _t18_enter_programming_mode(radio):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
-    if radio.MODEL != "RB18":
+    if radio.MODEL != "RB18" and radio.MODEL != "RB618":
         try:
             serial.write(CMD_ACK)
             ack = serial.read(1)
@@ -321,7 +327,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs = False
+    _frs = _pmr = False
 
     _ranges = [
         (0x0000, 0x03F0),
@@ -335,7 +341,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        if self.MODEL != "T18":
+        if self.MODEL != "T18" and self.MODEL != "RB618":
             rf.valid_power_levels = self.POWER_LEVELS
         rf.can_odd_split = True
         rf.has_rx_dtcs = True
@@ -392,6 +398,23 @@ class T18Radio(chirp_common.CloneModeRadio):
                 if str(mem.power) != "Low":
                     # warn user can't change power
                     msgs.append(chirp_common.ValidationError(_msg_txp))
+
+        # PMR only models
+        if self._pmr:
+            # range of memories with values set by PMR rules
+            if mem.freq != int(PMR_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+
+            # channels 1 - 16 are simplex only
+            if str(mem.duplex) != "":
+                # warn user can't change duplex
+                msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            # channels 1 - 16 are NFM only
+            if str(mem.mode) != "NFM":
+                # warn user can't change mode
+                msgs.append(chirp_common.ValidationError(_msg_nfm))
 
         return msgs
 
@@ -465,7 +488,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         rxtone = self._decode_tone(_mem.rxtone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        if self.MODEL != "T18":
+        if self.MODEL != "T18" and self.MODEL != "RB618":
             mem.power = self.POWER_LEVELS[_mem.highpower]
 
         if self._frs:
@@ -475,11 +498,15 @@ class T18Radio(chirp_common.CloneModeRadio):
             else:
                 mem.immutable = FRS_IMMUTABLE
 
+        if self._pmr:
+            PMR_IMMUTABLE = ["freq", "duplex", "offset", "mode", "power"]
+            mem.immutable = PMR_IMMUTABLE
+
         mem.extra = RadioSettingGroup("Extra", "extra")
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
         mem.extra.append(rs)
-        if self.MODEL != "RB18":
+        if self.MODEL != "RB18" and self.MODEL != "RB618":
             rs = RadioSetting("scramble", "Scramble",
                               RadioSettingValueBoolean(not _mem.scramble))
             mem.extra.append(rs)
@@ -503,6 +530,12 @@ class T18Radio(chirp_common.CloneModeRadio):
                     _mem.highpower = False
                 else:
                     _mem.highpower = True
+            elif self._pmr:
+                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
+                PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
+                _mem.rxfreq = _mem.txfreq = PMR_FREQ
+                _mem.narrow = True
+                _mem.highpower = False
             else:
                 _mem.set_raw("\xFF" * (_mem.size() / 8))
 
@@ -526,7 +559,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         self._encode_tone(_mem.txtone, *txtone)
         self._encode_tone(_mem.rxtone, *rxtone)
 
-        if self.MODEL != "T18":
+        if self.MODEL != "T18" and self.MODEL != "RB18":
             _mem.highpower = mem.power == self.POWER_LEVELS[1]
 
         _mem.narrow = 'N' in mem.mode
@@ -553,7 +586,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   _settings.timeouttimer]))
         basic.append(rs)
 
-        if self.MODEL == "RB18":
+        if self.MODEL == "RB18" or self.MODEL == "RB618":
             rs = RadioSetting("scan", "Scan",
                               RadioSettingValueBoolean(_settings.scan))
             basic.append(rs)
@@ -611,7 +644,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   SIDEKEY2_LIST[_settings.sidekey2]))
             basic.append(rs)
 
-        if self.MODEL == "RB18":
+        if self.MODEL == "RB18" or self.MODEL == "RB618":
             rs = RadioSetting("hivoltnotx", "High voltage no TX",
                               RadioSettingValueBoolean(_settings.hivoltnotx))
             basic.append(rs)
@@ -705,6 +738,7 @@ class RT22SRadio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _frs = True
+    _pmr = False
 
 
 @directory.register
@@ -721,7 +755,10 @@ class RB18Radio(T18Radio):
     _magic = "PROGRAL"
     _fingerprint = "P3107" + "\xF7"
     _upper = 22
+    _mem_params = (_upper  # number of channels
+                   )
     _frs = True
+    _pmr = False
 
     _ranges = [
         (0x0000, 0x0660),
@@ -729,10 +766,24 @@ class RB18Radio(T18Radio):
     _memsize = 0x0660
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_RB18, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT_RB18 %
+                                     self._mem_params, self._mmap)
 
     @classmethod
     def match_model(cls, filedata, filename):
         # This radio has always been post-metadata, so never do
         # old-school detection
         return False
+
+
+@directory.register
+class RB618Radio(RB18Radio):
+    """RETEVIS RB618"""
+    VENDOR = "Retevis"
+    MODEL = "RB618"
+
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs = False
+    _pmr = True
