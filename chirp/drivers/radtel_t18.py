@@ -1,4 +1,4 @@
-# Copyright 2017 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2021 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,7 +63,6 @@ struct {
 """
 
 CMD_ACK = "\x06"
-BLOCK_SIZE = 0x08
 
 VOICE_LIST = ["Off", "Chinese", "English"]
 TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
@@ -77,7 +76,7 @@ VOXDELAY_LIST = ["0.5 seconds", "1.0 seconds", "1.5 seconds",
 SIDEKEY2_LIST = ["Off", "Scan", "Emergency Alarm", "Display Battery"]
 
 SETTING_LISTS = {
-    "voice": VOICE_LIST,
+    "voiceprompt": VOICE_LIST,
     "timeouttimer": TIMEOUTTIMER_LIST,
     "scanmode": SCANMODE_LIST,
     "voxlevel": VOXLEVEL_LIST,
@@ -152,7 +151,7 @@ def _t18_enter_programming_mode(radio):
 def _t18_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("b")
+        serial.write(radio.CMD_EXIT)
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -189,7 +188,7 @@ def _t18_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">cHb", 'W', block_addr, block_size)
-    data = radio.get_mmap()[block_addr:block_addr + 8]
+    data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -215,11 +214,11 @@ def do_download(radio):
     status.cur = 0
     status.max = radio._memsize
 
-    for addr in range(0, radio._memsize, BLOCK_SIZE):
-        status.cur = addr + BLOCK_SIZE
+    for addr in range(0, radio._memsize, radio.BLOCK_SIZE):
+        status.cur = addr + radio.BLOCK_SIZE
         radio.status_fn(status)
 
-        block = _t18_read_block(radio, addr, BLOCK_SIZE)
+        block = _t18_read_block(radio, addr, radio.BLOCK_SIZE)
         data += block
 
         LOG.debug("Address: %04x" % addr)
@@ -240,10 +239,10 @@ def do_upload(radio):
     status.max = radio._memsize
 
     for start_addr, end_addr in radio._ranges:
-        for addr in range(start_addr, end_addr, BLOCK_SIZE):
-            status.cur = addr + BLOCK_SIZE
+        for addr in range(start_addr, end_addr, radio.BLOCK_SIZE):
+            status.cur = addr + radio.BLOCK_SIZE
             radio.status_fn(status)
-            _t18_write_block(radio, addr, BLOCK_SIZE)
+            _t18_write_block(radio, addr, radio.BLOCK_SIZE)
 
     _t18_exit_programming_mode(radio)
 
@@ -264,6 +263,8 @@ class T18Radio(chirp_common.CloneModeRadio):
     VENDOR = "Radtel"
     MODEL = "T18"
     BAUD_RATE = 9600
+    BLOCK_SIZE = 0x08
+    CMD_EXIT = "b"
 
     _magic = "1ROGRAM"
     _fingerprint = "SMP558" + "\x00\x00"
@@ -284,6 +285,8 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        if self.MODEL != "T18":
+            rf.valid_power_levels = self.POWER_LEVELS
         rf.can_odd_split = True
         rf.has_rx_dtcs = True
         rf.has_ctone = True
@@ -412,6 +415,9 @@ class T18Radio(chirp_common.CloneModeRadio):
         rxtone = self._decode_tone(_mem.rxtone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
+        if self.MODEL != "T18":
+            mem.power = self.POWER_LEVELS[_mem.highpower]
+
         if self._frs:
             FRS_IMMUTABLE = ["freq", "duplex", "offset", "mode"]
             if mem.number >= 8 and mem.number <= 14:
@@ -468,6 +474,9 @@ class T18Radio(chirp_common.CloneModeRadio):
         txtone, rxtone = chirp_common.split_tone_encode(mem)
         self._encode_tone(_mem.txtone, *txtone)
         self._encode_tone(_mem.rxtone, *rxtone)
+
+        if self.MODEL != "T18":
+            _mem.highpower = mem.power == self.POWER_LEVELS[1]
 
         _mem.narrow = 'N' in mem.mode
         _mem.skip = mem.skip == "S"
@@ -589,6 +598,9 @@ class RT22SRadio(T18Radio):
     """RETEVIS RT22S"""
     VENDOR = "Retevis"
     MODEL = "RT22S"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
+                    chirp_common.PowerLevel("High", watts=2.00)]
 
     _magic = "9COGRAM"
     _fingerprint = "SMP558" + "\x02"
