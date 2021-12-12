@@ -36,6 +36,9 @@ LOG = logging.getLogger(__name__)
 # Baofeng WP970I magic string
 MSTRING_WP970I = "\x50\xBB\xFF\x20\x14\x04\x13"
 
+# Baofeng UV-9G magic string
+MSTRING_UV9G = "\x50\xBB\xFF\x20\x12\x05\x25"
+
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -112,6 +115,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
     _vhf_range = (130000000, 180000000)
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 521000000)
+    _gmrs = False
     VALID_BANDS = [_vhf_range,
                    _uhf_range]
     PTTID_LIST = LIST_PTTID
@@ -929,3 +933,25 @@ class UV9R(WP970I):
     VENDOR = "Baofeng"
     MODEL = "UV-9R"
     LENGTH_NAME = 7
+
+
+@directory.register
+class UV9G(WP970I):
+    """Baofeng UV-9G"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-9G"
+    LENGTH_NAME = 7
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Med",  watts=0.50),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
+    _magic = [MSTRING_UV9G, ]
+    _gmrs = True
+
+    
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False
+

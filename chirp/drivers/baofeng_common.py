@@ -315,6 +315,14 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
     MODEL = ""
     IDENT = ""
 
+    GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+                   462.6875, 462.7125]
+    GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+                   467.6875, 467.7125]
+    GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+                   462.6750, 462.7000, 462.7250]
+    GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
+
     def sync_in(self):
         """Download from radio"""
         try:
@@ -515,6 +523,33 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             return
 
         _mem.set_raw("\x00" * 16)
+
+        if self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = int(self.GMRS_FREQS[mem.number - 1] * 1000000)
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.mode = "NFM"
+                        mem.power = self.POWER_LEVELS[2]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
+            elif float(mem.freq) / 1000000 in self.GMRS_FREQS:
+                if float(mem.freq) / 1000000 in self.GMRS_FREQS2:
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[2]
+                if float(mem.freq) / 1000000 in self.GMRS_FREQS3:
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
