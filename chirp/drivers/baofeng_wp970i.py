@@ -948,10 +948,8 @@ class UV9G(WP970I):
     _magic = [MSTRING_UV9G, ]
     _gmrs = True
 
-    
     @classmethod
     def match_model(cls, filedata, filename):
         # This radio has always been post-metadata, so never do
         # old-school detection
         return False
-
