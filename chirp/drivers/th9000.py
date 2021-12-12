@@ -614,7 +614,8 @@ class Th9000Radio(chirp_common.CloneModeRadio,
             mem.freq += 50
 
         mem.offset = int(_mem.offset) * 100
-        mem.name = str(_mem.name).rstrip()  # Set the alpha tag
+        # Set the alpha tag
+        mem.name = self.filter_name(str(_mem.name).rstrip())
         mem.duplex = DUPLEXES[_mem.duplex]
         mem.mode = MODES[_mem.channel_width]
         mem.power = POWER_LEVELS[_mem.power]
