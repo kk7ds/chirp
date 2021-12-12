@@ -115,7 +115,6 @@ class WP970I(baofeng_common.BaofengCommonHT):
     _vhf_range = (130000000, 180000000)
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 521000000)
-    _gmrs = False
     VALID_BANDS = [_vhf_range,
                    _uhf_range]
     PTTID_LIST = LIST_PTTID

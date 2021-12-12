@@ -322,6 +322,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
     GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
                    462.6750, 462.7000, 462.7250]
     GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
+    _gmrs = False
 
     def sync_in(self):
         """Download from radio"""
