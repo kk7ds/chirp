@@ -790,6 +790,9 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         def convert_bytes_to_freq(bytes):
             real_freq = 0
             for byte in bytes:
+                if byte > 9:
+                    real_freq = 0
+                    continue
                 real_freq = (real_freq * 10) + byte
             return chirp_common.format_freq(real_freq * 10)
 
@@ -866,43 +869,55 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_freq, _mem.vfo.b)
         work.append(rs)
 
-        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.subvfoa.vhf.freq))
+        val = convert_bytes_to_freq(_mem.subvfoa.vhf.freq)
+        if int(float(val)) == 0:
+            val = str(int(_mem.limits.vhf.lower)) + ".000000"
+        val1a = RadioSettingValueString(0, 10, val)
         val1a.set_validate_callback(my_vhf_validate)
         rs = RadioSetting("subvfoa.vhf.freq", "VFO A VHF (Saved)", val1a)
         rs.set_apply_callback(apply_freq, _mem.subvfoa.vhf)
         work.append(rs)
 
-        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.subvfob.vhf.freq))
+        val = convert_bytes_to_freq(_mem.subvfob.vhf.freq)
+        if int(float(val)) == 0:
+            val = str(int(_mem.limits.vhf.lower)) + ".000000"
+        val1b = RadioSettingValueString(0, 10, val)
         val1b.set_validate_callback(my_vhf_validate)
         rs = RadioSetting("subvfob.vhf.freq", "VFO B VHF (Saved)", val1b)
         rs.set_apply_callback(apply_freq, _mem.subvfob.vhf)
         work.append(rs)
 
-        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.subvfoa.vhf2.freq))
+        val = convert_bytes_to_freq(_mem.subvfoa.vhf2.freq)
+        if int(float(val)) == 0:
+            val = str(int(_mem.limits.vhf2.lower)) + ".000000"
+        val1a = RadioSettingValueString(0, 10, val)
         val1a.set_validate_callback(my_vhf2_validate)
         rs = RadioSetting("subvfoa.vhf2.freq", "VFO A VHF2 (Saved)", val1a)
         rs.set_apply_callback(apply_freq, _mem.subvfoa.vhf2)
         work.append(rs)
 
-        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.subvfob.vhf2.freq))
+        val = convert_bytes_to_freq(_mem.subvfob.vhf2.freq)
+        if int(float(val)) == 0:
+            val = str(int(_mem.limits.vhf2.lower)) + ".000000"
+        val1b = RadioSettingValueString(0, 10, val)
         val1b.set_validate_callback(my_vhf2_validate)
         rs = RadioSetting("subvfob.vhf2.freq", "VFO B VHF2 (Saved)", val1b)
         rs.set_apply_callback(apply_freq, _mem.subvfob.vhf2)
         work.append(rs)
 
-        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.subvfoa.uhf.freq))
+        val = convert_bytes_to_freq(_mem.subvfoa.uhf.freq)
+        if int(float(val)) == 0:
+            val = str(int(_mem.limits.uhf.lower)) + ".000000"
+        val1a = RadioSettingValueString(0, 10, val)
         val1a.set_validate_callback(my_uhf_validate)
         rs = RadioSetting("subvfoa.uhf.freq", "VFO A UHF (Saved)", val1a)
         rs.set_apply_callback(apply_freq, _mem.subvfoa.uhf)
         work.append(rs)
 
-        val1b = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.subvfob.uhf.freq))
+        val = convert_bytes_to_freq(_mem.subvfob.uhf.freq)
+        if int(float(val)) == 0:
+            val = str(int(_mem.limits.uhf.lower)) + ".000000"
+        val1b = RadioSettingValueString(0, 10, val)
         val1b.set_validate_callback(my_uhf_validate)
         rs = RadioSetting("subvfob.uhf.freq", "VFO B UHF (Saved)", val1b)
         rs.set_apply_callback(apply_freq, _mem.subvfob.uhf)
