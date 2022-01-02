@@ -140,6 +140,8 @@ FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
 GMRS_FREQS = FRS_FREQS + FRS_FREQS3
 
+MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600]
+
 
 def _enter_programming_mode(radio):
     serial = radio.pipe
@@ -312,7 +314,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
     _mem_params = (_upper,  # number of channels
                    _upper   # number of names
                    )
-    _frs = _gmrs = False
+    _frs = _gmrs = _murs = False
 
     _ranges = [
                (0x0000, 0x0B60),
@@ -380,6 +382,24 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                 if str(mem.power) != "Low":
                     # warn user can't change power
                     msgs.append(chirp_common.ValidationError(_msg_txp))
+
+        # MURS only models
+        if self._murs:
+            # range of memories with values set by FCC rules
+            if mem.freq != int(MURS_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+
+            # channels 1 - 5 are simplex only
+            if str(mem.duplex) != "":
+                # warn user can't change duplex
+                msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            # channels 1 - 3 are NFM only
+            if mem.number <= 3:
+                if mem.mode != "NFM":
+                    # warn user can't change mode
+                    msgs.append(chirp_common.ValidationError(_msg_nfm))
 
         return msgs
 
@@ -519,6 +539,13 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             else:
                 mem.immutable = GMRS_IMMUTABLE
 
+        if mem.number <= 5 and self._murs:
+            MURS_IMMUTABLE = ["freq", "duplex", "offset"]
+            if mem.number <= 3:
+                mem.immutable = MURS_IMMUTABLE + ["mode"]
+            else:
+                mem.immutable = MURS_IMMUTABLE
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -560,6 +587,16 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                     _mem.lowpower = True
                 else:
                     _mem.lowpower = False
+            elif self._murs:
+                if mem.number <= 5:
+                    _mem.set_raw("\xFF" * 8 + "\x00" * 5 + "\xFF" * 3)
+                    MURS_FREQ = int(MURS_FREQS[mem.number - 1] * 100000)
+                    _mem.rxfreq = _mem.txfreq = MURS_FREQ
+                    _mem.lowpower = False
+                    if mem.number <= 3:
+                        _mem.isnarrow = True
+                    else:
+                        _mem.isnarrow = False
             else:
                 _mem.set_raw("\xFF" * 8 + "\x00" * 4 + "\x03" + "\xFF" * 3)
 
@@ -651,7 +688,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("squelch", "Squelch Level", rs)
         basic.append(rset)
 
-        model_list = ["RB27B", ]
+        model_list = ["RB27B", "RB27V"]
         if self.MODEL in model_list:
             # Menu 09 (RB27x)
             rs = RadioSettingValueList(TOT2_LIST, TOT2_LIST[_settings.tot])
@@ -840,7 +877,7 @@ class RetevisRT27B(BFT8Radio):
 
     _upper = 22
     _frs = True
-    _gmrs = False
+    _gmrs = _murs = False
 
     _ranges = [
                (0x0000, 0x0640),
@@ -860,4 +897,15 @@ class RetevisRT27(RetevisRT27B):
 
     _upper = 99
     _gmrs = True
-    _frs = False
+    _frs = _murs = False
+
+
+@directory.register
+class RetevisRT27V(RetevisRT27B):
+    VENDOR = "Retevis"
+    MODEL = "RB27V"
+    VALID_BANDS = [(136000000, 174000000)]
+
+    _upper = 5
+    _murs = True
+    _frs = _gmrs = False
