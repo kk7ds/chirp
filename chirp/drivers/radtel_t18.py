@@ -48,17 +48,26 @@ struct {
 struct {
     u8 unknown1:1,
        scanmode:1,
-       unknown2:2,
+       unknown2:1,
+       speccode:1,
        voiceprompt:2,
        batterysaver:1,
        beep:1;
     u8 squelchlevel;
     u8 sidekey2;         // Retevis RT22S setting
+                         // Retevis RB85 sidekey 1 short
     u8 timeouttimer;
     u8 voxlevel;
-    u8 unknown3;
+    u8 sidekey2S;
     u8 unused;
     u8 voxdelay;
+    u8 sidekey1L;
+    u8 sidekey2L;
+    u8 unused2[3];
+    u8 unknown3:4,
+       unknown4:1,
+       unknown5:2,
+       power10w:1;
 } settings;
 """
 
@@ -123,6 +132,27 @@ VOXDELAY_LIST = ["0.5 seconds", "1.0 seconds", "1.5 seconds",
                  "2.0 seconds", "2.5 seconds", "3.0 seconds"]
 SIDEKEY2_LIST = ["Off", "Scan", "Emergency Alarm", "Display Battery"]
 
+SIDEKEY85SHORT_LIST = ["Off",
+                       "Noise Cansellation On",
+                       "Continuous Monitor",
+                       "High/Low Power",
+                       "Emergency Alarm",
+                       "Show Battery",
+                       "Scan",
+                       "VOX",
+                       "Busy Channel Lock"]
+SIDEKEY85LONG_LIST = ["Off",
+                      "Noise Cansellation On",
+                      "Continuous Monitor",
+                      "Monitor Momentary",
+                      "High/Low Power",
+                      "Emergency Alarm",
+                      "Show Battery",
+                      "Scan",
+                      "VOX",
+                      "Busy Channel Lock"]
+SPECCODE_LIST = ["SpeCode 1", "SpeCode 2"]
+
 SETTING_LISTS = {
     "voiceprompt": VOICE_LIST,
     "language": VOICE_LIST2,
@@ -130,7 +160,12 @@ SETTING_LISTS = {
     "scanmode": SCANMODE_LIST,
     "voxlevel": VOXLEVEL_LIST,
     "voxdelay": VOXDELAY_LIST,
-    "sidekey2": SIDEKEY2_LIST
+    "sidekey2": SIDEKEY2_LIST,
+    "sidekey2": SIDEKEY85SHORT_LIST,
+    "sidekey1L": SIDEKEY85LONG_LIST,
+    "sidekey2S": SIDEKEY85SHORT_LIST,
+    "sidekey2L": SIDEKEY85LONG_LIST,
+    "speccode": SPECCODE_LIST
 }
 
 FRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
@@ -700,6 +735,41 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.rogerbeep))
             basic.append(rs)
 
+        if self.MODEL == "RB85":
+            rs = RadioSetting("speccode", "SpecCode Select",
+                              RadioSettingValueList(
+                                  SPECCODE_LIST,
+                                  SPECCODE_LIST[_settings.speccode]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2", "Side Key 1(Short)",
+                              RadioSettingValueList(
+                                  SIDEKEY85SHORT_LIST,
+                                  SIDEKEY85SHORT_LIST[_settings.sidekey2]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey1L", "Side Key 1(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY85LONG_LIST,
+                                  SIDEKEY85LONG_LIST[_settings.sidekey1L]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2S", "Side Key 2(Short)",
+                              RadioSettingValueList(
+                                  SIDEKEY85SHORT_LIST,
+                                  SIDEKEY85SHORT_LIST[_settings.sidekey2S]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2L", "Side Key 2(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY85LONG_LIST,
+                                  SIDEKEY85LONG_LIST[_settings.sidekey2L]))
+            basic.append(rs)
+
+            rs = RadioSetting("power10w", "Power 10W",
+                              RadioSettingValueBoolean(_settings.power10w))
+            basic.append(rs)
+
         return top
 
     def set_settings(self, settings):
@@ -895,3 +965,17 @@ class RB17VRadio(RB17Radio):
     _frs = False
     _pmr = False
     _murs = True
+
+
+@directory.register
+class RB85Radio(T18Radio):
+    """Retevis RB85"""
+    VENDOR = "Retevis"
+    MODEL = "RB85"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
+                    chirp_common.PowerLevel("High", watts=10.00)]
+
+    _magic = "H19GRAM"
+    _fingerprint = "SMP558" + "\x02"
