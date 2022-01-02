@@ -830,3 +830,13 @@ class RB17Radio(RT68Radio):
 
     _frs = True
     _pmr = False
+
+
+@directory.register
+class RB617Radio(RB17Radio):
+    """RETEVIS RB617"""
+    VENDOR = "Retevis"
+    MODEL = "RB617"
+
+    _frs = False
+    _pmr = True
