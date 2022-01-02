@@ -74,7 +74,7 @@ struct {
   u8 mra;               // MR Channel A
   u8 mrb;               // MR Channel B
   u8 disp_ab;           // Display A/B Selected
-  ul16 fmcur;           // Broadcast FM station
+  u16 fmcur;            // Broadcast FM station
   u8 workmode;          // Work Mode
   u8 wx;                // NOAA WX ch#
   u8 area;              // Area Selected
