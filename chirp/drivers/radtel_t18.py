@@ -146,6 +146,8 @@ FRS16_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
                462.7125, 462.5500, 462.5750, 462.6000,
                462.6500, 462.6750, 462.7000, 462.7250]
 
+MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600]
+
 PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
               446.06875, 446.08125, 446.09375]
 PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
@@ -308,12 +310,14 @@ class T18Radio(chirp_common.CloneModeRadio):
     CMD_EXIT = "b"
     ACK_BLOCK = True
 
+    VALID_BANDS = [(400000000, 470000000)]
+
     _magic = "1ROGRAM"
     _fingerprint = "SMP558" + "\x00\x00"
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs = _pmr = False
+    _frs = _murs = _pmr = False
 
     _ranges = [
         (0x0000, 0x03F0),
@@ -345,7 +349,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.has_bank = False
         rf.has_name = False
         rf.memory_bounds = (1, self._upper)
-        rf.valid_bands = [(400000000, 470000000)]
+        rf.valid_bands = self.VALID_BANDS
         rf.valid_tuning_steps = chirp_common.TUNING_STEPS
 
         return rf
@@ -387,6 +391,24 @@ class T18Radio(chirp_common.CloneModeRadio):
             if str(mem.mode) != "NFM":
                 # warn user can't change mode
                 msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+        # MURS only models
+        if self._murs:
+            # range of memories with values set by FCC rules
+            if mem.freq != int(MURS_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+
+            # channels 1 - 5 are simplex only
+            if str(mem.duplex) != "":
+                # warn user can't change duplex
+                msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            # channels 1 - 3 are NFM only
+            if mem.number <= 3:
+                if mem.mode != "NFM":
+                    # warn user can't change mode
+                    msgs.append(chirp_common.ValidationError(_msg_nfm))
 
         # PMR only models
         if self._pmr:
@@ -488,6 +510,13 @@ class T18Radio(chirp_common.CloneModeRadio):
 
             mem.immutable = FRS_IMMUTABLE
 
+        if self._murs:
+            MURS_IMMUTABLE = ["freq", "duplex", "offset"]
+            if mem.number <= 3:
+                MURS_IMMUTABLE = MURS_IMMUTABLE + ["mode"]
+
+            mem.immutable = MURS_IMMUTABLE
+
         if self._pmr:
             PMR_IMMUTABLE = ["freq", "duplex", "offset", "mode", "power"]
             mem.immutable = PMR_IMMUTABLE
@@ -523,6 +552,15 @@ class T18Radio(chirp_common.CloneModeRadio):
                 if self._upper == 22:
                     if mem.number >= 8 and mem.number <= 14:
                         _mem.highpower = False
+            elif self._murs:
+                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
+                MURS_FREQ = int(MURS_FREQS[mem.number - 1] * 100000)
+                _mem.rxfreq = _mem.txfreq = MURS_FREQ
+                _mem.highpower = True
+                if mem.number <= 3:
+                    _mem.narrow = True
+                else:
+                    _mem.narrow = False
             elif self._pmr:
                 _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
                 PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
@@ -830,6 +868,7 @@ class RB17Radio(RT68Radio):
 
     _frs = True
     _pmr = False
+    _murs = False
 
 
 @directory.register
@@ -840,3 +879,19 @@ class RB617Radio(RB17Radio):
 
     _frs = False
     _pmr = True
+    _murs = False
+
+
+@directory.register
+class RB17VRadio(RB17Radio):
+    """RETEVIS RB17V"""
+    VENDOR = "Retevis"
+    MODEL = "RB17V"
+
+    VALID_BANDS = [(136000000, 174000000)]
+
+    _upper = 5
+
+    _frs = False
+    _pmr = False
+    _murs = True
