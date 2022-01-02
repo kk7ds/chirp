@@ -67,7 +67,8 @@ struct {
     u8 unknown3:4,
        unknown4:1,
        unknown5:2,
-       power10w:1;
+       power10w:1;       // Retevis RT85 power 10w on/off
+                         // Retevis RT75 stop TX with low voltage
 } settings;
 """
 
@@ -152,6 +153,12 @@ SIDEKEY85LONG_LIST = ["Off",
                       "VOX",
                       "Busy Channel Lock"]
 SPECCODE_LIST = ["SpeCode 1", "SpeCode 2"]
+SIDEKEY75_LIST = ["Off",
+                  "Monitor Momentary",
+                  "Scan",
+                  "VOX",
+                  "Monitor",
+                  "Announciation"]
 
 SETTING_LISTS = {
     "voiceprompt": VOICE_LIST,
@@ -180,6 +187,8 @@ FRS16_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
                462.6625, 462.6250, 462.7250, 462.6875,
                462.7125, 462.5500, 462.5750, 462.6000,
                462.6500, 462.6750, 462.7000, 462.7250]
+
+GMRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3 * 2
 
 MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600]
 
@@ -352,7 +361,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs = _murs = _pmr = False
+    _frs = _murs = _pmr = _gmrs = False
 
     _ranges = [
         (0x0000, 0x03F0),
@@ -398,6 +407,7 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         _msg_freq = 'Memory location cannot change frequency'
         _msg_simplex = 'Memory location only supports Duplex:(None)'
+        _msg_duplex = 'Memory location only supports Duplex: +'
         _msg_nfm = 'Memory location only supports Mode: NFM'
         _msg_txp = 'Memory location only supports Power: Low'
 
@@ -426,6 +436,33 @@ class T18Radio(chirp_common.CloneModeRadio):
             if str(mem.mode) != "NFM":
                 # warn user can't change mode
                 msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+        # GMRS only models
+        if self._gmrs:
+            # range of memories with values set by FCC rules
+            if mem.freq != int(GMRS_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+            if mem.number >= 8 and mem.number <= 14:
+                if str(mem.power) != "Low":
+                    # warn user can't change power
+                    msgs.append(chirp_common.ValidationError(_msg_txp))
+
+                if str(mem.mode) != "NFM":
+                    # warn user can't change mode
+                    msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+            if mem.number >= 1 and mem.number <= 22:
+                # channels 1 - 22 are simplex only
+                if str(mem.duplex) != "":
+                    # warn user can't change duplex
+                    msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            if mem.number >= 23 and mem.number <= 30:
+                # channels 23 - 30 are duplex + only
+                if str(mem.duplex) != "+":
+                    # warn user can't change duplex
+                    msgs.append(chirp_common.ValidationError(_msg_duplex))
 
         # MURS only models
         if self._murs:
@@ -545,6 +582,13 @@ class T18Radio(chirp_common.CloneModeRadio):
 
             mem.immutable = FRS_IMMUTABLE
 
+        if self._gmrs:
+            GMRS_IMMUTABLE = ["freq", "duplex", "offset"]
+            if mem.number >= 8 and mem.number <= 14:
+                GMRS_IMMUTABLE = GMRS_IMMUTABLE + ["mode", "power"]
+
+            mem.immutable = GMRS_IMMUTABLE
+
         if self._murs:
             MURS_IMMUTABLE = ["freq", "duplex", "offset"]
             if mem.number <= 3:
@@ -587,6 +631,20 @@ class T18Radio(chirp_common.CloneModeRadio):
                 if self._upper == 22:
                     if mem.number >= 8 and mem.number <= 14:
                         _mem.highpower = False
+            elif self._gmrs:
+                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
+                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 100000)
+                if mem.number > 22:
+                    _mem.rxfreq = GMRS_FREQ
+                    _mem.txfreq = int(_mem.rxfreq) + 500000
+                else:
+                    _mem.rxfreq = _mem.txfreq = GMRS_FREQ
+                if mem.number >= 8 and mem.number <= 14:
+                    _mem.narrow = True
+                    _mem.highpower = False
+                else:
+                    _mem.narrow = False
+                    _mem.highpower = True
             elif self._murs:
                 _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
                 MURS_FREQ = int(MURS_FREQS[mem.number - 1] * 100000)
@@ -767,6 +825,35 @@ class T18Radio(chirp_common.CloneModeRadio):
             basic.append(rs)
 
             rs = RadioSetting("power10w", "Power 10W",
+                              RadioSettingValueBoolean(_settings.power10w))
+            basic.append(rs)
+
+        if self.MODEL == "RB75":
+            rs = RadioSetting("sidekey2", "Side Key 1(Short)",
+                              RadioSettingValueList(
+                                  SIDEKEY75_LIST,
+                                  SIDEKEY75_LIST[_settings.sidekey2]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey1L", "Side Key 1(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY75_LIST,
+                                  SIDEKEY75_LIST[_settings.sidekey1L]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2S", "Side Key 2(Short)",
+                              RadioSettingValueList(
+                                  SIDEKEY75_LIST,
+                                  SIDEKEY75_LIST[_settings.sidekey2S]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2L", "Side Key 2(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY75_LIST,
+                                  SIDEKEY75_LIST[_settings.sidekey2L]))
+            basic.append(rs)
+
+            rs = RadioSetting("power10w", "Low Voltage Stop TX",
                               RadioSettingValueBoolean(_settings.power10w))
             basic.append(rs)
 
@@ -979,3 +1066,21 @@ class RB85Radio(T18Radio):
 
     _magic = "H19GRAM"
     _fingerprint = "SMP558" + "\x02"
+
+
+@directory.register
+class RB75Radio(T18Radio):
+    """Retevis RB75"""
+    VENDOR = "Retevis"
+    MODEL = "RB75"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("High", watts=5.00)]
+
+    _magic = "KVOGRAM"
+    _fingerprint = "SMP558" + "\x00"
+    _upper = 30
+    _mem_params = (_upper  # number of channels
+                   )
+    _gmrs = True
