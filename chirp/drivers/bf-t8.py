@@ -142,6 +142,12 @@ GMRS_FREQS = FRS_FREQS + FRS_FREQS3
 
 MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600]
 
+PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
+              446.06875, 446.08125, 446.09375]
+PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
+              446.16875, 446.18125, 446.19375]
+PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
+
 
 def _enter_programming_mode(radio):
     serial = radio.pipe
@@ -314,7 +320,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
     _mem_params = (_upper,  # number of channels
                    _upper   # number of names
                    )
-    _frs = _gmrs = _murs = False
+    _frs = _gmrs = _murs = _pmr = False
 
     _ranges = [
                (0x0000, 0x0B60),
@@ -400,6 +406,28 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                 if mem.mode != "NFM":
                     # warn user can't change mode
                     msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+        # PMR only models
+        if self._pmr:
+            # range of memories with values set by governmental rules
+            if mem.freq != int(PMR_FREQS[mem.number - 1] * 1000000):
+                # warn user can't change frequency
+                msgs.append(chirp_common.ValidationError(_msg_freq))
+
+            # channels 1 - 16 are simplex only
+            if str(mem.duplex) != "":
+                # warn user can't change duplex
+                msgs.append(chirp_common.ValidationError(_msg_simplex))
+
+            # channels 1 - 16 are NFM only
+            if mem.mode != "NFM":
+                # warn user can't change mode
+                msgs.append(chirp_common.ValidationError(_msg_nfm))
+
+            # channels 1 - 16 are low power only
+            if str(mem.power) != "Low":
+                # warn user can't change power
+                msgs.append(chirp_common.ValidationError(_msg_txp))
 
         return msgs
 
@@ -546,6 +574,10 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             else:
                 mem.immutable = MURS_IMMUTABLE
 
+        if mem.number <= 16 and self._pmr:
+            PMR_IMMUTABLE = ["freq", "duplex", "offset", "mode", "power"]
+            mem.immutable = PMR_IMMUTABLE
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -597,6 +629,13 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                         _mem.isnarrow = True
                     else:
                         _mem.isnarrow = False
+            elif self._pmr:
+                if mem.number <= 16:
+                    _mem.set_raw("\xFF" * 8 + "\x00" * 5 + "\xFF" * 3)
+                    PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
+                    _mem.rxfreq = _mem.txfreq = PMR_FREQ
+                    _mem.lowpower = True
+                    _mem.isnarrow = True
             else:
                 _mem.set_raw("\xFF" * 8 + "\x00" * 4 + "\x03" + "\xFF" * 3)
 
@@ -688,9 +727,9 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("squelch", "Squelch Level", rs)
         basic.append(rset)
 
-        model_list = ["RB27B", "RB27V"]
+        model_list = ["RB27B", "RB27V", "RB627B"]
         if self.MODEL in model_list:
-            # Menu 09 (RB27x)
+            # Menu 09 (RB27x/RB627x)
             rs = RadioSettingValueList(TOT2_LIST, TOT2_LIST[_settings.tot])
         else:
             # Menu 11 / 09 (RB27)
@@ -762,9 +801,10 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("disp_ab", "Selected Display Line", rs)
         basic.append(rset)
 
-        rs = RadioSettingValueList(WX_LIST, WX_LIST[_settings.wx])
-        rset = RadioSetting("wx", "NOAA WX Radio", rs)
-        basic.append(rset)
+        if not self.MODEL.startswith("RB627"):
+            rs = RadioSettingValueList(WX_LIST, WX_LIST[_settings.wx])
+            rset = RadioSetting("wx", "NOAA WX Radio", rs)
+            basic.append(rset)
 
         def myset_freq(setting, obj, atrb, mult):
             """ Callback to set frequency by applying multiplier"""
@@ -877,7 +917,7 @@ class RetevisRT27B(BFT8Radio):
 
     _upper = 22
     _frs = True
-    _gmrs = _murs = False
+    _gmrs = _murs = _pmr = False
 
     _ranges = [
                (0x0000, 0x0640),
@@ -897,7 +937,7 @@ class RetevisRT27(RetevisRT27B):
 
     _upper = 99
     _gmrs = True
-    _frs = _murs = False
+    _frs = _murs = _pmr = False
 
 
 @directory.register
@@ -908,4 +948,16 @@ class RetevisRT27V(RetevisRT27B):
 
     _upper = 5
     _murs = True
-    _frs = _gmrs = False
+    _frs = _gmrs = _pmr = False
+
+
+@directory.register
+class RetevisRT627B(RetevisRT27B):
+    VENDOR = "Retevis"
+    MODEL = "RB627B"
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _upper = 16
+    _pmr = True
+    _frs = _gmrs = _murs = False
