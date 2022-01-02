@@ -817,3 +817,16 @@ class RT668Radio(RT68Radio):
 
     _frs = False
     _pmr = True
+
+
+@directory.register
+class RB17Radio(RT68Radio):
+    """RETEVIS RB17"""
+    VENDOR = "Retevis"
+    MODEL = "RB17"
+
+    _magic = "A5OGRAM"
+    _fingerprint = "\x53\x00\x00\x00\x00\x00\x00\x00"
+
+    _frs = True
+    _pmr = False
