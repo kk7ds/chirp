@@ -138,6 +138,8 @@ FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
               462.6750, 462.7000, 462.7250]
 FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
+GMRS_FREQS = FRS_FREQS + FRS_FREQS3
+
 
 def _enter_programming_mode(radio):
     serial = radio.pipe
@@ -310,7 +312,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
     _mem_params = (_upper,  # number of channels
                    _upper   # number of names
                    )
-    _frs = False
+    _frs = _gmrs = False
 
     _ranges = [
                (0x0000, 0x0B60),
@@ -352,6 +354,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
 
         _msg_freq = 'Memory location cannot change frequency'
         _msg_simplex = 'Memory location only supports Duplex:(None)'
+        _msg_duplex = 'Memory location only supports Duplex: +'
         _msg_nfm = 'Memory location only supports Mode: NFM'
         _msg_txp = 'Memory location only supports Power: Low'
 
@@ -432,6 +435,12 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         chirp_common.split_tone_decode(mem, (tx_tmode, tx_tone, tx_pol),
                                        (rx_tmode, rx_tone, rx_pol))
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def _get_mem(self, number):
         return self._memobj.memory[number - 1]
 
@@ -462,7 +471,10 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             LOG.debug("Initializing empty memory")
             _mem.set_raw("\x00" * 13 + "\xFF" * 3)
 
-        if int(_mem.rxfreq) == int(_mem.txfreq):
+        if self._is_txinh(_mem):
+            mem.duplex = "off"
+            mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
         else:
@@ -499,6 +511,13 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                 mem.immutable = FRS_IMMUTABLE + ["power"]
             else:
                 mem.immutable = FRS_IMMUTABLE
+
+        if mem.number <= 30 and self._gmrs:
+            GMRS_IMMUTABLE = ["freq", "duplex", "offset"]
+            if mem.number >= 8 and mem.number <= 14:
+                mem.immutable = GMRS_IMMUTABLE + ["mode", "power"]
+            else:
+                mem.immutable = GMRS_IMMUTABLE
 
         return mem
 
@@ -551,6 +570,38 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             return mem
 
         _mem.set_raw("\x00" * 13 + "\xFF" * 3)
+
+        if self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.mode = "NFM"
+                        mem.power = self.POWER_LEVELS[1]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
+            elif float(mem.freq) / 1000000 in GMRS_FREQS:
+                if float(mem.freq) / 1000000 in FRS_FREQS1:
+                    mem.duplex = ''
+                    mem.offset = 0
+                if float(mem.freq) / 1000000 in FRS_FREQS2:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[1]
+                if float(mem.freq) / 1000000 in FRS_FREQS3:
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.duplex = ''
+                        mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
 
         # frequency
         _mem.rxfreq = mem.freq / 10
@@ -605,7 +656,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             # Menu 09 (RB27x)
             rs = RadioSettingValueList(TOT2_LIST, TOT2_LIST[_settings.tot])
         else:
-            # Menu 11
+            # Menu 11 / 09 (RB27)
             rs = RadioSettingValueList(TOT_LIST, TOT_LIST[_settings.tot])
         rset = RadioSetting("tot", "Time-out timer", rs)
         basic.append(rset)
@@ -789,9 +840,24 @@ class RetevisRT27B(BFT8Radio):
 
     _upper = 22
     _frs = True
+    _gmrs = False
 
     _ranges = [
                (0x0000, 0x0640),
                (0x0D00, 0x1040),
               ]
     _memsize = 0x1040
+
+
+@directory.register
+class RetevisRT27(RetevisRT27B):
+    VENDOR = "Retevis"
+    MODEL = "RB27"
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+    VALID_BANDS = [(136000000, 174000000),
+                   (400000000, 520000000)]
+
+    _upper = 99
+    _gmrs = True
+    _frs = False
