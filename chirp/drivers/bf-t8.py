@@ -355,7 +355,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                 # warn user can't change mode
                 msgs.append(chirp_common.ValidationError(_msg_nfm))
 
-            # channels 8 - 14 are low power NFM only
+            # channels 8 - 14 are low power only
             if mem.number >= 8 and mem.number <= 14:
                 if str(mem.power) != "Low":
                     # warn user can't change power
@@ -416,10 +416,10 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                                        (rx_tmode, rx_tone, rx_pol))
 
     def _get_mem(self, number):
-        return self._memobj.memory[number]
+        return self._memobj.memory[number - 1]
 
     def get_memory(self, number):
-        _mem = self._get_mem(number - 1)
+        _mem = self._get_mem(number)
 
         mem = chirp_common.Memory()
 
@@ -434,17 +434,6 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
-            mem.mode = "NFM"
-            if mem.number <= 22 and not self._frs:
-                LOG.debug("Initializing empty memory")
-                _mem.set_raw("\x00" * 13 + "\xFF" * 3)
-                FRS_FREQ = FRS_FREQS[mem.number - 1] * 1000000
-                mem.freq = FRS_FREQ
-                if mem.number >= 8 and mem.number <= 14:
-                    mem.power = "Low"
-                else:
-                    mem.power = "High"
-
             return mem
 
         if _mem.get_raw() == ("\xFF" * 16):
@@ -470,7 +459,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             mem.power = levels[_mem.lowpower]
         except IndexError:
             LOG.error("Radio reported invalid power level %s (in %s)" %
-                      (_mem.power, levels))
+                      (_mem.lowpower, levels))
             mem.power = levels[0]
 
         if mem.number <= 22 and self._frs:
@@ -499,8 +488,11 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             _mem.rx_tmode = rxpol == "R" and 0x03 or 0x02
             _mem.rx_tone = self.DTCS_CODES.index(rxtone)
 
+    def _set_mem(self, number):
+        return self._memobj.memory[number - 1]
+
     def set_memory(self, mem):
-        _mem = self._get_mem(mem.number - 1)
+        _mem = self._set_mem(mem.number)
 
         # if empty memmory
         if mem.empty:
