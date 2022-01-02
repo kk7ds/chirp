@@ -902,7 +902,7 @@ class RetevisRT16(BFT8Radio):
 
 
 @directory.register
-class RetevisRT27B(BFT8Radio):
+class RetevisRB27B(BFT8Radio):
     VENDOR = "Retevis"
     MODEL = "RB27B"
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
@@ -927,7 +927,7 @@ class RetevisRT27B(BFT8Radio):
 
 
 @directory.register
-class RetevisRT27(RetevisRT27B):
+class RetevisRB27(RetevisRB27B):
     VENDOR = "Retevis"
     MODEL = "RB27"
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
@@ -941,7 +941,7 @@ class RetevisRT27(RetevisRT27B):
 
 
 @directory.register
-class RetevisRT27V(RetevisRT27B):
+class RetevisRB27V(RetevisRB27B):
     VENDOR = "Retevis"
     MODEL = "RB27V"
     VALID_BANDS = [(136000000, 174000000)]
@@ -952,7 +952,7 @@ class RetevisRT27V(RetevisRT27B):
 
 
 @directory.register
-class RetevisRT627B(RetevisRT27B):
+class RetevisRB627B(RetevisRB27B):
     VENDOR = "Retevis"
     MODEL = "RB627B"
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
