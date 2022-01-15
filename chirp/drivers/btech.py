@@ -279,6 +279,7 @@ KT980PLUS_fp1 = "VC6042"
 
 # Radioddity DB25-G (gmrs)
 DB25G_fp = "VC6182"
+DB25G_fp1 = "VC7062"
 
 
 # ### MAGICS
@@ -4086,7 +4087,7 @@ class DB25G(BTechColor):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
-    _fileid = [DB25G_fp, ]
+    _fileid = [DB25G_fp1, DB25G_fp]
     _gmrs = True
     _power_levels = [chirp_common.PowerLevel("High", watts=25),
                      chirp_common.PowerLevel("Mid", watts=15),
