@@ -75,6 +75,8 @@ struct {
   u8 k1longp;       // Key 1 Long Press
   u8 k2longp;       // Key 2 Long Press
   u8 lpt;           // Long Press Time
+  u8 unknown7:6,
+     txtone:2;      // TX Tone
 } settings;
 
 #seekto 0x0170;
@@ -102,6 +104,7 @@ LIST_SSAVE = ["Off"] + ["%s" % x for x in range(1, 7)]
 LIST_PRIORITYCH = ["Off"] + ["%s" % x for x in range(1, 17)]
 LIST_SCANSPEED = ["%s" % x for x in range(100, 550, 50)]
 LIST_SCANDELAY = ["%s" % x for x in range(3, 31)]
+LIST_TXTONE = ["Off", "BOT", "EOT", "Both"]
 
 SETTING_LISTS = {
     "lpt": LIST_LPT,
@@ -117,6 +120,7 @@ SETTING_LISTS = {
     "prioritych": LIST_PRIORITYCH,
     "scanspeed": LIST_SCANSPEED,
     "scandelay": LIST_SCANDELAY,
+    "txtone": LIST_TXTONE,
     }
 
 # Retevis RT1 fingerprints
@@ -685,6 +689,12 @@ class RT1Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               LIST_SCANDELAY,
                               LIST_SCANDELAY[val]))
+        basic.append(rs)
+
+        rs = RadioSetting("txtone", "Tx Tone",
+                          RadioSettingValueList(
+                              LIST_TXTONE,
+                              LIST_TXTONE[_settings.txtone]))
         basic.append(rs)
 
         return top
