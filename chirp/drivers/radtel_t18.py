@@ -70,6 +70,18 @@ struct {
        power10w:1;       // Retevis RT85 power 10w on/off
                          // Retevis RT75 stop TX with low voltage
 } settings;
+
+#seekto 0x02B0;
+struct {
+    u8 voicesw;      // Voice SW            +
+    u8 unknown1;
+    u8 scan;         // Scan                +
+    u8 vox;          // VOX                 +
+    u8 voxgain;      // Vox Gain            +
+    u8 voxnotxonrx;  // Rx Disable Vox      +
+    u8 hivoltnotx;   // High Vol Inhibit TX +
+    u8 lovoltnotx;   // Low Vol Inhibit TX  +
+} settings2;
 """
 
 MEM_FORMAT_RB18 = """
@@ -695,6 +707,8 @@ class T18Radio(chirp_common.CloneModeRadio):
 
     def get_settings(self):
         _settings = self._memobj.settings
+        if self.MODEL == "FRS-B1":
+            _settings2 = self._memobj.settings2
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
 
@@ -714,6 +728,10 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("scan", "Scan",
                               RadioSettingValueBoolean(_settings.scan))
             basic.append(rs)
+        elif self.MODEL == "FRS-B1":
+            rs = RadioSetting("settings2.scan", "Scan",
+                              RadioSettingValueBoolean(_settings2.scan))
+            basic.append(rs)
         else:
             rs = RadioSetting("scanmode", "Scan mode",
                               RadioSettingValueList(
@@ -728,6 +746,10 @@ class T18Radio(chirp_common.CloneModeRadio):
         elif self.MODEL == "RB18" or self.MODEL == "RB618":
             rs = RadioSetting("voice", "Voice prompts",
                               RadioSettingValueBoolean(_settings.voice))
+            basic.append(rs)
+        elif self.MODEL == "FRS-B1":
+            rs = RadioSetting("settings2.voicesw", "Voice prompts",
+                              RadioSettingValueBoolean(_settings2.voicesw))
             basic.append(rs)
         else:
             rs = RadioSetting("voiceprompt", "Voice prompts",
@@ -745,7 +767,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
 
-        if self.MODEL != "RB18" and self.MODEL != "RB618":
+        if self.MODEL != "RB18" and self.MODEL != "RB618" \
+                and self.MODEL != "FRS-B1":
             rs = RadioSetting("voxlevel", "Vox level",
                               RadioSettingValueList(
                                   VOXLEVEL_LIST,
@@ -862,6 +885,29 @@ class T18Radio(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("power10w", "Low Voltage Stop TX",
                               RadioSettingValueBoolean(_settings.power10w))
+            basic.append(rs)
+
+        if self.MODEL == "FRS-B1":
+            rs = RadioSetting("settings2.hivoltnotx",
+                              "High Voltage Inhibit TX",
+                              RadioSettingValueBoolean(_settings2.hivoltnotx))
+            basic.append(rs)
+
+            rs = RadioSetting("settings2.lovoltnotx", "Low Voltage Inhibit TX",
+                              RadioSettingValueBoolean(_settings2.lovoltnotx))
+            basic.append(rs)
+
+            rs = RadioSetting("settings2.vox", "Vox",
+                              RadioSettingValueBoolean(_settings2.vox))
+            basic.append(rs)
+
+            rs = RadioSetting("settings2.voxnotxonrx", "Rx Disable VOX",
+                              RadioSettingValueBoolean(_settings2.voxnotxonrx))
+            basic.append(rs)
+
+            rs = RadioSetting("settings2.voxgain", "Vox Gain",
+                              RadioSettingValueInteger(
+                                  1, 5, _settings2.voxgain))
             basic.append(rs)
 
         return top
@@ -1091,3 +1137,21 @@ class RB75Radio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _gmrs = True
+
+
+@directory.register
+class FRSB1Radio(T18Radio):
+    """BTECH FRS-B1"""
+    VENDOR = "BTECH"
+    MODEL = "FRS-B1"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("High", watts=2.00)]
+
+    _magic = "PROGRAM"
+    _fingerprint = "P3107" + "\xF7\x00"
+    _upper = 22
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs = True
