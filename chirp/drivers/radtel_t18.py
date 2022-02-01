@@ -714,20 +714,6 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("scan", "Scan",
                               RadioSettingValueBoolean(_settings.scan))
             basic.append(rs)
-
-            rs = RadioSetting("voice", "Voice prompts",
-                              RadioSettingValueBoolean(_settings.voice))
-            basic.append(rs)
-
-            rs = RadioSetting("language", "Language",
-                              RadioSettingValueList(
-                                  VOICE_LIST2,
-                                  VOICE_LIST2[_settings.language]))
-            basic.append(rs)
-
-            rs = RadioSetting("tail", "Tail",
-                              RadioSettingValueBoolean(_settings.tail))
-            basic.append(rs)
         else:
             rs = RadioSetting("scanmode", "Scan mode",
                               RadioSettingValueList(
@@ -735,12 +721,31 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   SCANMODE_LIST[_settings.scanmode]))
             basic.append(rs)
 
-            rs = RadioSetting("voiceprompt", "Voice prompt",
+        if self.MODEL == "RT22S":
+            rs = RadioSetting("voiceprompt", "Voice prompts",
+                              RadioSettingValueBoolean(_settings.voiceprompt))
+            basic.append(rs)
+        elif self.MODEL == "RB18" or self.MODEL == "RB618":
+            rs = RadioSetting("voice", "Voice prompts",
+                              RadioSettingValueBoolean(_settings.voice))
+            basic.append(rs)
+        else:
+            rs = RadioSetting("voiceprompt", "Voice prompts",
                               RadioSettingValueList(
                                   VOICE_LIST,
                                   VOICE_LIST[_settings.voiceprompt]))
             basic.append(rs)
 
+        rs = RadioSetting("batterysaver", "Battery saver",
+                          RadioSettingValueBoolean(_settings.batterysaver))
+        basic.append(rs)
+
+        if self.MODEL != "RB75":
+            rs = RadioSetting("beep", "Beep",
+                              RadioSettingValueBoolean(_settings.beep))
+            basic.append(rs)
+
+        if self.MODEL != "RB18" and self.MODEL != "RB618":
             rs = RadioSetting("voxlevel", "Vox level",
                               RadioSettingValueList(
                                   VOXLEVEL_LIST,
@@ -753,14 +758,6 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   VOXDELAY_LIST[_settings.voxdelay]))
             basic.append(rs)
 
-        rs = RadioSetting("batterysaver", "Battery saver",
-                          RadioSettingValueBoolean(_settings.batterysaver))
-        basic.append(rs)
-
-        rs = RadioSetting("beep", "Beep",
-                          RadioSettingValueBoolean(_settings.beep))
-        basic.append(rs)
-
         if self.MODEL == "RT22S":
             rs = RadioSetting("sidekey2", "Side Key 2(Long)",
                               RadioSettingValueList(
@@ -769,6 +766,16 @@ class T18Radio(chirp_common.CloneModeRadio):
             basic.append(rs)
 
         if self.MODEL == "RB18" or self.MODEL == "RB618":
+            rs = RadioSetting("language", "Language",
+                              RadioSettingValueList(
+                                  VOICE_LIST2,
+                                  VOICE_LIST2[_settings.language]))
+            basic.append(rs)
+
+            rs = RadioSetting("tail", "Tail",
+                              RadioSettingValueBoolean(_settings.tail))
+            basic.append(rs)
+
             rs = RadioSetting("hivoltnotx", "High voltage no TX",
                               RadioSettingValueBoolean(_settings.hivoltnotx))
             basic.append(rs)
