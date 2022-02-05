@@ -62,6 +62,8 @@ cmd_name = {
 
 config_map = (          # map address, write size, write count
     (0x40,   16, 1),    # Passwords
+    (0x60,   20, 1),    # RX frequency limits
+    (0x74,    8, 1),    # TX frequency limits
     (0x740,  40, 1),    # FM chan 1-20
     (0x780,  16, 1),    # vfo-b-150
     (0x790,  16, 1),    # vfo-b-450
@@ -104,6 +106,26 @@ struct {
     char mode_sw[6];
     char x4e;
 }  passwords;
+
+#seekto 0x60;
+
+struct freq_limit {
+    u16 start;
+    u16 stop;
+};
+
+struct {
+    struct freq_limit band_150;
+    struct freq_limit band_450;
+    struct freq_limit band_300;
+    struct freq_limit band_700;
+    struct freq_limit band_200;
+} rx_freq_limits;
+
+struct {
+    struct freq_limit band_150;
+    struct freq_limit band_450;
+} tx_freq_limits;
 
 #seekto 0x740;
 
@@ -1799,6 +1821,99 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                    PF3KEY_LIST[s.pf3])))
         return kf
 
+    def _fl_tab(self):
+        """Build the frequency limits tab
+        """
+
+        # The stop limits in the factory KG-UV9D Mate memory image are 1MHz
+        # higher than the published specs. The settings panel will crash if
+        # it encounters a value outside of these ranges.
+        hard_limits = {
+            "band_150": (108000000, 181000000),
+            "band_450": (400000000, 513000000),
+            "band_300": (350000000, 401000000),
+            "band_700": (700000000, 987000000),
+            "band_200": (230000000, 251000000)
+        }
+
+        def apply_freq_start(setting, low, high, obj):
+            f = freq2short(setting.value, low, high)
+            obj.start = f
+
+        def apply_freq_stop(setting, low, high, obj):
+            """Sets the stop limit to 1MHz below the input value"""
+
+            # The firmware has an off-by-1MHz error with stop limits.
+            # If you set the stop limit to 1480 (148MHz), you can still tune
+            # up to 148.99MHz. To compensate for this,
+            # we subtract 10 increments of 100MHz before storing the value.
+            f = freq2short(setting.value, low, high) - 10
+            obj.stop = f
+
+        fl = RadioSettingGroup("freq_limit_grp", "Frequency Limits")
+
+        rx = self._memobj.rx_freq_limits
+        tx = self._memobj.tx_freq_limits
+
+        for rx_band in rx.items():
+            name, limits = rx_band
+
+            start_freq = RadioSettingValueString(1, 
+                                                 20, 
+                                                 short2freq(limits.start))
+            start_rs = RadioSetting("rx_start_" + name, 
+                                    name + " Receive Start", 
+                                    start_freq)
+            start_rs.set_apply_callback(apply_freq_start, 
+                                        hard_limits[name][0], 
+                                        hard_limits[name][1], 
+                                        limits)
+            fl.append(start_rs)
+
+            # Add 10 increments of 100MHz before displaying to compensate for
+            # the firmware off-by-1MHz problem.
+            stop_freq = RadioSettingValueString(1, 
+                                                20, 
+                                                short2freq(limits.stop + 10))
+            stop_rs = RadioSetting("rx_stop_" + name, 
+                                   name + " Receive Stop", 
+                                   stop_freq)
+            stop_rs.set_apply_callback(apply_freq_stop, 
+                                       hard_limits[name][0], 
+                                       hard_limits[name][1], 
+                                       limits)
+            fl.append(stop_rs)
+
+        for tx_band in tx.items():
+            name, limits = tx_band
+
+            start_freq = RadioSettingValueString(1, 
+                                                 20, 
+                                                 short2freq(limits.start))
+            start_rs = RadioSetting("tx_start_" + name, 
+                                    name + " Transmit Start", 
+                                    start_freq)
+            start_rs.set_apply_callback(apply_freq_start, 
+                                        hard_limits[name][0], 
+                                        hard_limits[name][1], limits)
+            fl.append(start_rs)
+
+            # Add 10 increments of 100MHz before displaying to compensate for
+            # the firmware off-by-1MHz problem.
+            stop_freq = RadioSettingValueString(1, 
+                                                20, 
+                                                short2freq(limits.stop + 10))
+            stop_rs = RadioSetting("tx_stop_" + name, 
+                                   name + " Transmit Stop", 
+                                   stop_freq)
+            stop_rs.set_apply_callback(apply_freq_stop, 
+                                       hard_limits[name][0], 
+                                       hard_limits[name][1], 
+                                       limits)
+            fl.append(stop_rs)
+
+        return fl
+
     def _get_settings(self):
         """Build the radio configuration settings menus
         """
@@ -1812,10 +1927,12 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         callid_grp = self._callid_grp()
         admin_grp = self._admin_tab()
         rpt_grp = self._repeater_tab()
+        freq_limit_grp = self._fl_tab()
 
         core_grp.append(key_grp)
         core_grp.append(admin_grp)
         core_grp.append(rpt_grp)
+        core_grp.append(freq_limit_grp)
         group = RadioSettings(core_grp,
                               area_a_grp,
                               area_b_grp,
