@@ -80,8 +80,8 @@ struct tguv2_config {
 };
 
 struct vfo {
-    u8 current; 
-    u8 chan;    
+    u8 current;
+    u8 chan;
     u8 memno;
 };
 
@@ -103,15 +103,16 @@ struct bandflag bandflags[200];
 #seekto 0x0E30;
 struct tguv2_config settings;
 struct vfo vfos[2];
-u8 unk5; 
+u8 unk5;
 u8 reserved2[9];
-u8 band_restrict;	
-u8 txen350390;	
+u8 band_restrict;
+u8 txen350390;
 
 #seekto 0x0F30;
 struct name names[200];
 
 """
+
 
 def do_ident(radio):
     radio.pipe.timeout = 3
@@ -151,7 +152,7 @@ def do_download(radio):
         frame = struct.pack(">cHB", "R", i, 8)
         radio.pipe.write(frame)
         result = radio.pipe.read(12)
-        if not (result[0]=="W" and frame[1:4]==result[1:4]):
+        if not (result[0] == "W" and frame[1:4] == result[1:4]):
             LOG.debug(util.hexprint(result))
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
         radio.pipe.write("\x06")
@@ -186,10 +187,10 @@ def do_upload(radio):
         do_status(radio, "to", i)
 
 DUPLEX = ["", "+", "-"]
-TGUV2P_STEPS = [5, 6.25, 10, 12.5, 15, 20, 25, 30, 50, 100,]
+TGUV2P_STEPS = [5, 6.25, 10, 12.5, 15, 20, 25, 30, 50, 100]
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_|* +-"
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10),
-				chirp_common.PowerLevel("Med", watts=5),
+                chirp_common.PowerLevel("Med", watts=5),
                 chirp_common.PowerLevel("Low", watts=1)]
 POWER_LEVELS_STR = ["High", "Med", "Low"]
 VALID_BANDS = [(88000000, 108000000),
@@ -198,9 +199,10 @@ VALID_BANDS = [(88000000, 108000000),
                (400000000, 470000000),
                (470000000, 520000000)]
 
+
 @directory.register
 class QuanshengTGUV2P(chirp_common.CloneModeRadio,
-                  chirp_common.ExperimentalRadio):
+                      chirp_common.ExperimentalRadio):
     """Quansheng TG-UV2+"""
     VENDOR = "Quansheng"
     MODEL = "TG-UV2+"
@@ -324,7 +326,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         else:
             return (self._memobj.channels[number - 1],
-                    self._memobj.bandflags[number -1],
+                    self._memobj.bandflags[number - 1],
                     self._memobj.names[number - 1].name)
 
     def get_memory(self, number):
@@ -341,11 +343,10 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         mem.freq = int(_mem.freq) * 10
 
-        if _mem.offset.get_raw()[0] == "\xFF" :
+        if _mem.offset.get_raw()[0] == "\xFF":
             mem.offset = 0
         else:
             mem.offset = int(_mem.offset) * 10
-
 
         chirp_common.split_tone_decode(
             mem,
@@ -375,7 +376,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         mem.extra.append(rs)
 
         rs = RadioSetting("not_revfreq", "(not)Reverse Duplex",
-                        RadioSettingValueBoolean(_mem.not_revfreq))
+                          RadioSettingValueBoolean(_mem.not_revfreq))
         mem.extra.append(rs)
 
         return mem
@@ -385,12 +386,10 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         _bf.set_raw("\xFF")
 
-
         if mem.empty:
             _mem.set_raw("\xFF" * 16)
             return
 
-        #if _mem.get_raw() == ("\xFF" * 16):
         _mem.set_raw("\x00" * 12 + "\xFF" * 2 + "\x00"*2)
 
         _bf.scanadd = int(mem.skip != "S")
@@ -410,7 +409,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         _mem.isnarrow = mem.mode == "NFM"
         _mem.step = TGUV2P_STEPS.index(mem.tuning_step)
 
-        if mem.power == None :
+        if mem.power is None:
             _mem.power = 0
         else:
             _mem.power = POWER_LEVELS.index(mem.power)
@@ -431,37 +430,37 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         _vfob = self._memobj.vfos[1]
         _bandsettings = self._memobj.bands
 
-
         cfg_grp = RadioSettingGroup("cfg_grp", "Configuration")
-        vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings\n  (Current Status, Read Only)")
-        vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings\n  (Current Status, Read Only)")
-
+        vfoa_grp = RadioSettingGroup(
+            "vfoa_grp", "VFO A Settings\n  (Current Status, Read Only)")
+        vfob_grp = RadioSettingGroup(
+            "vfob_grp", "VFO B Settings\n  (Current Status, Read Only)")
 
         group = RadioSettings(cfg_grp, vfoa_grp, vfob_grp)
         #
         # Configuration Settings
         #
 
-        ###### TX time out timer:
+        # TX time out timer:
         options = ["Off"] + ["%s min" % x for x in range(1, 10)]
         rs = RadioSetting("time_out_timer", "TX Time Out Timer",
                           RadioSettingValueList(
                               options, options[_settings.time_out_timer]))
         cfg_grp.append(rs)
 
-        ###### Display mode
+        # Display mode
         options = ["Frequency", "Channel", "Name"]
         rs = RadioSetting("display", "Channel Display Mode",
                           RadioSettingValueList(
                               options, options[_settings.display]))
         cfg_grp.append(rs)
 
-        ###### Squelch level
+        # Squelch level
         rs = RadioSetting("squelch", "Squelch Level",
                           RadioSettingValueInteger(0, 9, _settings.squelch))
         cfg_grp.append(rs)
 
-        ######## Vox level
+        # Vox level
         mem_vals = range(10)
         user_options = [str(x) for x in mem_vals]
         user_options[0] = "Off"
@@ -471,15 +470,15 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                           RadioSettingValueMap(options_map, _settings.vox))
         cfg_grp.append(rs)
 
-        ###### Keypad beep
+        # Keypad beep
         rs = RadioSetting("beep_tone_disabled", "Beep Prompt",
                           RadioSettingValueBoolean(
                                not _settings.beep_tone_disabled))
         cfg_grp.append(rs)
 
-        ######## Dual watch/crossband
+        # Dual watch/crossband
         options = ["Dual Watch", "CrossBand", "Normal"]
-        if _settings.rxmode >=2:
+        if _settings.rxmode >= 2:
             _rxmode = 2
         else:
             _rxmode = _settings.rxmode
@@ -488,32 +487,33 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                             options, options[_rxmode]))
         cfg_grp.append(rs)
 
-        ###### Busy chanel lock
+        # Busy chanel lock
         rs = RadioSetting("busy_lockout", "Busy Channel Lock",
                           RadioSettingValueBoolean(
                              not _settings.busy_lockout))
         cfg_grp.append(rs)
 
-        ####### Keypad lock
+        # Keypad lock
         rs = RadioSetting("keyunlocked", "Keypad Lock",
                           RadioSettingValueBoolean(
                               not _settings.keyunlocked))
         cfg_grp.append(rs)
 
-        ####### Priority channel
+        # Priority channel
         mem_vals = range(200)
         user_options = [str(x) for x in mem_vals]
-        mem_vals.insert(0,0xFF)
-        user_options.insert(0,"Not Set")
+        mem_vals.insert(0, 0xFF)
+        user_options.insert(0, "Not Set")
         options_map = zip(user_options, mem_vals)
 
         rs = RadioSetting("priority_channel", "Priority Channel",
-                          RadioSettingValueMap(options_map, _settings.priority_channel))
+                          RadioSettingValueMap(options_map,
+                                               _settings.priority_channel))
         cfg_grp.append(rs)
 
-        ####### Step
+        # Step
         mem_vals = range(0, len(TGUV2P_STEPS))
-        user_options = [(str(x)+ " kHz") for x in TGUV2P_STEPS]
+        user_options = [(str(x) + " kHz") for x in TGUV2P_STEPS]
         options_map = zip(user_options, mem_vals)
 
         rs = RadioSetting("step", "Current (VFO?) step size",
@@ -529,18 +529,20 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         vfo_lower = ["vfoa", "vfob"]
         vfo_upper = ["VFOA", "VFOB"]
 
-        for idx,vfo_group in enumerate(vfo_groups):
+        for idx, vfo_group in enumerate(vfo_groups):
 
             options = ["Channel", "Frequency"]
             tempvar = 0 if (vfo_mem[idx].current < 200) else 1
-            rs = RadioSetting(vfo_lower[idx]+"_mode", vfo_upper[idx]+" Mode",
+            rs = RadioSetting(vfo_lower[idx] + "_mode", vfo_upper[idx]+" Mode",
                               RadioSettingValueList(
                                   options, options[tempvar]))
             vfo_group.append(rs)
 
             if tempvar == 0:
-                rs = RadioSetting(vfo_lower[idx]+"_ch", vfo_upper[idx]+" Channel",
-                                  RadioSettingValueInteger(0, 199, vfo_mem[idx].current))
+                rs = RadioSetting(vfo_lower[idx] + "_ch",
+                                  vfo_upper[idx] + " Channel",
+                                  RadioSettingValueInteger(
+                                      0, 199, vfo_mem[idx].current))
                 vfo_group.append(rs)
             else:
                 band_num = vfo_mem[idx].current - 200
@@ -549,69 +551,101 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                 txtmode = _bandsettings[band_num].txtmode
                 rxtmode = _bandsettings[band_num].rxtmode
 
-                rs = RadioSetting(vfo_lower[idx]+"_freq", vfo_upper[idx]+" Frequency",
-                                  RadioSettingValueFloat(0.0, 520.0, freq / 1000000.0, precision=6))
+                rs = RadioSetting(vfo_lower[idx] + "_freq",
+                                  vfo_upper[idx] + " Frequency",
+                                  RadioSettingValueFloat(
+                                      0.0, 520.0, freq / 1000000.0,
+                                      precision=6))
                 vfo_group.append(rs)
 
                 if offset > 70e6:
                     offset = 0
-                rs = RadioSetting(vfo_lower[idx]+"_offset", vfo_upper[idx]+" Offset",
-                                  RadioSettingValueFloat(0.0, 69.995, offset / 100000.0, resolution= 0.005))
-                vfo_group.append(rs)
-
-                rs = RadioSetting(vfo_lower[idx]+"_duplex", vfo_upper[idx]+" Shift",
-                                  RadioSettingValueList(
-                                      DUPLEX, DUPLEX[_bandsettings[band_num].duplex]))
-                vfo_group.append(rs)
-
-                rs = RadioSetting(vfo_lower[idx]+"_step", vfo_upper[idx]+" Step",
+                rs = RadioSetting(vfo_lower[idx] + "_offset",
+                                  vfo_upper[idx] + " Offset",
                                   RadioSettingValueFloat(
-                                      0.0, 1000.0, TGUV2P_STEPS[_bandsettings[band_num].step], resolution=0.25))
+                                      0.0, 69.995, offset / 100000.0,
+                                      resolution=0.005))
                 vfo_group.append(rs)
 
-                rs = RadioSetting(vfo_lower[idx]+"_pwr", vfo_upper[idx]+" Power",
+                rs = RadioSetting(vfo_lower[idx] + "_duplex",
+                                  vfo_upper[idx] + " Shift",
                                   RadioSettingValueList(
-                                      POWER_LEVELS_STR, POWER_LEVELS_STR[_bandsettings[band_num].power]))
+                                      DUPLEX,
+                                      DUPLEX[_bandsettings[band_num].duplex]))
+                vfo_group.append(rs)
+
+                rs = RadioSetting(
+                    vfo_lower[idx] + "_step",
+                    vfo_upper[idx] + " Step",
+                    RadioSettingValueFloat(
+                        0.0, 1000.0,
+                        TGUV2P_STEPS[_bandsettings[band_num].step],
+                        resolution=0.25))
+                vfo_group.append(rs)
+
+                rs = RadioSetting(
+                    vfo_lower[idx] + "_pwr",
+                    vfo_upper[idx] + " Power",
+                    RadioSettingValueList(
+                        POWER_LEVELS_STR,
+                        POWER_LEVELS_STR[_bandsettings[band_num].power]))
                 vfo_group.append(rs)
 
                 options = ["None", "Tone", "DTCS-N", "DTCS-I"]
-                rs = RadioSetting(vfo_lower[idx]+"_ttmode", vfo_upper[idx]+" TX tone mode",
-                                  RadioSettingValueList( options, options[txtmode]))
+                rs = RadioSetting(vfo_lower[idx] + "_ttmode",
+                                  vfo_upper[idx]+" TX tone mode",
+                                  RadioSettingValueList(
+                                      options, options[txtmode]))
                 vfo_group.append(rs)
                 if txtmode == 1:
-                    rs =  RadioSetting(vfo_lower[idx]+"_ttone", vfo_upper[idx]+" TX tone",
-                                       RadioSettingValueFloat(
-                                           0.0, 1000.0, chirp_common.TONES[_bandsettings[band_num].txtone], resolution=0.1))
+                    rs = RadioSetting(
+                        vfo_lower[idx] + "_ttone",
+                        vfo_upper[idx] + " TX tone",
+                        RadioSettingValueFloat(
+                            0.0, 1000.0,
+                            chirp_common.TONES[_bandsettings[band_num].txtone],
+                            resolution=0.1))
                     vfo_group.append(rs)
                 elif txtmode >= 2:
                     txtone = _bandsettings[band_num].txtone
-                    rs =  RadioSetting(vfo_lower[idx]+"_tdtcs", vfo_upper[idx]+" TX DTCS",
-                                       RadioSettingValueInteger(
-                                           0, 1000, chirp_common.DTCS_CODES[txtone]))
+                    rs = RadioSetting(
+                        vfo_lower[idx] + "_tdtcs",
+                        vfo_upper[idx] + " TX DTCS",
+                        RadioSettingValueInteger(
+                            0, 1000, chirp_common.DTCS_CODES[txtone]))
                     vfo_group.append(rs)
 
-                options = ["None", "Tone", "DTCS-N", "DTCS-I" ]
-                rs = RadioSetting(vfo_lower[idx]+"_rtmode", vfo_upper[idx]+" RX tone mode",
-                                  RadioSettingValueList( options, options[rxtmode]))
+                options = ["None", "Tone", "DTCS-N", "DTCS-I"]
+                rs = RadioSetting(vfo_lower[idx] + "_rtmode",
+                                  vfo_upper[idx] + " RX tone mode",
+                                  RadioSettingValueList(options,
+                                                        options[rxtmode]))
                 vfo_group.append(rs)
 
                 if rxtmode == 1:
-                    rs =  RadioSetting(vfo_lower[idx]+"_rtone", vfo_upper[idx]+" RX tone",
-                                       RadioSettingValueFloat(
-                                           0.0, 1000.0, chirp_common.TONES[_bandsettings[band_num].rxtone], resolution=0.1))
+                    rs = RadioSetting(
+                        vfo_lower[idx] + "_rtone",
+                        vfo_upper[idx] + " RX tone",
+                        RadioSettingValueFloat(
+                            0.0, 1000.0,
+                            chirp_common.TONES[_bandsettings[band_num].rxtone],
+                            resolution=0.1))
                     vfo_group.append(rs)
                 elif rxtmode >= 2:
                     rxtone = _bandsettings[band_num].rxtone
-                    rs =  RadioSetting(vfo_lower[idx]+"_rdtcs", vfo_upper[idx]+" TX rTCS",
-                                       RadioSettingValueInteger(
-                                           0, 1000, chirp_common.DTCS_CODES[rxtone]))
+                    rs = RadioSetting(vfo_lower[idx] + "_rdtcs",
+                                      vfo_upper[idx] + " TX rTCS",
+                                      RadioSettingValueInteger(
+                                          0, 1000,
+                                          chirp_common.DTCS_CODES[rxtone]))
                     vfo_group.append(rs)
 
-
                 options = ["FM", "NFM"]
-                rs =  RadioSetting(vfo_lower[idx]+"_fm", vfo_upper[idx]+" FM BW ",
-                                   RadioSettingValueList(
-                                       options, options[_bandsettings[band_num].isnarrow]))
+                rs = RadioSetting(
+                    vfo_lower[idx] + "_fm",
+                    vfo_upper[idx] + " FM BW ",
+                    RadioSettingValueList(
+                        options, options[_bandsettings[band_num].isnarrow]))
                 vfo_group.append(rs)
 
         return group

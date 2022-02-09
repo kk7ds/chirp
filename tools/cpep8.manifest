@@ -89,6 +89,7 @@
 ./chirp/drivers/rfinder.py
 ./chirp/drivers/tdxone_tdq8a.py
 ./chirp/drivers/template.py
+./chirp/drivers/tg_uv2p.py
 ./chirp/drivers/th350.py
 ./chirp/drivers/th9800.py
 ./chirp/drivers/th_uv3r.py
