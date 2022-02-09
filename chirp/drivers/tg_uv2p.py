@@ -23,7 +23,7 @@ from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat, RadioSettings
+                RadioSettingValueFloat, RadioSettingValueMap, RadioSettings
 from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
@@ -433,72 +433,92 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
 
         cfg_grp = RadioSettingGroup("cfg_grp", "Configuration")
-        vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings")
-        vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings")
+        vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings\n  (Current Status, Read Only)")
+        vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings\n  (Current Status, Read Only)")
 
 
         group = RadioSettings(cfg_grp, vfoa_grp, vfob_grp)
         #
         # Configuration Settings
         #
+
+        ###### TX time out timer:
         options = ["Off"] + ["%s min" % x for x in range(1, 10)]
-        rs = RadioSetting("timeout", "Time Out Timer",
+        rs = RadioSetting("time_out_timer", "TX Time Out Timer",
                           RadioSettingValueList(
                               options, options[_settings.time_out_timer]))
         cfg_grp.append(rs)
 
+        ###### Display mode
         options = ["Frequency", "Channel", "Name"]
-        rs = RadioSetting("isplay", "Channel Display Moe",
+        rs = RadioSetting("display", "Channel Display Mode",
                           RadioSettingValueList(
                               options, options[_settings.display]))
         cfg_grp.append(rs)
 
+        ###### Squelch level
         rs = RadioSetting("squelch", "Squelch Level",
                           RadioSettingValueInteger(0, 9, _settings.squelch))
         cfg_grp.append(rs)
 
-        if _settings.vox == 0:
-            rs = RadioSetting("vox", "VOX",
-                              RadioSettingValueString(0,10,"Off"))
-            cfg_grp.append(rs)
-        else:
-            rs = RadioSetting("vox", "VOX Level",
-                              RadioSettingValueInteger(1, 9, _settings.vox))
-            cfg_grp.append(rs)
+        ######## Vox level
+        mem_vals = range(10)
+        user_options = [str(x) for x in mem_vals]
+        user_options[0] = "Off"
+        options_map = zip(user_options, mem_vals)
 
+        rs = RadioSetting("vox", "VOX Level",
+                          RadioSettingValueMap(options_map, _settings.vox))
+        cfg_grp.append(rs)
+
+        ###### Keypad beep
         rs = RadioSetting("beep_tone_disabled", "Beep Prompt",
                           RadioSettingValueBoolean(
                                not _settings.beep_tone_disabled))
         cfg_grp.append(rs)
 
+        ######## Dual watch/crossband
         options = ["Dual Watch", "CrossBand", "Normal"]
         if _settings.rxmode >=2:
             _rxmode = 2
         else:
             _rxmode = _settings.rxmode
-        rs = RadioSetting("RX mode", "Dual Watch/CrossBand Monitor",
+        rs = RadioSetting("rxmode", "Dual Watch/CrossBand Monitor",
                           RadioSettingValueList(
                             options, options[_rxmode]))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("bcl", "Busy Channel Lock",
+        ###### Busy chanel lock
+        rs = RadioSetting("busy_lockout", "Busy Channel Lock",
                           RadioSettingValueBoolean(
                              not _settings.busy_lockout))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("keylock", "Keypad Lock",
+        ####### Keypad lock
+        rs = RadioSetting("keyunlocked", "Keypad Lock",
                           RadioSettingValueBoolean(
                               not _settings.keyunlocked))
         cfg_grp.append(rs)
 
-        if _settings.priority_channel >= 200:
-            rs = RadioSetting("pri_ch", "Priority Channel",
-                              RadioSettingValueString(0,10,"Not Set"))
-            cfg_grp.append(rs)
-        else:
-            rs = RadioSetting("pri_ch", "Priority Channel",
-                              RadioSettingValueInteger(0, 199, _settings.priority_channel))
-            cfg_grp.append(rs)
+        ####### Priority channel
+        mem_vals = range(200)
+        user_options = [str(x) for x in mem_vals]
+        mem_vals.insert(0,0xFF)
+        user_options.insert(0,"Not Set")
+        options_map = zip(user_options, mem_vals)
+
+        rs = RadioSetting("priority_channel", "Priority Channel",
+                          RadioSettingValueMap(options_map, _settings.priority_channel))
+        cfg_grp.append(rs)
+
+        ####### Step
+        mem_vals = range(0, len(TGUV2P_STEPS))
+        user_options = [(str(x)+ " kHz") for x in TGUV2P_STEPS]
+        options_map = zip(user_options, mem_vals)
+
+        rs = RadioSetting("step", "Current (VFO?) step size",
+                          RadioSettingValueMap(options_map, _settings.step))
+        cfg_grp.append(rs)
 
         #
         # VFO Settings
@@ -596,6 +616,40 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         return group
 
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            else:
+                try:
+                    if "vfo" in element.get_name():
+                        continue
+                    elif "." in element.get_name():
+                        bits = element.get_name().split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = self._memobj.settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        LOG.debug("using apply callback")
+                        element.run_apply_callback()
+                    elif setting == "beep_tone_disabled":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "busy_lockout":
+                        setattr(obj, setting, not int(element.value))
+                    elif setting == "keyunlocked":
+                        setattr(obj, setting, not int(element.value))
+                    elif element.value.get_mutable():
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
+                        setattr(obj, setting, element.value)
+                except Exception, e:
+                    LOG.debug(element.get_name())
+                    raise
 
     @classmethod
     def match_model(cls, filedata, filename):
