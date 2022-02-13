@@ -203,6 +203,10 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
             ensure_has_calls(dst_radio, src_mem)
 
     dst_mem = src_mem.dupe()
+    # The source's immutable list almost definitely does not match the
+    # latter, so eliminate that list here and rely on set_memory() on
+    # the destination to enforce anything that should not be set.
+    dst_mem.immutable = []
 
     for k, v in overrides.items():
         dst_mem.__dict__[k] = v
