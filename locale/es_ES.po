@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-16 12:06-0800\n"
-"PO-Revision-Date: 2022-03-04 00:08-0300\n"
+"PO-Revision-Date: 2022-03-04 00:24-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -103,7 +103,7 @@ msgstr "Obteniendo información del banco"
 
 #: ../chirpui/inputdialog.py:81
 msgid "An error has occurred"
-msgstr "Ocurrió un error"
+msgstr "Ha ocurrido un error"
 
 #: ../chirpui/inputdialog.py:130
 msgid "Overwrite"
@@ -267,7 +267,7 @@ msgid ""
 "Open in read-only mode?"
 msgstr ""
 "Archivos ICF no se pueden editar, solo mostrarse o importarse en algún otro "
-"archivo. ¿Abrir en modo solo-lectura?"
+"archivo. ¿Abrir en modo solo lectura?"
 
 #: ../chirpui/mainapp.py:373
 msgid "There was an error opening {fname}: {error}"
