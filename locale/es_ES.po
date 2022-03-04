@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-16 12:06-0800\n"
-"PO-Revision-Date: 2022-03-03 22:06-0300\n"
+"PO-Revision-Date: 2022-03-04 00:08-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -694,7 +694,7 @@ msgstr "Código DTCS"
 #: ../chirpui/memedit.py:223 ../chirpui/memedit.py:878
 #: ../chirpui/memedit.py:933 ../chirpui/memedit.py:1060
 msgid "DTCS Pol"
-msgstr "Política DTCS"
+msgstr "Polaridad DTCS"
 
 #: ../chirpui/memedit.py:71 ../chirpui/memedit.py:91 ../chirpui/memedit.py:112
 #: ../chirpui/memedit.py:879 ../chirpui/memedit.py:932
