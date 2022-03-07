@@ -182,7 +182,7 @@ def isValidDate(month, day, year):
     elif month in monthlist2:
         max1 = 30
     elif month in monthlist3:
-        if ((yy % 4) == 0 and (yy % 100) != 0 or (yy % 400) == 0):
+        if ((year % 4) == 0 and (year % 100) != 0 or (year % 400) == 0):
             max1 = 29
         else:
             max1 = 28
