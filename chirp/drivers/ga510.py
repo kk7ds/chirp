@@ -23,10 +23,6 @@ except ImportError:
 # GA510 also has DTCS code 645
 DTCS_CODES = list(sorted(chirp_common.DTCS_CODES + [645]))
 
-POWER_LEVELS = [
-    chirp_common.PowerLevel('H', watts=10),
-    chirp_common.PowerLevel('L', watts=1),
-    chirp_common.PowerLevel('M', watts=5)]
 DTMFCHARS = '0123456789ABCD*#'
 
 
@@ -37,7 +33,7 @@ def reset(radio):
 def start_program(radio):
     reset(radio)
     radio.pipe.read(256)
-    radio.pipe.write(b'PROGROMBFHU')
+    radio.pipe.write(radio._magic)
     ack = radio.pipe.read(256)
     if not ack.endswith(b'\x06'):
         LOG.debug('Ack was %r' % ack)
@@ -216,6 +212,12 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
     ALIASES = [TDH6Radio]
+    POWER_LEVELS = [
+        chirp_common.PowerLevel('H', watts=10),
+        chirp_common.PowerLevel('L', watts=1),
+        chirp_common.PowerLevel('M', watts=5)]
+
+    _magic = (b'PROGROMBFHU')
 
     def sync_in(self):
         try:
@@ -260,7 +262,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                                  25.0, 50.0, 100.0]
         rf.valid_dtcs_codes = DTCS_CODES
         rf.valid_duplexes = ['', '-', '+', 'split', 'off']
-        rf.valid_power_levels = POWER_LEVELS
+        rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_name_length = 10
         rf.valid_characters = ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                                'abcdefghijklmnopqrstuvwxyz'
@@ -343,15 +345,22 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             raw_tx += _mem.txfreq[i].get_raw()
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
+    def _get_mem(self, num):
+        return self._memobj.memories[num]
+
+    def _get_nam(self, num):
+        return self._memobj.names[num]
+
     def get_memory(self, num):
-        _mem = self._memobj.memories[num]
+        _mem = self._get_mem(num)
+        _nam = self._get_nam(num)
         mem = chirp_common.Memory()
         mem.number = num
         if int(_mem.rxfreq) == 166666665:
             mem.empty = True
             return mem
 
-        mem.name = ''.join([str(c) for c in self._memobj.names[num].name
+        mem.name = ''.join([str(c) for c in _nam.name
                             if ord(str(c)) < 127]).rstrip()
         mem.freq = int(_mem.rxfreq) * 10
         offset = (int(_mem.txfreq) - int(_mem.rxfreq)) * 10
@@ -367,7 +376,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             mem.duplex = 'split'
             mem.offset = int(_mem.txfreq) * 10
 
-        mem.power = POWER_LEVELS[_mem.power]
+        mem.power = self.POWER_LEVELS[_mem.power]
         mem.mode = 'NFM' if _mem.narrow else 'FM'
         mem.skip = '' if _mem.scan else 'S'
 
@@ -382,9 +391,15 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             LOG.exception('Failed to get extra for %i' % num)
         return mem
 
+    def _set_mem(self, number):
+        return self._memobj.memories[number]
+
+    def _set_nam(self, number):
+        return self._memobj.names[number]
+
     def set_memory(self, mem):
-        _mem = self._memobj.memories[mem.number]
-        _nam = self._memobj.names[mem.number]
+        _mem = self._set_mem(mem.number)
+        _nam = self._set_nam(mem.number)
 
         if mem.empty:
             _mem.set_raw(b'\xff' * 16)
@@ -419,7 +434,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         _mem.rxtone = self._encode_tone(*rxtone)
 
         try:
-            _mem.power = POWER_LEVELS.index(mem.power)
+            _mem.power = self.POWER_LEVELS.index(mem.power)
         except ValueError:
             _mem.power = 0
         _mem.narrow = mem.mode == 'NFM'
