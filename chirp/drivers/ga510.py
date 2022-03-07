@@ -208,6 +208,14 @@ struct {
 PTTID = ['Off', 'BOT', 'EOT', 'Both']
 SIGNAL = [str(i) for i in range(1, 16)]
 
+GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+               462.6875, 462.7125]
+GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+               467.6875, 467.7125]
+GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+               462.6750, 462.7000, 462.7250]
+GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3
+
 
 class TDH6Radio(chirp_common.Alias):
     VENDOR = "TIDRADIO"
@@ -227,6 +235,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         chirp_common.PowerLevel('M', watts=5)]
 
     _magic = (b'PROGROMBFHU')
+
+    _gmrs = False
 
     def sync_in(self):
         try:
@@ -418,6 +428,26 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         if int(_mem.rxfreq) == 166666665:
             LOG.debug('Initializing new memory %i' % mem.number)
             _mem.set_raw(b'\x00' * 16)
+
+        if self._gmrs:
+            if float(mem.freq) / 1000000 in GMRS_FREQS:
+                if float(mem.freq) / 1000000 in GMRS_FREQS1:
+                    mem.duplex = ''
+                    mem.offset = 0
+                if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[1]
+                if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.duplex = ''
+                        mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
 
         _nam.name = mem.name.ljust(10)
 
@@ -786,3 +816,35 @@ class RetevisRA685Radio(RadioddityGA510Radio):
             mem.duplex = 'off'
             mem.offset = 0
         RadioddityGA510Radio.set_memory(self, mem)
+
+
+@directory.register
+class RetevisRA85Radio(RadioddityGA510Radio):
+    VENDOR = 'Retevis'
+    MODEL = 'RA85'
+    POWER_LEVELS = [
+        chirp_common.PowerLevel('H', watts=5),
+        chirp_common.PowerLevel('L', watts=0.5),
+        chirp_common.PowerLevel('M', watts=0.6)]
+
+    _magic = b'PROGROMWLTU'
+    _gmrs = True
+
+    def get_features(self):
+        rf = RadioddityGA510Radio.get_features(self)
+        rf.memory_bounds = (1, 128)
+        rf.valid_bands = [(136000000, 174000000),
+                          (400000000, 520000000)]
+        return rf
+
+    def _get_mem(self, num):
+        return self._memobj.memories[num - 1]
+
+    def _get_nam(self, number):
+        return self._memobj.names[number - 1]
+
+    def _set_mem(self, num):
+        return self._memobj.memories[num - 1]
+
+    def _set_nam(self, number):
+        return self._memobj.names[number - 1]
