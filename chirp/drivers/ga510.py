@@ -151,6 +151,7 @@ struct {
   u8 pttid; // [off, BOT, EOT, Both]
   u8 pttdelay; // 0-30
   u8 cha_disp; // [ch-name, ch-freq]
+               // [ch, ch-name]; retevis
   u8 chb_disp;
   u8 bcl; // bool
 
@@ -170,6 +171,14 @@ struct {
   u8 workmode; // [vfo, chan]; 1A30-1A31 related?
   u8 kblock; // boolean
 } settings;
+
+#seekto 0x1A80;
+struct {
+  u8 skey1sp; // [off, lamp, sos, fm, noaa, moni, search]
+  u8 skey1lp; // [off, lamp, sos, fm, noaa, moni, search]
+  u8 skey2sp; // [off, lamp, sos, fm, noaa, moni, search]
+  u8 skey2lp; // [off, lamp, sos, fm, noaa, moni, search]
+} skey;
 
 struct dtmfcode {
   u8 code[5];
@@ -449,8 +458,22 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         adv = RadioSettingGroup('advanced', 'Advanced')
         dtmf = RadioSettingGroup('dtmf', 'DTMF')
 
-        choice_settings = {
+        radioddity_settings = {
             'savemode': ['Off', 'Mode 1', 'Mode 2', 'Mode 3'],
+            'cha_disp': ['CH+Name', 'CH+Freq'],
+            'chb_disp': ['CH+Name', 'CH+Freq'],
+            'txundertdr': ['Off', 'Band A', 'Band B'],
+            'rptnoiseclr': ['Off'] + ['%i' % i for i in range(100, 1001, 100)],
+            'rptnoisedet': ['Off'] + ['%i' % i for i in range(100, 1001, 100)],
+        }
+
+        retevis_settings = {
+            'savemode': ['Off', 'On'],
+            'cha_disp': ['CH', 'CH+Name'],
+            'chb_disp': ['CH', 'CH+Name'],
+        }
+
+        choice_settings = {
             'vox': ['Off'] + ['%i' % i for i in range(1, 11)],
             'backlight': ['Off'] + ['%i' % i for i in range(1, 11)],
             'timeout': ['Off'] + ['%i' % i for i in range(15, 615, 15)],
@@ -459,14 +482,14 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                        'KB ST+ANI ST', 'Both'],
             'scanmode': ['TO', 'CO', 'SE'],
             'pttid': ['Off', 'BOT', 'EOT', 'Both'],
-            'cha_disp': ['CH+Name', 'CH+Freq'],
-            'chb_disp': ['CH+Name', 'CH+Freq'],
             'alarm_mode': ['Site', 'Tone', 'Code'],
-            'txundertdr': ['Off', 'Band A', 'Band B'],
-            'rptnoiseclr': ['Off'] + ['%i' % i for i in range(100, 1001, 100)],
-            'rptnoisedet': ['Off'] + ['%i' % i for i in range(100, 1001, 100)],
             'workmode': ['VFO', 'Chan'],
         }
+
+        if self.VENDOR == "Retevis":
+            choice_settings.update(retevis_settings)
+        else:
+            choice_settings.update(radioddity_settings)
 
         basic_settings = ['timeout', 'vox', 'backlight', 'language',
                           'cha_disp', 'chb_disp', 'workmode']
@@ -556,6 +579,64 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                                  choices,
                                  choices[val])))
 
+        if self.VENDOR == "Retevis":
+            # Side Keys
+            _skey = self._memobj.skey
+            SK_CHOICES = ['OFF', 'LAMP', 'SOS', 'FM', 'NOAA', 'MONI', 'SEARCH']
+            SK_VALUES = [0xFF, 0x08, 0x03, 0x07, 0x0C, 0x05, 0x1D]
+
+            def apply_sk_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(setting.value) +
+                          " from list")
+                val = str(setting.value)
+                index = SK_CHOICES.index(val)
+                val = SK_VALUES[index]
+                obj.set_value(val)
+
+            # Side Key 1 - Short Press
+            if _skey.skey1sp in SK_VALUES:
+                idx = SK_VALUES.index(_skey.skey1sp)
+            else:
+                idx = SK_VALUES.index(0xFF)
+            rs = RadioSetting('skey.skey1sp', 'Side Key 1 - Short Press',
+                              RadioSettingValueList(SK_CHOICES,
+                                                    SK_CHOICES[idx]))
+            rs.set_apply_callback(apply_sk_listvalue, _skey.skey1sp)
+            adv.append(rs)
+
+            # Side Key 1 - Long Press
+            if _skey.skey1lp in SK_VALUES:
+                idx = SK_VALUES.index(_skey.skey1lp)
+            else:
+                idx = SK_VALUES.index(0xFF)
+            rs = RadioSetting('skey.skey1lp', 'Side Key 1 - Long Press',
+                              RadioSettingValueList(SK_CHOICES,
+                                                    SK_CHOICES[idx]))
+            rs.set_apply_callback(apply_sk_listvalue, _skey.skey1lp)
+            adv.append(rs)
+
+            # Side Key 2 - Short Press
+            if _skey.skey2sp in SK_VALUES:
+                idx = SK_VALUES.index(_skey.skey2sp)
+            else:
+                idx = SK_VALUES.index(0xFF)
+            rs = RadioSetting('skey.skey2sp', 'Side Key 2 - Short Press',
+                              RadioSettingValueList(SK_CHOICES,
+                                                    SK_CHOICES[idx]))
+            rs.set_apply_callback(apply_sk_listvalue, _skey.skey2sp)
+            adv.append(rs)
+
+            # Side Key 1 - Long Press
+            if _skey.skey2lp in SK_VALUES:
+                idx = SK_VALUES.index(_skey.skey2lp)
+            else:
+                idx = SK_VALUES.index(0xFF)
+            rs = RadioSetting('skey.skey2lp', 'Side Key 2 - Long Press',
+                              RadioSettingValueList(SK_CHOICES,
+                                                    SK_CHOICES[idx]))
+            rs.set_apply_callback(apply_sk_listvalue, _skey.skey2lp)
+            adv.append(rs)
+
         for i in range(1, 16):
             cur = ''.join(
                 DTMFCHARS[i]
@@ -615,6 +696,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                 self._set_anicode(element)
             elif element.get_name().startswith('dtmf.code'):
                 self._set_dtmfcode(element)
+            elif element.get_name().startswith('skey.'):
+                self._set_skey(element)
             elif not isinstance(element, RadioSetting):
                 self.set_settings(element)
                 continue
@@ -652,3 +735,54 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             except IndexError:
                 value = 0xFF
             self._memobj.dtmfgroup[index].code[i] = value
+
+    def _set_skey(self, setting):
+        if setting.has_apply_callback():
+            LOG.debug("Using apply callback")
+            setting.run_apply_callback()
+
+
+@directory.register
+class RetevisRA685Radio(RadioddityGA510Radio):
+    VENDOR = 'Retevis'
+    MODEL = 'RA685'
+    POWER_LEVELS = [
+        chirp_common.PowerLevel('H', watts=5),
+        chirp_common.PowerLevel('L', watts=1),
+        chirp_common.PowerLevel('M', watts=3)]
+
+    _magic = b'PROGROMWLTU'
+
+    def get_features(self):
+        rf = RadioddityGA510Radio.get_features(self)
+        rf.memory_bounds = (1, 128)
+        rf.valid_bands = [(136000000, 174000000),
+                          (400000000, 520000000)]
+        return rf
+
+    def _get_mem(self, num):
+        return self._memobj.memories[num - 1]
+
+    def _get_nam(self, number):
+        return self._memobj.names[number - 1]
+
+    def _set_mem(self, num):
+        return self._memobj.memories[num - 1]
+
+    def _set_nam(self, number):
+        return self._memobj.names[number - 1]
+
+    vhftx = [144000000, 146000000]
+    uhftx = [430000000, 440000000]
+
+    def set_memory(self, mem):
+        # If memory is outside the TX limits, the radio will refuse
+        # transmit. Retevis asked for us to enforce this behavior
+        # in CHIRP for consistency.
+        if not (mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) and \
+           not (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1]):
+            LOG.info('Memory frequency outside TX limits of radio; '
+                     'forcing duplex=off')
+            mem.duplex = 'off'
+            mem.offset = 0
+        RadioddityGA510Radio.set_memory(self, mem)
