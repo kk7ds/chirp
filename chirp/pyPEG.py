@@ -169,7 +169,7 @@ class parser(object):
             except:
                 pass
 
-        if isinstance(pattern, collections.Callable):
+        if isinstance(pattern, collections.abc.Callable):
             if __debug__:
                 if print_trace:
                     try:
@@ -184,7 +184,7 @@ class parser(object):
                 name = Name(pattern.__name__)
 
             pattern = pattern()
-            if isinstance(pattern, collections.Callable):
+            if isinstance(pattern, collections.abc.Callable):
                 pattern = (pattern,)
 
         text = skip(self.skipper, textline, skipWS, skipComments)
@@ -353,7 +353,7 @@ def parse(language, lineSource, skipWS=True, skipComments=None,
           packrat=False, lineCount=True):
     lines, lineNo = [], 0
 
-    while isinstance(language, collections.Callable):
+    while isinstance(language, collections.abc.Callable):
         language = language()
 
     orig, ld = "", 0
