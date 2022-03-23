@@ -256,7 +256,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_tuning_step = True
-        rf.memory_bounds = (1, 200)
+        rf.memory_bounds = (0, 199)
         return rf
 
     def sync_in(self):
@@ -280,7 +280,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.channels[number - 1])
+        return repr(self._memobj.channels[number])
 
     def _decode_tone(self, _mem, which):
         def _get(field):
@@ -327,9 +327,9 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
             return (getattr(self._memobj, number.lower()), None)
 
         else:
-            return (self._memobj.channels[number - 1],
-                    self._memobj.bandflags[number - 1],
-                    self._memobj.names[number - 1].name)
+            return (self._memobj.channels[number],
+                    self._memobj.bandflags[number],
+                    self._memobj.names[number].name)
 
     def get_memory(self, number):
         _mem, _bf, _nam = self._get_memobjs(number)
