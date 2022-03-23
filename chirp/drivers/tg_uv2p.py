@@ -19,6 +19,7 @@
 
 import struct
 import logging
+import serial
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
@@ -116,6 +117,7 @@ struct name names[200];
 
 def do_ident(radio):
     radio.pipe.timeout = 3
+    radio.pipe.stopbits = serial.STOPBITS_TWO
     radio.pipe.write("\x02PnOGdAM")
     for x in xrange(10):
         ack = radio.pipe.read(1)
