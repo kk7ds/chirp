@@ -38,8 +38,8 @@ ADDR_LAST_BLOCK_BEFORE_MEMORIES = 0x19F0
 ADDR_FIRST_MEMORY_LOCATION = 0x2000
 
 
-# This _mem_format structure is defined separately from the rest because it 
-# needs to be parsed twice -- once in the middle of downloading data from the 
+# This _mem_format structure is defined separately from the rest because it
+# needs to be parsed twice -- once in the middle of downloading data from the
 # radio, and then again (along with everything else) once the download is
 # complete.
 _mem_format = """
@@ -118,19 +118,19 @@ struct {
   u8 unknown1:6,
      display:2;
   u8 unknown2[11];
-  # TODO Backlight brightness is in here (RGB)
+  // TODO Backlight brightness is in here (RGB)
   u8 unknown3:3,
      apo:5;
   u8 unknown4a[2];
   u8 unknown4b:6,
      mute:2;
-  # TODO Keypad locked is in here (0=unlocked, 1=locked)
+  // TODO Keypad locked is in here (0=unlocked, 1=locked)
   u8 unknown4;
   u8 unknown5:5,
      beep:1,
      unknown6:2;
   u8 unknown[334];
-  # TODO Programmable keys A-D are here
+  // TODO Programmable keys A-D are here
   char welcome[8];
 } settings;
 
@@ -138,9 +138,9 @@ struct {
 struct memory memblk1[12];
 
 #seekto 0x2000;
-struct memory memory[758]; #FIXME It's actually only 750
+struct memory memory[758];  // FIXME It's actually only 750
 
-# TODO VFO scan limits are here (after the 750th memory; seekto 0x7DC0)
+// TODO VFO scan limits are here (after the 750th memory; seekto 0x7DC0)
 
 #seekto 0x7ec0;
 struct memory memblk2[10];
