@@ -878,12 +878,17 @@ class UV82IIIAlias(chirp_common.Alias):
     MODEL = "UV-82III"
 
 
+class UV9RPROAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-9R Pro"
+
+
 @directory.register
 class BFA58(WP970I):
     """Baofeng BF-A58"""
     VENDOR = "Baofeng"
     MODEL = "BF-A58"
-    ALIASES = [RH5XAlias]
+    ALIASES = [RH5XAlias, UV9RPROAlias]
 
     _fileid = ["BFT515 ", "BFT517 "]
 
