@@ -30,6 +30,18 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
 
 LOG = logging.getLogger(__name__)
 
+BLOCK_SIZE = 0x10
+NUMBER_OF_MEMORY_LOCATIONS = 758
+MEMORY_LOCATION_SIZE = 32
+ADDR_FIRST_WRITABLE_BYTE = 0x0100
+ADDR_LAST_BLOCK_BEFORE_MEMORIES = 0x19F0
+ADDR_FIRST_MEMORY_LOCATION = 0x2000
+
+
+# This _mem_format structure is defined separately from the rest because it
+# needs to be parsed twice -- once in the middle of downloading data from the
+# radio, and then again (along with everything else) once the download is
+# complete.
 _mem_format = """
 #seekto 0x0100;
 struct {
@@ -106,16 +118,19 @@ struct {
   u8 unknown1:6,
      display:2;
   u8 unknown2[11];
+  // TODO Backlight brightness is in here (RGB)
   u8 unknown3:3,
      apo:5;
   u8 unknown4a[2];
   u8 unknown4b:6,
      mute:2;
+  // TODO Keypad locked is in here (0=unlocked, 1=locked)
   u8 unknown4;
   u8 unknown5:5,
      beep:1,
      unknown6:2;
   u8 unknown[334];
+  // TODO Programmable keys A-D are here
   char welcome[8];
 } settings;
 
@@ -123,7 +138,9 @@ struct {
 struct memory memblk1[12];
 
 #seekto 0x2000;
-struct memory memory[758];
+struct memory memory[758];  // FIXME It's actually only 750
+
+// TODO VFO scan limits are here (after the 750th memory; seekto 0x7DC0)
 
 #seekto 0x7ec0;
 struct memory memblk2[10];
@@ -181,11 +198,11 @@ def _is_loc_used(memobj, loc):
 
 
 def _addr_to_loc(addr):
-    return (addr - 0x2000) / 32
+    return (addr - ADDR_FIRST_MEMORY_LOCATION) / MEMORY_LOCATION_SIZE
 
 
 def _should_send_addr(memobj, addr):
-    if addr < 0x2000 or addr >= 0x7EC0:
+    if addr < ADDR_FIRST_MEMORY_LOCATION or addr >= 0x7EC0:
         return True
     else:
         return _is_loc_used(memobj, _addr_to_loc(addr))
@@ -223,7 +240,7 @@ def _ident(radio):
     response = radio.pipe.read(3)
     if response != "QX\x06":
         LOG.debug("Response was:\n%s" % util.hexprint(response))
-        raise errors.RadioError("Unsupported model")
+        raise errors.RadioError("Unsupported model or bad connection")
     _echo_write(radio, "\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
@@ -292,11 +309,11 @@ def _download(radio):
 
     data = ""
     for start, end in radio._ranges:
-        for addr in range(start, end, 0x10):
+        for addr in range(start, end, BLOCK_SIZE):
             if memobj is not None and not _should_send_addr(memobj, addr):
-                block = "\xFF" * 0x10
+                block = "\xFF" * BLOCK_SIZE
             else:
-                block = _send(radio, 'R', addr, 0x10)
+                block = _send(radio, 'R', addr, BLOCK_SIZE)
             data += block
 
             status = chirp_common.Status()
@@ -305,7 +322,7 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-            if addr == 0x19F0:
+            if addr == ADDR_LAST_BLOCK_BEFORE_MEMORIES:
                 memobj = bitwise.parse(_mem_format, data)
 
     _finish(radio)
@@ -317,12 +334,12 @@ def _upload(radio):
     _ident(radio)
 
     for start, end in radio._ranges:
-        for addr in range(start, end, 0x10):
-            if addr < 0x0100:
+        for addr in range(start, end, BLOCK_SIZE):
+            if addr < ADDR_FIRST_WRITABLE_BYTE:
                 continue
             if not _should_send_addr(radio._memobj, addr):
                 continue
-            block = radio._mmap[addr:addr + 0x10]
+            block = radio._mmap[addr:addr + BLOCK_SIZE]
             _send(radio, 'W', addr, len(block), block)
 
             status = chirp_common.Status()
@@ -354,6 +371,7 @@ OPT_SIG_SQL = ["Off"] + SQL_MODES[2:]
 OPT_SIGS = ['Off', 'DTMF', '2Tone', '5Tone']
 PTT_IDS = ['Off', 'Begin', 'End', 'Begin & End']
 TUNING_STEPS = [2.5, 5, 6.25, 10, 12.5, 15, 20, 25, 30, 50]
+# FIXME (1) Not sure if 15 is a valid step, (2) 100 might be a valid step
 
 
 @directory.register
@@ -396,7 +414,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
         rf.valid_name_length = 7
         rf.valid_power_levels = POWER_LEVELS
-        rf.memory_bounds = (1, 758)
+        rf.memory_bounds = (1, NUMBER_OF_MEMORY_LOCATIONS)
         return rf
 
     def sync_in(self):
@@ -573,7 +591,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             _flg.set()
             return
         _flg.clear()
-        _mem.set_raw("\x00" * 32)
+        _mem.set_raw("\x00" * MEMORY_LOCATION_SIZE)
 
         _mem.freq = mem.freq / 100
         _mem.offset = mem.offset / 100
@@ -676,10 +694,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.beep))
         basic.append(rs)
 
-        mute = ["Off", "TX", "RX", "TX/RX"]
+        MUTE_CHOICES = ["Off", "TX", "RX", "TX/RX"]
         rs = RadioSetting("mute", "Sub Band Mute",
-                          RadioSettingValueList(mute,
-                                                mute[_settings.mute]))
+                          RadioSettingValueList(MUTE_CHOICES,
+                                                MUTE_CHOICES[_settings.mute]))
         basic.append(rs)
 
         return settings
