@@ -1,4 +1,4 @@
-# Copyright 2016-2021:
+# Copyright 2016-2022:
 # * Pavel Milanes CO7WT, <pavelmc@gmail.com>
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 #
@@ -359,7 +359,7 @@ def _rawrecv(radio, amount):
     return data
 
 
-def _send(radio, data):
+def _send(radio, data, upload=False):
     """Send data to the radio device"""
 
     try:
@@ -375,7 +375,10 @@ def _send(radio, data):
             # Finally, a static delay was chosen as simplest of all solutions
             # (Michael Wagner, OE4AMW)
             # (for details, see issue 3993)
-            sleep(0.002)
+            #
+            # skip 'sleep()' when uploading added by Jim Unroe, KC9HI
+            if upload is False:
+                sleep(0.002)
 
         # DEBUG
         if debug is True:
@@ -653,7 +656,7 @@ def _upload(radio):
             frame = frame[1:]
 
         # send the frame
-        _send(radio, frame)
+        _send(radio, frame, True)
 
         # receiving the response
         ack = _rawrecv(radio, 1)
