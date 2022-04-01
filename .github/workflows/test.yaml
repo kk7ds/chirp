@@ -10,6 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: install dependencies
         run: |
+          sudo apt-get update
           sudo apt-get remove -y python3-libxml2
           sudo apt-get install -y libxml2-dev python-dev python-libxml2
           curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
