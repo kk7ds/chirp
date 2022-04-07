@@ -236,6 +236,8 @@ KT8900R_fp2 = "M3C234"
 KT8900R_fp3 = "M39164"
 # another model
 KT8900R_fp4 = "M3G314"
+# AC3MB: another id
+KT8900R_fp5 = "M3B064"
 # this radio has an extra ID
 KT8900R_id = "280528"
 # another extra ID in dec/2018
@@ -3598,7 +3600,8 @@ class KT9800R(BTech):
                KT8900R_fp1,
                KT8900R_fp2,
                KT8900R_fp3,
-               KT8900R_fp4]
+               KT8900R_fp4,
+               KT8900R_fp5]
     _id2 = [KT8900R_id, KT8900R_id2]
 
 
