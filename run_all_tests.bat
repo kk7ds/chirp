@@ -1,3 +1,3 @@
 @echo off
-python tests\run_tests.py
-python tools\cpep8.py
+py -2 tests\run_tests.py
+py -2 tools\cpep8.py
