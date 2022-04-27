@@ -30,19 +30,24 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
 
 LOG = logging.getLogger(__name__)
 
-BLOCK_SIZE = 0x10
+BLOCK_SIZE = 0x10  # 16 bytes
 NUMBER_OF_MEMORY_LOCATIONS = 758
 MEMORY_LOCATION_SIZE = 32
+MEMORY_LOCATION_SIZE = 32  # bytes
 ADDR_FIRST_WRITABLE_BYTE = 0x0100
 ADDR_LAST_BLOCK_BEFORE_MEMORIES = 0x19F0
 ADDR_FIRST_MEMORY_LOCATION = 0x2000
+ADDR_AFTER_LAST_MEMORY_LOCATION = 0x7EC0
+ADDR_MAX = 0x8000
 
+assert(ADDR_AFTER_LAST_MEMORY_LOCATION == ADDR_FIRST_MEMORY_LOCATION +
+       NUMBER_OF_MEMORY_LOCATIONS * MEMORY_LOCATION_SIZE)
 
-# This _mem_format structure is defined separately from the rest because it
-# needs to be parsed twice -- once in the middle of downloading data from the
-# radio, and then again (along with everything else) once the download is
-# complete.
-_mem_format = """
+# This mem_format_just_flags structure is defined separately from the rest
+# because it needs to be parsed twice -- once in the middle of downloading
+# data from the radio, and then again (along with everything else) once the
+# download is complete.
+mem_format_just_flags = """
 #seekto 0x0100;
 struct {
   u8 even_unknown:2,
@@ -54,7 +59,7 @@ struct {
 } flags[379];
 """
 
-mem_format = _mem_format + """
+mem_format_all = mem_format_just_flags + """
 struct memory {
   bbcd freq[4];
   bbcd offset[4];
@@ -202,7 +207,8 @@ def _addr_to_loc(addr):
 
 
 def _should_send_addr(memobj, addr):
-    if addr < ADDR_FIRST_MEMORY_LOCATION or addr >= 0x7EC0:
+    if addr < ADDR_FIRST_MEMORY_LOCATION or \
+            addr >= ADDR_AFTER_LAST_MEMORY_LOCATION:
         return True
     else:
         return _is_loc_used(memobj, _addr_to_loc(addr))
@@ -210,7 +216,10 @@ def _should_send_addr(memobj, addr):
 
 def _echo_write(radio, data):
     try:
+        # writing to the pipe does not advance the pointer
         radio.pipe.write(data)
+        # so, to advance the pointer we read for the corresponding length
+        # (ignoring the data that is read)
         radio.pipe.read(len(data))
     except Exception, e:
         LOG.error("Error writing to radio: %s" % e)
@@ -233,16 +242,27 @@ def _read(radio, length):
 
 valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00', 'DB-750X']
 
+ACK = "\x06"
+CMD_BEGIN_PROGRAMMING_SESSION = "PROGRAM"
+CMD_INQUIRE_MODEL = "\x02"
+CMD_END_SESSION = "\x45\x4E\x44"  # aka end frame
+CMD_READ = 'R'
+CMD_WRITE = 'W'
+RESPONSE_CLEAN_START = "QX\x06"
+MODEL_NUMBER_MAX_LEN = 16
+# > = big-endian, c = char, H = unsigned short, b = signed char
+FRAME_HEADER_FORMAT = ">cHb"
+
 
 def _ident(radio):
     radio.pipe.timeout = 1
-    _echo_write(radio, "PROGRAM")
-    response = radio.pipe.read(3)
-    if response != "QX\x06":
+    _echo_write(radio, CMD_BEGIN_PROGRAMMING_SESSION)
+    response = radio.pipe.read(len(RESPONSE_CLEAN_START))
+    if response != RESPONSE_CLEAN_START:
         LOG.debug("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model or bad connection")
-    _echo_write(radio, "\x02")
-    response = radio.pipe.read(16)
+    _echo_write(radio, CMD_INQUIRE_MODEL)
+    response = radio.pipe.read(MODEL_NUMBER_MAX_LEN)
     LOG.debug(util.hexprint(response))
     if response[1:8] not in valid_model:
         LOG.debug("Response was:\n%s" % util.hexprint(response))
@@ -250,10 +270,9 @@ def _ident(radio):
 
 
 def _finish(radio):
-    endframe = "\x45\x4E\x44"
-    _echo_write(radio, endframe)
+    _echo_write(radio, CMD_END_SESSION)
     result = radio.pipe.read(1)
-    if result != "\x06":
+    if result != ACK:
         LOG.debug("Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
@@ -266,17 +285,17 @@ def _checksum(data):
 
 
 def _send(radio, cmd, addr, length, data=None):
-    frame = struct.pack(">cHb", cmd, addr, length)
+    frame = struct.pack(FRAME_HEADER_FORMAT, cmd, addr, length)
     if data:
         frame += data
         frame += chr(_checksum(frame[1:]))
-        frame += "\x06"
+        frame += ACK
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
     if data:
         result = radio.pipe.read(1)
-        if result != "\x06":
-            LOG.debug("Ack was: %s" % repr(result))
+        if result != ACK:
+            LOG.debug("Expected ACK, got: %s" % repr(result))
             raise errors.RadioError(
                 "Radio did not accept block at %04x" % addr)
         return
@@ -285,10 +304,10 @@ def _send(radio, cmd, addr, length, data=None):
     header = result[0:4]
     data = result[4:-2]
     ack = result[-1]
-    if ack != "\x06":
-        LOG.debug("Ack was: %s" % repr(ack))
+    if ack != ACK:
+        LOG.debug("Expected ACK, got: %s" % repr(ack))
         raise errors.RadioError("Radio NAK'd block at %04x" % addr)
-    _cmd, _addr, _length = struct.unpack(">cHb", header)
+    _cmd, _addr, _length = struct.unpack(FRAME_HEADER_FORMAT, header)
     if _addr != addr or _length != _length:
         LOG.debug("Expected/Received:")
         LOG.debug(" Length: %02x/%02x" % (length, _length))
@@ -313,7 +332,7 @@ def _download(radio):
             if memobj is not None and not _should_send_addr(memobj, addr):
                 block = "\xFF" * BLOCK_SIZE
             else:
-                block = _send(radio, 'R', addr, BLOCK_SIZE)
+                block = _send(radio, CMD_READ, addr, BLOCK_SIZE)
             data += block
 
             status = chirp_common.Status()
@@ -323,7 +342,7 @@ def _download(radio):
             radio.status_fn(status)
 
             if addr == ADDR_LAST_BLOCK_BEFORE_MEMORIES:
-                memobj = bitwise.parse(_mem_format, data)
+                memobj = bitwise.parse(mem_format_just_flags, data)
 
     _finish(radio)
 
@@ -340,7 +359,7 @@ def _upload(radio):
             if not _should_send_addr(radio._memobj, addr):
                 continue
             block = radio._mmap[addr:addr + BLOCK_SIZE]
-            _send(radio, 'W', addr, len(block), block)
+            _send(radio, CMD_WRITE, addr, len(block), block)
 
             status = chirp_common.Status()
             status.cur = addr
@@ -385,7 +404,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
     # May try to mirror the OEM behavior later
     _ranges = [
-        (0x0000, 0x8000),
+        (0x0000, ADDR_MAX),
         ]
 
     @classmethod
@@ -425,7 +444,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         _upload(self)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(mem_format_all, self._mmap)
 
     def _get_memobjs(self, number):
         number -= 1
@@ -666,10 +685,11 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         basic = RadioSettingGroup("basic", "Basic")
         settings = RadioSettings(basic)
 
-        display = ["Frequency", "Channel", "Name"]
-        rs = RadioSetting("display", "Display",
-                          RadioSettingValueList(display,
-                                                display[_settings.display]))
+        DISPLAY_CHOICES = ["Frequency", "Channel", "Name"]
+        rs = RadioSetting("display", "Memory Display",
+                          RadioSettingValueList(DISPLAY_CHOICES,
+                                                DISPLAY_CHOICES[
+                                                    _settings.display]))
         basic.append(rs)
 
         apo = ["Off"] + ['%.1f hour(s)' % (0.5 * x) for x in range(1, 25)]
@@ -733,14 +753,3 @@ class PolmarDB50MRadio(AnyTone5888UVRadio):
     VENDOR = "Polmar"
     MODEL = "DB-50M"
     _file_ident = ["DB-50M"]
-
-
-@directory.register
-class PowerwerxDB750XRadio(AnyTone5888UVRadio):
-    """Powerwerx DB-750X"""
-    VENDOR = "Powerwerx"
-    MODEL = "DB-750X"
-    _file_ident = ["DB-750X"]
-
-    def get_settings(self):
-        return {}
