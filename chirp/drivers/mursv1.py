@@ -177,8 +177,18 @@ class MURSV1(baofeng_common.BaofengCommonHT):
       u8 unused[11];
     } pttid[15];
 
-    #seekto 0x0CAA;
+    #seekto 0x0C80;
     struct {
+      u8 unknown222[5];
+      u8 unknown333[5];
+      u8 alarm[5];
+      u8 unknown1;
+      u8 unknown555[5];
+      u8 unknown666[5];
+      u8 unknown777[5];
+      u8 unknown2;
+      u8 unknown60606[5];
+      u8 unknown70707[5];
       u8 code[5];
       u8 unused1:6,
          aniid:2;
@@ -840,6 +850,23 @@ class MURSV1(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("ani.aniid", "When to send ANI ID",
                           RadioSettingValueList(LIST_PTTID,
                                                 LIST_PTTID[_mem.ani.aniid]))
+        dtmfe.append(rs)
+
+        def apply_alarmcode(setting, obj, length):
+            code = []
+            for j in range(0, length):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.alarm = code
+
+        _codeobj = self._memobj.ani.alarm
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.alarm", "Alarm Code", val)
+        rs.set_apply_callback(apply_alarmcode, self._memobj.ani, 5)
         dtmfe.append(rs)
 
         # Service settings
