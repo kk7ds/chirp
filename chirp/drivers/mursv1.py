@@ -630,7 +630,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
                               _mem.settings.pttid]))
         basic.append(rs)
 
-        if _mem.settings.pttlt > 0x1E:
+        if _mem.settings.pttlt > 0x32:
             val = 0x05
         else:
             val = _mem.settings.pttlt
