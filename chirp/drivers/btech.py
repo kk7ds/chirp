@@ -133,8 +133,7 @@ LIST_2TONE_DEC = ["A-B", "A-C", "A-D",
 LIST_2TONE_RESPONSE = ["None", "Alert", "Transpond", "Alert+Transpond"]
 
 # This is a general serial timeout for all serial read functions.
-# Practice has show that about 0.7 sec will be enough to cover all radios.
-STIMEOUT = 0.7
+STIMEOUT = 0.25
 
 # this var controls the verbosity in the debug and by default it's low (False)
 # make it True and you will to get a very verbose debug.log
@@ -166,9 +165,6 @@ UV2501G3_fp = "BTG324"
 
 # B-TECH UV-2501+220 pre-production units
 UV2501_220pp_fp = "M3C281"
-# extra block read for the 2501+220 pre-production units
-# the same for all of this radios so far
-UV2501_220pp_id = "      280528"
 # B-TECH UV-2501+220
 UV2501_220_fp = "M3G201"
 # new variant, let's call it Generation 2
@@ -221,10 +217,6 @@ KT8900_fp4 = "M2G304"
 KT8900_fp5 = "M2G314"
 KT8900_fp6 = "M2G424"
 KT8900_fp7 = "M27184"
-# this radio has an extra ID
-KT8900_id = "303688"
-# another extra ID in sep/2021
-KT8900_id2 = "\x05\x58\x3d\xf0\x10"
 
 # KT8900R
 KT8900R_fp = "M3G1F4"
@@ -238,10 +230,6 @@ KT8900R_fp3 = "M39164"
 KT8900R_fp4 = "M3G314"
 # AC3MB: another id
 KT8900R_fp5 = "M3B064"
-# this radio has an extra ID
-KT8900R_id = "280528"
-# another extra ID in dec/2018
-KT8900R_id2 = "\x05\x58\x3d\xf0\x10"
 
 # KT7900D (quad band)
 KT7900D_fp = "VC4004"
@@ -361,26 +349,11 @@ def _rawrecv(radio, amount):
     return data
 
 
-def _send(radio, data, upload=False):
+def _send(radio, data):
     """Send data to the radio device"""
 
     try:
-        for byte in data:
-            radio.pipe.write(byte)
-            # Some OS (mainly Linux ones) are too fast on the serial and
-            # get the MCU inside the radio stuck in the early stages, this
-            # hits some models more than others.
-            #
-            # To cope with that we introduce a delay on the writes.
-            # Many option have been tested (delaying only after error occures,
-            # after short reads, only for linux, ...)
-            # Finally, a static delay was chosen as simplest of all solutions
-            # (Michael Wagner, OE4AMW)
-            # (for details, see issue 3993)
-            #
-            # skip 'sleep()' when uploading added by Jim Unroe, KC9HI
-            if upload is False:
-                sleep(0.002)
+        radio.pipe.write(data)
 
         # DEBUG
         if debug is True:
@@ -428,66 +401,27 @@ def _recv(radio, addr):
     return block[5:]
 
 
-def _start_clone_mode(radio, status):
-    """Put the radio in clone mode and get the ident string, 3 tries"""
-
-    # cleaning the serial buffer
-    _clean_buffer(radio)
-
-    # prep the data to show in the UI
-    status.cur = 0
-    status.msg = "Identifying the radio..."
-    status.max = 3
-    radio.status_fn(status)
-
-    try:
-        for a in range(0, status.max):
-            # Update the UI
-            status.cur = a + 1
-            radio.status_fn(status)
-
-            # send the magic word
-            _send(radio, radio._magic)
-
-            # Now you get a x06 of ACK if all goes well
-            ack = radio.pipe.read(1)
-
-            if ack == "\x06":
-                # DEBUG
-                LOG.info("Magic ACK received")
-                status.cur = status.max
-                radio.status_fn(status)
-
-                return True
-
-        return False
-
-    except errors.RadioError:
-        raise
-    except Exception, e:
-        raise errors.RadioError("Error sending Magic to radio:\n%s" % e)
-
-
 def _do_ident(radio, status, upload=False):
     """Put the radio in PROGRAM mode & identify it"""
     #  set the serial discipline
     radio.pipe.baudrate = 9600
     radio.pipe.parity = "N"
 
-    # open the radio into program mode
-    if _start_clone_mode(radio, status) is False:
-        msg = "Radio did not enter clone mode"
-        # warning about old versions of QYT KT8900
-        if radio.MODEL == "KT8900":
-            msg += ". You may want to try it as a WACCOM MINI-8900, there is a"
-            msg += " known variant of this radios that is a clone of it."
-        raise errors.RadioError(msg)
+    # lengthen the timeout here as these radios are reseting due to timeout
+    radio.pipe.timeout = 0.75
 
-    # Ok, get the ident string
-    ident = _rawrecv(radio, 49)
+    # send the magic word
+    _send(radio, radio._magic)
 
-    # basic check for the ident
-    if len(ident) != 49:
+    # Now you get a 50 byte reply if all goes well
+    ident = _rawrecv(radio, 50)
+
+    # checking for the ack
+    if ident[0] != ACK_CMD:
+        raise errors.RadioError("Bad ack from radio")
+
+    # basic check for the ident block
+    if len(ident) != 50:
         raise errors.RadioError("Radio send a short ident block.")
 
     # check if ident is OK
@@ -506,62 +440,52 @@ def _do_ident(radio, status, upload=False):
         LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
         raise errors.RadioError("Radio identification failed.")
 
-    # some radios needs a extra read and check for a code on it, this ones
-    # has the check value in the _id2 var, others simply False
-    if radio._id2 is not False:
-        # lower the timeout here as this radios are reseting due to timeout
-        radio.pipe.timeout = 0.05
+    # pause here for the radio to catch up
+    sleep(0.1)
 
-        # query & receive the extra ID
-        _send(radio, _make_frame("S", 0x3DF0, 16))
-        id2 = _rawrecv(radio, 21)
+    # the OEM software reads this additional block, so we will, too
 
-        # WARNING !!!!!!
-        # different radios send a response with a different amount of data
-        # it seems that it's padded with \xff, \x20 and some times with \x00
-        # we just care about the first 16, our magic string is in there
-        if len(id2) < 16:
-            raise errors.RadioError("The extra ID is short, aborting.")
+    # Get the full 21 bytes at a time to reduce load
+    # 1 byte ACK + 4 bytes header + 16 bytes of data (BLOCK_SIZE)
+    frame = _make_frame("S", 0x3DF0, 16)
+    _send(radio, frame)
+    id2 = _rawrecv(radio, 21)
 
-        # ok, the correct string must be in the received data
-        # the radio._id2 var will be always a list
-        flag2 = False
-        for _id2 in radio._id2:
-            if _id2 in id2:
-                flag2 = True
+    # restore the default serial timeout
+    radio.pipe.timeout = STIMEOUT
 
-        if not flag2:
-            LOG.debug("Full *BAD* extra ID on the %s is: \n%s" %
-                      (radio.MODEL, util.hexprint(id2)))
-            raise errors.RadioError("The extra ID is wrong, aborting.")
+    # checking for the ack
+    if id2[0] not in "\x06\x05":
+        raise errors.RadioError("Bad ack from radio")
 
-        # this radios need a extra request/answer here on the upload
-        # the amount of data received depends of the radio type
+    # basic check for the additional block
+    if len(id2) < 21:
+        raise errors.RadioError("The extra ID is short, aborting.")
+
+    # this radios need a extra request/answer here on the upload
+    # the amount of data received depends of the radio type
+    #
+    # also the first block of TX must no have the ACK at the beginning
+    # see _upload for this.
+    if upload is True:
+        # send an ACK
+        _send(radio, ACK_CMD)
+
+        # the amount of data depend on the radio, so far we have two radios
+        # reading two bytes with an ACK at the end and just ONE with just
+        # one byte (QYT KT8900)
+        # the JT-6188 appears a clone of the last, but reads TWO bytes.
         #
-        # also the first block of TX must no have the ACK at the beginning
-        # see _upload for this.
-        if upload is True:
-            # send an ACK
-            _send(radio, ACK_CMD)
+        # we will read two bytes with a custom timeout to not penalize the
+        # users for this.
+        #
+        # we just check for a response and last byte being a ACK, that is
+        # the common stone for all radios (3 so far)
+        ack = _rawrecv(radio, 2)
 
-            # the amount of data depend on the radio, so far we have two radios
-            # reading two bytes with an ACK at the end and just ONE with just
-            # one byte (QYT KT8900)
-            # the JT-6188 appears a clone of the last, but reads TWO bytes.
-            #
-            # we will read two bytes with a custom timeout to not penalize the
-            # users for this.
-            #
-            # we just check for a response and last byte being a ACK, that is
-            # the common stone for all radios (3 so far)
-            ack = _rawrecv(radio, 2)
-
-            # checking
-            if len(ack) == 0 or ack[-1:] != ACK_CMD:
-                raise errors.RadioError("Radio didn't ACK the upload")
-
-            # restore the default serial timeout
-            radio.pipe.timeout = STIMEOUT
+        # checking
+        if len(ack) == 0 or ack[-1:] != ACK_CMD:
+            raise errors.RadioError("Radio didn't ACK the upload")
 
     # DEBUG
     LOG.info("Positive ident, this is a %s %s" % (radio.VENDOR, radio.MODEL))
@@ -578,23 +502,11 @@ def _download(radio):
     # put radio in program mode and identify it
     _do_ident(radio, status)
 
-    # the models that doesn't have the extra ID have to make a dummy read here
-    if radio._id2 is False:
-        _send(radio, _make_frame("S", 0, BLOCK_SIZE))
-        discard = _rawrecv(radio, BLOCK_SIZE + 5)
-
-        if debug is True:
-            LOG.info("Dummy first block read done, got this:\n\n %s",
-                     util.hexprint(discard))
-
     # reset the progress bar in the UI
     status.max = MEM_SIZE / BLOCK_SIZE
     status.msg = "Cloning from radio..."
     status.cur = 0
     radio.status_fn(status)
-
-    # cleaning the serial buffer
-    _clean_buffer(radio)
 
     data = ""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
@@ -637,13 +549,6 @@ def _upload(radio):
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
-    # the radios that doesn't have the extra ID 'may' do a dummy write, I found
-    # that leveraging the bad ACK and NOT doing the dummy write is ok, as the
-    # dummy write is accepted (it actually writes to the mem!) by the radio.
-
-    # cleaning the serial buffer
-    _clean_buffer(radio)
-
     # the fun start here
     for addr in range(0, MEM_SIZE, TX_BLOCK_SIZE):
         # getting the block of data to send
@@ -654,11 +559,11 @@ def _upload(radio):
 
         # first block must not send the ACK at the beginning for the
         # ones that has the extra id, since this have to do a extra step
-        if addr == 0 and radio._id2 is not False:
+        if addr == 0:
             frame = frame[1:]
 
         # send the frame
-        _send(radio, frame, True)
+        _send(radio, frame)
 
         # receiving the response
         ack = _rawrecv(radio, 1)
@@ -3513,7 +3418,6 @@ class UV2501_220(BTech):
     MODEL = "UV-2501+220"
     BANDS = 3
     _magic = MSTRING_220
-    _id2 = [UV2501_220pp_id, ]
     _fileid = [UV2501_220G3_fp,
                UV2501_220G2_fp,
                UV2501_220_fp,
@@ -3581,7 +3485,6 @@ class KT9800(BTech):
                KT8900_fp5,
                KT8900_fp6,
                KT8900_fp7]
-    _id2 = [KT8900_id, KT8900_id2]
     # Clones
     ALIASES = [JT6188Mini, SSGT890, ZastoneMP300]
 
@@ -3602,7 +3505,6 @@ class KT9800R(BTech):
                KT8900R_fp3,
                KT8900R_fp4,
                KT8900R_fp5]
-    _id2 = [KT8900R_id, KT8900R_id2]
 
 
 @directory.register
