@@ -279,6 +279,9 @@ DB25G_fp1 = "VC7062"
 # QYT KT-WP12 and KT-9900
 KTWP12_fp = "WP3094"
 
+# Anysecu WP-9900
+WP9900_fp = "WP3094"
+
 
 # ### MAGICS
 # for the Waccom Mini-8900
@@ -300,7 +303,7 @@ MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
 MSTRING_GMRS50X1 = "\x55\x20\x18\x10\x18\xFF\xDC\x02"
 # for the QYT KT-8R
 MSTRING_KT8R = "\x55\x20\x17\x07\x03\xFF\xDC\x02"
-# for the QYT KT-WP12 and KT-9900
+# for the QYT KT-WP12, KT-9900 and Anysecu WP-9900
 MSTRING_KTWP12 = "\x55\x20\x18\x11\x02\xFF\xDC\x02"
 
 
@@ -1104,7 +1107,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                         _mem.settings.save))
                 basic.append(save)
 
-        model_list = ["KT-8R", "KT-WP12"]
+        model_list = ["KT-8R", "KT-WP12", "WP-9900"]
         if self.MODEL not in model_list:
             if self.VENDOR == "BTECH" or self.COLOR_LCD:
                 apo = RadioSetting("settings.apo", "Auto power off timer",
@@ -1129,7 +1132,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                             RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(beep)
 
-        if self.MODEL == "KT-WP12":
+        if self.MODEL == "KT-WP12" or self.MODEL == "WP-9900":
             rs = RadioSettingValueInteger(1, 51, _mem.settings.volume + 1)
             volume = RadioSetting("settings.volume", "Volume", rs)
             basic.append(volume)
@@ -3149,6 +3152,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     elif setting == "volume" and self.MODEL == "KT-WP12":
+                        setattr(obj, setting, int(element.value) - 1)
+                    elif setting == "volume" and self.MODEL == "WP-9900":
                         setattr(obj, setting, int(element.value) - 1)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
@@ -5203,6 +5208,30 @@ class KTWP12(BTechColorWP):
     _upper = 199
     _magic = MSTRING_KTWP12
     _fileid = [KTWP12_fp, ]
+    _gmrs = False
+
+    def process_mmap(self):
+        """Process the mem map into the mem object"""
+
+        # Get it
+        self._memobj = bitwise.parse(COLOR9900_MEM_FORMAT, self._mmap)
+
+        # load specific parameters from the radio image
+        self.set_options()
+
+
+@directory.register
+class WP9900(BTechColorWP):
+    """Anysecu WP-9900"""
+    VENDOR = "Anysecu"
+    MODEL = "WP-9900"
+    BANDS = 2
+    UPLOAD_MEM_SIZE = 0X3100
+    _power_levels = [chirp_common.PowerLevel("High", watts=25),
+                     chirp_common.PowerLevel("Low", watts=5)]
+    _upper = 199
+    _magic = MSTRING_KTWP12
+    _fileid = [WP9900_fp, ]
     _gmrs = False
 
     def process_mmap(self):
