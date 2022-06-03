@@ -1617,7 +1617,9 @@ of file.
                                  os.linesep +
                                  "Russian: Dmitry Slukin" +
                                  os.linesep +
-                                 "Portuguese (BR): Crezivando PP7CJ")
+                                 "Portuguese (BR): Crezivando PP7CJ" +
+                                 os.linesep +
+                                 "Chinese (Simplified): DuckSoft BH2UEP")
         d.set_comments(verinfo)
 
         d.run()
