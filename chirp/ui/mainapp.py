@@ -1756,7 +1756,7 @@ of file.
     def do_change_language(self):
         langs = ["Auto", "English", "Polish", "Italian", "Dutch", "German",
                  "Hungarian", "Russian", "Portuguese (BR)", "French",
-                 "Spanish"]
+                 "Spanish", 'Chinese (Simplified)']
         d = inputdialog.ChoiceDialog(langs, parent=self,
                                      title="Choose Language")
         d.label.set_text(_("Choose a language or Auto to use the "
