@@ -59,7 +59,7 @@ LIST_ABCD = LIST_AB + ["C", "D"]
 LIST_ANIL = ["3", "4", "5"]
 LIST_APO = ["Off"] + ["%s minutes" % x for x in range(30, 330, 30)]
 LIST_COLOR4 = ["Off", "Blue", "Orange", "Purple"]
-LIST_COLOR8 = ["White", "Red", "Blue", "Green", "Yellow", "Indego",
+LIST_COLOR8 = ["White", "Red", "Blue", "Green", "Yellow", "Indigo",
                "Purple", "Gray"]
 LIST_COLOR9 = ["Black"] + LIST_COLOR8
 LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboad + ANI"]
