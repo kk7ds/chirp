@@ -270,7 +270,7 @@ def _t18_read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
-        if radio.MODEL != "RT22S":
+        if radio.ACK_BLOCK:
             serial.write(CMD_ACK)
             ack = serial.read(1)
     except:
@@ -1144,7 +1144,7 @@ class FRSB1Radio(T18Radio):
     """BTECH FRS-B1"""
     VENDOR = "BTECH"
     MODEL = "FRS-B1"
-    ACK_BLOCK = False
+    ACK_BLOCK = True
 
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
                     chirp_common.PowerLevel("High", watts=2.00)]
