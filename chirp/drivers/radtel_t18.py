@@ -770,7 +770,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
 
-        if self.MODEL == "RB19" or self.MODEL == "RB19P":
+        if self.MODEL == "RB19" or self.MODEL == "RB19P" \
+                or self.MODEL == "RB619":
             rs = RadioSetting("vox", "VOX",
                               RadioSettingValueBoolean(_settings.vox))
             basic.append(rs)
@@ -918,7 +919,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   1, 5, _settings2.voxgain))
             basic.append(rs)
 
-        if self.MODEL == "RB19" or self.MODEL == "RB19P":
+        if self.MODEL == "RB19" or self.MODEL == "RB19P" \
+                or self.MODEL == "RB619":
             rs = RadioSetting("sidekey2", "Left Navigation Button(Long)",
                               RadioSettingValueList(
                                   SIDEKEY19_LIST,
@@ -1206,3 +1208,21 @@ class RB19PRadio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _gmrs = True
+
+
+@directory.register
+class RB619Radio(T18Radio):
+    """Retevis RB619"""
+    VENDOR = "Retevis"
+    MODEL = "RB619"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.499),
+                    chirp_common.PowerLevel("High", watts=0.500)]
+
+    _magic = "9COGRAM"
+    _fingerprint = "SMP558" + "\x02"
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _pmr = True
