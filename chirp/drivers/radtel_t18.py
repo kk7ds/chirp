@@ -48,7 +48,7 @@ struct {
 struct {
     u8 unknown1:1,
        scanmode:1,
-       unknown2:1,
+       vox:1,            // Retevis RB19 VOX
        speccode:1,
        voiceprompt:2,
        batterysaver:1,
@@ -56,6 +56,7 @@ struct {
     u8 squelchlevel;
     u8 sidekey2;         // Retevis RT22S setting
                          // Retevis RB85 sidekey 1 short
+                         // Retevis RB19 sidekey 2 long
     u8 timeouttimer;
     u8 voxlevel;
     u8 sidekey2S;
@@ -143,7 +144,8 @@ SCANMODE_LIST = ["Carrier", "Time"]
 VOXLEVEL_LIST = ["Off", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 VOXDELAY_LIST = ["0.5 seconds", "1.0 seconds", "1.5 seconds",
                  "2.0 seconds", "2.5 seconds", "3.0 seconds"]
-SIDEKEY2_LIST = ["Off", "Scan", "Emergency Alarm", "Display Battery"]
+SIDEKEY19_LIST = ["Off", "Scan", "Emergency Alarm"]
+SIDEKEY2_LIST = SIDEKEY19_LIST + ["Display Battery"]
 
 SIDEKEY85SHORT_LIST = ["Off",
                        "Noise Cansellation On",
@@ -180,6 +182,7 @@ SETTING_LISTS = {
     "voxlevel": VOXLEVEL_LIST,
     "voxdelay": VOXDELAY_LIST,
     "sidekey2": SIDEKEY2_LIST,
+    "sidekey2": SIDEKEY19_LIST,
     "sidekey2": SIDEKEY85SHORT_LIST,
     "sidekey1L": SIDEKEY85LONG_LIST,
     "sidekey2S": SIDEKEY85SHORT_LIST,
@@ -270,7 +273,7 @@ def _t18_read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
-        if radio.MODEL != "RT22S":
+        if radio.ACK_BLOCK:
             serial.write(CMD_ACK)
             ack = serial.read(1)
     except:
@@ -767,6 +770,12 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
 
+        if self.MODEL == "RB19" or self.MODEL == "RB19P" \
+                or self.MODEL == "RB619":
+            rs = RadioSetting("vox", "VOX",
+                              RadioSettingValueBoolean(_settings.vox))
+            basic.append(rs)
+
         if self.MODEL != "RB18" and self.MODEL != "RB618" \
                 and self.MODEL != "FRS-B1":
             rs = RadioSetting("voxlevel", "Vox level",
@@ -908,6 +917,14 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("settings2.voxgain", "Vox Gain",
                               RadioSettingValueInteger(
                                   1, 5, _settings2.voxgain))
+            basic.append(rs)
+
+        if self.MODEL == "RB19" or self.MODEL == "RB19P" \
+                or self.MODEL == "RB619":
+            rs = RadioSetting("sidekey2", "Left Navigation Button(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY19_LIST,
+                                  SIDEKEY19_LIST[_settings.sidekey2]))
             basic.append(rs)
 
         return top
@@ -1144,7 +1161,7 @@ class FRSB1Radio(T18Radio):
     """BTECH FRS-B1"""
     VENDOR = "BTECH"
     MODEL = "FRS-B1"
-    ACK_BLOCK = False
+    ACK_BLOCK = True
 
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
                     chirp_common.PowerLevel("High", watts=2.00)]
@@ -1155,3 +1172,57 @@ class FRSB1Radio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _frs = True
+
+
+@directory.register
+class RB19Radio(T18Radio):
+    """Retevis RB19"""
+    VENDOR = "Retevis"
+    MODEL = "RB19"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("High", watts=2.00)]
+
+    _magic = "9COGRAM"
+    _fingerprint = "SMP558" + "\x02"
+    _upper = 22
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs = True
+
+
+@directory.register
+class RB19PRadio(T18Radio):
+    """Retevis RB19P"""
+    VENDOR = "Retevis"
+    MODEL = "RB19P"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("High", watts=3.00)]
+
+    _magic = "70OGRAM"
+    _fingerprint = "SMP558" + "\x02"
+    _upper = 30
+    _mem_params = (_upper  # number of channels
+                   )
+    _gmrs = True
+
+
+@directory.register
+class RB619Radio(T18Radio):
+    """Retevis RB619"""
+    VENDOR = "Retevis"
+    MODEL = "RB619"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.499),
+                    chirp_common.PowerLevel("High", watts=0.500)]
+
+    _magic = "9COGRAM"
+    _fingerprint = "SMP558" + "\x02"
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _pmr = True
