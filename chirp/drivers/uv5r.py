@@ -313,7 +313,8 @@ STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 STEP291_LIST = [str(x) for x in STEPS]
 TDRAB_LIST = ["Off"] + AB_LIST
 TDRCH_LIST = ["CH%s" % x for x in range(1, 129)]
-TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)]
+TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)] + \
+    ["Off (if supported by radio)"]
 TXPOWER_LIST = ["High", "Low"]
 TXPOWER3_LIST = ["High", "Mid", "Low"]
 VOICE_LIST = ["Off", "English", "Chinese"]
