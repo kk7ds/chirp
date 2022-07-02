@@ -94,7 +94,10 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
     _ack_block = True
 
     _ranges = [(0x0000, 0x0DF0),
-               (0x0E00, 0x1EF0)]
+               (0x0E00, 0x1EF0),
+               (0x1F60, 0x1F70),
+               (0x1F80, 0x1F90),
+               (0x1FC0, 0x1FD0)]
 
     _send_block_size = 0x10
 
