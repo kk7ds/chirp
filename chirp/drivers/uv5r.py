@@ -2021,6 +2021,8 @@ class BaofengUV82HPRadio(BaofengUV5R):
     _idents = [UV5R_MODEL_UV82]
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 521000000)
+    _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
+        "!@#$%^&*()+-=[]:\";'<>?,./"
     _tri_power = True
 
     def get_features(self):
