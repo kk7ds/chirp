@@ -877,7 +877,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             self._write_record(CMD_HANGUP)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError(
                 "Failed to communicate with radio: %s" % e)
@@ -894,7 +894,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             self._write_record(CMD_HANGUP)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError(
                 "Failed to communicate with radio: %s" % e)
         return
@@ -1887,7 +1887,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug("set_settings: Exception with %s" %
                               element.get_name())
                     raise
