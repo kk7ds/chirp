@@ -528,7 +528,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     _GM_RING = ("OFF", "IN RING", "AlWAYS")
     _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
 
-    _MYCALL_CHR_SET = list(string.uppercase) + list(string.digits) + ['-','/' ]
+    _MYCALL_CHR_SET = list(string.ascii_uppercase) + list(string.digits) + ['-','/' ]
 
     @classmethod
     def get_prompts(cls):

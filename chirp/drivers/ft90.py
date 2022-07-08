@@ -52,7 +52,7 @@ FT90_POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
                          chirp_common.PowerLevel("Low", watts=5)]
 
 FT90_DUPLEX = ["", "-", "+", "split"]
-FT90_CWID_CHARS = list(string.digits) + list(string.uppercase) + list(" ")
+FT90_CWID_CHARS = list(string.digits) + list(string.ascii_uppercase) + list(" ")
 FT90_DTMF_CHARS = list("0123456789ABCD*#")
 FT90_SPECIAL = ["vfo_vhf", "home_vhf", "vfo_uhf", "home_uhf",
                 "pms_1L", "pms_1U", "pms_2L", "pms_2U"]
