@@ -302,7 +302,7 @@ def _ident_radio(radio):
             data = _do_ident(radio, magic)
             return data
         except errors.RadioError as e:
-            print e
+            print (e)
             error = e
             time.sleep(2)
     if error:
@@ -426,7 +426,7 @@ def model_match(cls, data):
 
     if len(data) == 0x2008:
         rid = data[0x2000:0x2008]
-        print rid
+        print (rid)
         return rid.startswith(cls.MODEL)
     else:
         return False
