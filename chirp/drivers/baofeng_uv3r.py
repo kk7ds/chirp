@@ -19,7 +19,7 @@ import time
 import os
 import logging
 
-from wouxun_common import do_download, do_upload
+from chirp.drivers.wouxun_common import do_download, do_upload
 from chirp import util, chirp_common, bitwise, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \

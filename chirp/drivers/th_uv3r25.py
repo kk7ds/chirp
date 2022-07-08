@@ -22,7 +22,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString
 
-from th_uv3r import TYTUV3RRadio, tyt_uv3r_prep, THUV3R_CHARSET
+from chirp.drivers.th_uv3r import TYTUV3RRadio, tyt_uv3r_prep, THUV3R_CHARSET
 
 
 def tyt_uv3r_download(radio):

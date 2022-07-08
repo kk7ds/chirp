@@ -18,7 +18,7 @@ import os
 import logging
 
 from chirp import util, memmap, chirp_common, bitwise, directory, errors
-from yaesu_clone import YaesuCloneModeRadio
+from chirp.drivers.yaesu_clone import YaesuCloneModeRadio
 
 LOG = logging.getLogger(__name__)
 
