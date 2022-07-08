@@ -287,7 +287,7 @@ class RFinderRadio(chirp_common.NetworkSourceRadio):
 
         self._rfp = None
 
-    def set_params(self, (lat, lon), miles, email, password):
+    def set_params(self, lat, lon, miles, email, password):
         """Sets the parameters to use for the query"""
         self._lat = lat
         self._lon = lon
