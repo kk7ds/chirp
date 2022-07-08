@@ -790,11 +790,11 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                         obj = getattr(_mem, sett)
                         setattr(obj, name, element.value)
 
-                    except AttributeError, e:
+                    except AttributeError as e:
                         m = "Setting %s is not in this setting block" % name
                         LOG.debug(m)
 
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

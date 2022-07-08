@@ -332,7 +332,7 @@ struct  {
             self._mmap = self._clone_in()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             trace = traceback.format_exc()
             raise errors.RadioError(
                     "Failed to communicate with radio: %s" % trace)
@@ -343,7 +343,7 @@ struct  {
             self._clone_out()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             trace = traceback.format_exc()
             raise errors.RadioError(
                     "Failed to communicate with radio: %s" % trace)
@@ -670,6 +670,6 @@ struct  {
                     newval = self._dtmf2bbcd(newval)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise

@@ -352,7 +352,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -366,7 +366,7 @@ def _checksum(data):
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error( "Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -793,7 +793,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
                     else:
                         LOG.debug( "Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug( element.get_name())
                     raise
 

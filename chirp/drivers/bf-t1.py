@@ -225,7 +225,7 @@ def _start_clone_mode(radio, status):
 
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Error sending Magic to radio:\n%s" % e)
 
 
@@ -561,7 +561,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Error: %s" % e)
 
     def _decode_tone(self, val, inv):
@@ -894,7 +894,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

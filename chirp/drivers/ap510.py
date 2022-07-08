@@ -380,7 +380,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
             data = download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
         # _mmap isn't a Chirp MemoryMap, but since AP510Memory implements
@@ -398,7 +398,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
             upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def load_mmap(self, filename):
