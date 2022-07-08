@@ -270,7 +270,7 @@ class FT8100RadioUHF(FT8100Radio):
 def _clone_out(radio):
     try:
         return __clone_out(radio)
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 

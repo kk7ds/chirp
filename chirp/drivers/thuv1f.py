@@ -214,7 +214,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             self._mmap = uvf1_download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -223,7 +223,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             uvf1_upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     @classmethod
