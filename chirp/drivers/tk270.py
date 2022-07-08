@@ -25,6 +25,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettings
+
 from textwrap import dedent
 
 MEM_FORMAT = """
@@ -96,7 +97,7 @@ struct {
 
 MEM_SIZE = 0x400
 BLOCK_SIZE = 8
-MEM_BLOCKS = range(0, (MEM_SIZE / BLOCK_SIZE))
+MEM_BLOCKS = range(0, int(MEM_SIZE / BLOCK_SIZE))
 ACK_CMD = "\x06"
 TIMEOUT = 0.05  # from 0.03 up it' s safe, we set in 0.05 for a margin
 

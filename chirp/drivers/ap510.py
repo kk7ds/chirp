@@ -242,7 +242,7 @@ class AP510Memory(object):
 
 class AP510Memory20141215(AP510Memory):
     """Compatible with firmware version 20141215"""
-    ATTR_MAP = dict(AP510Memory.ATTR_MAP.items() + {
+    ATTR_MAP = dict(AP510Memory.ATTR_MAP.items() | {
         'tx_volume': '21',  # 1-6
         'rx_volume': '22',  # 1-9
         'tx_power': '23',  # 1: 1 watt,  0: 0.5 watt
