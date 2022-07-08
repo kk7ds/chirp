@@ -217,7 +217,7 @@ class TS2000Radio(KenwoodLiveRadio):
             duplex = 0
             offset = 0
         else:
-            print "Bug: unsupported duplex `%s'" % mem.duplex
+            print ("Bug: unsupported duplex `%s'" % mem.duplex)
         if mem.mode in ["AM", "FM"]:
             step = TS2000_FM_STEPS.index(mem.tuning_step)
         else:
@@ -259,7 +259,7 @@ class TS2000Radio(KenwoodLiveRadio):
         elif mem.duplex == "split":
             duplex = 0
         else:
-            print "Bug: unsupported duplex `%s'" % mem.duplex
+            print ("Bug: unsupported duplex `%s'" % mem.duplex)
         if mem.mode in ["AM", "FM"]:
             step = TS2000_FM_STEPS.index(mem.tuning_step)
         else:

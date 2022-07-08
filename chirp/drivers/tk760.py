@@ -97,7 +97,7 @@ KEYS = {
 
 MEM_SIZE = 0x400
 BLOCK_SIZE = 8
-MEM_BLOCKS = range(0, (MEM_SIZE / BLOCK_SIZE))
+MEM_BLOCKS = range(0, int(MEM_SIZE / BLOCK_SIZE))
 ACK_CMD = "\x06"
 # from 0.03 up it' s safe
 # I have to turn it up, some users reported problems with this, was 0.05

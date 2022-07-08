@@ -568,7 +568,7 @@ class FT7100Radio(YaesuCloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Downloaded in %.2f sec", (time.time() - start))
         self.process_mmap()
@@ -580,7 +580,7 @@ class FT7100Radio(YaesuCloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Uploaded in %.2f sec", (time.time() - start))
 
@@ -1091,7 +1091,7 @@ class FT7100Radio(YaesuCloneModeRadio):
                     setattr(_overlay, name, value)
 
                 LOG.debug("Setting %s: %s", name, value)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

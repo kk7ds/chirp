@@ -301,8 +301,8 @@ def _ident_radio(radio):
         try:
             data = _do_ident(radio, magic)
             return data
-        except errors.RadioError, e:
-            print e
+        except errors.RadioError as e:
+            print (e)
             error = e
             time.sleep(2)
     if error:
@@ -426,7 +426,7 @@ def model_match(cls, data):
 
     if len(data) == 0x2008:
         rid = data[0x2000:0x2008]
-        print rid
+        print (rid)
         return rid.startswith(cls.MODEL)
     else:
         return False
@@ -1117,7 +1117,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1131,7 +1131,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                     value = int(val.get_value() * 10)
                 LOG.debug("Setting fm_presets = %s" % (value))
                 self._memobj.fm_presets = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

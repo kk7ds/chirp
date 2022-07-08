@@ -240,7 +240,7 @@ class RFinderParser:
                 dist = distance(self.__lat, self.__lon, lat, lon)
                 bear = fuzzy_to(self.__lat, self.__lon, lat, lon)
                 mem.comment = "(%imi %s) %s" % (dist, bear, mem.comment)
-            except Exception, e:
+            except Exception as e:
                 LOG.error("Failed to calculate distance: %s" % e)
 
         return mem
@@ -258,7 +258,7 @@ class RFinderParser:
                 mem.number = number
                 number += 1
                 self.__memories.append(mem)
-            except Exception, e:
+            except Exception as e:
                 import traceback
                 LOG.error(traceback.format_exc())
                 LOG.error("Error in received data, cannot continue")
@@ -287,7 +287,7 @@ class RFinderRadio(chirp_common.NetworkSourceRadio):
 
         self._rfp = None
 
-    def set_params(self, (lat, lon), miles, email, password):
+    def set_params(self, lat, lon, miles, email, password):
         """Sets the parameters to use for the query"""
         self._lat = lat
         self._lon = lon

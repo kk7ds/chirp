@@ -37,7 +37,7 @@ TS850_MODES = {
     "CW-R":  "7",
     "FSK-R": "9",
 }
-TS850_MODES_REV = {val: mode for mode, val in TS850_MODES.iteritems()}
+TS850_MODES_REV = {val: mode for mode, val in TS850_MODES.items()}
 
 TS850_TONES = list(chirp_common.OLD_TONES)
 TS850_TONES.remove(69.3)

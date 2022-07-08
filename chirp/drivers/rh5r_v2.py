@@ -167,7 +167,7 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
                 filedata[0x840:0x848] == cls._FILEID)
 
     def process_mmap(self):
-        print MEM_FORMAT
+        print (MEM_FORMAT)
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):

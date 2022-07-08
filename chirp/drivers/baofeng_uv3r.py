@@ -19,7 +19,7 @@ import time
 import os
 import logging
 
-from wouxun_common import do_download, do_upload
+from chirp.drivers.wouxun_common import do_download, do_upload
 from chirp import util, chirp_common, bitwise, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
@@ -51,7 +51,7 @@ def uv3r_prep(radio):
     for _i in range(0, 10):
         try:
             return _uv3r_prep(radio)
-        except errors.RadioError, e:
+        except errors.RadioError as e:
             time.sleep(1)
 
     raise e
@@ -64,7 +64,7 @@ def uv3r_download(radio):
         return do_download(radio, 0x0000, 0x0E40, 0x0010)
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 
@@ -75,7 +75,7 @@ def uv3r_upload(radio):
         return do_upload(radio, 0x0000, 0x0E40, 0x0010)
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 
@@ -623,7 +623,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -639,7 +639,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                 LOG.debug("Setting fm_presets[%1i] = %s" % (index, value))
                 setting = self._memobj.fm_presets
                 setting[index] = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

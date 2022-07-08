@@ -177,7 +177,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate " +
                                     "with the radio: %s" % e)
         self.process_mmap()
@@ -192,7 +192,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate " +
                                     "with the radio: %s" % e)
 
