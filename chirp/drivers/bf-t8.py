@@ -1,4 +1,4 @@
-# Copyright 2021 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2022 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ struct {
   u8 voice;             // Voice
   u8 abr;               // Back Light
   u8 ring;              // Ring
-  u8 unknown;           //
+  u8 mdf;               // Display Type
   u8 mra;               // MR Channel A
   u8 mrb;               // MR Channel B
   u8 disp_ab;           // Display A/B Selected
@@ -147,6 +147,9 @@ PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
 PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
               446.16875, 446.18125, 446.19375]
 PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
+
+VOICE_CHOICES = ["Off", "On"]
+VOICE_VALUES = [0x00, 0x02]
 
 
 def _enter_programming_mode(radio):
@@ -309,6 +312,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
     CH_OFFSET = False
     SKIP_VALUES = []
     DTCS_CODES = sorted(chirp_common.DTCS_CODES)
+    DUPLEXES = ["", "-", "+", "split", "off"]
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
@@ -345,7 +349,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_power_levels = self.POWER_LEVELS
-        rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        rf.valid_duplexes = self.DUPLEXES
         rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 KHz.
         rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
@@ -742,10 +746,30 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("vox", "VOX Level", rs)
         basic.append(rset)
 
-        # Menu 15 (BF-T8) / 12 (RB-27/RB627)
-        rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
-        rset = RadioSetting("voice", "Voice", rs)
-        basic.append(rset)
+        # Menu 15 (BF-T8) / Menu 14 (FRS-A1)
+        if self.MODEL == "FRS-A1":
+            # Menu 14 (FRS-A1)
+            def apply_voice_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(setting.value) +
+                          " from list")
+                val = str(setting.value)
+                index = VOICE_CHOICES.index(val)
+                val = VOICE_VALUES[index]
+                obj.set_value(val)
+
+            if _settings.voice in VOICE_VALUES:
+                idx = VOICE_VALUES.index(_settings.voice)
+            else:
+                idx = VOICE_VALUES.index(0x00)
+            rs = RadioSettingValueList(VOICE_CHOICES, VOICE_CHOICES[idx])
+            rset = RadioSetting("voice", "Voice", rs)
+            rset.set_apply_callback(apply_voice_listvalue, _settings.voice)
+            basic.append(rset)
+        else:
+            # Menu 15 (BF-T8)
+            rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
+            rset = RadioSetting("voice", "Voice", rs)
+            basic.append(rset)
 
         # Menu 12
         rs = RadioSettingValueBoolean(_settings.bcl)
@@ -781,7 +805,11 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("ste", "Squelch Tail Eliminate", rs)
         basic.append(rset)
 
-        #
+        # Menu 15 (FRS-A1)
+        if self.MODEL == "FRS-A1":
+            rs = RadioSettingValueList(MDF_LIST, MDF_LIST[_settings.mdf])
+            rset = RadioSetting("mdf", "Display Type", rs)
+            basic.append(rset)
 
         if self.CH_OFFSET:
             rs = RadioSettingValueInteger(1, self._upper, _settings.mra + 1)
@@ -802,6 +830,8 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         if not self.MODEL.startswith("RB627"):
+            if self.MODEL == "FRS-A1":
+                del WX_LIST[7:]
             rs = RadioSettingValueList(WX_LIST, WX_LIST[_settings.wx])
             rset = RadioSetting("wx", "NOAA WX Radio", rs)
             basic.append(rset)
@@ -816,6 +846,8 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         val = _settings.fmcur
         val = val / 10.0
         val_low = 76.0
+        if self.MODEL == "FRS-A1":
+            val_low = 87.0
         if val < val_low or val > 108.0:
             val = 90.4
         rx = RadioSettingValueFloat(val_low, 108.0, val, 0.1, 1)
@@ -961,3 +993,32 @@ class RetevisRB627B(RetevisRB27B):
     _upper = 16
     _pmr = True
     _frs = _gmrs = _murs = False
+
+
+@directory.register
+class FRSA1Radio(BFT8Radio):
+    """BTECH FRS-A1"""
+    VENDOR = "BTECH"
+    MODEL = "FRS-A1"
+    ODD_SPLIT = False
+    HAS_NAMES = True
+    NAME_LENGTH = 6
+    SKIP_VALUES = ["", "S"]
+    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DUPLEXES = ["", "-", "+", "off"]
+
+    _fingerprint = "BF-T8A" + "\x2E"
+    _upper = 22
+    _frs = _upper == 22
+
+    _ranges = [
+               (0x0000, 0x0640),
+               (0x0D00, 0x0DC0),
+              ]
+    _memsize = 0x0DC0
+
+    def get_features(self):
+        rf = BFT8Radio.get_features(self)
+        rf.valid_name_length = 6
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
+        return rf
