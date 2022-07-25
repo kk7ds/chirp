@@ -52,10 +52,11 @@ struct {
      highpower:1,       // Power Level
      wide:1,            // Bandwidth
      unknown4:4;
-  u8 scramble_type:4,   // Scramble Type          E
+  u8 unknown7:1,        //                        E
+     scramble_type:3,   // Scramble Type
      unknown5:4;
-  u8 unknown6:4,
-     scramble_type2:4;  // Scramble Type 2        F
+  u8 unknown6:5,
+     scramble_type2:3;  // Scramble Type 2        F
 } memory[16];
 
 #seekto 0x011D;
@@ -248,7 +249,6 @@ GAIN_LIST = ["Standard", "Enhanced"]
 PFKEY_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
               "Key Lock", "Scan"]
 SAVE_LIST = ["Standard", "Super"]
-SCRAMBLE_LIST = ["%s" % x for x in range(1, 9)]
 TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 615, 15)]
 TOTALERT_LIST = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
 VOICE_LIST = ["Off", "Chinese", "English"]
@@ -270,7 +270,6 @@ SETTING_LISTS = {
     "gain": GAIN_LIST,
     "pfkey": PFKEY_LIST,
     "save": SAVE_LIST,
-    "scramble": SCRAMBLE_LIST,
     "tot": TIMEOUTTIMER_LIST,
     "totalert": TOTALERT_LIST,
     "voice": VOICE_LIST,
@@ -706,8 +705,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
             mem.extra.append(rset)
 
-            rs = RadioSettingValueList(SCRAMBLE_LIST,
-                                       SCRAMBLE_LIST[_mem.scramble_type - 8])
+            rs = RadioSettingValueInteger(1, 8, _mem.scramble_type + 1)
             rset = RadioSetting("scramble_type", "Scramble Type", rs)
             mem.extra.append(rset)
 
@@ -853,8 +851,9 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         for setting in mem.extra:
             if setting.get_name() == "scramble_type":
-                setattr(_mem, setting.get_name(), int(setting.value) + 8)
-                setattr(_mem, "scramble_type2", int(setting.value) + 8)
+                setattr(_mem, setting.get_name(), int(setting.value) - 1)
+                if self.MODEL == "RT21":
+                    setattr(_mem, "scramble_type2", int(setting.value) - 1)
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
