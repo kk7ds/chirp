@@ -201,6 +201,9 @@ UV50X2_fp = "UC2M12"
 GMRS50X1_fp = "NC1802"
 GMRS50X1_fp1 = "NC1932"
 
+# B-TECH GMRS-20V2
+GMRS20V2_fp = "WP4204"
+
 # special var to know when we found a BTECH Gen 3
 BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
 
@@ -302,6 +305,8 @@ MSTRING_UV25X2 = "\x55\x20\x16\x12\x28\xFF\xDC\x02"
 MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
 # for the BTECH GMRS-50X1
 MSTRING_GMRS50X1 = "\x55\x20\x18\x10\x18\xFF\xDC\x02"
+# for the BTECH GMRS-20V2
+MSTRING_GMRS20V2 = "\x55\x20\x21\x03\x27\xFF\xDC\x02"
 # for the QYT KT-8R
 MSTRING_KT8R = "\x55\x20\x17\x07\x03\xFF\xDC\x02"
 # for the QYT KT-WP12, KT-9900 and Anysecu WP-9900
@@ -1133,6 +1138,11 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                             RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(beep)
 
+        if self.MODEL == "GMRS-20V2":
+            rs = RadioSettingValueInteger(0, 58, _mem.settings.volume)
+            volume = RadioSetting("settings.volume", "Volume", rs)
+            basic.append(volume)
+
         if self.MODEL == "KT-WP12" or self.MODEL == "WP-9900":
             rs = RadioSettingValueInteger(1, 51, _mem.settings.volume + 1)
             volume = RadioSetting("settings.volume", "Volume", rs)
@@ -1178,7 +1188,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                                       _mem.settings.pttlt))
         basic.append(pttlt)
 
-        if self.VENDOR == "BTECH" and self.COLOR_LCD:
+        if self.VENDOR == "BTECH" and self.COLOR_LCD and not \
+                self.MODEL == "GMRS-20V2":
             emctp = RadioSetting("settings.emctp", "Alarm mode",
                                  RadioSettingValueList(
                                      LIST_EMCTPX,
@@ -1265,11 +1276,19 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         if self.VENDOR == "BTECH":
             if self.COLOR_LCD:
-                val = RadioSettingValueList(LIST_SYNC,
-                                            LIST_SYNC[_mem.settings.sync])
-                sync = RadioSetting("settings.sync",
-                                    "Channel display sync", val)
-                basic.append(sync)
+                if self.MODEL == "GMRS-20V2":
+                    val = RadioSettingValueList(LIST_SYNCV2,
+                                                LIST_SYNCV2[
+                                                    _mem.settings.sync])
+                    sync = RadioSetting("settings.sync",
+                                        "Channel display sync", val)
+                    basic.append(sync)
+                else:
+                    val = RadioSettingValueList(LIST_SYNC,
+                                                LIST_SYNC[_mem.settings.sync])
+                    sync = RadioSetting("settings.sync",
+                                        "Channel display sync", val)
+                    basic.append(sync)
             else:
                 sync = RadioSetting("settings.sync", "A/B channel sync",
                                     RadioSettingValueBoolean(
@@ -1584,6 +1603,13 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                 RadioSettingValueBoolean(
                                     _mem.settings.dsub))
             basic.append(dsub)
+
+        if self.MODEL == "GMRS-20V2":
+            repsw = RadioSetting("settings.repsw", "Repeater SW",
+                                 RadioSettingValueList(
+                                     LIST_REPSW,
+                                     LIST_REPSW[_mem.settings.repsw]))
+            basic.append(repsw)
 
         model_list = ["GMRS-50X1", "KT-8R", "KT-WP12", "WP-9900"]
         if self.MODEL not in model_list:
@@ -5168,6 +5194,315 @@ struct {
 """
 
 
+COLOR20V2_MEM_FORMAT = """
+#seekto 0x0000;
+struct {
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unknown0:4,
+     scode:4;
+  u8 unknown1:2,
+     spmute:2,
+     unknown2:2,
+     optsig:2;
+  u8 unknown3:3,
+     scramble:1,
+     unknown4:2,
+     power:2;
+  u8 unknown5:1,
+     wide:1,
+     unknown6:2,
+     bcl:1,
+     add:1,
+     pttid:2;
+} memory[200];
+
+#seekto 0x0E00;
+struct {
+  u8 tmr;
+  u8 unknown1;
+  u8 sql;
+  u8 unknown2;
+  u8 autolock;
+  u8 tot;
+  u8 apo;
+  u8 unknown3;
+  u8 abr;
+  u8 beep;
+  u8 unknown4[4];
+  u8 dtmfst;
+  u8 unknown5[2];
+  u8 screv;
+  u8 unknown6[2];
+  u8 pttid;
+  u8 pttlt;
+  u8 unknown7;
+  u8 emctp;
+  u8 emcch;
+  u8 sigbp;
+  u8 unknown8;
+  u8 camdf;
+  u8 cbmdf;
+  u8 ccmdf;
+  u8 vox;
+  u8 voxt;
+  u8 sync;
+  u8 asfc;
+  u8 mainfc;
+  u8 a_fc;
+  u8 b_fc;
+  u8 c_fc;
+  u8 subfc;
+  u8 battfc;
+  u8 sigfc;
+  u8 menufc;
+  u8 txfc;
+  u8 rxfc;
+  u8 repsw;
+  u8 dsub;
+  u8 unknown9[5];
+  u8 anil;
+  u8 reps;
+  u8 repm;
+  u8 tmrmr;
+  u8 ste;
+  u8 rpste;
+  u8 rptdl;
+  u8 dtmfg;
+  u8 mgain;
+  u8 skiptx;
+  u8 scmode;
+  u8 tmrtx;
+  u8 volume;
+  u8 unknown_10;
+  u8 save;
+} settings;
+
+#seekto 0x0E80;
+struct {
+  u8 unknown1;
+  u8 vfomr;
+  u8 keylock;
+  u8 unknown2;
+  u8 unknown3:4,
+     vfomren:1,
+     unknown4:1,
+     reseten:1,
+     menuen:1;
+  u8 unknown5[11];
+  u8 dispab;
+  u8 unknown6[2];
+  u8 menu;
+  u8 unknown7[7];
+  u8 vfomra;
+  u8 vfomrb;
+  u8 vfomrc;
+  u8 vfomrd;
+  u8 mrcha;
+  u8 mrchb;
+  u8 mrchc;
+  u8 mrchd;
+} settings2;
+
+struct settings_vfo {
+  u8 freq[8];
+  u8 offset[6];
+  u8 unknown2[2];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 scode;
+  u8 spmute;
+  u8 optsig;
+  u8 scramble;
+  u8 wide;
+  u8 power;
+  u8 shiftd;
+  u8 step;
+  u8 unknown3[4];
+};
+
+#seekto 0x0F00;
+struct {
+  struct settings_vfo a;
+  struct settings_vfo b;
+  struct settings_vfo c;
+  struct settings_vfo d;
+} vfo;
+
+#seekto 0x0F80;
+struct {
+  char line1[8];
+  char line2[8];
+  char line3[8];
+  char line4[8];
+  char line5[8];
+  char line6[8];
+  char line7[8];
+  char line8[8];
+} poweron_msg;
+
+#seekto 0x0FE0;
+struct {
+  char line[16];
+} static_msg;
+
+#seekto 0x1000;
+struct {
+  char name[7];
+  u8 unknown1[9];
+} names[200];
+
+#seekto 0x2400;
+struct {
+  u8 period; // one out of LIST_5TONE_STANDARD_PERIODS
+  u8 group_tone;
+  u8 repeat_tone;
+  u8 unused[13];
+} _5tone_std_settings[15];
+
+#seekto 0x2500;
+struct {
+  u8 frame1[5];
+  u8 frame2[5];
+  u8 frame3[5];
+  u8 standard;   // one out of LIST_5TONE_STANDARDS
+} _5tone_codes[15];
+
+#seekto 0x25F0;
+struct {
+  u8 _5tone_delay1; // * 10ms
+  u8 _5tone_delay2; // * 10ms
+  u8 _5tone_delay3; // * 10ms
+  u8 _5tone_first_digit_ext_length;
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  u8 unknown4;
+  u8 decode_standard;
+  u8 unknown5:5,
+     _5tone_decode_call_frame3:1,
+     _5tone_decode_call_frame2:1,
+     _5tone_decode_call_frame1:1;
+  u8 unknown6:5,
+     _5tone_decode_disp_frame3:1,
+     _5tone_decode_disp_frame2:1,
+     _5tone_decode_disp_frame1:1;
+  u8 decode_reset_time; // * 100 + 100ms
+} _5tone_settings;
+
+#seekto 0x2900;
+struct {
+  u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
+} dtmf_codes[15];
+
+#seekto 0x29F0;
+struct {
+  u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10      // 9f0
+  u8 dtmfspeed_off; //list with 50..2000ms in steps of 10      // 9f1
+  u8 unknown0[14];                                             // 9f2-9ff
+  u8 inspection[16];                                           // a00-a0f
+  u8 monitor[16];                                              // a10-a1f
+  u8 alarmcode[16];                                            // a20-a2f
+  u8 stun[16];                                                 // a30-a3f
+  u8 kill[16];                                                 // a40-a4f
+  u8 revive[16];                                               // a50-a5f
+  u8 unknown1[16];                                             // a60-a6f
+  u8 unknown2[16];                                             // a70-a7f
+  u8 unknown3[16];                                             // a80-a8f
+  u8 unknown4[16];                                             // a90-a9f
+  u8 unknown5[16];                                             // aa0-aaf
+  u8 unknown6[16];                                             // ab0-abf
+  u8 unknown7[16];                                             // ac0-acf
+  u8 masterid[16];                                             // ad0-adf
+  u8 viceid[16];                                               // ae0-aef
+  u8 unused01:7,                                               // af0
+     mastervice:1;
+  u8 unused02:3,                                               // af1
+     mrevive:1,
+     mkill:1,
+     mstun:1,
+     mmonitor:1,
+     minspection:1;
+  u8 unused03:3,                                               // af2
+     vrevive:1,
+     vkill:1,
+     vstun:1,
+     vmonitor:1,
+     vinspection:1;
+  u8 unused04:6,                                               // af3
+     txdisable:1,
+     rxdisable:1;
+  u8 groupcode;                                                // af4
+  u8 spacecode;                                                // af5
+  u8 delayproctime; // * 100 + 100ms                           // af6
+  u8 resettime;     // * 100 + 100ms                           // af7
+} dtmf_settings;
+
+#seekto 0x2D00;
+struct {
+  struct {
+    ul16 freq1;
+    u8 unused01[6];
+    ul16 freq2;
+    u8 unused02[6];
+  } _2tone_encode[15];
+  u8 duration_1st_tone; // *10ms
+  u8 duration_2nd_tone; // *10ms
+  u8 duration_gap;      // *10ms
+  u8 unused03[13];
+  struct {
+    struct {
+      u8 dec;      // one out of LIST_2TONE_DEC
+      u8 response; // one out of LIST_2TONE_RESPONSE
+      u8 alert;    // 1-16
+    } decs[4];
+    u8 unused04[4];
+  } _2tone_decode[15];
+  u8 unused05[16];
+
+  struct {
+    ul16 freqA;
+    ul16 freqB;
+    ul16 freqC;
+    ul16 freqD;
+    // unknown what those values mean, but they are
+    // derived from configured frequencies
+    ul16 derived_from_freqA; // 2304000/freqA
+    ul16 derived_from_freqB; // 2304000/freqB
+    ul16 derived_from_freqC; // 2304000/freqC
+    ul16 derived_from_freqD; // 2304000/freqD
+  }freqs[15];
+  u8 reset_time;  // * 100 + 100ms - 100-8000ms
+} _2tone;
+
+#seekto 0x3D80;
+struct {
+  u8 vhf_low[3];
+  u8 vhf_high[3];
+  u8 unknown1[4];
+  u8 unknown2[6];
+  u8 vhf2_low[3];
+  u8 vhf2_high[3];
+  u8 unknown3[4];
+  u8 unknown4[6];
+  u8 uhf_low[3];
+  u8 uhf_high[3];
+  u8 unknown5[4];
+  u8 unknown6[6];
+  u8 uhf2_low[3];
+  u8 uhf2_high[3];
+} ranges;
+
+#seekto 0x3F70;
+struct {
+  char fp[6];
+} fingerprint;
+
+"""
+
+
 class BTechColorWP(BTechMobileCommon):
     """BTECH's Color WP Mobile and alike radios"""
     COLOR_LCD = True
@@ -5240,6 +5575,30 @@ class WP9900(BTechColorWP):
 
         # Get it
         self._memobj = bitwise.parse(COLOR9900_MEM_FORMAT, self._mmap)
+
+        # load specific parameters from the radio image
+        self.set_options()
+
+
+@directory.register
+class GMRS20V2(BTechColorWP):
+    """Baofeng Tech GMRS-20V2"""
+    MODEL = "GMRS-20V2"
+    BANDS = 2
+    UPLOAD_MEM_SIZE = 0X3100
+    _power_levels = [chirp_common.PowerLevel("High", watts=20),
+                     chirp_common.PowerLevel("", watts=6),
+                     chirp_common.PowerLevel("Low", watts=5)]
+    _upper = 199
+    _magic = MSTRING_GMRS20V2
+    _fileid = [GMRS20V2_fp, ]
+    _gmrs = True
+
+    def process_mmap(self):
+        """Process the mem map into the mem object"""
+
+        # Get it
+        self._memobj = bitwise.parse(COLOR20V2_MEM_FORMAT, self._mmap)
 
         # load specific parameters from the radio image
         self.set_options()
