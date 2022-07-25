@@ -114,6 +114,12 @@ FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
               462.6750, 462.7000, 462.7250]
 FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
+PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
+              446.06875, 446.08125, 446.09375]
+PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
+              446.16875, 446.18125, 446.19375]
+PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
+
 
 def _checksum(data):
     cs = 0
@@ -322,7 +328,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x07A0
 
-    _frs = False
+    _frs = _pmr = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -556,6 +562,13 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
                     mem.mode = "NFM"
                     if mem.number >= 8 and mem.number <= 14:
                         mem.power = self.POWER_LEVELS[1]
+        elif self._pmr:
+            if mem.number >= 1 and mem.number <= 16:
+                PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+                mem.freq = PMR_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                mem.mode = "NFM"
 
         _mem.rxfreq = mem.freq / 10
 
@@ -768,3 +781,21 @@ class RB15Radio(RB15RadioBase):
 
     _upper = 22
     _frs = True
+
+
+@directory.register
+class RB615RadioBase(RB15RadioBase):
+    """RETEVIS RB615"""
+    VENDOR = "Retevis"
+    MODEL = "RB615"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
+                    chirp_common.PowerLevel("Low", watts=0.49)]
+
+    _ranges = [
+               (0x0150, 0x07A0),
+              ]
+    _memsize = 0x07A0
+
+    _upper = 16
+    _pmr = True
