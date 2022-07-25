@@ -249,7 +249,7 @@ GAIN_LIST = ["Standard", "Enhanced"]
 PFKEY_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
               "Key Lock", "Scan"]
 SAVE_LIST = ["Standard", "Super"]
-TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 615, 15)]
+TIMEOUTTIMER_LIST = ["Off"] + ["%s seconds" % x for x in range(15, 615, 15)]
 TOTALERT_LIST = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOICE_LIST2 = ["Off", "English"]
@@ -866,7 +866,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _keys = self._memobj.keys
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                       TIMEOUTTIMER_LIST[_settings.tot - 1])
+                                       TIMEOUTTIMER_LIST[_settings.tot])
             rset = RadioSetting("tot", "Time-out timer", rs)
             basic.append(rset)
 
@@ -950,7 +950,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             basic.append(rset)
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                       TIMEOUTTIMER_LIST[_settings.tot - 1])
+                                       TIMEOUTTIMER_LIST[_settings.tot])
             rset = RadioSetting("tot", "Time-out timer", rs)
             basic.append(rset)
 
@@ -1073,8 +1073,6 @@ class RT21Radio(chirp_common.CloneModeRadio):
                         setattr(obj, setting, not int(element.value))
                     elif setting == "tail":
                         setattr(obj, setting, not int(element.value))
-                    elif setting == "tot":
-                        setattr(obj, setting, int(element.value) + 1)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
