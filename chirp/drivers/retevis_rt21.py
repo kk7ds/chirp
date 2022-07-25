@@ -313,6 +313,8 @@ VOXL_LIST = ["OFF"] + ["%s" % x for x in range(1, 9)]
 WARN_LIST = ["OFF", "Native Warn", "Remote Warn"]
 PF1_CHOICES = ["None", "Monitor", "Scan", "Scramble", "Alarm"]
 PF1_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x0C]
+PF1_17A_CHOICES = ["None", "Monitor", "Scan", "Scramble"]
+PF1_17A_VALUES = [0x0F, 0x04, 0x06, 0x08]
 PFKEY_CHOICES = ["None", "Monitor", "Scan", "Scramble", "VOX", "Alarm"]
 PFKEY_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x09, 0x0A]
 TOPKEY_CHOICES = ["None", "Alarming"]
@@ -779,7 +781,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("cdcss", "Cdcss Mode", rs)
                 mem.extra.append(rset)
 
-            if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+            if self.MODEL == "RB17A" or self.MODEL == "RT29_UHF" or \
+                    self.MODEL == "RT29_VHF":
                 rs = RadioSettingValueBoolean(_mem.compander)
                 rset = RadioSetting("compander", "Compander", rs)
                 mem.extra.append(rset)
@@ -998,6 +1001,25 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rs = RadioSettingValueList(PF1_CHOICES, PF1_CHOICES[idx])
                 rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
                 rset.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
+                basic.append(rset)
+
+            def apply_pf1_17a_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(
+                          setting.value) + " from list")
+                val = str(setting.value)
+                index = PF1_17A_CHOICES.index(val)
+                val = PF1_17A_VALUES[index]
+                obj.set_value(val)
+
+            if self.MODEL == "RB17A":
+                if _keys.pf1 in PF1_17A_VALUES:
+                    idx = PF1_17A_VALUES.index(_keys.pf1)
+                else:
+                    idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
+                rs = RadioSettingValueList(PF1_17A_CHOICES,
+                                           PF1_17A_CHOICES[idx])
+                rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
+                rset.set_apply_callback(apply_pf1_17a_listvalue, _keys.pf1)
                 basic.append(rset)
 
             def apply_topkey_listvalue(setting, obj):
