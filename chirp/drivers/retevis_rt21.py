@@ -240,11 +240,64 @@ struct {
 } settings;
 """
 
+MEM_FORMAT_RT29 = """
+#seekto 0x0010;
+struct {
+  lbcd rxfreq[4];       // RX Frequency           0-3
+  lbcd txfreq[4];       // TX Frequency           4-7
+  ul16 rx_tone;         // PL/DPL Decode          8-9
+  ul16 tx_tone;         // PL/DPL Encode          A-B
+  u8 unknown1:2,        //                        C
+     compander:1,       // Compander
+     bcl:2,             // Busy Lock
+     unknown2:3;
+  u8 unknown3:1,        //                        D
+     highpower:2,       // Power Level
+     wide:1,            // Bandwidth
+     unknown4:3,
+     cdcss:1;           // Cdcss Mode
+  u8 unknown5;          //                        E
+  u8 unknown6:5,
+     scramble_type:3;   // Scramble Type          F
+} memory[16];
+
+#seekto 0x011D;
+struct {
+  u8 unused1:4,
+     pf1:4;             // Programmable Function Key 1
+  u8 unused2:4,
+     pf2:4;             // Programmable Function Key 2
+} keys;
+
+#seekto 0x012C;
+struct {
+  u8 use_scramble;      // Scramble Enable
+  u8 unknown1[2];
+  u8 voice;             // Voice Annunciation
+  u8 tot;               // Time-out Timer
+  u8 totalert;          // Time-out Timer Pre-alert
+  u8 unknown2[2];
+  u8 squelch;           // Squelch Level
+  u8 save;              // Battery Saver
+  u8 unknown3[3];
+  u8 use_vox;           // VOX Enable
+  u8 vox;               // VOX Gain
+  u8 voxd;              // Vox Delay
+} settings;
+
+#seekto 0x017E;
+u8 skipflags[2];       // SCAN_ADD
+
+#seekto 0x01B8;
+u8 fingerprint[5];     // Fingerprint
+"""
+
 CMD_ACK = "\x06"
 
 ALARM_LIST = ["Local Alarm", "Remote Alarm"]
 BCL_LIST = ["Off", "Carrier", "QT/DQT"]
 CDCSS_LIST = ["Normal Code", "Special Code 2", "Special Code 1"]
+CDCSS2_LIST = ["Normal Code", "Special Code"]  # RT29 UHF and RT29 VHF
 GAIN_LIST = ["Standard", "Enhanced"]
 PFKEY_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
               "Key Lock", "Scan"]
@@ -260,6 +313,8 @@ VOXL_LIST = ["OFF"] + ["%s" % x for x in range(1, 9)]
 WARN_LIST = ["OFF", "Native Warn", "Remote Warn"]
 PF1_CHOICES = ["None", "Monitor", "Scan", "Scramble", "Alarm"]
 PF1_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x0C]
+PFKEY_CHOICES = ["None", "Monitor", "Scan", "Scramble", "VOX", "Alarm"]
+PFKEY_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x09, 0x0A]
 TOPKEY_CHOICES = ["None", "Alarming"]
 TOPKEY_VALUES = [0xFF, 0x0C]
 
@@ -267,6 +322,7 @@ SETTING_LISTS = {
     "alarm": ALARM_LIST,
     "bcl": BCL_LIST,
     "cdcss": CDCSS_LIST,
+    "cdcss": CDCSS2_LIST,
     "gain": GAIN_LIST,
     "pfkey": PFKEY_LIST,
     "save": SAVE_LIST,
@@ -481,6 +537,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
                     chirp_common.PowerLevel("High", watts=2.50)]
 
+    VALID_BANDS = [(400000000, 480000000)]
+
     _magic = "PRMZUNE"
     _fingerprint = "P3207s\xF8\xFF"
     _upper = 16
@@ -512,7 +570,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
         rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
-        rf.valid_bands = [(400000000, 480000000)]
+        rf.valid_bands = self.VALID_BANDS
 
         return rf
 
@@ -700,7 +758,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
-        if self.MODEL == "RT21" or self.MODEL == "RB17A":
+        if self.MODEL == "RT21" or self.MODEL == "RB17A" or \
+                self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
             rs = RadioSettingValueList(BCL_LIST, BCL_LIST[_mem.bcl])
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
             mem.extra.append(rset)
@@ -712,6 +771,17 @@ class RT21Radio(chirp_common.CloneModeRadio):
             if self.MODEL == "RB17A":
                 rs = RadioSettingValueList(CDCSS_LIST, CDCSS_LIST[_mem.cdcss])
                 rset = RadioSetting("cdcss", "Cdcss Mode", rs)
+                mem.extra.append(rset)
+
+            if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+                rs = RadioSettingValueList(CDCSS2_LIST,
+                                           CDCSS2_LIST[_mem.cdcss])
+                rset = RadioSetting("cdcss", "Cdcss Mode", rs)
+                mem.extra.append(rset)
+
+            if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+                rs = RadioSettingValueBoolean(_mem.compander)
+                rset = RadioSetting("compander", "Compander", rs)
                 mem.extra.append(rset)
 
         if self.MODEL == "RB26" or self.MODEL == "RT76":
@@ -862,7 +932,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
 
-        if self.MODEL == "RT21" or self.MODEL == "RB17A":
+        if self.MODEL == "RT21" or self.MODEL == "RB17A" or \
+                self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
             _keys = self._memobj.keys
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
@@ -905,6 +976,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("vox", "VOX Gain", rs)
             basic.append(rset)
 
+            if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+                rs = RadioSettingValueList(VOXD_LIST,
+                                           VOXD_LIST[_settings.voxd])
+                rset = RadioSetting("voxd", "Vox Delay", rs)
+                basic.append(rset)
+
             def apply_pf1_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(
                           setting.value) + " from list")
@@ -913,14 +990,15 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 val = PF1_VALUES[index]
                 obj.set_value(val)
 
-            if _keys.pf1 in PF1_VALUES:
-                idx = PF1_VALUES.index(_keys.pf1)
-            else:
-                idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
-            rs = RadioSettingValueList(PF1_CHOICES, PF1_CHOICES[idx])
-            rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
-            rset.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
-            basic.append(rset)
+            if self.MODEL == "RT21":
+                if _keys.pf1 in PF1_VALUES:
+                    idx = PF1_VALUES.index(_keys.pf1)
+                else:
+                    idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
+                rs = RadioSettingValueList(PF1_CHOICES, PF1_CHOICES[idx])
+                rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
+                rset.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
+                basic.append(rset)
 
             def apply_topkey_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -938,6 +1016,33 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rs = RadioSettingValueList(TOPKEY_CHOICES, TOPKEY_CHOICES[idx])
                 rset = RadioSetting("keys.topkey", "Top Key Function", rs)
                 rset.set_apply_callback(apply_topkey_listvalue, _keys.topkey)
+                basic.append(rset)
+
+            def apply_pfkey_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(setting.value) +
+                          " from list")
+                val = str(setting.value)
+                index = PFKEY_CHOICES.index(val)
+                val = PFKEY_VALUES[index]
+                obj.set_value(val)
+
+            if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+                if _keys.pf1 in PFKEY_VALUES:
+                    idx = PFKEY_VALUES.index(_keys.pf1)
+                else:
+                    idx = PFKEY_VALUES.index(0x04)
+                rs = RadioSettingValueList(PFKEY_CHOICES, PFKEY_CHOICES[idx])
+                rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
+                rset.set_apply_callback(apply_pfkey_listvalue, _keys.pf1)
+                basic.append(rset)
+
+                if _keys.pf2 in PFKEY_VALUES:
+                    idx = PFKEY_VALUES.index(_keys.pf2)
+                else:
+                    idx = PFKEY_VALUES.index(0x0A)
+                rs = RadioSettingValueList(PFKEY_CHOICES, PFKEY_CHOICES[idx])
+                rset = RadioSetting("keys.pf2", "PF2 Key Function", rs)
+                rset.set_apply_callback(apply_pfkey_listvalue, _keys.pf2)
                 basic.append(rset)
 
         if self.MODEL == "RB26" or self.MODEL == "RT76":
@@ -1186,3 +1291,46 @@ class RT76Radio(RT21Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT76, self._mmap)
+
+
+@directory.register
+class RT29UHFRadio(RT21Radio):
+    """RETEVIS RT29UHF"""
+    VENDOR = "Retevis"
+    MODEL = "RT29_UHF"
+    BLOCK_SIZE = 0x40
+    BLOCK_SIZE_UP = 0x10
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Mid", watts=5.00),
+                    chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=1.00)]
+
+    _magic = "PROHRAM"
+    _fingerprint = "P3207" + "\x13\xF8\xFF"  # UHF model
+    _upper = 16
+    _skipflags = True
+    _reserved = False
+
+    _ranges = [
+               (0x0000, 0x0300),
+              ]
+    _memsize = 0x0400
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RT29, self._mmap)
+
+
+@directory.register
+class RT29VHFRadio(RT29UHFRadio):
+    """RETEVIS RT29VHF"""
+    VENDOR = "Retevis"
+    MODEL = "RT29_VHF"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("Mid", watts=5.00),
+                    chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=1.00)]
+
+    VALID_BANDS = [(136000000, 174000000)]
+
+    _magic = "PROHRAM"
+    _fingerprint = "P2207" + "\x01\xF8\xFF"  # VHF model
