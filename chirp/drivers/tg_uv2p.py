@@ -534,6 +534,20 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                                                _settings.not_end_tone_elim))
         cfg_grp.append(rs)
 
+        # VFO mode
+
+        if _settings.vfo_mode >= 1:
+            _vfo_mode = 0xFF
+        else:
+            _vfo_mode = _settings.vfo_mode
+        mem_vals = [0xFF, 0]
+        user_options = ["VFO Mode Enabled", "VFO Mode Disabled"]
+        options_map = zip(user_options, mem_vals)
+
+        rs = RadioSetting("vfo_mode", "VFO (CH only) mode",
+                          RadioSettingValueMap(options_map, _vfo_mode))
+        cfg_grp.append(rs)
+
         #
         # VFO Settings
         #
@@ -671,7 +685,9 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                 continue
             else:
                 try:
-                    if "vfo" in element.get_name():
+                    if "vfoa" in element.get_name():
+                        continue
+                    if "vfob" in element.get_name():
                         continue
                     elif "." in element.get_name():
                         bits = element.get_name().split(".")
