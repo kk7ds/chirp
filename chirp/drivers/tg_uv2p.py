@@ -76,8 +76,8 @@ struct tguv2_config {
     u8 unknown5;
     u8 rxmode;
     u8 unknown6:7,
-        no_end_tone:1;
-    u8 vfo_model;
+        not_end_tone_elim:1;
+    u8 vfo_mode;
 };
 
 struct vfo {
@@ -522,6 +522,16 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("step", "Current (VFO?) step size",
                           RadioSettingValueMap(options_map, _settings.step))
+        cfg_grp.append(rs)
+
+        # End (Tail) tone elimination
+        mem_vals = [0, 1]
+        user_options = ["Tone Elimination On", "Tone Elimination Off"]
+        options_map = zip(user_options, mem_vals)
+
+        rs = RadioSetting("not_end_tone_elim", "Tx End Tone Elimination",
+                          RadioSettingValueMap(options_map,
+                                               _settings.not_end_tone_elim))
         cfg_grp.append(rs)
 
         #
