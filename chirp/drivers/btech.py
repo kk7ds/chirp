@@ -948,45 +948,47 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             _mem.set_raw('\x00' * 16)
 
         if self._gmrs:
-            if mem.number >= 1 and mem.number <= 30:
-                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
-                mem.freq = GMRS_FREQ
-                if mem.number <= 22:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    mem.mode = "FM"
-                    mem.power = POWER_LEVELS[0]
-                    if mem.number >= 8 and mem.number <= 14:
-                        mem.duplex = 'off'
+            if self.MODEL == "GMRS-50X1":
+                if mem.number >= 1 and mem.number <= 30:
+                    GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                    mem.freq = GMRS_FREQ
+                    if mem.number <= 22:
+                        mem.duplex = ''
                         mem.offset = 0
-                        mem.mode = "NFM"
-                        mem.power = POWER_LEVELS[2]
-                if mem.number > 22:
-                    mem.duplex = '+'
-                    mem.offset = 5000000
-                    mem.mode = "FM"
-                    mem.power = POWER_LEVELS[0]
-            elif float(mem.freq) / 1000000 in GMRS_FREQS:
+                        if mem.number <= 7:
+                            mem.power = POWER_LEVELS[2]
+                        if mem.number >= 8 and mem.number <= 14:
+                            mem.duplex = 'off'
+                            mem.offset = 0
+                            mem.mode = 'NFM'
+                            mem.power = POWER_LEVELS[2]
+                    if mem.number > 22:
+                        mem.duplex = '+'
+                        mem.offset = 5000000
+                else:
+                    mem.duplex = 'off'
+                    mem.offset = 0
+            if self.MODEL == "GMRS-20V2":
                 if float(mem.freq) / 1000000 in GMRS_FREQS1:
                     mem.duplex = ''
                     mem.offset = 0
-                    mem.mode = "FM"
-                    mem.power = POWER_LEVELS[0]
-                if float(mem.freq) / 1000000 in GMRS_FREQS2:
+                    mem.power = POWER_LEVELS[2]
+                elif float(mem.freq) / 1000000 in GMRS_FREQS2:
                     mem.duplex = 'off'
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = POWER_LEVELS[2]
-                if float(mem.freq) / 1000000 in GMRS_FREQS3:
+                elif float(mem.freq) / 1000000 in GMRS_FREQS3:
+                    if mem.power == POWER_LEVELS[1]:
+                        mem.power = POWER_LEVELS[0]
                     if mem.duplex == '+':
                         mem.offset = 5000000
                     else:
+                        mem.duplex == ''
                         mem.offset = 0
-                    mem.mode = "FM"
-                    mem.power = POWER_LEVELS[0]
-            else:
-                mem.duplex = 'off'
-                mem.offset = 0
+                else:
+                    mem.duplex = 'off'
+                    mem.offset = 0
 
         # frequency
         _mem.rxfreq = mem.freq / 10
@@ -4536,6 +4538,7 @@ class GMRS50X1(BTechGMRS):
     _upper = 255
     _magic = MSTRING_GMRS50X1
     _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]
+    _gmrs = True
 
 
 COLORHT_MEM_FORMAT = """
