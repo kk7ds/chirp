@@ -55,6 +55,7 @@ SPMUTE_LIST = ["Tone/DTCS", "Tone/DTCS and Optsig", "Tone/DTCS or Optsig"]
 
 # lists
 LIST_AB = ["A", "B"]
+LIST_ABC = LIST_AB + ["C"]
 LIST_ABCD = LIST_AB + ["C", "D"]
 LIST_ANIL = ["3", "4", "5"]
 LIST_APO = ["Off"] + ["%s minutes" % x for x in range(30, 330, 30)]
@@ -1865,7 +1866,13 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         other.append(fp)
 
         # Work
-        if self.COLOR_LCD:
+        if self.COLOR_LCD4:
+            dispab = RadioSetting("settings2.dispab", "Display",
+                                  RadioSettingValueList(
+                                      LIST_ABC,
+                                      LIST_ABC[_mem.settings2.dispab]))
+            work.append(dispab)
+        elif self.COLOR_LCD:
             dispab = RadioSetting("settings2.dispab", "Display",
                                   RadioSettingValueList(
                                       LIST_ABCD,
