@@ -204,6 +204,8 @@ GMRS50X1_fp1 = "NC1932"
 
 # B-TECH GMRS-20V2
 GMRS20V2_fp = "WP4204"
+GMRS20V2_fp1 = "VW2112"
+GMRS20V2_fp2 = "VWG728"
 
 # special var to know when we found a BTECH Gen 3
 BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
@@ -5598,7 +5600,7 @@ class GMRS20V2(BTechColorWP):
                      chirp_common.PowerLevel("Low", watts=5)]
     _upper = 199
     _magic = MSTRING_GMRS20V2
-    _fileid = [GMRS20V2_fp, ]
+    _fileid = [GMRS20V2_fp2, GMRS20V2_fp1, GMRS20V2_fp, ]
     _gmrs = True
 
     def process_mmap(self):
