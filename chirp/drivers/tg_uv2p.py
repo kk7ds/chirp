@@ -515,7 +515,9 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         # Step
         mem_vals = range(0, len(TGUV2P_STEPS))
+        mem_vals.append(0xFF)
         user_options = [(str(x) + " kHz") for x in TGUV2P_STEPS]
+        user_options.append("Unknown")
         options_map = zip(user_options, mem_vals)
 
         rs = RadioSetting("step", "Current (VFO?) step size",
