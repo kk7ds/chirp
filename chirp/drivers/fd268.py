@@ -221,7 +221,7 @@ def do_program(radio):
     #
     # Even FDX-288 software appears to match the model by any other
     # mean, so I detected on a few images that the 3 first bytes are
-    # unique to each radio model, so for now we use that method untill
+    # unique to each radio model, so for now we use that method until
     # proven otherwise
     # ###################################################################
 
@@ -353,7 +353,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
             "DTCS->Tone",
             "->Tone",
             "DTCS->DTCS"]
-        # Power levels are golbal and no per channel, so disabled
+        # Power levels are global and no per channel, so disabled
         # rf.valid_power_levels = POWER_LEVELS
         # this radio has no skips
         rf.valid_skips = []
@@ -589,7 +589,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         else:
             vfo = int(_mem.vfo.vrx_freq) * 10
 
-        # frecuency apply_callback
+        # frequency apply_callback
         def apply_freq(setting, obj):
             """Setting is the UI returned value, obj is the memmap object"""
             value = chirp_common.parse_freq(str(setting.value))
@@ -842,7 +842,7 @@ class FD268BRadio(FeidaxinFD2x8yRadio):
 # #####################################################################
 # FD-288 Family: the only difference from this family to the FD-268's
 # are the ANI settings
-# Tested hacking the FD-268A memmory
+# Tested hacking the FD-268A memory
 
 
 @directory.register
@@ -864,7 +864,7 @@ class FD288BRadio(FeidaxinFD2x8yRadio):
 
 
 # #####################################################################
-# The following radios was tested hacking the FD-268A memmory with
+# The following radios was tested hacking the FD-268A memory with
 # the software and found to be clones of FD-268 ones
 # please report any problems to driver author (see head of this file)
 

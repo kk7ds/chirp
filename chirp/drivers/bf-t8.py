@@ -612,7 +612,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         if self.HAS_NAMES:
             _nam = self._set_nam(mem.number)
 
-        # if empty memmory
+        # if empty memory
         if mem.empty:
             if mem.number <= 22 and self._frs:
                 _mem.set_raw("\xFF" * 8 + "\x00" * 5 + "\xFF" * 3)

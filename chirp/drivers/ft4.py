@@ -571,7 +571,7 @@ CHARSET = CW_ID_CHARS + "abcdefghijklmnopqrstuvwxyz*+-/@"
 PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 
 # Four separate arrays of special channel mems.
-# Each special has unique constrants: band, name yes/no, and pms L/U
+# Each special has unique constraints: band, name yes/no, and pms L/U
 # The FT-65 class replaces the "prog" entry in this list.
 # The name field must be the name of a slot array in MEM_FORMAT
 SPECIALS_FT4 = [
@@ -735,8 +735,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     # callback for setting  byte arrays: DTMF[0-9], passwd, and CW_ID
     def apply_str_to_bytearray(self, element, obj):
         lng = len(obj)
-        strng = (element.value.get_value() + "                ")[:lng]
-        bytes = bytearray(strng, "ascii")
+        string = (element.value.get_value() + "                ")[:lng]
+        bytes = bytearray(string, "ascii")
         for x in range(0, lng):    # memobj cannot iterate, so byte-by-byte
             obj[x] = bytes[x]
         return

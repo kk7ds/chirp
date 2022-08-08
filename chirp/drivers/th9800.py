@@ -729,7 +729,7 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
 
     if data != radio._mmap[:radio._mmap_offset]:
         raise errors.RadioError(
-            "Model mis-match: \n%s\n%s" %
+            "Model mismatch: \n%s\n%s" %
             (util.hexprint(data),
              util.hexprint(radio._mmap[:radio._mmap_offset])))
     # in the factory software they update the last program date when

@@ -1664,7 +1664,7 @@ class TS480Radio(KenwoodLiveRadio):
         mem.number = number
         spec0 = command(self.pipe, "MR0%03i" % mem.number)
         spec1 = command(self.pipe, "MR1%03i" % mem.number)
-        # Add 1 to string idecis if refering to CAT manual
+        # Add 1 to string idecis if referring to CAT manual
         mem.name = spec0[41:49]  # Max 8-Char Name if assigned
         mem.name = mem.name.strip()
         mem.name = mem.name.upper()

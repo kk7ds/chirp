@@ -477,7 +477,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         # Menu 05 - Battery Save
-        rs = RadioSetting("batterysave", "Batery Save",
+        rs = RadioSetting("batterysave", "Battery Save",
                           RadioSettingValueList(
                               BATTERYSAVE_LIST,
                               BATTERYSAVE_LIST[_settings.batterysave]))

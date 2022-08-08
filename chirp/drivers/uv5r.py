@@ -420,12 +420,12 @@ def _do_ident(radio, magic, secondack=True):
     serial.write("\x02")
 
     # Until recently, the "ident" returned by the radios supported by this
-    # driver have always been 8 bytes long. The image sturcture is the 8 byte
+    # driver have always been 8 bytes long. The image structure is the 8 byte
     # "ident" followed by the downloaded memory data. So all of the settings
     # structures are offset by 8 bytes. The ident returned from a UV-6 radio
     # can be 8 bytes (original model) or now 12 bytes.
     #
-    # To accomodate this, the "ident" is now read one byte at a time until the
+    # To accommodate this, the "ident" is now read one byte at a time until the
     # last byte ("\xdd") is encountered. The bytes containing the value "\x01"
     # are discarded to shrink the "ident" length down to 8 bytes to keep the
     # image data aligned with the existing settings structures.

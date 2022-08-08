@@ -310,7 +310,7 @@ def _split(rf, f1, f2):
 
 class BaofengCommonHT(chirp_common.CloneModeRadio,
                       chirp_common.ExperimentalRadio):
-    """Baofeng HT Sytle Radios"""
+    """Baofeng HT Style Radios"""
     VENDOR = "Baofeng"
     MODEL = ""
     IDENT = ""

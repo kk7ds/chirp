@@ -87,7 +87,7 @@ KEYS = {
     0x01: "Monitor",
     0x02: "Talk Around",
     0x03: "Horn Alert",
-    0x04: "Public Adress",
+    0x04: "Public Address",
     0x05: "Auxiliary",
     0x06: "Scan",
     0x07: "Scan Del/Add",
@@ -237,7 +237,7 @@ def open_radio(radio):
         raise errors.RadioError(msg)
 
     handshake(radio, "Comm error after ident", True)
-    LOG.debug("Correct get ident and hanshake")
+    LOG.debug("Correct get ident and handshake")
 
     if not (radio.TYPE in ident):
         LOG.debug("Incorrect model ID:")
@@ -426,11 +426,11 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
             raise errors.RadioError("Error uploading data to radio")
 
     def set_variant(self):
-        """Select and set the correct variables for the class acording
+        """Select and set the correct variables for the class according
         to the correct variant of the radio"""
         rid = get_rid(self._mmap)
 
-        # indentify the radio variant and set the enviroment to it's values
+        # identify the radio variant and set the environment to it's values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
 
@@ -453,7 +453,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
                 "Wrong Kenwood radio, ID or unknown variant, see LOG output.")
 
     def _prep_data(self):
-        """Prepare the areas in the memmap to do a consistend write
+        """Prepare the areas in the memmap to do a consistent write
         it has to make an update on the x200 flag data"""
         achs = 0
 

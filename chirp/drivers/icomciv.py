@@ -990,7 +990,7 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
 
 
 def probe_model(ser):
-    """Probe the radio attatched to @ser for its model"""
+    """Probe the radio attached to @ser for its model"""
     f = Frame()
     f.set_command(0x19, 0x00)
 

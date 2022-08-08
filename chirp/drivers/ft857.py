@@ -483,7 +483,7 @@ class FT857Radio(ft817.FT817Radio):
         elif mem.tmode == "TSQL":
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         elif mem.tmode == "DTCS Enc":   # UI does not support it yet but
-                                        # this code has alreay been tested
+                                        # this code has already been tested
             mem.dtcs = mem.rx_dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         elif mem.tmode == "DTCS":
             mem.dtcs = mem.rx_dtcs = chirp_common.DTCS_CODES[_mem.dcs]
@@ -510,7 +510,7 @@ class FT857Radio(ft817.FT817Radio):
         elif mem.tmode == "TSQL":
             _mem.tone = _mem.rxtone = chirp_common.TONES.index(mem.ctone)
         elif mem.tmode == "DTCS Enc":   # UI does not support it yet but
-                                        # this code has alreay been tested
+                                        # this code has already been tested
             _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         elif mem.tmode == "DTCS":
             _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.rx_dtcs)
@@ -1108,7 +1108,7 @@ class FT857Radio(ft817.FT817Radio):
 @directory.register
 class FT857USRadio(FT857Radio):
     """Yaesu FT857/897 (US version)"""
-    # seems that radios configured for 5MHz operations send one paket more
+    # seems that radios configured for 5MHz operations send one packet more
     # than others so we have to distinguish sub models
     MODEL = "FT-857/897 (US)"
 
@@ -1178,7 +1178,7 @@ class FT857USRadio(FT857Radio):
             return self._get_special_60m(number)
         elif number < 0 and \
                 self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
         else:

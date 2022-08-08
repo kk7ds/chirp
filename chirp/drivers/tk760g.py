@@ -44,7 +44,7 @@ struct {
   u8 tot_rekey;             // x12 TOT Re-key value range(0, 60); off= 0
   u8 unknown1;              // x13 unknown
   u8 tot_reset;             // x14 TOT Re-key value range(0, 60); off= 0
-  u8 unknown2;              // x15 unknows
+  u8 unknown2;              // x15 unknowns
   u8 tot_alert;             // x16 TOT pre alert: range(0,10); 0 = off
   u8 unknown3[7];           // x17-x1d unknown
   u8 sql_level;             // x1e  SQ reference level
@@ -81,9 +81,9 @@ struct {
      control_tone:1,        // 1 bit control tone (key tone), enabled: 1-on
      poweron_tone:1;        // 1 bit power on tone, enabled: 1-on
   u8 unknown19[5];          // x85-x89
-  u8 min_vol;               // minimum volume posible: range(0,32); 0 = off
-  u8 tone_vol;              // minimum tone volume posible:
-                                // xff = continous, range(0, 31)
+  u8 min_vol;               // minimum volume possible: range(0,32); 0 = off
+  u8 tone_vol;              // minimum tone volume possible:
+                                // xff = continuous, range(0, 31)
   u8 unknown20[4];          // x8c-x8f
   // --
   u8 unknown21[4];          // x90-x93
@@ -108,11 +108,11 @@ struct {
 #seekto 0x0110;
 struct {
   u8 kA;                // Portable > Closed circle
-  u8 kDA;               // Protable > Triangle to Left
-  u8 kGROUP_DOWN;       // Protable > Triangle to Right
-  u8 kGROUP_UP;         // Protable > Side 1
+  u8 kDA;               // Portable > Triangle to Left
+  u8 kGROUP_DOWN;       // Portable > Triangle to Right
+  u8 kGROUP_UP;         // Portable > Side 1
   u8 kSCN;              // Portable > Open Circle
-  u8 kMON;              // Protable > Side 2
+  u8 kMON;              // Portable > Side 2
   u8 kFOOT;
   u8 kCH_UP;
   u8 kCH_DOWN;
@@ -289,7 +289,7 @@ TOT_REKEY = ["off"] + ["%s" % x for x in range(1, 61)]
 TOT_RESET = ["off"] + ["%s" % x for x in range(1, 16)]
 VOL = ["off"] + ["%s" % x for x in range(1, 32)]
 TVOL = ["%s" % x for x in range(0, 33)]
-TVOL[32] = "Continous"
+TVOL[32] = "Continuous"
 SQL = ["off"] + ["%s" % x for x in range(1, 10)]
 
 ## BOT = 0, EOT = 1, Both = 2, NONE = 3
@@ -300,7 +300,7 @@ debug = False
 
 KEYS = {
     0x33: "Display character",
-    0x35: "Home Channel",                   # Posible portable only, chek it
+    0x35: "Home Channel",                   # Possible portable only, check it
     0x37: "CH down",
     0x38: "CH up",
     0x39: "Key lock",
@@ -313,7 +313,7 @@ KEYS = {
     0x40: "Monitor A: open mommentary",
     0x41: "Monitor B: Open Toggle",
     0x42: "Monitor C: Carrier mommentary",
-    0x43: "Monitor D: Carrier toogle",
+    0x43: "Monitor D: Carrier toggle",
     0x44: "Operator selectable tone",
     0x45: "Redial",
     0x46: "RF Power Low",                   # portable only ?
@@ -485,7 +485,7 @@ def _open_radio(radio, status):
 
     if exito is False:
         _close_radio(radio)
-        LOG.debug("Radio did not accepted PROGRAM command in %s atempts" % tries)
+        LOG.debug("Radio did not accepted PROGRAM command in %s attempts" % tries)
         raise errors.RadioError("The radio doesn't accept program mode")
 
     # DEBUG
@@ -552,7 +552,7 @@ def do_download(radio):
         # now we get the data
         d = _recv(radio)
         # if empty block, it return false
-        # aka we asume a empty 256 xFF block
+        # aka we assume a empty 256 xFF block
         if d is False:
             d = EMPTY_BLOCK
 
@@ -697,7 +697,7 @@ class memBank(chirp_common.Bank):
 
 
 class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
-    """Kenwood Serie 60G Radios base class"""
+    """Kenwood Series 60G Radios base class"""
     VENDOR = "Kenwood"
     BAUD_RATE = 9600
     _memsize = MEM_SIZE
@@ -783,7 +783,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             self._mmap[offset + addr] = data[addr]
 
     def _prep_data(self):
-        """Prepare the areas in the memmap to do a consistend write
+        """Prepare the areas in the memmap to do a consistent write
         it has to make an update on the x300 area with banks and channel
         info; other in the x1000 with banks and channel counts
         and a last one in x7000 with flag data"""
@@ -814,7 +814,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         fdata = ""
 
         for k, v in data.iteritems():
-            # posible bad data
+            # possible bad data
             if k == 0:
                 k = 1
                 raise errors.InvalidValueError(
@@ -859,11 +859,11 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         self._fill(0x7000, fldata)
 
     def _set_variant(self):
-        """Select and set the correct variables for the class acording
+        """Select and set the correct variables for the class according
         to the correct variant of the radio"""
         rid = self._mmap[0xA7:0xAE]
 
-        # indentify the radio variant and set the enviroment to it's values
+        # identify the radio variant and set the environment to it's values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
 
@@ -913,7 +913,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
     def process_mmap(self):
         """Process the memory object"""
-        # how many channels are programed
+        # how many channels are programmed
         self._chs_progs = ord(self._mmap[15])
 
         # load the memobj
@@ -1081,7 +1081,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # get the eprom representation of this channel
         _mem = self._memobj.memory[mem.number - 1]
 
-        # if empty memmory
+        # if empty memory
         if mem.empty:
             _mem.set_raw("\xFF" * 48)
             return
@@ -1089,7 +1089,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # frequency
         _mem.rxfreq = mem.freq / 10
 
-        # this are a mistery yet, but so falr there is no impact
+        # this are a mystery yet, but so falr there is no impact
         # whit this default values for new channels
         if int(_mem.rx_unkw) == 0xff:
             _mem.rx_unkw = 0x35
@@ -1180,7 +1180,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # buttons
         fkeys = RadioSettingGroup("keys", "Front keys config")
 
-        # TODO / PLANED
+        # TODO / PLANNED
         # adjust feqs
         #freqs = RadioSettingGroup("freqs", "Adjust Frequencies")
 
@@ -1302,7 +1302,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         dealer.append(fmw)
 
         # front keys
-        # The Mobile only parameters are wraped here
+        # The Mobile only parameters are wrapped here
         if self.TYPE[0] == "M":
             vu = RadioSetting("keys.kVOL_UP", "VOL UP",
                               RadioSettingValueList(KEYS.values(),
@@ -1517,7 +1517,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             raise errors.InvalidDataError(msg)
 
 
-# This kenwwood family is known as "60-G Serie"
+# This kenwwood family is known as "60-G Series"
 # all this radios ending in G are compatible:
 #
 # Portables VHF TK-260G/270G/272G/278G

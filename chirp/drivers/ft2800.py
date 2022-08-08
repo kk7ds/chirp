@@ -257,7 +257,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             return
 
         if _mem.get_raw()[0] == "\xFF":
-            # Emtpy -> Non-empty, so initialize
+            # Empty -> Non-empty, so initialize
             _mem.set_raw("\x00" * (_mem.size() / 8))
 
         _mem.freq = mem.freq / 10

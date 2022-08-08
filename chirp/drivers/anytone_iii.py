@@ -391,7 +391,7 @@ struct {
 //                            // shown as range(0, 2000, 100) msec
 //  u8 auto_rst_time;         // Auto reset time * 10
 //                            // shown as range(0, 25, 0.1) sec
-//  u8 unkonwn:7,
+//  u8 unknown:7,
 //     enc_sidetone;          // Encode side-tone 0=off 1=on
 //  u8 unknown2:4,
 //     call_format:4;         // Call format [A-B, A-C, A-D, B-A, B-C, B-D,

@@ -690,7 +690,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
         if self._identify():
             return True
         else:
-            # Apparenly Alinco support suggests to try again at a lower baud
+            # Apparently Alinco support suggests to try again at a lower baud
             # rate if their cable fails with the default rate. See #4355.
             LOG.info("Could not talk to radio. Trying again at 19200 baud")
             self.pipe.baudrate = 19200

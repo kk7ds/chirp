@@ -67,7 +67,7 @@ u8 pch2;                    // Priority channel 1
 
 #seekto 0x010;
 struct {
-  u8 notx:1,            // 0 = Tx posible,  1 = Tx disabled
+  u8 notx:1,            // 0 = Tx possible,  1 = Tx disabled
      empty:1,           // 0 = channel enabled, 1 = channed empty
      tot:1,             // 0 = tot disabled, 1 = tot enabled
      power:1,           // 0 = high, 1 = low
@@ -514,7 +514,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # this radio has a primitive mode to show the channel number on a 7-segment
         # two digit LCD, we will use channel number
-        # we will use a trick to show the numbers < 10 wit a space not a zero in front
+        # we will use a trick to show the numbers < 10 with a space not a zero in front
         chname = int_to_bcd(mem.number)
         if mem.number < 10:
             # convert to F# as BCD
@@ -598,7 +598,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # this radio has a primitive mode to show the channel number on a 7-segment
         # two digit LCD, we will use channel number
-        # we will use a trick to show the numbers < 10 wit a space not a zero in front
+        # we will use a trick to show the numbers < 10 with a space not a zero in front
         chname = int_to_bcd(mem.number)
         if mem.number < 10:
             # convert to F# as BCD

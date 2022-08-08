@@ -93,9 +93,9 @@ struct {
   u8 unknown_1a0a;    // 1A0B
   u8 pttlt;           // 1A0C PTT Delay
   u8 unknown_1a0d:6,  // 1A0D
-     mdfa:2;          //      Channle A Display
+     mdfa:2;          //      Channel A Display
   u8 unknown_1a0e:6,  // 1A0E
-     mdfb:2;          //      Channle B Display
+     mdfb:2;          //      Channel B Display
   u8 unknown_1a0f:7,  // 1A0F
      bcl:1;           //      BCL
   u8 unknown_1a10:7,  // 1A10
@@ -109,9 +109,9 @@ struct {
   u8 unknown_1a14:7,  // 1A14
      ste:1;           //      Tail Noise Clear
   u8 unknown_1a15:4,  // 1A15
-     rpste:4;         //      Pass Repet Noise
+     rpste:4;         //      Pass Repeat Noise
   u8 unknown_1a16:4,  // 1A16
-     rptrl:4;         //      Pass Repet Noise
+     rptrl:4;         //      Pass Repeat Noise
   u8 unknown_1a17:7,  // 1A17
      roger:1;         //      Roger
   u8 unknown_1a18;    // 1A18
@@ -882,12 +882,12 @@ class RT76PRadio(chirp_common.CloneModeRadio):
         rset.set_apply_callback(apply_skey_listvalue, _skey.longp)
         advanced.append(rset)
 
-        # Pass Repet Noise
+        # Pass Repeat Noise
         rs = RadioSettingValueList(RPSTE_LIST, RPSTE_LIST[_settings.rpste])
         rset = RadioSetting("rpste", "Squelch Tail Eliminate (repeater)", rs)
         advanced.append(rset)
 
-        # Pass Repet Noise
+        # Pass Repeat Noise
         rs = RadioSettingValueList(RPSTE_LIST, RPSTE_LIST[_settings.rptrl])
         rset = RadioSetting("rptrl", "STE Repeater Delay", rs)
         advanced.append(rset)

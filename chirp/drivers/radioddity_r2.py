@@ -454,7 +454,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
             mem.duplex = "+"
             mem.offset = txfreq - mem.freq
 
-        # get bandwith FM or NFM
+        # get bandwidth FM or NFM
         mem.mode = MODE_LIST[_mem.mode]
 
         # tone data

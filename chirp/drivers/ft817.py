@@ -479,7 +479,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         if isinstance(number, str):
             return self._get_special(number)
         elif number < 0:
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special(self.SPECIAL_MEMORIES_REV[number])
         else:
@@ -774,7 +774,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("ars_430", "430 ARS",
                           RadioSettingValueBoolean(_settings.ars_430))
         basic.append(rs)
-        rs = RadioSetting("pkt9600_mic", "Paket 9600 mic level",
+        rs = RadioSetting("pkt9600_mic", "Packet 9600 mic level",
                           RadioSettingValueInteger(0, 100,
                                                    _settings.pkt9600_mic))
         packet.append(rs)
@@ -1119,7 +1119,7 @@ class FT817NDRadio(FT817Radio):
 class FT817NDUSRadio(FT817Radio):
 
     """Yaesu FT-817ND (US version)"""
-    # seems that radios configured for 5MHz operations send one paket
+    # seems that radios configured for 5MHz operations send one packet
     # more than others so we have to distinguish sub models
     MODEL = "FT-817ND (US)"
 
@@ -1185,7 +1185,7 @@ class FT817NDUSRadio(FT817Radio):
             return self._get_special_60m(number)
         elif number < 0 and \
                 self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
         else:

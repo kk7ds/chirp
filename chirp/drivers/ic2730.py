@@ -732,7 +732,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             return
 
         def myset_bitmask(setting, obj, ndx, atrb, knt):
-            """ Callback to gnerate byte-array bitmask from string"""
+            """ Callback to generate byte-array bitmask from string"""
             # knt is BIT count to process
             lsx = str(setting.value).strip().split(",")
             for kx in range(0, len(lsx)):
@@ -985,7 +985,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         abset.append(rset)
 
         # --- Microphone Keys
-        # The Mic keys get wierd: stored values are indecis to the full
+        # The Mic keys get weird: stored values are indecis to the full
         # options list, but only a subset is valid...
         shortopts = ["Off", "Monitor", "MR (Ch 0)", "MR (Ch 1)", "Band/Bank",
                      "Scan", "Temp Skip", "Mode", "Low", "Dup", "Priority",

@@ -63,7 +63,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     # plus an empty line at the end
     _datsize = (_memsize * 2) / 96 * 98 + 2
 
-    # block are read in same order as original sw eventhough they are not
+    # block are read in same order as original sw even though they are not
     # in physical order
     _blocks = [
         (0x400, 0x1BFF, 0x30),

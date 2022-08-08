@@ -103,7 +103,7 @@ struct {
   u8 code3_len;     // Stun Code length
   u8 code3[5];      // Stun Code
   u8 unknown9[10];
-  u8 code1[8];      // PTT ID(beggining of TX)
+  u8 code1[8];      // PTT ID(beginning of TX)
   u8 code2[8];      // PTT ID(end of TX)
 } dtmf;
 

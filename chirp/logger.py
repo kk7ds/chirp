@@ -15,7 +15,7 @@
 
 
 r"""
-The chirp.logger module provides the core logging facilties for CHIRP.
+The chirp.logger module provides the core logging facilities for CHIRP.
 It sets up the console and (optionally) a log file.  For early debugging,
 it checks the CHIRP_DEBUG, CHIRP_LOG, and CHIRP_LOG_LEVEL environment
 variables.

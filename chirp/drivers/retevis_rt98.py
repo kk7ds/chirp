@@ -151,7 +151,7 @@ SETTING_LISTS = {
 #  1          u8 unknown0
 #  1          u8
 #   :1        reverse:1            reverse flag, 0=off, 1=on (reverses
-#                                  transmit and receive freqencies)
+#                                  transmit and receive frequencies)
 #   :1        txoff:1              transmitt off flag, 0=transmit, 1=do not
 #                                  transmit
 #   :2        power:2              transmit power setting, value range 0-2,
