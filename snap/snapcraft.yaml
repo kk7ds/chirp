@@ -77,6 +77,10 @@ parts:
     override-build: |
       snapcraftctl build
       cp ${SNAPCRAFT_PART_SRC}/share/chirp.svg ${SNAPCRAFT_PART_INSTALL}/share/chirp-snap.svg
+      rsync -av ${SNAPCRAFT_PART_INSTALL}/share/ ${SNAPCRAFT_PART_INSTALL}/usr/share/
+      rm ${SNAPCRAFT_PART_INSTALL}/usr/share/pixmaps/chirp.png
+    build-packages:
+      - rsync
     stage-packages:
       - python-gtk2
       - python-serial
