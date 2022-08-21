@@ -507,10 +507,16 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         mem_vals.insert(0, 0xFF)
         user_options.insert(0, "Not Set")
         options_map = zip(user_options, mem_vals)
-
-        rs = RadioSetting("priority_channel", "Priority Channel",
-                          RadioSettingValueMap(options_map,
-                                               _settings.priority_channel))
+        if _settings.priority_channel >= 200:
+            _priority_ch = 0xFF
+        else:
+            _priority_ch = _settings.priority_channel
+        rs = RadioSetting(
+            "priority_channel",
+            "Priority Channel \n"
+            "Note: Unused channels,\nor channels "
+            "in the\nbroadcast FM band,\nwill not be set",
+            RadioSettingValueMap(options_map, _priority_ch))
         cfg_grp.append(rs)
 
         # Step
@@ -678,6 +684,17 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
 
         return group
 
+    def _validate_priority_ch(self, ch_num):
+        if ch_num == 0xFF:
+            return True
+        _mem, _bf, _nam = self._get_memobjs(ch_num)
+        if (_mem.freq.get_raw()[0] == "\xFF") or (_bf.band == "\x0F"):
+            return False
+        elif _bf.band == 0x00:
+            return False
+        else:
+            return True
+
     def set_settings(self, settings):
         for element in settings:
             if not isinstance(element, RadioSetting):
@@ -711,6 +728,18 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                     elif setting == "keyunlocked":
                         LOG.debug("Setting %s = %s" % (setting, not int(element.value)))
                         setattr(obj, setting, not int(element.value))
+                    elif setting == "priority_channel":
+                        _check = self._validate_priority_ch(int(element.value))
+                        if _check:
+                            LOG.debug("Setting %s = %s" % (setting,
+                                                           element.value))
+                            setattr(obj, setting, element.value)
+                        else:
+                            raise errors.InvalidValueError(
+                                "Please select a valid priority channel:\n"
+                                "A used memory channel which is not "
+                                "in the Broadcast FM band (88-108MHz),\n"
+                                "Or select 'Not Used'")
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
