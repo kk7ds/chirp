@@ -720,13 +720,16 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                         LOG.debug("using apply callback")
                         element.run_apply_callback()
                     elif setting == "beep_tone_disabled":
-                        LOG.debug("Setting %s = %s" % (setting, not int(element.value)))
+                        LOG.debug("Setting %s = %s" % (setting,
+                                                       not int(element.value)))
                         setattr(obj, setting, not int(element.value))
                     elif setting == "busy_lockout":
-                        LOG.debug("Setting %s = %s" % (setting, not int(element.value)))
+                        LOG.debug("Setting %s = %s" % (setting,
+                                                       not int(element.value)))
                         setattr(obj, setting, not int(element.value))
                     elif setting == "keyunlocked":
-                        LOG.debug("Setting %s = %s" % (setting, not int(element.value)))
+                        LOG.debug("Setting %s = %s" % (setting,
+                                                       not int(element.value)))
                         setattr(obj, setting, not int(element.value))
                     elif setting == "priority_channel":
                         _check = self._validate_priority_ch(int(element.value))
