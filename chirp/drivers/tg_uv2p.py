@@ -728,9 +728,27 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                                                        not int(element.value)))
                         setattr(obj, setting, not int(element.value))
                     elif setting == "keyunlocked":
+                        # keypad currently unlocked being set to locked
+                        # and rx_mode is currently not "Normal":
+                        if getattr(obj, "keyunlocked") and int(element.value) \
+                                and (getattr(obj, "rxmode") != 0x02):
+                            raise errors.InvalidValueError(
+                                "Keypad lock not allowed in "
+                                "Dual-Watch or CrossBand")
                         LOG.debug("Setting %s = %s" % (setting,
                                                        not int(element.value)))
                         setattr(obj, setting, not int(element.value))
+                    elif setting == "rxmode":
+                        # rx_mode was normal, now being set otherwise
+                        # and keypad is locked:
+                        if (getattr(obj, "rxmode") == 0x02) \
+                                and (int(element.value) != 2) \
+                                and not (getattr(obj, "keyunlocked")):
+                            raise errors.InvalidValueError(
+                                "Dual-Watch or CrossBand can not be set "
+                                "when keypad is locked")
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
+                        setattr(obj, setting, element.value)
                     elif setting == "priority_channel":
                         _check = self._validate_priority_ch(int(element.value))
                         if _check:
