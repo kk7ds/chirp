@@ -582,52 +582,6 @@ class RT21Radio(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
-    def validate_memory(self, mem):
-        msgs = ""
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        _msg_freq = 'Memory location cannot change frequency'
-        _msg_simplex = 'Memory location only supports Duplex:(None)'
-        _msg_duplex = 'Memory location only supports Duplex: +'
-        _msg_offset = 'Memory location only supports Offset: 5.000000'
-        _msg_nfm = 'Memory location only supports Mode: NFM'
-        _msg_txp = 'Memory location only supports Power: Low'
-
-        # GMRS models
-        if self._gmrs:
-            # range of memories with values set by FCC rules
-            if mem.freq != int(GMRS_FREQS[mem.number - 1] * 1000000):
-                # warn user can't change frequency
-                msgs.append(chirp_common.ValidationError(_msg_freq))
-
-            # channels 1 - 22 are simplex only
-            if mem.number <= 22:
-                if str(mem.duplex) != "":
-                    # warn user can't change duplex
-                    msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-            # channels 23 - 30 are +5 MHz duplex only
-            if mem.number >= 23:
-                if str(mem.duplex) != "+":
-                    # warn user can't change duplex
-                    msgs.append(chirp_common.ValidationError(_msg_duplex))
-
-                if str(mem.offset) != "5000000":
-                    # warn user can't change offset
-                    msgs.append(chirp_common.ValidationError(_msg_offset))
-
-            # channels 8 - 14 are low power NFM only
-            if mem.number >= 8 and mem.number <= 14:
-                if mem.mode != "NFM":
-                    # warn user can't change mode
-                    msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-                if mem.power != "Low":
-                    # warn user can't change power
-                    msgs.append(chirp_common.ValidationError(_msg_txp))
-
-        return msgs
-
     def sync_in(self):
         """Download from radio"""
         try:
@@ -735,15 +689,6 @@ class RT21Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.get_raw() == ("\xFF" * 16):
-            LOG.debug("Initializing empty memory")
-            if self.MODEL == "RB17A":
-                _mem.set_raw("\x00" * 13 + "\x04\xFF\xFF")
-            if self.MODEL == "RB26" or self.MODEL == "RT76":
-                _mem.set_raw("\x00" * 13 + _rsvd)
-            else:
-                _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
-
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
@@ -812,13 +757,6 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("compander", "Compander", rs)
             mem.extra.append(rset)
 
-        if self._gmrs:
-            GMRS_IMMUTABLE = ["freq", "duplex", "offset"]
-            if mem.number >= 8 and mem.number <= 14:
-                mem.immutable = GMRS_IMMUTABLE + ["power", "mode"]
-            else:
-                mem.immutable = GMRS_IMMUTABLE
-
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -879,36 +817,33 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _rsvd = _mem.reserved.get_raw()
 
         if mem.empty:
-            if self.MODEL == "RB17A":
-                _mem.set_raw("\xFF" * 12 + "\x00\x00\xFF\xFF")
-            elif self.MODEL == "RB26" or self.MODEL == "RT76":
+            if self.MODEL == "RB26" or self.MODEL == "RT76":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
             else:
                 _mem.set_raw("\xFF" * (_mem.size() / 8))
 
-            if self._gmrs:
-                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 100000)
-                if mem.number > 22:
-                    _mem.rxfreq = GMRS_FREQ
-                    _mem.txfreq = int(_mem.rxfreq) + 500000
-                    _mem.wide = True
-                else:
-                    _mem.rxfreq = _mem.txfreq = GMRS_FREQ
-                if mem.number >= 8 and mem.number <= 14:
-                    _mem.wide = False
-                    _mem.highpower = False
-                else:
-                    _mem.wide = True
-                    _mem.highpower = True
-
             return
 
         if self.MODEL == "RB17A":
-            _mem.set_raw("\x00" * 13 + "\x00\xFF\xFF")
+            _mem.set_raw("\x00" * 14 + "\xFF\xFF")
         elif self.MODEL == "RB26" or self.MODEL == "RT76":
             _mem.set_raw("\x00" * 13 + _rsvd)
         else:
             _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
+
+        if self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.mode = "NFM"
+                        mem.power = self.POWER_LEVELS[1]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
 
         _mem.rxfreq = mem.freq / 10
 
