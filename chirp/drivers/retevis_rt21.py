@@ -252,7 +252,7 @@ struct {
      bcl:2,             // Busy Lock
      unknown2:3;
   u8 unknown3:1,        //                        D
-     highpower:2,       // Power Level
+     txpower:2,         // Power Level
      wide:1,            // Bandwidth
      unknown4:3,
      cdcss:1;           // Cdcss Mode
@@ -752,7 +752,19 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         self._get_tone(_mem, mem)
 
-        mem.power = self.POWER_LEVELS[_mem.highpower]
+        if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+            # set the power level
+            if _mem.txpower == self.TXPOWER_LOW:
+                mem.power = self.POWER_LEVELS[2]
+            elif _mem.txpower == self.TXPOWER_MED:
+                mem.power = self.POWER_LEVELS[1]
+            elif _mem.txpower == self.TXPOWER_HIGH:
+                mem.power = self.POWER_LEVELS[0]
+            else:
+                LOG.error('%s: get_mem: unhandled power level: 0x%02x' %
+                          (mem.name, _mem.txpower))
+        else:
+            mem.power = self.POWER_LEVELS[_mem.highpower]
 
         if self.MODEL != "RT76":
             mem.skip = "" if (_skp & bitpos) else "S"
@@ -913,7 +925,19 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         self._set_tone(mem, _mem)
 
-        _mem.highpower = mem.power == self.POWER_LEVELS[1]
+        if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+            # set the power level
+            if mem.power == self.POWER_LEVELS[2]:
+                _mem.txpower = self.TXPOWER_LOW
+            elif mem.power == self.POWER_LEVELS[1]:
+                _mem.txpower = self.TXPOWER_MED
+            elif mem.power == self.POWER_LEVELS[0]:
+                _mem.txpower = self.TXPOWER_HIGH
+            else:
+                LOG.error('%s: set_mem: unhandled power level: %s' %
+                          (mem.name, mem.power))
+        else:
+            _mem.highpower = mem.power == self.POWER_LEVELS[1]
 
         if self.MODEL != "RT76":
             if mem.skip != "S":
@@ -1323,8 +1347,12 @@ class RT29UHFRadio(RT21Radio):
     BLOCK_SIZE = 0x40
     BLOCK_SIZE_UP = 0x10
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Mid", watts=5.00),
-                    chirp_common.PowerLevel("High", watts=10.00),
+    TXPOWER_MED = 0x00
+    TXPOWER_HIGH = 0x01
+    TXPOWER_LOW = 0x02
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Mid", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
     _magic = "PROHRAM"
@@ -1348,8 +1376,12 @@ class RT29VHFRadio(RT29UHFRadio):
     VENDOR = "Retevis"
     MODEL = "RT29_VHF"
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Mid", watts=5.00),
-                    chirp_common.PowerLevel("High", watts=10.00),
+    TXPOWER_MED = 0x00
+    TXPOWER_HIGH = 0x01
+    TXPOWER_LOW = 0x02
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Mid", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
     VALID_BANDS = [(136000000, 174000000)]
