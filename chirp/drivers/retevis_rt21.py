@@ -536,8 +536,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
     BLOCK_SIZE = 0x10
     BLOCK_SIZE_UP = 0x10
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
-                    chirp_common.PowerLevel("High", watts=2.50)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.50),
+                    chirp_common.PowerLevel("Low", watts=1.00)]
 
     VALID_BANDS = [(400000000, 480000000)]
 
@@ -767,7 +767,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 LOG.error('%s: get_mem: unhandled power level: 0x%02x' %
                           (mem.name, _mem.txpower))
         else:
-            mem.power = self.POWER_LEVELS[_mem.highpower]
+            mem.power = self.POWER_LEVELS[1 - _mem.highpower]
 
         if self.MODEL != "RT76":
             mem.skip = "" if (_skp & bitpos) else "S"
@@ -940,7 +940,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 LOG.error('%s: set_mem: unhandled power level: %s' %
                           (mem.name, mem.power))
         else:
-            _mem.highpower = mem.power == self.POWER_LEVELS[1]
+            _mem.highpower = mem.power == self.POWER_LEVELS[0]
 
         if self.MODEL != "RT76":
             if mem.skip != "S":
@@ -1267,8 +1267,8 @@ class RB17ARadio(RT21Radio):
     BLOCK_SIZE = 0x40
     BLOCK_SIZE_UP = 0x10
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=5.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PROA8US"
     _fingerprint = "P3217s\xF8\xFF"
@@ -1295,8 +1295,8 @@ class RB26Radio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=3.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PHOGR" + "\x01" + "0"
     _fingerprint = "P32073" + "\x02\xFF"
@@ -1323,8 +1323,8 @@ class RT76Radio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=5.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PHOGR\x14\xD4"
     _fingerprint = "P32073" + "\x02\xFF"
