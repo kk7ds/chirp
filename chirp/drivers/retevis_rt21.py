@@ -563,7 +563,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.has_name = False
-        rf.valid_skips = ["", "S"]
+        if self.MODEL == "RT76":
+            rf.valid_skips = []
+        else:
+            rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
