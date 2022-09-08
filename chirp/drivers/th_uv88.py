@@ -789,7 +789,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 03 - VOX Level
-        ##rx = RadioSettingValueInteger(1, 7, _settings.voxLevel - 1)
+        # rx = RadioSettingValueInteger(1, 7, _settings.voxLevel - 1)
         rx = RadioSettingValueInteger(1, 7, _settings.voxLevel + 1)
         rset = RadioSetting("basicsettings.voxLevel", "Vox Level", rx)
         basic.append(rset)
@@ -998,7 +998,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                     elif setting == "mrAch" or setting == "mrBch":
                         setattr(obj, setting, int(element.value) - 1)
                     elif setting == "voxLevel":
-                        ##setattr(obj, setting, int(element.value) + 1)
+                        # setattr(obj, setting, int(element.value) + 1)
                         setattr(obj, setting, int(element.value) - 1)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
