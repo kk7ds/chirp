@@ -70,6 +70,7 @@
 ./chirp/drivers/kenwood_hmk.py
 ./chirp/drivers/kenwood_itm.py
 ./chirp/drivers/kenwood_live.py
+./chirp/drivers/kg935g.py
 ./chirp/drivers/kguv8d.py
 ./chirp/drivers/kguv920pa.py
 ./chirp/drivers/kguv9dplus.py
