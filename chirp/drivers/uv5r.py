@@ -731,7 +731,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_ORIG
                ]
-    _vhf_range = (136000000, 174000000)
+    _vhf_range = (130000000, 176000000)
     _220_range = (220000000, 260000000)
     _uhf_range = (400000000, 520000000)
     _aux_block = True
