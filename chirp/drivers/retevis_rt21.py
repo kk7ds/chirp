@@ -415,39 +415,13 @@ def _read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
-        serial.write(CMD_ACK)
-        ack = serial.read(1)
-    except:
-        raise errors.RadioError("Failed to read block at %04x" % block_addr)
-
-    if ack != CMD_ACK:
-        raise Exception("No ACK reading block %04x." % (block_addr))
-
-    return block_data
-
-
-def _rb26_read_block(radio, block_addr, block_size):
-    serial = radio.pipe
-
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
-    LOG.debug("Reading block %04x..." % (block_addr))
-
-    try:
-        serial.write(cmd)
-        response = serial.read(4 + block_size)
-        if response[:4] != expectedresponse:
-            raise Exception("Error reading block %04x." % (block_addr))
-
-        block_data = response[4:]
-
-        if block_addr != 0:
+        if block_addr != 0 or radio._ack_1st_block:
             serial.write(CMD_ACK)
             ack = serial.read(1)
     except:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
 
-    if block_addr != 0:
+    if block_addr != 0 or radio._ack_1st_block:
         if ack != CMD_ACK:
             raise Exception("No ACK reading block %04x." % (block_addr))
 
@@ -488,10 +462,7 @@ def do_download(radio):
         status.cur = addr + radio.BLOCK_SIZE
         radio.status_fn(status)
 
-        if radio.MODEL == "RB26" or radio.MODEL == "RT76":
-            block = _rb26_read_block(radio, addr, radio.BLOCK_SIZE)
-        else:
-            block = _read_block(radio, addr, radio.BLOCK_SIZE)
+        block = _read_block(radio, addr, radio.BLOCK_SIZE)
         data += block
 
         LOG.debug("Address: %04x" % addr)
@@ -544,6 +515,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     _magic = "PRMZUNE"
     _fingerprint = "P3207s\xF8\xFF"
     _upper = 16
+    _ack_1st_block = True
     _skipflags = True
     _reserved = False
     _gmrs = False
@@ -1236,6 +1208,7 @@ class RB26Radio(RT21Radio):
     _magic = "PHOGR" + "\x01" + "0"
     _fingerprint = "P32073" + "\x02\xFF"
     _upper = 30
+    _ack_1st_block = False
     _skipflags = True
     _reserved = True
     _gmrs = True
@@ -1264,6 +1237,7 @@ class RT76Radio(RT21Radio):
     _magic = "PHOGR\x14\xD4"
     _fingerprint = "P32073" + "\x02\xFF"
     _upper = 30
+    _ack_1st_block = False
     _skipflags = False
     _reserved = True
     _gmrs = True
