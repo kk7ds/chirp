@@ -686,7 +686,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         else:
             mem.power = self.POWER_LEVELS[1 - _mem.highpower]
 
-        if self.MODEL != "RT76":
+        if self._skipflags:
             mem.skip = "" if (_skp & bitpos) else "S"
             LOG.debug("mem.skip %s" % mem.skip)
 
@@ -849,7 +849,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         else:
             _mem.highpower = mem.power == self.POWER_LEVELS[0]
 
-        if self.MODEL != "RT76":
+        if self._skipflags:
             if mem.skip != "S":
                 _skp |= bitpos
             else:
