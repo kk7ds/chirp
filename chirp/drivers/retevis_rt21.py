@@ -1,4 +1,4 @@
-# Copyright 2021 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2021-2022 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -507,6 +507,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     BLOCK_SIZE = 0x10
     BLOCK_SIZE_UP = 0x10
 
+    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [17, 50, 645])
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.50),
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
@@ -545,6 +546,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]  # 25 KHz, 12.5 kHz.
+        rf.valid_dtcs_codes = self.DTCS_CODES
         rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = self.VALID_BANDS
@@ -590,6 +592,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             pol = (val & 0x8000) and "R" or "N"
             return code, pol
 
+        tpol = False
         if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2000:
             tcode, tpol = _get_dcs(_mem.tx_tone)
             mem.dtcs = tcode
@@ -600,6 +603,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         else:
             txmode = ""
 
+        rpol = False
         if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2000:
             rcode, rpol = _get_dcs(_mem.rx_tone)
             mem.rx_dtcs = rcode
@@ -620,8 +624,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
             mem.tmode = "Cross"
             mem.cross_mode = "%s->%s" % (txmode, rxmode)
 
-        if mem.tmode == "DTCS":
-            mem.dtcs_polarity = "%s%s" % (tpol, rpol)
+        # always set it even if no dtcs is used
+        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
 
         LOG.debug("Got TX %s (%i) RX %s (%i)" %
                   (txmode, _mem.tx_tone, rxmode, _mem.rx_tone))
@@ -733,7 +737,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
     def _set_tone(self, mem, _mem):
         def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2800
+            val = int("%i" % code, 8) + 0x2000
             if pol == "R":
                 val += 0x8000
             return val
@@ -1202,6 +1206,7 @@ class RB26Radio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
+    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
@@ -1231,6 +1236,7 @@ class RT76Radio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
+    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
