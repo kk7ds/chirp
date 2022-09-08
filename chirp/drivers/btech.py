@@ -1703,7 +1703,9 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                       LIST_SCMODE[_mem.settings.scmode]))
             basic.append(scmode)
 
-        if self.MODEL == "KT-8R":
+        if self.MODEL == "KT-8R" or self.MODEL == "UV-25X2" \
+                or self.MODEL == "UV-25X4" or self.MODEL == "UV-50X2" \
+                or self.MODEL == "GMRS-50X1" or self.MODEL == "GMRS-20V2":
             tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby",
                                  RadioSettingValueList(
                                      LIST_TMRTX,
@@ -3778,6 +3780,7 @@ struct {
   u8 mgain;         // used by db25-g for ponyey
   u8 skiptx;
   u8 scmode;
+  u8 tmrtx;
 } settings;
 
 #seekto 0x0E80;
@@ -4402,6 +4405,7 @@ struct {
   u8 mgain;
   u8 skiptx;
   u8 scmode;
+  u8 tmrtx;
 } settings;
 
 #seekto 0x3280;
