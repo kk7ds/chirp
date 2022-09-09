@@ -71,7 +71,7 @@ class ValueEditor:
                 extra_name = self._name.split("_", 1)[1]
                 LOG.debug('Setting extra %s=%r' % (extra_name, newval))
                 self._memory.extra[extra_name].value = newval
-            except settings.InternalError, e:
+            except settings.InternalError as e:
                 self._errfn(self._name, str(e))
                 return str(e)
         else:
