@@ -1143,7 +1143,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
         rf.valid_name_length = 6
         rf.valid_cross_modes = CROSS_MODES
         rf.memory_bounds = (1, 128)
-        rf.valid_special_chans = SPECIAL_CHANNELS.keys()
+        rf.valid_special_chans = list(SPECIAL_CHANNELS.keys())
         rf.valid_tuning_steps = [5.0, 6.25, 10.0, 12.5, 25.0]
         return rf
 

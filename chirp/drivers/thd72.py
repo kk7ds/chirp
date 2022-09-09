@@ -244,9 +244,9 @@ class THD72Radio(chirp_common.CloneModeRadio):
         rf.has_bank = False
         rf.has_settings = True
         rf.valid_tuning_steps = []
-        rf.valid_modes = MODES_REV.keys()
-        rf.valid_tmodes = TMODES_REV.keys()
-        rf.valid_duplexes = DUPLEX_REV.keys()
+        rf.valid_modes = list(MODES_REV.keys())
+        rf.valid_tmodes = list(TMODES_REV.keys())
+        rf.valid_duplexes = list(DUPLEX_REV.keys())
         rf.valid_skips = ["", "S"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8

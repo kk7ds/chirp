@@ -503,7 +503,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         """Get the radio's features"""
 
         rf = chirp_common.RadioFeatures()
-        rf.valid_special_chans = SPECIALS.keys()
+        rf.valid_special_chans = list(SPECIALS.keys())
         rf.has_settings = True
         rf.has_bank = False
         rf.has_tuning_step = False
