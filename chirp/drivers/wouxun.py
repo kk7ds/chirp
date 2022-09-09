@@ -37,7 +37,7 @@ def encode_freq(freq):
     div = 1000
     for i in range(0, 4):
         enc <<= 4
-        enc |= FREQ_ENCODE_TABLE[(freq/div) % 10]
+        enc |= FREQ_ENCODE_TABLE[int((freq/div) % 10)]
         div /= 10
     return enc
 
@@ -1407,7 +1407,7 @@ class KGUV6DRadio(KGUVD1PRadio):
             try:
                 (bank, index) = \
                     (int(a) for a in element.get_name().split("_")[-2:])
-                val = element.value
+                val = list(element.value)
                 if val[0].get_value():
                     value = int(val[1].get_value()*10-760)
                 else:

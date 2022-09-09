@@ -813,7 +813,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # building the data for the memmap
         fdata = ""
 
-        for k, v in data.iteritems():
+        for k, v in data.items():
             # posible bad data
             if k == 0:
                 k = 1
@@ -844,7 +844,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         bdata += (256 - (len(bdata)) % 256) * "\xFF"
 
         # fill to match the whole area
-        bdata += (16 - len(bdata) / 256) * EMPTY_BLOCK
+        bdata += int(16 - len(bdata) / 256) * EMPTY_BLOCK
 
         # updating the data in the memmap [x1000]
         self._fill(0x1000, bdata)
@@ -1306,31 +1306,31 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         if self.TYPE[0] == "M":
             vu = RadioSetting("keys.kVOL_UP", "VOL UP",
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
+                              list(KEYS.values())[list(KEYS.keys()).index(
                                   int(keys.kVOL_UP))]))
             fkeys.append(vu)
 
             vd = RadioSetting("keys.kVOL_DOWN", "VOL DOWN",
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
+                              list(KEYS.values())[list(KEYS.keys()).index(
                                   int(keys.kVOL_DOWN))]))
             fkeys.append(vd)
 
             chu = RadioSetting("keys.kCH_UP", "CH UP",
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
+                               list(KEYS.values())[list(KEYS.keys()).index(
                                    int(keys.kCH_UP))]))
             fkeys.append(chu)
 
             chd = RadioSetting("keys.kCH_DOWN", "CH DOWN",
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
+                               list(KEYS.values())[list(KEYS.keys()).index(
                                    int(keys.kCH_DOWN))]))
             fkeys.append(chd)
 
             foot = RadioSetting("keys.kFOOT", "Foot switch",
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
+                               list(KEYS.values())[list(KEYS.keys()).index(
                                    int(keys.kCH_DOWN))]))
             fkeys.append(foot)
 
@@ -1344,7 +1344,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
             scn = RadioSetting("keys.kSCN", scn_name,
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
+                               list(KEYS.values())[list(KEYS.keys()).index(
                                    int(keys.kSCN))]))
             fkeys.append(scn)
 
@@ -1354,7 +1354,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
             a = RadioSetting("keys.kA", a_name,
                              RadioSettingValueList(KEYS.values(),
-                             KEYS.values()[KEYS.keys().index(
+                             list(KEYS.values())[list(KEYS.keys()).index(
                                  int(keys.kA))]))
             fkeys.append(a)
 
@@ -1364,7 +1364,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
             da = RadioSetting("keys.kDA", da_name,
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
+                              list(KEYS.values())[list(KEYS.keys()).index(
                                   int(keys.kDA))]))
             fkeys.append(da)
 
@@ -1374,7 +1374,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
             gu = RadioSetting("keys.kGROUP_UP", gu_name,
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
+                              list(KEYS.values())[list(KEYS.keys()).index(
                                   int(keys.kGROUP_UP))]))
             fkeys.append(gu)
 
@@ -1385,7 +1385,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         gd = RadioSetting("keys.kGROUP_DOWN", gd_name,
                           RadioSettingValueList(KEYS.values(),
-                          KEYS.values()[KEYS.keys().index(
+                          list(KEYS.values())[list(KEYS.keys()).index(
                               int(keys.kGROUP_DOWN))]))
         fkeys.append(gd)
 
@@ -1395,7 +1395,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         mon = RadioSetting("keys.kMON", mon_name,
                            RadioSettingValueList(KEYS.values(),
-                           KEYS.values()[KEYS.keys().index(
+                           list(KEYS.values())[list(KEYS.keys()).index(
                                int(keys.kMON))]))
         fkeys.append(mon)
 
@@ -1480,7 +1480,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
                 # case keys, with special config
                 if inter == "keys":
-                    value = KEYS.keys()[KEYS.values().index(str(value))]
+                    value = list(KEYS.keys())[list(KEYS.values()).index(str(value))]
 
             # Apply al configs done
             setattr(obj, setting, value)
