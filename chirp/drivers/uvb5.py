@@ -795,5 +795,5 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return (filedata.startswith("KT511 Radio Program data") and
+        return (filedata.startswith(b"KT511 Radio Program data") and
                 len(filedata) == (cls._memsize + 0x30))

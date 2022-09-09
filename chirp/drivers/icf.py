@@ -449,7 +449,13 @@ def convert_data_line(line):
 
     line = line.strip()
 
-    if len(line) == 38:
+    # Detection of the prefix length. The code assumes that the data line
+    # length (without the prefix) is multiply of 8 characters (i.e. multiply
+    # of 4 bytes), so the rest (remainder of division by 8) has to be the
+    # prefix (prefix = address + length) - for small memory the address is
+    # 2 bytes long and the length indicator is 1 byte long which means 3 bytes
+    # in total which is 6 characters in total for the prefix on the ICF line.
+    if len(line) % 8 == 6:
         # Small memory (< 0x10000)
         size = int(line[4:6], 16)
         data = line[6:]

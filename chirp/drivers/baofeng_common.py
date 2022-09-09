@@ -140,7 +140,7 @@ def _do_ident(radio, magic):
     if not ident.startswith("\xaa") or not ident.endswith("\xdd"):
         # bad response
         msg = "Unexpected response, got this:"
-        msg +=  util.hexprint(ident)
+        msg += util.hexprint(ident)
         LOG.debug(msg)
         raise errors.RadioError("Unexpected response from radio.")
 
@@ -307,12 +307,22 @@ def _split(rf, f1, f2):
     # if you get here is because the freq pairs are split
     return True
 
+
 class BaofengCommonHT(chirp_common.CloneModeRadio,
                       chirp_common.ExperimentalRadio):
-    """Baofeng HT Sytle Radios"""
+    """Baofeng HT Style Radios"""
     VENDOR = "Baofeng"
     MODEL = ""
     IDENT = ""
+
+    GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
+                   462.6875, 462.7125]
+    GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
+                   467.6875, 467.7125]
+    GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
+                   462.6750, 462.7000, 462.7250]
+    GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
+    _gmrs = False
 
     def sync_in(self):
         """Download from radio"""
@@ -342,7 +352,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             LOG.exception('Unexpected error during upload')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-                                    
+
     def get_features(self):
         """Get the radio's features"""
 
@@ -380,7 +390,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 
         return rf
-        
+
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
@@ -408,7 +418,8 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             # TX freq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset != 0:
-                if _split(self.get_features(), mem.freq, int(_mem.txfreq) * 10):
+                if _split(self.get_features(), mem.freq, int(
+                          _mem.txfreq) * 10):
                     mem.duplex = "split"
                     mem.offset = int(_mem.txfreq) * 10
                 elif offset < 0:
@@ -513,6 +524,33 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             return
 
         _mem.set_raw("\x00" * 16)
+
+        if self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = int(self.GMRS_FREQS[mem.number - 1] * 1000000)
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.mode = "NFM"
+                        mem.power = self.POWER_LEVELS[2]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
+            elif float(mem.freq) / 1000000 in self.GMRS_FREQS:
+                if float(mem.freq) / 1000000 in self.GMRS_FREQS2:
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[2]
+                if float(mem.freq) / 1000000 in self.GMRS_FREQS3:
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 

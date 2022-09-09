@@ -20,8 +20,6 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -29,6 +27,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 struct mem {
@@ -93,12 +93,12 @@ struct {
       workmoda:1;      // work mode (left side)
   u8  scansb:1,        // scan stop beep
       aftone:3,        // af tone control
-      scand:1,         // scan directon
+      scand:1,         // scan direction
       scanr:3;         // scan resume
   u8  rxexp:1,         // rx expansion
       ptt:1,           // ptt mode
       display:1,       // display select (frequency/clock)
-      omode:1,         // operaton mode
+      omode:1,         // operation mode
       beep:2,          // beep volume
       spkr:2;          // speaker
   u8  cpuclk:1,        // operating mode(cpu clock)
@@ -261,8 +261,8 @@ LIST_SCAND = ["Down", "Up"]
 LIST_SCANR = ["Busy", "Hold", "1 sec", "3 sec", "5 sec"]
 LIST_APO = ["Off", ".5", "1", "1.5"] + ["%s" % x for x in range(2, 13)]
 LIST_BEEP = ["Off", "Low", "High"]
-LIST_FKEY = ["MHz/AD-F", "AF Dual 1(line-in)", "AF Dual 2(AM)", "AF Dual 3(FM)",
-             "PA", "SQL off", "T-call", "WX"]
+LIST_FKEY = ["MHz/AD-F", "AF Dual 1(line-in)", "AF Dual 2(AM)",
+             "AF Dual 3(FM)", "PA", "SQL off", "T-call", "WX"]
 LIST_PFKEY = ["Off", "SQL off", "TX power", "Scan", "RPT shift", "Reverse",
               "T-Call"]
 LIST_AB = ["A", "B"]
@@ -345,7 +345,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
 
 # B-TECH UV-50X3 id string
-UV50X3_id  = "VGC6600MD"
+UV50X3_id = "VGC6600MD"
 
 
 def _clean_buffer(radio):
@@ -451,7 +451,7 @@ def _do_ident(radio):
     if ident != radio.IDENT:
         # bad ident
         msg = "Incorrect model ID, got this:"
-        msg +=  util.hexprint(ident)
+        msg += util.hexprint(ident)
         LOG.debug(msg)
         raise errors.RadioError("Radio identification failed.")
 
@@ -551,7 +551,6 @@ def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x6140:0x6148]
 
-    #if rid in cls._fileid:
     if rid in cls.IDENT:
         return True
 
@@ -787,7 +786,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         mem.extra = RadioSettingGroup("extra", "Extra")
 
         bcl = RadioSetting("bcl", "Busy channel lockout",
-                              RadioSettingValueBoolean(bool(_mem.bcl)))
+                           RadioSettingValueBoolean(bool(_mem.bcl)))
         mem.extra.append(bcl)
 
         revert = RadioSetting("revert", "Revert",
@@ -870,7 +869,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             if dname and not dname.changed():
                 dname.value = False
 
-        # reseting unknowns, this has to be set by hand
+        # resetting unknowns, this has to be set by hand
         _mem.unknown0 = 0
         _mem.unknown1 = 0
         _mem.unknown2 = 0
@@ -924,7 +923,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic.append(aftone)
 
         spkr = RadioSetting("settings.spkr", "Speaker",
-                            RadioSettingValueList(LIST_SPKR,LIST_SPKR[
+                            RadioSettingValueList(LIST_SPKR, LIST_SPKR[
                                 _mem.settings.spkr]))
         basic.append(spkr)
 
@@ -946,7 +945,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic.append(mgain)
 
         ptt = RadioSetting("settings.ptt", "PTT mode",
-                           RadioSettingValueList(LIST_PTT,LIST_PTT[
+                           RadioSettingValueList(LIST_PTT, LIST_PTT[
                                _mem.settings.ptt]))
         basic.append(ptt)
 
@@ -954,7 +953,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         # B04 (per channel)
 
         rxexp = RadioSetting("settings.rxexp", "RX expansion",
-                             RadioSettingValueList(LIST_RXEXP,LIST_RXEXP[
+                             RadioSettingValueList(LIST_RXEXP, LIST_RXEXP[
                                  _mem.settings.rxexp]))
         basic.append(rxexp)
 
@@ -973,8 +972,9 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         # Display: C01-C06
 
         display = RadioSetting("settings.display", "Display select",
-                               RadioSettingValueList(LIST_DISPLAY,
-                                   LIST_DISPLAY[_mem.settings.display]))
+                               RadioSettingValueList(
+                                   LIST_DISPLAY, LIST_DISPLAY[
+                                       _mem.settings.display]))
         basic.append(display)
 
         lcdb = RadioSetting("settings.lcdb", "LCD brightness",
@@ -1022,12 +1022,12 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic.append(dwstop)
 
         scand = RadioSetting("settings.scand", "Scan direction",
-                             RadioSettingValueList(LIST_SCAND,LIST_SCAND[
+                             RadioSettingValueList(LIST_SCAND, LIST_SCAND[
                                  _mem.settings.scand]))
         basic.append(scand)
 
         scanr = RadioSetting("settings.scanr", "Scan resume",
-                             RadioSettingValueList(LIST_SCANR,LIST_SCANR[
+                             RadioSettingValueList(LIST_SCANR, LIST_SCANR[
                                  _mem.settings.scanr]))
         basic.append(scanr)
 
@@ -1047,12 +1047,12 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic.append(ars)
 
         beep = RadioSetting("settings.beep", "Beep volume",
-                            RadioSettingValueList(LIST_BEEP,LIST_BEEP[
+                            RadioSettingValueList(LIST_BEEP, LIST_BEEP[
                                 _mem.settings.beep]))
         basic.append(beep)
 
         fkey = RadioSetting("settings.fkey", "F key",
-                            RadioSettingValueList(LIST_FKEY,LIST_FKEY[
+                            RadioSettingValueList(LIST_FKEY, LIST_FKEY[
                                 _mem.settings.fkey]))
         basic.append(fkey)
 
@@ -1077,36 +1077,40 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic.append(pfkey4)
 
         omode = RadioSetting("settings.omode", "Operation mode",
-                             RadioSettingValueList(LIST_AB,LIST_AB[
+                             RadioSettingValueList(LIST_AB, LIST_AB[
                                  _mem.settings.omode]))
         basic.append(omode)
 
         rxcoverm = RadioSetting("settings.rxcoverm", "RX coverage - memory",
-                                RadioSettingValueList(LIST_COVERAGE, 
-                                    LIST_COVERAGE[_mem.settings.rxcoverm]))
+                                RadioSettingValueList(
+                                    LIST_COVERAGE, LIST_COVERAGE[
+                                        _mem.settings.rxcoverm]))
         basic.append(rxcoverm)
 
         rxcoverv = RadioSetting("settings.rxcoverv", "RX coverage - VFO",
-                                RadioSettingValueList(LIST_COVERAGE, 
-                                    LIST_COVERAGE[_mem.settings.rxcoverv]))
+                                RadioSettingValueList(
+                                    LIST_COVERAGE, LIST_COVERAGE[
+                                        _mem.settings.rxcoverv]))
         basic.append(rxcoverv)
 
         tot = RadioSetting("settings.tot", "Time out timer [min]",
                            RadioSettingValueList(LIST_TOT, LIST_TOT[
-                               _mem.settings.tot]))
+                                                 _mem.settings.tot]))
         basic.append(tot)
 
         # Timer/Clock: G01-G04
 
         # G01
         datefmt = RadioSetting("settings.datefmt", "Date format",
-                               RadioSettingValueList(LIST_DATEFMT,
-                                   LIST_DATEFMT[_mem.settings.datefmt]))
+                               RadioSettingValueList(
+                                   LIST_DATEFMT, LIST_DATEFMT[
+                                       _mem.settings.datefmt]))
         basic.append(datefmt)
 
         timefmt = RadioSetting("settings.timefmt", "Time format",
-                               RadioSettingValueList(LIST_TIMEFMT,
-                                   LIST_TIMEFMT[_mem.settings.timefmt]))
+                               RadioSettingValueList(
+                                   LIST_TIMEFMT, LIST_TIMEFMT[
+                                       _mem.settings.timefmt]))
         basic.append(timefmt)
 
         timesig = RadioSetting("settings.timesig", "Time signal",
@@ -1140,7 +1144,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         # H04 (per channel)
 
         decbandsel = RadioSetting("settings.decbandsel", "DTMF band select",
-                                  RadioSettingValueList(LIST_AB,LIST_AB[
+                                  RadioSettingValueList(LIST_AB, LIST_AB[
                                       _mem.settings.decbandsel]))
         basic.append(decbandsel)
 
@@ -1151,18 +1155,21 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         # Pkt: I01-I03
 
         databnd = RadioSetting("settings.databnd", "Packet data band",
-                               RadioSettingValueList(LIST_DATABND,LIST_DATABND[
-                                   _mem.settings.databnd]))
+                               RadioSettingValueList(
+                                   LIST_DATABND, LIST_DATABND[
+                                       _mem.settings.databnd]))
         basic.append(databnd)
 
         dataspd = RadioSetting("settings.dataspd", "Packet data speed",
-                               RadioSettingValueList(LIST_DATASPD,LIST_DATASPD[
-                                   _mem.settings.dataspd]))
+                               RadioSettingValueList(
+                                   LIST_DATASPD, LIST_DATASPD[
+                                       _mem.settings.dataspd]))
         basic.append(dataspd)
 
         datasql = RadioSetting("settings.datasql", "Packet data squelch",
-                               RadioSettingValueList(LIST_DATASQL,LIST_DATASQL[
-                                   _mem.settings.datasql]))
+                               RadioSettingValueList(
+                                   LIST_DATASQL, LIST_DATASQL[
+                                       _mem.settings.datasql]))
         basic.append(datasql)
 
         # Other
@@ -1172,7 +1179,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         other.append(dw)
 
         cpuclk = RadioSetting("settings.cpuclk", "CPU clock frequency",
-                              RadioSettingValueList(LIST_CPUCLK,LIST_CPUCLK[
+                              RadioSettingValueList(LIST_CPUCLK, LIST_CPUCLK[
                                   _mem.settings.cpuclk]))
         other.append(cpuclk)
 
@@ -1198,12 +1205,12 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         # Work
 
         workmoda = RadioSetting("settings.workmoda", "Work mode A",
-                                RadioSettingValueList(LIST_WORK,LIST_WORK[
+                                RadioSettingValueList(LIST_WORK, LIST_WORK[
                                     _mem.settings.workmoda]))
         work.append(workmoda)
 
         workmodb = RadioSetting("settings.workmodb", "Work mode B",
-                                RadioSettingValueList(LIST_WORK,LIST_WORK[
+                                RadioSettingValueList(LIST_WORK, LIST_WORK[
                                     _mem.settings.workmodb]))
         work.append(workmodb)
 
@@ -1228,23 +1235,23 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         work.append(sqlb)
 
         stepa = RadioSetting("settings.stepa", "Auto step A",
-                             RadioSettingValueList(LIST_STEP,LIST_STEP[
+                             RadioSettingValueList(LIST_STEP, LIST_STEP[
                                  _mem.settings.stepa]))
         work.append(stepa)
 
         stepb = RadioSetting("settings.stepb", "Auto step B",
-                             RadioSettingValueList(LIST_STEP,LIST_STEP[
+                             RadioSettingValueList(LIST_STEP, LIST_STEP[
                                  _mem.settings.stepb]))
         work.append(stepb)
 
         mrcha = RadioSetting("settings.mrcha", "Current channel A",
                              RadioSettingValueInteger(0, 499,
-                                 _mem.settings.mrcha))
+                                                      _mem.settings.mrcha))
         work.append(mrcha)
 
         mrchb = RadioSetting("settings.mrchb", "Current channel B",
                              RadioSettingValueInteger(0, 499,
-                                 _mem.settings.mrchb))
+                                                      _mem.settings.mrchb))
         work.append(mrchb)
 
         val = _mem.settings.offseta / 100.00
@@ -1259,16 +1266,16 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
         wpricha = RadioSetting("settings.wpricha", "Priority channel A",
                                RadioSettingValueInteger(0, 499,
-                                   _mem.settings.wpricha))
+                                                        _mem.settings.wpricha))
         work.append(wpricha)
 
         wprichb = RadioSetting("settings.wprichb", "Priority channel B",
                                RadioSettingValueInteger(0, 499,
-                                   _mem.settings.wprichb))
+                                                        _mem.settings.wprichb))
         work.append(wprichb)
 
         smode = RadioSetting("settings.smode", "Smart function mode",
-                             RadioSettingValueList(LIST_SMODE,LIST_SMODE[
+                             RadioSettingValueList(LIST_SMODE, LIST_SMODE[
                                  _mem.settings.smode]))
         work.append(smode)
 
@@ -1280,13 +1287,13 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         dtmf.append(ttdkey)
 
         ttdgt = RadioSetting("dtmf.ttdgt", "Digit time",
-                              RadioSettingValueList(LIST_TT200, LIST_TT200[
-                                  (_mem.dtmf.ttdgt) - 5]))
+                             RadioSettingValueList(LIST_TT200, LIST_TT200[
+                                 (_mem.dtmf.ttdgt) - 5]))
         dtmf.append(ttdgt)
 
         ttint = RadioSetting("dtmf.ttint", "Interval time",
-                              RadioSettingValueList(LIST_TT200, LIST_TT200[
-                                  (_mem.dtmf.ttint) - 5]))
+                             RadioSettingValueList(LIST_TT200, LIST_TT200[
+                                 (_mem.dtmf.ttint) - 5]))
         dtmf.append(ttint)
 
         tt1stdgt = RadioSetting("dtmf.tt1stdgt", "1st digit time",
@@ -1310,8 +1317,9 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         dtmf.append(ttsig)
 
         ttautorst = RadioSetting("dtmf2.ttautorst", "Auto reset time",
-                                 RadioSettingValueList(LIST_TTAUTORST,
-                                     LIST_TTAUTORST[_mem.dtmf2.ttautorst]))
+                                 RadioSettingValueList(
+                                     LIST_TTAUTORST, LIST_TTAUTORST[
+                                         _mem.dtmf2.ttautorst]))
         dtmf.append(ttautorst)
 
         if _mem.dtmf2.ttgrpcode > 0x06:
@@ -1320,12 +1328,13 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             val = _mem.dtmf2.ttgrpcode
         ttgrpcode = RadioSetting("dtmf2.ttgrpcode", "Group code",
                                  RadioSettingValueList(LIST_TTGRPCODE,
-                                     LIST_TTGRPCODE[val]))
+                                                       LIST_TTGRPCODE[val]))
         dtmf.append(ttgrpcode)
 
         ttintcode = RadioSetting("dtmf2.ttintcode", "Interval code",
-                                 RadioSettingValueList(LIST_TTINTCODE,
-                                     LIST_TTINTCODE[_mem.dtmf2.ttintcode]))
+                                 RadioSettingValueList(
+                                     LIST_TTINTCODE, LIST_TTINTCODE[
+                                         _mem.dtmf2.ttintcode]))
         dtmf.append(ttintcode)
 
         if _mem.dtmf2.ttalert > 0x04:
@@ -1334,12 +1343,13 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             val = _mem.dtmf2.ttalert
         ttalert = RadioSetting("dtmf2.ttalert", "Alert tone/transpond",
                                RadioSettingValueList(LIST_TTALERT,
-                                   LIST_TTALERT[val]))
+                                                     LIST_TTALERT[val]))
         dtmf.append(ttalert)
 
         ttautod = RadioSetting("dtmf.ttautod", "Auto dial group",
-                               RadioSettingValueList(LIST_TTAUTOD,
-                                   LIST_TTAUTOD[_mem.dtmf.ttautod]))
+                               RadioSettingValueList(
+                                   LIST_TTAUTOD, LIST_TTAUTOD[
+                                       _mem.dtmf.ttautod]))
         dtmf.append(ttautod)
 
         # setup 9 dtmf autodial entries
@@ -1413,7 +1423,6 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
-
 
     @classmethod
     def match_model(cls, filedata, filename):

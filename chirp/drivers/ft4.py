@@ -469,12 +469,25 @@ class YaesuSC35GenericBankModel(chirp_common.BankModel):
 # the values in these lists must also be in the canonical UI list
 # we can re-arrange the order, and we don't need to have all
 # the values, but we cannot add our own values here.
-DUPLEX = ["+", "", "-", "", "off", "", "split"]  # (0,2,4,5)= (+,-,0, auto)
-# the radio implements duplex "auto" as 5. we map to "" It appears to be
-# a convienience function in the radio that affects the offset, but I do not
-# understand it.
 
-SKIPS = ["", "S"]
+DUPLEX = ["+", "", "-", "", "off", "", "split"]  # (0,2,4,5) = (+, -, 0, auto)
+# The radio implements duplex "auto" as 5. We map to "". It is a convenience
+# function in the radio that affects the offset, which sets the duplex value
+# according to the frequency in use. Yaesu doesn't entirely adhere to the band
+# plans; but worse, they save the value 'auto' instead of + or -. Why Yaesu
+# is doing such a thing is beyond me. [AE6YN]
+DUPLEX_AUTO_US = [
+    [145100000, 145495000, 2],
+    [146000000, 146395000, 0],
+    [146600000, 146995000, 2],
+    [147000000, 147395000, 0],
+    [147600000, 147995000, 2]]
+# (There are no automatic duplex values in IARU-2 70CM.)
+DUPLEX_AUTO_EU = [
+    [145600000, 145800000, 2],
+    [438200000, 439425000, 2]]
+
+SKIPS = ["S", ""]
 
 POWER_LEVELS = [
     chirp_common.PowerLevel("High", watts=5.0),  # high must be first (0)
@@ -558,7 +571,7 @@ CHARSET = CW_ID_CHARS + "abcdefghijklmnopqrstuvwxyz*+-/@"
 PMSNAMES = ["%s%02d" % (c, i) for i in range(1, 11) for c in ('L', 'U')]
 
 # Four separate arrays of special channel mems.
-# Each special has unique constrants: band, name yes/no, and pms L/U
+# Each special has unique constraints: band, name yes/no, and pms L/U
 # The FT-65 class replaces the "prog" entry in this list.
 # The name field must be the name of a slot array in MEM_FORMAT
 SPECIALS_FT4 = [
@@ -722,8 +735,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     # callback for setting  byte arrays: DTMF[0-9], passwd, and CW_ID
     def apply_str_to_bytearray(self, element, obj):
         lng = len(obj)
-        strng = (element.value.get_value() + "                ")[:lng]
-        bytes = bytearray(strng, "ascii")
+        string = (element.value.get_value() + "                ")[:lng]
+        bytes = bytearray(string, "ascii")
         for x in range(0, lng):    # memobj cannot iterate, so byte-by-byte
             obj[x] = bytes[x]
         return
@@ -807,7 +820,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ("apo", "Automatic Power Off",
           ["OFF"] + ["%0.1f" % (x * 0.5) for x in range(1, 24 + 1)]),
          ("bclo", "Busy Channel Lock-Out", ["OFF", "ON"]),
-         ("beep", "Enable the Beeper", ["OFF", "KEY", "KEY+SC"]),
+         ("beep", "Enable the Beeper", ["KEY+SC", "KEY", "OFF"]),
          ("bsy_led", "Busy LED", ["ON", "OFF"]),
          ("edg_beep", "Band Edge Beeper", ["OFF", "ON"]),
          ("vox", "VOX", ["OFF", "ON"]),
@@ -1047,6 +1060,17 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 name += chr(y)
             return name.rstrip()
 
+        def get_duplex(freq):    # auto duplex to real duplex
+            """
+            Select the duplex direction if duplex == 'auto'.
+            0 is +, 2 is -, and 4 is none.
+            """
+            return_value = 4     # off, if not in auto range
+            for x in self.DUPLEX_AUTO:
+                if freq in range(x[0], x[1]):
+                    return_value = x[2]
+            return return_value
+
         mem = chirp_common.Memory()
         _mem, ndx, num, regtype, sname = self.slotloc(memref)
         mem.number = num
@@ -1081,12 +1105,14 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         else:
             mem.freq = int(_mem.freq) * 10
             txfreq = int(self._memobj.txfreqs[ndx].freq) * 10
-            if (txfreq != 0) and (txfreq != mem.freq):
-                mem.duplex = "split"
+            if _mem.duplex == 5:  # auto offset
+                mem.duplex = DUPLEX[get_duplex(mem.freq)]
+            else:
+                mem.duplex = DUPLEX[_mem.duplex]
+            if _mem.duplex == 6:  # split: offset is tx frequency
                 mem.offset = txfreq
             else:
                 mem.offset = int(_mem.offset) * self.freq_offset_scale
-                mem.duplex = DUPLEX[_mem.duplex]
             self.decode_sql(mem, _mem)
             mem.power = POWER_LEVELS[2 - _mem.tx_pwr]
             mem.mode = ["FM", "NFM"][_mem.tx_width]
@@ -1137,7 +1163,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             self._memobj.names[ndx].chrs = bytearray(nametrim, "ascii")
             if mem.duplex == "split":
                 txfreq = mem.offset / 10
-                duplex = "off"    # radio ignores when tx != rx
             self._memobj.txfreqs[num-1].freq = txfreq
         _mem.duplex = DUPLEX.index(duplex)
         if regtype in ["vfo", "home"]:
@@ -1210,6 +1235,7 @@ class YaesuFT4XRRadio(YaesuFT4GenericRadio):
     MODEL = "FT-4XR"
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
+    DUPLEX_AUTO = DUPLEX_AUTO_US
     legal_steps = US_LEGAL_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
@@ -1222,6 +1248,7 @@ class YaesuFT4XERadio(YaesuFT4GenericRadio):
     MODEL = "FT-4XE"
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
+    DUPLEX_AUTO = DUPLEX_AUTO_EU
     legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
@@ -1234,6 +1261,7 @@ class YaesuFT4VRRadio(YaesuFT4GenericRadio):
     MODEL = "FT-4VR"
     id_str = b'IFT-15R\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_VHF
+    DUPLEX_AUTO = DUPLEX_AUTO_US
     legal_steps = US_LEGAL_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
 
@@ -1247,6 +1275,7 @@ class YaesuFT4VRRadio(YaesuFT4GenericRadio):
 #    MODEL = "FT-4VE"
 #    id_str = b'IFT-15R\x00\x00V100\x00\x00'
 #    valid_bands = VALID_BANDS_VHF
+#    DUPLEX_AUTO = DUPLEX_AUTO_EU
 #    legal_steps = STEP_CODE
 #    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
 
@@ -1259,7 +1288,8 @@ class YaesuFT65RRadio(YaesuFT65GenericRadio):
     MODEL = "FT-65R"
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
-    legal_steps = US_LEGAL_STEPS
+    DUPLEX_AUTO = DUPLEX_AUTO_US
+    legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
 
@@ -1271,6 +1301,7 @@ class YaesuFT65ERadio(YaesuFT65GenericRadio):
     MODEL = "FT-65E"
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
+    DUPLEX_AUTO = DUPLEX_AUTO_EU
     legal_steps = STEP_CODE
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
@@ -1283,6 +1314,7 @@ class YaesuFT25RRadio(YaesuFT65GenericRadio):
     MODEL = "FT-25R"
     id_str = b'IFT-25R\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_VHF
+    DUPLEX_AUTO = DUPLEX_AUTO_US
     legal_steps = US_LEGAL_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF
 
@@ -1296,5 +1328,6 @@ class YaesuFT25RRadio(YaesuFT65GenericRadio):
 #    MODEL = "FT-25E"
 #    id_str = b'IFT-25R\x00\x00V100\x00\x00'
 #    valid_bands = VALID_BANDS_VHF
+#    DUPLEX_AUTO = DUPLEX_AUTO_EU
 #    legal_steps = STEP_CODE
 #    BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_MONO_VHF

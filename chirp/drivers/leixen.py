@@ -421,6 +421,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rf.valid_tuning_steps = _STEP_LIST
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 470000000)]
+        rf.valid_dtcs_codes = DTCS_CODES
         rf.memory_bounds = (1, 199)
         return rf
 

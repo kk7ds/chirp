@@ -88,11 +88,15 @@ class TemplateRadio(chirp_common.CloneModeRadio):
     # Do a download of the radio from the serial port
     def sync_in(self):
         self._mmap = do_download(self)
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self.process_mmap()
 
     # Do an upload of the radio to the serial port
     def sync_out(self):
         do_upload(self)
+
+    # Convert the raw byte array into a memory object structure
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     # Return a raw representation of the memory object, which
     # is very helpful for development

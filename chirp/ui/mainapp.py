@@ -160,10 +160,14 @@ class ChirpMain(gtk.Window):
         for i in range(0, self.tabs.get_n_pages()):
             esets.append(self.tabs.get_nth_page(i))
 
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         d = gtk.Dialog(title="Diff Radios",
-                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
+                       buttons=buttons,
                        parent=self)
+        d.set_default_response(gtk.RESPONSE_OK)
+        d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                        gtk.RESPONSE_CANCEL])
 
         label = gtk.Label("")
         label.set_markup("<b>-1</b> for either Mem # does a full-file hex " +
@@ -267,7 +271,6 @@ class ChirpMain(gtk.Window):
     def do_new(self):
         eset = editorset.EditorSet(_("Untitled") + ".csv", self)
         self._connect_editorset(eset)
-        eset.prime()
         eset.show()
 
         tab = self.tabs.append_page(eset, eset.get_tab_label())
@@ -295,9 +298,13 @@ of file.
         lab.show()
         choice = miscwidgets.make_choice(sorted(radiolist.keys()), False,
                                          sorted(radiolist.keys())[0])
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         d = gtk.Dialog(title="Detection Failed",
-                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                       buttons=buttons)
+        d.set_default_response(gtk.RESPONSE_OK)
+        d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                        gtk.RESPONSE_CANCEL])
         d.vbox.pack_start(lab, 0, 0, 0)
         d.vbox.pack_start(choice, 0, 0, 0)
         d.vbox.set_spacing(5)
@@ -318,7 +325,6 @@ of file.
         if not fname:
             types = [(_("All files") + " (*.*)", "*"),
                      (_("CHIRP Radio Images") + " (*.img)", "*.img"),
-                     (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                      (_("CSV Files") + " (*.csv)", "*.csv"),
                      (_("DAT Files") + " (*.dat)", "*.dat"),
                      (_("EVE Files (VX5)") + " (*.eve)", "*.eve"),
@@ -330,6 +336,10 @@ of file.
             fname = platform.get_platform().gui_open_file(types=types)
             if not fname:
                 return
+
+        if not os.path.exists(fname):
+            LOG.error("Unable to find file %s" % fname)
+            return
 
         self.record_recent_file(fname)
 
@@ -523,41 +533,63 @@ of file.
         return recent
 
     def _set_recent_list(self, recent):
-        for fn in recent:
-            CONF.set("recent%i" % recent.index(fn), fn, "state")
+        for index in range(0, KEEP_RECENT):
+            key = "recent%i" % index
+            if (index < len(recent)):
+                fn = recent[index]
+                CONF.set(key, fn, "state")
+            else:
+                CONF.remove_option(key, "state")
+        self.recent_files = None
 
     def update_recent_files(self):
-        i = 0
-        for fname in self._get_recent_list():
-            action_name = "recent%i" % i
+        if self.recent_files is not None:
+            return
+
+        self.recent_files = self._get_recent_list()
+        for index in range(0, KEEP_RECENT):
+            action_name = "recent%i" % index
             path = "/MenuBar/file/recent"
 
             old_action = self.menu_ag.get_action(action_name)
             if old_action:
+                old_action.set_visible(False)
                 self.menu_ag.remove_action(old_action)
 
-            file_basename = os.path.basename(fname).replace("_", "__")
-            action = gtk.Action(
-                action_name, "_%i. %s" % (i + 1, file_basename),
-                _("Open recent file {name}").format(name=fname), "")
-            action.connect("activate", lambda a, f: self.do_open(f), fname)
-            mid = self.menu_uim.new_merge_id()
-            self.menu_uim.add_ui(mid, path,
-                                 action_name, action_name,
-                                 gtk.UI_MANAGER_MENUITEM, False)
-            self.menu_ag.add_action(action)
-            i += 1
+            if (index < len(self.recent_files)):
+                fname = self.recent_files[index]
+                widget_label = os.path.basename(fname).replace("_", "__")
+                widget_tip = _("Open recent file") + (" {name}").format(
+                    name=fname)
+                widget_path = path + "/" + action_name
 
-    def record_recent_file(self, filename):
+                action = gtk.Action(action_name, widget_label, widget_tip, "")
+                action.connect("activate", lambda a, f: self.do_open(f), fname)
 
+                mid = self.menu_uim.new_merge_id()
+                self.menu_uim.add_ui(mid, path,
+                                     action_name, action_name,
+                                     gtk.UI_MANAGER_MENUITEM, True)
+                self.menu_ag.add_action(action)
+
+                try:
+                    widget = self.menu_uim.get_widget(widget_path)
+                    widget.set_tooltip_text(tip)
+                except:
+                    pass
+
+    def record_recent_file(self, fname):
         recent_files = self._get_recent_list()
-        if filename not in recent_files:
-            if len(recent_files) == KEEP_RECENT:
-                del recent_files[-1]
-            recent_files.insert(0, filename)
-            self._set_recent_list(recent_files)
+        if fname in recent_files:
+            recent_files.remove(fname)
+        if len(recent_files) == KEEP_RECENT:
+            recent_files.pop(0)
+        recent_files.append(fname)
 
-        self.update_recent_files()
+        self._set_recent_list(recent_files)
+
+    def clear_recent_files(self):
+        self._set_recent_list([])
 
     def import_stock_config(self, action, config):
         eset = self.get_current_editorset()
@@ -601,9 +633,9 @@ of file.
                                 "")
             action.connect("activate", self.import_stock_config, config)
             mid = self.menu_uim.new_merge_id()
-            mid = self.menu_uim.add_ui(mid, path,
-                                       action_name, action_name,
-                                       gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_uim.add_ui(mid, path,
+                                 action_name, action_name,
+                                 gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
 
         def _do_open_action(config):
@@ -617,9 +649,9 @@ of file.
                                 "")
             action.connect("activate", lambda a, c: self.do_open(c), config)
             mid = self.menu_uim.new_merge_id()
-            mid = self.menu_uim.add_ui(mid, path,
-                                       action_name, action_name,
-                                       gtk.UI_MANAGER_MENUITEM, False)
+            self.menu_uim.add_ui(mid, path,
+                                 action_name, action_name,
+                                 gtk.UI_MANAGER_MENUITEM, False)
             self.menu_ag.add_action(action)
 
         configs = glob(os.path.join(stock_dir, "*.csv"))
@@ -803,11 +835,16 @@ of file.
             return False
 
         if eset.is_modified():
+            buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                       gtk.STOCK_NO, gtk.RESPONSE_NO,
+                       gtk.STOCK_YES, gtk.RESPONSE_YES)
             dlg = miscwidgets.YesNoDialog(
                 title=_("Save Changes?"), parent=self,
-                buttons=(gtk.STOCK_YES, gtk.RESPONSE_YES,
-                         gtk.STOCK_NO, gtk.RESPONSE_NO,
-                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                buttons=buttons)
+            dlg.set_default_response(gtk.RESPONSE_YES)
+            dlg.set_alternative_button_order([gtk.RESPONSE_YES,
+                                              gtk.RESPONSE_NO,
+                                              gtk.RESPONSE_CANCEL])
             dlg.set_text(_("File is modified, save changes before closing?"))
             res = dlg.run()
             dlg.destroy()
@@ -838,7 +875,6 @@ of file.
 
     def do_import(self):
         types = [(_("All files") + " (*.*)", "*"),
-                 (_("CHIRP Files") + " (*.chirp)", "*.chirp"),
                  (_("CHIRP Radio Images") + " (*.img)", "*.img"),
                  (_("CSV Files") + " (*.csv)", "*.csv"),
                  (_("DAT Files") + " (*.dat)", "*.dat"),
@@ -857,6 +893,9 @@ of file.
         eset = self.get_current_editorset()
         count = eset.do_import(filen)
         reporting.report_model_usage(eset.rthread.radio, "import", count > 0)
+
+    def do_clear_recently_opened(self):
+        self.clear_recent_files()
 
     def do_dmrmarc_prompt(self):
         fields = {"1City":      (gtk.Entry(), lambda x: x),
@@ -1385,13 +1424,144 @@ of file.
 
         if do_import:
             eset = self.get_current_editorset()
-            rrstr = "radioreference://%s/%s/%s" % (zipcode, username, passwd)
+            rrstr = "radioreference://%s/%s/%s/%s" % (zipcode, username,
+                                                      passwd, 'US')
             count = eset.do_import(rrstr)
         else:
             try:
                 from chirp import radioreference
                 radio = radioreference.RadioReferenceRadio(None)
-                radio.set_params(zipcode, username, passwd)
+                radio.set_params(zipcode, username, passwd, 'US')
+                self.do_open_live(radio, read_only=True)
+            except errors.RadioError, e:
+                common.show_error(e)
+
+        self.window.set_cursor(None)
+
+    def do_radioreference_promptcanada(self):
+        fields = {"1Username":  (gtk.Entry(), lambda x: x),
+                  "2Password":  (gtk.Entry(), lambda x: x)
+                  }
+
+        d = inputdialog.FieldDialog(title=_("RadioReference.com Query"),
+                                    parent=self)
+        for k in sorted(fields.keys()):
+            d.add_field(k[1:], fields[k][0])
+            fields[k][0].set_text(CONF.get(k[1:], "radioreference") or "")
+            fields[k][0].set_visibility(k != "2Password")
+
+        while d.run() == gtk.RESPONSE_OK:
+            valid = True
+            for k in sorted(fields.keys()):
+                widget, validator = fields[k]
+                try:
+                    if validator(widget.get_text()):
+                        CONF.set(k[1:], widget.get_text(), "radioreference")
+                        continue
+                except Exception:
+                    pass
+                common.show_error("Invalid value for %s" % k[1:])
+                valid = False
+                break
+
+            if valid:
+                d.destroy()
+                return True
+
+        d.destroy()
+        return False
+
+    def do_radioreference_promptcounty(self, username, passwd):
+        """gotta get the fkn province list (they do change sometimes)
+        and the absurd arbitrary county list
+        """
+        from chirp import radioreference
+        provincecounty = radioreference.RadioReferenceRadio(None)
+        provincecounty.set_params(None, username, passwd, None)
+        cancounties = provincecounty.do_getcanadacounties()
+        clist = cancounties[0]
+        provinces = cancounties[1]
+        default_prov = ""
+        default_county = ""
+        try:
+            code = int(CONF.get("province", "radioreference"))
+            for k, v in provinces.items():
+                if code == v:
+                    default_prov = k
+                    break
+            code = int(CONF.get("county", "radioreference"))
+            for row in clist:
+                if code == row[2]:
+                    default_county = row[3]
+                    break
+        except:
+            pass
+        province = miscwidgets.make_choice(sorted(provinces.keys()),
+                                           False, default_prov)
+        counties = []
+        for x in clist:
+            if x[1] == default_prov:
+                counties.append(x[3])
+        county = miscwidgets.make_choice(counties, False, default_county)
+
+        def _changed(box, county):
+            selectedprov = provinces[box.get_active_text()]
+            county.get_model().clear()
+            for list_county in clist:
+                if list_county[0] == selectedprov:
+                    county.append_text(list_county[3])
+            county.set_active(0)
+        province.connect("changed", _changed, county)
+
+        d = inputdialog.FieldDialog(
+            title=_("RadioReference.com Province Query"), parent=self)
+        d.add_field("Province", province)
+        d.add_field("Region/City", county)
+        r = d.run()
+        d.destroy()
+        if r != gtk.RESPONSE_OK:
+            return False
+
+        code = provinces[province.get_active_text()]
+        for row in clist:  # this is absolutely not the right way to do this!
+            if row[3] == county.get_active_text() and \
+                    row[1] == province.get_active_text():
+                county_id = row[2]
+        CONF.set("province", str(code), "radioreference")
+        CONF.set("county", str(county_id), "radioreference")
+
+        return True
+
+    def do_radioreferencecanada(self, do_import):
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_radioreference_promptcanada():
+            self.window.set_cursor(None)
+            return
+        username = CONF.get("Username", "radioreference")
+        passwd = CONF.get("Password", "radioreference")
+
+        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        if not self.do_radioreference_promptcounty(username, passwd):
+            self.window.set_cursor(None)
+            return
+        county = CONF.get("County", "radioreference")
+
+        # Do this in case the import process is going to take a while
+        # to make sure we process events leading up to this
+        gtk.gdk.window_process_all_updates()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+
+        if do_import:
+            eset = self.get_current_editorset()
+            rrstr = "radioreference://%s/%s/%s/%s" % (county, username,
+                                                      passwd, 'CA')
+            count = eset.do_import(rrstr)
+        else:
+            try:
+                from chirp import radioreference
+                radio = radioreference.RadioReferenceRadio(None)
+                radio.set_params(county, username, passwd, 'CA')
                 self.do_open_live(radio, read_only=True)
             except errors.RadioError as e:
                 common.show_error(e)
@@ -1458,7 +1628,9 @@ of file.
                                  os.linesep +
                                  "Russian: Dmitry Slukin" +
                                  os.linesep +
-                                 "Portuguese (BR): Crezivando PP7CJ")
+                                 "Portuguese (BR): Crezivando PP7CJ" +
+                                 os.linesep +
+                                 "Chinese (Simplified): DuckSoft BH2UEP")
         d.set_comments(verinfo)
 
         d.run()
@@ -1473,10 +1645,14 @@ of file.
         radio_name = "%s %s %s" % (eset.rthread.radio.VENDOR,
                                    eset.rthread.radio.MODEL,
                                    eset.rthread.radio.VARIANT)
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         d = gtk.Dialog(title=_("Select Columns"),
                        parent=self,
-                       buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                       buttons=buttons)
+        d.set_default_response(gtk.RESPONSE_OK)
+        d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                        gtk.RESPONSE_CANCEL])
 
         vbox = gtk.VBox()
         vbox.show()
@@ -1593,7 +1769,7 @@ of file.
     def do_change_language(self):
         langs = ["Auto", "English", "Polish", "Italian", "Dutch", "German",
                  "Hungarian", "Russian", "Portuguese (BR)", "French",
-                 "Spanish"]
+                 "Spanish", 'Chinese (Simplified)', 'Ukrainian']
         d = inputdialog.ChoiceDialog(langs, parent=self,
                                      title="Choose Language")
         d.label.set_text(_("Choose a language or Auto to use the "
@@ -1656,12 +1832,16 @@ of file.
             self.do_close()
         elif action == "import":
             self.do_import()
+        elif action == "clearrecent":
+            self.do_clear_recently_opened()
         elif action in ["qdmrmarc", "idmrmarc"]:
             self.do_dmrmarc(action[0] == "i")
         elif action in ["qrfinder", "irfinder"]:
             self.do_rfinder(action[0] == "i")
         elif action in ["qradioreference", "iradioreference"]:
             self.do_radioreference(action[0] == "i")
+        elif action in ["qradioreferencecanada", "iradioreferencecanada"]:
+            self.do_radioreferencecanada(action[0] == "i")
         elif action == "export":
             self.do_export()
         elif action in ["qrbookpolitical", "irbookpolitical"]:
@@ -1717,7 +1897,10 @@ of file.
       <menuitem action="new"/>
       <menuitem action="open"/>
       <menu action="openstock" name="openstock"/>
-      <menu action="recent" name="recent"/>
+      <menu action="recent" name="recent">
+        <separator/>
+        <menuitem action="clearrecent"/>
+      </menu>
       <menuitem action="save"/>
       <menuitem action="saveas"/>
       <menuitem action="loadmod"/>
@@ -1758,7 +1941,10 @@ of file.
       <menuitem action="upload"/>
       <menu action="importsrc" name="importsrc">
         <menuitem action="idmrmarc"/>
-        <menuitem action="iradioreference"/>
+        <menu action="iradioref" name="iradioref">
+            <menuitem action="iradioreferencecanada"/>
+            <menuitem action="iradioreference"/>
+        </menu>
         <menu action="irbook" name="irbook">
             <menuitem action="irbookpolitical"/>
             <menuitem action="irbookproximity"/>
@@ -1768,7 +1954,10 @@ of file.
       </menu>
       <menu action="querysrc" name="querysrc">
         <menuitem action="qdmrmarc"/>
-        <menuitem action="qradioreference"/>
+        <menu action="qradioref" name="qradioref">
+            <menuitem action="qradioreferencecanada"/>
+            <menuitem action="qradioreference"/>
+        </menu>
         <menu action="qrbook" name="qrbook">
             <menuitem action="qrbookpolitical"/>
             <menuitem action="qrbookproximity"/>
@@ -1804,8 +1993,10 @@ of file.
             ('file', None, _("_File"), None, None, self.mh),
             ('new', gtk.STOCK_NEW, None, None, None, self.mh),
             ('open', gtk.STOCK_OPEN, None, None, None, self.mh),
-            ('openstock', None, _("Open stock config"), None, None, self.mh),
-            ('recent', None, _("_Recent"), None, None, self.mh),
+            ('openstock', None, _("Open Stock Config"), None, None, self.mh),
+            ('recent', None, _("Open _Recent"), None, None, self.mh),
+            ('clearrecent', None, _("Clear Recently Opened"), None, None,
+             self.mh),
             ('save', gtk.STOCK_SAVE, None, None, None, self.mh),
             ('saveas', gtk.STOCK_SAVE_AS, None, None, None, self.mh),
             ('loadmod', None, _("Load Module"), None, None, self.mh),
@@ -1828,13 +2019,13 @@ of file.
             ('view', None, _("_View"), None, None, self.mh),
             ('columns', None, _("Columns"), None, None, self.mh),
             ('viewdeveloper', None, _("Developer"), None, None, self.mh),
-            ('devshowraw', None, _('Show raw memory'),
+            ('devshowraw', None, _('Show Raw Memory'),
              "%s<Shift>r" % CTRL_KEY, None, self.mh),
-            ('devdiffraw', None, _("Diff raw memories"),
+            ('devdiffraw', None, _("Diff Raw Memories"),
              "%s<Shift>d" % CTRL_KEY, None, self.mh),
-            ('devdifftab', None, _("Diff tabs"),
+            ('devdifftab', None, _("Diff Tabs"),
              "%s<Shift>t" % CTRL_KEY, None, self.mh),
-            ('language', None, _("Change language"), None, None, self.mh),
+            ('language', None, _("Change Language"), None, None, self.mh),
             ('radio', None, _("_Radio"), None, None, self.mh),
             ('download', None, _("Download From Radio"),
              "%sd" % ALT_KEY, None, self.mh),
@@ -1842,35 +2033,41 @@ of file.
              "%su" % ALT_KEY, None, self.mh),
             ('import', None, _("Import"), "%si" % ALT_KEY, None, self.mh),
             ('export', None, _("Export"), "%se" % ALT_KEY, None, self.mh),
-            ('importsrc', None, _("Import from data source"),
+            ('importsrc', None, _("Import From Data Source"),
              None, None, self.mh),
             ('idmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
-            ('iradioreference', None, _("RadioReference.com"),
+            ('iradioref', None, _("RadioReference"), None, None, self.mh),
+            ('iradioreference', None, _("RadioReference.com US"),
+             None, None, self.mh),
+            ('iradioreferencecanada', None, _("RadioReference.com Canada"),
              None, None, self.mh),
             ('irfinder', None, _("RFinder"), None, None, self.mh),
             ('irbook', None, _("RepeaterBook"), None, None, self.mh),
-            ('irbookpolitical', None, _("RepeaterBook political query"), None,
+            ('irbookpolitical', None, _("RepeaterBook Political Query"), None,
              None, self.mh),
-            ('irbookproximity', None, _("RepeaterBook proximity query"), None,
+            ('irbookproximity', None, _("RepeaterBook Proximity Query"), None,
              None, self.mh),
             ('ipr', None, _("przemienniki.net"), None, None, self.mh),
-            ('querysrc', None, _("Query data source"), None, None, self.mh),
+            ('querysrc', None, _("Query Data Source"), None, None, self.mh),
             ('qdmrmarc', None, _("DMR-MARC Repeaters"), None, None, self.mh),
-            ('qradioreference', None, _("RadioReference.com"),
+            ('qradioref', None, _("RadioReference"), None, None, self.mh),
+            ('qradioreference', None, _("RadioReference.com US"),
+             None, None, self.mh),
+            ('qradioreferencecanada', None, _("RadioReference.com Canada"),
              None, None, self.mh),
             ('qrfinder', None, _("RFinder"), None, None, self.mh),
             ('qpr', None, _("przemienniki.net"), None, None, self.mh),
             ('qrbook', None, _("RepeaterBook"), None, None, self.mh),
-            ('qrbookpolitical', None, _("RepeaterBook political query"), None,
+            ('qrbookpolitical', None, _("RepeaterBook Political Query"), None,
              None, self.mh),
-            ('qrbookproximity', None, _("RepeaterBook proximity query"), None,
+            ('qrbookproximity', None, _("RepeaterBook Proximity Query"), None,
              None, self.mh),
             ('export_chirp', None, _("CHIRP Native File"),
              None, None, self.mh),
             ('export_csv', None, _("CSV File"), None, None, self.mh),
-            ('stock', None, _("Import from stock config"),
+            ('stock', None, _("Import From Stock Config"),
              None, None, self.mh),
-            ('channel_defaults', None, _("Channel defaults"),
+            ('channel_defaults', None, _("Channel Defaults"),
              None, None, self.mh),
             ('cancelq', gtk.STOCK_STOP, None, "Escape", None, self.mh),
             ('help', None, _('Help'), None, None, self.mh),
@@ -1910,6 +2107,9 @@ of file.
 
         self.add_accel_group(self.menu_uim.get_accel_group())
 
+        self.recentmenu = self.menu_uim.get_widget(
+            "/MenuBar/file/recent")
+
         self.infomenu = self.menu_uim.get_widget(
             "/MenuBar/help/clone_information")
 
@@ -1918,6 +2118,8 @@ of file.
 
         # Initialize
         self.do_toggle_developer(self.menu_ag.get_action("developer"))
+        self.recentmenu.connect("activate",
+                                lambda a: self.update_recent_files())
 
         return self.menu_uim.get_widget("/MenuBar")
 
@@ -2034,14 +2236,14 @@ of file.
         try:
             import gtk_osxapplication
             macapp = gtk_osxapplication.OSXApplication()
-        except ImportError:
+        except ImportError as e:
             pass
 
         # for gtk-mac-integration >= 2.0.7
         try:
             import gtkosx_application
             macapp = gtkosx_application.Application()
-        except ImportError:
+        except ImportError as e:
             pass
 
         # for gtk-mac-integration 2.1.3 in brew
@@ -2107,8 +2309,6 @@ of file.
 
         vbox = gtk.VBox(False, 2)
 
-        self._recent = []
-
         self.menu_ag = None
         mbar = self.make_menubar()
 
@@ -2161,6 +2361,7 @@ of file.
             d.destroy()
         CONF.set_bool("warned_about_reporting", True)
 
+        self.recent_files = None
         self.update_recent_files()
         try:
             self.update_stock_configs()

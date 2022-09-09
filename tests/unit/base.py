@@ -48,3 +48,12 @@ def mock_gtk():
 def unmock_gtk():
     for module in pygtk_mocks:
         del sys.modules[module]
+
+
+class BaseGTKTest(BaseTest):
+    def setUp(self):
+        super(BaseGTKTest, self).setUp()
+        try:
+            import gtk
+        except ImportError:
+            self.skipTest('pygtk not available')

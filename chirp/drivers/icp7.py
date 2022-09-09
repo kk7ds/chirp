@@ -16,7 +16,7 @@
 from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
 
-# memory nuber:
+# memory number:
 #	 000 -  999	regular memory channels (supported, others not)
 #	1000 - 1049	scan edges
 #	1050 - 1249	auto write channels

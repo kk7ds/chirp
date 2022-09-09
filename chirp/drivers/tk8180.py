@@ -36,8 +36,8 @@ try:
     has_future = True
 except ImportError:
     has_future = False
-    LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
+    LOG.debug('python-future package is not '
+              'available; %s requires it' % __name__)
 
 
 HEADER_FORMAT = """
@@ -650,7 +650,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             return int(val * 10)
         elif mode == 'DTCS':
             code = int('%i' % val, 8)
-            code |= 0x2000
+            code |= 0x2800
             if pol == 'R':
                 code |= 0x8000
             return code

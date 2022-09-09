@@ -56,24 +56,54 @@ class RadioReferenceRadio(chirp_common.NetworkSourceRadio):
         self._client = Client(self.URL)
         self._freqs = None
         self._modes = None
-        self._zip = None
+        self._zipcounty = None
+        self._country = None
 
-    def set_params(self, zipcode, username, password):
+    def set_params(self, zipcounty, username, password, country):
         """Set the parameters to be used for a query"""
-        self._zip = zipcode
+        self._country = country
+        self._zipcounty = zipcounty
         self._auth["username"] = username
         self._auth["password"] = password
 
-    def do_fetch(self):
-        """Fetches frequencies for all subcategories in a county."""
-        self._freqs = []
-
+    def do_getcanadacounties(self):
         try:
             service = self._client.service
-            zipcode = service.getZipcodeInfo(self._zip, self._auth)
-            county = service.getCountyInfo(zipcode.ctid, self._auth)
+            provincelist = service.getCountryInfo(2, self._auth)
+            provinces = {}
+            clist = []
+            for province in provincelist:
+                provinces[province[2]] = province[0]
+                provinceinfo = service.getStateInfo(province[0], self._auth)
+                for county in provinceinfo.countyList:
+                    if (county[1] != 'UNKNOWN' and county[1] != 'N/A' and
+                            county[1] != 'Provincewide'):
+                        # some counties are actually cities but whatever fml
+                        clist.append([province[0], province[2],
+                                      county[0], county[1]])
         except WebFault as err:
             raise errors.RadioError(err)
+        return clist, provinces
+
+    def do_fetch(self):
+        """Fetches frequencies for all subcategories in a county
+        (or zip if USA)."""
+        self._freqs = []
+        # if this method was accessed for the USA, use the zip; otherwise
+        # use the county ID
+        if self._country == 'US':
+            try:
+                service = self._client.service
+                zipcode = service.getZipcodeInfo(self._zipcounty, self._auth)
+                county = service.getCountyInfo(zipcode.ctid, self._auth)
+            except WebFault as err:
+                raise errors.RadioError(err)
+        if self._country == 'CA':
+            try:
+                service = self._client.service
+                county = service.getCountyInfo(self._zipcounty, self._auth)
+            except WebFault as err:
+                raise errors.RadioError(err)
 
         status = chirp_common.Status()
         status.max = 0
@@ -177,13 +207,15 @@ def main():
     """
     Usage:
     cd ~/src/chirp.hg
-    python ./chirp/radioreference.py [ZIPCODE] [USERNAME] [PASSWORD]
+    python ./chirp/radioreference.py [USERNAME] [PASSWORD] \
+        [COUNTRY - 2 LETTER] [US ZIP(USA) OR COUNTY ID(CANADA)]
     """
     import sys
     rrr = RadioReferenceRadio(None)
-    rrr.set_params(zipcode=sys.argv[1],
-                   username=sys.argv[2],
-                   password=sys.argv[3])
+    rrr.set_params(username=sys.argv[1],
+                   password=sys.argv[2],
+                   country=sys.argv[3],
+                   zipcounty=sys.argv[4])
     rrr.do_fetch()
     print(rrr.get_raw_memory(0))
     print(rrr.get_memory(0))

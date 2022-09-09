@@ -405,7 +405,7 @@ def _pkt_decode(data):
     cksum_match = (cksum & 0xf) == payload[-1]
     if (not cksum_match):
         LOG.debug(
-            "Checksum missmatch: %x != %x; " % (cksum, payload[-1]))
+            "Checksum mismatch: %x != %x; " % (cksum, payload[-1]))
     return (cksum_match, op, payload[:-1])
 
 # UI callbacks to process input for mapping UI fields to memory cells
@@ -427,7 +427,7 @@ def int2freq(freq):
     """
     Convert a u32 frequency to a string for UI data entry/display
     This is stored in the radio as units of 10Hz which we compensate to Hz.
-    A value of -1 indicates <no freqency>, i.e. unused channel.
+    A value of -1 indicates <no frequency>, i.e. unused channel.
     """
     if (int(freq) > 0):
         f = chirp_common.format_freq(freq)

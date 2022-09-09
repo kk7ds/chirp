@@ -1,4 +1,4 @@
-# Copyright 2016 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2016-2020 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,36 +30,43 @@ LOG = logging.getLogger(__name__)
 MEM_FORMAT = """
 #seekto 0x0010;
 struct {
-  lbcd rxfreq[4];                
-  lbcd txfreq[4];                
-  ul16 rx_tone;                  
-  ul16 tx_tone;                  
-  u8 unknown1;                   
-  u8 unknown3:2,                 
-     highpower:1, // Power Level 
-     wide:1,      // Bandwidth   
-     unknown4:4;                 
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  ul16 rx_tone;
+  ul16 tx_tone;
+  u8 unknown1;
+  u8 unknown3:2,
+     highpower:1, // Power Level
+     wide:1,      // Bandwidth
+     unknown4:2,
+     signal:1,    // Signal
+     bcl:1;       // BCL
   u8 unknown5[2];
 } memory[16];
 
 #seekto 0x012F;
 struct {
   u8 voice;       // Voice Annunciation
-  u8 tot;         // Time-out Timer                   
+  u8 tot;         // Time-out Timer
   u8 unknown1[3];
   u8 squelch;     // Squelch Level
-  u8 save;        // Battery Saver                    
-  u8 beep;        // Beep                             
+  u8 save;        // Battery Saver
+  u8 beep;        // Beep
   u8 unknown2[2];
   u8 vox;         // VOX
   u8 voxgain;     // VOX Gain
-  u8 voxdelay;    // VOX Delay                        
+  u8 voxdelay;    // VOX Delay
   u8 unknown3[2];
-  u8 pf2key;      // PF2 Key                          
+  u8 pf2key;      // PF2 Key
 } settings;
 
 #seekto 0x017E;
 u8 skipflags[2];  // SCAN_ADD
+
+#seekto 0x0200;
+struct {
+  char id_0x200[8];  // Radio ID @ 0x0200
+} radio;
 
 #seekto 0x0300;
 struct {
@@ -76,10 +83,16 @@ RT22_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=2.00),
 RT22_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
 PF2KEY_LIST = ["Scan", "Local Alarm", "Remote Alarm"]
-TIMEOUTTIMER_LIST = [""] + ["%s seconds" % x for x in range(15, 615, 15)]
+TIMEOUTTIMER_LIST = ["Off"] + ["%s seconds" % x for x in range(15, 615, 15)]
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 17)]
-VOXDELAY_LIST = ["0.5", "1.0", "1.5", "2.0", "2.5", "3.0"]
+VOXDELAY_LIST = ["0.5 | Off",
+                 "1.0 | 0",
+                 "1.5 | 1",
+                 "2.0 | 2",
+                 "2.5 | 3",
+                 "3.0 | 4",
+                 "--- | 5"]
 
 SETTING_LISTS = {
     "pf2key": PF2KEY_LIST,
@@ -91,6 +104,21 @@ SETTING_LISTS = {
 
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
+
+
+def _ident_from_data(data):
+    return data[0x1B8:0x1C0]
+
+
+def _ident_from_image(radio):
+    return _ident_from_data(radio.get_mmap())
+
+
+def _get_radio_model(radio):
+    block = _rt22_read_block(radio, 0x360, 0x10)
+    block = _rt22_read_block(radio, 0x1B8, 0x10)
+    version = block[0:8]
+    return version
 
 
 def _rt22_enter_programming_mode(radio):
@@ -160,6 +188,8 @@ def _rt22_enter_programming_mode(radio):
         _rt22_exit_programming_mode(radio)
         raise errors.RadioError("Radio refused to enter programming mode")
 
+    return ident
+
 
 def _rt22_exit_programming_mode(radio):
     serial = radio.pipe
@@ -188,6 +218,7 @@ def _rt22_read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
+        time.sleep(0.005)
         serial.write(CMD_ACK)
         ack = serial.read(1)
     except:
@@ -201,11 +232,23 @@ def _rt22_read_block(radio, block_addr, block_size):
     return block_data
 
 
-def _rt22_write_block(radio, block_addr, block_size):
+def _rt22_write_block(radio, block_addr, block_size, _requires_patch=False,
+                      _radio_id=""):
     serial = radio.pipe
 
     cmd = struct.pack(">cHb", 'W', block_addr, block_size)
-    data = radio.get_mmap()[block_addr:block_addr + block_size]
+    if _requires_patch:
+        mmap = radio.get_mmap()
+        data = mmap[block_addr:block_addr + block_size]
+
+        # For some radios (RT-622 & RT22FRS) memory at 0x1b8 reads as 0, but
+        # radio ID should be written instead
+        if block_addr == 0x1b8:
+            for fp in _radio_id:
+                if fp in mmap[0:len(_radio_id)]:
+                    data = mmap[0:len(_radio_id)] + data[len(_radio_id):]
+    else:
+        data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -227,7 +270,8 @@ def _rt22_write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _rt22_enter_programming_mode(radio)
+    radio_ident = _rt22_enter_programming_mode(radio)
+    LOG.info("Radio Ident is %s" % repr(radio_ident))
 
     data = ""
 
@@ -258,7 +302,17 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _rt22_enter_programming_mode(radio)
+    radio_ident = _rt22_enter_programming_mode(radio)
+    LOG.info("Radio Ident is %s" % repr(radio_ident))
+
+    image_ident = _ident_from_image(radio)
+    LOG.info("Image Ident is %s" % repr(image_ident))
+
+    # Determine if upload requires patching
+    if image_ident == "\x00\x00\x00\x00\x00\x00\xFF\xFF":
+        patch_block = True
+    else:
+        patch_block = False
 
     status.cur = 0
     status.max = radio._memsize
@@ -267,7 +321,8 @@ def do_upload(radio):
         for addr in range(start_addr, end_addr, block_size):
             status.cur = addr + block_size
             radio.status_fn(status)
-            _rt22_write_block(radio, addr, block_size)
+            _rt22_write_block(radio, addr, block_size, patch_block,
+                              radio_ident)
 
     _rt22_exit_programming_mode(radio)
 
@@ -297,7 +352,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x0400
     _block_size = 0x40
-    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3"]
+    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!"]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -316,6 +371,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = RT22_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
+        rf.valid_dtcs_codes = RT22_DTCS
         rf.memory_bounds = (1, 16)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = [(400000000, 520000000)]
@@ -437,6 +493,17 @@ class RT22Radio(chirp_common.CloneModeRadio):
         mem.skip = "" if (_skp & bitpos) else "S"
         LOG.debug("mem.skip %s" % mem.skip)
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        if self.MODEL == "RT22FRS" or self.MODEL == "RT622":
+            rs = RadioSettingValueBoolean(_mem.bcl)
+            rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
+            mem.extra.append(rset)
+
+            rs = RadioSettingValueBoolean(_mem.signal)
+            rset = RadioSetting("signal", "Signal", rs)
+            mem.extra.append(rset)
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -516,6 +583,9 @@ class RT22Radio(chirp_common.CloneModeRadio):
             _skp &= ~bitpos
         LOG.debug("_skp %s" % _skp)
 
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
+
     def get_settings(self):
         _settings = self._memobj.settings
         _message = self._memobj.embedded_msg
@@ -551,7 +621,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
                               VOX_LIST, VOX_LIST[_settings.voxgain]))
         basic.append(rs)
 
-        rs = RadioSetting("voxdelay", "VOX Delay Time",
+        rs = RadioSetting("voxdelay", "VOX Delay Time (Old | New)",
                           RadioSettingValueList(
                               VOXDELAY_LIST,
                               VOXDELAY_LIST[_settings.voxdelay]))
@@ -574,15 +644,17 @@ class RT22Radio(chirp_common.CloneModeRadio):
                     filtered += " "
             return filtered
 
-        rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
-                          RadioSettingValueString(0, 32, _filter(
-                              _message.line1)))
-        basic.append(rs)
+        val = str(self._memobj.radio.id_0x200)
+        if val == "\xFF" * 8:
+            rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
+                              RadioSettingValueString(0, 32, _filter(
+                                  _message.line1)))
+            basic.append(rs)
 
-        rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
-                          RadioSettingValueString(0, 32, _filter(
-                              _message.line2)))
-        basic.append(rs)
+            rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
+                              RadioSettingValueString(0, 32, _filter(
+                                  _message.line2)))
+            basic.append(rs)
 
         return top
 
@@ -617,7 +689,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         # testing the file data size
         if len(filedata) in [0x0408, ]:
             match_size = True
-        
+
         # testing the model fingerprint
         match_model = model_match(cls, filedata)
 
@@ -626,11 +698,13 @@ class RT22Radio(chirp_common.CloneModeRadio):
         else:
             return False
 
+
 @directory.register
 class KDC1(RT22Radio):
     """WLN KD-C1"""
     VENDOR = "WLN"
     MODEL = "KD-C1"
+
 
 @directory.register
 class ZTX6(RT22Radio):
@@ -638,13 +712,27 @@ class ZTX6(RT22Radio):
     VENDOR = "Zastone"
     MODEL = "ZT-X6"
 
+
 @directory.register
 class LT316(RT22Radio):
     """Luiton LT-316"""
     VENDOR = "LUITON"
     MODEL = "LT-316"
 
+
 @directory.register
 class TDM8(RT22Radio):
     VENDOR = "TID"
     MODEL = "TD-M8"
+
+
+@directory.register
+class RT22FRS(RT22Radio):
+    VENDOR = "Retevis"
+    MODEL = "RT22FRS"
+
+
+@directory.register
+class RT622(RT22Radio):
+    VENDOR = "Retevis"
+    MODEL = "RT622"

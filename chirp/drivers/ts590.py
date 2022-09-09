@@ -330,7 +330,7 @@ def _read_settings(radio):
     """ Continue filling memory map"""
     global MEMSEL
     # setc: the list of CAT commands for downloaded settings
-    # Block paramters first. In the exact order of MEM_FORMAT
+    # Block parameters first. In the exact order of MEM_FORMAT
     setc = radio.SETC
     setc.extend(radio.EX)  # Menu A EX params
     setc.extend(radio.EX)  # Menu B
@@ -574,7 +574,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
     # Settings read/write cmd sequence list
     SETC = ["AS0", "SS", "EQ", "AG0", "AN", "FA", "FB",
             "FV", "MF", "MG", "PC", "RG", "TP", "MF0"]
-    # This is the TS-590SG MENU A/B read_settings paramter tuple list
+    # This is the TS-590SG MENU A/B read_settings parameter tuple list
     # The order is mandatory; to match the Mem_Format sequence
     EX = ["EX001", "EX002", "EX003", "EX005", "EX006", "EX007",
           "EX008", "EX009", "EX010", "EX011", "EX012", "EX013", "EX016",
@@ -878,7 +878,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
         return
 
     def _parse_mem_spec(self, spec0, spec1):
-        """ Extract ascii memory paramters; build data string """
+        """ Extract ascii memory parameters; build data string """
         # spec0 is simplex result, spec1 is split
         # pad string so indexes match Kenwood docs
         spec0 = "x" + spec0  # match CAT document 1-based description

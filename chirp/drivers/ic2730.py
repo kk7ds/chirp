@@ -1,5 +1,8 @@
-# Copyright 2018 Rhett Robinson <rrhett@gmail.com>
-# Added Settings support, 6/2019 Rick DeWitt <aa0rd@yahoo.com>
+# Copyright 2018 Rhett Robinson <rrhett@gmail.com> Vers 1.0
+# 6/2019: Vers 1.1 Added Settings support, Rick DeWitt <aa0rd@yahoo.com>
+# 7/2020: Vers 1.2 Fixed reversed E:* / F:# DTMF codes Issue #8159
+# 9/2020: Vers 1.3 Expanded tone mode support and added py3 HAS_FUTURE
+#                  bytes() per issue #8233. (icf.py is NOT updated)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +29,14 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
+
+HAS_FUTURE = True
+try:                         # PY3 compliance
+    from builtins import bytes
+except ImportError:
+    HAS_FUTURE = False
+    LOG.debug('python-future package is not '
+              'available; %s requires it' % __name__)
 
 MEM_FORMAT = """
 struct {
@@ -219,15 +230,17 @@ u8  msk[4];
 u16  mem_writes_count;
 """
 
-# Guessing some of these intermediate values are with the Pocket Beep function,
-# but I haven't reliably reproduced these.
-TMODES = ["", "Tone", "??0", "TSQL", "??1", "DTCS", "TSQL-R", "DTCS-R",
-          "DTC.OFF", "TON.DTC", "DTC.TSQ", "TON.TSQ"]
-DUPLEX = ["", "-", "+"]
-MODES = ["FM", "NFM", "AM", "NAM"]
-DTCSP = ["NN", "NR", "RN", "RR"]
-DTMF_CHARS = list("0123456789ABCD*#")
-BANKLINK_CHARS = list("ABCDEFGHIJ")
+MDUPLEX = ["", "-", "+"]
+MSKIPS = ["", "S", "P"]
+MMODES = ["FM", "NFM", "AM", "NAM"]
+MTONE_MODES = chirp_common.TONE_MODES
+MTMODES = ["", "Tone", "TonePoc", "TSQL", "DTCSPoc", "DTCS",
+           "TSQL-R", "DTCS-R", "DTC.OFF", "TON.DTC",
+           "DTC.TSQ", "TON.TSQ"]
+MCROSS_MODES = ["Tone->Tone", "DTCS->", "Tone->DTCS", "DTCS->Tone"]
+MDTCSP = ["NN", "NR", "RN", "RR"]
+MDTMF_CHARS = list("0123456789ABCD*#")
+MBANKLINK_CHARS = list("ABCDEFGHIJ")
 AUTOREPEATER = ["OFF", "DUP", "DUP.TON"]
 MICKEYOPTS = ["Off", "Up", "Down", "Vol Up", "Vol Down", "SQL Up",
               "SQL Down", "Monitor", "Call", "MR (Ch 0)", "MR (Ch 1)",
@@ -285,7 +298,9 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.info = ('Click the Special Channels tab on the main screen to '
-                   'access the C0 and C1 frequencies.\n')
+                   'access the C0 and C1 frequencies.\n'
+                   'The Pocket Beep tone/dtcs modes are not supported by '
+                   'CHIRP. Set those manually.\n')
 
         rp.pre_download = _(dedent("""\
             Follow these instructions to download your config:
@@ -338,16 +353,22 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         rf.has_settings = True
         rf.has_bank_index = True
         rf.has_bank_names = True
+        rf.has_cross = True
+        rf.has_ctone = True
+        rf.has_dtcs = True
+        rf.has_rx_dtcs = False
+        rf.has_dtcs_polarity = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, 999)
-        rf.valid_modes = list(MODES)
-        rf.valid_tmodes = list(TMODES)
-        rf.valid_duplexes = list(set(DUPLEX))
+        rf.valid_modes = MMODES
+        rf.valid_tmodes = MTONE_MODES
+        rf.valid_duplexes = MDUPLEX
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS[0:9])
         rf.valid_bands = [(118000000, 174000000),
                           (375000000, 550000000)]
-        rf.valid_skips = ["", "S", "P"]
+        rf.valid_skips = MSKIPS
         rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_cross_modes = MCROSS_MODES
         rf.valid_name_length = 6
         rf.valid_special_chans = sorted(_get_special().keys())
 
@@ -369,9 +390,9 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             _skip = self._memobj.skip_flags[bytepos]
             _pskip = self._memobj.pskip_flags[bytepos]
             if _skip & bitpos:
-                mem.skip = "S"
+                mem.skip = MSKIPS[1]     # "S"
             elif _pskip & bitpos:
-                mem.skip = "P"
+                mem.skip = MSKIPS[2]    # "P"
             if not is_used:
                 mem.empty = True
                 return mem
@@ -403,11 +424,37 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             mem.offset = int(_mem.offset) * offset_multiplier
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
-        mem.tmode = TMODES[_mem.tmode]
-        mem.duplex = DUPLEX[_mem.duplex]
-        mem.mode = MODES[_mem.mode]
+        tmx = 0     # MTONE_MODES index default
+        cmx = 0     # MCROSS_MODES index
+        if _mem.tmode == 1:     # Tone
+            tmx = 1
+        elif _mem.tmode == 3:   # TSQL
+            tmx = 2
+        elif _mem.tmode == 5:   # DTCS
+            tmx = 3
+        elif _mem.tmode == 6:   # TSQL-R
+            tmx = 5
+        elif _mem.tmode == 7:   # DTCS-R
+            tmx = 4
+        elif _mem.tmode == 8:   # DTC.OFF
+            tmx = 6             # Real Cross modes now
+            cmx = 1
+        elif _mem.tmode == 9:   # TON.DTC
+            tmx = 6
+            cmx = 2
+        elif _mem.tmode == 10:   # DTC.TSQ
+            tmx = 6
+            cmx = 3
+        elif _mem.tmode == 11:  # TON.TSQ
+            tmx = 6
+            cmx = 0
+        mem.tmode = MTONE_MODES[tmx]
+        mem.cross_mode = MCROSS_MODES[cmx]
+        mem.duplex = MDUPLEX[_mem.duplex]
+        mem.mode = MMODES[_mem.mode]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
-        mem.dtcs_polarity = DTCSP[_mem.dtcs_polarity]
+        mem.dtcs_polarity = MDTCSP[_mem.dtcs_polarity]
+
         if _mem.tune_step > 8:
             mem.tuning_step = 5.0  # Sometimes TS is garbage?
         else:
@@ -477,11 +524,32 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         _mem.freq_flags = frequency_flags
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
-        _mem.tmode = TMODES.index(mem.tmode)
-        _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.mode = MODES.index(mem.mode)
+        tmx = MTONE_MODES.index(mem.tmode)
+        cmx = MCROSS_MODES.index(mem.cross_mode)
+        if tmx != 6:        # Not Cross
+            if tmx < 2:     # "", Tone
+                _mem.tmode = tmx
+            if tmx == 2:    # TSQL
+                _mem.tmode = 3
+            if tmx == 3:    # DTCS
+                _mem.tmode = 5
+            if tmx == 4:    # DTCS-R
+                _mem.tmode = 7
+            if tmx == 5:    # TSQL-R
+                _mem.tmode = 6
+        else:           # Cross modes
+            if cmx == 0:    # Tone->Tone
+                _mem.tmode = 11
+            if cmx == 1:    # DTCS->
+                _mem.tmode = 8
+            if cmx == 2:    # Tone->DTCS
+                _mem.tmode = 9
+            if cmx == 3:    # DTCS->Tone
+                _mem.tmode = 10
+        _mem.duplex = MDUPLEX.index(mem.duplex)
+        _mem.mode = MMODES.index(mem.mode)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem.dtcs_polarity = DTCSP.index(mem.dtcs_polarity)
+        _mem.dtcs_polarity = MDTCSP.index(mem.dtcs_polarity)
         _mem.tune_step = chirp_common.TUNING_STEPS.index(mem.tuning_step)
 
     def get_raw_memory(self, number):
@@ -528,11 +596,11 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             """Convert u8 DTMF array to a string: NOT a callback."""
             stx = ""
             for i in range(0, 24):    # unpack up to ff
-                if codestr[i] != 0xff:
+                if codestr[i] != 0xff:      # Issue  8159 fix
                     if codestr[i] == 0x0E:
-                        stx += "#"
-                    elif codestr[i] == 0x0F:
                         stx += "*"
+                    elif codestr[i] == 0x0F:
+                        stx += "#"
                     else:
                         stx += format(int(codestr[i]), '0X')
             return stx
@@ -547,13 +615,13 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             # Remove illegal characters first
             sty = ""
             for j in range(0, len(stx)):
-                if stx[j] in DTMF_CHARS:
+                if stx[j] in MDTMF_CHARS:
                     sty += stx[j]
             for j in range(0, 24):
-                if j < len(sty):
-                    if sty[j] == "#":
+                if j < len(sty):        # Issue 8159 fix
+                    if sty[j] == "*":
                         chrv = 0xE
-                    elif sty[j] == "*":
+                    elif sty[j] == "#":
                         chrv = 0xF
                     else:
                         chrv = int(sty[j], 16)
@@ -664,7 +732,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
             return
 
         def myset_bitmask(setting, obj, ndx, atrb, knt):
-            """ Callback to gnerate byte-array bitmask from string"""
+            """ Callback to generate byte-array bitmask from string"""
             # knt is BIT count to process
             lsx = str(setting.value).strip().split(",")
             for kx in range(0, len(lsx)):
@@ -917,7 +985,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         abset.append(rset)
 
         # --- Microphone Keys
-        # The Mic keys get wierd: stored values are indecis to the full
+        # The Mic keys get weird: stored values are indecis to the full
         # options list, but only a subset is valid...
         shortopts = ["Off", "Monitor", "MR (Ch 0)", "MR (Ch 1)", "Band/Bank",
                      "Scan", "Temp Skip", "Mode", "Low", "Dup", "Priority",

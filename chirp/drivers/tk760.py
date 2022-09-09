@@ -13,12 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import struct
-import logging
-
-LOG = logging.getLogger(__name__)
-
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -26,6 +20,12 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettings
 from textwrap import dedent
+
+import time
+import struct
+import logging
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0000;
@@ -87,12 +87,13 @@ KEYS = {
     0x01: "Monitor",
     0x02: "Talk Around",
     0x03: "Horn Alert",
-    0x04: "Public Adress",
+    0x04: "Public Address",
     0x05: "Auxiliary",
     0x06: "Scan",
     0x07: "Scan Del/Add",
     0x08: "Home Channel",
-    0x09: "Operator Selectable Tone"
+    0x09: "Operator Selectable Tone",
+    0x0C: "Unknown"
 }
 
 MEM_SIZE = 0x400
@@ -108,7 +109,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
 MODES = ["NFM", "FM"]
 SKIP_VALUES = ["", "S"]
 TONES = chirp_common.TONES
-#TONES.remove(254.1)
+# TONES.remove(254.1)
 DTCS_CODES = chirp_common.DTCS_CODES
 
 TOT = ["off"] + ["%s" % x for x in range(30, 330, 30)]
@@ -120,7 +121,7 @@ def rawrecv(radio, amount):
     data = ""
     try:
         data = radio.pipe.read(amount)
-        #print("<= %02i: %s" % (len(data), util.hexprint(data)))
+        # print("<= %02i: %s" % (len(data), util.hexprint(data)))
     except:
         raise errors.RadioError("Error reading data from radio")
 
@@ -131,7 +132,7 @@ def rawsend(radio, data):
     """Raw send to the radio device"""
     try:
         radio.pipe.write(data)
-        #print("=> %02i: %s" % (len(data), util.hexprint(data)))
+        # print("=> %02i: %s" % (len(data), util.hexprint(data)))
     except:
         raise errors.RadioError("Error sending data from radio")
 
@@ -162,7 +163,7 @@ def handshake(radio, msg="", full=False):
     ack = rawrecv(radio, 1)
     # check ACK
     if ack != ACK_CMD:
-        #close_radio(radio)
+        # close_radio(radio)
         mesg = "Handshake failed: " + msg
         raise errors.RadioError(mesg)
 
@@ -229,14 +230,14 @@ def open_radio(radio):
     ident = rawrecv(radio, 8)
 
     # validate the input
-    if  len(ident) != 8:
+    if len(ident) != 8:
         LOG.debug("Wrong ID, get only %s bytes, we expect 8" % len(ident))
         LOG.debug(hexprint(ident))
         msg = "Bad ID received, just %s bytes, we want 8" % len(ident)
         raise errors.RadioError(msg)
 
     handshake(radio, "Comm error after ident", True)
-    LOG.debug("Correct get ident and hanshake")
+    LOG.debug("Correct get ident and handshake")
 
     if not (radio.TYPE in ident):
         LOG.debug("Incorrect model ID:")
@@ -253,7 +254,7 @@ def do_download(radio):
     """This is your download function"""
     open_radio(radio)
 
-     # UI progress
+    # UI progress
     status = chirp_common.Status()
     status.cur = 0
     status.max = MEM_SIZE / BLOCK_SIZE
@@ -280,7 +281,7 @@ def do_upload(radio):
     """Upload info to radio"""
     open_radio(radio)
 
-     # UI progress
+    # UI progress
     status = chirp_common.Status()
     status.cur = 0
     status.max = MEM_SIZE / BLOCK_SIZE
@@ -324,7 +325,7 @@ def model_match(cls, data):
     rid = get_rid(data)
 
     # DEBUG
-    #print("Full ident string is %s" % util.hexprint(rid))
+    # print("Full ident string is %s" % util.hexprint(rid))
 
     if (rid in cls.VARIANTS):
         # correct model
@@ -333,7 +334,8 @@ def model_match(cls, data):
         return False
 
 
-class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
+class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
+                        chirp_common.ExperimentalRadio):
     """Kenwood Mobile Family 60 Radios"""
     VENDOR = "Kenwood"
     _range = [136000000, 500000000]  # don't mind, it will be overwritten
@@ -346,7 +348,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
             ('This driver is experimental; not all features have been '
-            'implemented, but it has those features most used by hams.\n'
+             'implemented, but it has those features most used by hams.\n'
              '\n'
              'This radios are able to work slightly outside the OEM '
              'frequency limits. After testing, the limit in Chirp has '
@@ -401,6 +403,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         rf.valid_dtcs_codes = DTCS_CODES
         rf.valid_bands = [self._range]
         rf.memory_bounds = (1, self._upper)
+        rf.valid_tuning_steps = [5., 6.25, 10., 12.5]
         return rf
 
     def sync_in(self):
@@ -423,11 +426,11 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             raise errors.RadioError("Error uploading data to radio")
 
     def set_variant(self):
-        """Select and set the correct variables for the class acording
+        """Select and set the correct variables for the class according
         to the correct variant of the radio"""
         rid = get_rid(self._mmap)
 
-        # indentify the radio variant and set the enviroment to it's values
+        # identify the radio variant and set the environment to it's values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
 
@@ -450,7 +453,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 "Wrong Kenwood radio, ID or unknown variant, see LOG output.")
 
     def _prep_data(self):
-        """Prepare the areas in the memmap to do a consistend write
+        """Prepare the areas in the memmap to do a consistent write
         it has to make an update on the x200 flag data"""
         achs = 0
 
@@ -736,28 +739,28 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         basic.append(clone)
 
         # front keys
-        mon = RadioSetting("settings.kMON", "MON",
-                           RadioSettingValueList(KEYS.values(),
-                           KEYS.values()[KEYS.keys().index(
-                               int(sett.kMON))]))
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS.values()[KEYS.keys().index(
+                                       int(sett.kMON))])
+        mon = RadioSetting("settings.kMON", "MON", rs)
         fkeys.append(mon)
 
-        a = RadioSetting("settings.kA", "A",
-                         RadioSettingValueList(KEYS.values(),
-                         KEYS.values()[KEYS.keys().index(
-                             int(sett.kA))]))
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS.values()[KEYS.keys().index(
+                                       int(sett.kA))])
+        a = RadioSetting("settings.kA", "A", rs)
         fkeys.append(a)
 
-        scn = RadioSetting("settings.kSCN", "SCN",
-                           RadioSettingValueList(KEYS.values(),
-                           KEYS.values()[KEYS.keys().index(
-                               int(sett.kSCN))]))
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS.values()[KEYS.keys().index(
+                                       int(sett.kSCN))])
+        scn = RadioSetting("settings.kSCN", "SCN", rs)
         fkeys.append(scn)
 
-        da = RadioSetting("settings.kDA", "D/A",
-                          RadioSettingValueList(KEYS.values(),
-                          KEYS.values()[KEYS.keys().index(
-                              int(sett.kDA))]))
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS.values()[KEYS.keys().index(
+                                       int(sett.kDA))])
+        da = RadioSetting("settings.kDA", "D/A", rs)
         fkeys.append(da)
 
         return top
@@ -803,7 +806,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
             # Apply al configs done
             # DEBUG
-            #print("%s: %s" % (setting, value))
+            # print("%s: %s" % (setting, value))
             setattr(obj, setting, value)
 
 

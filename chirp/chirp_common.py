@@ -272,11 +272,11 @@ class Memory:
     # or an empty list if none
     extra = []
 
-    def __init__(self):
+    def __init__(self, number=0, empty=False, name=""):
         self.freq = 0
-        self.number = 0
+        self.number = number
         self.extd_number = ""
-        self.name = ""
+        self.name = name
         self.vfo = 0
         self.rtone = 88.5
         self.ctone = 88.5
@@ -294,7 +294,7 @@ class Memory:
 
         self.comment = ""
 
-        self.empty = False
+        self.empty = empty
 
         self.immutable = []
 
@@ -1251,7 +1251,7 @@ class CloneModeRadio(FileBackedRadio):
         # Ideally, each radio would perform an intelligent analysis to
         # make this determination to avoid model conflicts with
         # memories of the same size.
-        return len(filedata) == cls._memsize
+        return cls._memsize and len(filedata) == cls._memsize
 
     def sync_in(self):
         "Initiate a radio-to-PC clone operation"

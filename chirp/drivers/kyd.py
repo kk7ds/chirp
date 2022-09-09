@@ -245,6 +245,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, 16)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = [(400000000, 520000000)]
+        rf.valid_dtcs_codes = NC630A_DTCS
 
         return rf
 

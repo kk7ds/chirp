@@ -45,7 +45,8 @@ class CloneSettings:
 
 class CloneSettingsDialog(gtk.Dialog):
     def __make_field(self, label, widget):
-        l = gtk.Label(label)
+        l = gtk.Label(label + ":")
+        l.set_alignment(1.0, 0.5)
         self.__table.attach(l, 0, 1, self.__row, self.__row+1)
         self.__table.attach(widget, 1, 2, self.__row, self.__row+1)
         self.__row += 1
@@ -103,7 +104,7 @@ class CloneSettingsDialog(gtk.Dialog):
 
             model_store = modelbox.get_model()
             model_store.clear()
-            for rclass in sorted(models, key=lambda c: c.__name__):
+            for rclass in sorted(models, key=lambda c: c.MODEL):
                 if rclass.MODEL not in added_models:
                     model_store.append([rclass.MODEL])
                     added_models.append(rclass.MODEL)
@@ -151,14 +152,12 @@ class CloneSettingsDialog(gtk.Dialog):
                    gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self, title,
                             parent=parent,
+                            buttons=buttons,
                             flags=gtk.DIALOG_MODAL)
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_alternative_button_order([gtk.RESPONSE_OK,
+                                           gtk.RESPONSE_CANCEL])
         self.__make_ui(settings)
-        self.__cancel_button = self.add_button(gtk.STOCK_CANCEL,
-                                               gtk.RESPONSE_CANCEL)
-        self.__okay_button = self.add_button(gtk.STOCK_OK,
-                                             gtk.RESPONSE_OK)
-        self.__okay_button.grab_default()
-        self.__okay_button.grab_focus()
 
     def run(self):
         r = gtk.Dialog.run(self)
@@ -258,7 +257,7 @@ class CloneThread(threading.Thread):
             emsg = None
         except Exception as e:
             common.log_exception()
-            LOG.error(_("Clone failed: {error}").format(error=e))
+            LOG.error("Clone failed: {error}".format(error=e))
             emsg = e
 
         gobject.idle_add(self.__progw.hide)

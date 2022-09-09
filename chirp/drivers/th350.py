@@ -295,6 +295,7 @@ class Th350Radio(BaofengUVB5):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_special_chans = list(self.SPECIALS.keys())
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_tuning_steps = [5.0, 6.25, 10.0, 12.5, 20.0, 25.0]
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_tuning_step = False

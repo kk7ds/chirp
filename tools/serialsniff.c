@@ -94,7 +94,7 @@ void hexdump(char *buf, int len, FILE *dest)
 	 *
 	 * The amendment of this procedure to support the "total_hex" variable
 	 * allows for the user to pass a command line argument instantiating a
-	 * desired number of hexadecimal bytes (and their ASCII equivelent) to
+	 * desired number of hexadecimal bytes (and their ASCII equivalent) to
 	 * be displayed.
 	 *
 	 */

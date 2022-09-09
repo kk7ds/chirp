@@ -823,7 +823,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
             return self._get_settings()
         except:
             import traceback
-            pring(traceback.format_exc())
+            print(traceback.format_exc())
             return None
 
     def set_settings(self, uisettings):

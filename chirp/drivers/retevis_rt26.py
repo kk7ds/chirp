@@ -103,7 +103,7 @@ struct {
   u8 code3_len;     // Stun Code length
   u8 code3[5];      // Stun Code
   u8 unknown9[10];
-  u8 code1[8];      // PTT ID(beggining of TX)
+  u8 code1[8];      // PTT ID(beginning of TX)
   u8 code2[8];      // PTT ID(end of TX)
 } dtmf;
 
@@ -119,12 +119,12 @@ NUMERIC_CHARSET = list("0123456789")
 DTMF_CHARSET = NUMERIC_CHARSET + list("ABCD*#")
 
 RT26_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=5.00),
-                    chirp_common.PowerLevel("High", watts=10.00)]
+                     chirp_common.PowerLevel("High", watts=10.00)]
 
 RT26_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
 LIST_PTTID = ["Off", "BOT", "EOT", "Both"]
-LIST_SHORT_PRESS = ["Off", "Monitor On/Off", "", "Scan", "Alarm", 
+LIST_SHORT_PRESS = ["Off", "Monitor On/Off", "", "Scan", "Alarm",
                     "Power High/Low"]
 LIST_LONG_PRESS = ["Off", "Monitor On/Off", "Monitor(momentary)",
                    "Scan", "Alarm", "Power High/Low"]
@@ -159,18 +159,18 @@ SETTING_LISTS = {
     "scandelay": LIST_SCANDELAY,
     "digtime": LIST_DIGTIME,
     "digdelay": LIST_DIGDELAY,
-    "starhash" : LIST_STARHASH,
-    "codespace" : LIST_CODESPACE,
-    "groupcode" : LIST_GROUPCODE,
-    "resettime" : LIST_RESETTIME,
-    "decodeto" : LIST_DECODETO,
-    "stuntype" : LIST_STUNTYPE,
+    "starhash": LIST_STARHASH,
+    "codespace": LIST_CODESPACE,
+    "groupcode": LIST_GROUPCODE,
+    "resettime": LIST_RESETTIME,
+    "decodeto": LIST_DECODETO,
+    "stuntype": LIST_STUNTYPE,
     }
 
 # Retevis RT26 fingerprints
 RT26_UHF_fp = "PDK80" + "\xF3\x00\x00"   # RT26 UHF model
 
-MODELS = [RT26_UHF_fp,]
+MODELS = [RT26_UHF_fp, ]
 
 
 def _model_from_data(data):
@@ -392,6 +392,7 @@ class RT26Radio(chirp_common.CloneModeRadio):
         rf.valid_power_levels = RT26_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
+        rf.valid_dtcs_codes = RT26_DTCS
         rf.memory_bounds = (1, 16)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = [(400000000, 520000000)]
@@ -710,8 +711,8 @@ class RT26Radio(chirp_common.CloneModeRadio):
             val = _settings.scanspeed
         rs = RadioSetting("scanspeed", "Scan Speed[ms]",
                           RadioSettingValueList(
-                          LIST_SCANSPEED,
-                          LIST_SCANSPEED[val]))
+                              LIST_SCANSPEED,
+                              LIST_SCANSPEED[val]))
         basic.append(rs)
 
         if _settings.scandelay > 27:
@@ -842,7 +843,7 @@ class RT26Radio(chirp_common.CloneModeRadio):
                               LIST_STUNTYPE[_mem.dtmf.stuntype]))
         dtmf.append(rs)
 
-        ## setup stun entry
+        # setup stun entry
         objname = "code3"
         strname = "Stun Code"
         dtmfsetting = getattr(_mem.dtmf, objname)

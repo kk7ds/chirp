@@ -320,7 +320,7 @@ class FT818NDUSRadio(FT818Radio):
             return self._get_special_60m(number)
         elif number < 0 and \
                 self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
         else:

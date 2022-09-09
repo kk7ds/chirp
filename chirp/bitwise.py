@@ -666,6 +666,8 @@ class bcdDataElement(DataElement):
             self._data[self._offset] = data & 0xFF
         elif isinstance(data, str):
             self._data[self._offset] = string_straight_encode(data[0])
+        elif isinstance(data, bytes) and len(data) == 1:
+            self._data[self._offset] = int(data[0]) & 0xFF
         else:
             raise TypeError("Unable to set bcdDataElement from type %s" %
                             type(data))

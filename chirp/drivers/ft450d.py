@@ -1,4 +1,5 @@
 # Copyright 2018 by Rick DeWitt (aa0rd@yahoo.com>
+# Bug fix for issue #8183, invalid APO Off value
 # Thanks to Filippi Marco <iz3gme.marco@gmail.com> for Yaesu processes
 #
 # This program is free software: you can redistribute it and/or modify
@@ -288,7 +289,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         #seekto 0x3C3;
         struct mem_struct memory[500];
-        struct mem_struct pms[4];       // Programed Scan limits @ x387F
+        struct mem_struct pms[4];       // Programmed Scan limits @ x387F
 
         #seekto 0x3906;
         struct {
@@ -377,7 +378,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             50m HOME memories and all the A and B VFO memories.
             There are VFO memories for the last frequency dialed in
             each band. The last mem-tune config is also stored.
-            These Special Channels allow limited field editting.
+            These Special Channels allow limited field editing.
             This driver also populates the 'Other' tab in the channel
             memory Properties window. This tab contains values for
             those channel memory settings that don't fall under the
@@ -553,7 +554,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         if isinstance(number, str):
             return self._get_special(number)
         elif number < 0:
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special(self.SPECIAL_MEMORIES_REV[number])
         else:
@@ -920,7 +921,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         for setting in mem.extra:
             if setting.get_name() == "notch_pos":
-                vx = 0          # Overide list string with signed value
+                vx = 0          # Override list string with signed value
                 stx = str(setting.value)
                 if stx == "<-":
                     vx = -13
@@ -1007,9 +1008,9 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                           RadioSettingValueBoolean(_settings.ext_mnu))
         rs.set_doc("Enables access to extended settings in the radio")
         tab.append(rs)
-
+        # Issue #8183 bugfix
         rs = RadioSetting("apo", "APO time (Hrs)",
-                          RadioSettingValueInteger(1, 12, _settings.apo))
+                          RadioSettingValueInteger(0, 12, _settings.apo))
         tab.append(rs)
 
         options = ["%i" % i for i in range(0, 21)]
