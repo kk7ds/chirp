@@ -738,9 +738,9 @@ if __name__ == "__main__":
         return r
 
     def usage():
-        print ("Usage: %s <-i input.img>|<-o output.img> -p port "
-               "[[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" %
-               sys.argv[0])
+        print("Usage: %s <-i input.img>|<-o output.img> -p port "
+              "[[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" %
+              sys.argv[0])
         sys.exit(1)
 
     opts, args = getopt.getopt(sys.argv[1:], "i:o:p:f:l:b:")
@@ -793,4 +793,4 @@ if __name__ == "__main__":
     else:
         r._mmap = file(fname, "rb").read(r._memsize)
         r.upload(blocks)
-    print ("\nDone")
+    print("\nDone")
