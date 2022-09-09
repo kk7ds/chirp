@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 
+import pytest
 import six
 
 from chirp import directory
@@ -15,6 +16,7 @@ from tests import run_tests
 
 
 LOG = logging.getLogger('testadapter')
+PY3_XFAIL = []
 
 
 def if_enabled(fn):
@@ -44,6 +46,7 @@ class TestAdapter(unittest.TestCase):
     SOURCE_IMAGE = None
     RADIO_INST = None
     testwrapper = None
+    XFAIL = False
 
     def shortDescription(self):
         test = self.id().split('.')[-1].replace('test_', '').replace('_', ' ')
@@ -115,6 +118,10 @@ class TestAdapter(unittest.TestCase):
 
     @if_enabled
     def test_detect(self):
+        if self.SOURCE_IMAGE in PY3_XFAIL:
+            pytest.xfail('Driver not expected to run in python3. '
+                         'Remove from py3_remaining.txt')
+
         self._runtest(run_tests.TestCaseDetect)
 
     @if_enabled
@@ -167,13 +174,29 @@ def _load_tests(loader, tests, pattern, suite=None):
         # This default is meaningless for us
         pattern = None
 
+    py3_remaining = [x.strip() for x in open(os.path.join(
+        base, '..', 'py3_remaining.txt')).readlines()
+                     if not x.startswith('#')]
+
     for image, test in tests.items():
         try:
             rclass = directory.get_radio(test)
+            if os.path.basename(image) in py3_remaining:
+                PY3_XFAIL.append(image)
+
         except Exception:
-            if six.PY3 and 'CHIRP_DEBUG' in os.environ:
+            if not six.PY3:
+                raise
+
+            if 'CHIRP_DEBUG' in os.environ:
                 LOG.error('Failed to load %s' % test)
+
+            if os.path.basename(image) in py3_remaining:
+                # We expect this to fail to import in py3, so do not
+                # abort the test run.
                 continue
+            print('%s not in py3 exclusion list %s...' % (
+                os.path.basename(image), ','.join(py3_remaining)))
             raise
         for device in _get_sub_devices(rclass, image):
             class_name = 'TestCase_%s' % (
