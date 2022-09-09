@@ -44,7 +44,7 @@ args = parser.parse_args()
 
 
 def file_to_lines(name):
-    fh = file(name, "r")
+    fh = open(name, "r")
     lines = fh.read().split("\n")
     lines.pop()
     fh.close()
@@ -64,7 +64,7 @@ if args.scan:
             if f.endswith('.py'):
                 manifest.append(filename)
                 continue
-            with file(filename, "r") as fh:
+            with open(filename, "r") as fh:
                 shebang = fh.readline()
                 if shebang.startswith("#!/usr/bin/env python"):
                     manifest.append(filename)
@@ -90,25 +90,25 @@ def get_exceptions(f):
     return ignore
 
 if args.update:
-    print "Starting update of %d files" % len(manifest)
+    print("Starting update of %d files" % len(manifest))
     bad = []
     for f in manifest:
         checker = pep8.StyleGuide(quiet=True, ignore=get_exceptions(f))
         results = checker.check_files([f])
         if results.total_errors:
             bad.append(f)
-        print "%s: %s" % (results.total_errors and "FAIL" or "PASS", f)
+        print("%s: %s" % (results.total_errors and "FAIL" or "PASS", f))
 
-    with file(blacklist_filename, "w") as fh:
-        print >>fh, """\
+    with open(blacklist_filename, "w") as fh:
+        fh.write("""\
 # cpep8.blacklist: The list of files that do not meet PEP8 standards.
 # DO NOT ADD NEW FILES!!  Instead, fix the code to be compliant.
-# Over time, this list should shrink and (eventually) be eliminated."""
-        print >>fh, "\n".join(sorted(bad))
+# Over time, this list should shrink and (eventually) be eliminated.""")
+        fh.write("\n".join(sorted(bad)))
 
     if args.scan:
-        with file(manifest_filename, "w") as fh:
-            print >>fh, "\n".join(sorted(manifest))
+        with open(manifest_filename, "w") as fh:
+            fh.write("\n".join(sorted(manifest)))
     sys.exit(0)
 
 if args.files:
@@ -126,7 +126,7 @@ check_list = sorted(check_list)
 total_errors = 0
 for f in check_list:
     if args.verbose:
-        print "Checking %s" % f
+        print("Checking %s" % f)
 
     checker = pep8.Checker(f, quiet=args.stats, ignore=get_exceptions(f))
     results = checker.check_all()
