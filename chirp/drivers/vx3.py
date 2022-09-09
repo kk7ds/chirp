@@ -775,7 +775,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting(
                 "my_key", "My key",
                 RadioSettingValueList(keys, keys[_settings.my_key - 16]))
-        # TODO: fix keys list isnt exactly right order
+        # TODO: fix keys list isn't exactly right order
         # leave disabled in settings for now
         # basic.append(rs)
 

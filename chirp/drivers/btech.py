@@ -30,7 +30,7 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
-# A note about the memmory in these radios
+# A note about the memory in these radios
 #
 # The real memory of these radios extends to 0x4000
 # On read the factory software only uses up to 0x3200
@@ -63,7 +63,7 @@ LIST_COLOR4 = ["Off", "Blue", "Orange", "Purple"]
 LIST_COLOR8 = ["White", "Red", "Blue", "Green", "Yellow", "Indigo",
                "Purple", "Gray"]
 LIST_COLOR9 = ["Black"] + LIST_COLOR8
-LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboad + ANI"]
+LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboard + ANI"]
 LIST_EMCTP = ["TX alarm sound", "TX ANI", "Both"]
 LIST_EMCTPX = ["Off"] + LIST_EMCTP
 LIST_LANGUA = ["English", "Chinese"]
@@ -429,7 +429,7 @@ def _do_ident(radio, status, upload=False):
     radio.pipe.baudrate = 9600
     radio.pipe.parity = "N"
 
-    # lengthen the timeout here as these radios are reseting due to timeout
+    # lengthen the timeout here as these radios are resetting due to timeout
     radio.pipe.timeout = 0.75
 
     # send the magic word
@@ -553,7 +553,7 @@ def _upload(radio):
     """Upload procedure"""
 
     # The UPLOAD mem is restricted to lower than 0x3100,
-    # so we will overide that here localy
+    # so we will override that here localy
     MEM_SIZE = radio.UPLOAD_MEM_SIZE
 
     # UI progress
@@ -933,7 +933,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             LOG.debug("This mem was empty before")
             mem_was_empty = True
 
-        # if empty memmory
+        # if empty memory
         if mem.empty:
             # the channel itself
             _mem.set_raw("\xFF" * 16)
@@ -1027,7 +1027,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         # scan add property
         _mem.add = SKIP_VALUES.index(mem.skip)
 
-        # reseting unknowns, this have to be set by hand
+        # resetting unknowns, this have to be set by hand
         _mem.unknown0 = 0
         _mem.unknown1 = 0
         _mem.unknown2 = 0
@@ -2914,7 +2914,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         ext_length = _mem._5tone_settings._5tone_first_digit_ext_length
         if ext_length == 255:
             ext_length = 0
-            LOG.debug("1st Tone ext lenght unconfigured! Resetting to 0")
+            LOG.debug("1st Tone ext length unconfigured! Resetting to 0")
 
         if ext_length <= len(LIST_5TONE_DELAY):
             list = RadioSettingValueList(

@@ -1578,7 +1578,7 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                         sx = "Block 0x%x read error: " % bkx
                         sx += "Got %i bytes, expected 260." % len(resp0)
                         LOG.error(sx)
-                        sx = "Block read errror! Check debug.log"
+                        sx = "Block read error! Check debug.log"
                         raise errors.RadioError(sx)
                     if bkx == 0:   # 1st packet of 1st block
                         mht = resp0[4:7]   # [57 00 00 00] 03 4b 01 ff ff ...
@@ -2020,7 +2020,7 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                         sx = "Block 0x%x, 0x%x read error: " % (blkn, bkx)
                         sx += "Got %i bytes, expected %i." % (lb, xb)
                         LOG.error(sx)
-                        sx = "Block read errror! Check debug.log"
+                        sx = "Block read error! Check debug.log"
                         raise errors.RadioError(sx)
                     if blkn == 0 and bkx == 0:   # 1st packet of 1st block
                         mht = resp0[5:9]   # Magic Header Thingy after cmd echo

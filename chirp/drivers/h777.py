@@ -284,7 +284,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
 
     # This code currently requires that ranges start at 0x0000
-    # and are continious. In the original program 0x0388 and 0x03C8
+    # and are continuous. In the original program 0x0388 and 0x03C8
     # are only written (all bytes 0xFF), not read.
     # _ranges = [
     #       (0x0000, 0x0110),

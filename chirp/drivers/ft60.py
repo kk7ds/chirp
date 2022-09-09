@@ -627,7 +627,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # RXSAVE
         opts = ["OFF", "200 MS", "300 MS", "500 MS", "1 S", "2 S"]
         power.append(RadioSetting(
-            "rxsave", "Receive Mode Batery Savery Interval",
+            "rxsave", "Receive Mode Battery Savery Interval",
                      RadioSettingValueList(opts, opts[_settings.rxsave])))
 
         # S.SRCH

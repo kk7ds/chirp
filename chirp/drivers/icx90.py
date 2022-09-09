@@ -880,7 +880,7 @@ def reorder_banks(icx90, preserve_position, preserve_unknown, banks_templ):
                     bank_pos = banks_cnt[bank]
                     banks_cnt[bank] += 1
                 print("%s\t-> %s, %02d" % (mem.name, BANK_INDEX[bank], bank_pos))
-            # explictly set non empty channel as visible
+            # explicitly set non empty channel as visible
             icx90.memobj.banks[mi].invisible_channel = 0
         if bank >= BANKS or bank_pos >= BANK_NUM:
             bank = None

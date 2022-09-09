@@ -63,7 +63,7 @@ class DTCSPolarityAction(argparse.Action):
         value = values[0]
         if value not in ["NN", "RN", "NR", "RR"]:
             raise argparse.ArgumentError(
-                self, "Invaid DTCS polarity: %s" % value)
+                self, "Invalid DTCS polarity: %s" % value)
         setattr(namespace, self.dest, value)
 
 

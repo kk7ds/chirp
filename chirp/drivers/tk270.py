@@ -56,11 +56,11 @@ u8 active[4];           //  4 bytes / bit LSBF for the active cha
 
 #seekto 0x0340;
 struct {
-  u8 kMoni;             // monitor key funcion
-  u8 kScan;             // scan key funcion
-  u8 kDial;             // dial key funcion
-  u8 kTa;               // ta key funcion
-  u8 kLo;               // low key funcion
+  u8 kMoni;             // monitor key function
+  u8 kScan;             // scan key function
+  u8 kDial;             // dial key function
+  u8 kTa;               // ta key function
+  u8 kLo;               // low key function
   u8 unknown40[7];
   // 0x034c
   u8 tot;               // TOT val * 30 steps (x00-0xa)
@@ -405,11 +405,11 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             raise errors.RadioError("Error uploading data to radio")
 
     def set_variant(self):
-        """Select and set the correct variables for the class acording
+        """Select and set the correct variables for the class according
         to the correct variant of the radio"""
         rid = get_radio_id(self._mmap)
 
-        # indentify the radio variant and set the enviroment to it's values
+        # identify the radio variant and set the environment to it's values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
 
@@ -744,7 +744,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             # off
             sett.tot_reset = 0
         if int(sett.sql) == 0xff:
-            # a confortable level ~6
+            # a comfortable level ~6
             sett.sql = 6
 
         tot = RadioSetting("settings.tot", "Time Out Timer (TOT)",

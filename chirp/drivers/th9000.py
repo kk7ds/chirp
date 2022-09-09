@@ -166,7 +166,7 @@ struct {
 #
 #  bytes:bit   type                 description
 #  ---------------------------------------------------------------------------
-#  6         u8 bootup_passwd[6]     bootup passwd, 6 chars, numberic chars
+#  6         u8 bootup_passwd[6]     bootup passwd, 6 chars, numeric chars
 #                                    30-39 , see boot_passwd checkbox to set
 #  10        u8 unknown;
 #

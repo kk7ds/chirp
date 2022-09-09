@@ -623,7 +623,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         if isinstance(number, str):
             return self._get_special(number)
         elif number < 0:
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special(self.SPECIAL_MEMORIES_REV[number])
         else:
@@ -887,7 +887,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         # All mem.extra << Once the channel is defined
         for setting in mem.extra:
-            # Overide list strings with signed value
+            # Override list strings with signed value
             if setting.get_name() == "ptt":
                 sx = str(setting.value)
                 for i in range(0, 4):
@@ -1275,7 +1275,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         rx = RadioSettingValueBoolean(bool(_sets.rxinhib))
         rset = RadioSetting("setstuf.rxinhib",
-                            "Rcvr Will Interupt FM (DW)", rx)
+                            "Rcvr Will Interrupt FM (DW)", rx)
         fmb.append(rset)
 
         _fmfrq = self._memobj.fm_stations

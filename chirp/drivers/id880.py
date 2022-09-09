@@ -112,7 +112,7 @@ def decode_call(sevenbytes):
         # places for the next round
         rem = (byte & mask) << 7 - i
 
-    # After seven trips gathering overflow bits, we chould have seven
+    # After seven trips gathering overflow bits, we should have seven
     # left, which is the final character
     call += chr(rem)
 

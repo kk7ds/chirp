@@ -93,12 +93,12 @@ struct {
       workmoda:1;      // work mode (left side)
   u8  scansb:1,        // scan stop beep
       aftone:3,        // af tone control
-      scand:1,         // scan directon
+      scand:1,         // scan direction
       scanr:3;         // scan resume
   u8  rxexp:1,         // rx expansion
       ptt:1,           // ptt mode
       display:1,       // display select (frequency/clock)
-      omode:1,         // operaton mode
+      omode:1,         // operation mode
       beep:2,          // beep volume
       spkr:2;          // speaker
   u8  cpuclk:1,        // operating mode(cpu clock)
@@ -869,7 +869,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             if dname and not dname.changed():
                 dname.value = False
 
-        # reseting unknowns, this has to be set by hand
+        # resetting unknowns, this has to be set by hand
         _mem.unknown0 = 0
         _mem.unknown1 = 0
         _mem.unknown2 = 0

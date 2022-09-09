@@ -374,9 +374,9 @@ class MemoryEditor(common.Editor):
 
         # Verify a change was made
         if new == prev:
-            # Restore all columns to their orginal values, a given editor
-            # may modify mutliple columns so we need to restore each of them
-            # to their previous values in order to restore the orginal state.
+            # Restore all columns to their original values, a given editor
+            # may modify multiple columns so we need to restore each of them
+            # to their previous values in order to restore the original state.
             self._restore(iter, vals)
             return
 
@@ -389,7 +389,7 @@ class MemoryEditor(common.Editor):
         if msgs:
             common.show_error(_("Error setting memory") + ": " +
                               "\r\n\r\n".join(msgs))
-            # Restore to orginal values and exit
+            # Restore to original values and exit
             self._restore(iter, vals)
             return
 

@@ -458,8 +458,8 @@ class LT725UV(chirp_common.CloneModeRadio):
     # Low = 5W, Med = 10W, High = 25W
     # The band power selection in a VFO applies to the VFO and overrides
     # the stored channel power selection
-    # The firmware chanel memory structure provides only 1 bit for
-    # individual chanel power settings, limiting potential channel
+    # The firmware channel memory structure provides only 1 bit for
+    # individual channel power settings, limiting potential channel
     # power selection options to 2 levels: Low or High.
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
                     chirp_common.PowerLevel("High", watts=30.00)]

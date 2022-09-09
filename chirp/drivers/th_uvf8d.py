@@ -87,7 +87,7 @@ def tyt_uvf8d_upload(radio):
     radio.pipe.timeout = 1
 
     if data != radio._mmap[:32]:
-        raise errors.RadioError("Model mis-match: \n%s\n%s" %
+        raise errors.RadioError("Model mismatch: \n%s\n%s" %
                                 (util.hexprint(data),
                                  util.hexprint(radio._mmap[:32])))
 

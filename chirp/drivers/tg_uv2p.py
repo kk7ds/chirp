@@ -489,7 +489,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                             options, options[_rxmode]))
         cfg_grp.append(rs)
 
-        # Busy chanel lock
+        # Busy channel lock
         rs = RadioSetting("busy_lockout", "Busy Channel Lock",
                           RadioSettingValueBoolean(
                              not _settings.busy_lockout))

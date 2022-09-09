@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# FT-1802 Clone Proceedure
+# FT-1802 Clone Procedure
 # 1. Turn radio off.
 # 2. Connect cable to mic jack.
 # 3. Press and hold in the [LOW(A/N)] key while turning the radio on.
