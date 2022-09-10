@@ -160,7 +160,7 @@ class ID51PLUSRadio(id31.ID31Radio):
 
     def get_repeater_call_list(self):
         calls = []
-        # Unlike previos DStar radios, there is not a seperate repeater
+        # Unlike previous DStar radios, there is not a separate repeater
         # callsign list. It's only the DV Memory banks.
         for repeater in self._memobj.repeaters:
             call = id31._decode_call(repeater.call)

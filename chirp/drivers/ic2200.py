@@ -79,9 +79,9 @@ DTCSP = ["NN", "NR", "RN", "RR"]
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=65),
-                chirp_common.PowerLevel("Mid", watts=25),
+                chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("MidLow", watts=10),
-                chirp_common.PowerLevel("Low", watts=5)]
+                chirp_common.PowerLevel("Mid", watts=25)]
 
 
 def _get_special():

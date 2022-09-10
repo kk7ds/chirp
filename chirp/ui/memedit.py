@@ -49,18 +49,10 @@ def handle_toggle(_, path, store, col):
     store[path][col] = not store[path][col]
 
 
-def handle_ed(_, iter, new, store, col):
-    old, = store.get(iter, col)
-    if old != new:
-        store.set(iter, col, new)
-        return True
-    else:
-        return False
-
-
 class ValueErrorDialog(gtk.MessageDialog):
     def __init__(self, exception, **args):
         gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_OK, **args)
+        self.set_default_response(gtk.RESPONSE_OK)
         self.set_property("text", _("Invalid value for this field"))
         self.format_secondary_text(str(exception))
 
@@ -340,9 +332,13 @@ class MemoryEditor(common.Editor):
             return
 
         iter = self.store.get_iter(path)
-        if not self.store.get(iter, self.col("_filled"))[0] and \
-                self.store.get(iter, self.col(_("Frequency")))[0] == 0:
-            LOG.error(_("Editing new item, taking defaults"))
+        vals = self.store.get(iter, *range(0, len(self.cols)))
+        prev, = self.store.get(iter, self.col(cap))
+        filled, = self.store.get(iter, self.col("_filled"))
+        freq, = self.store.get(iter, self.col(_("Frequency")))
+
+        # Take default values, if not yet edited
+        if not filled and freq == 0:
             self.insert_new(iter)
 
         colnum = self.col(cap)
@@ -360,13 +356,16 @@ class MemoryEditor(common.Editor):
             _("Cross Mode"): self.ed_tone_field,
             }
 
+        # Call the specific editor for the given column
         if cap in funcs:
             new = funcs[cap](rend, path, new, colnum)
 
+        # Sanity check
         if new is None:
-            LOG.error(_("Bad value for {col}: {val}").format(col=cap, val=new))
+            LOG.error("Bad value for {col}: {val}".format(col=cap, val=new))
             return
 
+        # Convert type based on column
         if self.store.get_column_type(colnum) == TYPE_INT:
             new = int(new)
         elif self.store.get_column_type(colnum) == TYPE_FLOAT:
@@ -377,24 +376,30 @@ class MemoryEditor(common.Editor):
             if new == "(None)":
                 new = ""
 
-        if not handle_ed(rend, iter, new, self.store, self.col(cap)) and \
-                cap != _("Frequency"):
-            # No change was made
-            # For frequency, we make an exception, since the handler might
-            # have altered the duplex.  That needs to be fixed.
+        # Verify a change was made
+        if new == prev:
+            # Restore all columns to their original values, a given editor
+            # may modify multiple columns so we need to restore each of them
+            # to their previous values in order to restore the original state.
+            self._restore(iter, vals)
             return
 
-        mem = self._get_memory(iter)
+        # Finally, set the new value
+        self.store.set(iter, self.col(cap), new)
 
+        # Have the radio validate the memory
+        mem = self._get_memory(iter)
         msgs = self.rthread.radio.validate_memory(mem)
         if msgs:
             common.show_error(_("Error setting memory") + ": " +
                               "\r\n\r\n".join(msgs))
-            self.prefill()
+            # Restore to original values and exit
+            self._restore(iter, vals)
             return
 
         mem.empty = False
 
+        # Kick off job to write memory
         job = common.RadioJob(self._set_memory_cb, "set_memory", mem)
         job.set_desc(_("Writing memory {number}").format(number=mem.number))
         self.rthread.submit(job)
@@ -1088,6 +1093,20 @@ class MemoryEditor(common.Editor):
                 _('Internal Error: Renderer for column %s not found') % (
                     caption))
 
+    def _prefill(self, num):
+        def handler(mem, number):
+            if not isinstance(mem, Exception):
+                if not mem.empty or self.show_empty:
+                    gobject.idle_add(self.set_memory, mem)
+            else:
+                mem = chirp_common.Memory(number, True, "Error")
+                gobject.idle_add(self.set_memory, mem)
+
+        job = common.RadioJob(handler, "get_memory", num)
+        job.set_desc(_("Getting memory {number}").format(number=num))
+        job.set_cb_args(num)
+        self.rthread.submit(job, 2)
+
     def prefill(self):
         self.store.clear()
         self._rows_in_store = 0
@@ -1095,29 +1114,16 @@ class MemoryEditor(common.Editor):
         lo = int(self.lo_limit_adj.get_value())
         hi = int(self.hi_limit_adj.get_value())
 
-        def handler(mem, number):
-            if not isinstance(mem, Exception):
-                if not mem.empty or self.show_empty:
-                    gobject.idle_add(self.set_memory, mem)
-            else:
-                mem = chirp_common.Memory()
-                mem.number = number
-                mem.name = "ERROR"
-                mem.empty = True
-                gobject.idle_add(self.set_memory, mem)
-
         for i in range(lo, hi+1):
-            job = common.RadioJob(handler, "get_memory", i)
-            job.set_desc(_("Getting memory {number}").format(number=i))
-            job.set_cb_args(i)
-            self.rthread.submit(job, 2)
+            self._prefill(i)
 
         if self.show_special:
             for i in self._features.valid_special_chans:
-                job = common.RadioJob(handler, "get_memory", i)
-                job.set_desc(_("Getting channel {chan}").format(chan=i))
-                job.set_cb_args(i)
-                self.rthread.submit(job, 2)
+                self._prefill(i)
+
+    def _restore(self, iter, vals):
+        for col, val in enumerate(vals):
+            self.store.set(iter, col, val)
 
     def _set_memory(self, iter, memory):
         self.store.set(iter,
@@ -1432,7 +1438,7 @@ class MemoryEditor(common.Editor):
 
         # Run low priority jobs to get the rest of the memories
         hi = int(self.hi_limit_adj.get_value())
-        for i in range(hi, max+1):
+        for i in range(hi+1, max+1):
             job = common.RadioJob(None, "get_memory", i)
             job.set_desc(_("Getting memory {number}").format(number=i))
             self.rthread.submit(job, 10)
@@ -1521,20 +1527,27 @@ class MemoryEditor(common.Editor):
             loc, filled = store.get(iter,
                                     self.col(_("Loc")), self.col("_filled"))
             if filled and not always:
+                buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                           gtk.STOCK_NO, gtk.RESPONSE_NO,
+                           _("Yes to All"), gtk.RESPONSE_ACCEPT,
+                           gtk.STOCK_YES, gtk.RESPONSE_YES)
                 d = miscwidgets.YesNoDialog(title=_("Overwrite?"),
-                                            buttons=(gtk.STOCK_YES, 1,
-                                                     gtk.STOCK_NO, 2,
-                                                     gtk.STOCK_CANCEL, 3,
-                                                     "All", 4))
+                                            parent=None,
+                                            buttons=buttons)
+                d.set_default_response(gtk.RESPONSE_YES)
+                d.set_alternative_button_order([gtk.RESPONSE_YES,
+                                                gtk.RESPONSE_ACCEPT,
+                                                gtk.RESPONSE_NO,
+                                                gtk.RESPONSE_CANCEL])
                 d.set_text(
                     _("Overwrite location {number}?").format(number=loc))
                 r = d.run()
                 d.destroy()
-                if r == 4:
+                if r == gtk.RESPONSE_ACCEPT:
                     always = True
-                elif r == 3:
+                elif r == gtk.RESPONSE_CANCEL:
                     break
-                elif r == 2:
+                elif r == gtk.RESPONSE_NO:
                     iter = store.iter_next(iter)
                     continue
 
@@ -1552,16 +1565,20 @@ class MemoryEditor(common.Editor):
                 errs = [x for x in msgs
                         if isinstance(x, chirp_common.ValidationError)]
                 if errs:
+                    buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                               gtk.STOCK_OK, gtk.RESPONSE_OK)
                     d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
-                                                buttons=(gtk.STOCK_OK, 1,
-                                                         gtk.STOCK_CANCEL, 2))
+                                                buttons=buttons)
+                    d.set_default_response(gtk.RESPONSE_OK)
+                    d.set_alternative_button_order([gtk.RESPONSE_OK,
+                                                    gtk.RESPONSE_CANCEL])
                     d.set_text(
                         _("Pasted memory {number} is not compatible with "
                           "this radio because:").format(number=src_number) +
                         os.linesep + os.linesep.join(msgs))
                     r = d.run()
                     d.destroy()
-                    if r == 2:
+                    if r == gtk.RESPONSE_CANCEL:
                         break
                     else:
                         iter = store.iter_next(iter)
@@ -1738,7 +1755,3 @@ class DstarMemoryEditor(MemoryEditor):
                            self.col("RPT2CALL"), "",
                            self.col("Digital Code"), 0,
                            )
-
-
-class ID800MemoryEditor(DstarMemoryEditor):
-    pass

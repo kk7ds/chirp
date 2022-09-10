@@ -152,7 +152,7 @@ class FT2D(ft1d.FT1Radio):
 
 @directory.register
 class FT2Dv2(FT2D):
-    """Yaesu FT-2D v2 firwmare"""
+    """Yaesu FT-2D v2 firmware"""
     VARIANT = "Rv2"
 
     _model = "AH60G"

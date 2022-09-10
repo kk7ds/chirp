@@ -1,5 +1,6 @@
 # Copyright 2019: Rick DeWitt (RJD), <aa0rd@yahoo.com>
 # Version 1.0 for TYT-UV8000D/E
+#         1.1 Fixes issue #8339, Priority chan OFF (0)
 # Thanks to Damon Schaefer (K9CQB) and the Loudoun County, VA ARES
 #    club for the donated radio.
 # And thanks to Ian Harris (VA3IHX) for decoding the memory map.
@@ -622,7 +623,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         if isinstance(number, str):
             return self._get_special(number)
         elif number < 0:
-            # I can't stop delete operation from loosing extd_number but
+            # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special(self.SPECIAL_MEMORIES_REV[number])
         else:
@@ -886,7 +887,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         # All mem.extra << Once the channel is defined
         for setting in mem.extra:
-            # Overide list strings with signed value
+            # Override list strings with signed value
             if setting.get_name() == "ptt":
                 sx = str(setting.value)
                 for i in range(0, 4):
@@ -1250,10 +1251,8 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         scn.append(rset)
 
         val = _sets.prichan
-        if val <= 0:
-            val = 1
-        rx = RadioSettingValueInteger(1, 128, val)
-        rset = RadioSetting("setstuf.prichan", "Priority Channel", rx)
+        rx = RadioSettingValueInteger(0, 128, val)
+        rset = RadioSetting("setstuf.prichan", "Priority Channel (0:Off)", rx)
         scn.append(rset)
 
         # FM Broadcast Settings
@@ -1276,7 +1275,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         rx = RadioSettingValueBoolean(bool(_sets.rxinhib))
         rset = RadioSetting("setstuf.rxinhib",
-                            "Rcvr Will Interupt FM (DW)", rx)
+                            "Rcvr Will Interrupt FM (DW)", rx)
         fmb.append(rset)
 
         _fmfrq = self._memobj.fm_stations

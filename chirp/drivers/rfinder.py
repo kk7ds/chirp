@@ -177,8 +177,6 @@ class RFinderParser:
 
     def fetch_data(self, user, pw, coords, radius):
         """Fetches the data for a set of parameters"""
-        LOG.debug(user)
-        LOG.debug(pw)
         args = {
             "email": urllib.quote_plus(user),
             "pass": hashlib.new("md5", pw).hexdigest(),
@@ -190,8 +188,6 @@ class RFinderParser:
 
         _url = "https://www.rfinder.net/query.php?%s" % \
                ("&".join(["%s=%s" % (k, v) for k, v in args.items()]))
-
-        LOG.debug("Query URL: %s" % _url)
 
         f = urllib.urlopen(_url)
         data = f.read()

@@ -1,0 +1,118 @@
+name: chirp-snap
+summary: A free, open-source tool for programming your amateur radio
+description: |
+    CHIRP is a free, open-source tool for programming your amateur radio. 
+    It supports a large number of manufacturers and models, as well as 
+    provides a way to interface with multiple data sources and formats.
+adopt-info: chirp
+grade: stable
+confinement: strict
+base: core18
+
+# This is a python2 GTK2 Application:
+# https://snapcraft.io/docs/gtk2-applications
+
+plugs:
+  gtk-2-engines:
+    interface: content
+    target: $SNAP/lib/gtk-2.0
+    default-provider: gtk2-common-themes
+  gtk-2-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+
+hooks:
+  configure:
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media
+  pre-refresh:
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media
+
+apps:
+  chirp-snap:
+    command: bin/chirpw
+    desktop: share/applications/chirp.desktop
+    environment:
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
+      # Needed for fontconfig
+      XDG_DATA_HOME: ${SNAP}/usr/share
+      FONTCONFIG_PATH: ${SNAP}/etc/fonts/config.d
+      FONTCONFIG_FILE: ${SNAP}/etc/fonts/fonts.conf
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media
+      - desktop-legacy
+      - unity7
+      - x11
+      - raw-usb
+      - serial-port
+
+parts:
+  chirp:
+    plugin: python
+    python-version: python2
+    #python-packages: [pycairo, pygobject, pygtk, libxml2, pyserial, python-future, python-suds]
+    source: https://github.com/kk7ds/chirp.git
+    override-pull: |
+      snapcraftctl pull
+      # Set timezone to America/Los_Angeles
+      sudo sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+      sed -i "s/CHIRP_VERSION = \".*\"/CHIRP_VERSION = \"daily-$(date +%Y%m%d)\"/" chirp/__init__.py
+      sed -i "s,^Icon=.*$,Icon=\$\{SNAP\}/share/chirp-snap.svg," share/chirp.desktop
+      # snap version cannot be longer than 32 characters
+      LATEST_COMMIT_SHORT=$(git rev-parse --short HEAD)
+      SNAP_VERSION="snap-$(date +%Y%m%d)+${LATEST_COMMIT_SHORT}"
+      snapcraftctl set-version "$SNAP_VERSION"
+    override-build: |
+      snapcraftctl build
+      cp ${SNAPCRAFT_PART_SRC}/share/chirp.svg ${SNAPCRAFT_PART_INSTALL}/share/chirp-snap.svg
+      rsync -av ${SNAPCRAFT_PART_INSTALL}/share/ ${SNAPCRAFT_PART_INSTALL}/usr/share/
+      rm ${SNAPCRAFT_PART_INSTALL}/usr/share/pixmaps/chirp.png
+    build-packages:
+      - rsync
+    stage-packages:
+      - python-gtk2
+      - python-serial
+      - python-libxml2
+      - python-future
+    after:
+      - desktop-gtk2
+  # https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
+  desktop-gtk2:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk2"]
+    build-packages:
+      - build-essential
+      - libgtk2.0-dev
+      - gettext
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk2.0-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk2.0-bin
+      - unity-gtk2-module
+      - locales-all
+      - libappindicator1
+      - xdg-user-dirs
+      - ibus-gtk
+      - libibus-1.0-5

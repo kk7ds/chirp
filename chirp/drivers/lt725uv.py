@@ -1,6 +1,10 @@
-# Copyright 2016:
+# Copyright 2016-2021:
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
-# Modified for Baojie BJ-218: 2018 by Rick DeWitt (RJD), <aa0rd@yahoo.com>#
+# Modified for Baojie BJ-218: 2018
+#    Rick DeWitt (RJD), <aa0rd@yahoo.com>
+# Modified for Baojie BJ-318: April 2021
+#    Mark Hartong, AJ4YI <mark.hartong@verizon.net>
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
@@ -19,25 +23,25 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings,InvalidValueError
+    RadioSettingValueFloat, RadioSettings, InvalidValueError
 from textwrap import dedent
+
+LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 #seekto 0x0200;
 struct {
-  u8  init_bank;
-  u8  volume;
-  u16 fm_freq;
-  u8  wtled;
-  u8  rxled;
-  u8  txled;
+  u8  init_bank; // determines which VFO is primary A or B
+  u8  volume;    // not used BJ-318, band volume is controlled vfo u8 bvol
+  u16 fm_freq;   // not used BJ-318, freq is controlled hello_lims u16 fm_318
+  u8  wtled;     // not used BJ-318
+  u8  rxled;     // not used BJ-318
+  u8  txled;     // not used BJ-318
   u8  ledsw;
   u8  beep;
   u8  ring;
@@ -45,7 +49,7 @@ struct {
   u8  tot;
   u16 sig_freq;
   u16 dtmf_txms;
-  u8  init_sql;
+  u8  init_sql;  // not used BJ-318, band squelch is controlled vfo u8 sql
   u8  rptr_mode;
 } settings;
 
@@ -92,15 +96,25 @@ struct {
 
 #seekto 0x02d0;
 struct {
-  u8  hello1_cnt;
-  char  hello1[7];
-  u8  hello2_cnt;
-  char  hello2[7];
+  u8  hello1_cnt;    // not used in BJ-318, is set in memory map
+  char  hello1[7];   // not used in BJ-318, is set in memory map
+  u8  hello2_cnt;    // not used in BJ-318, is set in memory map
+  char  hello2[7];   // not used in BJ-318, is set in memory map
   u32  vhf_low;
   u32  vhf_high;
   u32  uhf_low;
   u32  uhf_high;
-  u8  lims_on;
+  u8  lims_on;       // first byte @ at address 0x02f0;
+  u8 unknown_1;      // use in BJ-318 unknown
+  u8 lang;           // BJ-318 Display language
+                     // 02 = English 00 and 01 are Asian
+  u8 up_scr_color;   // BJ-318 upper screen character color
+  u8 dn_scr_color;   // BJ-318 lower screen character color
+                     // purple=00, red=01, emerald=02, blue=03,
+                     // sky_blue=04, black=05, required hex values for color
+                     // Note   sky_blue and black look the same on the
+                     // BJ-318 screen
+  u16 fm_318;        // FM stored Frequency in BJ-318
 } hello_lims;
 
 struct vfo {
@@ -117,14 +131,18 @@ struct vfo {
       tx_tone:14;
   u8  launch_sig;
   u8  tx_end_sig;
-  u8  bpower;
+  u8  bpower;        // sets power Hi=02h, Medium=01h, Low=00
+                     // sets power for entire vfo band
   u8  fm_bw;
   u8  cmp_nder;
   u8  scrm_blr;
   u8  shift;
   u32 offset;
   u16 step;
-  u8  sql;
+  u8  sql;           // squelch for entire vfo band
+                     // integer values 0 (low) to 9 (high)
+  u8  bvol;          // sets volume for vfo band
+                     // integer values 0  (low) TO 10 (high)
 };
 
 #seekto 0x0300;
@@ -149,7 +167,11 @@ struct mem {
       txtone:14;
   u8  botsignal;
   u8  eotsignal;
-  u8  power:1,
+  u8  power:1,            // binary value for
+                          // indiviudal channel power
+                          // set to "High" or "Low"
+                          // BJ-318 band power overrides any
+                          // individual channel power setting
       wide:1,
       compandor:1
       scrambler:1
@@ -173,17 +195,18 @@ struct {
 MEM_SIZE = 0x1C00
 BLOCK_SIZE = 0x40
 STIMEOUT = 2
-# Channel power: 2 levels
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
-                chirp_common.PowerLevel("High", watts=30.00)]
-
 LIST_RECVMODE = ["QT/DQT", "QT/DQT + Signaling"]
 LIST_SIGNAL = ["Off"] + ["DTMF%s" % x for x in range(1, 9)] + \
               ["DTMF%s + Identity" % x for x in range(1, 9)] + \
               ["Identity code"]
 # Band Power settings, can be different than channel power
 LIST_BPOWER = ["Low", "Mid", "High"]    # Tri-power models
+
+# Screen Color Settings
+# BJ-218 Colors
 LIST_COLOR = ["Off", "Orange", "Blue", "Purple"]
+# BJ-318 Colors
+LIST_COLOR318 = ["Purple", "Red", "Emerald", "Blue", "Sky_Blue", "Black"]
 LIST_LEDSW = ["Auto", "On"]
 LIST_RING = ["Off"] + ["%s" % x for x in range(1, 10)]
 LIST_TDR_DEF = ["A-Upper", "B-Lower"]
@@ -199,35 +222,38 @@ for x in chirp_common.DTCS_CODES:
 for x in chirp_common.DTCS_CODES:
     LIST_CTCSS.append("D{:03d}R".format(x))
 LIST_BW = ["Narrow", "Wide"]
-LIST_SHIFT = ["Off"," + ", " - "]
+LIST_SHIFT = ["Off", " + ", " - "]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 LIST_STEPS = [str(x) for x in STEPS]
 LIST_STATE = ["Normal", "Stun", "Kill"]
 LIST_SSF = ["1000", "1450", "1750", "2100"]
-LIST_DTMFTX = ["50", "100", "150", "200", "300","500"]
+LIST_DTMFTX = ["50", "100", "150", "200", "300", "500"]
 
 SETTING_LISTS = {
-"init_bank": LIST_TDR_DEF ,
-"tot": LIST_TIMEOUT,
-"wtled": LIST_COLOR,
-"rxled": LIST_COLOR,
-"txled": LIST_COLOR,
-"sig_freq": LIST_SSF,
-"dtmf_txms": LIST_DTMFTX,
-"ledsw": LIST_LEDSW,
-"frq_chn_mode": LIST_VFOMODE,
-"rx_tone": LIST_CTCSS,
-"tx_tone": LIST_CTCSS,
-"rx_mode": LIST_RECVMODE,
-"launch_sig": LIST_SIGNAL,
-"tx_end_sig": LIST_SIGNAL,
-"bpower":LIST_BPOWER,
-"fm_bw": LIST_BW,
-"shift": LIST_SHIFT,
-"step": LIST_STEPS,
-"ring": LIST_RING,
-"state_now": LIST_STATE
+    "init_bank": LIST_TDR_DEF,
+    "tot": LIST_TIMEOUT,
+    "wtled": LIST_COLOR,   # not used in BJ-318, other radios use
+    "rxled": LIST_COLOR,   # not used in BJ-318, other radios use
+    "txled": LIST_COLOR,   # not used in BJ-318, other radios use
+    "sig_freq": LIST_SSF,
+    "dtmf_txms": LIST_DTMFTX,
+    "ledsw": LIST_LEDSW,
+    "frq_chn_mode": LIST_VFOMODE,
+    "rx_tone": LIST_CTCSS,
+    "tx_tone": LIST_CTCSS,
+    "rx_mode": LIST_RECVMODE,
+    "launch_sig": LIST_SIGNAL,
+    "tx_end_sig": LIST_SIGNAL,
+    "bpower": LIST_BPOWER,
+    "fm_bw": LIST_BW,
+    "shift": LIST_SHIFT,
+    "step": LIST_STEPS,
+    "ring": LIST_RING,
+    "state_now": LIST_STATE,
+    "up_scr_color": LIST_COLOR318,  # unique to BJ-318
+    "dn_scr_color": LIST_COLOR318,  # unique to BJ-318
 }
+
 
 def _clean_buffer(radio):
     radio.pipe.timeout = 0.005
@@ -427,6 +453,17 @@ class LT725UV(chirp_common.CloneModeRadio):
     NAME_LENGTH = 7
     DTMF_CHARS = list("0123456789ABCD*#")
 
+    # Channel Power: 2 levels
+    # BJ-318 uses 3 power levels for each VFO "Band"
+    # Low = 5W, Med = 10W, High = 25W
+    # The band power selection in a VFO applies to the VFO and overrides
+    # the stored channel power selection
+    # The firmware channel memory structure provides only 1 bit for
+    # individual channel power settings, limiting potential channel
+    # power selection options to 2 levels: Low or High.
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
+                    chirp_common.PowerLevel("High", watts=30.00)]
+
     VALID_BANDS = [(136000000, 176000000),
                    (400000000, 480000000)]
 
@@ -437,20 +474,39 @@ class LT725UV(chirp_common.CloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.info = \
-            ('Some notes about POWER settings:\n'
-             '- The individual channel power settings are ignored'
-             ' by the radio.\n'
-             '  They are allowed to be set (and downloaded) in hopes of'
-             ' a future firmware update.\n'
-             '- Power settings done \'Live\' in the radio apply to the'
-             ' entire upper or lower band.\n'
-             '- Tri-power radio models will set and download the three'
-             ' band-power'
-             ' levels, but they are converted to just Low and High at'
-             ' upload.'
-             ' The Mid setting reverts to Low.'
-             )
+        if cls.MODEL == "BJ-318":
+            msg = \
+                ('              BJ-318 EXPERIMENTAL\n'
+                 '            PLEASE REPORT ANY ISSUES \n'
+                 '\n'
+                 'The individual channel power settings are ignored by \n'
+                 'the radio. They are allowed to be set in hopes of a \n'
+                 'future firmware change. Changing a stored channel power \n'
+                 'setting must be done manually using the front panel menu \n'
+                 'control (or the microphone control controls while in VFO \n'
+                 'mode) to change the VFO power. The CHIRP driver will \n'
+                 'allow setting the individual VFO power to High (25W), \n'
+                 'Med (10W) or Low (5W) and setting the unused individual \n'
+                 'channel power setting to High (25W) or Low (5W)'
+                 )
+
+        else:
+            msg = \
+                ('Some notes about POWER settings:\n'
+                 '- The individual channel power settings are ignored'
+                 ' by the radio.\n'
+                 '  They are allowed to be set (and downloaded) in hopes of'
+                 ' a future firmware update.\n'
+                 '- Power settings done \'Live\' in the radio apply to the'
+                 ' entire upper or lower band.\n'
+                 '- Tri-power radio models will set and download the three'
+                 ' band-power'
+                 ' levels, but they are converted to just Low and High at'
+                 ' upload.'
+                 ' The Mid setting reverts to Low.'
+                 )
+
+        rp.info = msg
 
         rp.pre_download = _(dedent("""\
             Follow this instructions to download your info:
@@ -498,7 +554,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS"]
         rf.valid_skips = []
-        rf.valid_power_levels = POWER_LEVELS
+        rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_name_length = self.NAME_LENGTH
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_bands = self.VALID_BANDS
@@ -623,7 +679,7 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         mem.mode = _mem.wide and "FM" or "NFM"
 
-        mem.power = POWER_LEVELS[_mem.power]
+        mem.power = self.POWER_LEVELS[_mem.power]
 
         # Extra
         mem.extra = RadioSettingGroup("extra", "Extra")
@@ -634,7 +690,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             val = _mem.recvmode
         recvmode = RadioSetting("recvmode", "Receiving mode",
                                 RadioSettingValueList(LIST_RECVMODE,
-                                    LIST_RECVMODE[val]))
+                                                      LIST_RECVMODE[val]))
         mem.extra.append(recvmode)
 
         if _mem.botsignal == 0xFF:
@@ -643,7 +699,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             val = _mem.botsignal
         botsignal = RadioSetting("botsignal", "Launch signaling",
                                  RadioSettingValueList(LIST_SIGNAL,
-                                     LIST_SIGNAL[val]))
+                                                       LIST_SIGNAL[val]))
         mem.extra.append(botsignal)
 
         if _mem.eotsignal == 0xFF:
@@ -744,7 +800,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             _mem.txtone = self._set_dcs(mem.dtcs)
 
         _mem.wide = self.MODES.index(mem.mode)
-        _mem.power = mem.power == POWER_LEVELS[1]
+        _mem.power = mem.power == self.POWER_LEVELS[1]
 
         # Extra settings
         for setting in mem.extra:
@@ -770,27 +826,34 @@ class LT725UV(chirp_common.CloneModeRadio):
         # Basic Settings
         bnd_mode = RadioSetting("settings.init_bank", "TDR Band Default",
                                 RadioSettingValueList(LIST_TDR_DEF,
-                                    LIST_TDR_DEF[ _sets.init_bank]))
+                                                      LIST_TDR_DEF[
+                                                          _sets.init_bank]))
         basic.append(bnd_mode)
 
-        volume = RadioSetting("settings.volume", "Volume",
-                              RadioSettingValueInteger(0, 20, _sets.volume))
-        basic.append(volume)
+        # BJ-318 set by vfo, skip
+        if self.MODEL != "BJ-318":
+            rs = RadioSettingValueInteger(0, 20, _sets.volume)
+            volume = RadioSetting("settings.volume", "Volume", rs)
+            basic.append(volume)
 
-        val = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
-        rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val])
-        powera = RadioSetting("upper.vfoa.bpower", "Power (Upper)", rx)
-        basic.append(powera)
+        # BJ-318 set by vfo, skip
+        if self.MODEL != "BJ-318":
+            vala = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
+            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[vala])
+            powera = RadioSetting("upper.vfoa.bpower", "Power (Upper)", rx)
+            basic.append(powera)
 
-        val = _vfob.bpower
-        rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val])
-        powerb = RadioSetting("lower.vfob.bpower", "Power (Lower)", rx)
-        basic.append(powerb)
+        # BJ-318 set by vfo, skip
+        if self.MODEL != "BJ-318":
+            valb = _vfob.bpower
+            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[valb])
+            powerb = RadioSetting("lower.vfob.bpower", "Power (Lower)", rx)
+            basic.append(powerb)
 
         def my_word2raw(setting, obj, atrb, mlt=10):
             """Callback function to convert UI floating value to u16 int"""
             if str(setting.value) == "Off":
-               frq = 0x0FFFF
+                frq = 0x0FFFF
             else:
                 frq = int(float(str(setting.value)) * float(mlt))
             if frq == 0:
@@ -801,7 +864,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         def my_adjraw(setting, obj, atrb, fix):
             """Callback: add or subtract fix from value."""
             vx = int(str(setting.value))
-            value = vx  + int(fix)
+            value = vx + int(fix)
             if value < 0:
                 value = 0
             if atrb == "frq_chn_mode" and int(str(setting.value)) == 2:
@@ -829,7 +892,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         def my_spcl(setting, obj, atrb):
             """Callback: Special handling based on atrb."""
             if atrb == "frq_chn_mode":
-                idx = LIST_VFOMODE.index (str(setting.value))  # Returns 0 or 1
+                idx = LIST_VFOMODE.index(str(setting.value))  # Returns 0 or 1
                 value = idx * 2            # Set bit 1
             setattr(obj, atrb, value)
             return
@@ -871,28 +934,48 @@ class LT725UV(chirp_common.CloneModeRadio):
             setattr(obj, tone_atr, tonx)
             return
 
-        val = _sets.fm_freq / 10.0
-        if val == 0:
-            val = 88.9            # 0 is not valid
-        rx = RadioSettingValueFloat(65, 108.0, val, 0.1, 1)
-        rs = RadioSetting("settings.fm_freq", "FM Broadcast Freq (MHz)", rx)
-        rs.set_apply_callback(my_word2raw, _sets, "fm_freq")
-        basic.append(rs)
+        # not used by BJ-318 skip
+        if self.MODEL != "BJ-318":
+            val = _sets.fm_freq / 10.0
+            if val == 0:
+                val = 88.9            # 0 is not valid
+            rx = RadioSettingValueFloat(65, 108.0, val, 0.1, 1)
+            rs = RadioSetting("settings.fm_freq",
+                              "FM Broadcast Freq (MHz)", rx)
+            rs.set_apply_callback(my_word2raw, _sets, "fm_freq")
+            basic.append(rs)
 
-        wtled = RadioSetting("settings.wtled", "Standby LED Color",
-                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _sets.wtled]))
-        basic.append(wtled)
+        # BJ-318 fm frequency
+        if self.MODEL == "BJ-318":
+            val = _lims.fm_318 / 10.0
+            if val == 0:
+                val = 88.9            # 0 is not valid
+            rx = RadioSettingValueFloat(65, 108.0, val, 0.1, 1)
+            rs = RadioSetting("hello_lims.fm_318",
+                              "FM Broadcast Freq (MHz)", rx)
+            rs.set_apply_callback(my_word2raw, _lims, "fm_318")
+            basic.append(rs)
 
-        rxled = RadioSetting("settings.rxled", "RX LED Color",
-                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _sets.rxled]))
-        basic.append(rxled)
+        # not used in BJ-318, skip
+        if self.MODEL != "BJ-318":
+            rs = RadioSettingValueList(LIST_COLOR,
+                                       LIST_COLOR[_sets.wtled])
+            wtled = RadioSetting("settings.wtled", "Standby LED Color", rs)
+            basic.append(wtled)
 
-        txled = RadioSetting("settings.txled", "TX LED Color",
-                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _sets.txled]))
-        basic.append(txled)
+        # not used in BJ-318, skip
+        if self.MODEL != "BJ-318":
+            rs = RadioSettingValueList(LIST_COLOR,
+                                       LIST_COLOR[_sets.rxled])
+            rxled = RadioSetting("settings.rxled", "RX LED Color", rs)
+            basic.append(rxled)
+
+        # not used in BJ-318, skip
+        if self.MODEL != "BJ-318":
+            rs = RadioSettingValueList(LIST_COLOR,
+                                       LIST_COLOR[_sets.txled])
+            txled = RadioSetting("settings.txled", "TX LED Color", rs)
+            basic.append(txled)
 
         ledsw = RadioSetting("settings.ledsw", "Back light mode",
                              RadioSettingValueList(LIST_LEDSW, LIST_LEDSW[
@@ -912,25 +995,28 @@ class LT725UV(chirp_common.CloneModeRadio):
                            RadioSettingValueBoolean(bool(_sets.bcl)))
         basic.append(bcl)
 
-        if _vfoa.sql == 0xFF:
-            val = 0x04
-        else:
-            val = _vfoa.sql
-        sqla = RadioSetting("upper.vfoa.sql", "Squelch (Upper)",
-                            RadioSettingValueInteger(0, 9, val))
-        basic.append(sqla)
+        # squelch for non-BJ-318 models
+        # BJ-318 squelch set by VFO basis
+        if self.MODEL != "BJ-318":
+            if _vfoa.sql == 0xFF:
+                val = 0x04
+            else:
+                val = _vfoa.sql
+            sqla = RadioSetting("upper.vfoa.sql", "Squelch (Upper)",
+                                RadioSettingValueInteger(0, 9, val))
+            basic.append(sqla)
 
-        if _vfob.sql == 0xFF:
-            val = 0x04
-        else:
-            val = _vfob.sql
-        sqlb = RadioSetting("lower.vfob.sql", "Squelch (Lower)",
-                            RadioSettingValueInteger(0, 9, val))
-        basic.append(sqlb)
+            if _vfob.sql == 0xFF:
+                val = 0x04
+            else:
+                val = _vfob.sql
+            sqlb = RadioSetting("lower.vfob.sql", "Squelch (Lower)",
+                                RadioSettingValueInteger(0, 9, val))
+            basic.append(sqlb)
 
         tmp = str(int(_sets.tot) * 30)     # 30 sec step counter
         rs = RadioSetting("settings.tot", "Transmit Timeout (Secs)",
-                           RadioSettingValueList(LIST_TIMEOUT, tmp))
+                          RadioSettingValueList(LIST_TIMEOUT, tmp))
         rs.set_apply_callback(my_val_list, _sets, "tot")
         basic.append(rs)
 
@@ -960,7 +1046,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         rs.set_apply_callback(my_spcl, _vfoa, "frq_chn_mode")
         a_band.append(rs)
 
-        val =_vfoa.chan_num + 1                  # Add 1 for 1-128 displayed
+        val = _vfoa.chan_num + 1                  # Add 1 for 1-128 displayed
         rs = RadioSetting("upper.vfoa.chan_num", "Initial Chan",
                           RadioSettingValueInteger(1, 128, val))
         rs.set_apply_callback(my_adjraw, _vfoa, "chan_num", -1)
@@ -995,10 +1081,10 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("upper.vfoa.launch_sig", "Launch Signaling",
                           RadioSettingValueList(LIST_SIGNAL,
-                              LIST_SIGNAL[_vfoa.launch_sig]))
+                                                LIST_SIGNAL[_vfoa.launch_sig]))
         a_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfoa.tx_end_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfoa.tx_end_sig])
         rs = RadioSetting("upper.vfoa.tx_end_sig", "Xmit End Signaling", rx)
         a_band.append(rs)
 
@@ -1028,8 +1114,40 @@ class LT725UV(chirp_common.CloneModeRadio):
         tmp = str(_vfoa.step / 100.0)
         rs = RadioSetting("step", "Freq step (KHz)",
                           RadioSettingValueList(LIST_STEPS, tmp))
-        rs.set_apply_callback(my_word2raw, _vfoa,"step", 100)
+        rs.set_apply_callback(my_word2raw, _vfoa, "step", 100)
         a_band.append(rs)
+
+        # BJ-318 upper band squelch
+        if self.MODEL == "BJ-318":
+            if _vfoa.sql == 0xFF:
+                valq = 0x04    # setting default squelch to 04
+            else:
+                valq = _vfoa.sql
+                sqla = RadioSetting("upper.vfoa.sql", "Squelch",
+                                    RadioSettingValueInteger(0, 9, valq))
+            a_band.append(sqla)
+
+        # BJ-318 upper band volume
+        if self.MODEL == "BJ-318":
+            bvolume_u = RadioSetting("upper.vfoa.bvol",
+                                     "Volume", RadioSettingValueInteger(
+                                         0, 10, _vfoa.bvol))
+            a_band.append(bvolume_u)
+
+        # BJ-318 Upper Screen Color
+        if self.MODEL == "BJ-318":
+            rs_u = RadioSettingValueList(LIST_COLOR318,
+                                         LIST_COLOR318[_lims.up_scr_color])
+            up_scr_color = RadioSetting("hello_lims.up_scr_color",
+                                        "Screen Color", rs_u)
+            a_band.append(up_scr_color)
+
+        # BJ-318 Upper band power
+        if self.MODEL == "BJ-318":
+            val_b = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
+            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val_b])
+            power_u = RadioSetting("upper.vfoa.bpower", "Power", rx)
+            a_band.append(power_u)
 
         # LOWER BAND SETTINGS
 
@@ -1041,7 +1159,7 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         val = _vfob.chan_num + 1
         rs = RadioSetting("lower.vfob.chan_num", "Initial Chan",
-                          RadioSettingValueInteger(0, 127, val))
+                          RadioSettingValueInteger(1, 128, val))
         rs.set_apply_callback(my_adjraw, _vfob, "chan_num", -1)
         b_band.append(rs)
 
@@ -1071,11 +1189,11 @@ class LT725UV(chirp_common.CloneModeRadio):
                               "txdtcs_pol", "tx_tone")
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfob.launch_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfob.launch_sig])
         rs = RadioSetting("lower.vfob.launch_sig", "Launch Signaling", rx)
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL,LIST_SIGNAL[_vfob.tx_end_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfob.tx_end_sig])
         rs = RadioSetting("lower.vfob.tx_end_sig", "Xmit End Signaling", rx)
         b_band.append(rs)
 
@@ -1107,8 +1225,39 @@ class LT725UV(chirp_common.CloneModeRadio):
         rs.set_apply_callback(my_word2raw, _vfob, "step", 100)
         b_band.append(rs)
 
-        # PowerOn & Freq Limits Settings
+        # BJ-318 lower band squelch
+        if self.MODEL == "BJ-318":
+            if _vfob.sql == 0xFF:
+                val_l = 0x04    # setting default squelch to 04
+            else:
+                val_l = _vfob.sql
+                sql_b = RadioSetting("lower.vfob.sql", "Squelch",
+                                     RadioSettingValueInteger(0, 9, val_l))
+                b_band.append(sql_b)
 
+        # BJ-318 lower band volume
+        if self.MODEL == "BJ-318":
+            bvolume_l = RadioSetting("lower.vfob.bvol",
+                                     "Volume", RadioSettingValueInteger(
+                                         0, 10, _vfob.bvol))
+            b_band.append(bvolume_l)
+
+        # BJ-318 Lower Screen Color
+        if self.MODEL == "BJ-318":
+            rs_l = RadioSettingValueList(LIST_COLOR318,
+                                         LIST_COLOR318[_lims.dn_scr_color])
+            dn_scr_color = RadioSetting("hello_lims.dn_scr_color",
+                                        "Screen Color", rs_l)
+            b_band.append(dn_scr_color)
+
+        # BJ-318 lower band power
+        if self.MODEL == "BJ-318":
+            val_l = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
+            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val_l])
+            powera = RadioSetting("lower.vfob.bpower", "Power", rx)
+            b_band.append(powera)
+
+        # PowerOn & Freq Limits Settings
         def chars2str(cary, knt):
             """Convert raw memory char array to a string: NOT a callback."""
             stx = ""
@@ -1120,29 +1269,35 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Callback: convert 7-char string to char array with count."""
             ary = ""
             knt = 7
-            for j in range (6, -1, -1):       # Strip trailing spaces
+            for j in range(6, -1, -1):       # Strip trailing spaces
                 if str(setting.value)[j] == "" or str(setting.value)[j] == " ":
                     knt = knt - 1
                 else:
                     break
             for j in range(0, 7, 1):
-                if j < knt: ary += str(setting.value)[j]
-                else: ary += chr(0xFF)
+                if j < knt:
+                    ary += str(setting.value)[j]
+                else:
+                    ary += chr(0xFF)
             setattr(obj, atrba, ary)
             setattr(obj, atrbc, knt)
             return
 
-        tmp = chars2str(_lims.hello1, _lims.hello1_cnt)
-        rs = RadioSetting("hello_lims.hello1", "Power-On Message 1",
-                          RadioSettingValueString(0, 7, tmp))
-        rs.set_apply_callback(my_str2ary, _lims, "hello1", "hello1_cnt")
-        lims.append(rs)
+        # not used in BJ-318 startup screen
+        if self.MODEL != "BJ-318":
+            tmp = chars2str(_lims.hello1, _lims.hello1_cnt)
+            rs = RadioSetting("hello_lims.hello1", "Power-On Message 1",
+                              RadioSettingValueString(0, 7, tmp))
+            rs.set_apply_callback(my_str2ary, _lims, "hello1", "hello1_cnt")
+            lims.append(rs)
 
-        tmp = chars2str(_lims.hello2, _lims.hello2_cnt)
-        rs = RadioSetting("hello_lims.hello2", "Power-On Message 2",
-                          RadioSettingValueString(0, 7, tmp))
-        rs.set_apply_callback(my_str2ary, _lims,"hello2", "hello2_cnt")
-        lims.append(rs)
+        # not used in BJ-318 startup screen
+        if self.MODEL != "BJ-318":
+            tmp = chars2str(_lims.hello2, _lims.hello2_cnt)
+            rs = RadioSetting("hello_lims.hello2", "Power-On Message 2",
+                              RadioSettingValueString(0, 7, tmp))
+            rs.set_apply_callback(my_str2ary, _lims, "hello2", "hello2_cnt")
+            lims.append(rs)
 
         # VALID_BANDS = [(136000000, 176000000),400000000, 480000000)]
 
@@ -1184,7 +1339,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Generate the DTMF code 1-8, NOT a callback."""
             tmp = ""
             if knt > 0 and knt != 0xff:
-                for  val in ary[:knt]:
+                for val in ary[:knt]:
                     if val > 0 and val <= 9:
                         tmp += chr(val + 48)
                     elif val == 0x0a:
@@ -1210,7 +1365,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Callback: DTMF Code; sends 5 or 7-byte string."""
             draw = []
             knt = syz
-            for j in range (syz - 1, -1, -1):       # Strip trailing spaces
+            for j in range(syz - 1, -1, -1):       # Strip trailing spaces
                 if str(setting.value)[j] == "" or str(setting.value)[j] == " ":
                     knt = knt - 1
                 else:
@@ -1220,19 +1375,19 @@ class LT725UV(chirp_common.CloneModeRadio):
                 obx = ord(bx)
                 dig = 0x0ff
                 if j < knt and knt > 0:      # (Else) is pads
-                    if  bx == "0":
+                    if bx == "0":
                         dig = 0x0a
-                    elif  bx == "A":
+                    elif bx == "A":
                         dig = 0x0d
-                    elif  bx == "B":
+                    elif bx == "B":
                         dig = 0x0e
-                    elif  bx == "C":
+                    elif bx == "C":
                         dig = 0x0f
-                    elif  bx == "D":
+                    elif bx == "D":
                         dig = 0x00
-                    elif  bx == "*":
+                    elif bx == "*":
                         dig = 0x0b
-                    elif  bx == "#":
+                    elif bx == "#":
                         dig = 0x0c
                     elif obx >= 49 and obx <= 57:
                         dig = obx - 48
@@ -1258,14 +1413,14 @@ class LT725UV(chirp_common.CloneModeRadio):
         rs = RadioSetting("codes.master_id_code", "Master Control ID Code",
                           RadioSettingValueString(0, 7, tmp))
         rs.set_apply_callback(my_dtmf2raw, _codes, "master_id_code",
-                              "master_id_cnt",7)
+                              "master_id_cnt", 7)
         codes.append(rs)
 
         tmp = make_dtmf(_codes.alarm_code, _codes.alarm_cnt)
         rs = RadioSetting("codes.alarm_code", "Alarm Code",
-                            RadioSettingValueString(0, 5, tmp))
+                          RadioSettingValueString(0, 5, tmp))
         rs.set_apply_callback(my_dtmf2raw, _codes, "alarm_code",
-                            "alarm_cnt", 5)
+                              "alarm_cnt", 5)
         codes.append(rs)
 
         tmp = make_dtmf(_codes.id_disp_code, _codes.id_disp_cnt)
@@ -1278,7 +1433,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         tmp = make_dtmf(_codes.revive_code, _codes.revive_cnt)
         rs = RadioSetting("codes.revive_code", "Revive Code",
                           RadioSettingValueString(0, 5, tmp))
-        rs.set_apply_callback(my_dtmf2raw, _codes,"revive_code",
+        rs.set_apply_callback(my_dtmf2raw, _codes, "revive_code",
                               "revive_cnt", 5)
         codes.append(rs)
 
@@ -1361,7 +1516,6 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         return group       # END get_settings()
 
-
     def set_settings(self, settings):
         _settings = self._memobj.settings
         _mem = self._memobj
@@ -1396,7 +1550,6 @@ class LT725UV(chirp_common.CloneModeRadio):
                 except Exception, e:
                     LOG.debug(element.get_name())
                     raise
-
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -1438,9 +1591,42 @@ class Hesenate(chirp_common.Alias):
     MODEL = "BJ-218"
 
 
+class Baojie218Upper(LT725UVUpper):
+    VENDOR = "Baojie"
+    MODEL = "BJ-218"
+
+
+class Baojie218Lower(LT725UVLower):
+    VENDOR = "Baojie"
+    MODEL = "BJ-218"
+
+
 @directory.register
 class Baojie218(LT725UV):
     """Baojie BJ-218"""
     VENDOR = "Baojie"
     MODEL = "BJ-218"
     ALIASES = [Zastone, Hesenate, ]
+
+    def get_sub_devices(self):
+        return [Baojie218Upper(self._mmap), Baojie218Lower(self._mmap)]
+
+
+class Baojie318Upper(LT725UVUpper):
+    VENDOR = "Baojie"
+    MODEL = "BJ-318"
+
+
+class Baojie318Lower(LT725UVLower):
+    VENDOR = "Baojie"
+    MODEL = "BJ-318"
+
+
+@directory.register
+class Baojie318(LT725UV):
+    """Baojie BJ-318"""
+    VENDOR = "Baojie"
+    MODEL = "BJ-318"
+
+    def get_sub_devices(self):
+        return [Baojie318Upper(self._mmap), Baojie318Lower(self._mmap)]

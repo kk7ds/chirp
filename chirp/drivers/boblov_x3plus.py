@@ -136,7 +136,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
 
         LOG.debug('Boblov_x3plus: match_model: size matches')
 
-        if 'P310' in filedata[0x03D0:0x03D8]:
+        if b'P310' in filedata[0x03D0:0x03D8]:
             LOG.debug('Boblov_x3plus: match_model: radio ID matches')
             return True
 
@@ -322,7 +322,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
         if memory.duplex == 'off':
             for i in range(0, 4):
                 rmem.txfreq[i].set_raw('\xFF')
-                # If recieve only then txtone value should be none
+                # If receive only then txtone value should be none
                 self._encode_tone(rmem.txtone, mode='', value=None, pol=None)
                 set_txtone = False
         elif memory.duplex == 'split':

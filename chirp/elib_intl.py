@@ -504,7 +504,7 @@ def install_module(domain, localedir):
     :returns: an anonymous function object, based on domain and localedir.
               Codeset is always UTF-8.
 
-    You may find this function usefull when writing localized modules.
+    You may find this function useful when writing localized modules.
     Use this code to make _() available to your module:
 
     .. sourcecode:: python

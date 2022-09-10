@@ -1184,7 +1184,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
         _priority = None
         if number in SPECIAL_NUMBERS.keys():
             index = number
-            # speical by index
+            # special by index
             designator = SPECIAL_NUMBERS[number]
         elif number in SPECIAL_CHANNELS.keys():
             # special by name

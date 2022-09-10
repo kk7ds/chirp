@@ -1254,3 +1254,18 @@ class FT2900ERadio(FT2900Radio):
     MODEL = "FT-2900E/1900E"
     VARIANT = "E"
     IDBLOCK = "\x56\x43\x32\x33\x00\x02\x41\x02\x01\x01"
+
+
+# This class is for the TX Modified FT-1900/FT-2900 (MARS/CAP Mod).
+# Enabling out of band TX changes the header received by CHIRP
+@directory.register
+class FT2900ModRadio(FT2900Radio):
+
+    """Yaesu FT-2900Mod"""
+    MODEL = "FT-2900R/1900R(TXMod)"
+    VARIANT = "Opened Xmit"
+    IDBLOCK = "\x56\x43\x32\x33\x00\x02\xc7\x01\x01\x01"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False

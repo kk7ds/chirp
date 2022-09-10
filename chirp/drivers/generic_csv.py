@@ -47,7 +47,7 @@ def write_memory(writer, mem):
 
 
 @directory.register
-class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
+class CSVRadio(chirp_common.FileBackedRadio):
     """A driver for Generic CSV files"""
     VENDOR = "Generic"
     MODEL = "CSV"
@@ -67,20 +67,15 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         "Mode":          (str,   "mode"),
         "TStep":         (float, "tuning_step"),
         "Skip":          (str,   "skip"),
-        "URCALL":        (str,   "dv_urcall"),
-        "RPT1CALL":      (str,   "dv_rpt1call"),
-        "RPT2CALL":      (str,   "dv_rpt2call"),
         "Comment":       (str,   "comment"),
         }
 
-    def _blank(self):
+    def _blank(self, setDefault=False):
         self.errors = []
-        self.memories = []
-        for i in range(0, 1000):
-            mem = chirp_common.Memory()
-            mem.number = i
-            mem.empty = True
-            self.memories.append(mem)
+        self.memories = [chirp_common.Memory(i, True) for i in range(0, 1000)]
+        if (setDefault):
+            self.memories[0].empty = False
+            self.memories[0].freq = 146010000
 
     def __init__(self, pipe):
         chirp_common.FileBackedRadio.__init__(self, None)
@@ -92,14 +87,14 @@ class CSVRadio(chirp_common.FileBackedRadio, chirp_common.IcomDstarSupport):
         if self._filename and os.path.exists(self._filename):
             self.load()
         else:
-            self._blank()
+            self._blank(True)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.requires_call_lists = False
         rf.has_implicit_calls = False
-        rf.memory_bounds = (0, len(self.memories))
+        rf.memory_bounds = (0, len(self.memories)-1)
         rf.has_infinite_number = True
         rf.has_nostep_tuning = True
         rf.has_comment = True
@@ -366,11 +361,11 @@ class CommanderCSVRadio(CSVRadio):
     def match_model(cls, filedata, filename):
         """Match files ending in .csv and using Commander column names."""
         return filename.lower().endswith("." + cls.FILE_EXTENSION) and \
-            filedata.startswith("Name,RX Freq,TX Freq,Decode,Encode,TX Pwr,"
-                                "Scan,TX Dev,Busy Lck,Group/Notes") or \
-            filedata.startswith('"#","Name","RX Freq","TX Freq","Decode",'
-                                '"Encode","TX Pwr","Scan","TX Dev",'
-                                '"Busy Lck","Group/Notes"')
+            filedata.startswith(b"Name,RX Freq,TX Freq,Decode,Encode,TX Pwr,"
+                                b"Scan,TX Dev,Busy Lck,Group/Notes") or \
+            filedata.startswith(b'"#","Name","RX Freq","TX Freq","Decode",'
+                                b'"Encode","TX Pwr","Scan","TX Dev",'
+                                b'"Busy Lck","Group/Notes"')
 
 
 @directory.register

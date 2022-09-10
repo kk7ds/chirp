@@ -201,7 +201,7 @@ class MemoryDetailEditor(gtk.Dialog):
 
     def _add(self, tab, row, name, editor, text, colindex=0):
         label = gtk.Label(text + ":")
-        label.set_alignment(0.0, 0.5)
+        label.set_alignment(1.0, 0.5)
         label.show()
         tab.attach(label, colindex, colindex + 1, row, row + 1,
                    xoptions=gtk.FILL, yoptions=0, xpadding=6, ypadding=3)
@@ -319,12 +319,16 @@ class MemoryDetailEditor(gtk.Dialog):
 
     def __init__(self, features, memory, parent=None):
         self._memory = memory
+        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                   gtk.STOCK_OK, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self,
                             title="Memory Properties",
                             flags=gtk.DIALOG_MODAL,
                             parent=parent,
-                            buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK,
-                                     gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+                            buttons=buttons)
+        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_alternative_button_order([gtk.RESPONSE_OK,
+                                           gtk.RESPONSE_CANCEL])
         self.set_size_request(-1, 500)
         self._tips = compat.CompatTooltips()
 

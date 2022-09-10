@@ -106,7 +106,7 @@ class VX170Radio(ft7800.FTx800Radio):
 3. Press and hold in the [moni] key while turning the radio on.
 4. Select CLONE in menu, then press F. Radio restarts in clone mode.
      ("CLONE" will appear on the display).
-5. <b>After clicking OK</b>, breifly hold [PTT] key to send image.
+5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.
     ("-TX-" will appear on the LCD). """))
         rp.pre_upload = _(dedent("""\
 1. Turn radio off.

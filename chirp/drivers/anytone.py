@@ -30,6 +30,18 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
 
 LOG = logging.getLogger(__name__)
 
+BLOCK_SIZE = 0x10
+NUMBER_OF_MEMORY_LOCATIONS = 758
+MEMORY_LOCATION_SIZE = 32
+ADDR_FIRST_WRITABLE_BYTE = 0x0100
+ADDR_LAST_BLOCK_BEFORE_MEMORIES = 0x19F0
+ADDR_FIRST_MEMORY_LOCATION = 0x2000
+
+
+# This _mem_format structure is defined separately from the rest because it
+# needs to be parsed twice -- once in the middle of downloading data from the
+# radio, and then again (along with everything else) once the download is
+# complete.
 _mem_format = """
 #seekto 0x0100;
 struct {
@@ -53,12 +65,15 @@ struct memory {
      rxinv:1,
      txinv:1,
      channel_width:2,
-     unknownB:2;
-  u8 unknown8:3,
+     rev:1,
+     txoff:1;
+  u8 talkaround:1,
+     compander:1,
+     unknown8:1,
      is_am:1,
      power:2,
      duplex:2;
-  u8 unknown4:4,
+  u8 dtmfSlotNum:4,
      rxtmode:2,
      txtmode:2;
   u8 unknown5:2,
@@ -67,10 +82,25 @@ struct memory {
      rxtone:6;
   u8 txcode;
   u8 rxcode;
-  u8 unknown7[2];
-  u8 unknown2[5];
+  u8 unknown10:2,
+     pttid:2,
+     unknown11:2,
+     bclo:2;
+  u8 unknown7;
+  u8 unknown9:5,
+     sqlMode:3;         // [Carrier, CTCSS/DCS Tones,
+                        // Opt Sig Only, Tones & Opt Sig,
+                        // Tones or Opt Sig]
+  u8 unknown21:6,
+     optsig:2;
+  u8 unknown22:3,
+     twotone:5;
+  u8 unknown23:1,
+     fivetone:7;
+  u8 unknown24:4,
+     scramble:4;
   char name[7];
-  u8 unknownZ[2];
+  ul16 custtone;
 };
 
 #seekto 0x0030;
@@ -88,16 +118,19 @@ struct {
   u8 unknown1:6,
      display:2;
   u8 unknown2[11];
+  // TODO Backlight brightness is in here (RGB)
   u8 unknown3:3,
      apo:5;
   u8 unknown4a[2];
   u8 unknown4b:6,
      mute:2;
+  // TODO Keypad locked is in here (0=unlocked, 1=locked)
   u8 unknown4;
   u8 unknown5:5,
      beep:1,
      unknown6:2;
   u8 unknown[334];
+  // TODO Programmable keys A-D are here
   char welcome[8];
 } settings;
 
@@ -105,7 +138,9 @@ struct {
 struct memory memblk1[12];
 
 #seekto 0x2000;
-struct memory memory[758];
+struct memory memory[758];  // FIXME It's actually only 750
+
+// TODO VFO scan limits are here (after the 750th memory; seekto 0x7DC0)
 
 #seekto 0x7ec0;
 struct memory memblk2[10];
@@ -163,11 +198,11 @@ def _is_loc_used(memobj, loc):
 
 
 def _addr_to_loc(addr):
-    return (addr - 0x2000) / 32
+    return (addr - ADDR_FIRST_MEMORY_LOCATION) / MEMORY_LOCATION_SIZE
 
 
 def _should_send_addr(memobj, addr):
-    if addr < 0x2000 or addr >= 0x7EC0:
+    if addr < ADDR_FIRST_MEMORY_LOCATION or addr >= 0x7EC0:
         return True
     else:
         return _is_loc_used(memobj, _addr_to_loc(addr))
@@ -205,7 +240,7 @@ def _ident(radio):
     response = radio.pipe.read(3)
     if response != "QX\x06":
         LOG.debug("Response was:\n%s" % util.hexprint(response))
-        raise errors.RadioError("Unsupported model")
+        raise errors.RadioError("Unsupported model or bad connection")
     _echo_write(radio, "\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
@@ -274,11 +309,11 @@ def _download(radio):
 
     data = ""
     for start, end in radio._ranges:
-        for addr in range(start, end, 0x10):
+        for addr in range(start, end, BLOCK_SIZE):
             if memobj is not None and not _should_send_addr(memobj, addr):
-                block = "\xFF" * 0x10
+                block = "\xFF" * BLOCK_SIZE
             else:
-                block = _send(radio, 'R', addr, 0x10)
+                block = _send(radio, 'R', addr, BLOCK_SIZE)
             data += block
 
             status = chirp_common.Status()
@@ -287,7 +322,7 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-            if addr == 0x19F0:
+            if addr == ADDR_LAST_BLOCK_BEFORE_MEMORIES:
                 memobj = bitwise.parse(_mem_format, data)
 
     _finish(radio)
@@ -299,12 +334,12 @@ def _upload(radio):
     _ident(radio)
 
     for start, end in radio._ranges:
-        for addr in range(start, end, 0x10):
-            if addr < 0x0100:
+        for addr in range(start, end, BLOCK_SIZE):
+            if addr < ADDR_FIRST_WRITABLE_BYTE:
                 continue
             if not _should_send_addr(radio._memobj, addr):
                 continue
-            block = radio._mmap[addr:addr + 0x10]
+            block = radio._mmap[addr:addr + BLOCK_SIZE]
             _send(radio, 'W', addr, len(block), block)
 
             status = chirp_common.Status()
@@ -318,12 +353,25 @@ def _upload(radio):
 
 TONES = [62.5] + list(chirp_common.TONES)
 TMODES = ['', 'Tone', 'DTCS', '']
-DUPLEXES = ['', '-', '+', '']
+DUPLEXES = ['', '-', '+', 'off']
 MODES = ["FM", "FM", "NFM"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=50),
                 chirp_common.PowerLevel("Mid1", watts=25),
                 chirp_common.PowerLevel("Mid2", watts=10),
                 chirp_common.PowerLevel("Low", watts=5)]
+BCLO = ['Off', 'Repeater', 'Busy']
+DTMF_SLOTS = ['M%d' % x for x in range(1, 17)]
+# Chose not to expose SCRAMBLE_CODES = ['Off'] +
+# ['%d' % x for x in range(1, 10)] + ['Define 1', 'Define 2']
+TONE2_SLOTS = ['%d' % x for x in range(0, 24)]
+TONE5_SLOTS = ['%d' % x for x in range(0, 100)]
+SQL_MODES = ["Carrier", "CTCSS/DCS", "Opt Sig Only", "Tones AND Sig",
+             "Tones OR Sig"]
+OPT_SIG_SQL = ["Off"] + SQL_MODES[2:]
+OPT_SIGS = ['Off', 'DTMF', '2Tone', '5Tone']
+PTT_IDS = ['Off', 'Begin', 'End', 'Begin & End']
+TUNING_STEPS = [2.5, 5, 6.25, 10, 12.5, 15, 20, 25, 30, 50]
+# FIXME (1) Not sure if 15 is a valid step, (2) 100 might be a valid step
 
 
 @directory.register
@@ -333,7 +381,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UV"
     BAUD_RATE = 9600
-    _file_ident = "QX588UV"
+    _file_ident = ["QX588UV", "588UVN"]
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -353,7 +401,8 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.has_settings = True
         rf.has_bank = False
         rf.has_cross = True
-        rf.has_tuning_step = False
+        rf.valid_duplexes = DUPLEXES
+        rf.valid_tuning_steps = TUNING_STEPS
         rf.has_rx_dtcs = True
         rf.valid_skips = ["", "S", "P"]
         rf.valid_modes = ["FM", "NFM", "AM"]
@@ -365,7 +414,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
         rf.valid_name_length = 7
         rf.valid_power_levels = POWER_LEVELS
-        rf.memory_bounds = (1, 758)
+        rf.memory_bounds = (1, NUMBER_OF_MEMORY_LOCATIONS)
         return rf
 
     def sync_in(self):
@@ -410,21 +459,46 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             return mem
 
         mem.freq = int(_mem.freq) * 100
+
+        # compensate for 6.25 and 12.5 kHz tuning steps, add 500 Hz if needed
+        lastdigit = int(_mem.freq) % 10
+        if (lastdigit == 2 or lastdigit == 7):
+            mem.freq += 50
+
         mem.offset = int(_mem.offset) * 100
         mem.name = str(_mem.name).rstrip()
         mem.duplex = DUPLEXES[_mem.duplex]
         mem.mode = _mem.is_am and "AM" or MODES[_mem.channel_width]
+        mem.tuning_step = TUNING_STEPS[_mem.tune_step]
+
+        if _mem.txoff:
+            mem.duplex = DUPLEXES[3]
 
         rxtone = txtone = None
         rxmode = TMODES[_mem.rxtmode]
+        if (_mem.sqlMode == SQL_MODES.index("Carrier") or
+                _mem.sqlMode == SQL_MODES.index("Opt Sig Only")):
+            rxmode = TMODES.index('')
         txmode = TMODES[_mem.txtmode]
         if txmode == "Tone":
-            txtone = TONES[_mem.txtone]
+            # If custom tone is being used, show as 88.5 (and set
+            # checkbox in extras) Future: Improve chirp_common, so I
+            # can add "CUSTOM" into TONES
+            if _mem.txtone == len(TONES):
+                txtone = 88.5
+            else:
+                txtone = TONES[_mem.txtone]
         elif txmode == "DTCS":
             txtone = chirp_common.ALL_DTCS_CODES[self._get_dcs_index(_mem,
                                                                      'tx')]
         if rxmode == "Tone":
-            rxtone = TONES[_mem.rxtone]
+            # If custom tone is being used, show as 88.5 (and set
+            # checkbox in extras) Future: Improve chirp_common, so I
+            # can add "CUSTOM" into TONES
+            if _mem.rxtone == len(TONES):
+                rxtone = 88.5
+            else:
+                rxtone = TONES[_mem.rxtone]
         elif rxmode == "DTCS":
             rxtone = chirp_common.ALL_DTCS_CODES[self._get_dcs_index(_mem,
                                                                      'rx')]
@@ -439,6 +513,76 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         mem.skip = _flg.get_skip() and "S" or _flg.get_pskip() and "P" or ""
         mem.power = POWER_LEVELS[_mem.power]
 
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        rs = RadioSetting("rev", "Reverse", RadioSettingValueBoolean(_mem.rev))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueBoolean(_mem.compander))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("talkaround", "Talkaround",
+                          RadioSettingValueBoolean(_mem.talkaround))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueList(PTT_IDS, PTT_IDS[_mem.pttid]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("bclo", "Busy Channel Lockout",
+                          RadioSettingValueList(BCLO, BCLO[_mem.bclo]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("optsig", "Optional Signaling",
+                          RadioSettingValueList(OPT_SIGS,
+                                                OPT_SIGS[_mem.optsig]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("OPTSIGSQL", "Squelch w/Opt Signaling",
+                          RadioSettingValueList(
+                              OPT_SIG_SQL, SQL_MODES[_mem.sqlMode]
+                              if SQL_MODES[_mem.sqlMode] in OPT_SIG_SQL
+                              else "Off"))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("dtmfSlotNum", "DTMF",
+                          RadioSettingValueList(DTMF_SLOTS,
+                                                DTMF_SLOTS[_mem.dtmfSlotNum]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("twotone", "2-Tone",
+                          RadioSettingValueList(TONE2_SLOTS,
+                                                TONE2_SLOTS[_mem.twotone]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("fivetone", "5-Tone",
+                          RadioSettingValueList(TONE5_SLOTS,
+                                                TONE5_SLOTS[_mem.fivetone]))
+        mem.extra.append(rs)
+
+        # Chose not to expose scramble rs = RadioSetting("scramble",
+        # "Scrambler Switch", RadioSettingValueList(SCRAMBLE_CODES,
+        # SCRAMBLE_CODES[_mem.scramble])) mem.extra.append(rs)
+
+        # Memory properties dialog is only capable of Boolean and List
+        # RadioSettingValue classes, so cannot configure it rs =
+        # RadioSetting("custtone", "Custom CTCSS",
+        # RadioSettingValueFloat(min(TONES), max(TONES), _mem.custtone
+        # and _mem.custtone / 10 or 151.1, 0.1, 1))
+        # mem.extra.append(rs)
+        custToneStr = chirp_common.format_freq(_mem.custtone)
+
+        rs = RadioSetting("CUSTTONETX",
+                          "Use Custom CTCSS (%s) for Tx" % custToneStr,
+                          RadioSettingValueBoolean(_mem.txtone == len(TONES)))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("CUSTTONERX",
+                          "Use Custom CTCSS (%s) for Rx" % custToneStr,
+                          RadioSettingValueBoolean(_mem.rxtone == len(TONES)))
+        mem.extra.append(rs)
+
         return mem
 
     def set_memory(self, mem):
@@ -447,13 +591,19 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             _flg.set()
             return
         _flg.clear()
-        _mem.set_raw("\x00" * 32)
+        _mem.set_raw("\x00" * MEMORY_LOCATION_SIZE)
 
         _mem.freq = mem.freq / 100
         _mem.offset = mem.offset / 100
         _mem.name = mem.name.ljust(7)
         _mem.is_am = mem.mode == "AM"
-        _mem.duplex = DUPLEXES.index(mem.duplex)
+        _mem.tune_step = TUNING_STEPS.index(mem.tuning_step)
+        if mem.duplex == "off":
+            _mem.duplex = DUPLEXES.index("")
+            _mem.txoff = 1
+        else:
+            _mem.duplex = DUPLEXES.index(mem.duplex)
+            _mem.txoff = 0
 
         try:
             _mem.channel_width = MODES.index(mem.mode)
@@ -465,6 +615,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
         _mem.txtmode = TMODES.index(txmode)
         _mem.rxtmode = TMODES.index(rxmode)
+        if rxmode != '':
+            _mem.sqlMode = SQL_MODES.index("CTCSS/DCS")
+        else:
+            _mem.sqlMode = SQL_MODES.index("Carrier")
         if txmode == "Tone":
             _mem.txtone = TONES.index(txtone)
         elif txmode == "DTCS":
@@ -486,6 +640,26 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             _mem.power = POWER_LEVELS.index(mem.power)
         else:
             _mem.power = 0
+
+        for setting in mem.extra:
+            if setting.get_name() == "ignore":
+                LOG.debug("*** ignore: %s" % str(setting.value))
+            # Future: elif setting.get_name() == "custtone": Future:
+            # setattr(_mem, "custtone", setting.value.get_value() *
+            # 10)
+            elif setting.get_name() == "OPTSIGSQL":
+                if str(setting.value) != "Off":
+                    _mem.sqlMode = SQL_MODES.index(str(setting.value))
+            elif setting.get_name() == "CUSTTONETX":
+                if setting.value:
+                    _mem.txtone = len(TONES)
+            elif setting.get_name() == "CUSTTONERX":
+                if setting.value:
+                    _mem.rxtone = len(TONES)
+            else:
+                setattr(_mem, setting.get_name(), setting.value)
+
+        return mem
 
     def get_settings(self):
         _settings = self._memobj.settings
@@ -520,10 +694,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.beep))
         basic.append(rs)
 
-        mute = ["Off", "TX", "RX", "TX/RX"]
+        MUTE_CHOICES = ["Off", "TX", "RX", "TX/RX"]
         rs = RadioSetting("mute", "Sub Band Mute",
-                          RadioSettingValueList(mute,
-                                                mute[_settings.mute]))
+                          RadioSettingValueList(MUTE_CHOICES,
+                                                MUTE_CHOICES[_settings.mute]))
         basic.append(rs)
 
         return settings
@@ -539,7 +713,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return cls._file_ident in filedata[0x20:0x40]
+        for _ident in cls._file_ident:
+            if _ident in filedata[0x20:0x40]:
+                return True
+        return False
 
 
 @directory.register
@@ -547,7 +724,7 @@ class IntekHR2040Radio(AnyTone5888UVRadio):
     """Intek HR-2040"""
     VENDOR = "Intek"
     MODEL = "HR-2040"
-    _file_ident = "HR-2040"
+    _file_ident = ["HR-2040"]
 
 
 @directory.register
@@ -555,7 +732,7 @@ class PolmarDB50MRadio(AnyTone5888UVRadio):
     """Polmar DB-50M"""
     VENDOR = "Polmar"
     MODEL = "DB-50M"
-    _file_ident = "DB-50M"
+    _file_ident = ["DB-50M"]
 
 
 @directory.register
@@ -563,7 +740,7 @@ class PowerwerxDB750XRadio(AnyTone5888UVRadio):
     """Powerwerx DB-750X"""
     VENDOR = "Powerwerx"
     MODEL = "DB-750X"
-    _file_ident = "DB-750X"
+    _file_ident = ["DB-750X"]
 
     def get_settings(self):
         return {}

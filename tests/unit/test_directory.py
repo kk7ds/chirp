@@ -1,5 +1,7 @@
 import base64
+import glob
 import json
+import os
 import tempfile
 
 from tests.unit import base
@@ -67,3 +69,26 @@ class TestDirectory(base.BaseTest):
             self.assertEqual('Barmaster 2000', radio.MODEL)
             self.assertEqual('A', radio.VARIANT)
 
+
+class TestDetectBruteForce(base.BaseTest):
+    def test_detect_all(self):
+        # Attempt a brute-force detection of all test images.
+        #
+        # This confirms that no test image is detected by more than one
+        # radio class. If it is, fail and report those classes.
+
+        path = os.path.dirname(__file__)
+        path = os.path.join(path, '..', 'images', '*.img')
+        test_images = glob.glob(path)
+        self.assertNotEqual(0, len(test_images))
+        for image in test_images:
+            detections = []
+            filedata = open(image, 'rb').read()
+            for cls in directory.RADIO_TO_DRV:
+                if not hasattr(cls, 'match_model'):
+                    continue
+                if cls.match_model(filedata, image):
+                    detections.append(cls)
+            if len(detections) > 1:
+                raise Exception('Detection of %s failed: %s' % (image,
+                                                                detections))

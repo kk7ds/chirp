@@ -1482,6 +1482,8 @@ class VX8DRadio(VX8Radio):
                    146,     # Length of beacon data stored.
                    50)      # Number of beacons stored.
 
+    _TX_DELAY = ("100ms", "150ms", "200ms", "250ms", "300ms",
+                 "400ms", "500ms", "750ms", "1000ms")
     _BEACON_TYPE = ("Off", "Interval", "SmartBeaconing")
     _SMARTBEACON_PROFILE = ("Off", "Type 1", "Type 2", "Type 3")
     _POSITIONS = ("GPS", "Manual Latitude/Longitude",
