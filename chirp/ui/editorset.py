@@ -168,6 +168,7 @@ class EditorSet(gtk.VBox):
         self.modified = (tempname is not None)
         if tempname:
             self.filename = tempname
+        self.tooltip_filename = None
         self.update_tab()
 
     def make_label(self):
@@ -199,6 +200,9 @@ class EditorSet(gtk.VBox):
             text = fn
 
         self.text_label.set_text(self.radio.get_name() + ": " + text)
+        if self.filename != self.tooltip_filename:
+            self.text_label.set_tooltip_text(self.filename)
+            self.tooltip_filename = self.filename
 
     def save(self, fname=None):
         if not fname:
@@ -379,19 +383,6 @@ class EditorSet(gtk.VBox):
             common.show_error(_("There was an error during "
                                 "export: {error}").format(error=e),
                               self)
-
-    def prime(self):
-        # NOTE: this is only called to prime new CSV files, so assume
-        # only one memory editor for now
-        mem = chirp_common.Memory()
-        mem.freq = 146010000
-
-        def cb(*args):
-            gobject.idle_add(self.editors["memedit0"].prefill)
-
-        job = common.RadioJob(cb, "set_memory", mem)
-        job.set_desc(_("Priming memory"))
-        self.rthread.submit(job)
 
     def tab_selected(self, notebook, foo, pagenum):
         widget = notebook.get_nth_page(pagenum)

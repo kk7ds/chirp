@@ -286,7 +286,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
 SKIPS = ["", "S", "P"]
 DTMF_CHARS = list("0123456789ABCD*#")
-CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ [?]^__|`?$%&-()*+,-,/|;/=>?@"
+CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ !`o$%&'()*+,-./|;/=>?@[u]^_"
 SPECIALS = ["%s%d" % (c, i + 1) for i in range(0, 50) for c in ('L', 'U')]
 
 
@@ -627,7 +627,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         # RXSAVE
         opts = ["OFF", "200 MS", "300 MS", "500 MS", "1 S", "2 S"]
         power.append(RadioSetting(
-            "rxsave", "Receive Mode Batery Savery Interval",
+            "rxsave", "Receive Mode Battery Savery Interval",
                      RadioSettingValueList(opts, opts[_settings.rxsave])))
 
         # S.SRCH

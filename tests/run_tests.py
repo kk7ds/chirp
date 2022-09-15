@@ -451,7 +451,9 @@ class TestCaseBruteForce(TestCase):
             tmp = copy.deepcopy(m)
             if mode not in chirp_common.MODES:
                 continue
-            if mode == "DV":
+            if mode == "DV" and \
+                   isinstance(self._wrapper._dst,
+                              chirp_common.IcomDstarSupport):
                 tmp = chirp_common.DVMemory()
                 try:
                     ensure_urcall(tmp.dv_urcall)
@@ -895,8 +897,9 @@ class TestCaseDetect(TestCase):
         elif issubclass(radio.__class__, self._wrapper._dstclass):
             pass
         elif radio.__class__ != self._wrapper._dstclass:
-            raise TestFailedError("%s detected as %s" %
-                                  (self._wrapper._dstclass, radio.__class__))
+            raise TestFailedError("%s detected as %s for %s" %
+                                  (self._wrapper._dstclass, radio.__class__,
+                                   filename))
         return []
 
 TESTS["Detect"] = TestCaseDetect

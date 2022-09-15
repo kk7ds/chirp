@@ -138,12 +138,10 @@ struct {
 
 """
 
-##### MAGICS #########################################################
+# #### MAGICS #########################################################
 
 # TDXone TD-Q8A magic string
 MSTRING_TDQ8A = "\x02PYNCRAM"
-
-#STIMEOUT = 2
 
 LIST_DTMF = ["QT", "QT+DTMF"]
 LIST_VOICE = ["Off", "Chinese", "English"]
@@ -174,10 +172,9 @@ LIST_RPSTE = ["Off"] + ["%s" % x for x in range(1, 11)]
 LIST_SAVE = ["Off", "1:1", "1:2", "1:3", "1:4"]
 LIST_SHIFTD = ["Off", "+", "-"]
 LIST_STEDELAY = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
-#LIST_STEP = [str(x) for x in STEPS]
 LIST_TXPOWER = ["High", "Low"]
-LIST_DTMF_SPECIAL_DIGITS = [ "*", "#", "A", "B", "C", "D"]
-LIST_DTMF_SPECIAL_VALUES = [ 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
+LIST_DTMF_SPECIAL_DIGITS = ["*", "#", "A", "B", "C", "D"]
+LIST_DTMF_SPECIAL_VALUES = [0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x00]
 
 CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ?+-*"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
@@ -185,14 +182,6 @@ POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5),
                 chirp_common.PowerLevel("Low", watts=1)]
 VALID_BANDS = [(136000000, 174000000),
                (400000000, 520000000)]
-
-
-#def _clean_buffer(radio):
-#    radio.pipe.timeout = 0.005
-#    junk = radio.pipe.read(256)
-#    radio.pipe.timeout = STIMEOUT
-#    if junk:
-#        LOG.debug("Got %i bytes of junk before starting" % len(junk))
 
 
 def _rawrecv(radio, amount):
@@ -252,12 +241,8 @@ def _recv(radio, addr, length):
 
 def _do_ident(radio, magic):
     """Put the radio in PROGRAM mode"""
-    #  set the serial discipline
+    # set the serial discipline
     radio.pipe.baudrate = 9600
-    ####radio.pipe.timeout = STIMEOUT
-
-    ## flush input buffer
-    #_clean_buffer(radio)
 
     # send request to enter program mode
     _rawsend(radio, magic)
@@ -277,7 +262,7 @@ def _do_ident(radio, magic):
     if not ident.startswith("P3107"):
         # bad response
         msg = "Unexpected response, got this:"
-        msg +=  util.hexprint(ident)
+        msg += util.hexprint(ident)
         LOG.debug(msg)
         raise errors.RadioError("Unexpected response from radio.")
 
@@ -344,8 +329,6 @@ def _download(radio):
             raise errors.RadioError(
                 "Radio refused to send block 0x%04x" % addr)
 
-        ####time.sleep(0.05)
-
         # aggregate the data
         data += d
 
@@ -363,8 +346,6 @@ def _upload(radio):
     """Upload procedure"""
     # put radio in program mode
     _ident_radio(radio)
-
-
 
     addr = 0x0f80
     frame = _make_frame("R", addr, radio._recv_block_size)
@@ -387,8 +368,6 @@ def _upload(radio):
         raise errors.RadioError(
             "Radio refused to send block 0x%04x" % addr)
 
-
-
     _ranges = radio._ranges
 
     # UI progress
@@ -407,7 +386,6 @@ def _upload(radio):
             frame = _make_frame("W", addr, radio._send_block_size, data)
 
             _rawsend(radio, frame)
-            #time.sleep(0.05)
 
             # receiving the response
             ack = _rawrecv(radio, 1)
@@ -454,36 +432,18 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
     VENDOR = "TDXone"
     MODEL = "TD-Q8A"
 
-    ####_fileid = [TDQ8A_fp1, ]
-
-    _magic = [MSTRING_TDQ8A, MSTRING_TDQ8A,]
+    _magic = [MSTRING_TDQ8A, MSTRING_TDQ8A, ]
     _magic_response_length = 8
     _fw_ver_start = 0x1EF0
     _recv_block_size = 0x40
     _mem_size = 0x2000
 
-    #_ranges = [(0x0000, 0x2000)]
-    # same as radio
-    #_ranges = [(0x0010, 0x0810),
-    #           (0x0F10, 0x0F30),
-    #           (0x1010, 0x1810),
-    #           (0x0E20, 0x0E60),
-    #           (0x1F10, 0x1F30)]
-    # in increasing order
     _ranges = [(0x0010, 0x0810),
                (0x0E20, 0x0E60),
                (0x0F10, 0x0F30),
                (0x1010, 0x1810),
                (0x1F10, 0x1F30)]
     _send_block_size = 0x10
-
-    #DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
-    #DTCS_CODES = sorted(chirp_common.ALL_DTCS_CODES)
-    #POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
-    #                chirp_common.PowerLevel("High", watts=5.00)]
-    #VALID_BANDS = [(136000000, 174000000),
-    #               (400000000, 520000000)]
-
 
     @classmethod
     def get_prompts(cls):
@@ -512,7 +472,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
             """))
         return rp
 
-
     def get_features(self):
         """Get the radio's features"""
 
@@ -524,31 +483,20 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         rf.has_name = True
         rf.has_offset = True
         rf.has_mode = True
-        rf.has_dtcs = False #True
-        rf.has_rx_dtcs = False #True
-        rf.has_dtcs_polarity = False #True
+        rf.has_dtcs = False
+        rf.has_rx_dtcs = False
+        rf.has_dtcs_polarity = False
         rf.has_ctone = True
         rf.has_cross = True
         rf.valid_modes = ["FM", "NFM"]
-        #rf.valid_characters = self.VALID_CHARS
         rf.valid_characters = CHARSET
         rf.valid_name_length = 6
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        #rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
-        #rf.valid_cross_modes = [
-        #    "Tone->Tone",
-        #    "DTCS->",
-        #    "->DTCS",
-        #    "Tone->DTCS",
-        #    "DTCS->Tone",
-        #    "->Tone",
-        #    "DTCS->DTCS"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'Cross']
         rf.valid_cross_modes = [
             "Tone->Tone",
             "->Tone"]
         rf.valid_skips = ["", "S"]
-        #rf.valid_dtcs_codes = self.DTCS_CODES
         rf.memory_bounds = (1, 128)
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = STEPS
@@ -556,11 +504,9 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
 
         return rf
 
-
     def process_mmap(self):
         """Process the mem map into the mem object"""
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
 
     def sync_in(self):
         """Download from radio"""
@@ -578,7 +524,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         self._mmap = memmap.MemoryMap(data)
         self.process_mmap()
 
-
     def sync_out(self):
         """Upload to radio"""
         try:
@@ -590,13 +535,11 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
 
-
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
             raw_tx += _mem.txfreq[i].get_raw()
         return raw_tx == "\xFF\xFF\xFF\xFF"
-
 
     def _get_mem(self, number):
         return self._memobj.memory[number - 1]
@@ -625,7 +568,8 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
             # TX freq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset != 0:
-                if _split(self.get_features(), mem.freq, int(_mem.txfreq) * 10):
+                if _split(self.get_features(), mem.freq, int(
+                          _mem.txfreq) * 10):
                     mem.duplex = "split"
                     mem.offset = int(_mem.txfreq) * 10
                 elif offset < 0:
@@ -645,8 +589,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                     break
             mem.name = mem.name.rstrip()
 
-        #dtcs_pol = ["N", "N"]
-
         if _mem.txtone in [0, 0xFFFF]:
             txmode = ""
         elif _mem.txtone >= 0x0258:
@@ -654,17 +596,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
             mem.rtone = int(_mem.txtone) / 10.0
         else:
             LOG.warn("Bug: txtone is %04x" % _mem.txtone)
-
-        #elif _mem.txtone <= 0x0258:
-        #    txmode = "DTCS"
-        #    if _mem.txtone > 0x69:
-        #        index = _mem.txtone - 0x6A
-        #        dtcs_pol[0] = "R"
-        #    else:
-        #        index = _mem.txtone - 1
-        #    mem.dtcs = self.DTCS_CODES[index]
-        #else:
-        #    LOG.warn("Bug: txtone is %04x" % _mem.txtone)
 
         if _mem.rxtone in [0, 0xFFFF]:
             rxmode = ""
@@ -674,17 +605,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         else:
             LOG.warn("Bug: rxtone is %04x" % _mem.rxtone)
 
-        #elif _mem.rxtone <= 0x0258:
-        #    rxmode = "DTCS"
-        #    if _mem.rxtone >= 0x6A:
-        #        index = _mem.rxtone - 0x6A
-        #        dtcs_pol[1] = "R"
-        #    else:
-        #        index = _mem.rxtone - 1
-        #    mem.rx_dtcs = self.DTCS_CODES[index]
-        #else:
-        #    LOG.warn("Bug: rxtone is %04x" % _mem.rxtone)
-
         if txmode == "Tone" and not rxmode:
             mem.tmode = "Tone"
         elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
@@ -692,14 +612,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         elif rxmode or txmode:
             mem.tmode = "Cross"
             mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        #elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-        #    mem.tmode = "DTCS"
-        #elif rxmode or txmode:
-        #    mem.tmode = "Cross"
-        #    mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        #mem.dtcs_polarity = "".join(dtcs_pol)
 
         if not _mem.scan:
             mem.skip = "S"
@@ -721,7 +633,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
 
         return mem
 
-
     def _set_mem(self, number):
         return self._memobj.memory[number - 1]
 
@@ -733,12 +644,11 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         _nam = self._get_nam(mem.number)
 
         if mem.empty:
-            _mem.set_raw("\xff" * 12 + "\xbf" +"\xff" * 3)
+            _mem.set_raw("\xff" * 12 + "\xbf" + "\xff" * 3)
             _nam.set_raw("\xff" * 16)
             return
 
-        #_mem.set_raw("\x00" * 16)
-        _mem.set_raw("\xff" * 12 + "\x9f" +"\xff" * 3)
+        _mem.set_raw("\xff" * 12 + "\x9f" + "\xff" * 3)
 
         _mem.rxfreq = mem.freq / 10
 
@@ -768,32 +678,19 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         elif mem.tmode == "TSQL":
             _mem.txtone = int(mem.ctone * 10)
             _mem.rxtone = int(mem.ctone * 10)
-            #elif mem.tmode == "DTCS":
-            #    rxmode = txmode = "DTCS"
-            #    _mem.txtone = self.DTCS_CODES.index(mem.dtcs) + 1
-            #    _mem.rxtone = self.DTCS_CODES.index(mem.dtcs) + 1
         elif mem.tmode == "Cross":
             txmode, rxmode = mem.cross_mode.split("->", 1)
             if txmode == "Tone":
                 _mem.txtone = int(mem.rtone * 10)
-                #elif txmode == "DTCS":
-                #    _mem.txtone = self.DTCS_CODES.index(mem.dtcs) + 1
             else:
                 _mem.txtone = 0
             if rxmode == "Tone":
                 _mem.rxtone = int(mem.ctone * 10)
-                #elif rxmode == "DTCS":
-                #    _mem.rxtone = self.DTCS_CODES.index(mem.rx_dtcs) + 1
             else:
                 _mem.rxtone = 0
         else:
             _mem.rxtone = 0
             _mem.txtone = 0
-
-        #if txmode == "DTCS" and mem.dtcs_polarity[0] == "R":
-        #    _mem.txtone += 0x69
-        #if rxmode == "DTCS" and mem.dtcs_polarity[1] == "R":
-        #    _mem.rxtone += 0x69
 
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
@@ -803,25 +700,17 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
 
-
     def get_settings(self):
-    #    """Translate the bit in the mem_struct into settings in the UI"""
+        """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
-        #other = RadioSettingGroup("other", "Other Settings")
-        #work = RadioSettingGroup("work", "Work Mode Settings")
-        #fm_preset = RadioSettingGroup("fm_preset", "FM Preset")
-        #dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
-        #dtmfd = RadioSettingGroup("dtmfd", "DTMF Decode Settings")
-        #service = RadioSettingGroup("service", "Service Settings")
-        #top = RadioSettings(basic, advanced, other, work, fm_preset, dtmfe,
-        #                    dtmfd, service)
         top = RadioSettings(basic, advanced, )
 
         # Basic settings
         rs = RadioSetting("settings.beep", "Beep",
-                           RadioSettingValueBoolean(_mem.settings.beep))
+                          RadioSettingValueBoolean(
+                              _mem.settings.beep))
         basic.append(rs)
 
         if _mem.settings.squelcha > 0x09:
@@ -829,18 +718,18 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         else:
             val = _mem.settings.squelcha
         rs = RadioSetting("squelcha", "Squelch Level A",
-                          RadioSettingValueInteger(0, 9, _mem.settings.squelcha))
+                          RadioSettingValueInteger(
+                              0, 9, _mem.settings.squelcha))
         basic.append(rs)
-
 
         if _mem.settings.squelchb > 0x09:
             val = 0x00
         else:
             val = _mem.settings.squelchb
         rs = RadioSetting("squelchb", "Squelch Level B",
-                          RadioSettingValueInteger(0, 9, _mem.settings.squelchb))
+                          RadioSettingValueInteger(
+                              0, 9, _mem.settings.squelchb))
         basic.append(rs)
-
 
         if _mem.settings.voice > 0x02:
             val = 0x01
@@ -945,7 +834,8 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("settings.pttid", "When to send PTT ID",
                           RadioSettingValueList(LIST_PTTID,
-                                                LIST_PTTID[_mem.settings.pttid]))
+                                                LIST_PTTID[
+                                                    _mem.settings.pttid]))
         basic.append(rs)
 
         rs = RadioSetting("settings.dtmfst", "DTMF Sidetone",
@@ -1027,62 +917,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
 
         return top
 
-
-
-        """
-        # Other settings
-        def _filter(name):
-            filtered = ""
-            for char in str(name):
-                if char in chirp_common.CHARSET_ASCII:
-                    filtered += char
-                else:
-                    filtered += " "
-            return filtered
-
-        _msg = _mem.sixpoweron_msg
-        val = RadioSettingValueString(0, 7, _filter(_msg.line1))
-        val.set_mutable(False)
-        rs = RadioSetting("sixpoweron_msg.line1", "6+Power-On Message 1", val)
-        other.append(rs)
-        val = RadioSettingValueString(0, 7, _filter(_msg.line2))
-        val.set_mutable(False)
-        rs = RadioSetting("sixpoweron_msg.line2", "6+Power-On Message 2", val)
-        other.append(rs)
-
-        _msg = _mem.poweron_msg
-        rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
-                          RadioSettingValueString(
-                              0, 7, _filter(_msg.line1)))
-        other.append(rs)
-        rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
-                          RadioSettingValueString(
-                              0, 7, _filter(_msg.line2)))
-        other.append(rs)
-
-        # DTMF encode settings
-
-        if _mem.ani.dtmfon > 0xC3:
-            val = 0x03
-        else:
-            val = _mem.ani.dtmfon
-        rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
-                          RadioSettingValueList(LIST_DTMFSPEED,
-                                                LIST_DTMFSPEED[val]))
-        dtmfe.append(rs)
-
-        if _mem.ani.dtmfoff > 0xC3:
-            val = 0x03
-        else:
-            val = _mem.ani.dtmfoff
-        rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
-                          RadioSettingValueList(LIST_DTMFSPEED,
-                                                LIST_DTMFSPEED[val]))
-        dtmfe.append(rs)
-
-    """
-
-
     def set_settings(self, settings):
         _settings = self._memobj.settings
         _mem = self._memobj
@@ -1135,7 +969,6 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                 LOG.debug(element.get_name())
                 raise
 
-
     @classmethod
     def match_model(cls, filedata, filename):
         match_size = False
@@ -1148,7 +981,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         # testing the model fingerprint
         match_model = model_match(cls, filedata)
 
-        #if match_size and match_model:
+        # if match_size and match_model:
         if match_size and match_model:
             return True
         else:

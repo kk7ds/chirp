@@ -19,8 +19,6 @@ import struct
 import logging
 import re
 
-LOG = logging.getLogger(__name__)
-
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
@@ -31,18 +29,20 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     InvalidValueError
 from textwrap import dedent
 
-##### MAGICS #########################################################
+LOG = logging.getLogger(__name__)
+
+# #### MAGICS #########################################################
 
 # BTECH GMRS-V1 magic string
 MSTRING_GMRSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
 
-##### ID strings #####################################################
+# #### ID strings #####################################################
 
 # BTECH GMRS-V1
-GMRSV1_fp1 = "US32411" # original
-GMRSV1_fp2 = "US32416" # original
-GMRSV1_fp3 = "US32418" # new rules
-GMRSV1_fp4 = "US32412" # original
+GMRSV1_fp1 = "US32411"  # original
+GMRSV1_fp2 = "US32416"  # original
+GMRSV1_fp3 = "US32418"  # new rules
+GMRSV1_fp4 = "US32412"  # original
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -81,6 +81,7 @@ GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
 GMRS_FREQS_ORIG = GMRS_FREQS1 + GMRS_FREQS3 * 2
 GMRS_FREQS_2017 = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
+
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x1EF0:0x1EF7]
@@ -97,7 +98,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
     VENDOR = "BTECH"
     MODEL = "GMRS-V1"
 
-    _fileid = [GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
+    _fileid = [GMRSV1_fp4, GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
     _is_orig = [GMRSV1_fp2, GMRSV1_fp1, GMRSV1_fp4, ]
 
     _magic = [MSTRING_GMRSV1, ]
@@ -127,7 +128,6 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
                    (400000000, 521000000)]
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
-
 
     def get_features(self):
         """Get the radio's features"""
@@ -167,7 +167,6 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
 
         return rf
 
-
     MEM_FORMAT = """
     #seekto 0x0000;
     struct {
@@ -193,157 +192,167 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
       u8 code[5];
       u8 unused[11];
     } pttid[15];
-    
-    #seekto 0x0CAA;
+
+    #seekto 0x0C80;
     struct {
-      u8 code[5];      
-      u8 unused1:6,    
-         aniid:2;      
-      u8 unknown[2];   
-      u8 dtmfon;       
-      u8 dtmfoff;      
-    } ani;             
-                       
-    #seekto 0x0E20;    
-    struct {           
-      u8 unused01:4,   
-         squelch:4;    
-      u8 unused02;     
-      u8 unused03;     
-      u8 unused04:5,   
-         save:3;       
-      u8 unused05:4,   
-         vox:4;        
-      u8 unused06;     
-      u8 unused07:4,   
-         abr:4;        
-      u8 unused08:7,   
-         tdr:1;        
-      u8 unused09:7,   
-         beep:1;       
-      u8 unused10:2,   
-         timeout:6;    
-      u8 unused11[4];  
-      u8 unused12:6,   
-         voice:2;      
-      u8 unused13;     
-      u8 unused14:6,   
-         dtmfst:2;     
-      u8 unused15;     
-      u8 unused16:6,   
-         screv:2;      
-      u8 unused17:6,   
-         pttid:2;      
-      u8 unused18:2,   
-         pttlt:6;      
-      u8 unused19:6,   
-         mdfa:2;       
-      u8 unused20:6,   
-         mdfb:2;       
-      u8 unused21;     
-      u8 unused22:7,   
-         sync:1;       
-      u8 unused23[4];  
-      u8 unused24:6,   
-         wtled:2;      
-      u8 unused25:6,   
-         rxled:2;      
-      u8 unused26:6,   
-         txled:2;      
-      u8 unused27:6,   
-         almod:2;      
-      u8 unused28:7,   
-         dbptt:1;      
-      u8 unused29:6,   
-         tdrab:2;      
-      u8 unused30:7,   
-         ste:1;        
-      u8 unused31:4,   
-         rpste:4;      
-      u8 unused32:4,   
-         rptrl:4;      
-      u8 unused33:7,   
-         ponmsg:1;     
-      u8 unused34:7,   
-         roger:1;      
-      u8 unused35:6,   
-         rtone:2;      
-      u8 unused36;     
-      u8 unused37:6,   
-         rogerrx:2;    
-      u8 unused38;     
-      u8 displayab:1,  
-         unknown1:2,   
-         fmradio:1,    
-         alarm:1,      
-         unknown2:1,   
-         reset:1,      
-         menu:1;       
-      u8 unused39;     
-      u8 workmode;     
-      u8 keylock;      
-      u8 cht;          
-    } settings;        
-                       
-    #seekto 0x0E76;    
-    struct {           
-      u8 unused1:1,    
-         mrcha:7;      
-      u8 unused2:1,    
-         mrchb:7;      
-    } wmchannel;       
-                       
-    struct vfo {       
-      u8 unknown0[8];  
-      u8 freq[8];      
-      u8 unknown1;     
-      u8 offset[4];    
-      u8 unknown2;     
-      ul16 rxtone;     
-      ul16 txtone;     
-      u8 unused1:7,    
-         band:1;       
-      u8 unknown3;     
-      u8 unused2:2,    
-         sftd:2,       
-         scode:4;      
-      u8 unknown4;     
-      u8 unused3:1     
-         step:3,       
-         unused4:4;    
-      u8 txpower:1,    
-         widenarr:1,   
-         unknown5:4,   
-         txpower3:2;   
-    };                 
-                       
-    #seekto 0x0F00;    
-    struct {           
+      u8 unknown222[5];
+      u8 unknown333[5];
+      u8 alarm[5];
+      u8 unknown1;
+      u8 unknown555[5];
+      u8 unknown666[5];
+      u8 unknown777[5];
+      u8 unknown2;
+      u8 unknown60606[5];
+      u8 unknown70707[5];
+      u8 code[5];
+      u8 unused1:6,
+         aniid:2;
+      u8 unknown[2];
+      u8 dtmfon;
+      u8 dtmfoff;
+    } ani;
+
+    #seekto 0x0E20;
+    struct {
+      u8 unused01:4,
+         squelch:4;
+      u8 unused02;
+      u8 unused03;
+      u8 unused04:5,
+         save:3;
+      u8 unused05:4,
+         vox:4;
+      u8 unused06;
+      u8 unused07:4,
+         abr:4;
+      u8 unused08:7,
+         tdr:1;
+      u8 unused09:7,
+         beep:1;
+      u8 unused10:2,
+         timeout:6;
+      u8 unused11[4];
+      u8 unused12:6,
+         voice:2;
+      u8 unused13;
+      u8 unused14:6,
+         dtmfst:2;
+      u8 unused15;
+      u8 unused16:6,
+         screv:2;
+      u8 unused17:6,
+         pttid:2;
+      u8 unused18:2,
+         pttlt:6;
+      u8 unused19:6,
+         mdfa:2;
+      u8 unused20:6,
+         mdfb:2;
+      u8 unused21;
+      u8 unused22:7,
+         sync:1;
+      u8 unused23[4];
+      u8 unused24:6,
+         wtled:2;
+      u8 unused25:6,
+         rxled:2;
+      u8 unused26:6,
+         txled:2;
+      u8 unused27:6,
+         almod:2;
+      u8 unused28:7,
+         dbptt:1;
+      u8 unused29:6,
+         tdrab:2;
+      u8 unused30:7,
+         ste:1;
+      u8 unused31:4,
+         rpste:4;
+      u8 unused32:4,
+         rptrl:4;
+      u8 unused33:7,
+         ponmsg:1;
+      u8 unused34:7,
+         roger:1;
+      u8 unused35:6,
+         rtone:2;
+      u8 unused36;
+      u8 unused37:6,
+         rogerrx:2;
+      u8 unused38;
+      u8 displayab:1,
+         unknown1:2,
+         fmradio:1,
+         alarm:1,
+         unknown2:1,
+         reset:1,
+         menu:1;
+      u8 unused39;
+      u8 workmode;
+      u8 keylock;
+      u8 cht;
+    } settings;
+
+    #seekto 0x0E76;
+    struct {
+      u8 unused1:1,
+         mrcha:7;
+      u8 unused2:1,
+         mrchb:7;
+    } wmchannel;
+
+    struct vfo {
+      u8 unknown0[8];
+      u8 freq[8];
+      u8 unknown1;
+      u8 offset[4];
+      u8 unknown2;
+      ul16 rxtone;
+      ul16 txtone;
+      u8 unused1:7,
+         band:1;
+      u8 unknown3;
+      u8 unused2:2,
+         sftd:2,
+         scode:4;
+      u8 unknown4;
+      u8 unused3:1
+         step:3,
+         unused4:4;
+      u8 txpower:1,
+         widenarr:1,
+         unknown5:4,
+         txpower3:2;
+    };
+
+    #seekto 0x0F00;
+    struct {
       struct vfo a;
       struct vfo b;
     } vfo;
-    
+
     #seekto 0x0F4E;
     u16 fm_presets;
-    
+
     #seekto 0x1000;
     struct {
       char name[7];
       u8 unknown1[9];
     } names[128];
-    
+
     #seekto 0x1ED0;
     struct {
       char line1[7];
       char line2[7];
     } sixpoweron_msg;
-    
+
     #seekto 0x1EE0;
     struct {
       char line1[7];
       char line2[7];
     } poweron_msg;
-    
+
     #seekto 0x1EF0;
     struct {
       char line1[7];
@@ -362,7 +371,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
       u8 sql8;
       u8 sql9;
     };
-    
+
     #seekto 0x1F60;
     struct {
       struct squelch vhf;
@@ -679,7 +688,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         basic.append(rs)
 
         rs = RadioSetting("settings.beep", "Beep",
-                           RadioSettingValueBoolean(_mem.settings.beep))
+                          RadioSettingValueBoolean(_mem.settings.beep))
         basic.append(rs)
 
         if _mem.settings.timeout > 0x27:
@@ -719,7 +728,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
                               _mem.settings.pttid]))
         basic.append(rs)
 
-        if _mem.settings.pttlt > 0x1E:
+        if _mem.settings.pttlt > 0x32:
             val = 0x05
         else:
             val = _mem.settings.pttlt
@@ -785,7 +794,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
             val = _mem.settings.rpste
         rs = RadioSetting("settings.rpste",
                           "Squelch Tail Eliminate (repeater)",
-                              RadioSettingValueList(
+                          RadioSettingValueList(
                               LIST_RPSTE, LIST_RPSTE[val]))
         basic.append(rs)
 
@@ -815,7 +824,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("settings.rogerrx", "Roger Beep (RX)",
                           RadioSettingValueList(
                              LIST_OFFAB, LIST_OFFAB[
-                             _mem.settings.rogerrx]))
+                                 _mem.settings.rogerrx]))
         basic.append(rs)
 
         # Advanced settings
@@ -894,12 +903,12 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
 
         rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrcha))
+                                                   _mem.wmchannel.mrcha))
         work.append(rs)
 
         rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
                           RadioSettingValueInteger(0, 127,
-                                                      _mem.wmchannel.mrchb))
+                                                   _mem.wmchannel.mrchb))
         work.append(rs)
 
         def convert_bytes_to_freq(bytes):
@@ -1013,6 +1022,23 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
                                                 LIST_PTTID[_mem.ani.aniid]))
         dtmfe.append(rs)
 
+        def apply_alarmcode(setting, obj, length):
+            code = []
+            for j in range(0, length):
+                try:
+                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
+                except IndexError:
+                    code.append(0xFF)
+            obj.alarm = code
+
+        _codeobj = self._memobj.ani.alarm
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.alarm", "Alarm Code", val)
+        rs.set_apply_callback(apply_alarmcode, self._memobj.ani, 5)
+        dtmfe.append(rs)
+
         # Service settings
         for band in ["vhf", "uhf"]:
             for index in range(0, 10):
@@ -1022,7 +1048,8 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
                 elif band == "uhf":
                     _obj = self._memobj.squelch.uhf
                 val = RadioSettingValueInteger(0, 123,
-                          getattr(_obj, "sql%i" % (index)))
+                                               getattr(_obj, "sql%i" % (
+                                                       index)))
                 if index == 0:
                     val.set_mutable(False)
                 name = "%s Squelch %i" % (band.upper(), index)

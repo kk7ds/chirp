@@ -379,12 +379,12 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                               50, 174, decode_freq(
                                   self._memobj.freq_ranges.vhf_tx_stop)))
         freq_ranges.append(rs)
-        rs = RadioSetting("uhf_tx_start", "2st band TX Lower Limit (MHz)",
+        rs = RadioSetting("uhf_tx_start", "2nd band TX Lower Limit (MHz)",
                           RadioSettingValueInteger(
                               136, 520, decode_freq(
                                   self._memobj.freq_ranges.uhf_tx_start)))
         freq_ranges.append(rs)
-        rs = RadioSetting("uhf_tx_stop", "2st band TX Upper Limit (MHz)",
+        rs = RadioSetting("uhf_tx_stop", "2nd band TX Upper Limit (MHz)",
                           RadioSettingValueInteger(
                               136, 520, decode_freq(
                                   self._memobj.freq_ranges.uhf_tx_stop)))

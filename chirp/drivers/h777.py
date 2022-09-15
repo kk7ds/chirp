@@ -95,6 +95,8 @@ SETTING_LISTS = {
 
 def _h777_enter_programming_mode(radio):
     serial = radio.pipe
+    # increase default timeout from .25 to .5 for all serial communications
+    serial.timeout = 0.5
 
     try:
         serial.write(b"\x02")
@@ -109,19 +111,15 @@ def _h777_enter_programming_mode(radio):
     elif ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 
-    original_timeout = serial.timeout
     try:
         serial.write(b"\x02")
         # At least one version of the Baofeng BF-888S has a consistent
         # ~0.33s delay between sending the first five bytes of the
         # version data and the last three bytes. We need to raise the
         # timeout so that the read doesn't finish early.
-        serial.timeout = 0.5
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
-    finally:
-        serial.timeout = original_timeout
 
     if not ident.startswith(b"P3107"):
         LOG.debug(util.hexprint(ident))
@@ -180,20 +178,16 @@ def _h777_write_block(radio, block_addr, block_size):
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
 
-    original_timeout = serial.timeout
     try:
         serial.write(cmd + data)
         # Time required to write data blocks varies between individual
         # radios of the Baofeng BF-888S model. The longest seen is
         # ~0.31s.
-        serial.timeout = 0.5
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
     except:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
-    finally:
-        serial.timeout = original_timeout
 
 
 def do_download(radio):
@@ -271,6 +265,11 @@ class TenwayTW325Alias(chirp_common.Alias):
     MODEL = 'TW-325'
 
 
+class RetevisH777Alias(chirp_common.Alias):
+    VENDOR = 'Retevis'
+    MODEL = 'H777'
+
+
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -282,11 +281,11 @@ class H777Radio(chirp_common.CloneModeRadio):
     NEEDS_COMPAT_SERIAL = False
 
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
-               TenwayTW325Alias]
+               TenwayTW325Alias, RetevisH777Alias]
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
 
     # This code currently requires that ranges start at 0x0000
-    # and are continious. In the original program 0x0388 and 0x03C8
+    # and are continuous. In the original program 0x0388 and 0x03C8
     # are only written (all bytes 0xFF), not read.
     # _ranges = [
     #       (0x0000, 0x0110),
@@ -297,12 +296,13 @@ class H777Radio(chirp_common.CloneModeRadio):
 
     _ranges = [
         (0x0000, 0x0110),
-        (0x02B0, 0x02C0),
         (0x0380, 0x03E0),
+        (0x02B0, 0x02C0),
     ]
     _memsize = 0x03E0
     _has_fm = True
     _has_sidekey = True
+    _has_scanmodes = True
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -481,11 +481,13 @@ class H777Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.scan))
         basic.append(rs)
 
-        rs = RadioSetting("settings2.scanmode", "Scan mode",
-                          RadioSettingValueList(
-                              SCANMODE_LIST,
-                              SCANMODE_LIST[self._memobj.settings2.scanmode]))
-        basic.append(rs)
+        if self._has_scanmodes:
+            rs = RadioSetting("settings2.scanmode", "Scan mode",
+                              RadioSettingValueList(
+                                  SCANMODE_LIST,
+                                  SCANMODE_LIST[
+                                      self._memobj.settings2.scanmode]))
+            basic.append(rs)
 
         rs = RadioSetting("vox", "VOX",
                           RadioSettingValueBoolean(_settings.vox))
@@ -635,6 +637,19 @@ class ROGA2SRadio(H777Radio):
     MODEL = "GA-2S"
     _has_fm = False
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Unused", "Alarm"]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class H777PlusRadio(H777Radio):
+    VENDOR = "Retevis"
+    MODEL = "H777 Plus"
+    _has_fm = False
+    _has_scanmodes = False
 
     @classmethod
     def match_model(cls, filedata, filename):

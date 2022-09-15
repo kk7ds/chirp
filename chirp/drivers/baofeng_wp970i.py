@@ -36,6 +36,9 @@ LOG = logging.getLogger(__name__)
 # Baofeng WP970I magic string
 MSTRING_WP970I = "\x50\xBB\xFF\x20\x14\x04\x13"
 
+# Baofeng UV-9G magic string
+MSTRING_UV9G = "\x50\xBB\xFF\x20\x12\x05\x25"
+
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -83,6 +86,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
     VENDOR = "Baofeng"
     MODEL = "WP970I"
 
+    _tri_band = False
     _fileid = []
     _magic = [MSTRING_WP970I, ]
     _magic_response_length = 8
@@ -109,6 +113,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
                     chirp_common.PowerLevel("Med",  watts=3.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
     _vhf_range = (130000000, 180000000)
+    _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 521000000)
     VALID_BANDS = [_vhf_range,
                    _uhf_range]
@@ -302,6 +307,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
     struct {
       struct limit vhf;
       struct limit uhf;
+      struct limit vhf2;
     } limits;
 
     """
@@ -591,6 +597,19 @@ class WP970I(baofeng_common.BaofengCommonHT):
                               lower, upper, _mem.limits.vhf.upper))
         other.append(rs)
 
+        if self._tri_band:
+            lower = 200
+            upper = 260
+            rs = RadioSetting("limits.vhf2.lower", "VHF2 Lower Limit (MHz)",
+                              RadioSettingValueInteger(
+                                  lower, upper, _mem.limits.vhf2.lower))
+            other.append(rs)
+
+            rs = RadioSetting("limits.vhf2.upper", "VHF2 Upper Limit (MHz)",
+                              RadioSettingValueInteger(
+                                  lower, upper, _mem.limits.vhf2.upper))
+            other.append(rs)
+
         lower = 400
         upper = 520
         rs = RadioSetting("limits.uhf.lower", "UHF Lower Limit (MHz)",
@@ -859,12 +878,17 @@ class UV82IIIAlias(chirp_common.Alias):
     MODEL = "UV-82III"
 
 
+class UV9RPROAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-9R Pro"
+
+
 @directory.register
 class BFA58(WP970I):
     """Baofeng BF-A58"""
     VENDOR = "Baofeng"
     MODEL = "BF-A58"
-    ALIASES = [RH5XAlias]
+    ALIASES = [RH5XAlias, UV9RPROAlias]
 
     _fileid = ["BFT515 ", "BFT517 "]
 
@@ -881,6 +905,7 @@ class GT3WP(WP970I):
     """Baofeng GT-3WP"""
     VENDOR = "Baofeng"
     MODEL = "GT-3WP"
+    LENGTH_NAME = 7
 
 
 @directory.register
@@ -894,12 +919,14 @@ class RT6(WP970I):
 class BFA58S(WP970I):
     VENDOR = "Baofeng"
     MODEL = "BF-A58S"
+    LENGTH_NAME = 7
     ALIASES = [UV82IIIAlias]
+    _tri_band = True
 
     def get_features(self):
         rf = WP970I.get_features(self)
         rf.valid_bands = [self._vhf_range,
-                          (200000000, 260000000),
+                          self._vhf2_range,
                           self._uhf_range]
         return rf
 
@@ -910,3 +937,23 @@ class UV9R(WP970I):
     VENDOR = "Baofeng"
     MODEL = "UV-9R"
     LENGTH_NAME = 7
+
+
+@directory.register
+class UV9G(WP970I):
+    """Baofeng UV-9G"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-9G"
+    LENGTH_NAME = 7
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Med",  watts=0.50),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
+    _magic = [MSTRING_UV9G, ]
+    _gmrs = True
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False

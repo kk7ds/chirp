@@ -26,10 +26,11 @@ LOG = logging.getLogger(__name__)
 
 class ShiftDialog(gtk.Dialog):
     def __init__(self, rthread, parent=None):
+        buttons = (gtk.STOCK_CLOSE, gtk.RESPONSE_OK)
         gtk.Dialog.__init__(self,
                             title=_("Shift"),
-                            buttons=(gtk.STOCK_CLOSE, gtk.RESPONSE_OK))
-
+                            buttons=buttons)
+        self.set_default_response(gtk.RESPONSE_OK)
         self.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 
         self.rthread = rthread

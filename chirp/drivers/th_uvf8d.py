@@ -87,7 +87,7 @@ def tyt_uvf8d_upload(radio):
     radio.pipe.timeout = 1
 
     if data != radio._mmap[:32]:
-        raise errors.RadioError("Model mis-match: \n%s\n%s" %
+        raise errors.RadioError("Model mismatch: \n%s\n%s" %
                                 (util.hexprint(data),
                                  util.hexprint(radio._mmap[:32])))
 
@@ -301,7 +301,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata.startswith("TYT-F10\x00")
+        return filedata.startswith(b"TYT-F10\x00")
 
     def process_mmap(self):
         self._memobj = bitwise.parse(UVF8D_MEM_FORMAT, self._mmap)

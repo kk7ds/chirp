@@ -523,7 +523,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_bands = [(134000000, 175000000),  # supports 2m
                           (220000000, 260000000),  # supports 1.25m
-                          (400000000, 520000000)]  # supports 70cm
+                          (350000000, 520000000)]  # supports 70cm
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.memory_bounds = (1, 999)  # 999 memories
         rf.valid_tuning_steps = STEPS
@@ -1041,12 +1041,12 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("uhf_limits.rx_start", "UHF RX Lower Limit",
                           RadioSettingValueInteger(
-                              400000000, 520000000,
+                              350000000, 520000000,
                               self._memobj.uhf_limits.rx_start * 10, 5000))
         uhf_lmt_grp.append(rs)
         rs = RadioSetting("uhf_limits.rx_stop", "UHF RX Upper Limit",
                           RadioSettingValueInteger(
-                              400000000, 520000000,
+                              350000000, 520000000,
                               self._memobj.uhf_limits.rx_stop * 10, 5000))
         uhf_lmt_grp.append(rs)
         rs = RadioSetting("uhf_limits.tx_start", "UHF TX Lower Limit",

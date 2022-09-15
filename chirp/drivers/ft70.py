@@ -332,7 +332,7 @@ MEM_FORMAT = """
     pskip:1,                            // PSkip (Select?)
     skip:1,                             // Skip memory during scan
     used:1,                             // Memory used 
-    valid:1;                            // Aways 1?
+    valid:1;                            // Always 1?
     } flag[%d];
     """
 

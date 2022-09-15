@@ -162,7 +162,7 @@ TONES = list(chirp_common.OLD_TONES)
 # the = displays as an underscored dash on radio
 # the first ? is an uppercase delta - \xA7
 # the second ? is an uppercase gamma - \xD1
-# the thrid ? is an uppercase sigma - \xCF
+# the third ? is an uppercase sigma - \xCF
 NUMERIC_CHARSET = list("0123456789")
 CHARSET = [str(x) for x in range(0, 10)] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
@@ -218,7 +218,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_characters = "".join(CHARSET)
         rf.valid_name_length = 4
         rf.valid_modes = MODES
-        # Specials not yet implementd
+        # Specials not yet implemented
         # rf.valid_special_chans = SPECIALS
         rf.valid_bands = [(76000000, 200000000),
                           (300000000, 540000000),

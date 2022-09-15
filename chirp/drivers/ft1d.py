@@ -338,7 +338,7 @@ struct {
   char dst_callsign[9];
   char path[30];
   u16 flags;
-  u8 seperator;
+  u8 separator;
   char body[%d];
 } aprs_beacon_pkt[%d];
 

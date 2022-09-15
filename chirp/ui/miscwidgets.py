@@ -611,9 +611,13 @@ class LatLonEntry(gtk.Entry):
 
 class YesNoDialog(gtk.Dialog):
     def __init__(self, title="", parent=None, buttons=None):
-        gtk.Dialog.__init__(self, title=title, parent=parent, buttons=buttons)
+        gtk.Dialog.__init__(self,
+                            title=title,
+                            parent=parent,
+                            buttons=buttons)
 
         self._label = gtk.Label("")
+        self._label.set_alignment(0.0, 0.5)
         self._label.show()
 
         # pylint: disable-msg=E1101

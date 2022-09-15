@@ -85,7 +85,7 @@ _TMODES = ["", "Tone", "TSQL", "-RVT", "DTCS", "-PR", "-PAG"]
 TMODES = ["", "Tone", "TSQL", "", "DTCS", "", ""]
 MODES = ["FM", "AM", "NFM", "", "WFM"]
 DUPLEXES = ["", "", "-", "+", "split"]
-# TODO: add japaneese characters (viewable in special menu, scroll backwards)
+# TODO: add japanese characters (viewable in special menu, scroll backwards)
 CHARSET = \
     ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
      '#$%&`()*+,-./:;<=>?@[\\]^_`{|}~?????? ' + '?' * 91)
