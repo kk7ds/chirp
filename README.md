@@ -1,10 +1,10 @@
 # CHIRP Project
 
 This is the official git repository for the
-__[CHIRP](https://chirp.danplanet.com)__ project. Pull requests are accepted
-here, but for the moment, the main repository is still on mercurial.
-Changesets will be mirrored in both directions, but may not always happen
-immediately.
+__[CHIRP](https://chirp.danplanet.com)__ project. This repo is mirrored to
+the legacy mercurial repo and patches are still accepted via the mailing list
+against that repository for existing contributors. New contributions are
+preferred as PRs here.
 
 When submitting PRs, please squash commits into logical units in a fashion
 similar to what is currently expected by the project on the mailing list.
