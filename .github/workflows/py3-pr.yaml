@@ -1,0 +1,29 @@
+name: Sync to py3 branch
+on:
+  push:
+    branches:
+      - master
+jobs:
+  makepr:
+    name: Generate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Merge with py3
+        run: |
+          git fetch origin py3
+          git checkout origin/py3 -b py3-sync
+          git config --global user.email "bot@chirp.danplanet.com"
+          git config --global user.name "Merge Bot"
+          git merge $GITHUB_SHA --allow-unrelated-histories --no-edit
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_branch: py3
+          pr_title: "[Automated] Sync master with py3"
+          pr_body: "Automated pull request to sync py3 with changes from master"
+          pr_reviewer: "kk7ds"
