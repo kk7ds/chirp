@@ -1,0 +1,35 @@
+name: Test merging against py3
+on:
+  pull_request:
+    branches-ignore:
+      - 'py3**'
+  push:
+    branches-ignore:
+      - 'py3**'
+jobs:
+  test:
+    name: Merge and run all tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Merge with py3
+        run: |
+          echo SHA $GITHUB_SHA
+          echo REF $GITHUB_REF
+          git fetch origin py3
+          git branch -a
+          git checkout origin/py3 -b py3-test
+          echo HEAD $(git rev-parse HEAD)
+          git config --global user.email "bot@chirp.danplanet.com"
+          git config --global user.name "Merge Bot"
+          git merge $GITHUB_SHA --allow-unrelated-histories --no-edit
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-pip gobject-introspection python3-gi libgirepository1.0-dev
+          sudo python3 -mpip install tox
+      - name: Run tests
+        run: tox -e py3unit,py3driver,style
