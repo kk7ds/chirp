@@ -1,0 +1,1098 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2022-09-16 11:37+0300\n"
+"Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
+"Language-Team: TURKISH\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "...and shift all memories up"
+msgstr "... ve tüm kayıtları yukarı kaydır"
+
+msgid "...and shift block up"
+msgstr "...ve bloğu yukarı kaydır"
+
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device."
+msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihazdan indirmek için Tamam'a tıklayın."
+
+msgid "A new version of CHIRP is available: "
+msgstr "CHIRP'in yeni bir sürümü mevcut: "
+
+msgid "A new version of CHIRP is available: {ver}. "
+msgstr "CHIRP'in yeni bir sürümü mevcut: {ver}. "
+
+msgid "About"
+msgstr "Hakkında"
+
+msgid "Adding memory {number}"
+msgstr "{number} kaydı ekleniyor"
+
+msgid "Adjust New Location"
+msgstr "Yeni Konumu Ayarla"
+
+msgid "All"
+msgstr "Tümü"
+
+msgid "All files"
+msgstr "Tüm dosyalar"
+
+msgid "An error has occurred"
+msgstr "Bir hata oluştu"
+
+msgid "Auto"
+msgstr "Otomatik"
+
+msgid "Automatic Repeater Offset"
+msgstr "Otomatik Tekrarlama Ofseti"
+
+msgid "Bad value for {col}: {val}"
+msgstr "{col} için kötü değer: {val}"
+
+msgid "Band plans define default channel settings for frequencies in a region.  Choose a band plan or None for completely manual channel settings."
+msgstr "Bant planları, bir bölgedeki frekanslar için varsayılan kanal ayarlarını tanımlar. Tamamen manuel kanal ayarları için bir bant planını veya Hiçbirini seçin."
+
+msgid "Bank"
+msgstr "Banka"
+
+msgid "Bank Names"
+msgstr "Banka İsimleri"
+
+msgid "Banks"
+msgstr "Bankalar"
+
+msgid "Browser"
+msgstr "Tarayıcı"
+
+msgid "CHIRP"
+msgstr "CHIRP"
+
+msgid "CHIRP Documentation"
+msgstr "CHIRP Belgeleri"
+
+msgid "CHIRP Files"
+msgstr "CHIRP Dosyaları"
+
+msgid "CHIRP Native File"
+msgstr "CHIRP Yerel Dosyası"
+
+msgid "CHIRP Radio Images"
+msgstr "CHIRP Telsiz İmajları"
+
+msgid "CSV File"
+msgstr "CSV Dosyası"
+
+msgid "CSV Files"
+msgstr "CSV Dosyası"
+
+msgid "Callsign"
+msgstr "Çağrı işareti"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Cancelled"
+msgstr "İptal edildi"
+
+msgid "Cannot be imported because"
+msgstr "İçe aktarılamıyor çünkü"
+
+msgid "Change Language"
+msgstr "Dili Değiştir (Change Language)"
+
+msgid "Change language"
+msgstr "Dili değiştir (Change language)"
+
+msgid "Channel Defaults"
+msgstr "Kanal Varsayılanları"
+
+msgid "Channel defaults"
+msgstr "Kanal varsayılanları"
+
+msgid "Check this to change the {name} value"
+msgstr "{name} değerini değiştirmek için bunu kontrol edin"
+
+msgid "Choose Language"
+msgstr "Dil Seçin"
+
+msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
+msgstr "Bir dil seçin veya işletim sistemi varsayılanını kullanmak için otomatiği seçin. Değişikliğin uygulanması için uygulamayı yeniden başlatmanız gerekir"
+
+msgid "Choose one to import from:"
+msgstr "İçe aktarılacak bir şey seçin:"
+
+msgid "Clear Recently Opened"
+msgstr "Son Açılanları Temizle"
+
+msgid "Clone Progress"
+msgstr "Klon İlerlemesi"
+
+msgid "Clone completed, checking for spurious bytes"
+msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
+
+msgid "Clone failed: {error}"
+msgstr "Klon başarısız oldu: {error}"
+
+msgid "Cloning"
+msgstr "Klonlanıyor"
+
+msgid "Cloning from radio"
+msgstr "Telsizden klonlama"
+
+msgid "Cloning to radio"
+msgstr "Telsize klonlama"
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Columns"
+msgstr "Sütunlar"
+
+msgid "Comment"
+msgstr "Yorum"
+
+msgid "Completed"
+msgstr "Tamamlandı"
+
+msgid "Confirm overwrites"
+msgstr "Üzerine yazmayı onayla"
+
+msgid "Copy"
+msgstr "Kopyala"
+
+msgid "Cross Mode"
+msgstr "Çapraz Mod"
+
+msgid "Cross mode"
+msgstr "Çapraz mod"
+
+msgid "Cut"
+msgstr "Kes"
+
+msgid "Cutting memory {number}"
+msgstr "{number} kaydı kesiliyor"
+
+msgid "D-STAR"
+msgstr "Takas"
+
+msgid "DAT Files"
+msgstr "DAT Dosyaları"
+
+msgid "DMR-MARC Repeater Database Dump"
+msgstr "DMR-MARC Tekrarlayıcı Veritabanı Dökümü"
+
+msgid "DMR-MARC Repeaters"
+msgstr "DMR-MARC Tekrarlayıcılar"
+
+msgid "DTCS Code"
+msgstr "DTCS Kodu"
+
+msgid "DTCS Pol"
+msgstr "DTCS Pol"
+
+msgid "DTCS Rx Code"
+msgstr "DTCS Rx Kodu"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Delete (and shift up)"
+msgstr "Sil (ve yukarı kaydır)"
+
+msgid "Delete all"
+msgstr "Hepsini sil"
+
+msgid "Details"
+msgstr "Detaylar"
+
+msgid "Detect"
+msgstr "Tespit etme"
+
+msgid "Developer"
+msgstr "Geliştirici"
+
+msgid "Diff Raw Memories"
+msgstr "Farklı Ham kayıtlar"
+
+msgid "Diff Tabs"
+msgstr "Fark Sekmeleri"
+
+msgid "Diff of {a} and {b}"
+msgstr "{a} ve {b} arasındaki fark"
+
+msgid "Diff raw memories"
+msgstr "Farklı ham kayıtlar"
+
+msgid "Diff tabs"
+msgstr "Fark sekmeleri"
+
+msgid "Digital Code"
+msgstr "Dijital Kod"
+
+msgid "Do not show this next time"
+msgstr "Bunu bir dahaki sefere gösterme"
+
+msgid "Documentation"
+msgstr "Belgeler"
+
+msgid ""
+"Documentation for CHIRP, including FAQs, and help for common problems is available on the CHIRP web site, please go to\n"
+"\n"
+"<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/Documentation</a>\n"
+msgstr ""
+"CHIRP için SSS'leri de içeren dokümantasyon ve yaygın sorunlara yönelik yardım CHIRP web sitesinde mevcuttur, lütfen şu adrese gidin\n"
+"\n"
+"<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/Documentation</a>\n"
+
+msgid "Don't show information for any radio again"
+msgstr "Bir daha hiçbir telsiz için bilgi gösterme"
+
+msgid "Don't show instructions for any radio again"
+msgstr "Bir daha hiçbir telsiz için talimatları gösterme"
+
+msgid "Don't show this again"
+msgstr "Bunu bir daha gösterme"
+
+msgid "Download From Radio"
+msgstr "Telsizden İndir"
+
+msgid "Downloading MYCALL list"
+msgstr "MYCALL (çağrı listem) indiriliyor"
+
+msgid "Downloading RPTCALL list"
+msgstr "RPTCAL (tekrarlanan çağrı) listesini indiriliyor"
+
+msgid "Downloading URCALL list"
+msgstr "URCALL (sizin çağrı) listesi indiriliyor"
+
+msgid "Duplex"
+msgstr "Duplex"
+
+msgid "EVE"
+msgstr "EVE"
+
+msgid "EVE Files (VX5)"
+msgstr "EVE Dosyaları (VX5)"
+
+msgid "E_xchange"
+msgstr "T_akas"
+
+msgid "Edit"
+msgstr "Düzenle"
+
+msgid "Edit Memory #{num}"
+msgstr "Kaydı Düzenle #{num}"
+
+msgid "Edit Memory#{num}"
+msgstr "Kaydı Düzenle#{num}"
+
+msgid "Edit Multiple Memories"
+msgstr "Birden Fazla Kaydı Düzenle"
+
+msgid "Editing new item, taking defaults"
+msgstr "Yeni öğe düzenleniyor, varsayılanlar alınıyor"
+
+msgid "Enable Developer Functions"
+msgstr "Geliştirici İşlevlerini Etkinleştir"
+
+msgid "Enabled"
+msgstr "Etkin"
+
+msgid "Erasing memory {loc}"
+msgstr "Kayıt siliniyor {loc}"
+
+msgid "Erasing memory {number}"
+msgstr "Kayıt siliniyor {number}"
+
+msgid "Error importing memories:"
+msgstr "Kayıt içe aktarılırken hata oluştu:"
+
+msgid "Error in setting value: %s"
+msgstr "Değer ayarında hata: %s"
+
+msgid "Error reporting is enabled"
+msgstr "Hata raporlama etkinleştirildi"
+
+msgid "Error setting memory"
+msgstr "Kayıt ayarında hata"
+
+msgid "Exchange memories"
+msgstr "Kayıtları değiştir"
+
+msgid "Export"
+msgstr "Dışa Aktar"
+
+msgid "Export To File"
+msgstr "Dosyaya Aktar"
+
+msgid "File Exists"
+msgstr "Dosya Mevcut"
+
+msgid "File is modified, save changes before closing?"
+msgstr "Dosya değiştirildi, kapatmadan önce değişiklikler kaydedilsin mi?"
+
+msgid "Frequency"
+msgstr "Frekans"
+
+msgid "From"
+msgstr "Dan"
+
+msgid "General"
+msgstr "Genel"
+
+msgid "Get Help Online..."
+msgstr "Çevrimiçi Yardım Alın..."
+
+msgid "Getting %s information"
+msgstr "%s bilgisi alınıyor"
+
+msgid "Getting bank for memory {num}"
+msgstr "{num} kaydı için banka alınıyor"
+
+msgid "Getting bank information"
+msgstr "Banka bilgileri alınıyor"
+
+msgid "Getting bank information for memory {num}"
+msgstr "{num} kaydı için banka bilgileri alınıyor"
+
+msgid "Getting channel {chan}"
+msgstr "{chan} kanalı alınıyor"
+
+msgid "Getting memory {number}"
+msgstr "{number} kaydı alınıyor"
+
+msgid "Getting memory {num}"
+msgstr "{num} kaydı alınıyor"
+
+msgid "Getting original memory {number}"
+msgstr "Orijinal {number} kaydı alınıyor"
+
+msgid "Getting raw memory {number}"
+msgstr "{number} ham kaydı alınıyor"
+
+msgid "Getting {type} for memory {num}"
+msgstr "{num} kaydı için {type} alınıyor"
+
+msgid "Getting {type} information for memory {num}"
+msgstr "{num} kaydı için {type} bilgisi alınıyor"
+
+msgid "Go"
+msgstr "Git"
+
+msgid "Hamradio;Programming;Handheld;Radio;Amateur;Programmer"
+msgstr "AmatörTelsiz;Programlama;ElTipi;Telsiz;Amatör;Programcı"
+
+msgid "Help"
+msgstr "Yardım"
+
+msgid "Hide Unused Fields"
+msgstr "Kullanılmayan Alanları Gizle"
+
+msgid "ICF Files"
+msgstr "ICF Dosyaları"
+
+msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+msgstr "ICF dosyaları düzenlenemez, yalnızca görüntülenebilir veya başka bir dosyaya aktarılamaz. Salt okunur modda açılsın mı?"
+
+msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+msgstr "Bu özelliği devre dışı bırakmak isterseniz, bunu <u>Yardım</u> menüsünden yapabilirsiniz"
+
+msgid "Import"
+msgstr "İçe Aktar"
+
+msgid "Import From Data Source"
+msgstr "Veri Kaynağından İçe Aktar"
+
+msgid "Import From File"
+msgstr "Dosyadan İçe Aktar"
+
+msgid "Import From Stock Config"
+msgstr "Stok Yapılandırmasından İçe Aktar"
+
+msgid "Import from RFinder"
+msgstr "RFinder'dan içe aktar"
+
+msgid "Import from data source"
+msgstr "Veri kaynağından içe aktar"
+
+msgid "Import from stock config"
+msgstr "Stok yapılandırmasından içe aktar"
+
+msgid "Import stock configuration {name}"
+msgstr "{name} stok yapılandırmasını içe aktar"
+
+msgid "Importing bank information"
+msgstr "Banka bilgileri içe aktarılıyor"
+
+msgid "Incompatible Memory"
+msgstr "Uyumsuz Kayıt"
+
+msgid "Index"
+msgstr "Dizin"
+
+msgid "Insert row above"
+msgstr "Yukarıya satır ekle"
+
+msgid "Insert row below"
+msgstr "Aşağıya satır ekle"
+
+msgid "Internal Error"
+msgstr "İç Hata"
+
+msgid "Internal Error: Column {name} not found"
+msgstr "Dahili Hata: Sütun {name} bulunamadı"
+
+msgid "Internal Error: Invalid limit {number}"
+msgstr "Dahili Hata: Geçersiz limit {number}"
+
+msgid "Internal error: Unable to upload to {model}"
+msgstr "Dahili hata: {model}'e yüklenemiyor"
+
+msgid "Invalid setting value: %s"
+msgstr "Geçersiz ayar değeri: %s"
+
+msgid "Invalid value for %s"
+msgstr "%s için geçersiz değer"
+
+msgid "Invalid value for this field"
+msgstr "Bu alan için geçersiz değer"
+
+msgid "Invalid value. Must be an integer."
+msgstr "Geçersiz değer. Tam sayı olmak zorunda."
+
+msgid "Inverse"
+msgstr "Ters"
+
+msgid "Kenwood HMK Files"
+msgstr "Kenwood HMK Dosyaları"
+
+msgid "Kenwood ITM Files"
+msgstr "Kenwood ITM Dosyaları"
+
+msgid "Load Module"
+msgstr "Modülü Yükle"
+
+msgid "Loc"
+msgstr "Konum"
+
+msgid "Location memory will be imported into"
+msgstr "Konum kaydı şuraya aktarılacak"
+
+msgid "Location of memory in the file being imported"
+msgstr "İçe aktarılan dosyadaki kaydın konumu"
+
+msgid "Location {number} is already being imported"
+msgstr "{number} konumu zaten içe aktarılıyor"
+
+msgid "Location {number} is already being imported. Choose another valü for 'New Location' before selection 'Import'"
+msgstr "{number} konumu zaten içe aktarılıyor. 'İçe Aktar' seçiminden önce 'Yeni Konum' için başka bir değer seçin"
+
+msgid "Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'"
+msgstr "{number} konumu zaten içe aktarılıyor. 'İçe Aktar' seçiminden önce 'Yeni Konum' için başka bir değer seçin"
+
+msgid "Looking for a free spot ({number})"
+msgstr "Boş yer arıyorum ({number})"
+
+msgid "Memories"
+msgstr "Kayıtlar"
+
+msgid "Memories (%(variant)s)"
+msgstr "Kayıtlar (%(variant)s)"
+
+msgid "Memories must be contiguous"
+msgstr "Kayıtlar bitişik olmalı"
+
+msgid "Memory Range:"
+msgstr "Kayıt Aralığı:"
+
+msgid "Memory range:"
+msgstr "Kayıt aralığı:"
+
+msgid "Memory validation failed:"
+msgstr "Kayıt doğrulaması başarısız oldu:"
+
+msgid "Memory {number}"
+msgstr "Kayıt {number}"
+
+msgid "Memory {num} not in bank {bank}"
+msgstr "{num} kaydı {bank} bankasında değil"
+
+msgid "Mode"
+msgstr "Mod"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Modules"
+msgstr "Modüller"
+
+msgid "Move Dow_n"
+msgstr "Aşağı Taş_ı"
+
+msgid "Move _Up"
+msgstr "Yukarı _Taşı"
+
+msgid "Move down"
+msgstr "Aşağı taşı"
+
+msgid "Move up"
+msgstr "Yukarı taşı"
+
+msgid "Moved {count} memories"
+msgstr "{count} kaydı taşındı"
+
+msgid "Moving memory from {old} to {new}"
+msgstr "Kayıt {old} olandan {new} olana taşınıyor..."
+
+msgid "Moving {src} to {dst}"
+msgstr "{src}, {dst}'e taşınıyor"
+
+msgid "My callsign"
+msgstr "Benim çağrı işaretim"
+
+msgid "Name"
+msgstr "İsim"
+
+msgid "New"
+msgstr "Yeni"
+
+msgid "No space to insert a row"
+msgstr "Satır eklemek için boşluk yok"
+
+msgid "None"
+msgstr "Hiçbiri"
+
+msgid "Note:"
+msgstr "Not:"
+
+msgid "Offset"
+msgstr "Ofset"
+
+msgid "Open"
+msgstr "Aç"
+
+msgid "Open Recent"
+msgstr "Son Kullanılanları Aç"
+
+msgid "Open Stock Config"
+msgstr "Stok Yapılandırmasını Aç"
+
+msgid "Open _Recent"
+msgstr "Son _Kullanılanları Aç"
+
+msgid "Open recent file"
+msgstr "Son dosyayı aç"
+
+msgid "Open recent file {name}"
+msgstr "{name} geçmiş dosyasını aç"
+
+msgid "Open stock config"
+msgstr "Stok yapılandırmasını aç"
+
+msgid "Open stock configuration {name}"
+msgstr "{name} stok yapılandırmasını aç"
+
+msgid "Options"
+msgstr "Seçenekler"
+
+msgid "Other"
+msgstr "Diğer"
+
+msgid "Overwrite"
+msgstr "Üzerine yaz"
+
+msgid "Overwrite location {number}?"
+msgstr "{number} konumunun üzerine yazılsın mı?"
+
+msgid "Overwrite?"
+msgstr "Üzerine yazılsın mı?"
+
+msgid "P_roperties"
+msgstr "Ö_zellikler"
+
+msgid "Paste"
+msgstr "Yapıştır"
+
+msgid "Pasted memory {number} is not compatible with this radio because:"
+msgstr "Yapıştırılan {number} kaydı bu telsizle uyumlu değil çünkü:"
+
+msgid "Port"
+msgstr "Port"
+
+msgid "Power"
+msgstr "Güç"
+
+msgid "Preparing memory list..."
+msgstr "Kayıt listesi hazırlanıyor..."
+
+msgid "Priming memory"
+msgstr "Kayıt hazırlanıyor"
+
+msgid "Proceed with experimental driver?"
+msgstr "Deneysel sürücü ile devam edilsin mi?"
+
+msgid "Proceed?"
+msgstr "Devam et?"
+
+msgid "Program amateur radios"
+msgstr "Amatör telsizleri programla"
+
+msgid "Properties"
+msgstr "Özellikler"
+
+msgid "Python Modules"
+msgstr "Python Modülleri"
+
+msgid "Query Data Source"
+msgstr "Veri Kaynağını Sorgula"
+
+msgid "Query data source"
+msgstr "Veri kaynağını sorgula"
+
+msgid "Query failed"
+msgstr "Sorgu başarısız"
+
+msgid "Quit"
+msgstr "Çıkış"
+
+msgid "RFinder"
+msgstr "RFinder"
+
+msgid "RPT1CALL"
+msgstr "RFinder"
+
+msgid "RPT2CALL"
+msgstr "RPT2CALL"
+
+msgid "RX DTCS Code"
+msgstr "RX DTCS Kodu"
+
+msgid "Radio"
+msgstr "Telsiz"
+
+msgid "Radio Programming Tool"
+msgstr "Telsiz Programlama Aracı"
+
+msgid "Radio did not ack block %i"
+msgstr "Telsiz %i bloğunu onaylamadı"
+
+msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
+msgstr "Telsiz, beklenen son bloktan sonra veri gönderdi, bu, seçilen model ABD dışındaysa gerçekleşir ama telsiz bir ABD telsizi. Lütfen doğru modeli seçin ve tekrar deneyin."
+
+msgid "RadioReference"
+msgstr "RadioReference"
+
+msgid "RadioReference.com"
+msgstr "RadioReference.com"
+
+msgid "RadioReference.com Canada"
+msgstr "RadioReference.com Kanada"
+
+msgid "RadioReference.com Province Query"
+msgstr "RadioReference.com İl Sorgusu"
+
+msgid "RadioReference.com Query"
+msgstr "RadioReference.com Sorgusu"
+
+msgid "RadioReference.com US"
+msgstr "RadioReference.com ABD"
+
+msgid "Raw memory {number}"
+msgstr "Ham kayıt {number}"
+
+msgid "Refresh"
+msgstr "Yenile"
+
+msgid "Repeater callsign"
+msgstr "Tekrarlayıcı çağrı işareti"
+
+msgid "RepeaterBook"
+msgstr "RepeaterBook"
+
+msgid "RepeaterBook Political Query"
+msgstr "RepeaterBook Siyasi Sorgusu"
+
+msgid "RepeaterBook Proximity Query"
+msgstr "RepeaterBook Yakınlık Sorgusu"
+
+msgid "RepeaterBook Query"
+msgstr "RepeaterBook Sorgusu"
+
+msgid "RepeaterBook query failed"
+msgstr "RepeaterBook sorgusu başarısız oldu"
+
+msgid "Report Statistics"
+msgstr "Rapor İstatistikleri"
+
+msgid "Report statistics"
+msgstr "Rapor istatistikleri"
+
+msgid "Reporting is disabled"
+msgstr "Raporlama devre dışı"
+
+msgid "Retrieving %s information"
+msgstr "%s bilgisi alınıyor"
+
+msgid "Retrieving bank information"
+msgstr "Banka bilgileri alınıyor"
+
+msgid "Reverse"
+msgstr "Tersi"
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Save As"
+msgstr "Farklı Kaydet"
+
+msgid "Save Changes?"
+msgstr "Değişiklikleri Kaydet?"
+
+msgid "Select"
+msgstr "Seç"
+
+msgid "Select All"
+msgstr "Tümünü seç"
+
+msgid "Select Columns"
+msgstr "Sütunları Seç"
+
+msgid "Select _All"
+msgstr "Tümünü _Seç"
+
+msgid "Setting index for memory {num}"
+msgstr "{num} kaydı için ayar dizini"
+
+msgid "Setting memory {number}"
+msgstr "Kaydın ayarlanması {sayı}"
+
+msgid "Setting name on %s"
+msgstr "%s üzerinde ad ayarlanıyor"
+
+msgid "Setting name on bank"
+msgstr "Bankada isim ayarlama"
+
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgid "Shift"
+msgstr "Shift"
+
+msgid "Show Empty"
+msgstr "Boş Kayıtlar"
+
+msgid "Show Information"
+msgstr "Bilgi göster"
+
+msgid "Show Instructions"
+msgstr "Talimatları Göster"
+
+msgid "Show Raw Memory"
+msgstr "Ham Kaydı Göster"
+
+msgid "Show raw memory"
+msgstr "Ham kaydı göster"
+
+msgid "Skip"
+msgstr "Atla"
+
+msgid "Smart Tone Modes"
+msgstr "Akıllı Ton Modları"
+
+msgid "Special Channels"
+msgstr "Özel Kanallar"
+
+msgid "The file {name} already exists. Do you want to overwrite it?"
+msgstr "{name} dosyası zaten var. Üzerine yazmak istiyor musunuz?"
+
+msgid ""
+"The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no "
+"identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
+"\n"
+"<b>Are you sure you want to disable this feature?</b>"
+msgstr ""
+"CHIRP'in raporlama özelliği, yazarların en sık kullanılan telsiz sürücülerine ve kullanıcıların yaşadığı hatalara odaklanmasını sağlayarak <u>kaliteyi iyileştirmeye</u> yardımcı olmak için tasarlanmıştır. Raporlar "
+"tanımlayıcı bilgi içermez ve yazarlar tarafından yalnızca istatistiksel amaçlarla kullanılır. Gizliliğiniz son derece önemlidir, ancak <u>CHIRP'i daha iyi hale getirmeye yardımcı olmak için lütfen bu özelliği "
+"etkinleştirmeyi düşünün!</u>\n"
+"\n"
+"<b>Bu özelliği devre dışı bırakmak istediğinizden emin misiniz?</b>"
+
+msgid "The {vendor} {model} has multiple independent sub-devices"
+msgstr "{vendor} {model} birden çok bağımsız alt cihaza sahip"
+
+msgid ""
+"The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you "
+"wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+msgstr ""
+"{vendor} {model} <b>canlı modda</b> çalışır. Bu, yaptığınız tüm değişikliklerin anında telsize gönderileceği anlamına gelir. Bu nedenle, <u>Kaydet</u> veya <u>Yükle</u> işlemlerini gerçekleştiremezsiniz. İçeriği "
+"çevrimdışı düzenlemek istiyorsanız, lütfen <b>Dosya menüsünü</b> kullanarak bir CSV dosyasına <u>Dışa aktarın</u>."
+
+msgid "There was an error during export: {error}"
+msgstr "Dışa aktarma sırasında bir hata oluştu: {error}"
+
+msgid "There was an error during import: {error}"
+msgstr "İçe aktarma sırasında bir hata oluştu: {error}"
+
+msgid "There was an error opening {fname}: {error}"
+msgstr "{fname} açılırken bir hata oluştu: {error}"
+
+msgid "There were errors while opening {file}. The affected memories will not be importable!"
+msgstr "{file} açılırken hatalar oluştu. Etkilenen kayıtlar içe aktarılmayacak!"
+
+msgid ""
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
+msgstr ""
+"Bu, halen geliştirilmekte olan BJ-9900 için deneysel destektir.\n"
+"Lütfen OEM yazılımıyla iyi bir yedeklemeniz olduğundan emin olun.\n"
+"Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
+"Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
+
+msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
+msgstr "Bu işlem, boş bir konuma ulaşılana kadar sonraki tüm kanalların bir noktada taşınmasını gerektirir. Bu UZUN zaman alabilir. Bunu yapmak istediğinden emin misin?"
+
+msgid "This radio's driver is experimental. Do you want to proceed?"
+msgstr "Bu telsizin sürücüsü deneyseldir. Devam etmek istiyor musunuz?"
+
+msgid "To"
+msgstr "İle"
+
+msgid "Tone"
+msgstr "Ton"
+
+msgid "Tone Mode"
+msgstr "Ton Modu"
+
+msgid "ToneSql"
+msgstr "ToneSql"
+
+msgid "Travel Plus Files"
+msgstr "Seyahat Artı Dosyaları"
+
+msgid "Tune Step"
+msgstr "Adımı Ayarla"
+
+msgid "URCALL"
+msgstr "URCALL"
+
+msgid "Unable to detect radio on {port}"
+msgstr "{port} üzerinde telsiz algılanamadı"
+
+msgid "Unable to make changes to this model"
+msgstr "Bu modelde değişiklik yapılamıyor"
+
+msgid "Unable to open this image. It was generated with a newer version of CHIRP and thus may be for a radio model that is not supported by this version. Please update to the latest version of CHIRP and try again."
+msgstr "Bu imaj açılamıyor. CHIRP'in daha yeni bir sürümüyle oluşturulmuş ve bu nedenle bu sürüm tarafından desteklenmeyen bir telsiz modeli için olabilir. Lütfen en son CHIRP sürümüne güncelleyin ve tekrar deneyin."
+
+msgid "Unable to open this image: unsupported model"
+msgstr "Bu imaj açılamıyor: desteklenmeyen model"
+
+msgid "Unable to paste {src} memories into {dst} rows. Increase the memory bounds or show empty memories."
+msgstr "{src} kayıtları {dst} satırlarına yapıştırılamıyor. Kayıt sınırlarını artırın veya boş kayıtları gösterin."
+
+msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
+msgstr "Son blok okunamıyor. Bu genellikle seçilen model ABD olduğunda olur ama telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli seçin ve tekrar deneyin."
+
+msgid "Unsupported file type"
+msgstr "Desteklenmeyen dosya türü"
+
+msgid "Untitled"
+msgstr "Başlıksız"
+
+msgid "Updating RPTCALL list"
+msgstr "RPTCALL listesi güncelleniyor"
+
+msgid "Updating URCALL list"
+msgstr "URCALL listesi güncelleniyor"
+
+msgid "Updating bank index for memory {num}"
+msgstr "{num} kaydı için banka dizini güncelleniyor"
+
+msgid "Updating bank information for memory {num}"
+msgstr "{num} kaydı için banka bilgileri güncelleniyor"
+
+msgid "Updating mapping information for memory {num}"
+msgstr "{num} kaydı için eşleme bilgileri güncelleniyor"
+
+msgid "Updating {type} index for memory {num}"
+msgstr "{num} kayıt için {type} dizini güncelleniyor"
+
+msgid "Upload To Radio"
+msgstr "Telsize Yükle"
+
+msgid "VX5 Commander"
+msgstr "VX5 Commander"
+
+msgid "VX5 Commander Files"
+msgstr "VX5 Commander Dosyaları"
+
+msgid "VX6 Commander"
+msgstr "VX6 Commander"
+
+msgid "VX6 Commander Files"
+msgstr "VX6 Commander Dosyaları"
+
+msgid "VX7 Commander"
+msgstr "VX7 Commander"
+
+msgid "VX7 Commander Files"
+msgstr "VX7 Commander Dosyaları"
+
+msgid "Vendor"
+msgstr "Tedarikçi"
+
+msgid "Visible columns for {radio}"
+msgstr "{radio} için görünür sütunlar"
+
+msgid "With significant contributions by:"
+msgstr "Önemli katkılarıyla:"
+
+msgid "With significant contributions from:"
+msgstr "Önemli katkılarla:"
+
+msgid "Writing memory {number}"
+msgstr "{number} kaydı yazılıyor"
+
+msgid "Yes to All"
+msgstr "Hepsine evet"
+
+msgid "You can only diff two memories!"
+msgstr "Sadece iki kaydı birbirinden ayırabilirsin!"
+
+msgid "Your callsign"
+msgstr "Çağrı işaretiniz"
+
+msgid "_Copy"
+msgstr "_Kopyala"
+
+msgid "_Cut"
+msgstr "_Kes"
+
+msgid "_Delete"
+msgstr "_Sil"
+
+msgid "_Edit"
+msgstr "_Düzen"
+
+msgid "_File"
+msgstr "_Dosya"
+
+msgid "_Paste"
+msgstr "_Yapıştır"
+
+msgid "_Radio"
+msgstr "_Telsiz"
+
+msgid "_Recent"
+msgstr "_Geçmiş"
+
+msgid "_View"
+msgstr "_Görünüm"
+
+msgid "idle"
+msgstr "boşta"
+
+msgid "przemienniki.net"
+msgstr "przemienniki.net"
+
+msgid "these memories"
+msgstr "bu kayıtları"
+
+msgid "this memory"
+msgstr "bu kaydı"
+
+msgid "{bank} is full"
+msgstr "{bank} dolu"
+
+msgid "{information}"
+msgstr "{information}"
+
+msgid "{instructions}"
+msgstr "{instructions}"
+
+msgid "{name} Information"
+msgstr "{name} Bilgi"
+
+msgid "{name} Instructions"
+msgstr "{name} Talimatlar"
+
+msgid "{num} errors during open:"
+msgstr "açma sırasında {num} hatalar:"
+
+msgid "{vendor} {model} image file"
+msgstr "{vendor} {model} imaj dosyası"
+
+msgid "{vendor} {model} on {port}"
+msgstr "{vendor} {model} üzerinde {port}"
+
+msgid "Memory Properties"
+msgstr "Kayıt özellikleri"
+
+msgid "Yes"
+msgstr "Evet"
+
+msgid "No"
+msgstr "Hayır"
+
+msgid "Ok"
+msgstr "Tamam"
+
+msgid "OK"
+msgstr "TAMAM"
+
+msgid "Off"
+msgstr "Kapalı"
+
+msgid "Both"
+msgstr "İkisi de"
+
+msgid "High"
+msgstr "Yüksek"
+
+msgid "Low"
+msgstr "Düşük"
+
+msgid "Basic Settings"
+msgstr "Temel Ayarlar"
+
+msgid "Advenced Settings"
+msgstr "Gelişmiş Ayarlar"
+
+msgid "Other Settings"
+msgstr "Diğer ayarlar"
+
+msgid "Work Mode Settings"
+msgstr "Çalışma Modu Ayarları"
+
+msgid "FM Radio Preset"
+msgstr "FM Radyo Ön Ayarı"
+
+msgid "DTMF Settings"
+msgstr "DTMF Ayarları"
+
+msgid "Service Settings"
+msgstr "Servis Ayarları"
+
+msgid "A new version of CHIRP is available: {name}. It is recommended that you upgrade as soon as possible. Please go to:"
+msgstr "CHIRP'in yeni bir sürümü mevcut: {name}. En kısa sürede yükseltmeniz önerilir. Lütfen git:"
