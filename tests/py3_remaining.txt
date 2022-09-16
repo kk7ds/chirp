@@ -54,6 +54,7 @@ Retevis_RB17V.img
 Retevis_RB18.img
 Retevis_RB19.img
 Retevis_RB19P.img
+Retevis_RB23.img
 Retevis_RB26.img
 Retevis_RB27.img
 Retevis_RB27B.img
