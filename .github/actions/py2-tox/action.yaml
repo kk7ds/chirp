@@ -1,0 +1,29 @@
+name: Python2 tox runner
+description: Runs tox py2 targets
+inputs:
+  tox_target:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get remove -y python3-libxml2
+        sudo apt-get install -y libxml2-dev python-dev python-libxml2
+        curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+        python get-pip.py
+        pip --version
+        python -m pip install --upgrade --no-deps --force-reinstall lxml
+        python -m pip install \
+          future \
+          pep8 \
+          pyserial \
+          tox
+    - name: Run tox
+      shell: bash
+      run: |
+        tox -e ${{ inputs.tox_target }}
