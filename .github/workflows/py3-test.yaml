@@ -1,16 +1,48 @@
-name: Test
+name: Tests
 on:
   pull_request:
   push:
 jobs:
-  test:
-    name: Run all tests
+  style:
+    name: Style checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install python3-pip gobject-introspection python3-gi libgirepository1.0-dev
-          sudo python3 -mpip install tox
-      - run: tox -e py3unit,py3driver,style
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: style
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: py3unit
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit_report
+          path: unit_report.html
+
+  driver:
+    name: Driver tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: py3driver
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: driver_report
+          path: driver_report.html
+
