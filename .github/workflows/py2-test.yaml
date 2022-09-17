@@ -1,7 +1,11 @@
 name: Tests
 on:
   pull_request:
+    branches:
+      - master
   push:
+    branches:
+      - master
 jobs:
   style:
     name: Style checks
@@ -10,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run tox
-        uses: ./.github/actions/py3-tox
+        uses: ./.github/actions/py2-tox
         with:
           tox_target: style
 
@@ -21,14 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run tox
-        uses: ./.github/actions/py3-tox
+        uses: ./.github/actions/py2-tox
         with:
-          tox_target: py3unit
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: unit_report
-          path: unit_report.html
+          tox_target: unit
 
   driver:
     name: Driver tests
@@ -37,14 +36,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run tox
-        uses: ./.github/actions/py3-tox
+        uses: ./.github/actions/py2-tox
         with:
-          tox_target: py3driver
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: driver_report
-          path: driver_report.html
+          tox_target: driver
 
   matrix:
     name: Create support matrix
@@ -53,7 +47,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run tox
-        uses: ./.github/actions/py3-tox
+        uses: ./.github/actions/py2-tox
         with:
           tox_target: makesupported
       - name: Archive support matrix
