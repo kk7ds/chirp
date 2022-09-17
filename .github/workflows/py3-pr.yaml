@@ -18,15 +18,17 @@ jobs:
           git checkout origin/py3 -b py3-sync
           git config --global user.email "bot@chirp.danplanet.com"
           git config --global user.name "Merge Bot"
-          git merge $GITHUB_SHA --allow-unrelated-histories --no-edit
+          git merge $GITHUB_SHA --allow-unrelated-histories --no-edit || {
+            git add -u
+            git commit --no-edit
+          }
           git checkout -b auto-py3-$GITHUB_SHA
           git push origin auto-py3-$GITHUB_SHA:auto-py3-$GITHUB_SHA
       - name: Create PR
         uses: repo-sync/pull-request@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PR_SYNC }}
           source_branch: auto-py3-${{ github.sha }}
           destination_branch: py3
           pr_title: "[Automated] Sync master with py3"
           pr_body: "Automated pull request to sync py3 with changes from master"
-          pr_reviewer: "kk7ds"
