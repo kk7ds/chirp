@@ -288,7 +288,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_modes = ["FM", "NFM"]
-        rf.valid_special_chans = SPECIALS.keys()
+        rf.valid_special_chans = list(SPECIALS.keys())
         rf.valid_name_length = 7
         return rf
 

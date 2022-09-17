@@ -46,3 +46,18 @@ jobs:
           name: driver_report
           path: driver_report.html
 
+  matrix:
+    name: Create support matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: makesupported
+      - name: Archive support matrix
+        uses: actions/upload-artifact@v3
+        with:
+          name: support-matrix
+          path: model_support.html

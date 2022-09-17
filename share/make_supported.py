@@ -9,8 +9,9 @@ sys.path.insert(0, "..")
 tmp = sys.stdout
 sys.stdout = sys.stderr
 from chirp import *
-from chirp.drivers import *
 sys.stdout = tmp
+
+directory.safe_import_drivers()
 
 RF = chirp_common.RadioFeatures()
 KEYS = [x for x in sorted(RF.__dict__.keys())
@@ -58,7 +59,7 @@ def supported_row(radio):
             try:
                 value = ", ".join([str(x) for x in value
                                    if not str(x).startswith("?")])
-            except Exception, e:
+            except Exception as e:
                 raise
 
         if key == "memory_bounds":
@@ -167,7 +168,7 @@ for radio in directory.DRV_TO_RADIO.values():
 def get_key(rc):
     return '%s %s %s' % (rc.VENDOR, rc.MODEL, rc.VARIANT)
 
-for radio in sorted(models, cmp=lambda a, b: get_key(a) < get_key(b) and -1 or 1):
+for radio in sorted(models, key=get_key):
     if counter % 10 == 0:
         output(header_row())
     _radio = radio(None)
