@@ -523,7 +523,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-UV920P-A"
     _model = "KG-UV920Rr"   # what the radio responds to CMD_ID with
-    _file_ident = "KGUV920PA"
+    _file_ident = b"KGUV920PA"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=5),
                     chirp_common.PowerLevel("M", watts=20),
@@ -598,7 +598,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             self._mmap = self._download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -615,7 +615,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             return self._do_download(0, 0x6640, 0x40)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
@@ -647,7 +647,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             self._do_upload(0x0000, 0x6640, 0x40)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
@@ -786,7 +786,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number-1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             _nam.set_raw(_str_encode(""))
             _mem.rxfreq = 0xFFFFFFFF
             return
@@ -1289,7 +1289,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                 #
                 # Special Configuration Settings
                 #
-                if group.get_name() is 'cfg_grp':
+                if group.get_name() == 'cfg_grp':
                     if name == 'roger_begin':
                         value = _roger_encode(element[0].get_value())
                         for i in range(0, 4):
@@ -1308,7 +1308,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                 #
                 # Special UI Settings
                 #
-                if group.get_name() is 'ui_grp':
+                if group.get_name() == 'ui_grp':
                     if name == 'ponmsg.left':
                         value = _str_encode(element[0].get_value())
                         for i in range(0, 8):
@@ -1323,8 +1323,8 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                 #
                 # Special VFO A Settings
                 #
-                if (group.get_name() is 'vfoa_grp') or \
-                   (group.get_name() is 'vfob_grp'):
+                if (group.get_name() == 'vfoa_grp') or \
+                   (group.get_name() == 'vfob_grp'):
                     if (setting == 'rxfreq') or \
                        (setting == 'txoffset'):
                         value = _freq_encode(element[0].get_value())
@@ -1339,25 +1339,25 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                 #
                 # Special VFO B Settings
                 #
-                if group.get_name() is 'vfob_grp':
+                if group.get_name() == 'vfob_grp':
                     pass
 
                 #
                 # Special Scan settings
                 #
-                if group.get_name() is 'scn_grp':
+                if group.get_name() == 'scn_grp':
                     pass
 
                 #
                 # Special Repeater settings
                 #
-                if group.get_name() is 'rpt_grp':
+                if group.get_name() == 'rpt_grp':
                     pass
 
                 #
                 # Special Remote settings
                 #
-                if group.get_name() is 'rmt_grp':
+                if group.get_name() == 'rmt_grp':
                     if name == 'ani':
                         value = _ani_encode(element[0].get_value())
                         for i in range(0, 3):
@@ -1382,7 +1382,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                 #
                 # FM Radio Presets Settings
                 #
-                if group.get_name() is 'fmp_grp':
+                if group.get_name() == 'fmp_grp':
                     value = int(element[0].get_value() * 100)
                     self._memobj.fm_preset[int(name)-1].freq = value
                     continue
