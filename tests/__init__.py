@@ -1,3 +1,4 @@
+import functools
 import glob
 import logging
 import os
@@ -118,15 +119,14 @@ class TestAdapter(unittest.TestCase):
 
     @if_enabled
     def test_detect(self):
-        if self.SOURCE_IMAGE in PY3_XFAIL:
-            pytest.xfail('Driver not expected to run in python3. '
-                         'Remove from py3_remaining.txt')
-
         self._runtest(run_tests.TestCaseDetect)
 
     @if_enabled
     def test_clone(self):
         self._runtest(run_tests.TestCaseClone)
+
+    def test_py3_expected(self):
+        assert self.SOURCE_IMAGE not in PY3_XFAIL
 
 
 def _get_sub_devices(rclass, testimage):
@@ -148,6 +148,13 @@ def _get_sub_devices(rclass, testimage):
         return tw.do("get_sub_devices")
     else:
         return [rclass]
+
+
+class TestAdapterXFAIL(TestAdapter):
+    @pytest.mark.xfail(reason=('Driver not expected to run in python3. '
+                               'Remove from py3_remaining.txt'), strict=True)
+    def test_py3_expected(self):
+        pass
 
 
 class RadioSkipper(unittest.TestCase):
@@ -207,10 +214,16 @@ def _load_tests(loader, tests, pattern, suite=None):
             else:
                 dst = device
                 device = device.__class__
+
+            if image in PY3_XFAIL:
+                cls = TestAdapterXFAIL
+            else:
+                cls = TestAdapter
+
             tc = TestAdapterMeta(
-                class_name, (TestAdapter,), dict(RADIO_CLASS=device,
-                                                 SOURCE_IMAGE=image,
-                                                 RADIO_INST=dst))
+                class_name, (cls,), dict(RADIO_CLASS=device,
+                                         SOURCE_IMAGE=image,
+                                         RADIO_INST=dst))
             tests = loader.loadTestsFromTestCase(tc)
 
             if pattern:
