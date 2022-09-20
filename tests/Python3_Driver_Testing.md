@@ -1,0 +1,141 @@
+| Driver | Tester | Tested |
+| ------ | ------ | ------ |
+| ARRL_Travel_Plus |  |  |
+| Anysecu_WP-9900 |  |  |
+| BTECH_GMRS-20V2 |  |  |
+| BTECH_GMRS-50X1 |  |  |
+| BTECH_UV-2501 |  |  |
+| BTECH_UV-2501+220 |  |  |
+| BTECH_UV-25X2 |  |  |
+| BTECH_UV-25X4 |  |  |
+| BTECH_UV-5001 |  |  |
+| BTECH_UV-50X2 |  |  |
+| Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 |
+| Baofeng_BF-F8HP |  |  |
+| Baofeng_F-11 |  |  |
+| Baofeng_GT-5R |  |  |
+| Baofeng_UV-5R |  |  |
+| Baofeng_UV-6 |  |  |
+| Baofeng_UV-82 |  |  |
+| Baofeng_UV-82HP |  |  |
+| Baofeng_UV-B5 |  |  |
+| Boblov_X3Plus |  |  |
+| Commander_KG-UV |  |  |
+| Generic_CSV |  |  |
+| HobbyPCB_RS-UV3 |  |  |
+| Icom_7200 |  |  |
+| Icom_746 |  |  |
+| Icom_IC-208H |  |  |
+| Icom_IC-2100H |  |  |
+| Icom_IC-2200H |  |  |
+| Icom_IC-2300H |  |  |
+| Icom_IC-2720H |  |  |
+| Icom_IC-2730A |  |  |
+| Icom_IC-2820H |  |  |
+| Icom_IC-7000 |  |  |
+| Icom_IC-7100 |  |  |
+| Icom_IC-7300 |  |  |
+| Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 |
+| Icom_IC-91_92AD |  |  |
+| Icom_IC-P7 |  |  |
+| Icom_IC-Q7A |  |  |
+| Icom_IC-T70 |  |  |
+| Icom_IC-T7H |  |  |
+| Icom_IC-T8A |  |  |
+| Icom_IC-V82_U82 |  |  |
+| Icom_IC-W32A |  |  |
+| Icom_IC-W32E |  |  |
+| Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 12-Feb-2019 |
+| Icom_ID-51 |  |  |
+| Icom_ID-51_Plus |  |  |
+| Icom_ID-800H_v2 |  |  |
+| Icom_ID-80H |  |  |
+| Icom_ID-880H |  |  |
+| Intek_KT-980HP |  |  |
+| Kenwood_HMK |  |  |
+| Kenwood_ITM |  |  |
+| Kenwood_TH-D7 |  |  |
+| Kenwood_TH-D72_live_mode |  |  |
+| Kenwood_TH-D7G |  |  |
+| Kenwood_TH-F6 |  |  |
+| Kenwood_TH-F7 |  |  |
+| Kenwood_TH-G71 |  |  |
+| Kenwood_TH-K2 |  |  |
+| Kenwood_TK-2180 |  |  |
+| Kenwood_TK-3180K |  |  |
+| Kenwood_TK-3180K2 |  |  |
+| Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Kenwood_TK-7108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Kenwood_TK-7180 |  |  |
+| Kenwood_TK-8102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Kenwood_TK-8108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Kenwood_TK-8180 |  |  |
+| Kenwood_TM-271 |  |  |
+| Kenwood_TM-281 |  |  |
+| Kenwood_TM-471 |  |  |
+| Kenwood_TM-D700 |  |  |
+| Kenwood_TM-D710 |  |  |
+| Kenwood_TM-D710G |  |  |
+| Kenwood_TM-D710G_CloneMode |  |  |
+| Kenwood_TM-D710_CloneMode |  |  |
+| Kenwood_TM-G707 |  |  |
+| Kenwood_TM-V7 |  |  |
+| Kenwood_TM-V71 |  |  |
+| Kenwood_TS-480_LiveMode |  |  |
+| Kenwood_TS-590S_SG_LiveMode |  |  |
+| LUITON_LT-588UV |  |  |
+| QYT_KT-8R |  |  |
+| QYT_KT-UV980 |  |  |
+| QYT_KT-WP12 |  |  |
+| QYT_KT5800 |  |  |
+| QYT_KT7900D |  |  |
+| QYT_KT8900 |  |  |
+| QYT_KT8900D |  |  |
+| QYT_KT8900R |  |  |
+| QYT_KT980PLUS |  |  |
+| RT_Systems_CSV |  |  |
+| Radioddity_DB25-G |  |  |
+| Radioddity_GA-2S |  |  |
+| Radioddity_GA-510 |  |  |
+| Radioddity_UV-5G |  |  |
+| Radioddity_UV-5RX3 |  |  |
+| Radioddity_UV-82X3 |  |  |
+| Retevis_H777_Plus |  |  |
+| Retevis_RA685 |  |  |
+| Retevis_RA85 |  |  |
+| TYT_TH-350 |  |  |
+| TYT_TH-UVF8D |  |  |
+| Vertex_Standard_FTL-1011 |  |  |
+| Vertex_Standard_FTL-2011 |  |  |
+| Vertex_Standard_FTL-7011 |  |  |
+| Vertex_Standard_FTL-8011 |  |  |
+| WACCOM_MINI-8900 |  |  |
+| Wouxun_KG-UV920P-A |  |  |
+| Yaesu_FT-1500M |  |  |
+| Yaesu_FT-1802M |  |  |
+| Yaesu_FT-25R |  |  |
+| Yaesu_FT-4VR |  |  |
+| Yaesu_FT-4XE |  |  |
+| Yaesu_FT-4XR |  |  |
+| Yaesu_FT-65E |  |  |
+| Yaesu_FT-65R |  |  |
+| Yaesu_FT-7100M |  |  |
+| Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 |
+| Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 |
+| Yaesu_FT-817ND |  |  |
+| Yaesu_FT-817ND_US |  |  |
+| Yaesu_FT-818 |  |  |
+| Yaesu_FT-818ND_US |  |  |
+| Yaesu_FT-857_897 |  |  |
+| Yaesu_FT-857_897_US |  |  |
+| Yaesu_FT-8800 |  |  |
+| Yaesu_FT-8900 |  |  |
+| Yaesu_VX-170 |  |  |
+| Yaesu_VX-2 |  |  |
+| Yaesu_VX-3 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Yaesu_VX-5 |  |  |
+| Yaesu_VX-6 |  |  |
+| Yaesu_VX-7 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Yaesu_VX-8DR | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
+| Yaesu_VX-8GE |  |  |
+| Yaesu_VX-8R |  |  |
