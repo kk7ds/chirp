@@ -16,35 +16,15 @@ jobs:
 
   unit:
     name: Unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run tox
-        uses: ./.github/actions/py3-tox
-        with:
-          tox_target: py3unit
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: unit_report
-          path: unit_report.html
+    uses: ./.github/workflows/py3-test-and-report.yaml
+    with:
+      tox_target: unit
 
   driver:
     name: Driver tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run tox
-        uses: ./.github/actions/py3-tox
-        with:
-          tox_target: py3driver
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: driver_report
-          path: driver_report.html
+    uses: ./.github/workflows/py3-test-and-report.yaml
+    with:
+      tox_target: unit
 
   matrix:
     name: Create support matrix

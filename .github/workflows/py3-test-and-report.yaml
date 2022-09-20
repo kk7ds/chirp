@@ -1,0 +1,29 @@
+name: Test and report a tox target
+on:
+  workflow_call:
+    inputs:
+      tox_target:
+        required: true
+        type: string
+jobs:
+  test_and_report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: py3unit
+      - name: Archive HTML report
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: ${{ inputs.tox_target }}_report
+          path: ${{ inputs.tox_target }}_report.html
+      - name: Archive XML results
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: ${{ inputs.tox_target }}_results
+          path: ${{ inputs.tox_target }}_report.xml
