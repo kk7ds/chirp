@@ -101,7 +101,7 @@ class ChirpCloneDialog(wx.Dialog):
         _add_grid('Vendor', self._vendor)
         self.Bind(wx.EVT_CHOICE, self._selected_vendor, self._vendor)
 
-        self._model = wx.Choice(panel, choices=[])
+        self._model = wx.Choice(panel, choices=[], style = wx.CB_SORT)
         _add_grid('Model', self._model)
         self.Bind(wx.EVT_CHOICE, self._selected_model, self._model)
 
