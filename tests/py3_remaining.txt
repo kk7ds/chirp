@@ -28,8 +28,6 @@ Jetstream_JT220M.img
 Jetstream_JT270MH.img
 Jetstream_JT270M.img
 Kenwood_TH-D72_clone_mode.img
-Kenwood_TK-272G.img
-Kenwood_TK-760G.img
 Kenwood_TS-480_CloneMode.img
 KYD_IP-620.img
 KYD_NC-630A.img
