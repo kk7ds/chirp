@@ -1,0 +1,17 @@
+# Format is:
+# Driver_ID,Tester,Test Date
+# Tester is preferred as a github id, but obfuscated email or name is
+# acceptable
+# Actually Arcshell AR-6 which is a direct clone
+Baofeng_BF-888,@kk7ds,13-Feb-2019
+Icom_ID-31A,@kk7ds,12-Feb-2019
+Icom_IC-910,@mfncooper,1-Oct-2021
+Kenwood_TK-8102,@kk7ds,15-Feb-2019
+Kenwood_TK-7102,@kk7ds,15-Feb-2019
+Kenwood_TK-8108,@kk7ds,15-Feb-2019
+Kenwood_TK-7108,@kk7ds,15-Feb-2019
+Yaesu_FT-7800_7900,@kk7ds,14-Feb-2019
+Yaesu_FT-817,@kk7ds,14-Feb-2019
+Yaesu_VX-3,@kk7ds,15-Feb-2019
+Yaesu_VX-8DR,@kk7ds,15-Feb-2019
+Yaesu_VX-7,@kk7ds,15-Feb-2019
