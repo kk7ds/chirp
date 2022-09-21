@@ -23,8 +23,6 @@ Jetstream_JT270MH.img
 Jetstream_JT270M.img
 Kenwood_TH-D72_clone_mode.img
 Kenwood_TS-480_CloneMode.img
-KYD_IP-620.img
-KYD_NC-630A.img
 Leixen_VV-898.img
 Leixen_VV-898S.img
 LUITON_LT-580_UHF.img
