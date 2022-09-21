@@ -96,7 +96,7 @@ Wouxun_KG-UV6.img
 Wouxun_KG-UV8D.img
 Wouxun_KG-UV8D_Plus.img
 Wouxun_KG-UV8E.img
-Wouxun_KG-UV9D_Plus.img
+### Wouxun_KG-UV9D_Plus.img
 Wouxun_KG-UVD1P.img
 Yaesu_FT-1D_R.img
 Yaesu_FT-2800M.img
