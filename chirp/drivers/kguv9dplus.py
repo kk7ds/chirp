@@ -445,7 +445,7 @@ def freq2short(val, min, max):
                                 (chirp_common.format_freq(_freq),
                                  chirp_common.format_freq(min),
                                  chirp_common.format_freq(max)))
-    return int(_freq/100000) & 0xFFFF
+    return _freq // 100000 & 0xFFFF
 
 
 def short2freq(freq):
