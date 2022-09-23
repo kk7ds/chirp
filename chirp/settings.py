@@ -176,15 +176,19 @@ class RadioSettingValueList(RadioSettingValue):
 
     """A list-of-strings setting"""
 
-    def __init__(self, options, current):
+    def __init__(self, options, current=None, current_index=0):
         RadioSettingValue.__init__(self)
-        self._options = options
-        self.set_value(current)
+        self._options = list(options)
+        self.set_value(current or self._options[int(current_index)])
 
     def set_value(self, value):
         if value not in self._options:
             raise InvalidValueError("%s is not valid for this setting" % value)
         RadioSettingValue.set_value(self, value)
+
+    def set_index(self, index):
+        # Will raise IndexError as expected
+        self.set_value(self._options[int(index)])
 
     def get_options(self):
         """Returns the list of valid option values"""
