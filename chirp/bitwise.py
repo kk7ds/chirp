@@ -801,7 +801,7 @@ class structDataElement(DataElement):
             return string_straight_decode(raw)
 
     def set_raw(self, buffer):
-        if len(buffer) != (self.size() / 8):
+        if len(buffer) != (self.size() // 8):
             raise ValueError("Struct size mismatch during set_raw()")
         if isinstance(buffer, str):
             buffer = string_straight_encode(buffer)

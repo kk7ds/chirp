@@ -73,7 +73,7 @@ def model_match(cls, data):
 
     if len(data) > 0x2008:
         rid = data[0x2008:0x2010]
-        return rid.startswith(cls.MODEL)
+        return rid.startswith(cls.MODEL.encode())
     elif len(data) == 0x2008:
         rid = data[0x1EF0:0x1EF7]
         return rid in cls._fileid

@@ -4,20 +4,31 @@
 | Anysecu_WP-9900 |  |  |
 | BTECH_GMRS-20V2 |  |  |
 | BTECH_GMRS-50X1 |  |  |
+| BTECH_GMRS-V1 |  |  |
+| BTECH_GMRS-V2 |  |  |
+| BTECH_MURS-V1 |  |  |
 | BTECH_UV-2501 |  |  |
 | BTECH_UV-2501+220 |  |  |
 | BTECH_UV-25X2 |  |  |
 | BTECH_UV-25X4 |  |  |
 | BTECH_UV-5001 |  |  |
 | BTECH_UV-50X2 |  |  |
+| BTECH_UV-5X3 |  |  |
 | Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 |
+| Baofeng_BF-A58 |  |  |
+| Baofeng_BF-A58S |  |  |
 | Baofeng_BF-F8HP |  |  |
 | Baofeng_F-11 |  |  |
+| Baofeng_GT-3WP |  |  |
 | Baofeng_GT-5R |  |  |
 | Baofeng_UV-5R |  |  |
 | Baofeng_UV-6 |  |  |
+| Baofeng_UV-6R |  |  |
 | Baofeng_UV-82 |  |  |
 | Baofeng_UV-82HP |  |  |
+| Baofeng_UV-82WP |  |  |
+| Baofeng_UV-9G |  |  |
+| Baofeng_UV-9R |  |  |
 | Baofeng_UV-B5 |  |  |
 | Boblov_X3Plus |  |  |
 | Commander_KG-UV |  |  |
@@ -43,6 +54,7 @@
 | Icom_IC-T7H |  |  |
 | Icom_IC-T8A |  |  |
 | Icom_IC-V82_U82 |  |  |
+| Icom_IC-V86 |  |  |
 | Icom_IC-W32A |  |  |
 | Icom_IC-W32E |  |  |
 | Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 12-Feb-2019 |
@@ -52,6 +64,8 @@
 | Icom_ID-80H |  |  |
 | Icom_ID-880H |  |  |
 | Intek_KT-980HP |  |  |
+| KYD_IP-620 |  |  |
+| KYD_NC-630A |  |  |
 | Kenwood_HMK |  |  |
 | Kenwood_ITM |  |  |
 | Kenwood_TH-D7 |  |  |
@@ -62,14 +76,35 @@
 | Kenwood_TH-G71 |  |  |
 | Kenwood_TH-K2 |  |  |
 | Kenwood_TK-2180 |  |  |
+| Kenwood_TK-260G |  |  |
+| Kenwood_TK-270G |  |  |
+| Kenwood_TK-272G |  |  |
+| Kenwood_TK-278G |  |  |
 | Kenwood_TK-3180K |  |  |
 | Kenwood_TK-3180K2 |  |  |
+| Kenwood_TK-360G |  |  |
+| Kenwood_TK-370G |  |  |
+| Kenwood_TK-372G |  |  |
+| Kenwood_TK-378G |  |  |
+| Kenwood_TK-388G |  |  |
 | Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
 | Kenwood_TK-7108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
 | Kenwood_TK-7180 |  |  |
+| Kenwood_TK-760 |  |  |
+| Kenwood_TK-760G |  |  |
+| Kenwood_TK-762 |  |  |
+| Kenwood_TK-762G |  |  |
+| Kenwood_TK-768 |  |  |
+| Kenwood_TK-768G |  |  |
 | Kenwood_TK-8102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
 | Kenwood_TK-8108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
 | Kenwood_TK-8180 |  |  |
+| Kenwood_TK-860 |  |  |
+| Kenwood_TK-860G |  |  |
+| Kenwood_TK-862 |  |  |
+| Kenwood_TK-862G |  |  |
+| Kenwood_TK-868 |  |  |
+| Kenwood_TK-868G |  |  |
 | Kenwood_TM-271 |  |  |
 | Kenwood_TM-281 |  |  |
 | Kenwood_TM-471 |  |  |
@@ -84,6 +119,7 @@
 | Kenwood_TS-480_LiveMode |  |  |
 | Kenwood_TS-590S_SG_LiveMode |  |  |
 | LUITON_LT-588UV |  |  |
+| MTC_UV-5R-3 |  |  |
 | QYT_KT-8R |  |  |
 | QYT_KT-UV980 |  |  |
 | QYT_KT-WP12 |  |  |
@@ -103,6 +139,7 @@
 | Retevis_H777_Plus |  |  |
 | Retevis_RA685 |  |  |
 | Retevis_RA85 |  |  |
+| Retevis_RT6 |  |  |
 | TYT_TH-350 |  |  |
 | TYT_TH-UVF8D |  |  |
 | Vertex_Standard_FTL-1011 |  |  |
@@ -111,6 +148,7 @@
 | Vertex_Standard_FTL-8011 |  |  |
 | WACCOM_MINI-8900 |  |  |
 | Wouxun_KG-UV920P-A |  |  |
+| Wouxun_KG-UV9D_Plus |  |  |
 | Yaesu_FT-1500M |  |  |
 | Yaesu_FT-1802M |  |  |
 | Yaesu_FT-25R |  |  |

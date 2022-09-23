@@ -98,7 +98,7 @@ KEYS = {
 
 MEM_SIZE = 0x400
 BLOCK_SIZE = 8
-MEM_BLOCKS = range(0, (MEM_SIZE / BLOCK_SIZE))
+MEM_BLOCKS = list(range(0, (MEM_SIZE // BLOCK_SIZE)))
 ACK_CMD = "\x06"
 # from 0.03 up it' s safe
 # I have to turn it up, some users reported problems with this, was 0.05
@@ -312,12 +312,9 @@ def get_rid(data):
     """Extract the radio identification from the firmware"""
     rid = data[0x0378:0x0380]
     # we have to invert rid
-    nrid = ""
-    for i in range(1, len(rid) + 1):
-        nrid += rid[-i]
-    rid = nrid
+    nrid = rid[::-1]
 
-    return rid
+    return nrid
 
 
 def model_match(cls, data):
@@ -739,26 +736,26 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         basic.append(clone)
 
         # front keys
-        rs = RadioSettingValueList(KEYS.values(),
-                                   KEYS.values()[KEYS.keys().index(
+        rs = RadioSettingValueList(list(KEYS.values()),
+                                   list(KEYS.values())[list(KEYS.keys()).index(
                                        int(sett.kMON))])
         mon = RadioSetting("settings.kMON", "MON", rs)
         fkeys.append(mon)
 
-        rs = RadioSettingValueList(KEYS.values(),
-                                   KEYS.values()[KEYS.keys().index(
+        rs = RadioSettingValueList(list(KEYS.values()),
+                                   list(KEYS.values())[list(KEYS.keys()).index(
                                        int(sett.kA))])
         a = RadioSetting("settings.kA", "A", rs)
         fkeys.append(a)
 
-        rs = RadioSettingValueList(KEYS.values(),
-                                   KEYS.values()[KEYS.keys().index(
+        rs = RadioSettingValueList(list(KEYS.values()),
+                                   list(KEYS.values())[list(KEYS.keys()).index(
                                        int(sett.kSCN))])
         scn = RadioSetting("settings.kSCN", "SCN", rs)
         fkeys.append(scn)
 
-        rs = RadioSettingValueList(KEYS.values(),
-                                   KEYS.values()[KEYS.keys().index(
+        rs = RadioSettingValueList(list(KEYS.values()),
+                                   list(KEYS.values())[list(KEYS.keys()).index(
                                        int(sett.kDA))])
         da = RadioSetting("settings.kDA", "D/A", rs)
         fkeys.append(da)
@@ -790,7 +787,8 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
 
                 # case keys, with special config
                 if setting[0] == "k":
-                    value = KEYS.keys()[KEYS.values().index(str(value))]
+                    value = list(KEYS.keys())[
+                            list(KEYS.values()).index(str(value))]
 
                 # integers case + special case
                 if setting in ["tot", "min_vol"]:
