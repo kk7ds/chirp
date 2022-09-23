@@ -54,6 +54,28 @@ class TestSettingValues(base.BaseTest):
         self._set_and_catch(value, "Jkl", "Xyz")
         self.assertEqual(value.get_options(), opts)
 
+    def test_radio_setting_value_list_by_index(self):
+        opts = ["Abc", "Def", "Ghi"]
+        value = settings.RadioSettingValueList(opts, current_index=1)
+        self.assertEqual(value.get_value(), "Def")
+        self.assertEqual(int(value), 1)
+        self._set_and_test(value, "Def", "Ghi", "Abc")
+        self._set_and_catch(value, "Jkl", "Xyz")
+        self.assertEqual(value.get_options(), opts)
+
+        # Make sure we int() the index, as we may pass a bitwise object
+        value = settings.RadioSettingValueList(opts, current_index='1')
+        self.assertEqual(value.get_value(), "Def")
+
+        value.set_index(0)
+        self.assertEqual(value.get_value(), 'Abc')
+
+        # Same here, int() the index
+        value.set_index('0')
+        self.assertEqual(value.get_value(), 'Abc')
+
+        self.assertRaises(IndexError, value.set_index, 7)
+
     def test_radio_setting_value_string(self):
         value = settings.RadioSettingValueString(1, 5, "foo", autopad=False)
         self.assertEqual(value.get_value(), "foo")
