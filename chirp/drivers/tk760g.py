@@ -1188,30 +1188,29 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         # Basic
         tot = RadioSetting("settings.tot", "Time Out Timer (TOT)",
-                           RadioSettingValueList(TOT, TOT[
-                           TOT.index(str(int(sett.tot)))]))
+                           RadioSettingValueList(TOT, '%i' % sett.tot))
         basic.append(tot)
 
         totalert = RadioSetting("settings.tot_alert", "TOT pre alert",
-                                RadioSettingValueList(TOT_PRE,
-                                TOT_PRE[int(sett.tot_alert)]))
+                                RadioSettingValueList(
+                                    TOT_PRE, current_index=sett.tot_alert))
         basic.append(totalert)
 
         totrekey = RadioSetting("settings.tot_rekey", "TOT re-key time",
-                                RadioSettingValueList(TOT_REKEY,
-                                TOT_REKEY[int(sett.tot_rekey)]))
+                                RadioSettingValueList(
+                                    TOT_REKEY, current_index=sett.tot_rekey))
         basic.append(totrekey)
 
         totreset = RadioSetting("settings.tot_reset", "TOT reset time",
-                                RadioSettingValueList(TOT_RESET,
-                                TOT_RESET[int(sett.tot_reset)]))
+                                RadioSettingValueList(
+                                    TOT_RESET, current_index=sett.tot_reset))
         basic.append(totreset)
 
         # this feature is for mobile only
         if self.TYPE[0] == "M":
             minvol = RadioSetting("settings.min_vol", "Minimum volume",
-                                  RadioSettingValueList(VOL,
-                                  VOL[int(sett.min_vol)]))
+                                  RadioSettingValueList(
+                                      VOL, current_index=sett.min_vol))
             basic.append(minvol)
 
             tv = int(sett.tone_vol)
@@ -1223,7 +1222,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         sql = RadioSetting("settings.sql_level", "SQL Ref Level",
                            RadioSettingValueList(
-                           SQL, SQL[int(sett.sql_level)]))
+                               SQL, current_index=sett.sql_level))
         basic.append(sql)
 
         #c2t = RadioSetting("settings.c2t", "Clear to Transpond",
@@ -1305,33 +1304,28 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # The Mobile only parameters are wrapped here
         if self.TYPE[0] == "M":
             vu = RadioSetting("keys.kVOL_UP", "VOL UP",
-                              RadioSettingValueList(list(KEYS.values()),
-                              list(KEYS.values())[list(KEYS.keys()).index(
-                                  int(keys.kVOL_UP))]))
+                              RadioSettingValueList(KEYS.values(),
+                                                    KEYS[int(keys.kVOL_UP)]))
             fkeys.append(vu)
 
             vd = RadioSetting("keys.kVOL_DOWN", "VOL DOWN",
-                              RadioSettingValueList(list(KEYS.values()),
-                              list(KEYS.values())[list(KEYS.keys()).index(
-                                  int(keys.kVOL_DOWN))]))
+                              RadioSettingValueList(KEYS.values(),
+                                                    KEYS[int(keys.kVOL_DOWN)]))
             fkeys.append(vd)
 
             chu = RadioSetting("keys.kCH_UP", "CH UP",
-                               RadioSettingValueList(list(KEYS.values()),
-                               list(KEYS.values())[list(KEYS.keys()).index(
-                                   int(keys.kCH_UP))]))
+                               RadioSettingValueList(KEYS.values(),
+                                                     KEYS[int(keys.kCH_UP)]))
             fkeys.append(chu)
 
             chd = RadioSetting("keys.kCH_DOWN", "CH DOWN",
-                               RadioSettingValueList(list(KEYS.values()),
-                               list(KEYS.values())[list(KEYS.keys()).index(
-                                   int(keys.kCH_DOWN))]))
+                               RadioSettingValueList(KEYS.values(),
+                                                     KEYS[int(keys.kCH_DOWN)]))
             fkeys.append(chd)
 
             foot = RadioSetting("keys.kFOOT", "Foot switch",
-                               RadioSettingValueList(list(KEYS.values()),
-                               list(KEYS.values())[list(KEYS.keys()).index(
-                                   int(keys.kCH_DOWN))]))
+                               RadioSettingValueList(KEYS.values(),
+                                                     KEYS[int(keys.kFOOT)]))
             fkeys.append(foot)
 
         # this is the common buttons for all
@@ -1343,9 +1337,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 scn_name = "Open Circle"
 
             scn = RadioSetting("keys.kSCN", scn_name,
-                               RadioSettingValueList(list(KEYS.values()),
-                               list(KEYS.values())[list(KEYS.keys()).index(
-                                   int(keys.kSCN))]))
+                               RadioSettingValueList(KEYS.values(),
+                                                     KEYS[int(keys.kSCN)]))
             fkeys.append(scn)
 
             a_name = "A"
@@ -1353,9 +1346,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 a_name = "Closed circle"
 
             a = RadioSetting("keys.kA", a_name,
-                             RadioSettingValueList(list(KEYS.values()),
-                             list(KEYS.values())[list(KEYS.keys()).index(
-                                 int(keys.kA))]))
+                             RadioSettingValueList(KEYS.values(),
+                                                   KEYS[int(keys.kA)]))
             fkeys.append(a)
 
             da_name = "D/A"
@@ -1363,9 +1355,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 da_name = "< key"
 
             da = RadioSetting("keys.kDA", da_name,
-                              RadioSettingValueList(list(KEYS.values()),
-                              list(KEYS.values())[list(KEYS.keys()).index(
-                                  int(keys.kDA))]))
+                              RadioSettingValueList(KEYS.values(),
+                                                    KEYS[int(keys.kDA)]))
             fkeys.append(da)
 
             gu_name = "Triangle up"
@@ -1373,9 +1364,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 gu_name = "Side 1"
 
             gu = RadioSetting("keys.kGROUP_UP", gu_name,
-                              RadioSettingValueList(list(KEYS.values()),
-                              list(KEYS.values())[list(KEYS.keys()).index(
-                                  int(keys.kGROUP_UP))]))
+                              RadioSettingValueList(KEYS.values(),
+                                                    KEYS[int(keys.kGROUP_UP)]))
             fkeys.append(gu)
 
         # Side keys on portables
@@ -1384,9 +1374,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             gd_name = "> key"
 
         gd = RadioSetting("keys.kGROUP_DOWN", gd_name,
-                          RadioSettingValueList(list(KEYS.values()),
-                          list(KEYS.values())[list(KEYS.keys()).index(
-                              int(keys.kGROUP_DOWN))]))
+                          RadioSettingValueList(KEYS.values(),
+                                                KEYS[int(keys.kGROUP_DOWN)]))
         fkeys.append(gd)
 
         mon_name = "MON"
@@ -1394,9 +1383,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             mon_name = "Side 2"
 
         mon = RadioSetting("keys.kMON", mon_name,
-                           RadioSettingValueList(list(KEYS.values()),
-                           list(KEYS.values())[list(KEYS.keys()).index(
-                               int(keys.kMON))]))
+                           RadioSettingValueList(KEYS.values(),
+                                                 KEYS[int(keys.kMON)]))
         fkeys.append(mon)
 
         return top
