@@ -712,12 +712,12 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         basic.append(mod)
 
         tot = RadioSetting("settings.tot", "Time Out Timer (TOT)",
-                           RadioSettingValueList(TOT, TOT[int(sett.tot)]))
+                           RadioSettingValueList(TOT, sett.tot))
         basic.append(tot)
 
         minvol = RadioSetting("settings.min_vol", "Minimum volume",
                               RadioSettingValueList(VOL,
-                                                    VOL[int(sett.min_vol)]))
+                                                    sett.min_vol))
         basic.append(minvol)
 
         ptone = RadioSetting("settings.poweron_tone", "Power On tone",
@@ -736,27 +736,23 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         basic.append(clone)
 
         # front keys
-        rs = RadioSettingValueList(list(KEYS.values()),
-                                   list(KEYS.values())[list(KEYS.keys()).index(
-                                       int(sett.kMON))])
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS[int(sett.kMON)])
         mon = RadioSetting("settings.kMON", "MON", rs)
         fkeys.append(mon)
 
-        rs = RadioSettingValueList(list(KEYS.values()),
-                                   list(KEYS.values())[list(KEYS.keys()).index(
-                                       int(sett.kA))])
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS[int(sett.kA)])
         a = RadioSetting("settings.kA", "A", rs)
         fkeys.append(a)
 
-        rs = RadioSettingValueList(list(KEYS.values()),
-                                   list(KEYS.values())[list(KEYS.keys()).index(
-                                       int(sett.kSCN))])
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS[int(sett.kSCN)])
         scn = RadioSetting("settings.kSCN", "SCN", rs)
         fkeys.append(scn)
 
-        rs = RadioSettingValueList(list(KEYS.values()),
-                                   list(KEYS.values())[list(KEYS.keys()).index(
-                                       int(sett.kDA))])
+        rs = RadioSettingValueList(KEYS.values(),
+                                   KEYS[int(sett.kDA)])
         da = RadioSetting("settings.kDA", "D/A", rs)
         fkeys.append(da)
 
