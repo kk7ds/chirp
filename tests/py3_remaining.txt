@@ -2,11 +2,6 @@ Alinco_DJ175.img
 Alinco_DJ596.img
 Alinco_DJ-G7EG.img
 Alinco_DR235T.img
-AnyTone_5888UV.img
-AnyTone_5888UVIII.img
-AnyTone_778UV.img
-AnyTone_OBLTR-8R.img
-AnyTone_TERMN-8R.img
 Baofeng_BF-T1.img
 Baofeng_BF-T8.img
 Baofeng_UV-3R.img
@@ -14,7 +9,6 @@ Baojie_BJ-9900.img
 BTECH_FRS-A1.img
 BTECH_FRS-B1.img
 BTECH_UV-50X3.img
-CRT_Micron_UV.img
 Feidaxin_FD-268A.img
 Feidaxin_FD-268B.img
 Feidaxin_FD-288B.img
@@ -28,8 +22,6 @@ Leixen_VV-898S.img
 LUITON_LT-580_UHF.img
 LUITON_LT-580_VHF.img
 LUITON_LT-725UV.img
-Midland_DBR2500.img
-Polmar_DB-50M.img
 Puxing_PX-2R.img
 Puxing_PX-777.img
 Puxing_PX-888K.img
@@ -70,7 +62,6 @@ Retevis_RT668.img
 Retevis_RT68.img
 Retevis_RT76.img
 Retevis_RT87.img
-Retevis_RT95.img
 Retevis_RT622.img
 Retevis_RT9000D_66-88.img
 Retevis_RT9000D_136-174.img

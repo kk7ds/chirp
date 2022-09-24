@@ -548,9 +548,10 @@ def do_upload(radio):
 
         bptr = 0
 
-        memory_addrs = range(MEMORY_ADDRESS_RANGE[0],
-                             MEMORY_ADDRESS_RANGE[1] + MEMORY_RW_BLOCK_SIZE,
-                             MEMORY_RW_BLOCK_SIZE)
+        memory_addrs = list(range(MEMORY_ADDRESS_RANGE[0],
+                                  MEMORY_ADDRESS_RANGE[1] +
+                                  MEMORY_RW_BLOCK_SIZE,
+                                  MEMORY_RW_BLOCK_SIZE))
 
         # status info for the UI
         status = chirp_common.Status()
@@ -941,9 +942,9 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         if mem.empty:
             # Set the whole memory to 0xff
-            _mem.set_raw('\xff' * (_mem.size() / 8))
+            _mem.set_raw('\xff' * (_mem.size() // 8))
         else:
-            _mem.set_raw('\x00' * (_mem.size() / 8))
+            _mem.set_raw('\x00' * (_mem.size() // 8))
 
             _mem.freq = int(mem.freq / 10)
             _mem.offset = int(mem.offset / 10)
@@ -1225,7 +1226,8 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             def _pswd_vfy(setting, obj, atrb):
                 """ Verify password is 1-6 chars, numbers 1-5 """
                 str1 = str(setting.value).strip()  # initial
-                str2 = filter(lambda c: c in '0123456789', str1)  # valid chars
+                # valid chars
+                str2 = ''.join([c for c in str1 if c in '0123456789'])
                 if str1 != str2:
                     # Two lines due to python 73 char limit
                     sx = "Bad characters in Password"
@@ -1711,7 +1713,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

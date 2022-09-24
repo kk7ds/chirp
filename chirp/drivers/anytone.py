@@ -212,7 +212,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -220,7 +220,7 @@ def _echo_write(radio, data):
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -381,7 +381,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UV"
     BAUD_RATE = 9600
-    _file_ident = ["QX588UV", "588UVN"]
+    _file_ident = ["QX588UV".encode(), "588UVN".encode()]
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -685,9 +685,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                 s_ += (c if c in chirp_common.CHARSET_ASCII else "")
             return s_
 
+        welcome_msg = ''.join(list(filter(_settings.welcome)))
         rs = RadioSetting("welcome", "Welcome Message",
-                          RadioSettingValueString(0, 8,
-                                                  filter(_settings.welcome)))
+                          RadioSettingValueString(0, 8, welcome_msg))
+
         basic.append(rs)
 
         rs = RadioSetting("beep", "Beep Enabled",
@@ -724,7 +725,7 @@ class IntekHR2040Radio(AnyTone5888UVRadio):
     """Intek HR-2040"""
     VENDOR = "Intek"
     MODEL = "HR-2040"
-    _file_ident = ["HR-2040"]
+    _file_ident = ["HR-2040".encode()]
 
 
 @directory.register
@@ -732,7 +733,7 @@ class PolmarDB50MRadio(AnyTone5888UVRadio):
     """Polmar DB-50M"""
     VENDOR = "Polmar"
     MODEL = "DB-50M"
-    _file_ident = ["DB-50M"]
+    _file_ident = ["DB-50M".encode()]
 
 
 @directory.register
@@ -740,7 +741,7 @@ class PowerwerxDB750XRadio(AnyTone5888UVRadio):
     """Powerwerx DB-750X"""
     VENDOR = "Powerwerx"
     MODEL = "DB-750X"
-    _file_ident = ["DB-750X"]
+    _file_ident = ["DB-750X".encode()]
 
     def get_settings(self):
         return {}
