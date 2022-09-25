@@ -19,7 +19,7 @@
 import struct
 import os
 import logging
-from chirp import util, chirp_common, memmap
+from chirp import util, chirp_common, memmap, bitwise
 
 LOG = logging.getLogger(__name__)
 
@@ -33,9 +33,9 @@ def do_download(radio, start, end, blocksize):
     """Initiate a download of @radio between @start and @end"""
     image = ""
     for i in range(start, end, blocksize):
-        cmd = struct.pack(">cHb", "R", i, blocksize)
+        cmd = struct.pack(">cHb", b"R", i, blocksize)
         LOG.debug(util.hexprint(cmd))
-        radio.pipe.write(cmd)
+        radio.pipe.write(bitwise.string_straight_decode(cmd))
         length = len(cmd) + blocksize
         resp = radio.pipe.read(length)
         if len(resp) != (len(cmd) + blocksize):
@@ -61,10 +61,10 @@ def do_upload(radio, start, end, blocksize):
     """Initiate an upload of @radio between @start and @end"""
     ptr = start
     for i in range(start, end, blocksize):
-        cmd = struct.pack(">cHb", "W", i, blocksize)
-        chunk = radio.get_mmap()[ptr:ptr+blocksize]
+        cmd = struct.pack(">cHb", b"W", i, blocksize)
+        chunk = radio.get_mmap().get_byte_compatible()[ptr:ptr+blocksize]
         ptr += blocksize
-        radio.pipe.write(cmd + chunk)
+        radio.pipe.write(bitwise.string_straight_decode(cmd + chunk))
         LOG.debug(util.hexprint(cmd + chunk))
 
         ack = radio.pipe.read(1)
