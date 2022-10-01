@@ -67,6 +67,7 @@
 ./chirp/drivers/id800.py
 ./chirp/drivers/id880.py
 ./chirp/drivers/idrp.py
+./chirp/drivers/iradio_uv-5118.py
 ./chirp/drivers/kenwood_hmk.py
 ./chirp/drivers/kenwood_itm.py
 ./chirp/drivers/kenwood_live.py
