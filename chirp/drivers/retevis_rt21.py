@@ -405,6 +405,12 @@ GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
 FRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3
 
+PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
+              446.06875, 446.08125, 446.09375]
+PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
+              446.16875, 446.18125, 446.19375]
+PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
+
 
 def _enter_programming_mode(radio):
     serial = radio.pipe
@@ -577,7 +583,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     _ack_1st_block = True
     _skipflags = True
     _reserved = False
-    _gmrs = _frs = False
+    _gmrs = _frs = _pmr = False
 
     _ranges = [
                (0x0000, 0x0400),
@@ -595,7 +601,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.has_name = False
         if self.MODEL == "RT76" or \
-                self.MODEL == "RT19":
+                self.MODEL == "RT19" or self.MODEL == "RT619":
             rf.valid_skips = []
         else:
             rf.valid_skips = ["", "S"]
@@ -793,7 +799,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("compander", "Compander", rs)
             mem.extra.append(rset)
 
-        if self.MODEL == "RT19":
+        if self.MODEL == "RT19" or self.MODEL == "RT619":
             _freqhops = self._memobj.freqhops[number - 1]
 
             rs = RadioSettingValueList(FUNCTION_LIST,
@@ -863,7 +869,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 _mem = self._memobj.lomems[mem.number - 1]
             else:
                 _mem = self._memobj.himems[mem.number - 17]
-        elif self.MODEL == "RT19":
+        elif self.MODEL == "RT19" or self.MODEL == "RT619":
             _mem = self._memobj.memory[mem.number - 1]
             _freqhops = self._memobj.freqhops[mem.number - 1]
         else:
@@ -876,7 +882,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             if self.MODEL == "RB26" or self.MODEL == "RT76" \
                     or self.MODEL == "RB23":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
-            elif self.MODEL == "RT19":
+            elif self.MODEL == "RT19" or self.MODEL == "RT619":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
                 _freqhops.freqhop.set_raw("\x00")
             else:
@@ -913,6 +919,13 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 mem.offset = 0
                 if mem.number >= 8 and mem.number <= 14:
                     mem.power = self.POWER_LEVELS[1]
+        if self._pmr:
+            PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+            mem.freq = PMR_FREQ
+            mem.duplex = ''
+            mem.offset = 0
+            mem.mode = "NFM"
+            mem.power = self.POWER_LEVELS[1]
 
         _mem.rxfreq = mem.freq / 10
 
@@ -1116,7 +1129,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("tot", "Time-out timer", rs)
             basic.append(rset)
 
-            if self.MODEL == "RT19":
+            if self.MODEL == "RT19" or self.MODEL == "RT619":
                 rs = RadioSettingValueList(VOICE_LIST,
                                            VOICE_LIST[_settings.voice])
                 rset = RadioSetting("voice", "Voice Prompts", rs)
@@ -1179,7 +1192,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("savem", "Battery Save Mode", rs)
             basic.append(rset)
 
-            if self.MODEL != "RT19":
+            if self.MODEL != "RT19" and self.MODEL != "RT619":
                 rs = RadioSettingValueList(GAIN_LIST,
                                            GAIN_LIST[_settings.gain])
                 rset = RadioSetting("gain", "MIC Gain", rs)
@@ -1530,3 +1543,27 @@ class RT19Radio(RT21Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT19 % self._mem_params,
                                      self._mmap)
+
+
+@directory.register
+class RT619Radio(RT19Radio):
+    """RETEVIS RT619"""
+    VENDOR = "Retevis"
+    MODEL = "RT619"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
+                    chirp_common.PowerLevel("Low", watts=0.49)]
+
+    _magic = "PHOGRS]"
+    _fingerprint = "P32073" + "\x02\xFF"
+    _upper = 16
+    _mem_params = (_upper,  # number of channels
+                   0x100,   # memory start
+                   _upper   # number of freqhops
+                   )
+    _pmr = True
+
+    _ranges = [
+               (0x0000, 0x0120),
+              ]
+    _memsize = 0x0120
