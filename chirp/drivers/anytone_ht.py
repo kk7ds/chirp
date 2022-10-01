@@ -410,7 +410,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "TERMN-8R"
     BAUD_RATE = 9600
-    _file_ident = "TERMN8R".encode()
+    _file_ident = b"TERMN8R"
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -952,4 +952,4 @@ class AnyToneOBLTR8RRadio(AnyToneTERMN8RRadio):
     """AnyTone OBLTR-8R"""
     VENDOR = "AnyTone"
     MODEL = "OBLTR-8R"
-    _file_ident = "OBLTR8R".encode()
+    _file_ident = b"OBLTR8R"
