@@ -34,7 +34,7 @@ struct {
     lbcd txfreq[4];
     lbcd rxtone[2];
     lbcd txtone[2];
-    u8 unknown1:1,
+    u8 speccode:1,
        compander:1,
        scramble:1,
        skip:1,
@@ -57,10 +57,11 @@ struct {
     u8 sidekey2;         // Retevis RT22S setting
                          // Retevis RB85 sidekey 1 short
                          // Retevis RB19 sidekey 2 long
+                         // Retevis RT47 sidekey 1 long
     u8 timeouttimer;
     u8 voxlevel;
     u8 sidekey2S;
-    u8 unused;
+    u8 unused;           // Selected channel
     u8 voxdelay;
     u8 sidekey1L;
     u8 sidekey2L;
@@ -173,6 +174,10 @@ SIDEKEY75_LIST = ["Off",
                   "VOX",
                   "Monitor",
                   "Announciation"]
+SIDEKEY47_LIST = ["Monitor Momentary",
+                  "Channel Lock",
+                  "Scan",
+                  "VOX"]
 
 SETTING_LISTS = {
     "voiceprompt": VOICE_LIST,
@@ -217,10 +222,12 @@ PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 def _t18_enter_programming_mode(radio):
     serial = radio.pipe
 
+    _magic = "\x02" + radio._magic
+
     try:
-        serial.write("\x02")
-        time.sleep(0.01)
-        serial.write(radio._magic)
+        serial.write(_magic)
+        if radio._echo:
+            chew = serial.read(len(_magic))  # Chew the echo
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -232,6 +239,8 @@ def _t18_enter_programming_mode(radio):
 
     try:
         serial.write("\x02")
+        if radio._echo:
+            serial.read(1)  # Chew the echo
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -242,6 +251,8 @@ def _t18_enter_programming_mode(radio):
 
     try:
         serial.write(CMD_ACK)
+        if radio._echo:
+            serial.read(1)  # Chew the echo
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -254,6 +265,8 @@ def _t18_exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write(radio.CMD_EXIT)
+        if radio._echo:
+            chew = serial.read(1)  # Chew the echo
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -267,6 +280,8 @@ def _t18_read_block(radio, block_addr, block_size):
 
     try:
         serial.write(cmd)
+        if radio._echo:
+            serial.read(4)  # Chew the echo
         response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
@@ -275,6 +290,8 @@ def _t18_read_block(radio, block_addr, block_size):
 
         if radio.ACK_BLOCK:
             serial.write(CMD_ACK)
+            if radio._echo:
+                serial.read(1)  # Chew the echo
             ack = serial.read(1)
     except:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
@@ -297,6 +314,8 @@ def _t18_write_block(radio, block_addr, block_size):
 
     try:
         serial.write(cmd + data)
+        if radio._echo:
+            serial.read(4 + len(data))  # Chew the echo
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
     except:
@@ -376,7 +395,8 @@ class T18Radio(chirp_common.CloneModeRadio):
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs = _murs = _pmr = _gmrs = False
+    _frs = _frs16 = _murs = _pmr = _gmrs = False
+    _echo = False
 
     _ranges = [
         (0x0000, 0x03F0),
@@ -802,6 +822,19 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   SIDEKEY19_LIST[_settings.sidekey2]))
             basic.append(rs)
 
+        if self.MODEL == "RT47":
+            rs = RadioSetting("sidekey2", "Side Key 1(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY47_LIST,
+                                  SIDEKEY47_LIST[_settings.sidekey2]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2S", "Side Key 2(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY47_LIST,
+                                  SIDEKEY47_LIST[_settings.sidekey2S]))
+            basic.append(rs)
+
         return top
 
     def set_settings(self, settings):
@@ -939,7 +972,7 @@ class RT68Radio(T18Radio):
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs = True
+    _frs16 = True
     _pmr = False
 
     @classmethod
@@ -968,7 +1001,7 @@ class RB17Radio(RT68Radio):
     _magic = "A5OGRAM"
     _fingerprint = "\x53\x00\x00\x00\x00\x00\x00\x00"
 
-    _frs = True
+    _frs16 = True
     _pmr = False
     _murs = False
 
@@ -1101,3 +1134,22 @@ class RB619Radio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _pmr = True
+
+
+@directory.register
+class RT47Radio(T18Radio):
+    """Retevis RT47"""
+    VENDOR = "Retevis"
+    MODEL = "RT47"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.000),
+                    chirp_common.PowerLevel("Low", watts=0.500)]
+
+    _magic = "47OGRAM"
+    _fingerprint = "\x06\x00\x00\x00\x00\x00\x00\x00"
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs16 = True
+    _echo = True
