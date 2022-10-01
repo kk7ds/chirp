@@ -257,8 +257,12 @@ def _t18_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if ack != CMD_ACK:
-        raise errors.RadioError("Radio refused to enter programming mode")
+    if radio.MODEL == "RT647":
+        if ack != "\xF0":
+            raise errors.RadioError("Radio refused to enter programming mode")
+    else:
+        if ack != CMD_ACK:
+            raise errors.RadioError("Radio refused to enter programming mode")
 
 
 def _t18_exit_programming_mode(radio):
@@ -410,7 +414,9 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        if self.MODEL != "T18" and self.MODEL != "RB618":
+        if self.MODEL != "T18" and \
+                self.MODEL != "RB618" and \
+                self.MODEL != "RT647":
             rf.valid_power_levels = self.POWER_LEVELS
         rf.can_odd_split = True
         rf.has_rx_dtcs = True
@@ -830,7 +836,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   SIDEKEY19_LIST[_settings.sidekey2]))
             basic.append(rs)
 
-        if self.MODEL == "RT47" or self.MODEL == "RT47V":
+        if self.MODEL == "RT47" or self.MODEL == "RT47V" or \
+                self.MODEL == "RT647":
             rs = RadioSetting("sidekey2", "Side Key 1(Long)",
                               RadioSettingValueList(
                                   SIDEKEY47_LIST,
@@ -1176,3 +1183,13 @@ class RT47VRadio(RT47Radio):
                    )
     _frs16 = False
     _murs = True
+
+
+@directory.register
+class RT647Radio(RT47Radio):
+    """Retevis RT647"""
+    VENDOR = "Retevis"
+    MODEL = "RT647"
+
+    _frs16 = False
+    _pmr = True
