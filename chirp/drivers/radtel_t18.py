@@ -416,106 +416,6 @@ class T18Radio(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
-    def validate_memory(self, mem):
-        msgs = ""
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        _msg_freq = 'Memory location cannot change frequency'
-        _msg_simplex = 'Memory location only supports Duplex:(None)'
-        _msg_duplex = 'Memory location only supports Duplex: +'
-        _msg_nfm = 'Memory location only supports Mode: NFM'
-        _msg_txp = 'Memory location only supports Power: Low'
-
-        # FRS only models
-        if self._frs:
-            # range of memories with values set by FCC rules
-            if self._upper == 22:
-                if mem.freq != int(FRS_FREQS[mem.number - 1] * 1000000):
-                    # warn user can't change frequency
-                    msgs.append(chirp_common.ValidationError(_msg_freq))
-                if mem.number >= 8 and mem.number <= 14:
-                    if str(mem.power) != "Low":
-                        # warn user can't change power
-                        msgs.append(chirp_common.ValidationError(_msg_txp))
-            else:
-                if mem.freq != int(FRS16_FREQS[mem.number - 1] * 1000000):
-                    # warn user can't change frequency
-                    msgs.append(chirp_common.ValidationError(_msg_freq))
-
-            # channels 1 - 16/22 are simplex only
-            if str(mem.duplex) != "":
-                # warn user can't change duplex
-                msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-            # channels 1 - 16/22 are NFM only
-            if str(mem.mode) != "NFM":
-                # warn user can't change mode
-                msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-        # GMRS only models
-        if self._gmrs:
-            # range of memories with values set by FCC rules
-            if mem.freq != int(GMRS_FREQS[mem.number - 1] * 1000000):
-                # warn user can't change frequency
-                msgs.append(chirp_common.ValidationError(_msg_freq))
-            if mem.number >= 8 and mem.number <= 14:
-                if str(mem.power) != "Low":
-                    # warn user can't change power
-                    msgs.append(chirp_common.ValidationError(_msg_txp))
-
-                if str(mem.mode) != "NFM":
-                    # warn user can't change mode
-                    msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-            if mem.number >= 1 and mem.number <= 22:
-                # channels 1 - 22 are simplex only
-                if str(mem.duplex) != "":
-                    # warn user can't change duplex
-                    msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-            if mem.number >= 23 and mem.number <= 30:
-                # channels 23 - 30 are duplex + only
-                if str(mem.duplex) != "+":
-                    # warn user can't change duplex
-                    msgs.append(chirp_common.ValidationError(_msg_duplex))
-
-        # MURS only models
-        if self._murs:
-            # range of memories with values set by FCC rules
-            if mem.freq != int(MURS_FREQS[mem.number - 1] * 1000000):
-                # warn user can't change frequency
-                msgs.append(chirp_common.ValidationError(_msg_freq))
-
-            # channels 1 - 5 are simplex only
-            if str(mem.duplex) != "":
-                # warn user can't change duplex
-                msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-            # channels 1 - 3 are NFM only
-            if mem.number <= 3:
-                if mem.mode != "NFM":
-                    # warn user can't change mode
-                    msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-        # PMR only models
-        if self._pmr:
-            # range of memories with values set by PMR rules
-            if mem.freq != int(PMR_FREQS[mem.number - 1] * 1000000):
-                # warn user can't change frequency
-                msgs.append(chirp_common.ValidationError(_msg_freq))
-
-            # channels 1 - 16 are simplex only
-            if str(mem.duplex) != "":
-                # warn user can't change duplex
-                msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-            # channels 1 - 16 are NFM only
-            if str(mem.mode) != "NFM":
-                # warn user can't change mode
-                msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-        return msgs
-
     def sync_in(self):
         self._mmap = do_download(self)
         self.process_mmap()
@@ -589,32 +489,6 @@ class T18Radio(chirp_common.CloneModeRadio):
         if self.MODEL != "T18" and self.MODEL != "RB618":
             mem.power = self.POWER_LEVELS[1 - _mem.highpower]
 
-        if self._frs:
-            FRS_IMMUTABLE = ["freq", "duplex", "offset", "mode"]
-            if self._upper == 22:
-                if mem.number >= 8 and mem.number <= 14:
-                    FRS_IMMUTABLE = FRS_IMMUTABLE + ["power"]
-
-            mem.immutable = FRS_IMMUTABLE
-
-        if self._gmrs:
-            GMRS_IMMUTABLE = ["freq", "duplex", "offset"]
-            if mem.number >= 8 and mem.number <= 14:
-                GMRS_IMMUTABLE = GMRS_IMMUTABLE + ["mode", "power"]
-
-            mem.immutable = GMRS_IMMUTABLE
-
-        if self._murs:
-            MURS_IMMUTABLE = ["freq", "duplex", "offset"]
-            if mem.number <= 3:
-                MURS_IMMUTABLE = MURS_IMMUTABLE + ["mode"]
-
-            mem.immutable = MURS_IMMUTABLE
-
-        if self._pmr:
-            PMR_IMMUTABLE = ["freq", "duplex", "offset", "mode", "power"]
-            mem.immutable = PMR_IMMUTABLE
-
         mem.extra = RadioSettingGroup("Extra", "extra")
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
@@ -634,51 +508,52 @@ class T18Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            if self._frs:
-                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
-                if self._upper == 22:
-                    FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
-                else:
-                    FRS_FREQ = int(FRS16_FREQS[mem.number - 1] * 100000)
-                _mem.rxfreq = _mem.txfreq = FRS_FREQ
-                _mem.narrow = True
-                _mem.highpower = True
-                if self._upper == 22:
-                    if mem.number >= 8 and mem.number <= 14:
-                        _mem.highpower = False
-            elif self._gmrs:
-                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
-                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 100000)
-                if mem.number > 22:
-                    _mem.rxfreq = GMRS_FREQ
-                    _mem.txfreq = int(_mem.rxfreq) + 500000
-                else:
-                    _mem.rxfreq = _mem.txfreq = GMRS_FREQ
-                if mem.number >= 8 and mem.number <= 14:
-                    _mem.narrow = True
-                    _mem.highpower = False
-                else:
-                    _mem.narrow = False
-                    _mem.highpower = True
-            elif self._murs:
-                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
-                MURS_FREQ = int(MURS_FREQS[mem.number - 1] * 100000)
-                _mem.rxfreq = _mem.txfreq = MURS_FREQ
-                _mem.highpower = True
-                if mem.number <= 3:
-                    _mem.narrow = True
-                else:
-                    _mem.narrow = False
-            elif self._pmr:
-                _mem.set_raw("\xFF" * 12 + "\x00" + "\xFF" * 3)
-                PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 100000)
-                _mem.rxfreq = _mem.txfreq = PMR_FREQ
-                _mem.narrow = True
-                _mem.highpower = False
-            else:
-                _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() / 8))
 
             return
+
+        _mem.set_raw("\x00" * 12 + "\xF9\xFF\xFF\xFF")
+
+        if self._gmrs:
+            GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+            mem.freq = GMRS_FREQ
+            if mem.number <= 22:
+                mem.duplex = ''
+                mem.offset = 0
+                if mem.number >= 8 and mem.number <= 14:
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[1]
+            if mem.number > 22:
+                mem.duplex = '+'
+                mem.offset = 5000000
+        if self._frs:
+            FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 1000000)
+            mem.freq = FRS_FREQ
+            mem.mode = "NFM"
+            mem.duplex = ''
+            mem.offset = 0
+            if mem.number >= 8 and mem.number <= 14:
+                mem.power = self.POWER_LEVELS[1]
+        if self._frs16:
+            FRS_FREQ = int(FRS16_FREQS[mem.number - 1] * 1000000)
+            mem.freq = FRS_FREQ
+            mem.mode = "NFM"
+            mem.duplex = ''
+            mem.offset = 0
+        if self._murs:
+            MURS_FREQ = int(MURS_FREQS[mem.number - 1] * 1000000)
+            mem.freq = MURS_FREQ
+            if mem.number <= 3:
+                mem.mode = "NFM"
+            mem.duplex = ''
+            mem.offset = 0
+        if self._pmr:
+            PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+            mem.freq = PMR_FREQ
+            mem.duplex = ''
+            mem.offset = 0
+            mem.mode = "NFM"
+            mem.power = self.POWER_LEVELS[1]
 
         _mem.rxfreq = mem.freq / 10
 
