@@ -233,7 +233,7 @@ struct memory memory[200];
 def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -241,7 +241,7 @@ def _echo_write(radio, data):
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -410,7 +410,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "TERMN-8R"
     BAUD_RATE = 9600
-    _file_ident = "TERMN8R"
+    _file_ident = b"TERMN8R"
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -938,7 +938,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -952,4 +952,4 @@ class AnyToneOBLTR8RRadio(AnyToneTERMN8RRadio):
     """AnyTone OBLTR-8R"""
     VENDOR = "AnyTone"
     MODEL = "OBLTR-8R"
-    _file_ident = "OBLTR8R"
+    _file_ident = b"OBLTR8R"

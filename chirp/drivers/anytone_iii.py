@@ -37,9 +37,9 @@ class ATBankModel(chirp_common.BankModel):
     def __init__(self, radio, name='Banks'):
         super(ATBankModel, self).__init__(radio, name)
         self._banks = []
-        self._memBounds = range(0, 750)
+        self._memBounds = list(range(0, 750))
         for i in range(0, 10):
-            self._banks.append(chirp_common.Bank(self, i, string.uppercase[i]))
+            self._banks.append(chirp_common.Bank(self, i, string.ascii_uppercase[i]))
 
     def get_num_mappings(self):
         return len(self._banks)
@@ -519,7 +519,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -527,7 +527,7 @@ def _echo_write(radio, data):
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -798,7 +798,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UVIII"
     BAUD_RATE = 9600
-    _file_ident = "588UVP"
+    _file_ident = b"588UVP"
 
     _ranges = [
             (0x0000, 0x8000)

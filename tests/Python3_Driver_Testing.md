@@ -1,6 +1,12 @@
 | Driver | Tester | Tested |
 | ------ | ------ | ------ |
 | ARRL_Travel_Plus |  |  |
+| AnyTone_5888UV |  |  |
+| AnyTone_5888UVIII |  |  |
+| AnyTone_778UV |  |  |
+| AnyTone_778UV_VOX |  |  |
+| AnyTone_OBLTR-8R |  |  |
+| AnyTone_TERMN-8R |  |  |
 | Anysecu_WP-9900 |  |  |
 | BTECH_GMRS-20V2 |  |  |
 | BTECH_GMRS-50X1 |  |  |
@@ -31,6 +37,8 @@
 | Baofeng_UV-9R |  |  |
 | Baofeng_UV-B5 |  |  |
 | Boblov_X3Plus |  |  |
+| CRT_Micron_UV |  |  |
+| CRT_Micron_UV_V2 |  |  |
 | Commander_KG-UV |  |  |
 | Generic_CSV |  |  |
 | HobbyPCB_RS-UV3 |  |  |
@@ -63,6 +71,7 @@
 | Icom_ID-800H_v2 |  |  |
 | Icom_ID-80H |  |  |
 | Icom_ID-880H |  |  |
+| Intek_HR-2040 |  |  |
 | Intek_KT-980HP |  |  |
 | KYD_IP-620 |  |  |
 | KYD_NC-630A |  |  |
@@ -120,6 +129,9 @@
 | Kenwood_TS-590S_SG_LiveMode |  |  |
 | LUITON_LT-588UV |  |  |
 | MTC_UV-5R-3 |  |  |
+| Midland_DBR2500 |  |  |
+| Polmar_DB-50M |  |  |
+| Powerwerx_DB-750X |  |  |
 | QYT_KT-8R |  |  |
 | QYT_KT-UV980 |  |  |
 | QYT_KT-WP12 |  |  |
@@ -140,6 +152,8 @@
 | Retevis_RA685 |  |  |
 | Retevis_RA85 |  |  |
 | Retevis_RT6 |  |  |
+| Retevis_RT95 |  |  |
+| Retevis_RT95_VOX |  |  |
 | TYT_TH-350 |  |  |
 | TYT_TH-UVF8D |  |  |
 | Vertex_Standard_FTL-1011 |  |  |
@@ -177,3 +191,4 @@
 | Yaesu_VX-8DR | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 |
 | Yaesu_VX-8GE |  |  |
 | Yaesu_VX-8R |  |  |
+| Yedro_YC-M04VUS |  |  |
