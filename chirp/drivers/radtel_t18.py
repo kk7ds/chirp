@@ -587,7 +587,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
         if self.MODEL != "T18" and self.MODEL != "RB618":
-            mem.power = self.POWER_LEVELS[_mem.highpower]
+            mem.power = self.POWER_LEVELS[1 - _mem.highpower]
 
         if self._frs:
             FRS_IMMUTABLE = ["freq", "duplex", "offset", "mode"]
@@ -699,7 +699,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         self._encode_tone(_mem.rxtone, *rxtone)
 
         if self.MODEL != "T18" and self.MODEL != "RB18":
-            _mem.highpower = mem.power == self.POWER_LEVELS[1]
+            _mem.highpower = mem.power == self.POWER_LEVELS[0]
 
         _mem.narrow = 'N' in mem.mode
         _mem.skip = mem.skip == "S"
@@ -988,8 +988,8 @@ class RT22SRadio(T18Radio):
     MODEL = "RT22S"
     ACK_BLOCK = False
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
-                    chirp_common.PowerLevel("High", watts=2.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = "9COGRAM"
     _fingerprint = "SMP558" + "\x02"
@@ -1008,8 +1008,8 @@ class RB18Radio(T18Radio):
     BLOCK_SIZE = 0x10
     CMD_EXIT = "E"
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
-                    chirp_common.PowerLevel("High", watts=2.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = "PROGRAL"
     _fingerprint = "P3107" + "\xF7"
@@ -1056,8 +1056,8 @@ class RT68Radio(T18Radio):
     ACK_BLOCK = False
     CMD_EXIT = ""
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
-                    chirp_common.PowerLevel("High", watts=2.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = "83OGRAM"
     _fingerprint = "\x06\x00\x00\x00\x00\x00\x00\x00"
@@ -1131,8 +1131,8 @@ class RB85Radio(T18Radio):
     MODEL = "RB85"
     ACK_BLOCK = False
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5.00),
-                    chirp_common.PowerLevel("High", watts=10.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=5.00)]
 
     _magic = "H19GRAM"
     _fingerprint = "SMP558" + "\x02"
@@ -1145,8 +1145,8 @@ class RB75Radio(T18Radio):
     MODEL = "RB75"
     ACK_BLOCK = False
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=5.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "KVOGRAM"
     _fingerprint = "SMP558" + "\x00"
@@ -1163,8 +1163,8 @@ class FRSB1Radio(T18Radio):
     MODEL = "FRS-B1"
     ACK_BLOCK = True
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=2.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PROGRAM"
     _fingerprint = "P3107" + "\xF7\x00"
@@ -1181,8 +1181,8 @@ class RB19Radio(T18Radio):
     MODEL = "RB19"
     ACK_BLOCK = False
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=2.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "9COGRAM"
     _fingerprint = "SMP558" + "\x02"
@@ -1199,8 +1199,8 @@ class RB19PRadio(T18Radio):
     MODEL = "RB19P"
     ACK_BLOCK = False
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=3.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "70OGRAM"
     _fingerprint = "SMP558" + "\x02"
@@ -1217,8 +1217,8 @@ class RB619Radio(T18Radio):
     MODEL = "RB619"
     ACK_BLOCK = False
 
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.499),
-                    chirp_common.PowerLevel("High", watts=0.500)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.500),
+                    chirp_common.PowerLevel("Low", watts=0.499)]
 
     _magic = "9COGRAM"
     _fingerprint = "SMP558" + "\x02"
