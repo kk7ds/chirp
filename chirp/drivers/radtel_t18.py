@@ -513,13 +513,21 @@ class T18Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
         mem.extra.append(rs)
-        if self.MODEL != "RB18" and self.MODEL != "RB618":
-            rs = RadioSetting("scramble", "Scramble",
-                              RadioSettingValueBoolean(not _mem.scramble))
-            mem.extra.append(rs)
+        if self.MODEL != "RB18" and self.MODEL != "RB618" and \
+                self.MODEL != "FRS-B1":
+            if self.MODEL != "RT47V":
+                rs = RadioSetting("scramble", "Scramble",
+                                  RadioSettingValueBoolean(not _mem.scramble))
+                mem.extra.append(rs)
             rs = RadioSetting("compander", "Compander",
                               RadioSettingValueBoolean(not _mem.compander))
             mem.extra.append(rs)
+            if self.MODEL != "RT47V" and self.MODEL != "T8" and \
+                    self.MODEL != "RB17" and self.MODEL != "RB617" and \
+                    self.MODEL != "RB75" and self.MODEL != "RB19P":
+                rs = RadioSetting("speccode", "Spec Code",
+                                  RadioSettingValueBoolean(not _mem.speccode))
+                mem.extra.append(rs)
 
         return mem
 
@@ -822,7 +830,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   SIDEKEY19_LIST[_settings.sidekey2]))
             basic.append(rs)
 
-        if self.MODEL == "RT47":
+        if self.MODEL == "RT47" or self.MODEL == "RT47V":
             rs = RadioSetting("sidekey2", "Side Key 1(Long)",
                               RadioSettingValueList(
                                   SIDEKEY47_LIST,
@@ -1153,3 +1161,18 @@ class RT47Radio(T18Radio):
                    )
     _frs16 = True
     _echo = True
+
+
+@directory.register
+class RT47VRadio(RT47Radio):
+    """Retevis RT47V"""
+    VENDOR = "Retevis"
+    MODEL = "RT47V"
+
+    VALID_BANDS = [(136000000, 174000000)]
+
+    _upper = 5
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs16 = False
+    _murs = True
