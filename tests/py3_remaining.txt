@@ -1,3 +1,4 @@
+Abbree_AR-518.img
 Alinco_DJ175.img
 Alinco_DJ596.img
 Alinco_DJ-G7EG.img
@@ -9,6 +10,7 @@ Baojie_BJ-9900.img
 BTECH_FRS-A1.img
 BTECH_FRS-B1.img
 BTECH_UV-50X3.img
+Explorer_QRZ-1.img
 Feidaxin_FD-268A.img
 Feidaxin_FD-268B.img
 Feidaxin_FD-288B.img
@@ -51,6 +53,7 @@ Retevis_RB75.img
 Retevis_RB85.img
 Retevis_RT1.img
 Retevis_RT16.img
+Retevis_RT19.img
 Retevis_RT21.img
 Retevis_RT22.img
 Retevis_RT22FRS.img
@@ -58,8 +61,12 @@ Retevis_RT22S.img
 Retevis_RT23.img
 Retevis_RT26.img
 Retevis_RT29_VHF.img
+Retevis_RT47.img
+Retevis_RT47V.img
+Retevis_RT647.img
 Retevis_RT668.img
 Retevis_RT68.img
+Retevis_RT619.img
 Retevis_RT76.img
 Retevis_RT87.img
 Retevis_RT622.img
