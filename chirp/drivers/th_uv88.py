@@ -186,6 +186,23 @@ struct {
   u8 unk2;
 } openradioname;
 
+struct fm_chn {
+  ul32 rxfreq;
+};
+
+#seekto 0x2180;
+struct fm_chn fm_stations[24];
+
+#seekto 0x021E0;
+struct {
+  u8  fmset[4];
+} fmmap;
+
+#seekto 0x21E4;
+struct {
+  ul32 fmcur;
+} fmfrqs;
+
 """
 
 MEM_SIZE = 0x22A0
@@ -300,12 +317,11 @@ def _do_ident(radio):
     _clean_buffer(radio)
 
     # Ident radio
-    magic = "\xFE\xFE\xEE\xEF\xE0\x55\x56\x38\x38\xFD"
+    magic = radio._magic0
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 36)
 
-    if not ack.startswith("\xFE\xFE\xEF\xEE\xE1\x55\x56\x38\x38"
-                          ) or not ack.endswith("\xFD"):
+    if not ack.startswith(radio._fingerprint) or not ack.endswith("\xFD"):
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
@@ -316,14 +332,9 @@ def _do_ident(radio):
 
 def _exit_program_mode(radio):
     # This may be the last part of a read
-    magic = "\xFE\xFE\xEE\xEF\xE5\x55\x56\x38\x38\xFD"
+    magic = radio._magic5
     _rawsend(radio, magic)
-    ack = _rawrecv(radio, 7)
-    if ack != "\xFE\xFE\xEF\xEE\xE6\x00\xFD":
-        _exit_program_mode(radio)
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond as expected (B)")
+    _clean_buffer(radio)
 
 
 def _download(radio):
@@ -333,7 +344,7 @@ def _download(radio):
     _do_ident(radio)
 
     # Enter read mode
-    magic = "\xFE\xFE\xEE\xEF\xE2\x55\x56\x38\x38\xFD"
+    magic = radio._magic2
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 7)
     if ack != "\xFE\xFE\xEF\xEE\xE6\x00\xFD":
@@ -387,7 +398,7 @@ def _upload(radio):
     # Put radio in program mode and identify it
     _do_ident(radio)
 
-    magic = "\xFE\xFE\xEE\xEF\xE3\x55\x56\x38\x38\xFD"
+    magic = radio._magic3
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 7)
     if ack != "\xFE\xFE\xEF\xEE\xE6\x00\xFD":
@@ -468,6 +479,12 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     # Valid chars on the LCD
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
         "`!\"#$%&'()*+,-./:;<=>?@[]^_"
+
+    _magic0 = "\xFE\xFE\xEE\xEF\xE0" + "UV88" + "\xFD"
+    _magic2 = "\xFE\xFE\xEE\xEF\xE2" + "UV88" + "\xFD"
+    _magic3 = "\xFE\xFE\xEE\xEF\xE3" + "UV88" + "\xFD"
+    _magic5 = "\xFE\xFE\xEE\xEF\xE5" + "UV88" + "\xFD"
+    _fingerprint = "\xFE\xFE\xEF\xEE\xE1" + "UV88"
 
     @classmethod
     def get_prompts(cls):
@@ -846,7 +863,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 17 - Scan Type
-        options = ["CO", "TO", "SE"]
+        if self.MODEL == "QRZ-1":
+            options = ["Time", "Carrier", "Stop"]
+        else:
+            options = ["CO", "TO", "SE"]
         rx = RadioSettingValueList(options, options[_settings.scanType])
         rset = RadioSetting("basicsettings.scanType", "Scan Type", rx)
         basic.append(rset)
@@ -856,10 +876,11 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("basicsettings.keylock", "Auto Key Lock", rx)
         basic.append(rset)
 
-        # Menu 19 - SW Audio
-        rx = RadioSettingValueBoolean(_settings.swAudio)
-        rset = RadioSetting("basicsettings.swAudio", "Voice Prompts", rx)
-        basic.append(rset)
+        if self.MODEL != "QRZ-1":
+            # Menu 19 - SW Audio
+            rx = RadioSettingValueBoolean(_settings.swAudio)
+            rset = RadioSetting("basicsettings.swAudio", "Voice Prompts", rx)
+            basic.append(rset)
 
         # Menu 20 - Intro Screen
         options = ["Off", "Voltage", "Character String"]
@@ -964,6 +985,73 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("workmodesettings.mrBch", "MR B Channel #", rx)
         workmode.append(rset)
 
+        fmb = RadioSettingGroup("fmradioc", "FM Radio Settings")
+        group.append(fmb)
+
+        def myset_mask(setting, obj, atrb, nx):
+            if bool(setting.value):     # Enabled = 1
+                vx = 1
+            else:
+                vx = 0
+            _do_map(nx + 1, vx, self._memobj.fmmap.fmset)
+            return
+
+        def myset_fmfrq(setting, obj, atrb, nx):
+            """ Callback to set xx.x FM freq in memory as xx.x * 100000"""
+            # in-valid even KHz freqs are allowed; to satisfy run_tests
+            vx = float(str(setting.value))
+            vx = int(vx * 100000)
+            setattr(obj[nx], atrb, vx)
+            return
+
+        def myset_freq(setting, obj, atrb, mult):
+            """ Callback to set frequency by applying multiplier"""
+            value = int(float(str(setting.value)) * mult)
+            setattr(obj, atrb, value)
+            return
+
+        _fmx = self._memobj.fmfrqs
+
+        # FM Broadcast Manual Settings
+        val = _fmx.fmcur
+        val = val / 100000.0
+        if val < 64.0 or val > 108.0:
+            val = 100.7
+        rx = RadioSettingValueFloat(64.0, 108.0, val, 0.1, 1)
+        rset = RadioSetting("fmfrqs.fmcur", "Manual FM Freq (MHz)", rx)
+        rset.set_apply_callback(myset_freq, _fmx, "fmcur", 100000)
+        fmb.append(rset)
+
+        _fmfrq = self._memobj.fm_stations
+        _fmap = self._memobj.fmmap
+
+        # FM Broadcast Presets Settings
+        for j in range(0, 24):
+            val = _fmfrq[j].rxfreq
+            if val < 6400000 or val > 10800000:
+                val = 88.0
+                fmset = False
+            else:
+                val = (float(int(val)) / 100000)
+                # get fmmap bit value: 1 = enabled
+                ndx = int(math.floor((j) / 8))
+                bv = j % 8
+                msk = 1 << bv
+                vx = _fmap.fmset[ndx]
+                fmset = bool(vx & msk)
+            rx = RadioSettingValueBoolean(fmset)
+            rset = RadioSetting("fmmap.fmset/%d" % j,
+                                "FM Preset %02d" % (j + 1), rx)
+            rset.set_apply_callback(myset_mask, _fmap, "fmset", j)
+            fmb.append(rset)
+
+            rx = RadioSettingValueFloat(64.0, 108.0, val, 0.1, 1)
+            rset = RadioSetting("fm_stations/%d.rxfreq" % j,
+                                "    Preset %02d Freq" % (j + 1), rx)
+            # This callback uses the array index
+            rset.set_apply_callback(myset_fmfrq, _fmfrq, "rxfreq", j)
+            fmb.append(rset)
+
         return group       # END get_settings()
 
     def set_settings(self, settings):
@@ -1010,3 +1098,15 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 class RT85(THUV88Radio):
     VENDOR = "Retevis"
     MODEL = "RT85"
+
+
+@directory.register
+class QRZ1(THUV88Radio):
+    VENDOR = "Explorer"
+    MODEL = "QRZ-1"
+
+    _magic0 = "\xFE\xFE\xEE\xEF\xE0" + "UV78" + "\xFD"
+    _magic2 = "\xFE\xFE\xEE\xEF\xE2" + "UV78" + "\xFD"
+    _magic3 = "\xFE\xFE\xEE\xEF\xE3" + "UV78" + "\xFD"
+    _magic5 = "\xFE\xFE\xEE\xEF\xE5" + "UV78" + "\xFD"
+    _fingerprint = "\xFE\xFE\xEF\xEE\xE1" + "UV78"
