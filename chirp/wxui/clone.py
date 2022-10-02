@@ -74,6 +74,7 @@ class ChirpCloneDialog(wx.Dialog):
         super(ChirpCloneDialog, self).__init__(
             *a, title='Communicate with radio', **k)
 
+        self.SetSize(-1, 260)
         panel = wx.Panel(self)
 
         try:
@@ -92,7 +93,7 @@ class ChirpCloneDialog(wx.Dialog):
             ports.insert(0, last_port)
         elif not last_port:
             last_port = ports[0]
-        self._port = wx.ComboBox(panel, choices=ports)
+        self._port = wx.ComboBox(panel, choices=ports, style=wx.CB_DROPDOWN)
         self._port.SetValue(last_port)
         self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
         _add_grid('Port', self._port)
@@ -118,12 +119,14 @@ class ChirpCloneDialog(wx.Dialog):
         hbox2.Add(cancel, flag=wx.RIGHT)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(grid, proportion=0, flag=wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM,
+        vbox.Add(grid, proportion=0, flag=wx.ALIGN_CENTER_HORIZONTAL|wx.TOP,
                  border=20)
-        vbox.Add(self.gauge, flag=wx.EXPAND, border=10, proportion=1)
+        vbox.Add(self.gauge, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=10, proportion=0)
         vbox.Add(wx.StaticLine(panel), flag=wx.EXPAND|wx.TOP, border=10)
         vbox.Add(hbox2, proportion=0, flag=wx.ALIGN_RIGHT|wx.ALL, border=10)
         panel.SetSizer(vbox)
+        self.Layout()
+        self.Center()
 
         self._vendors = collections.defaultdict(list)
         for rclass in directory.DRV_TO_RADIO.values():
