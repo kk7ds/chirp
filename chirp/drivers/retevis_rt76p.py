@@ -795,8 +795,8 @@ class RT76PRadio(chirp_common.CloneModeRadio):
 
         # Menu 34: ANI ID (display only)
         _codeobj = self._memobj.dtmf.code
-        print "_codeobj"
-        print _codeobj
+        print("_codeobj")
+        print(_codeobj)
         _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
         val = RadioSettingValueString(0, 6, _code, False)
         val.set_charset(dtmfchars)

@@ -152,17 +152,24 @@
 | Retevis_H777_Plus |  |  | Yes |
 | Retevis_RA685 |  |  | Yes |
 | Retevis_RA85 |  |  | Yes |
+| Retevis_RB15 |  |  |  |
 | Retevis_RB17A |  |  |  |
+| Retevis_RB17P |  |  |  |
 | Retevis_RB23 |  |  |  |
 | Retevis_RB26 |  |  |  |
+| Retevis_RB615 |  |  |  |
+| Retevis_RT1 |  |  |  |
 | Retevis_RT19 |  |  |  |
 | Retevis_RT21 |  |  |  |
+| Retevis_RT23 |  |  |  |
+| Retevis_RT26 |  |  |  |
 | Retevis_RT29_UHF |  |  |  |
 | Retevis_RT29_VHF |  |  |  |
 | Retevis_RT40B |  |  |  |
 | Retevis_RT6 |  |  |  |
 | Retevis_RT619 |  |  |  |
 | Retevis_RT76 |  |  |  |
+| Retevis_RT76P |  |  |  |
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
 | TYT_TH-350 |  |  | Yes |
