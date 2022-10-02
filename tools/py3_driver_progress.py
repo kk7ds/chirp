@@ -49,13 +49,16 @@ def main():
 
         testers[fields[0]] = fields[1:]
 
-    print('| Driver | Tester | Tested |', file=output)
-    print('| ------ | ------ | ------ |', file=output)
+    print('| Driver | Tester | Tested | Byte Clean |', file=output)
+    print('| ------ | ------ | ------ | ---------- |', file=output)
 
     drivers = sorted([ident for ident in directory.DRV_TO_RADIO])
     for driver in drivers:
+        cls = directory.get_radio(driver)
         tester, tested = testers.pop(driver, ('', ''))
-        print('| %s | %s | %s |' % (driver, tester_link(tester), tested),
+        print('| %s | %s | %s | %s |' % (
+            driver, tester_link(tester), tested,
+            '' if cls.NEEDS_COMPAT_SERIAL else 'Yes'),
               file=output)
 
     for driver, (tester, tested) in testers.items():
