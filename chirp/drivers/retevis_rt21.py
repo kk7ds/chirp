@@ -576,7 +576,7 @@ def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x01B8:0x01BE]
 
-    return rid.startswith("P3207")
+    return rid.startswith(b"P3207")
 
 
 @directory.register
@@ -915,7 +915,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             elif self.MODEL == "AR-63":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
             else:
-                _mem.set_raw("\xFF" * (_mem.size() / 8))
+                _mem.set_raw("\xFF" * (_mem.size() // 8))
 
             return
 
