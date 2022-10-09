@@ -351,6 +351,52 @@ struct {
 } freqhops[%d];
 """
 
+MEM_FORMAT_RT40B = """
+#seekto 0x0000;
+struct {
+  lbcd rxfreq[4];      // RX Frequency           0-3
+  lbcd txfreq[4];      // TX Frequency           4-7
+  ul16 rx_tone;        // PL/DPL Decode          8-9
+  ul16 tx_tone;        // PL/DPL Encode          A-B
+  u8 compander:1,      // Compander              C
+     unknown1:1,       //
+     highpower:1,      // Power Level
+     wide:1,           // Bandwidth
+     unknown2:4;       //
+  u8 reserved[3];      // Reserved               D-F
+} memory[%d];
+
+#seekto 0x002D;
+struct {
+  u8 unknown_1:1,      //                        002D
+     unknown_2:1,      //
+     savem:2,          // Battery Save Mode
+     save:1,           // Battery Save
+     beep:1,           // Beep
+     voice:2;          // Voice Prompts
+  u8 squelch;          // Squelch                002E
+  u8 tot;              // Time-out Timer         002F
+  u8 channel_4[13];    //                        0030-003C
+  u8 unknown_3:7,      //                        003D
+     vox:1;            // Vox
+  u8 voxl;             // Vox Level              003E
+  u8 voxd;             // Vox Delay              003F
+  u8 channel_5[13];    //                        0040-004C
+  u8 unknown_4[2];     //                        004D-004F
+  u8 channel_6[13];    //                        0050-005C
+  u8 chnumber;         // Channel Number         005D
+  u8 unknown_5[2];     //                        005E-005F
+  u8 channel_7[13];    //                        0060-006C
+  u8 unknown_6:7,      //                        006D
+     pttstone:1;       // PTT Start Tone
+  u8 unknown_7:7,      //                        006E
+     pttetone:1;       // PTT End Tone
+} settings;
+
+#seekto 0x00AD;
+u8 skipflags[3];       // SCAN_ADD
+"""
+
 CMD_ACK = "\x06"
 
 ALARM_LIST = ["Local Alarm", "Remote Alarm"]
@@ -365,6 +411,7 @@ HOP_LIST = ["Mode A", "Mode B", "Mode C", "Mode D", "Mode E"]
 PFKEY_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
               "Key Lock", "Scan"]
 SAVE_LIST = ["Standard", "Super"]
+SAVEM_LIST = ["1-5", "1-8", "1-10", "1-15"]
 SCRAMBLE_LIST = ["OFF"] + ["%s" % x for x in range(1, 9)]
 TAIL_LIST = ["134.4 Hz", "55 Hz"]
 TIMEOUTTIMER_LIST = ["Off"] + ["%s seconds" % x for x in range(15, 615, 15)]
@@ -399,6 +446,7 @@ SETTING_LISTS = {
     "hop": HOP_LIST,
     "pfkey": PFKEY_LIST,
     "save": SAVE_LIST,
+    "savem": SAVEM_LIST,
     "scramble": SCRAMBLE_LIST,
     "tail": TAIL_LIST,
     "tot": TIMEOUTTIMER_LIST,
@@ -432,29 +480,27 @@ PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 def _enter_programming_mode(radio):
     serial = radio.pipe
 
-    exito = False
-    for i in range(0, 5):
-        serial.write(radio._magic)
+    _magic = radio._magic
+
+    try:
+        serial.write(_magic)
+        if radio._echo:
+            chew = serial.read(len(_magic))  # Chew the echo
         ack = serial.read(1)
         if ack == "\x00":
             ack = serial.read(1)
+    except:
+        raise errors.RadioError("Error communicating with radio")
 
-        try:
-            if ack == CMD_ACK:
-                exito = True
-                break
-        except:
-            LOG.debug("Attempt #%s, failed, trying again" % i)
-            pass
-
-    # check if we had EXITO
-    if exito is False:
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
+    if not ack:
+        raise errors.RadioError("No response from radio")
+    elif ack != CMD_ACK:
+        raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
         serial.write("\x02")
+        if radio._echo:
+            serial.read(1)  # Chew the echo
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -465,6 +511,8 @@ def _enter_programming_mode(radio):
 
     try:
         serial.write(CMD_ACK)
+        if radio._echo:
+            serial.read(1)  # Chew the echo
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -477,6 +525,8 @@ def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write("E")
+        if radio._echo:
+            chew = serial.read(1)  # Chew the echo
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -490,6 +540,8 @@ def _read_block(radio, block_addr, block_size):
 
     try:
         serial.write(cmd)
+        if radio._echo:
+            serial.read(4)  # Chew the echo
         response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
@@ -498,6 +550,8 @@ def _read_block(radio, block_addr, block_size):
 
         if block_addr != 0 or radio._ack_1st_block:
             serial.write(CMD_ACK)
+            if radio._echo:
+                serial.read(1)  # Chew the echo
             ack = serial.read(1)
     except:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
@@ -520,6 +574,8 @@ def _write_block(radio, block_addr, block_size):
 
     try:
         serial.write(cmd + data)
+        if radio._echo:
+            serial.read(4 + len(data))  # Chew the echo
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
     except:
@@ -601,6 +657,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     _skipflags = True
     _reserved = False
     _gmrs = _frs = _pmr = False
+    _echo = False
 
     _ranges = [
                (0x0000, 0x0400),
@@ -843,6 +900,11 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("freqhop", "Frequency Hop", rs)
             mem.extra.append(rset)
 
+        if self.MODEL == "RT40B":
+            rs = RadioSettingValueBoolean(_mem.compander)
+            rset = RadioSetting("compander", "Compander", rs)
+            mem.extra.append(rset)
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -907,7 +969,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         if mem.empty:
             if self.MODEL == "RB26" or self.MODEL == "RT76" \
-                    or self.MODEL == "RB23":
+                    or self.MODEL == "RB23" \
+                    or self.MODEL == "RT40B":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
             elif self.MODEL == "RT19" or self.MODEL == "RT619":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
@@ -1149,13 +1212,14 @@ class RT21Radio(chirp_common.CloneModeRadio):
         if self.MODEL == "RB26" or self.MODEL == "RT76" \
                 or self.MODEL == "RB23" \
                 or self.MODEL == "RT19" or self.MODEL == "RT619" \
-                or self.MODEL == "AR-63":
+                or self.MODEL == "AR-63" \
+                or self.MODEL == "RT40B":
             if self.MODEL == "RB26" or self.MODEL == "RB23":
                 _settings2 = self._memobj.settings2
                 _settings3 = self._memobj.settings3
 
             rs = RadioSettingValueInteger(0, 9, _settings.squelch)
-            rset = RadioSetting("squelch", "63 Squelch Level", rs)
+            rset = RadioSetting("squelch", "Squelch Level", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
@@ -1228,14 +1292,15 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("tail", "QT/DQT Tail", rs)
                 basic.append(rset)
 
-            if self.MODEL != "AR-63":
+            if self.MODEL != "AR-63" and self.MODEL != "RT40B":
                 rs = RadioSettingValueList(SAVE_LIST,
                                            SAVE_LIST[_settings.savem])
                 rset = RadioSetting("savem", "Battery Save Mode", rs)
                 basic.append(rset)
 
             if self.MODEL != "RT19" and self.MODEL != "RT619" and \
-                    self.MODEL != "AR-63":
+                    self.MODEL != "AR-63" and \
+                    self.MODEL != "RT40B":
                 rs = RadioSettingValueList(GAIN_LIST,
                                            GAIN_LIST[_settings.gain])
                 rset = RadioSetting("gain", "MIC Gain", rs)
@@ -1342,6 +1407,39 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rs = RadioSettingValueList(TAIL_LIST,
                                            TAIL_LIST[_settings.tailmode])
                 rset = RadioSetting("tailmode", "DCS Tail Mode", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueBoolean(_settings.vox)
+                rset = RadioSetting("vox", "Vox Function", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueList(VOXL_LIST,
+                                           VOXL_LIST[_settings.voxl])
+                rset = RadioSetting("voxl", "Vox Level", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueList(VOXD_LIST,
+                                           VOXD_LIST[_settings.voxd])
+                rset = RadioSetting("voxd", "Vox Delay", rs)
+                basic.append(rset)
+
+            if self.MODEL == "RT40B":
+                rs = RadioSettingValueList(VOICE_LIST,
+                                           VOICE_LIST[_settings.voice])
+                rset = RadioSetting("voice", "Voice Prompts", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueList(SAVEM_LIST,
+                                           SAVEM_LIST[_settings.savem])
+                rset = RadioSetting("savem", "Battery Save Mode", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueBoolean(_settings.pttstone)
+                rset = RadioSetting("pttstone", "PTT Start Tone", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueBoolean(_settings.pttetone)
+                rset = RadioSetting("pttetone", "PTT End Tone", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueBoolean(_settings.vox)
@@ -1671,3 +1769,38 @@ class AR63Radio(RT21Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT76, self._mmap)
+
+
+@directory.register
+class RT40BRadio(RT21Radio):
+    """RETEVIS RT40B"""
+    VENDOR = "Retevis"
+    MODEL = "RT40B"
+    BLOCK_SIZE = 0x20
+    BLOCK_SIZE_UP = 0x10
+
+    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    VALID_BANDS = [(400000000, 480000000)]
+
+    _magic = "PHOGRH" + "\x5C"
+    _fingerprint = "P32073" + "\x02\xFF"
+    _upper = 22
+    _mem_params = (_upper,  # number of channels
+                   )
+    _ack_1st_block = False
+    _skipflags = True
+    _reserved = True
+    _gmrs = True
+    _echo = True
+
+    _ranges = [
+               (0x0000, 0x0160),
+              ]
+    _memsize = 0x0160
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RT40B % self._mem_params,
+                                     self._mmap)
