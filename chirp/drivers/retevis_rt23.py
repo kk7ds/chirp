@@ -765,25 +765,25 @@ class RT23Radio(chirp_common.CloneModeRadio):
         advanced.append(pf2)
 
         # other
-        _limit = str(int(_mem.limits.vhf.lower) / 10)
+        _limit = str(int(_mem.limits.vhf.lower) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.vhf.lower", "VHF low", val)
         other.append(rs)
 
-        _limit = str(int(_mem.limits.vhf.upper) / 10)
+        _limit = str(int(_mem.limits.vhf.upper) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.vhf.upper", "VHF high", val)
         other.append(rs)
 
-        _limit = str(int(_mem.limits.uhf.lower) / 10)
+        _limit = str(int(_mem.limits.uhf.lower) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.uhf.lower", "UHF low", val)
         other.append(rs)
 
-        _limit = str(int(_mem.limits.uhf.upper) / 10)
+        _limit = str(int(_mem.limits.uhf.upper) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.uhf.upper", "UHF high", val)
@@ -849,7 +849,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
