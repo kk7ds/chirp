@@ -646,20 +646,13 @@ def _do_upload(radio):
     _ranges_aux_extra = [
         (0x1F60, 0x1F70),
         (0x1F80, 0x1F90),
-        (0x1FC0, 0x1FD0)
+        (0x1FC0, 0x1FE0)
         ]
 
     if image_version == radio_version:
         image_matched_radio = True
-        if image_version.startswith(b"HN5RV"):
-            ranges_main = _ranges_main_default
-            ranges_aux = _ranges_aux_default + _ranges_aux_extra
-        elif image_version == 0xFF * 7:
-            ranges_main = _ranges_main_default
-            ranges_aux = _ranges_aux_default + _ranges_aux_extra
-        else:
-            ranges_main = radio._ranges_main
-            ranges_aux = radio._ranges_aux
+        ranges_main = _ranges_main_default
+        ranges_aux = _ranges_aux_default + _ranges_aux_extra
     elif any(type in radio_version for type in radio._basetype):
         image_matched_radio = False
         ranges_main = _ranges_main_default
