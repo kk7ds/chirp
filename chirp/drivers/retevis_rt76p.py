@@ -1,4 +1,4 @@
-# Copyright 2021 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2021-2022 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,13 +59,13 @@ struct {
      scan:1,          //     Scan  0 = Skip, 1 = Scan
      unknown5:1,
      compand:1;       //     Compand
-} memory[30];
+} memory[128];
 
 #seekto 0x0C00;
 struct {
   char name[10];      // 10-character Alpha Tag
   u8 unused[6];
-} names[30];
+} names[128];
 
 #seekto 0x1A00;
 struct {
@@ -372,8 +372,7 @@ class RT76PRadio(chirp_common.CloneModeRadio):
     _ranges = [
                (0x0000, 0x0820),
                (0x0C00, 0x1400),
-               (0x1A00, 0x1E00),
-               (0x1FE0, 0x2000),
+               (0x1A00, 0x1C20),
               ]
     _memsize = 0x2000
 
@@ -396,58 +395,14 @@ class RT76PRadio(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 KHz.
         rf.valid_dtcs_codes = RT76P_DTCS
-        rf.memory_bounds = (1, 30)
+        rf.memory_bounds = (1, 128)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 20., 25., 50.]
-        rf.valid_bands = [(400000000, 480000000)]
+        rf.valid_bands = [(136000000, 174000000),
+                          (400000000, 480000000)]
         return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    def validate_memory(self, mem):
-        msgs = ""
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        _msg_freq = 'Memory location cannot change frequency'
-        _msg_simplex = 'Memory location only supports Duplex:(None)'
-        _msg_duplex = 'Memory location only supports Duplex: +'
-        _msg_offset = 'Memory location only supports Offset: 5.000000'
-        _msg_nfm = 'Memory location only supports Mode: NFM'
-        _msg_txp = 'Memory location only supports Power: Low'
-
-        # GMRS models
-        # range of memories with values set by FCC rules
-        if mem.freq != int(GMRS_FREQS[mem.number - 1] * 1000000):
-            # warn user can't change frequency
-            msgs.append(chirp_common.ValidationError(_msg_freq))
-
-        # channels 1 - 22 are simplex only
-        if mem.number <= 22:
-            if str(mem.duplex) != "":
-                # warn user can't change duplex
-                msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-        # channels 23 - 30 are +5 MHz duplex only
-        if mem.number >= 23:
-            if str(mem.duplex) != "+":
-                # warn user can't change duplex
-                msgs.append(chirp_common.ValidationError(_msg_duplex))
-
-            if str(mem.offset) != "5000000":
-                # warn user can't change offset
-                msgs.append(chirp_common.ValidationError(_msg_offset))
-
-        # channels 8 - 14 are low power NFM only
-        if mem.number >= 8 and mem.number <= 14:
-            if mem.mode != "NFM":
-                # warn user can't change mode
-                msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-            if mem.power != "Low":
-                # warn user can't change power
-                msgs.append(chirp_common.ValidationError(_msg_txp))
-
-        return msgs
 
     def sync_in(self):
         """Download from radio"""
@@ -476,35 +431,39 @@ class RT76PRadio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
 
+    def _is_txinh(self, _mem):
+        raw_tx = ""
+        for i in range(0, 4):
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == "\xFF\xFF\xFF\xFF"
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
         _nam = self._memobj.names[number - 1]
 
         mem = chirp_common.Memory()
-
         mem.number = number
+
+        if _mem.get_raw()[0] == "\xff":
+            mem.empty = True
+            return mem
+
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
-        if mem.freq == 0:
-            mem.empty = True
-            return mem
-
-        if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
-            mem.freq = 0
-            mem.empty = True
-            return mem
-
-        if _mem.get_raw() == ("\xFF" * 16):
-            LOG.debug("Initializing empty memory")
-            _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
-
-        if int(_mem.rxfreq) == int(_mem.txfreq):
-            mem.duplex = ""
+        if self._is_txinh(_mem):
+            # TX freq not set
+            mem.duplex = "off"
             mem.offset = 0
         else:
-            mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
-            mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
+            # TX freq set
+            offset = (int(_mem.txfreq) * 10) - mem.freq
+            if offset != 0:
+                if offset > 0:
+                    mem.duplex = "+"
+                    mem.offset = 5000000
+            else:
+                mem.duplex = ""
+                mem.offset = 0
 
         for char in _nam.name:
             if str(char) == "\xFF":
@@ -599,23 +558,29 @@ class RT76PRadio(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xff" * 8 + "\x00" * 8)
-
-            GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 100000)
-            _mem.narrow = True
-            _mem.scan = True
-            if mem.number > 22:
-                _mem.rxfreq = GMRS_FREQ
-                _mem.txfreq = int(_mem.rxfreq) + 500000
-            else:
-                _mem.rxfreq = _mem.txfreq = GMRS_FREQ
-            if mem.number >= 8 and mem.number <= 14:
-                _mem.lowpower = True
-
+            _mem.set_raw("\xff" * 16)
             _nam.set_raw("\xff" * 16)
             return
 
         _mem.set_raw("\x00" * 16)
+
+        if float(mem.freq) / 1000000 in GMRS_FREQS1:
+            mem.duplex == ''
+            mem.offset = 0
+        elif float(mem.freq) / 1000000 in GMRS_FREQS2:
+            mem.duplex == ''
+            mem.offset = 0
+            mem.mode = "NFM"
+            mem.power = self.POWER_LEVELS[1]
+        elif float(mem.freq) / 1000000 in GMRS_FREQS3:
+            if mem.duplex == '+':
+                mem.offset = 5000000
+            else:
+                mem.duplex == ''
+                mem.offset = 0
+        else:
+            mem.duplex = 'off'
+            mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
@@ -1032,7 +997,7 @@ class RT76PRadio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
