@@ -95,7 +95,7 @@ def tohex(data):
 class AlincoStyleRadio(chirp_common.CloneModeRadio):
     """Base class for all known Alinco radios"""
     _memsize = 0
-    _model = "NONE"
+    _model = b"NONE"
 
     def _send(self, data):
         LOG.debug("PC->R: (%2i) %s" % (len(data), tohex(data)))
@@ -199,7 +199,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             self._mmap = self._download(self._memsize)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -208,7 +208,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             self._upload(self._memsize)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def get_raw_memory(self, number):
@@ -408,14 +408,14 @@ class DR03Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR03T"
 
-    _model = "DR135"
+    _model = b"DR135"
     _memsize = 4096
     _range = [(28000000, 29695000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x28)
+                filedata[0x64:0x66] == b'\x00\x28'
 
 
 @directory.register
@@ -424,14 +424,14 @@ class DR06Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR06T"
 
-    _model = "DR435"
+    _model = b"DR435"
     _memsize = 4096
     _range = [(50000000, 53995000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x64] == chr(0x00) and filedata[0x65] == chr(0x50)
+                filedata[0x64:0x66] == b'\x00\x50'
 
 
 @directory.register
@@ -440,14 +440,14 @@ class DR135Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR135T"
 
-    _model = "DR135"
+    _model = b"DR135"
     _memsize = 4096
     _range = [(118000000, 173000000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x64] == chr(0x01) and filedata[0x65] == chr(0x44)
+                filedata[0x64:0x66] == b'\x01\x44'
 
 
 @directory.register
@@ -456,14 +456,14 @@ class DR235Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR235T"
 
-    _model = "DR235"
+    _model = b"DR235"
     _memsize = 4096
     _range = [(216000000, 280000000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x64] == chr(0x02) and filedata[0x65] == chr(0x22)
+                filedata[0x64:0x66] == b'\x02\x22'
 
 
 @directory.register
@@ -472,14 +472,14 @@ class DR435Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR435T"
 
-    _model = "DR435"
+    _model = b"DR435"
     _memsize = 4096
     _range = [(350000000, 511000000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x64] == chr(0x04) and filedata[0x65] == chr(0x00)
+                filedata[0x64:0x66] == b'\x04\x00'
 
 
 @directory.register
@@ -488,7 +488,7 @@ class DJ596Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DJ596"
 
-    _model = "DJ596"
+    _model = b"DJ596"
     _memsize = 4096
     _range = [(136000000, 174000000), (400000000, 511000000)]
     _power_levels = [chirp_common.PowerLevel("Low", watts=1.00),
@@ -497,7 +497,7 @@ class DJ596Radio(DRx35Radio):
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x64] == chr(0x45) and filedata[0x65] == chr(0x01)
+                filedata[0x64:0x66] == b'\x45\x01'
 
 
 @directory.register
@@ -506,14 +506,14 @@ class JT220MRadio(DRx35Radio):
     VENDOR = "Jetstream"
     MODEL = "JT220M"
 
-    _model = "DR136"
+    _model = b"DR136"
     _memsize = 8192
     _range = [(216000000, 280000000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0x60:0x64] == "2009"
+            filedata[0x60:0x64] == b'2009'
 
 
 @directory.register
@@ -522,7 +522,7 @@ class DJ175Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DJ175"
 
-    _model = "DJ175"
+    _model = b"DJ175"
     _memsize = 6896
     _range = [(136000000, 174000000), (400000000, 511000000)]
     _power_levels = [
@@ -614,7 +614,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
     TMODES = ["", "??1", "Tone", "TSQL", "TSQL-R", "DTCS"]
 
     # This is a bit of a hack to avoid overwriting _identify()
-    _model = "AL~DJ-G7EG"
+    _model = b"AL~DJ-G7EG"
     _memsize = 0x1a7c0
     _range = [(500000, 1300000000)]
 
@@ -817,7 +817,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number]
         if mem.empty:
-            _mem.set_raw("\xff" * (_mem.size()/8))
+            _mem.set_raw("\xff" * (_mem.size() // 8))
             _mem.empty = 0x00
         else:
             _mem.empty = self._get_empty_flag(mem.freq, mem.mode)

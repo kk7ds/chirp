@@ -2,6 +2,14 @@
 | ------ | ------ | ------ | ---------- |
 | ARRL_Travel_Plus |  |  |  |
 | Abbree_AR-63 |  |  |  |
+| Alinco_DJ-G7EG |  |  |  |
+| Alinco_DJ175 |  |  |  |
+| Alinco_DJ596 |  |  |  |
+| Alinco_DR03T |  |  |  |
+| Alinco_DR06T |  |  |  |
+| Alinco_DR135T |  |  |  |
+| Alinco_DR235T |  |  |  |
+| Alinco_DR435T |  |  |  |
 | AnyTone_5888UV |  |  |  |
 | AnyTone_5888UVIII |  |  |  |
 | AnyTone_778UV |  |  | Yes |
@@ -74,6 +82,7 @@
 | Icom_ID-880H |  |  | Yes |
 | Intek_HR-2040 |  |  |  |
 | Intek_KT-980HP |  |  | Yes |
+| Jetstream_JT220M |  |  |  |
 | KYD_IP-620 |  |  |  |
 | KYD_NC-630A |  |  |  |
 | Kenwood_HMK |  |  |  |

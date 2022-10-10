@@ -1,8 +1,4 @@
 Abbree_AR-518.img
-Alinco_DJ175.img
-Alinco_DJ596.img
-Alinco_DJ-G7EG.img
-Alinco_DR235T.img
 Baofeng_BF-T1.img
 Baofeng_BF-T8.img
 Baofeng_UV-3R.img
@@ -14,7 +10,6 @@ Explorer_QRZ-1.img
 Feidaxin_FD-268A.img
 Feidaxin_FD-268B.img
 Feidaxin_FD-288B.img
-Jetstream_JT220M.img
 Jetstream_JT270MH.img
 Jetstream_JT270M.img
 Kenwood_TH-D72_clone_mode.img
