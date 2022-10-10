@@ -45,7 +45,7 @@ struct {
        unknown4:1,
        bcl:2;
     u8 unknown6[2];
-} memory[30];
+} memory[128];
 #seekto 0x0810;
 struct {
     u8 unknown01:5,
@@ -67,7 +67,7 @@ struct {
        timeouttimer:2,
        unknown08:1;
     u8 alarmtype:1,
-       unknown09:3
+       voxdelay:3,
        voxlevel:4;
     u8 unknown10:2,
        backlight:2,
@@ -78,6 +78,11 @@ struct {
        unknown14:1,
        sidekey:3;
 } settings;
+#seekto 0x0010;
+struct {
+  char name[10];      // 10-character Alpha Tag
+} names[128];
+
 """
 
 CMD_ACK = "\x06"
@@ -88,8 +93,9 @@ BATTERYSAVE_LIST = ["Off", "1:4", "1:8"]
 SCANMODE_LIST = ["Time Operated", "Carrier Operated", "Search"]
 SIDEKEY_LIST = ["Off", "Scan", "VOX", "2nd PTT", "NOAA", "Monitor"]
 TIMEOUTTIMER_LIST = ["60 seconds", "120 seconds", "180 seconds"]
+VOXDELAY_LIST = ["0.3", "0.5", "1", "1.5", "2", "2.5"]
 VOXLEVEL_LIST = ["Off", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-WORKMODE_LIST = ["Frequencies", "Channel Numbers"]
+WORKMODE_LIST = ["Frequencies", "Channel Numbers", "Names"]
 
 SETTING_LISTS = {
     "alarmtype": ALARMTYPE_LIST,
@@ -98,6 +104,7 @@ SETTING_LISTS = {
     "scanmode": SCANMODE_LIST,
     "sidekey": SIDEKEY_LIST,
     "timeouttimer": TIMEOUTTIMER_LIST,
+    "voxdelay": VOXDELAY_LIST,
     "voxlevel": VOXLEVEL_LIST,
     "workmode": WORKMODE_LIST
 }
@@ -236,18 +243,18 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     BLOCK_SIZE = 0x40
 
     VALID_BANDS = [(400000000, 470000000)]
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
-                    chirp_common.PowerLevel("High", watts=5.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PGA588"
     _fingerprint = "\xFF" * 8
     _upper = 128
-    _mem_params = (_upper  # number of channels
-                   )
-    _gmrs = False
+    _gmrs = True
     _ranges = [(0x0000, 0x1800, 0x40),
                ]
     _memsize = 0x1800
+    _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
+        "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -271,8 +278,10 @@ class RB17P_Base(chirp_common.CloneModeRadio):
             "DTCS->DTCS"]
         rf.has_tuning_step = False
         rf.has_bank = False
-        rf.has_name = False
-        rf.memory_bounds = (1, 30)
+        rf.has_name = True
+        rf.valid_name_length = 10
+        rf.valid_characters = self._valid_chars
+        rf.memory_bounds = (1, 128)
         rf.valid_bands = self.VALID_BANDS
         rf.valid_tuning_steps = chirp_common.TUNING_STEPS
 
@@ -280,45 +289,6 @@ class RB17P_Base(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    def validate_memory(self, mem):
-        msgs = ""
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        _msg_freq = 'Memory location cannot change frequency'
-        _msg_simplex = 'Memory location only supports Duplex:(None)'
-        _msg_duplex = 'Memory location only supports Duplex: +'
-        _msg_nfm = 'Memory location only supports Mode: NFM'
-        _msg_txp = 'Memory location only supports Power: Low'
-
-        # GMRS only models
-        if self._gmrs:
-            # range of memories with values set by FCC rules
-            if mem.freq != int(GMRS_FREQS[mem.number - 1] * 1000000):
-                # warn user can't change frequency
-                msgs.append(chirp_common.ValidationError(_msg_freq))
-            if mem.number >= 8 and mem.number <= 14:
-                if str(mem.power) != "Low":
-                    # warn user can't change power
-                    msgs.append(chirp_common.ValidationError(_msg_txp))
-
-                if str(mem.mode) != "NFM":
-                    # warn user can't change mode
-                    msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-            if mem.number >= 1 and mem.number <= 22:
-                # channels 1 - 22 are simplex only
-                if str(mem.duplex) != "":
-                    # warn user can't change duplex
-                    msgs.append(chirp_common.ValidationError(_msg_simplex))
-
-            if mem.number >= 23 and mem.number <= 30:
-                # channels 23 - 30 are duplex + only
-                if str(mem.duplex) != "+":
-                    # warn user can't change duplex
-                    msgs.append(chirp_common.ValidationError(_msg_duplex))
-
-        return msgs
 
     def sync_in(self):
         self._mmap = do_download(self)
@@ -356,6 +326,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
+        _nam = self._memobj.names[number - 1]
 
         mem = chirp_common.Memory()
 
@@ -382,6 +353,12 @@ class RB17P_Base(chirp_common.CloneModeRadio):
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
+        for char in _nam.name:
+            if str(char) == "\xFF":
+                char = " "  # may have 0xFF mid-name
+            mem.name += str(char)
+        mem.name = mem.name.rstrip()
+
         mem.mode = _mem.wide and "FM" or "NFM"
 
         mem.skip = not _mem.scan and "S" or ""
@@ -390,14 +367,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
         rxtone = self._decode_tone(_mem.rxtone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        mem.power = self.POWER_LEVELS[_mem.highpower]
-
-        if self._gmrs:
-            GMRS_IMMUTABLE = ["freq", "duplex", "offset"]
-            if mem.number >= 8 and mem.number <= 14:
-                GMRS_IMMUTABLE = GMRS_IMMUTABLE + ["mode", "power"]
-
-            mem.immutable = GMRS_IMMUTABLE
+        mem.power = self.POWER_LEVELS[1 - _mem.highpower]
 
         mem.extra = RadioSettingGroup("Extra", "extra")
         rs = RadioSetting("bcl", "Busy Channel Lockout",
@@ -412,24 +382,34 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number - 1]
+        _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            if self._frs:
-                _mem.set_raw("\xFF" * 12 + "\x6A\x08\xFF\xDC")
-                if self._upper == 22:
-                    FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 100000)
-                else:
-                    FRS_FREQ = int(FRS16_FREQS[mem.number - 1] * 100000)
-                _mem.rxfreq = _mem.txfreq = FRS_FREQ
-                _mem.narrow = True
-                _mem.highpower = True
-                if self._upper == 22:
-                    if mem.number >= 8 and mem.number <= 14:
-                        _mem.highpower = False
-            else:
-                _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _nam.set_raw("\xFF" * (_nam.size() / 8))
 
             return
+
+        _mem.set_raw("\x00" * (_mem.size() / 8))
+
+        if self._gmrs:
+            if float(mem.freq) / 1000000 in GMRS_FREQS1:
+                mem.duplex == ''
+                mem.offset = 0
+            elif float(mem.freq) / 1000000 in GMRS_FREQS2:
+                mem.duplex == ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = self.POWER_LEVELS[1]
+            elif float(mem.freq) / 1000000 in GMRS_FREQS3:
+                if mem.duplex == '+':
+                    mem.offset = 5000000
+                else:
+                    mem.duplex == ''
+                    mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
@@ -445,12 +425,19 @@ class RB17P_Base(chirp_common.CloneModeRadio):
         else:
             _mem.txfreq = mem.freq / 10
 
+        _namelength = self.get_features().valid_name_length
+        for i in range(_namelength):
+            try:
+                _nam.name[i] = mem.name[i]
+            except IndexError:
+                _nam.name[i] = "\xFF"
+
         txtone, rxtone = chirp_common.split_tone_encode(mem)
         self._encode_tone(_mem.txtone, *txtone)
         self._encode_tone(_mem.rxtone, *rxtone)
 
         if self.MODEL != "T18" and self.MODEL != "RB18":
-            _mem.highpower = mem.power == self.POWER_LEVELS[1]
+            _mem.highpower = mem.power == self.POWER_LEVELS[0]
 
         _mem.wide = mem.mode == "FM"
         _mem.scan = mem.skip == ""
@@ -556,6 +543,13 @@ class RB17P_Base(chirp_common.CloneModeRadio):
                               VOXLEVEL_LIST[_settings.voxlevel]))
         basic.append(rs)
 
+        # VOX Delay
+        rs = RadioSetting("voxdelay", "Vox delay",
+                          RadioSettingValueList(
+                              VOXDELAY_LIST,
+                              VOXDELAY_LIST[_settings.voxdelay]))
+        basic.append(rs)
+
         return top
 
     def set_settings(self, settings):
@@ -585,7 +579,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
