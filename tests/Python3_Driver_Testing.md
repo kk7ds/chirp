@@ -66,6 +66,7 @@
 | Icom_IC-7300 |  |  | Yes |
 | Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes |
 | Icom_IC-91_92AD |  |  |  |
+| Icom_IC-E90 |  |  | Yes |
 | Icom_IC-P7 |  |  | Yes |
 | Icom_IC-Q7A |  |  | Yes |
 | Icom_IC-T70 |  |  | Yes |
