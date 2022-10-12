@@ -385,12 +385,12 @@ class RB17P_Base(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
-            _nam.set_raw("\xFF" * (_nam.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
+            _nam.set_raw("\xFF" * (_nam.size() // 8))
 
             return
 
-        _mem.set_raw("\x00" * (_mem.size() / 8))
+        _mem.set_raw("\x00" * (_mem.size() // 8))
 
         if self._gmrs:
             if float(mem.freq) / 1000000 in GMRS_FREQS1:
