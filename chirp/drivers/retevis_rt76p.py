@@ -375,6 +375,8 @@ class RT76PRadio(chirp_common.CloneModeRadio):
                (0x1A00, 0x1C20),
               ]
     _memsize = 0x2000
+    _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
+        "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -387,6 +389,7 @@ class RT76PRadio(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.has_name = True
         rf.valid_name_length = 10
+        rf.valid_characters = self._valid_chars
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
@@ -795,8 +798,6 @@ class RT76PRadio(chirp_common.CloneModeRadio):
 
         # Menu 34: ANI ID (display only)
         _codeobj = self._memobj.dtmf.code
-        print "_codeobj"
-        print _codeobj
         _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x1F])
         val = RadioSettingValueString(0, 6, _code, False)
         val.set_charset(dtmfchars)
