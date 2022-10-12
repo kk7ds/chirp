@@ -36,7 +36,7 @@
 | Baofeng_F-11 |  |  | Yes |
 | Baofeng_GT-3WP |  |  |  |
 | Baofeng_GT-5R |  |  | Yes |
-| Baofeng_UV-3R |  |  |  |
+| Baofeng_UV-3R | [@yarda](https://github.com/yarda) | 26-Sep-2022 |  |
 | Baofeng_UV-5R |  |  | Yes |
 | Baofeng_UV-6 |  |  | Yes |
 | Baofeng_UV-6R |  |  |  |
