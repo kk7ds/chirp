@@ -201,6 +201,7 @@
 | Retevis_RT76P |  |  |  |
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
+| TDXone_TD-Q8A |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
 | Vertex_Standard_FTL-1011 |  |  |  |

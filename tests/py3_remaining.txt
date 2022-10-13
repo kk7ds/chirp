@@ -36,7 +36,6 @@ Retevis_RT9000D_136-174.img
 Retevis_RT9000D_220-260.img
 Retevis_RT9000D_400-490.img
 Rugged_RH5R-V2.img
-TDXone_TD-Q8A.img
 TYT_TH-7800.img
 TYT_TH9000_144.img
 TYT_TH-9800.img
