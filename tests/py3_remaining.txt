@@ -45,7 +45,6 @@ TYT_TH-UV3R.img
 TYT_TH-UV88.img
 TYT_TH-UV8000.img
 TYT_TH-UVF1.img
-Vertex_Standard_VXA-700.img
 Wouxun_KG-816.img
 Wouxun_KG-818.img
 Wouxun_KG-935G.img

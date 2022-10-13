@@ -207,6 +207,7 @@
 | Vertex_Standard_FTL-2011 |  |  |  |
 | Vertex_Standard_FTL-7011 |  |  |  |
 | Vertex_Standard_FTL-8011 |  |  |  |
+| Vertex_Standard_VXA-700 |  |  |  |
 | WACCOM_MINI-8900 |  |  | Yes |
 | Wouxun_KG-UV920P-A |  |  |  |
 | Wouxun_KG-UV9D_Plus |  |  |  |
