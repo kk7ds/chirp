@@ -29,6 +29,7 @@
 | BTECH_UV-25X4 |  |  | Yes |
 | BTECH_UV-5001 |  |  | Yes |
 | BTECH_UV-50X2 |  |  | Yes |
+| BTECH_UV-50X3 |  |  |  |
 | BTECH_UV-5X3 |  |  |  |
 | Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes |
 | Baofeng_BF-A58 |  |  |  |

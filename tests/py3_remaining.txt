@@ -3,7 +3,6 @@ Baofeng_BF-T1.img
 Baofeng_BF-T8.img
 Baojie_BJ-9900.img
 BTECH_FRS-A1.img
-BTECH_UV-50X3.img
 Explorer_QRZ-1.img
 Feidaxin_FD-268A.img
 Feidaxin_FD-268B.img

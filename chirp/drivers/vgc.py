@@ -551,7 +551,7 @@ def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x6140:0x6148]
 
-    if rid in cls.IDENT:
+    if rid in cls.IDENT.encode():
         return True
 
     return False
@@ -1353,7 +1353,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         dtmf.append(ttautod)
 
         # setup 9 dtmf autodial entries
-        for i in map(str, range(1, 10)):
+        for i in map(str, list(range(1, 10))):
             objname = "code" + i
             strname = "Code " + str(i)
             dtmfsetting = getattr(_mem.dtmfcode, objname)
@@ -1420,7 +1420,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
