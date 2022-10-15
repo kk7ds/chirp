@@ -216,6 +216,7 @@
 | Yaesu_FT-1500M |  |  | Yes |
 | Yaesu_FT-1802M |  |  | Yes |
 | Yaesu_FT-25R |  |  | Yes |
+| Yaesu_FT-2800M |  |  | Yes |
 | Yaesu_FT-4VR |  |  | Yes |
 | Yaesu_FT-4XE |  |  | Yes |
 | Yaesu_FT-4XR |  |  | Yes |
