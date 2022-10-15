@@ -92,6 +92,7 @@
 | Kenwood_HMK |  |  |  |
 | Kenwood_ITM |  |  |  |
 | Kenwood_TH-D7 |  |  | Yes |
+| Kenwood_TH-D72_clone_mode |  |  |  |
 | Kenwood_TH-D72_live_mode |  |  | Yes |
 | Kenwood_TH-D7G |  |  | Yes |
 | Kenwood_TH-F6 |  |  | Yes |
