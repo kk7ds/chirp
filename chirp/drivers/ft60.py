@@ -345,7 +345,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODEL = "FT-60"
-    _model = "AH017"
+    _model = b"AH017"
 
     _memsize = 28617
 
@@ -403,7 +403,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
         self.check_checksums()
@@ -414,7 +414,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
@@ -716,7 +716,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

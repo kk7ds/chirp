@@ -220,6 +220,7 @@
 | Yaesu_FT-4VR |  |  | Yes |
 | Yaesu_FT-4XE |  |  | Yes |
 | Yaesu_FT-4XR |  |  | Yes |
+| Yaesu_FT-60 |  |  | Yes |
 | Yaesu_FT-65E |  |  | Yes |
 | Yaesu_FT-65R |  |  | Yes |
 | Yaesu_FT-7100M |  |  | Yes |
