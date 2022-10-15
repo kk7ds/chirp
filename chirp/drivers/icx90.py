@@ -17,7 +17,7 @@
 
 import logging
 
-import icf
+from chirp.drivers import icf
 import struct
 from chirp import chirp_common, bitwise, errors, directory
 from chirp.memmap import MemoryMap
@@ -174,7 +174,7 @@ DUPLEX = ["", "-", "+", ""]
 DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
 TONE_MODE = ["", "Tone", "TSQL", "DTCS"]
 TUNE_STEP = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0, 200.0]
-TUNE_STEP_STR = list(map(lambda x: str(x), TUNE_STEP))
+TUNE_STEP_STR = [str(x) for x in TUNE_STEP]
 MODE = ["FM", "WFM", "AM"]
 TV_MODE = ["WFM", "AM"]
 
@@ -596,7 +596,7 @@ class ICx90Radio(icf.IcomCloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

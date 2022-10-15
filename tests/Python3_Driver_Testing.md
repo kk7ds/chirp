@@ -17,6 +17,7 @@
 | AnyTone_OBLTR-8R |  |  |  |
 | AnyTone_TERMN-8R |  |  |  |
 | Anysecu_WP-9900 |  |  | Yes |
+| BTECH_FRS-B1 |  |  |  |
 | BTECH_GMRS-20V2 |  |  | Yes |
 | BTECH_GMRS-50X1 |  |  | Yes |
 | BTECH_GMRS-V1 |  |  |  |
@@ -28,6 +29,7 @@
 | BTECH_UV-25X4 |  |  | Yes |
 | BTECH_UV-5001 |  |  | Yes |
 | BTECH_UV-50X2 |  |  | Yes |
+| BTECH_UV-50X3 |  |  |  |
 | BTECH_UV-5X3 |  |  |  |
 | Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes |
 | Baofeng_BF-A58 |  |  |  |
@@ -66,6 +68,7 @@
 | Icom_IC-7300 |  |  | Yes |
 | Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes |
 | Icom_IC-91_92AD |  |  |  |
+| Icom_IC-E90 |  |  | Yes |
 | Icom_IC-P7 |  |  | Yes |
 | Icom_IC-Q7A |  |  | Yes |
 | Icom_IC-T70 |  |  | Yes |
@@ -159,35 +162,54 @@
 | Radioddity_UV-5G |  |  | Yes |
 | Radioddity_UV-5RX3 |  |  | Yes |
 | Radioddity_UV-82X3 |  |  | Yes |
+| Radtel_T18 |  |  |  |
 | Retevis_H777_Plus |  |  | Yes |
 | Retevis_RA685 |  |  | Yes |
 | Retevis_RA85 |  |  | Yes |
 | Retevis_RB15 |  |  |  |
+| Retevis_RB17 |  |  |  |
 | Retevis_RB17A |  |  |  |
 | Retevis_RB17P |  |  |  |
+| Retevis_RB17V |  |  |  |
+| Retevis_RB18 |  |  |  |
+| Retevis_RB19 |  |  |  |
+| Retevis_RB19P |  |  |  |
 | Retevis_RB23 |  |  |  |
 | Retevis_RB26 |  |  |  |
 | Retevis_RB615 |  |  |  |
+| Retevis_RB617 |  |  |  |
+| Retevis_RB618 |  |  |  |
+| Retevis_RB619 |  |  |  |
+| Retevis_RB75 |  |  |  |
+| Retevis_RB85 |  |  |  |
 | Retevis_RT1 |  |  |  |
 | Retevis_RT19 |  |  |  |
 | Retevis_RT21 |  |  |  |
+| Retevis_RT22S |  |  |  |
 | Retevis_RT23 |  |  |  |
 | Retevis_RT26 |  |  |  |
 | Retevis_RT29_UHF |  |  |  |
 | Retevis_RT29_VHF |  |  |  |
 | Retevis_RT40B |  |  |  |
+| Retevis_RT47 |  |  |  |
+| Retevis_RT47V |  |  |  |
 | Retevis_RT6 |  |  |  |
 | Retevis_RT619 |  |  |  |
+| Retevis_RT647 |  |  |  |
+| Retevis_RT668 |  |  |  |
+| Retevis_RT68 |  |  |  |
 | Retevis_RT76 |  |  |  |
 | Retevis_RT76P |  |  |  |
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
+| TDXone_TD-Q8A |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
 | Vertex_Standard_FTL-1011 |  |  |  |
 | Vertex_Standard_FTL-2011 |  |  |  |
 | Vertex_Standard_FTL-7011 |  |  |  |
 | Vertex_Standard_FTL-8011 |  |  |  |
+| Vertex_Standard_VXA-700 |  |  |  |
 | WACCOM_MINI-8900 |  |  | Yes |
 | Wouxun_KG-UV920P-A |  |  |  |
 | Wouxun_KG-UV9D_Plus |  |  |  |

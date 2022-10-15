@@ -377,7 +377,7 @@ def model_match(cls, data):
 
     if len(data) == cls._memsize:
         rid = data[0x03D0:0x03D8]
-        return "P558" in rid
+        return b"P558" in rid
     else:
         return False
 
@@ -542,7 +542,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
 
             return
 
@@ -877,7 +877,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

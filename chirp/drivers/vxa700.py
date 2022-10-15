@@ -86,14 +86,14 @@ def _download(radio):
 def _upload(radio):
     for i in range(0, radio.get_memsize(), 128):
         chunk = radio.get_mmap()[i:i+128]
-        cs = 0x20 + 130 + (i / 128)
+        cs = 0x20 + 130 + (i // 128)
         for byte in chunk:
             cs += ord(byte)
         _spoonfeed(radio,
                    struct.pack("BBB128sB",
                                0x20,
                                130,
-                               i / 128,
+                               i // 128,
                                chunk,
                                cs % 256))
         radio.pipe.write("")
@@ -104,7 +104,7 @@ def _upload(radio):
         time.sleep(0.5)
         if ack != "\x06":
             LOG.debug(repr(ack))
-            raise errors.RadioError("Radio did not ack block %i" % (i / 132))
+            raise errors.RadioError("Radio did not ack block %i" % (i // 132))
         # radio.pipe.read(1)
         if radio.status_fn:
             status = chirp_common.Status()
@@ -161,7 +161,7 @@ POWER = [chirp_common.PowerLevel("Low1", watts=0.050),
 
 
 def _wipe_memory(_mem):
-    _mem.set_raw("\x00" * (_mem.size() / 8))
+    _mem.set_raw("\x00" * (_mem.size() // 8))
 
 
 @directory.register
@@ -177,7 +177,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate " +
                                     "with the radio: %s" % e)
         self.process_mmap()
@@ -192,7 +192,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate " +
                                     "with the radio: %s" % e)
 
@@ -226,7 +226,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
 
     def get_memory(self, number):
         _mem = self._get_mem(number)
-        byte = (number - 1) / 8
+        byte = (number - 1) // 8
         bit = 1 << ((number - 1) % 8)
 
         mem = chirp_common.Memory()
@@ -264,7 +264,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
 
     def set_memory(self, mem):
         _mem = self._get_mem(mem.number)
-        byte = (mem.number - 1) / 8
+        byte = (mem.number - 1) // 8
         bit = 1 << ((mem.number - 1) % 8)
 
         if mem.empty and self._memobj.invisible_bits[byte] & bit:
@@ -296,7 +296,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.offset = mem.offset / 5000 / 10
+        _mem.offset = mem.offset // 5000 // 10
         _mem.isfm = mem.mode == "FM"
         _mem.skip = mem.skip == "S"
         try:
@@ -314,4 +314,4 @@ class VXA700Radio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            ord(filedata[5]) == 0x0F
+            filedata[5] == 0x0F
