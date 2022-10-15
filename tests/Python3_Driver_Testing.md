@@ -203,6 +203,7 @@
 | Retevis_RT87 |  |  |  |
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
+| Retevis_RT98 |  |  |  |
 | TDXone_TD-Q8A |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
