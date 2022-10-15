@@ -28,7 +28,6 @@ Retevis_RB627B.img
 Retevis_RT16.img
 Retevis_RT22.img
 Retevis_RT22FRS.img
-Retevis_RT87.img
 Retevis_RT622.img
 Retevis_RT9000D_66-88.img
 Retevis_RT9000D_136-174.img

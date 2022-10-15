@@ -200,6 +200,7 @@
 | Retevis_RT68 |  |  |  |
 | Retevis_RT76 |  |  |  |
 | Retevis_RT76P |  |  |  |
+| Retevis_RT87 |  |  |  |
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
 | TDXone_TD-Q8A |  |  |  |
