@@ -100,15 +100,23 @@
 | Kenwood_TH-G71 |  |  | Yes |
 | Kenwood_TH-K2 |  |  | Yes |
 | Kenwood_TK-2180 |  |  | Yes |
+| Kenwood_TK-260 |  |  |  |
 | Kenwood_TK-260G |  |  |  |
+| Kenwood_TK-270 |  |  |  |
 | Kenwood_TK-270G |  |  |  |
+| Kenwood_TK-272 |  |  |  |
 | Kenwood_TK-272G |  |  |  |
+| Kenwood_TK-278 |  |  |  |
 | Kenwood_TK-278G |  |  |  |
 | Kenwood_TK-3180K |  |  | Yes |
 | Kenwood_TK-3180K2 |  |  | Yes |
+| Kenwood_TK-360 |  |  |  |
 | Kenwood_TK-360G |  |  |  |
+| Kenwood_TK-370 |  |  |  |
 | Kenwood_TK-370G |  |  |  |
+| Kenwood_TK-372 |  |  |  |
 | Kenwood_TK-372G |  |  |  |
+| Kenwood_TK-378 |  |  |  |
 | Kenwood_TK-378G |  |  |  |
 | Kenwood_TK-388G |  |  |  |
 | Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
