@@ -92,6 +92,7 @@
 | Kenwood_HMK |  |  |  |
 | Kenwood_ITM |  |  |  |
 | Kenwood_TH-D7 |  |  | Yes |
+| Kenwood_TH-D72_clone_mode |  |  |  |
 | Kenwood_TH-D72_live_mode |  |  | Yes |
 | Kenwood_TH-D7G |  |  | Yes |
 | Kenwood_TH-F6 |  |  | Yes |
@@ -99,15 +100,23 @@
 | Kenwood_TH-G71 |  |  | Yes |
 | Kenwood_TH-K2 |  |  | Yes |
 | Kenwood_TK-2180 |  |  | Yes |
+| Kenwood_TK-260 |  |  |  |
 | Kenwood_TK-260G |  |  |  |
+| Kenwood_TK-270 |  |  |  |
 | Kenwood_TK-270G |  |  |  |
+| Kenwood_TK-272 |  |  |  |
 | Kenwood_TK-272G |  |  |  |
+| Kenwood_TK-278 |  |  |  |
 | Kenwood_TK-278G |  |  |  |
 | Kenwood_TK-3180K |  |  | Yes |
 | Kenwood_TK-3180K2 |  |  | Yes |
+| Kenwood_TK-360 |  |  |  |
 | Kenwood_TK-360G |  |  |  |
+| Kenwood_TK-370 |  |  |  |
 | Kenwood_TK-370G |  |  |  |
+| Kenwood_TK-372 |  |  |  |
 | Kenwood_TK-372G |  |  |  |
+| Kenwood_TK-378 |  |  |  |
 | Kenwood_TK-378G |  |  |  |
 | Kenwood_TK-388G |  |  |  |
 | Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
@@ -139,6 +148,8 @@
 | Kenwood_TM-G707 |  |  | Yes |
 | Kenwood_TM-V7 |  |  | Yes |
 | Kenwood_TM-V71 |  |  | Yes |
+| Kenwood_TS-2000 |  |  | Yes |
+| Kenwood_TS-480_CloneMode |  |  |  |
 | Kenwood_TS-480_LiveMode |  |  | Yes |
 | Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
 | LUITON_LT-588UV |  |  | Yes |
@@ -200,8 +211,10 @@
 | Retevis_RT68 |  |  |  |
 | Retevis_RT76 |  |  |  |
 | Retevis_RT76P |  |  |  |
+| Retevis_RT87 |  |  |  |
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
+| Retevis_RT98 |  |  |  |
 | TDXone_TD-Q8A |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
@@ -216,9 +229,11 @@
 | Yaesu_FT-1500M |  |  | Yes |
 | Yaesu_FT-1802M |  |  | Yes |
 | Yaesu_FT-25R |  |  | Yes |
+| Yaesu_FT-2800M |  |  | Yes |
 | Yaesu_FT-4VR |  |  | Yes |
 | Yaesu_FT-4XE |  |  | Yes |
 | Yaesu_FT-4XR |  |  | Yes |
+| Yaesu_FT-60 |  |  | Yes |
 | Yaesu_FT-65E |  |  | Yes |
 | Yaesu_FT-65R |  |  | Yes |
 | Yaesu_FT-7100M |  |  | Yes |
