@@ -505,9 +505,18 @@ def _enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident == radio._fingerprint:
-        LOG.debug(util.hexprint(ident))
-        raise errors.RadioError("Radio returned unknown identification string")
+    # check if ident is OK
+    itis = False
+    for fp in radio._fingerprint:
+        if fp in ident:
+            # got it!
+            itis = True
+
+            break
+
+    if itis is False:
+        LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
+        raise errors.RadioError("Radio identification failed.")
 
     try:
         serial.write(CMD_ACK)
@@ -651,7 +660,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     VALID_BANDS = [(400000000, 480000000)]
 
     _magic = "PRMZUNE"
-    _fingerprint = "P3207s\xF8\xFF"
+    _fingerprint = ["P3207s\xF8\xFF", ]
     _upper = 16
     _ack_1st_block = True
     _skipflags = True
@@ -1532,7 +1541,7 @@ class RB17ARadio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PROA8US"
-    _fingerprint = "P3217s\xF8\xFF"
+    _fingerprint = ["P3217s\xF8\xFF", ]
     _upper = 30
     _skipflags = True
     _reserved = False
@@ -1561,7 +1570,7 @@ class RB26Radio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PHOGR" + "\x01" + "0"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = True
@@ -1591,7 +1600,7 @@ class RT76Radio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PHOGR\x14\xD4"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = False
@@ -1624,7 +1633,7 @@ class RT29UHFRadio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
     _magic = "PROHRAM"
-    _fingerprint = "P3207" + "\x13\xF8\xFF"  # UHF model
+    _fingerprint = ["P3207" + "\x13\xF8\xFF", ]  # UHF model
     _upper = 16
     _skipflags = True
     _reserved = False
@@ -1655,7 +1664,7 @@ class RT29VHFRadio(RT29UHFRadio):
     VALID_BANDS = [(136000000, 174000000)]
 
     _magic = "PROHRAM"
-    _fingerprint = "P2207" + "\x01\xF8\xFF"  # VHF model
+    _fingerprint = ["P2207" + "\x01\xF8\xFF", ]  # VHF model
 
 
 @directory.register
@@ -1670,7 +1679,7 @@ class RB23Radio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PHOGR" + "\x01" + "0"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = True
@@ -1698,7 +1707,7 @@ class RT19Radio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = "PHOGRQ^"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF", ]
     _upper = 22
     _mem_params = (_upper,  # number of channels
                    0x160,   # memory start
@@ -1729,7 +1738,7 @@ class RT619Radio(RT19Radio):
                     chirp_common.PowerLevel("Low", watts=0.49)]
 
     _magic = "PHOGRS]"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF", ]
     _upper = 16
     _mem_params = (_upper,  # number of channels
                    0x100,   # memory start
@@ -1755,7 +1764,8 @@ class AR63Radio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
     _magic = "PHOGR\xF5\x9A"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF",
+                    "P32073" + "\x03\xFF", ]
     _upper = 16
     _ack_1st_block = False
     _skipflags = True
@@ -1786,7 +1796,7 @@ class RT40BRadio(RT21Radio):
     VALID_BANDS = [(400000000, 480000000)]
 
     _magic = "PHOGRH" + "\x5C"
-    _fingerprint = "P32073" + "\x02\xFF"
+    _fingerprint = ["P32073" + "\x02\xFF", ]
     _upper = 22
     _mem_params = (_upper,  # number of channels
                    )
