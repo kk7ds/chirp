@@ -9,7 +9,6 @@ Feidaxin_FD-268B.img
 Feidaxin_FD-288B.img
 Jetstream_JT270MH.img
 Jetstream_JT270M.img
-Kenwood_TS-480_CloneMode.img
 Leixen_VV-898.img
 Leixen_VV-898S.img
 LUITON_LT-580_UHF.img

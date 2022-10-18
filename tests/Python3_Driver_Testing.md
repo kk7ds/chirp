@@ -149,6 +149,7 @@
 | Kenwood_TM-V7 |  |  | Yes |
 | Kenwood_TM-V71 |  |  | Yes |
 | Kenwood_TS-2000 |  |  | Yes |
+| Kenwood_TS-480_CloneMode |  |  |  |
 | Kenwood_TS-480_LiveMode |  |  | Yes |
 | Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
 | LUITON_LT-588UV |  |  | Yes |
