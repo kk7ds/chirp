@@ -121,7 +121,7 @@
 | Kenwood_TK-388G |  |  |  |
 | Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | Kenwood_TK-7108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
-| Kenwood_TK-7180 |  |  | Yes |
+| Kenwood_TK-7180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes |
 | Kenwood_TK-760 |  |  |  |
 | Kenwood_TK-760G |  |  |  |
 | Kenwood_TK-762 |  |  |  |
@@ -130,7 +130,7 @@
 | Kenwood_TK-768G |  |  |  |
 | Kenwood_TK-8102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | Kenwood_TK-8108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
-| Kenwood_TK-8180 |  |  | Yes |
+| Kenwood_TK-8180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes |
 | Kenwood_TK-860 |  |  |  |
 | Kenwood_TK-860G |  |  |  |
 | Kenwood_TK-862 |  |  |  |

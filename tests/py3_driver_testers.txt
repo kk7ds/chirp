@@ -7,10 +7,12 @@ Baofeng_BF-888,@kk7ds,13-Feb-2019
 Baofeng_UV-3R,@yarda,26-Sep-2022
 Icom_ID-31A,@kk7ds,12-Feb-2019
 Icom_IC-910,@mfncooper,1-Oct-2021
-Kenwood_TK-8102,@kk7ds,15-Feb-2019
 Kenwood_TK-7102,@kk7ds,15-Feb-2019
-Kenwood_TK-8108,@kk7ds,15-Feb-2019
 Kenwood_TK-7108,@kk7ds,15-Feb-2019
+Kenwood_TK-7180,@kk7ds,18-Oct-2022
+Kenwood_TK-8102,@kk7ds,15-Feb-2019
+Kenwood_TK-8108,@kk7ds,15-Feb-2019
+Kenwood_TK-8180,@kk7ds,18-Oct-2022
 Yaesu_FT-7800_7900,@kk7ds,14-Feb-2019
 Yaesu_FT-817,@kk7ds,14-Feb-2019
 Yaesu_VX-3,@kk7ds,15-Feb-2019

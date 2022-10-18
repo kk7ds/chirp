@@ -353,7 +353,7 @@ def do_upload(radio):
             send(radio, make_frame('Z', block, b'\xFF'))
         else:
             checksum = checksum_data(chunk)
-            send(radio, make_frame('W', block, chunk + chr(checksum)))
+            send(radio, make_frame('W', block, chunk + bytes([checksum])))
 
         ack = radio.pipe.read(1)
         if ack != b'\x06':
