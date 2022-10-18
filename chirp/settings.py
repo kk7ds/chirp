@@ -423,7 +423,7 @@ class RadioSetting(RadioSettingGroup):
         return "%s:%s" % (self._name, self.value)
 
     def __repr__(self):
-        return "[RadioSetting %s:%s]" % (self._name, self._value)
+        return "[RadioSetting %s:%s]" % (self._name, self.value)
 
     # Magic foo.value attribute
     def __getattr__(self, name):
