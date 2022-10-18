@@ -111,6 +111,8 @@ class TestSettingContainers(base.BaseTest):
         self.assertEqual(rs.value, val)
         rs.value = False
         self.assertEqual(val.get_value(), False)
+        self.assertEqual('foo:False', str(rs))
+        self.assertEqual('[RadioSetting foo:False]', repr(rs))
 
     def test_radio_setting_multi(self):
         val1 = settings.RadioSettingValueBoolean(True)
