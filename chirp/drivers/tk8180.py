@@ -1010,10 +1010,11 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                                 RadioSettingValueString(0, 12, _name))
             zone.append(name)
 
-            def apply_timer(setting, key):
+            def apply_timer(setting, key, zone_number):
                 val = int(setting.value)
                 if val == 0:
                     val = 0xFFFF
+                _zone = getattr(self._memobj, 'zone%i' % zone_number).zoneinfo
                 setattr(_zone, key, val)
 
             def collapse(val):
@@ -1025,25 +1026,25 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             timer = RadioSetting(
                 'timeout', 'Time-out Timer',
                 RadioSettingValueInteger(15, 1200, collapse(_zone.timeout)))
-            timer.set_apply_callback(apply_timer, 'timeout')
+            timer.set_apply_callback(apply_timer, 'timeout', i)
             zone.append(timer)
 
             timer = RadioSetting(
                 'tot_alert', 'TOT Pre-Alert',
                 RadioSettingValueInteger(0, 10, collapse(_zone.tot_alert)))
-            timer.set_apply_callback(apply_timer, 'tot_alert')
+            timer.set_apply_callback(apply_timer, 'tot_alert', i)
             zone.append(timer)
 
             timer = RadioSetting(
                 'tot_rekey', 'TOT Re-Key Time',
                 RadioSettingValueInteger(0, 60, collapse(_zone.tot_rekey)))
-            timer.set_apply_callback(apply_timer, 'tot_rekey')
+            timer.set_apply_callback(apply_timer, 'tot_rekey', i)
             zone.append(timer)
 
             timer = RadioSetting(
                 'tot_reset', 'TOT Reset Time',
                 RadioSettingValueInteger(0, 15, collapse(_zone.tot_reset)))
-            timer.set_apply_callback(apply_timer, 'tot_reset')
+            timer.set_apply_callback(apply_timer, 'tot_reset', i)
             zone.append(timer)
 
             zone.append(self._inverted_flag_setting(
