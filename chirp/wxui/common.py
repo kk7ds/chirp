@@ -131,6 +131,10 @@ class ChirpSettingGrid(wx.Panel):
                 if editor:
                     self.pg.Append(editor)
 
+    @property
+    def name(self):
+        return self._group.get_name()
+
     def _pg_changed(self, event):
         wx.PostEvent(self, EditorChanged(self.GetId()))
 
@@ -188,15 +192,21 @@ class ChirpSettingGrid(wx.Panel):
                                 setting.get_name(),
                                 value=str(value))
 
-    def get_values(self):
+    def get_setting_values(self):
+        """Return a dict of {name: (RadioSetting, newvalue)}"""
         values = {}
         for prop in self.pg._Items():
             if isinstance(prop, wx.propgrid.EnumProperty):
                 value = self._choices[prop.GetName()][prop.GetValue()]
             else:
                 value = prop.GetValue()
-            values[prop.GetName()] = value
+            setting = self._group[prop.GetName()]
+            values[prop.GetName()] = setting, value
         return values
+
+    def get_values(self):
+        """Return a dict of {name: newvalue}"""
+        return {k: v[1] for k, v in self.get_setting_values().items()}
 
     def saved(self):
         for prop in self.pg._Items():

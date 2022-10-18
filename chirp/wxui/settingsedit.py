@@ -59,9 +59,11 @@ class ChirpSettingsEdit(common.ChirpEditor):
             all_values = {}
             for i in range(self._group_control.GetPageCount()):
                 page = self._group_control.GetPage(i)
-                all_values.update(page.get_values())
-            for group in self._settings:
-                self._apply_setting_group(all_values, group)
+                for name, (setting, val) in page.get_setting_values().items():
+                    LOG.debug('Setting %s:%s=%r' % (page.name,
+                                                    setting.get_name(),
+                                                    val))
+                    setting.value = val
             return True
         except Exception as e:
             LOG.exception('Failed to apply settings')
@@ -73,7 +75,8 @@ class ChirpSettingsEdit(common.ChirpEditor):
         for element in group.values():
             if isinstance(element, settings.RadioSetting):
                 if element.value.get_mutable():
-                    element.value = all_values[element.get_name()]
+                    element.value = \
+                        all_values[group.get_name()][element.get_name()]
             else:
                 self._apply_setting_group(all_values, element)
 
