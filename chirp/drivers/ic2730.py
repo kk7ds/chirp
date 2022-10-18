@@ -817,7 +817,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
 
         stx = ""
         for i in range(0, 16):
-            stx += chr(_cmnt.com[i])
+            stx += chr(int(_cmnt.com[i]))
         stx = stx.rstrip()
         rx = RadioSettingValueString(0, 16, stx)
         rset = RadioSetting("comment.com", "Comment (16 chars)", rx)
@@ -1187,7 +1187,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         for kx in range(0, 25):
             stx = ""
             for i in range(0, 6):
-                stx += chr(_pses[kx].name[i])
+                stx += chr(int(_pses[kx].name[i]))
             stx = stx.rstrip()
             rx = RadioSettingValueString(0, 6, stx)
             rset = RadioSetting("pgmscanedge/%d.name" % kx,
@@ -1286,7 +1286,7 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
         for kx in range(0, 10):
             stx = ""
             for i in range(0, 6):
-                stx += chr(_psln[kx].nam[i])
+                stx += chr(int(_psln[kx].nam[i]))
             stx = stx.rstrip()
             rx = RadioSettingValueString(0, 6, stx)
             rset = RadioSetting("pslnam/%d.nam" % kx,

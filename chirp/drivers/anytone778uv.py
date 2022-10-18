@@ -1143,7 +1143,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         # Starting Display
         name = ""
         for i in range(7):  # 0 - 7
-            name += chr(self._memobj.starting_display.line[i])
+            name += chr(int(self._memobj.starting_display.line[i]))
         name = name.upper().rstrip()  # remove trailing spaces
 
         rs = RadioSettingValueString(0, 7, name)
@@ -1220,7 +1220,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 str1 = ""
                 for sx in chrx:
                     if int(sx) > 31 and int(sx) < 127:
-                        str1 += chr(sx)
+                        str1 += chr(int(sx))
                 return str1
 
             def _pswd_vfy(setting, obj, atrb):

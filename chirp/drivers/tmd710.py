@@ -276,7 +276,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             mnx = ""
             for char in _nam.name:
                 if int(char) < 127:
-                    mnx += chr(char)
+                    mnx += chr(int(char))
             mem.name = mnx
         if _mem.rxfreq == 0x0ffffffff or _mem.rxfreq == 0:
             mem.empty = True
@@ -499,7 +499,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             str1 = ""
             for sx in chrx:
                 if int(sx) > 31 and int(sx) < 127:
-                    str1 += chr(sx)
+                    str1 += chr(int(sx))
             return str1
 
         def _pswd_vfy(setting, obj, atrb):

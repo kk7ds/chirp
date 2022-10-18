@@ -586,7 +586,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             _mem.split = 1
         mnx = ""
         for char in _mem.name:
-            mnx += chr(char)
+            mnx += chr(int(char))
         mem.name = mnx.strip()
         mem.name = mem.name.upper()
         if _mem.rxfreq == 0:
