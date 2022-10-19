@@ -8,6 +8,7 @@ import wx.grid
 import wx.propgrid
 
 from chirp import chirp_common
+from chirp import bandplan
 from chirp.ui import config
 from chirp.wxui import common
 from chirp.wxui import developer
@@ -243,6 +244,8 @@ class ChirpMemEdit(common.ChirpEditor):
 
         self._col_defs = self._setup_columns()
 
+        self.bandplan = bandplan.BandPlans(CONF)
+
         self._grid = wx.grid.Grid(self)
         self._grid.CreateGrid(self._features.memory_bounds[1] +
                               len(self._features.valid_special_chans) + 1,
@@ -355,6 +358,28 @@ class ChirpMemEdit(common.ChirpEditor):
             m = self._radio.get_memory(i)
             self.refresh_memory(m)
 
+    def _set_memory_defaults(self, mem):
+        if not CONF.get_bool('auto_edits', 'state', True):
+            return
+
+        defaults = self.bandplan.get_defaults_for_frequency(mem.freq)
+
+        if not defaults.offset:
+            mem.duplex = ''
+        elif defaults.offset > 0:
+            mem.duplex = '+'
+            mem.offset = defaults.offset
+        elif defaults.offset < 0:
+            mem.duplex = '-'
+            mem.offset = abs(defaults.offset)
+
+        if defaults.step_khz:
+            mem.tuning_step = defaults.step_khz
+        if defaults.mode:
+            mem.mode = defaults.mode
+        if defaults.tones:
+            mem.rtone = defaults.tones[0]
+
     def _memory_edited(self, event):
         """
         Called when the memory row in the UI is edited.
@@ -377,6 +402,8 @@ class ChirpMemEdit(common.ChirpEditor):
             if col_def.label == 'Name':
                 val = self._radio.filter_name(val)
             col_def.digest_value(mem, val)
+            if col_def.label == 'Frequency':
+                self._set_memory_defaults(mem)
             mem.empty = False
             job = self._radio.set_memory(mem)
         except Exception as e:

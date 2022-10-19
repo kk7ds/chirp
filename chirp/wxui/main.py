@@ -8,6 +8,7 @@ import wx
 import wx.aui
 import wx.lib.newevent
 
+from chirp import bandplan
 from chirp import directory
 from chirp import platform
 from chirp.ui import config
@@ -275,6 +276,20 @@ class ChirpMain(wx.Frame):
         upload_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
+
+        radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
+
+        auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
+                                 'Enable Automatic Edits',
+                                 kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU, self._menu_auto_edits, auto_edits)
+        radio_menu.Append(auto_edits)
+        auto_edits.Check(CONF.get_bool('auto_edits', 'state', True))
+
+        select_bandplan = wx.MenuItem(radio_menu, wx.NewId(),
+                                      'Select Bandplan')
+        self.Bind(wx.EVT_MENU, self._menu_select_bandplan, select_bandplan)
+        radio_menu.Append(select_bandplan)
 
         if CONF.get_bool('developer', 'state'):
             radio_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
@@ -647,3 +662,27 @@ class ChirpMain(wx.Frame):
         wx.MessageBox(('Developer state is now %s. '
                        'CHIRP must be restarted to take effect') % state,
                       'Restart Required', wx.OK)
+
+    def _menu_auto_edits(self, event):
+        CONF.set_bool('auto_edits', event.IsChecked(), 'state')
+        LOG.debug('Set auto_edits=%s' % event.IsChecked())
+
+    def _menu_select_bandplan(self, event):
+        bandplans = bandplan.BandPlans(CONF) 
+        plans = sorted([(shortname, details[0])
+                        for shortname, details in bandplans.plans.items()],
+                       key=lambda x: x[1])
+        d = wx.SingleChoiceDialog(self, 'Select a bandplan',
+                                  'Bandplan',
+                                  [x[1] for x in plans])
+        current = 0
+        for index, (shortname, name) in enumerate(plans):
+            if CONF.get_bool(shortname, 'bandplan'):
+                d.SetSelection(index)
+                break
+        r = d.ShowModal()
+        if r == wx.ID_OK:
+            selected = plans[d.GetSelection()][0]
+            LOG.info('Selected bandplan: %s' % selected)
+            for shortname, name in plans:
+                CONF.set_bool(shortname, shortname == selected, 'bandplan')

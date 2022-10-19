@@ -152,4 +152,3 @@ class BandPlans(object):
                     break
 
         return result
-
