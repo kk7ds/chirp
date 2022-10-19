@@ -153,6 +153,8 @@
 | Kenwood_TS-2000 |  |  | Yes |
 | Kenwood_TS-480_CloneMode |  |  |  |
 | Kenwood_TS-480_LiveMode |  |  | Yes |
+| Kenwood_TS-590SG_CloneMode |  |  |  |
+| Kenwood_TS-590S_CloneMode |  |  |  |
 | Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
 | LUITON_LT-316 |  |  |  |
 | LUITON_LT-588UV |  |  | Yes |
