@@ -234,6 +234,8 @@ class ChirpMemEdit(common.ChirpEditor):
 
         self._radio = radio
         self._features = self._radio.get_features()
+        # This is set based on the radio behavior during refresh()
+        self._negative_specials = False
 
         #self._radio.subscribe(self._job_done)
         self._jobs = {}
@@ -307,10 +309,27 @@ class ChirpMemEdit(common.ChirpEditor):
         ]
         return defs
 
-    def refresh_memory(self, memory):
-        self._memory_cache[memory.number] = memory
+    def _memory_to_row(self, memory):
+        number = memory.number
+        if number < 0:
+            # Some radios use negative positions for special memory numbers,
+            # so map those after the memory bounds for consistency
+            number = self._features.memory_bounds[1] + abs(number)
+            LOG.debug('Mapped memory %s from %i to %i' % (
+                memory.extd_number, memory.number, number))
+            self._negative_specials = True
+        return number - self._features.memory_bounds[0]
 
-        row = memory.number - self._features.memory_bounds[0]
+    def _row_to_memory(self, row):
+        number = row + self._features.memory_bounds[0]
+        if number > self._features.memory_bounds[1] and self._negative_specials:
+            number = 0 - (number - self._features.memory_bounds[1])
+            LOG.debug('Row %i mapped to %i' % (row, number))
+        return number
+
+    def refresh_memory(self, memory):
+        row = self._memory_to_row(memory)
+        self._memory_cache[row] = memory
 
         if memory.extd_number:
             self._grid.SetRowLabelValue(row, memory.extd_number)
@@ -332,8 +351,6 @@ class ChirpMemEdit(common.ChirpEditor):
                 continue
             self.refresh_memory(m)
 
-        return
-
         for i in self._features.valid_special_chans:
             m = self._radio.get_memory(i)
             self.refresh_memory(m)
@@ -350,7 +367,7 @@ class ChirpMemEdit(common.ChirpEditor):
         col_def = self._col_defs[col]
 
         try:
-            mem = self._memory_cache[row + self._features.memory_bounds[0]]
+            mem = self._memory_cache[row]
         except KeyError:
             wx.MessageBox('Unable to edit memory before radio is loaded')
             event.Veto()
@@ -386,7 +403,7 @@ class ChirpMemEdit(common.ChirpEditor):
         Also provides the trigger to the editorset that we have changed.
         """
         row = event.GetRow()
-        mem = self._radio.get_memory(row + self._features.memory_bounds[0])
+        mem = self._radio.get_memory(self._row_to_memory(row))
         self.refresh_memory(mem)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
