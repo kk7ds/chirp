@@ -317,6 +317,14 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
         help_menu.Append(about_item)
 
+        developer_menu = wx.MenuItem(help_menu, wx.NewId(), 'Developer Mode',
+                                     kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._menu_developer, developer_menu),
+                  developer_menu)
+        help_menu.Append(developer_menu)
+        developer_menu.Check(CONF.get_bool('developer', 'state'))
+
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
         menu_bar.Append(edit_menu, '&Edit')
@@ -633,3 +641,9 @@ class ChirpMain(wx.Frame):
         wx.MessageBox(aboutinfo, 'About CHIRP',
                       wx.OK | wx.ICON_INFORMATION)
 
+    def _menu_developer(self, menuitem, event):
+        CONF.set_bool('developer', menuitem.IsChecked(), 'state')
+        state = menuitem.IsChecked() and 'enabled' or 'disabled'
+        wx.MessageBox(('Developer state is now %s. '
+                       'CHIRP must be restarted to take effect') % state,
+                      'Restart Required', wx.OK)
