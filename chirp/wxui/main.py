@@ -39,7 +39,7 @@ class ChirpEditorSet(wx.Panel):
         self._filename = filename
         self._modified = not os.path.exists(filename)
 
-        self._editors = wx.Notebook(self, style=wx.NB_LEFT)
+        self._editors = wx.Notebook(self, style=wx.NB_TOP)
 
         self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING,
                            self._editor_selected)
