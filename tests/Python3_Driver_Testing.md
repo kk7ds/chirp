@@ -156,6 +156,7 @@
 | Kenwood_TS-590SG_CloneMode |  |  |  |
 | Kenwood_TS-590S_CloneMode |  |  |  |
 | Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
+| Kenwood_TS-850 |  |  | Yes |
 | LUITON_LT-316 |  |  |  |
 | LUITON_LT-588UV |  |  | Yes |
 | MTC_UV-5R-3 |  |  |  |
