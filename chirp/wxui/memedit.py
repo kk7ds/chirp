@@ -246,6 +246,7 @@ class ChirpMemEdit(common.ChirpEditor):
                               len(self._features.valid_special_chans) + 1,
                               len(self._col_defs))
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
+        self._grid.DisableDragRowSize()
 
         self._fixed_font = wx.Font(pointSize=10,
                                    family=wx.FONTFAMILY_TELETYPE,
