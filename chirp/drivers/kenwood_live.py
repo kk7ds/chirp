@@ -122,7 +122,12 @@ def get_id(ser):
             ser.baudrate = i
             ser.write(LAST_DELIMITER[0].encode())
             ser.read(25)
-            resp = command(ser, "ID")
+            try:
+                resp = command(ser, "ID")
+            except UnicodeDecodeError:
+                # If we got binary here, we are using the wrong rate
+                # or not talking to a kenwood live radio.
+                continue
 
             # most kenwood radios
             if " " in resp:

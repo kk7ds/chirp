@@ -98,7 +98,7 @@
 | Kenwood_TH-D74_live_mode | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | Kenwood_TH-D7G |  |  | Yes |
 | Kenwood_TH-F6 |  |  | Yes |
-| Kenwood_TH-F7 |  |  | Yes |
+| Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes |
 | Kenwood_TH-G71 |  |  | Yes |
 | Kenwood_TH-K2 |  |  | Yes |
 | Kenwood_TK-2180 |  |  | Yes |
