@@ -16,6 +16,7 @@ from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
 from chirp.wxui import memedit
+from chirp.wxui import query_sources
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -277,6 +278,13 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
 
+        source_menu = wx.Menu()
+        radio_menu.AppendSubMenu(source_menu, 'Query Source')
+
+        query_rb_item = wx.MenuItem(source_menu, wx.NewId(), 'RepeaterBook')
+        self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
+        source_menu.Append(query_rb_item)
+
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
@@ -325,6 +333,7 @@ class ChirpMain(wx.Frame):
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
+
 
         help_menu = wx.Menu()
 
@@ -686,3 +695,11 @@ class ChirpMain(wx.Frame):
             LOG.info('Selected bandplan: %s' % selected)
             for shortname, name in plans:
                 CONF.set_bool(shortname, shortname == selected, 'bandplan')
+
+    def _menu_query_rb(self, event):
+        d = query_sources.RepeaterBookQueryDialog(self,
+                                                  title='Query Repeaterbook')
+        r = d.ShowModal()
+        if r == wx.ID_OK:
+            LOG.debug('Result file: %s' % d.result_file)
+            self.open_file(d.result_file)
