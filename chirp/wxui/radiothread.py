@@ -7,6 +7,20 @@ import wx
 
 LOG = logging.getLogger(__name__)
 RadioThreadResult, EVT_RADIO_THREAD_RESULT = wx.lib.newevent.NewCommandEvent()
+_JOB_COUNTER = 0
+_JOB_COUNTER_LOCK = threading.Lock()
+
+
+def jobnumber():
+    global _JOB_COUNTER
+
+    # This shouldn't be called outside the main thread, so this should
+    # not be necessary. But, be careful anyway in case that changes in
+    # the future.
+    with _JOB_COUNTER_LOCK:
+        num = _JOB_COUNTER
+        _JOB_COUNTER += 1
+    return num
 
 
 class RadioJob:
@@ -17,9 +31,24 @@ class RadioJob:
         self.kwargs = kwargs
         self.result = None
         self.id = str(uuid.uuid4())
+        self.jobnumber = jobnumber()
+
+    @property
+    def score(self):
+        if self.fn == 'get_memory':
+            return 20
+        elif self.fn.startswith('get'):
+            return 10
+        else:
+            return 0
+
+    def __lt__(self, job):
+        # Prioritize jobs with lower scores and jobs submitted before us
+        return self.score < job.score or self.jobnumber < job.jobnumber
 
     def __repr__(self):
-        return '<RadioJob>%s(%s,%s)=%r' % (
+        return '<RadioJob@%i>%s(%s,%s)=%r' % (
+            self.score,
             self.fn,
             ','.join(repr(a) for a in self.args),
             ','.join('%s=%r' % (k, v) for k, v in self.kwargs.items()),
@@ -37,12 +66,12 @@ class RadioJob:
 
 
 class RadioThread(threading.Thread):
-    SENTINEL = object()
+    SENTINEL = RadioJob(None, 'END', [], {})
 
     def __init__(self, radio):
         super().__init__()
         self._radio = radio
-        self._queue = queue.Queue()
+        self._queue = queue.PriorityQueue()
         self._log = logging.getLogger('RadioThread')
 
     def submit(self, editor, fn, *a, **k):
@@ -61,3 +90,6 @@ class RadioThread(threading.Thread):
                 return
             job.dispatch(self._radio)
 
+    @property
+    def pending(self):
+        return self._queue.qsize()
