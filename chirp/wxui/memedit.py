@@ -439,17 +439,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def delete_memory_at(self, row, event):
-        number = row + self._features.memory_bounds[0]
-
-        def set_cb(job):
-            self.refresh_memory(job.args[0])
+        number = self.row2mem(row)
 
         def get_cb(job):
-            mem = job.result
-            mem.empty = True
-            self.do_radio(set_cb, 'set_memory', mem)
+            self.refresh_memory(job.result)
 
-        mem = self.do_radio(get_cb, 'get_memory', number)
+        def del_cb(job):
+            self.do_radio(get_cb, 'get_memory', number)
+
+        self.do_radio(del_cb, 'erase_memory', number)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def _delete_memories_at(self, rows, event):
