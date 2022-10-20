@@ -44,6 +44,12 @@ class ChirpEditorSet(wx.Panel):
 
     def add_editor(self, editor, title):
         self._editors.AddPage(editor, title)
+        self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editor)
+
+    def _editor_status(self, event):
+        LOG.info('Editor status: %s' % event.message)
+        wx.PostEvent(self, common.StatusMessage(self.GetId(),
+                                                message=event.message))
 
     def __init__(self, radio, filename, *a, **k):
         super(ChirpEditorSet, self).__init__(*a, **k)
@@ -202,6 +208,8 @@ class ChirpMain(wx.Frame):
                   self._editor_page_changed)
         self.Bind(wx.EVT_CLOSE, self._window_close)
 
+        self.statusbar = self.CreateStatusBar(1)
+
         self._update_window_for_editor()
 
     @property
@@ -225,6 +233,7 @@ class ChirpMain(wx.Frame):
                               os.path.basename(editorset.filename),
                               select=select)
         self.Bind(EVT_EDITORSET_CHANGED, self._editor_changed, editorset)
+        self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editorset)
         self._update_editorset_title(editorset)
 
     def make_menubar(self):
@@ -469,6 +478,10 @@ class ChirpMain(wx.Frame):
     def _editor_changed(self, event):
         self._update_editorset_title(event.editorset)
         self._update_window_for_editor()
+
+    def _editor_status(self, event):
+        # FIXME: Should probably only do this for the current editorset
+        self.statusbar.SetStatusText(event.message)
 
     def _editor_close(self, event):
         eset = self._editors.GetPage(event.GetSelection())

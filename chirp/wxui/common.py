@@ -13,6 +13,7 @@ LOG = logging.getLogger(__name__)
 
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
+StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
 
 
 class LiveAdapter(generic_csv.CSVRadio):
@@ -103,6 +104,9 @@ class ChirpEditor(wx.Panel):
 
         wx.CallAfter(cb)
 
+    def status_message(self, message):
+        wx.PostEvent(self, StatusMessage(self.GetId(), message=message))
+
     def cb_copy(self, cut=False):
         pass
 
@@ -153,6 +157,19 @@ class ChirpAsyncEditor(ChirpSyncEditor):
 
     def radio_thread_event(self, event):
         job = event.job
+
+        if job.fn == 'get_memory':
+            msg = 'Refreshed memory %s' % job.args[0]
+        elif job.fn == 'set_memory':
+            msg = 'Uploaded memory %s' % job.args[0].number
+        elif job.fn == 'get_settings':
+            msg = 'Retrieved settings'
+        elif job.fn == 'set_settings':
+            msg = 'Saved settings'
+        else:
+            msg = 'Finished radio job %s' % job.fn
+        self.status_message(msg)
+
         cb = self._jobs.pop(job.id)
         if cb:
             cb(job)
