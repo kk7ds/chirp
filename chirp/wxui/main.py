@@ -508,11 +508,13 @@ class ChirpMain(wx.Frame):
         can_upload = False
         CSVRadio = directory.get_radio('Generic_CSV')
         if eset is not None:
+            is_live = isinstance(eset.radio, chirp_common.LiveRadio)
             can_close = True
-            can_save = eset.modified
-            can_saveas = True
-            can_upload = not (isinstance(eset.radio, CSVRadio) and not
-                              isinstance(eset.radio, common.LiveAdapter))
+            can_save = eset.modified and not is_live
+            can_saveas = not is_live
+            can_upload = (not isinstance(eset.radio, CSVRadio) and
+                          not isinstance(eset.radio, common.LiveAdapter) and
+                          not is_live)
 
         items = [
             (wx.ID_CLOSE, can_close),
