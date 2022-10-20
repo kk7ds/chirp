@@ -79,6 +79,29 @@ class ChirpEditor(wx.Panel):
     def __init__(self, *a, **k):
         super().__init__(*a, **k)
         self.setup_radio_interface()
+        self.wait_dialog = None
+
+    def start_wait_dialog(self, message):
+        if self.wait_dialog:
+            LOG.error('Wait dialog already in progress!')
+            return
+
+        self.wait_dialog = wx.ProgressDialog('Please wait', message, 100,
+                                             parent=self)
+        wx.CallAfter(self.wait_dialog.ShowModal)
+
+    def bump_wait_dialog(self, value=None, message=None):
+        if value:
+            wx.CallAfter(self.wait_dialog.Update, value, newmsg=message)
+        else:
+            wx.CallAfter(self.wait_dialog.Pulse, message)
+
+    def stop_wait_dialog(self):
+        def cb():
+            self.wait_dialog.EndModal(wx.ID_OK)
+            self.wait_dialog = None
+
+        wx.CallAfter(cb)
 
     def cb_copy(self, cut=False):
         pass

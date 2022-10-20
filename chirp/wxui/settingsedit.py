@@ -27,6 +27,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
         self._group_control.Bind(wx.EVT_PAINT, self._activate)
 
     def _initialize(self, job):
+        self.stop_wait_dialog()
         with common.error_proof(Exception):
             if isinstance(job.result, Exception):
                 raise job.result
@@ -35,9 +36,9 @@ class ChirpSettingsEdit(common.ChirpEditor):
 
     def _activate(self, event):
         if not self._initialized:
+            self.start_wait_dialog('Getting settings')
             self.do_radio(self._initialize, 'get_settings')
             self._initialized = True
-            #wx.CallAfter(self._initialize)
 
     def _load_settings(self):
         for group in self._settings:
