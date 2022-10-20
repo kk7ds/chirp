@@ -282,7 +282,7 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
         self._sizer.Layout()
 
 
-class ChirpRadioBrowser(common.ChirpEditor):
+class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpRadioBrowser, self).__init__(*a, **k)
         self._loaded = False

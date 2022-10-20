@@ -36,6 +36,8 @@ class CloneThread(threading.Thread):
             self._dialog.complete()
 
 
+# NOTE: This is the legacy settings thread that facilitates
+# LiveAdapter to get/fetch settings.
 class SettingsThread(threading.Thread):
     def __init__(self, radio, progdialog, settings=None):
         super(SettingsThread, self).__init__()
@@ -236,7 +238,14 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             return
 
         if isinstance(self._radio, chirp_common.LiveRadio):
-            self._radio = common.LiveAdapter(self._radio)
+            if CONF.get_bool('live_adapter', 'state', False):
+                # Use LiveAdapter to make LiveRadio behave like CloneMode
+                self._radio = common.LiveAdapter(self._radio)
+            else:
+                # Live radios are live
+                # FIXME: This needs to make sure we can talk to the radio first
+                self.EndModal(wx.ID_OK)
+                return
 
         self._radio.status_fn = self._status
 

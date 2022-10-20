@@ -7,6 +7,7 @@ from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import errors
 from chirp import settings
+from chirp.wxui import radiothread
 
 LOG = logging.getLogger(__name__)
 
@@ -75,6 +76,10 @@ class LiveAdapter(generic_csv.CSVRadio):
 
 
 class ChirpEditor(wx.Panel):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self.setup_radio_interface()
+
     def cb_copy(self, cut=False):
         pass
 
@@ -89,6 +94,51 @@ class ChirpEditor(wx.Panel):
 
     def selected(self):
         pass
+
+
+class ChirpSyncEditor:
+    """Radio interface that makes synchronous calls.
+
+    This executes RadioJob requests synchronously in the calling
+    thread and directly spawns the callback. To be used only with
+    radio drivers that manipulate in-memory state.
+    """
+    def do_radio(self, cb, fn, *a, **k):
+        """Synchronous passthrough for non-Live radios"""
+        from chirp.wxui import clone
+        job = radiothread.RadioJob(self, fn, a, k)
+        try:
+            job.result = getattr(self._radio, fn)(*a, **k)
+        except Exception as e:
+            job.result = e
+        if cb:
+            cb(job)
+
+    def setup_radio_interface(self):
+        pass
+
+
+class ChirpAsyncEditor(ChirpSyncEditor):
+    """Radio interface that makes async calls in a helper thread.
+
+    This executes RadioJob requests asynchronously in a thread and
+    schedules the callback via a wx event.
+
+    """
+    def do_radio(self, cb, fn, *a, **k):
+        self._jobs[self._radio_thread.submit(self, fn, *a, **k)] = cb
+
+    def radio_thread_event(self, event):
+        job = event.job
+        cb = self._jobs.pop(job.id)
+        if cb:
+            cb(job)
+
+    def set_radio_thread(self, radio_thread):
+        self._radio_thread = radio_thread
+
+    def setup_radio_interface(self):
+        self._jobs = {}
 
 
 class ChirpSettingGrid(wx.Panel):

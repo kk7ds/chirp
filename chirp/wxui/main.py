@@ -9,6 +9,7 @@ import wx.aui
 import wx.lib.newevent
 
 from chirp import bandplan
+from chirp import chirp_common
 from chirp import directory
 from chirp import platform
 from chirp.ui import config
@@ -17,6 +18,7 @@ from chirp.wxui import clone
 from chirp.wxui import developer
 from chirp.wxui import memedit
 from chirp.wxui import query_sources
+from chirp.wxui import radiothread
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -32,12 +34,23 @@ OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
 
 class ChirpEditorSet(wx.Panel):
+    MEMEDIT_CLS = memedit.ChirpMemEdit
+    SETTINGS_CLS = settingsedit.ChirpCloneSettingsEdit
+
+    @property
+    def tab_name(self):
+        return '%s.%s' % (self.default_filename,
+                          self._radio.FILE_EXTENSION)
+
+    def add_editor(self, editor, title):
+        self._editors.AddPage(editor, title)
+
     def __init__(self, radio, filename, *a, **k):
         super(ChirpEditorSet, self).__init__(*a, **k)
         self._radio = radio
         if filename is None:
-            filename = '%s.%s' % (self.default_filename,
-                                  radio.FILE_EXTENSION)
+            filename = self.tab_name
+
         self._filename = filename
         self._modified = not os.path.exists(filename)
 
@@ -60,23 +73,19 @@ class ChirpEditorSet(wx.Panel):
             format = 'Memories'
 
         for radio in radios:
-            edit = memedit.ChirpMemEdit(radio, self._editors)
+            edit = self.MEMEDIT_CLS(radio, self._editors)
+            self.add_editor(edit, format % {'variant': radio.VARIANT})
             edit.refresh()
             self.Bind(common.EVT_EDITOR_CHANGED, self._editor_changed)
-            self._editors.AddPage(edit, format % {'variant': radio.VARIANT})
 
         if features.has_settings:
-            if isinstance(radio, common.LiveAdapter):
-                settings = settingsedit.ChirpLiveSettingsEdit(radio,
-                                                              self._editors)
-            else:
-                settings = settingsedit.ChirpCloneSettingsEdit(radio,
-                                                               self._editors)
-            self._editors.AddPage(settings, 'Settings')
+            settings = self.SETTINGS_CLS(radio, self._editors)
+            self.add_editor(settings, 'Settings')
 
-        if CONF.get_bool('developer', 'state'):
+        if (CONF.get_bool('developer', 'state') and
+                not isinstance(radio, chirp_common.LiveRadio)):
             browser = developer.ChirpRadioBrowser(radio, self._editors)
-            self._editors.AddPage(browser, 'Browser')
+            self.add_editor(browser, 'Browser')
 
     def _editor_changed(self, event):
         self._modified = True
@@ -139,6 +148,34 @@ class ChirpEditorSet(wx.Panel):
 
     def select_all(self):
         return self.current_editor.select_all()
+
+    def close(self):
+        pass
+
+
+class ChirpLiveEditorSet(ChirpEditorSet):
+    MEMEDIT_CLS = memedit.ChirpLiveMemEdit
+    SETTINGS_CLS = settingsedit.ChirpLiveSettingsEdit
+
+    @property
+    def tab_name(self):
+        return '%s %s@LIVE' % (self._radio.VENDOR,
+                               self._radio.MODEL)
+
+    def __init__(self, radio, *a, **k):
+        self._radio_thread = radiothread.RadioThread(radio)
+        self._radio_thread.start()
+        super().__init__(radio, *a, **k)
+
+    def add_editor(self, editor, title):
+        super(ChirpLiveEditorSet, self).add_editor(editor, title)
+        editor.set_radio_thread(self._radio_thread)
+        self.Bind(radiothread.EVT_RADIO_THREAD_RESULT,
+                  editor.radio_thread_event,
+                  editor)
+
+    def close(self):
+        self._radio_thread.end()
 
 
 class ChirpMain(wx.Frame):
@@ -442,6 +479,8 @@ class ChirpMain(wx.Frame):
                     wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING) != wx.YES:
                 event.Veto()
 
+        eset.close()
+
         wx.CallAfter(self._update_window_for_editor)
 
     def _update_window_for_editor(self):
@@ -483,6 +522,13 @@ class ChirpMain(wx.Frame):
         CONF.set_int('window_w', size.GetWidth(), 'state')
         CONF.set_int('window_h', size.GetHeight(), 'state')
         config._CONFIG.save()
+
+        # Make sure we call close on each editor, so it can end
+        # threads and do other cleanup
+        for i in range(self._editors.GetPageCount()):
+            e = self._editors.GetPage(i)
+            e.close()
+
         self.Destroy()
 
     def _update_editorset_title(self, editorset):
@@ -585,7 +631,10 @@ class ChirpMain(wx.Frame):
             d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
-                editorset = ChirpEditorSet(radio, None, self._editors)
+                if isinstance(radio, chirp_common.LiveRadio):
+                    editorset = ChirpLiveEditorSet(radio, None, self._editors)
+                else:
+                    editorset = ChirpEditorSet(radio, None, self._editors)
                 self.add_editorset(editorset)
 
     def _menu_upload(self, event):
