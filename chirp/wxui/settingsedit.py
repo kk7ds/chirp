@@ -118,7 +118,7 @@ class ChirpLiveSettingsEdit(ChirpSettingsEdit):
 
         self._apply_btn = wx.Button(buttons, wx.ID_APPLY)
         hbox.Add(self._apply_btn, 0,
-                  flag=wx.ALIGN_RIGHT|wx.ALL, border=10)
+                  flag=wx.ALL, border=10)
         self._apply_btn.Disable()
         self._apply_btn.Bind(wx.EVT_BUTTON, self._apply_settings_button)
 
