@@ -139,6 +139,9 @@ class ChirpCloneDialog(wx.Dialog):
             for alias in rclass.ALIASES:
                 self._vendors[alias.VENDOR].append(alias)
 
+        for models in self._vendors.values():
+            models.sort(key=lambda x: '%s %s' % (x.MODEL, x.VARIANT))
+
         self._vendor.Set(sorted(self._vendors.keys()))
         try:
             self.select_vendor_model(CONF.get('last_vendor', 'state'),
@@ -163,7 +166,8 @@ class ChirpCloneDialog(wx.Dialog):
         self._persist_choices()
 
     def _select_vendor(self, vendor):
-        models = [x.MODEL for x in self._vendors[vendor]]
+        models = [('%s %s' % (x.MODEL, x.VARIANT)).strip()
+                  for x in self._vendors[vendor]]
         self._model.Set(models)
         self._model.SetSelection(0)
 
@@ -202,6 +206,7 @@ class ChirpCloneDialog(wx.Dialog):
     def get_selected_rclass(self):
         vendor = self._vendor.GetStringSelection()
         model = self._model.GetSelection()
+        LOG.debug('Selected %r' % self._vendors[vendor][model])
         return self._vendors[vendor][model]
 
 
