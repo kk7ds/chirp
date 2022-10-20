@@ -183,6 +183,10 @@ class ChirpLiveEditorSet(ChirpEditorSet):
     def close(self):
         self._radio_thread.end()
 
+    @property
+    def modified(self):
+        return self._radio_thread.pending != 0
+
 
 class ChirpMain(wx.Frame):
     def __init__(self, *args, **kwargs):

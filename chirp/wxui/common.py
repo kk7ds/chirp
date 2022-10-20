@@ -174,6 +174,9 @@ class ChirpAsyncEditor(ChirpSyncEditor):
         if cb:
             cb(job)
 
+        # Update our status, which may be reset to unmodified
+        wx.PostEvent(self, EditorChanged(self.GetId()))
+
     def set_radio_thread(self, radio_thread):
         self._radio_thread = radio_thread
 
