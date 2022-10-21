@@ -217,18 +217,12 @@ GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
 GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3
 
 
-class TDH6Radio(chirp_common.Alias):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H6"
-
-
 @directory.register
 class RadioddityGA510Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Radioddity'
     MODEL = 'GA-510'
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
-    ALIASES = [TDH6Radio]
     POWER_LEVELS = [
         chirp_common.PowerLevel('H', watts=10),
         chirp_common.PowerLevel('L', watts=1),
@@ -848,3 +842,9 @@ class RetevisRA85Radio(RadioddityGA510Radio):
 
     def _set_nam(self, number):
         return self._memobj.names[number - 1]
+
+
+@directory.register
+class TDH6Radio(RadioddityGA510Radio):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H6"
