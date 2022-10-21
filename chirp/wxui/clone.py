@@ -192,7 +192,11 @@ class ChirpCloneDialog(wx.Dialog):
             wx.MessageBox(message,
                           'Error communicating with radio',
                           wx.ICON_ERROR)
-            self.EndModal(wx.ID_CANCEL)
+            if isinstance(self, ChirpDownloadDialog):
+                self._vendor.Enable()
+                self._model.Enable()
+            self._port.Enable()
+            self.FindWindowById(wx.ID_OK).Enable()
 
         wx.CallAfter(safe_fail)
 
@@ -258,6 +262,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
 
         self.select_vendor_model(self._radio.VENDOR,
                                  self._radio.MODEL)
+        self.disable_model_select()
 
         if isinstance(self._radio, chirp_common.LiveRadio):
             self._radio = common.LiveAdapter(self._radio)
