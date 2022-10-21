@@ -2,22 +2,15 @@ import sys
 import time
 from unittest import mock
 
-from tests.unit import base
-
 sys.modules['wx'] = wx = mock.MagicMock()
 
-event_cls = mock.MagicMock()
-event_type = mock.sentinel.radio_thread_result
-wx.lib.newevent.NewCommandEvent.return_value = (event_cls, event_type)
-
+from tests.unit import base
 from chirp.wxui import radiothread
 
 
 class TestRadioThread(base.BaseTest):
     def setUp(self):
         super().setUp()
-        wx.PostEvent.reset_mock()
-        event_cls.reset_mock()
 
     def test_radiojob(self):
         radio = mock.MagicMock()
@@ -25,9 +18,6 @@ class TestRadioThread(base.BaseTest):
         job = radiothread.RadioJob(editor, 'get_memory', [12], {})
         self.assertIsNone(job.dispatch(radio))
         radio.get_memory.assert_called_once_with(12)
-        wx.PostEvent.assert_called_once_with(editor, event_cls.return_value)
-        event_cls.assert_called_once_with(editor.GetId.return_value,
-                                          job=job)
         self.assertEqual(job.result, radio.get_memory.return_value)
 
     def test_radiojob_exception(self):
@@ -37,15 +27,15 @@ class TestRadioThread(base.BaseTest):
         job = radiothread.RadioJob(editor, 'get_memory', [12], {})
         self.assertIsNone(job.dispatch(radio))
         radio.get_memory.assert_called_once_with(12)
-        wx.PostEvent.assert_called_once_with(editor, event_cls.return_value)
-        event_cls.assert_called_once_with(editor.GetId.return_value,
-                                          job=job)
         self.assertIsInstance(job.result, ValueError)
 
     def test_thread(self):
         radio = mock.MagicMock()
         radio.get_features.side_effect = ValueError('some error')
         editor = mock.MagicMock()
+        # Simulate an edit conflict with the first event by returning
+        # False for "delivered" to force us to queue an event.
+        editor.radio_thread_event.side_effect = [False, True, True, True]
         thread = radiothread.RadioThread(radio)
         mem = mock.MagicMock()
         job1id = thread.submit(editor, 'get_memory', 12)
@@ -65,13 +55,27 @@ class TestRadioThread(base.BaseTest):
         radio.get_memory.assert_called_once_with(12)
         radio.set_memory.assert_called_once_with(mem)
         radio.get_features.assert_called_once_with()
-        self.assertEqual(3, wx.PostEvent.call_count)
+        self.assertEqual(4, editor.radio_thread_event.call_count)
 
-        expected_order = [job2id, job3id, job1id]
-        for i, (jobid, call) in enumerate(zip(expected_order,
-                                              wx.PostEvent.call_args_list)):
-            job = event_cls.call_args_list[i][1]['job']
+        # We expect the jobs to be delivered in order of
+        # priority. Since we return False for the first call to
+        # radio_thread_event(), job2 should be queued and then
+        # delivered first on the next cycle.
+        expected_order = [job2id, job2id, job3id, job1id]
+        for i, (jobid, call) in enumerate(
+                zip(expected_order,
+                    editor.radio_thread_event.call_args_list)):
+            job = call[0][0]
             self.assertEqual(jobid, job.id)
+
+        # We should call non-blocking for every call except the last
+        # one, when the queue is empty
+        editor.radio_thread_event.assert_has_calls([
+            mock.call(mock.ANY, block=False),
+            mock.call(mock.ANY, block=False),
+            mock.call(mock.ANY, block=False),
+            mock.call(mock.ANY, block=True),
+        ])
 
     def test_thread_abort_priority(self):
         radio = mock.MagicMock()

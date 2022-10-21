@@ -176,9 +176,6 @@ class ChirpLiveEditorSet(ChirpEditorSet):
     def add_editor(self, editor, title):
         super(ChirpLiveEditorSet, self).add_editor(editor, title)
         editor.set_radio_thread(self._radio_thread)
-        self.Bind(radiothread.EVT_RADIO_THREAD_RESULT,
-                  editor.radio_thread_event,
-                  editor)
 
     def close(self):
         self._radio_thread.end()

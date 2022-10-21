@@ -6,7 +6,6 @@ import uuid
 import wx
 
 LOG = logging.getLogger(__name__)
-RadioThreadResult, EVT_RADIO_THREAD_RESULT = wx.lib.newevent.NewCommandEvent()
 _JOB_COUNTER = 0
 _JOB_COUNTER_LOCK = threading.Lock()
 
@@ -61,8 +60,6 @@ class RadioJob:
             self.result = e
 
         LOG.debug('Radio finished %r' % self)
-        wx.PostEvent(self.editor, RadioThreadResult(
-            self.editor.GetId(), job=self))
 
 
 class RadioThread(threading.Thread):
@@ -73,6 +70,7 @@ class RadioThread(threading.Thread):
         self._radio = radio
         self._queue = queue.PriorityQueue()
         self._log = logging.getLogger('RadioThread')
+        self._waiting = []
 
     def submit(self, editor, fn, *a, **k):
         job = RadioJob(editor, fn, a, k)
@@ -89,6 +87,13 @@ class RadioThread(threading.Thread):
                 self._log.info('Exiting on request')
                 return
             job.dispatch(self._radio)
+            self._waiting.append(job)
+
+            for job in list(self._waiting):
+                delivered = job.editor.radio_thread_event(
+                    job, block=not self.pending)
+                if delivered:
+                    self._waiting.remove(job)
 
     @property
     def pending(self):

@@ -120,6 +120,30 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
         return int(chirp_common.to_MHz(float(input_value)))
 
 
+class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
+    """A locking GridCellChoiceEditor.
+
+    Events to our parent window will cause editing to stop and will
+    close our drop-down box, which is very annoying. This looks the
+    begin/end event to use the EDIT_LOCK to prevent other things from
+    submitting changes while we're in the middle of an edit.
+    """
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._locked = False
+
+    def BeginEdit(self, *a, **k):
+        common.EDIT_LOCK.acquire()
+        self._locked = True
+        super().BeginEdit(*a, **k)
+
+    def EndEdit(self, *a, **k):
+        super().EndEdit(*a, **k)
+        if self._locked:
+            self._locked = False
+            common.EDIT_LOCK.release()
+
+
 class ChirpToneColumn(ChirpMemoryColumn):
     def __init__(self, name, radio):
         super(ChirpToneColumn, self).__init__(name, radio)
@@ -143,8 +167,7 @@ class ChirpToneColumn(ChirpMemoryColumn):
         return float(input_value)
 
     def get_editor(self):
-        return wx.grid.GridCellChoiceEditor(['%.1f' % t
-                                             for t in chirp_common.TONES])
+        return ChirpChoiceEditor(['%.1f' % t for t in chirp_common.TONES])
 
     def get_propeditor(self, memory):
         current = self.value(memory)
@@ -165,7 +188,7 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
         return self._choices[idx]
 
     def get_editor(self):
-        return wx.grid.GridCellChoiceEditor(self._str_choices)
+        return ChirpChoiceEditor(self._str_choices)
 
     def get_propeditor(self, memory):
         current = self._render_value(memory, self.value(memory))
@@ -332,13 +355,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         row = self._memory_to_row(memory)
         self._memory_cache[row] = memory
 
-        if memory.extd_number:
-            self._grid.SetRowLabelValue(row, memory.extd_number)
-        else:
-            self._grid.SetRowLabelValue(row, str(memory.number))
+        with wx.grid.GridUpdateLocker(self._grid):
+            if memory.extd_number:
+                self._grid.SetRowLabelValue(row, memory.extd_number)
+            else:
+                self._grid.SetRowLabelValue(row, str(memory.number))
 
-        for col, col_def in enumerate(self._col_defs):
-            self._grid.SetCellValue(row, col, col_def.render_value(memory))
+            for col, col_def in enumerate(self._col_defs):
+                self._grid.SetCellValue(row, col, col_def.render_value(memory))
 
     def refresh(self):
 
@@ -352,7 +376,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             else:
                 self.refresh_memory(job.result)
 
-        for i in range(*self._features.memory_bounds):
+        lower, upper = self._features.memory_bounds
+        for i in range(lower, upper + 1):
                 m = self.do_radio(cb, 'get_memory', i)
 
         for i in self._features.valid_special_chans:
@@ -565,6 +590,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def select_all(self):
         self._grid.SelectAll()
+
+    def rows_visible(self):
+        first = self._grid.GetFirstFullyVisibleRow()
+        last = first + self._grid.GetScrollPageSize(wx.VERTICAL)
+        return first, last
 
 
 class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):
