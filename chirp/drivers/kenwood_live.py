@@ -65,13 +65,11 @@ LAST_DELIMITER = ("\r", " ")
 # fields, but others do.
 
 
-def command(ser, cmd, *args):
+def _command(ser, cmd, *args):
     """Send @cmd to radio via @ser"""
     global LOCK, LAST_DELIMITER, COMMAND_RESP_BUFSIZE
 
     start = time.time()
-
-    LOCK.acquire()
 
     # TODO: This global use of LAST_DELIMITER breaks reentrancy
     # and needs to be fixed.
@@ -95,9 +93,12 @@ def command(ser, cmd, *args):
     else:
         LOG.error("Giving up")
 
-    LOCK.release()
-
     return result.strip()
+
+
+def command(ser, cmd, *args):
+    with LOCK:
+        return _command(ser, cmd, *args)
 
 
 def get_id(ser):
@@ -121,7 +122,12 @@ def get_id(ser):
             ser.baudrate = i
             ser.write(LAST_DELIMITER[0].encode())
             ser.read(25)
-            resp = command(ser, "ID")
+            try:
+                resp = command(ser, "ID")
+            except UnicodeDecodeError:
+                # If we got binary here, we are using the wrong rate
+                # or not talking to a kenwood live radio.
+                continue
 
             # most kenwood radios
             if " " in resp:

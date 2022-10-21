@@ -98,7 +98,7 @@
 | Kenwood_TH-D74_live_mode | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | Kenwood_TH-D7G |  |  | Yes |
 | Kenwood_TH-F6 |  |  | Yes |
-| Kenwood_TH-F7 |  |  | Yes |
+| Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes |
 | Kenwood_TH-G71 |  |  | Yes |
 | Kenwood_TH-K2 |  |  | Yes |
 | Kenwood_TK-2180 |  |  | Yes |
@@ -153,7 +153,10 @@
 | Kenwood_TS-2000 |  |  | Yes |
 | Kenwood_TS-480_CloneMode |  |  |  |
 | Kenwood_TS-480_LiveMode |  |  | Yes |
+| Kenwood_TS-590SG_CloneMode |  |  |  |
+| Kenwood_TS-590S_CloneMode |  |  |  |
 | Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
+| Kenwood_TS-850 |  |  | Yes |
 | LUITON_LT-316 |  |  |  |
 | LUITON_LT-588UV |  |  | Yes |
 | MTC_UV-5R-3 |  |  |  |
