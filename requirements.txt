@@ -1,4 +1,5 @@
 six
-PyGObject;python_version>="3.0"
+wxPython>=4.0,<4.2.0 # See https://github.com/wxWidgets/Phoenix/issues/2225
 pyserial
 future
+requests

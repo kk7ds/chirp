@@ -3,3 +3,7 @@ mox3
 pytest
 pytest-xdist
 pytest-html
+six
+pyserial
+future
+requests

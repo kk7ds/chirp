@@ -12,7 +12,7 @@ runs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install python3-pip gobject-introspection python3-gi libgirepository1.0-dev
+        sudo apt-get install python3-pip python3-wxgtk4.0
         sudo python3 -mpip install tox
     - name: Run tox
       shell: bash
