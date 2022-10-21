@@ -10,7 +10,6 @@ import wx
 from chirp import CHIRP_VERSION
 from chirp.ui import config
 from chirp.ui import fips
-from chirp.drivers import repeaterbook
 
 CONF = config.get()
 LOG = logging.getLogger(__name__)
@@ -59,7 +58,7 @@ class QuerySourceDialog(wx.Dialog):
 
         self.statusmsg = wx.StaticText(
             self, label='',
-            style=(wx.ALIGN_CENTRE_HORIZONTAL|wx.ST_NO_AUTORESIZE|
+            style=(wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE |
                    wx.ST_ELLIPSIZE_END))
         vbox.Add(self.statusmsg, 0, wx.EXPAND)
 
@@ -76,7 +75,7 @@ class QuerySourceDialog(wx.Dialog):
 
         if id == wx.ID_OK:
             self.FindWindowById(wx.ID_OK).Disable()
-            fn = self.do_query()
+            self.do_query()
             return
 
         self.EndModal(id)
@@ -199,7 +198,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                 for k, v in fips.FIPS_COUNTIES[int(current_state)].items()}
             self._county.SetSelection(
                 self._county.FindString(_fips_to_county[current_county]))
-        except Exception as e:
+        except Exception:
             if current_county:
                 LOG.warning('Missing county code %r in state %r' % (
                     current_county,

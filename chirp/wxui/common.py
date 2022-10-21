@@ -1,5 +1,6 @@
 import functools
 import logging
+import threading
 
 import wx
 
@@ -14,6 +15,14 @@ LOG = logging.getLogger(__name__)
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
 StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
+
+# This is a lock that can be used to exclude edit-specific operations
+# from happening at the same time, like radiothread async
+# operations. This needs to be local to the thing with the wx.Grid as
+# its child, which is the chirp main window in our case. Making this
+# global is technically too broad, but in reality, it's equivalent for
+# us at the moment, and this is easier.
+EDIT_LOCK = threading.Lock()
 
 
 class LiveAdapter(generic_csv.CSVRadio):
@@ -132,7 +141,6 @@ class ChirpSyncEditor:
     """
     def do_radio(self, cb, fn, *a, **k):
         """Synchronous passthrough for non-Live radios"""
-        from chirp.wxui import clone
         job = radiothread.RadioJob(self, fn, a, k)
         try:
             job.result = getattr(self._radio, fn)(*a, **k)
@@ -155,9 +163,7 @@ class ChirpAsyncEditor(ChirpSyncEditor):
     def do_radio(self, cb, fn, *a, **k):
         self._jobs[self._radio_thread.submit(self, fn, *a, **k)] = cb
 
-    def radio_thread_event(self, event):
-        job = event.job
-
+    def radio_thread_event(self, job, block=True):
         if job.fn == 'get_memory':
             msg = 'Refreshed memory %s' % job.args[0]
         elif job.fn == 'set_memory':
@@ -168,14 +174,21 @@ class ChirpAsyncEditor(ChirpSyncEditor):
             msg = 'Saved settings'
         else:
             msg = 'Finished radio job %s' % job.fn
-        self.status_message(msg)
 
-        cb = self._jobs.pop(job.id)
-        if cb:
-            cb(job)
+        if not EDIT_LOCK.acquire(block):
+            return False
+        try:
+            self.status_message(msg)
+            cb = self._jobs.pop(job.id)
+            if cb:
+                wx.CallAfter(cb, job)
 
-        # Update our status, which may be reset to unmodified
-        wx.PostEvent(self, EditorChanged(self.GetId()))
+            # Update our status, which may be reset to unmodified
+            wx.PostEvent(self, EditorChanged(self.GetId()))
+        finally:
+            EDIT_LOCK.release()
+
+        return True
 
     def set_radio_thread(self, radio_thread):
         self._radio_thread = radio_thread
@@ -252,8 +265,8 @@ class ChirpSettingGrid(wx.Panel):
                         _('Value must be between %.4f and %.4f') % (
                             value.get_min(), value.get_max()))
         return ChirpFloatProperty(setting.get_shortname(),
-                                setting.get_name(),
-                                value=int(value))
+                                  setting.get_name(),
+                                  value=int(value))
 
     def _get_editor_choice(self, setting, value):
         choices = value.get_options()
@@ -355,6 +368,8 @@ class error_proof(object):
             self.show_error(e)
 
     def __call__(self, fn):
+        self.fn = fn
+
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
             return self.run_safe(fn, args, kwargs)
@@ -366,7 +381,7 @@ class error_proof(object):
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type:
             if exc_type in self._expected:
-                LOG.error('%s: %s: %s' % (fn, exc_type, exc_val))
+                LOG.error('%s: %s: %s' % (self.fn, exc_type, exc_val))
                 self.show_error(exc_val)
                 return True
             else:

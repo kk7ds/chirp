@@ -33,6 +33,7 @@ KEEP_RECENT = 8
 OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
 
+
 class ChirpEditorSet(wx.Panel):
     MEMEDIT_CLS = memedit.ChirpMemEdit
     SETTINGS_CLS = settingsedit.ChirpCloneSettingsEdit
@@ -176,9 +177,6 @@ class ChirpLiveEditorSet(ChirpEditorSet):
     def add_editor(self, editor, title):
         super(ChirpLiveEditorSet, self).add_editor(editor, title)
         editor.set_radio_thread(self._radio_thread)
-        self.Bind(radiothread.EVT_RADIO_THREAD_RESULT,
-                  editor.radio_thread_event,
-                  editor)
 
     def close(self):
         self._radio_thread.end()
@@ -206,7 +204,8 @@ class ChirpMain(wx.Frame):
         # self.make_toolbar()
 
         self._editors = wx.aui.AuiNotebook(
-            self, style=wx.aui.AUI_NB_CLOSE_ON_ALL_TABS|wx.aui.AUI_NB_TAB_MOVE)
+            self,
+            style=wx.aui.AUI_NB_CLOSE_ON_ALL_TABS | wx.aui.AUI_NB_TAB_MOVE)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
                   self._editor_page_changed)
@@ -379,11 +378,10 @@ class ChirpMain(wx.Frame):
             self._interact_driver_item = wx.NewId()
             interact_drv_item = wx.MenuItem(radio_menu,
                                             self._interact_driver_item,
-                                          'Interact with driver')
+                                            'Interact with driver')
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
-
 
         help_menu = wx.Menu()
 
@@ -416,27 +414,27 @@ class ChirpMain(wx.Frame):
 
         tbopen = tb.AddTool(wx.NewId(), 'Open', bm(wx.ART_FILE_OPEN),
                             'Open a file')
-        tbsave = tb.AddTool(wx.NewId(), 'Save', bm(wx.ART_FILE_SAVE),
-                            'Save file')
-        tbclose = tb.AddTool(wx.NewId(), 'Close', bm(wx.ART_CLOSE),
-                             'Close file')
-        tbdl = tb.AddTool(wx.NewId(), 'Download', bm(wx.ART_GO_DOWN),
+        tb.AddTool(wx.NewId(), 'Save', bm(wx.ART_FILE_SAVE),
+                   'Save file')
+        tb.AddTool(wx.NewId(), 'Close', bm(wx.ART_CLOSE),
+                   'Close file')
+        tb.AddTool(wx.NewId(), 'Download', bm(wx.ART_GO_DOWN),
                    'Download from radio')
-        tbl = tb.AddTool(wx.NewId(), 'Upload', bm(wx.ART_GO_UP),
-                         'Upload to radio')
+        tb.AddTool(wx.NewId(), 'Upload', bm(wx.ART_GO_UP),
+                   'Upload to radio')
 
         self.Bind(wx.EVT_MENU, self._menu_open, tbopen)
         tb.Realize()
 
     def adj_menu_open_recent(self, filename):
-        ### Don't add stock config files to the recent files list
+        # Don't add stock config files to the recent files list
         stock_dir = platform.get_platform().config_file("stock_configs")
         this_dir = os.path.dirname(filename)
         if (stock_dir and os.path.exists(stock_dir) and
                 this_dir and os.path.samefile(stock_dir, this_dir)):
             return
 
-        ### Travel the Open Recent menu looking for filename
+        # Travel the Open Recent menu looking for filename
         found_mi = None
         empty_mi = None
         for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
@@ -447,7 +445,7 @@ class ChirpMain(wx.Frame):
             if fn == EMPTY_MENU_LABEL:
                 empty_mi = menu_item
 
-        ### Move filename to top of menu or add it to top if it wasn't found
+        # Move filename to top of menu or add it to top if it wasn't found
         if found_mi:
             self.OPEN_RECENT_MENU.Remove(found_mi)
             self.OPEN_RECENT_MENU.Prepend(found_mi)
@@ -455,18 +453,18 @@ class ChirpMain(wx.Frame):
             submenu_item = self.OPEN_RECENT_MENU.Prepend(wx.ID_ANY, filename)
             self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
 
-        ### Get rid of the place holder used in an empty menu
+        # Get rid of the place holder used in an empty menu
         if empty_mi:
             self.OPEN_RECENT_MENU.Delete(empty_mi)
 
-        ### Trim the menu length
+        # Trim the menu length
         if self.OPEN_RECENT_MENU.GetMenuItemCount() > KEEP_RECENT:
             for i in range(self.OPEN_RECENT_MENU.GetMenuItemCount() - 1,
                            KEEP_RECENT - 1, -1):
                 extra_mi = self.OPEN_RECENT_MENU.FindItemByPosition(i)
                 self.OPEN_RECENT_MENU.Delete(extra_mi)
 
-        ### Travel the Open Recent menu and save file names to config.
+        # Travel the Open Recent menu and save file names to config.
         for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
             if i >= KEEP_RECENT:
                 break
@@ -493,7 +491,7 @@ class ChirpMain(wx.Frame):
             if wx.MessageBox(
                     '%s has not been saved. Close anyway?' % eset.filename,
                     'Close without saving?',
-                    wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING) != wx.YES:
+                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING) != wx.YES:
                 event.Veto()
 
         eset.close()
@@ -532,7 +530,7 @@ class ChirpMain(wx.Frame):
             if wx.MessageBox(
                     'Some files have not been saved. Exit anyway?',
                     'Exit without saving?',
-                    wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING) != wx.YES:
+                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING) != wx.YES:
                 if event.CanVeto():
                     event.Veto()
                 return
@@ -745,14 +743,13 @@ class ChirpMain(wx.Frame):
         LOG.debug('Set auto_edits=%s' % event.IsChecked())
 
     def _menu_select_bandplan(self, event):
-        bandplans = bandplan.BandPlans(CONF) 
+        bandplans = bandplan.BandPlans(CONF)
         plans = sorted([(shortname, details[0])
                         for shortname, details in bandplans.plans.items()],
                        key=lambda x: x[1])
         d = wx.SingleChoiceDialog(self, 'Select a bandplan',
                                   'Bandplan',
                                   [x[1] for x in plans])
-        current = 0
         for index, (shortname, name) in enumerate(plans):
             if CONF.get_bool(shortname, 'bandplan'):
                 d.SetSelection(index)

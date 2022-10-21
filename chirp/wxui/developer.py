@@ -42,7 +42,7 @@ class MemoryDialog(wx.Dialog):
         self.SetSizer(sizer)
 
         self.text = wx.richtext.RichTextCtrl(
-            self, style=wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER)
+            self, style=wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER)
         sizer.Add(self.text, 1, wx.EXPAND)
 
         sizer.Add(wx.StaticLine(self), 0)
@@ -297,7 +297,7 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
             # https://github.com/wxWidgets/Phoenix/issues/918
             view = self._treebook.GetChildren()[0]
 
-        view.SetMinSize((250,0))
+        view.SetMinSize((250, 0))
 
         self._treebook.Bind(wx.EVT_TREEBOOK_PAGE_CHANGED,
                             self.page_selected)
