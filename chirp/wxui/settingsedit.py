@@ -4,7 +4,6 @@ import wx
 import wx.dataview
 
 from chirp import settings
-from chirp.wxui import clone
 from chirp.wxui import common
 
 LOG = logging.getLogger(__name__)
@@ -63,7 +62,6 @@ class ChirpSettingsEdit(common.ChirpEditor):
 
     def _apply_settings(self):
         try:
-            all_values = {}
             for i in range(self._group_control.GetPageCount()):
                 page = self._group_control.GetPage(i)
                 for name, (setting, val) in page.get_setting_values().items():
@@ -102,6 +100,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
 class ChirpCloneSettingsEdit(ChirpSettingsEdit,
                              common.ChirpSyncEditor):
     pass
+
 
 class ChirpLiveSettingsEdit(ChirpSettingsEdit,
                             common.ChirpAsyncEditor):

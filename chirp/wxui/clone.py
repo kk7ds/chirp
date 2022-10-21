@@ -85,7 +85,7 @@ class ChirpCloneDialog(wx.Dialog):
 
         def _add_grid(label, control):
             grid.Add(wx.StaticText(self, label=label),
-                     border=20, flag=wx.ALIGN_CENTER|wx.RIGHT|wx.LEFT)
+                     border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
             grid.Add(control, 1, flag=wx.EXPAND)
 
         ports = platform.get_platform().list_serial_ports()
@@ -113,10 +113,11 @@ class ChirpCloneDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self._action)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(grid, proportion=0, flag=wx.ALIGN_CENTER_HORIZONTAL|wx.TOP,
+        vbox.Add(grid, proportion=0, flag=wx.ALIGN_CENTER_HORIZONTAL | wx.TOP,
                  border=20)
-        vbox.Add(self.gauge, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=10, proportion=0)
-        vbox.Add(wx.StaticLine(self), flag=wx.EXPAND|wx.TOP, border=10)
+        vbox.Add(self.gauge, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10,
+                 proportion=0)
+        vbox.Add(wx.StaticLine(self), flag=wx.EXPAND | wx.TOP, border=10)
         vbox.Add(bs)
         self.SetSizer(vbox)
         self.Layout()
@@ -138,7 +139,7 @@ class ChirpCloneDialog(wx.Dialog):
         try:
             self.select_vendor_model(CONF.get('last_vendor', 'state'),
                                      CONF.get('last_model', 'state'))
-        except ValueError as e:
+        except ValueError:
             LOG.warning('Last vendor/model not found')
 
     def disable_model_select(self):
@@ -212,6 +213,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         else:
             prompt = ''
 
+        LOG.debug('Expose prompt: %s' % prompt)
         # FIXME: Handle download prompt here
 
     def _action(self, event):

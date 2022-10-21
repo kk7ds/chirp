@@ -85,7 +85,7 @@ class ChirpMemoryColumn(object):
                     validationInfo.SetFailureMessage(
                         'Invalid value: %r' % value)
                     return False
-                except Exception as e:
+                except Exception:
                     LOG.exception('Failed to validate %r for property %s' % (
                         value, self._name))
                     validationInfo.SetFailureMessage(
@@ -99,6 +99,7 @@ class ChirpMemoryColumn(object):
 
 class ChirpFrequencyColumn(ChirpMemoryColumn):
     DEFAULT = 0
+
     @property
     def label(self):
         if self._name == 'offset':
@@ -346,7 +347,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def _row_to_memory(self, row):
         number = row + self._features.memory_bounds[0]
-        if number > self._features.memory_bounds[1] and self._negative_specials:
+        if (number > self._features.memory_bounds[1] and
+                self._negative_specials):
             number = 0 - (number - self._features.memory_bounds[1])
             LOG.debug('Row %i mapped to %i' % (row, number))
         return number
@@ -378,10 +380,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         lower, upper = self._features.memory_bounds
         for i in range(lower, upper + 1):
-                m = self.do_radio(cb, 'get_memory', i)
+            self.do_radio(cb, 'get_memory', i)
 
         for i in self._features.valid_special_chans:
-            m = self.do_radio(cb, 'get_memory', i)
+            self.do_radio(cb, 'get_memory', i)
 
     def _set_memory_defaults(self, mem):
         if not CONF.get_bool('auto_edits', 'state', True):
@@ -459,7 +461,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self.refresh_memory(job.result)
 
         row = event.GetRow()
-        mem = self.do_radio(cb, 'get_memory', self._row_to_memory(row))
+        self.do_radio(cb, 'get_memory', self._row_to_memory(row))
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
@@ -642,7 +644,7 @@ class ChirpMemPropDialog(wx.Dialog):
         hbox.Add(wx.Button(self, wx.ID_OK))
         hbox.Add(wx.Button(self, wx.ID_CANCEL))
 
-        vbox.Add(hbox, 0, wx.ALIGN_RIGHT|wx.ALL, border=10)
+        vbox.Add(hbox, 0, wx.ALIGN_RIGHT | wx.ALL, border=10)
 
         self.Bind(wx.EVT_BUTTON, self._button)
 

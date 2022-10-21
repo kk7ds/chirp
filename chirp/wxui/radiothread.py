@@ -3,8 +3,6 @@ import queue
 import threading
 import uuid
 
-import wx
-
 LOG = logging.getLogger(__name__)
 _JOB_COUNTER = 0
 _JOB_COUNTER_LOCK = threading.Lock()

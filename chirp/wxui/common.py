@@ -141,7 +141,6 @@ class ChirpSyncEditor:
     """
     def do_radio(self, cb, fn, *a, **k):
         """Synchronous passthrough for non-Live radios"""
-        from chirp.wxui import clone
         job = radiothread.RadioJob(self, fn, a, k)
         try:
             job.result = getattr(self._radio, fn)(*a, **k)
@@ -266,8 +265,8 @@ class ChirpSettingGrid(wx.Panel):
                         _('Value must be between %.4f and %.4f') % (
                             value.get_min(), value.get_max()))
         return ChirpFloatProperty(setting.get_shortname(),
-                                setting.get_name(),
-                                value=int(value))
+                                  setting.get_name(),
+                                  value=int(value))
 
     def _get_editor_choice(self, setting, value):
         choices = value.get_options()
@@ -369,6 +368,8 @@ class error_proof(object):
             self.show_error(e)
 
     def __call__(self, fn):
+        self.fn = fn
+
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
             return self.run_safe(fn, args, kwargs)
@@ -380,7 +381,7 @@ class error_proof(object):
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type:
             if exc_type in self._expected:
-                LOG.error('%s: %s: %s' % (fn, exc_type, exc_val))
+                LOG.error('%s: %s: %s' % (self.fn, exc_type, exc_val))
                 self.show_error(exc_val)
                 return True
             else:

@@ -1,26 +1,18 @@
 #!/usr/bin/env python3
 
 import argparse
-import collections
-import functools
 import gettext
-import logging
-import os
-import sys
 
 import wx
 import wx.aui
 import wx.grid
 import wx.lib.newevent
 
-from chirp import chirp_common
-from chirp.drivers import ic2820, generic_csv
 from chirp import directory
 from chirp import logger
 
 from chirp.ui import config
 from chirp.wxui import main
-
 
 
 if __name__ == '__main__':
@@ -50,7 +42,6 @@ if __name__ == '__main__':
         directory.register(fake.FakeLiveRadio)
         directory.register(fake.FakeLiveSlowRadio)
 
-    #logging.basicConfig(level=logging.DEBUG)
     app = wx.App()
     mainwindow = main.ChirpMain(None, title='CHIRP')
     mainwindow.Show()
