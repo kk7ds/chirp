@@ -332,7 +332,7 @@ def model_match(cls, data):
 
     if len(data) == 0x0408:
         rid = data[0x0400:0x0408]
-        return rid.startswith(cls.MODEL)
+        return rid.startswith(cls.MODEL.encode())
     else:
         return False
 
@@ -555,7 +555,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         _mem.rxfreq = mem.freq / 10
