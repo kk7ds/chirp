@@ -7,11 +7,13 @@ from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import errors
 from chirp import settings
+from chirp.wxui import radiothread
 
 LOG = logging.getLogger(__name__)
 
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
+StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
 
 
 class LiveAdapter(generic_csv.CSVRadio):
@@ -75,6 +77,36 @@ class LiveAdapter(generic_csv.CSVRadio):
 
 
 class ChirpEditor(wx.Panel):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self.setup_radio_interface()
+        self.wait_dialog = None
+
+    def start_wait_dialog(self, message):
+        if self.wait_dialog:
+            LOG.error('Wait dialog already in progress!')
+            return
+
+        self.wait_dialog = wx.ProgressDialog('Please wait', message, 100,
+                                             parent=self)
+        wx.CallAfter(self.wait_dialog.ShowModal)
+
+    def bump_wait_dialog(self, value=None, message=None):
+        if value:
+            wx.CallAfter(self.wait_dialog.Update, value, newmsg=message)
+        else:
+            wx.CallAfter(self.wait_dialog.Pulse, message)
+
+    def stop_wait_dialog(self):
+        def cb():
+            self.wait_dialog.EndModal(wx.ID_OK)
+            self.wait_dialog = None
+
+        wx.CallAfter(cb)
+
+    def status_message(self, message):
+        wx.PostEvent(self, StatusMessage(self.GetId(), message=message))
+
     def cb_copy(self, cut=False):
         pass
 
@@ -89,6 +121,67 @@ class ChirpEditor(wx.Panel):
 
     def selected(self):
         pass
+
+
+class ChirpSyncEditor:
+    """Radio interface that makes synchronous calls.
+
+    This executes RadioJob requests synchronously in the calling
+    thread and directly spawns the callback. To be used only with
+    radio drivers that manipulate in-memory state.
+    """
+    def do_radio(self, cb, fn, *a, **k):
+        """Synchronous passthrough for non-Live radios"""
+        from chirp.wxui import clone
+        job = radiothread.RadioJob(self, fn, a, k)
+        try:
+            job.result = getattr(self._radio, fn)(*a, **k)
+        except Exception as e:
+            job.result = e
+        if cb:
+            cb(job)
+
+    def setup_radio_interface(self):
+        pass
+
+
+class ChirpAsyncEditor(ChirpSyncEditor):
+    """Radio interface that makes async calls in a helper thread.
+
+    This executes RadioJob requests asynchronously in a thread and
+    schedules the callback via a wx event.
+
+    """
+    def do_radio(self, cb, fn, *a, **k):
+        self._jobs[self._radio_thread.submit(self, fn, *a, **k)] = cb
+
+    def radio_thread_event(self, event):
+        job = event.job
+
+        if job.fn == 'get_memory':
+            msg = 'Refreshed memory %s' % job.args[0]
+        elif job.fn == 'set_memory':
+            msg = 'Uploaded memory %s' % job.args[0].number
+        elif job.fn == 'get_settings':
+            msg = 'Retrieved settings'
+        elif job.fn == 'set_settings':
+            msg = 'Saved settings'
+        else:
+            msg = 'Finished radio job %s' % job.fn
+        self.status_message(msg)
+
+        cb = self._jobs.pop(job.id)
+        if cb:
+            cb(job)
+
+        # Update our status, which may be reset to unmodified
+        wx.PostEvent(self, EditorChanged(self.GetId()))
+
+    def set_radio_thread(self, radio_thread):
+        self._radio_thread = radio_thread
+
+    def setup_radio_interface(self):
+        self._jobs = {}
 
 
 class ChirpSettingGrid(wx.Panel):

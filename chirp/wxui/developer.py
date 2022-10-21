@@ -282,7 +282,7 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
         self._sizer.Layout()
 
 
-class ChirpRadioBrowser(common.ChirpEditor):
+class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpRadioBrowser, self).__init__(*a, **k)
         self._loaded = False
@@ -310,12 +310,13 @@ class ChirpRadioBrowser(common.ChirpEditor):
         if self._loaded:
             return
 
-        pd = wx.ProgressDialog('Loading', 'Building Radio Browser')
+        self.start_wait_dialog('Building Radio Browser')
+
         self._loaded = True
         self._load_from_radio('%s %s' % (self._radio.VENDOR,
                                          self._radio.MODEL),
-                              self._radio._memobj, pd)
-        pd.Destroy()
+                              self._radio._memobj)
+        self.stop_wait_dialog()
         if self._treebook.GetPageCount():
             self._treebook.ExpandNode(0)
 
@@ -323,38 +324,37 @@ class ChirpRadioBrowser(common.ChirpEditor):
         page = self._treebook.GetPage(event.GetSelection())
         page.selected()
 
-    def _load_from_radio(self, name, memobj, pd, parent=None):
+    def _load_from_radio(self, name, memobj, parent=None):
         editor = None
 
-        def sub_panel(name, memobj, pd, parent):
+        def sub_panel(name, memobj, parent):
             page = ChirpBrowserPanel(self)
             if parent:
                 pos = self._treebook.FindPage(parent)
                 self._treebook.InsertSubPage(pos, page, name)
-                # Stop updating the progress dialog once we get past the
-                # first generation in the tree because it slows us down
-                # a lot.
-                pd = None
             else:
                 self._treebook.AddPage(page, name)
 
             for subname, item in memobj.items():
-                self._load_from_radio(subname, item, pd, parent=page)
+                self._load_from_radio(subname, item, parent=page)
 
+        # Stop updating the progress dialog once we get past the
+        # first generation in the tree because it slows us down
+        # a lot.
 
         if isinstance(memobj, bitwise.structDataElement):
-            if pd:
-                pd.Pulse('Loading %s' % name)
-            sub_panel(name, memobj, pd, parent)
+            if not parent:
+                self.bump_wait_dialog(message='Loading %s' % name)
+            sub_panel(name, memobj, parent)
         elif isinstance(memobj, bitwise.arrayDataElement):
             if isinstance(memobj[0], bitwise.charDataElement):
                 editor = ChirpStringEditor(parent, memobj)
             elif isinstance(memobj[0], bitwise.bcdDataElement):
                 editor = ChirpBCDEditor(parent, memobj)
             else:
-                if pd:
-                    pd.Pulse('Loading %s' % name)
-                sub_panel('%s[%i]' % (name, len(memobj)), memobj, pd, parent)
+                if not parent:
+                    self.bump_wait_dialog(message='Loading %s' % name)
+                sub_panel('%s[%i]' % (name, len(memobj)), memobj, parent)
         elif isinstance(memobj, bitwise.intDataElement):
             editor = ChirpIntegerEditor(parent, memobj)
         else:

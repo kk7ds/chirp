@@ -8,6 +8,8 @@ import wx
 import wx.aui
 import wx.lib.newevent
 
+from chirp import bandplan
+from chirp import chirp_common
 from chirp import directory
 from chirp import platform
 from chirp.ui import config
@@ -15,6 +17,8 @@ from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
 from chirp.wxui import memedit
+from chirp.wxui import query_sources
+from chirp.wxui import radiothread
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -30,16 +34,33 @@ OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
 
 class ChirpEditorSet(wx.Panel):
+    MEMEDIT_CLS = memedit.ChirpMemEdit
+    SETTINGS_CLS = settingsedit.ChirpCloneSettingsEdit
+
+    @property
+    def tab_name(self):
+        return '%s.%s' % (self.default_filename,
+                          self._radio.FILE_EXTENSION)
+
+    def add_editor(self, editor, title):
+        self._editors.AddPage(editor, title)
+        self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editor)
+
+    def _editor_status(self, event):
+        LOG.info('Editor status: %s' % event.message)
+        wx.PostEvent(self, common.StatusMessage(self.GetId(),
+                                                message=event.message))
+
     def __init__(self, radio, filename, *a, **k):
         super(ChirpEditorSet, self).__init__(*a, **k)
         self._radio = radio
         if filename is None:
-            filename = '%s.%s' % (self.default_filename,
-                                  radio.FILE_EXTENSION)
+            filename = self.tab_name
+
         self._filename = filename
         self._modified = not os.path.exists(filename)
 
-        self._editors = wx.Notebook(self, style=wx.NB_LEFT)
+        self._editors = wx.Notebook(self, style=wx.NB_TOP)
 
         self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING,
                            self._editor_selected)
@@ -58,23 +79,19 @@ class ChirpEditorSet(wx.Panel):
             format = 'Memories'
 
         for radio in radios:
-            edit = memedit.ChirpMemEdit(radio, self._editors)
+            edit = self.MEMEDIT_CLS(radio, self._editors)
+            self.add_editor(edit, format % {'variant': radio.VARIANT})
             edit.refresh()
             self.Bind(common.EVT_EDITOR_CHANGED, self._editor_changed)
-            self._editors.AddPage(edit, format % {'variant': radio.VARIANT})
 
         if features.has_settings:
-            if isinstance(radio, common.LiveAdapter):
-                settings = settingsedit.ChirpLiveSettingsEdit(radio,
-                                                              self._editors)
-            else:
-                settings = settingsedit.ChirpCloneSettingsEdit(radio,
-                                                               self._editors)
-            self._editors.AddPage(settings, 'Settings')
+            settings = self.SETTINGS_CLS(radio, self._editors)
+            self.add_editor(settings, 'Settings')
 
-        if CONF.get_bool('developer', 'state'):
+        if (CONF.get_bool('developer', 'state') and
+                not isinstance(radio, chirp_common.LiveRadio)):
             browser = developer.ChirpRadioBrowser(radio, self._editors)
-            self._editors.AddPage(browser, 'Browser')
+            self.add_editor(browser, 'Browser')
 
     def _editor_changed(self, event):
         self._modified = True
@@ -138,6 +155,38 @@ class ChirpEditorSet(wx.Panel):
     def select_all(self):
         return self.current_editor.select_all()
 
+    def close(self):
+        pass
+
+
+class ChirpLiveEditorSet(ChirpEditorSet):
+    MEMEDIT_CLS = memedit.ChirpLiveMemEdit
+    SETTINGS_CLS = settingsedit.ChirpLiveSettingsEdit
+
+    @property
+    def tab_name(self):
+        return '%s %s@LIVE' % (self._radio.VENDOR,
+                               self._radio.MODEL)
+
+    def __init__(self, radio, *a, **k):
+        self._radio_thread = radiothread.RadioThread(radio)
+        self._radio_thread.start()
+        super().__init__(radio, *a, **k)
+
+    def add_editor(self, editor, title):
+        super(ChirpLiveEditorSet, self).add_editor(editor, title)
+        editor.set_radio_thread(self._radio_thread)
+        self.Bind(radiothread.EVT_RADIO_THREAD_RESULT,
+                  editor.radio_thread_event,
+                  editor)
+
+    def close(self):
+        self._radio_thread.end()
+
+    @property
+    def modified(self):
+        return self._radio_thread.pending != 0
+
 
 class ChirpMain(wx.Frame):
     def __init__(self, *args, **kwargs):
@@ -163,6 +212,8 @@ class ChirpMain(wx.Frame):
                   self._editor_page_changed)
         self.Bind(wx.EVT_CLOSE, self._window_close)
 
+        self.statusbar = self.CreateStatusBar(1)
+
         self._update_window_for_editor()
 
     @property
@@ -186,6 +237,7 @@ class ChirpMain(wx.Frame):
                               os.path.basename(editorset.filename),
                               select=select)
         self.Bind(EVT_EDITORSET_CHANGED, self._editor_changed, editorset)
+        self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editorset)
         self._update_editorset_title(editorset)
 
     def make_menubar(self):
@@ -276,6 +328,27 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
 
+        source_menu = wx.Menu()
+        radio_menu.AppendSubMenu(source_menu, 'Query Source')
+
+        query_rb_item = wx.MenuItem(source_menu, wx.NewId(), 'RepeaterBook')
+        self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
+        source_menu.Append(query_rb_item)
+
+        radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
+
+        auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
+                                 'Enable Automatic Edits',
+                                 kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU, self._menu_auto_edits, auto_edits)
+        radio_menu.Append(auto_edits)
+        auto_edits.Check(CONF.get_bool('auto_edits', 'state', True))
+
+        select_bandplan = wx.MenuItem(radio_menu, wx.NewId(),
+                                      'Select Bandplan')
+        self.Bind(wx.EVT_MENU, self._menu_select_bandplan, select_bandplan)
+        radio_menu.Append(select_bandplan)
+
         if CONF.get_bool('developer', 'state'):
             radio_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
 
@@ -311,11 +384,20 @@ class ChirpMain(wx.Frame):
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
 
+
         help_menu = wx.Menu()
 
         about_item = wx.MenuItem(help_menu, wx.NewId(), 'About')
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
         help_menu.Append(about_item)
+
+        developer_menu = wx.MenuItem(help_menu, wx.NewId(), 'Developer Mode',
+                                     kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._menu_developer, developer_menu),
+                  developer_menu)
+        help_menu.Append(developer_menu)
+        developer_menu.Check(CONF.get_bool('developer', 'state'))
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
@@ -401,6 +483,10 @@ class ChirpMain(wx.Frame):
         self._update_editorset_title(event.editorset)
         self._update_window_for_editor()
 
+    def _editor_status(self, event):
+        # FIXME: Should probably only do this for the current editorset
+        self.statusbar.SetStatusText(event.message)
+
     def _editor_close(self, event):
         eset = self._editors.GetPage(event.GetSelection())
         if eset.modified:
@@ -409,6 +495,8 @@ class ChirpMain(wx.Frame):
                     'Close without saving?',
                     wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING) != wx.YES:
                 event.Veto()
+
+        eset.close()
 
         wx.CallAfter(self._update_window_for_editor)
 
@@ -420,11 +508,13 @@ class ChirpMain(wx.Frame):
         can_upload = False
         CSVRadio = directory.get_radio('Generic_CSV')
         if eset is not None:
+            is_live = isinstance(eset.radio, chirp_common.LiveRadio)
             can_close = True
-            can_save = eset.modified
-            can_saveas = True
-            can_upload = not (isinstance(eset.radio, CSVRadio) and not
-                              isinstance(eset.radio, common.LiveAdapter))
+            can_save = eset.modified and not is_live
+            can_saveas = not is_live
+            can_upload = (not isinstance(eset.radio, CSVRadio) and
+                          not isinstance(eset.radio, common.LiveAdapter) and
+                          not is_live)
 
         items = [
             (wx.ID_CLOSE, can_close),
@@ -451,6 +541,13 @@ class ChirpMain(wx.Frame):
         CONF.set_int('window_w', size.GetWidth(), 'state')
         CONF.set_int('window_h', size.GetHeight(), 'state')
         config._CONFIG.save()
+
+        # Make sure we call close on each editor, so it can end
+        # threads and do other cleanup
+        for i in range(self._editors.GetPageCount()):
+            e = self._editors.GetPage(i)
+            e.close()
+
         self.Destroy()
 
     def _update_editorset_title(self, editorset):
@@ -553,7 +650,10 @@ class ChirpMain(wx.Frame):
             d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
-                editorset = ChirpEditorSet(radio, None, self._editors)
+                if isinstance(radio, chirp_common.LiveRadio):
+                    editorset = ChirpLiveEditorSet(radio, None, self._editors)
+                else:
+                    editorset = ChirpEditorSet(radio, None, self._editors)
                 self.add_editorset(editorset)
 
     def _menu_upload(self, event):
@@ -633,3 +733,41 @@ class ChirpMain(wx.Frame):
         wx.MessageBox(aboutinfo, 'About CHIRP',
                       wx.OK | wx.ICON_INFORMATION)
 
+    def _menu_developer(self, menuitem, event):
+        CONF.set_bool('developer', menuitem.IsChecked(), 'state')
+        state = menuitem.IsChecked() and 'enabled' or 'disabled'
+        wx.MessageBox(('Developer state is now %s. '
+                       'CHIRP must be restarted to take effect') % state,
+                      'Restart Required', wx.OK)
+
+    def _menu_auto_edits(self, event):
+        CONF.set_bool('auto_edits', event.IsChecked(), 'state')
+        LOG.debug('Set auto_edits=%s' % event.IsChecked())
+
+    def _menu_select_bandplan(self, event):
+        bandplans = bandplan.BandPlans(CONF) 
+        plans = sorted([(shortname, details[0])
+                        for shortname, details in bandplans.plans.items()],
+                       key=lambda x: x[1])
+        d = wx.SingleChoiceDialog(self, 'Select a bandplan',
+                                  'Bandplan',
+                                  [x[1] for x in plans])
+        current = 0
+        for index, (shortname, name) in enumerate(plans):
+            if CONF.get_bool(shortname, 'bandplan'):
+                d.SetSelection(index)
+                break
+        r = d.ShowModal()
+        if r == wx.ID_OK:
+            selected = plans[d.GetSelection()][0]
+            LOG.info('Selected bandplan: %s' % selected)
+            for shortname, name in plans:
+                CONF.set_bool(shortname, shortname == selected, 'bandplan')
+
+    def _menu_query_rb(self, event):
+        d = query_sources.RepeaterBookQueryDialog(self,
+                                                  title='Query Repeaterbook')
+        r = d.ShowModal()
+        if r == wx.ID_OK:
+            LOG.debug('Result file: %s' % d.result_file)
+            self.open_file(d.result_file)

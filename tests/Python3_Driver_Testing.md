@@ -95,7 +95,7 @@
 | Kenwood_TH-D7 |  |  | Yes |
 | Kenwood_TH-D72_clone_mode |  |  |  |
 | Kenwood_TH-D72_live_mode |  |  | Yes |
-| Kenwood_TH-D74_live_mode |  |  | Yes |
+| Kenwood_TH-D74_live_mode | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | Kenwood_TH-D7G |  |  | Yes |
 | Kenwood_TH-F6 |  |  | Yes |
 | Kenwood_TH-F7 |  |  | Yes |
@@ -142,7 +142,7 @@
 | Kenwood_TM-271 |  |  | Yes |
 | Kenwood_TM-281 |  |  | Yes |
 | Kenwood_TM-471 |  |  | Yes |
-| Kenwood_TM-D700 |  |  | Yes |
+| Kenwood_TM-D700 | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | Kenwood_TM-D710 |  |  | Yes |
 | Kenwood_TM-D710G |  |  | Yes |
 | Kenwood_TM-D710G_CloneMode |  |  |  |

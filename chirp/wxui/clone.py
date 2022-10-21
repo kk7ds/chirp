@@ -36,6 +36,8 @@ class CloneThread(threading.Thread):
             self._dialog.complete()
 
 
+# NOTE: This is the legacy settings thread that facilitates
+# LiveAdapter to get/fetch settings.
 class SettingsThread(threading.Thread):
     def __init__(self, radio, progdialog, settings=None):
         super(SettingsThread, self).__init__()
@@ -75,7 +77,6 @@ class ChirpCloneDialog(wx.Dialog):
             *a, title='Communicate with radio', **k)
 
         self.SetSize(-1, 260)
-        panel = wx.Panel(self)
 
         try:
             grid = wx.FlexGridSizer(3, 2)
@@ -83,7 +84,7 @@ class ChirpCloneDialog(wx.Dialog):
             grid = wx.FlexGridSizer(2, 5, 0)
 
         def _add_grid(label, control):
-            grid.Add(wx.StaticText(panel, label=label),
+            grid.Add(wx.StaticText(self, label=label),
                      border=20, flag=wx.ALIGN_CENTER|wx.RIGHT|wx.LEFT)
             grid.Add(control, 1, flag=wx.EXPAND)
 
@@ -93,38 +94,31 @@ class ChirpCloneDialog(wx.Dialog):
             ports.insert(0, last_port)
         elif not last_port:
             last_port = ports[0]
-        self._port = wx.ComboBox(panel, choices=ports, style=wx.CB_DROPDOWN)
+        self._port = wx.ComboBox(self, choices=ports, style=wx.CB_DROPDOWN)
         self._port.SetValue(last_port)
         self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
         _add_grid('Port', self._port)
 
-        self._vendor = wx.Choice(panel, choices=['Icom', 'Yaesu'])
+        self._vendor = wx.Choice(self, choices=['Icom', 'Yaesu'])
         _add_grid('Vendor', self._vendor)
         self.Bind(wx.EVT_CHOICE, self._selected_vendor, self._vendor)
 
-        self._model = wx.Choice(panel, choices=[])
+        self._model = wx.Choice(self, choices=[])
         _add_grid('Model', self._model)
         self.Bind(wx.EVT_CHOICE, self._selected_model, self._model)
 
-        self.gauge = wx.Gauge(panel)
+        self.gauge = wx.Gauge(self)
 
-        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-
-        action = self._make_action(panel)
-
-        hbox2.Add(action)
-        self._action_button = action
-
-        cancel = wx.Button(panel, wx.ID_CANCEL)
-        hbox2.Add(cancel, flag=wx.RIGHT)
+        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
+        self.Bind(wx.EVT_BUTTON, self._action)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(grid, proportion=0, flag=wx.ALIGN_CENTER_HORIZONTAL|wx.TOP,
                  border=20)
         vbox.Add(self.gauge, flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=10, proportion=0)
-        vbox.Add(wx.StaticLine(panel), flag=wx.EXPAND|wx.TOP, border=10)
-        vbox.Add(hbox2, proportion=0, flag=wx.ALIGN_RIGHT|wx.ALL, border=10)
-        panel.SetSizer(vbox)
+        vbox.Add(wx.StaticLine(self), flag=wx.EXPAND|wx.TOP, border=10)
+        vbox.Add(bs)
+        self.SetSizer(vbox)
         self.Layout()
         self.Center()
 
@@ -136,6 +130,9 @@ class ChirpCloneDialog(wx.Dialog):
             self._vendors[rclass.VENDOR].append(rclass)
             for alias in rclass.ALIASES:
                 self._vendors[alias.VENDOR].append(alias)
+
+        for models in self._vendors.values():
+            models.sort(key=lambda x: '%s %s' % (x.MODEL, x.VARIANT))
 
         self._vendor.Set(sorted(self._vendors.keys()))
         try:
@@ -150,7 +147,7 @@ class ChirpCloneDialog(wx.Dialog):
 
     def disable_running(self):
         self._port.Disable()
-        self._action_button.Disable()
+        self.FindWindowById(wx.ID_OK).Disable()
 
     def _persist_choices(self):
         CONF.set('last_vendor', self._vendor.GetStringSelection(), 'state')
@@ -161,7 +158,8 @@ class ChirpCloneDialog(wx.Dialog):
         self._persist_choices()
 
     def _select_vendor(self, vendor):
-        models = [x.MODEL for x in self._vendors[vendor]]
+        models = [('%s %s' % (x.MODEL, x.VARIANT)).strip()
+                  for x in self._vendors[vendor]]
         self._model.Set(models)
         self._model.SetSelection(0)
 
@@ -200,15 +198,11 @@ class ChirpCloneDialog(wx.Dialog):
     def get_selected_rclass(self):
         vendor = self._vendor.GetStringSelection()
         model = self._model.GetSelection()
+        LOG.debug('Selected %r' % self._vendors[vendor][model])
         return self._vendors[vendor][model]
 
 
 class ChirpDownloadDialog(ChirpCloneDialog):
-    def _make_action(self, panel):
-        start = wx.Button(panel, label='Download')
-        start.Bind(wx.EVT_BUTTON, self._download)
-        return start
-
     def _selected_model(self, event):
         super(ChirpDownloadDialog, self)._selected_model(event)
         rclass = self.get_selected_rclass()
@@ -220,7 +214,11 @@ class ChirpDownloadDialog(ChirpCloneDialog):
 
         # FIXME: Handle download prompt here
 
-    def _download(self, event):
+    def _action(self, event):
+        if event.GetEventObject().GetId() != wx.ID_OK:
+            self.EndModal(event.GetEventObject().GetId())
+            return
+
         self.disable_model_select()
         self.disable_running()
 
@@ -236,7 +234,14 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             return
 
         if isinstance(self._radio, chirp_common.LiveRadio):
-            self._radio = common.LiveAdapter(self._radio)
+            if CONF.get_bool('live_adapter', 'state', False):
+                # Use LiveAdapter to make LiveRadio behave like CloneMode
+                self._radio = common.LiveAdapter(self._radio)
+            else:
+                # Live radios are live
+                # FIXME: This needs to make sure we can talk to the radio first
+                self.EndModal(wx.ID_OK)
+                return
 
         self._radio.status_fn = self._status
 
@@ -255,13 +260,11 @@ class ChirpUploadDialog(ChirpCloneDialog):
         if isinstance(self._radio, chirp_common.LiveRadio):
             self._radio = common.LiveAdapter(self._radio)
 
-    def _make_action(self, panel):
-        start = wx.Button(panel, label='Upload')
-        start.Bind(wx.EVT_BUTTON, self._upload)
-        self.disable_model_select()
-        return start
+    def _action(self, event):
+        if event.GetEventObject().GetId() != wx.ID_OK:
+            self.EndModal(event.GetEventObject().GetId())
+            return
 
-    def _upload(self, event):
         self.disable_running()
 
         port = self._port.GetValue()

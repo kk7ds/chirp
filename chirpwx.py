@@ -18,6 +18,7 @@ from chirp.drivers import ic2820, generic_csv
 from chirp import directory
 from chirp import logger
 
+from chirp.ui import config
 from chirp.wxui import main
 
 
@@ -42,6 +43,12 @@ if __name__ == '__main__':
     logger.handle_options(args)
 
     directory.safe_import_drivers(limit=args.onlydriver)
+
+    CONF = config.get()
+    if CONF.get('developer', 'state'):
+        from chirp.drivers import fake
+        directory.register(fake.FakeLiveRadio)
+        directory.register(fake.FakeLiveSlowRadio)
 
     #logging.basicConfig(level=logging.DEBUG)
     app = wx.App()

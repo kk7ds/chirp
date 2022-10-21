@@ -33,6 +33,7 @@ from chirp.drivers import generic_csv, repeaterbook
 from chirp.drivers import ic9x, kenwood_live, idrp, vx7, vx5, vx6
 from chirp.drivers import icf, ic9x_icf
 from chirp import CHIRP_VERSION, chirp_common, detect, errors
+from chirp import bandplan
 from chirp.ui import editorset, clone, miscwidgets, config, reporting, fips
 from chirp.ui import bandplans
 
@@ -1864,8 +1865,8 @@ of file.
             self.do_toggle_report(_action)
         elif action == "channel_defaults":
             # The memedit thread also has an instance of bandplans.
-            bp = bandplans.BandPlans(CONF)
-            bp.select_bandplan(self)
+            bp = bandplan.BandPlans(CONF)
+            bandplans.select_bandplan(bp)
         elif action == "no_smart_tmode":
             self.do_toggle_no_smart_tmode(_action)
         elif action == "developer":
