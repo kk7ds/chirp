@@ -332,7 +332,7 @@ def model_match(cls, data):
 
     if len(data) == 0x0408:
         rid = data[0x0400:0x0408]
-        return rid.startswith(cls.MODEL)
+        return rid.startswith(cls.MODEL.encode())
     else:
         return False
 
@@ -352,7 +352,8 @@ class RT22Radio(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x0400
     _block_size = 0x40
-    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!"]
+    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!",
+               "\x00\x00\x00\x00\x00\x00\xF8\xFF"]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -554,7 +555,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         _mem.rxfreq = mem.freq / 10
@@ -677,7 +678,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
 
                     LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

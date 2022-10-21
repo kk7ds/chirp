@@ -35,6 +35,7 @@
 | Baofeng_BF-A58 |  |  |  |
 | Baofeng_BF-A58S |  |  |  |
 | Baofeng_BF-F8HP |  |  | Yes |
+| Baofeng_BF-V8A |  |  |  |
 | Baofeng_F-11 |  |  | Yes |
 | Baofeng_GT-3WP |  |  |  |
 | Baofeng_GT-5R |  |  | Yes |
@@ -94,6 +95,7 @@
 | Kenwood_TH-D7 |  |  | Yes |
 | Kenwood_TH-D72_clone_mode |  |  |  |
 | Kenwood_TH-D72_live_mode |  |  | Yes |
+| Kenwood_TH-D74_live_mode |  |  | Yes |
 | Kenwood_TH-D7G |  |  | Yes |
 | Kenwood_TH-F6 |  |  | Yes |
 | Kenwood_TH-F7 |  |  | Yes |
@@ -152,6 +154,7 @@
 | Kenwood_TS-480_CloneMode |  |  |  |
 | Kenwood_TS-480_LiveMode |  |  | Yes |
 | Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
+| LUITON_LT-316 |  |  |  |
 | LUITON_LT-588UV |  |  | Yes |
 | MTC_UV-5R-3 |  |  |  |
 | Midland_DBR2500 |  |  | Yes |
@@ -196,6 +199,8 @@
 | Retevis_RT1 |  |  |  |
 | Retevis_RT19 |  |  |  |
 | Retevis_RT21 |  |  |  |
+| Retevis_RT22 |  |  |  |
+| Retevis_RT22FRS |  |  |  |
 | Retevis_RT22S |  |  |  |
 | Retevis_RT23 |  |  |  |
 | Retevis_RT26 |  |  |  |
@@ -206,6 +211,7 @@
 | Retevis_RT47V |  |  |  |
 | Retevis_RT6 |  |  |  |
 | Retevis_RT619 |  |  |  |
+| Retevis_RT622 |  |  |  |
 | Retevis_RT647 |  |  |  |
 | Retevis_RT668 |  |  |  |
 | Retevis_RT68 |  |  |  |
@@ -216,6 +222,7 @@
 | Retevis_RT95_VOX |  |  | Yes |
 | Retevis_RT98 |  |  |  |
 | TDXone_TD-Q8A |  |  |  |
+| TID_TD-M8 |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
 | Vertex_Standard_FTL-1011 |  |  |  |
@@ -224,6 +231,7 @@
 | Vertex_Standard_FTL-8011 |  |  |  |
 | Vertex_Standard_VXA-700 |  |  |  |
 | WACCOM_MINI-8900 |  |  | Yes |
+| WLN_KD-C1 |  |  |  |
 | Wouxun_KG-UV920P-A |  |  |  |
 | Wouxun_KG-UV9D_Plus |  |  |  |
 | Yaesu_FT-1500M |  |  | Yes |
@@ -257,3 +265,4 @@
 | Yaesu_VX-8GE |  |  | Yes |
 | Yaesu_VX-8R |  |  | Yes |
 | Yedro_YC-M04VUS |  |  | Yes |
+| Zastone_ZT-X6 |  |  |  |
