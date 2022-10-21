@@ -1227,7 +1227,7 @@ class THD74Radio(TMD710Radio):
              25.0, 30.0, 50.0, 100.0]
     MODES = ['FM', 'DV', 'AM', 'LSB', 'USB', 'CW', 'NFM', 'DR',
              'WFM', 'R-CW']
-    CROSS_MODES = ['DCS->', 'Tone->DCS', 'DCS->Tone', 'Tone->Tone']
+    CROSS_MODES = ['DTCS->', 'Tone->DTCS', 'DTCS->Tone', 'Tone->Tone']
     DUPLEX = ['', '+', '-', 'split']
     _has_name = False
 
@@ -1248,7 +1248,9 @@ class THD74Radio(TMD710Radio):
         rf.valid_tuning_steps = self.STEPS
         rf.valid_modes = self.MODES
         rf.valid_cross_modes = self.CROSS_MODES
+        rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.has_name = False  # Radio has it, but no command to retrieve
+        rf.has_cross = True
         return rf
 
     def _parse_mem_spec(self, spec):
@@ -1258,7 +1260,10 @@ class THD74Radio(TMD710Radio):
         mem.offset = int(spec[2])
         mem.tuning_step = self.STEPS[int(spec[3])]
         mem.mode = self.MODES[int(spec[5])]
-        if int(spec[8]):
+        if int(spec[11]):
+            mem.tmode = "Cross"
+            mem.cross_mode = self.CROSS_MODES[int(spec[18])]
+        elif int(spec[8]):
             mem.tmode = "Tone"
         elif int(spec[9]):
             mem.tmode = "TSQL"
@@ -1266,10 +1271,9 @@ class THD74Radio(TMD710Radio):
             mem.tmode = "DTCS"
 
         mem.duplex = self.DUPLEX[int(spec[14])]
-        mem.rtone = self._kenwood_valid_tones[int(spec[15])]
-        mem.ctone = self._kenwood_valid_tones[int(spec[16])]
+        mem.rtone = chirp_common.TONES[int(spec[15])]
+        mem.ctone = chirp_common.TONES[int(spec[16])]
         mem.dtcs = chirp_common.DTCS_CODES[int(spec[17])]
-        # mem.cross_mode = self.CROSS_MODES[int(spec[18])]
         mem.skip = int(spec[22]) and 'S' or ''
 
         return mem
@@ -1286,14 +1290,14 @@ class THD74Radio(TMD710Radio):
             "%i" % (mem.tmode == "Tone" and 1 or 0),
             "%i" % (mem.tmode == "TSQL" and 1 or 0),
             "%i" % (mem.tmode == "DTCS" and 1 or 0),
-            "0",  # CTCSS/DCS status
+            "%i" % (mem.tmode == 'Cross'),
             "0",  # Reverse
             "0",  # Odd split channel
             "%i" % self.DUPLEX.index(mem.duplex),
-            "%02i" % (self._kenwood_valid_tones.index(mem.rtone)),
-            "%02i" % (self._kenwood_valid_tones.index(mem.ctone)),
+            "%02i" % (chirp_common.TONES.index(mem.rtone)),
+            "%02i" % (chirp_common.TONES.index(mem.ctone)),
             "%03i" % (chirp_common.DTCS_CODES.index(mem.dtcs)),
-            "0",  # Cross mode
+            "%i" % self.CROSS_MODES.index(mem.cross_mode),
             "CQCQCQ",  # URCALL
             "0",   # D-STAR squelch type
             "00",  # D-STAR squelch code
