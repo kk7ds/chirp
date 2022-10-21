@@ -222,6 +222,7 @@
 | Retevis_RT95_VOX |  |  | Yes |
 | Retevis_RT98 |  |  |  |
 | TDXone_TD-Q8A |  |  |  |
+| TIDRADIO_TD-H6 |  |  | Yes |
 | TID_TD-M8 |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
