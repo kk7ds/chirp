@@ -352,7 +352,8 @@ class RT22Radio(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x0400
     _block_size = 0x40
-    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!"]
+    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!",
+               "\x00\x00\x00\x00\x00\x00\xF8\xFF"]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -677,7 +678,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
 
                     LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
