@@ -586,7 +586,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # allocate & fill memory
         image = ""
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256) + chr(blocksize)
+            req = chr(i // 256) + chr(i % 256) + chr(blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
@@ -617,7 +617,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256)
+            req = chr(i // 256) + chr(i % 256)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
             LOG.debug(util.hexprint(req + chunk))
@@ -1448,8 +1448,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 # OEM info
         #
         def _decode(lst):
-            _str = ''.join([chr(c) for c in lst
-                            if chr(c) in chirp_common.CHARSET_ASCII])
+            _str = ''.join([chr(int(c)) for c in lst
+                            if chr(int(c)) in chirp_common.CHARSET_ASCII])
             return _str
 
         def do_nothing(setting, obj):
