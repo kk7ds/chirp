@@ -2,6 +2,8 @@ import logging
 import time
 
 from chirp import chirp_common
+from chirp import directory
+from chirp import errors
 from chirp import settings
 
 LOG = logging.getLogger(__name__)
@@ -68,3 +70,31 @@ class FakeLiveSlowRadio(FakeLiveRadio):
     def set_settings(self, settings):
         time.sleep(2)
         return super().set_settings(settings)
+
+
+class FakeLiveRadioWithErrors(FakeLiveRadio):
+    VARIANT = 'Errors'
+
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self.memories[2] = errors.RadioError
+        self.memories[3] = Exception
+
+    def get_memory(self, number):
+        m = super().get_memory(number)
+        if isinstance(m, type):
+            raise m('Error')
+        else:
+            return m
+
+    def set_memory(self, mem):
+        if mem.freq < 145000000:
+            raise errors.RadioError('Out of range')
+        else:
+            return super().set_memory(mem)
+
+
+def register_fakes():
+    directory.register(FakeLiveRadio)
+    directory.register(FakeLiveSlowRadio)
+    directory.register(FakeLiveRadioWithErrors)
