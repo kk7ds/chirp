@@ -281,7 +281,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-UV8D"
     _model = "KG-UV8D"
-    _file_ident = "KGUV8D"
+    _file_ident = b"KGUV8D"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
@@ -376,7 +376,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             self._mmap = self._download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -393,7 +393,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             return self._do_download(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
@@ -426,7 +426,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             self._do_upload(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
@@ -628,9 +628,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() / 8))
+            _mem.set_raw("\x00" * (_mem.size() // 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() / 8))
+            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)
