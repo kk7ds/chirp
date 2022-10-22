@@ -69,7 +69,7 @@ PONMSG_LIST = ["MSG - Bitmap", "Battery Volts"]
 SPMUTE_LIST = ["QT", "QT+DTMF", "QT*DTMF"]
 DTMFST_LIST = ["OFF", "DTMF", "ANI", "DTMF+ANI"]
 # DTMF_TIMES = [str(x) + "ms" for x in range(0, 501, 10)]
-DTMF_TIMES = [('%dms' % dtmf, (dtmf / 10)) for dtmf in range(50, 501, 10)]
+DTMF_TIMES = [('%dms' % dtmf, (dtmf // 10)) for dtmf in range(50, 501, 10)]
 ALERTS = [1750, 2100, 1000, 1450]
 ALERTS_LIST = [str(x) for x in ALERTS]
 PTTID_LIST = ["BOT", "EOT", "Both"]
@@ -89,7 +89,7 @@ DSPBRTACT_MAP = [("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5),
 TONESCANSAVELIST = ["Rx", "Tx", "Tx/Rx"]
 # PTTDELAY_LIST = [str(x) + "ms" for x in range(0, 3001, 100)]
 PTTDELAY_TIMES = [('%dms' % pttdelay,
-                  (pttdelay / 100)) for pttdelay in range(100, 3001, 100)]
+                  (pttdelay // 100)) for pttdelay in range(100, 3001, 100)]
 SCRAMBLE_LIST = ["OFF"] + [str(x) for x in range(1, 9)]
 ONOFF_LIST = ["OFF", "ON"]
 # MRT - Map CTCSS Tones -  Value in mem is hex value of
@@ -443,7 +443,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-935G"
     _model = "KG-UV8D-B"
-    _file_ident = "935G"
+    _file_ident = b"935G"
     BAUD_RATE = 19200
 # MRT - Added Medium Power level for 935G support
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
@@ -482,7 +482,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
         try:
             self.pipe.write(_header)
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def _read_record(self):
@@ -561,7 +561,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             self._mmap = self._download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -578,7 +578,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             return self._do_download(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
@@ -586,7 +586,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # allocate & fill memory
         image = ""
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256) + chr(blocksize)
+            req = chr(i // 256) + chr(i % 256) + chr(blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
@@ -610,14 +610,14 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             self._do_upload(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256)
+            req = chr(i // 256) + chr(i % 256)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
             LOG.debug(util.hexprint(req + chunk))
@@ -848,9 +848,9 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() / 8))
+            _mem.set_raw("\x00" * (_mem.size() // 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() / 8))
+            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)
@@ -1448,8 +1448,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 # OEM info
         #
         def _decode(lst):
-            _str = ''.join([chr(c) for c in lst
-                            if chr(c) in chirp_common.CHARSET_ASCII])
+            _str = ''.join([chr(int(c)) for c in lst
+                            if chr(int(c)) in chirp_common.CHARSET_ASCII])
             return _str
 
         def do_nothing(setting, obj):
@@ -1531,7 +1531,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                     int(element.values()[0]._current * 10.0))
                         else:
                             setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

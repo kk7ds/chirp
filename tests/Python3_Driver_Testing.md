@@ -228,6 +228,7 @@
 | TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | TID_TD-M8 |  |  |  |
 | TYT_TH-350 |  |  | Yes |
+| TYT_TH-UV8000 |  |  |  |
 | TYT_TH-UVF8D |  |  |  |
 | Vertex_Standard_FTL-1011 |  |  |  |
 | Vertex_Standard_FTL-2011 |  |  |  |
@@ -236,6 +237,9 @@
 | Vertex_Standard_VXA-700 |  |  |  |
 | WACCOM_MINI-8900 |  |  | Yes |
 | WLN_KD-C1 |  |  |  |
+| Wouxun_KG-935G |  |  |  |
+| Wouxun_KG-UV8D |  |  |  |
+| Wouxun_KG-UV8D_Plus |  |  |  |
 | Wouxun_KG-UV920P-A |  |  |  |
 | Wouxun_KG-UV9D_Plus |  |  |  |
 | Yaesu_FT-1500M |  |  | Yes |

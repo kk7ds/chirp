@@ -300,7 +300,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-UV8D Plus"
     _model = "KG-UV8D"
-    _file_ident = "kguv8dplus"
+    _file_ident = b"kguv8dplus"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
@@ -387,7 +387,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
 #
     @classmethod
     def match_model(cls, filedata, filename):
-        return cls._file_ident in 'kg' + filedata[0x426:0x430].replace('(', '').replace(')', '').lower()
+        return cls._file_ident in b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(b')', b'').lower()
 
     def _identify(self):
         """Do the identification dance"""
@@ -418,7 +418,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
             self._mmap = self._download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -435,7 +435,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
             return self._do_download(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
@@ -467,7 +467,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
             self._do_upload(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
@@ -666,9 +666,9 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() / 8))
+            _mem.set_raw("\x00" * (_mem.size() // 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() / 8))
+            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)
@@ -1103,9 +1103,15 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
     def _is_freq(self, element):
-        return "rxfreq" in element.get_name() or "txoffset" in element.get_name() or "rx_start" in element.get_name() or "rx_stop" in element.get_name() or "tx_start" in element.get_name() or "tx_stop" in element.get_name()
+        return "rxfreq" in element.get_name() \
+                or "txoffset" in element.get_name() \
+                or "rx_start" in element.get_name() \
+                or "rx_stop" in element.get_name() \
+                or "tx_start" in element.get_name() \
+                or "tx_stop" in element.get_name()
+
