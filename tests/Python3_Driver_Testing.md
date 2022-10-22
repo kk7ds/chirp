@@ -237,6 +237,7 @@
 | Vertex_Standard_VXA-700 |  |  |  |
 | WACCOM_MINI-8900 |  |  | Yes |
 | WLN_KD-C1 |  |  |  |
+| Wouxun_KG-935G |  |  |  |
 | Wouxun_KG-UV920P-A |  |  |  |
 | Wouxun_KG-UV9D_Plus |  |  |  |
 | Yaesu_FT-1500M |  |  | Yes |

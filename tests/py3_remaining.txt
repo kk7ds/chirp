@@ -38,7 +38,6 @@ TYT_TH-UV88.img
 TYT_TH-UVF1.img
 Wouxun_KG-816.img
 Wouxun_KG-818.img
-Wouxun_KG-935G.img
 Wouxun_KG-UV6.img
 Wouxun_KG-UV8D.img
 Wouxun_KG-UV8D_Plus.img
