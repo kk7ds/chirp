@@ -69,7 +69,7 @@ PONMSG_LIST = ["MSG - Bitmap", "Battery Volts"]
 SPMUTE_LIST = ["QT", "QT+DTMF", "QT*DTMF"]
 DTMFST_LIST = ["OFF", "DTMF", "ANI", "DTMF+ANI"]
 # DTMF_TIMES = [str(x) + "ms" for x in range(0, 501, 10)]
-DTMF_TIMES = [('%dms' % dtmf, (dtmf / 10)) for dtmf in range(50, 501, 10)]
+DTMF_TIMES = [('%dms' % dtmf, (dtmf // 10)) for dtmf in range(50, 501, 10)]
 ALERTS = [1750, 2100, 1000, 1450]
 ALERTS_LIST = [str(x) for x in ALERTS]
 PTTID_LIST = ["BOT", "EOT", "Both"]
@@ -89,7 +89,7 @@ DSPBRTACT_MAP = [("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5),
 TONESCANSAVELIST = ["Rx", "Tx", "Tx/Rx"]
 # PTTDELAY_LIST = [str(x) + "ms" for x in range(0, 3001, 100)]
 PTTDELAY_TIMES = [('%dms' % pttdelay,
-                  (pttdelay / 100)) for pttdelay in range(100, 3001, 100)]
+                  (pttdelay // 100)) for pttdelay in range(100, 3001, 100)]
 SCRAMBLE_LIST = ["OFF"] + [str(x) for x in range(1, 9)]
 ONOFF_LIST = ["OFF", "ON"]
 # MRT - Map CTCSS Tones -  Value in mem is hex value of
