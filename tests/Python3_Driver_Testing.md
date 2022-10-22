@@ -144,9 +144,9 @@
 | Kenwood_TM-471 |  |  | Yes |
 | Kenwood_TM-D700 | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | Kenwood_TM-D710 |  |  | Yes |
-| Kenwood_TM-D710G |  |  | Yes |
-| Kenwood_TM-D710G_CloneMode |  |  |  |
-| Kenwood_TM-D710_CloneMode |  |  |  |
+| Kenwood_TM-D710G | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
+| Kenwood_TM-D710G_CloneMode | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
+| Kenwood_TM-D710_CloneMode |  |  | Yes |
 | Kenwood_TM-G707 |  |  | Yes |
 | Kenwood_TM-V7 |  |  | Yes |
 | Kenwood_TM-V71 |  |  | Yes |
