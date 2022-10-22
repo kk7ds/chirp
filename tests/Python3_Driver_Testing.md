@@ -175,7 +175,7 @@
 | RT_Systems_CSV |  |  |  |
 | Radioddity_DB25-G |  |  | Yes |
 | Radioddity_GA-2S |  |  | Yes |
-| Radioddity_GA-510 |  |  | Yes |
+| Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | Radioddity_UV-5G |  |  | Yes |
 | Radioddity_UV-5RX3 |  |  | Yes |
 | Radioddity_UV-82X3 |  |  | Yes |
@@ -225,7 +225,7 @@
 | Retevis_RT95_VOX |  |  | Yes |
 | Retevis_RT98 |  |  |  |
 | TDXone_TD-Q8A |  |  |  |
-| TIDRADIO_TD-H6 |  |  | Yes |
+| TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | TID_TD-M8 |  |  |  |
 | TYT_TH-350 |  |  | Yes |
 | TYT_TH-UVF8D |  |  |  |
