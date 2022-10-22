@@ -228,6 +228,7 @@
 | TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | TID_TD-M8 |  |  |  |
 | TYT_TH-350 |  |  | Yes |
+| TYT_TH-UV8000 |  |  |  |
 | TYT_TH-UVF8D |  |  |  |
 | Vertex_Standard_FTL-1011 |  |  |  |
 | Vertex_Standard_FTL-2011 |  |  |  |
