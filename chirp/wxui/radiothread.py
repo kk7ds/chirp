@@ -55,6 +55,7 @@ class RadioJob:
         try:
             self.result = getattr(radio, self.fn)(*self.args, **self.kwargs)
         except Exception as e:
+            LOG.exception('Failed to run %r' % self)
             self.result = e
 
         LOG.debug('Radio finished %r' % self)

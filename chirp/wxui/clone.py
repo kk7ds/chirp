@@ -260,8 +260,9 @@ class ChirpUploadDialog(ChirpCloneDialog):
         super(ChirpUploadDialog, self).__init__(*a, **k)
         self._radio = radio
 
-        self.select_vendor_model(self._radio.VENDOR,
-                                 self._radio.MODEL)
+        self.select_vendor_model(
+            self._radio.VENDOR,
+            ('%s %s' % (self._radio.MODEL, self._radio.VARIANT)).strip())
         self.disable_model_select()
 
         if isinstance(self._radio, chirp_common.LiveRadio):

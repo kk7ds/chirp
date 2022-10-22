@@ -121,15 +121,19 @@ class RadioStream:
 
         return frames
 
-    def get_frames(self, nolimit=False):
+    def get_frames(self, nolimit=False, limit=None):
         """Read any pending frames from the stream"""
         while True:
-            _data = self.pipe.read(64)
+            _data = self.pipe.read(1)
             if not _data:
+                if limit:
+                    LOG.warning('Hit timeout before one frame')
                 break
             else:
                 self.data += _data
 
+            if limit and 0xFD in self.data:
+                break
             if not nolimit and len(self.data) > 128 and 0xFD in self.data:
                 break  # Give us a chance to do some status
             if len(self.data) > 1024:
@@ -335,7 +339,7 @@ def clone_from_radio(radio):
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 
-def send_mem_chunk(radio, start, stop, bs=32):
+def send_mem_chunk(radio, stream, start, stop, bs=32):
     """Send a single chunk of the radio's memory from @start-@stop"""
     _mmap = radio.get_mmap().get_byte_compatible()
 
@@ -360,6 +364,8 @@ def send_mem_chunk(radio, start, stop, bs=32):
                          chunk,
                          raw=False,
                          checksum=True)
+
+        stream.get_frames(1)
 
         if radio.status_fn:
             status.cur = i+bs
@@ -396,9 +402,8 @@ def _clone_to_radio(radio):
     frames = []
 
     for start, stop, bs in radio.get_ranges():
-        if not send_mem_chunk(radio, start, stop, bs):
+        if not send_mem_chunk(radio, stream, start, stop, bs):
             break
-        frames += stream.get_frames()
 
     send_clone_frame(radio, CMD_CLONE_END,
                      radio.get_endframe(),

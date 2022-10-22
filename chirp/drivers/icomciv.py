@@ -722,7 +722,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 @directory.register
 class Icom7200Radio(IcomCIVRadio):
     """Icom IC-7200"""
-    MODEL = "7200"
+    MODEL = "IC-7200"
     _model = "\x76"
     _template = 201
 
@@ -961,7 +961,7 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
                                      _SPECIAL_CHANNELS.keys()))
 
     def _is_special(self, number):
-        return number > 99 or isinstance(number, str)
+        return isinstance(number, str) or number > 99
 
     def _get_special_info(self, number):
         info = SpecialChannel()

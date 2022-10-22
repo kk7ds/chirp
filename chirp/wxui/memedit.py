@@ -6,6 +6,7 @@ import wx
 import wx.lib.newevent
 import wx.grid
 import wx.propgrid
+import wx.lib.mixins.gridlabelrenderer as glr
 
 from chirp import chirp_common
 from chirp import bandplan
@@ -15,6 +16,37 @@ from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
 CONF = config.get()
+
+
+class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
+    def __init__(self, *a, **k):
+        wx.grid.Grid.__init__(self, *a, **k)
+        glr.GridWithLabelRenderersMixin.__init__(self)
+
+
+class ChirpRowLabelRenderer(glr.GridDefaultRowLabelRenderer):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self.bgcolor = None
+
+    def set_error(self):
+        self.bgcolor = '#FF0000'
+
+    def set_progress(self):
+        self.bgcolor = '#98FB98'
+
+    def clear_error(self):
+        self.bgcolor = None
+
+    def Draw(self, grid, dc, rect, row):
+        if self.bgcolor:
+            dc.SetBrush(wx.Brush(self.bgcolor))
+            dc.SetPen(wx.TRANSPARENT_PEN)
+            dc.DrawRectangle(rect)
+        hAlign, vAlign = grid.GetRowLabelAlignment()
+        text = grid.GetRowLabelValue(row)
+        self.DrawBorder(grid, dc, rect)
+        self.DrawText(grid, dc, rect, text, hAlign, vAlign)
 
 
 class ChirpMemoryColumn(object):
@@ -261,12 +293,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._negative_specials = False
 
         self._memory_cache = {}
+        self._special_rows = {}
 
         self._col_defs = self._setup_columns()
 
         self.bandplan = bandplan.BandPlans(CONF)
 
-        self._grid = wx.grid.Grid(self)
+        self._grid = ChirpMemoryGrid(self)
         self._grid.CreateGrid(self._features.memory_bounds[1] +
                               len(self._features.valid_special_chans) + 1,
                               len(self._col_defs))
@@ -332,27 +365,25 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         ]
         return defs
 
-    def _memory_to_row(self, memory):
-        number = memory.number
-        if number < 0:
-            # Some radios use negative positions for special memory numbers,
-            # so map those after the memory bounds for consistency
-            number = self._features.memory_bounds[1] + abs(number)
-            LOG.debug('Mapped memory %s from %i to %i' % (
-                memory.extd_number, memory.number, number))
-            self._negative_specials = True
+    def mem2row(self, number):
+        if isinstance(number, str):
+            return self._special_rows[number]
         return number - self._features.memory_bounds[0]
 
-    def _row_to_memory(self, row):
-        number = row + self._features.memory_bounds[0]
-        if (number > self._features.memory_bounds[1] and
-                self._negative_specials):
-            number = 0 - (number - self._features.memory_bounds[1])
-            LOG.debug('Row %i mapped to %i' % (row, number))
-        return number
+    def row2mem(self, row):
+        return row + self._features.memory_bounds[0]
 
-    def refresh_memory(self, memory):
-        row = self._memory_to_row(memory)
+    def refresh_memory(self, number, memory):
+        row = self.mem2row(number)
+
+        if isinstance(memory, Exception):
+            LOG.error('Failed to load memory %s as error because: %s' % (
+                number, memory))
+            self._row_label_renderers[row].set_error()
+            self._grid.SetRowLabelValue(row, '!%s' % (
+                self._grid.GetRowLabelValue(row)))
+            return
+
         self._memory_cache[row] = memory
 
         with wx.grid.GridUpdateLocker(self._grid):
@@ -364,24 +395,31 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             for col, col_def in enumerate(self._col_defs):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
 
+    def refresh_memory_from_job(self, job):
+        self.refresh_memory(job.args[0], job.result)
+
     def refresh(self):
 
-        def cb(job):
-            # FIXME: handle errors
-            if isinstance(job, Exception):
-                LOG.exception('Failure retrieving memory %i from %s' % (
-                    i, '%s %s %s' % (self._radio.VENDOR,
-                                     self._radio.MODEL,
-                                     self._radio.VARIANT)))
-            else:
-                self.refresh_memory(job.result)
-
         lower, upper = self._features.memory_bounds
+
+        # Build our row label renderers so we can set colors to
+        # indicate success or failure
+        self._row_label_renderers = []
+        for row, _ in enumerate(
+                range(lower,
+                      upper + len(self._features.valid_special_chans) + 1)):
+            self._row_label_renderers.append(ChirpRowLabelRenderer())
+            self._grid.SetRowLabelRenderer(row, self._row_label_renderers[-1])
+
+        row = 0
         for i in range(lower, upper + 1):
-            self.do_radio(cb, 'get_memory', i)
+            row += 1
+            self.do_radio(self.refresh_memory_from_job, 'get_memory', i)
 
         for i in self._features.valid_special_chans:
-            self.do_radio(cb, 'get_memory', i)
+            self._special_rows[i] = row
+            row += 1
+            self.do_radio(self.refresh_memory_from_job, 'get_memory', i)
 
     def _set_memory_defaults(self, mem):
         if not CONF.get_bool('auto_edits', 'state', True):
@@ -423,6 +461,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             event.Veto()
             return
 
+        def set_cb(job):
+            if isinstance(job.result, Exception):
+                self._row_label_renderers[row].set_error()
+            else:
+                self._row_label_renderers[row].clear_error()
+
         try:
             if col_def.label == 'Name':
                 val = self._radio.filter_name(val)
@@ -431,7 +475,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._set_memory_defaults(mem)
             mem.empty = False
             self._grid.SetRowLabelValue(row, '*%i' % mem.number)
-            self.do_radio(None, 'set_memory', mem)
+            self._row_label_renderers[row].set_progress()
+            self.do_radio(set_cb, 'set_memory', mem)
         except Exception as e:
             LOG.exception('Failed to edit memory')
             wx.MessageBox('Invalid edit: %s' % e, 'Error')
@@ -455,22 +500,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         the UI accordingly.
         Also provides the trigger to the editorset that we have changed.
         """
-        def cb(job):
-            self.refresh_memory(job.result)
-
         row = event.GetRow()
-        self.do_radio(cb, 'get_memory', self._row_to_memory(row))
+        self.do_radio(self.refresh_memory_from_job, 'get_memory',
+                      self.row2mem(row))
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def delete_memory_at(self, row, event):
         number = self.row2mem(row)
 
-        def get_cb(job):
-            self.refresh_memory(job.result)
-
         def del_cb(job):
-            self.do_radio(get_cb, 'get_memory', number)
+            self.do_radio(self.refresh_memory_from_job, 'get_memory', number)
 
         self.do_radio(del_cb, 'erase_memory', number)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
@@ -522,9 +562,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.PopupMenu(menu)
         menu.Destroy()
 
-    def row2mem(self, row):
-        return row + self._features.memory_bounds[0]
-
     def _mem_properties(self, rows, event):
         memories = [
             self._radio.get_memory(self.row2mem(row))
@@ -533,7 +570,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if d.ShowModal() == wx.ID_OK:
                 for memory in d._memories:
                     self._radio.set_memory(memory)
-                    self.refresh_memory(memory)
+                    self.refresh_memory(memory.number, memory)
 
     def _mem_showraw(self, row, event):
         mem = self._radio.get_raw_memory(self.row2mem(row))
@@ -562,7 +599,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if cut:
                 self._radio.erase_memory(mem.number)
                 mem = self._radio.get_memory(mem.number)
-                self.refresh_memory(mem)
+                self.refresh_memory(mem.number, mem)
         return data
 
     def _cb_paste_memories(self, mems):
@@ -577,7 +614,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mem.number = row + self._features.memory_bounds[0]
             row += 1
             self._radio.set_memory(mem)
-            self.refresh_memory(mem)
+            self.refresh_memory(mem.number, mem)
 
     def cb_paste(self, data):
         if data.GetFormat() == common.CHIRP_DATA_MEMORY:
