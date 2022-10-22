@@ -39,8 +39,7 @@ if __name__ == '__main__':
     CONF = config.get()
     if CONF.get('developer', 'state'):
         from chirp.drivers import fake
-        directory.register(fake.FakeLiveRadio)
-        directory.register(fake.FakeLiveSlowRadio)
+        fake.register_fakes()
 
     app = wx.App()
     mainwindow = main.ChirpMain(None, title='CHIRP')

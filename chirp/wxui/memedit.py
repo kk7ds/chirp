@@ -136,13 +136,11 @@ class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
     def BeginEdit(self, *a, **k):
         common.EDIT_LOCK.acquire()
         self._locked = True
-        super().BeginEdit(*a, **k)
+        return super().BeginEdit(*a, **k)
 
-    def EndEdit(self, *a, **k):
-        super().EndEdit(*a, **k)
-        if self._locked:
-            self._locked = False
-            common.EDIT_LOCK.release()
+    def EndEdit(self, row, col, grid, val, **k):
+        common.EDIT_LOCK.release()
+        return self.Control.GetStringSelection()
 
 
 class ChirpToneColumn(ChirpMemoryColumn):

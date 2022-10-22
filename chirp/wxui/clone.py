@@ -231,9 +231,9 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         port = self._port.GetValue()
         rclass = self.get_selected_rclass()
 
-        pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
-                             rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
         try:
+            pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
+                                 rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
             self._radio = rclass(pipe)
         except Exception as e:
             self.fail(str(e))
