@@ -55,7 +55,6 @@
 | Commander_KG-UV |  |  |  |
 | Generic_CSV |  |  |  |
 | HobbyPCB_RS-UV3 |  |  |  |
-| Icom_7200 |  |  | Yes |
 | Icom_746 |  |  | Yes |
 | Icom_IC-208H |  |  | Yes |
 | Icom_IC-2100H |  |  | Yes |
@@ -63,10 +62,11 @@
 | Icom_IC-2300H |  |  | Yes |
 | Icom_IC-2720H |  |  | Yes |
 | Icom_IC-2730A |  |  | Yes |
-| Icom_IC-2820H |  |  | Yes |
+| Icom_IC-2820H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | Icom_IC-7000 |  |  | Yes |
 | Icom_IC-7100 |  |  | Yes |
-| Icom_IC-7300 |  |  | Yes |
+| Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
+| Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes |
 | Icom_IC-91_92AD |  |  |  |
 | Icom_IC-E90 |  |  | Yes |
@@ -82,9 +82,9 @@
 | Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 12-Feb-2019 | Yes |
 | Icom_ID-51 |  |  | Yes |
 | Icom_ID-51_Plus |  |  | Yes |
-| Icom_ID-800H_v2 |  |  | Yes |
+| Icom_ID-800H_v2 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | Icom_ID-80H |  |  | Yes |
-| Icom_ID-880H |  |  | Yes |
+| Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | Intek_HR-2040 |  |  |  |
 | Intek_KT-980HP |  |  | Yes |
 | Jetstream_JT220M |  |  |  |

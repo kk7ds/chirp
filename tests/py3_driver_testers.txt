@@ -5,8 +5,13 @@
 # Actually Arcshell AR-6 which is a direct clone
 Baofeng_BF-888,@kk7ds,13-Feb-2019
 Baofeng_UV-3R,@yarda,26-Sep-2022
-Icom_ID-31A,@kk7ds,12-Feb-2019
+Icom_IC-2820H,@kk7ds,22-Oct-2022
+Icom_IC-7200,@kk7ds,22-Oct-2022
+Icom_IC-7300,@kk7ds,22-Oct-2022
 Icom_IC-910,@mfncooper,1-Oct-2021
+Icom_ID-31A,@kk7ds,12-Feb-2019
+Icom_ID-800H_v2,@kk7ds,22-Oct-2022
+Icom_ID-880H,@kk7ds,22-Oct-2022
 Kenwood_TH-D72_live_mode,@kk7ds,21-Oct-2022
 Kenwood_TH-D74_live_mode,@kk7ds,20-Oct-2022
 Kenwood_TM-D700,@kk7ds,20-Oct-2022

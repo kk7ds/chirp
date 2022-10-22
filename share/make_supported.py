@@ -150,7 +150,7 @@ models = {"Icom": [],
 
 models = []
 
-exclude = [directory.DRV_TO_RADIO["Icom_7200"]]
+exclude = []
 
 for radio in directory.DRV_TO_RADIO.values():
     if radio in exclude:
