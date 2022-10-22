@@ -239,6 +239,7 @@
 | WLN_KD-C1 |  |  |  |
 | Wouxun_KG-935G |  |  |  |
 | Wouxun_KG-UV8D |  |  |  |
+| Wouxun_KG-UV8D_Plus |  |  |  |
 | Wouxun_KG-UV920P-A |  |  |  |
 | Wouxun_KG-UV9D_Plus |  |  |  |
 | Yaesu_FT-1500M |  |  | Yes |
