@@ -46,7 +46,9 @@ class TestRadioThread(base.BaseTest):
         thread.start()
 
         # Wait for the main jobs to be processed before we signal exit
-        while thread.pending:
+        while not all([radio.get_memory.called,
+                       radio.set_memory.called,
+                       radio.get_features.called]):
             time.sleep(0.1)
 
         thread.end()
