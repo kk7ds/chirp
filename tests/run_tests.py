@@ -1345,8 +1345,10 @@ Available tests:
         test_out = TestOutputHTML(options.html)
     else:
         stdout = sys.stdout
-        if not os.path.exists("logs"):
+        try:
             os.mkdir("logs")
+        except FileExistsError:
+            pass
         sys.stdout = open("logs/verbose", "w")
         test_out = TestOutputANSI(stdout)
 
