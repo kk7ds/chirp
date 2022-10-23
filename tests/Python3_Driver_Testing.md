@@ -243,6 +243,7 @@
 | <a name="TID_TD-M8"></a> TID_TD-M8 |  |  |  |
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
+| <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  |
 | <a name="Vertex_Standard_FTL-1011"></a> Vertex_Standard_FTL-1011 |  |  |  |
 | <a name="Vertex_Standard_FTL-2011"></a> Vertex_Standard_FTL-2011 |  |  |  |
@@ -291,8 +292,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 288
+**Drivers:** 289
 
-**Tested:** 12% (35/253)
+**Tested:** 12% (35/254)
 
-**Byte clean:** 49% (143/145)
+**Byte clean:** 49% (143/146)

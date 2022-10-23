@@ -25,7 +25,6 @@ TYT_TH-9800.img
 TYT_TH-UV3R-25.img
 TYT_TH-UV3R.img
 TYT_TH-UV88.img
-TYT_TH-UVF1.img
 Wouxun_KG-816.img
 Wouxun_KG-818.img
 Wouxun_KG-UV6.img
