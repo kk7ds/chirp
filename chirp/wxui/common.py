@@ -145,6 +145,9 @@ class ChirpSyncEditor:
         try:
             job.result = getattr(self._radio, fn)(*a, **k)
         except Exception as e:
+            LOG.exception('Failed to run %s(%s, %s)' % (
+                fn, ','.join(str(x) for x in a),
+                ','.join('%s=%r' % (k, v) for k, v in k.items())))
             job.result = e
         if cb:
             cb(job)
