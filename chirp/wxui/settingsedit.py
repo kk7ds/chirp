@@ -36,7 +36,8 @@ class ChirpSettingsEdit(common.ChirpEditor):
     def _activate(self, event):
         if not self._initialized:
             self.start_wait_dialog('Getting settings')
-            self.do_radio(self._initialize, 'get_settings')
+            self.do_radio(lambda job: wx.CallAfter(self._initialize, job),
+                          'get_settings')
             self._initialized = True
 
     def _load_settings(self):
