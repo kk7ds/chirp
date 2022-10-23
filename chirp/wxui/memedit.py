@@ -571,6 +571,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 for memory in d._memories:
                     self._radio.set_memory(memory)
                     self.refresh_memory(memory.number, memory)
+                    wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def _mem_showraw(self, row, event):
         mem = self._radio.get_raw_memory(self.row2mem(row))
