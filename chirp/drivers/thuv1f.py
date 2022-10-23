@@ -216,7 +216,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             self._mmap = uvf1_download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -225,18 +225,18 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             uvf1_upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     @classmethod
     def match_model(cls, filedata, filename):
         # TYT TH-UVF1 original
-        if filedata.startswith("\x13\x60\x17\x40\x40\x00\x48\x00" +
-                               "\x35\x00\x39\x00\x47\x00\x52\x00"):
+        if filedata.startswith(b"\x13\x60\x17\x40\x40\x00\x48\x00" +
+                               b"\x35\x00\x39\x00\x47\x00\x52\x00"):
             return True
         # TYT TH-UVF1 V2
-        elif filedata.startswith("\x14\x40\x14\x80\x43\x00\x45\x00" +
-                                 "\x13\x60\x17\x40\x40\x00\x47\x00"):
+        elif filedata.startswith(b"\x14\x40\x14\x80\x43\x00\x45\x00" +
+                                 b"\x13\x60\x17\x40\x40\x00\x47\x00"):
             return True
         else:
             return False
