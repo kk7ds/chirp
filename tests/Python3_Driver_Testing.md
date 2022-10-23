@@ -17,6 +17,7 @@
 | AnyTone_OBLTR-8R |  |  |  |
 | AnyTone_TERMN-8R |  |  |  |
 | Anysecu_WP-9900 |  |  | Yes |
+| BTECH_FRS-A1 |  |  |  |
 | BTECH_FRS-B1 |  |  |  |
 | BTECH_GMRS-20V2 |  |  | Yes |
 | BTECH_GMRS-50X1 |  |  | Yes |
@@ -35,6 +36,7 @@
 | Baofeng_BF-A58 |  |  |  |
 | Baofeng_BF-A58S |  |  |  |
 | Baofeng_BF-F8HP |  |  | Yes |
+| Baofeng_BF-T8 |  |  |  |
 | Baofeng_BF-V8A |  |  |  |
 | Baofeng_F-11 |  |  | Yes |
 | Baofeng_GT-3WP |  |  |  |
@@ -193,13 +195,18 @@
 | Retevis_RB19P |  |  |  |
 | Retevis_RB23 |  |  |  |
 | Retevis_RB26 |  |  |  |
+| Retevis_RB27 |  |  |  |
+| Retevis_RB27B |  |  |  |
+| Retevis_RB27V |  |  |  |
 | Retevis_RB615 |  |  |  |
 | Retevis_RB617 |  |  |  |
 | Retevis_RB618 |  |  |  |
 | Retevis_RB619 |  |  |  |
+| Retevis_RB627B |  |  |  |
 | Retevis_RB75 |  |  |  |
 | Retevis_RB85 |  |  |  |
 | Retevis_RT1 |  |  |  |
+| Retevis_RT16 |  |  |  |
 | Retevis_RT19 |  |  |  |
 | Retevis_RT21 |  |  |  |
 | Retevis_RT22 |  |  |  |
