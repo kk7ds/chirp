@@ -95,8 +95,10 @@ class Platform:
     def log_dir(self):
         """Return the preferred log file directory"""
         logdir = os.path.join(self.config_dir(), "logs")
-        if not os.path.isdir(logdir):
+        try:
             os.mkdir(logdir)
+        except FileExistsError:
+            pass
 
         return logdir
 
@@ -280,8 +282,10 @@ class UnixPlatform(Platform):
             basepath = os.path.abspath(os.path.join(self.default_dir(),
                                                     ".chirp"))
 
-        if not os.path.isdir(basepath):
+        try:
             os.mkdir(basepath)
+        except FileExistsError:
+            pass
 
         Platform.__init__(self, basepath)
 
@@ -352,7 +356,10 @@ class Win32Platform(Platform):
             basepath = os.path.abspath(os.path.join(appdata, "CHIRP"))
 
         if not os.path.isdir(basepath):
-            os.mkdir(basepath)
+            try:
+                os.mkdir(basepath)
+            except FileExistsError:
+                pass
 
         Platform.__init__(self, basepath)
 
