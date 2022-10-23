@@ -602,7 +602,7 @@ def _do_download(radio):
             data += _read_block(radio, i, 0x40, False)
 
     if append_model:
-        data += radio.MODEL.ljust(8).encode('ascii', 'ignore')
+        data += radio.MODEL.ljust(8).encode()
 
     LOG.debug("done.")
     return memmap.MemoryMapBytes(data)
