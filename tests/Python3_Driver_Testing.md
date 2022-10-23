@@ -224,6 +224,7 @@
 | Retevis_RT95 |  |  | Yes |
 | Retevis_RT95_VOX |  |  | Yes |
 | Retevis_RT98 |  |  |  |
+| Rugged_RH5R-V2 |  |  |  |
 | TDXone_TD-Q8A |  |  |  |
 | TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | TID_TD-M8 |  |  |  |
