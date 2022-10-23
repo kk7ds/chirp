@@ -1,6 +1,7 @@
 | Driver | Tester | Tested | Byte Clean |
 | ------ | ------ | ------ | ---------- |
 | ARRL_Travel_Plus |  |  |  |
+| Abbree_AR-518 |  |  |  |
 | Abbree_AR-63 |  |  |  |
 | Alinco_DJ-G7EG |  |  |  |
 | Alinco_DJ175 |  |  |  |
