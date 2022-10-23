@@ -254,6 +254,7 @@
 | Yaesu_FT-65R |  |  | Yes |
 | Yaesu_FT-7100M |  |  | Yes |
 | Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes |
+| Yaesu_FT-8100 |  |  | Yes |
 | Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes |
 | Yaesu_FT-817ND |  |  | Yes |
 | Yaesu_FT-817ND_US |  |  | Yes |
