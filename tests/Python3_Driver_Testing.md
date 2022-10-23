@@ -178,6 +178,7 @@
 | Radioddity_DB25-G |  |  | Yes |
 | Radioddity_GA-2S |  |  | Yes |
 | Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
+| Radioddity_R2 |  |  |  |
 | Radioddity_UV-5G |  |  | Yes |
 | Radioddity_UV-5RX3 |  |  | Yes |
 | Radioddity_UV-82X3 |  |  | Yes |
