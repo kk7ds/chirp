@@ -1214,3 +1214,15 @@ if has_future:
         MODEL = 'TK-3180K2'
         VALID_BANDS = [(400000000, 520000000)]
         _model = b'P3180\x07'
+
+    @directory.register
+    class KenwoodTK8180E(KenwoodTKx180Radio):
+        MODEL = 'TK-8180E'
+        VALID_BANDS = [(400000000, 520000000)]
+        _model = b'M8189\''
+
+    @directory.register
+    class KenwoodTK7180ERadio(KenwoodTKx180Radio):
+        MODEL = 'TK-7180E'
+        VALID_BANDS = [(136000000, 174000000)]
+        _model = b'M7189$'
