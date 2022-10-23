@@ -541,6 +541,13 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                 dest_zone.zoneinfo.name = (
                     'Zone %i' % (zone_number + 1)).ljust(12)
 
+                # Copy the settings we care about from the first zone
+                z0info = self._memobj.zone0.zoneinfo
+                dest_zone.zoneinfo.timeout = z0info.timeout
+                dest_zone.zoneinfo.tot_alert = z0info.tot_alert
+                dest_zone.zoneinfo.tot_rekey = z0info.tot_rekey
+                dest_zone.zoneinfo.tot_reset = z0info.tot_reset
+
     def shuffle_zone(self):
         """Sort the memories in the zone according to logical channel number"""
         # FIXME: Move this to the zone
