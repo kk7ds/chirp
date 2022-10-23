@@ -1,9 +1,11 @@
 import collections
 import logging
+import textwrap
 import threading
 
 import serial
 import wx
+import wx.lib.sized_controls
 
 from chirp import chirp_common
 from chirp import directory
@@ -30,7 +32,7 @@ class CloneThread(threading.Thread):
         try:
             self._fn()
         except Exception as e:
-            LOG.error('Failed to clone: %s' % e)
+            LOG.exception('Failed to clone: %s' % e)
             self._dialog.fail(str(e))
         else:
             self._dialog.complete()
@@ -69,6 +71,55 @@ class SettingsThread(threading.Thread):
         else:
             self.settings = self._radio.get_settings()
         wx.CallAfter(self._dialog.Update, 100, newmsg=_('Complete'))
+
+
+class ChirpRadioPromptDialog(wx.Dialog):
+    def __init__(self, *a, **k):
+        self.radio = k.pop('radio')
+        self.prompt = k.pop('prompt')
+        buttons = k.pop('buttons', wx.OK | wx.CANCEL)
+        super().__init__(*a, **k)
+
+        prompts = self.radio.get_prompts()
+        self.message = getattr(prompts, self.prompt)
+
+        bs = self.CreateButtonSizer(buttons)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        vbox.Add(wx.StaticText(self,
+                               label='\n'.join(textwrap.wrap(self.message))),
+                 border=20, flag=wx.ALL)
+        self.cb = wx.CheckBox(self,
+                              label="Do not prompt again for %s %s" % (
+                                  self.radio.VENDOR, self.radio.MODEL))
+        vbox.Add(self.cb, border=20, flag=wx.ALL)
+        vbox.Add(bs)
+        self.Fit()
+        self.Centre()
+
+    def persist_flag(self, radio, flag):
+        key = '%s_%s' % (flag, directory.radio_class_id(radio))
+        CONF.set_bool(key.lower(), not self.cb.IsChecked(), 'clone_prompts')
+
+    def check_flag(self, radio, flag):
+        key = '%s_%s' % (flag, directory.radio_class_id(radio))
+        return CONF.get_bool(key.lower(), 'clone_prompts', True)
+
+    def ShowModal(self):
+        if not self.message:
+            LOG.debug('No %s prompt for radio' % self.prompt)
+            return wx.ID_OK
+        if not self.check_flag(self.radio, self.prompt):
+            LOG.debug('Prompt %s disabled for radio' % self.prompt)
+            return wx.ID_OK
+        LOG.debug('Showing %s prompt' % self.prompt)
+        status = super().ShowModal()
+        if status == wx.ID_OK:
+            LOG.debug('Setting flag for prompt %s' % self.prompt)
+            self.persist_flag(self.radio, self.prompt)
+        else:
+            LOG.debug('No flag change for %s' % self.prompt)
+        return status
 
 
 class ChirpCloneDialog(wx.Dialog):
@@ -192,13 +243,15 @@ class ChirpCloneDialog(wx.Dialog):
             wx.MessageBox(message,
                           'Error communicating with radio',
                           wx.ICON_ERROR)
-            if isinstance(self, ChirpDownloadDialog):
-                self._vendor.Enable()
-                self._model.Enable()
-            self._port.Enable()
-            self.FindWindowById(wx.ID_OK).Enable()
-
+            self.cancel_action()
         wx.CallAfter(safe_fail)
+
+    def cancel_action(self):
+        if isinstance(self, ChirpDownloadDialog):
+            self._vendor.Enable()
+            self._model.Enable()
+        self._port.Enable()
+        self.FindWindowById(wx.ID_OK).Enable()
 
     def get_selected_rclass(self):
         vendor = self._vendor.GetStringSelection()
@@ -212,13 +265,13 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         super(ChirpDownloadDialog, self)._selected_model(event)
         rclass = self.get_selected_rclass()
         prompts = rclass.get_prompts()
-        if prompts.pre_download:
-            prompt = prompts.pre_download
-        else:
-            prompt = ''
-
-        LOG.debug('Expose prompt: %s' % prompt)
-        # FIXME: Handle download prompt here
+        if prompts.experimental:
+            d = ChirpRadioPromptDialog(self,
+                                       title='Experimental driver',
+                                       buttons=wx.OK,
+                                       radio=rclass,
+                                       prompt='experimental')
+            d.ShowModal()
 
     def _action(self, event):
         if event.GetEventObject().GetId() != wx.ID_OK:
@@ -230,6 +283,24 @@ class ChirpDownloadDialog(ChirpCloneDialog):
 
         port = self._port.GetValue()
         rclass = self.get_selected_rclass()
+
+        prompts = rclass.get_prompts()
+        if prompts.info:
+            d = ChirpRadioPromptDialog(self,
+                                       title='Radio information',
+                                       radio=rclass,
+                                       prompt='info')
+            if d.ShowModal() != wx.ID_OK:
+                self.cancel_action()
+                return
+        if prompts.pre_download:
+            d = ChirpRadioPromptDialog(self,
+                                       title='Download instructions',
+                                       radio=rclass,
+                                       prompt='pre_download')
+            if d.ShowModal() != wx.ID_OK:
+                self.cancel_action()
+                return
 
         try:
             pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
@@ -274,6 +345,24 @@ class ChirpUploadDialog(ChirpCloneDialog):
             return
 
         self.disable_running()
+
+        prompts = self._radio.get_prompts()
+        if prompts.info:
+            d = ChirpRadioPromptDialog(self,
+                                       title='Radio information',
+                                       radio=self._radio,
+                                       prompt='info')
+            if d.ShowModal() != wx.ID_OK:
+                self.cancel_action()
+                return
+        if prompts.pre_upload:
+            d = ChirpRadioPromptDialog(self,
+                                       title='Upload instructions',
+                                       radio=self._radio,
+                                       prompt='pre_upload')
+            if d.ShowModal() != wx.ID_OK:
+                self.cancel_action()
+                return
 
         port = self._port.GetValue()
 
