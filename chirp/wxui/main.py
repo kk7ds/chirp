@@ -72,6 +72,7 @@ class ChirpEditorSet(wx.Panel):
 
         features = radio.get_features()
 
+        parent_radio = radio
         if features.has_sub_devices:
             radios = radio.get_sub_devices()
             format = 'Memories (%(variant)s)'
@@ -86,12 +87,12 @@ class ChirpEditorSet(wx.Panel):
             self.Bind(common.EVT_EDITOR_CHANGED, self._editor_changed)
 
         if features.has_settings:
-            settings = self.SETTINGS_CLS(radio, self._editors)
+            settings = self.SETTINGS_CLS(parent_radio, self._editors)
             self.add_editor(settings, 'Settings')
 
         if (CONF.get_bool('developer', 'state') and
                 not isinstance(radio, chirp_common.LiveRadio)):
-            browser = developer.ChirpRadioBrowser(radio, self._editors)
+            browser = developer.ChirpRadioBrowser(parent_radio, self._editors)
             self.add_editor(browser, 'Browser')
 
     def _editor_changed(self, event):
