@@ -2,6 +2,8 @@
 
 import argparse
 import gettext
+import os
+import sys
 
 import wx
 import wx.aui
@@ -29,6 +31,9 @@ if __name__ == '__main__':
                         help="Include this driver while loading")
     parser.add_argument("--inspect", action="store_true",
                         help="Show wxPython inspector")
+    if sys.platform == 'linux':
+        parser.add_argument('--no-linux-gdk-backend', action='store_true',
+                            help='Do not force GDK_BACKEND=x11')
     logger.add_arguments(parser)
     args = parser.parse_args()
 
@@ -40,6 +45,11 @@ if __name__ == '__main__':
     if CONF.get('developer', 'state'):
         from chirp.drivers import fake
         fake.register_fakes()
+
+    # wxGTK on Wayland seems to have problems. Override GDK_BACKEND to
+    # use X11, unless we were asked not to
+    if sys.platform == 'linux' and not args.no_linux_gdk_backend:
+        os.putenv('GDK_BACKEND', 'x11')
 
     app = wx.App()
     mainwindow = main.ChirpMain(None, title='CHIRP')
