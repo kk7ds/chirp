@@ -62,7 +62,7 @@
 | <a name="Icom_746"></a> Icom_746 |  |  | Yes |
 | <a name="Icom_IC-208H"></a> Icom_IC-208H |  |  | Yes |
 | <a name="Icom_IC-2100H"></a> Icom_IC-2100H |  |  | Yes |
-| <a name="Icom_IC-2200H"></a> Icom_IC-2200H |  |  | Yes |
+| <a name="Icom_IC-2200H"></a> Icom_IC-2200H | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Icom_IC-2300H"></a> Icom_IC-2300H |  |  | Yes |
 | <a name="Icom_IC-2720H"></a> Icom_IC-2720H |  |  | Yes |
 | <a name="Icom_IC-2730A"></a> Icom_IC-2730A |  |  | Yes |
@@ -293,6 +293,6 @@
 
 **Drivers:** 285
 
-**Tested:** 11% (33/252)
+**Tested:** 11% (34/251)
 
 **Byte clean:** 49% (140/145)
