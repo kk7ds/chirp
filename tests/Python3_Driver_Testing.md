@@ -267,7 +267,7 @@
 | <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E |  |  | Yes |
 | <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R |  |  | Yes |
 | <a name="Yaesu_FT-7100M"></a> Yaesu_FT-7100M |  |  | Yes |
-| <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes |
+| <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 |  |  | Yes |
 | <a name="Yaesu_FT-817"></a> Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes |
 | <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND |  |  | Yes |
@@ -276,7 +276,7 @@
 | <a name="Yaesu_FT-818ND_US"></a> Yaesu_FT-818ND_US |  |  | Yes |
 | <a name="Yaesu_FT-857_897"></a> Yaesu_FT-857_897 |  |  | Yes |
 | <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US |  |  | Yes |
-| <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 |  |  | Yes |
+| <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 |  |  | Yes |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes |
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 |  |  | Yes |
@@ -293,6 +293,6 @@
 
 **Drivers:** 285
 
-**Tested:** 11% (32/253)
+**Tested:** 11% (33/252)
 
 **Byte clean:** 49% (140/145)
