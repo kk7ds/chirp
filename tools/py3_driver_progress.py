@@ -53,17 +53,37 @@ def main():
 
         testers[fields[0]] = fields[1:]
 
+    print('## Status', file=output)
+
     print('| Driver | Tester | Tested | Byte Clean |', file=output)
     print('| ------ | ------ | ------ | ---------- |', file=output)
 
     drivers = sorted([ident for ident in directory.DRV_TO_RADIO])
+    drvstested = 0
+    byteclean = 0
     for driver in drivers:
         cls = directory.get_radio(driver)
         tester, tested = testers.pop(driver, ('', ''))
+        if tester:
+            drvstested += 1
+        if not cls.NEEDS_COMPAT_SERIAL:
+            byteclean += 1
         print('| <a name="%s"></a> %s | %s | %s | %s |' % (
             driver, driver, tester_link(tester), tested,
             '' if cls.NEEDS_COMPAT_SERIAL else 'Yes'),
               file=output)
+
+    print('## Stats', file=output)
+    print('\n**Drivers:** %i' % (len(drivers)), file=output)
+    print('\n**Tested:** %i%% (%i/%i)' % (
+        drvstested / len(drivers) * 100,
+        drvstested, len(drivers) - drvstested),
+          file=output)
+    print('\n**Byte clean:** %i%% (%i/%i)' % (
+        byteclean / len(drivers) * 100,
+        byteclean,
+        len(drivers) - byteclean),
+          file=output)
 
     for driver, (tester, tested) in testers.items():
         print('Error in testers file; driver %s by %s on %s unknown' % (
