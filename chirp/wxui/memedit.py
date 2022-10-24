@@ -306,6 +306,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
 
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self._grid, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+
         self._fixed_font = wx.Font(pointSize=10,
                                    family=wx.FONTFAMILY_TELETYPE,
                                    style=wx.FONTSTYLE_NORMAL,
@@ -321,10 +325,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 attr.SetFont(self._fixed_font)
                 self._grid.SetColAttr(col, attr)
                 self._grid.SetColMinimalWidth(col, 75)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self._grid, 1, wx.EXPAND)
-        self.SetSizer(sizer)
 
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
