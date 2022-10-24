@@ -38,6 +38,7 @@
 | <a name="Baofeng_BF-A58"></a> Baofeng_BF-A58 |  |  |  |
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S |  |  |  |
 | <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP |  |  | Yes |
+| <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 |  |  |  |
 | <a name="Baofeng_BF-T8"></a> Baofeng_BF-T8 |  |  |  |
 | <a name="Baofeng_BF-V8A"></a> Baofeng_BF-V8A |  |  |  |
 | <a name="Baofeng_F-11"></a> Baofeng_F-11 |  |  | Yes |
@@ -303,8 +304,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 300
+**Drivers:** 301
 
-**Tested:** 11% (35/265)
+**Tested:** 11% (35/266)
 
-**Byte clean:** 47% (143/157)
+**Byte clean:** 47% (143/158)
