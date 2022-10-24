@@ -15,6 +15,8 @@ Icom_ID-800H_v2,@kk7ds,22-Oct-2022
 Icom_ID-880H,@kk7ds,22-Oct-2022
 Kenwood_TH-D72_live_mode,@kk7ds,21-Oct-2022
 Kenwood_TH-D74_live_mode,@kk7ds,20-Oct-2022
+Kenwood_TM-271,@kk7ds,23-Oct-2022
+Kenwood_TM-281,@kk7ds,23-Oct-2022
 Kenwood_TM-D700,@kk7ds,20-Oct-2022
 Kenwood_TM-D710G,@kk7ds,22-Oct-2022
 Kenwood_TM-D710G_CloneMode,@kk7ds,22-Oct-2022

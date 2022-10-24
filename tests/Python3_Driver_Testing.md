@@ -142,8 +142,8 @@
 | Kenwood_TK-862G |  |  |  |
 | Kenwood_TK-868 |  |  |  |
 | Kenwood_TK-868G |  |  |  |
-| Kenwood_TM-271 |  |  | Yes |
-| Kenwood_TM-281 |  |  | Yes |
+| Kenwood_TM-271 | [@kk7ds](https://github.com/kk7ds) | 23-Oct-2022 | Yes |
+| Kenwood_TM-281 | [@kk7ds](https://github.com/kk7ds) | 23-Oct-2022 | Yes |
 | Kenwood_TM-471 |  |  | Yes |
 | Kenwood_TM-D700 | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | Kenwood_TM-D710 |  |  | Yes |
