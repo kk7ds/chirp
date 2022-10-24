@@ -302,7 +302,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-UV8E"
     _model = "KG-UV8D-A"
-    _file_ident = "kguv8e" # lowercase
+    _file_ident = b"kguv8e" # lowercase
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
@@ -337,7 +337,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
 
         try:
             self.pipe.write(_header)
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def _read_record(self):
@@ -392,7 +392,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     @classmethod
     def match_model(cls, filedata, filename):
         id = cls._file_ident 
-        return cls._file_ident in 'kg' + filedata[0x426:0x430].replace('(', '').replace(')', '').lower()
+        return cls._file_ident in b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(b')', b'').lower()
 
     def _identify(self):
         """Do the identification dance"""
@@ -423,7 +423,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
             self._mmap = self._download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -440,7 +440,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
             return self._do_download(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
@@ -448,7 +448,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         # allocate & fill memory
         image = ""
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256) + chr(blocksize)
+            req = chr(i // 256) + chr(i % 256) + chr(blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
@@ -472,14 +472,14 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
             self._do_upload(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256)
+            req = chr(i // 256) + chr(i % 256)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
             # ~ LOG.debug(util.hexprint(req + chunk))
@@ -677,9 +677,9 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() / 8))
+            _mem.set_raw("\x00" * (_mem.size() // 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() / 8))
+            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)
@@ -1138,7 +1138,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

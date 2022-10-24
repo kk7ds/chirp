@@ -255,6 +255,7 @@
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus |  |  |  |
+| <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A |  |  |  |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M |  |  | Yes |
@@ -292,8 +293,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 289
+**Drivers:** 290
 
-**Tested:** 12% (35/254)
+**Tested:** 12% (35/255)
 
-**Byte clean:** 49% (143/146)
+**Byte clean:** 49% (143/147)
