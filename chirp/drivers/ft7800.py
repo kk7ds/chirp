@@ -30,7 +30,7 @@ from collections import defaultdict
 
 LOG = logging.getLogger(__name__)
 
-ACK = 0x06
+ACK = b'\x06'
 
 MEM_FORMAT = """
 #seekto 0x002A;
@@ -184,7 +184,7 @@ def _download(radio):
         raise Exception("Failed to read header (%i)" % len(chunk))
     data += chunk
 
-    _send(radio.pipe, bytes([ACK]))
+    _send(radio.pipe, ACK)
 
     for i in range(0, radio._block_lengths[1], radio._block_size):
         chunk = radio.pipe.read(radio._block_size)
@@ -201,7 +201,7 @@ def _download(radio):
             radio.status_fn(status)
 
     data += radio.pipe.read(1)
-    _send(radio.pipe, bytes([ACK]))
+    _send(radio.pipe, ACK)
 
     return memmap.MemoryMapBytes(data)
 
@@ -1010,7 +1010,7 @@ class FT8900Radio(FT8800Radio):
         _mem.skip = SKIPS.index(mem.skip)
 
     def get_memory(self, number):
-        mem = FT8800Radio.get_memory(self, number)
+        mem = super().get_memory(number)
 
         _mem = self._memobj.memory[number - 1]
 

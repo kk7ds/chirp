@@ -1230,7 +1230,7 @@ class CloneModeRadio(FileBackedRadio):
         if isinstance(pipe, str):
             self.pipe = None
             self.load_mmap(pipe)
-        elif isinstance(pipe, memmap.MemoryMap):
+        elif isinstance(pipe, memmap.MemoryMapBytes):
             self.pipe = None
             self._mmap = pipe
             self.process_mmap()

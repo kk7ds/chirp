@@ -31,7 +31,8 @@ Kenwood_TK-8108,@kk7ds,15-Feb-2019
 Kenwood_TK-8180,@kk7ds,18-Oct-2022
 Radioddity_GA-510,@kk7ds,21-Oct-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
-Yaesu_FT-7800_7900,@kk7ds,14-Feb-2019
+Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022
+Yaesu_FT-8800,@kk7ds,24-Oct-2022
 Yaesu_FT-817,@kk7ds,14-Feb-2019
 Yaesu_VX-3,@kk7ds,15-Feb-2019
 Yaesu_VX-8DR,@kk7ds,15-Feb-2019
