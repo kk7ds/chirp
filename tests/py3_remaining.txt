@@ -11,7 +11,6 @@ LUITON_LT-725UV.img
 Puxing_PX-2R.img
 Puxing_PX-777.img
 Puxing_PX-888K.img
-Quansheng_TG-UV2+.img
 Retevis_RT9000D_66-88.img
 Retevis_RT9000D_136-174.img
 Retevis_RT9000D_220-260.img

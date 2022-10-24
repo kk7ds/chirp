@@ -188,6 +188,7 @@
 | <a name="QYT_KT8900D"></a> QYT_KT8900D |  |  | Yes |
 | <a name="QYT_KT8900R"></a> QYT_KT8900R |  |  | Yes |
 | <a name="QYT_KT980PLUS"></a> QYT_KT980PLUS |  |  | Yes |
+| <a name="Quansheng_TG-UV2+"></a> Quansheng_TG-UV2+ |  |  |  |
 | <a name="RT_Systems_CSV"></a> RT_Systems_CSV |  |  |  |
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G |  |  | Yes |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S |  |  | Yes |
@@ -302,8 +303,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 299
+**Drivers:** 300
 
-**Tested:** 11% (35/264)
+**Tested:** 11% (35/265)
 
-**Byte clean:** 47% (143/156)
+**Byte clean:** 47% (143/157)
