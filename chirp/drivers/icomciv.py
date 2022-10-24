@@ -127,15 +127,6 @@ char pad1;
 bbcd rtone[2];             // 12-14 tx tone freq
 char pad2;
 bbcd ctone[2];             // 15-17 tone rx squelch setting
-lbcd freq_tx[5];           // 4-8 transmit freq
-u8   mode_tx;              // 9 tx operating mode
-u8   filter_tx;            // 10
-u8   dataMode_tx:4,        // 11 tx data mode setting (on or off)
-     tmode_tx:4;           // 11 tx tone type
-char pad3;
-bbcd rtone_tx[2];          // 12-14 repeater tone freq
-char pad4;
-bbcd ctone_tx[2];          // 15-17 tone squelch setting
 char name[10];             // 18-27 Callsign
 """
 
@@ -987,6 +978,12 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
         self._rf.valid_name_length = 10
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
         self._rf.valid_special_chans = sorted(self._SPECIAL_CHANNELS.keys())
+
+
+@directory.register
+class Icom7610Radio(Icom7300Radio):
+    MODEL = "IC-7610"
+    _model = '\x98'
 
 
 def probe_model(ser):
