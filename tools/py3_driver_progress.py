@@ -12,6 +12,10 @@ directory.safe_import_drivers()
 def tester_link(text):
     if text.startswith('@'):
         return '[%s](https://github.com/%s)' % (text, text[1:])
+    elif text.startswith('+'):
+        assert text[1:] in directory.DRV_TO_RADIO, \
+            '%s is not in the driver directory' % text[1:]
+        return '[Implied by %s](#user-content-%s)' % (text[1:], text[1:])
     else:
         return text
 
@@ -56,8 +60,8 @@ def main():
     for driver in drivers:
         cls = directory.get_radio(driver)
         tester, tested = testers.pop(driver, ('', ''))
-        print('| %s | %s | %s | %s |' % (
-            driver, tester_link(tester), tested,
+        print('| <a name="%s"></a> %s | %s | %s | %s |' % (
+            driver, driver, tester_link(tester), tested,
             '' if cls.NEEDS_COMPAT_SERIAL else 'Yes'),
               file=output)
 
