@@ -1,3 +1,4 @@
+## Status
 | Driver | Tester | Tested | Byte Clean |
 | ------ | ------ | ------ | ---------- |
 | <a name="ARRL_Travel_Plus"></a> ARRL_Travel_Plus |  |  |  |
@@ -288,3 +289,10 @@
 | <a name="Yaesu_VX-8R"></a> Yaesu_VX-8R |  |  | Yes |
 | <a name="Yedro_YC-M04VUS"></a> Yedro_YC-M04VUS |  |  | Yes |
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
+## Stats
+
+**Drivers:** 285
+
+**Tested:** 11% (32/253)
+
+**Byte clean:** 49% (140/145)
