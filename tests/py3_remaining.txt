@@ -1,9 +1,6 @@
 Baofeng_BF-T1.img
 Baojie_BJ-9900.img
 Explorer_QRZ-1.img
-Feidaxin_FD-268A.img
-Feidaxin_FD-268B.img
-Feidaxin_FD-288B.img
 Jetstream_JT270MH.img
 Jetstream_JT270M.img
 Leixen_VV-898.img

@@ -57,6 +57,15 @@
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV |  |  | Yes |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 |  |  | Yes |
 | <a name="Commander_KG-UV"></a> Commander_KG-UV |  |  |  |
+| <a name="Feidaxin_FD-150A"></a> Feidaxin_FD-150A |  |  |  |
+| <a name="Feidaxin_FD-160A"></a> Feidaxin_FD-160A |  |  |  |
+| <a name="Feidaxin_FD-268A"></a> Feidaxin_FD-268A |  |  |  |
+| <a name="Feidaxin_FD-268B"></a> Feidaxin_FD-268B |  |  |  |
+| <a name="Feidaxin_FD-288A"></a> Feidaxin_FD-288A |  |  |  |
+| <a name="Feidaxin_FD-288B"></a> Feidaxin_FD-288B |  |  |  |
+| <a name="Feidaxin_FD-450A"></a> Feidaxin_FD-450A |  |  |  |
+| <a name="Feidaxin_FD-460A"></a> Feidaxin_FD-460A |  |  |  |
+| <a name="Feidaxin_FD-460UH"></a> Feidaxin_FD-460UH |  |  |  |
 | <a name="Generic_CSV"></a> Generic_CSV |  |  |  |
 | <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 |  |  |  |
 | <a name="Icom_746"></a> Icom_746 |  |  | Yes |
@@ -293,8 +302,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 290
+**Drivers:** 299
 
-**Tested:** 12% (35/255)
+**Tested:** 11% (35/264)
 
-**Byte clean:** 49% (143/147)
+**Byte clean:** 47% (143/156)

@@ -297,7 +297,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
     _memsize = MEM_SIZE
     _upper = 99
     _VFO_DEFAULT = 0
-    _IDENT = ""
+    _IDENT = b""
     _active_ch = ACTIVE_CH
 
     @classmethod
@@ -790,11 +790,11 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                         obj = getattr(_mem, sett)
                         setattr(obj, name, element.value)
 
-                    except AttributeError, e:
+                    except AttributeError as e:
                         m = "Setting %s is not in this setting block" % name
                         LOG.debug(m)
 
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -827,7 +827,7 @@ class FD268ARadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-268A"
     _range = (136000000, 174000000)
     _VFO_DEFAULT = 145000000
-    _IDENT = "\xFF\xEE\x46\xFF"
+    _IDENT = b"\xFF\xEE\x46\xFF"
 
 
 @directory.register
@@ -836,7 +836,7 @@ class FD268BRadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-268B"
     _range = (400000000, 470000000)
     _VFO_DEFAULT = 439000000
-    _IDENT = "\xFF\xEE\x47\xFF"
+    _IDENT = b"\xFF\xEE\x47\xFF"
 
 
 # #####################################################################
@@ -851,7 +851,7 @@ class FD288ARadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-288A"
     _range = (136000000, 174000000)
     _VFO_DEFAULT = 145000000
-    _IDENT = "\xFF\xEE\x4B\xFF"
+    _IDENT = b"\xFF\xEE\x4B\xFF"
 
 
 @directory.register
@@ -860,7 +860,7 @@ class FD288BRadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-288B"
     _range = (400000000, 470000000)
     _VFO_DEFAULT = 439000000
-    _IDENT = "\xFF\xEE\x4C\xFF"
+    _IDENT = b"\xFF\xEE\x4C\xFF"
 
 
 # #####################################################################
@@ -875,7 +875,7 @@ class FD150ARadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-150A"
     _range = (136000000, 174000000)
     _VFO_DEFAULT = 145000000
-    _IDENT = "\xFF\xEE\x45\xFF"
+    _IDENT = b"\xFF\xEE\x45\xFF"
 
 
 @directory.register
@@ -884,7 +884,7 @@ class FD160ARadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-160A"
     _range = (136000000, 174000000)
     _VFO_DEFAULT = 145000000
-    _IDENT = "\xFF\xEE\x48\xFF"
+    _IDENT = b"\xFF\xEE\x48\xFF"
 
 
 @directory.register
@@ -893,7 +893,7 @@ class FD450ARadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-450A"
     _range = (400000000, 470000000)
     _VFO_DEFAULT = 439000000
-    _IDENT = "\xFF\xEE\x44\xFF"
+    _IDENT = b"\xFF\xEE\x44\xFF"
 
 
 @directory.register
@@ -902,7 +902,7 @@ class FD460ARadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-460A"
     _range = (400000000, 470000000)
     _VFO_DEFAULT = 439000000
-    _IDENT = "\xFF\xEE\x4A\xFF"
+    _IDENT = b"\xFF\xEE\x4A\xFF"
 
 
 @directory.register
@@ -911,4 +911,4 @@ class FD460UHRadio(FeidaxinFD2x8yRadio):
     MODEL = "FD-460UH"
     _range = (400000000, 480000000)
     _VFO_DEFAULT = 439000000
-    _IDENT = "\xFF\xF4\x44\xFF"
+    _IDENT = b"\xFF\xF4\x44\xFF"
