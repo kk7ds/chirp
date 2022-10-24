@@ -70,6 +70,7 @@
 | Icom_IC-7100 |  |  | Yes |
 | Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
+| Icom_IC-7610 |  |  | Yes |
 | Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes |
 | Icom_IC-91_92AD |  |  |  |
 | Icom_IC-E90 |  |  | Yes |
