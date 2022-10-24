@@ -28,7 +28,6 @@ TYT_TH-UV88.img
 Wouxun_KG-816.img
 Wouxun_KG-818.img
 Wouxun_KG-UV6.img
-Wouxun_KG-UV8E.img
 Wouxun_KG-UVD1P.img
 Yaesu_FT-1D_R.img
 Yaesu_FT-2900R_1900R.img
