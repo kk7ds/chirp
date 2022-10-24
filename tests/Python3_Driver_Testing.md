@@ -155,7 +155,7 @@
 | <a name="Kenwood_TM-D710_CloneMode"></a> Kenwood_TM-D710_CloneMode |  |  | Yes |
 | <a name="Kenwood_TM-G707"></a> Kenwood_TM-G707 |  |  | Yes |
 | <a name="Kenwood_TM-V7"></a> Kenwood_TM-V7 |  |  | Yes |
-| <a name="Kenwood_TM-V71"></a> Kenwood_TM-V71 |  |  | Yes |
+| <a name="Kenwood_TM-V71"></a> Kenwood_TM-V71 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | <a name="Kenwood_TS-2000"></a> Kenwood_TS-2000 |  |  | Yes |
 | <a name="Kenwood_TS-480_CloneMode"></a> Kenwood_TS-480_CloneMode |  |  |  |
 | <a name="Kenwood_TS-480_LiveMode"></a> Kenwood_TS-480_LiveMode |  |  | Yes |
