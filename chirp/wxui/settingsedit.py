@@ -31,14 +31,14 @@ class ChirpSettingsEdit(common.ChirpEditor):
             if isinstance(job.result, Exception):
                 raise job.result
             self._settings = job.result
-        self._load_settings()
+            self._load_settings()
 
     def _activate(self, event):
         if not self._initialized:
+            self._initialized = True
             self.start_wait_dialog('Getting settings')
             self.do_radio(lambda job: wx.CallAfter(self._initialize, job),
                           'get_settings')
-            self._initialized = True
 
     def _load_settings(self):
         for group in self._settings:

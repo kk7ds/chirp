@@ -98,7 +98,7 @@ class ChirpEditor(wx.Panel):
 
         self.wait_dialog = wx.ProgressDialog('Please wait', message, 100,
                                              parent=self)
-        wx.CallAfter(self.wait_dialog.ShowModal)
+        wx.CallAfter(self.wait_dialog.Show)
 
     def bump_wait_dialog(self, value=None, message=None):
         if value:
@@ -108,8 +108,9 @@ class ChirpEditor(wx.Panel):
 
     def stop_wait_dialog(self):
         def cb():
-            self.wait_dialog.EndModal(wx.ID_OK)
-            self.wait_dialog = None
+            if self.wait_dialog:
+                self.wait_dialog.Destroy()
+                self.wait_dialog = None
 
         wx.CallAfter(cb)
 
