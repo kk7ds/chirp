@@ -70,6 +70,7 @@
 | Icom_IC-7100 |  |  | Yes |
 | Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
+| Icom_IC-7610 |  |  | Yes |
 | Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes |
 | Icom_IC-91_92AD |  |  |  |
 | Icom_IC-E90 |  |  | Yes |
@@ -127,6 +128,7 @@
 | Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | Kenwood_TK-7108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | Kenwood_TK-7180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes |
+| Kenwood_TK-7180E |  |  | Yes |
 | Kenwood_TK-760 |  |  |  |
 | Kenwood_TK-760G |  |  |  |
 | Kenwood_TK-762 |  |  |  |
@@ -136,6 +138,7 @@
 | Kenwood_TK-8102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | Kenwood_TK-8108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | Kenwood_TK-8180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes |
+| Kenwood_TK-8180E |  |  | Yes |
 | Kenwood_TK-860 |  |  |  |
 | Kenwood_TK-860G |  |  |  |
 | Kenwood_TK-862 |  |  |  |
