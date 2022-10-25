@@ -32,6 +32,9 @@ jobs:
       - name: Push changes
         run: |
           git push origin auto-py3-$GITHUB_SHA:auto-py3-$GITHUB_SHA
+      - name: Update support matrix if needed
+        run: |
+          tox -e makesupported || git commit -m "Update support matrix"
       - name: Create PR
         uses: repo-sync/pull-request@v2
         with:
