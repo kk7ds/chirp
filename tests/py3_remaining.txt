@@ -32,5 +32,4 @@ Yaesu_FT-450D.img
 Yaesu_FT-50.img
 Yaesu_FT-70D.img
 Yaesu_FTM-3200D_R.img
-Yaesu_FTM-350.img
 Yaesu_FTM-7250D_R.img

@@ -278,7 +278,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = _clone_in(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to download from radio (%s)" % e)
         self.process_mmap()
 
@@ -287,7 +287,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             _clone_out(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to upload to radio (%s)" % e)
 
     def process_mmap(self):
@@ -399,7 +399,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @classmethod
     def match_model(self, filedata, filename):
-        return filedata.startswith("AH033$")
+        return filedata.startswith(b"AH033$")
 
     def get_settings(self):
         top = RadioSettings()

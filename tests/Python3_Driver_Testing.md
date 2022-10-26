@@ -291,6 +291,7 @@
 | <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US |  |  | Yes |
 | <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 |  |  | Yes |
+| <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 |  |  | Yes |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes |
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 |  |  | Yes |
 | <a name="Yaesu_VX-3"></a> Yaesu_VX-3 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
@@ -304,8 +305,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 301
+**Drivers:** 302
 
-**Tested:** 11% (35/266)
+**Tested:** 11% (35/267)
 
-**Byte clean:** 47% (143/158)
+**Byte clean:** 47% (144/158)
