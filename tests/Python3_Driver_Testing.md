@@ -285,6 +285,7 @@
 | <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR |  |  | Yes |
 | <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE |  |  | Yes |
 | <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR |  |  | Yes |
+| <a name="Yaesu_FT-50"></a> Yaesu_FT-50 |  |  | Yes |
 | <a name="Yaesu_FT-60"></a> Yaesu_FT-60 |  |  | Yes |
 | <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E |  |  | Yes |
 | <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R |  |  | Yes |
@@ -315,8 +316,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 312
+**Drivers:** 313
 
-**Tested:** 11% (35/277)
+**Tested:** 11% (35/278)
 
-**Byte clean:** 46% (145/167)
+**Byte clean:** 46% (146/167)
