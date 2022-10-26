@@ -175,6 +175,8 @@
 | <a name="Kenwood_TS-590S_SG_LiveMode"></a> Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
 | <a name="Kenwood_TS-850"></a> Kenwood_TS-850 |  |  | Yes |
 | <a name="LUITON_LT-316"></a> LUITON_LT-316 |  |  |  |
+| <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF |  |  |  |
+| <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF |  |  |  |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV |  |  | Yes |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 |  |  |  |
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 |  |  | Yes |
@@ -245,6 +247,10 @@
 | <a name="Retevis_RT76"></a> Retevis_RT76 |  |  |  |
 | <a name="Retevis_RT76P"></a> Retevis_RT76P |  |  |  |
 | <a name="Retevis_RT87"></a> Retevis_RT87 |  |  |  |
+| <a name="Retevis_RT9000D_136-174"></a> Retevis_RT9000D_136-174 |  |  |  |
+| <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 |  |  |  |
+| <a name="Retevis_RT9000D_400-490"></a> Retevis_RT9000D_400-490 |  |  |  |
+| <a name="Retevis_RT9000D_66-88"></a> Retevis_RT9000D_66-88 |  |  |  |
 | <a name="Retevis_RT95"></a> Retevis_RT95 |  |  | Yes |
 | <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX |  |  | Yes |
 | <a name="Retevis_RT98"></a> Retevis_RT98 |  |  |  |
@@ -256,6 +262,9 @@
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  |
+| <a name="TYT_TH9000_144"></a> TYT_TH9000_144 |  |  |  |
+| <a name="TYT_TH9000_220"></a> TYT_TH9000_220 |  |  |  |
+| <a name="TYT_TH9000_440"></a> TYT_TH9000_440 |  |  |  |
 | <a name="Vertex_Standard_FTL-1011"></a> Vertex_Standard_FTL-1011 |  |  |  |
 | <a name="Vertex_Standard_FTL-2011"></a> Vertex_Standard_FTL-2011 |  |  |  |
 | <a name="Vertex_Standard_FTL-7011"></a> Vertex_Standard_FTL-7011 |  |  |  |
@@ -305,8 +314,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 302
+**Drivers:** 311
 
-**Tested:** 11% (35/267)
+**Tested:** 11% (35/276)
 
-**Byte clean:** 47% (144/158)
+**Byte clean:** 46% (144/167)
