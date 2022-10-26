@@ -384,7 +384,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -399,7 +399,7 @@ def _checksum(data):
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -593,7 +593,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         _mem = self._memobj.memory[number]
 
         # get flag info
-        cbyte = number / 8
+        cbyte = number // 8
         cbit = 7 - (number % 8)
         setflag = self._memobj.csetflag[cbyte].c[cbit]
         skipflag = self._memobj.cskipflag[cbyte].c[cbit]
@@ -660,7 +660,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
 
         _mem = self._memobj.memory[mem.number]
 
-        cbyte = mem.number / 8
+        cbyte = mem.number // 8
         cbit = 7 - (mem.number % 8)
 
         if mem.empty:
@@ -847,7 +847,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
                         LOG.debug("Setting %s = %s" % (setting,
                                   element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -867,14 +867,14 @@ def match_orig_model(cls, filedata, filename):
         flow /= 1000000
         fhigh /= 1000000
 
-        txmin = ord(filedata[0x200]) * 100 + (ord(filedata[0x201]) >> 4) \
-            * 10 + ord(filedata[0x201]) % 16
-        txmax = ord(filedata[0x204]) * 100 + (ord(filedata[0x205]) >> 4) \
-            * 10 + ord(filedata[0x205]) % 16
-        rxmin = ord(filedata[0x208]) * 100 + (ord(filedata[0x209]) >> 4) \
-            * 10 + ord(filedata[0x209]) % 16
-        rxmax = ord(filedata[0x20C]) * 100 + (ord(filedata[0x20D]) >> 4) \
-            * 10 + ord(filedata[0x20D]) % 16
+        txmin = filedata[0x200] * 100 + (filedata[0x201] >> 4) \
+            * 10 + filedata[0x201] % 16
+        txmax = filedata[0x204] * 100 + (filedata[0x205] >> 4) \
+            * 10 + filedata[0x205] % 16
+        rxmin = filedata[0x208] * 100 + (filedata[0x209] >> 4) \
+            * 10 + filedata[0x209] % 16
+        rxmax = filedata[0x20C] * 100 + (filedata[0x20D] >> 4) \
+            * 10 + filedata[0x20D] % 16
 
         if (rxmin >= flow and rxmax <= fhigh and txmin >= flow and
                 txmax <= fhigh):
