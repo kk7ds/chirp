@@ -528,7 +528,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     _GM_RING = ("OFF", "IN RING", "AlWAYS")
     _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
 
-    _MYCALL_CHR_SET = list(string.uppercase) + list(string.digits) + ['-','/' ]
+    _MYCALL_CHR_SET = list(string.ascii_uppercase) + list(string.digits) + ['-','/' ]
 
     @classmethod
     def get_prompts(cls):
@@ -707,7 +707,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @classmethod
     def _wipe_memory(cls, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
+        mem.set_raw("\x00" * (mem.size() // 8))
         mem.unknown1 = 0x05
 
     def get_bank_model(self):
@@ -1162,7 +1162,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
