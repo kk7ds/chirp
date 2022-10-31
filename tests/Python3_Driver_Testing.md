@@ -282,6 +282,8 @@
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes |
 | <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R |  |  | Yes |
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M |  |  | Yes |
+| <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R |  |  | Yes |
+| <a name="Yaesu_FT-2900R_1900RTXMod_Opened_Xmit"></a> Yaesu_FT-2900R_1900RTXMod_Opened_Xmit |  |  | Yes |
 | <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR |  |  | Yes |
 | <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE |  |  | Yes |
 | <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR |  |  | Yes |
@@ -317,8 +319,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 314
+**Drivers:** 316
 
-**Tested:** 11% (35/279)
+**Tested:** 11% (35/281)
 
-**Byte clean:** 46% (147/167)
+**Byte clean:** 47% (149/167)
