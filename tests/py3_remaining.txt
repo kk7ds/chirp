@@ -8,7 +8,6 @@ LUITON_LT-725UV.img
 Puxing_PX-2R.img
 Puxing_PX-777.img
 Puxing_PX-888K.img
-TYT_TH-7800.img
 TYT_TH-9800.img
 TYT_TH-UV3R-25.img
 TYT_TH-UV3R.img

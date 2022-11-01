@@ -259,6 +259,8 @@
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | <a name="TID_TD-M8"></a> TID_TD-M8 |  |  |  |
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes |
+| <a name="TYT_TH-7800"></a> TYT_TH-7800 |  |  |  |
+| <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  |
@@ -319,8 +321,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 316
+**Drivers:** 318
 
-**Tested:** 11% (35/281)
+**Tested:** 11% (35/283)
 
-**Byte clean:** 47% (149/167)
+**Byte clean:** 46% (149/169)

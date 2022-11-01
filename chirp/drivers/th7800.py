@@ -218,7 +218,7 @@ class TYTTH7800Base(chirp_common.Radio):
         """get active flag for channel active,
         scan enable, or priority banks"""
         bank = getattr(self._memobj, banktype)
-        index = (num - 1) / 8
+        index = (num - 1) // 8
         bitpos = (num - 1) % 8
         mask = 2**bitpos
         enabled = bank[index] & mask
@@ -231,7 +231,7 @@ class TYTTH7800Base(chirp_common.Radio):
         """set active flag for channel active,
         scan enable, or priority banks"""
         bank = getattr(self._memobj, banktype)
-        index = (num - 1) / 8
+        index = (num - 1) // 8
         bitpos = (num - 1) % 8
         mask = 2**bitpos
         if enable:
@@ -536,7 +536,7 @@ class TYTTH7800Base(chirp_common.Radio):
 
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -701,8 +701,8 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
         # TYT used TH9800 as model for TH-7800 _AND_ TH-9800.  Check
         # for TH7800 in case they fix it or if users update the model
         # in their own radio.
-        if not (filedata[0xfe18:0xfe1e] == "TH9800" or
-                filedata[0xfe18:0xfe1e] == "TH7800"):
+        if not (filedata[0xfe18:0xfe1e] == b"TH9800" or
+                filedata[0xfe18:0xfe1e] == b"TH7800"):
             return False
         # TH-7800 bandlimits differ from TH-9800.  First band Invalid
         # (zero).
@@ -726,7 +726,7 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
     def sync_in(self):
         try:
             self._mmap = _download(self)
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)
         self.process_mmap()
@@ -734,6 +734,6 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
     def sync_out(self):
         try:
             _upload(self)
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)
