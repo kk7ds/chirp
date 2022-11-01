@@ -226,7 +226,7 @@ PFKEYSHORT_LIST = ["OFF",
                    ]
 
 MODES = ["NFM", "FM"]
-WTFTONES = map(float, xrange(56, 64))
+WTFTONES = [float(x) for x in range(56, 64)]
 TONES = WTFTONES + chirp_common.TONES
 DTCS_CODES = [17, 50, 645] + chirp_common.DTCS_CODES
 DTCS_CODES.sort()
@@ -261,7 +261,7 @@ def send(radio, frame):
     #            util.hexprint(frame).replace("\n", "\n          ")))
     try:
         radio.pipe.write(frame)
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 
@@ -373,8 +373,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     ALIASES = [LT898UV, ]
     BAUD_RATE = 9600
 
-    _file_ident = "Leixen"
-    _model_ident = 'LX-\x89\x85\x63'
+    _file_ident = b"Leixen"
+    _model_ident = b'LX-\x89\x85\x63'
 
     _memsize = 0x2000
     _ranges = [
@@ -428,7 +428,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     def sync_in(self):
         try:
             self._mmap = do_download(self)
-        except Exception, e:
+        except Exception as e:
             finish(self)
             raise errors.RadioError("Failed to download from radio: %s" % e)
         self.process_mmap()
@@ -443,7 +443,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         except errors.RadioError:
             finish(self)
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to upload to radio: %s" % e)
 
     def get_raw_memory(self, number):
@@ -797,17 +797,17 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               DTMFTIME_LIST, DTMFTIME_LIST[val]))
         adv_grp.append(rs)
-        val = (_settings.dtmfdelay) / 5
+        val = (_settings.dtmfdelay) // 5
         rs = RadioSetting("dtmfdelay", "DTMF 1st Digit Delay",
                           RadioSettingValueList(
                               DTMFDELAY_LIST, DTMFDELAY_LIST[val]))
         adv_grp.append(rs)
-        val = (_settings.dtmfpretime) / 10 - 1
+        val = (_settings.dtmfpretime) // 10 - 1
         rs = RadioSetting("dtmfpretime", "DTMF Pretime",
                           RadioSettingValueList(
                               DTMFPRETIME_LIST, DTMFPRETIME_LIST[val]))
         adv_grp.append(rs)
-        val = (_settings.dtmfdelay2) / 5
+        val = (_settings.dtmfdelay2) // 5
         rs = RadioSetting("dtmfdelay2", "DTMF * and # Digit Delay",
                           RadioSettingValueList(
                               DTMFDELAY2_LIST, DTMFDELAY2_LIST[val]))
@@ -942,7 +942,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -962,8 +962,8 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     VENDOR = "Jetstream"
     MODEL = "JT270M"
 
-    _file_ident = "JET"
-    _model_ident = 'LX-\x89\x85\x53'
+    _file_ident = b"JET"
+    _model_ident = b'LX-\x89\x85\x53'
 
 
 @directory.register
@@ -973,8 +973,8 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
     VENDOR = "Jetstream"
     MODEL = "JT270MH"
 
-    _file_ident = "Leixen"
-    _model_ident = 'LX-\x89\x85\x85'
+    _file_ident = b"Leixen"
+    _model_ident = b'LX-\x89\x85\x85'
     _ranges = [(0x0C00, 0x2000)]
     _mem_formatter = {'unknownormode': 'mode:1',
                       'modeorpower': 'power:2',
@@ -1028,7 +1028,7 @@ class LeixenVV898SRadio(LeixenVV898Radio):
     MODEL = "VV-898S"
     ALIASES = [VV898E, ]
 
-    _model_ident = 'LX-\x89\x85\x75'
+    _model_ident = b'LX-\x89\x85\x75'
     _mem_formatter = {'unknownormode': 'mode:1',
                       'modeorpower': 'power:2',
                       'chanstart': 0x0D00,

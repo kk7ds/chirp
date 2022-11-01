@@ -1,9 +1,5 @@
 Baojie_BJ-9900.img
 Explorer_QRZ-1.img
-Jetstream_JT270MH.img
-Jetstream_JT270M.img
-Leixen_VV-898.img
-Leixen_VV-898S.img
 LUITON_LT-725UV.img
 Puxing_PX-2R.img
 Puxing_PX-777.img
