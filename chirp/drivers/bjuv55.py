@@ -237,7 +237,7 @@ struct {
 class BaojieBJUV55Radio(uv5r.BaofengUV5R):
     VENDOR = "Baojie"
     MODEL = "BJ-UV55"
-    _basetype = ["BJ55"]
+    _basetype = [b"BJ55"]
     _idents = [BJUV55_MODEL]
     _mem_params = (0x1928  # poweron_msg offset
                    )
@@ -647,6 +647,6 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
                 value = int(val.get_value() * 10 - 870)
                 LOG.debug("Setting fm_preset = %s" % (value))
                 self._memobj.fm_preset = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
