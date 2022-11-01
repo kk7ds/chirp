@@ -104,6 +104,8 @@
 | <a name="Intek_HR-2040"></a> Intek_HR-2040 |  |  |  |
 | <a name="Intek_KT-980HP"></a> Intek_KT-980HP |  |  | Yes |
 | <a name="Jetstream_JT220M"></a> Jetstream_JT220M |  |  |  |
+| <a name="Jetstream_JT270M"></a> Jetstream_JT270M |  |  |  |
+| <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH |  |  |  |
 | <a name="KYD_IP-620"></a> KYD_IP-620 |  |  |  |
 | <a name="KYD_NC-630A"></a> KYD_NC-630A |  |  |  |
 | <a name="Kenwood_HMK"></a> Kenwood_HMK |  |  |  |
@@ -179,6 +181,8 @@
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF |  |  |  |
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF |  |  |  |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV |  |  | Yes |
+| <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  |
+| <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 |  |  |  |
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 |  |  | Yes |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M |  |  |  |
@@ -322,8 +326,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 319
+**Drivers:** 323
 
-**Tested:** 10% (35/284)
+**Tested:** 10% (35/288)
 
-**Byte clean:** 47% (150/169)
+**Byte clean:** 46% (150/173)
