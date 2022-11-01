@@ -292,8 +292,8 @@ def zero_indexed_seq_map(user_options):
     returns a list of tuples of form (str, int).
 
     """
-    mem_vals = range(0, len(user_options))
-    return zip(user_options, mem_vals)
+    mem_vals = list(range(0, len(user_options)))
+    return list(zip(user_options, mem_vals))
 
 
 class RadioSettings(list):
