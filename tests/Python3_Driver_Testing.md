@@ -54,6 +54,7 @@
 | <a name="Baofeng_UV-9G"></a> Baofeng_UV-9G |  |  |  |
 | <a name="Baofeng_UV-9R"></a> Baofeng_UV-9R |  |  |  |
 | <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 |  |  | Yes |
+| <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV |  |  | Yes |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 |  |  | Yes |
@@ -321,8 +322,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 318
+**Drivers:** 319
 
-**Tested:** 11% (35/283)
+**Tested:** 10% (35/284)
 
-**Byte clean:** 46% (149/169)
+**Byte clean:** 47% (150/169)
