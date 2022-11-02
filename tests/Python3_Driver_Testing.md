@@ -59,6 +59,7 @@
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV |  |  | Yes |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 |  |  | Yes |
 | <a name="Commander_KG-UV"></a> Commander_KG-UV |  |  |  |
+| <a name="Explorer_QRZ-1"></a> Explorer_QRZ-1 |  |  |  |
 | <a name="Feidaxin_FD-150A"></a> Feidaxin_FD-150A |  |  |  |
 | <a name="Feidaxin_FD-160A"></a> Feidaxin_FD-160A |  |  |  |
 | <a name="Feidaxin_FD-268A"></a> Feidaxin_FD-268A |  |  |  |
@@ -251,6 +252,7 @@
 | <a name="Retevis_RT68"></a> Retevis_RT68 |  |  |  |
 | <a name="Retevis_RT76"></a> Retevis_RT76 |  |  |  |
 | <a name="Retevis_RT76P"></a> Retevis_RT76P |  |  |  |
+| <a name="Retevis_RT85"></a> Retevis_RT85 |  |  |  |
 | <a name="Retevis_RT87"></a> Retevis_RT87 |  |  |  |
 | <a name="Retevis_RT9000D_136-174"></a> Retevis_RT9000D_136-174 |  |  |  |
 | <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 |  |  |  |
@@ -267,6 +269,7 @@
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 |  |  |  |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
+| <a name="TYT_TH-UV88"></a> TYT_TH-UV88 |  |  |  |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  |
 | <a name="TYT_TH9000_144"></a> TYT_TH9000_144 |  |  |  |
@@ -326,8 +329,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 323
+**Drivers:** 326
 
-**Tested:** 10% (35/288)
+**Tested:** 10% (35/291)
 
-**Byte clean:** 46% (150/173)
+**Byte clean:** 46% (150/176)
