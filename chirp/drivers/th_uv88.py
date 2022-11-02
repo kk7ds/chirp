@@ -917,7 +917,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # software only
         name = ""
         for i in range(15):  # 0 - 15
-            name += chr(self._memobj.openradioname.name1[i])
+            name += chr(int(self._memobj.openradioname.name1[i]))
         name = name.rstrip()  # remove trailing spaces
 
         rx = RadioSettingValueString(0, 15, name)
@@ -927,7 +927,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # software only
         name = ""
         for i in range(15):  # 0 - 15
-            name += chr(self._memobj.openradioname.name2[i])
+            name += chr(int(self._memobj.openradioname.name2[i]))
         name = name.rstrip()  # remove trailing spaces
 
         rx = RadioSettingValueString(0, 15, name)
@@ -1089,7 +1089,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
