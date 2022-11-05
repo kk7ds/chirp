@@ -305,8 +305,8 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         struct mem_struct current;
 
     """
-    _CALLSIGN_CHARSET = [chr(x) for x in range(ord("0"), ord("9") + 1) +
-                        range(ord("A"), ord("Z") + 1) + [ord(" ")]]
+    _CALLSIGN_CHARSET = [chr(x) for x in list(range(ord("0"), ord("9") + 1)) +
+                        list(range(ord("A"), ord("Z") + 1)) + [ord(" ")]]
     _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
                                      range(0, len(_CALLSIGN_CHARSET))))
 
@@ -500,7 +500,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = self._clone_in()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s"
                                     % e)
         self.process_mmap()
@@ -510,7 +510,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             self._clone_out()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s"
                                     % e)
 
@@ -705,18 +705,18 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             if mem.number == 1:
                 raise Exception("Sorry, can't delete first memory")
             if wasvalid and not wasused:
-                self._memobj.filled[(mem.number - 1) / 8] &= \
+                self._memobj.filled[(mem.number - 1) // 8] &= \
                     ~(1 << (mem.number - 1) % 8)
-                _mem.set_raw("\xFF" * (_mem.size() / 8))    # clean up
-            self._memobj.visible[(mem.number - 1) / 8] &= \
+                _mem.set_raw("\xFF" * (_mem.size() // 8))    # clean up
+            self._memobj.visible[(mem.number - 1) // 8] &= \
                 ~(1 << (mem.number - 1) % 8)
             return
         if not wasvalid:
-            _mem.set_raw("\x00" * (_mem.size() / 8))    # clean up
+            _mem.set_raw("\x00" * (_mem.size() // 8))    # clean up
 
-        self._memobj.visible[(mem.number - 1) / 8] |= 1 << (mem.number - 1) \
+        self._memobj.visible[(mem.number - 1) // 8] |= 1 << (mem.number - 1) \
                         % 8
-        self._memobj.filled[(mem.number - 1) / 8] |= 1 << (mem.number - 1) \
+        self._memobj.filled[(mem.number - 1) // 8] |= 1 << (mem.number - 1) \
                         % 8
         self._set_memory(mem, _mem)
 
@@ -945,7 +945,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         """Match the opened/downloaded image to the correct version"""
         if len(filedata) == cls.MEM_SIZE + 7:    # +7 bytes of model name
             rid = filedata[cls.MEM_SIZE:cls.MEM_SIZE + 7]
-            if rid.startswith(cls.MODEL):
+            if rid.startswith(cls.MODEL.encode()):
                 return True
         else:
             return False
@@ -959,8 +959,8 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
     def _chars2str(self, cary, knt):
         """Convert raw memory char array to a string: NOT a callback."""
         stx = ""
-        for char in cary[:knt]:
-            stx += chr(char)
+        for char in cary[0:knt]:
+            stx += chr(int(char))
         return stx
 
     def _my_str2ary(self, setting, obj, atrba, knt):
@@ -1490,6 +1490,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
