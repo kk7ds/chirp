@@ -263,6 +263,7 @@
 | <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX |  |  | Yes |
 | <a name="Retevis_RT98"></a> Retevis_RT98 |  |  |  |
 | <a name="Rugged_RH5R-V2"></a> Rugged_RH5R-V2 |  |  |  |
+| <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A |  |  |  |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | <a name="TID_TD-M8"></a> TID_TD-M8 |  |  |  |
@@ -332,8 +333,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 329
+**Drivers:** 330
 
-**Tested:** 10% (35/294)
+**Tested:** 10% (35/295)
 
-**Byte clean:** 45% (151/178)
+**Byte clean:** 45% (151/179)
