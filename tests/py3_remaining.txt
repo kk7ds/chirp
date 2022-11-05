@@ -9,9 +9,4 @@ Wouxun_KG-816.img
 Wouxun_KG-818.img
 Wouxun_KG-UV6.img
 Wouxun_KG-UVD1P.img
-Yaesu_FT-1D_R.img
-Yaesu_FT2D_R.img
-Yaesu_FT3D_R.img
 Yaesu_FT-450D.img
-Yaesu_FTM-3200D_R.img
-Yaesu_FTM-7250D_R.img

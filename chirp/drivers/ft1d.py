@@ -558,7 +558,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "FT-1D"
     VARIANT = "R"
 
-    _model = "AH44M"
+    _model = b"AH44M"
     _memsize = 130507
     _block_lengths = [10, 130497]
     _block_size = 32
@@ -698,7 +698,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @staticmethod
     def _add_ff_pad(val, length):
-        return val.ljust(length, "\xFF")[:length]
+        return val.ljust(length, b"\xFF")[:length]
 
     @classmethod
     def _strip_ff_pads(cls, messages):
@@ -740,7 +740,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return str(mem.label).rstrip("\xFF").translate(charset)
 
     def _encode_label(self, mem):
-        label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
+        label = "".join([chr(CHARSET.index(x))
+                         for x in mem.name.rstrip()]).encode()
         return self._add_ff_pad(label, 16)
 
     def _encode_charsetbits(self, mem):
@@ -820,7 +821,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @classmethod
     def _wipe_memory(cls, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
+        mem.set_raw("\x00" * (mem.size() // 8))
         mem.unknown1 = 0x05
 
     def get_bank_model(self):
@@ -1131,7 +1132,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 checksum = body[-2:]
                 body = ''.join(s for s in body[:-2]
                                if s in string.printable).translate(
-                                   None, "\x09\x0a\x0b\x0c\x0d")
+                                   str.maketrans(
+                                       "", "", "\x09\x0a\x0b\x0c\x0d"))
                 try:
                     val = RadioSettingValueString(0, 134, body.strip())
                 except Exception as e:
@@ -1890,7 +1892,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
