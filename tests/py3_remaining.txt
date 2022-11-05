@@ -9,4 +9,3 @@ Wouxun_KG-816.img
 Wouxun_KG-818.img
 Wouxun_KG-UV6.img
 Wouxun_KG-UVD1P.img
-Yaesu_FT-450D.img

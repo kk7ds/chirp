@@ -299,6 +299,7 @@
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M |  |  | Yes |
 | <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R |  |  | Yes |
 | <a name="Yaesu_FT-2900R_1900RTXMod_Opened_Xmit"></a> Yaesu_FT-2900R_1900RTXMod_Opened_Xmit |  |  | Yes |
+| <a name="Yaesu_FT-450D"></a> Yaesu_FT-450D |  |  | Yes |
 | <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR |  |  | Yes |
 | <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE |  |  | Yes |
 | <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR |  |  | Yes |
