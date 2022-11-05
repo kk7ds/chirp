@@ -117,7 +117,7 @@ class FT2D(ft1d.FT1Radio):
         return mem
 
     def _decode_label(self, mem):
-        return str(mem.label).rstrip("\xFF").decode('ascii', 'replace')
+        return str(mem.label).rstrip("\xFF")
 
     def _encode_label(self, mem):
         label = mem.name.rstrip().encode('ascii', 'ignore')

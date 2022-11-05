@@ -294,6 +294,7 @@
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M |  |  | Yes |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes |
+| <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes |
 | <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R |  |  | Yes |
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M |  |  | Yes |
 | <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R |  |  | Yes |
@@ -319,7 +320,12 @@
 | <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 |  |  | Yes |
 | <a name="Yaesu_FT-90"></a> Yaesu_FT-90 |  |  | Yes |
+| <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R |  |  | Yes |
+| <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 |  |  | Yes |
+| <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R |  |  | Yes |
+| <a name="Yaesu_FTM-3200D_R"></a> Yaesu_FTM-3200D_R |  |  | Yes |
 | <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 |  |  | Yes |
+| <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes |
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 |  |  | Yes |
 | <a name="Yaesu_VX-3"></a> Yaesu_VX-3 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
@@ -333,8 +339,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 330
+**Drivers:** 336
 
-**Tested:** 10% (35/295)
+**Tested:** 10% (35/301)
 
-**Byte clean:** 45% (151/179)
+**Byte clean:** 46% (157/179)
