@@ -589,7 +589,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting(
                 "toa",
                 "Timeout Timer Alarm",
-                RadioSettingValueList(TOA_LIST, TOA_LIST[_settings.tot]),
+                RadioSettingValueList(TOA_LIST, TOA_LIST[_settings.toa]),
             )
         )
         basic.append(
