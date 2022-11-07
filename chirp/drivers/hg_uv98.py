@@ -32,18 +32,6 @@ from chirp.settings import RadioSettingValueString, RadioSettings
 
 LOG = logging.getLogger(__name__)
 
-# Gross hack to handle missing future module on un-updatable
-# platforms like MacOS. Just avoid registering these radio
-# classes for now.
-try:
-    from builtins import bytes
-    has_future = True
-except ImportError:
-    has_future = False
-    LOG.debug('python-future package is not '
-              'available; %s requires it' % __name__)
-
-
 MEM_FORMAT = """
 #seekto 0x0000;
 struct {
@@ -319,6 +307,7 @@ class RadioSettingValueChannel(RadioSettingValueList):
         return int(self.get_value().partition(" ")[0])
 
 
+@directory.register
 class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """
     Lanchonlh HG-UV98
@@ -905,7 +894,3 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
 
             if hasattr(_settings, name):
                 setattr(_settings, name, value)
-
-
-if has_future:
-    LanchonlhHG_UV98 = directory.register(LanchonlhHG_UV98)
