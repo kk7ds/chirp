@@ -182,6 +182,7 @@
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF |  |  |  |
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF |  |  |  |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV |  |  | Yes |
+| <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 |  |  |  |
@@ -331,8 +332,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 328
+**Drivers:** 329
 
-**Tested:** 10% (35/293)
+**Tested:** 10% (35/294)
 
-**Byte clean:** 45% (150/178)
+**Byte clean:** 45% (151/178)
