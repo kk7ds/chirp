@@ -32,17 +32,6 @@ from chirp.settings import RadioSettingValueString, RadioSettings
 
 LOG = logging.getLogger(__name__)
 
-# Gross hack to handle missing future module on un-updatable
-# platforms like MacOS. Just avoid registering these radio
-# classes for now.
-try:
-    from builtins import bytes
-    has_future = True
-except ImportError:
-    has_future = False
-    LOG.debug('python-future package is not '
-              'available; %s requires it' % __name__)
-
 
 MEM_FORMAT = """
 #seekto 0x0000;
@@ -180,8 +169,6 @@ BEACON_EXIT_DLY_LIST = MENU_DLY_LIST = AUTOLOCK_DLY_LIST
 
 
 def make_frame(cmd, addr, length, data=b""):
-    if not isinstance(data, bytes):
-        data = data.decode("ascii")
     return struct.pack(">BHB", ord(cmd), addr, length) + data
 
 
@@ -205,7 +192,7 @@ def recv(radio, readdata=True):
     ack = radio.pipe.read(1)
     if ack != b"\x06":
         raise errors.RadioError("Radio didn't ack our read ack")
-    return addr, bytes(data)
+    return addr, data
 
 
 def do_ident(radio):
@@ -234,9 +221,9 @@ def do_download(radio):
     radio.pipe.timeout = 1
     do_ident(radio)
 
-    data = bytes(b"")
+    data = b""
     for addr in range(0, MAX_ADDR, CHUNK_SIZE):
-        send(radio, make_frame(bytes(b"R"), addr, CHUNK_SIZE))
+        send(radio, make_frame(b"R", addr, CHUNK_SIZE))
         _addr, _data = recv(radio)
         if _addr != addr:
             raise errors.RadioError("Radio sent unexpected address")
@@ -263,7 +250,7 @@ def do_upload(radio):
 
     mmap = radio._mmap
     if callable(getattr(mmap, "get_byte_compatible", None)):
-        # for py3-CHIRP
+        # for py3
         mmap = mmap.get_byte_compatible()
     for addr in range(0, MAX_ADDR, CHUNK_SIZE):
         send(radio, make_frame(b"W", addr, CHUNK_SIZE, mmap[addr:addr + CHUNK_SIZE]))
@@ -319,6 +306,7 @@ class RadioSettingValueChannel(RadioSettingValueList):
         return int(self.get_value().partition(" ")[0])
 
 
+@directory.register
 class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """
     Lanchonlh HG-UV98
@@ -905,7 +893,3 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
 
             if hasattr(_settings, name):
                 setattr(_settings, name, value)
-
-
-if has_future:
-    LanchonlhHG_UV98 = directory.register(LanchonlhHG_UV98)
