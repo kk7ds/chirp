@@ -37,7 +37,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3-pip python3-wxgtk4.0
           sudo python3 -mpip install tox
-          tox -e makesupported || git commit -m "Update support matrix" tests/Python3_Driver_Testing.md
+          tox -e makesupported || git commit -m "Update support matrix" tests/Python3_Driver_Testing.md || true
       - name: Push changes
         run: |
           git push origin auto-py3-$GITHUB_SHA:auto-py3-$GITHUB_SHA
