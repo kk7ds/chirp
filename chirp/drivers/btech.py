@@ -173,9 +173,6 @@ UV2501G3_fp = b"BTG324"
 
 # B-TECH UV-2501+220 pre-production units
 UV2501_220pp_fp = b"M3C281"
-# extra block read for the 2501+220 pre-production units
-# the same for all of this radios so far
-UV2501_220pp_id = b"      280528"
 # B-TECH UV-2501+220
 UV2501_220_fp = b"M3G201"
 # new variant, let's call it Generation 2
@@ -233,8 +230,6 @@ KT8900_fp4 = b"M2G304"
 KT8900_fp5 = b"M2G314"
 KT8900_fp6 = b"M2G424"
 KT8900_fp7 = b"M27184"
-# this radio has an extra ID
-KT8900_id = b"303688"
 
 # KT8900R
 KT8900R_fp = b"M3G1F4"
@@ -275,26 +270,26 @@ LT588UV_fp = b"V2G1F4"
 LT588UV_fp1 = b"V2G214"
 
 # QYT KT-8R (quad band ht)
-KT8R_fp = "MCB264"
-KT8R_fp1 = "MCB284"
-KT8R_fp2 = "MC5264"
+KT8R_fp = b"MCB264"
+KT8R_fp1 = b"MCB284"
+KT8R_fp2 = b"MC5264"
 
 # QYT KT5800 (dual band)
-KT5800_fp = "VCB222"
+KT5800_fp = b"VCB222"
 
 # QYT KT980Plus (dual band)
-KT980PLUS_fp = "VC2002"
-KT980PLUS_fp1 = "VC6042"
+KT980PLUS_fp = b"VC2002"
+KT980PLUS_fp1 = b"VC6042"
 
 # Radioddity DB25-G (gmrs)
-DB25G_fp = "VC6182"
-DB25G_fp1 = "VC7062"
+DB25G_fp = b"VC6182"
+DB25G_fp1 = b"VC7062"
 
 # QYT KT-WP12 and KT-9900
-KTWP12_fp = "WP3094"
+KTWP12_fp = b"WP3094"
 
 # Anysecu WP-9900
-WP9900_fp = "WP3094"
+WP9900_fp = b"WP3094"
 
 
 # ### MAGICS
@@ -312,15 +307,15 @@ MSTRING_KT8900D = b"\x55\x20\x16\x08\x01\xFF\xDC\x02"
 # for the BTECH UV-25X2 and UV-50X2
 MSTRING_UV25X2 = b"\x55\x20\x16\x12\x28\xFF\xDC\x02"
 # for the BTECH UV-25X4
-MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
+MSTRING_UV25X4 = b"\x55\x20\x16\x11\x18\xFF\xDC\x02"
 # for the BTECH GMRS-50X1
-MSTRING_GMRS50X1 = "\x55\x20\x18\x10\x18\xFF\xDC\x02"
+MSTRING_GMRS50X1 = b"\x55\x20\x18\x10\x18\xFF\xDC\x02"
 # for the BTECH GMRS-20V2
-MSTRING_GMRS20V2 = "\x55\x20\x21\x03\x27\xFF\xDC\x02"
+MSTRING_GMRS20V2 = b"\x55\x20\x21\x03\x27\xFF\xDC\x02"
 # for the QYT KT-8R
-MSTRING_KT8R = "\x55\x20\x17\x07\x03\xFF\xDC\x02"
+MSTRING_KT8R = b"\x55\x20\x17\x07\x03\xFF\xDC\x02"
 # for the QYT KT-WP12, KT-9900 and Anysecu WP-9900
-MSTRING_KTWP12 = "\x55\x20\x18\x11\x02\xFF\xDC\x02"
+MSTRING_KTWP12 = b"\x55\x20\x18\x11\x02\xFF\xDC\x02"
 
 
 def _clean_buffer(radio):
@@ -446,7 +441,7 @@ def _do_ident(radio, status, upload=False):
     ident = _rawrecv(radio, 50)
 
     # checking for the ack
-    if ident[0] != ACK_CMD:
+    if ident[:1] != ACK_CMD:
         raise errors.RadioError("Bad ack from radio")
 
     # basic check for the ident block
@@ -456,7 +451,7 @@ def _do_ident(radio, status, upload=False):
     # check if ident is OK
     itis = False
     for fp in radio._fileid:
-        if fp in ident:
+        if fp in ident.decode():
             # got it!
             itis = True
             # checking if we are dealing with a Gen 3 BTECH
@@ -484,7 +479,7 @@ def _do_ident(radio, status, upload=False):
     radio.pipe.timeout = STIMEOUT
 
     # checking for the ack
-    if id2[0] not in "\x06\x05":
+    if id2[:1] not in b"\x06\x05":
         raise errors.RadioError("Bad ack from radio")
 
     # basic check for the additional block
@@ -532,7 +527,7 @@ def _download(radio):
     _do_ident(radio, status)
 
     # reset the progress bar in the UI
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     status.cur = 0
     radio.status_fn(status)
@@ -549,7 +544,7 @@ def _download(radio):
         data += d
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
@@ -573,7 +568,7 @@ def _upload(radio):
     data = radio.get_mmap().get_byte_compatible()
 
     # Reset the UI progress
-    status.max = MEM_SIZE / TX_BLOCK_SIZE
+    status.max = MEM_SIZE // TX_BLOCK_SIZE
     status.cur = 0
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
@@ -605,7 +600,7 @@ def _upload(radio):
             raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
 
         # UI Update
-        status.cur = addr / TX_BLOCK_SIZE
+        status.cur = addr // TX_BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
