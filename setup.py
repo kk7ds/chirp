@@ -106,7 +106,10 @@ def macos_build():
 
 
 def default_build():
-    from distutils.core import setup
+    try:
+        from setuptools import setup
+    except ImportError:
+        from distutils.core import setup
     from glob import glob
 
     os.system("make -C locale clean all")
