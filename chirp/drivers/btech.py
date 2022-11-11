@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 MEM_SIZE = 0x4000
 BLOCK_SIZE = 0x40
 TX_BLOCK_SIZE = 0x10
-ACK_CMD = b"\x06"
+ACK_CMD = 0x06
 MODES = ["FM", "NFM"]
 SKIP_VALUES = ["S", ""]
 TONES = chirp_common.TONES
@@ -411,7 +411,7 @@ def _recv(radio, addr):
         raise errors.RadioError("Short read of the block 0x%04x" % addr)
 
     # checking for the ack
-    if block[:1] != ACK_CMD:
+    if block[0] != ACK_CMD:
         raise errors.RadioError("Bad ack from radio in block 0x%04x" % addr)
 
     # header validation
@@ -441,7 +441,7 @@ def _do_ident(radio, status, upload=False):
     ident = _rawrecv(radio, 50)
 
     # checking for the ack
-    if ident[:1] != ACK_CMD:
+    if ident[0] != ACK_CMD:
         raise errors.RadioError("Bad ack from radio")
 
     # basic check for the ident block
@@ -451,7 +451,7 @@ def _do_ident(radio, status, upload=False):
     # check if ident is OK
     itis = False
     for fp in radio._fileid:
-        if fp in ident.decode():
+        if fp in ident:
             # got it!
             itis = True
             # checking if we are dealing with a Gen 3 BTECH
@@ -493,7 +493,7 @@ def _do_ident(radio, status, upload=False):
     # see _upload for this.
     if upload is True:
         # send an ACK
-        _send(radio, ACK_CMD)
+        _send(radio, b"\x06")
 
         # the amount of data depend on the radio, so far we have two radios
         # reading two bytes with an ACK at the end and just ONE with just
@@ -508,7 +508,7 @@ def _do_ident(radio, status, upload=False):
         ack = _rawrecv(radio, 2)
 
         # checking
-        if len(ack) == 0 or ack[-1:] != ACK_CMD:
+        if len(ack) == 0 or ack[-1] != ACK_CMD:
             raise errors.RadioError("Radio didn't ACK the upload")
 
     # DEBUG
