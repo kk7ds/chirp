@@ -18,7 +18,7 @@
 | <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX |  |  | Yes |
 | <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R |  |  |  |
 | <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R |  |  |  |
-| <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 |  |  | Yes |
+| <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 |  |  |  |
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 |  |  |  |
 | <a name="BTECH_GMRS-20V2"></a> BTECH_GMRS-20V2 |  |  | Yes |
@@ -26,12 +26,12 @@
 | <a name="BTECH_GMRS-V1"></a> BTECH_GMRS-V1 |  |  |  |
 | <a name="BTECH_GMRS-V2"></a> BTECH_GMRS-V2 |  |  |  |
 | <a name="BTECH_MURS-V1"></a> BTECH_MURS-V1 |  |  |  |
-| <a name="BTECH_UV-2501"></a> BTECH_UV-2501 |  |  | Yes |
-| <a name="BTECH_UV-2501+220"></a> BTECH_UV-2501+220 |  |  | Yes |
-| <a name="BTECH_UV-25X2"></a> BTECH_UV-25X2 |  |  | Yes |
-| <a name="BTECH_UV-25X4"></a> BTECH_UV-25X4 |  |  | Yes |
-| <a name="BTECH_UV-5001"></a> BTECH_UV-5001 |  |  | Yes |
-| <a name="BTECH_UV-50X2"></a> BTECH_UV-50X2 |  |  | Yes |
+| <a name="BTECH_UV-2501"></a> BTECH_UV-2501 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
+| <a name="BTECH_UV-2501+220"></a> BTECH_UV-2501+220 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
+| <a name="BTECH_UV-25X2"></a> BTECH_UV-25X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
+| <a name="BTECH_UV-25X4"></a> BTECH_UV-25X4 | [@KC9HI](https://github.com/KC9HI) | 10-Nov-2022 | Yes |
+| <a name="BTECH_UV-5001"></a> BTECH_UV-5001 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
+| <a name="BTECH_UV-50X2"></a> BTECH_UV-50X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="BTECH_UV-50X3"></a> BTECH_UV-50X3 |  |  |  |
 | <a name="BTECH_UV-5X3"></a> BTECH_UV-5X3 |  |  |  |
 | <a name="Baofeng_BF-888"></a> Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes |
@@ -183,7 +183,7 @@
 | <a name="LUITON_LT-316"></a> LUITON_LT-316 |  |  |  |
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF |  |  |  |
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF |  |  |  |
-| <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV |  |  | Yes |
+| <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV |  |  |  |
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  |
@@ -192,18 +192,18 @@
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 |  |  | Yes |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M |  |  |  |
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X |  |  |  |
-| <a name="QYT_KT-8R"></a> QYT_KT-8R |  |  | Yes |
-| <a name="QYT_KT-UV980"></a> QYT_KT-UV980 |  |  | Yes |
-| <a name="QYT_KT-WP12"></a> QYT_KT-WP12 |  |  | Yes |
-| <a name="QYT_KT5800"></a> QYT_KT5800 |  |  | Yes |
-| <a name="QYT_KT7900D"></a> QYT_KT7900D |  |  | Yes |
-| <a name="QYT_KT8900"></a> QYT_KT8900 |  |  | Yes |
-| <a name="QYT_KT8900D"></a> QYT_KT8900D |  |  | Yes |
-| <a name="QYT_KT8900R"></a> QYT_KT8900R |  |  | Yes |
-| <a name="QYT_KT980PLUS"></a> QYT_KT980PLUS |  |  | Yes |
+| <a name="QYT_KT-8R"></a> QYT_KT-8R | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT-UV980"></a> QYT_KT-UV980 | [Implied by WACCOM_MINI-8900](#user-content-WACCOM_MINI-8900) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT-WP12"></a> QYT_KT-WP12 | [Implied by Anysecu_WP-9900](#user-content-Anysecu_WP-9900) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT5800"></a> QYT_KT5800 | [Implied by BTECH_UV-25X2](#user-content-BTECH_UV-25X2) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT7900D"></a> QYT_KT7900D | [Implied by BTECH_UV-25X4](#user-content-BTECH_UV-25X4) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT8900"></a> QYT_KT8900 | [Implied by LUITON_LT-588UV](#user-content-LUITON_LT-588UV) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT8900D"></a> QYT_KT8900D | [Implied by BTECH_UV-25X2](#user-content-BTECH_UV-25X2) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT8900R"></a> QYT_KT8900R | [Implied by BTECH_UV-2501+220](#user-content-BTECH_UV-2501+220) | 11-Nov-2022 | Yes |
+| <a name="QYT_KT980PLUS"></a> QYT_KT980PLUS | [Implied by BTECH_UV-25X2](#user-content-BTECH_UV-25X2) | 11-Nov-2022 | Yes |
 | <a name="Quansheng_TG-UV2+"></a> Quansheng_TG-UV2+ |  |  |  |
 | <a name="RT_Systems_CSV"></a> RT_Systems_CSV |  |  |  |
-| <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G |  |  | Yes |
+| <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S |  |  | Yes |
 | <a name="Radioddity_GA-510"></a> Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | <a name="Radioddity_R2"></a> Radioddity_R2 |  |  |  |
@@ -287,7 +287,7 @@
 | <a name="Vertex_Standard_FTL-7011"></a> Vertex_Standard_FTL-7011 |  |  |  |
 | <a name="Vertex_Standard_FTL-8011"></a> Vertex_Standard_FTL-8011 |  |  |  |
 | <a name="Vertex_Standard_VXA-700"></a> Vertex_Standard_VXA-700 |  |  |  |
-| <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 |  |  | Yes |
+| <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="WLN_KD-C1"></a> WLN_KD-C1 |  |  |  |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  |
@@ -345,6 +345,6 @@
 
 **Drivers:** 340
 
-**Tested:** 10% (35/305)
+**Tested:** 15% (54/286)
 
 **Byte clean:** 46% (158/182)
