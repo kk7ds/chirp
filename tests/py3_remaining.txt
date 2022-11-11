@@ -1,5 +1,4 @@
 Baojie_BJ-9900.img
-LUITON_LT-725UV.img
 Puxing_PX-2R.img
 Puxing_PX-777.img
 Puxing_PX-888K.img

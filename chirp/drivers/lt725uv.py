@@ -422,7 +422,7 @@ def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     if len(data) == 0x1C08:
         rid = data[0x1C00:0x1C08]
-        return rid.startswith(cls.MODEL)
+        return rid.startswith(cls.MODEL.encode())
     else:
         return False
 
@@ -634,7 +634,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
-        for char in _mem.name[:_mem.namelen]:
+        for char in _mem.name[0:_mem.namelen]:
             mem.name += chr(char)
 
         dtcs_pol = ["N", "N"]
@@ -1039,7 +1039,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         # UPPER BAND SETTINGS
 
         # Freq Mode, convert bit 1 state to index pointer
-        val = _vfoa.frq_chn_mode / 2
+        val = _vfoa.frq_chn_mode // 2
 
         rx = RadioSettingValueList(LIST_VFOMODE, LIST_VFOMODE[val])
         rs = RadioSetting("upper.vfoa.frq_chn_mode", "Default Mode", rx)
@@ -1151,7 +1151,7 @@ class LT725UV(chirp_common.CloneModeRadio):
 
         # LOWER BAND SETTINGS
 
-        val = _vfob.frq_chn_mode / 2
+        val = _vfob.frq_chn_mode // 2
         rx = RadioSettingValueList(LIST_VFOMODE, LIST_VFOMODE[val])
         rs = RadioSetting("lower.vfob.frq_chn_mode", "Default Mode", rx)
         rs.set_apply_callback(my_spcl, _vfob, "frq_chn_mode")
@@ -1261,8 +1261,8 @@ class LT725UV(chirp_common.CloneModeRadio):
         def chars2str(cary, knt):
             """Convert raw memory char array to a string: NOT a callback."""
             stx = ""
-            for char in cary[:knt]:
-                stx += chr(char)
+            for char in cary[0:knt]:
+                stx += chr(int(char))
             return stx
 
         def my_str2ary(setting, obj, atrba, atrbc):
@@ -1547,7 +1547,7 @@ class LT725UV(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

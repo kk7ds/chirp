@@ -54,6 +54,8 @@
 | <a name="Baofeng_UV-9G"></a> Baofeng_UV-9G |  |  |  |
 | <a name="Baofeng_UV-9R"></a> Baofeng_UV-9R |  |  |  |
 | <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 |  |  | Yes |
+| <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  |  |
+| <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  |  |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV |  |  | Yes |
@@ -182,6 +184,7 @@
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF |  |  |  |
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF |  |  |  |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV |  |  | Yes |
+| <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV |  |  |  |
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  |
@@ -340,8 +343,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 336
+**Drivers:** 340
 
-**Tested:** 10% (35/301)
+**Tested:** 10% (35/305)
 
-**Byte clean:** 46% (157/179)
+**Byte clean:** 46% (158/182)
