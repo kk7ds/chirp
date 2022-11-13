@@ -21,8 +21,8 @@
 | <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 |  |  |  |
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 |  |  |  |
-| <a name="BTECH_GMRS-20V2"></a> BTECH_GMRS-20V2 |  |  | Yes |
-| <a name="BTECH_GMRS-50X1"></a> BTECH_GMRS-50X1 |  |  | Yes |
+| <a name="BTECH_GMRS-20V2"></a> BTECH_GMRS-20V2 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes |
+| <a name="BTECH_GMRS-50X1"></a> BTECH_GMRS-50X1 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes |
 | <a name="BTECH_GMRS-V1"></a> BTECH_GMRS-V1 |  |  |  |
 | <a name="BTECH_GMRS-V2"></a> BTECH_GMRS-V2 |  |  |  |
 | <a name="BTECH_MURS-V1"></a> BTECH_MURS-V1 |  |  |  |
@@ -345,6 +345,6 @@
 
 **Drivers:** 340
 
-**Tested:** 15% (54/286)
+**Tested:** 16% (56/284)
 
 **Byte clean:** 46% (158/182)
