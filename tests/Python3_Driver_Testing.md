@@ -14,8 +14,8 @@
 | <a name="Alinco_DR435T"></a> Alinco_DR435T |  |  |  |
 | <a name="AnyTone_5888UV"></a> AnyTone_5888UV |  |  |  |
 | <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII |  |  |  |
-| <a name="AnyTone_778UV"></a> AnyTone_778UV |  |  | Yes |
-| <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX |  |  | Yes |
+| <a name="AnyTone_778UV"></a> AnyTone_778UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
+| <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R |  |  |  |
 | <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R |  |  |  |
 | <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
@@ -58,8 +58,8 @@
 | <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  |  |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  |
-| <a name="CRT_Micron_UV"></a> CRT_Micron_UV |  |  | Yes |
-| <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 |  |  | Yes |
+| <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
+| <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Commander_KG-UV"></a> Commander_KG-UV |  |  |  |
 | <a name="Explorer_QRZ-1"></a> Explorer_QRZ-1 |  |  |  |
 | <a name="Feidaxin_FD-150A"></a> Feidaxin_FD-150A |  |  |  |
@@ -189,7 +189,7 @@
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 |  |  |  |
-| <a name="Midland_DBR2500"></a> Midland_DBR2500 |  |  | Yes |
+| <a name="Midland_DBR2500"></a> Midland_DBR2500 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M |  |  |  |
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X |  |  |  |
 | <a name="QYT_KT-8R"></a> QYT_KT-8R | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
@@ -262,8 +262,8 @@
 | <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 |  |  |  |
 | <a name="Retevis_RT9000D_400-490"></a> Retevis_RT9000D_400-490 |  |  |  |
 | <a name="Retevis_RT9000D_66-88"></a> Retevis_RT9000D_66-88 |  |  |  |
-| <a name="Retevis_RT95"></a> Retevis_RT95 |  |  | Yes |
-| <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX |  |  | Yes |
+| <a name="Retevis_RT95"></a> Retevis_RT95 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes |
+| <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Retevis_RT98"></a> Retevis_RT98 |  |  |  |
 | <a name="Rugged_RH5R-V2"></a> Rugged_RH5R-V2 |  |  |  |
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  |
@@ -339,12 +339,12 @@
 | <a name="Yaesu_VX-8DR"></a> Yaesu_VX-8DR | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | <a name="Yaesu_VX-8GE"></a> Yaesu_VX-8GE |  |  | Yes |
 | <a name="Yaesu_VX-8R"></a> Yaesu_VX-8R |  |  | Yes |
-| <a name="Yedro_YC-M04VUS"></a> Yedro_YC-M04VUS |  |  | Yes |
+| <a name="Yedro_YC-M04VUS"></a> Yedro_YC-M04VUS | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
 **Drivers:** 340
 
-**Tested:** 16% (56/284)
+**Tested:** 18% (64/276)
 
 **Byte clean:** 46% (158/182)
