@@ -457,10 +457,10 @@ def exit_program_mode(radio):
 def parse_read_response(resp):
     addr = resp[:4]
     data = bytes(resp[4:-2])
-    cs = checksum(ord(d) for d in resp[1:-2])
-    valid = cs == ord(resp[-2])
+    cs = checksum(d for d in resp[1:-2])
+    valid = cs == resp[-2]
     if not valid:
-        LOG.error('checksumfail: %02x, expected %02x' % (cs, ord(resp[-2])))
+        LOG.error('checksumfail: %02x, expected %02x' % (cs, resp[-2]))
         LOG.error('msg data: %s' % util.hexprint(resp))
     return addr, data, valid
 
@@ -481,7 +481,7 @@ def do_download(radio):
         status = chirp_common.Status()
         status.cur = 0
         status.max = (MEMORY_ADDRESS_RANGE[1] -
-                      MEMORY_ADDRESS_RANGE[0])/MEMORY_RW_BLOCK_SIZE
+                      MEMORY_ADDRESS_RANGE[0]) // MEMORY_RW_BLOCK_SIZE
         status.msg = 'Cloning from radio...'
         radio.status_fn(status)
 
@@ -499,7 +499,7 @@ def do_download(radio):
 
             # update UI
             status.cur = (addr - MEMORY_ADDRESS_RANGE[0])\
-                / MEMORY_RW_BLOCK_SIZE
+                // MEMORY_RW_BLOCK_SIZE
             radio.status_fn(status)
 
         exit_program_mode(radio)
@@ -515,7 +515,7 @@ def do_download(radio):
 def make_write_data_cmd(addr, data, datalen):
     cmd = struct.pack('>BHB', 0x57, addr, datalen)
     cmd += data
-    cs = checksum(ord(c) for c in cmd[1:])
+    cs = checksum(c for c in cmd[1:])
     cmd += struct.pack('>BB', cs, 0x06)
     return cmd
 

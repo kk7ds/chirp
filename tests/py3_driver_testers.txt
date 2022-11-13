@@ -5,6 +5,8 @@
 # +DRIVER_KEY to mark it as implied-tested.
 # Actually Arcshell AR-6 which is a direct clone
 Anysecu_WP-9900,@KC9HI,11-Nov-2022
+AnyTone_778UV,+Retevis_RT95,13-Nov-2022
+AnyTone_778UV_VOX,+Retevis_RT95,13-Nov-2022
 BTECH_GMRS-20V2,@KC9HI,13-Nov-2022
 BTECH_GMRS-50X1,@KC9HI,13-Nov-2022
 BTECH_UV-2501,@KC9HI,11-Nov-2022
@@ -16,6 +18,8 @@ BTECH_UV-50X2,@KC9HI,11-Nov-2022
 Baofeng_BF-888,@kk7ds,13-Feb-2019
 Baofeng_UV-3R,@yarda,26-Sep-2022
 Baofeng_UV-5R,@lekv,23-Oct-2022
+CRT_Micron_UV,+Retevis_RT95,13-Nov-2022
+CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
 Icom_IC-7200,@kk7ds,22-Oct-2022
@@ -41,6 +45,7 @@ Kenwood_TK-8102,@kk7ds,15-Feb-2019
 Kenwood_TK-8108,@kk7ds,15-Feb-2019
 Kenwood_TK-8180,@kk7ds,18-Oct-2022
 LUITON_LT-588UV,@KC9HI,11-Nov-2022
+Midland_DBR2500,+Retevis_RT95,13-Nov-2022
 QYT_KT-8R,@KC9HI,11-Nov-2022
 QYT_KT-UV980,+WACCOM_MINI-8900,11-Nov-2022
 QYT_KT-WP12,+Anysecu_WP-9900,11-Nov-2022
@@ -52,6 +57,8 @@ QYT_KT8900R,+BTECH_UV-2501+220,11-Nov-2022
 QYT_KT980PLUS,+BTECH_UV-25X2,11-Nov-2022
 Radioddity_DB25-G,@KC9HI,11-Nov-2022
 Radioddity_GA-510,@kk7ds,21-Oct-2022
+Retevis_RT95,@KC9HI,13-Nov-2022
+Retevis_RT95_VOX,+Retevis_RT95,13-Nov-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
 WACCOM_MINI-8900,@KC9HI,11-Nov-2022
 Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022
@@ -60,3 +67,4 @@ Yaesu_FT-817,@kk7ds,14-Feb-2019
 Yaesu_VX-3,@kk7ds,15-Feb-2019
 Yaesu_VX-8DR,@kk7ds,15-Feb-2019
 Yaesu_VX-7,@kk7ds,15-Feb-2019
+Yedro_YC-M04VUS,+Retevis_RT95,13-Nov-2022
