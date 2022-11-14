@@ -374,14 +374,14 @@ def _do_status(radio, block):
     status.max = radio.get_memsize()
     radio.status_fn(status)
 
-UV5R_MODEL_ORIG = bytes(b"\x50\xBB\xFF\x01\x25\x98\x4D")
-UV5R_MODEL_291 = bytes(b"\x50\xBB\xFF\x20\x12\x07\x25")
-UV5R_MODEL_F11 = bytes(b"\x50\xBB\xFF\x13\xA1\x11\xDD")
-UV5R_MODEL_UV82 = bytes(b"\x50\xBB\xFF\x20\x13\x01\x05")
-UV5R_MODEL_UV6 = bytes(b"\x50\xBB\xFF\x20\x12\x08\x23")
-UV5R_MODEL_UV6_ORIG = bytes(b"\x50\xBB\xFF\x12\x03\x98\x4D")
-UV5R_MODEL_A58 = bytes(b"\x50\xBB\xFF\x20\x14\x04\x13")
-UV5R_MODEL_UV5G = bytes(b"\x50\xBB\xFF\x20\x12\x06\x25")
+UV5R_MODEL_ORIG = b"\x50\xBB\xFF\x01\x25\x98\x4D"
+UV5R_MODEL_291 = b"\x50\xBB\xFF\x20\x12\x07\x25"
+UV5R_MODEL_F11 = b"\x50\xBB\xFF\x13\xA1\x11\xDD"
+UV5R_MODEL_UV82 = b"\x50\xBB\xFF\x20\x13\x01\x05"
+UV5R_MODEL_UV6 = b"\x50\xBB\xFF\x20\x12\x08\x23"
+UV5R_MODEL_UV6_ORIG = b"\x50\xBB\xFF\x12\x03\x98\x4D"
+UV5R_MODEL_A58 = b"\x50\xBB\xFF\x20\x14\x04\x13"
+UV5R_MODEL_UV5G = b"\x50\xBB\xFF\x20\x12\x06\x25"
 
 
 def _upper_band_from_data(data):
@@ -421,7 +421,7 @@ def _do_ident(radio, magic, secondack=True):
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond")
 
-    serial.write(bytes(b"\x02"))
+    serial.write(b"\x02")
 
     # Until recently, the "ident" returned by the radios supported by this
     # driver have always been 8 bytes long. The image structure is the 8 byte
@@ -435,7 +435,7 @@ def _do_ident(radio, magic, secondack=True):
     # image data aligned with the existing settings structures.
 
     # Ok, get the response
-    response = bytes(b"")
+    response = b""
     for i in range(1, 13):
         byte = serial.read(1)
         response += byte
@@ -572,7 +572,7 @@ def _do_download(radio):
         # then append that model type to the end of the image so it can
         # be properly detected when loaded.
         append_model = True
-    elif "\x20" * 14 in radio_version:
+    elif b"\x20" * 14 in radio_version:
         # A radio UV-5R style radio that reports no firmware version has
         # been detected.
         # We are going to count on the user to make the right choice and
