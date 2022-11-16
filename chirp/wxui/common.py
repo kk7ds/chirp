@@ -239,6 +239,7 @@ class ChirpSettingGrid(wx.Panel):
                     LOG.warning('Unsupported setting type %r' % value)
                     editor = None
                 if editor:
+                    editor.Enable(value.get_mutable())
                     self.pg.Append(editor)
 
     @property
