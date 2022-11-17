@@ -67,6 +67,9 @@ class RadioSettingValue:
     def __trunc__(self):
         return int(self.get_value())
 
+    def __float__(self):
+        return float(self.get_value())
+
     def __str__(self):
         return str(self.get_value())
 
