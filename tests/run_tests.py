@@ -444,9 +444,10 @@ class TestCaseBruteForce(TestCase):
                 continue
             if mode == "DV":
                 tmp = chirp_common.DVMemory()
-                ensure_urcall(tmp.dv_urcall)
-                ensure_rptcall(tmp.dv_rpt1call)
-                ensure_rptcall(tmp.dv_rpt2call)
+                if rf.requires_call_lists:
+                    ensure_urcall(tmp.dv_urcall)
+                    ensure_rptcall(tmp.dv_rpt1call)
+                    ensure_rptcall(tmp.dv_rpt2call)
             if mode == "FM" and freq_is_ok(tmp.freq + 100000000):
                 # Some radios don't support FM below approximately 30MHz,
                 # so jump up by 100MHz, if they support that
