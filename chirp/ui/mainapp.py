@@ -483,6 +483,9 @@ of file.
         elif isinstance(eset.radio, vx5.VX5Radio):
             types += [(_("EVE") + " (*.eve)", "eve")]
             types += [(_("VX5 Commander") + " (*.vx5)", "vx5")]
+        elif (isinstance(eset.radio, icf.IcomCloneModeRadio) and
+              eset.radio._icf_etcdata):
+            types += [(_("ICF") + " (*.icf)", "icf")]
 
         while True:
             fname = platform.get_platform().gui_save_file(default_name=defname,
