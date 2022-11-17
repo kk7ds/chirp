@@ -263,15 +263,20 @@ class ChirpSettingGrid(wx.Panel):
                                 value=int(value))
 
     def _get_editor_float(self, setting, value):
-        class ChirpFloatProperty(wx.propgrid.IntProperty):
+        class ChirpFloatProperty(wx.propgrid.FloatProperty):
             def ValidateValue(self, val, info):
-                if not (val > value.get_min() and val < value.get_max()):
+                if value.get_min() and not val >= value.get_min():
                     info.SetFailureMessage(
-                        _('Value must be between %.4f and %.4f') % (
-                            value.get_min(), value.get_max()))
+                        _('Value must be at least %.4f' % value.get_min()))
+                    return False
+                if value.get_max() and not val <= value.get_max():
+                    info.SetFailureMessage(
+                        _('Value must be at most %.4f' % value.get_max()))
+                    return False
+                return True
         return ChirpFloatProperty(setting.get_shortname(),
                                   setting.get_name(),
-                                  value=int(value))
+                                  value=float(value))
 
     def _get_editor_choice(self, setting, value):
         choices = value.get_options()
