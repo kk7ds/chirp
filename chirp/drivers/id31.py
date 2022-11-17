@@ -170,6 +170,9 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _bank_class = ID31Bank
     _can_hispeed = True
 
+    _icf_maprev = 1
+    _icf_etcdata = '000005'
+
     _ranges = [(0x00000, 0x15500, 32)]
 
     MODES = {0: "FM", 1: "NFM", 5: "DV"}
