@@ -15,6 +15,8 @@
 
 from builtins import bytes
 
+import binascii
+import struct
 import re
 import time
 import logging
@@ -438,7 +440,7 @@ def clone_to_radio(radio):
 
 def convert_model(mod_str):
     """Convert an ICF-style model string into what we get from the radio"""
-    data = ""
+    data = b""
     for i in range(0, len(mod_str), 2):
         hexval = mod_str[i:i+2]
         intval = int(hexval, 16)
@@ -469,7 +471,7 @@ def convert_data_line(line):
         size = int(line[8:10], 16)
         data = line[10:]
 
-    _mmap = ""
+    _mmap = b""
     i = 0
     while i < (size * 2):
         try:
@@ -485,19 +487,43 @@ def convert_data_line(line):
 
 def read_file(filename):
     """Read an ICF file and return the model string and memory data"""
-    f = file(filename)
+    f = open(filename)
 
     mod_str = f.readline()
     dat = f.readlines()
 
     model = convert_model(mod_str.strip())
 
-    _mmap = ""
+    _mmap = b""
     for line in dat:
         if not line.startswith("#"):
             _mmap += convert_data_line(line)
 
     return model, memmap.MemoryMap(_mmap)
+
+
+def write_file(radio, filename):
+    """Write an ICF file"""
+    f = open(filename, 'w')
+
+    model = radio._model
+    mdata = '%02x%02x%02x%02x' % (ord(model[0]),
+                                  ord(model[1]),
+                                  ord(model[2]),
+                                  ord(model[3]))
+    data = radio._mmap.get_packed()
+
+    f.write('%s\r\n' % mdata)
+    f.write('#Comment=\r\n')
+    f.write('#MapRev=%i\r\n' % radio._icf_maprev)
+    f.write('#EtcData=%s\r\n' % radio._icf_etcdata)
+
+    blksize = 32
+    for addr in range(0, len(data), blksize):
+        block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
+        line = '%08X%02X%s\r\n' % (addr, blksize, block)
+        f.write(line)
+    f.close()
 
 
 def is_9x_icf(filename):
@@ -645,6 +671,13 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _bank_class = IcomBank
     _can_hispeed = False
 
+    # Attributes that get put into ICF files when we export. The meaning
+    # of these are unknown at this time, but differ per model (at least).
+    # Saving ICF files will not be offered unless _icf_etcdata is set to
+    # a non-zero-length string.
+    _icf_maprev = 1
+    _icf_etcdata = ''
+
     @classmethod
     def is_hispeed(cls):
         """Returns True if the radio supports hispeed cloning"""
@@ -726,6 +759,12 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     def set_settings(self, settings):
         return honor_speed_switch_setting(self, settings)
+
+    def save(self, filename):
+        if filename.lower().endswith('.icf'):
+            write_file(self, filename)
+        else:
+            chirp_common.CloneModeRadio.save(self, filename)
 
 
 def flip_high_order_bit(data):
