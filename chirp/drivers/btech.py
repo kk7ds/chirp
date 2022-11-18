@@ -3161,7 +3161,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 if tmp == 65535:
                     tmp = 0
                 if tmp != 0:
-                    expected = int(round(2304000.0/tmp))
+                    expected = int(round(2304000.0/int(tmp)))
                     from_mem = freq["derived_from_" + setting_name]
                     if expected != from_mem:
                         LOG.error("Expected " + str(expected) +
