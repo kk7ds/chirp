@@ -32,6 +32,7 @@
 | <a name="BTECH_UV-25X4"></a> BTECH_UV-25X4 | [@KC9HI](https://github.com/KC9HI) | 10-Nov-2022 | Yes |
 | <a name="BTECH_UV-5001"></a> BTECH_UV-5001 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="BTECH_UV-50X2"></a> BTECH_UV-50X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
+| <a name="BTECH_UV-50X2_G2"></a> BTECH_UV-50X2_G2 |  |  | Yes |
 | <a name="BTECH_UV-50X3"></a> BTECH_UV-50X3 |  |  |  |
 | <a name="BTECH_UV-5X3"></a> BTECH_UV-5X3 |  |  |  |
 | <a name="Baofeng_BF-888"></a> Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes |
@@ -343,8 +344,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 340
+**Drivers:** 341
 
-**Tested:** 18% (64/276)
+**Tested:** 18% (64/277)
 
-**Byte clean:** 46% (158/182)
+**Byte clean:** 46% (159/182)
