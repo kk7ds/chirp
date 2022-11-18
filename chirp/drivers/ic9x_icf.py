@@ -48,7 +48,7 @@ class IC9xICFRadio(chirp_common.CloneModeRadio):
         return ic9x_icf_ll.get_memory(self._mmap, number)
 
     def load_mmap(self, filename):
-        _mdata, self._mmap = icf.read_file(filename)
+        _icf_data, self._mmap = icf.read_file(filename)
 
     def get_sub_devices(self):
         return [IC9xICFRadioA(self._mmap),
