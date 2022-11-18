@@ -11,6 +11,7 @@ import wx.lib.newevent
 from chirp import bandplan
 from chirp import chirp_common
 from chirp import directory
+from chirp.drivers import icf
 from chirp import platform
 from chirp.ui import config
 from chirp.wxui import common
@@ -561,6 +562,7 @@ class ChirpMain(wx.Frame):
     def _menu_open(self, event):
         wildcard = '|'.join(['Chirp Image Files (*.img)|*.img',
                              'CSV Files (*.csv)|*.csv',
+                             'ICF Files (*.icf)|*.icf',
                              'All Files (*.*)|*.*'])
         with wx.FileDialog(self, 'Open a file',
                            platform.get_platform().get_last_dir(),
@@ -593,6 +595,10 @@ class ChirpMain(wx.Frame):
             'vendor': eset._radio.VENDOR,
             'model': eset._radio.MODEL,
             'ext': eset._radio.FILE_EXTENSION}
+
+        if (isinstance(eset.radio, icf.IcomCloneModeRadio) and
+                eset.radio._icf_etcdata):
+            wildcard += '|ICF Files (*.icf)|*.icf'
 
         style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
         with wx.FileDialog(self, "Save file", defaultFile=eset.filename,

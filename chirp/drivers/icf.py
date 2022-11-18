@@ -444,7 +444,7 @@ def convert_model(mod_str):
     for i in range(0, len(mod_str), 2):
         hexval = mod_str[i:i+2]
         intval = int(hexval, 16)
-        data += chr(intval)
+        data += bytes([intval])
 
     return data
 
@@ -499,7 +499,7 @@ def read_file(filename):
         if not line.startswith("#"):
             _mmap += convert_data_line(line)
 
-    return model, memmap.MemoryMap(_mmap)
+    return model, memmap.MemoryMapBytes(_mmap)
 
 
 def write_file(radio, filename):
