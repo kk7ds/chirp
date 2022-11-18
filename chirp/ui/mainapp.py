@@ -343,17 +343,6 @@ of file.
 
         self.record_recent_file(fname)
 
-        if icf.is_icf_file(fname):
-            a = common.ask_yesno_question(
-                _("ICF files cannot be edited, only displayed or imported "
-                  "into another file. Open in read-only mode?"),
-                self)
-            if not a:
-                return
-            read_only = True
-        else:
-            read_only = False
-
         if icf.is_9x_icf(fname):
             # We have to actually instantiate the IC9xICFRadio to get its
             # sub-devices
@@ -402,7 +391,6 @@ of file.
                     error=e))
             return
 
-        eset.set_read_only(read_only)
         self._connect_editorset(eset)
         eset.show()
         self.tabs.append_page(eset, eset.get_tab_label())
@@ -483,8 +471,7 @@ of file.
         elif isinstance(eset.radio, vx5.VX5Radio):
             types += [(_("EVE") + " (*.eve)", "eve")]
             types += [(_("VX5 Commander") + " (*.vx5)", "vx5")]
-        elif (isinstance(eset.radio, icf.IcomCloneModeRadio) and
-              eset.radio._icf_etcdata):
+        elif isinstance(eset.radio, icf.IcomCloneModeRadio):
             types += [(_("ICF") + " (*.icf)", "icf")]
 
         while True:

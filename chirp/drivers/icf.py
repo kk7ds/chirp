@@ -470,14 +470,39 @@ def read_file(filename):
     mod_str = f.readline()
     dat = f.readlines()
 
-    model = convert_model(mod_str.strip())
+    icfdata = {
+        'model': convert_model(mod_str.strip())
+    }
 
     _mmap = b""
     for line in dat:
-        if not line.startswith("#"):
-            _mmap += convert_data_line(line)
+        if line.startswith("#"):
+            try:
+                key, value = line.strip().split('=', 1)
+                if value.isdigit():
+                    value = int(value)
+                icfdata[key[1:]] = value
+            except ValueError:
+                # Some old files have lines with just #
+                pass
+        else:
+            line_data = convert_data_line(line)
+            _mmap += line_data
+            if 'recordsize' not in icfdata:
+                icfdata['recordsize'] = len(line_data)
 
-    return model, memmap.MemoryMap(_mmap)
+    # This is zero-padded six decimal digits in every known
+    # example. Being zero-padded means it might be hex, but we do not
+    # know. Try to detect that occurrence here and warn in the log
+    # so we can catch it in the future.
+    if isinstance(icfdata.get('EtcData', 0), str):
+        LOG.warning(
+            'ICF file %s had non-decimal-integer EtcData=%r - '
+            'ICF write will fail!',
+            icfdata['EtcData'])
+        icfdata['EtcData'] = 0
+
+    return icfdata, memmap.MemoryMap(_mmap)
 
 
 def write_file(radio, filename):
@@ -492,14 +517,17 @@ def write_file(radio, filename):
     data = radio._mmap.get_packed()
 
     f.write('%s\r\n' % mdata)
-    f.write('#Comment=\r\n')
-    f.write('#MapRev=%i\r\n' % radio._icf_maprev)
-    f.write('#EtcData=%s\r\n' % radio._icf_etcdata)
+    f.write('#Comment=%s\r\n' % radio._icf_data.get('Comment', ''))
+    f.write('#MapRev=%i\r\n' % radio._icf_data.get('MapRev', 1))
+    f.write('#EtcData=%06i\r\n' % radio._icf_data.get('EtcData', 0))
 
-    blksize = 32
+    blksize = radio._icf_data.get('recordsize', 32)
     for addr in range(0, len(data), blksize):
         block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
-        line = '%08X%02X%s\r\n' % (addr, blksize, block)
+        if blksize == 32:
+            line = '%08X%02X%s\r\n' % (addr, blksize, block)
+        else:
+            line = '%04X%02X%s\r\n' % (addr, blksize, block)
         f.write(line)
     f.close()
 
@@ -644,10 +672,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     # Attributes that get put into ICF files when we export. The meaning
     # of these are unknown at this time, but differ per model (at least).
-    # Saving ICF files will not be offered unless _icf_etcdata is set to
-    # a non-zero-length string.
-    _icf_maprev = 1
-    _icf_etcdata = ''
+    # Saving ICF files will not be offered unless _icf_data has attributes.
+    _icf_data = {
+        'recordsize': 16,
+    }
 
     @classmethod
     def is_hispeed(cls):
@@ -729,11 +757,20 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     def set_settings(self, settings):
         return honor_speed_switch_setting(self, settings)
 
-    def save(self, filename):
+    def load_mmap(self, filename):
+        if filename.lower().endswith('.icf'):
+            self._icf_data, self._mmap = read_file(filename)
+            LOG.debug('Loaded ICF file %s with data: %s' % (filename,
+                                                            self._icf_data))
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
         if filename.lower().endswith('.icf'):
             write_file(self, filename)
         else:
-            chirp_common.CloneModeRadio.save(self, filename)
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
 
 
 def flip_high_order_bit(data):
@@ -769,6 +806,13 @@ def unescape_raw_bytes(escaped_data):
 
 class IcomRawCloneModeRadio(IcomCloneModeRadio):
     """Subclass for Icom clone-mode radios using the raw data protocol."""
+
+    _icf_data = {
+        'MapRev': 1,
+        'EtcData': 0,
+        'Comment': '',
+        'recordsize': 32,
+    }
 
     def process_frame_payload(self, payload):
         """Payloads from a raw-clone-mode radio are already in raw format."""
