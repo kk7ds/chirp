@@ -169,3 +169,23 @@ class ID51PLUSRadio(id31.ID31Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+
+
+@directory.register
+class ID51PLUS2Radio(ID51PLUSRadio):
+    MODEL = 'ID-51 Plus2'
+    _model = b'\x33\x90\x00\x03'
+    _endframe = b'Icom Inc.DA'
+
+    _raw_frames = True
+    _highbit_flip = True
+
+    _icf_data = {
+        'MapRev': 1,
+        'EtcData': 400001,
+    }
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is always matched with metadata
+        return False
