@@ -66,6 +66,7 @@ LIST_COLOR8 = ["White", "Red", "Blue", "Green", "Yellow", "Indigo",
                "Purple", "Gray"]
 LIST_COLOR9 = ["Black"] + LIST_COLOR8
 LIST_DTMFST = ["OFF", "Keyboard", "ANI", "Keyboard + ANI"]
+LIST_EARPH = ["Off", "Earphone", "Earphone + Speaker"]
 LIST_EMCTP = ["TX alarm sound", "TX ANI", "Both"]
 LIST_EMCTPX = ["Off"] + LIST_EMCTP
 LIST_LANGUA = ["English", "Chinese"]
@@ -1256,12 +1257,19 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                          LIST_MDF[_mem.settings.cdmdf]))
                 basic.append(cdmdf)
 
-                langua = RadioSetting("settings.langua", "Language",
-                                      RadioSettingValueList(
-                                          LIST_LANGUA,
-                                          LIST_LANGUA[_mem.settings.langua]))
-                basic.append(langua)
-
+                if self.MODEL == "UV-50X2_G2":
+                    vox = RadioSetting("settings.langua", "VOX",
+                                       RadioSettingValueList(
+                                           LIST_VOX,
+                                           LIST_VOX[_mem.settings.langua]))
+                    basic.append(vox)
+                else:
+                    langua = RadioSetting("settings.langua", "Language",
+                                          RadioSettingValueList(
+                                              LIST_LANGUA,
+                                              LIST_LANGUA[
+                                                  _mem.settings.langua]))
+                    basic.append(langua)
         if self.MODEL == "KT-8R":
             voice = RadioSetting("settings.voice", "Voice prompt",
                                  RadioSettingValueList(
@@ -1708,12 +1716,20 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         if self.MODEL == "KT-8R" or self.MODEL == "UV-25X2" \
                 or self.MODEL == "UV-25X4" or self.MODEL == "UV-50X2" \
-                or self.MODEL == "GMRS-50X1" or self.MODEL == "GMRS-20V2":
+                or self.MODEL == "GMRS-50X1" or self.MODEL == "GMRS-20V2" \
+                or self.MODEL == "UV-50X2_G2":
             tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby",
                                  RadioSettingValueList(
                                      LIST_TMRTX,
                                      LIST_TMRTX[_mem.settings.tmrtx]))
             basic.append(tmrtx)
+
+        if self.MODEL == "UV-50X2_G2":
+            earpho = RadioSetting("settings.earpho", "Earphone",
+                                  RadioSettingValueList(
+                                      LIST_EARPH,
+                                      LIST_EARPH[_mem.settings.earpho]))
+            basic.append(earpho)
 
         # Advanced
         def _filter(name):
@@ -3756,7 +3772,8 @@ struct {
   u8 cbmdf;
   u8 ccmdf;
   u8 cdmdf;
-  u8 langua;
+  u8 langua;        // BTech Gen2 radios have removed the Language setting
+                    // use this as the VOX setting
   u8 sync;          // BTech radios use this as the display sync
                     // setting, other radios use this as the auto
                     // keypad lock setting
@@ -3784,6 +3801,7 @@ struct {
   u8 skiptx;
   u8 scmode;
   u8 tmrtx;
+  u8 earpho;
 } settings;
 
 #seekto 0x0E80;
@@ -4099,6 +4117,24 @@ class UV50X2(BTechColor):
     _fileid = [UV50X2_fp, ]
     _power_levels = [chirp_common.PowerLevel("High", watts=50),
                      chirp_common.PowerLevel("Low", watts=10)]
+
+
+@directory.register
+class UV50X2_G2(BTechColor):
+    """Baofeng Tech UV50X2_G2"""
+    MODEL = "UV-50X2_G2"
+    BANDS = 2
+    _vhf_range = (130000000, 180000000)
+    _uhf_range = (400000000, 521000000)
+    _magic = MSTRING_UV25X2
+    _fileid = [UV50X2_fp, ]
+    _power_levels = [chirp_common.PowerLevel("High", watts=50),
+                     chirp_common.PowerLevel("Low", watts=10)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
 
 
 @directory.register

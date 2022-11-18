@@ -526,6 +526,30 @@ def write_file(radio, filename):
     f.close()
 
 
+def write_file(radio, filename):
+    """Write an ICF file"""
+    f = open(filename, 'w')
+
+    model = radio._model
+    mdata = '%02x%02x%02x%02x' % (ord(model[0]),
+                                  ord(model[1]),
+                                  ord(model[2]),
+                                  ord(model[3]))
+    data = radio._mmap.get_packed()
+
+    f.write('%s\r\n' % mdata)
+    f.write('#Comment=\r\n')
+    f.write('#MapRev=%i\r\n' % radio._icf_maprev)
+    f.write('#EtcData=%s\r\n' % radio._icf_etcdata)
+
+    blksize = 32
+    for addr in range(0, len(data), blksize):
+        block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
+        line = '%08X%02X%s\r\n' % (addr, blksize, block)
+        f.write(line)
+    f.close()
+
+
 def is_9x_icf(filename):
     """Returns True if @filename is an IC9x ICF file"""
     try:
