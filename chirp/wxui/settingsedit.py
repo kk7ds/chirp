@@ -66,14 +66,22 @@ class ChirpSettingsEdit(common.ChirpEditor):
             for i in range(self._group_control.GetPageCount()):
                 page = self._group_control.GetPage(i)
                 for name, (setting, val) in page.get_setting_values().items():
-                    if not setting.value.get_mutable():
-                        LOG.debug('Skipping immutable setting %r' % (
-                            setting.get_name()))
-                        continue
-                    LOG.debug('Setting %s:%s=%r' % (page.name,
-                                                    setting.get_name(),
-                                                    val))
-                    setting.value = val
+                    if isinstance(setting.value, list):
+                        values = setting.value
+                    else:
+                        values = [setting.value]
+                    for j, value in enumerate(values):
+                        if not value.get_mutable():
+                            LOG.debug('Skipping immutable setting %r' % (
+                                setting.get_name()))
+                            continue
+                        LOG.debug('Setting %s:%s[%i]=%r' % (page.name,
+                                                            setting.get_name(),
+                                                            j,
+                                                            val))
+                        realname, index = name.split('@')
+                        if int(index) == j:
+                            setting[j] = val
             return True
         except Exception as e:
             LOG.exception('Failed to apply settings')

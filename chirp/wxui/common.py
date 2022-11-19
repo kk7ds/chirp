@@ -223,6 +223,10 @@ class ChirpSettingGrid(wx.Panel):
             if not isinstance(element, settings.RadioSetting):
                 LOG.debug('Skipping nested group %s' % element)
                 continue
+            if len(element.keys()) > 1:
+                self.pg.Append(wx.propgrid.PropertyCategory(
+                    element.get_shortname()))
+
             for i in element.keys():
                 value = element[i]
                 if isinstance(value, settings.RadioSettingValueInteger):
@@ -239,6 +243,9 @@ class ChirpSettingGrid(wx.Panel):
                     LOG.warning('Unsupported setting type %r' % value)
                     editor = None
                 if editor:
+                    editor.SetName('%s@%i' % (name, i))
+                    if len(element.keys()) > 1:
+                        editor.SetLabel('')
                     editor.Enable(value.get_mutable())
                     self.pg.Append(editor)
 
@@ -312,11 +319,12 @@ class ChirpSettingGrid(wx.Panel):
         """Return a dict of {name: (RadioSetting, newvalue)}"""
         values = {}
         for prop in self.pg._Items():
+            basename = prop.GetName().split('@')[0]
             if isinstance(prop, wx.propgrid.EnumProperty):
-                value = self._choices[prop.GetName()][prop.GetValue()]
+                value = self._choices[basename][prop.GetValue()]
             else:
                 value = prop.GetValue()
-            setting = self._group[prop.GetName()]
+            setting = self._group[basename]
             values[prop.GetName()] = setting, value
         return values
 

@@ -450,7 +450,7 @@ class RadioSetting(RadioSettingGroup):
             if len(self) == 1:
                 return self._elements[self._element_order[0]]
             else:
-                return self._elements.values()
+                return list(self._elements.values())
         else:
             return self.__dict__[name]
 
