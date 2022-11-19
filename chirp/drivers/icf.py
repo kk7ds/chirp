@@ -423,6 +423,8 @@ def _clone_to_radio(radio):
 
     if len(frames) == 0:
         raise errors.RadioError("Did not get clone result from radio")
+    else:
+        LOG.debug('Clone result frame:\n%s' % result)
 
     return result.payload[0] == '\x00'
 
