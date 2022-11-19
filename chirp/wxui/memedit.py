@@ -714,7 +714,7 @@ class ChirpMemPropDialog(wx.Dialog):
                 for setting in mem.extra:
                     name = setting.get_name()
                     try:
-                        setting.value = extra[name]
+                        setting.value = extra['%s@0' % name]
                     except KeyError:
                         raise
                         LOG.warning('Missing setting %r' % name)
