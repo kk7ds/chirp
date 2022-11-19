@@ -90,6 +90,7 @@ class RadioStream:
     def __init__(self, pipe):
         self.pipe = pipe
         self.data = bytes()
+        self.iecho = None
 
     def _process_frames(self):
         if not self.data.startswith(b"\xFE\xFE"):
@@ -101,6 +102,11 @@ class RadioStream:
         frames = []
 
         while self.data:
+            # Hispeed clone frames start with a pad of \xFE, so strip those
+            # away until we have the two we expect
+            while self.data.startswith(b'\xfe\xfe\xfe'):
+                self.data = self.data[1:]
+
             try:
                 cmd = self.data[4]
             except IndexError:
@@ -112,7 +118,9 @@ class RadioStream:
                     break
                 elif frame.src == 0xEE and frame.dst == 0xEF:
                     # PC echo, ignore
-                    pass
+                    if self.iecho is None:
+                        LOG.info('Detected an echoing cable')
+                        self.iecho = True
                 else:
                     frames.append(frame)
 
@@ -121,6 +129,9 @@ class RadioStream:
                 LOG.error("Failed to parse frame (cmd=%i): %s" % (cmd, e))
                 return []
 
+        if frames and self.iecho is None:
+            LOG.info('Non-echoing cable detected')
+            self.iecho = False
         return frames
 
     def get_frames(self, nolimit=False, limit=None):
@@ -146,12 +157,22 @@ class RadioStream:
 
         return self._process_frames()
 
+    def munch_echo(self):
+        if self.iecho is not False:
+            f = self.get_frames(limit=1)
+            if len(f) != 0:
+                LOG.warning('Expected to read one echo frame, found %i',
+                            len(f))
+            if f and f[0].src == 0xEF:
+                LOG.warning('Expected PC echo but found radio frame!')
 
-def get_model_data(radio, mdata=bytes(b"\x00\x00\x00\x00")):
+
+def get_model_data(radio, mdata=bytes(b"\x00\x00\x00\x00"), stream=None):
     """Query the @radio for its model data"""
     send_clone_frame(radio, 0xe0, mdata, raw=True)
 
-    stream = RadioStream(radio.pipe)
+    if stream is None:
+        stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
 
     if len(frames) != 1:
@@ -367,7 +388,7 @@ def send_mem_chunk(radio, stream, start, stop, bs=32):
                          raw=False,
                          checksum=True)
 
-        stream.get_frames(1)
+        stream.munch_echo()
 
         if radio.status_fn:
             status.cur = i+bs
@@ -382,7 +403,8 @@ def _clone_to_radio(radio):
     # Uncomment to save out a capture of what we actually write to the radio
     # SAVE_PIPE = file("pipe_capture.log", "w", 0)
 
-    md = get_model_data(radio)
+    stream = RadioStream(radio.pipe)
+    md = get_model_data(radio, stream=stream)
 
     if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
@@ -391,8 +413,6 @@ def _clone_to_radio(radio):
     # takes longer
     # md = get_model_data(radio, mdata=md[0:2]+"\x00\x00")
     # md = get_model_data(radio, mdata=md[0:2]+"\x00\x00")
-
-    stream = RadioStream(radio.pipe)
 
     if radio.is_hispeed():
         start_hispeed_clone(radio, CMD_CLONE_IN)
@@ -492,14 +512,28 @@ def read_file(filename):
     mod_str = f.readline()
     dat = f.readlines()
 
-    model = convert_model(mod_str.strip())
+    icfdata = {
+        'model': convert_model(mod_str.strip())
+    }
 
     _mmap = b""
     for line in dat:
-        if not line.startswith("#"):
-            _mmap += convert_data_line(line)
+        if line.startswith("#"):
+            try:
+                key, value = line.strip().split('=', 1)
+                if value.isdigit():
+                    value = int(value)
+                icfdata[key[1:]] = value
+            except ValueError:
+                # Some old files have lines with just #
+                pass
+        else:
+            line_data = convert_data_line(line)
+            _mmap += line_data
+            if 'recordsize' not in icfdata:
+                icfdata['recordsize'] = len(line_data)
 
-    return model, memmap.MemoryMapBytes(_mmap)
+    return icfdata, memmap.MemoryMapBytes(_mmap)
 
 
 def write_file(radio, filename):
@@ -524,6 +558,18 @@ def write_file(radio, filename):
         line = '%08X%02X%s\r\n' % (addr, blksize, block)
         f.write(line)
     f.close()
+    # This is zero-padded six decimal digits in every known
+    # example. Being zero-padded means it might be hex, but we do not
+    # know. Try to detect that occurrence here and warn in the log
+    # so we can catch it in the future.
+    if isinstance(icfdata.get('EtcData', 0), str):
+        LOG.warning(
+            'ICF file %s had non-decimal-integer EtcData=%r - '
+            'ICF write will fail!',
+            icfdata['EtcData'])
+        icfdata['EtcData'] = 0
+
+    return icfdata, memmap.MemoryMap(_mmap)
 
 
 def write_file(radio, filename):
@@ -538,14 +584,17 @@ def write_file(radio, filename):
     data = radio._mmap.get_packed()
 
     f.write('%s\r\n' % mdata)
-    f.write('#Comment=\r\n')
-    f.write('#MapRev=%i\r\n' % radio._icf_maprev)
-    f.write('#EtcData=%s\r\n' % radio._icf_etcdata)
+    f.write('#Comment=%s\r\n' % radio._icf_data.get('Comment', ''))
+    f.write('#MapRev=%i\r\n' % radio._icf_data.get('MapRev', 1))
+    f.write('#EtcData=%06i\r\n' % radio._icf_data.get('EtcData', 0))
 
-    blksize = 32
+    blksize = radio._icf_data.get('recordsize', 32)
     for addr in range(0, len(data), blksize):
         block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
-        line = '%08X%02X%s\r\n' % (addr, blksize, block)
+        if blksize == 32:
+            line = '%08X%02X%s\r\n' % (addr, blksize, block)
+        else:
+            line = '%04X%02X%s\r\n' % (addr, blksize, block)
         f.write(line)
     f.close()
 
@@ -697,10 +746,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     # Attributes that get put into ICF files when we export. The meaning
     # of these are unknown at this time, but differ per model (at least).
-    # Saving ICF files will not be offered unless _icf_etcdata is set to
-    # a non-zero-length string.
-    _icf_maprev = 1
-    _icf_etcdata = ''
+    # Saving ICF files will not be offered unless _icf_data has attributes.
+    _icf_data = {
+        'recordsize': 16,
+    }
 
     @classmethod
     def is_hispeed(cls):
@@ -784,11 +833,20 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     def set_settings(self, settings):
         return honor_speed_switch_setting(self, settings)
 
-    def save(self, filename):
+    def load_mmap(self, filename):
+        if filename.lower().endswith('.icf'):
+            self._icf_data, self._mmap = read_file(filename)
+            LOG.debug('Loaded ICF file %s with data: %s' % (filename,
+                                                            self._icf_data))
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
         if filename.lower().endswith('.icf'):
             write_file(self, filename)
         else:
-            chirp_common.CloneModeRadio.save(self, filename)
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
 
 
 def flip_high_order_bit(data):
@@ -824,6 +882,14 @@ def unescape_raw_bytes(escaped_data):
 
 class IcomRawCloneModeRadio(IcomCloneModeRadio):
     """Subclass for Icom clone-mode radios using the raw data protocol."""
+
+    _icf_data = {
+        'MapRev': 1,
+        'EtcData': 0,
+        'Comment': '',
+        'recordsize': 32,
+    }
+
     def process_frame_payload(self, payload):
         """Payloads from a raw-clone-mode radio are already in raw format."""
         return unescape_raw_bytes(payload)
