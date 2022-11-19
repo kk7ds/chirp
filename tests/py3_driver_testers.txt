@@ -16,8 +16,15 @@ BTECH_UV-25X4,@KC9HI,10-Nov-2022
 BTECH_UV-5001,@KC9HI,11-Nov-2022
 BTECH_UV-50X2,@KC9HI,11-Nov-2022
 Baofeng_BF-888,@kk7ds,13-Feb-2019
+Baofeng_BF-F8HP,@KC9HI,18-Nov-2022
+Baofeng_F-11,+Baofeng_UV-5R,18-Nov-2022
+Baofeng_GT-5R,@KC9HI,18-Nov-2022
 Baofeng_UV-3R,@yarda,26-Sep-2022
 Baofeng_UV-5R,@lekv,23-Oct-2022
+Baofeng_UV-6,+Baofeng_UV-5R,18-Nov-2022
+Baofeng_UV-82,@KC9HI,18-Nov-2022
+Baofeng_UV-82HP,@KC9HI,18-Nov-2022
+Baofeng_UV-B5,@KC9HI,18-Nov-2022
 CRT_Micron_UV,+Retevis_RT95,13-Nov-2022
 CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
@@ -29,6 +36,7 @@ Icom_IC-910,@mfncooper,1-Oct-2021
 Icom_ID-31A,@kk7ds,12-Feb-2019
 Icom_ID-800H_v2,@kk7ds,22-Oct-2022
 Icom_ID-880H,@kk7ds,22-Oct-2022
+Intek_KT-980HP,+Baofeng_BF-F8HP,18-Nov-2022
 Kenwood_TH-D72_live_mode,@kk7ds,21-Oct-2022
 Kenwood_TH-D74_live_mode,@kk7ds,20-Oct-2022
 Kenwood_TH-F7,@sv1,19-Oct-2022
@@ -57,6 +65,9 @@ QYT_KT8900R,+BTECH_UV-2501+220,11-Nov-2022
 QYT_KT980PLUS,+BTECH_UV-25X2,11-Nov-2022
 Radioddity_DB25-G,@KC9HI,11-Nov-2022
 Radioddity_GA-510,@kk7ds,21-Oct-2022
+Radioddity_UV-5G,@KC9HI,18-Nov-2022
+Radioddity_UV-5RX3,@KC9HI,18-Nov-2022
+Radioddity_UV-82X3,@KC9HI,18-Nov-2022
 Retevis_RT95,@KC9HI,13-Nov-2022
 Retevis_RT95_VOX,+Retevis_RT95,13-Nov-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
