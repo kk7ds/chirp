@@ -319,6 +319,8 @@ class ChirpSettingGrid(wx.Panel):
         """Return a dict of {name: (RadioSetting, newvalue)}"""
         values = {}
         for prop in self.pg._Items():
+            if prop.IsCategory():
+                continue
             basename = prop.GetName().split('@')[0]
             if isinstance(prop, wx.propgrid.EnumProperty):
                 value = self._choices[basename][prop.GetValue()]
