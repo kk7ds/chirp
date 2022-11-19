@@ -548,42 +548,6 @@ def write_file(radio, filename):
     data = radio._mmap.get_packed()
 
     f.write('%s\r\n' % mdata)
-    f.write('#Comment=\r\n')
-    f.write('#MapRev=%i\r\n' % radio._icf_maprev)
-    f.write('#EtcData=%s\r\n' % radio._icf_etcdata)
-
-    blksize = 32
-    for addr in range(0, len(data), blksize):
-        block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
-        line = '%08X%02X%s\r\n' % (addr, blksize, block)
-        f.write(line)
-    f.close()
-    # This is zero-padded six decimal digits in every known
-    # example. Being zero-padded means it might be hex, but we do not
-    # know. Try to detect that occurrence here and warn in the log
-    # so we can catch it in the future.
-    if isinstance(icfdata.get('EtcData', 0), str):
-        LOG.warning(
-            'ICF file %s had non-decimal-integer EtcData=%r - '
-            'ICF write will fail!',
-            icfdata['EtcData'])
-        icfdata['EtcData'] = 0
-
-    return icfdata, memmap.MemoryMap(_mmap)
-
-
-def write_file(radio, filename):
-    """Write an ICF file"""
-    f = open(filename, 'w')
-
-    model = radio._model
-    mdata = '%02x%02x%02x%02x' % (ord(model[0]),
-                                  ord(model[1]),
-                                  ord(model[2]),
-                                  ord(model[3]))
-    data = radio._mmap.get_packed()
-
-    f.write('%s\r\n' % mdata)
     f.write('#Comment=%s\r\n' % radio._icf_data.get('Comment', ''))
     f.write('#MapRev=%i\r\n' % radio._icf_data.get('MapRev', 1))
     f.write('#EtcData=%06i\r\n' % radio._icf_data.get('EtcData', 0))
