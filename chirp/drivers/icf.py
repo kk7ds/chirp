@@ -83,6 +83,7 @@ class RadioStream:
     def __init__(self, pipe):
         self.pipe = pipe
         self.data = ""
+        self.iecho = None
 
     def _process_frames(self):
         if not self.data.startswith("\xFE\xFE"):
@@ -94,6 +95,11 @@ class RadioStream:
         frames = []
 
         while self.data:
+            # Hispeed clone frames start with a pad of \xFE, so strip those
+            # away until we have the two we expect
+            while self.data.startswith(b'\xfe\xfe\xfe'):
+                self.data = self.data[1:]
+
             try:
                 cmd = ord(self.data[4])
             except IndexError:
@@ -105,7 +111,9 @@ class RadioStream:
                     break
                 elif frame.src == 0xEE and frame.dst == 0xEF:
                     # PC echo, ignore
-                    pass
+                    if self.iecho is None:
+                        LOG.info('Detected an echoing cable')
+                        self.iecho = True
                 else:
                     frames.append(frame)
 
@@ -114,6 +122,9 @@ class RadioStream:
                 LOG.error("Failed to parse frame (cmd=%i): %s" % (cmd, e))
                 return []
 
+        if frames and self.iecho is None:
+            LOG.info('Non-echoing cable detected')
+            self.iecho = False
         return frames
 
     def get_frames(self, nolimit=False, limit=None):
@@ -139,12 +150,22 @@ class RadioStream:
 
         return self._process_frames()
 
+    def munch_echo(self):
+        if self.iecho is not False:
+            f = self.get_frames(limit=1)
+            if len(f) != 0:
+                LOG.warning('Expected to read one echo frame, found %i',
+                            len(f))
+            if f and f[0].src == 0xEF:
+                LOG.warning('Expected PC echo but found radio frame!')
 
-def get_model_data(radio, mdata="\x00\x00\x00\x00"):
+
+def get_model_data(radio, mdata="\x00\x00\x00\x00", stream=None):
     """Query the @radio for its model data"""
     send_clone_frame(radio, 0xe0, mdata, raw=True)
 
-    stream = RadioStream(radio.pipe)
+    if stream is None:
+        stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
 
     if len(frames) != 1:
@@ -349,7 +370,7 @@ def send_mem_chunk(radio, stream, start, stop, bs=32):
                          raw=False,
                          checksum=True)
 
-        stream.get_frames(1)
+        stream.munch_echo()
 
         if radio.status_fn:
             status.cur = i+bs
@@ -364,7 +385,8 @@ def _clone_to_radio(radio):
     # Uncomment to save out a capture of what we actually write to the radio
     # SAVE_PIPE = file("pipe_capture.log", "w", 0)
 
-    md = get_model_data(radio)
+    stream = RadioStream(radio.pipe)
+    md = get_model_data(radio, stream=stream)
 
     if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
@@ -373,8 +395,6 @@ def _clone_to_radio(radio):
     # takes longer
     # md = get_model_data(radio, mdata=md[0:2]+"\x00\x00")
     # md = get_model_data(radio, mdata=md[0:2]+"\x00\x00")
-
-    stream = RadioStream(radio.pipe)
 
     if radio.is_hispeed():
         start_hispeed_clone(radio, CMD_CLONE_IN)
