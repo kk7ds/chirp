@@ -25,57 +25,71 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 
 LOG = logging.getLogger(__name__)
 
+CMD_CLONE_ID = 0xE0
+CMD_CLONE_MODEL = 0xE1
 CMD_CLONE_OUT = 0xE2
 CMD_CLONE_IN = 0xE3
 CMD_CLONE_DAT = 0xE4
 CMD_CLONE_END = 0xE5
+CMD_CLONE_OK = 0xE6
+CMD_CLONE_HISPEED = 0xE8
+
+ADDR_PC = 0xEE
+ADDR_RADIO = 0xEF
 
 SAVE_PIPE = None
 
 
 class IcfFrame:
     """A single ICF communication frame"""
-    src = 0
-    dst = 0
-    cmd = 0
-
-    payload = ""
 
     def __str__(self):
-        addrs = {0xEE: "PC",
-                 0xEF: "Radio"}
-        cmds = {0xE0: "ID",
-                0xE1: "Model",
-                0xE2: "Clone out",
-                0xE3: "Clone in",
-                0xE4: "Clone data",
-                0xE5: "Clone end",
-                0xE6: "Clone result"}
+        addrs = {ADDR_PC: "PC",
+                 ADDR_RADIO: "Radio"}
+        cmds = {CMD_CLONE_ID: "ID",
+                CMD_CLONE_MODEL: "Model",
+                CMD_CLONE_OUT: "Clone out",
+                CMD_CLONE_IN: "Clone in",
+                CMD_CLONE_DAT: "Clone data",
+                CMD_CLONE_END: "Clone end",
+                CMD_CLONE_OK: "Clone OK",
+                CMD_CLONE_HISPEED: "Clone hispeed"}
 
-        return "%s -> %s [%s]:\n%s" % (addrs[self.src], addrs[self.dst],
-                                       cmds[self.cmd],
+        return "%s -> %s [%s]:\n%s" % (addrs.get(self.src, '??'),
+                                       addrs.get(self.dst, '??'),
+                                       cmds.get(self.cmd, '??'),
                                        util.hexprint(self.payload))
 
-    def __init__(self):
-        pass
+    def __init__(self, src=0, dst=0, cmd=0):
+        self.src = src
+        self.dst = dst
+        self.cmd = cmd
+        self.payload = b''
 
+    @classmethod
+    def parse(cls, data):
+        """Parse an ICF frame of unknown type from the beginning of @data"""
+        frame = cls(util.byte_to_int(data[2]),
+                    util.byte_to_int(data[3]),
+                    util.byte_to_int(data[4]))
 
-def parse_frame_generic(data):
-    """Parse an ICF frame of unknown type from the beginning of @data"""
-    frame = IcfFrame()
+        try:
+            end = data.index(b"\xFD")
+        except ValueError:
+            LOG.warning('Frame parsed with no end')
+            return None
 
-    frame.src = ord(data[2])
-    frame.dst = ord(data[3])
-    frame.cmd = ord(data[4])
+        if data[end + 1:]:
+            LOG.warning('Frame parsed with trailing data')
 
-    try:
-        end = data.index("\xFD")
-    except ValueError:
-        return None, data
+        frame.payload = data[5:end]
 
-    frame.payload = data[5:end]
+        return frame
 
-    return frame, data[end+1:]
+    def pack(self):
+        return (b'\xfe\xfe' +
+                struct.pack('BBB', self.src, self.dst, self.cmd) +
+                self.payload + b'\xfd')
 
 
 class RadioStream:
@@ -106,19 +120,20 @@ class RadioStream:
                 break  # Out of data
 
             try:
-                frame, rest = parse_frame_generic(self.data)
-                if not frame:
-                    break
-                elif frame.src == 0xEE and frame.dst == 0xEF:
+                end = self.data.index(b'\xFD')
+                frame = IcfFrame.parse(self.data[:end + 1])
+                self.data = self.data[end + 1:]
+                if frame.src == 0xEE and frame.dst == 0xEF:
                     # PC echo, ignore
                     if self.iecho is None:
                         LOG.info('Detected an echoing cable')
                         self.iecho = True
                 else:
                     frames.append(frame)
-
-                self.data = rest
-            except errors.InvalidDataError, e:
+            except ValueError:
+                # no data
+                break
+            except errors.InvalidDataError as e:
                 LOG.error("Failed to parse frame (cmd=%i): %s" % (cmd, e))
                 return []
 
@@ -197,13 +212,13 @@ def get_clone_resp(pipe, length=None, max_count=None):
 
 def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
     """Send a clone frame with @cmd and @data to the @radio"""
-    payload = radio.get_payload(data, raw, checksum)
 
-    frame = "\xfe\xfe\xee\xef%s%s\xfd" % (chr(cmd), payload)
+    frame = IcfFrame(ADDR_PC, ADDR_RADIO, cmd)
+    frame.payload = radio.get_payload(data, raw, checksum)
 
     if SAVE_PIPE:
         LOG.debug("Saving data...")
-        SAVE_PIPE.write(frame)
+        SAVE_PIPE.write(frame.pack())
 
     # LOG.debug("Sending:\n%s" % util.hexprint(frame))
     # LOG.debug("Sending:\n%s" % util.hexprint(hed[6:]))
@@ -212,7 +227,7 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
         # return frame
         pass
 
-    radio.pipe.write(frame)
+    radio.pipe.write(frame.pack())
     if radio.MUNCH_CLONE_RESP:
         # Do max 2*len(frame) read(1) calls
         get_clone_resp(radio.pipe, max_count=2*len(frame))
@@ -263,12 +278,11 @@ def process_data_frame(radio, frame, _mmap):
 
 def start_hispeed_clone(radio, cmd):
     """Send the magic incantation to the radio to go fast"""
-    buf = ("\xFE" * 20) + \
-        "\xEE\xEF\xE8" + \
-        radio.get_model() + \
-        "\x00\x00\x02\x01\xFD"
-    LOG.debug("Starting HiSpeed:\n%s" % util.hexprint(buf))
-    radio.pipe.write(buf)
+    frame = IcfFrame(ADDR_PC, ADDR_RADIO, CMD_CLONE_HISPEED)
+    frame.payload = radio.get_model() + b'\x00\x00\x02\x01\xFD'
+
+    LOG.debug("Starting HiSpeed:\n%s" % frame)
+    radio.pipe.write(b'\xFE' * 20 + frame.pack())
     radio.pipe.flush()
     resp = radio.pipe.read(128)
     LOG.debug("Response:\n%s" % util.hexprint(resp))
@@ -276,13 +290,11 @@ def start_hispeed_clone(radio, cmd):
     LOG.info("Switching to 38400 baud")
     radio.pipe.baudrate = 38400
 
-    buf = ("\xFE" * 14) + \
-        "\xEE\xEF" + \
-        chr(cmd) + \
-        radio.get_model()[:3] + \
-        "\x00\xFD"
-    LOG.debug("Starting HiSpeed Clone:\n%s" % util.hexprint(buf))
-    radio.pipe.write(buf)
+    frame = IcfFrame(ADDR_PC, ADDR_RADIO, cmd)
+    frame.payload = radio.get_model()[:3] + b'\x00'
+
+    LOG.debug("Starting HiSpeed Clone:\n%s" % frame)
+    radio.pipe.write(b'\xFE' * 14 + frame.pack())
     radio.pipe.flush()
 
 
@@ -340,7 +352,7 @@ def clone_from_radio(radio):
     """Do a full clone out of the radio's memory"""
     try:
         return _clone_from_radio(radio)
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
 
@@ -423,6 +435,9 @@ def _clone_to_radio(radio):
 
     if len(frames) == 0:
         raise errors.RadioError("Did not get clone result from radio")
+    elif result.cmd != CMD_CLONE_OK:
+        LOG.error('Clone failed result frame:\n%s' % result)
+        raise errors.RadioError('Radio rejected clone')
     else:
         LOG.debug('Clone result frame:\n%s' % result)
 
@@ -433,7 +448,7 @@ def clone_to_radio(radio):
     """Initiate a full memory clone out to @radio"""
     try:
         return _clone_to_radio(radio)
-    except Exception, e:
+    except Exception as e:
         logging.exception("Failed to communicate with the radio")
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
@@ -478,7 +493,7 @@ def convert_data_line(line):
             val = int("%s%s" % (data[i], data[i+1]), 16)
             i += 2
             _mmap += struct.pack("B", val)
-        except ValueError, e:
+        except ValueError as e:
             LOG.debug("Failed to parse byte: %s" % e)
             break
 
@@ -729,8 +744,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
                 val = int("%s%s" % (bcddata[i], bcddata[i+1]), 16)
                 i += 2
                 data += struct.pack("B", val)
-            except ValueError, e:
-                LOG.error("Failed to parse byte: %s" % e)
+            except (ValueError, TypeError) as e:
+                LOG.error("Failed to parse byte %i (%r): %s" % (i,
+                                                                bcddata[i:i+2],
+                                                                e))
                 break
 
         return data

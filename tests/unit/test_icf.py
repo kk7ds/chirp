@@ -21,7 +21,7 @@ from chirp import directory
 from chirp.drivers import ic2820, icf, id31
 
 
-class TestICF(unittest.TestCase):
+class TestFileICF(unittest.TestCase):
     def test_read_icf_data_modern(self):
         with tempfile.NamedTemporaryFile(suffix='.icf') as f:
             f.write('12345678\r\n#Foo=somefoovalue\r\n#Bar=123\r\n')
@@ -120,3 +120,28 @@ class TestICF(unittest.TestCase):
 
             self.assertEqual(ic2820.IC2820Radio,
                              directory.icf_to_radio(f.name))
+
+
+class TestCloneICF(unittest.TestCase):
+    def test_frame_parse(self):
+        f = icf.IcfFrame.parse(b'\xfe\xfe\xee\xef\xe0\x00\01\xfd')
+        self.assertEqual(0xEE, f.src)
+        self.assertEqual(0xEF, f.dst)
+        self.assertEqual(0xE0, f.cmd)
+        self.assertEqual(b'\x00\x01', f.payload)
+
+    def test_frame_parse_no_end(self):
+        f = icf.IcfFrame.parse(b'\xfe\xfe\xee\xef\xe0\x00\01')
+        self.assertIsNone(f)
+
+    def test_frame_parse_trailing_garbage(self):
+        f = icf.IcfFrame.parse(b'\xfe\xfe\xee\xef\xe0\x00\01\xfd\x01')
+        self.assertEqual(0xEE, f.src)
+        self.assertEqual(0xEF, f.dst)
+        self.assertEqual(0xE0, f.cmd)
+        self.assertEqual(b'\x00\x01', f.payload)
+
+    def test_pack(self):
+        f = icf.IcfFrame(icf.ADDR_PC, icf.ADDR_RADIO, icf.CMD_CLONE_ID)
+        f.payload = b'\x01\x02'
+        self.assertEqual(b'\xfe\xfe\xee\xef\xe0\x01\x02\xfd', f.pack())
