@@ -38,23 +38,23 @@
 | <a name="Baofeng_BF-888"></a> Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes |
 | <a name="Baofeng_BF-A58"></a> Baofeng_BF-A58 |  |  |  |
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S |  |  |  |
-| <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP |  |  | Yes |
+| <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 |  |  |  |
 | <a name="Baofeng_BF-T8"></a> Baofeng_BF-T8 |  |  |  |
 | <a name="Baofeng_BF-V8A"></a> Baofeng_BF-V8A |  |  |  |
-| <a name="Baofeng_F-11"></a> Baofeng_F-11 |  |  | Yes |
+| <a name="Baofeng_F-11"></a> Baofeng_F-11 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_GT-3WP"></a> Baofeng_GT-3WP |  |  |  |
-| <a name="Baofeng_GT-5R"></a> Baofeng_GT-5R |  |  | Yes |
+| <a name="Baofeng_GT-5R"></a> Baofeng_GT-5R | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_UV-3R"></a> Baofeng_UV-3R | [@yarda](https://github.com/yarda) | 26-Sep-2022 |  |
 | <a name="Baofeng_UV-5R"></a> Baofeng_UV-5R | [@lekv](https://github.com/lekv) | 23-Oct-2022 | Yes |
-| <a name="Baofeng_UV-6"></a> Baofeng_UV-6 |  |  | Yes |
+| <a name="Baofeng_UV-6"></a> Baofeng_UV-6 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_UV-6R"></a> Baofeng_UV-6R |  |  |  |
-| <a name="Baofeng_UV-82"></a> Baofeng_UV-82 |  |  | Yes |
-| <a name="Baofeng_UV-82HP"></a> Baofeng_UV-82HP |  |  | Yes |
+| <a name="Baofeng_UV-82"></a> Baofeng_UV-82 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
+| <a name="Baofeng_UV-82HP"></a> Baofeng_UV-82HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_UV-82WP"></a> Baofeng_UV-82WP |  |  |  |
 | <a name="Baofeng_UV-9G"></a> Baofeng_UV-9G |  |  |  |
 | <a name="Baofeng_UV-9R"></a> Baofeng_UV-9R |  |  |  |
-| <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 |  |  | Yes |
+| <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  |  |
 | <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  |  |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes |
@@ -106,7 +106,7 @@
 | <a name="Icom_ID-80H"></a> Icom_ID-80H |  |  | Yes |
 | <a name="Icom_ID-880H"></a> Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | <a name="Intek_HR-2040"></a> Intek_HR-2040 |  |  |  |
-| <a name="Intek_KT-980HP"></a> Intek_KT-980HP |  |  | Yes |
+| <a name="Intek_KT-980HP"></a> Intek_KT-980HP | [Implied by Baofeng_BF-F8HP](#user-content-Baofeng_BF-F8HP) | 18-Nov-2022 | Yes |
 | <a name="Jetstream_JT220M"></a> Jetstream_JT220M |  |  |  |
 | <a name="Jetstream_JT270M"></a> Jetstream_JT270M |  |  |  |
 | <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH |  |  |  |
@@ -208,9 +208,9 @@
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S |  |  | Yes |
 | <a name="Radioddity_GA-510"></a> Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | <a name="Radioddity_R2"></a> Radioddity_R2 |  |  |  |
-| <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G |  |  | Yes |
-| <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 |  |  | Yes |
-| <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 |  |  | Yes |
+| <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
+| <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
+| <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Radtel_T18"></a> Radtel_T18 |  |  |  |
 | <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus |  |  | Yes |
 | <a name="Retevis_RA685"></a> Retevis_RA685 |  |  | Yes |
@@ -346,6 +346,6 @@
 
 **Drivers:** 341
 
-**Tested:** 18% (64/277)
+**Tested:** 21% (75/266)
 
 **Byte clean:** 46% (159/182)

@@ -209,7 +209,7 @@ def do_download(radio):
     data += (b"\x00" * 16)
     firstack = None
     for i in range(0, 0x1000, 16):
-        frame = struct.pack(">cHB", "R", i, 16)
+        frame = struct.pack(">cHB", b"R", i, 16)
         radio.pipe.write(frame)
         result = radio.pipe.read(20)
         if frame[1:4] != result[1:4]:
