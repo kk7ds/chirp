@@ -13,7 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 import struct
+
+
+def byte_to_int(b):
+    """This does what is needed to convert a bytes()[i] to an int"""
+
+    if six.PY3 and isinstance(b, int):
+        return b
+    else:
+        return ord(b)
 
 
 def hexprint(data, addrfmt=None):
@@ -22,16 +32,13 @@ def hexprint(data, addrfmt=None):
         addrfmt = '%(addr)03i'
 
     block_size = 8
-
-    lines = len(data) / block_size
-
-    if (len(data) % block_size) != 0:
-        lines += 1
-        data += "\x00" * ((lines * block_size) - len(data))
-
     out = ""
 
-    for block in range(0, (len(data)/block_size)):
+    blocks = len(data) // block_size
+    if len(data) % block_size:
+        blocks += 1
+
+    for block in range(0, blocks):
         addr = block * block_size
         try:
             out += addrfmt % locals()
@@ -39,22 +46,22 @@ def hexprint(data, addrfmt=None):
             out += "%03i" % addr
         out += ': '
 
-        left = len(data) - (block * block_size)
-        if left < block_size:
-            limit = left
-        else:
-            limit = block_size
-
-        for j in range(0, limit):
-            out += "%02x " % ord(data[(block * block_size) + j])
+        for j in range(0, block_size):
+            try:
+                out += "%02x " % byte_to_int(data[(block * block_size) + j])
+            except IndexError:
+                out += "   "
 
         out += "  "
 
-        for j in range(0, limit):
-            char = data[(block * block_size) + j]
+        for j in range(0, block_size):
+            try:
+                char = byte_to_int(data[(block * block_size) + j])
+            except IndexError:
+                char = ord('.')
 
-            if ord(char) > 0x20 and ord(char) < 0x7E:
-                out += "%s" % char
+            if char > 0x20 and char < 0x7E:
+                out += "%s" % chr(char)
             else:
                 out += "."
 
