@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import binascii
 import glob
 import os
 import tempfile
@@ -91,27 +92,20 @@ def get_driver(rclass):
         raise Exception("Unknown radio type `%s'" % rclass)
 
 
-def icf_to_image(icf_file, img_file):
-    # FIXME: Why is this here?
-    """Convert an ICF file to a .img file"""
-    mdata, mmap = icf.read_file(icf_file)
-    img_data = None
+def icf_to_radio(icf_file):
+    """Detect radio class from ICF file."""
+    icfdata, mmap = icf.read_file(icf_file)
 
     for model in list(DRV_TO_RADIO.values()):
         try:
-            if model._model == mdata:
-                img_data = mmap.get_packed()[:model._memsize]
-                break
+            if model.get_model() == icfdata['model']:
+                return model
         except Exception:
             pass  # Skip non-Icoms
 
-    if img_data:
-        f = open(img_file, "wb")
-        f.write(img_data)
-        f.close()
-    else:
-        LOG.error("Unsupported model data: %s" % util.hexprint(mdata))
-        raise Exception("Unsupported model")
+    LOG.error("Unsupported model data: %s" % util.hexprint(icfdata['model']))
+    raise Exception("Unsupported model %s" % binascii.hexlify(
+        icfdata['model']))
 
 
 # This is a mapping table of radio models that have changed in the past.
@@ -140,10 +134,8 @@ def get_radio_by_image(image_file):
         return rf
 
     if os.path.exists(image_file) and icf.is_icf_file(image_file):
-        tempf = tempfile.mktemp()
-        icf_to_image(image_file, tempf)
-        LOG.info("Auto-converted %s -> %s" % (image_file, tempf))
-        image_file = tempf
+        rclass = icf_to_radio(image_file)
+        return rclass(image_file)
 
     if os.path.exists(image_file):
         with open(image_file, "rb") as f:
