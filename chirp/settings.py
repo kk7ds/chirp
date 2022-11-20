@@ -15,6 +15,8 @@
 
 from chirp import chirp_common
 
+BANNED_NAME_CHARACTERS = r'%'
+
 
 class InvalidValueError(Exception):
 
@@ -25,6 +27,11 @@ class InvalidValueError(Exception):
 class InternalError(Exception):
 
     """A driver provided an invalid settings object structure"""
+    pass
+
+
+class InvalidNameError(Exception):
+    """A driver provided a setting with an invalid name"""
     pass
 
 
@@ -319,6 +326,10 @@ class RadioSettingGroup(object):
             raise InternalError("Incorrect type %s" % type(element))
 
     def __init__(self, name, shortname, *elements):
+        for c in BANNED_NAME_CHARACTERS:
+            if c in name:
+                raise InvalidNameError(
+                    'Name must not contain %r character' % c)
         self._name = name            # Setting identifier
         self._shortname = shortname  # Short human-readable name/description
         self.__doc__ = name          # Longer explanation/documentation
