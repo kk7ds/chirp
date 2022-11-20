@@ -278,6 +278,7 @@
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 |  |  |  |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  |  |
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  |  |
+| <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  |  |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 |  |  |  |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
@@ -350,8 +351,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 347
+**Drivers:** 348
 
-**Tested:** 22% (77/270)
+**Tested:** 22% (77/271)
 
-**Byte clean:** 45% (159/188)
+**Byte clean:** 45% (159/189)

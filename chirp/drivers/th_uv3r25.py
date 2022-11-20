@@ -22,7 +22,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString
 
-from th_uv3r import TYTUV3RRadio, tyt_uv3r_prep, THUV3R_CHARSET
+from chirp.drivers.th_uv3r import TYTUV3RRadio, tyt_uv3r_prep, THUV3R_CHARSET
 
 
 def tyt_uv3r_download(radio):
@@ -155,7 +155,7 @@ class TYTUV3R25Radio(TYTUV3RRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         bit = 1 << ((mem.number - 1) % 8)
-        byte = (mem.number - 1) / 8
+        byte = (mem.number - 1) // 8
 
         if mem.empty:
             self._memobj.emptyflags[byte] |= bit

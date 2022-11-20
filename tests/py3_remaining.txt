@@ -1,4 +1,3 @@
 Puxing_PX-2R.img
 Puxing_PX-777.img
 Puxing_PX-888K.img
-TYT_TH-UV3R-25.img
