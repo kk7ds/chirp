@@ -213,8 +213,8 @@
 | <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Radtel_T18"></a> Radtel_T18 |  |  |  |
 | <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus |  |  | Yes |
-| <a name="Retevis_RA685"></a> Retevis_RA685 |  |  | Yes |
-| <a name="Retevis_RA85"></a> Retevis_RA85 |  |  | Yes |
+| <a name="Retevis_RA685"></a> Retevis_RA685 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes |
+| <a name="Retevis_RA85"></a> Retevis_RA85 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes |
 | <a name="Retevis_RB15"></a> Retevis_RB15 |  |  |  |
 | <a name="Retevis_RB17"></a> Retevis_RB17 |  |  |  |
 | <a name="Retevis_RB17A"></a> Retevis_RB17A |  |  |  |
@@ -346,6 +346,6 @@
 
 **Drivers:** 341
 
-**Tested:** 21% (75/266)
+**Tested:** 22% (77/264)
 
 **Byte clean:** 46% (159/182)
