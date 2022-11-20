@@ -277,6 +277,7 @@
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  |
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 |  |  |  |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  |  |
+| <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  |  |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 |  |  |  |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
@@ -291,12 +292,16 @@
 | <a name="Vertex_Standard_VXA-700"></a> Vertex_Standard_VXA-700 |  |  |  |
 | <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="WLN_KD-C1"></a> WLN_KD-C1 |  |  |  |
+| <a name="Wouxun_KG-816"></a> Wouxun_KG-816 |  |  |  |
+| <a name="Wouxun_KG-818"></a> Wouxun_KG-818 |  |  |  |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  |
+| <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 |  |  |  |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus |  |  |  |
 | <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A |  |  |  |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  |
+| <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P |  |  |  |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M |  |  | Yes |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes |
 | <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes |
@@ -345,8 +350,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 342
+**Drivers:** 347
 
-**Tested:** 22% (77/265)
+**Tested:** 22% (77/270)
 
-**Byte clean:** 46% (159/183)
+**Byte clean:** 45% (159/188)
