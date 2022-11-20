@@ -57,6 +57,7 @@
 | <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  |  |
 | <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  |  |
+| <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
@@ -276,6 +277,8 @@
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  |
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 |  |  |  |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  |  |
+| <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  |  |
+| <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  |  |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 |  |  |  |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
@@ -290,12 +293,16 @@
 | <a name="Vertex_Standard_VXA-700"></a> Vertex_Standard_VXA-700 |  |  |  |
 | <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="WLN_KD-C1"></a> WLN_KD-C1 |  |  |  |
+| <a name="Wouxun_KG-816"></a> Wouxun_KG-816 |  |  |  |
+| <a name="Wouxun_KG-818"></a> Wouxun_KG-818 |  |  |  |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  |
+| <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 |  |  |  |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus |  |  |  |
 | <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A |  |  |  |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  |
+| <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P |  |  |  |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M |  |  | Yes |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes |
 | <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes |
@@ -344,8 +351,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 341
+**Drivers:** 348
 
-**Tested:** 22% (77/264)
+**Tested:** 22% (77/271)
 
-**Byte clean:** 46% (159/182)
+**Byte clean:** 45% (159/189)

@@ -26,7 +26,7 @@ LOG = logging.getLogger(__name__)
 
 def wipe_memory(_mem, byte):
     """Cleanup a memory"""
-    _mem.set_raw(byte * (_mem.size() / 8))
+    _mem.set_raw(byte * (_mem.size() // 8))
 
 
 def do_download(radio, start, end, blocksize):

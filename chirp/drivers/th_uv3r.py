@@ -229,7 +229,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         bit = 1 << ((mem.number - 1) % 8)
-        byte = (mem.number - 1) / 8
+        byte = (mem.number - 1) // 8
 
         if mem.empty:
             self._memobj.emptyflags[byte] |= bit
