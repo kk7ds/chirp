@@ -13,14 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import six
 import struct
+import sys
 
 
 def byte_to_int(b):
     """This does what is needed to convert a bytes()[i] to an int"""
 
-    if six.PY3 and isinstance(b, int):
+    if sys.version_info.major == 3 and isinstance(b, int):
         return b
     else:
         return ord(b)
