@@ -338,6 +338,9 @@ def _clone_from_radio(radio):
                 LOG.debug("End frame (%i):\n%s" %
                           (len(frame.payload), util.hexprint(frame.payload)))
                 LOG.debug("Last addr: %04x" % addr)
+                # For variable-length radios, make sure we don't
+                # return a longer map than we got from the radio.
+                _mmap.truncate(addr)
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -708,6 +711,11 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _bank_class = IcomBank
     _can_hispeed = False
 
+    # Newer radios (ID51Plus2, ID5100, IC2730) use a slightly
+    # different CLONE_DAT format
+    _raw_frames = False
+    _highbit_flip = False
+
     # Attributes that get put into ICF files when we export. The meaning
     # of these are unknown at this time, but differ per model (at least).
     # Saving ICF files will not be offered unless _icf_data has attributes.
@@ -725,24 +733,26 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         """Returns the Icom model data for this radio"""
         return cls._model
 
-    @classmethod
-    def get_endframe(cls):
+    def get_endframe(self):
         """Returns the magic clone end frame for this radio"""
-        return cls._endframe
+        return self._endframe
 
-    @classmethod
-    def get_ranges(cls):
+    def get_ranges(self):
         """Returns the ranges this radio likes to have in a clone"""
-        return cls._ranges
+        return self._ranges
 
     def process_frame_payload(self, payload):
-        """Convert BCD-encoded data to raw"""
+        if self._raw_frames:
+            return unescape_raw_bytes(payload)
+
+        # Legacy frame format: convert BCD-encoded data to raw"""
         bcddata = payload
-        data = ""
+        data = b""
         i = 0
         while i+1 < len(bcddata):
             try:
-                val = int("%s%s" % (bcddata[i], bcddata[i+1]), 16)
+                val = int(b"%s%s" % (util.int_to_byte(bcddata[i]),
+                                     util.int_to_byte(bcddata[i+1])), 16)
                 i += 2
                 data += struct.pack("B", val)
             except (ValueError, TypeError) as e:
@@ -755,18 +765,36 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     def get_payload(self, data, raw, checksum):
         """Returns the data with optional checksum BCD-encoded for the radio"""
+        if checksum:
+            data += util.int_to_byte(compute_checksum(data))
+        if self._raw_frames:
+            # Always raw format, no need to check raw
+            return b''.join(escape_raw_byte(b) for b in data)
         if raw:
             return data
-        payload = ""
+        payload = b''
         for byte in data:
-            payload += "%02X" % ord(byte)
-        if checksum:
-            payload += "%02X" % compute_checksum(data)
+            payload += b"%02X" % util.byte_to_int(byte)
         return payload
 
     def sync_in(self):
-        self._mmap = clone_from_radio(self)
+        _mmap = clone_from_radio(self)
+        if self._highbit_flip:
+            LOG.debug('Flipping high bits of received image')
+            map_cls = _mmap.__class__
+            _mmap = flip_high_order_bit(_mmap.get_packed())
+            self._mmap = map_cls(_mmap)
+        else:
+            self._mmap = _mmap
         self.process_mmap()
+
+    def get_mmap(self):
+        if self._highbit_flip:
+            map_cls = self._mmap.__class__
+            LOG.debug('Flipping high bits of image')
+            return map_cls(flip_high_order_bit(self._mmap.get_packed()))
+        else:
+            return self._mmap
 
     def sync_out(self):
         clone_to_radio(self)
