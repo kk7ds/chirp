@@ -194,6 +194,7 @@ def get_model_data(radio, mdata=bytes(b"\x00\x00\x00\x00"), stream=None):
     if len(frames) != 1:
         raise errors.RadioError("Unexpected response from radio")
 
+    LOG.debug('Model query result:\n%s' % frames[0])
     return frames[0].payload
 
 
