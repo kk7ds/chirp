@@ -17,32 +17,28 @@ import six
 import struct
 
 
+def byte_to_int(b):
+    """This does what is needed to convert a bytes()[i] to an int"""
+
+    if six.PY3 and isinstance(b, int):
+        return b
+    else:
+        return ord(b)
+
+
 def hexprint(data, addrfmt=None):
     """Return a hexdump-like encoding of @data"""
     if addrfmt is None:
         addrfmt = '%(addr)03i'
 
     block_size = 8
-
-    lines = len(data) // block_size
-
-    if six.PY3 and isinstance(data, bytes):
-        pad = bytes([0])
-    else:
-        pad = '\x00'
-
-    if (len(data) % block_size) != 0:
-        lines += 1
-        data += pad * ((lines * block_size) - len(data))
-
     out = ""
 
-    if six.PY3 and isinstance(data, bytes):
-        byte_to_int = lambda b: b
-    else:
-        byte_to_int = ord
+    blocks = len(data) // block_size
+    if len(data) % block_size:
+        blocks += 1
 
-    for block in range(0, (len(data) // block_size)):
+    for block in range(0, blocks):
         addr = block * block_size
         try:
             out += addrfmt % locals()
@@ -50,26 +46,22 @@ def hexprint(data, addrfmt=None):
             out += "%03i" % addr
         out += ': '
 
-        left = len(data) - (block * block_size)
-        if left < block_size:
-            limit = left
-        else:
-            limit = block_size
-
-        for j in range(0, limit):
-            byte = data[(block * block_size) + j]
-            if isinstance(byte, str):
-                byte = ord(byte)
-            out += "%02x " % byte
+        for j in range(0, block_size):
+            try:
+                out += "%02x " % byte_to_int(data[(block * block_size) + j])
+            except IndexError:
+                out += "   "
 
         out += "  "
 
-        for j in range(0, limit):
-            byte = data[(block * block_size) + j]
-            if isinstance(byte, str):
-                byte = ord(byte)
-            if byte > 0x20 and byte < 0x7E:
-                out += "%s" % chr(byte)
+        for j in range(0, block_size):
+            try:
+                char = byte_to_int(data[(block * block_size) + j])
+            except IndexError:
+                char = ord('.')
+
+            if char > 0x20 and char < 0x7E:
+                out += "%s" % chr(char)
             else:
                 out += "."
 

@@ -153,16 +153,16 @@ class FakeIcomRadio(object):
 
         self._memory += data
 
+    def do_clone_end(self):
+        self.queue(self.make_response(icf.CMD_CLONE_OK, bytes([0])))
+
     def write(self, data):
         """write() to radio, so here we process requests"""
 
         assert isinstance(data, bytes), 'Bytes required, %s received' % data.__class__
 
-        if data[:12] == (bytes(b'\xFE') * 12):
-            LOG.debug('Got hispeed kicker')
-            data = data[12:]
-            if data[2] == 0xFE:
-                return
+        while data.startswith(b'\xfe\xfe\xfe'):
+            data = data[1:]
 
         src = data[2]
         dst = data[3]
@@ -170,7 +170,7 @@ class FakeIcomRadio(object):
         payload = data[5:-1]
         end = data[-1]
 
-        LOG.debug('Received command: %r' % cmd)
+        LOG.debug('Received command: %x' % cmd)
         LOG.debug('  Full frame: %r' % data)
 
         model = self._radio.get_model() + bytes(b'\x00' * 20)
@@ -185,6 +185,10 @@ class FakeIcomRadio(object):
             self.do_clone_in()
         elif cmd == icf.CMD_CLONE_DAT:
             self.do_clone_data(payload)
+        elif cmd == icf.CMD_CLONE_END:
+            self.do_clone_end()
+        elif cmd == icf.CMD_CLONE_HISPEED:
+            LOG.info('Got hispeed kicker')
         else:
             LOG.debug('Unknown command %i' % cmd)
             self.queue(self.make_response(0x00, bytes([0x01])))
