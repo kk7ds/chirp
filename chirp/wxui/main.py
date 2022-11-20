@@ -596,8 +596,7 @@ class ChirpMain(wx.Frame):
             'model': eset._radio.MODEL,
             'ext': eset._radio.FILE_EXTENSION}
 
-        if (isinstance(eset.radio, icf.IcomCloneModeRadio) and
-                eset.radio._icf_etcdata):
+        if isinstance(eset.radio, icf.IcomCloneModeRadio):
             wildcard += '|ICF Files (*.icf)|*.icf'
 
         style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
