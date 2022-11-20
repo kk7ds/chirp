@@ -68,6 +68,8 @@ Radioddity_GA-510,@kk7ds,21-Oct-2022
 Radioddity_UV-5G,@KC9HI,18-Nov-2022
 Radioddity_UV-5RX3,@KC9HI,18-Nov-2022
 Radioddity_UV-82X3,@KC9HI,18-Nov-2022
+Retevis_RA685,@KC9HI,19-Nov-2022
+Retevis_RA85,@KC9HI,19-Nov-2022
 Retevis_RT95,@KC9HI,13-Nov-2022
 Retevis_RT95_VOX,+Retevis_RT95,13-Nov-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
