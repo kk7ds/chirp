@@ -57,6 +57,7 @@
 | <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  |  |
 | <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  |  |
+| <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
@@ -344,8 +345,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 341
+**Drivers:** 342
 
-**Tested:** 22% (77/264)
+**Tested:** 22% (77/265)
 
-**Byte clean:** 46% (159/182)
+**Byte clean:** 46% (159/183)
