@@ -15,6 +15,7 @@ LOG = logging.getLogger(__name__)
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
 StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
+INDEX_CHAR = settings.BANNED_NAME_CHARACTERS[0]
 
 # This is a lock that can be used to exclude edit-specific operations
 # from happening at the same time, like radiothread async
@@ -243,7 +244,7 @@ class ChirpSettingGrid(wx.Panel):
                     LOG.warning('Unsupported setting type %r' % value)
                     editor = None
                 if editor:
-                    editor.SetName('%s@%i' % (name, i))
+                    editor.SetName('%s%s%i' % (name, INDEX_CHAR, i))
                     if len(element.keys()) > 1:
                         editor.SetLabel('')
                     editor.Enable(value.get_mutable())
@@ -321,7 +322,7 @@ class ChirpSettingGrid(wx.Panel):
         for prop in self.pg._Items():
             if prop.IsCategory():
                 continue
-            basename = prop.GetName().split('@')[0]
+            basename = prop.GetName().split(INDEX_CHAR)[0]
             if isinstance(prop, wx.propgrid.EnumProperty):
                 value = self._choices[basename][prop.GetValue()]
             else:

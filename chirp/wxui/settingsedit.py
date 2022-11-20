@@ -79,7 +79,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
                                                             setting.get_name(),
                                                             j,
                                                             val))
-                        realname, index = name.split('@')
+                        realname, index = name.split(common.INDEX_CHAR)
                         if int(index) == j:
                             setting[j] = val
             return True
