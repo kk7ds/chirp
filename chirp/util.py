@@ -26,6 +26,17 @@ def byte_to_int(b):
         return ord(b)
 
 
+def int_to_byte(i):
+    """This does what is needed to convert an int to a bytes"""
+
+    if sys.version_info.major == 3 and isinstance(i, int):
+        return bytes([i])
+    elif isinstance(i, int):
+        return chr(i)
+    else:
+        return i
+
+
 def hexprint(data, addrfmt=None):
     """Return a hexdump-like encoding of @data"""
     if addrfmt is None:
