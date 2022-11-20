@@ -140,3 +140,12 @@ class TestSettingContainers(base.BaseTest):
         rs.set_apply_callback(test_cb, "foo", "bar")
         self.assertTrue(rs.has_apply_callback())
         self.assertRaises(TestException, rs.run_apply_callback)
+
+    def test_setting_banned_name(self):
+        self.assertRaises(settings.InvalidNameError,
+                          settings.RadioSetting, "foo%bar", "Foo")
+
+    def test_setting_banned_name_characters(self):
+        for c in settings.BANNED_NAME_CHARACTERS:
+            self.assertRaises(settings.InvalidNameError,
+                              settings.RadioSetting, "foo%sbar" % c, "Foo")
