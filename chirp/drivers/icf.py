@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import os
 import struct
 import re
 import time
@@ -38,6 +39,7 @@ ADDR_PC = 0xEE
 ADDR_RADIO = 0xEF
 
 SAVE_PIPE = None
+TRACE_ICF = 'CHIRP_DEBUG_ICF' in os.environ
 
 
 class IcfFrame:
@@ -129,6 +131,8 @@ class RadioStream:
                         LOG.info('Detected an echoing cable')
                         self.iecho = True
                 else:
+                    if TRACE_ICF:
+                        LOG.debug('Received frame:\n%s' % frame)
                     frames.append(frame)
             except ValueError:
                 # no data
@@ -237,8 +241,9 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
         LOG.debug("Saving data...")
         SAVE_PIPE.write(frame.pack())
 
-    # LOG.debug("Sending:\n%s" % util.hexprint(frame))
-    # LOG.debug("Sending:\n%s" % util.hexprint(hed[6:]))
+    if TRACE_ICF:
+        LOG.debug('Sending:\n%s' % frame)
+
     if cmd == 0xe4:
         # Uncomment to avoid cloning to the radio
         # return frame
@@ -384,6 +389,8 @@ def send_mem_chunk(radio, stream, start, stop, bs=32):
     status.msg = "Cloning to radio"
     status.max = radio.get_memsize()
 
+    LOG.debug('Sending memory range %06x - %06x @ %i bytes' % (
+        start, stop, bs))
     for i in range(start, stop, bs):
         if i + bs < stop:
             size = bs
