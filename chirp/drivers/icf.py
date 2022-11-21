@@ -175,6 +175,21 @@ class RadioStream:
                 LOG.warning('Expected PC echo but found radio frame!')
 
 
+def decode_model(data):
+    if len(data) != 49:
+        LOG.info('Unable to decode %i-byte model data' % len(data))
+        return None
+    rev = util.byte_to_int(data[5])
+    LOG.info('Radio revision is %i' % rev)
+    comment = data[6:6 + 16]
+    LOG.info('Radio comment is %r' % comment)
+    serial = binascii.unhexlify(data[35:35 + 14])
+    model, b1, b2, u1, s3 = struct.unpack('>HBBBH', serial)
+    serial_num = '%04i%02i%02i%04i' % (model, b1, b2, s3)
+    LOG.info('Radio serial is %r' % serial_num)
+    return rev
+
+
 def get_model_data(radio, mdata="\x00\x00\x00\x00", stream=None):
     """Query the @radio for its model data"""
     send_clone_frame(radio, 0xe0, mdata, raw=True)
@@ -187,6 +202,7 @@ def get_model_data(radio, mdata="\x00\x00\x00\x00", stream=None):
         raise errors.RadioError("Unexpected response from radio")
 
     LOG.debug('Model query result:\n%s' % frames[0])
+
     return frames[0].payload
 
 
@@ -406,6 +422,17 @@ def _clone_to_radio(radio):
 
     if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
+
+    try:
+        radio_rev = decode_model(md)
+    except Exception as e:
+        LOG.error('Failed to decode model data')
+        radio_rev = None
+
+    image_rev = radio._icf_data.get('MapRev', 1)
+    if radio_rev is not None and radio_rev != image_rev:
+        raise errors.RadioError('Radio revision %i does not match image %i' % (
+            radio_rev, image_rev))
 
     # This mimics what the Icom software does, but isn't required and just
     # takes longer
