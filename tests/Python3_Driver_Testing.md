@@ -92,7 +92,7 @@
 | <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD |  |  |  |
 | <a name="Icom_IC-E90"></a> Icom_IC-E90 |  |  | Yes |
 | <a name="Icom_IC-P7"></a> Icom_IC-P7 |  |  | Yes |
-| <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A |  |  | Yes |
+| <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A | [@KC9HI](https://github.com/KC9HI) | 20-Nov-2022 | Yes |
 | <a name="Icom_IC-T70"></a> Icom_IC-T70 |  |  | Yes |
 | <a name="Icom_IC-T7H"></a> Icom_IC-T7H |  |  | Yes |
 | <a name="Icom_IC-T8A"></a> Icom_IC-T8A |  |  | Yes |
@@ -353,6 +353,6 @@
 
 **Drivers:** 348
 
-**Tested:** 22% (77/271)
+**Tested:** 22% (78/270)
 
 **Byte clean:** 45% (159/189)
