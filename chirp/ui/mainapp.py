@@ -757,7 +757,7 @@ of file.
                 ser = compat.CompatSerial.get(rclass.NEEDS_COMPAT_SERIAL,
                                               port=settings.port,
                                               baudrate=rclass.BAUD_RATE,
-                                          rtscts=rclass.HARDWARE_FLOW,
+                                              rtscts=rclass.HARDWARE_FLOW,
                                               timeout=0.25)
             ser.flushInput()
         except serial.SerialException as e:
