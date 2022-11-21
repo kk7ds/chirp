@@ -258,17 +258,14 @@ class ChirpSettingGrid(wx.Panel):
         wx.PostEvent(self, EditorChanged(self.GetId()))
 
     def _get_editor_int(self, setting, value):
-        class ChirpIntProperty(wx.propgrid.IntProperty):
-            def ValidateValue(self, val, info):
-                if not (val > value.get_min() and val < value.get_max()):
-                    info.SetFailureMessage(
-                        _('Value must be between %i and %i') % (
-                            value.get_min(), value.get_max()))
-                    return False
-                return True
-        return ChirpIntProperty(setting.get_shortname(),
-                                setting.get_name(),
-                                value=int(value))
+        e = wx.propgrid.IntProperty(setting.get_shortname(),
+                                    setting.get_name(),
+                                    value=int(value))
+        e.SetEditor('SpinCtrl')
+        e.SetAttribute(wx.propgrid.PG_ATTR_MIN, value.get_min())
+        e.SetAttribute(wx.propgrid.PG_ATTR_MAX, value.get_max())
+        e.SetAttribute(wx.propgrid.PG_ATTR_SPINCTRL_STEP, value.get_step())
+        return e
 
     def _get_editor_float(self, setting, value):
         class ChirpFloatProperty(wx.propgrid.FloatProperty):
