@@ -747,10 +747,15 @@ of file.
                   (rclass.VENDOR, rclass.MODEL, settings.port))
 
         try:
-            ser = serial.Serial(port=settings.port,
-                                baudrate=rclass.BAUD_RATE,
-                                rtscts=rclass.HARDWARE_FLOW,
-                                timeout=0.25)
+            if '://' in settings.port:
+                ser = serial.serial_for_url(settings.port, do_not_open=True)
+                ser.timeout = 0.25
+                ser.open()
+            else:
+                ser = serial.Serial(port=settings.port,
+                                    baudrate=rclass.BAUD_RATE,
+                                    rtscts=rclass.HARDWARE_FLOW,
+                                    timeout=0.25)
             ser.flushInput()
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
@@ -793,10 +798,15 @@ of file.
             return
 
         try:
-            ser = serial.Serial(port=settings.port,
-                                baudrate=radio.BAUD_RATE,
-                                rtscts=radio.HARDWARE_FLOW,
-                                timeout=0.25)
+            if '://' in settings.port:
+                ser = serial.serial_for_url(settings.port, do_not_open=True)
+                ser.timeout = 0.25
+                ser.open()
+            else:
+                ser = serial.Serial(port=settings.port,
+                                    baudrate=radio.BAUD_RATE,
+                                    rtscts=radio.HARDWARE_FLOW,
+                                    timeout=0.25)
             ser.flushInput()
         except serial.SerialException, e:
             d = inputdialog.ExceptionDialog(e)
