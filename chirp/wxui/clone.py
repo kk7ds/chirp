@@ -370,9 +370,15 @@ class ChirpUploadDialog(ChirpCloneDialog):
         if self._radio.pipe:
             baud = self._radio.pipe.baudrate
 
-        pipe = serial.Serial(port=port, baudrate=baud,
-                             rtscts=self._radio.HARDWARE_FLOW, timeout=0.25)
-        self._radio.set_pipe(pipe)
+        try:
+            pipe = serial.Serial(port=port, baudrate=baud,
+                                 rtscts=self._radio.HARDWARE_FLOW,
+                                 timeout=0.25)
+            self._radio.set_pipe(pipe)
+        except Exception as e:
+            self.fail(str(e))
+            return
+
         self._radio._status_fn = self._status
 
         self._clone_thread = CloneThread(self._radio, self, 'sync_out')
