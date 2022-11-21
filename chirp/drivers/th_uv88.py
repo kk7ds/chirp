@@ -917,7 +917,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # software only
         name = ""
         for i in range(15):  # 0 - 15
-            name += chr(int(self._memobj.openradioname.name1[i]))
+            char = chr(int(self._memobj.openradioname.name1[i]))
+            if char == "\x00":
+                char = " "  # Other software may have 0x00 mid-name
+            name += char
         name = name.rstrip()  # remove trailing spaces
 
         rx = RadioSettingValueString(0, 15, name)
@@ -927,7 +930,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # software only
         name = ""
         for i in range(15):  # 0 - 15
-            name += chr(int(self._memobj.openradioname.name2[i]))
+            char = chr(int(self._memobj.openradioname.name2[i]))
+            if char == "\x00":
+                char = " "  # Other software may have 0x00 mid-name
+            name += char
         name = name.rstrip()  # remove trailing spaces
 
         rx = RadioSettingValueString(0, 15, name)
