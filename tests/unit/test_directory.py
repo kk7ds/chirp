@@ -2,6 +2,7 @@ import base64
 import glob
 import json
 import os
+import shutil
 import tempfile
 
 from tests.unit import base
@@ -10,9 +11,12 @@ from chirp import directory
 
 
 class TestDirectory(base.BaseTest):
+    def cleanUp(self):
+        shutil.rmtree(self.tempdir)
+
     def setUp(self):
         super(TestDirectory, self).setUp()
-
+        self.tempdir = tempfile.mkdtemp()
         directory.enable_reregistrations()
 
         class FakeAlias(chirp_common.Alias):
@@ -39,21 +43,24 @@ class TestDirectory(base.BaseTest):
         return radio
 
     def test_detect_with_no_metadata(self):
-        with tempfile.NamedTemporaryFile() as f:
+        fn = os.path.join(self.tempdir, 'testfile')
+        with open(fn, 'wb') as f:
             f.write(b'thisisrawdata')
             f.flush()
-            self._test_detect_finds_our_class(f.name)
+        self._test_detect_finds_our_class(fn)
 
     def test_detect_with_metadata_base_class(self):
-        with tempfile.NamedTemporaryFile() as f:
+        fn = os.path.join(self.tempdir, 'testfile')
+        with open(fn, 'wb') as f:
             f.write(b'thisisrawdata')
             f.write(self.test_class.MAGIC + b'-')
             f.write(self.test_class._make_metadata())
             f.flush()
-            self._test_detect_finds_our_class(f.name)
+        self._test_detect_finds_our_class(fn)
 
     def test_detect_with_metadata_alias_class(self):
-        with tempfile.NamedTemporaryFile() as f:
+        fn = os.path.join(self.tempdir, 'testfile')
+        with open(fn, 'wb') as f:
             f.write(b'thisisrawdata')
             f.write(self.test_class.MAGIC + b'-')
             FakeAlias = self.test_class.ALIASES[0]
@@ -64,10 +71,10 @@ class TestDirectory(base.BaseTest):
                 }).encode())
             f.write(fake_metadata)
             f.flush()
-            radio = self._test_detect_finds_our_class(f.name)
-            self.assertEqual('Taylor', radio.VENDOR)
-            self.assertEqual('Barmaster 2000', radio.MODEL)
-            self.assertEqual('A', radio.VARIANT)
+        radio = self._test_detect_finds_our_class(fn)
+        self.assertEqual('Taylor', radio.VENDOR)
+        self.assertEqual('Barmaster 2000', radio.MODEL)
+        self.assertEqual('A', radio.VARIANT)
 
 
 class TestDetectBruteForce(base.BaseTest):

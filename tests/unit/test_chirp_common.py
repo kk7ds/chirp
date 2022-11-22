@@ -320,23 +320,27 @@ class TestImageMetadata(base.BaseTest):
         self.assertEqual(expected, metadata)
 
     def test_load_mmap_no_metadata(self):
-        f = tempfile.NamedTemporaryFile()
-        f.write(b'thisisrawdata')
-        f.flush()
+        fn = os.path.join(tempfile.gettempdir(), 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
+            f.flush()
 
         with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
-            chirp_common.FileBackedRadio(None).load_mmap(f.name)
+            chirp_common.FileBackedRadio(None).load_mmap(fn)
             mock_mmap.assert_called_once_with(b'thisisrawdata')
+        os.remove(fn)
 
     def test_load_mmap_bad_metadata(self):
-        f = tempfile.NamedTemporaryFile()
-        f.write(b'thisisrawdata')
-        f.write(chirp_common.FileBackedRadio.MAGIC + b'bad')
-        f.flush()
+        fn = os.path.join(tempfile.gettempdir(), 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
+            f.write(chirp_common.FileBackedRadio.MAGIC + b'bad')
+            f.flush()
 
         with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
-            chirp_common.FileBackedRadio(None).load_mmap(f.name)
+            chirp_common.FileBackedRadio(None).load_mmap(fn)
             mock_mmap.assert_called_once_with(b'thisisrawdata')
+        os.remove(fn)
 
     def test_save_mmap_includes_metadata(self):
         # Make sure that a file saved with a .img extension includes
@@ -346,8 +350,7 @@ class TestImageMetadata(base.BaseTest):
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
 
-        with tempfile.NamedTemporaryFile(suffix='.Img') as f:
-            fn = f.name
+        fn = os.path.join(tempfile.gettempdir(), 'test.img')
         r = TestRadio(None)
         r._mmap = mock.Mock()
         r._mmap.get_byte_compatible.return_value.get_packed.return_value = (

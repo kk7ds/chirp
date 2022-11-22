@@ -591,7 +591,7 @@ def read_file(filename):
 
 def write_file(radio, filename):
     """Write an ICF file"""
-    f = open(filename, 'w')
+    f = open(filename, 'w', newline='\r\n')
 
     model = radio._model
     mdata = '%02x%02x%02x%02x' % (ord(model[0]),
@@ -600,18 +600,18 @@ def write_file(radio, filename):
                                   ord(model[3]))
     data = radio._mmap.get_packed()
 
-    f.write('%s\r\n' % mdata)
-    f.write('#Comment=%s\r\n' % radio._icf_data.get('Comment', ''))
-    f.write('#MapRev=%i\r\n' % radio._icf_data.get('MapRev', 1))
-    f.write('#EtcData=%06i\r\n' % radio._icf_data.get('EtcData', 0))
+    f.write('%s\n' % mdata)
+    f.write('#Comment=%s\n' % radio._icf_data.get('Comment', ''))
+    f.write('#MapRev=%i\n' % radio._icf_data.get('MapRev', 1))
+    f.write('#EtcData=%06i\n' % radio._icf_data.get('EtcData', 0))
 
     blksize = radio._icf_data.get('recordsize', 32)
     for addr in range(0, len(data), blksize):
         block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
         if blksize == 32:
-            line = '%08X%02X%s\r\n' % (addr, blksize, block)
+            line = '%08X%02X%s\n' % (addr, blksize, block)
         else:
-            line = '%04X%02X%s\r\n' % (addr, blksize, block)
+            line = '%04X%02X%s\n' % (addr, blksize, block)
         f.write(line)
     f.close()
 

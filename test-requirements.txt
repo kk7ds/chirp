@@ -4,6 +4,8 @@ pytest
 pytest-xdist
 pytest-html
 six
+pep8
 pyserial
 future
 requests
+pywin32; platform_system=="Windows"
