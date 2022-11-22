@@ -748,11 +748,17 @@ of file.
                   (rclass.VENDOR, rclass.MODEL, settings.port))
 
         try:
-            ser = compat.CompatSerial.get(rclass.NEEDS_COMPAT_SERIAL,
-                                          port=settings.port,
-                                          baudrate=rclass.BAUD_RATE,
-                                          rtscts=rclass.HARDWARE_FLOW,
-                                          timeout=0.25)
+            if '://' in settings.port:
+                # NOTE: This will only work with byte-clean radios
+                ser = serial.serial_for_url(settings.port, do_not_open=True)
+                ser.timeout = 0.25
+                ser.open()
+            else:
+                ser = compat.CompatSerial.get(rclass.NEEDS_COMPAT_SERIAL,
+                                              port=settings.port,
+                                              baudrate=rclass.BAUD_RATE,
+                                              rtscts=rclass.HARDWARE_FLOW,
+                                              timeout=0.25)
             ser.flushInput()
         except serial.SerialException as e:
             d = inputdialog.ExceptionDialog(e, parent=self)
@@ -795,11 +801,16 @@ of file.
             return
 
         try:
-            ser = compat.CompatSerial.get(radio.NEEDS_COMPAT_SERIAL,
-                                          port=settings.port,
-                                          baudrate=radio.BAUD_RATE,
-                                          rtscts=radio.HARDWARE_FLOW,
-                                          timeout=0.25)
+            if '://' in settings.port:
+                ser = serial.serial_for_url(settings.port, do_not_open=True)
+                ser.timeout = 0.25
+                ser.open()
+            else:
+                ser = compat.CompatSerial.get(radio.NEEDS_COMPAT_SERIAL,
+                                              port=settings.port,
+                                              baudrate=radio.BAUD_RATE,
+                                              rtscts=radio.HARDWARE_FLOW,
+                                              timeout=0.25)
             ser.flushInput()
         except serial.SerialException as e:
             d = inputdialog.ExceptionDialog(e)

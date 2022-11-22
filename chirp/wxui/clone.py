@@ -303,8 +303,13 @@ class ChirpDownloadDialog(ChirpCloneDialog):
                 return
 
         try:
-            pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
-                                 rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
+            if '://' in port:
+                pipe = serial.serial_for_url(port, do_not_open=True)
+                pipe.timeout = 0.25
+                pipe.open()
+            else:
+                pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
+                                     rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
             self._radio = rclass(pipe)
         except Exception as e:
             self.fail(str(e))
@@ -371,9 +376,14 @@ class ChirpUploadDialog(ChirpCloneDialog):
             baud = self._radio.pipe.baudrate
 
         try:
-            pipe = serial.Serial(port=port, baudrate=baud,
-                                 rtscts=self._radio.HARDWARE_FLOW,
-                                 timeout=0.25)
+            if '://' in port:
+                pipe = serial.serial_for_url(port, do_not_open=True)
+                pipe.timeout = 0.25
+                pipe.open()
+            else:
+                pipe = serial.Serial(port=port, baudrate=baud,
+                                     rtscts=self._radio.HARDWARE_FLOW,
+                                     timeout=0.25)
             self._radio.set_pipe(pipe)
         except Exception as e:
             self.fail(str(e))
