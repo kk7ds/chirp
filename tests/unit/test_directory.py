@@ -7,6 +7,7 @@ import shutil
 import tempfile
 
 import yaml
+import pytest
 
 from tests.unit import base
 from chirp import chirp_common
@@ -105,6 +106,7 @@ class TestDetectBruteForce(base.BaseTest):
 
 
 class TestAliasMap(base.BaseTest):
+    @pytest.mark.xfail(reason='Not all drivers are importable in py3')
     def test_uniqueness(self):
         directory_models = {}
         for rclass in directory.DRV_TO_RADIO.values():
@@ -118,7 +120,8 @@ class TestAliasMap(base.BaseTest):
 
         aliases = yaml.load(open(os.path.join(os.path.dirname(__file__),
                                               '..', '..', 'share',
-                                              'model_alias_map.yaml')).read())
+                                              'model_alias_map.yaml')).read(),
+                            Loader=yaml.FullLoader)
         for vendor, models in sorted(aliases.items()):
             directory_models.setdefault(vendor, set())
             my_aliases = set([x['model'] for x in models])

@@ -111,7 +111,7 @@ for image_file in glob.glob(test_file_glob):
     except Exception:
         continue
 
-    if issubclass(radio, icf.IcomRawCloneModeRadio) or radio._raw_frames:
+    if radio._raw_frames:
         # The simulator does not behave like a raw radio
         continue
 
