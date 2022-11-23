@@ -79,40 +79,6 @@ SPECIALS = ['144-C0', '144-C1', '430-C0', '430-C1']
 MULTS = [5000, 6250, 25000 / 3.0]
 
 
-def warp_byte_size(inbytes, obw=8, ibw=8):
-    """Convert between "byte sizes".
-
-    This will pack N-bit characters into a sequence of 8-bit bytes,
-    and perform the opposite.
-
-    ibw (input bit width) is the width of the storage
-    obw (output bit width) is the width of the characters to extract
-
-    ibw=8,obw=7 will pull seven-bit characters from a sequence of bytes
-    ibw=7,obw=8 will pack seven-bit characters into a sequence of bytes
-    """
-    if isinstance(inbytes, str):
-        inbytes = [ord(x) for x in inbytes]
-    outbit = 0
-    tmp = 0
-    stripmask = 1 << (ibw - 1)
-    for byte in inbytes:
-        inbit = 0
-        for i in range(0, max(obw, ibw - inbit)):
-            if inbit == ibw:
-                # Move to next char
-                inbit = 0
-                break
-            tmp = (tmp << 1) | ((byte & stripmask) and 1 or 0)
-            byte = (byte << 1) & 0xFF
-            inbit += 1
-            outbit += 1
-            if outbit == obw:
-                yield tmp
-                tmp = 0
-                outbit = 0
-
-
 @directory.register
 class ID5100Radio(icf.IcomCloneModeRadio,
                   chirp_common.IcomDstarSupport):
@@ -293,12 +259,12 @@ class ID5100Radio(icf.IcomCloneModeRadio,
         m.duplex = DUPLEX[_mem.duplex]
 
         m.dv_code = _mem.dv_code
-        m.dv_urcall = ''.join(chr(x)
-                              for x in warp_byte_size(_mem.urcall, 7, 8))
-        m.dv_rpt1call = ''.join(chr(x)
-                                for x in warp_byte_size(_mem.rpt1call, 7, 8))
-        m.dv_rpt2call = ''.join(chr(x)
-                                for x in warp_byte_size(_mem.rpt2call, 7, 8))
+        m.dv_urcall = ''.join(
+            chr(x) for x in icf.warp_byte_size(_mem.urcall, 7, 8))
+        m.dv_rpt1call = ''.join(
+            chr(x) for x in icf.warp_byte_size(_mem.rpt1call, 7, 8))
+        m.dv_rpt2call = ''.join(
+            chr(x) for x in icf.warp_byte_size(_mem.rpt2call, 7, 8))
 
         return m
 
@@ -348,8 +314,8 @@ class ID5100Radio(icf.IcomCloneModeRadio,
         if isinstance(mem, chirp_common.DVMemory):
             _mem.dv_code = mem.dv_code
             _mem.urcall = list(
-                warp_byte_size(mem.dv_urcall.ljust(8), 8, 7))
+                icf.warp_byte_size(mem.dv_urcall.ljust(8), 8, 7))
             _mem.rpt1call = list(
-                warp_byte_size(mem.dv_rpt1call.ljust(8), 8, 7))
+                icf.warp_byte_size(mem.dv_rpt1call.ljust(8), 8, 7))
             _mem.rpt2call = list(
-                warp_byte_size(mem.dv_rpt2call.ljust(8), 8, 7))
+                icf.warp_byte_size(mem.dv_rpt2call.ljust(8), 8, 7))
