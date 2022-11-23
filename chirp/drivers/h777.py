@@ -634,6 +634,7 @@ class H777TestCase(unittest.TestCase):
 class ROGA2SRadio(H777Radio):
     VENDOR = "Radioddity"
     MODEL = "GA-2S"
+    ALIASES = []
     _has_fm = False
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Unused", "Alarm"]
 
@@ -647,6 +648,7 @@ class ROGA2SRadio(H777Radio):
 class H777PlusRadio(H777Radio):
     VENDOR = "Retevis"
     MODEL = "H777 Plus"
+    ALIASES = []
     _has_fm = False
     _has_scanmodes = False
 
