@@ -961,6 +961,7 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     """Jetstream JT270M"""
     VENDOR = "Jetstream"
     MODEL = "JT270M"
+    ALIASES = []
 
     _file_ident = "JET"
     _model_ident = 'LX-\x89\x85\x53'
@@ -972,6 +973,7 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
     """Jetstream JT270MH"""
     VENDOR = "Jetstream"
     MODEL = "JT270MH"
+    ALIASES = []
 
     _file_ident = "Leixen"
     _model_ident = 'LX-\x89\x85\x85'
