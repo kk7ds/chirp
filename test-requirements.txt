@@ -8,4 +8,5 @@ pep8
 pyserial
 future
 requests
+pyyaml
 pywin32; platform_system=="Windows"

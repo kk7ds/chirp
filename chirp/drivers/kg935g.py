@@ -432,7 +432,7 @@ _MEM_FORMAT = """
 
 class KGUV8TRadio(chirp_common.Alias):
     VENDOR = "Wouxun"
-    MODEL = "KG-935G"
+    MODEL = "KG-UV8T"
 
 
 @directory.register

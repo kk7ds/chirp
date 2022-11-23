@@ -97,28 +97,11 @@ TUNING_STEPS = [5.0, 6.25, 0, 0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
 
 def _decode_call(_call):
     # Why Icom, why?
-    call = ""
-    shift = 1
-    acc = 0
-    for val in _call:
-        mask = (1 << (shift)) - 1
-        call += chr((val >> shift) | acc)
-        acc = (val & mask) << (7 - shift)
-        shift += 1
-    call += chr(acc)
-    return call
+    return ''.join(chr(x) for x in icf.warp_byte_size(_call, 7, 8))
 
 
 def _encode_call(call):
-    _call = [0x00] * 7
-    for i in range(0, 7):
-        val = ord(call[i]) << (i + 1)
-        if i > 0:
-            _call[i-1] |= (val & 0xFF00) >> 8
-        _call[i] = val
-    _call[6] |= (ord(call[7]) & 0x7F)
-
-    return _call
+    return list(icf.warp_byte_size(call.ljust(8), 8, 7))
 
 
 def _get_freq(_mem):

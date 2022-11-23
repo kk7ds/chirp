@@ -277,7 +277,7 @@ def _wipe_memory(mem, char):
 
 
 @directory.register
-class IC2730Radio(icf.IcomRawCloneModeRadio):
+class IC2730Radio(icf.IcomCloneModeRadio):
     """Icom IC-2730A"""
     VENDOR = "Icom"
     MODEL = "IC-2730A"
@@ -293,6 +293,15 @@ class IC2730Radio(icf.IcomRawCloneModeRadio):
     _num_banks = 10
     _bank_class = IC2730Bank
     _can_hispeed = True
+    _raw_frames = True
+    _highbit_flip = True
+
+    _icf_data = {
+        'MapRev': 1,
+        'EtcData': 0,  # This might be wrong
+        'Comment': '',
+        'recordsize': 32,
+    }
 
     @classmethod
     def get_prompts(cls):

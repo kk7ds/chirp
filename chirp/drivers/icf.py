@@ -922,41 +922,6 @@ def unescape_raw_bytes(escaped_data):
     return data
 
 
-class IcomRawCloneModeRadio(IcomCloneModeRadio):
-    """Subclass for Icom clone-mode radios using the raw data protocol."""
-
-    _icf_data = {
-        'MapRev': 1,
-        'EtcData': 0,
-        'Comment': '',
-        'recordsize': 32,
-    }
-
-    def process_frame_payload(self, payload):
-        """Payloads from a raw-clone-mode radio are already in raw format."""
-        return unescape_raw_bytes(payload)
-
-    def get_payload(self, data, raw, checksum):
-        """Returns the data with optional checksum in raw format."""
-        payload = data
-        if checksum:
-            payload += bytes([compute_checksum(data)])
-        # Escape control characters.
-        escaped_payload = b''.join([escape_raw_byte(b) for b in payload])
-        return escaped_payload
-
-    def sync_in(self):
-        # The radio returns all the bytes with the high-order bit flipped.
-        _mmap = clone_from_radio(self)
-        _mmap = flip_high_order_bit(_mmap.get_packed())
-        self._mmap = memmap.MemoryMap(_mmap)
-        self.process_mmap()
-
-    def get_mmap(self):
-        _data = flip_high_order_bit(self._mmap.get_packed())
-        return memmap.MemoryMap(_data)
-
-
 class IcomLiveRadio(chirp_common.LiveRadio):
     """Base class for an Icom Live-mode radio"""
     VENDOR = "Icom"
@@ -995,3 +960,37 @@ def honor_speed_switch_setting(radio, settings):
         if element.get_name() == "drv_clone_speed":
             radio.__class__._can_hispeed = element.value.get_value()
             return
+
+
+def warp_byte_size(inbytes, obw=8, ibw=8):
+    """Convert between "byte sizes".
+
+    This will pack N-bit characters into a sequence of 8-bit bytes,
+    and perform the opposite.
+
+    ibw (input bit width) is the width of the storage
+    obw (output bit width) is the width of the characters to extract
+
+    ibw=8,obw=7 will pull seven-bit characters from a sequence of bytes
+    ibw=7,obw=8 will pack seven-bit characters into a sequence of bytes
+    """
+    if isinstance(inbytes, str):
+        inbytes = [ord(x) for x in inbytes]
+    outbit = 0
+    tmp = 0
+    stripmask = 1 << (ibw - 1)
+    for byte in inbytes:
+        inbit = 0
+        for i in range(0, max(obw, ibw - inbit)):
+            if inbit == ibw:
+                # Move to next char
+                inbit = 0
+                break
+            tmp = (tmp << 1) | ((byte & stripmask) and 1 or 0)
+            byte = (byte << 1) & 0xFF
+            inbit += 1
+            outbit += 1
+            if outbit == obw:
+                yield tmp
+                tmp = 0
+                outbit = 0
