@@ -944,3 +944,37 @@ def honor_speed_switch_setting(radio, settings):
         if element.get_name() == "drv_clone_speed":
             radio.__class__._can_hispeed = element.value.get_value()
             return
+
+
+def warp_byte_size(inbytes, obw=8, ibw=8):
+    """Convert between "byte sizes".
+
+    This will pack N-bit characters into a sequence of 8-bit bytes,
+    and perform the opposite.
+
+    ibw (input bit width) is the width of the storage
+    obw (output bit width) is the width of the characters to extract
+
+    ibw=8,obw=7 will pull seven-bit characters from a sequence of bytes
+    ibw=7,obw=8 will pack seven-bit characters into a sequence of bytes
+    """
+    if isinstance(inbytes, str):
+        inbytes = [ord(x) for x in inbytes]
+    outbit = 0
+    tmp = 0
+    stripmask = 1 << (ibw - 1)
+    for byte in inbytes:
+        inbit = 0
+        for i in range(0, max(obw, ibw - inbit)):
+            if inbit == ibw:
+                # Move to next char
+                inbit = 0
+                break
+            tmp = (tmp << 1) | ((byte & stripmask) and 1 or 0)
+            byte = (byte << 1) & 0xFF
+            inbit += 1
+            outbit += 1
+            if outbit == obw:
+                yield tmp
+                tmp = 0
+                outbit = 0
