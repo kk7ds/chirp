@@ -10,6 +10,9 @@ import wx.aui
 import wx.grid
 import wx.lib.newevent
 
+# Import the drivers module before directory for frozen builds
+from chirp import drivers
+
 from chirp import directory
 from chirp import logger
 
