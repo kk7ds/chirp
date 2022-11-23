@@ -582,7 +582,7 @@ def read_file(filename):
 
 def write_file(radio, filename):
     """Write an ICF file"""
-    f = open(filename, 'w')
+    f = open(filename, 'wb')
 
     model = radio._model
     mdata = '%02x%02x%02x%02x' % (ord(model[0]),
