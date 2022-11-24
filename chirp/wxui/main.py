@@ -172,20 +172,23 @@ class ChirpLiveEditorSet(ChirpEditorSet):
                                self._radio.MODEL)
 
     def __init__(self, radio, *a, **k):
-        self._radio_thread = radiothread.RadioThread(radio)
-        self._radio_thread.start()
+        self._threads = []
         super().__init__(radio, *a, **k)
 
     def add_editor(self, editor, title):
         super(ChirpLiveEditorSet, self).add_editor(editor, title)
-        editor.set_radio_thread(self._radio_thread)
+        thread = radiothread.RadioThread(editor._radio)
+        thread.start()
+        self._threads.append(thread)
+        editor.set_radio_thread(thread)
 
     def close(self):
-        self._radio_thread.end()
+        for thread in self._threads:
+            thread.end()
 
     @property
     def modified(self):
-        return self._radio_thread.pending != 0
+        return any(t.pending != 0 for t in self._threads)
 
 
 class ChirpMain(wx.Frame):

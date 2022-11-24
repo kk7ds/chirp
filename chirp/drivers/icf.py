@@ -27,6 +27,7 @@ from chirp import bitwise
 from chirp import chirp_common, errors, util, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettings
+from chirp import util
 
 LOG = logging.getLogger(__name__)
 
@@ -781,7 +782,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     @classmethod
     def get_model(cls):
         """Returns the Icom model data for this radio"""
-        return bytes([ord(x) for x in cls._model])
+        return bytes([util.byte_to_int(x) for x in cls._model])
 
     def get_endframe(self):
         """Returns the magic clone end frame for this radio"""
