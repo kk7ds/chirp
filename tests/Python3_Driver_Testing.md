@@ -196,6 +196,9 @@
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M |  |  |  |
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X |  |  |  |
+| <a name="Puxing_PX-2R"></a> Puxing_PX-2R |  |  |  |
+| <a name="Puxing_PX-777"></a> Puxing_PX-777 |  |  |  |
+| <a name="Puxing_PX-888K"></a> Puxing_PX-888K |  |  |  |
 | <a name="QYT_KT-8R"></a> QYT_KT-8R | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="QYT_KT-UV980"></a> QYT_KT-UV980 | [Implied by WACCOM_MINI-8900](#user-content-WACCOM_MINI-8900) | 11-Nov-2022 | Yes |
 | <a name="QYT_KT-WP12"></a> QYT_KT-WP12 | [Implied by Anysecu_WP-9900](#user-content-Anysecu_WP-9900) | 11-Nov-2022 | Yes |
@@ -353,8 +356,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 350
+**Drivers:** 353
 
-**Tested:** 22% (78/272)
+**Tested:** 22% (78/275)
 
-**Byte clean:** 46% (161/189)
+**Byte clean:** 45% (161/192)

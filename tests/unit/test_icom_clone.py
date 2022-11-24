@@ -21,7 +21,7 @@ import logging
 import unittest
 
 from chirp import directory
-directory.safe_import_drivers()
+directory.import_drivers()
 from chirp.drivers import icf, icw32
 from chirp import memmap
 from tests import icom_clone_simulator
