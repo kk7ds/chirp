@@ -106,7 +106,6 @@ class TestDetectBruteForce(base.BaseTest):
 
 
 class TestAliasMap(base.BaseTest):
-    @pytest.mark.xfail(reason='Not all drivers are importable in py3')
     def test_uniqueness(self):
         directory_models = {}
         for rclass in directory.DRV_TO_RADIO.values():
