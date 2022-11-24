@@ -89,7 +89,7 @@
 | <a name="Icom_IC-7300"></a> Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
 | <a name="Icom_IC-7610"></a> Icom_IC-7610 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Icom_IC-910"></a> Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes |
-| <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD |  |  |  |
+| <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD | [@kk7ds](https://github.com/kk7ds) | 23-Nov-2022 | Yes |
 | <a name="Icom_IC-E90"></a> Icom_IC-E90 |  |  | Yes |
 | <a name="Icom_IC-P7"></a> Icom_IC-P7 |  |  | Yes |
 | <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A | [@KC9HI](https://github.com/KC9HI) | 20-Nov-2022 | Yes |
@@ -358,6 +358,6 @@
 
 **Drivers:** 353
 
-**Tested:** 22% (78/275)
+**Tested:** 22% (79/274)
 
-**Byte clean:** 45% (161/192)
+**Byte clean:** 45% (162/191)

@@ -69,10 +69,11 @@ class IC9xBank(icf.IcomNamedBank):
 class IC9xRadio(icf.IcomLiveRadio):
     """Base class for Icom IC-9x radios"""
     MODEL = "IC-91/92AD"
+    NEEDS_COMPAT_SERIAL = False
 
     _model = "ic9x"    # Fake model info for detect.py
     vfo = 0
-    __last = 0
+    _last = 0
     _upper = 300
 
     _num_banks = 26
@@ -109,10 +110,10 @@ class IC9xRadio(icf.IcomLiveRadio):
         self._lock = LOCK
 
     def _maybe_send_magic(self):
-        if (time.time() - self.__last) > 1:
-            LOG.debug("Sending magic")
+        if (time.time() - self._last) > 1:
+            LOG.debug("Sending magic %i %i" % (time.time(), self._last))
             ic9x_ll.send_magic(self.pipe)
-        self.__last = time.time()
+        self._last = time.time()
 
     def get_memory(self, number):
         if isinstance(number, str):
