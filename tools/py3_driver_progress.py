@@ -6,7 +6,7 @@ import sys
 
 from chirp import directory
 
-directory.safe_import_drivers()
+directory.import_drivers()
 
 
 def tester_link(text):

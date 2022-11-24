@@ -50,14 +50,11 @@ if not os.path.exists("logs"):
 logger.handle_options(LoggerOpts())
 
 from chirp import CHIRP_VERSION
-# FIXME: Not all drivers are py3 compatible in syntax, so punt on this
-# until that time, and defer to the safe import loop below.
-# from chirp.drivers import *
 from chirp import chirp_common, directory
 from chirp import import_logic, memmap, settings, errors
 from chirp import settings
 
-directory.safe_import_drivers()
+directory.import_drivers()
 
 from chirp.drivers import generic_csv
 

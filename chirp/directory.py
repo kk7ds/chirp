@@ -207,7 +207,7 @@ def get_radio_by_image(image_file):
         raise errors.ImageDetectFailed("Unknown file format")
 
 
-def safe_import_drivers(limit=None):
+def import_drivers(limit=None):
     if sys.platform == 'win32':
         # Assume we are in a frozen win32 build, so we can not glob
         # the driver files, but we do not need to anyway
@@ -230,7 +230,4 @@ def safe_import_drivers(limit=None):
         driver_module = os.path.basename(module)
         if limit and driver_module not in limit:
             continue
-        try:
-            __import__('chirp.drivers.%s' % driver_module)
-        except Exception as e:
-            print('Failed to import %s: %s' % (module, e))
+        __import__('chirp.drivers.%s' % driver_module)

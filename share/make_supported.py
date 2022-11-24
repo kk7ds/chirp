@@ -11,7 +11,7 @@ sys.stdout = sys.stderr
 from chirp import *
 sys.stdout = tmp
 
-directory.safe_import_drivers()
+directory.import_drivers()
 
 RF = chirp_common.RadioFeatures()
 KEYS = [x for x in sorted(RF.__dict__.keys())

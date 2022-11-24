@@ -19,6 +19,6 @@ class TestSuiteAdapter(object):
         pass
 
 
-directory.safe_import_drivers()
+directory.import_drivers()
 adapter = TestSuiteAdapter(locals())
 load_tests(adapter, None, None, suite=adapter)
