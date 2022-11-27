@@ -80,6 +80,7 @@ class TestFileICF(unittest.TestCase):
                               'EtcData': 6,
                               'Comment': '',
                               'model': r._model,
+                              'CD': '9674E1C86BA17D36DB9D3D8A144F1081',
                               'recordsize': 32}, icfdata)
 
     def test_read_img_write_icf_modern(self):
@@ -97,6 +98,7 @@ class TestFileICF(unittest.TestCase):
                               'EtcData': 5,
                               'Comment': '',
                               'model': r._model,
+                              'CD': '9F240F598EF20683726ED252278C61D0',
                               'recordsize': 32}, icfdata)
 
             self.assertEqual(id31.ID31Radio,

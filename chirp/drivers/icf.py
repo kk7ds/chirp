@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import hashlib
 import os
 import struct
 import re
@@ -580,6 +581,26 @@ def read_file(filename):
     return icfdata, memmap.MemoryMap(_mmap)
 
 
+def _encode_model_for_icf(model):
+    """ Encode the model magically for the ICF file hash.
+
+    If model is: AB CD 00 00
+    Then the magic is AA BB CC DD AB CD
+    """
+    a = (util.byte_to_int(model[0]) & 0xF0) >> 4
+    b = util.byte_to_int(model[0]) & 0x0F
+    c = (util.byte_to_int(model[1]) & 0xF0) >> 4
+    d = util.byte_to_int(model[1]) & 0x0F
+
+    sequence = [(a << 4) | a,
+                (b << 4) | b,
+                (c << 4) | c,
+                (d << 4) | d,
+                (a << 4) | b,
+                (c << 4) | d]
+    return b''.join(util.int_to_byte(x) for x in sequence)
+
+
 def write_file(radio, filename):
     """Write an ICF file"""
     f = open(filename, 'wb')
@@ -596,14 +617,39 @@ def write_file(radio, filename):
     f.write('#MapRev=%i\r\n' % radio._icf_data.get('MapRev', 1))
     f.write('#EtcData=%06i\r\n' % radio._icf_data.get('EtcData', 0))
 
+    binicf = _encode_model_for_icf(model)
+
+    # ICF files for newer models (probably everything with an SD card
+    # slot) store a hash on the last line of the ICF file, as
+    # #CD=$hexdigest. This is an MD5 sum of a sequence that starts
+    # with the specially-encoded model from _encode_model_for_icf(),
+    # followed by the unencoded lines of the ICF file (including
+    # address and length values). So for an ID31 the value we hash
+    # looks like this (in hex, line breaks for the humans and pep8):
+    #
+    # 333322223322
+    # 0000000020
+    #     dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    # 0000002020
+    #     dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    # ... and so on
+
+    LOG.debug('ICF hash header: %r' % binascii.hexlify(binicf))
     blksize = radio._icf_data.get('recordsize', 32)
     for addr in range(0, len(data), blksize):
         block = binascii.hexlify(data[addr:addr + blksize]).decode().upper()
         if blksize == 32:
-            line = '%08X%02X%s\r\n' % (addr, blksize, block)
+            line = '%08X%02X%s' % (addr, blksize, block)
+            binicf += binascii.unhexlify(line)
         else:
-            line = '%04X%02X%s\r\n' % (addr, blksize, block)
-        f.write(line)
+            line = '%04X%02X%s' % (addr, blksize, block)
+        f.write(line + '\r\n')
+
+    if blksize == 32:
+        hash = hashlib.md5(binicf)
+        digest = hash.hexdigest().upper()
+        LOG.debug('ICF hash digest: %s' % digest)
+        f.write('#CD=%s\r\n' % digest)
     f.close()
 
 
