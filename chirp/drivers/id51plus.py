@@ -184,7 +184,7 @@ class ID51PLUS2Radio(ID51PLUSRadio):
 
     _icf_data = {
         'MapRev': 1,
-        'EtcData': 400001,
+        'EtcData': 0x400001,
     }
 
     @classmethod
