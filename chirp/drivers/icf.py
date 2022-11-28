@@ -555,7 +555,9 @@ def read_file(filename):
         if line.startswith("#"):
             try:
                 key, value = line.strip().split('=', 1)
-                if value.isdigit():
+                if key == '#EtcData':
+                    value = int(value, 16)
+                elif value.isdigit():
                     value = int(value)
                 icfdata[key[1:]] = value
             except ValueError:
@@ -566,17 +568,6 @@ def read_file(filename):
             _mmap += line_data
             if 'recordsize' not in icfdata:
                 icfdata['recordsize'] = len(line_data)
-
-    # This is zero-padded six decimal digits in every known
-    # example. Being zero-padded means it might be hex, but we do not
-    # know. Try to detect that occurrence here and warn in the log
-    # so we can catch it in the future.
-    if isinstance(icfdata.get('EtcData', 0), str):
-        LOG.warning(
-            'ICF file %s had non-decimal-integer EtcData=%r - '
-            'ICF write will fail!',
-            icfdata['EtcData'])
-        icfdata['EtcData'] = 0
 
     return icfdata, memmap.MemoryMap(_mmap)
 
@@ -615,7 +606,7 @@ def write_file(radio, filename):
     f.write('%s\r\n' % mdata)
     f.write('#Comment=%s\r\n' % radio._icf_data.get('Comment', ''))
     f.write('#MapRev=%i\r\n' % radio._icf_data.get('MapRev', 1))
-    f.write('#EtcData=%06i\r\n' % radio._icf_data.get('EtcData', 0))
+    f.write('#EtcData=%06x\r\n' % radio._icf_data.get('EtcData', 0))
 
     binicf = _encode_model_for_icf(model)
 

@@ -155,7 +155,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     _icf_data = {
         'MapRev': 1,
-        'EtcData': 5,
+        'EtcData': 0x000005,
     }
 
     _ranges = [(0x00000, 0x15500, 32)]
