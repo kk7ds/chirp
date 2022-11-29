@@ -425,7 +425,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
     def match_model(cls, filedata, filename):
         model = filedata[0x03D1:0x03D5]
         LOG.debug(model)
-        return model == cls.MODEL.split("-")[1]
+        return model == cls.MODEL.encode().split(b"-")[1]
 
 
 @directory.register

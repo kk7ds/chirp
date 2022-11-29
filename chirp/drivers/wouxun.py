@@ -890,16 +890,17 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def match_model(cls, filedata, filename):
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and \
-                filedata[0x60:0x64] != "2009" and \
-                filedata[0x170:0x173] != "LX-" and \
-                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
-                filedata[0x0d70:0x0d80] == "\xff\xff\xff\xff\xff\xff\xff\xff" \
-                                           "\xff\xff\xff\xff\xff\xff\xff\xff":
+                filedata[0x60:0x64] != b"2009" and \
+                filedata[0x170:0x173] != b"LX-" and \
+                filedata[0x1f77:0x1f7d] == b"\xff\xff\xff\xff\xff\xff" and \
+                filedata[0x0d70:0x0d80] == \
+                b"\xff\xff\xff\xff\xff\xff\xff\xff" \
+                b"\xff\xff\xff\xff\xff\xff\xff\xff":
                 # those areas are (seems to be) unused
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
-                filedata[0:4] == "\x01\x00\x00\x00":
+                filedata[0:4] == b"\x01\x00\x00\x00":
             return True
         return False
 
@@ -1426,7 +1427,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         if len(filedata) == 8192 and \
-                filedata[0x1f77:0x1f7d] == "WELCOM":
+                filedata[0x1f77:0x1f7d] == b"WELCOM":
             return True
         return False
 
@@ -1547,12 +1548,13 @@ class KG816Radio(KGUVD1PRadio, chirp_common.ExperimentalRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         if len(filedata) == 8192 and \
-                filedata[0x60:0x64] != "2009" and \
-                filedata[0x170:0x173] != "LX-" and \
-                filedata[0xF7E:0xF80] != "\x01\xE2" and \
-                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
-                filedata[0x0d70:0x0d80] != "\xff\xff\xff\xff\xff\xff\xff\xff" \
-                                           "\xff\xff\xff\xff\xff\xff\xff\xff":
+                filedata[0x60:0x64] != b"2009" and \
+                filedata[0x170:0x173] != b"LX-" and \
+                filedata[0xF7E:0xF80] != b"\x01\xE2" and \
+                filedata[0x1f77:0x1f7d] == b"\xff\xff\xff\xff\xff\xff" and \
+                filedata[0x0d70:0x0d80] != (
+                    b"\xff\xff\xff\xff\xff\xff\xff\xff"
+                    b"\xff\xff\xff\xff\xff\xff\xff\xff"):
             return True
         return False
 

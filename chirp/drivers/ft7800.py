@@ -529,7 +529,7 @@ class FT7800Radio(FTx800Radio):
     """Yaesu FT-7800"""
     MODEL = "FT-7800/7900"
 
-    _model = "AH016"
+    _model = b"AH016"
     _memsize = 31561
     _block_lengths = [8, 31552, 1]
     TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
@@ -823,7 +823,7 @@ class FT8800Radio(FTx800Radio):
     """Base class for Yaesu FT-8800"""
     MODEL = "FT-8800"
 
-    _model = "AH018"
+    _model = b"AH018"
     _memsize = 22217
 
     _block_lengths = [8, 22208, 1]
@@ -973,7 +973,7 @@ class FT8900Radio(FT8800Radio):
     """Yaesu FT-8900"""
     MODEL = "FT-8900"
 
-    _model = "AH008"
+    _model = b"AH008"
     _memsize = 14793
     _block_lengths = [8, 14784, 1]
 

@@ -232,7 +232,7 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
 
     VENDOR = "Yaesu"
     NEEDS_COMPAT_SERIAL = False
-    _model = "ABCDE"
+    _model = b"ABCDE"
 
     @classmethod
     def get_prompts(cls):

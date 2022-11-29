@@ -363,7 +363,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "VX-3"
 
     # 41 48 30 32 38
-    _model = "AH028"
+    _model = b"AH028"
     _memsize = 32587
     _block_lengths = [10, 32577]
     # right now this reads in 45 seconds and writes in 41 seconds

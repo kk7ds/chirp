@@ -335,7 +335,7 @@ def model_match(cls, data):
 
     if len(data) == 0x1000:
         rid = data[0x0000:0x0006]
-        return rid == "P31183"
+        return rid == b"P31183"
     else:
         return False
 

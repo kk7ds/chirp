@@ -1113,7 +1113,7 @@ class FT7100Radio(YaesuCloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata[0x1ec0:0x1ec0+len(cls.IDBLOCK)] == cls.IDBLOCK
+        return filedata[0x1ec0:0x1ec0+len(cls.IDBLOCK)] == cls.IDBLOCK.encode()
 
     @classmethod
     def get_prompts(cls):
