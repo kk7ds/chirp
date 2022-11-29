@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp.drivers import icf
-from chirp import directory, bitwise, chirp_common
+from chirp import directory, bitwise, chirp_common, settings
 
 MEM_FORMAT = """
 struct {
@@ -26,13 +26,14 @@ struct {
       mode:3;
   u8 dtcs;
   u8 tune_step:4,
-     unknown5:4;
+     dsql_mode:2,
+     unknown5:2;
   u8 unknown4;
   u8 tmode:4,
      duplex:2,
      dtcs_polarity:2;
   char name[16];
-  u8 unknow13;
+  u8 digcode;
   u8 urcall[7];
   u8 rpt1call[7];
   u8 rpt2call[7];
@@ -93,6 +94,7 @@ DUPLEX = ["", "-", "+"]
 DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
 TUNING_STEPS = [5.0, 6.25, 0, 0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
                 100.0, 125.0, 200.0]
+DSQL_MODES = ['', 'DSQL', 'CSQL']
 
 
 def _decode_call(_call):
@@ -206,6 +208,25 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
+    def _get_mem_extra(self, _mem, mem):
+        extra = settings.RadioSettingGroup('extra', 'Extra')
+        rs = settings.RadioSetting(
+            'dsql', 'DSQL Mode',
+            settings.RadioSettingValueList(
+                DSQL_MODES, current_index=int(_mem.dsql_mode)))
+        extra.append(rs)
+        return extra
+
+    def _set_mem_extra(self, _mem, mem):
+        try:
+            _mem.dsql_mode = DSQL_MODES.index(str(mem.extra['dsql'].value))
+        except (KeyError, TypeError):
+            # No settings or dsql is not provided
+            pass
+        except ValueError:
+            LOG.error('Invalid extra.dsql_mode: %r' % str(
+                mem.extra['dsql'].value))
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _usd = self._memobj.used_flags[number / 8]
@@ -239,11 +260,14 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             mem.dv_urcall = _decode_call(_mem.urcall).rstrip()
             mem.dv_rpt1call = _decode_call(_mem.rpt1call).rstrip()
             mem.dv_rpt2call = _decode_call(_mem.rpt2call).rstrip()
+            mem.dv_code = int(_mem.digcode)
 
         if _psk & bit:
             mem.skip = "P"
         elif _skp & bit:
             mem.skip = "S"
+
+        mem.extra = self._get_mem_extra(_mem, mem)
 
         return mem
 
@@ -278,6 +302,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.urcall = _encode_call(memory.dv_urcall.ljust(8))
             _mem.rpt1call = _encode_call(memory.dv_rpt1call.ljust(8))
             _mem.rpt2call = _encode_call(memory.dv_rpt2call.ljust(8))
+            _mem.digcode = memory.dv_code
         elif memory.mode == "DV":
             raise Exception("BUG")
 
@@ -290,6 +315,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         else:
             _skp &= ~bit
             _psk &= ~bit
+
+        self._set_mem_extra(_mem, memory)
 
     def get_urcall_list(self):
         calls = []
