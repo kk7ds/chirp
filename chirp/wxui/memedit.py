@@ -25,6 +25,7 @@ import wx.lib.mixins.gridlabelrenderer as glr
 
 from chirp import chirp_common
 from chirp import bandplan
+from chirp import settings
 from chirp.ui import config
 from chirp.wxui import common
 from chirp.wxui import developer
@@ -578,6 +579,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.PopupMenu(menu)
         menu.Destroy()
 
+    @common.error_proof()
     def _mem_properties(self, rows, event):
         memories = [
             self._radio.get_memory(self.row2mem(row))
@@ -655,6 +657,28 @@ class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):
     pass
 
 
+class DVMemoryAsSettings(settings.RadioSettingGroup):
+    def __init__(self, dvmemory):
+        self._dvmemory = dvmemory
+        super(DVMemoryAsSettings, self).__init__('dvmemory', 'DV Memory')
+
+        fields = {'dv_urcall': 'URCALL',
+                  'dv_rpt1call': 'RPT1Call',
+                  'dv_rpt2call': 'RPT2Call',
+                  'dv_code': 'Digital Code'}
+
+        for field, title in fields.items():
+            value = getattr(dvmemory, field)
+
+            if isinstance(value, int):
+                rsv = settings.RadioSettingValueInteger(0, 99, value)
+            else:
+                rsv = settings.RadioSettingValueString(0, 8, str(value))
+
+            rs = settings.RadioSetting(field, title, rsv)
+            self.append(rs)
+
+
 class ChirpMemPropDialog(wx.Dialog):
     def __init__(self, memories, memedit, *a, **k):
         if len(memories) == 1:
@@ -681,11 +705,24 @@ class ChirpMemPropDialog(wx.Dialog):
 
         self._pg = wx.propgrid.PropertyGrid(self._tabs)
         self._tabs.InsertPage(0, self._pg, 'Values')
+        page_index = 0
+        self._extra_page = None
+        self._dv_page = None
 
         if memory.extra:
-            self._tabs.InsertPage(1, common.ChirpSettingGrid(memory.extra,
-                                                             self._tabs),
+            page_index += 1
+            self._extra_page = page_index
+            self._tabs.InsertPage(page_index,
+                                  common.ChirpSettingGrid(memory.extra,
+                                                          self._tabs),
                                   'Extra')
+        if isinstance(memory, chirp_common.DVMemory):
+            page_index += 1
+            self._dv_page = page_index
+            self._tabs.InsertPage(page_index,
+                                  common.ChirpSettingGrid(
+                                      DVMemoryAsSettings(memory), self._tabs),
+                                  'DV Memory')
 
         for coldef in memedit._col_defs:
             if coldef.valid:
@@ -725,16 +762,25 @@ class ChirpMemPropDialog(wx.Dialog):
                 setattr(mem, prop.GetName(), value)
                 mem.empty = False
 
-            if self._tabs.GetPageCount() == 2:
-                extra = self._tabs.GetPage(1).get_values()
+            if self._extra_page is not None:
+                extra = self._tabs.GetPage(self._extra_page).get_values()
                 for setting in mem.extra:
                     name = setting.get_name()
                     try:
-                        setting.value = extra['%s@0' % name]
+                        setting.value = extra['%s%s0' % (
+                            name, common.INDEX_CHAR)]
                     except KeyError:
                         raise
                         LOG.warning('Missing setting %r' % name)
                         continue
+
+            if self._dv_page is not None:
+                dv = self._tabs.GetPage(self._dv_page).get_values()
+                for k, v in dv.items():
+                    k = k.split(common.INDEX_CHAR)[0]
+                    if isinstance(v, str):
+                        v = v.upper()
+                    setattr(mem, k, v)
 
         return memories
 
