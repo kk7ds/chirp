@@ -162,23 +162,9 @@ def get_radio_by_image(image_file):
                 if rclass.match_model(filedata, image_file):
                     return rclass(image_file)
             except Exception as e:
-                error = e
-
-            # NOTE: For compatibility, try a straight up conversion to
-            # string and log a warning
-            if six.PY3:
-                try:
-                    if rclass.match_model(filestring, image_file):
-                        LOG.warning(('Radio driver %s needs py3 '
-                                     'match_model conversion!') % (
-                                         rclass.__name__))
-                        return rclass(image_file)
-                except Exception as e:
-                    error = e
-
-            if error:
                 LOG.error('Radio class %s failed during detection: %s' % (
-                    rclass.__name__, error))
+                    rclass.__name__, e))
+                pass
 
         meta_vendor = metadata.get('vendor')
         meta_model = metadata.get('model')
