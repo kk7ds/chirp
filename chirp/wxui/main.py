@@ -586,7 +586,8 @@ class ChirpMain(wx.Frame):
 
     def _menu_open_stock_config(self, event):
         stock_dir = platform.get_platform().config_file("stock_configs")
-        fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(event.GetId()).GetLabel()
+        fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(
+            event.GetId()).GetItemLabelText()
         fn += ".csv"
         filename = os.path.join(stock_dir, fn)
         self.open_file(filename)
