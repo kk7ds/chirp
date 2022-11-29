@@ -216,7 +216,8 @@ class ChirpMain(wx.Frame):
                   self._editor_page_changed)
         self.Bind(wx.EVT_CLOSE, self._window_close)
 
-        self.statusbar = self.CreateStatusBar(1)
+        self.statusbar = self.CreateStatusBar(2)
+        self.statusbar.SetStatusWidths([-1, 200])
 
         self._update_window_for_editor()
 
@@ -481,6 +482,9 @@ class ChirpMain(wx.Frame):
     def _editor_page_changed(self, event):
         self._editors.GetPage(event.GetSelection())
         self._update_window_for_editor()
+        radio = self.current_editorset.radio
+        radio_name = '%s %s%s' % (radio.VENDOR, radio.MODEL, radio.VARIANT)
+        self.statusbar.SetStatusText(radio_name, i=1)
 
     def _editor_changed(self, event):
         self._update_editorset_title(event.editorset)
