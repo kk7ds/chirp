@@ -20,6 +20,7 @@ from chirp.wxui import clone
 from chirp.wxui import developer
 from chirp.wxui import memedit
 from chirp.wxui import query_sources
+from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
@@ -96,6 +97,8 @@ class ChirpEditorSet(wx.Panel):
                 not isinstance(radio, chirp_common.LiveRadio)):
             browser = developer.ChirpRadioBrowser(parent_radio, self._editors)
             self.add_editor(browser, 'Browser')
+            info = radioinfo.ChirpRadioInfo(parent_radio, self._editors)
+            self.add_editor(info, 'Info')
 
     def _editor_changed(self, event):
         self._modified = True
