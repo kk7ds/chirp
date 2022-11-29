@@ -315,9 +315,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.bandplan = bandplan.BandPlans(CONF)
 
         self._grid = ChirpMemoryGrid(self)
-        self._grid.CreateGrid(self._features.memory_bounds[1] +
-                              len(self._features.valid_special_chans) + 1,
-                              len(self._col_defs))
+        self._grid.CreateGrid(
+            self._features.memory_bounds[1] - self._features.memory_bounds[0] +
+            len(self._features.valid_special_chans) + 1,
+            len(self._col_defs))
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
 
