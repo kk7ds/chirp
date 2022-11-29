@@ -11,6 +11,7 @@ import wx.lib.newevent
 from chirp import bandplan
 from chirp import chirp_common
 from chirp import directory
+from chirp import errors
 from chirp.drivers import icf
 from chirp import platform
 from chirp.ui import config
@@ -225,9 +226,12 @@ class ChirpMain(wx.Frame):
     def current_editorset(self):
         return self._editors.GetCurrentPage()
 
+    @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
     def open_file(self, filename, exists=True, select=True):
 
         if exists:
+            if not os.path.exists(filename):
+                raise FileNotFoundError('File does not exist: %s' % filename)
             radio = directory.get_radio_by_image(filename)
         else:
             CSVRadio = directory.get_radio('Generic_CSV')
