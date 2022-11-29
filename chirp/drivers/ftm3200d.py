@@ -68,7 +68,7 @@ class FTM3200Radio(ft1d.FT1Radio):
     MODEL = "FTM-3200D"
     VARIANT = "R"
 
-    _model = "AH52N"
+    _model = b"AH52N"
     _memsize = 65227
     _block_lengths = [10, 65217]
     _has_vibrate = False

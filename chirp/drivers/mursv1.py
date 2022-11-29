@@ -39,7 +39,7 @@ MSTRING_MURSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
 # #### ID strings #####################################################
 
 # BTECH MURS-V1
-MURSV1_fp1 = "USM2402"
+MURSV1_fp1 = b"USM2402"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 

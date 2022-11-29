@@ -432,8 +432,8 @@ else:
             "u8 _unknown_0CFE[2];")
 
 FILE_MAGIC = [0xc40, 0xc50,
-              '\x50\x58\x38\x38\x38\x44\x00\xff'
-              '\x13\x40\x17\x60\x40\x00\x48\x00']
+              b'\x50\x58\x38\x38\x38\x44\x00\xff'
+              b'\x13\x40\x17\x60\x40\x00\x48\x00']
 HANDSHAKE_OUT = b'XONLINE'
 HANDSHAKE_IN = [b'PX888D\x00\xff']
 

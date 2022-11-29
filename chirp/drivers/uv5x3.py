@@ -42,9 +42,9 @@ MSTRING_UV5R3 = "\x50\x0D\x0C\x20\x17\x09\x19"
 # #### ID strings #####################################################
 
 # BTECH UV-5X3
-UV5X3_fp1 = "UVVG302"  # BFB300 original
-UV5X3_fp2 = "UVVG301"  # UVV300 original
-UV5X3_fp3 = "UVVG306"  # UVV306 original
+UV5X3_fp1 = b"UVVG302"  # BFB300 original
+UV5X3_fp2 = b"UVVG301"  # UVV300 original
+UV5X3_fp3 = b"UVVG306"  # UVV306 original
 
 # MTC UV-5R-3
 UV5R3_fp1 = "5R31709"

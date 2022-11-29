@@ -471,7 +471,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-70D"
 
-    _model = "AH51G"
+    _model = b"AH51G"
 
     _memsize = 65227  # 65227 read from dump
     _block_lengths = [10, 65217]

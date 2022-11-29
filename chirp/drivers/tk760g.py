@@ -641,7 +641,7 @@ def do_upload(radio):
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0xA7:0xAE]
-    if (rid in cls.VARIANTS):
+    if (''.join(chr(b) for b in rid) in cls.VARIANTS):
         # correct model
         return True
     else:

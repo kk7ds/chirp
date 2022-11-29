@@ -275,7 +275,7 @@ def _wipe_memory(mem):
 class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu VX-2"""
     MODEL = "VX-2"
-    _model = "AH015"
+    _model = b"AH015"
     BAUD_RATE = 19200
     _block_lengths = [10, 8, 32577]
     _memsize = 32595
