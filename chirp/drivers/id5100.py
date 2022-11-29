@@ -104,7 +104,7 @@ class ID5100Radio(icf.IcomCloneModeRadio,
     _can_hispeed = True
     _icf_data = {
         'MapRev': 1,
-        'EtcData': 404010,
+        'EtcData': 0x404010,
     }
     _raw_frames = True
     _highbit_flip = True

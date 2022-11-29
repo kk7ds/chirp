@@ -576,7 +576,9 @@ def read_file(filename):
         if line.startswith("#"):
             try:
                 key, value = line.strip().split('=', 1)
-                if value.isdigit():
+                if key == '#EtcData':
+                    value = int(value, 16)
+                elif value.isdigit():
                     value = int(value)
                 icfdata[key[1:]] = value
             except ValueError:
@@ -625,7 +627,7 @@ def write_file(radio, filename):
     f.write('%s\n' % mdata)
     f.write('#Comment=%s\n' % radio._icf_data.get('Comment', ''))
     f.write('#MapRev=%i\n' % radio._icf_data.get('MapRev', 1))
-    f.write('#EtcData=%06i\n' % radio._icf_data.get('EtcData', 0))
+    f.write('#EtcData=%06x\n' % radio._icf_data.get('EtcData', 0))
 
     binicf = _encode_model_for_icf(model)
 
