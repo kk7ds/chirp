@@ -80,23 +80,17 @@ MULTS = [5000, 6250, 25000 / 3.0]
 
 
 @directory.register
-class ID5100Radio(icf.IcomCloneModeRadio,
-                  chirp_common.IcomDstarSupport):
-    VENDOR = "Icom"
-    MODEL = "ID-5100"
+class ID4100Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
+    VENDOR = 'Icom'
+    MODEL = 'ID-4100'
     NEEDS_COMPAT_SERIAL = False
 
-    _model = b'\x34\x84\x00\x01'
-
-    # This is only for MapRev=1
-    _endframe = b"Icom Inc.EE"
-
-    # MapRev=1 Size is 260928 0x3FB40
-    # MapRev=2 Size is 148160 0x242C0
-    # MapRev=3 Size is 172928 0x2A380
-    _memsize = 0x3FB40
-
+    _model = b'\x38\x66\x00\x01'
+    _endframe = b'Icom Inc.8F'
+    _memsize = 0x2A3C0
     _ranges = [(0, _memsize, 64)]
+    _raw_frames = True
+    _highbit_flip = True
 
     _num_banks = 26
     _bank_class = id31.ID31Bank
@@ -104,65 +98,11 @@ class ID5100Radio(icf.IcomCloneModeRadio,
     _can_hispeed = True
     _icf_data = {
         'MapRev': 1,
-        'EtcData': 0x404010,
+        'EtcData': 0x400001,
     }
-    _raw_frames = True
-    _highbit_flip = True
 
     def process_mmap(self):
-        was_memsize = self._memsize
-
-        # Apparently the 5100 has different reported memory sizes
-        # depending on firmware version. When we're loading an image,
-        # we should adjust our MapRev and _ranges to be correct for
-        # saving ICF files and uploading. This also means we should
-        # try to detect which version we are talking to and refuse to
-        # upload an image to a radio with a mismatch.
-
-        self._memsize = len(self._mmap)
-        self._ranges = [(0, self._memsize, 64)]
-
-        # Major (memory-format-changing) firmware versions, which
-        # correspond to MapRev in an ICF file.
-        maprevs = {
-            0x3FB40: 1,
-            0x242C0: 2,
-            0x2A380: 3,
-        }
-
-        # The 5100 seems to almost behave like three different radios,
-        # depending on firmware version. These are the endframes that
-        # are expected for a given MapRev.
-        endframes = {
-            1: b'Icom Inc.EE',
-            2: b'Icom Inc.0C',
-            3: b'Icom Inc.8E',
-        }
-
-        if self._memsize != was_memsize:
-            self._icf_data['MapRev'] = maprevs.get(self._memsize, 0)
-            if self._icf_data['MapRev'] == 0:
-                LOG.error('Unknown memsize %06X!', self._memsize)
-                raise errors.InvalidDataError('Unsupported memory format!')
-            self._endframe = endframes[self._icf_data['MapRev']]
-            LOG.info('Memory length changed from %06X to %06X; new MapRev=%i',
-                     was_memsize, self._memsize, self._icf_data['MapRev'])
-        else:
-            LOG.debug('Unchanged memsize at %06X' % self._memsize)
-
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    @classmethod
-    def get_prompts(cls):
-        rp = chirp_common.RadioPrompts()
-        rp.info = dedent('This driver has been tested with v3 of the ID-5100. '
-                         'If your radio is not fully updated please help by '
-                         'opening a bug report with a debug log so we can add '
-                         'support for the other revisions.')
-
-        rp.pre_upload = rp.info
-        rp.experimental = rp.info
-        return rp
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -319,3 +259,77 @@ class ID5100Radio(icf.IcomCloneModeRadio,
                 icf.warp_byte_size(mem.dv_rpt1call.ljust(8), 8, 7))
             _mem.rpt2call = list(
                 icf.warp_byte_size(mem.dv_rpt2call.ljust(8), 8, 7))
+
+
+@directory.register
+class ID5100Radio(ID4100Radio):
+    MODEL = "ID-5100"
+
+    _model = b'\x34\x84\x00\x01'
+
+    # This is only for MapRev=1
+    _endframe = b"Icom Inc.EE"
+
+    # MapRev=1 Size is 260928 0x3FB40
+    # MapRev=2 Size is 148160 0x242C0
+    # MapRev=3 Size is 172928 0x2A380
+    _memsize = 0x3FB40
+
+    _ranges = [(0, _memsize, 64)]
+    _raw_frames = True
+    _highbit_flip = True
+
+    def process_mmap(self):
+        was_memsize = self._memsize
+
+        # Apparently the 5100 has different reported memory sizes
+        # depending on firmware version. When we're loading an image,
+        # we should adjust our MapRev and _ranges to be correct for
+        # saving ICF files and uploading. This also means we should
+        # try to detect which version we are talking to and refuse to
+        # upload an image to a radio with a mismatch.
+
+        self._memsize = len(self._mmap)
+        self._ranges = [(0, self._memsize, 64)]
+
+        # Major (memory-format-changing) firmware versions, which
+        # correspond to MapRev in an ICF file.
+        maprevs = {
+            0x3FB40: 1,
+            0x242C0: 2,
+            0x2A380: 3,
+        }
+
+        # The 5100 seems to almost behave like three different radios,
+        # depending on firmware version. These are the endframes that
+        # are expected for a given MapRev.
+        endframes = {
+            1: b'Icom Inc.EE',
+            2: b'Icom Inc.0C',
+            3: b'Icom Inc.8E',
+        }
+
+        if self._memsize != was_memsize:
+            self._icf_data['MapRev'] = maprevs.get(self._memsize, 0)
+            if self._icf_data['MapRev'] == 0:
+                LOG.error('Unknown memsize %06X!', self._memsize)
+                raise errors.InvalidDataError('Unsupported memory format!')
+            self._endframe = endframes[self._icf_data['MapRev']]
+            LOG.info('Memory length changed from %06X to %06X; new MapRev=%i',
+                     was_memsize, self._memsize, self._icf_data['MapRev'])
+        else:
+            LOG.debug('Unchanged memsize at %06X' % self._memsize)
+
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.info = dedent('This driver has been tested with v3 of the ID-5100. '
+                         'If your radio is not fully updated please help by '
+                         'opening a bug report with a debug log so we can add '
+                         'support for the other revisions.')
+
+        rp.pre_upload = rp.info
+        rp.experimental = rp.info
+        return rp
