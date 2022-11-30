@@ -388,7 +388,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         return number - self._features.memory_bounds[0]
 
     def row2mem(self, row):
-        return row + self._features.memory_bounds[0]
+        if row in self._special_rows.values():
+            row2number = {v: k for k, v in self._special_rows.items()}
+            return row2number[row]
+        else:
+            return row + self._features.memory_bounds[0]
 
     def refresh_memory(self, number, memory):
         row = self.mem2row(number)
@@ -490,7 +494,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             col_def.digest_value(mem, val)
             if col_def.label == 'Frequency':
                 self._set_memory_defaults(mem)
-            mem.empty = False
+            if mem.empty:
+                mem.empty = False
             self._grid.SetRowLabelValue(row, '*%i' % mem.number)
             self._row_label_renderers[row].set_progress()
             self.do_radio(set_cb, 'set_memory', mem)
