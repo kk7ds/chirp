@@ -70,6 +70,11 @@ DRV_TO_RADIO = {}
 RADIO_TO_DRV = {}
 
 
+def register_format(name, pattern, readonly=False):
+    """This is just here for compatibility with the py3 branch."""
+    pass
+
+
 def get_radio(driver):
     """Get radio driver class by identification string"""
     if driver in DRV_TO_RADIO:
