@@ -49,9 +49,9 @@ class TestFileICF(unittest.TestCase):
                           'CD': 'fakehash'}, icfdata)
 
         try:
-            directory.icf_to_radio(fn)
+            directory.get_radio_by_image(fn)
         except Exception as e:
-            self.assertIn('12345678', str(e))
+            self.assertIn('Unknown file format', str(e))
         else:
             self.fail('Directory failed to reject unknown model')
 
@@ -113,9 +113,8 @@ class TestFileICF(unittest.TestCase):
                               'CD': '9F240F598EF20683726ED252278C61D0',
                               'recordsize': 32}, icfdata)
 
-            self.assertEqual(id31.ID31Radio,
-                             directory.icf_to_radio(fn))
-
+            self.assertIsInstance(directory.get_radio_by_image(fn),
+                                  id31.ID31Radio)
 
     def test_read_img_write_icf_old(self):
         img_file = os.path.join(os.path.dirname(__file__),
@@ -133,8 +132,8 @@ class TestFileICF(unittest.TestCase):
                               'model': r.get_model(),
                               'recordsize': 16}, icfdata)
 
-            self.assertEqual(ic2820.IC2820Radio,
-                             directory.icf_to_radio(fn))
+            self.assertIsInstance(directory.get_radio_by_image(fn),
+                                  ic2820.IC2820Radio)
 
 
 class TestCloneICF(unittest.TestCase):

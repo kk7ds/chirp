@@ -27,6 +27,7 @@ class TpeRadio(generic_csv.CSVRadio):
     VENDOR = "ARRL"
     MODEL = "Travel Plus"
     FILE_EXTENSION = "tpe"
+    FORMATS = [directory.register_format('ARRL TPE', '*.tpe')]
 
     ATTR_MAP = {
         "Sequence Number":  (int, "number"),

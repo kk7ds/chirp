@@ -27,7 +27,6 @@ from chirp import bandplan
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
-from chirp.drivers import icf
 from chirp import platform
 from chirp.ui import config
 from chirp.wxui import common
@@ -589,10 +588,13 @@ class ChirpMain(wx.Frame):
         self.open_file('Untitled.csv', exists=False)
 
     def _menu_open(self, event):
-        wildcard = '|'.join(['Chirp Image Files (*.img)|*.img',
-                             'CSV Files (*.csv)|*.csv',
-                             'ICF Files (*.icf)|*.icf',
-                             'All Files (*.*)|*.*'])
+        formats = ['Chirp Image Files (*.img)|*.img',
+                   'All Files (*.*)|*.*']
+        for name, pattern, readonly in directory.AUX_FORMATS:
+            formats.insert(1, '%s Files (%s)|%s' % (
+                name, pattern, pattern))
+
+        wildcard = '|'.join(formats)
         with wx.FileDialog(self, 'Open a file',
                            platform.get_platform().get_last_dir(),
                            wildcard=wildcard,
@@ -626,8 +628,13 @@ class ChirpMain(wx.Frame):
             'model': eset._radio.MODEL,
             'ext': eset._radio.FILE_EXTENSION}
 
-        if isinstance(eset.radio, icf.IcomCloneModeRadio):
-            wildcard += '|ICF Files (*.icf)|*.icf'
+        for name, pattern, readonly in directory.AUX_FORMATS:
+            if readonly:
+                continue
+            if pattern in wildcard:
+                continue
+            if name in eset.radio.FORMATS:
+                wildcard += '|%s Files (%s)|%s' % (name, pattern, pattern)
 
         style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
         with wx.FileDialog(self, "Save file", defaultFile=eset.filename,

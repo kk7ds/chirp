@@ -23,7 +23,6 @@ import sys
 
 import six
 
-from chirp.drivers import icf  # , rfinder
 from chirp import chirp_common, util, radioreference, errors
 
 LOG = logging.getLogger(__name__)
@@ -72,11 +71,27 @@ def register(cls):
 
 DRV_TO_RADIO = {}
 RADIO_TO_DRV = {}
+AUX_FORMATS = set()
 
 
 def register_format(name, pattern, readonly=False):
-    """This is just here for compatibility with the py3 branch."""
-    pass
+    """Register a named format and file pattern.
+
+    The name and pattern must not exist in the directory already
+    (except together). The name should be something like "CSV" or
+    "Icom ICF" and the pattern should be a glob like "*.icf".
+
+    Returns a unique name to go in Radio.FORMATS so the UI knows what
+    additional formats a driver can read (and write unless readonly is
+    set).
+    """
+    if (name, pattern) not in [(n, p) for n, p, r in AUX_FORMATS]:
+        if name in [x[0] for x in AUX_FORMATS]:
+            raise Exception('Duplicate format name %r' % name)
+        if pattern in [x[1] for x in AUX_FORMATS]:
+            raise Exception('Duplicate format pattern %r' % pattern)
+    AUX_FORMATS.add((name, pattern, readonly))
+    return name
 
 
 def get_radio(driver):
@@ -95,22 +110,6 @@ def get_driver(rclass):
         return RADIO_TO_DRV[rclass.__bases__[0]]
     else:
         raise Exception("Unknown radio type `%s'" % rclass)
-
-
-def icf_to_radio(icf_file):
-    """Detect radio class from ICF file."""
-    icfdata, mmap = icf.read_file(icf_file)
-
-    for model in list(DRV_TO_RADIO.values()):
-        try:
-            if model.get_model() == icfdata['model']:
-                return model
-        except Exception:
-            pass  # Skip non-Icoms
-
-    LOG.error("Unsupported model data: %s" % util.hexprint(icfdata['model']))
-    raise Exception("Unsupported model %s" % binascii.hexlify(
-        icfdata['model']))
 
 
 # This is a mapping table of radio models that have changed in the past.
@@ -137,10 +136,6 @@ def get_radio_by_image(image_file):
         rf = rfinder.RFinderRadio(None)
         rf.set_params((float(lat), float(lon)), int(miles), email, passwd)
         return rf
-
-    if os.path.exists(image_file) and icf.is_icf_file(image_file):
-        rclass = icf_to_radio(image_file)
-        return rclass(image_file)
 
     if os.path.exists(image_file):
         with open(image_file, "rb") as f:

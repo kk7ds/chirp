@@ -26,6 +26,7 @@ import struct
 
 from chirp import bitwise
 from chirp import chirp_common, errors, util, memmap
+from chirp import directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettings
 from chirp import util
@@ -801,6 +802,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     # gradually migrated to this. Once all Icom drivers will use
     # MUNCH_CLONE_RESP = True, this flag will be removed.
     MUNCH_CLONE_RESP = False
+    FORMATS = [directory.register_format('Icom ICF', '*.icf')]
 
     _model = "\x00\x00\x00\x00"  # 4-byte model string
     _endframe = ""               # Model-unique ending frame
@@ -938,6 +940,15 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
             write_file(self, filename)
         else:
             chirp_common.CloneModeRadio.save_mmap(self, filename)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if (filedata[:4] == binascii.hexlify(cls.get_model())[:4] and
+                filename.lower().endswith('.icf')):
+            return True
+        else:
+            return super(IcomCloneModeRadio, cls).match_model(filedata,
+                                                              filename)
 
 
 def flip_high_order_bit(data):
