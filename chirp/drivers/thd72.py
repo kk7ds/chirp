@@ -103,7 +103,8 @@ struct {
 #seekto 0x1500;
 struct {
   ul32 freq;
-  u8 unknown1;
+  u8 unknown1:4,
+     tune_step:4;
   u8 mode;
   u8 tone_mode:4,
      duplex:4;
@@ -112,7 +113,8 @@ struct {
   u8 dtcs;
   u8 cross_mode;
   ul32 offset;
-  u8 unknown2;
+  u8 unknown2:4,
+     split_tune_step:4;
 } memory[1032];
 
 #seekto 0x5e00;
@@ -185,6 +187,7 @@ DUPLEX_REV = {
     "split": 0x04,
 }
 
+TUNE_STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 
 EXCH_R = "R\x00\x00\x00\x00"
 EXCH_W = "W\x00\x00\x00\x00"
@@ -197,9 +200,14 @@ DEFAULT_PROG_VFO = (
     (320000000, 400000000),
     (400000000, 524000000),
 )
-# index of PROG_VFO used for setting memory.unknown1 and memory.unknown2
-# see http://chirp.danplanet.com/issues/1611#note-9
-UNKNOWN_LOOKUP = (0, 7, 4, 0, 4, 7)
+
+D72_FILE_HEADER = (
+    b'MCP-4A\xFF\xFFV1.04\xFF\xFF\xFF' +
+    b'TH-D72' + (b'\xFF' * 10) +
+    b'\x31' + (b'\xFF' * 15) +
+    b'\xFF' * (5 * 16) +
+    b'AMB0' + (b'\xFF' * 12) +
+    b'\xFF' * (7 * 16))
 
 
 def get_prog_vfo(frequency):
@@ -241,13 +249,14 @@ class THD72Radio(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.can_odd_split = True
         rf.has_dtcs_polarity = False
-        rf.has_tuning_step = False
+        rf.has_tuning_step = True
         rf.has_bank = False
         rf.has_settings = True
         rf.valid_tuning_steps = []
         rf.valid_modes = list(MODES_REV.keys())
         rf.valid_tmodes = list(TMODES_REV.keys())
         rf.valid_duplexes = list(DUPLEX_REV.keys())
+        rf.valid_tuning_steps = list(TUNE_STEPS)
         rf.valid_skips = ["", "S"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
@@ -341,6 +350,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         mem.duplex = DUPLEX[int(_mem.duplex)]
         mem.offset = int(_mem.offset)
         mem.mode = MODES[int(_mem.mode)]
+        mem.tuning_step = TUNE_STEPS[int(_mem.tune_step)]
 
         if number < 999:
             mem.skip = chirp_common.SKIP_VALUES[int(flag.skip)]
@@ -395,10 +405,16 @@ class THD72Radio(chirp_common.CloneModeRadio):
         _mem.duplex = DUPLEX_REV[mem.duplex]
         _mem.offset = mem.offset
         _mem.mode = MODES_REV[mem.mode]
+        _mem.tune_step = TUNE_STEPS.index(mem.tuning_step)
+
+        if mem.duplex == 'split':
+            _mem.split_tune_step = TUNE_STEPS.index(
+                chirp_common.required_step(mem.offset))
+        else:
+            _mem.split_tune_step = _mem.tune_step
 
         prog_vfo = get_prog_vfo(mem.freq)
         flag.prog_vfo = prog_vfo
-        _mem.unknown1 = _mem.unknown2 = UNKNOWN_LOOKUP[prog_vfo]
 
         if mem.number < 999:
             flag.skip = chirp_common.SKIP_VALUES.index(mem.skip)
@@ -724,6 +740,33 @@ class THD72Radio(chirp_common.CloneModeRadio):
         for msg_text in messages:
             result.append(str(msg_text).rstrip("\xFF"))
         return result
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith('.mc4'):
+            with open(filename, 'rb') as f:
+                f.seek(0x100)
+                self._mmap = memmap.MemoryMapBytes(f.read())
+                LOG.info('Loaded MCP file at offset 0x100')
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith('.mc4'):
+            with open(filename, 'wb') as f:
+                f.write(D72_FILE_HEADER)
+                f.write(self._mmap.get_packed())
+                LOG.info('Wrote MCP file')
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if filename.endswith('.mc4'):
+            return True
+        else:
+            return super(THD72Radio, cls).match_model(filedata, filename)
+
 
 if __name__ == "__main__":
     import sys
