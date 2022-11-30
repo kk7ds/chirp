@@ -735,6 +735,9 @@ class ChirpMain(wx.Frame):
             new_radio._mmap = mmap
             new_radio.process_mmap()
 
+        # Get the currently-selected memedit row so we can re-select it
+        editor_pos = self.current_editorset.current_editor.get_scroll_pos()
+
         # Kill the current editorset now that we know the radio loaded
         # successfully
         last_editor = self.current_editorset.current_editor_index
@@ -745,6 +748,7 @@ class ChirpMain(wx.Frame):
         editorset = ChirpEditorSet(new_radio, filename, self._editors)
         self.add_editorset(editorset, select=True)
         editorset.select_editor(last_editor)
+        editorset.current_editor.set_scroll_pos(editor_pos)
 
         LOG.info('Reloaded radio driver%s in place; good luck!' % (
             andfile and ' (and file)' or ''))

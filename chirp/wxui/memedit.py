@@ -652,6 +652,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         last = first + self._grid.GetScrollPageSize(wx.VERTICAL)
         return first, last
 
+    def get_scroll_pos(self):
+        return self._grid.GetViewStart()
+
+    def set_scroll_pos(self, pos):
+        self._grid.Scroll(*pos)
+
 
 class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):
     pass
