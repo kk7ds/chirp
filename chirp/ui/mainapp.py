@@ -1435,7 +1435,7 @@ of file.
                 radio = radioreference.RadioReferenceRadio(None)
                 radio.set_params(zipcode, username, passwd, 'US')
                 self.do_open_live(radio, read_only=True)
-            except errors.RadioError, e:
+            except errors.RadioError as e:
                 common.show_error(e)
 
         self.window.set_cursor(None)
