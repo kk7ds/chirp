@@ -317,8 +317,7 @@ def _t18_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">cHb", b'W', block_addr, block_size)
-    data = radio.get_mmap().get_byte_compatible()[block_addr:block_addr +
-                                                  block_size]
+    data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -358,7 +357,7 @@ def do_download(radio):
 
     _t18_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -395,6 +394,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     VENDOR = "Radtel"
     MODEL = "T18"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x08
     CMD_EXIT = b"b"
     ACK_BLOCK = True
