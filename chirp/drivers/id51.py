@@ -29,13 +29,14 @@ struct {
       mode:3;
   u8 dtcs;
   u8 tune_step:4,
-     unknown5:4;
+     dsql_mode:2,
+     unknown5:2;
   u8 unknown4;
   u8 tmode:4,
      duplex:2,
      dtcs_polarity:2;
   char name[16];
-  u8 unknown13;
+  u8 digcode;
   u8 urcall[7];
   u8 rpt1call[7];
   u8 rpt2call[7];
