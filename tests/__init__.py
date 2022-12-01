@@ -1,10 +1,13 @@
+import datetime
 import glob
 import logging
+import mock
 import os
 import re
 import shutil
 import sys
 import tempfile
+import time
 import unittest
 
 import six
@@ -15,6 +18,8 @@ from tests import run_tests
 
 
 LOG = logging.getLogger('testadapter')
+
+REAL_TIME = time.time
 
 
 def if_enabled(fn):
@@ -73,8 +78,33 @@ class TestAdapter(unittest.TestCase):
         self.testimage = tempfile.mktemp('.%s' % ext, rid)
         shutil.copy(self.SOURCE_IMAGE, self.testimage)
 
+        self.mocks = []
+
+        today = datetime.date.today()
+        # Some (one) drivers need to know what the time now is, so those
+        # get a special mock.
+        fake_dt = mock.MagicMock()
+        fake_dt.today.return_value = today
+        m = mock.patch('chirp.drivers.th9800.date', new=fake_dt)
+        self.mocks.append(m)
+        m.start()
+
+        # Mock out the time to return a large change each time we call it
+        # so that timeout loops proceed quickly.
+        m = mock.patch('time.time',
+                       side_effect=lambda: REAL_TIME() * 1000)
+        self.mocks.append(m)
+        m.start()
+
+        # Mock out time.sleep() to be a no-op
+        m = mock.patch('time.sleep')
+        self.mocks.append(m)
+        m.start()
+
     def tearDown(self):
         os.remove(self.testimage)
+        for m in self.mocks:
+            m.stop()
 
     def _runtest(self, test):
         tw = run_tests.TestWrapper(self.RADIO_CLASS,
