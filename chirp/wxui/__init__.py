@@ -1,5 +1,6 @@
 import argparse
 import gettext
+import logging
 import os
 import sys
 
@@ -11,6 +12,7 @@ def chirpmain():
     import wx
     from chirp.ui import config
     from chirp.wxui import main
+    from chirp.wxui import report
 
     directory.import_drivers()
     gettext.install('CHIRP')
@@ -33,6 +35,7 @@ def chirpmain():
     args = parser.parse_args()
 
     logger.handle_options(args)
+    logging.getLogger('main').info(report.get_environment())
 
     directory.import_drivers(limit=args.onlydriver)
 
@@ -55,5 +58,8 @@ def chirpmain():
     if args.inspect:
         from wx.lib import inspection
         inspection.InspectionTool().Show()
+
+    report.check_for_updates(
+        lambda ver: wx.CallAfter(main.display_update_notice, ver))
 
     app.MainLoop()

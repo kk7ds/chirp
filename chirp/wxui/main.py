@@ -18,6 +18,8 @@ import functools
 import logging
 import os
 import sys
+import time
+import webbrowser
 
 import wx
 import wx.aui
@@ -36,6 +38,7 @@ from chirp.wxui import memedit
 from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
+from chirp.wxui import report
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -268,13 +271,16 @@ class ChirpMain(wx.Frame):
     @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
     def open_file(self, filename, exists=True, select=True):
 
+        CSVRadio = directory.get_radio('Generic_CSV')
         if exists:
             if not os.path.exists(filename):
                 raise FileNotFoundError('File does not exist: %s' % filename)
             radio = directory.get_radio_by_image(filename)
         else:
-            CSVRadio = directory.get_radio('Generic_CSV')
             radio = CSVRadio(None)
+
+        if not isinstance(radio, CSVRadio):
+            report.report_model(radio, 'open')
 
         self.adj_menu_open_recent(filename)
         editorset = ChirpEditorSet(radio, filename, self._editors)
@@ -452,6 +458,15 @@ class ChirpMain(wx.Frame):
                   developer_menu)
         help_menu.Append(developer_menu)
         developer_menu.Check(CONF.get_bool('developer', 'state'))
+
+        reporting_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                     'Reporting enabled',
+                                     kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._menu_reporting, reporting_menu),
+                  reporting_menu)
+        help_menu.Append(reporting_menu)
+        reporting_menu.Check(not CONF.get_bool('no_report', default=False))
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
@@ -729,6 +744,7 @@ class ChirpMain(wx.Frame):
             d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
+                report.report_model(radio, 'download')
                 if isinstance(radio, chirp_common.LiveRadio):
                     editorset = ChirpLiveEditorSet(radio, None, self._editors)
                 else:
@@ -737,6 +753,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_upload(self, event):
         radio = self.current_editorset.radio
+        report.report_model(radio, 'upload')
         with clone.ChirpUploadDialog(radio, self) as d:
             d.Centre()
             d.ShowModal()
@@ -823,6 +840,21 @@ class ChirpMain(wx.Frame):
                        'CHIRP must be restarted to take effect') % state,
                       'Restart Required', wx.OK)
 
+    def _menu_reporting(self, menuitem, event):
+        if not menuitem.IsChecked():
+            r = wx.MessageBox(
+                'Reporting helps the CHIRP project know which '
+                'radio models and OS platforms to spend our limited '
+                'efforts on. We would really appreciate if you left '
+                'it enabled. Really disable reporting?',
+                'Disable reporting',
+                wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
+            if r == wx.NO:
+                menuitem.Check(True)
+                return
+
+        CONF.set_bool('no_report', not menuitem.IsChecked())
+
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
         LOG.debug('Set auto_edits=%s' % event.IsChecked())
@@ -853,3 +885,31 @@ class ChirpMain(wx.Frame):
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)
             self.open_file(d.result_file)
+
+
+def display_update_notice(version):
+    LOG.info('Server reports %s is latest' % version)
+
+    if version == CHIRP_VERSION:
+        return
+
+    if CONF.get_bool("skip_update_check", "state"):
+        return
+
+    # Report new updates every three days
+    intv = 3600 * 24 * 3
+
+    if CONF.is_defined("last_update_check", "state") and \
+       (time.time() - CONF.get_int("last_update_check", "state")) < intv:
+        return
+
+    CONF.set_int("last_update_check", int(time.time()), "state")
+
+    msg = ('A new CHIRP version is available. Please visit the '
+           'website as soon as possible to download it!')
+    d = wx.MessageDialog(None, msg, 'New version available',
+                         style=wx.OK | wx.CANCEL | wx.ICON_INFORMATION)
+    visit = d.ShowModal()
+    if visit == wx.ID_OK:
+        webbrowser.open('https://chirp.danplanet.com/'
+                        'projects/chirp/wiki/Download')
