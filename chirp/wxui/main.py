@@ -690,6 +690,13 @@ class ChirpMain(wx.Frame):
         self._update_editorset_title(self.current_editorset)
 
     def _menu_close(self, event):
+        if self.current_editorset.modified:
+            if wx.MessageBox(
+                    'Some changes have not been saved. Close anyway?',
+                    'Close without saving?',
+                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING) != wx.YES:
+                return
+
         self._editors.DeletePage(self._editors.GetSelection())
         self._update_window_for_editor()
 
