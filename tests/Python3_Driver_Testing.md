@@ -123,7 +123,7 @@
 | <a name="Kenwood_TH-D74_clone_mode"></a> Kenwood_TH-D74_clone_mode | [@kk7ds](https://github.com/kk7ds) | 30-Nov-2022 | Yes |
 | <a name="Kenwood_TH-D74_live_mode"></a> Kenwood_TH-D74_live_mode | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes |
 | <a name="Kenwood_TH-D7G"></a> Kenwood_TH-D7G |  |  | Yes |
-| <a name="Kenwood_TH-F6"></a> Kenwood_TH-F6 |  |  | Yes |
+| <a name="Kenwood_TH-F6"></a> Kenwood_TH-F6 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Kenwood_TH-F7"></a> Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes |
 | <a name="Kenwood_TH-G71"></a> Kenwood_TH-G71 |  |  | Yes |
 | <a name="Kenwood_TH-K2"></a> Kenwood_TH-K2 |  |  | Yes |
@@ -359,6 +359,6 @@
 
 **Drivers:** 354
 
-**Tested:** 31% (112/242)
+**Tested:** 31% (113/241)
 
 **Byte clean:** 54% (194/160)
