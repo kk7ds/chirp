@@ -238,6 +238,28 @@ class ChirpMain(wx.Frame):
         self.statusbar.SetStatusWidths([-1, 200])
 
         self._update_window_for_editor()
+        self._editors.Show(False)
+
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
+
+    def on_erase_background(self, event):
+        dc = event.GetDC()
+
+        rect = self.GetUpdateRegion().GetBox()
+        if not dc:
+            dc = wx.ClientDC(self)
+            dc.SetClippingRect(rect)
+        dc.Clear()
+        fn = os.path.join('share', 'welcome_screen.png')
+        if not os.path.exists(fn):
+            LOG.error('Unable to find %s' % fn)
+            return
+        bmp = wx.Bitmap(fn)
+
+        width, height = self.GetSize()
+        dc.DrawBitmap(bmp,
+                      (width // 2) - bmp.GetWidth() // 2,
+                      (height // 2) - bmp.GetHeight() // 2)
 
     @property
     def current_editorset(self):
@@ -543,6 +565,8 @@ class ChirpMain(wx.Frame):
             can_upload = (not isinstance(eset.radio, CSVRadio) and
                           not isinstance(eset.radio, common.LiveAdapter) and
                           not is_live)
+
+        self._editors.Show()
 
         items = [
             (wx.ID_CLOSE, can_close),
