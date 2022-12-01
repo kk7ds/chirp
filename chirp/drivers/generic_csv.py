@@ -52,6 +52,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
     VENDOR = "Generic"
     MODEL = "CSV"
     FILE_EXTENSION = "csv"
+    FORMATS = [directory.register_format('CSV', '*.csv')]
 
     ATTR_MAP = {
         "Location":      (int,   "number"),

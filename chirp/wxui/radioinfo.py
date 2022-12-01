@@ -52,6 +52,8 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
             p.Enable(False)
             pg.Append(p)
 
+        pg.Sort()
+
     def _add_vendor(self):
         # This should really be an interface on the radio, but there
         # is only one example for the moment, so just cheat.
@@ -77,3 +79,5 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
                 value=str(value))
             p.Enable(False)
             pg.Append(p)
+
+        pg.Sort()

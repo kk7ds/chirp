@@ -1021,6 +1021,7 @@ class Radio(Alias):
     HARDWARE_FLOW = False
     ALIASES = []
     NEEDS_COMPAT_SERIAL = True
+    FORMATS = []
 
     def status_fn(self, status):
         """Deliver @status to the UI"""
@@ -1115,6 +1116,15 @@ class Radio(Alias):
         If this function is implemented, the has_settings RadioFeatures flag
         should be True and get_settings() must be implemented as well."""
         pass
+
+    @classmethod
+    def supports_format(self, fmt):
+        """Returns true if file format @fmt is supported by this radio.
+
+        This really should not be overridden by implementations
+        without a good reason (like excluding one).
+        """
+        return fmt in cls.FORMATS
 
 
 class FileBackedRadio(Radio):
