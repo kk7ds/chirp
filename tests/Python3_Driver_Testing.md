@@ -19,7 +19,7 @@
 | <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R |  |  |  |
 | <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R |  |  |  |
 | <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
-| <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 |  |  |  |
+| <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="BTECH_GMRS-20V2"></a> BTECH_GMRS-20V2 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes |
 | <a name="BTECH_GMRS-50X1"></a> BTECH_GMRS-50X1 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes |
@@ -40,7 +40,7 @@
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S |  |  |  |
 | <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 |  |  |  |
-| <a name="Baofeng_BF-T8"></a> Baofeng_BF-T8 |  |  |  |
+| <a name="Baofeng_BF-T8"></a> Baofeng_BF-T8 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Baofeng_BF-V8A"></a> Baofeng_BF-V8A | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Baofeng_F-11"></a> Baofeng_F-11 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes |
 | <a name="Baofeng_GT-3WP"></a> Baofeng_GT-3WP |  |  |  |
@@ -232,18 +232,18 @@
 | <a name="Retevis_RB19P"></a> Retevis_RB19P | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Retevis_RB23"></a> Retevis_RB23 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RB26"></a> Retevis_RB26 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
-| <a name="Retevis_RB27"></a> Retevis_RB27 |  |  |  |
-| <a name="Retevis_RB27B"></a> Retevis_RB27B |  |  |  |
-| <a name="Retevis_RB27V"></a> Retevis_RB27V |  |  |  |
+| <a name="Retevis_RB27"></a> Retevis_RB27 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
+| <a name="Retevis_RB27B"></a> Retevis_RB27B | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
+| <a name="Retevis_RB27V"></a> Retevis_RB27V | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RB615"></a> Retevis_RB615 |  |  |  |
 | <a name="Retevis_RB617"></a> Retevis_RB617 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Retevis_RB618"></a> Retevis_RB618 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Retevis_RB619"></a> Retevis_RB619 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
-| <a name="Retevis_RB627B"></a> Retevis_RB627B |  |  |  |
+| <a name="Retevis_RB627B"></a> Retevis_RB627B | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RB75"></a> Retevis_RB75 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Retevis_RB85"></a> Retevis_RB85 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Retevis_RT1"></a> Retevis_RT1 |  |  |  |
-| <a name="Retevis_RT16"></a> Retevis_RT16 |  |  |  |
+| <a name="Retevis_RT16"></a> Retevis_RT16 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RT19"></a> Retevis_RT19 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RT21"></a> Retevis_RT21 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RT22"></a> Retevis_RT22 |  |  |  |
@@ -359,6 +359,6 @@
 
 **Drivers:** 354
 
-**Tested:** 31% (113/241)
+**Tested:** 33% (120/234)
 
-**Byte clean:** 54% (194/160)
+**Byte clean:** 56% (201/153)
