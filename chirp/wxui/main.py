@@ -335,12 +335,15 @@ class ChirpMain(wx.Frame):
         save_item = file_menu.Append(wx.ID_SAVE)
         self.Bind(wx.EVT_MENU, self._menu_save, save_item)
 
-        save_item = file_menu.Append(wx.ID_SAVEAS)
-        self.Bind(wx.EVT_MENU, self._menu_save_as, save_item)
+        saveas_item = file_menu.Append(wx.ID_SAVEAS)
+        saveas_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL | wx.ACCEL_ALT,
+                                                 ord('S')))
+        self.Bind(wx.EVT_MENU, self._menu_save_as, saveas_item)
 
         file_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
 
         close_item = file_menu.Append(wx.ID_CLOSE)
+        close_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('W')))
         self.Bind(wx.EVT_MENU, self._menu_close, close_item)
 
         exit_item = file_menu.Append(wx.ID_EXIT)
@@ -363,16 +366,21 @@ class ChirpMain(wx.Frame):
 
         radio_menu = wx.Menu()
 
+        if sys.platform == 'darwin':
+            updownmod = wx.MOD_CONTROL
+        else:
+            updownmod = wx.ACCEL_ALT
+
         self._download_menu_item = wx.NewId()
         download_item = wx.MenuItem(radio_menu, self._download_menu_item,
                                     'Download')
-        download_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('D')))
+        download_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('D')))
         self.Bind(wx.EVT_MENU, self._menu_download, download_item)
         radio_menu.Append(download_item)
 
         self._upload_menu_item = wx.NewId()
         upload_item = wx.MenuItem(radio_menu, self._upload_menu_item, 'Upload')
-        upload_item.SetAccel(wx.AcceleratorEntry(wx.ACCEL_ALT, ord('U')))
+        upload_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
 
@@ -405,8 +413,7 @@ class ChirpMain(wx.Frame):
                                           self._reload_driver_item,
                                           'Reload Driver')
             reload_drv_item.SetAccel(
-                wx.AcceleratorEntry(wx.ACCEL_ALT | wx.ACCEL_CTRL,
-                                    ord('R')))
+                wx.AcceleratorEntry(wx.MOD_CONTROL, ord('R')))
             self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
             radio_menu.Append(reload_drv_item)
 
@@ -416,7 +423,7 @@ class ChirpMain(wx.Frame):
                                            'Reload Driver and File')
             reload_both_item.SetAccel(
                 wx.AcceleratorEntry(
-                    wx.ACCEL_ALT | wx.ACCEL_CTRL | wx.ACCEL_SHIFT,
+                    wx.ACCEL_ALT | wx.MOD_CONTROL,
                     ord('R')))
             self.Bind(
                 wx.EVT_MENU,
