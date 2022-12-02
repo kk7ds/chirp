@@ -15,6 +15,7 @@
 
 import datetime
 import functools
+import importlib.resources
 import logging
 import os
 import sys
@@ -42,8 +43,6 @@ from chirp.wxui import report
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
-from fnmatch import fnmatch
-
 EditorSetChanged, EVT_EDITORSET_CHANGED = wx.lib.newevent.NewCommandEvent()
 CONF = config.get()
 LOG = logging.getLogger(__name__)
@@ -52,6 +51,19 @@ EMPTY_MENU_LABEL = '(none)'
 KEEP_RECENT = 8
 OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
+
+
+def pkg_path(*args):
+    # This is the root of the chirp git tree, or the egg for sdist,
+    # or the bundle directory if frozen.
+    base = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), '..', '..'))
+
+    fn = os.path.join(base, *args)
+    LOG.debug('Calculated path for %s as %s' % (os.path.join(*args), fn))
+    if os.path.exists(fn):
+        return fn
+    raise FileNotFoundError('Not found: %s' % fn)
 
 
 class ChirpEditorSet(wx.Panel):
@@ -219,6 +231,8 @@ class ChirpMain(wx.Frame):
         self.SetSize(int(CONF.get('window_w', 'state') or 1024),
                      int(CONF.get('window_h', 'state') or 768))
 
+        self.set_icon()
+
         d = CONF.get('last_dir', 'state')
         if d and os.path.isdir(d):
             platform.get_platform().set_last_dir(d)
@@ -245,6 +259,16 @@ class ChirpMain(wx.Frame):
 
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
 
+    def set_icon(self):
+        if sys.platform == 'win32':
+            icon = 'chirp.ico'
+        else:
+            icon = 'chirp.png'
+        try:
+            self.SetIcon(wx.Icon(pkg_path('share', icon)))
+        except Exception as e:
+            LOG.exception('Failed to SetIcon: %s' % e)
+
     def on_erase_background(self, event):
         dc = event.GetDC()
 
@@ -253,11 +277,11 @@ class ChirpMain(wx.Frame):
             dc = wx.ClientDC(self)
             dc.SetClippingRect(rect)
         dc.Clear()
-        fn = os.path.join('share', 'welcome_screen.png')
-        if not os.path.exists(fn):
-            LOG.error('Unable to find %s' % fn)
+        welcome = pkg_path('share', 'welcome_screen.png')
+        if not os.path.exists(welcome):
+            LOG.error('Unable to find %r' % welcome)
             return
-        bmp = wx.Bitmap(fn)
+        bmp = wx.Bitmap(welcome)
 
         width, height = self.GetSize()
         dc.DrawBitmap(bmp,
@@ -294,6 +318,35 @@ class ChirpMain(wx.Frame):
         self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editorset)
         self._update_editorset_title(editorset)
 
+    def add_stock_menu(self):
+        stock = wx.Menu()
+
+        dist_stock_confs = sorted(os.listdir(pkg_path('stock_configs', '')))
+        user_stock_dir = platform.get_platform().config_file("stock_configs")
+        if os.path.isdir(user_stock_dir):
+            user_stock_confs = sorted(os.listdir(user_stock_dir))
+        else:
+            user_stock_confs = []
+
+        def add_stock(fn):
+            submenu_item = stock.Append(wx.ID_ANY, fn)
+            self.Bind(wx.EVT_MENU,
+                      self._menu_open_stock_config, submenu_item)
+
+        found = []
+        for fn in user_stock_confs:
+            add_stock(fn)
+            found.append(os.path.basename(fn))
+
+        for fn in dist_stock_confs:
+            if os.path.basename(fn) not in found:
+                add_stock(fn)
+            else:
+                LOG.info('Ignoring dist stock conf %s because same name found '
+                         'in user dir', os.path.basename(fn))
+
+        return stock
+
     def make_menubar(self):
         file_menu = wx.Menu()
 
@@ -303,23 +356,9 @@ class ChirpMain(wx.Frame):
         open_item = file_menu.Append(wx.ID_OPEN)
         self.Bind(wx.EVT_MENU, self._menu_open, open_item)
 
-        stock_dir = platform.get_platform().config_file("stock_configs")
-        sconfigs = []
-        if os.path.isdir(stock_dir):
-            for fn in os.listdir(stock_dir):
-                if fnmatch(fn, "*.csv"):
-                    config, ext = os.path.splitext(fn)
-                    sconfigs.append(config)
-            sconfigs.sort()
-            if len(sconfigs):
-                self.OPEN_STOCK_CONFIG_MENU = wx.Menu()
-                for fn in sconfigs:
-                    submenu_item = self.OPEN_STOCK_CONFIG_MENU.Append(
-                                       wx.ID_ANY, fn)
-                    self.Bind(wx.EVT_MENU,
-                              self._menu_open_stock_config, submenu_item)
-                file_menu.AppendSubMenu(self.OPEN_STOCK_CONFIG_MENU,
-                                        "Open Stock Config")
+        self.OPEN_STOCK_CONFIG_MENU = self.add_stock_menu()
+        file_menu.AppendSubMenu(self.OPEN_STOCK_CONFIG_MENU,
+                                "Open Stock Config")
 
         self.OPEN_RECENT_MENU = wx.Menu()
         i = 0
@@ -655,11 +694,24 @@ class ChirpMain(wx.Frame):
             self.open_file(str(filename))
 
     def _menu_open_stock_config(self, event):
-        stock_dir = platform.get_platform().config_file("stock_configs")
         fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(
             event.GetId()).GetItemLabelText()
-        fn += ".csv"
-        filename = os.path.join(stock_dir, fn)
+
+        user_stock_dir = platform.get_platform().config_file("stock_configs")
+        user_stock_conf = os.path.join(user_stock_dir, fn)
+        with importlib.resources.path('stock_configs', fn) as path:
+            dist_stock_conf = str(path)
+        if os.path.exists(user_stock_conf):
+            filename = user_stock_conf
+        elif os.path.exists(dist_stock_conf):
+            filename = dist_stock_conf
+        else:
+            LOG.error('Unable to find %s or %s' % (user_stock_conf,
+                                                   dist_stock_conf))
+            common.error_proof.show_error(
+                'Unable to find stock config %r' % fn)
+            return
+
         self.open_file(filename)
 
     def _menu_open_recent(self, event):
