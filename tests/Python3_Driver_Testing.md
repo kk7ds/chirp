@@ -101,8 +101,9 @@
 | <a name="Icom_IC-W32A"></a> Icom_IC-W32A |  |  | Yes |
 | <a name="Icom_IC-W32E"></a> Icom_IC-W32E |  |  | Yes |
 | <a name="Icom_ID-31A"></a> Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 12-Feb-2019 | Yes |
+| <a name="Icom_ID-4100"></a> Icom_ID-4100 | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes |
 | <a name="Icom_ID-51"></a> Icom_ID-51 |  |  | Yes |
-| <a name="Icom_ID-5100"></a> Icom_ID-5100 |  |  | Yes |
+| <a name="Icom_ID-5100"></a> Icom_ID-5100 | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes |
 | <a name="Icom_ID-51_Plus"></a> Icom_ID-51_Plus |  |  | Yes |
 | <a name="Icom_ID-51_Plus2"></a> Icom_ID-51_Plus2 |  |  | Yes |
 | <a name="Icom_ID-800H_v2"></a> Icom_ID-800H_v2 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |
@@ -357,8 +358,8 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
-**Drivers:** 354
+**Drivers:** 355
 
-**Tested:** 33% (120/234)
+**Tested:** 34% (122/233)
 
-**Byte clean:** 56% (201/153)
+**Byte clean:** 56% (202/153)
