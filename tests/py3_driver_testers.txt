@@ -121,8 +121,16 @@ TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
 WACCOM_MINI-8900,@KC9HI,11-Nov-2022
 Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022
 Yaesu_FT-8800,@kk7ds,24-Oct-2022
+Yaesu_FT-8900,+Yaesu_FT-8800,24-Oct-2022
 Yaesu_FT-817,@kk7ds,14-Feb-2019
+Yaesu_FT-817ND_US,@kk7ds,14-Feb-2019
+Yaesu_FT-818,+Yaesu_FT-817,14-Feb-2019
+Yaesu_FT-818ND_US,+Yaesu_FT-817,14-Feb-2019
+Yaesu_FT-857_897,+Yaesu_FT-817,14-Feb-2019
+Yaesu_FT-857_897_US,+Yaesu_FT-817,14-Feb-2019
 Yaesu_VX-3,@kk7ds,15-Feb-2019
-Yaesu_VX-8DR,@kk7ds,15-Feb-2019
 Yaesu_VX-7,@kk7ds,15-Feb-2019
+Yaesu_VX-8R,+Yaesu_VX-8DR,15-Feb-2019
+Yaesu_VX-8DR,@kk7ds,15-Feb-2019
+Yaesu_VX-8GE,+Yaesu_VX-8DR,15-Feb-2019
 Yedro_YC-M04VUS,+Retevis_RT95,13-Nov-2022

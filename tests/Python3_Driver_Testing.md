@@ -331,13 +331,13 @@
 | <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 |  |  | Yes |
 | <a name="Yaesu_FT-817"></a> Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes |
 | <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND |  |  | Yes |
-| <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US |  |  | Yes |
-| <a name="Yaesu_FT-818"></a> Yaesu_FT-818 |  |  | Yes |
-| <a name="Yaesu_FT-818ND_US"></a> Yaesu_FT-818ND_US |  |  | Yes |
-| <a name="Yaesu_FT-857_897"></a> Yaesu_FT-857_897 |  |  | Yes |
-| <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US |  |  | Yes |
+| <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes |
+| <a name="Yaesu_FT-818"></a> Yaesu_FT-818 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes |
+| <a name="Yaesu_FT-818ND_US"></a> Yaesu_FT-818ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes |
+| <a name="Yaesu_FT-857_897"></a> Yaesu_FT-857_897 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes |
+| <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes |
 | <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
-| <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 |  |  | Yes |
+| <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 | [Implied by Yaesu_FT-8800](#user-content-Yaesu_FT-8800) | 24-Oct-2022 | Yes |
 | <a name="Yaesu_FT-90"></a> Yaesu_FT-90 |  |  | Yes |
 | <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R |  |  | Yes |
 | <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 |  |  | Yes |
@@ -352,14 +352,14 @@
 | <a name="Yaesu_VX-6"></a> Yaesu_VX-6 |  |  | Yes |
 | <a name="Yaesu_VX-7"></a> Yaesu_VX-7 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | <a name="Yaesu_VX-8DR"></a> Yaesu_VX-8DR | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
-| <a name="Yaesu_VX-8GE"></a> Yaesu_VX-8GE |  |  | Yes |
-| <a name="Yaesu_VX-8R"></a> Yaesu_VX-8R |  |  | Yes |
+| <a name="Yaesu_VX-8GE"></a> Yaesu_VX-8GE | [Implied by Yaesu_VX-8DR](#user-content-Yaesu_VX-8DR) | 15-Feb-2019 | Yes |
+| <a name="Yaesu_VX-8R"></a> Yaesu_VX-8R | [Implied by Yaesu_VX-8DR](#user-content-Yaesu_VX-8DR) | 15-Feb-2019 | Yes |
 | <a name="Yedro_YC-M04VUS"></a> Yedro_YC-M04VUS | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  |
 ## Stats
 
 **Drivers:** 355
 
-**Tested:** 34% (122/233)
+**Tested:** 36% (130/225)
 
 **Byte clean:** 56% (202/153)
