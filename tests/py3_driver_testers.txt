@@ -135,6 +135,7 @@ Yaesu_FT-818,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-818ND_US,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-857_897,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-857_897_US,+Yaesu_FT-817,14-Feb-2019
+Yaesu_FTM-350,@kk7ds,4-Dec-2022
 Yaesu_VX-3,@kk7ds,15-Feb-2019
 Yaesu_VX-7,@kk7ds,15-Feb-2019
 Yaesu_VX-8R,+Yaesu_VX-8DR,15-Feb-2019

@@ -343,7 +343,7 @@
 | <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 |  |  | Yes |
 | <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R |  |  | Yes |
 | <a name="Yaesu_FTM-3200D_R"></a> Yaesu_FTM-3200D_R |  |  | Yes |
-| <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 |  |  | Yes |
+| <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes |
 | <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes |
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 |  |  | Yes |
@@ -360,6 +360,6 @@
 
 **Drivers:** 355
 
-**Tested:** 38% (137/218)
+**Tested:** 38% (138/217)
 
 **Byte clean:** 58% (209/146)
