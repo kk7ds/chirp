@@ -51,6 +51,8 @@ class CloneThread(threading.Thread):
             self._dialog.fail(str(e))
         else:
             self._dialog.complete()
+        finally:
+            self._radio.pipe.close()
 
 
 # NOTE: This is the legacy settings thread that facilitates
