@@ -62,6 +62,8 @@ def pkg_path(*args):
     fn = os.path.join(base, *args)
     if os.path.exists(fn):
         return fn
+
+    LOG.error('File not found searching for %r at %r', args, fn)
     raise FileNotFoundError('Not found: %s' % fn)
 
 
@@ -265,6 +267,8 @@ class ChirpMain(wx.Frame):
             icon = 'chirp.png'
         try:
             self.SetIcon(wx.Icon(pkg_path('share', icon)))
+        except FileNotFoundError:
+            pass
         except Exception as e:
             LOG.exception('Failed to SetIcon: %s' % e)
 
@@ -324,12 +328,17 @@ class ChirpMain(wx.Frame):
     def add_stock_menu(self):
         stock = wx.Menu()
 
-        dist_stock_confs = sorted(os.listdir(pkg_path('stock_configs', '')))
-        user_stock_dir = platform.get_platform().config_file("stock_configs")
-        if os.path.isdir(user_stock_dir):
+        try:
+            user_stock_dir = platform.get_platform().config_file(
+                "stock_configs")
             user_stock_confs = sorted(os.listdir(user_stock_dir))
-        else:
+        except FileNotFoundError:
             user_stock_confs = []
+        try:
+            dist_stock_dir = pkg_path('stock_configs', '')
+            dist_stock_confs = sorted(os.listdir(dist_stock_dir))
+        except FileNotFoundError:
+            dist_stock_confs = []
 
         def add_stock(fn):
             submenu_item = stock.Append(wx.ID_ANY, fn)
