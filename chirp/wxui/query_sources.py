@@ -62,6 +62,8 @@ class QueryThread(threading.Thread):
 
 
 class QuerySourceDialog(wx.Dialog):
+    NAME = 'NetworkSource'
+
     def __init__(self, *a, **k):
         super(QuerySourceDialog, self).__init__(*a, **k)
         vbox = self.build()
@@ -83,7 +85,9 @@ class QuerySourceDialog(wx.Dialog):
 
         self.Bind(EVT_QUERY_THREAD, self._got_status)
 
-        self.result_file = tempfile.NamedTemporaryFile(suffix='.csv').name
+        self.result_file = tempfile.NamedTemporaryFile(
+            prefix='%s-' % self.NAME,
+            suffix='.csv').name
 
     def _button(self, event):
         id = event.GetEventObject().GetId()
@@ -155,6 +159,7 @@ class RepeaterBookQueryThread(QueryThread):
 
 
 class RepeaterBookQueryDialog(QuerySourceDialog):
+    NAME = 'Repeaterbook'
     RB_BANDS = {
         "--All--":                  0,
         "10 meters (29MHz)":        29,
