@@ -60,7 +60,6 @@ def pkg_path(*args):
         os.path.dirname(__file__), '..', '..'))
 
     fn = os.path.join(base, *args)
-    LOG.debug('Calculated path for %s as %s' % (os.path.join(*args), fn))
     if os.path.exists(fn):
         return fn
     raise FileNotFoundError('Not found: %s' % fn)
@@ -600,16 +599,11 @@ class ChirpMain(wx.Frame):
 
     def _editor_close(self, event):
         eset = self._editors.GetPage(event.GetSelection())
-        if eset.modified:
-            if wx.MessageBox(
-                    '%s has not been saved. Close anyway?' % eset.filename,
-                    'Close without saving?',
-                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING) != wx.YES:
-                event.Veto()
-
-        eset.close()
-
-        wx.CallAfter(self._update_window_for_editor)
+        if self._prompt_to_close_editor(eset):
+            eset.close()
+            wx.CallAfter(self._update_window_for_editor)
+        else:
+            event.Veto()
 
     def _update_window_for_editor(self):
         eset = self.current_editorset
@@ -640,12 +634,10 @@ class ChirpMain(wx.Frame):
             menuitem.Enable(enabled)
 
     def _window_close(self, event):
-        if any([self._editors.GetPage(i).modified
-                for i in range(self._editors.GetPageCount())]):
-            if wx.MessageBox(
-                    'Some files have not been saved. Exit anyway?',
-                    'Exit without saving?',
-                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING) != wx.YES:
+        for i in range(self._editors.GetPageCount()):
+            editorset = self._editors.GetPage(i)
+            self._editors.ChangeSelection(i)
+            if not self._prompt_to_close_editor(editorset, True):
                 if event.CanVeto():
                     event.Veto()
                 return
@@ -744,6 +736,7 @@ class ChirpMain(wx.Frame):
             eset.save(filename)
             self.adj_menu_open_recent(filename)
             self._update_editorset_title(eset)
+            return True
 
     def _menu_save(self, event):
         editorset = self.current_editorset
@@ -756,16 +749,33 @@ class ChirpMain(wx.Frame):
         editorset.save()
         self._update_editorset_title(self.current_editorset)
 
-    def _menu_close(self, event):
-        if self.current_editorset.modified:
-            if wx.MessageBox(
-                    'Some changes have not been saved. Close anyway?',
-                    'Close without saving?',
-                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING) != wx.YES:
-                return
+    def _prompt_to_close_editor(self, editorset, allow_cancel=False):
+        """Returns True if it is okay to close the editor, False otherwise"""
+        if not editorset.modified:
+            return True
 
-        self._editors.DeletePage(self._editors.GetSelection())
-        self._update_window_for_editor()
+        also_cancel = wx.CANCEL if allow_cancel else 0
+        answer = wx.MessageBox(
+            '%s has not been saved. Save before closing?' % editorset.filename,
+            'Save before closing?',
+            wx.YES_NO | wx.YES_DEFAULT | also_cancel | wx.ICON_WARNING)
+        if answer == wx.NO:
+            # User does not want to save, okay to close
+            return True
+        elif answer == wx.CANCEL:
+            # User wants to cancel, not okay to close
+            return False
+        else:
+            if not os.path.exists(editorset.filename):
+                return self._menu_save_as(None)
+            else:
+                editorset.save()
+                return True
+
+    def _menu_close(self, event):
+        if self._prompt_to_close_editor(self.current_editorset):
+            self._editors.DeletePage(self._editors.GetSelection())
+            self._update_window_for_editor()
 
     def _menu_exit(self, event):
         self.Close(True)
