@@ -65,6 +65,9 @@ Kenwood_TM-D700,@kk7ds,20-Oct-2022
 Kenwood_TM-D710G,@kk7ds,22-Oct-2022
 Kenwood_TM-D710G_CloneMode,@kk7ds,22-Oct-2022
 Kenwood_TM-V71,@kk7ds,21-Oct-2022
+Kenwood_TK-2180,@kk7ds,4-Dec-2022
+Kenwood_TK-3180K,@kk7ds,4-Dec-2022
+Kenwood_TK-3180K2,+Kenwood_TK-3180K,4-Dec-2022
 Kenwood_TK-7102,@kk7ds,15-Feb-2019
 Kenwood_TK-7108,@kk7ds,15-Feb-2019
 Kenwood_TK-7180,@kk7ds,18-Oct-2022
