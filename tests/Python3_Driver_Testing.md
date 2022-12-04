@@ -310,7 +310,7 @@
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A |  |  |  |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  |
 | <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P |  |  |  |
-| <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M |  |  | Yes |
+| <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M | [@f3sty](https://github.com/f3sty) | 05-Dec-2022 | Yes |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes |
 | <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes |
 | <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R |  |  | Yes |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 40% (143/212)
+**Tested:** 40% (144/211)
 
 **Byte clean:** 58% (209/146)
 
