@@ -197,8 +197,7 @@ class ChirpCloneDialog(wx.Dialog):
                     not issubclass(rclass, chirp_common.LiveRadio)):
                 continue
             self._vendors[rclass.VENDOR].append(rclass)
-            for alias in rclass.ALIASES:
-                self._vendors[alias.VENDOR].append(alias)
+            self._add_aliases(rclass)
 
         for models in self._vendors.values():
             models.sort(key=lambda x: '%s %s' % (x.MODEL, x.VARIANT))
@@ -209,6 +208,16 @@ class ChirpCloneDialog(wx.Dialog):
                                      CONF.get('last_model', 'state'))
         except ValueError:
             LOG.warning('Last vendor/model not found')
+
+    def _add_aliases(self, rclass):
+        for alias in rclass.ALIASES:
+            class DynamicRadioAlias(rclass):
+                _orig_rclass = rclass
+                VENDOR = alias.VENDOR
+                MODEL = alias.MODEL
+                VARIANT = alias.VARIANT
+
+            self._vendors[alias.VENDOR].append(DynamicRadioAlias)
 
     def disable_model_select(self):
         self._vendor.Disable()
