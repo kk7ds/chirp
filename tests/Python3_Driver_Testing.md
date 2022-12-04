@@ -128,7 +128,7 @@
 | <a name="Kenwood_TH-F7"></a> Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes |
 | <a name="Kenwood_TH-G71"></a> Kenwood_TH-G71 |  |  | Yes |
 | <a name="Kenwood_TH-K2"></a> Kenwood_TH-K2 |  |  | Yes |
-| <a name="Kenwood_TK-2180"></a> Kenwood_TK-2180 |  |  | Yes |
+| <a name="Kenwood_TK-2180"></a> Kenwood_TK-2180 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes |
 | <a name="Kenwood_TK-260"></a> Kenwood_TK-260 |  |  |  |
 | <a name="Kenwood_TK-260G"></a> Kenwood_TK-260G |  |  |  |
 | <a name="Kenwood_TK-270"></a> Kenwood_TK-270 |  |  |  |
@@ -137,8 +137,8 @@
 | <a name="Kenwood_TK-272G"></a> Kenwood_TK-272G |  |  |  |
 | <a name="Kenwood_TK-278"></a> Kenwood_TK-278 |  |  |  |
 | <a name="Kenwood_TK-278G"></a> Kenwood_TK-278G |  |  |  |
-| <a name="Kenwood_TK-3180K"></a> Kenwood_TK-3180K |  |  | Yes |
-| <a name="Kenwood_TK-3180K2"></a> Kenwood_TK-3180K2 |  |  | Yes |
+| <a name="Kenwood_TK-3180K"></a> Kenwood_TK-3180K | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes |
+| <a name="Kenwood_TK-3180K2"></a> Kenwood_TK-3180K2 | [Implied by Kenwood_TK-3180K](#user-content-Kenwood_TK-3180K) | 4-Dec-2022 | Yes |
 | <a name="Kenwood_TK-360"></a> Kenwood_TK-360 |  |  |  |
 | <a name="Kenwood_TK-360G"></a> Kenwood_TK-360G |  |  |  |
 | <a name="Kenwood_TK-370"></a> Kenwood_TK-370 |  |  |  |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 39% (140/215)
+**Tested:** 40% (143/212)
 
 **Byte clean:** 58% (209/146)
 
