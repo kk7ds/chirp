@@ -34,10 +34,10 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # Baofeng WP970I magic string
-MSTRING_WP970I = "\x50\xBB\xFF\x20\x14\x04\x13"
+MSTRING_WP970I = b"\x50\xBB\xFF\x20\x14\x04\x13"
 
 # Baofeng UV-9G magic string
-MSTRING_UV9G = "\x50\xBB\xFF\x20\x12\x05\x25"
+MSTRING_UV9G = b"\x50\xBB\xFF\x20\x12\x05\x25"
 
 
 DTMF_CHARS = "0123456789 *#ABCD"
@@ -85,6 +85,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
     """Baofeng WP970I"""
     VENDOR = "Baofeng"
     MODEL = "WP970I"
+    NEEDS_COMPAT_SERIAL = False
 
     _tri_band = False
     _fileid = []
