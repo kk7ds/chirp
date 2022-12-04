@@ -292,17 +292,21 @@ class ChirpMain(wx.Frame):
         return self._editors.GetCurrentPage()
 
     @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
-    def open_file(self, filename, exists=True, select=True):
+    def open_file(self, filename, exists=True, select=True, rclass=None):
 
         CSVRadio = directory.get_radio('Generic_CSV')
         if exists:
             if not os.path.exists(filename):
                 raise FileNotFoundError('File does not exist: %s' % filename)
-            radio = directory.get_radio_by_image(filename)
+            if rclass is None:
+                radio = directory.get_radio_by_image(filename)
+            else:
+                radio = rclass(filename)
         else:
             radio = CSVRadio(None)
 
-        if not isinstance(radio, CSVRadio):
+        if (not isinstance(radio, CSVRadio) or
+                isinstance(radio, chirp_common.NetworkSourceRadio)):
             report.report_model(radio, 'open')
 
         self.adj_menu_open_recent(filename)
@@ -944,9 +948,10 @@ class ChirpMain(wx.Frame):
         d = query_sources.RepeaterBookQueryDialog(self,
                                                   title='Query Repeaterbook')
         r = d.ShowModal()
+        from chirp.drivers import repeaterbook
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)
-            self.open_file(d.result_file)
+            self.open_file(d.result_file, rclass=repeaterbook.RBRadio)
 
 
 def display_update_notice(version):
