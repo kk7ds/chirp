@@ -39,6 +39,7 @@ Baofeng_UV-9R,@KC9HI,3-Dec-2022
 Baofeng_UV-B5,@KC9HI,18-Nov-2022
 CRT_Micron_UV,+Retevis_RT95,13-Nov-2022
 CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
+Generic_CSV,@kk7ds,4-Dec-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
 Icom_IC-7200,@kk7ds,22-Oct-2022
@@ -55,6 +56,7 @@ Icom_ID-800H_v2,@kk7ds,22-Oct-2022
 Icom_ID-880H,@kk7ds,22-Oct-2022
 Icom_IC-Q7A,@KC9HI,20-Nov-2022
 Intek_KT-980HP,+Baofeng_BF-F8HP,18-Nov-2022
+Kenwood_HMK,+Generic_CSV,4-Dec-2022
 Kenwood_TH-D72_clone_mode,@kk7ds,28-Nov-2022
 Kenwood_TH-D72_live_mode,@kk7ds,21-Oct-2022
 Kenwood_TH-D74_clone_mode,@kk7ds,30-Nov-2022

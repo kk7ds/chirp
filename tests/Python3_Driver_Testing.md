@@ -73,7 +73,7 @@
 | <a name="Feidaxin_FD-450A"></a> Feidaxin_FD-450A |  |  |  |
 | <a name="Feidaxin_FD-460A"></a> Feidaxin_FD-460A |  |  |  |
 | <a name="Feidaxin_FD-460UH"></a> Feidaxin_FD-460UH |  |  |  |
-| <a name="Generic_CSV"></a> Generic_CSV |  |  |  |
+| <a name="Generic_CSV"></a> Generic_CSV | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 |  |
 | <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 |  |  |  |
 | <a name="Icom_746"></a> Icom_746 |  |  | Yes |
 | <a name="Icom_IC-208H"></a> Icom_IC-208H |  |  | Yes |
@@ -116,7 +116,7 @@
 | <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH |  |  |  |
 | <a name="KYD_IP-620"></a> KYD_IP-620 |  |  |  |
 | <a name="KYD_NC-630A"></a> KYD_NC-630A |  |  |  |
-| <a name="Kenwood_HMK"></a> Kenwood_HMK |  |  |  |
+| <a name="Kenwood_HMK"></a> Kenwood_HMK | [Implied by Generic_CSV](#user-content-Generic_CSV) | 4-Dec-2022 |  |
 | <a name="Kenwood_ITM"></a> Kenwood_ITM |  |  |  |
 | <a name="Kenwood_TH-D7"></a> Kenwood_TH-D7 |  |  | Yes |
 | <a name="Kenwood_TH-D72_clone_mode"></a> Kenwood_TH-D72_clone_mode | [@kk7ds](https://github.com/kk7ds) | 28-Nov-2022 | Yes |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 41% (146/209)
+**Tested:** 41% (148/207)
 
 **Byte clean:** 58% (209/146)
 
