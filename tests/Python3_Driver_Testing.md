@@ -213,14 +213,14 @@
 | <a name="Quansheng_TG-UV2+"></a> Quansheng_TG-UV2+ |  |  |  |
 | <a name="RT_Systems_CSV"></a> RT_Systems_CSV |  |  |  |
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
-| <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S |  |  | Yes |
+| <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes |
 | <a name="Radioddity_GA-510"></a> Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes |
 | <a name="Radioddity_R2"></a> Radioddity_R2 |  |  |  |
 | <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes |
 | <a name="Radtel_T18"></a> Radtel_T18 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
-| <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus |  |  | Yes |
+| <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes |
 | <a name="Retevis_RA685"></a> Retevis_RA685 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes |
 | <a name="Retevis_RA85"></a> Retevis_RA85 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes |
 | <a name="Retevis_RB15"></a> Retevis_RB15 |  |  |  |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 38% (138/217)
+**Tested:** 39% (140/215)
 
 **Byte clean:** 58% (209/146)
 
