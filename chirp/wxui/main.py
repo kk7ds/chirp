@@ -130,6 +130,9 @@ class ChirpEditorSet(wx.Panel):
             info = radioinfo.ChirpRadioInfo(parent_radio, self._editors)
             self.add_editor(info, 'Info')
 
+        # After the GUI is built, set focus to the current editor
+        wx.CallAfter(self.current_editor.SetFocus)
+
     def _editor_changed(self, event):
         self._modified = True
         wx.PostEvent(self, EditorSetChanged(self.GetId(), editorset=self))
@@ -138,6 +141,7 @@ class ChirpEditorSet(wx.Panel):
         page_index = event.GetSelection()
         page = self._editors.GetPage(page_index)
         page.selected()
+        wx.PostEvent(self, EditorSetChanged(self.GetId(), editorset=self))
 
     def save(self, filename=None):
         if filename is None:
@@ -188,6 +192,12 @@ class ChirpEditorSet(wx.Panel):
 
     def cb_paste(self, data):
         return self.current_editor.cb_paste(data)
+
+    def cb_goto(self, number):
+        return self.current_editor.cb_goto(number)
+
+    def cb_find(self, text):
+        return self.current_editor.cb_find(text)
 
     def select_all(self):
         return self.current_editor.select_all()
@@ -423,6 +433,27 @@ class ChirpMain(wx.Frame):
         selall_item = edit_menu.Append(wx.ID_SELECTALL)
         self.Bind(wx.EVT_MENU, self._menu_selall, selall_item)
 
+        edit_menu.Append(wx.MenuItem(edit_menu, wx.ID_SEPARATOR))
+
+        self._last_search_text = ''
+        find_item = edit_menu.Append(wx.ID_FIND)
+        self.Bind(wx.EVT_MENU, self._menu_find, find_item)
+
+        self._find_next_item = wx.NewId()
+        find_next_item = edit_menu.Append(wx.MenuItem(edit_menu,
+                                                      self._find_next_item,
+                                                      'Find Next'))
+        find_next_item.SetAccel(wx.AcceleratorEntry
+                                (wx.MOD_CONTROL | wx.ACCEL_ALT, ord('F')))
+        self.Bind(wx.EVT_MENU, self._menu_find, find_next_item,
+                  self._find_next_item)
+
+        self._goto_item = wx.NewId()
+        goto_item = edit_menu.Append(wx.MenuItem(edit_menu, self._goto_item,
+                                                 'Goto'))
+        goto_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
+        self.Bind(wx.EVT_MENU, self._menu_goto, goto_item)
+
         radio_menu = wx.Menu()
 
         if sys.platform == 'darwin':
@@ -626,6 +657,7 @@ class ChirpMain(wx.Frame):
         can_save = False
         can_saveas = False
         can_upload = False
+        can_goto = False
         CSVRadio = directory.get_radio('Generic_CSV')
         if eset is not None:
             is_live = isinstance(eset.radio, chirp_common.LiveRadio)
@@ -635,6 +667,7 @@ class ChirpMain(wx.Frame):
             can_upload = (not isinstance(eset.radio, CSVRadio) and
                           not isinstance(eset.radio, common.LiveAdapter) and
                           not is_live)
+            can_goto = isinstance(eset.current_editor, memedit.ChirpMemEdit)
 
         self._editors.Show()
 
@@ -643,6 +676,9 @@ class ChirpMain(wx.Frame):
             (wx.ID_SAVE, can_save),
             (wx.ID_SAVEAS, can_saveas),
             (self._upload_menu_item, can_upload),
+            (self._goto_item, can_goto),
+            (self._find_next_item, can_goto),
+            (wx.ID_FIND, can_goto),
         ]
         for ident, enabled in items:
             menuitem = self.GetMenuBar().FindItemById(ident)
@@ -815,6 +851,27 @@ class ChirpMain(wx.Frame):
 
     def _menu_selall(self, event):
         self.current_editorset.select_all()
+
+    def _menu_find(self, event):
+        if event.GetId() == wx.ID_FIND:
+            search = wx.GetTextFromUser('Find:', 'Find',
+                                        self._last_search_text, self)
+        elif not self._last_search_text:
+            return
+        else:
+            search = self._last_search_text
+        if search:
+            self._last_search_text = search
+            self.current_editorset.cb_find(search)
+
+    def _menu_goto(self, event):
+        eset = self.current_editorset
+        rf = eset.radio.get_features()
+        l, u = rf.memory_bounds
+        a = wx.GetNumberFromUser("Goto Memory:", "Number", 'Goto Memory',
+                                 1, l, u, self)
+        if a >= 0:
+            eset.cb_goto(a)
 
     def _menu_download(self, event):
         with clone.ChirpDownloadDialog(self) as d:

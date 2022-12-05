@@ -329,6 +329,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             len(self._col_defs))
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
+        self._grid.SetFocus()
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self._grid, 1, wx.EXPAND)
@@ -662,6 +663,32 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.debug('FIXME: handle pasted text: %r' % data.GetText())
         else:
             LOG.warning('Unknown data format %s' % data.GetFormat().Type)
+
+    def cb_goto(self, number, column=0):
+        self._grid.GoToCell(self.mem2row(number), column)
+        self._grid.SelectRow(self.mem2row(number))
+
+    def cb_find(self, text):
+        # FIXME: This should be more dynamic
+        cols = [
+            0,   # Freq
+            1,   # Name
+            14,  # Comment
+        ]
+        num_rows = self._grid.GetNumberRows()
+        try:
+            current_row = self._grid.GetSelectedRows()[0] + 1
+        except IndexError:
+            current_row = 0
+        for row in range(current_row, current_row + num_rows):
+            # Start at current row, and wrap around
+            row_num = row % num_rows
+            for col in cols:
+                if text.lower() in self._grid.GetCellValue(
+                        row_num, col).lower():
+                    self.cb_goto(self.row2mem(row_num), col)
+                    return True
+        return False
 
     def select_all(self):
         self._grid.SelectAll()
