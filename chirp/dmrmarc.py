@@ -44,28 +44,26 @@ class DMRMARCRadio(chirp_common.NetworkSourceRadio):
 
     def set_params(self, city, state, country):
         """Set the parameters to be used for a query"""
-        self._city = city and [x.strip() for x in city.split(",")] or ['']
-        self._state = state and [x.strip() for x in state.split(",")] or ['']
-        self._country = country and [x.strip() for x in country.split(",")] \
-            or ['']
+        self._city = city
+        self._state = state
+        self._country = country
 
     def do_fetch(self):
+        url = 'https://radioid.net/api/dmr/repeater/?%s' % (
+                   urllib.urlencode([('city', self._city),
+                                     ('state', self._state),
+                                     ('country', self._country)]))
         fn = tempfile.mktemp(".json")
-        filename, headers = urllib.urlretrieve(self.URL, fn)
+        filename, headers = urllib.urlretrieve(url, fn)
         with open(fn, 'r') as f:
             try:
-                self._repeaters = json.load(f)['repeaters']
+                self._repeaters = json.load(f)['results']
             except AttributeError:
                 raise errors.RadioError(
                     "Unexpected response from %s" % self.URL)
             except ValueError as e:
                 raise errors.RadioError(
                     "Invalid JSON from %s. %s" % (self.URL, str(e)))
-
-        self._repeaters = list_filter(self._repeaters, "city", self._city)
-        self._repeaters = list_filter(self._repeaters, "state", self._state)
-        self._repeaters = list_filter(self._repeaters, "country",
-                                      self._country)
 
     def get_features(self):
         if not self._repeaters:
@@ -102,7 +100,7 @@ class DMRMARCRadio(chirp_common.NetworkSourceRadio):
             mem.duplex = ""
         mem.offset = abs(offset)
         mem.mode = 'DMR'
-        mem.comment = repeater.get('map_info')
+        mem.comment = repeater.get('details')
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
