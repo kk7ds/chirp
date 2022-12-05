@@ -139,6 +139,12 @@ class ChirpEditor(wx.Panel):
     def cb_paste(self, data):
         pass
 
+    def cb_goto(self, number):
+        pass
+
+    def cb_find(self, text):
+        pass
+
     def select_all(self):
         pass
 
