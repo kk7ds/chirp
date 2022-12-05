@@ -206,10 +206,16 @@ class ChirpToneColumn(ChirpMemoryColumn):
             return 'ToneSql'
 
     def hidden_for(self, memory):
-        return (
-            (self._name == 'rtone' and memory.tmode not in ('Tone', 'Cross'))
+        cross_rx_tone = (memory.tmode == 'Cross' and
+                         '->Tone' in memory.cross_mode)
+        cross_tx_tone = (memory.tmode == 'Cross' and
+                         'Tone->' in memory.cross_mode)
+        return not (
+            (self._name == 'rtone' and (
+                memory.tmode == 'Tone' or cross_tx_tone))
             or
-            (self._name == 'ctone' and memory.tmode not in ('TSQL', 'Cross')))
+            (self._name == 'ctone' and (
+                memory.tmode == 'TSQL' or cross_rx_tone)))
 
     def _digest_value(self, memory, input_value):
         return float(input_value)
