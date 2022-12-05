@@ -18,7 +18,10 @@ import functools
 import importlib.resources
 import logging
 import os
+import platform
+import shutil
 import sys
+import tempfile
 import time
 import webbrowser
 
@@ -30,7 +33,7 @@ from chirp import bandplan
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
-from chirp import platform
+from chirp import platform as chirp_platform
 from chirp.ui import config
 from chirp.wxui import common
 from chirp.wxui import clone
@@ -246,7 +249,7 @@ class ChirpMain(wx.Frame):
 
         d = CONF.get('last_dir', 'state')
         if d and os.path.isdir(d):
-            platform.get_platform().set_last_dir(d)
+            chirp_platform.get_platform().set_last_dir(d)
 
         self.SetMenuBar(self.make_menubar())
 
@@ -339,7 +342,7 @@ class ChirpMain(wx.Frame):
         stock = wx.Menu()
 
         try:
-            user_stock_dir = platform.get_platform().config_file(
+            user_stock_dir = chirp_platform.get_platform().config_file(
                 "stock_configs")
             user_stock_confs = sorted(os.listdir(user_stock_dir))
         except FileNotFoundError:
@@ -556,6 +559,17 @@ class ChirpMain(wx.Frame):
         help_menu.Append(reporting_menu)
         reporting_menu.Check(not CONF.get_bool('no_report', default=False))
 
+        debug_log_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                     'Open debug log')
+        self.Bind(wx.EVT_MENU, self._menu_debug_log, debug_log_menu)
+        help_menu.Append(debug_log_menu)
+
+        if platform.system() in ('Windows', 'Darwin'):
+            debug_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                         'Show debug log location')
+            self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
+            help_menu.Append(debug_loc_menu)
+
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
         menu_bar.Append(edit_menu, '&Edit')
@@ -587,7 +601,7 @@ class ChirpMain(wx.Frame):
 
     def adj_menu_open_recent(self, filename):
         # Don't add stock config files to the recent files list
-        stock_dir = platform.get_platform().config_file("stock_configs")
+        stock_dir = chirp_platform.get_platform().config_file("stock_configs")
         this_dir = os.path.dirname(filename)
         if (stock_dir and os.path.exists(stock_dir) and
                 this_dir and os.path.samefile(stock_dir, this_dir)):
@@ -728,14 +742,14 @@ class ChirpMain(wx.Frame):
 
         wildcard = '|'.join(formats)
         with wx.FileDialog(self, 'Open a file',
-                           platform.get_platform().get_last_dir(),
+                           chirp_platform.get_platform().get_last_dir(),
                            wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
             if fd.ShowModal() == wx.ID_CANCEL:
                 return
             filename = fd.GetPath()
             d = fd.GetDirectory()
-            platform.get_platform().set_last_dir(d)
+            chirp_platform.get_platform().set_last_dir(d)
             CONF.set('last_dir', d, 'state')
             config._CONFIG.save()
             self.open_file(str(filename))
@@ -744,7 +758,8 @@ class ChirpMain(wx.Frame):
         fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(
             event.GetId()).GetItemLabelText()
 
-        user_stock_dir = platform.get_platform().config_file("stock_configs")
+        user_stock_dir = chirp_platform.get_platform().config_file(
+            "stock_configs")
         user_stock_conf = os.path.join(user_stock_dir, fn)
         with importlib.resources.path('stock_configs', fn) as path:
             dist_stock_conf = str(path)
@@ -992,6 +1007,32 @@ class ChirpMain(wx.Frame):
                 return
 
         CONF.set_bool('no_report', not menuitem.IsChecked())
+
+    @common.error_proof()
+    def _menu_debug_log(self, event):
+        pf = chirp_platform.get_platform()
+        src = pf.config_file('debug.log')
+        dst = tempfile.NamedTemporaryFile(
+            prefix='chirp_debug-',
+            suffix='.txt').name
+        shutil.copy(src, dst)
+        wx.LaunchDefaultApplication(dst)
+
+    @common.error_proof()
+    def _menu_debug_loc(self, event):
+        pf = chirp_platform.get_platform()
+        src = pf.config_file('debug.log')
+        dst = tempfile.NamedTemporaryFile(
+            prefix='chirp_debug-',
+            suffix='.txt').name
+        shutil.copy(src, dst)
+        system = platform.system()
+        if system == 'Windows':
+            wx.Execute('explorer /select, %s' % dst)
+        elif system == 'Darwin':
+            wx.Execute('open -R %s' % dst)
+        else:
+            raise Exception('Unable to reveal %s on this system' % dst)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
