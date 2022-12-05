@@ -1043,6 +1043,9 @@ def display_update_notice(version):
     if CONF.get_bool("skip_update_check", "state"):
         return
 
+    if CHIRP_VERSION.endswith('dev'):
+        return
+
     # Report new updates every three days
     intv = 3600 * 24 * 3
 
