@@ -23,6 +23,8 @@ import threading
 import wx
 
 from chirp import CHIRP_VERSION
+from chirp import dmrmarc
+from chirp.drivers import generic_csv
 from chirp.ui import config
 from chirp.ui import fips
 
@@ -154,6 +156,29 @@ class RepeaterBookQueryThread(QueryThread):
         if size <= 105:
             self.send_fail('No results!')
             return
+
+        self.send_end()
+
+
+class DMRMARCQueryThread(QueryThread):
+    def do_query(self):
+        self.send_status('Querying', 10)
+
+        r = dmrmarc.DMRMARCRadio(None)
+        r.set_params(**self.query_dialog.get_dm_params())
+        r.do_fetch()
+        f = r.get_features()
+        if f.memory_bounds[1] == 0:
+            self.send_fail('No results!')
+            return
+        self.send_status('Parsing', 20)
+
+        csv = generic_csv.CSVRadio(None)
+        for i in range(0, f.memory_bounds[1] + 1):
+            m = r.get_memory(i)
+            csv.set_memory(m)
+
+        csv.save(self.query_dialog.result_file)
 
         self.send_end()
 
@@ -323,3 +348,44 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                 }
             except (TypeError, ValueError):
                 raise Exception('Distance must be a number!')
+
+
+class DMRMARCQueryDialog(QuerySourceDialog):
+    NAME = 'DMR-MARC'
+
+    def _add_grid(self, grid, label, widget):
+        grid.Add(wx.StaticText(widget.GetParent(), label=label),
+                 border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+        grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
+
+    def build(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        panel = wx.Panel(self)
+        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+
+        self._city = wx.TextCtrl(panel,
+                                 value=CONF.get('city', 'dmrmarc') or '')
+        self._add_grid(grid, 'City', self._city)
+        self._state = wx.TextCtrl(panel,
+                                  value=CONF.get('state', 'dmrmarc') or '')
+        self._add_grid(grid, 'State', self._state)
+        self._country = wx.TextCtrl(panel,
+                                    value=CONF.get('country', 'dmrmarc') or '')
+        self._add_grid(grid, 'Country', self._country)
+
+        return vbox
+
+    def do_query(self):
+        CONF.set('city', self._city.GetValue(), 'dmrmarc')
+        CONF.set('state', self._state.GetValue(), 'dmrmarc')
+        CONF.set('country', self._country.GetValue(), 'dmrmarc')
+        DMRMARCQueryThread(self).start()
+
+    def get_dm_params(self):
+        return {'city': CONF.get('city', 'dmrmarc'),
+                'state': CONF.get('state', 'dmrmarc'),
+                'country': CONF.get('country', 'dmrmarc')}

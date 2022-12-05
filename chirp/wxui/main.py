@@ -481,6 +481,10 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
         source_menu.Append(query_rb_item)
 
+        query_dm_item = wx.MenuItem(source_menu, wx.NewId(), 'DMR-MARC')
+        self.Bind(wx.EVT_MENU, self._menu_query_dm, query_dm_item)
+        source_menu.Append(query_dm_item)
+
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
@@ -1020,6 +1024,14 @@ class ChirpMain(wx.Frame):
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)
             self.open_file(d.result_file, rclass=repeaterbook.RBRadio)
+
+    def _menu_query_dm(self, event):
+        d = query_sources.DMRMARCQueryDialog(self,
+                                             title='Query DMR-MARC')
+        r = d.ShowModal()
+        if r == wx.ID_OK:
+            LOG.debug('Result file: %s' % d.result_file)
+            self.open_file(d.result_file)
 
 
 def display_update_notice(version):
