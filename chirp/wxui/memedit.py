@@ -639,6 +639,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._radio.erase_memory(mem.number)
                 mem = self._radio.get_memory(mem.number)
                 self.refresh_memory(mem.number, mem)
+
+        if cut:
+            wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
         return data
 
     def _cb_paste_memories(self, mems):
@@ -649,11 +653,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             return
 
         for mem in mems:
-            mem.empty = False
             mem.number = row + self._features.memory_bounds[0]
             row += 1
-            self._radio.set_memory(mem)
+            if mem.empty:
+                self._radio.erase_memory(mem.number)
+            else:
+                self._radio.set_memory(mem)
             self.refresh_memory(mem.number, mem)
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def cb_paste(self, data):
         if data.GetFormat() == common.CHIRP_DATA_MEMORY:
