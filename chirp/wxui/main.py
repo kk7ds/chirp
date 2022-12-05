@@ -350,6 +350,8 @@ class ChirpMain(wx.Frame):
             add_stock(fn)
             found.append(os.path.basename(fn))
 
+        stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
+
         for fn in dist_stock_confs:
             if os.path.basename(fn) not in found:
                 add_stock(fn)
