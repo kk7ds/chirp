@@ -325,7 +325,7 @@
 | <a name="Yaesu_FT-60"></a> Yaesu_FT-60 |  |  | Yes |
 | <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E |  |  | Yes |
 | <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R |  |  | Yes |
-| <a name="Yaesu_FT-70D"></a> Yaesu_FT-70D |  |  | Yes |
+| <a name="Yaesu_FT-70D"></a> Yaesu_FT-70D | [@n8sqt](https://github.com/n8sqt) | 05-Dec-2022 | Yes |
 | <a name="Yaesu_FT-7100M"></a> Yaesu_FT-7100M |  |  | Yes |
 | <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes |
 | <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 |  |  | Yes |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 42% (151/204)
+**Tested:** 42% (152/203)
 
 **Byte clean:** 59% (212/143)
 
