@@ -508,6 +508,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._set_memory_defaults(mem)
             if mem.empty:
                 mem.empty = False
+            if col_def.label == 'Cross mode':
+                mem.tmode = 'Cross'
             self._grid.SetRowLabelValue(row, '*%i' % mem.number)
             self._row_label_renderers[row].set_progress()
             self.do_radio(set_cb, 'set_memory', mem)
