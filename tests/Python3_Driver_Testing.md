@@ -63,7 +63,7 @@
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Commander_KG-UV"></a> Commander_KG-UV |  |  |  |
-| <a name="Explorer_QRZ-1"></a> Explorer_QRZ-1 |  |  |  |
+| <a name="Explorer_QRZ-1"></a> Explorer_QRZ-1 | [Implied by TYT_TH-UV88](#user-content-TYT_TH-UV88) | 5-Dec-2022 | Yes |
 | <a name="Feidaxin_FD-150A"></a> Feidaxin_FD-150A |  |  |  |
 | <a name="Feidaxin_FD-160A"></a> Feidaxin_FD-160A |  |  |  |
 | <a name="Feidaxin_FD-268A"></a> Feidaxin_FD-268A |  |  |  |
@@ -265,7 +265,7 @@
 | <a name="Retevis_RT68"></a> Retevis_RT68 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes |
 | <a name="Retevis_RT76"></a> Retevis_RT76 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes |
 | <a name="Retevis_RT76P"></a> Retevis_RT76P |  |  |  |
-| <a name="Retevis_RT85"></a> Retevis_RT85 |  |  |  |
+| <a name="Retevis_RT85"></a> Retevis_RT85 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes |
 | <a name="Retevis_RT87"></a> Retevis_RT87 |  |  |  |
 | <a name="Retevis_RT9000D_136-174"></a> Retevis_RT9000D_136-174 |  |  |  |
 | <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 |  |  |  |
@@ -287,7 +287,7 @@
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  |  |
 | <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  |  |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  |
-| <a name="TYT_TH-UV88"></a> TYT_TH-UV88 |  |  |  |
+| <a name="TYT_TH-UV88"></a> TYT_TH-UV88 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  |
 | <a name="TYT_TH9000_144"></a> TYT_TH9000_144 |  |  |  |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 41% (148/207)
+**Tested:** 42% (151/204)
 
-**Byte clean:** 58% (209/146)
+**Byte clean:** 59% (212/143)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
