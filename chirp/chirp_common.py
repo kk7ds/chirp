@@ -1118,7 +1118,7 @@ class Radio(Alias):
         pass
 
     @classmethod
-    def supports_format(self, fmt):
+    def supports_format(cls, fmt):
         """Returns true if file format @fmt is supported by this radio.
 
         This really should not be overridden by implementations
