@@ -62,9 +62,10 @@ class MemoryDialog(wx.Dialog):
 
         sizer.Add(wx.StaticLine(self), 0)
 
-        btn = wx.Button(self, wx.OK, 'OK')
-        btn.Bind(wx.EVT_BUTTON, lambda e: self.EndModal(wx.OK))
-        sizer.Add(btn, 0)
+        bs = self.CreateButtonSizer(wx.OK | wx.OK_DEFAULT)
+        sizer.Add(bs)
+
+        self.Bind(wx.EVT_BUTTON, lambda e: self.EndModal(wx.CLOSE))
 
         font = wx.Font(12, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL,
                        wx.FONTWEIGHT_NORMAL)
@@ -77,6 +78,7 @@ class MemoryDialog(wx.Dialog):
         else:
             self._raw_memory(mem)
 
+        self.SetSize(640, 480)
         self.Centre()
 
     def _raw_memory(self, mem):
