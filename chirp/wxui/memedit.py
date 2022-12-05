@@ -652,15 +652,31 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.info('No row selected for paste')
             return
 
+        errors = []
+        modified = False
         for mem in mems:
             mem.number = row + self._features.memory_bounds[0]
             row += 1
-            if mem.empty:
-                self._radio.erase_memory(mem.number)
-            else:
-                self._radio.set_memory(mem)
-            self.refresh_memory(mem.number, mem)
-        wx.PostEvent(self, common.EditorChanged(self.GetId()))
+            try:
+                if mem.empty:
+                    self._radio.erase_memory(mem.number)
+                else:
+                    self._radio.set_memory(mem)
+                self.refresh_memory(mem.number, mem)
+                modified = True
+            except Exception as e:
+                errors.append((mem, e))
+
+        if modified:
+            wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+        if errors:
+            d = wx.MessageDialog(
+                    self,
+                    'Some memories are incompatible with this radio')
+            msg = '\n'.join('#%i: %s' % (mem.number, e) for mem, e in errors)
+            d.SetExtendedMessage(msg)
+            d.ShowModal()
 
     def cb_paste(self, data):
         if data.GetFormat() == common.CHIRP_DATA_MEMORY:
