@@ -25,6 +25,7 @@ import wx.lib.mixins.gridlabelrenderer as glr
 
 from chirp import chirp_common
 from chirp import bandplan
+from chirp import errors
 from chirp import settings
 from chirp.ui import config
 from chirp.wxui import common
@@ -459,6 +460,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         if defaults.step_khz:
             mem.tuning_step = defaults.step_khz
+        else:
+            try:
+                mem.tuning_step = chirp_common.required_step(mem.freq)
+            except errors.InvalidDataError as e:
+                LOG.warning(e)
         if defaults.mode:
             mem.mode = defaults.mode
         if defaults.tones:
