@@ -17,7 +17,7 @@ clean:
 
 chirpui.pot:
 	xgettext -L Python -k_ -o chirpui.pot -f <( \
-	  /usr/bin/find ../chirp/ui ../chirp/wxui -name '*.py') $(XGT_OPTS)
+	  /usr/bin/find ../ui ../wxui -name '*.py') $(XGT_OPTS)
 
 %.po: chirpui.pot
 	if [ -f $@ ]; then                                \

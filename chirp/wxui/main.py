@@ -15,7 +15,6 @@
 
 import datetime
 import functools
-import importlib.resources
 import logging
 import os
 import platform
@@ -24,6 +23,11 @@ import sys
 import tempfile
 import time
 import webbrowser
+
+if sys.version_info < (3, 10):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
 
 import wx
 import wx.aui
@@ -56,20 +60,6 @@ EMPTY_MENU_LABEL = '(none)'
 KEEP_RECENT = 8
 OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
-
-
-def pkg_path(*args):
-    # This is the root of the chirp git tree, or the egg for sdist,
-    # or the bundle directory if frozen.
-    base = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), '..', '..'))
-
-    fn = os.path.join(base, *args)
-    if os.path.exists(fn):
-        return fn
-
-    LOG.error('File not found searching for %r at %r', args, fn)
-    raise FileNotFoundError('Not found: %s' % fn)
 
 
 class ChirpEditorSet(wx.Panel):
@@ -270,18 +260,13 @@ class ChirpWelcomePanel(wx.Panel):
     def __init__(self, *a, **k):
         super(ChirpWelcomePanel, self).__init__(*a, **k)
 
-        try:
-            welcome = pkg_path('share', 'welcome_screen.png')
-        except FileNotFoundError as e:
-            LOG.error('Unable to find welcome image: %s' % e)
-            return
-        if not os.path.exists(welcome):
-            LOG.error('Unable to find welcome image %r:' % welcome)
-            return
-
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
-        bmp = wx.Bitmap(welcome)
+        with importlib_resources.as_file(
+            importlib_resources.files('chirp.share')
+            .joinpath('welcome_screen.png')
+        ) as welcome:
+            bmp = wx.Bitmap(str(welcome))
         width, height = self.GetSize()
         img = wx.StaticBitmap(self, wx.ID_ANY, bmp)
         vbox.Add(img, 1, flag=wx.EXPAND)
@@ -335,12 +320,11 @@ class ChirpMain(wx.Frame):
             icon = 'chirp.ico'
         else:
             icon = 'chirp.png'
-        try:
-            self.SetIcon(wx.Icon(pkg_path('share', icon)))
-        except FileNotFoundError:
-            pass
-        except Exception as e:
-            LOG.exception('Failed to SetIcon: %s' % e)
+        with importlib_resources.as_file(
+            importlib_resources.files('chirp.share')
+            .joinpath(icon)
+        ) as path:
+            self.SetIcon(wx.Icon(str(path)))
 
     @property
     def current_editorset(self):
@@ -391,11 +375,13 @@ class ChirpMain(wx.Frame):
             user_stock_confs = sorted(os.listdir(user_stock_dir))
         except FileNotFoundError:
             user_stock_confs = []
-        try:
-            dist_stock_dir = pkg_path('stock_configs', '')
-            dist_stock_confs = sorted(os.listdir(dist_stock_dir))
-        except FileNotFoundError:
-            dist_stock_confs = []
+        dist_stock_confs = sorted(
+            [
+                conf.name for conf
+                in importlib_resources.files('chirp.stock_configs').iterdir()
+                if conf.is_file()
+            ]
+        )
 
         def add_stock(fn):
             submenu_item = stock.Append(wx.ID_ANY, fn)
@@ -831,7 +817,10 @@ class ChirpMain(wx.Frame):
         user_stock_dir = chirp_platform.get_platform().config_file(
             "stock_configs")
         user_stock_conf = os.path.join(user_stock_dir, fn)
-        with importlib.resources.path('stock_configs', fn) as path:
+        with importlib_resources.as_file(
+            importlib_resources.files('chirp.stock_configs')
+            .joinpath(fn)
+        ) as path:
             dist_stock_conf = str(path)
         if os.path.exists(user_stock_conf):
             filename = user_stock_conf

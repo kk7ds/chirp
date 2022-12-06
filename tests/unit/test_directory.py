@@ -118,7 +118,7 @@ class TestAliasMap(base.BaseTest):
                 directory_models[cls.VENDOR].add(fullmodel)
 
         aliases = yaml.load(open(os.path.join(os.path.dirname(__file__),
-                                              '..', '..', 'share',
+                                              '..', '..', 'chirp', 'share',
                                               'model_alias_map.yaml')).read(),
                             Loader=yaml.FullLoader)
         for vendor, models in sorted(aliases.items()):
