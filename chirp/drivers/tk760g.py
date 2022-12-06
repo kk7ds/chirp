@@ -27,11 +27,11 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
-##### IMPORTANT DATA ##########################################
+# #### IMPORTANT DATA ##########################################
 # This radios have a span of
 # 0x00000 - 0x08000 => Radio Memory / Settings data
 # 0x08000 - 0x10000 => FIRMWARE... hum...
-###############################################################
+# ##############################################################
 
 MEM_FORMAT = """
 #seekto 0x0000;
@@ -292,8 +292,8 @@ TVOL = ["%s" % x for x in range(0, 33)]
 TVOL[32] = "Continuous"
 SQL = ["off"] + ["%s" % x for x in range(1, 10)]
 
-## BOT = 0, EOT = 1, Both = 2, NONE = 3
-#PTTID = ["BOT", "EOT", "Both", "none"]
+# BOT = 0, EOT = 1, Both = 2, NONE = 3
+# PTTID = ["BOT", "EOT", "Both", "none"]
 
 # For debugging purposes
 debug = False
@@ -321,7 +321,7 @@ KEYS = {
     0x48: "Scan del/add",
     0x4a: "GROUP down",
     0x4b: "GROUP up",
-    #0x4e: "Tone off (Experimental)",       # undocumented !!!!
+    # 0x4e: "Tone off (Experimental)",       # undocumented !!!!
     0x4f: "None",
     0x50: "VOL down",
     0x51: "VOL up",
@@ -519,7 +519,7 @@ def do_download(radio):
         # send request, but before flush the rx buffer
         radio.pipe.flush()
         _raw_send(radio, _make_frame("R", addr))
-        
+
         time.sleep(0.1)
 
         # now we get the data
@@ -660,7 +660,8 @@ class memBank(chirp_common.Bank):
     index = 0
 
 
-class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
+class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
+                        chirp_common.ExperimentalRadio):
     """Kenwood Series 60G Radios base class"""
     VENDOR = "Kenwood"
     BAUD_RATE = 9600
@@ -1136,7 +1137,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         # TODO / PLANNED
         # adjust feqs
-        #freqs = RadioSettingGroup("freqs", "Adjust Frequencies")
+        # freqs = RadioSettingGroup("freqs", "Adjust Frequencies")
 
         top = RadioSettings(basic, dealer, fkeys)
 
@@ -1179,9 +1180,9 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                                SQL, current_index=sett.sql_level))
         basic.append(sql)
 
-        #c2t = RadioSetting("settings.c2t", "Clear to Transpond",
-                           #RadioSettingValueBoolean(not sett.c2t))
-        #basic.append(c2t)
+        # c2t = RadioSetting("settings.c2t", "Clear to Transpond",
+        #                    RadioSettingValueBoolean(not sett.c2t))
+        # basic.append(c2t)
 
         ptone = RadioSetting("settings.poweron_tone", "Power On tone",
                              RadioSettingValueBoolean(sett.poweron_tone))
@@ -1230,7 +1231,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         l1 = str(mess.line1).strip(" \xff")
         line1 = RadioSetting("message.line1", "Comment 1",
-                           RadioSettingValueString(0, 32, l1))
+                             RadioSettingValueString(0, 32, l1))
         dealer.append(line1)
 
         l2 = str(mess.line2).strip(" \xff")
@@ -1278,14 +1279,14 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             fkeys.append(chd)
 
             foot = RadioSetting("keys.kFOOT", "Foot switch",
-                               RadioSettingValueList(KEYS.values(),
-                                                     KEYS[int(keys.kFOOT)]))
+                                RadioSettingValueList(KEYS.values(),
+                                                      KEYS[int(keys.kFOOT)]))
             fkeys.append(foot)
 
         # this is the common buttons for all
 
         # 260G model don't have the front keys
-        if not b"P2600" in self.TYPE:
+        if b"P2600" not in self.TYPE:
             scn_name = "SCN"
             if self.TYPE[0] == b"P":
                 scn_name = "Open Circle"
@@ -1422,7 +1423,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
                 # case keys, with special config
                 if inter == "keys":
-                    value = list(KEYS.keys())[list(KEYS.values()).index(str(value))]
+                    value = list(KEYS.keys())[list(KEYS.values()).index(
+                            str(value))]
 
             # Apply al configs done
             setattr(obj, setting, value)
