@@ -94,6 +94,12 @@ Kenwood_TK-278G,+Kenwood_TK-762G,5-Dec-2022
 Kenwood_TK-272G,+Kenwood_TK-762G,5-Dec-2022
 Kenwood_TK-270G,+Kenwood_TK-762G,5-Dec-2022
 Kenwood_TK-260G,+Kenwood_TK-762G,5-Dec-2022
+Kenwood_TK-760,@kk7ds,5-Dec-2022
+Kenwood_TK-762,+Kenwood_TK-760,5-Dec-2022
+Kenwood_TK-768,+Kenwood_TK-760,5-Dec-2022
+Kenwood_TK-860,+Kenwood_TK-760,5-Dec-2022
+Kenwood_TK-862,+Kenwood_TK-760,5-Dec-2022
+Kenwood_TK-868,+Kenwood_TK-760,5-Dec-2022
 LUITON_LT-588UV,@KC9HI,11-Nov-2022
 Midland_DBR2500,+Retevis_RT95,13-Nov-2022
 QYT_KT-8R,@KC9HI,11-Nov-2022

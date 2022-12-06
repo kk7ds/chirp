@@ -152,21 +152,21 @@
 | <a name="Kenwood_TK-7108"></a> Kenwood_TK-7108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | <a name="Kenwood_TK-7180"></a> Kenwood_TK-7180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes |
 | <a name="Kenwood_TK-7180E"></a> Kenwood_TK-7180E |  |  | Yes |
-| <a name="Kenwood_TK-760"></a> Kenwood_TK-760 |  |  |  |
+| <a name="Kenwood_TK-760"></a> Kenwood_TK-760 | [@kk7ds](https://github.com/kk7ds) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-760G"></a> Kenwood_TK-760G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes |
-| <a name="Kenwood_TK-762"></a> Kenwood_TK-762 |  |  |  |
+| <a name="Kenwood_TK-762"></a> Kenwood_TK-762 | [Implied by Kenwood_TK-760](#user-content-Kenwood_TK-760) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-762G"></a> Kenwood_TK-762G | [@kk7ds](https://github.com/kk7ds) | 5-Dec-2022 | Yes |
-| <a name="Kenwood_TK-768"></a> Kenwood_TK-768 |  |  |  |
+| <a name="Kenwood_TK-768"></a> Kenwood_TK-768 | [Implied by Kenwood_TK-760](#user-content-Kenwood_TK-760) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-768G"></a> Kenwood_TK-768G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-8102"></a> Kenwood_TK-8102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | <a name="Kenwood_TK-8108"></a> Kenwood_TK-8108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes |
 | <a name="Kenwood_TK-8180"></a> Kenwood_TK-8180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes |
 | <a name="Kenwood_TK-8180E"></a> Kenwood_TK-8180E |  |  | Yes |
-| <a name="Kenwood_TK-860"></a> Kenwood_TK-860 |  |  |  |
+| <a name="Kenwood_TK-860"></a> Kenwood_TK-860 | [Implied by Kenwood_TK-760](#user-content-Kenwood_TK-760) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-860G"></a> Kenwood_TK-860G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes |
-| <a name="Kenwood_TK-862"></a> Kenwood_TK-862 |  |  |  |
+| <a name="Kenwood_TK-862"></a> Kenwood_TK-862 | [Implied by Kenwood_TK-760](#user-content-Kenwood_TK-760) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-862G"></a> Kenwood_TK-862G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes |
-| <a name="Kenwood_TK-868"></a> Kenwood_TK-868 |  |  |  |
+| <a name="Kenwood_TK-868"></a> Kenwood_TK-868 | [Implied by Kenwood_TK-760](#user-content-Kenwood_TK-760) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TK-868G"></a> Kenwood_TK-868G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes |
 | <a name="Kenwood_TM-271"></a> Kenwood_TM-271 | [Implied by Kenwood_TM-281](#user-content-Kenwood_TM-281) | 23-Oct-2022 | Yes |
 | <a name="Kenwood_TM-281"></a> Kenwood_TM-281 | [@kk7ds](https://github.com/kk7ds) | 23-Oct-2022 | Yes |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 47% (167/188)
+**Tested:** 48% (173/182)
 
-**Byte clean:** 63% (227/128)
+**Byte clean:** 65% (233/122)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
