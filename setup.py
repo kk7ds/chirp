@@ -10,7 +10,7 @@ stock_configs = glob("stock_configs/*")
 
 setup(name='chirp',
       descrption='A cross-platform cross-radio programming tool',
-      packages=find_packages(),
+      packages=find_packages(exclude=["tests", "tests.*"]),
       version=CHIRP_VERSION,
       url='https://chirp.danplanet.com',
       python_requires=">=3.3,<4",
