@@ -166,7 +166,6 @@
 ./chirp/util.py
 ./chirpc
 ./chirpw
-./locale/check_parameters.py
 ./rpttool
 ./setup.py
 ./share/make_supported.py

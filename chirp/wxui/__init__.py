@@ -5,6 +5,11 @@ import logging
 import os
 import sys
 
+if sys.version_info < (3, 10):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
+
 from chirp import directory
 from chirp import logger
 
@@ -12,11 +17,15 @@ LOG = logging.getLogger(__name__)
 
 
 def chirpmain():
-    # FIXME: This needs to use importlib resources when we have
-    # moved this stuff into the package
-    localedir = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), '..', '..', 'locale'))
     try:
+        # This looks strange, but:
+        # files('chirp') returns a Path which we can use
+        # files('chirp.locale') returns a MultiplexedPath, which we cannot
+        # So, get the path to the module/bundle and then construct the
+        # path to localedir, as gettext needs a path and not to iterate
+        # files or anything.
+        localedir = str(os.path.join(importlib_resources.files('chirp'),
+                                     'locale'))
         lang = locale.getdefaultlocale()[0]
         gettext.translation('CHIRP', localedir, languages=[lang]).install()
         translation_error = None

@@ -1,7 +1,7 @@
-include share/*.desktop
-include share/*.png
-include share/*.ico
-include share/*.1
-include stock_configs/*
+include chirp/share/*.desktop
+include chirp/share/*.png
+include chirp/share/*.ico
+include chirp/share/*.1
+include chirp/stock_configs/*
 include COPYING
 include *requirements.txt
