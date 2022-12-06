@@ -238,6 +238,35 @@ class ChirpLiveEditorSet(ChirpEditorSet):
         return any(t.pending != 0 for t in self._threads)
 
 
+class ChirpWelcomePanel(wx.Panel):
+    """Fake "editorset" that just displays the welcome image."""
+    def __init__(self, *a, **k):
+        super(ChirpWelcomePanel, self).__init__(*a, **k)
+
+        try:
+            welcome = pkg_path('share', 'welcome_screen.png')
+        except FileNotFoundError as e:
+            LOG.error('Unable to find welcome image: %s' % e)
+            return
+        if not os.path.exists(welcome):
+            LOG.error('Unable to find welcome image %r:' % welcome)
+            return
+
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        bmp = wx.Bitmap(welcome)
+        width, height = self.GetSize()
+        img = wx.StaticBitmap(self, wx.ID_ANY, bmp)
+        vbox.Add(img, 1, flag=wx.EXPAND)
+
+    def close(self):
+        pass
+
+    @property
+    def modified(self):
+        return False
+
+
 class ChirpMain(wx.Frame):
     def __init__(self, *args, **kwargs):
         super(ChirpMain, self).__init__(*args, **kwargs)
@@ -260,6 +289,10 @@ class ChirpMain(wx.Frame):
         self._editors = wx.aui.AuiNotebook(
             self,
             style=wx.aui.AUI_NB_CLOSE_ON_ALL_TABS | wx.aui.AUI_NB_TAB_MOVE)
+
+        self._welcome_page = ChirpWelcomePanel(self._editors)
+        self._editors.AddPage(self._welcome_page, 'Welcome', select=True)
+
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
                   self._editor_page_changed)
@@ -269,9 +302,6 @@ class ChirpMain(wx.Frame):
         self.statusbar.SetStatusWidths([-1, 200])
 
         self._update_window_for_editor()
-        self._editors.Show(False)
-
-        self.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
 
     def set_icon(self):
         if sys.platform == 'win32':
@@ -285,28 +315,11 @@ class ChirpMain(wx.Frame):
         except Exception as e:
             LOG.exception('Failed to SetIcon: %s' % e)
 
-    def on_erase_background(self, event):
-        dc = event.GetDC()
-
-        rect = self.GetUpdateRegion().GetBox()
-        if not dc:
-            dc = wx.ClientDC(self)
-            dc.SetClippingRect(rect)
-        dc.Clear()
-        welcome = pkg_path('share', 'welcome_screen.png')
-        if not os.path.exists(welcome):
-            LOG.error('Unable to find %r' % welcome)
-            return
-        bmp = wx.Bitmap(welcome)
-
-        width, height = self.GetSize()
-        dc.DrawBitmap(bmp,
-                      (width // 2) - bmp.GetWidth() // 2,
-                      (height // 2) - bmp.GetHeight() // 2)
-
     @property
     def current_editorset(self):
-        return self._editors.GetCurrentPage()
+        eset = self._editors.GetCurrentPage()
+        if isinstance(eset, ChirpEditorSet):
+            return eset
 
     @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
     def open_file(self, filename, exists=True, select=True, rclass=None):
@@ -331,6 +344,9 @@ class ChirpMain(wx.Frame):
         self.add_editorset(editorset, select=select)
 
     def add_editorset(self, editorset, select=True):
+        if self._welcome_page:
+            self._editors.RemovePage(0)
+            self._welcome_page = None
         self._editors.AddPage(editorset,
                               os.path.basename(editorset.filename),
                               select=select)
@@ -691,8 +707,6 @@ class ChirpMain(wx.Frame):
                           not isinstance(eset.radio, common.LiveAdapter) and
                           not is_live)
             can_goto = isinstance(eset.current_editor, memedit.ChirpMemEdit)
-
-        self._editors.Show()
 
         items = [
             (wx.ID_CLOSE, can_close),
