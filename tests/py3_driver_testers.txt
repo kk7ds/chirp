@@ -76,9 +76,11 @@ Kenwood_TK-3180K2,+Kenwood_TK-3180K,4-Dec-2022
 Kenwood_TK-7102,@kk7ds,15-Feb-2019
 Kenwood_TK-7108,@kk7ds,15-Feb-2019
 Kenwood_TK-7180,@kk7ds,18-Oct-2022
+Kenwood_TK-7180E,+Kenwood_TK-7180,18-Oct-2022
 Kenwood_TK-8102,@kk7ds,15-Feb-2019
 Kenwood_TK-8108,@kk7ds,15-Feb-2019
 Kenwood_TK-8180,@kk7ds,18-Oct-2022
+Kenwood_TK-8180E,+Kenwood_TK-8180,18-Dec-2022
 Kenwood_TK-762G,@kk7ds,5-Dec-2022
 Kenwood_TK-868G,+Kenwood_TK-762G,5-Dec-2022
 Kenwood_TK-862G,+Kenwood_TK-762G,5-Dec-2022
