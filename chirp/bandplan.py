@@ -116,9 +116,6 @@ class BandPlans(object):
             for band in plan.BANDS:
                 # Check for duplicates.
                 duplicates = [x for x in plan.BANDS if x == band]
-                if len(duplicates) > 1:
-                    LOG.info("Bandplan %s has duplicates %s" %
-                             (name, duplicates))
                 # Add repeater inputs.
                 rpt_input = band.inverse()
                 if rpt_input not in plan.BANDS:
