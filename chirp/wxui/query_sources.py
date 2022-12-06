@@ -71,21 +71,26 @@ class QuerySourceDialog(wx.Dialog):
         vbox = self.build()
         self.Center()
 
-        self.gauge = wx.Gauge(self)
-        self.gauge.SetRange(100)
-        vbox.Add(self.gauge, 0, wx.EXPAND)
-
         self.statusmsg = wx.StaticText(
             self, label='',
             style=(wx.ALIGN_CENTRE_HORIZONTAL | wx.ST_NO_AUTORESIZE |
                    wx.ST_ELLIPSIZE_END))
-        vbox.Add(self.statusmsg, 0, wx.EXPAND)
+        vbox.Add(self.statusmsg, proportion=0, border=5,
+                 flag=wx.EXPAND | wx.BOTTOM)
+
+        self.gauge = wx.Gauge(self)
+        self.gauge.SetRange(100)
+        vbox.Add(self.gauge, proportion=0, border=10,
+                 flag=wx.EXPAND | wx.LEFT | wx.RIGHT)
 
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
-        vbox.Add(bs)
+        vbox.Add(bs, border=10, flag=wx.ALL)
         self.Bind(wx.EVT_BUTTON, self._button)
 
         self.Bind(EVT_QUERY_THREAD, self._got_status)
+
+        self.SetMinSize((400, 200))
+        self.Fit()
 
         self.result_file = tempfile.NamedTemporaryFile(
             prefix='%s-' % self.NAME,
@@ -200,7 +205,8 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self.tabs = wx.Notebook(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
-        vbox.Add(self.tabs, 1, wx.EXPAND)
+        vbox.Add(self.tabs, proportion=1, border=10,
+                 flag=wx.EXPAND | wx.BOTTOM)
 
         self.tabs.InsertPage(0, self._build_political(self.tabs), 'Political')
         self.tabs.InsertPage(1, self._build_proximity(self.tabs), 'Proximity')
@@ -254,7 +260,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._add_grid(grid, 'Band', self._pol_band)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(grid, proportion=0, flag=wx.EXPAND,
+        vbox.Add(grid, proportion=0, flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
                  border=20)
         panel.SetSizer(vbox)
         return panel
@@ -302,7 +308,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._add_grid(grid, 'Band', self._prox_band)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(grid, flag=wx.EXPAND,
+        vbox.Add(grid, flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
                  border=20)
         panel.SetSizer(vbox)
         return panel
