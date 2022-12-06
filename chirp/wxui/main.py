@@ -412,6 +412,11 @@ class ChirpMain(wx.Frame):
                                                  ord('S')))
         self.Bind(wx.EVT_MENU, self._menu_save_as, saveas_item)
 
+        if CONF.get_bool('developer', 'state'):
+            loadmod_item = file_menu.Append(wx.MenuItem(file_menu, wx.NewId(),
+                                                        'Load Module'))
+            self.Bind(wx.EVT_MENU, self._menu_load_module, loadmod_item)
+
         file_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
 
         close_item = file_menu.Append(wx.ID_CLOSE)
@@ -976,6 +981,37 @@ class ChirpMain(wx.Frame):
                   'radio': radio}
         code.interact(banner='Locals are: %s' % (', '.join(locals.keys())),
                       local=locals)
+
+    @common.error_proof()
+    def load_module(self, filename):
+        # We're in development mode, so we need to tell the directory to
+        # allow a loaded module to override an existing driver, against
+        # its normal better judgement
+        directory.enable_reregistrations()
+
+        self.SetBackgroundColour((0xEA, 0x62, 0x62, 0xFF))
+
+        LOG.info('Loading module %s' % filename)
+        with open(filename) as module:
+            code = module.read()
+        pyc = compile(code, filename, 'exec')
+        # See this for why:
+        # http://stackoverflow.com/questions/2904274/globals-and-locals-in-python-exec
+        exec(pyc, globals(), globals())
+
+    def _menu_load_module(self, event):
+        formats = ['Python files (*.py)|*.py',
+                   'Module files (*.mod)|*.mod']
+
+        wildcard = '|'.join(formats)
+        with wx.FileDialog(self, 'Open a file',
+                           chirp_platform.get_platform().get_last_dir(),
+                           wildcard=wildcard,
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
+            if fd.ShowModal() == wx.ID_CANCEL:
+                return
+            filename = fd.GetPath()
+            self.load_module(filename)
 
     def _menu_about(self, event):
         pyver = sys.version_info

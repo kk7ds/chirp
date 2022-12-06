@@ -14,7 +14,6 @@ def chirpmain():
     from chirp.wxui import main
     from chirp.wxui import report
 
-    directory.import_drivers()
     gettext.install('CHIRP')
     parser = argparse.ArgumentParser()
     parser.add_argument("files", metavar="file", nargs='*',
@@ -52,6 +51,10 @@ def chirpmain():
     app = wx.App()
     mainwindow = main.ChirpMain(None, title='CHIRP')
     mainwindow.Show()
+
+    if args.module:
+        mainwindow.load_module(args.module)
+
     for fn in args.files:
         mainwindow.open_file(fn, select=False)
 
