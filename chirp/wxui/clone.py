@@ -144,17 +144,16 @@ class ChirpCloneDialog(wx.Dialog):
         super(ChirpCloneDialog, self).__init__(
             *a, title='Communicate with radio', **k)
 
-        self.SetSize(-1, 260)
-
-        try:
-            grid = wx.FlexGridSizer(3, 2)
-        except TypeError:
-            grid = wx.FlexGridSizer(2, 5, 0)
+        grid = wx.FlexGridSizer(2, 5, 5)
+        grid.AddGrowableCol(1)
 
         def _add_grid(label, control):
             grid.Add(wx.StaticText(self, label=label),
-                     border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
-            grid.Add(control, 1, flag=wx.EXPAND)
+                     proportion=1, border=20,
+                     flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+            grid.Add(control,
+                     proportion=1, border=20,
+                     flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
         ports = platform.get_platform().list_serial_ports()
         last_port = CONF.get('last_port', 'state')
@@ -181,14 +180,21 @@ class ChirpCloneDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self._action)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(grid, proportion=0, flag=wx.ALIGN_CENTER_HORIZONTAL | wx.TOP,
+        vbox.Add(grid, proportion=1,
+                 flag=wx.TOP | wx.BOTTOM | wx.EXPAND,
                  border=20)
-        vbox.Add(self.gauge, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10,
+        self.status_msg = wx.StaticText(
+            self, label='',
+            style=(wx.ALIGN_CENTER_HORIZONTAL | wx.ST_NO_AUTORESIZE |
+                   wx.ELLIPSIZE_END))
+        vbox.Add(self.status_msg,
+                 border=5, proportion=0,
+                 flag=wx.EXPAND | wx.BOTTOM)
+        vbox.Add(self.gauge, flag=wx.EXPAND | wx.RIGHT | wx.LEFT, border=10,
                  proportion=0)
-        vbox.Add(wx.StaticLine(self), flag=wx.EXPAND | wx.TOP, border=10)
-        vbox.Add(bs)
+        vbox.Add(wx.StaticLine(self), flag=wx.EXPAND | wx.ALL, border=5)
+        vbox.Add(bs, flag=wx.ALL, border=10)
         self.SetSizer(vbox)
-        self.Layout()
         self.Center()
 
         self._vendors = collections.defaultdict(list)
@@ -208,6 +214,8 @@ class ChirpCloneDialog(wx.Dialog):
                                      CONF.get('last_model', 'state'))
         except ValueError:
             LOG.warning('Last vendor/model not found')
+
+        self.Layout()
 
     def _add_aliases(self, rclass):
         for alias in rclass.ALIASES:
@@ -257,6 +265,7 @@ class ChirpCloneDialog(wx.Dialog):
         def _safe_status():
             self.gauge.SetRange(status.max)
             self.gauge.SetValue(status.cur)
+            self.status_msg.SetLabel(status.msg)
 
         wx.CallAfter(_safe_status)
 
