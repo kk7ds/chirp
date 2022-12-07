@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from pathlib import Path
 import sys
 import glob
 import re
@@ -279,15 +280,11 @@ class UnixPlatform(Platform):
     """A platform module suitable for UNIX systems"""
     def __init__(self, basepath):
         if not basepath:
-            basepath = os.path.abspath(os.path.join(self.default_dir(),
-                                                    ".chirp"))
+            basepath = self.default_dir().joinpath(".chirp")
 
-        try:
-            os.mkdir(basepath)
-        except FileExistsError:
-            pass
+        Path(basepath).mkdir(exist_ok=True)
 
-        Platform.__init__(self, basepath)
+        Platform.__init__(self, str(basepath))
 
         # This is a hack that needs to be properly fixed by importing the
         # latest changes to this module from d-rats.  In the interest of
@@ -300,7 +297,7 @@ class UnixPlatform(Platform):
             os.environ["PANGO_RC_FILE"] = "../Resources/etc/pango/pangorc"
 
     def default_dir(self):
-        return os.path.abspath(os.getenv("HOME"))
+        return Path.home()
 
     def filter_filename(self, filename):
         return filename.replace("/", "")
