@@ -8,4 +8,3 @@ include COPYING
 include *requirements.txt
 graft tests
 graft tools
-graft build
