@@ -952,7 +952,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
 
 def flip_high_order_bit(data):
-    return [chr(ord(d) ^ 0x80) for d in list(data)]
+    return bytes([d ^ 0x80 for d in list(data)])
 
 
 def escape_raw_byte(byte):
