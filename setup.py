@@ -12,13 +12,17 @@ setup(name='chirp',
       url='https://chirp.danplanet.com',
       python_requires=">=3.7,<4",
       install_requires=[
-          'wxPython',
           'pyserial',
           'six',
           'future',
           'importlib-resources;python_version<"3.10"'
       ],
+      extras_require={
+          'wx': ['wxPython'],
+          'gtk': ['PyGObject']
+      },
       entry_points={
           'console_scripts': ["chirp=chirp.wxui:chirpmain"],
       },
+      scripts=['chirpw'],
       )
