@@ -35,6 +35,7 @@ from chirp import directory
 from chirp import errors
 from chirp import platform as chirp_platform
 from chirp.ui import config
+from chirp.wxui import bankedit
 from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
@@ -73,6 +74,7 @@ def pkg_path(*args):
 class ChirpEditorSet(wx.Panel):
     MEMEDIT_CLS = memedit.ChirpMemEdit
     SETTINGS_CLS = settingsedit.ChirpCloneSettingsEdit
+    BANK_CLS = bankedit.ChirpBankEditSync
 
     @property
     def tab_name(self):
@@ -111,16 +113,22 @@ class ChirpEditorSet(wx.Panel):
         parent_radio = radio
         if features.has_sub_devices:
             radios = radio.get_sub_devices()
-            format = 'Memories (%(variant)s)'
+            format = '%(type)s (%(variant)s)'
         else:
             radios = [radio]
-            format = 'Memories'
+            format = '%(type)s'
 
         for radio in radios:
             edit = self.MEMEDIT_CLS(radio, self._editors)
-            self.add_editor(edit, format % {'variant': radio.VARIANT})
+            self.add_editor(edit, format % {'type': 'Memories',
+                                            'variant': radio.VARIANT})
             edit.refresh()
             self.Bind(common.EVT_EDITOR_CHANGED, self._editor_changed)
+
+            if features.has_bank and self.BANK_CLS:
+                banks = self.BANK_CLS(radio, self._editors)
+                self.add_editor(banks, format % {'type': 'Banks',
+                                                 'variant': radio.VARIANT})
 
         if features.has_settings:
             settings = self.SETTINGS_CLS(parent_radio, self._editors)
@@ -219,6 +227,7 @@ class ChirpEditorSet(wx.Panel):
 class ChirpLiveEditorSet(ChirpEditorSet):
     MEMEDIT_CLS = memedit.ChirpLiveMemEdit
     SETTINGS_CLS = settingsedit.ChirpLiveSettingsEdit
+    BANK_CLS = None
 
     @property
     def tab_name(self):

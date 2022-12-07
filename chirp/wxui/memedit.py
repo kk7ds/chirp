@@ -80,6 +80,10 @@ class ChirpMemoryColumn(object):
         self._features = radio.get_features()
 
     @property
+    def name(self):
+        return self._name
+
+    @property
     def label(self):
         return self.NAME or self._name.title()
 
@@ -124,6 +128,9 @@ class ChirpMemoryColumn(object):
 
     def get_editor(self):
         return wx.grid.GridCellTextEditor()
+
+    def get_renderer(self):
+        return None
 
     def get_propeditor(self, memory):
         class ChirpStringProperty(wx.propgrid.StringProperty):

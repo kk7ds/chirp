@@ -26,6 +26,9 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 10)
         rf.has_settings = True
+        # We don't even implement this interface, but the point of this
+        # is to make sure the GUI doesn't choke on live radios.
+        rf.has_bank = True
         return rf
 
     def get_memory(self, number):
