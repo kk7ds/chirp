@@ -5,3 +5,6 @@ include chirp/share/*.1
 include chirp/stock_configs/*
 include COPYING
 include *requirements.txt
+graft tests
+graft tools
+graft build

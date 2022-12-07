@@ -5,15 +5,15 @@ from setuptools import find_packages
 from chirp import CHIRP_VERSION
 
 setup(name='chirp',
-      descrption='A cross-platform cross-radio programming tool',
-      packages=find_packages(exclude=["tests", "tests.*"]),
+      description='A cross-platform cross-radio programming tool',
+      packages=find_packages(include=["chirp*"]),
       include_package_data=True,
       version=CHIRP_VERSION,
       url='https://chirp.danplanet.com',
       python_requires=">=3.7,<4",
       install_requires=[
           'wxPython',
-          'serial',
+          'pyserial',
           'six',
           'future',
           'importlib-resources;python_version<"3.10"'

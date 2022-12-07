@@ -45,8 +45,10 @@ class LoggerOpts(object):
     log_file = os.path.join('logs', 'debug.log')
     log_level = logging.DEBUG
 
-if not os.path.exists("logs"):
+try:
     os.mkdir("logs")
+except FileExistsError:
+    pass
 logger.handle_options(LoggerOpts())
 
 from chirp import CHIRP_VERSION
