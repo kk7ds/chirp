@@ -25,6 +25,7 @@ import wx.lib.mixins.gridlabelrenderer as glr
 
 from chirp import chirp_common
 from chirp import bandplan
+from chirp.drivers import generic_csv
 from chirp import errors
 from chirp import settings
 from chirp.ui import config
@@ -726,6 +727,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def set_scroll_pos(self, pos):
         self._grid.Scroll(*pos)
+
+    def export_to_file(self, filename):
+        if not filename.lower().endswith('.csv'):
+            raise Exception('Export can only write CSV files')
+        selected = self._grid.GetSelectedRows()
+        if len(selected) <= 1:
+            selected = range(0, self._grid.GetNumberRows())
+        r = generic_csv.CSVRadio(None)
+        # The CSV driver defaults to a single non-empty memory at location
+        # zero, so delete it before we go to export.
+        r.erase_memory(0)
+        for row in selected:
+            r.set_memory(self._memory_cache[row])
+        r.save(filename)
 
 
 class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):

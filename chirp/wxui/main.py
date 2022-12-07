@@ -208,6 +208,13 @@ class ChirpEditorSet(wx.Panel):
     def close(self):
         pass
 
+    @common.error_proof()
+    def export_to_file(self, filename):
+        current = self.current_editor
+        if not isinstance(current, memedit.ChirpMemEdit):
+            raise Exception('Only memory tabs may be exported')
+        current.export_to_file(filename)
+
 
 class ChirpLiveEditorSet(ChirpEditorSet):
     MEMEDIT_CLS = memedit.ChirpLiveMemEdit
@@ -427,6 +434,13 @@ class ChirpMain(wx.Frame):
         saveas_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL | wx.ACCEL_ALT,
                                                  ord('S')))
         self.Bind(wx.EVT_MENU, self._menu_save_as, saveas_item)
+
+        self._export_menu_item = wx.NewId()
+        export_item = file_menu.Append(wx.MenuItem(file_menu,
+                                                   self._export_menu_item,
+                                                   'Export to CSV'))
+        export_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('E')))
+        self.Bind(wx.EVT_MENU, self._menu_export, export_item)
 
         if CONF.get_bool('developer', 'state'):
             loadmod_item = file_menu.Append(wx.MenuItem(file_menu, wx.NewId(),
@@ -716,6 +730,7 @@ class ChirpMain(wx.Frame):
             (self._goto_item, can_goto),
             (self._find_next_item, can_goto),
             (wx.ID_FIND, can_goto),
+            (self._export_menu_item, can_close),
         ]
         for ident, enabled in items:
             menuitem = self.GetMenuBar().FindItemById(ident)
@@ -837,6 +852,17 @@ class ChirpMain(wx.Frame):
 
         editorset.save()
         self._update_editorset_title(self.current_editorset)
+
+    def _menu_export(self, event):
+        wildcard = 'CSV Files (*.csv)|*.csv'
+        defcsv = os.path.splitext(os.path.basename(
+                self.current_editorset.filename))[0] + '.csv'
+        style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
+        with wx.FileDialog(self, 'Export to CSV', defaultFile=defcsv,
+                           wildcard=wildcard, style=style) as fd:
+            if fd.ShowModal() == wx.ID_CANCEL:
+                return
+            self.current_editorset.export_to_file(fd.GetPath())
 
     def _prompt_to_close_editor(self, editorset, allow_cancel=False):
         """Returns True if it is okay to close the editor, False otherwise"""
