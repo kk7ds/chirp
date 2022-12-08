@@ -91,7 +91,7 @@ class LiveAdapter(generic_csv.CSVRadio):
             status = chirp_common.Status()
             status.max = self._features.memory_bounds[1]
             status.cur = i
-            status.msg = 'Cloning'
+            status.msg = _('Cloning')
             self.status_fn(status)
 
     def get_settings(self):
@@ -112,7 +112,7 @@ class ChirpEditor(wx.Panel):
             LOG.error('Wait dialog already in progress!')
             return
 
-        self.wait_dialog = wx.ProgressDialog('Please wait', message, 100,
+        self.wait_dialog = wx.ProgressDialog(_('Please wait'), message, 100,
                                              parent=self)
         wx.CallAfter(self.wait_dialog.Show)
 
@@ -198,15 +198,15 @@ class ChirpAsyncEditor(ChirpSyncEditor):
 
     def radio_thread_event(self, job, block=True):
         if job.fn == 'get_memory':
-            msg = 'Refreshed memory %s' % job.args[0]
+            msg = _('Refreshed memory %s') % job.args[0]
         elif job.fn == 'set_memory':
-            msg = 'Uploaded memory %s' % job.args[0].number
+            msg = _('Uploaded memory %s') % job.args[0].number
         elif job.fn == 'get_settings':
-            msg = 'Retrieved settings'
+            msg = _('Retrieved settings')
         elif job.fn == 'set_settings':
-            msg = 'Saved settings'
+            msg = _('Saved settings')
         else:
-            msg = 'Finished radio job %s' % job.fn
+            msg = _('Finished radio job %s') % job.fn
 
         if not EDIT_LOCK.acquire(block):
             return False
@@ -373,7 +373,7 @@ def _error_proof(*expected_errors):
     """
 
     def show_error(msg):
-        d = wx.MessageDialog(None, str(msg), 'An error has occurred',
+        d = wx.MessageDialog(None, str(msg), _('An error has occurred'),
                              style=wx.OK | wx.ICON_ERROR)
         d.ShowModal()
 
@@ -399,7 +399,7 @@ class error_proof(object):
 
     @staticmethod
     def show_error(msg):
-        d = wx.MessageDialog(None, str(msg), 'An error has occurred',
+        d = wx.MessageDialog(None, str(msg), _('An error has occurred'),
                              style=wx.OK | wx.ICON_ERROR)
         d.ShowModal()
 
