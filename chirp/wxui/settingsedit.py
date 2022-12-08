@@ -34,7 +34,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
 
-        self._group_control = wx.Listbook(self, style=wx.LB_LEFT)
+        self._group_control = wx.Treebook(self, style=wx.LB_LEFT)
         sizer.Add(self._group_control, 1, wx.EXPAND)
 
         self._initialized = False
@@ -58,17 +58,22 @@ class ChirpSettingsEdit(common.ChirpEditor):
     def _load_settings(self):
         for group in self._settings:
             self._add_group(group)
-        self._group_control.Layout()
+        self.Layout()
 
-    def _add_group(self, group):
+    def _add_group(self, group, parent=None):
         propgrid = common.ChirpSettingGrid(group, self._group_control)
         self.Bind(common.EVT_EDITOR_CHANGED, self._changed, propgrid)
         LOG.debug('Adding page for %s' % group.get_shortname())
-        self._group_control.AddPage(propgrid, group.get_shortname())
+        if parent:
+            self._group_control.InsertSubPage(parent, propgrid,
+                                              group.get_shortname())
+        else:
+            self._group_control.AddPage(propgrid, group.get_shortname())
 
         for element in group.values():
             if not isinstance(element, settings.RadioSetting):
-                self._add_group(element)
+                self._add_group(element,
+                                parent=self._group_control.FindPage(propgrid))
 
     def cb_copy(self, cut=False):
         pass
