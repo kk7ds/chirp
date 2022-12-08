@@ -48,7 +48,7 @@ class ChirpBankIndexColumn(memedit.ChirpMemoryColumn):
 
     @property
     def label(self):
-        return 'Index'
+        return _('Index')
 
     def get_editor(self):
         lower, upper = self.model.get_index_bounds()
@@ -161,7 +161,7 @@ class ChirpBankEdit(common.ChirpEditor):
                 member_bank = self._bank_indexes[bank_index]
                 break
         else:
-            raise Exception('Memory must be in a bank to be edited')
+            raise Exception(_('Memory must be in a bank to be edited'))
 
         self._bankmodel.set_memory_index(self._memory_cache[number],
                                          member_bank,

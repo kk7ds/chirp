@@ -121,7 +121,7 @@ class ChirpEditor(wx.Panel):
         if not tt:
             tt = wx.ToolTip('')
             thing.SetToolTip(tt)
-        tt.SetTip('Press enter to set this in memory')
+        tt.SetTip(_('Press enter to set this in memory'))
 
     def _mark_unchanged(self, thing):
         thing.SetBackgroundColour(wx.NullColour)
@@ -143,17 +143,20 @@ class ChirpEditor(wx.Panel):
 
         if isinstance(self._obj, bitwise.arrayDataElement):
             innertype = list(self._obj.items())[0][1]
-            return '%s[%i] (%i bytes each) @ %s' % (typestr(innertype),
-                                                    len(self._obj),
-                                                    innertype.size() / 8,
-                                                    addr)
+            return '%s[%i] (%i %s) @ %s' % (typestr(innertype),
+                                            len(self._obj),
+                                            innertype.size() / 8,
+                                            _('bytes each'),
+                                            addr)
         elif self._obj.size() % 8 == 0:
-            return '%s (%i bytes) @ %s' % (typestr(self._obj),
-                                           self._obj.size() / 8,
-                                           addr)
+            return '%s (%i %s) @ %s' % (typestr(self._obj),
+                                        self._obj.size() / 8,
+                                        _('bytes'),
+                                        addr)
         else:
-            return '%s bits @ %s' % (self._obj.size(),
-                                     addr)
+            return '%s %s @ %s' % (self._obj.size(),
+                                   _('bits'),
+                                   addr)
 
 
 class ChirpStringEditor(ChirpEditor):
@@ -174,7 +177,7 @@ class ChirpStringEditor(ChirpEditor):
         if len(value) == len(self._obj):
             self._mark_changed(entry)
         else:
-            self._mark_error(entry, 'Length must be %i' % len(self._obj))
+            self._mark_error(entry, _('Length must be %i') % len(self._obj))
 
     @common.error_proof()
     def _changed(self, event):
@@ -193,9 +196,9 @@ class ChirpIntegerEditor(ChirpEditor):
         hexdigits = (self._obj.size() / 4) + (self._obj.size() % 4 and 1 or 0)
         bindigits = self._obj.size()
 
-        self._editors = {'Hex': (16, '{:0%iX}' % hexdigits),
-                         'Dec': (10, '{:d}'),
-                         'Bin': (2, '{:0%ib}' % bindigits)}
+        self._editors = {_('Hex'): (16, '{:0%iX}' % hexdigits),
+                         _('Dec'): (10, '{:d}'),
+                         _('Bin'): (2, '{:0%ib}' % bindigits)}
         self._entries = {}
         for name, (base, fmt) in self._editors.items():
             label = wx.StaticText(self, label=name)
@@ -218,9 +221,9 @@ class ChirpIntegerEditor(ChirpEditor):
 
         try:
             val = int(entry.GetValue(), base)
-            assert val >= 0, 'Value must be zero or greater'
+            assert val >= 0, _('Value must be zero or greater')
             assert val < pow(2, self._obj.size()), \
-                'Value does not fit in %i bits' % self._obj.size()
+                _('Value does not fit in %i bits') % self._obj.size()
         except (ValueError, AssertionError) as e:
             self._mark_error(entry, str(e))
             return
@@ -256,9 +259,9 @@ class ChirpBCDEditor(ChirpEditor):
         try:
             val = int(entry.GetValue())
             digits = self._obj.size() // 4
-            assert val >= 0, 'Value must be zero or greater'
+            assert val >= 0, _('Value must be zero or greater')
             assert len(entry.GetValue()) == digits, \
-                   'Value must be exactly %i decimal digits' % digits
+                   _('Value must be exactly %i decimal digits') % digits
         except (ValueError, AssertionError) as e:
             self._mark_error(entry, str(e))
         else:
@@ -327,7 +330,7 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         if self._loaded:
             return
 
-        self.start_wait_dialog('Building Radio Browser')
+        self.start_wait_dialog(_('Building Radio Browser'))
 
         self._loaded = True
         self._load_from_radio('%s %s' % (self._radio.VENDOR,
