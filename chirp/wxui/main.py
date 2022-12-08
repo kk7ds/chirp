@@ -120,26 +120,26 @@ class ChirpEditorSet(wx.Panel):
 
         for radio in radios:
             edit = self.MEMEDIT_CLS(radio, self._editors)
-            self.add_editor(edit, format % {'type': 'Memories',
+            self.add_editor(edit, format % {'type': _('Memories'),
                                             'variant': radio.VARIANT})
             edit.refresh()
             self.Bind(common.EVT_EDITOR_CHANGED, self._editor_changed)
 
             if features.has_bank and self.BANK_CLS:
                 banks = self.BANK_CLS(radio, self._editors)
-                self.add_editor(banks, format % {'type': 'Banks',
+                self.add_editor(banks, format % {'type': _('Banks'),
                                                  'variant': radio.VARIANT})
 
         if features.has_settings:
             settings = self.SETTINGS_CLS(parent_radio, self._editors)
-            self.add_editor(settings, 'Settings')
+            self.add_editor(settings, _('Settings'))
 
         if (CONF.get_bool('developer', 'state') and
                 not isinstance(radio, chirp_common.LiveRadio)):
             browser = developer.ChirpRadioBrowser(parent_radio, self._editors)
-            self.add_editor(browser, 'Browser')
+            self.add_editor(browser, _('Browser'))
             info = radioinfo.ChirpRadioInfo(parent_radio, self._editors)
-            self.add_editor(info, 'Info')
+            self.add_editor(info, _('Info'))
 
         # After the GUI is built, set focus to the current editor
         wx.CallAfter(self.current_editor.SetFocus)
@@ -220,7 +220,7 @@ class ChirpEditorSet(wx.Panel):
     def export_to_file(self, filename):
         current = self.current_editor
         if not isinstance(current, memedit.ChirpMemEdit):
-            raise Exception('Only memory tabs may be exported')
+            raise Exception(_('Only memory tabs may be exported'))
         current.export_to_file(filename)
 
 
@@ -231,8 +231,9 @@ class ChirpLiveEditorSet(ChirpEditorSet):
 
     @property
     def tab_name(self):
-        return '%s %s@LIVE' % (self._radio.VENDOR,
-                               self._radio.MODEL)
+        return '%s %s@%s' % (self._radio.VENDOR,
+                             self._radio.MODEL,
+                             _('LIVE'))
 
     def __init__(self, radio, *a, **k):
         self._threads = []
@@ -307,7 +308,7 @@ class ChirpMain(wx.Frame):
             style=wx.aui.AUI_NB_CLOSE_ON_ALL_TABS | wx.aui.AUI_NB_TAB_MOVE)
 
         self._welcome_page = ChirpWelcomePanel(self._editors)
-        self._editors.AddPage(self._welcome_page, 'Welcome', select=True)
+        self._editors.AddPage(self._welcome_page, _('Welcome'), select=True)
 
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
@@ -343,7 +344,8 @@ class ChirpMain(wx.Frame):
         CSVRadio = directory.get_radio('Generic_CSV')
         if exists:
             if not os.path.exists(filename):
-                raise FileNotFoundError('File does not exist: %s' % filename)
+                raise FileNotFoundError(
+                    _('File does not exist: %s') % filename)
             if rclass is None:
                 radio = directory.get_radio_by_image(filename)
             else:
@@ -417,7 +419,7 @@ class ChirpMain(wx.Frame):
 
         self.OPEN_STOCK_CONFIG_MENU = self.add_stock_menu()
         file_menu.AppendSubMenu(self.OPEN_STOCK_CONFIG_MENU,
-                                "Open Stock Config")
+                                _("Open Stock Config"))
 
         self.OPEN_RECENT_MENU = wx.Menu()
         i = 0
@@ -434,7 +436,7 @@ class ChirpMain(wx.Frame):
                                                         EMPTY_MENU_LABEL)
             submenu_item.Enable(False)
             self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
-        file_menu.AppendSubMenu(self.OPEN_RECENT_MENU, 'Open Recent')
+        file_menu.AppendSubMenu(self.OPEN_RECENT_MENU, _('Open Recent'))
 
         save_item = file_menu.Append(wx.ID_SAVE)
         self.Bind(wx.EVT_MENU, self._menu_save, save_item)
@@ -447,13 +449,13 @@ class ChirpMain(wx.Frame):
         self._export_menu_item = wx.NewId()
         export_item = file_menu.Append(wx.MenuItem(file_menu,
                                                    self._export_menu_item,
-                                                   'Export to CSV'))
+                                                   _('Export to CSV')))
         export_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('E')))
         self.Bind(wx.EVT_MENU, self._menu_export, export_item)
 
         if CONF.get_bool('developer', 'state'):
             loadmod_item = file_menu.Append(wx.MenuItem(file_menu, wx.NewId(),
-                                                        'Load Module'))
+                                                        _('Load Module')))
             self.Bind(wx.EVT_MENU, self._menu_load_module, loadmod_item)
 
         file_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
@@ -489,7 +491,7 @@ class ChirpMain(wx.Frame):
         self._find_next_item = wx.NewId()
         find_next_item = edit_menu.Append(wx.MenuItem(edit_menu,
                                                       self._find_next_item,
-                                                      'Find Next'))
+                                                      _('Find Next')))
         find_next_item.SetAccel(wx.AcceleratorEntry
                                 (wx.MOD_CONTROL | wx.ACCEL_ALT, ord('F')))
         self.Bind(wx.EVT_MENU, self._menu_find, find_next_item,
@@ -497,7 +499,7 @@ class ChirpMain(wx.Frame):
 
         self._goto_item = wx.NewId()
         goto_item = edit_menu.Append(wx.MenuItem(edit_menu, self._goto_item,
-                                                 'Goto'))
+                                                 _('Goto')))
         goto_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
         self.Bind(wx.EVT_MENU, self._menu_goto, goto_item)
 
@@ -510,19 +512,20 @@ class ChirpMain(wx.Frame):
 
         self._download_menu_item = wx.NewId()
         download_item = wx.MenuItem(radio_menu, self._download_menu_item,
-                                    'Download')
+                                    _('Download'))
         download_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('D')))
         self.Bind(wx.EVT_MENU, self._menu_download, download_item)
         radio_menu.Append(download_item)
 
         self._upload_menu_item = wx.NewId()
-        upload_item = wx.MenuItem(radio_menu, self._upload_menu_item, 'Upload')
+        upload_item = wx.MenuItem(radio_menu, self._upload_menu_item,
+                                  _('Upload'))
         upload_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
 
         source_menu = wx.Menu()
-        radio_menu.AppendSubMenu(source_menu, 'Query Source')
+        radio_menu.AppendSubMenu(source_menu, _('Query Source'))
 
         query_rb_item = wx.MenuItem(source_menu, wx.NewId(), 'RepeaterBook')
         self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
@@ -535,14 +538,14 @@ class ChirpMain(wx.Frame):
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
-                                 'Enable Automatic Edits',
+                                 _('Enable Automatic Edits'),
                                  kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self._menu_auto_edits, auto_edits)
         radio_menu.Append(auto_edits)
         auto_edits.Check(CONF.get_bool('auto_edits', 'state', True))
 
         select_bandplan = wx.MenuItem(radio_menu, wx.NewId(),
-                                      'Select Bandplan')
+                                      _('Select Bandplan'))
         self.Bind(wx.EVT_MENU, self._menu_select_bandplan, select_bandplan)
         radio_menu.Append(select_bandplan)
 
@@ -552,7 +555,7 @@ class ChirpMain(wx.Frame):
             self._reload_driver_item = wx.NewId()
             reload_drv_item = wx.MenuItem(radio_menu,
                                           self._reload_driver_item,
-                                          'Reload Driver')
+                                          _('Reload Driver'))
             reload_drv_item.SetAccel(
                 wx.AcceleratorEntry(wx.MOD_CONTROL, ord('R')))
             self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
@@ -561,7 +564,7 @@ class ChirpMain(wx.Frame):
             self._reload_both_item = wx.NewId()
             reload_both_item = wx.MenuItem(radio_menu,
                                            self._reload_both_item,
-                                           'Reload Driver and File')
+                                           _('Reload Driver and File'))
             reload_both_item.SetAccel(
                 wx.AcceleratorEntry(
                     wx.ACCEL_ALT | wx.MOD_CONTROL,
@@ -575,18 +578,19 @@ class ChirpMain(wx.Frame):
             self._interact_driver_item = wx.NewId()
             interact_drv_item = wx.MenuItem(radio_menu,
                                             self._interact_driver_item,
-                                            'Interact with driver')
+                                            _('Interact with driver'))
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
 
         help_menu = wx.Menu()
 
-        about_item = wx.MenuItem(help_menu, wx.NewId(), 'About')
+        about_item = wx.MenuItem(help_menu, wx.NewId(), _('About'))
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
         help_menu.Append(about_item)
 
-        developer_menu = wx.MenuItem(help_menu, wx.NewId(), 'Developer Mode',
+        developer_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                     _('Developer Mode'),
                                      kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._menu_developer, developer_menu),
@@ -595,7 +599,7 @@ class ChirpMain(wx.Frame):
         developer_menu.Check(CONF.get_bool('developer', 'state'))
 
         reporting_menu = wx.MenuItem(help_menu, wx.NewId(),
-                                     'Reporting enabled',
+                                     _('Reporting enabled'),
                                      kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._menu_reporting, reporting_menu),
@@ -604,13 +608,13 @@ class ChirpMain(wx.Frame):
         reporting_menu.Check(not CONF.get_bool('no_report', default=False))
 
         debug_log_menu = wx.MenuItem(help_menu, wx.NewId(),
-                                     'Open debug log')
+                                     _('Open debug log'))
         self.Bind(wx.EVT_MENU, self._menu_debug_log, debug_log_menu)
         help_menu.Append(debug_log_menu)
 
         if platform.system() in ('Windows', 'Darwin'):
             debug_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
-                                         'Show debug log location')
+                                         _('Show debug log location'))
             self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
             help_menu.Append(debug_loc_menu)
 
@@ -629,16 +633,16 @@ class ChirpMain(wx.Frame):
             return wx.ArtProvider.GetBitmap(stock,
                                             wx.ART_TOOLBAR, (32, 32))
 
-        tbopen = tb.AddTool(wx.NewId(), 'Open', bm(wx.ART_FILE_OPEN),
-                            'Open a file')
-        tb.AddTool(wx.NewId(), 'Save', bm(wx.ART_FILE_SAVE),
-                   'Save file')
-        tb.AddTool(wx.NewId(), 'Close', bm(wx.ART_CLOSE),
-                   'Close file')
-        tb.AddTool(wx.NewId(), 'Download', bm(wx.ART_GO_DOWN),
-                   'Download from radio')
+        tbopen = tb.AddTool(wx.NewId(), _('Open'), bm(wx.ART_FILE_OPEN),
+                            _('Open a file'))
+        tb.AddTool(wx.NewId(), _('Save'), bm(wx.ART_FILE_SAVE),
+                   _('Save file'))
+        tb.AddTool(wx.NewId(), _('Close'), bm(wx.ART_CLOSE),
+                   _('Close file'))
+        tb.AddTool(wx.NewId(), _('Download'), bm(wx.ART_GO_DOWN),
+                   _('Download from radio'))
         tb.AddTool(wx.NewId(), 'Upload', bm(wx.ART_GO_UP),
-                   'Upload to radio')
+                   _('Upload to radio'))
 
         self.Bind(wx.EVT_MENU, self._menu_open, tbopen)
         tb.Realize()
@@ -777,14 +781,14 @@ class ChirpMain(wx.Frame):
         self.open_file('Untitled.csv', exists=False)
 
     def _menu_open(self, event):
-        formats = ['Chirp Image Files (*.img)|*.img',
-                   'All Files (*.*)|*.*']
+        formats = [_('Chirp Image Files') + ' (*.img)|*.img',
+                   _('All Files') + ' (*.*)|*.*']
         for name, pattern, readonly in directory.AUX_FORMATS:
-            formats.insert(1, '%s Files (%s)|%s' % (
-                name, pattern, pattern))
+            formats.insert(1, '%s %s (%s)|%s' % (
+                name, _('Files'), pattern, pattern))
 
         wildcard = '|'.join(formats)
-        with wx.FileDialog(self, 'Open a file',
+        with wx.FileDialog(self, _('Open a file'),
                            chirp_platform.get_platform().get_last_dir(),
                            wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
@@ -814,7 +818,7 @@ class ChirpMain(wx.Frame):
             LOG.error('Unable to find %s or %s' % (user_stock_conf,
                                                    dist_stock_conf))
             common.error_proof.show_error(
-                'Unable to find stock config %r' % fn)
+                _('Unable to find stock config %r') % fn)
             return
 
         self.open_file(filename)
@@ -826,10 +830,12 @@ class ChirpMain(wx.Frame):
 
     def _menu_save_as(self, event):
         eset = self.current_editorset
-        wildcard = 'CHIRP %(vendor)s %(model)s Files (*.%(ext)s)|*.%(ext)s' % {
-            'vendor': eset._radio.VENDOR,
-            'model': eset._radio.MODEL,
-            'ext': eset._radio.FILE_EXTENSION}
+        wildcard = (
+            'CHIRP %(vendor)s %(model)s %(files)s (*.%(ext)s)|*.%(ext)s' % {
+                'vendor': eset._radio.VENDOR,
+                'model': eset._radio.MODEL,
+                'files': _('Files'),
+                'ext': eset._radio.FILE_EXTENSION})
 
         for name, pattern, readonly in directory.AUX_FORMATS:
             if readonly:
@@ -837,10 +843,11 @@ class ChirpMain(wx.Frame):
             if pattern in wildcard:
                 continue
             if name in eset.radio.FORMATS:
-                wildcard += '|%s Files (%s)|%s' % (name, pattern, pattern)
+                wildcard += '|%s %s (%s)|%s' % (
+                    name, _('Files'), pattern, pattern)
 
         style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
-        with wx.FileDialog(self, "Save file", defaultFile=eset.filename,
+        with wx.FileDialog(self, _("Save file"), defaultFile=eset.filename,
                            wildcard=wildcard,
                            style=style) as fd:
             if fd.ShowModal() == wx.ID_CANCEL:
@@ -863,11 +870,11 @@ class ChirpMain(wx.Frame):
         self._update_editorset_title(self.current_editorset)
 
     def _menu_export(self, event):
-        wildcard = 'CSV Files (*.csv)|*.csv'
+        wildcard = 'CSV %s (*.csv)|*.csv' % _('Files')
         defcsv = os.path.splitext(os.path.basename(
                 self.current_editorset.filename))[0] + '.csv'
         style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
-        with wx.FileDialog(self, 'Export to CSV', defaultFile=defcsv,
+        with wx.FileDialog(self, _('Export to CSV'), defaultFile=defcsv,
                            wildcard=wildcard, style=style) as fd:
             if fd.ShowModal() == wx.ID_CANCEL:
                 return
@@ -880,8 +887,9 @@ class ChirpMain(wx.Frame):
 
         also_cancel = wx.CANCEL if allow_cancel else 0
         answer = wx.MessageBox(
-            '%s has not been saved. Save before closing?' % editorset.filename,
-            'Save before closing?',
+            _('%s has not been saved. Save before closing?') % (
+                editorset.filename),
+            _('Save before closing?'),
             wx.YES_NO | wx.YES_DEFAULT | also_cancel | wx.ICON_WARNING)
         if answer == wx.NO:
             # User does not want to save, okay to close
@@ -927,7 +935,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_find(self, event):
         if event.GetId() == wx.ID_FIND:
-            search = wx.GetTextFromUser('Find:', 'Find',
+            search = wx.GetTextFromUser(_('Find') + ':', _('Find'),
                                         self._last_search_text, self)
         elif not self._last_search_text:
             return
@@ -941,7 +949,8 @@ class ChirpMain(wx.Frame):
         eset = self.current_editorset
         rf = eset.radio.get_features()
         l, u = rf.memory_bounds
-        a = wx.GetNumberFromUser("Goto Memory:", "Number", 'Goto Memory',
+        a = wx.GetNumberFromUser(_('Goto Memory:'), _('Number'),
+                                 _('Goto Memory'),
                                  1, l, u, self)
         if a >= 0:
             eset.cb_goto(a)
@@ -1049,11 +1058,11 @@ class ChirpMain(wx.Frame):
         exec(pyc, globals(), globals())
 
     def _menu_load_module(self, event):
-        formats = ['Python files (*.py)|*.py',
-                   'Module files (*.mod)|*.mod']
+        formats = ['Python %s (*.py)|*.py' % _('Files'),
+                   '%s %s (*.mod)|*.mod' % (_('Module'), _('Files'))]
 
         wildcard = '|'.join(formats)
-        with wx.FileDialog(self, 'Open a file',
+        with wx.FileDialog(self, _('Open a module'),
                            chirp_platform.get_platform().get_last_dir(),
                            wildcard=wildcard,
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fd:
@@ -1068,24 +1077,24 @@ class ChirpMain(wx.Frame):
             CHIRP_VERSION,
             '%s.%s.%s' % (pyver.major, pyver.minor, pyver.micro),
             wx.version())
-        wx.MessageBox(aboutinfo, 'About CHIRP',
+        wx.MessageBox(aboutinfo, _('About CHIRP'),
                       wx.OK | wx.ICON_INFORMATION)
 
     def _menu_developer(self, menuitem, event):
         CONF.set_bool('developer', menuitem.IsChecked(), 'state')
         state = menuitem.IsChecked() and 'enabled' or 'disabled'
-        wx.MessageBox(('Developer state is now %s. '
-                       'CHIRP must be restarted to take effect') % state,
-                      'Restart Required', wx.OK)
+        wx.MessageBox(_('Developer state is now %s. '
+                        'CHIRP must be restarted to take effect') % state,
+                      _('Restart Required'), wx.OK)
 
     def _menu_reporting(self, menuitem, event):
         if not menuitem.IsChecked():
             r = wx.MessageBox(
-                'Reporting helps the CHIRP project know which '
-                'radio models and OS platforms to spend our limited '
-                'efforts on. We would really appreciate if you left '
-                'it enabled. Really disable reporting?',
-                'Disable reporting',
+                _('Reporting helps the CHIRP project know which '
+                  'radio models and OS platforms to spend our limited '
+                  'efforts on. We would really appreciate if you left '
+                  'it enabled. Really disable reporting?'),
+                _('Disable reporting'),
                 wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
             if r == wx.NO:
                 menuitem.Check(True)
@@ -1117,7 +1126,7 @@ class ChirpMain(wx.Frame):
         elif system == 'Darwin':
             wx.Execute('open -R %s' % dst)
         else:
-            raise Exception('Unable to reveal %s on this system' % dst)
+            raise Exception(_('Unable to reveal %s on this system') % dst)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
@@ -1128,8 +1137,8 @@ class ChirpMain(wx.Frame):
         plans = sorted([(shortname, details[0])
                         for shortname, details in bandplans.plans.items()],
                        key=lambda x: x[1])
-        d = wx.SingleChoiceDialog(self, 'Select a bandplan',
-                                  'Bandplan',
+        d = wx.SingleChoiceDialog(self, _('Select a bandplan'),
+                                  _('Bandplan'),
                                   [x[1] for x in plans])
         for index, (shortname, name) in enumerate(plans):
             if CONF.get_bool(shortname, 'bandplan'):
@@ -1143,8 +1152,8 @@ class ChirpMain(wx.Frame):
                 CONF.set_bool(shortname, shortname == selected, 'bandplan')
 
     def _menu_query_rb(self, event):
-        d = query_sources.RepeaterBookQueryDialog(self,
-                                                  title='Query Repeaterbook')
+        d = query_sources.RepeaterBookQueryDialog(
+            self, title=_('Query %s') % 'Repeaterbook')
         r = d.ShowModal()
         from chirp.drivers import repeaterbook
         if r == wx.ID_OK:
@@ -1152,8 +1161,8 @@ class ChirpMain(wx.Frame):
             self.open_file(d.result_file, rclass=repeaterbook.RBRadio)
 
     def _menu_query_dm(self, event):
-        d = query_sources.DMRMARCQueryDialog(self,
-                                             title='Query DMR-MARC')
+        d = query_sources.DMRMARCQueryDialog(
+                self, title=_('Query %s') % 'DMR-MARC')
         r = d.ShowModal()
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)
@@ -1181,9 +1190,9 @@ def display_update_notice(version):
 
     CONF.set_int("last_update_check", int(time.time()), "state")
 
-    msg = ('A new CHIRP version is available. Please visit the '
-           'website as soon as possible to download it!')
-    d = wx.MessageDialog(None, msg, 'New version available',
+    msg = _('A new CHIRP version is available. Please visit the '
+            'website as soon as possible to download it!')
+    d = wx.MessageDialog(None, msg, _('New version available'),
                          style=wx.OK | wx.CANCEL | wx.ICON_INFORMATION)
     visit = d.ShowModal()
     if visit == wx.ID_OK:
