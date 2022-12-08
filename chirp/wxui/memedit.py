@@ -106,8 +106,10 @@ class ChirpMemoryColumn(object):
 
     def _render_value(self, memory, value):
         if value is []:
-            raise Exception('Found empty list value for %s: %r' % (
-                self._name, value))
+            raise Exception(
+                _('Found empty list value for %(name)s: %(value)r' % {
+                    'name': self._name,
+                    'value': value}))
         return str(value)
 
     def value(self, memory):
@@ -140,13 +142,13 @@ class ChirpMemoryColumn(object):
                     return True
                 except ValueError:
                     validationInfo.SetFailureMessage(
-                        'Invalid value: %r' % value)
+                        _('Invalid value: %r') % value)
                     return False
                 except Exception:
                     LOG.exception('Failed to validate %r for property %s' % (
                         value, self._name))
                     validationInfo.SetFailureMessage(
-                        'Invalid value: %r' % value)
+                        _('Invalid value: %r') % value)
                     return False
 
         editor = ChirpStringProperty(self.label, self._name)
@@ -160,9 +162,9 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
     @property
     def label(self):
         if self._name == 'offset':
-            return 'Offset'
+            return _('Offset')
         else:
-            return 'Frequency'
+            return _('Frequency')
 
     def hidden_for(self, memory):
         return self._name == 'offset' and not memory.duplex
@@ -209,9 +211,9 @@ class ChirpToneColumn(ChirpMemoryColumn):
     @property
     def label(self):
         if self._name == 'rtone':
-            return 'Tone'
+            return _('Tone')
         else:
-            return 'ToneSql'
+            return _('ToneSql')
 
     def hidden_for(self, memory):
         cross_rx_tone = (memory.tmode == 'Cross' and
@@ -278,9 +280,9 @@ class ChirpDTCSColumn(ChirpChoiceColumn):
     @property
     def label(self):
         if self._name == 'dtcs':
-            return 'DTCS'
+            return _('DTCS')
         elif self._name == 'rx_dtcs':
-            return 'RX DTCS'
+            return _('RX DTCS')
         else:
             return 'ErrDTCS'
 
@@ -308,7 +310,7 @@ class ChirpCrossModeColumn(ChirpChoiceColumn):
 
     @property
     def label(self):
-        return 'Cross mode'
+        return _('Cross mode')
 
     def hidden_for(self, memory):
         return memory.tmode != 'Cross'
@@ -499,7 +501,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         try:
             mem = self._memory_cache[row]
         except KeyError:
-            wx.MessageBox('Unable to edit memory before radio is loaded')
+            wx.MessageBox(_('Unable to edit memory before radio is loaded'))
             event.Veto()
             return
 
@@ -510,21 +512,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._row_label_renderers[row].clear_error()
 
         try:
-            if col_def.label == 'Name':
+            if col_def.name == 'name':
                 val = self._radio.filter_name(val)
             col_def.digest_value(mem, val)
-            if col_def.label == 'Frequency':
+            if col_def.name == 'freq':
                 self._set_memory_defaults(mem)
             if mem.empty:
                 mem.empty = False
-            if col_def.label == 'Cross mode':
+            if col_def.name == 'cross_mode':
                 mem.tmode = 'Cross'
             self._grid.SetRowLabelValue(row, '*%i' % mem.number)
             self._row_label_renderers[row].set_progress()
             self.do_radio(set_cb, 'set_memory', mem)
         except Exception as e:
             LOG.exception('Failed to edit memory')
-            wx.MessageBox('Invalid edit: %s' % e, 'Error')
+            wx.MessageBox(_('Invalid edit: %s') % e, 'Error')
             event.Veto()
         else:
             LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
@@ -570,18 +572,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if not selected_rows:
             selected_rows = [event.GetRow()]
 
-        props_item = wx.MenuItem(menu, wx.NewId(), 'Properties')
+        props_item = wx.MenuItem(menu, wx.NewId(), _('Properties'))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_properties, selected_rows),
                   props_item)
         menu.Append(props_item)
 
         if len(selected_rows) > 1:
-            del_item = wx.MenuItem(menu, wx.NewId(),
-                                   'Delete %i Memories' % len(selected_rows))
+            del_item = wx.MenuItem(
+                menu, wx.NewId(),
+                _('Delete %i Memories') % len(selected_rows))
             to_delete = selected_rows
         else:
-            del_item = wx.MenuItem(menu, wx.NewId(), 'Delete')
+            del_item = wx.MenuItem(menu, wx.NewId(), _('Delete'))
             to_delete = [event.GetRow()]
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._delete_memories_at, to_delete),
@@ -591,14 +594,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if CONF.get_bool('developer', 'state'):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
 
-            raw_item = wx.MenuItem(menu, wx.NewId(), 'Show Raw Memory')
+            raw_item = wx.MenuItem(menu, wx.NewId(), _('Show Raw Memory'))
             self.Bind(wx.EVT_MENU,
                       functools.partial(self._mem_showraw, event.GetRow()),
                       raw_item)
             menu.Append(raw_item)
 
             if len(selected_rows) == 2:
-                diff_item = wx.MenuItem(menu, wx.NewId(), 'Diff Raw Memories')
+                diff_item = wx.MenuItem(menu, wx.NewId(),
+                                        _('Diff Raw Memories'))
                 self.Bind(wx.EVT_MENU,
                           functools.partial(self._mem_diff, selected_rows),
                           diff_item)
@@ -681,7 +685,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if errors:
             d = wx.MessageDialog(
                     self,
-                    'Some memories are incompatible with this radio')
+                    _('Some memories are incompatible with this radio'))
             msg = '\n'.join('#%i: %s' % (mem.number, e) for mem, e in errors)
             d.SetExtendedMessage(msg)
             d.ShowModal()
@@ -737,7 +741,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def export_to_file(self, filename):
         if not filename.lower().endswith('.csv'):
-            raise Exception('Export can only write CSV files')
+            raise Exception(_('Export can only write CSV files'))
         selected = self._grid.GetSelectedRows()
         if len(selected) <= 1:
             selected = range(0, self._grid.GetNumberRows())
@@ -762,7 +766,7 @@ class DVMemoryAsSettings(settings.RadioSettingGroup):
         fields = {'dv_urcall': 'URCALL',
                   'dv_rpt1call': 'RPT1Call',
                   'dv_rpt2call': 'RPT2Call',
-                  'dv_code': 'Digital Code'}
+                  'dv_code': _('Digital Code')}
 
         for field, title in fields.items():
             value = getattr(dvmemory, field)
@@ -779,9 +783,9 @@ class DVMemoryAsSettings(settings.RadioSettingGroup):
 class ChirpMemPropDialog(wx.Dialog):
     def __init__(self, memories, memedit, *a, **k):
         if len(memories) == 1:
-            title = 'Edit details for memory %i' % memories[0].number
+            title = _('Edit details for memory %i') % memories[0].number
         else:
-            title = 'Edit details for %i memories' % len(memories)
+            title = _('Edit details for %i memories') % len(memories)
 
         super(ChirpMemPropDialog, self).__init__(
             memedit, *a, title=title, **k)
@@ -812,14 +816,14 @@ class ChirpMemPropDialog(wx.Dialog):
             self._tabs.InsertPage(page_index,
                                   common.ChirpSettingGrid(memory.extra,
                                                           self._tabs),
-                                  'Extra')
+                                  _('Extra'))
         if isinstance(memory, chirp_common.DVMemory):
             page_index += 1
             self._dv_page = page_index
             self._tabs.InsertPage(page_index,
                                   common.ChirpSettingGrid(
                                       DVMemoryAsSettings(memory), self._tabs),
-                                  'DV Memory')
+                                  _('DV Memory'))
 
         for coldef in memedit._col_defs:
             if coldef.valid:
