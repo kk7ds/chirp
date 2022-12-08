@@ -1,20 +1,23 @@
-LOCALES = en_US pl it nl de hu ru pt_BR fr uk_UA es_ES zh_CN tr_TR
-MOFILES = $(patsubst %,%/LC_MESSAGES/CHIRP.mo,$(LOCALES))
+POFILES = $(shell ls *.po)
+MOFILES = $(patsubst %.po,%/LC_MESSAGES/CHIRP.mo,$(POFILES))
+SHELL = bash
 
-COPY="Dan Smith <dsmith@danplanet.com>"
+COPY="Dan Smith <chirp@f.danplanet.com>"
 PKG=CHIRP
 XGT_OPTS=--copyright-holder=$(COPY) --package-name=$(PKG)
 
-all: $(MOFILES)
+.PHONY: all
+
+all: chirpui.pot $(MOFILES)
 
 clean:
-	rm -f $(MOFILES) *~ *.orig
+	rm -f $(MOFILES) *~ *.orig chirpui.pot
 	find . -name '*.mo' -exec rm -f "{}" \;
 	find * -depth -type d -exec rmdir "{}" \;
 
 chirpui.pot:
-	/usr/bin/find ../chirp/ui -name '*.py' > .files
-	xgettext -L Python -k_ -o chirpui.pot -f .files $(XGT_OPTS)
+	xgettext -L Python -k_ -o chirpui.pot -f <( \
+	  /usr/bin/find ../chirp/ui ../chirp/wxui -name '*.py') $(XGT_OPTS)
 
 %.po: chirpui.pot
 	if [ -f $@ ]; then                                \
