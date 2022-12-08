@@ -126,9 +126,9 @@ class ChirpRadioPromptDialog(wx.Dialog):
         vbox.Add(wx.StaticText(self,
                                label='\n'.join(textwrap.wrap(self.message))),
                  border=20, flag=wx.ALL)
-        self.cb = wx.CheckBox(self,
-                              label="Do not prompt again for %s %s" % (
-                                  self.radio.VENDOR, self.radio.MODEL))
+        self.cb = wx.CheckBox(
+            self, label=_("Do not prompt again for %s") % (
+                '%s %s' % (self.radio.VENDOR, self.radio.MODEL)))
         vbox.Add(self.cb, border=20, flag=wx.ALL)
         vbox.Add(bs)
         self.Fit()
@@ -162,7 +162,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
 class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
         super(ChirpCloneDialog, self).__init__(
-            *a, title='Communicate with radio', **k)
+            *a, title=_('Communicate with radio'), **k)
         self._clone_thread = None
         grid = wx.FlexGridSizer(2, 5, 5)
         grid.AddGrowableCol(1)
@@ -184,14 +184,14 @@ class ChirpCloneDialog(wx.Dialog):
         self._port = wx.ComboBox(self, choices=ports, style=wx.CB_DROPDOWN)
         self._port.SetValue(last_port)
         self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
-        _add_grid('Port', self._port)
+        _add_grid(_('Port'), self._port)
 
         self._vendor = wx.Choice(self, choices=['Icom', 'Yaesu'])
-        _add_grid('Vendor', self._vendor)
+        _add_grid(_('Vendor'), self._vendor)
         self.Bind(wx.EVT_CHOICE, self._selected_vendor, self._vendor)
 
         self._model = wx.Choice(self, choices=[])
-        _add_grid('Model', self._model)
+        _add_grid(_('Model'), self._model)
         self.Bind(wx.EVT_CHOICE, self._selected_model, self._model)
 
         self.gauge = wx.Gauge(self)
@@ -296,7 +296,7 @@ class ChirpCloneDialog(wx.Dialog):
     def fail(self, message):
         def safe_fail():
             wx.MessageBox(message,
-                          'Error communicating with radio',
+                          _('Error communicating with radio'),
                           wx.ICON_ERROR)
             self.cancel_action()
         wx.CallAfter(safe_fail)
@@ -322,7 +322,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         prompts = rclass.get_prompts()
         if prompts.experimental:
             d = ChirpRadioPromptDialog(self,
-                                       title='Experimental driver',
+                                       title=_('Experimental driver'),
                                        buttons=wx.OK,
                                        radio=rclass,
                                        prompt='experimental')
@@ -344,7 +344,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         prompts = rclass.get_prompts()
         if prompts.info:
             d = ChirpRadioPromptDialog(self,
-                                       title='Radio information',
+                                       title=_('Radio information'),
                                        radio=rclass,
                                        prompt='info')
             if d.ShowModal() != wx.ID_OK:
@@ -352,7 +352,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
                 return
         if prompts.pre_download:
             d = ChirpRadioPromptDialog(self,
-                                       title='Download instructions',
+                                       title=_('Download instructions'),
                                        radio=rclass,
                                        prompt='pre_download')
             if d.ShowModal() != wx.ID_OK:
@@ -413,7 +413,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
         prompts = self._radio.get_prompts()
         if prompts.info:
             d = ChirpRadioPromptDialog(self,
-                                       title='Radio information',
+                                       title=_('Radio information'),
                                        radio=self._radio,
                                        prompt='info')
             if d.ShowModal() != wx.ID_OK:
@@ -421,7 +421,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
                 return
         if prompts.pre_upload:
             d = ChirpRadioPromptDialog(self,
-                                       title='Upload instructions',
+                                       title=_('Upload instructions'),
                                        radio=self._radio,
                                        prompt='pre_upload')
             if d.ShowModal() != wx.ID_OK:
