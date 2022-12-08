@@ -40,6 +40,17 @@ class CloneThread(threading.Thread):
         self._fn = getattr(self._radio, fn)
         self._radio.status_fn = self._status
 
+    def stop(self):
+        LOG.warning('Stopping clone thread')
+
+        # Clear out our dialog reference, which should stop us from
+        # eventing to a missing window, and reporting error, when we have
+        # already been asked to cancel
+        self._dialog = None
+
+        # Close the serial, which should stop the clone soon
+        self._radio.pipe.close()
+
     def _status(self, status):
         self._dialog._status(status)
 
@@ -47,12 +58,21 @@ class CloneThread(threading.Thread):
         try:
             self._fn()
         except Exception as e:
-            LOG.exception('Failed to clone: %s' % e)
-            self._dialog.fail(str(e))
+            if self._dialog:
+                LOG.exception('Failed to clone: %s' % e)
+                self._dialog.fail(str(e))
+            else:
+                LOG.warning('Clone failed after cancel: %s', e)
         else:
-            self._dialog.complete()
+            if self._dialog:
+                self._dialog.complete()
         finally:
-            self._radio.pipe.close()
+            try:
+                self._radio.pipe.close()
+            except OSError:
+                # If we were canceled and we have already closed an active
+                # serial, this will fail with EBADF
+                pass
 
 
 # NOTE: This is the legacy settings thread that facilitates
@@ -143,7 +163,7 @@ class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
         super(ChirpCloneDialog, self).__init__(
             *a, title='Communicate with radio', **k)
-
+        self._clone_thread = None
         grid = wx.FlexGridSizer(2, 5, 5)
         grid.AddGrowableCol(1)
 
@@ -310,6 +330,8 @@ class ChirpDownloadDialog(ChirpCloneDialog):
 
     def _action(self, event):
         if event.GetEventObject().GetId() != wx.ID_OK:
+            if self._clone_thread:
+                self._clone_thread.stop()
             self.EndModal(event.GetEventObject().GetId())
             return
 
@@ -381,6 +403,8 @@ class ChirpUploadDialog(ChirpCloneDialog):
 
     def _action(self, event):
         if event.GetEventObject().GetId() != wx.ID_OK:
+            if self._clone_thread:
+                self._clone_thread.stop()
             self.EndModal(event.GetEventObject().GetId())
             return
 
