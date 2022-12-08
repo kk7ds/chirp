@@ -39,7 +39,7 @@ from chirp import elib_intl
 from chirp import platform
 from chirp.ui import config
 
-directory.safe_import_drivers()
+directory.import_drivers()
 
 LOG = logging.getLogger("chirpw")
 

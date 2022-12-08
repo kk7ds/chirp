@@ -37,6 +37,11 @@ from chirp import bandplan
 from chirp.ui import editorset, clone, miscwidgets, config, reporting, fips
 from chirp.ui import bandplans
 
+if sys.version_info < (3, 10):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
+
 gobject.threads_init()
 
 LOG = logging.getLogger(__name__)
@@ -587,19 +592,27 @@ of file.
         count = eset.do_import(config)
 
     def copy_shipped_stock_configs(self, stock_dir):
-        basepath = platform.get_platform().find_resource("stock_configs")
-
-        files = glob(os.path.join(basepath, "*.csv"))
-        for fn in files:
-            if os.path.exists(os.path.join(stock_dir, os.path.basename(fn))):
+        for fn in (
+            conf.name for conf
+            in importlib_resources.files('chirp.stock_configs').iterdir()
+            if conf.is_file()
+        ):
+            if os.path.exists(os.path.join(stock_dir, fn)):
                 LOG.info("Skipping existing stock config")
                 continue
-            try:
-                shutil.copy(fn, stock_dir)
-                LOG.debug("Copying %s -> %s" % (fn, stock_dir))
-            except Exception as e:
-                LOG.error("Unable to copy %s to %s: %s" % (fn, stock_dir, e))
-                return False
+            with importlib_resources.as_file(
+                importlib_resources.files('chirp.stock_configs')
+                .joinpath(fn)
+            ) as path:
+                try:
+                    shutil.copy(str(path), stock_dir)
+                    LOG.debug("Copying %s -> %s" % (str(path), stock_dir))
+                except Exception as e:
+                    LOG.error(
+                        "Unable to copy %s to %s: %s"
+                        % (str(path), stock_dir, e)
+                    )
+                    return False
         return True
 
     def update_stock_configs(self):
@@ -844,9 +857,6 @@ of file.
                 title=_("Save Changes?"), parent=self,
                 buttons=buttons)
             dlg.set_default_response(gtk.RESPONSE_YES)
-            dlg.set_alternative_button_order([gtk.RESPONSE_YES,
-                                              gtk.RESPONSE_NO,
-                                              gtk.RESPONSE_CANCEL])
             dlg.set_text(_("File is modified, save changes before closing?"))
             res = dlg.run()
             dlg.destroy()
@@ -2191,14 +2201,11 @@ of file.
             a.connect_accelerator()
 
     def _set_icon(self):
-        this_platform = platform.get_platform()
-        path = (this_platform.find_resource("chirp.png") or
-                this_platform.find_resource(os.path.join("pixmaps",
-                                                         "chirp.png")))
-        if os.path.exists(path):
-            self.set_icon_from_file(path)
-        else:
-            LOG.warn("Icon %s not found" % path)
+        with importlib_resources.as_file(
+            importlib_resources.files("chirp.share")
+            .joinpath("chirp.png")
+        ) as path:
+            self.set_icon_from_file(str(path))
 
     def _updates(self, version):
         if not version:
@@ -2259,11 +2266,10 @@ of file.
             LOG.error("No MacOS support")
             return
 
-        this_platform = platform.get_platform()
-        icon = (this_platform.find_resource("chirp.png") or
-                this_platform.find_resource(os.path.join("pixmaps",
-                                                         "chirp.png")))
-        if os.path.exists(icon):
+        with importlib_resources.as_file(
+            importlib_resources.files("chirp.share")
+            .joinpath("chirp.png")
+        ) as icon:
             icon_pixmap = gtk.gdk.pixbuf_new_from_file(icon)
             macapp.set_dock_icon_pixbuf(icon_pixmap)
 
