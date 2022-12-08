@@ -187,8 +187,8 @@
 | <a name="Kenwood_TS-590S_SG_LiveMode"></a> Kenwood_TS-590S_SG_LiveMode |  |  | Yes |
 | <a name="Kenwood_TS-850"></a> Kenwood_TS-850 |  |  | Yes |
 | <a name="LUITON_LT-316"></a> LUITON_LT-316 |  |  |  |
-| <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF |  |  |  |
-| <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF |  |  |  |
+| <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes |
+| <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes |
 | <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV |  |  |  |
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes |
@@ -267,10 +267,10 @@
 | <a name="Retevis_RT76P"></a> Retevis_RT76P |  |  |  |
 | <a name="Retevis_RT85"></a> Retevis_RT85 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes |
 | <a name="Retevis_RT87"></a> Retevis_RT87 |  |  |  |
-| <a name="Retevis_RT9000D_136-174"></a> Retevis_RT9000D_136-174 |  |  |  |
-| <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 |  |  |  |
-| <a name="Retevis_RT9000D_400-490"></a> Retevis_RT9000D_400-490 |  |  |  |
-| <a name="Retevis_RT9000D_66-88"></a> Retevis_RT9000D_66-88 |  |  |  |
+| <a name="Retevis_RT9000D_136-174"></a> Retevis_RT9000D_136-174 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes |
+| <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes |
+| <a name="Retevis_RT9000D_400-490"></a> Retevis_RT9000D_400-490 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes |
+| <a name="Retevis_RT9000D_66-88"></a> Retevis_RT9000D_66-88 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes |
 | <a name="Retevis_RT95"></a> Retevis_RT95 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes |
 | <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes |
 | <a name="Retevis_RT98"></a> Retevis_RT98 |  |  |  |
@@ -290,9 +290,9 @@
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 |  |  |  |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  |
-| <a name="TYT_TH9000_144"></a> TYT_TH9000_144 |  |  |  |
-| <a name="TYT_TH9000_220"></a> TYT_TH9000_220 |  |  |  |
-| <a name="TYT_TH9000_440"></a> TYT_TH9000_440 |  |  |  |
+| <a name="TYT_TH9000_144"></a> TYT_TH9000_144 | [Implied by Retevis_RT9000D_136-174](#user-content-Retevis_RT9000D_136-174) | 8-Dec-2022 | Yes |
+| <a name="TYT_TH9000_220"></a> TYT_TH9000_220 | [Implied by Retevis_RT9000D_220-260](#user-content-Retevis_RT9000D_220-260) | 8-Dec-2022 | Yes |
+| <a name="TYT_TH9000_440"></a> TYT_TH9000_440 | [Implied by Retevis_RT9000D_400-490](#user-content-Retevis_RT9000D_400-490) | 8-Dec-2022 | Yes |
 | <a name="Vertex_Standard_FTL-1011"></a> Vertex_Standard_FTL-1011 |  |  |  |
 | <a name="Vertex_Standard_FTL-2011"></a> Vertex_Standard_FTL-2011 |  |  |  |
 | <a name="Vertex_Standard_FTL-7011"></a> Vertex_Standard_FTL-7011 |  |  |  |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 49% (175/180)
+**Tested:** 51% (184/171)
 
-**Byte clean:** 65% (233/122)
+**Byte clean:** 68% (242/113)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
