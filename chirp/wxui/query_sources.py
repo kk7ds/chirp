@@ -134,7 +134,7 @@ class QuerySourceDialog(wx.Dialog):
 
 class RepeaterBookQueryThread(QueryThread):
     def do_query(self):
-        self.send_status('Querying', 10)
+        self.send_status(_('Querying'), 10)
 
         params = self.query_dialog.get_rb_params()
         r = requests.get('http://chirp.danplanet.com/%s' % params.pop('_url'),
@@ -142,10 +142,10 @@ class RepeaterBookQueryThread(QueryThread):
                          headers=HEADERS,
                          stream=True)
         if r.status_code != 200:
-            self.send_fail('Got error code %i from server' % r.status_code)
+            self.send_fail(_('Got error code %i from server') % r.status_code)
             return
 
-        self.send_status('Downloading', 20)
+        self.send_status(_('Downloading'), 20)
 
         size = 0
         chunks = 0
@@ -154,12 +154,12 @@ class RepeaterBookQueryThread(QueryThread):
             for chunk in r.iter_content(chunk_size=8192):
                 size += len(chunk)
                 chunks += 1
-                self.send_status('Read %iKiB' % (size // 1024),
+                self.send_status(_('Read %iKiB') % (size // 1024),
                                  20 + max(chunks * 10, 80))
                 f.write(chunk)
 
         if size <= 105:
-            self.send_fail('No results!')
+            self.send_fail(_('No results!'))
             return
 
         self.send_end()
@@ -167,16 +167,16 @@ class RepeaterBookQueryThread(QueryThread):
 
 class DMRMARCQueryThread(QueryThread):
     def do_query(self):
-        self.send_status('Querying', 10)
+        self.send_status(_('Querying'), 10)
 
         r = dmrmarc.DMRMARCRadio(None)
         r.set_params(**self.query_dialog.get_dm_params())
         r.do_fetch()
         f = r.get_features()
         if f.memory_bounds[1] == 0:
-            self.send_fail('No results!')
+            self.send_fail(_('No results!'))
             return
-        self.send_status('Parsing', 20)
+        self.send_status(_('Parsing'), 20)
 
         csv = generic_csv.CSVRadio(None)
         for i in range(0, f.memory_bounds[1] + 1):
@@ -191,14 +191,14 @@ class DMRMARCQueryThread(QueryThread):
 class RepeaterBookQueryDialog(QuerySourceDialog):
     NAME = 'Repeaterbook'
     RB_BANDS = {
-        "--All--":                  0,
-        "10 meters (29MHz)":        29,
-        "6 meters (54MHz)":         5,
-        "2 meters (144MHz)":        14,
-        "1.25 meters (220MHz)":     22,
-        "70 centimeters (440MHz)":  4,
-        "33 centimeters (900MHz)":  9,
-        "23 centimeters (1.2GHz)":  12,
+        _('--All--'):                  0,
+        _('10 meters (29MHz)'):        29,
+        _('6 meters (54MHz)'):         5,
+        _('2 meters (144MHz)'):        14,
+        _('1.25 meters (220MHz)'):     22,
+        _('70 centimeters (440MHz)'):  4,
+        _('33 centimeters (900MHz)'):  9,
+        _('23 centimeters (1.2GHz)'):  12,
     }
 
     def build(self):
@@ -208,8 +208,10 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         vbox.Add(self.tabs, proportion=1, border=10,
                  flag=wx.EXPAND | wx.BOTTOM)
 
-        self.tabs.InsertPage(0, self._build_political(self.tabs), 'Political')
-        self.tabs.InsertPage(1, self._build_proximity(self.tabs), 'Proximity')
+        self.tabs.InsertPage(0, self._build_political(self.tabs),
+                             _('Political'))
+        self.tabs.InsertPage(1, self._build_proximity(self.tabs),
+                             _('Proximity'))
         self.Layout()
         return vbox
 
@@ -255,9 +257,9 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                     current_county,
                     current_state))
 
-        self._add_grid(grid, 'State', self._state)
-        self._add_grid(grid, 'County', self._county)
-        self._add_grid(grid, 'Band', self._pol_band)
+        self._add_grid(grid, _('State'), self._state)
+        self._add_grid(grid, _('County'), self._county)
+        self._add_grid(grid, _('Band'), self._pol_band)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(grid, proportion=0, flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
@@ -303,9 +305,9 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._prox_band = self._build_band_choice(panel)
         self.Bind(wx.EVT_CHOICE, self._selected_band, self._prox_band)
 
-        self._add_grid(grid, 'Location', self._location)
-        self._add_grid(grid, 'Distance', self._distance)
-        self._add_grid(grid, 'Band', self._prox_band)
+        self._add_grid(grid, _('Location'), self._location)
+        self._add_grid(grid, _('Distance'), self._distance)
+        self._add_grid(grid, _('Band'), self._prox_band)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(grid, flag=wx.EXPAND | wx.TOP | wx.BOTTOM,
@@ -353,7 +355,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                     'band': CONF.get('band', 'repeaterbook') or '%',
                 }
             except (TypeError, ValueError):
-                raise Exception('Distance must be a number!')
+                raise Exception(_('Distance must be a number!'))
 
 
 class DMRMARCQueryDialog(QuerySourceDialog):
@@ -375,13 +377,13 @@ class DMRMARCQueryDialog(QuerySourceDialog):
 
         self._city = wx.TextCtrl(panel,
                                  value=CONF.get('city', 'dmrmarc') or '')
-        self._add_grid(grid, 'City', self._city)
+        self._add_grid(grid, _('City'), self._city)
         self._state = wx.TextCtrl(panel,
                                   value=CONF.get('state', 'dmrmarc') or '')
-        self._add_grid(grid, 'State', self._state)
+        self._add_grid(grid, _('State'), self._state)
         self._country = wx.TextCtrl(panel,
                                     value=CONF.get('country', 'dmrmarc') or '')
-        self._add_grid(grid, 'Country', self._country)
+        self._add_grid(grid, _('Country'), self._country)
 
         return vbox
 
