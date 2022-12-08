@@ -40,12 +40,12 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
     def _add_features_group(self):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
-        self._group_control.AddPage(pg, 'Features')
+        self._group_control.AddPage(pg, _('Features'))
 
         for key in self._features._valid_map.keys():
             value = getattr(self._features, key)
             if isinstance(value, list):
-                value = ','.join(str(v) or '(none)' for v in value)
+                value = ','.join(str(v) or _('(none)') for v in value)
             p = wx.propgrid.StringProperty(
                 key, key,
                 value=str(value))

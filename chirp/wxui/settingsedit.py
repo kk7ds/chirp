@@ -51,7 +51,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
     def _activate(self, event):
         if not self._initialized:
             self._initialized = True
-            self.start_wait_dialog('Getting settings')
+            self.start_wait_dialog(_('Getting settings'))
             self.do_radio(lambda job: wx.CallAfter(self._initialize, job),
                           'get_settings')
 
@@ -105,7 +105,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
             return True
         except Exception as e:
             LOG.exception('Failed to apply settings')
-            wx.MessageBox(str(e), 'Error applying settings',
+            wx.MessageBox(str(e), _('Error applying settings'),
                           wx.OK | wx.ICON_ERROR)
             return False
 
