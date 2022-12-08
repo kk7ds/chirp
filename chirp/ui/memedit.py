@@ -34,7 +34,7 @@ import six
 
 from chirp.ui import common, shiftdialog, miscwidgets, config, memdetail
 from chirp.ui import compat
-from chirp.ui import bandplans
+from chirp import bandplan
 from chirp import chirp_common, errors, directory, import_logic
 
 LOG = logging.getLogger(__name__)
@@ -1386,7 +1386,7 @@ class MemoryEditor(common.Editor):
 
         self._config = config.get("memedit")
 
-        self.bandplans = bandplans.BandPlans(config.get())
+        self.bandplans = bandplan.BandPlans(config.get())
 
         self.allowed_bands = [144, 440]
         self.count = 100
@@ -1535,10 +1535,6 @@ class MemoryEditor(common.Editor):
                                             parent=None,
                                             buttons=buttons)
                 d.set_default_response(gtk.RESPONSE_YES)
-                d.set_alternative_button_order([gtk.RESPONSE_YES,
-                                                gtk.RESPONSE_ACCEPT,
-                                                gtk.RESPONSE_NO,
-                                                gtk.RESPONSE_CANCEL])
                 d.set_text(
                     _("Overwrite location {number}?").format(number=loc))
                 r = d.run()
@@ -1570,8 +1566,6 @@ class MemoryEditor(common.Editor):
                     d = miscwidgets.YesNoDialog(title=_("Incompatible Memory"),
                                                 buttons=buttons)
                     d.set_default_response(gtk.RESPONSE_OK)
-                    d.set_alternative_button_order([gtk.RESPONSE_OK,
-                                                    gtk.RESPONSE_CANCEL])
                     d.set_text(
                         _("Pasted memory {number} is not compatible with "
                           "this radio because:").format(number=src_number) +
