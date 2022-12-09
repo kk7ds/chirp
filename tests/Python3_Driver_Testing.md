@@ -186,7 +186,7 @@
 | <a name="Kenwood_TS-590S_CloneMode"></a> Kenwood_TS-590S_CloneMode |  |  |  | 0.00% |
 | <a name="Kenwood_TS-590S_SG_LiveMode"></a> Kenwood_TS-590S_SG_LiveMode |  |  | Yes |  |
 | <a name="Kenwood_TS-850"></a> Kenwood_TS-850 |  |  | Yes | 0.00% |
-| <a name="LUITON_LT-316"></a> LUITON_LT-316 |  |  |  | 0.04% |
+| <a name="LUITON_LT-316"></a> LUITON_LT-316 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.01% |
@@ -247,8 +247,8 @@
 | <a name="Retevis_RT16"></a> Retevis_RT16 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RT19"></a> Retevis_RT19 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
 | <a name="Retevis_RT21"></a> Retevis_RT21 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.20% |
-| <a name="Retevis_RT22"></a> Retevis_RT22 |  |  |  | 0.54% |
-| <a name="Retevis_RT22FRS"></a> Retevis_RT22FRS |  |  |  | 0.04% |
+| <a name="Retevis_RT22"></a> Retevis_RT22 | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.54% |
+| <a name="Retevis_RT22FRS"></a> Retevis_RT22FRS | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="Retevis_RT22S"></a> Retevis_RT22S | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
 | <a name="Retevis_RT23"></a> Retevis_RT23 |  |  |  | 0.04% |
 | <a name="Retevis_RT26"></a> Retevis_RT26 |  |  |  | 0.03% |
@@ -259,7 +259,7 @@
 | <a name="Retevis_RT47V"></a> Retevis_RT47V | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.00% |
 | <a name="Retevis_RT6"></a> Retevis_RT6 | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.04% |
 | <a name="Retevis_RT619"></a> Retevis_RT619 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
-| <a name="Retevis_RT622"></a> Retevis_RT622 |  |  |  | 0.09% |
+| <a name="Retevis_RT622"></a> Retevis_RT622 | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.09% |
 | <a name="Retevis_RT647"></a> Retevis_RT647 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.00% |
 | <a name="Retevis_RT668"></a> Retevis_RT668 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.03% |
 | <a name="Retevis_RT68"></a> Retevis_RT68 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.03% |
@@ -278,7 +278,7 @@
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  | 0.00% |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A |  |  |  | 0.02% |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.43% |
-| <a name="TID_TD-M8"></a> TID_TD-M8 |  |  |  | 0.04% |
+| <a name="TID_TD-M8"></a> TID_TD-M8 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 |  |  |  | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  |  |
@@ -299,7 +299,7 @@
 | <a name="Vertex_Standard_FTL-8011"></a> Vertex_Standard_FTL-8011 |  |  |  |  |
 | <a name="Vertex_Standard_VXA-700"></a> Vertex_Standard_VXA-700 |  |  |  |  |
 | <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.10% |
-| <a name="WLN_KD-C1"></a> WLN_KD-C1 |  |  |  | **1.74%** |
+| <a name="WLN_KD-C1"></a> WLN_KD-C1 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | **1.74%** |
 | <a name="Wouxun_KG-816"></a> Wouxun_KG-816 |  |  |  | 0.07% |
 | <a name="Wouxun_KG-818"></a> Wouxun_KG-818 |  |  |  | 0.04% |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  | 0.05% |
@@ -355,14 +355,14 @@
 | <a name="Yaesu_VX-8GE"></a> Yaesu_VX-8GE | [Implied by Yaesu_VX-8DR](#user-content-Yaesu_VX-8DR) | 15-Feb-2019 | Yes | 0.01% |
 | <a name="Yaesu_VX-8R"></a> Yaesu_VX-8R | [Implied by Yaesu_VX-8DR](#user-content-Yaesu_VX-8DR) | 15-Feb-2019 | Yes | 0.03% |
 | <a name="Yedro_YC-M04VUS"></a> Yedro_YC-M04VUS | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.02% |
-| <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 |  |  |  | 0.11% |
+| <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
 **Drivers:** 355
 
-**Tested:** 51% (184/171) (75% of usage stats)
+**Tested:** 53% (191/164) (77% of usage stats)
 
-**Byte clean:** 68% (242/113)
+**Byte clean:** 70% (249/106)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
