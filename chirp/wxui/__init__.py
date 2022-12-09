@@ -82,6 +82,7 @@ def chirpmain():
         os.putenv('GDK_BACKEND', 'x11')
 
     app = wx.App()
+    app.SetAppName('CHIRP')
     app._locale = wx.Locale(wx.Locale.GetSystemLanguage())
     mainwindow = main.ChirpMain(None, title='CHIRP')
     mainwindow.Show()
