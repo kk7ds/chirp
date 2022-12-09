@@ -5,6 +5,7 @@
 # +DRIVER_KEY to mark it as implied-tested.
 # Actually Arcshell AR-6 which is a direct clone
 Abbree_AR-63,@KC9HI,30-Nov-2022
+Alinco_DJ-G7EG,@HB9UF,09-Dec-2022
 Anysecu_WP-9900,@KC9HI,11-Nov-2022
 AnyTone_778UV,+Retevis_RT95,13-Nov-2022
 AnyTone_778UV_VOX,+Retevis_RT95,13-Nov-2022
