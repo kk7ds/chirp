@@ -4,7 +4,7 @@
 | <a name="ARRL_Travel_Plus"></a> ARRL_Travel_Plus |  |  |  | 0.00% |
 | <a name="Abbree_AR-518"></a> Abbree_AR-518 |  |  |  | 0.24% |
 | <a name="Abbree_AR-63"></a> Abbree_AR-63 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
-| <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG |  |  |  | 0.44% |
+| <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG | [@HB9UF](https://github.com/HB9UF) | 09-Dec-2022 | Yes | 0.44% |
 | <a name="Alinco_DJ175"></a> Alinco_DJ175 |  |  |  | 0.03% |
 | <a name="Alinco_DJ596"></a> Alinco_DJ596 |  |  |  | 0.02% |
 | <a name="Alinco_DR03T"></a> Alinco_DR03T |  |  |  | 0.01% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 59% (211/144) (86% of usage stats)
+**Tested:** 59% (212/143) (87% of usage stats)
 
-**Byte clean:** 76% (270/85)
+**Byte clean:** 76% (271/84)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
