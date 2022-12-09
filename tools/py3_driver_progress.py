@@ -21,22 +21,29 @@ def tester_link(text):
         return text
 
 
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument('testers')
-    p.add_argument('-o', '--output', default='-')
-    args = p.parse_args()
+def read_stats(statsfile):
+    with open(statsfile) as f:
+        lines = f.readlines()
 
+    models = {}
+    total = 0
+    skip = ['Repeaterbook', 'Radio Reference', 'CHIRP', 'CSV']
+    for line in lines[1:]:
+        model, count = line.strip().split('\t')
+        if any(s in model for s in skip):
+            continue
+        count = int(count)
+        models[model] = count
+        total += count
+
+    return total, models
+
+
+def read_testers(testersfile):
     headers = ['Driver', 'Tester', 'Tested']
-    testers = {}
-
-    if args.output == '-':
-        output = sys.stdout
-    else:
-        output = open(args.output, 'w')
-
     line = 0
-    for fields in csv.reader(open(args.testers)):
+    testers = {}
+    for fields in csv.reader(open(testersfile)):
         line += 1
         if fields[0][0] == '#':
             continue
@@ -54,31 +61,62 @@ def main():
 
         testers[fields[0]] = fields[1:]
 
+    return testers
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument('testers')
+    p.add_argument('stats')
+    p.add_argument('-o', '--output', default='-')
+    args = p.parse_args()
+
+    testers = read_testers(args.testers)
+    stats_total, stats = read_stats(args.stats)
+
+    if args.output == '-':
+        output = sys.stdout
+    else:
+        output = open(args.output, 'w')
+
+
     print('## Status', file=output)
 
-    print('| Driver | Tester | Tested | Byte Clean |', file=output)
-    print('| ------ | ------ | ------ | ---------- |', file=output)
+    print('| Driver | Tester | Tested | Byte Clean | "Market Share" |', file=output)
+    print('| ------ | ------ | ------ | ---------- | -------------- |', file=output)
 
     drivers = sorted([ident for ident in directory.DRV_TO_RADIO])
     drvstested = 0
     byteclean = 0
+    tested_stats = 0
     for driver in drivers:
         cls = directory.get_radio(driver)
         tester, tested = testers.pop(driver, ('', ''))
         if tester:
             drvstested += 1
+        count = stats.pop(driver, None)
+        if count is None:
+            share = ''
+        else:
+            pct = (count * 100 / stats_total)
+            share = '%.2f%%' % pct
+            if tester:
+                tested_stats += count
+            if pct > 1:
+                share = '**%s**' % share
         if not cls.NEEDS_COMPAT_SERIAL:
             byteclean += 1
-        print('| <a name="%s"></a> %s | %s | %s | %s |' % (
+        print('| <a name="%s"></a> %s | %s | %s | %s | %s |' % (
             driver, driver, tester_link(tester), tested,
-            '' if cls.NEEDS_COMPAT_SERIAL else 'Yes'),
+            '' if cls.NEEDS_COMPAT_SERIAL else 'Yes', share),
               file=output)
 
     print('## Stats', file=output)
     print('\n**Drivers:** %i' % (len(drivers)), file=output)
-    print('\n**Tested:** %i%% (%i/%i)' % (
+    print('\n**Tested:** %i%% (%i/%i) (%i%% of usage stats)' % (
         drvstested / len(drivers) * 100,
-        drvstested, len(drivers) - drvstested),
+        drvstested, len(drivers) - drvstested,
+        tested_stats * 100 / stats_total),
           file=output)
     print('\n**Byte clean:** %i%% (%i/%i)' % (
         byteclean / len(drivers) * 100,
