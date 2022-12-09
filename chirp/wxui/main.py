@@ -906,6 +906,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_close(self, event):
         if self._prompt_to_close_editor(self.current_editorset):
+            self.current_editorset.close()
             self._editors.DeletePage(self._editors.GetSelection())
             self._update_window_for_editor()
 
