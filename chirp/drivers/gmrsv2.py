@@ -34,12 +34,12 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # BTECH GMRS-V2 magic string
-MSTRING_GMRSV2 = "\x50\x5F\x20\x21\x12\x15\x4D"
+MSTRING_GMRSV2 = b"\x50\x5F\x20\x21\x12\x15\x4D"
 
 # #### ID strings #####################################################
 
 # BTECH GMRS-V2
-GMRSV2_fp1 = "US32419"  # original
+GMRSV2_fp1 = b"US32419"  # original
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -83,6 +83,7 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
     """BTech GMRS-V2"""
     VENDOR = "BTECH"
     MODEL = "GMRS-V2"
+    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [GMRSV2_fp1, ]
 
