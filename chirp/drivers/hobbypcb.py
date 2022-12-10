@@ -33,16 +33,16 @@ TONE_MODES = ['', 'Tone', 'TSQL', '']
 
 def detect_baudrate(radio):
     bauds = list(BAUDS)
-    bauds.remove(radio.pipe.getBaudrate())
-    bauds.insert(0, radio.pipe.getBaudrate())
+    bauds.remove(radio.pipe.baudrate)
+    bauds.insert(0, radio.pipe.baudrate)
     for baud in bauds:
-        radio.pipe.setBaudrate(baud)
-        radio.pipe.setTimeout(0.5)
-        radio.pipe.write('\rFW?\r')
+        radio.pipe.baudrate = baud
+        radio.pipe.timeout = 0.5
+        radio.pipe.write(b'\rFW?\r')
         resp = radio.pipe.read(2)
-        if resp.strip().startswith('FW'):
+        if resp.strip().startswith(b'FW'):
             resp += radio.pipe.read(16)
-            LOG.info('HobbyPCB %s at baud rate %i' % (resp.strip(), baud))
+            LOG.info('HobbyPCB %r at baud rate %i' % (resp.strip(), baud))
             return baud
 
 
@@ -52,24 +52,26 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
     VENDOR = "HobbyPCB"
     MODEL = "RS-UV3"
     BAUD_RATE = 19200
+    NEEDS_COMPAT_SERIAL = False
 
     def __init__(self, *args, **kwargs):
         super(HobbyPCBRSUV3Radio, self).__init__(*args, **kwargs)
         if self.pipe:
             baud = detect_baudrate(self)
             if not baud:
-                errors.RadioError('Radio did not respond')
+                raise errors.RadioError('Radio did not respond')
 
     def _cmd(self, command, rsize=None):
+        command = command.encode()
         LOG.debug('> %s' % command)
-        self.pipe.write('%s\r' % command)
-        resp = ''
+        self.pipe.write(b'%s\r' % command)
+        resp = b''
 
         if rsize is None:
-            complete = lambda: False
+            complete = lambda: time.sleep(0.1) is None
         elif rsize == 0:
             rsize = 1
-            complete = lambda: resp.endswith('\r')
+            complete = lambda: resp.endswith(b'\r')
         else:
             complete = lambda: len(resp) >= rsize
 
@@ -79,7 +81,7 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
                 break
             resp += chunk
         LOG.debug('< %r [%i]' % (resp, len(resp)))
-        return resp.strip()
+        return resp.decode().strip()
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -103,7 +105,7 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
 
     def get_memory(self, number):
         _mem = self._cmd('CP%i' % number, 33).split('\r')
-        LOG.debug('Memory elements: %s' % _mem)
+        LOG.debug('Memory elements: %r' % _mem)
         mem = chirp_common.Memory()
         mem.number = number
         mem.freq = int(_mem[0]) * 1000
@@ -137,7 +139,6 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
         self._cmd('TM%i' % TONE_MODES.index(mem.tmode))
         self._cmd('TF%05i' % tone)
         self._cmd('PW%i' % POWER_LEVELS.index(mem.power))
-        time.sleep(1)
         self._cmd('ST%i' % mem.number)
 
     def get_settings(self):

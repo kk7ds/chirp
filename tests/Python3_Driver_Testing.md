@@ -74,7 +74,7 @@
 | <a name="Feidaxin_FD-460A"></a> Feidaxin_FD-460A |  |  |  | 0.01% |
 | <a name="Feidaxin_FD-460UH"></a> Feidaxin_FD-460UH |  |  |  | 0.01% |
 | <a name="Generic_CSV"></a> Generic_CSV | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 |  |  |
-| <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 |  |  |  | 0.02% |
+| <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_746"></a> Icom_746 |  |  | Yes | 0.02% |
 | <a name="Icom_IC-208H"></a> Icom_IC-208H |  |  | Yes | 0.05% |
 | <a name="Icom_IC-2100H"></a> Icom_IC-2100H |  |  | Yes | 0.04% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 53% (191/164) (83% of usage stats)
+**Tested:** 54% (192/163) (83% of usage stats)
 
-**Byte clean:** 70% (249/106)
+**Byte clean:** 70% (250/105)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means

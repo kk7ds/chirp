@@ -41,6 +41,7 @@ CRT_Micron_UV,+Retevis_RT95,13-Nov-2022
 CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
 Explorer_QRZ-1,+TYT_TH-UV88,5-Dec-2022
 Generic_CSV,@kk7ds,4-Dec-2022
+HobbyPCB_RS-UV3,@kk7ds,9-Dec-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
 Icom_IC-7200,@kk7ds,22-Oct-2022
