@@ -12,7 +12,7 @@
 | <a name="Alinco_DR135T"></a> Alinco_DR135T |  |  |  | 0.04% |
 | <a name="Alinco_DR235T"></a> Alinco_DR235T |  |  |  | 0.02% |
 | <a name="Alinco_DR435T"></a> Alinco_DR435T |  |  |  | 0.02% |
-| <a name="AnyTone_5888UV"></a> AnyTone_5888UV |  |  |  | 0.14% |
+| <a name="AnyTone_5888UV"></a> AnyTone_5888UV | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.14% |
 | <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII |  |  |  | 0.04% |
 | <a name="AnyTone_778UV"></a> AnyTone_778UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.17% |
 | <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.23% |
@@ -109,7 +109,7 @@
 | <a name="Icom_ID-800H_v2"></a> Icom_ID-800H_v2 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.01% |
 | <a name="Icom_ID-80H"></a> Icom_ID-80H |  |  | Yes | 0.01% |
 | <a name="Icom_ID-880H"></a> Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.02% |
-| <a name="Intek_HR-2040"></a> Intek_HR-2040 |  |  |  | 0.02% |
+| <a name="Intek_HR-2040"></a> Intek_HR-2040 | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Intek_KT-980HP"></a> Intek_KT-980HP | [Implied by Baofeng_BF-F8HP](#user-content-Baofeng_BF-F8HP) | 18-Nov-2022 | Yes | 0.04% |
 | <a name="Jetstream_JT220M"></a> Jetstream_JT220M |  |  |  | 0.01% |
 | <a name="Jetstream_JT270M"></a> Jetstream_JT270M |  |  |  | 0.01% |
@@ -196,8 +196,8 @@
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  | 0.10% |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 |  |  |  | 0.02% |
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.05% |
-| <a name="Polmar_DB-50M"></a> Polmar_DB-50M |  |  |  | 0.03% |
-| <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X |  |  |  | 0.01% |
+| <a name="Polmar_DB-50M"></a> Polmar_DB-50M | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.03% |
+| <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.01% |
 | <a name="Puxing_PX-2R"></a> Puxing_PX-2R |  |  |  | 0.05% |
 | <a name="Puxing_PX-777"></a> Puxing_PX-777 |  |  |  | 0.11% |
 | <a name="Puxing_PX-888K"></a> Puxing_PX-888K |  |  |  | 0.07% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 54% (192/163) (83% of usage stats)
+**Tested:** 55% (196/159) (83% of usage stats)
 
-**Byte clean:** 70% (250/105)
+**Byte clean:** 71% (254/101)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
