@@ -25,7 +25,7 @@
 | <a name="BTECH_GMRS-50X1"></a> BTECH_GMRS-50X1 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes | 0.13% |
 | <a name="BTECH_GMRS-V1"></a> BTECH_GMRS-V1 |  |  | Yes | 0.16% |
 | <a name="BTECH_GMRS-V2"></a> BTECH_GMRS-V2 |  |  | Yes | 0.16% |
-| <a name="BTECH_MURS-V1"></a> BTECH_MURS-V1 |  |  |  | 0.04% |
+| <a name="BTECH_MURS-V1"></a> BTECH_MURS-V1 |  |  | Yes | 0.04% |
 | <a name="BTECH_UV-2501"></a> BTECH_UV-2501 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.02% |
 | <a name="BTECH_UV-2501+220"></a> BTECH_UV-2501+220 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.02% |
 | <a name="BTECH_UV-25X2"></a> BTECH_UV-25X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.15% |
@@ -362,7 +362,7 @@
 
 **Tested:** 55% (198/157) (84% of usage stats)
 
-**Byte clean:** 72% (258/97)
+**Byte clean:** 72% (259/96)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
