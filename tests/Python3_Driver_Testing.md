@@ -380,3 +380,10 @@ and serial ports is important, especially around bytes-vs-string safety.
 To update this document, add/edit entries in `tests/py3_driver_testers.txt` and
 then run `tox -e makesupported`. Commit the result (including the changes to this `.md`
 file) and submit a PR.
+
+The "Byte Clean" flag refers to whether or not the radio has set the
+`NEEDS_COMPAT_SERIAL = False` flag on the radio class, and thus uses
+`MemoryMapBytes` exclusively internally. Whenever possible, all radios
+that are fixed for py3 should do so with this flag set to False and with
+the byte-native memory map.
+
