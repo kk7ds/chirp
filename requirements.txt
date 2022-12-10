@@ -5,3 +5,4 @@ pyserial
 future
 requests
 pywin32; platform_system=="Windows"
+suds
