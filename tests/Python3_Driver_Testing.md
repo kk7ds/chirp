@@ -34,7 +34,7 @@
 | <a name="BTECH_UV-50X2"></a> BTECH_UV-50X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.13% |
 | <a name="BTECH_UV-50X2_G2"></a> BTECH_UV-50X2_G2 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
 | <a name="BTECH_UV-50X3"></a> BTECH_UV-50X3 |  |  |  | 0.06% |
-| <a name="BTECH_UV-5X3"></a> BTECH_UV-5X3 |  |  |  | 0.43% |
+| <a name="BTECH_UV-5X3"></a> BTECH_UV-5X3 | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.43% |
 | <a name="Baofeng_BF-888"></a> Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes | **15.53%** |
 | <a name="Baofeng_BF-A58"></a> Baofeng_BF-A58 | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | **1.46%** |
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.59% |
@@ -194,7 +194,7 @@
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes | 0.00% |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  | 0.18% |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  | 0.10% |
-| <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 |  |  |  | 0.02% |
+| <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 | [Implied by BTECH_UV-5X3](#user-content-BTECH_UV-5X3) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.05% |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.03% |
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.01% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 55% (196/159) (83% of usage stats)
+**Tested:** 55% (198/157) (84% of usage stats)
 
-**Byte clean:** 71% (254/101)
+**Byte clean:** 72% (256/99)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
