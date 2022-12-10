@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # BTECH MURS-V1 magic string
-MSTRING_MURSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
+MSTRING_MURSV1 = b"\x50\x5F\x20\x15\x12\x15\x4D"
 
 # #### ID strings #####################################################
 
@@ -86,6 +86,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
     """BTech MURS-V1"""
     VENDOR = "BTECH"
     MODEL = "MURS-V1"
+    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [MURSV1_fp1, ]
 
