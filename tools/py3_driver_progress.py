@@ -30,6 +30,10 @@ def read_stats(statsfile):
     skip = ['Repeaterbook', 'Radio Reference', 'CHIRP', 'CSV']
     for line in lines[1:]:
         model, count = line.strip().split('\t')
+        model = model.replace(' ', '_').\
+            replace('(', '').\
+            replace(')', '').\
+            replace('/', '_')
         if any(s in model for s in skip):
             continue
         count = int(count)
@@ -64,6 +68,26 @@ def read_testers(testersfile):
     return testers
 
 
+def get_share_for_radio(stats, stats_total, parent_cls):
+    count = 0
+    for cls in [parent_cls] + parent_cls.ALIASES:
+        driver = directory.radio_class_id(cls)
+        simple_driver = '%s_%s' % (cls.VENDOR, cls.MODEL)
+        if driver in stats:
+            count += stats.pop(driver, 0)
+        elif simple_driver in stats:
+            count += stats.pop(simple_driver, 0)
+
+    if count == 0:
+        share = ''
+    else:
+        pct = (count * 100 / stats_total)
+        share = '%.2f%%' % pct
+        if pct > 1:
+            share = '**%s**' % share
+    return count, share
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('testers')
@@ -94,16 +118,9 @@ def main():
         tester, tested = testers.pop(driver, ('', ''))
         if tester:
             drvstested += 1
-        count = stats.pop(driver, None)
-        if count is None:
-            share = ''
-        else:
-            pct = (count * 100 / stats_total)
-            share = '%.2f%%' % pct
-            if tester:
-                tested_stats += count
-            if pct > 1:
-                share = '**%s**' % share
+        count, share = get_share_for_radio(stats, stats_total, cls)
+        if tester:
+            tested_stats += count
         if not cls.NEEDS_COMPAT_SERIAL:
             byteclean += 1
         print('| <a name="%s"></a> %s | %s | %s | %s | %s |' % (
