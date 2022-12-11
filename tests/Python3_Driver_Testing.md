@@ -349,7 +349,7 @@
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 |  |  | Yes | 0.04% |
 | <a name="Yaesu_VX-3"></a> Yaesu_VX-3 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.08% |
 | <a name="Yaesu_VX-5"></a> Yaesu_VX-5 |  |  | Yes | 0.07% |
-| <a name="Yaesu_VX-6"></a> Yaesu_VX-6 |  |  | Yes | 0.16% |
+| <a name="Yaesu_VX-6"></a> Yaesu_VX-6 | [@dominickpastore](https://github.com/dominickpastore) | 10-Dec-2022 | Yes | 0.16% |
 | <a name="Yaesu_VX-7"></a> Yaesu_VX-7 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.09% |
 | <a name="Yaesu_VX-8DR"></a> Yaesu_VX-8DR | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.03% |
 | <a name="Yaesu_VX-8GE"></a> Yaesu_VX-8GE | [Implied by Yaesu_VX-8DR](#user-content-Yaesu_VX-8DR) | 15-Feb-2019 | Yes | 0.01% |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 57% (204/151) (86% of usage stats)
+**Tested:** 57% (205/150) (86% of usage stats)
 
 **Byte clean:** 73% (262/93)
 
