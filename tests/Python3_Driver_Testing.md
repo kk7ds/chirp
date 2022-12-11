@@ -300,16 +300,16 @@
 | <a name="Vertex_Standard_VXA-700"></a> Vertex_Standard_VXA-700 |  |  |  | 0.02% |
 | <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.12% |
 | <a name="WLN_KD-C1"></a> WLN_KD-C1 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | **1.73%** |
-| <a name="Wouxun_KG-816"></a> Wouxun_KG-816 |  |  |  | 0.07% |
-| <a name="Wouxun_KG-818"></a> Wouxun_KG-818 |  |  |  | 0.04% |
+| <a name="Wouxun_KG-816"></a> Wouxun_KG-816 | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.07% |
+| <a name="Wouxun_KG-818"></a> Wouxun_KG-818 | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.04% |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  | 0.05% |
-| <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 |  |  |  | 0.19% |
+| <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.19% |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  | 0.24% |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus |  |  |  | 0.08% |
 | <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  | 0.05% |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A |  |  |  | 0.04% |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  | 0.39% |
-| <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P |  |  |  | 0.35% |
+| <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.35% |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M | [@f3sty](https://github.com/f3sty) | 05-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes | 0.02% |
 | <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes | 0.03% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 57% (205/150) (86% of usage stats)
+**Tested:** 58% (209/146) (86% of usage stats)
 
-**Byte clean:** 73% (262/93)
+**Byte clean:** 74% (266/89)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
