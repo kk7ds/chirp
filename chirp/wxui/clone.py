@@ -235,7 +235,8 @@ class ChirpCloneDialog(wx.Dialog):
         except ValueError:
             LOG.warning('Last vendor/model not found')
 
-        self.Layout()
+        self.SetMinSize((400, 200))
+        self.Fit()
 
     def _add_aliases(self, rclass):
         for alias in rclass.ALIASES:
