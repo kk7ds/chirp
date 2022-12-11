@@ -527,13 +527,15 @@ class ChirpMain(wx.Frame):
         source_menu = wx.Menu()
         radio_menu.AppendSubMenu(source_menu, 'Query Source')
 
-        query_rrca_item = wx.MenuItem(source_menu, wx.NewId(), 'RadioReference Canada')
+        query_rrca_item = wx.MenuItem(source_menu,
+                                      wx.NewId(), 'RadioReference Canada')
         self.Bind(wx.EVT_MENU, self._menu_query_rrca, query_rrca_item)
         source_menu.Append(query_rrca_item)
         # Soon to be implemented
-        #query_rrus_item = wx.MenuItem(source_menu, wx.NewId(), 'RadioReference USA')
-        #self.Bind(wx.EVT_MENU, self._menu_query_rrus, query_rrus_item)
-        #source_menu.Append(query_rrus_item)
+        # query_rrus_item = wx.MenuItem(source_menu,
+        # wx.NewId(), 'RadioReference USA')
+        # self.Bind(wx.EVT_MENU, self._menu_query_rrus, query_rrus_item)
+        # source_menu.Append(query_rrus_item)
 
         query_rb_item = wx.MenuItem(source_menu, wx.NewId(), 'RepeaterBook')
         self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
@@ -1162,7 +1164,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_query_rrca(self, event):
         d = query_sources.RRCAQueryDialog(self,
-                                             title='Query RadioReference (Canada)')
+                                        title='Query RadioReference (Canada)')
         r = d.ShowModal()
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)
@@ -1170,7 +1172,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_query_rrus(self, event):
         d = query_sources.RRUSQueryDialog(self,
-                                             title='Query RadioReference (USA)')
+                                          title='Query RadioReference (USA)')
         r = d.ShowModal()
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)
