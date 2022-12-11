@@ -222,7 +222,7 @@ class RRCALOGINQueryThread(QueryThread):
         global rrcounties, rrloggedin
         # Write our new favorite place to the conf file. Get the 2 other parameters we need to pass
         province_id = provinces[provchoice.GetStringSelection()]
-        # Iterate over the pairs in the dictionary. Seriously? There must be a better way.
+        # Iterate over the pairs in the dictionary. There must be a better way...
         # They are all unique within each province, so it's not as bad as it seems
         for key, value in rrcounties.items():
             if value == countychoice.GetStringSelection():
@@ -516,36 +516,41 @@ class RRCAQueryDialog(QuerySourceDialog):
 
     def populatepc(self):
         # init and grab conf defaults and populate the selector
-        RRCAQueryDialog.getconfdefaults(self)
+        RRCAQueryDialog.getconfdefaults(self) #  <-- Problem child
         # Clear the temporary choice dropdown, disable the form bits we don't need any more
         # & insert provinces as exist in RR database because they change sometimes.
-        provchoice.Clear()
+        wx.CallAfter(provchoice.Clear)
+        engprovs = []
         for key in provinces:
-            provchoice.Append(key)
-        rrusername.Enable(False)
-        rrpassword.Enable(False)
-        loginbutton.Enable(False)
-        provchoice.SetStringSelection(self.default_prov)
-        # update the choice to match conf
-        RRCAQueryDialog.selected_province(self, self.default_prov)
-        countychoice.SetStringSelection(self.default_county)
+            engprovs.append(key)
+        # It's a sort of time machine
+        wx.CallAfter(provchoice.Append, engprovs)
+        wx.CallAfter(rrusername.Enable, False)
+        wx.CallAfter(rrpassword.Enable, False)
+        wx.CallAfter(loginbutton.Enable, False)
+        if self.default_prov:
+            wx.CallAfter(provchoice.SetStringSelection, self.default_prov)
+            # update the choice to match conf
+            RRCAQueryDialog.selected_province(self, self.default_prov)
+        if self.default_county:
+            wx.CallAfter(countychoice.SetStringSelection, self.default_county)
 
     def getconfdefaults(self):
-
-        code = int(CONF.get("province", "radioreference"))
+        code = CONF.get("province", "radioreference")
         for k, v in provinces.items():
-            if code == v:
+            if code == str(v):
                 self.default_prov = k
                 break
-        code = int(CONF.get("county", "radioreference"))
+            else: self.default_prov = "BC"
+        code = CONF.get("county", "radioreference")
         for row in clist:
-            if code == row[2]:
+            if code == str(row[2]):
                 self.default_county = row[3]
                 break
-
+            else: self.default_county = 0
 
     def selected_province(self, chosenprov):
-        #if user alters the province dropdown, load the new counties into the county dropdown
+        #if user alters the province dropdown, load the new counties into the county dropdown choice
         global rrcounties
         rrcounties = {}
         self.chosenprov = provchoice.GetSelection()
