@@ -1164,7 +1164,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_query_rrca(self, event):
         d = query_sources.RRCAQueryDialog(self,
-                                        title='Query RadioReference (Canada)')
+                                          title='Query RadioReference (Canada)')
         r = d.ShowModal()
         if r == wx.ID_OK:
             LOG.debug('Result file: %s' % d.result_file)

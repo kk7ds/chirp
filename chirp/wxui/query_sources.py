@@ -500,7 +500,7 @@ class RRCAQueryDialog(QuerySourceDialog):
 # build a prov/county selector grid & add selectors
         provchoice = wx.Choice(panel, choices=["Log in First"])
         provchoice.SetSelection(0)
-        on_choice = lambda event: \
+        def on_choice(event):
             self.selected_province(provchoice.GetStringSelection())
         self.Bind(wx.EVT_CHOICE, on_choice, provchoice)
         self._add_grid(grid, 'Province', provchoice)
