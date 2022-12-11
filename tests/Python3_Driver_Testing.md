@@ -23,9 +23,9 @@
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
 | <a name="BTECH_GMRS-20V2"></a> BTECH_GMRS-20V2 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes | 0.03% |
 | <a name="BTECH_GMRS-50X1"></a> BTECH_GMRS-50X1 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes | 0.13% |
-| <a name="BTECH_GMRS-V1"></a> BTECH_GMRS-V1 |  |  | Yes | 0.16% |
-| <a name="BTECH_GMRS-V2"></a> BTECH_GMRS-V2 |  |  | Yes | 0.16% |
-| <a name="BTECH_MURS-V1"></a> BTECH_MURS-V1 |  |  | Yes | 0.04% |
+| <a name="BTECH_GMRS-V1"></a> BTECH_GMRS-V1 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.16% |
+| <a name="BTECH_GMRS-V2"></a> BTECH_GMRS-V2 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.16% |
+| <a name="BTECH_MURS-V1"></a> BTECH_MURS-V1 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.04% |
 | <a name="BTECH_UV-2501"></a> BTECH_UV-2501 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.02% |
 | <a name="BTECH_UV-2501+220"></a> BTECH_UV-2501+220 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.02% |
 | <a name="BTECH_UV-25X2"></a> BTECH_UV-25X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.15% |
@@ -33,13 +33,13 @@
 | <a name="BTECH_UV-5001"></a> BTECH_UV-5001 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.03% |
 | <a name="BTECH_UV-50X2"></a> BTECH_UV-50X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.13% |
 | <a name="BTECH_UV-50X2_G2"></a> BTECH_UV-50X2_G2 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
-| <a name="BTECH_UV-50X3"></a> BTECH_UV-50X3 |  |  | Yes | 0.06% |
+| <a name="BTECH_UV-50X3"></a> BTECH_UV-50X3 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.06% |
 | <a name="BTECH_UV-5X3"></a> BTECH_UV-5X3 | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.43% |
 | <a name="Baofeng_BF-888"></a> Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes | **15.53%** |
 | <a name="Baofeng_BF-A58"></a> Baofeng_BF-A58 | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | **1.46%** |
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.59% |
 | <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **6.33%** |
-| <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 |  |  | Yes | 0.76% |
+| <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.76% |
 | <a name="Baofeng_BF-T8"></a> Baofeng_BF-T8 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.42% |
 | <a name="Baofeng_BF-V8A"></a> Baofeng_BF-V8A | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.03% |
 | <a name="Baofeng_F-11"></a> Baofeng_F-11 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.12% |
@@ -48,7 +48,7 @@
 | <a name="Baofeng_UV-3R"></a> Baofeng_UV-3R | [@yarda](https://github.com/yarda) | 26-Sep-2022 |  | 0.45% |
 | <a name="Baofeng_UV-5R"></a> Baofeng_UV-5R | [@lekv](https://github.com/lekv) | 23-Oct-2022 | Yes | **28.81%** |
 | <a name="Baofeng_UV-6"></a> Baofeng_UV-6 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.46% |
-| <a name="Baofeng_UV-6R"></a> Baofeng_UV-6R |  |  | Yes | 0.71% |
+| <a name="Baofeng_UV-6R"></a> Baofeng_UV-6R | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.71% |
 | <a name="Baofeng_UV-82"></a> Baofeng_UV-82 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **8.78%** |
 | <a name="Baofeng_UV-82HP"></a> Baofeng_UV-82HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **2.38%** |
 | <a name="Baofeng_UV-82WP"></a> Baofeng_UV-82WP | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.32% |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 55% (198/157) (84% of usage stats)
+**Tested:** 57% (204/151) (86% of usage stats)
 
 **Byte clean:** 73% (262/93)
 
