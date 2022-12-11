@@ -265,7 +265,7 @@ def _clean_buffer(radio):
 
 def _rawrecv(radio, amount):
     """Raw read from the radio device"""
-    data = ""
+    data = b""
     try:
         data = radio.pipe.read(amount)
     except:
@@ -321,12 +321,12 @@ def _do_ident(radio):
     # Flush input buffer
     _clean_buffer(radio)
 
-    magic = "PROM_LIN"
+    magic = b"PROM_LIN"
 
     _rawsend(radio, magic)
 
     ack = _rawrecv(radio, 1)
-    if ack != "\x06":
+    if ack != b"\x06":
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
@@ -336,7 +336,7 @@ def _do_ident(radio):
 
 
 def _exit_program_mode(radio):
-    endframe = "EXIT"
+    endframe = b"EXIT"
     _rawsend(radio, endframe)
 
 
@@ -349,13 +349,13 @@ def _download(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
-        frame = _make_frame("READ", addr, BLOCK_SIZE)
+        frame = _make_frame(b"READ", addr, BLOCK_SIZE)
         # DEBUG
         LOG.info("Request sent:")
         LOG.debug(util.hexprint(frame))
@@ -370,13 +370,11 @@ def _download(radio):
         data += d
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
     _exit_program_mode(radio)
-
-    data += radio.MODEL.ljust(8)
 
     return data
 
@@ -390,7 +388,7 @@ def _upload(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
@@ -399,19 +397,19 @@ def _upload(radio):
         # Sending the data
         data = radio.get_mmap()[addr:addr + BLOCK_SIZE]
 
-        frame = _make_frame("WRIE", addr, BLOCK_SIZE, data)
+        frame = _make_frame(b"WRIE", addr, BLOCK_SIZE, data)
 
         _rawsend(radio, frame)
 
         # Receiving the response
         ack = _rawrecv(radio, 1)
-        if ack != "\x06":
+        if ack != b"\x06":
             _exit_program_mode(radio)
             msg = "Bad ack writing block 0x%04x" % addr
             raise errors.RadioError(msg)
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
@@ -447,6 +445,7 @@ class LT725UV(chirp_common.CloneModeRadio):
     """LUITON LT-725UV Radio"""
     VENDOR = "LUITON"
     MODEL = "LT-725UV"
+    NEEDS_COMPAT_SERIAL = False
     MODES = ["NFM", "FM"]
     TONES = chirp_common.TONES
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
@@ -578,7 +577,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
