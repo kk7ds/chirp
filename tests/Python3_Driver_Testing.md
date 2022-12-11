@@ -55,8 +55,8 @@
 | <a name="Baofeng_UV-9G"></a> Baofeng_UV-9G | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.65% |
 | <a name="Baofeng_UV-9R"></a> Baofeng_UV-9R | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | **2.52%** |
 | <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.35% |
-| <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  |  | 0.29% |
-| <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  |  | 0.10% |
+| <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  | Yes | 0.29% |
+| <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  | Yes | 0.10% |
 | <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  | 0.02% |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes | 0.03% |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  | 0.02% |
@@ -190,7 +190,7 @@
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.01% |
-| <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV |  |  |  | 0.02% |
+| <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.02% |
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes | 0.00% |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  | 0.18% |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  | 0.10% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 58% (209/146) (86% of usage stats)
+**Tested:** 59% (210/145) (86% of usage stats)
 
-**Byte clean:** 74% (266/89)
+**Byte clean:** 75% (269/86)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
