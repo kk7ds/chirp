@@ -60,9 +60,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     """Wouxun KG-UVD1P,UV2,UV3"""
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
-    _model = "KG669V"
+    _model = b"KG669V"
+    NEEDS_COMPAT_SERIAL = False
 
-    _querymodel = ("HiWOUXUN\x02", "PROGUV6X\x02")
+    _querymodel = (b"HiWOUXUN\x02", b"PROGUV6X\x02")
 
     CHARSET = list("0123456789") + \
         [chr(x + ord("A")) for x in range(0, 26)] + list("?+-")
@@ -260,10 +261,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
 
     def _start_transfer(self):
         """Tell the radio to go into transfer mode"""
-        self.pipe.write("\x02\x06")
+        self.pipe.write(b"\x02\x06")
         time.sleep(0.05)
         ack = self.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             raise Exception("Radio refused transfer mode")
 
     def _download(self):
@@ -910,7 +911,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     """Wouxun KG-UV6 (D and X variants)"""
     MODEL = "KG-UV6"
 
-    _querymodel = ("HiWXUVD1\x02", "HiKGUVD1\x02")
+    _querymodel = (b"HiWXUVD1\x02", b"HiKGUVD1\x02")
 
     _MEM_FORMAT = """
         #seekto 0x0010;
@@ -1437,7 +1438,7 @@ class KG816Radio(KGUVD1PRadio, chirp_common.ExperimentalRadio):
     """Wouxun KG-816"""
     MODEL = "KG-816"
 
-    _querymodel = "HiWOUXUN\x02"
+    _querymodel = b"HiWOUXUN\x02"
 
     _MEM_FORMAT = """
         #seekto 0x0010;
