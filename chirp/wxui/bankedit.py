@@ -13,12 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import platform
+
 import wx
 import wx.grid
 
 from chirp import chirp_common
 from chirp.wxui import common
 from chirp.wxui import memedit
+
+
+if platform.system() == 'Linux':
+    BANK_SET_VALUE = 'X'
+else:
+    BANK_SET_VALUE = '1'
 
 
 class ChirpBankToggleColumn(memedit.ChirpMemoryColumn):
@@ -85,11 +93,13 @@ class ChirpBankEdit(common.ChirpEditor):
         for col, col_def in enumerate(self._col_defs):
             self._grid.SetColLabelValue(col, col_def.label)
             attr = wx.grid.GridCellAttr()
-            attr.SetEditor(col_def.get_editor())
-            attr.SetRenderer(col_def.get_renderer())
+            if platform.system() != 'Linux':
+                attr.SetEditor(col_def.get_editor())
+                attr.SetRenderer(col_def.get_renderer())
             attr.SetFont(self._fixed_font)
             attr.SetReadOnly(not (isinstance(col_def, ChirpBankToggleColumn) or
                                   isinstance(col_def, ChirpBankIndexColumn)))
+            attr.SetAlignment(wx.ALIGN_CENTER, wx.ALIGN_CENTER)
             self._grid.SetColAttr(col, attr)
 
         self._memory_cache = {}
@@ -152,12 +162,12 @@ class ChirpBankEdit(common.ChirpEditor):
         else:
             self._change_memory_mapping(self.row2mem(row),
                                         self.col2bank(col),
-                                        value != '1')
+                                        value != BANK_SET_VALUE)
 
     def _change_memory_index(self, number, index):
         for i, bank_index in enumerate(self._bank_index_order):
             if self._grid.GetCellValue(self.mem2row(number),
-                                       self.bank2col(i)) == '1':
+                                       self.bank2col(i)) == BANK_SET_VALUE:
                 member_bank = self._bank_indexes[bank_index]
                 break
         else:
@@ -194,7 +204,7 @@ class ChirpBankEdit(common.ChirpEditor):
             present = bank.get_index() in member and not mem.empty
             self._grid.SetCellValue(self.mem2row(mem.number),
                                     self.bank2col(i),
-                                    present and '1' or '')
+                                    present and BANK_SET_VALUE or '')
             if present and isinstance(self._bankmodel,
                                       chirp_common.MappingModelIndexInterface):
                 # NOTE: if this is somehow an indexed many-to-one model,
