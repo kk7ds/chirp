@@ -48,7 +48,7 @@
 | <a name="Baofeng_UV-3R"></a> Baofeng_UV-3R | [@yarda](https://github.com/yarda) | 26-Sep-2022 |  | 0.45% |
 | <a name="Baofeng_UV-5R"></a> Baofeng_UV-5R | [@lekv](https://github.com/lekv) | 23-Oct-2022 | Yes | **28.81%** |
 | <a name="Baofeng_UV-6"></a> Baofeng_UV-6 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.46% |
-| <a name="Baofeng_UV-6R"></a> Baofeng_UV-6R |  |  |  | 0.71% |
+| <a name="Baofeng_UV-6R"></a> Baofeng_UV-6R |  |  | Yes | 0.71% |
 | <a name="Baofeng_UV-82"></a> Baofeng_UV-82 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **8.78%** |
 | <a name="Baofeng_UV-82HP"></a> Baofeng_UV-82HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **2.38%** |
 | <a name="Baofeng_UV-82WP"></a> Baofeng_UV-82WP | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.32% |
@@ -362,7 +362,7 @@
 
 **Tested:** 55% (198/157) (84% of usage stats)
 
-**Byte clean:** 73% (260/95)
+**Byte clean:** 73% (261/94)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
