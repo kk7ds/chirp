@@ -94,7 +94,7 @@ class ChirpBankEdit(common.ChirpEditor):
 
         self._memory_cache = {}
 
-        self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self._memory_changed)
+        self._grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self._memory_changed)
 
     def selected(self):
         self.refresh_memories()
@@ -145,14 +145,14 @@ class ChirpBankEdit(common.ChirpEditor):
     def _memory_changed(self, event):
         row = event.GetRow()
         col = event.GetCol()
-        value = event.GetString()
+        value = self._grid.GetCellValue(row, col)
 
         if isinstance(self._col_defs[col], ChirpBankIndexColumn):
             self._change_memory_index(self.row2mem(row), int(value))
         else:
             self._change_memory_mapping(self.row2mem(row),
                                         self.col2bank(col),
-                                        value == '1')
+                                        value != '1')
 
     def _change_memory_index(self, number, index):
         for i, bank_index in enumerate(self._bank_index_order):
