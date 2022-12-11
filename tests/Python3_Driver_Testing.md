@@ -39,7 +39,7 @@
 | <a name="Baofeng_BF-A58"></a> Baofeng_BF-A58 | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | **1.46%** |
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.59% |
 | <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **6.33%** |
-| <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 |  |  |  | 0.76% |
+| <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 |  |  | Yes | 0.76% |
 | <a name="Baofeng_BF-T8"></a> Baofeng_BF-T8 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.42% |
 | <a name="Baofeng_BF-V8A"></a> Baofeng_BF-V8A | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.03% |
 | <a name="Baofeng_F-11"></a> Baofeng_F-11 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.12% |
@@ -362,7 +362,7 @@
 
 **Tested:** 55% (198/157) (84% of usage stats)
 
-**Byte clean:** 73% (261/94)
+**Byte clean:** 73% (262/93)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
