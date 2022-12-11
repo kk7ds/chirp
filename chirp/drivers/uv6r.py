@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # Baofeng UV-6R magic string
-MSTRING_UV6R = "\x50\xBB\xFF\x20\x14\x11\x22"
+MSTRING_UV6R = b"\x50\xBB\xFF\x20\x14\x11\x22"
 
 # #### ID strings #####################################################
 
@@ -97,6 +97,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
     """Baofeng UV-6R"""
     VENDOR = "Baofeng"
     MODEL = "UV-6R"
+    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [UV6R_fp2, UV6R_fp1, ]
 
