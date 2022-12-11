@@ -211,19 +211,18 @@ class RRCALOGINQueryThread(QueryThread):
         clist = cancounties[0]
         provinces = cancounties[1]
 # this should probably be a language translatable thing, not hardcoded?
-        self.send_status('Successfully Logged in', 100)  # we hope... If not, it's already given statuserror
+        self.send_status('Successfully Logged in', 100)  # we hope...
         rrloggedin = True
         RRCAQueryDialog.populatepc(self)
         return True
 
-
-
     def finalRRquery(self):
         global rrcounties, rrloggedin
-        # Write our new favorite place to the conf file. Get the 2 other parameters we need to pass
+        # Write our new favorite place to the conf file.
+        # et the 2 other parameters we need to pass
         province_id = provinces[provchoice.GetStringSelection()]
-        # Iterate over the pairs in the dictionary. There must be a better way...
-        # They are all unique within each province, so it's not as bad as it seems
+        # Iterate over the pairs. There must be a better way...
+        # They are all unique within each province.
         for key, value in rrcounties.items():
             if value == countychoice.GetStringSelection():
                 county_id = key
@@ -485,12 +484,14 @@ class RRCAQueryDialog(QuerySourceDialog):
 # build the login elements
         global provchoice, countychoice, rrusername, rrpassword, loginbutton
         rrusername = wx.TextCtrl(panel,
-                                 value=CONF.get('Username', 'radioreference') or '')
+                                 value=CONF.get('Username',
+                                                'radioreference') or '')
         self._add_grid(grid, 'Username', rrusername)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
         rrpassword = wx.TextCtrl(panel, style=wx.TE_PASSWORD,
-                                 value=CONF.get('Password', 'radioreference') or '')
+                                 value=CONF.get('Password',
+                                                'radioreference') or '')
         self._add_grid(grid, 'Password', rrpassword)
 # build a new login button
         loginbutton = wx.Button(panel, id=wx.ID_OK, label='Log In')
@@ -499,7 +500,8 @@ class RRCAQueryDialog(QuerySourceDialog):
 # build a prov/county selector grid & add selectors
         provchoice = wx.Choice(panel, choices=["Log in First"])
         provchoice.SetSelection(0)
-        on_choice = lambda event: self.selected_province(provchoice.GetStringSelection())
+        on_choice = lambda event: \
+            self.selected_province(provchoice.GetStringSelection())
         self.Bind(wx.EVT_CHOICE, on_choice, provchoice)
         self._add_grid(grid, 'Province', provchoice)
         grid.Add(wx.StaticText(panel, label=''),
@@ -516,9 +518,10 @@ class RRCAQueryDialog(QuerySourceDialog):
 
     def populatepc(self):
         # init and grab conf defaults and populate the selector
-        RRCAQueryDialog.getconfdefaults(self) #  <-- Problem child
-        # Clear the temporary choice dropdown, disable the form bits we don't need any more
-        # & insert provinces as exist in RR database because they change sometimes.
+        RRCAQueryDialog.getconfdefaults(self)
+        # Clear the temporary choice dropdown, disable the form bits we don't
+        # need any more & insert provinces as exist in RR database because
+        # they change sometimes.
         wx.CallAfter(provchoice.Clear)
         engprovs = []
         for key in provinces:
@@ -541,16 +544,19 @@ class RRCAQueryDialog(QuerySourceDialog):
             if code == str(v):
                 self.default_prov = k
                 break
-            else: self.default_prov = "BC"
+            else:
+                self.default_prov = "BC"
         code = CONF.get("county", "radioreference")
         for row in clist:
             if code == str(row[2]):
                 self.default_county = row[3]
                 break
-            else: self.default_county = 0
+            else:
+                self.default_county = 0
 
     def selected_province(self, chosenprov):
-        #if user alters the province dropdown, load the new counties into the county dropdown choice
+        # if user alters the province dropdown, load the new counties into
+        # the county dropdown choice
         global rrcounties
         rrcounties = {}
         self.chosenprov = provchoice.GetSelection()
@@ -572,7 +578,7 @@ class RRCAQueryDialog(QuerySourceDialog):
                 'country': ''}
 
 
-class RRUSQueryDialog(QuerySourceDialog):  # NOT IMPLEMENTED YET!!!!!!!!!!!!!!!!!!!!!!!!!
+class RRUSQueryDialog(QuerySourceDialog):  # NOT IMPLEMENTED YET
     NAME = 'RadioReferenceUSA'
 
     def _add_grid(self, grid, label, widget):
