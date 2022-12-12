@@ -38,7 +38,6 @@ class ChirpSettingsEdit(common.ChirpEditor):
         sizer.Add(self._group_control, 1, wx.EXPAND)
 
         self._initialized = False
-        self._group_control.Bind(wx.EVT_PAINT, self._activate)
 
     def _initialize(self, job):
         self.stop_wait_dialog()
@@ -48,7 +47,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
             self._settings = job.result
             self._load_settings()
 
-    def _activate(self, event):
+    def selected(self):
         if not self._initialized:
             self._initialized = True
             self.start_wait_dialog(_('Getting settings'))
