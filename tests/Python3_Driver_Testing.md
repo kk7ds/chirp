@@ -5,13 +5,13 @@
 | <a name="Abbree_AR-518"></a> Abbree_AR-518 |  |  |  | 0.24% |
 | <a name="Abbree_AR-63"></a> Abbree_AR-63 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG | [@HB9UF](https://github.com/HB9UF) | 09-Dec-2022 | Yes | 0.44% |
-| <a name="Alinco_DJ175"></a> Alinco_DJ175 |  |  |  | 0.03% |
-| <a name="Alinco_DJ596"></a> Alinco_DJ596 |  |  |  | 0.02% |
-| <a name="Alinco_DR03T"></a> Alinco_DR03T |  |  |  | 0.01% |
-| <a name="Alinco_DR06T"></a> Alinco_DR06T |  |  |  | 0.01% |
-| <a name="Alinco_DR135T"></a> Alinco_DR135T |  |  |  | 0.04% |
-| <a name="Alinco_DR235T"></a> Alinco_DR235T |  |  |  | 0.02% |
-| <a name="Alinco_DR435T"></a> Alinco_DR435T |  |  |  | 0.02% |
+| <a name="Alinco_DJ175"></a> Alinco_DJ175 | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.03% |
+| <a name="Alinco_DJ596"></a> Alinco_DJ596 | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Alinco_DR03T"></a> Alinco_DR03T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.01% |
+| <a name="Alinco_DR06T"></a> Alinco_DR06T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.01% |
+| <a name="Alinco_DR135T"></a> Alinco_DR135T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.04% |
+| <a name="Alinco_DR235T"></a> Alinco_DR235T | [@kk7ds](https://github.com/kk7ds) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Alinco_DR435T"></a> Alinco_DR435T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="AnyTone_5888UV"></a> AnyTone_5888UV | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.14% |
 | <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII |  |  |  | 0.04% |
 | <a name="AnyTone_778UV"></a> AnyTone_778UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.17% |
@@ -111,7 +111,7 @@
 | <a name="Icom_ID-880H"></a> Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.02% |
 | <a name="Intek_HR-2040"></a> Intek_HR-2040 | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Intek_KT-980HP"></a> Intek_KT-980HP | [Implied by Baofeng_BF-F8HP](#user-content-Baofeng_BF-F8HP) | 18-Nov-2022 | Yes | 0.04% |
-| <a name="Jetstream_JT220M"></a> Jetstream_JT220M |  |  |  | 0.01% |
+| <a name="Jetstream_JT220M"></a> Jetstream_JT220M | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Jetstream_JT270M"></a> Jetstream_JT270M |  |  |  | 0.01% |
 | <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH |  |  |  | 0.01% |
 | <a name="KYD_IP-620"></a> KYD_IP-620 |  |  |  | 0.02% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 66% (236/119) (88% of usage stats)
+**Tested:** 68% (244/111) (88% of usage stats)
 
-**Byte clean:** 76% (271/84)
+**Byte clean:** 78% (279/76)
 
 ## Meaning of this testing
 

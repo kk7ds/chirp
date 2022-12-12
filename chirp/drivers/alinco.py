@@ -76,54 +76,36 @@ RLENGTH = 2 + 5 + 32 + 2
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0]
 
 
-def isascii(data):
-    for byte in data:
-        if (ord(byte) < ord(" ") or ord(byte) > ord("~")) and \
-                byte not in "\r\n":
-            return False
-    return True
-
-
-def tohex(data):
-    if isascii(data):
-        return repr(data)
-    string = ""
-    for byte in data:
-        string += "%02X" % ord(byte)
-    return string
-
-
 class AlincoStyleRadio(chirp_common.CloneModeRadio):
     """Base class for all known Alinco radios"""
     _memsize = 0
-    _model = "NONE"
+    _model = b"NONE"
+    NEEDS_COMPAT_SERIAL = False
 
     def _send(self, data):
-        LOG.debug("PC->R: (%2i) %s" % (len(data), tohex(data)))
-        self.pipe.write(data.encode())
+        LOG.debug("PC->R: (%2i)\n%s" % (len(data), util.hexprint(data)))
+        self.pipe.write(data)
         self.pipe.read(len(data))
 
     def _read(self, length):
-        data = self.pipe.read(length).decode()
-        LOG.debug("R->PC: (%2i) %s" % (len(data), tohex(data)))
+        data = self.pipe.read(length)
+        LOG.debug("R->PC: (%2i)\n%s" % (len(data), util.hexprint(data)))
         return data
 
     def _download_chunk(self, addr):
         if addr % 16:
             raise Exception("Addr 0x%04x not on 16-byte boundary" % addr)
 
-        cmd = "AL~F%04XR\r\n" % addr
+        cmd = b"AL~F%04XR\r\n" % addr
         self._send(cmd)
 
         resp = self._read(RLENGTH).strip()
         if len(resp) == 0:
             raise errors.RadioError("No response from radio")
-        if ":" not in resp:
+        if b":" not in resp:
             raise errors.RadioError("Unexpected response from radio")
-        addr, _data = resp.split(":", 1)
-        data = ""
-        for i in range(0, len(_data), 2):
-            data += chr(int(_data[i:i+2], 16))
+        addr, _data = resp.split(b":", 1)
+        data = codecs.decode(_data, 'hex')
 
         if len(data) != 16:
             LOG.debug("Response was:")
@@ -137,7 +119,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
     def _download(self, limit):
         self._identify()
 
-        data = ""
+        data = b""
         for addr in range(0, limit, 16):
             data += self._download_chunk(addr)
             time.sleep(0.1)
@@ -149,16 +131,16 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
                 status.msg = "Downloading from radio"
                 self.status_fn(status)
 
-        self._send("AL~E\r\n")
+        self._send(b"AL~E\r\n")
         self._read(20)
 
         return memmap.MemoryMap(data)
 
     def _identify(self):
         for _i in range(0, 3):
-            self._send("%s\r\n" % self._model)
+            self._send(b"%s\r\n" % self._model)
             resp = self._read(6)
-            if resp.strip() == "OK":
+            if resp.strip() == b"OK":
                 return True
             time.sleep(1)
 
@@ -169,9 +151,9 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             raise Exception("Addr 0x%04x not on 16-byte boundary" % addr)
 
         _data = self._mmap[addr:addr+16]
-        data = "".join(["%02X" % ord(x) for x in _data])
+        data = codecs.encode(_data, 'hex').upper()
 
-        cmd = "AL~F%04XW%s\r\n" % (addr, data)
+        cmd = b"AL~F%04XW%s\r\n" % (addr, data)
         self._send(cmd)
 
     def _upload(self, limit):
@@ -189,7 +171,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
                 status.msg = "Uploading to radio"
                 self.status_fn(status)
 
-        self._send("AL~E\r\n")
+        self._send(b"AL~E\r\n")
         self._read(20)
 
     def process_mmap(self):
@@ -409,7 +391,7 @@ class DR03Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR03T"
 
-    _model = "DR135"
+    _model = b"DR135"
     _memsize = 4096
     _range = [(28000000, 29695000)]
 
@@ -425,7 +407,7 @@ class DR06Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR06T"
 
-    _model = "DR435"
+    _model = b"DR435"
     _memsize = 4096
     _range = [(50000000, 53995000)]
 
@@ -441,7 +423,7 @@ class DR135Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR135T"
 
-    _model = "DR135"
+    _model = b"DR135"
     _memsize = 4096
     _range = [(118000000, 173000000)]
 
@@ -457,7 +439,7 @@ class DR235Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR235T"
 
-    _model = "DR235"
+    _model = b"DR235"
     _memsize = 4096
     _range = [(216000000, 280000000)]
 
@@ -473,7 +455,7 @@ class DR435Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DR435T"
 
-    _model = "DR435"
+    _model = b"DR435"
     _memsize = 4096
     _range = [(350000000, 511000000)]
 
@@ -489,7 +471,7 @@ class DJ596Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DJ596"
 
-    _model = "DJ596"
+    _model = b"DJ596"
     _memsize = 4096
     _range = [(136000000, 174000000), (400000000, 511000000)]
     _power_levels = [chirp_common.PowerLevel("Low", watts=1.00),
@@ -507,7 +489,7 @@ class JT220MRadio(DRx35Radio):
     VENDOR = "Jetstream"
     MODEL = "JT220M"
 
-    _model = "DR136"
+    _model = b"DR136"
     _memsize = 8192
     _range = [(216000000, 280000000)]
 
@@ -523,7 +505,7 @@ class DJ175Radio(DRx35Radio):
     VENDOR = "Alinco"
     MODEL = "DJ175"
 
-    _model = "DJ175"
+    _model = b"DJ175"
     _memsize = 6896
     _range = [(136000000, 174000000), (400000000, 511000000)]
     _power_levels = [
@@ -553,20 +535,18 @@ class DJ175Radio(DRx35Radio):
         if addr % 16:
             raise Exception("Addr 0x%04x not on 16-byte boundary" % addr)
 
-        cmd = "AL~F%04XR\r\n" % addr
+        cmd = b"AL~F%04XR\r\n" % addr
         self._send(cmd)
 
         _data = self._read(34).strip()
         if len(_data) == 0:
             raise errors.RadioError("No response from radio")
 
-        data = ""
-        for i in range(0, len(_data), 2):
-            data += chr(int(_data[i:i+2], 16))
+        data = codecs.decode(_data, 'hex')
 
         if len(data) != 16:
             LOG.debug("Response was:")
-            LOG.debug("|%s|")
+            LOG.debug("|%r|" % _data)
             LOG.debug("Which I converted to:")
             LOG.debug(util.hexprint(data))
             raise Exception("Radio returned less than 16 bytes")
@@ -664,14 +644,14 @@ class AlincoDJG7EG(AlincoStyleRadio):
 
     # byte-clean version of _send()
     def _send(self, data):
-        LOG.debug("PC->R: (%2i) %s" % (len(data), tohex(data.decode())))
+        LOG.debug("PC->R: (%2i)\n%s" % (len(data), util.hexprint(data)))
         self.pipe.write(data)
         self.pipe.read(len(data))
 
     # byte-clean version of _read()
     def _read(self, length):
         data = self.pipe.read(length)
-        LOG.debug("R->PC: (%2i) %s" % (len(data), tohex(data.decode())))
+        LOG.debug("R->PC: (%2i)\n%s" % (len(data), util.hexprint(data)))
         return data
 
     # byte-clean version of _identify()
