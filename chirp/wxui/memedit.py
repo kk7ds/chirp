@@ -465,26 +465,41 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             return
 
         defaults = self.bandplan.get_defaults_for_frequency(mem.freq)
+        features = self._features
 
         if not defaults.offset:
-            mem.duplex = ''
+            want_duplex = ''
+            want_offset = None
         elif defaults.offset > 0:
-            mem.duplex = '+'
-            mem.offset = defaults.offset
+            want_duplex = '+'
+            want_offset = defaults.offset
         elif defaults.offset < 0:
-            mem.duplex = '-'
-            mem.offset = abs(defaults.offset)
+            want_duplex = '-'
+            want_offset = abs(defaults.offset)
+        else:
+            want_duplex = want_offset = None
+
+        if want_duplex is not None and want_duplex in features.valid_duplexes:
+            mem.duplex = want_duplex
+        if want_offset is not None and features.has_offset:
+            mem.offset = want_offset
 
         if defaults.step_khz:
-            mem.tuning_step = defaults.step_khz
+            want_tuning_step = defaults.step_khz
         else:
             try:
-                mem.tuning_step = chirp_common.required_step(mem.freq)
+                want_tuning_step = chirp_common.required_step(mem.freq)
             except errors.InvalidDataError as e:
                 LOG.warning(e)
-        if defaults.mode:
+                want_tuning_step = None
+
+        if want_tuning_step in features.valid_tuning_steps:
+            mem.tuning_step = want_tuning_step
+
+        if defaults.mode and defaults.mode in features.valid_modes:
             mem.mode = defaults.mode
-        if defaults.tones:
+
+        if defaults.tones and defaults.tones[0] in features.valid_tones:
             mem.rtone = defaults.tones[0]
 
     def _memory_edited(self, event):
