@@ -96,6 +96,9 @@ class Logger(object):
             console_stream = log
             console_format = self.log_format
             self.early_level = logging.DEBUG
+            self.has_debug_log_file = True
+        else:
+            self.has_debug_log_file = False
 
         self.console = logging.StreamHandler(console_stream)
         self.console_level = self.early_level

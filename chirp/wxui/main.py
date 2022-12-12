@@ -33,6 +33,7 @@ from chirp import bandplan
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
+from chirp import logger
 from chirp import platform as chirp_platform
 from chirp.ui import config
 from chirp.wxui import bankedit
@@ -617,16 +618,19 @@ class ChirpMain(wx.Frame):
         help_menu.Append(reporting_menu)
         reporting_menu.Check(not CONF.get_bool('no_report', default=False))
 
-        debug_log_menu = wx.MenuItem(help_menu, wx.NewId(),
-                                     _('Open debug log'))
-        self.Bind(wx.EVT_MENU, self._menu_debug_log, debug_log_menu)
-        help_menu.Append(debug_log_menu)
+        if logger.Logger.instance.has_debug_log_file:
+            # Only expose these debug log menu elements if we are logging to
+            # a debug.log file this session.
+            debug_log_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                         _('Open debug log'))
+            self.Bind(wx.EVT_MENU, self._menu_debug_log, debug_log_menu)
+            help_menu.Append(debug_log_menu)
 
-        if platform.system() in ('Windows', 'Darwin'):
-            debug_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
-                                         _('Show debug log location'))
-            self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
-            help_menu.Append(debug_loc_menu)
+            if platform.system() in ('Windows', 'Darwin'):
+                debug_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                             _('Show debug log location'))
+                self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
+                help_menu.Append(debug_loc_menu)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
