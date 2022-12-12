@@ -134,3 +134,15 @@ class AlincoCloneTest(unittest.TestCase):
         # The 175 has a slightly different download string, so test it
         # specifically
         self._test_alinco(alinco.DJ175Radio)
+
+    def test_all_alinco_identify(self):
+        # Make sure all the alinco models have bytes for their _model
+        # and can identify properly
+        alincos = [x for x in directory.DRV_TO_RADIO.values()
+                   if x.VENDOR == 'Alinco']
+        for rclass in alincos:
+            pipe = FakeAlincoSerial(__file__)
+            radio = rclass(None)
+            radio.pipe = pipe
+            radio._identify()
+            self.assertEqual(pipe.ident, radio._model)
