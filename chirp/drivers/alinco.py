@@ -586,7 +586,6 @@ class AlincoDJG7EG(AlincoStyleRadio):
     VENDOR = "Alinco"
     MODEL = "DJ-G7EG"
     BAUD_RATE = 57600
-    NEEDS_COMPAT_SERIAL = False
 
     # Those are different from the other Alinco radios.
     STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
@@ -641,31 +640,6 @@ class AlincoDJG7EG(AlincoStyleRadio):
         rf.memory_bounds = (0, 999)
 
         return rf
-
-    # byte-clean version of _send()
-    def _send(self, data):
-        LOG.debug("PC->R: (%2i)\n%s" % (len(data), util.hexprint(data)))
-        self.pipe.write(data)
-        self.pipe.read(len(data))
-
-    # byte-clean version of _read()
-    def _read(self, length):
-        data = self.pipe.read(length)
-        LOG.debug("R->PC: (%2i)\n%s" % (len(data), util.hexprint(data)))
-        return data
-
-    # byte-clean version of _identify()
-    def _identify(self):
-        for _i in range(0, 3):
-            # byte-clean: compile byte instead of str
-            self._send(b"%s\r\n" % self._model)
-            resp = self._read(6)
-            # byte-clean: check against b"OK" instead of "OK"
-            if resp.strip() == b"OK":
-                return True
-            time.sleep(1)
-
-        return False
 
     def _download_chunk(self, addr):
         if addr % 0x40:
