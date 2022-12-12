@@ -277,18 +277,46 @@ class ChirpBCDEditor(ChirpEditor):
 
 
 class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
-    def __init__(self, parent):
+    def __init__(self, parent, memobj):
         super(ChirpBrowserPanel, self).__init__(parent)
         self._sizer = wx.FlexGridSizer(2)
         self._sizer.AddGrowableCol(1)
         self.SetSizer(self._sizer)
         self.SetupScrolling()
+        self._parent = parent
+        self._memobj = memobj
         self._editors = {}
+        self._initialized = False
 
     def add_editor(self, name, editor):
         self._editors[name] = editor
 
+    def _initialize(self):
+        for name, obj in self._memobj.items():
+            editor = None
+            if isinstance(obj, bitwise.arrayDataElement):
+                if isinstance(obj[0], bitwise.charDataElement):
+                    editor = ChirpStringEditor(self, obj)
+                elif isinstance(obj[0], bitwise.bcdDataElement):
+                    editor = ChirpBCDEditor(self, obj)
+                else:
+                    self._parent.add_sub_panel(name, obj, self)
+            elif isinstance(obj, bitwise.intDataElement):
+                editor = ChirpIntegerEditor(self, obj)
+            elif isinstance(obj, bitwise.structDataElement):
+                self._parent.add_sub_panel(name, obj, self)
+            if editor:
+                self.add_editor(name, editor)
+        self._initialized = True
+
+    def add_sub_panel(self, name, obj, parent):
+        # This just forwards until we get to the browser
+        self._parent.add_sub_panel(name, obj, parent)
+
     def selected(self):
+        if not self._initialized:
+            self._initialize()
+
         for name, editor in self._editors.items():
             editor.set_up()
             label = wx.StaticText(self, label='%s: ' % name)
@@ -333,9 +361,9 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         self.start_wait_dialog(_('Building Radio Browser'))
 
         self._loaded = True
-        self._load_from_radio('%s %s' % (self._radio.VENDOR,
-                                         self._radio.MODEL),
-                              self._radio._memobj)
+        self.add_sub_panel('%s %s' % (self._radio.VENDOR,
+                                      self._radio.MODEL),
+                           self._radio._memobj, self)
         self.stop_wait_dialog()
         if self._treebook.GetPageCount():
             self._treebook.ExpandNode(0)
@@ -344,42 +372,12 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         page = self._treebook.GetPage(event.GetSelection())
         page.selected()
 
-    def _load_from_radio(self, name, memobj, parent=None):
-        editor = None
-
-        def sub_panel(name, memobj, parent):
-            page = ChirpBrowserPanel(self)
-            if parent:
-                pos = self._treebook.FindPage(parent)
-                self._treebook.InsertSubPage(pos, page, name)
-            else:
-                self._treebook.AddPage(page, name)
-
-            for subname, item in memobj.items():
-                self._load_from_radio(subname, item, parent=page)
-
-        # Stop updating the progress dialog once we get past the
-        # first generation in the tree because it slows us down
-        # a lot.
-
-        if isinstance(memobj, bitwise.structDataElement):
-            if not parent:
-                self.bump_wait_dialog(message='Loading %s' % name)
-            sub_panel(name, memobj, parent)
-        elif isinstance(memobj, bitwise.arrayDataElement):
-            if isinstance(memobj[0], bitwise.charDataElement):
-                editor = ChirpStringEditor(parent, memobj)
-            elif isinstance(memobj[0], bitwise.bcdDataElement):
-                editor = ChirpBCDEditor(parent, memobj)
-            else:
-                if not parent:
-                    self.bump_wait_dialog(message='Loading %s' % name)
-                sub_panel('%s[%i]' % (name, len(memobj)), memobj, parent)
-        elif isinstance(memobj, bitwise.intDataElement):
-            editor = ChirpIntegerEditor(parent, memobj)
+    def add_sub_panel(self, name, memobj, parent):
+        LOG.debug('Adding sub panel for %s' % name)
+        page = ChirpBrowserPanel(self, memobj)
+        if parent != self:
+            pos = self._treebook.FindPage(parent)
+            self._treebook.InsertSubPage(pos, page, name)
+            self._treebook.ExpandNode(pos)
         else:
-            print('Unsupported editor type for %s (%s)' % (
-                name, memobj.__class__))
-
-        if editor:
-            parent.add_editor(name, editor)
+            self._treebook.AddPage(page, name)
