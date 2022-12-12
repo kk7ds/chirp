@@ -105,6 +105,9 @@ class ChirpBankEdit(common.ChirpEditor):
         self._memory_cache = {}
 
         self._grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self._memory_changed)
+        self._grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self._label_click)
+        self._grid.GetGridColLabelWindow().Bind(wx.EVT_MOTION,
+                                                self._colheader_mouseover)
 
     def selected(self):
         self.refresh_memories()
@@ -150,6 +153,42 @@ class ChirpBankEdit(common.ChirpEditor):
 
     def mem2row(self, mem):
         return mem - self._features.memory_bounds[0]
+
+    def _colheader_mouseover(self, event):
+        x = event.GetX()
+        y = event.GetY()
+        col = self._grid.XToCol(x, y)
+        tip = ''
+        if col >= self._meta_cols:
+            bank = self._bankmodel.get_mappings()[self.col2bank(col)]
+            if hasattr(bank, 'set_name'):
+                tip = _('Double-click to change bank name')
+        self._grid.GetGridColLabelWindow().SetToolTip(tip)
+
+    def _label_click(self, event):
+        row = event.GetRow()
+        col = event.GetCol()
+        if row != -1:
+            # Row labels do not change
+            return
+        bank = self._bankmodel.get_mappings()[self.col2bank(col)]
+        if not hasattr(bank, 'set_name'):
+            return
+        d = wx.TextEntryDialog(self,
+                               _('Enter a new name for bank %s:') % (
+                                   bank.get_index()),
+                               _('Rename bank'))
+        d.SetValue(bank.get_name())
+        if d.ShowModal() == wx.ID_OK:
+            self.change_bank_name(col, bank, d.GetValue())
+            wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    def change_bank_name(self, col, bank, name):
+        bank.set_name(name)
+        # Refresh the column from the col def to make sure it stuck
+        col_def = self._col_defs[col]
+        self._grid.SetColLabelValue(col, col_def.label)
+        wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=True)
 
     @common.error_proof()
     def _memory_changed(self, event):
