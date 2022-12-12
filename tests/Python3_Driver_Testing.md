@@ -243,7 +243,7 @@
 | <a name="Retevis_RB627B"></a> Retevis_RB627B | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.05% |
 | <a name="Retevis_RB75"></a> Retevis_RB75 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RB85"></a> Retevis_RB85 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
-| <a name="Retevis_RT1"></a> Retevis_RT1 |  |  |  | 0.08% |
+| <a name="Retevis_RT1"></a> Retevis_RT1 | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.08% |
 | <a name="Retevis_RT16"></a> Retevis_RT16 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RT19"></a> Retevis_RT19 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
 | <a name="Retevis_RT21"></a> Retevis_RT21 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.20% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 59% (210/145) (86% of usage stats)
+**Tested:** 59% (211/144) (86% of usage stats)
 
-**Byte clean:** 75% (269/86)
+**Byte clean:** 76% (270/85)
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
