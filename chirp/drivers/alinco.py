@@ -190,7 +190,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
                 self.status_fn(status)
 
         self._send("AL~E\r\n")
-        self.pipe._read(20)
+        self._read(20)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(DRX35_MEM_FORMAT, self._mmap)
