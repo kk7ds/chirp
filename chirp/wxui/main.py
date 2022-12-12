@@ -753,7 +753,7 @@ class ChirpMain(wx.Frame):
         for i in range(self._editors.GetPageCount()):
             editorset = self._editors.GetPage(i)
             self._editors.ChangeSelection(i)
-            if not self._prompt_to_close_editor(editorset, True):
+            if not self._prompt_to_close_editor(editorset):
                 if event.CanVeto():
                     event.Veto()
                 return
@@ -880,17 +880,16 @@ class ChirpMain(wx.Frame):
                 return
             self.current_editorset.export_to_file(fd.GetPath())
 
-    def _prompt_to_close_editor(self, editorset, allow_cancel=False):
+    def _prompt_to_close_editor(self, editorset):
         """Returns True if it is okay to close the editor, False otherwise"""
         if not editorset.modified:
             return True
 
-        also_cancel = wx.CANCEL if allow_cancel else 0
         answer = wx.MessageBox(
             _('%s has not been saved. Save before closing?') % (
                 editorset.filename),
             _('Save before closing?'),
-            wx.YES_NO | wx.YES_DEFAULT | also_cancel | wx.ICON_WARNING)
+            wx.YES_NO | wx.YES_DEFAULT | wx.CANCEL | wx.ICON_WARNING)
         if answer == wx.NO:
             # User does not want to save, okay to close
             return True
