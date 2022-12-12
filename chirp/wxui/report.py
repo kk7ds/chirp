@@ -30,6 +30,7 @@ from chirp.ui import config
 
 CONF = config.get()
 LOG = logging.getLogger(__name__)
+logging.getLogger('urllib3.connectionpool').setLevel(logging.INFO)
 SESSION = None
 DISABLED = False
 SEM = threading.Semaphore(2)
