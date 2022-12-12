@@ -273,7 +273,7 @@
 | <a name="Retevis_RT9000D_66-88"></a> Retevis_RT9000D_66-88 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.00% |
 | <a name="Retevis_RT95"></a> Retevis_RT95 | [@KC9HI](https://github.com/KC9HI) | 13-Nov-2022 | Yes | 0.08% |
 | <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.15% |
-| <a name="Retevis_RT98"></a> Retevis_RT98 |  |  |  | 0.05% |
+| <a name="Retevis_RT98"></a> Retevis_RT98 | [@KC9HI](https://github.com/KC9HI) | 14-Dec-2022 | Yes | 0.05% |
 | <a name="Rugged_RH5R-V2"></a> Rugged_RH5R-V2 |  |  |  | 0.05% |
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  | 0.00% |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A |  |  |  | 0.02% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 70% (249/106) (88% of usage stats)
+**Tested:** 70% (250/105) (88% of usage stats)
 
-**Byte clean:** 80% (284/71)
+**Byte clean:** 80% (285/70)
 
 ## Meaning of this testing
 
