@@ -112,8 +112,8 @@
 | <a name="Intek_HR-2040"></a> Intek_HR-2040 | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Intek_KT-980HP"></a> Intek_KT-980HP | [Implied by Baofeng_BF-F8HP](#user-content-Baofeng_BF-F8HP) | 18-Nov-2022 | Yes | 0.04% |
 | <a name="Jetstream_JT220M"></a> Jetstream_JT220M | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.01% |
-| <a name="Jetstream_JT270M"></a> Jetstream_JT270M |  |  |  | 0.01% |
-| <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH |  |  |  | 0.01% |
+| <a name="Jetstream_JT270M"></a> Jetstream_JT270M | [Implied by Jetstream_JT270M](#user-content-Jetstream_JT270M) | 13-Dec-2022 | Yes | 0.01% |
+| <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.01% |
 | <a name="KYD_IP-620"></a> KYD_IP-620 |  |  |  | 0.02% |
 | <a name="KYD_NC-630A"></a> KYD_NC-630A |  |  |  | 0.02% |
 | <a name="Kenwood_HMK"></a> Kenwood_HMK | [Implied by Generic_CSV](#user-content-Generic_CSV) | 4-Dec-2022 |  | 0.00% |
@@ -192,8 +192,8 @@
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.02% |
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes | 0.00% |
-| <a name="Leixen_VV-898"></a> Leixen_VV-898 |  |  |  | 0.18% |
-| <a name="Leixen_VV-898S"></a> Leixen_VV-898S |  |  |  | 0.10% |
+| <a name="Leixen_VV-898"></a> Leixen_VV-898 | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.18% |
+| <a name="Leixen_VV-898S"></a> Leixen_VV-898S | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.10% |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 | [Implied by BTECH_UV-5X3](#user-content-BTECH_UV-5X3) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.05% |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.03% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 68% (244/111) (88% of usage stats)
+**Tested:** 69% (248/107) (88% of usage stats)
 
-**Byte clean:** 78% (279/76)
+**Byte clean:** 79% (283/72)
 
 ## Meaning of this testing
 
