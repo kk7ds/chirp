@@ -19,9 +19,10 @@ def chirpmain():
     try:
         lang = locale.getdefaultlocale()[0]
         gettext.translation('CHIRP', localedir, languages=[lang]).install()
+        translation_error = None
     except Exception as e:
-        # Logging is not setup yet
-        print('Failed to set up translations: %s' % e)
+        # Logging is not setup yet, so stash and log later
+        translation_error = e
         lang = None
         # Need to do some install to make _() work elsewhere
         gettext.install('CHIRP', localedir)
@@ -55,6 +56,9 @@ def chirpmain():
     if not os.path.isdir(localedir):
         LOG.warning('Did not find localedir: %s' % localedir)
     LOG.debug('Got system locale %s' % lang)
+    if translation_error:
+        LOG.debug('Failed to set up translations: %s',
+                  translation_error)
 
     directory.import_drivers(limit=args.onlydriver)
 
