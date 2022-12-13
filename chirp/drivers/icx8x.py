@@ -15,26 +15,75 @@
 
 import logging
 
+from chirp import bitwise
 from chirp.drivers import icf, icx8x_ll
 from chirp import chirp_common, errors, directory
 
 LOG = logging.getLogger(__name__)
 
+MEM_FORMAT = """
+struct {
+  ul16 freq;
+  ul16 offset;
+  char name[5];
+  u8 unknown1:2,
+     rtone:6;
+  u8 unknown2:2,
+     ctone:6;
+  u8 dtcs;
+  u8 unknown3[5];
+  u8 tuning_step:4,
+    unknown4:4;
+  u8 unknown5[3];
+  u8 mult:1,
+     unknown6_0:1,
+     narrow:1,
+     unknown6:1,
+     unknown7:2,
+     tmode:2;
+  u8 dtcs_pol:2,
+     duplex:2,
+     unknown9:4;
+  u8 unknown10:1,
+     txinhibit:1,
+     unknown11:2,
+     dvmode:1,
+     unknown12:3;
+} memories[207];
 
-def _isuhf(radio):
-    try:
-        md = icf.get_model_data(radio)
-        val = md[20]
-        uhf = val & 0x10
-    except:
-        raise errors.RadioError("Unable to probe radio band")
+#seekto 0x1370;
+struct {
+    u8 unknown:2,
+       empty:1,
+       skip:1,
+       bank:4;
+} flags[206];
 
-    LOG.debug("Radio is a %s82" % (uhf and "U" or "V"))
+struct dvcall {
+    char call[8];
+    char pad[8];
+};
 
-    return uhf
+#seekto 0x15E0;
+struct dvcall mycall[6];
+#seekto 0x1640;
+struct dvcall urcall[6];
+#seekto 0x16A0;
+struct dvcall rptcall[6];
+#seekto 0x1700;
+
+#seekto 0x1930;
+u8 isuhf;
+"""
 
 
-@directory.register
+TMODES = ["", "Tone", "TSQL", "DTCS"]
+DUPLEXES = ["", '-', '+']
+TUNING_STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
+DTCS_POLARITY = ['NN', 'NR', 'RN', 'RR']
+SPECIALS = ['L0', 'U0', 'L1', 'U1', 'L2', 'U2', 'C']
+
+
 class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     """Icom IC-V/U82"""
     VENDOR = "Icom"
@@ -65,7 +114,11 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     RPTCALL_LIMIT = (0, 6)
 
     def _get_bank(self, loc):
-        return icx8x_ll.get_bank(self._mmap, loc)
+        bank = int(self._memobj.flags[loc].bank)
+        if bank > 9:
+            return None
+        else:
+            return bank
 
     def _set_bank(self, loc, bank):
         return icx8x_ll.set_bank(self._mmap, loc, bank)
@@ -74,96 +127,84 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)
         rf.valid_modes = ["FM", "NFM", "DV"]
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
-        rf.valid_duplexes = ["", "-", "+"]
-        rf.valid_tuning_steps = [5., 10., 12.5, 15., 20., 25., 30., 50.]
-        if self._isuhf:
-            rf.valid_bands = [(420000000, 470000000)]
-        else:
-            rf.valid_bands = [(118000000, 176000000)]
+        rf.valid_tmodes = list(TMODES)
+        rf.valid_duplexes = list(DUPLEXES)
+        rf.valid_tuning_steps = list(TUNING_STEPS)
         rf.valid_skips = ["", "S"]
         rf.valid_name_length = 5
-        # This driver, as it is, is basically unmaintainable. The sepecials
-        # test shows that our handling of special channels here is broken,
-        # so disable this until the driver can be rewritten into bitwise
-        # form.
-        # rf.valid_special_chans = sorted(icx8x_ll.ICx8x_SPECIAL.keys())
+        rf.valid_special_chans = list(SPECIALS)
 
         return rf
 
-    def _get_type(self):
-        flag = (_isuhf(self) != 0)
-
-        if self._isuhf is not None and (self._isuhf != flag):
-            raise errors.RadioError("VHF/UHF model mismatch")
-
-        self._isuhf = flag
-
-        return flag
-
-    def __init__(self, pipe):
-        icf.IcomCloneModeRadio.__init__(self, pipe)
-
-        # Until I find a better way, I'll stash a boolean to indicate
-        # UHF-ness in an unused region of memory.  If we're opening a
-        # file, look for the flag.  If we're syncing from serial, set
-        # that flag.
-        if isinstance(pipe, str):
-            self._isuhf = (ord(self._mmap[0x1930]) != 0)
-            # LOG.debug("Found %s image" % (self.isUHF and "UHF" or "VHF"))
-        else:
-            self._isuhf = None
-
-    def sync_in(self):
-        self._get_type()
-        icf.IcomCloneModeRadio.sync_in(self)
-        self._mmap[0x1930] = self._isuhf and 1 or 0
-
-    def sync_out(self):
-        self._get_type()
-        icf.IcomCloneModeRadio.sync_out(self)
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_memory(self, number):
-        if not self._mmap:
-            self.sync_in()
-
-        if self._isuhf:
-            base = 400
-        else:
-            base = 0
-
+        mem = chirp_common.Memory()
         if isinstance(number, str):
-            try:
-                number = icx8x_ll.ICx8x_SPECIAL[number]
-            except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" %
-                                                   number)
+            mem.extd_number = number
+            number = 200 + SPECIALS.index(number)
 
-        return icx8x_ll.get_memory(self._mmap, number, base)
+        _mem = self._memobj.memories[number]
+
+        if number < 206:
+            _flg = self._memobj.flags[number]
+            mem.skip = _flg.skip and 'S' or ''
+            empty = _flg.empty
+        else:
+            empty = False
+
+        if _mem.mult:
+            mult = 6250
+        else:
+            mult = 5000
+
+        mem.number = number
+        if empty:
+            mem.empty = True
+            return mem
+
+        mem.name = str(_mem.name).rstrip()
+        if _mem.dvmode:
+            mem.mode = 'DV'
+        elif _mem.narrow:
+            mem.mode = 'NFM'
+        else:
+            mem.mode = 'FM'
+        mem.duplex = DUPLEXES[_mem.duplex]
+        mem.tmode = TMODES[_mem.tmode]
+        mem.tuning_step = TUNING_STEPS[_mem.tuning_step]
+        mem.rtone = chirp_common.TONES[_mem.rtone]
+        mem.ctone = chirp_common.TONES[_mem.ctone]
+        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
+        mem.dtcs_polarity = DTCS_POLARITY[_mem.dtcs_pol]
+
+        mem.freq = (_mem.freq * mult) + chirp_common.to_MHz(self._base)
+        mem.offset = _mem.offset * 5000
+
+        return mem
 
     def set_memory(self, memory):
-        if not self._mmap:
-            self.sync_in()
-
-        if self._isuhf:
-            base = 400
-        else:
-            base = 0
-
         if memory.empty:
             self._mmap = icx8x_ll.erase_memory(self._mmap, memory.number)
         else:
-            self._mmap = icx8x_ll.set_memory(self._mmap, memory, base)
+            self._mmap = icx8x_ll.set_memory(self._mmap, memory, self._base)
+
+        # Temporarily re-parse memory so that bitwise-based routines
+        # see the changes
+        self.process_mmap()
 
     def get_raw_memory(self, number):
-        return icx8x_ll.get_raw_memory(self._mmap, number)
+        if isinstance(number, str):
+            number = 200 + SPECIALS.index(number)
+
+        return repr(self._memobj.memories[number])
 
     def get_urcall_list(self):
         calls = []
 
         for i in range(*self.URCALL_LIMIT):
-            call = icx8x_ll.get_urcall(self._mmap, i)
-            calls.append(call)
+            calls.append(str(self._memobj.urcall[i].call).rstrip())
 
         return calls
 
@@ -171,8 +212,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         calls = []
 
         for i in range(*self.RPTCALL_LIMIT):
-            call = icx8x_ll.get_rptcall(self._mmap, i)
-            calls.append(call)
+            calls.append(str(self._memobj.rptcall[i].call).rstrip())
 
         return calls
 
@@ -180,8 +220,7 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         calls = []
 
         for i in range(*self.MYCALL_LIMIT):
-            call = icx8x_ll.get_mycall(self._mmap, i)
-            calls.append(call)
+            calls.append(str(self._memobj.mycall[i].call).rstrip())
 
         return calls
 
@@ -211,3 +250,37 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 call = " " * 8
 
             icx8x_ll.set_mycall(self._mmap, i, call)
+
+
+@directory.register
+class ICV82Radio(ICx8xRadio):
+    MODEL = 'IC-V82'
+    _base = 0
+    _isuhf = False
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = [(118000000, 176000000)]
+        return rf
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if super().match_model(filedata, filename):
+            return filedata[0x1930] == 0
+
+
+@directory.register
+class ICU82Radio(ICx8xRadio):
+    MODEL = 'IC-U82'
+    _base = 400
+    _isuhf = True
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = [(420000000, 470000000)]
+        return rf
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if super().match_model(filedata, filename):
+            return filedata[0x1930] == 1

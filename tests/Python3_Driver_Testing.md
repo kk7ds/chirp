@@ -97,7 +97,8 @@
 | <a name="Icom_IC-T70"></a> Icom_IC-T70 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.03% |
 | <a name="Icom_IC-T7H"></a> Icom_IC-T7H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-T8A"></a> Icom_IC-T8A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
-| <a name="Icom_IC-V82_U82"></a> Icom_IC-V82_U82 |  |  |  | 0.03% |
+| <a name="Icom_IC-U82"></a> Icom_IC-U82 |  |  |  |  |
+| <a name="Icom_IC-V82"></a> Icom_IC-V82 |  |  |  |  |
 | <a name="Icom_IC-V86"></a> Icom_IC-V86 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Icom_IC-W32A"></a> Icom_IC-W32A | [Reported working](https://chirp.danplanet.com/issues/10238) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-W32E"></a> Icom_IC-W32E | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
@@ -364,11 +365,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 361
+**Drivers:** 362
 
-**Tested:** 81% (293/68) (92% of usage stats)
+**Tested:** 80% (293/69) (92% of usage stats)
 
-**Byte clean:** 87% (316/45)
+**Byte clean:** 87% (316/46)
 
 ## Meaning of this testing
 
