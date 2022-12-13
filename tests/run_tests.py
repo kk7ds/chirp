@@ -904,29 +904,16 @@ TESTS["Detect"] = TestCaseDetect
 
 class TestCaseClone(TestCase):
     class SerialNone:
-        def __init__(self, isbytes):
-            self.isbytes = isbytes
+        def __init__(self):
             self.mismatch = False
             self.mismatch_at = None
 
         def read(self, size):
-            if self.isbytes:
-                return b""
-            else:
-                return ""
+            return b""
 
         def write(self, data):
-            expected = self.isbytes and bytes or str
-            if six.PY2:
-                # One driver uses bytearray() which will trigger this
-                # check even though it works fine on py2. So, only
-                # do this check for PY3 which is where it matters
-                # anyway.
-                pass
-            elif not self.mismatch and not isinstance(data, expected):
-                self.mismatch = True
-                self.mismatch_at = ''.join(traceback.format_stack())
-            pass
+            if not isinstance(data, bytes):
+                raise TypeError('Radio wrote non-bytes to serial')
 
         def setBaudrate(self, rate):
             pass
@@ -949,23 +936,14 @@ class TestCaseClone(TestCase):
 
     class SerialGarbage(SerialNone):
         def read(self, size):
-            if self.isbytes:
-                buf = []
-                for i in range(0, size):
-                    buf += i % 256
-                return bytes(buf)
-            else:
-                buf = ""
-                for i in range(0, size):
-                    buf += chr(i % 256)
-                return buf
+            buf = []
+            for i in range(0, size):
+                buf.append(i % 256)
+            return bytes(buf)
 
     class SerialShortGarbage(SerialNone):
         def read(self, size):
-            if self.isbytes:
-                return b'\x00' * (size - 1)
-            else:
-                return "\x00" * (size - 1)
+            return b'\x00' * (size - 1)
 
     def __str__(self):
         return "Clone"
@@ -1043,11 +1021,10 @@ class TestCaseClone(TestCase):
         return []
 
     def run(self):
-        isbytes = not self._wrapper._dst.NEEDS_COMPAT_SERIAL
-        self._run(self.SerialError(isbytes))
-        self._run(self.SerialNone(isbytes))
-        self._run(self.SerialGarbage(isbytes))
-        self._run(self.SerialShortGarbage(isbytes))
+        self._run(self.SerialError())
+        self._run(self.SerialNone())
+        self._run(self.SerialGarbage())
+        self._run(self.SerialShortGarbage())
         return []
 
 TESTS["Clone"] = TestCaseClone
