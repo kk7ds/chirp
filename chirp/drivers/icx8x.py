@@ -16,8 +16,8 @@
 import logging
 
 from chirp import bitwise
-from chirp.drivers import icf, icx8x_ll
-from chirp import chirp_common, errors, directory
+from chirp.drivers import icf
+from chirp import chirp_common, directory
 
 LOG = logging.getLogger(__name__)
 
@@ -88,7 +88,6 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     """Icom IC-V/U82"""
     VENDOR = "Icom"
     MODEL = "IC-V82/U82"
-    NEEDS_COMPAT_SERIAL = True
 
     _model = "\x28\x26\x00\x01"
     _memsize = 6464
@@ -121,7 +120,10 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             return bank
 
     def _set_bank(self, loc, bank):
-        return icx8x_ll.set_bank(self._mmap, loc, bank)
+        if bank is None:
+            self._memobj.flags[loc].bank = 0x0A
+        else:
+            self._memobj.flags[loc].bank = bank
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -185,14 +187,32 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return mem
 
     def set_memory(self, memory):
-        if memory.empty:
-            self._mmap = icx8x_ll.erase_memory(self._mmap, memory.number)
-        else:
-            self._mmap = icx8x_ll.set_memory(self._mmap, memory, self._base)
+        _mem = self._memobj.memories[memory.number]
+        if memory.number < 206:
+            _flg = self._memobj.flags[memory.number]
+            _flg.skip = memory.skip == 'S'
+            _flg.empty = memory.empty
 
-        # Temporarily re-parse memory so that bitwise-based routines
-        # see the changes
-        self.process_mmap()
+        if memory.empty:
+            return
+
+        _mem.mult = chirp_common.is_fractional_step(memory.freq)
+        if _mem.mult:
+            mult = 6250
+        else:
+            mult = 5000
+        _mem.freq = (memory.freq - chirp_common.to_MHz(self._base)) // mult
+        _mem.offset = memory.offset // 5000
+        _mem.name = memory.name[:5].ljust(5)
+        _mem.dvmode = memory.mode == 'DV'
+        _mem.narrow = memory.mode == 'NFM'
+        _mem.duplex = DUPLEXES.index(memory.duplex)
+        _mem.tmode = TMODES.index(memory.tmode)
+        _mem.tuning_step = TUNING_STEPS.index(memory.tuning_step)
+        _mem.rtone = chirp_common.TONES.index(memory.rtone)
+        _mem.ctone = chirp_common.TONES.index(memory.ctone)
+        _mem.dtcs = chirp_common.DTCS_CODES.index(memory.dtcs)
+        _mem.dtcs_pol = DTCS_POLARITY.index(memory.dtcs_polarity)
 
     def get_raw_memory(self, number):
         if isinstance(number, str):
@@ -227,36 +247,32 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     def set_urcall_list(self, calls):
         for i in range(*self.URCALL_LIMIT):
             try:
-                call = calls[i]
+                call = calls[i].ljust(8)
             except IndexError:
                 call = " " * 8
-
-            icx8x_ll.set_urcall(self._mmap, i, call)
+            self._memobj.urcall[i].call = call
 
     def set_repeater_call_list(self, calls):
         for i in range(*self.RPTCALL_LIMIT):
             try:
-                call = calls[i]
+                call = calls[i].ljust(8)
             except IndexError:
                 call = " " * 8
-
-            icx8x_ll.set_rptcall(self._mmap, i, call)
+            self._memobj.rptcall[i].call = call
 
     def set_mycall_list(self, calls):
         for i in range(*self.MYCALL_LIMIT):
             try:
-                call = calls[i]
+                call = calls[i].ljust(8)
             except IndexError:
                 call = " " * 8
-
-            icx8x_ll.set_mycall(self._mmap, i, call)
+            self._memobj.mycall[i].call = call
 
 
 @directory.register
 class ICV82Radio(ICx8xRadio):
     MODEL = 'IC-V82'
     _base = 0
-    _isuhf = False
 
     def get_features(self):
         rf = super().get_features()
@@ -273,7 +289,6 @@ class ICV82Radio(ICx8xRadio):
 class ICU82Radio(ICx8xRadio):
     MODEL = 'IC-U82'
     _base = 400
-    _isuhf = True
 
     def get_features(self):
         rf = super().get_features()
