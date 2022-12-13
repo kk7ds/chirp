@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+import os
 import sys
 import textwrap
 
@@ -17,6 +18,12 @@ def tester_link(text):
         assert text[1:] in directory.DRV_TO_RADIO, \
             '%s is not in the driver directory' % text[1:]
         return '[Implied by %s](#user-content-%s)' % (text[1:], text[1:])
+    elif text.startswith('*'):
+        assert os.path.exists(os.path.join('chirp', 'drivers',
+                                           text[1:] + '.py'))
+        return ('[Probably works]('
+            'https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/%s.py)' % (
+                text[1:]))
     else:
         return text
 
@@ -142,6 +149,32 @@ def main():
           file=output)
 
     print(textwrap.dedent("""
+    ## Meaning of this testing
+
+    The goal here is not necessarily to test the drivers themselves in terms of
+    actual functionality, but rather to validate the Python 3 conversion
+    work required of nearly all drivers. Thus, we are not trying to
+    comprehensively test these models so much as make sure they work at least
+    as well as they do on the Python 2 branch. Uncovering and reporting new
+    bugs is definitely welcome, but for the purpoes of this effort, "no worse
+    than the legacy branch" is good enough. There are multiple levels of
+    confirmation in the matrix above:
+    * Tested with real hardware (i.e. a person listed in the "Tester" column)
+      using roughly the procedure below.
+    * An "implied by (model)" link means that another model was tested, and it
+      is so similar, that the model on that line can be considered tested as
+      well.
+    * A "probably works" link means that the driver has not been tested with
+      real hardware, nor is it substantially similar to another model, but
+      shares a common base that entirely provides the cloning routines with
+      other drivers that have been tested with real hardware, such that
+      confidence is high that it will work. Only drivers with test images in
+      the tree (or live drivers) should be marked with this class.
+
+    If you have a model listed in this matrix with either "implied" or
+    "probably works" status, an actual confirmation with real hardware is
+    welcome and can replace the weaker reference.
+
     ## Minimal test prodecure
     For the purposes of the Python 3 effort, a "tested" radio means
     at least the following procedure was followed:

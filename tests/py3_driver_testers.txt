@@ -3,7 +3,10 @@
 # Tester is preferred as a github id, but obfuscated email or name is
 # acceptable. If a driver is literally identical to another, use
 # +DRIVER_KEY to mark it as implied-tested.
-# Actually Arcshell AR-6 which is a direct clone
+# If the driver is tested with an in-tree image (or is a live driver) and the
+# clone routines are shared in common with other things that are tested, use
+# *MODULE_NAME to mark it as "probably works because of common code in
+# $module"
 Abbree_AR-63,@KC9HI,30-Nov-2022
 Alinco_DJ-G7EG,@HB9UF,09-Dec-2022
 Anysecu_WP-9900,@KC9HI,11-Nov-2022
@@ -51,7 +54,11 @@ CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
 Explorer_QRZ-1,+TYT_TH-UV88,5-Dec-2022
 Generic_CSV,@kk7ds,4-Dec-2022
 HobbyPCB_RS-UV3,@kk7ds,9-Dec-2022
+Icom_IC-208H,*icf,12-Dec-2022
+Icom_IC-2100H,*icf,12-Dec-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
+Icom_IC-2300H,*icf,24-Oct-2022
+Icom_IC-2720H,*icf,12-Dec-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
 Icom_IC-7200,@kk7ds,22-Oct-2022
 Icom_IC-7300,@kk7ds,22-Oct-2022
@@ -64,22 +71,39 @@ Icom_ID-51_Plus,+Icom_ID-31A,1-Dec-2022
 Icom_ID-4100,@kk7ds,1-Dec-2022
 Icom_ID-5100,@kk7ds,1-Dec-2022
 Icom_ID-800H_v2,@kk7ds,22-Oct-2022
+Icom_ID-80H,*icf,22-Oct-2022
 Icom_ID-880H,@kk7ds,22-Oct-2022
+Icom_IC-E90,*icf,12-Dec-2022
+Icom_IC-P7,*icf,12-Dec-2022
+Icom_IC-T70,*icf,12-Dec-2022
+Icom_IC-T7H,*icf,12-Dec-2022
+Icom_IC-T8A,*icf,12-Dec-2022
 Icom_IC-Q7A,@KC9HI,20-Nov-2022
+Icom_IC-V86,*icf,12-Dec-2022
+Icom_IC-W32A,*icf,12-Dec-2022
+Icom_IC-W32E,*icf,12-Dec-2022
 Intek_KT-980HP,+Baofeng_BF-F8HP,18-Nov-2022
 Intek_HR-2040,+AnyTone_5888UV,9-Dec-2022
 Kenwood_HMK,+Generic_CSV,4-Dec-2022
+Kenwood_TH-D7,*kenwood_live,12-Dec-2022
+Kenwood_TH-D7G,*kenwood_live,12-Dec-2022
 Kenwood_TH-D72_clone_mode,@kk7ds,28-Nov-2022
 Kenwood_TH-D72_live_mode,@kk7ds,21-Oct-2022
 Kenwood_TH-D74_clone_mode,@kk7ds,30-Nov-2022
 Kenwood_TH-D74_live_mode,@kk7ds,20-Oct-2022
 Kenwood_TH-F6,@KC9HI,30-Nov-2022
 Kenwood_TH-F7,@sv1,19-Oct-2022
+Kenwood_TH-G71,*kenwood_live,12-Dec-2022
+Kenwood_TH-K2,*kenwood_live,12-Dec-2022
 Kenwood_TM-271,+Kenwood_TM-281,23-Oct-2022
 Kenwood_TM-281,@kk7ds,23-Oct-2022
+Kenwood_TM-471,*kenwood_live,12-Dec-2022
 Kenwood_TM-D700,@kk7ds,20-Oct-2022
+Kenwood_TM-D710,*kenwood_live,22-Oct-2022
 Kenwood_TM-D710G,@kk7ds,22-Oct-2022
 Kenwood_TM-D710G_CloneMode,@kk7ds,22-Oct-2022
+Kenwood_TM-G707,*kenwood_live,12-Dec-2022
+Kenwood_TM-V7,*kenwood_live,12-Dec-2022
 Kenwood_TM-V71,@kk7ds,21-Oct-2022
 Kenwood_TK-2180,@kk7ds,4-Dec-2022
 Kenwood_TK-3180K,@kk7ds,4-Dec-2022
@@ -208,7 +232,9 @@ Yaesu_FT-818ND_US,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-857_897,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-857_897_US,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FTM-350,@kk7ds,4-Dec-2022
+Yaesu_VX-2,*yaesu_clone,12-Dec-2022
 Yaesu_VX-3,@kk7ds,15-Feb-2019
+Yaesu_VX-5,*yaesu_clone,12-Dec-2022
 Yaesu_VX-6,@dominickpastore,10-Dec-2022
 Yaesu_VX-7,@kk7ds,15-Feb-2019
 Yaesu_VX-8R,+Yaesu_VX-8DR,15-Feb-2019
