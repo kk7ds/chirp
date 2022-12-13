@@ -122,10 +122,14 @@ class ChirpSettingsEdit(common.ChirpEditor):
             else:
                 self._apply_setting_group(all_values, element)
 
+    def _set_settings_cb(self, job):
+        if isinstance(job.result, Exception):
+            common.error_proof.show_error(str(job.result))
+
     def _changed(self, event):
         if not self._apply_settings():
             return
-        self.do_radio(None, 'set_settings', self._settings)
+        self.do_radio(self._set_settings_cb, 'set_settings', self._settings)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def saved(self):
