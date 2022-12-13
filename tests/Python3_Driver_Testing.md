@@ -76,11 +76,11 @@
 | <a name="Generic_CSV"></a> Generic_CSV | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 |  |  |
 | <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_746"></a> Icom_746 |  |  | Yes | 0.02% |
-| <a name="Icom_IC-208H"></a> Icom_IC-208H |  |  | Yes | 0.05% |
-| <a name="Icom_IC-2100H"></a> Icom_IC-2100H |  |  | Yes | 0.04% |
+| <a name="Icom_IC-208H"></a> Icom_IC-208H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.05% |
+| <a name="Icom_IC-2100H"></a> Icom_IC-2100H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Icom_IC-2200H"></a> Icom_IC-2200H | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.05% |
-| <a name="Icom_IC-2300H"></a> Icom_IC-2300H |  |  | Yes | 0.08% |
-| <a name="Icom_IC-2720H"></a> Icom_IC-2720H |  |  | Yes | 0.02% |
+| <a name="Icom_IC-2300H"></a> Icom_IC-2300H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 24-Oct-2022 | Yes | 0.08% |
+| <a name="Icom_IC-2720H"></a> Icom_IC-2720H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-2730A"></a> Icom_IC-2730A |  |  | Yes | 0.21% |
 | <a name="Icom_IC-2820H"></a> Icom_IC-2820H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.04% |
 | <a name="Icom_IC-7000"></a> Icom_IC-7000 |  |  | Yes | 0.03% |
@@ -90,16 +90,16 @@
 | <a name="Icom_IC-7610"></a> Icom_IC-7610 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.00% |
 | <a name="Icom_IC-910"></a> Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes | 0.00% |
 | <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD | [@kk7ds](https://github.com/kk7ds) | 23-Nov-2022 | Yes | 0.03% |
-| <a name="Icom_IC-E90"></a> Icom_IC-E90 |  |  | Yes | 0.04% |
-| <a name="Icom_IC-P7"></a> Icom_IC-P7 |  |  | Yes | 0.01% |
+| <a name="Icom_IC-E90"></a> Icom_IC-E90 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
+| <a name="Icom_IC-P7"></a> Icom_IC-P7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A | [@KC9HI](https://github.com/KC9HI) | 20-Nov-2022 | Yes | 0.01% |
-| <a name="Icom_IC-T70"></a> Icom_IC-T70 |  |  | Yes | 0.03% |
-| <a name="Icom_IC-T7H"></a> Icom_IC-T7H |  |  | Yes | 0.02% |
-| <a name="Icom_IC-T8A"></a> Icom_IC-T8A |  |  | Yes | 0.01% |
+| <a name="Icom_IC-T70"></a> Icom_IC-T70 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.03% |
+| <a name="Icom_IC-T7H"></a> Icom_IC-T7H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Icom_IC-T8A"></a> Icom_IC-T8A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-V82_U82"></a> Icom_IC-V82_U82 |  |  |  | 0.03% |
-| <a name="Icom_IC-V86"></a> Icom_IC-V86 |  |  | Yes | 0.04% |
-| <a name="Icom_IC-W32A"></a> Icom_IC-W32A |  |  | Yes | 0.02% |
-| <a name="Icom_IC-W32E"></a> Icom_IC-W32E |  |  | Yes | 0.01% |
+| <a name="Icom_IC-V86"></a> Icom_IC-V86 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
+| <a name="Icom_IC-W32A"></a> Icom_IC-W32A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Icom_IC-W32E"></a> Icom_IC-W32E | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_ID-31A"></a> Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_ID-4100"></a> Icom_ID-4100 | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes | 0.00% |
 | <a name="Icom_ID-51"></a> Icom_ID-51 | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 1-Dec-2022 | Yes | 0.02% |
@@ -107,7 +107,7 @@
 | <a name="Icom_ID-51_Plus"></a> Icom_ID-51_Plus | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 1-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_ID-51_Plus2"></a> Icom_ID-51_Plus2 |  |  | Yes | 0.00% |
 | <a name="Icom_ID-800H_v2"></a> Icom_ID-800H_v2 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.01% |
-| <a name="Icom_ID-80H"></a> Icom_ID-80H |  |  | Yes | 0.01% |
+| <a name="Icom_ID-80H"></a> Icom_ID-80H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 22-Oct-2022 | Yes | 0.01% |
 | <a name="Icom_ID-880H"></a> Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.02% |
 | <a name="Intek_HR-2040"></a> Intek_HR-2040 | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Intek_KT-980HP"></a> Intek_KT-980HP | [Implied by Baofeng_BF-F8HP](#user-content-Baofeng_BF-F8HP) | 18-Nov-2022 | Yes | 0.04% |
@@ -118,16 +118,16 @@
 | <a name="KYD_NC-630A"></a> KYD_NC-630A |  |  |  | 0.02% |
 | <a name="Kenwood_HMK"></a> Kenwood_HMK | [Implied by Generic_CSV](#user-content-Generic_CSV) | 4-Dec-2022 |  | 0.00% |
 | <a name="Kenwood_ITM"></a> Kenwood_ITM |  |  |  | 0.00% |
-| <a name="Kenwood_TH-D7"></a> Kenwood_TH-D7 |  |  | Yes | 0.00% |
+| <a name="Kenwood_TH-D7"></a> Kenwood_TH-D7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-D72_clone_mode"></a> Kenwood_TH-D72_clone_mode | [@kk7ds](https://github.com/kk7ds) | 28-Nov-2022 | Yes | 0.02% |
 | <a name="Kenwood_TH-D72_live_mode"></a> Kenwood_TH-D72_live_mode | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-D74_clone_mode"></a> Kenwood_TH-D74_clone_mode | [@kk7ds](https://github.com/kk7ds) | 30-Nov-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-D74_live_mode"></a> Kenwood_TH-D74_live_mode | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes | 0.00% |
-| <a name="Kenwood_TH-D7G"></a> Kenwood_TH-D7G |  |  | Yes | 0.00% |
+| <a name="Kenwood_TH-D7G"></a> Kenwood_TH-D7G | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-F6"></a> Kenwood_TH-F6 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Kenwood_TH-F7"></a> Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes | 0.03% |
-| <a name="Kenwood_TH-G71"></a> Kenwood_TH-G71 |  |  | Yes | 0.01% |
-| <a name="Kenwood_TH-K2"></a> Kenwood_TH-K2 |  |  | Yes | 0.00% |
+| <a name="Kenwood_TH-G71"></a> Kenwood_TH-G71 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
+| <a name="Kenwood_TH-K2"></a> Kenwood_TH-K2 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TK-2180"></a> Kenwood_TK-2180 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.04% |
 | <a name="Kenwood_TK-260"></a> Kenwood_TK-260 |  |  |  | 0.02% |
 | <a name="Kenwood_TK-260G"></a> Kenwood_TK-260G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.02% |
@@ -170,14 +170,14 @@
 | <a name="Kenwood_TK-868G"></a> Kenwood_TK-868G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-271"></a> Kenwood_TM-271 | [Implied by Kenwood_TM-281](#user-content-Kenwood_TM-281) | 23-Oct-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-281"></a> Kenwood_TM-281 | [@kk7ds](https://github.com/kk7ds) | 23-Oct-2022 | Yes | 0.02% |
-| <a name="Kenwood_TM-471"></a> Kenwood_TM-471 |  |  | Yes | 0.00% |
+| <a name="Kenwood_TM-471"></a> Kenwood_TM-471 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TM-D700"></a> Kenwood_TM-D700 | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes | 0.01% |
-| <a name="Kenwood_TM-D710"></a> Kenwood_TM-D710 |  |  | Yes | 0.01% |
+| <a name="Kenwood_TM-D710"></a> Kenwood_TM-D710 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 22-Oct-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-D710G"></a> Kenwood_TM-D710G | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-D710G_CloneMode"></a> Kenwood_TM-D710G_CloneMode | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.00% |
 | <a name="Kenwood_TM-D710_CloneMode"></a> Kenwood_TM-D710_CloneMode |  |  | Yes | 0.00% |
-| <a name="Kenwood_TM-G707"></a> Kenwood_TM-G707 |  |  | Yes | 0.01% |
-| <a name="Kenwood_TM-V7"></a> Kenwood_TM-V7 |  |  | Yes | 0.01% |
+| <a name="Kenwood_TM-G707"></a> Kenwood_TM-G707 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
+| <a name="Kenwood_TM-V7"></a> Kenwood_TM-V7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-V71"></a> Kenwood_TM-V71 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.04% |
 | <a name="Kenwood_TS-2000"></a> Kenwood_TS-2000 |  |  | Yes | 0.03% |
 | <a name="Kenwood_TS-480_CloneMode"></a> Kenwood_TS-480_CloneMode |  |  |  | 0.00% |
@@ -346,9 +346,9 @@
 | <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes | 0.04% |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes | 0.03% |
-| <a name="Yaesu_VX-2"></a> Yaesu_VX-2 |  |  | Yes | 0.04% |
+| <a name="Yaesu_VX-2"></a> Yaesu_VX-2 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/yaesu_clone.py) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Yaesu_VX-3"></a> Yaesu_VX-3 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.08% |
-| <a name="Yaesu_VX-5"></a> Yaesu_VX-5 |  |  | Yes | 0.07% |
+| <a name="Yaesu_VX-5"></a> Yaesu_VX-5 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/yaesu_clone.py) | 12-Dec-2022 | Yes | 0.07% |
 | <a name="Yaesu_VX-6"></a> Yaesu_VX-6 | [@dominickpastore](https://github.com/dominickpastore) | 10-Dec-2022 | Yes | 0.16% |
 | <a name="Yaesu_VX-7"></a> Yaesu_VX-7 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.09% |
 | <a name="Yaesu_VX-8DR"></a> Yaesu_VX-8DR | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.03% |
@@ -360,9 +360,35 @@
 
 **Drivers:** 355
 
-**Tested:** 59% (212/143) (87% of usage stats)
+**Tested:** 66% (235/120) (87% of usage stats)
 
 **Byte clean:** 76% (271/84)
+
+## Meaning of this testing
+
+The goal here is not necessarily to test the drivers themselves in terms of
+actual functionality, but rather to validate the Python 3 conversion
+work required of nearly all drivers. Thus, we are not trying to
+comprehensively test these models so much as make sure they work at least
+as well as they do on the Python 2 branch. Uncovering and reporting new
+bugs is definitely welcome, but for the purpoes of this effort, "no worse
+than the legacy branch" is good enough. There are multiple levels of
+confirmation in the matrix above:
+* Tested with real hardware (i.e. a person listed in the "Tester" column)
+  using roughly the procedure below.
+* An "implied by (model)" link means that another model was tested, and it
+  is so similar, that the model on that line can be considered tested as
+  well.
+* A "probably works" link means that the driver has not been tested with
+  real hardware, nor is it substantially similar to another model, but
+  shares a common base that entirely provides the cloning routines with
+  other drivers that have been tested with real hardware, such that
+  confidence is high that it will work. Only drivers with test images in
+  the tree (or live drivers) should be marked with this class.
+
+If you have a model listed in this matrix with either "implied" or
+"probably works" status, an actual confirmation with real hardware is
+welcome and can replace the weaker reference.
 
 ## Minimal test prodecure
 For the purposes of the Python 3 effort, a "tested" radio means
