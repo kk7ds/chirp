@@ -54,6 +54,11 @@ class ChirpSettingsEdit(common.ChirpEditor):
             self.do_radio(lambda job: wx.CallAfter(self._initialize, job),
                           'get_settings')
 
+    def refresh(self):
+        self._group_control.DeleteAllPages()
+        # Next select will re-load everything
+        self._initialized = False
+
     def _load_settings(self):
         for group in self._settings:
             self._add_group(group)

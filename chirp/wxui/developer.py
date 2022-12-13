@@ -25,6 +25,7 @@ from chirp import bitwise
 from chirp.wxui import common
 
 LOG = logging.getLogger(__name__)
+BrowserChanged, EVT_BROWSER_CHANGED = wx.lib.newevent.NewCommandEvent()
 
 
 def simple_diff(a, b, diffsonly=False):
@@ -112,6 +113,10 @@ class ChirpEditor(wx.Panel):
         self._changed_color = wx.Colour(0, 255, 0)
         self._error_color = wx.Colour(255, 0, 0)
 
+    def refresh(self):
+        """Called to refresh the widget from memory"""
+        pass
+
     def set_up(self):
         pass
 
@@ -123,9 +128,11 @@ class ChirpEditor(wx.Panel):
             thing.SetToolTip(tt)
         tt.SetTip(_('Press enter to set this in memory'))
 
-    def _mark_unchanged(self, thing):
+    def _mark_unchanged(self, thing, mem_changed=True):
         thing.SetBackgroundColour(wx.NullColour)
         thing.UnsetToolTip()
+        if mem_changed:
+            wx.PostEvent(self, BrowserChanged(self.GetId()))
 
     def _mark_error(self, thing, reason):
         tt = thing.GetToolTip()
@@ -162,14 +169,18 @@ class ChirpEditor(wx.Panel):
 class ChirpStringEditor(ChirpEditor):
     def set_up(self):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        entry = wx.TextCtrl(self, value=str(self._obj),
-                            style=wx.TE_PROCESS_ENTER)
-        entry.SetMaxLength(len(self._obj))
+        self._entry = wx.TextCtrl(self, value=str(self._obj),
+                                  style=wx.TE_PROCESS_ENTER)
+        self._entry.SetMaxLength(len(self._obj))
         self.SetSizer(sizer)
-        sizer.Add(entry, 1, wx.EXPAND)
+        sizer.Add(self._entry, 1, wx.EXPAND)
 
-        entry.Bind(wx.EVT_TEXT, self._edited)
-        entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+        self._entry.Bind(wx.EVT_TEXT, self._edited)
+        self._entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+
+    def refresh(self):
+        self._entry.SetValue(str(self._obj))
+        self._mark_unchanged(self._entry, mem_changed=False)
 
     def _edited(self, event):
         entry = event.GetEventObject()
@@ -214,6 +225,12 @@ class ChirpIntegerEditor(ChirpEditor):
             entry.Bind(wx.EVT_TEXT_ENTER, functools.partial(self._changed,
                                                             base=base))
 
+    def refresh(self):
+        for name, (base, fmt) in self._editors.items():
+            self._entries[name].SetValue(fmt.format(int(self._obj)))
+            self._mark_unchanged(self._entries[name],
+                                 mem_changed=False)
+
     def _edited(self, event, base=10):
         entry = event.GetEventObject()
         others = {n: e for n, e in self._entries.items()
@@ -247,12 +264,17 @@ class ChirpBCDEditor(ChirpEditor):
     def set_up(self):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(sizer)
-        entry = wx.TextCtrl(self, value=str(int(self._obj)),
-                            style=wx.TE_PROCESS_ENTER)
-        entry.SetFont(self._fixed_font)
-        sizer.Add(entry, 1, wx.EXPAND)
-        entry.Bind(wx.EVT_TEXT, self._edited)
-        entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+        self._entry = wx.TextCtrl(self, value=str(int(self._obj)),
+                                  style=wx.TE_PROCESS_ENTER)
+        self._entry.SetFont(self._fixed_font)
+        sizer.Add(self._entry, 1, wx.EXPAND)
+        self._entry.Bind(wx.EVT_TEXT, self._edited)
+        self._entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+
+    def refresh(self):
+        self._entry.SetValue(str(int(self._obj)))
+        self._mark_unchanged(self._entry,
+                             mem_changed=False)
 
     def _edited(self, event):
         entry = event.GetEventObject()
@@ -290,6 +312,10 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
 
     def add_editor(self, name, editor):
         self._editors[name] = editor
+        editor.Bind(EVT_BROWSER_CHANGED, self._panel_changed)
+
+    def _panel_changed(self, event):
+        wx.PostEvent(self, BrowserChanged(self.GetId()))
 
     def _initialize(self):
         for name, obj in self._memobj.items():
@@ -317,16 +343,18 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
         if not self._initialized:
             self._initialize()
 
-        for name, editor in self._editors.items():
-            editor.set_up()
-            label = wx.StaticText(self, label='%s: ' % name)
-            tt = wx.ToolTip(repr(editor))
-            label.SetToolTip(tt)
+            for name, editor in self._editors.items():
+                editor.set_up()
+                label = wx.StaticText(self, label='%s: ' % name)
+                tt = wx.ToolTip(repr(editor))
+                label.SetToolTip(tt)
 
-            self._sizer.Add(label, 0, wx.ALIGN_CENTER)
-            self._sizer.Add(editor, 1, flag=wx.EXPAND)
+                self._sizer.Add(label, 0, wx.ALIGN_CENTER)
+                self._sizer.Add(editor, 1, flag=wx.EXPAND)
+        else:
+            for editor in self._editors.values():
+                editor.refresh()
 
-        self._editors = {}
         self._sizer.Layout()
 
 
@@ -354,8 +382,12 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         sizer.Add(self._treebook, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
+    def _page_changed(self, event):
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
     def selected(self):
         if self._loaded:
+            self._treebook.CurrentPage.selected()
             return
 
         self.start_wait_dialog(_('Building Radio Browser'))
@@ -375,6 +407,7 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
     def add_sub_panel(self, name, memobj, parent):
         LOG.debug('Adding sub panel for %s' % name)
         page = ChirpBrowserPanel(self, memobj)
+        page.Bind(EVT_BROWSER_CHANGED, self._page_changed)
         if parent != self:
             pos = self._treebook.FindPage(parent)
             self._treebook.InsertSubPage(pos, page, name)

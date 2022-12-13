@@ -138,12 +138,21 @@ class ChirpEditorSet(wx.Panel):
         if (CONF.get_bool('developer', 'state') and
                 not isinstance(radio, chirp_common.LiveRadio)):
             browser = developer.ChirpRadioBrowser(parent_radio, self._editors)
+            browser.Bind(common.EVT_EDITOR_CHANGED, self._refresh_all)
             self.add_editor(browser, _('Browser'))
             info = radioinfo.ChirpRadioInfo(parent_radio, self._editors)
             self.add_editor(info, _('Info'))
 
         # After the GUI is built, set focus to the current editor
         wx.CallAfter(self.current_editor.SetFocus)
+
+    def _refresh_all(self, event):
+        LOG.info('Radio browser changed; refreshing all others')
+        for i in range(self._editors.GetPageCount()):
+            editor = self._editors.GetPage(i)
+            if editor.GetId() != event.GetId():
+                LOG.debug('refreshing %s' % editor)
+                editor.refresh()
 
     def _editor_changed(self, event):
         self._modified = True

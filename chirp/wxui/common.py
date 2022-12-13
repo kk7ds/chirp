@@ -133,6 +133,9 @@ class ChirpEditor(wx.Panel):
     def status_message(self, message):
         wx.PostEvent(self, StatusMessage(self.GetId(), message=message))
 
+    def refresh(self):
+        pass
+
     def cb_copy(self, cut=False):
         pass
 
