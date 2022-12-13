@@ -330,8 +330,8 @@
 | <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.14% |
 | <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 |  |  | Yes | 0.01% |
 | <a name="Yaesu_FT-817"></a> Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes | 0.04% |
-| <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND |  |  | Yes | 0.07% |
-| <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes | 0.02% |
+| <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.07% |
+| <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.02% |
 | <a name="Yaesu_FT-818"></a> Yaesu_FT-818 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.05% |
 | <a name="Yaesu_FT-818ND_US"></a> Yaesu_FT-818ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.02% |
 | <a name="Yaesu_FT-857_897"></a> Yaesu_FT-857_897 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.25% |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 66% (235/120) (87% of usage stats)
+**Tested:** 66% (236/119) (88% of usage stats)
 
 **Byte clean:** 76% (271/84)
 
