@@ -41,6 +41,9 @@ def chirpmain():
     from chirp.wxui import main
     from chirp.wxui import report
 
+    actions = ['upload', 'download', 'query_rrca', 'query_rrus',
+               'query_rb', 'query_dm']
+
     parser = argparse.ArgumentParser()
     parser.add_argument("files", metavar="file", nargs='*',
                         help="File to open")
@@ -55,6 +58,8 @@ def chirpmain():
                         help="Show wxPython inspector")
     parser.add_argument('--page', default=None,
                         help='Select this page of the default editor at start')
+    parser.add_argument('--action', default=None, choices=actions,
+                        help='Start UI action immediately')
     if sys.platform == 'linux':
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
@@ -101,6 +106,9 @@ def chirpmain():
     if args.inspect:
         from wx.lib import inspection
         inspection.InspectionTool().Show()
+
+    if args.action:
+        wx.CallAfter(getattr(mainwindow, '_menu_%s' % args.action), None)
 
     report.check_for_updates(
         lambda ver: wx.CallAfter(main.display_update_notice, ver))
