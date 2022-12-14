@@ -53,6 +53,8 @@ def chirpmain():
                         help="Include this driver while loading")
     parser.add_argument("--inspect", action="store_true",
                         help="Show wxPython inspector")
+    parser.add_argument('--page', default=None,
+                        help='Select this page of the default editor at start')
     if sys.platform == 'linux':
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
@@ -92,6 +94,9 @@ def chirpmain():
 
     for fn in args.files:
         mainwindow.open_file(fn, select=False)
+
+    if args.page:
+        mainwindow.current_editorset.select_editor(name=args.page)
 
     if args.inspect:
         from wx.lib import inspection

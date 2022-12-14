@@ -75,6 +75,7 @@ class ChirpEditorSet(wx.Panel):
     def add_editor(self, editor, title):
         self._editors.AddPage(editor, title)
         self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editor)
+        self._editor_index[title] = editor
 
     def _editor_status(self, event):
         LOG.info('Editor status: %s' % event.message)
@@ -91,6 +92,7 @@ class ChirpEditorSet(wx.Panel):
         self._modified = not os.path.exists(filename)
 
         self._editors = wx.Notebook(self, style=wx.NB_TOP)
+        self._editor_index = {}
 
         self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED,
                            self._editor_selected)
@@ -195,7 +197,17 @@ class ChirpEditorSet(wx.Panel):
     def current_editor_index(self):
         return self._editors.GetSelection()
 
-    def select_editor(self, index):
+    def select_editor(self, index=None, name=None):
+        if index is None and name:
+            try:
+                index = self._editors.FindPage(self._editor_index[name])
+            except KeyError:
+                LOG.error('No editor %r to select' % name)
+                return
+        if index is None:
+            LOG.error('Unable to find editor to select (%r/%r',
+                      index, name)
+            return
         self._editors.SetSelection(index)
 
     def cb_copy(self, cut=False):
@@ -1031,13 +1043,15 @@ class ChirpMain(wx.Frame):
         # Kill the current editorset now that we know the radio loaded
         # successfully
         last_editor = self.current_editorset.current_editor_index
-        self._menu_close(event)
+        self.current_editorset.close()
+        self._editors.DeletePage(self._editors.GetSelection())
+        self._update_window_for_editor()
 
         # Mimic the File->Open process to get a new editorset based
         # on our franken-radio
         editorset = ChirpEditorSet(new_radio, filename, self._editors)
         self.add_editorset(editorset, select=True)
-        editorset.select_editor(last_editor)
+        editorset.select_editor(index=last_editor)
         editorset.current_editor.set_scroll_pos(editor_pos)
 
         LOG.info('Reloaded radio driver%s in place; good luck!' % (
