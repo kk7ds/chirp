@@ -285,6 +285,10 @@ class ChirpSettingGrid(wx.Panel):
     def name(self):
         return self._group.get_name()
 
+    @property
+    def propgrid(self):
+        return self.pg
+
     def _pg_changed(self, event):
         wx.PostEvent(self, EditorChanged(self.GetId()))
 

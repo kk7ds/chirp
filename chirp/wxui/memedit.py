@@ -639,7 +639,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         memories = [
             self._radio.get_memory(self.row2mem(row))
             for row in rows]
-        with ChirpMemPropDialog(memories, self) as d:
+        with ChirpMemPropDialog(self, memories) as d:
             if d.ShowModal() == wx.ID_OK:
                 for memory in d._memories:
                     self._radio.set_memory(memory)
@@ -804,22 +804,25 @@ class DVMemoryAsSettings(settings.RadioSettingGroup):
 
 
 class ChirpMemPropDialog(wx.Dialog):
-    def __init__(self, memories, memedit, *a, **k):
+    def __init__(self, memedit, memories, *a, **k):
         if len(memories) == 1:
             title = _('Edit details for memory %i') % memories[0].number
         else:
             title = _('Edit details for %i memories') % len(memories)
 
-        super(ChirpMemPropDialog, self).__init__(
-            memedit, *a, title=title, **k)
+        super().__init__(memedit, *a, title=title, **k)
 
-        self.Centre()
+        self._memories = [mem.dupe() for mem in memories]
+        self._col_defs = list(memedit._col_defs)
+        self._radio = memedit._radio
 
-        self._memories = memories
-        self._col_defs = memedit._col_defs
-
-        # The first memory sets the defaults
+        # The first non-empty memory sets the defaults
         memory = self._memories[0]
+        for mem in self._memories:
+            if not mem.empty:
+                memory = mem
+                break
+        self.default_memory = memory
 
         self._tabs = wx.Notebook(self)
 
@@ -827,7 +830,9 @@ class ChirpMemPropDialog(wx.Dialog):
         self.SetSizer(vbox)
         vbox.Add(self._tabs, 1, wx.EXPAND)
 
-        self._pg = wx.propgrid.PropertyGrid(self._tabs)
+        self._pg = wx.propgrid.PropertyGrid(self._tabs,
+                                            style=wx.propgrid.PG_BOLD_MODIFIED)
+        self._pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._mem_prop_changed)
         self._tabs.InsertPage(0, self._pg, 'Values')
         page_index = 0
         self._extra_page = None
@@ -836,30 +841,36 @@ class ChirpMemPropDialog(wx.Dialog):
         if memory.extra:
             page_index += 1
             self._extra_page = page_index
-            self._tabs.InsertPage(page_index,
-                                  common.ChirpSettingGrid(memory.extra,
-                                                          self._tabs),
-                                  _('Extra'))
+            self._extra = common.ChirpSettingGrid(memory.extra, self._tabs)
+            self._tabs.InsertPage(page_index, self._extra, _('Extra'))
+            self._extra.propgrid.Bind(wx.propgrid.EVT_PG_CHANGED,
+                                      self._mem_extra_changed)
+
         if isinstance(memory, chirp_common.DVMemory):
             page_index += 1
             self._dv_page = page_index
-            self._tabs.InsertPage(page_index,
-                                  common.ChirpSettingGrid(
-                                      DVMemoryAsSettings(memory), self._tabs),
-                                  _('DV Memory'))
+            self._dv = common.ChirpSettingGrid(DVMemoryAsSettings(memory),
+                                               self._tabs)
+            self._tabs.InsertPage(page_index, self._dv, _('DV Memory'))
+            self._dv.propgrid.Bind(wx.propgrid.EVT_PG_CHANGED,
+                                   self._mem_prop_changed)
 
-        for coldef in memedit._col_defs:
+        for coldef in self._col_defs:
             if coldef.valid:
                 self._pg.Append(coldef.get_propeditor(memory))
-        self._pg.FitColumns()
 
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
-        hbox.Add(wx.Button(self, wx.ID_OK))
-        hbox.Add(wx.Button(self, wx.ID_CANCEL))
+        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
 
-        vbox.Add(hbox, 0, wx.ALIGN_RIGHT | wx.ALL, border=10)
-
+        vbox.Add(bs, 0, wx.ALIGN_RIGHT | wx.ALL, border=10)
         self.Bind(wx.EVT_BUTTON, self._button)
+
+        # OK button is disabled until something is changed
+        self.FindWindowById(wx.ID_OK).Enable(False)
+
+        self.SetMinSize((400, 400))
+        self.Fit()
+        self.Center()
+        wx.CallAfter(self._pg.FitColumns)
 
     def _col_def_by_name(self, name):
         for coldef in self._col_defs:
@@ -867,50 +878,51 @@ class ChirpMemPropDialog(wx.Dialog):
                 return coldef
         LOG.error('No column definition for %s' % name)
 
-    def _make_memories(self):
-        memories = [memory.dupe() for memory in self._memories]
+    def _mem_prop_changed(self, event):
+        self.FindWindowById(wx.ID_OK).Enable(True)
 
-        for mem in memories:
-            for prop in self._pg._Items():
-                name = prop.GetName()
-
-                coldef = self._col_def_by_name(name)
-                value = prop.GetValueAsString()
-                value = coldef._digest_value(mem, value)
-
-                if (getattr(self._memories[0], name) == value):
-                    LOG.debug('Skipping unchanged field %s' % name)
-                    continue
-
-                LOG.debug('Value for %s is %r' % (name, value))
-                setattr(mem, prop.GetName(), value)
+        prop = event.GetProperty()
+        coldef = self._col_def_by_name(prop.GetName())
+        name = prop.GetName().split(common.INDEX_CHAR)[0]
+        value = prop.GetValue()
+        for mem in self._memories:
+            if coldef:
+                setattr(mem, name, coldef._digest_value(mem, value))
+            else:
+                setattr(mem, name, value)
+            LOG.debug('Changed mem %i %s=%r' % (mem.number, name,
+                                                value))
+            if prop.GetName() == 'freq':
                 mem.empty = False
 
-            if self._extra_page is not None:
-                extra = self._tabs.GetPage(self._extra_page).get_values()
-                for setting in mem.extra:
-                    name = setting.get_name()
-                    try:
-                        setting.value = extra['%s%s0' % (
-                            name, common.INDEX_CHAR)]
-                    except KeyError:
-                        raise
-                        LOG.warning('Missing setting %r' % name)
-                        continue
+    def _mem_extra_changed(self, event):
+        self.FindWindowById(wx.ID_OK).Enable(True)
 
-            if self._dv_page is not None:
-                dv = self._tabs.GetPage(self._dv_page).get_values()
-                for k, v in dv.items():
-                    k = k.split(common.INDEX_CHAR)[0]
-                    if isinstance(v, str):
-                        v = v.upper()
-                    setattr(mem, k, v)
+        prop = event.GetProperty()
+        name = prop.GetName().split(common.INDEX_CHAR)[0]
+        value = prop.GetValueAsString()
+        for mem in self._memories:
+            for setting in mem.extra:
+                if setting.get_name() == name:
+                    setting.value = value
+                    LOG.debug('Changed mem %i extra %s=%r' % (
+                        mem.number, setting.get_name(), value))
 
-        return memories
+    def _validate_memories(self):
+        for mem in self._memories:
+            msgs = self._radio.validate_memory(mem)
+            if msgs:
+                wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
+                              'Invalid Entry')
+                raise errors.InvalidValueError()
 
     def _button(self, event):
         button_id = event.GetEventObject().GetId()
         if button_id == wx.ID_OK:
-            self._memories = self._make_memories()
+            try:
+                self._validate_memories()
+            except errors.InvalidValueError:
+                # Leave the box open
+                return
 
         self.EndModal(button_id)
