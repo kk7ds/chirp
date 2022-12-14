@@ -16,6 +16,7 @@
 import functools
 import logging
 import pickle
+import platform
 
 import wx
 import wx.lib.newevent
@@ -345,6 +346,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         sizer.Add(self._grid, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
+        if platform.system() == 'Linux':
+            minwidth = 100
+        else:
+            minwidth = 75
+
         self._fixed_font = wx.Font(pointSize=10,
                                    family=wx.FONTFAMILY_TELETYPE,
                                    style=wx.FONTSTYLE_NORMAL,
@@ -359,7 +365,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 attr.SetEditor(col_def.get_editor())
                 attr.SetFont(self._fixed_font)
                 self._grid.SetColAttr(col, attr)
-                self._grid.SetColMinimalWidth(col, 75)
+                self._grid.SetColMinimalWidth(col, minwidth)
 
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
