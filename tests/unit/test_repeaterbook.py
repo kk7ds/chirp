@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import requests
 
 from chirp import chirp_common
 from chirp.drivers import repeaterbook
@@ -8,7 +9,12 @@ from chirp.drivers import repeaterbook
 class TestRepeaterBook(unittest.TestCase):
     def _fetch_and_load(self, query):
         fn = tempfile.mktemp('.csv')
-        chirp_common.urlretrieve(query, fn)
+        try:
+            r = requests.get(query, timeout=5)
+        except requests.Timeout:
+            raise unittest.SkipTest('RepeaterBook timeout')
+        with open(fn, 'wb') as f:
+            f.write(r.content)
         radio = repeaterbook.RBRadio(fn)
         return fn, radio
 
