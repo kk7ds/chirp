@@ -502,6 +502,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if defaults.tones and defaults.tones[0] in features.valid_tones:
             mem.rtone = defaults.tones[0]
 
+    @common.error_proof()
     def _memory_edited(self, event):
         """
         Called when the memory row in the UI is edited.
@@ -526,25 +527,26 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             else:
                 self._row_label_renderers[row].clear_error()
 
-        try:
-            if col_def.name == 'name':
-                val = self._radio.filter_name(val)
-            col_def.digest_value(mem, val)
-            if col_def.name == 'freq':
-                self._set_memory_defaults(mem)
-            if mem.empty:
-                mem.empty = False
-            if col_def.name == 'cross_mode':
-                mem.tmode = 'Cross'
-            self._grid.SetRowLabelValue(row, '*%i' % mem.number)
-            self._row_label_renderers[row].set_progress()
-            self.do_radio(set_cb, 'set_memory', mem)
-        except Exception as e:
-            LOG.exception('Failed to edit memory')
-            wx.MessageBox(_('Invalid edit: %s') % e, 'Error')
-            event.Veto()
-        else:
-            LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
+        if col_def.name == 'name':
+            val = self._radio.filter_name(val)
+        col_def.digest_value(mem, val)
+        if col_def.name == 'freq':
+            self._set_memory_defaults(mem)
+        if mem.empty:
+            mem.empty = False
+        if col_def.name == 'cross_mode':
+            mem.tmode = 'Cross'
+        msgs = self._radio.validate_memory(mem)
+        if msgs:
+            wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
+                          'Invalid Entry')
+            event.Skip()
+            return
+
+        self._grid.SetRowLabelValue(row, '*%i' % mem.number)
+        self._row_label_renderers[row].set_progress()
+        self.do_radio(set_cb, 'set_memory', mem)
+        LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
 
         wx.CallAfter(self._resize_col_after_edit, row, col)
 
