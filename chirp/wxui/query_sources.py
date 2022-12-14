@@ -515,7 +515,7 @@ class RRCAQueryDialog(QuerySourceDialog):
         return vbox
 
     def populateprov(self, event):
-        self.selected_province(event.GetString)
+        self.selected_province(provchoice.GetStringSelection())
 
     def populatepc(self):
         # init and grab conf defaults and populate the selector
