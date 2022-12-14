@@ -200,7 +200,7 @@ STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0,
 
 CHARSET = ["%i" % int(x) for x in range(10)] + \
     [chr(x) for x in range(ord("A"), ord("Z")+1)] + \
-    list(" +-/\x00[]__" + ("\x00" * 9) + "$%%\x00**.|=\\\x00@") + \
+    list(" +-/?[]u_" + ("\x00" * 9) + "$%%\x00*#.|=\\o@") + \
     list("\x00" * 100)
 
 PASS_CHARSET = list("0123456789ABCDEF")
@@ -511,7 +511,9 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         for i in inarr:
             if i == 0xFF:
                 break
-            outstr += CHARSET[i & 0x7F]
+            outchar = CHARSET[i & 0x7F]
+            if outchar != "\x00":
+                outstr += outchar
         return outstr.rstrip()
 
     def _encode_chars(self, instr, length=16):
