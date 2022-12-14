@@ -42,7 +42,7 @@ def chirpmain():
     from chirp.wxui import report
 
     actions = ['upload', 'download', 'query_rrca', 'query_rrus',
-               'query_rb', 'query_dm']
+               'query_rb', 'query_dm', 'new']
 
     parser = argparse.ArgumentParser()
     parser.add_argument("files", metavar="file", nargs='*',
