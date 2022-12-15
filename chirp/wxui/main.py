@@ -871,7 +871,8 @@ class ChirpMain(wx.Frame):
                     name, _('Files'), pattern, pattern)
 
         style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
-        with wx.FileDialog(self, _("Save file"), defaultFile=eset.filename,
+        default_filename = os.path.basename(eset.filename)
+        with wx.FileDialog(self, _("Save file"), defaultFile=default_filename,
                            wildcard=wildcard,
                            style=style) as fd:
             if fd.ShowModal() == wx.ID_CANCEL:
