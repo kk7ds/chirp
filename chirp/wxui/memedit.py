@@ -156,6 +156,10 @@ class ChirpMemoryColumn(object):
         editor.SetValue(self.render_value(memory))
         return editor
 
+    def get_by_prompt(self, parent, memory, message):
+        common.error_proof.show_error(
+            'Internal error: unable to prompt for %s' % self._name)
+
 
 class ChirpFrequencyColumn(ChirpMemoryColumn):
     DEFAULT = 0
@@ -180,6 +184,25 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
         if not input_value.strip():
             input_value = 0
         return int(chirp_common.to_MHz(float(input_value)))
+
+    def get_by_prompt(self, parent, memory, message):
+        if self._name == 'offset':
+            if memory.duplex == 'split':
+                default = self._render_value(memory, memory.freq)
+            else:
+                default = self._render_value(memory, memory.offset)
+        else:
+            default = self._render_value(memory, memory.freq)
+        d = wx.TextEntryDialog(parent, message, _('Enter Frequency'),
+                               value=default)
+        while True:
+            r = d.ShowModal()
+            if r == wx.ID_CANCEL:
+                return
+            try:
+                return chirp_common.to_MHz(float(d.GetValue()))
+            except ValueError:
+                common.error_proof.show_error('Invalid frequency')
 
 
 class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
@@ -232,6 +255,13 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
                                         self._str_choices,
                                         range(len(self._str_choices)),
                                         cur_index)
+
+    def get_by_prompt(self, parent, memory, message):
+        d = wx.SingleChoiceDialog(parent, message, _('Choice Required'),
+                                  self._str_choices,
+                                  style=wx.OK | wx.CANCEL | wx.CENTER)
+        if d.ShowModal() == wx.ID_OK:
+            return self._digest_value(memory, self._choices[d.GetSelection()])
 
 
 class ChirpToneColumn(ChirpChoiceColumn):
@@ -397,6 +427,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         ]
         return defs
 
+    def _col_def_by_name(self, name):
+        for coldef in self._col_defs:
+            if coldef._name == name:
+                return coldef
+        LOG.error('No column definition for %s' % name)
+
     def mem2row(self, number):
         if isinstance(number, str):
             return self._special_rows[number]
@@ -499,12 +535,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if defaults.tones and defaults.tones[0] in features.valid_tones:
             mem.rtone = defaults.tones[0]
 
-    def _col_def_by_name(self, name):
-        for coldef in self._col_defs:
-            if coldef._name == name:
-                return coldef
-        LOG.error('No column definition for %s' % name)
-
     @common.error_proof()
     def _memory_edited(self, event):
         """
@@ -535,6 +565,50 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         col_def.digest_value(mem, val)
         if col_def.name == 'freq':
             self._set_memory_defaults(mem)
+
+        if col_def.name == 'cross_mode' and val == 'Tone->Tone':
+            rtone = self._col_def_by_name('rtone').get_by_prompt(
+                self, mem, _('Choose TX Tone'))
+            if rtone is None:
+                event.Veto()
+                return
+            ctone = self._col_def_by_name('ctone').get_by_prompt(
+                self, mem, _('Choose RX Tone'))
+            if ctone is None:
+                event.Veto()
+                return
+            mem.rtone = rtone
+            mem.ctone = ctone
+        if col_def.name == 'cross_mode' and val == 'DTCS->DTCS':
+            dtcs = self._col_def_by_name('dtcs').get_by_prompt(
+                self, mem, _('Choose TX DTCS Code'))
+            if dtcs is None:
+                event.Veto()
+                return
+            rx_dtcs = self._col_def_by_name('rx_dtcs').get_by_prompt(
+                self, mem, _('Choose RX DTCS Code'))
+            if rx_dtcs is None:
+                event.Veto()
+                return
+            mem.dtcs = dtcs
+            mem.rx_dtcs = rx_dtcs
+        if col_def.name == 'duplex' and val != '':
+            if val == 'split':
+                msg = _('Enter TX Frequency (MHz)')
+            elif mem.offset != 0:
+                # We don't need to ask
+                msg = None
+            else:
+                msg = _('Enter Offset (MHz)')
+
+            if msg:
+                offset = self._col_def_by_name('offset').get_by_prompt(
+                    self, mem, msg)
+                if offset is None:
+                    event.Veto()
+                    return
+                mem.offset = offset
+
         if mem.empty:
             mem.empty = False
         if col_def.name == 'cross_mode':
