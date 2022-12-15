@@ -499,6 +499,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if defaults.tones and defaults.tones[0] in features.valid_tones:
             mem.rtone = defaults.tones[0]
 
+    def _col_def_by_name(self, name):
+        for coldef in self._col_defs:
+            if coldef._name == name:
+                return coldef
+        LOG.error('No column definition for %s' % name)
+
     @common.error_proof()
     def _memory_edited(self, event):
         """
