@@ -168,7 +168,8 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
             return _('Frequency')
 
     def hidden_for(self, memory):
-        return self._name == 'offset' and not memory.duplex
+        return (self._name == 'offset' and
+                memory.duplex in ('', 'off'))
 
     def _render_value(self, memory, value):
         if not value:
