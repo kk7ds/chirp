@@ -885,12 +885,12 @@ class ChirpMemPropDialog(wx.Dialog):
         prop = event.GetProperty()
         coldef = self._col_def_by_name(prop.GetName())
         name = prop.GetName().split(common.INDEX_CHAR)[0]
-        value = prop.GetValue()
+        value = prop.GetValueAsString()
         for mem in self._memories:
             if coldef:
                 setattr(mem, name, coldef._digest_value(mem, value))
             else:
-                setattr(mem, name, value)
+                setattr(mem, name, prop.GetValue())
             LOG.debug('Changed mem %i %s=%r' % (mem.number, name,
                                                 value))
             if prop.GetName() == 'freq':
