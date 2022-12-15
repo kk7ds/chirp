@@ -164,6 +164,10 @@ class ChirpMemoryColumn(object):
 class ChirpFrequencyColumn(ChirpMemoryColumn):
     DEFAULT = 0
 
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._wants_split = set()
+
     @property
     def label(self):
         if self._name == 'offset':
@@ -173,16 +177,31 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
 
     def hidden_for(self, memory):
         return (self._name == 'offset' and
-                memory.duplex in ('', 'off'))
+                memory.duplex in ('', 'off') and
+                memory.number not in self._wants_split)
 
     def _render_value(self, memory, value):
         if not value:
             value = 0
+        if (self._name == 'offset' and
+                memory.number in self._wants_split and
+                memory.duplex in ('', '-', '+')):
+            # Radio is returning offset but user wants split, so calculate
+            # the TX frequency to render what they expect.
+            value = memory.freq + int('%s%i' % (memory.duplex, value))
+
         return '%.5f' % (value / 1000000.0)
 
     def _digest_value(self, memory, input_value):
         if not input_value.strip():
             input_value = 0
+        if self._name == 'offset' and memory.number in self._wants_split:
+            # If we are being edited and the user has requested split for
+            # this memory, we need to keep requesting split, even if the
+            # radio is returning an offset-based memory. Otherwise, radios
+            # that emulate offset-based memories from tx/rx frequencies will
+            # fight with the user.
+            memory.duplex = 'split'
         return int(chirp_common.to_MHz(float(input_value)))
 
     def get_by_prompt(self, parent, memory, message):
@@ -203,6 +222,12 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
                 return chirp_common.to_MHz(float(d.GetValue()))
             except ValueError:
                 common.error_proof.show_error('Invalid frequency')
+
+    def wants_split(self, memory, split):
+        if split:
+            self._wants_split.add(memory.number)
+        else:
+            self._wants_split.discard(memory.number)
 
 
 class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
@@ -291,6 +316,34 @@ class ChirpToneColumn(ChirpChoiceColumn):
 
     def _digest_value(self, memory, input_value):
         return float(input_value)
+
+
+class ChirpDuplexColumn(ChirpChoiceColumn):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._wants_split = set()
+
+    def _render_value(self, memory, value):
+        if memory.number in self._wants_split:
+            return 'split'
+        else:
+            return value
+
+    def _digest_value(self, memory, input_value):
+        if memory.number in self._wants_split:
+            # If we are being edited and the user has requested split for
+            # this memory, we need to avoid requesting a tiny tx frequency
+            # (i.e. an offset), even if the radio is returning an offset-based
+            # memory. Otherwise, radios that emulate offset-based memories
+            # from tx/rx frequencies will fight with the user.
+            memory.offset = memory.freq
+        return super()._digest_value(memory, input_value)
+
+    def wants_split(self, memory, split):
+        if split:
+            self._wants_split.add(memory.number)
+        else:
+            self._wants_split.discard(memory.number)
 
 
 class ChirpDTCSColumn(ChirpChoiceColumn):
@@ -411,7 +464,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpToneColumn('ctone', self._radio),
             ChirpDTCSColumn('dtcs', self._radio),
             ChirpDTCSColumn('rx_dtcs', self._radio),
-            ChirpChoiceColumn('duplex', self._radio,
+            ChirpDuplexColumn('duplex', self._radio,
                               self._features.valid_duplexes),
             ChirpFrequencyColumn('offset', self._radio),
             ChirpChoiceColumn('mode', self._radio,
@@ -455,6 +508,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self._grid.SetRowLabelValue(row, '!%s' % (
                 self._grid.GetRowLabelValue(row)))
             return
+
+        if memory.empty:
+            # Reset our "wants split" flags if the memory is empty
+            offset_col = self._col_def_by_name('offset')
+            duplex_col = self._col_def_by_name('duplex')
+            offset_col.wants_split(memory, False)
+            duplex_col.wants_split(memory, False)
 
         self._memory_cache[row] = memory
 
@@ -562,6 +622,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         if col_def.name == 'name':
             val = self._radio.filter_name(val)
+
+        if col_def.name == 'duplex':
+            offset_col = self._col_def_by_name('offset')
+            duplex_col = self._col_def_by_name('duplex')
+            offset_col.wants_split(mem, val == 'split')
+            duplex_col.wants_split(mem, val == 'split')
+
+        if col_def.name == 'cross_mode':
+            mem.tmode = 'Cross'
+        if mem.empty:
+            mem.empty = False
         col_def.digest_value(mem, val)
         if col_def.name == 'freq':
             self._set_memory_defaults(mem)
@@ -615,6 +686,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mem.tmode = 'Cross'
         msgs = self._radio.validate_memory(mem)
         if msgs:
+            LOG.warning('Memory failed validation: %s' % mem)
             wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
                           'Invalid Entry')
             event.Skip()
