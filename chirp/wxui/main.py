@@ -782,6 +782,8 @@ class ChirpMain(wx.Frame):
         size = self.GetSize()
         CONF.set_int('window_w', size.GetWidth(), 'state')
         CONF.set_int('window_h', size.GetHeight(), 'state')
+        CONF.set('last_dir', chirp_platform.get_platform().get_last_dir(),
+                 'state')
         config._CONFIG.save()
 
         # Make sure we call close on each editor, so it can end
@@ -878,6 +880,8 @@ class ChirpMain(wx.Frame):
             if fd.ShowModal() == wx.ID_CANCEL:
                 return
             filename = fd.GetPath()
+            chirp_platform.get_platform().set_last_dir(
+                fd.GetDirectory())
             eset.save(filename)
             self.adj_menu_open_recent(filename)
             self._update_editorset_title(eset)
