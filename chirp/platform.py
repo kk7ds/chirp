@@ -280,7 +280,8 @@ class UnixPlatform(Platform):
     """A platform module suitable for UNIX systems"""
     def __init__(self, basepath):
         if not basepath:
-            basepath = self.default_dir().joinpath(".chirp")
+            basepath = os.path.join(self.default_dir(),
+                                    ".chirp")
 
         Path(basepath).mkdir(exist_ok=True)
 
@@ -297,7 +298,7 @@ class UnixPlatform(Platform):
             os.environ["PANGO_RC_FILE"] = "../Resources/etc/pango/pangorc"
 
     def default_dir(self):
-        return Path.home()
+        return str(Path.home())
 
     def filter_filename(self, filename):
         return filename.replace("/", "")
