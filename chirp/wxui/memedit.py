@@ -553,9 +553,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             row += 1
             self.do_radio(self.refresh_memory_from_job, 'get_memory', i)
 
-    def _set_memory_defaults(self, mem):
+    def _set_memory_defaults(self, mem, *only):
+        """This is responsible for setting sane default values on memories.
+
+        For the most part, this just honors the bandplan rules, but it also
+        tries to do things like calculate the required step for the memory's
+        frequency, etc.
+
+        If fields are provided as arguments, only set those defaults, else,
+        set them all.
+        """
         if not CONF.get_bool('auto_edits', 'state', True):
             return
+        if not only:
+            only = ('offset', 'duplex', 'tuning_step', 'mode', 'rtone')
 
         defaults = self.bandplan.get_defaults_for_frequency(mem.freq)
         features = self._features
@@ -573,9 +584,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             want_duplex = want_offset = None
 
         if want_duplex is not None and want_duplex in features.valid_duplexes:
-            mem.duplex = want_duplex
+            if 'duplex' in only:
+                mem.duplex = want_duplex
         if want_offset is not None and features.has_offset:
-            mem.offset = want_offset
+            if 'offset' in only:
+                mem.offset = want_offset
 
         if defaults.step_khz:
             want_tuning_step = defaults.step_khz
@@ -587,19 +600,66 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 want_tuning_step = None
 
         if want_tuning_step in features.valid_tuning_steps:
-            mem.tuning_step = want_tuning_step
+            if 'tuning_step' in only:
+                mem.tuning_step = want_tuning_step
 
         if defaults.mode and defaults.mode in features.valid_modes:
-            mem.mode = defaults.mode
+            if 'mode' in only:
+                mem.mode = defaults.mode
 
         if defaults.tones and defaults.tones[0] in features.valid_tones:
-            mem.rtone = defaults.tones[0]
+            if 'rtone' in only:
+                mem.rtone = defaults.tones[0]
+
+    def _resolve_cross_mode(self, mem):
+        txmode, rxmode = mem.cross_mode.split('->')
+        todo = [('TX', txmode, 'rtone', 'dtcs'),
+                ('RX', rxmode, 'ctone', 'rx_dtcs')]
+        for which, mode, tone_prop, dtcs_prop in todo:
+            if mode == 'Tone':
+                msg = _('Choose %s Tone') % which
+                prop = tone_prop
+            elif mode == 'DTCS':
+                msg = _('Choose %s DTCS Code') % which
+                prop = dtcs_prop
+            else:
+                # No value for this element, so do not prompt
+                continue
+
+            val = self._col_def_by_name(prop).get_by_prompt(
+                self, mem, msg)
+            if val is None:
+                # User hit cancel, so abort
+                return False
+            setattr(mem, prop, val)
+        return True
+
+    def _resolve_duplex(self, mem):
+        self._set_memory_defaults(mem, 'offset')
+        if mem.duplex == 'split':
+            msg = _('Enter TX Frequency (MHz)')
+        elif 0 < mem.offset < 70000000:
+            # We don't need to ask, offset looks like an offset
+            return True
+        else:
+            msg = _('Enter Offset (MHz)')
+
+        offset = self._col_def_by_name('offset').get_by_prompt(
+            self, mem, msg)
+        if offset is None:
+            return False
+        mem.offset = offset
+        return True
 
     @common.error_proof()
     def _memory_edited(self, event):
         """
         Called when the memory row in the UI is edited.
-        Writes the memory to the radio and displays an error if needed.
+
+        Responsible for updating our copy of the memory with changes from the
+        grid, defaults where appropriate, and extra values when required.
+        Validates the memory with the radio, then writes the memory to the
+        radio and displays an error if needed.
         """
         row = event.GetRow()
         col = event.GetCol()
@@ -610,6 +670,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         try:
             mem = self._memory_cache[row]
         except KeyError:
+            # This means we never loaded this memory from the radio in the
+            # first place, likely due to some error.
             wx.MessageBox(_('Unable to edit memory before radio is loaded'))
             event.Veto()
             return
@@ -620,70 +682,55 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             else:
                 self._row_label_renderers[row].clear_error()
 
+        # Filter the name according to the radio's rules before we try to
+        # validate it
         if col_def.name == 'name':
             val = self._radio.filter_name(val)
 
+        # Record the user's desire for this being a split duplex so that
+        # we can represent it consistently to them. The offset and duplex
+        # columns need to know so they can behave appropriately.
         if col_def.name == 'duplex':
             offset_col = self._col_def_by_name('offset')
             duplex_col = self._col_def_by_name('duplex')
             offset_col.wants_split(mem, val == 'split')
             duplex_col.wants_split(mem, val == 'split')
 
-        if col_def.name == 'cross_mode':
-            mem.tmode = 'Cross'
+        # Any edited memory is going to be non-empty
         if mem.empty:
             mem.empty = False
+
+        # This is where the column definition actually applies the edit they
+        # made to the memory.
         col_def.digest_value(mem, val)
+
+        # If they edited the frequency, we assume that they are likely going
+        # to want band defaults applied (duplex, offset, etc).
         if col_def.name == 'freq':
             self._set_memory_defaults(mem)
 
-        if col_def.name == 'cross_mode' and val == 'Tone->Tone':
-            rtone = self._col_def_by_name('rtone').get_by_prompt(
-                self, mem, _('Choose TX Tone'))
-            if rtone is None:
-                event.Veto()
-                return
-            ctone = self._col_def_by_name('ctone').get_by_prompt(
-                self, mem, _('Choose RX Tone'))
-            if ctone is None:
-                event.Veto()
-                return
-            mem.rtone = rtone
-            mem.ctone = ctone
-        if col_def.name == 'cross_mode' and val == 'DTCS->DTCS':
-            dtcs = self._col_def_by_name('dtcs').get_by_prompt(
-                self, mem, _('Choose TX DTCS Code'))
-            if dtcs is None:
-                event.Veto()
-                return
-            rx_dtcs = self._col_def_by_name('rx_dtcs').get_by_prompt(
-                self, mem, _('Choose RX DTCS Code'))
-            if rx_dtcs is None:
-                event.Veto()
-                return
-            mem.dtcs = dtcs
-            mem.rx_dtcs = rx_dtcs
-        if col_def.name == 'duplex' and val != '':
-            if val == 'split':
-                msg = _('Enter TX Frequency (MHz)')
-            elif mem.offset != 0:
-                # We don't need to ask
-                msg = None
-            else:
-                msg = _('Enter Offset (MHz)')
-
-            if msg:
-                offset = self._col_def_by_name('offset').get_by_prompt(
-                    self, mem, msg)
-                if offset is None:
-                    event.Veto()
-                    return
-                mem.offset = offset
-
-        if mem.empty:
-            mem.empty = False
+        # If they edited cross mode, they definitely want a tone mode of
+        # 'Cross'. For radios that do not store all the tone/code values
+        # all the time, we need to set certain tones or codes at the same
+        # time as this selection was made.
         if col_def.name == 'cross_mode':
             mem.tmode = 'Cross'
+            if not self._resolve_cross_mode(mem):
+                event.Veto()
+                return
+
+        # If they edited duplex, we need to prompt them for the value of
+        # offset in some cases. For radios that do not store offset itself,
+        # we need to prompt for the offset so it is set in the same operation.
+        # For split mode, we should always prompt, because trying to set a
+        # TX frequency of 600kHz is likely to fail on most radios.
+        if col_def.name == 'duplex' and val != '':
+            if not self._resolve_duplex(mem):
+                event.Veto()
+                return
+
+        # Try to validate these changes with the radio before we go to store
+        # them, as now is the best time to present an error to the user.
         msgs = self._radio.validate_memory(mem)
         if msgs:
             LOG.warning('Memory failed validation: %s' % mem)
