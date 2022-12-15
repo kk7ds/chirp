@@ -335,7 +335,7 @@ class THD74Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
         mem.freq = int(_mem.freq)
-        mem.name = str(_nam.name).rstrip()
+        mem.name = str(_nam.name).rstrip().strip('\x00')
         mem.offset = int(_mem.offset)
         if _mem.split:
             mem.duplex = 'split'
