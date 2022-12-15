@@ -204,45 +204,6 @@ class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
         return self.Control.GetStringSelection()
 
 
-class ChirpToneColumn(ChirpMemoryColumn):
-    def __init__(self, name, radio):
-        super(ChirpToneColumn, self).__init__(name, radio)
-        self._choices = chirp_common.TONES
-        self._str_choices = [str(x) for x in self._choices]
-
-    @property
-    def label(self):
-        if self._name == 'rtone':
-            return _('Tone')
-        else:
-            return _('ToneSql')
-
-    def hidden_for(self, memory):
-        cross_rx_tone = (memory.tmode == 'Cross' and
-                         '->Tone' in memory.cross_mode)
-        cross_tx_tone = (memory.tmode == 'Cross' and
-                         'Tone->' in memory.cross_mode)
-        return not (
-            (self._name == 'rtone' and (
-                memory.tmode == 'Tone' or cross_tx_tone))
-            or
-            (self._name == 'ctone' and (
-                memory.tmode == 'TSQL' or cross_rx_tone)))
-
-    def _digest_value(self, memory, input_value):
-        return float(input_value)
-
-    def get_editor(self):
-        return ChirpChoiceEditor(['%.1f' % t for t in chirp_common.TONES])
-
-    def get_propeditor(self, memory):
-        current = self.value(memory)
-        return wx.propgrid.EnumProperty(self.label, self._name,
-                                        self._str_choices,
-                                        range(len(self._choices)),
-                                        self._choices.index(current))
-
-
 class ChirpChoiceColumn(ChirpMemoryColumn):
     def __init__(self, name, radio, choices):
         super(ChirpChoiceColumn, self).__init__(name, radio)
@@ -271,6 +232,35 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
                                         self._str_choices,
                                         range(len(self._str_choices)),
                                         cur_index)
+
+
+class ChirpToneColumn(ChirpChoiceColumn):
+    def __init__(self, name, radio):
+        tones = [str(x) for x in chirp_common.TONES]
+        super(ChirpToneColumn, self).__init__(name, radio,
+                                              tones)
+
+    @property
+    def label(self):
+        if self._name == 'rtone':
+            return _('Tone')
+        else:
+            return _('ToneSql')
+
+    def hidden_for(self, memory):
+        cross_rx_tone = (memory.tmode == 'Cross' and
+                         '->Tone' in memory.cross_mode)
+        cross_tx_tone = (memory.tmode == 'Cross' and
+                         'Tone->' in memory.cross_mode)
+        return not (
+            (self._name == 'rtone' and (
+                memory.tmode == 'Tone' or cross_tx_tone))
+            or
+            (self._name == 'ctone' and (
+                memory.tmode == 'TSQL' or cross_rx_tone)))
+
+    def _digest_value(self, memory, input_value):
+        return float(input_value)
 
 
 class ChirpDTCSColumn(ChirpChoiceColumn):
