@@ -688,10 +688,36 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.info('No row selected for paste')
             return
 
+        overwrite = []
+        for i in range(len(mems)):
+            mem = self._memory_cache[row + i]
+            if not mem.empty:
+                overwrite.append(mem.number)
+
+        if overwrite:
+            if len(overwrite) == 1 and len(mems) == 1:
+                msg = _('Pasted memory will overwrite memory %i') % (
+                    overwrite[0])
+            elif len(overwrite) == 1 and len(mems) > 0:
+                msg = _('Pasted memories will overwrite memory %i') % (
+                    overwrite[0])
+            elif len(overwrite) > 10:
+                msg = _('Pasted memories will overwrite %i '
+                        'existing memories') % (len(overwrite))
+            else:
+                msg = _('Pasted memories will overwrite memories %s') % (
+                    ','.join(str(x) for x in overwrite))
+            d = wx.MessageDialog(self, msg,
+                                 _('Overwrite memories?'),
+                                 wx.YES | wx.NO | wx.YES_DEFAULT)
+            resp = d.ShowModal()
+            if resp == wx.ID_NO:
+                return
+
         errors = []
         modified = False
         for mem in mems:
-            mem.number = row + self._features.memory_bounds[0]
+            mem.number = self.row2mem(row)
             row += 1
             try:
                 if mem.empty:
