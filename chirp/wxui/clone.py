@@ -15,7 +15,6 @@
 
 import collections
 import logging
-import textwrap
 import threading
 
 import serial
@@ -123,8 +122,9 @@ class ChirpRadioPromptDialog(wx.Dialog):
         bs = self.CreateButtonSizer(buttons)
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
-        vbox.Add(wx.StaticText(self,
-                               label='\n'.join(textwrap.wrap(self.message))),
+        instructions = wx.StaticText(self)
+        instructions.SetLabelMarkup(self.message)
+        vbox.Add(instructions,
                  border=20, flag=wx.ALL)
         self.cb = wx.CheckBox(
             self, label=_("Do not prompt again for %s") % (
