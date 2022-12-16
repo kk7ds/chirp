@@ -26,7 +26,7 @@ from chirp import CHIRP_VERSION
 from chirp import dmrmarc
 from chirp import radioreference
 from chirp.drivers import generic_csv
-from chirp.ui import config
+from chirp.wxui import config
 from chirp.ui import fips
 
 CONF = config.get()

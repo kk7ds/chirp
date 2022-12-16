@@ -26,7 +26,7 @@ except ImportError:
     wx = None
 
 from chirp import CHIRP_VERSION
-from chirp.ui import config
+from chirp.wxui import config
 
 CONF = config.get()
 LOG = logging.getLogger(__name__)
