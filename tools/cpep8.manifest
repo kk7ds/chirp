@@ -151,7 +151,6 @@
 ./chirp/ui/common.py
 ./chirp/ui/dstaredit.py
 ./chirp/ui/editorset.py
-./chirp/ui/fips.py
 ./chirp/ui/importdialog.py
 ./chirp/ui/inputdialog.py
 ./chirp/ui/mainapp.py

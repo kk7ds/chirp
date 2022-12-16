@@ -27,7 +27,7 @@ from chirp import dmrmarc
 from chirp import radioreference
 from chirp.drivers import generic_csv
 from chirp.wxui import config
-from chirp.ui import fips
+from chirp.wxui import fips
 
 CONF = config.get()
 LOG = logging.getLogger(__name__)
