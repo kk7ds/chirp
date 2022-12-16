@@ -29,7 +29,7 @@ from chirp import bandplan
 from chirp.drivers import generic_csv
 from chirp import errors
 from chirp import settings
-from chirp.ui import config
+from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
 

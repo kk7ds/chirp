@@ -24,7 +24,7 @@ import wx.lib.sized_controls
 from chirp import chirp_common
 from chirp import directory
 from chirp import platform
-from chirp.ui import config
+from chirp.wxui import config
 from chirp.wxui import common
 
 LOG = logging.getLogger(__name__)

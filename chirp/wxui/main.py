@@ -39,7 +39,7 @@ from chirp import directory
 from chirp import errors
 from chirp import logger
 from chirp import platform as chirp_platform
-from chirp.ui import config
+from chirp.wxui import config
 from chirp.wxui import bankedit
 from chirp.wxui import common
 from chirp.wxui import clone

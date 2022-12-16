@@ -37,7 +37,7 @@ def chirpmain():
         gettext.install('CHIRP', localedir)
 
     import wx
-    from chirp.ui import config
+    from chirp.wxui import config
     from chirp.wxui import main
     from chirp.wxui import report
 

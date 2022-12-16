@@ -149,7 +149,6 @@
 ./chirp/ui/clone.py
 ./chirp/ui/cloneprog.py
 ./chirp/ui/common.py
-./chirp/ui/config.py
 ./chirp/ui/dstaredit.py
 ./chirp/ui/editorset.py
 ./chirp/ui/fips.py
