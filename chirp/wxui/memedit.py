@@ -463,6 +463,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                         self._memory_changed)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK,
                         self._memory_rclick)
+        self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
+                        self._memory_rclick)
 
         # For resize calculations
         self._dc = wx.ScreenDC()
@@ -806,6 +808,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self.delete_memory_at(row, event)
 
     def _memory_rclick(self, event):
+        if event.GetRow() == -1:
+            # This is a right-click on a column header
+            return
         menu = wx.Menu()
         selected_rows = self._grid.GetSelectedRows()
         if not selected_rows:
