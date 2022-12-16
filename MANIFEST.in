@@ -3,7 +3,6 @@ include chirp/share/*.png
 include chirp/share/*.ico
 include chirp/share/*.1
 include chirp/stock_configs/*
-include chirpw
 include COPYING
 include *requirements.txt
 graft tests

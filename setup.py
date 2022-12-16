@@ -22,7 +22,7 @@ setup(name='chirp',
           'gtk': ['PyGObject']
       },
       entry_points={
-          'console_scripts': ["chirp=chirp.wxui:chirpmain"],
+          'console_scripts': ["chirp=chirp.wxui:chirpmain",
+                              "legacychirp=chirp.ui.__main__:main"],
       },
-      scripts=['chirpw'],
       )
