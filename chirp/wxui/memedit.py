@@ -377,6 +377,20 @@ class ChirpDTCSColumn(ChirpChoiceColumn):
                 memory.tmode == 'Cross' and '>DTCS' in memory.cross_mode)))
 
 
+class ChirpDTCSPolColumn(ChirpChoiceColumn):
+    def __init__(self, name, radio):
+        super().__init__(name, radio,
+                         ['NN', 'NR', 'RN', 'RR'])
+
+    @property
+    def label(self):
+        return _('DTCS Polarity')
+
+    def hidden_for(self, memory):
+        return not (memory.tmode == 'DTCS' or
+                    'DTCS' in memory.cross_mode)
+
+
 class ChirpCrossModeColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
         rf = radio.get_features()
@@ -464,6 +478,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpToneColumn('ctone', self._radio),
             ChirpDTCSColumn('dtcs', self._radio),
             ChirpDTCSColumn('rx_dtcs', self._radio),
+            ChirpDTCSPolColumn('dtcs_polarity', self._radio),
             ChirpDuplexColumn('duplex', self._radio,
                               self._features.valid_duplexes),
             ChirpFrequencyColumn('offset', self._radio),
