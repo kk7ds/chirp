@@ -734,6 +734,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 event.Veto()
                 return
 
+        # If they edited one of the tone values and tmode is not Cross,
+        # select the right thing for them. Note that we could get fancy
+        # here and change the TX or RX part of cross_mode, if Cross is
+        # selected.
+        if col_def.name == 'rtone' and mem.tmode != 'Cross':
+            mem.tmode = 'Tone'
+        elif col_def.name == 'ctone' and mem.tmode != 'Cross':
+            mem.tmode = 'TSQL'
+        elif col_def.name == 'dtcs' and mem.tmode != 'Cross':
+            mem.tmode = 'DTCS'
+
         # If they edited duplex, we need to prompt them for the value of
         # offset in some cases. For radios that do not store offset itself,
         # we need to prompt for the offset so it is set in the same operation.
