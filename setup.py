@@ -15,7 +15,8 @@ setup(name='chirp',
           'pyserial',
           'six',
           'future',
-          'importlib-resources;python_version<"3.10"'
+          'importlib-resources;python_version<"3.10"',
+          'yattag',
       ],
       extras_require={
           'wx': ['wxPython'],

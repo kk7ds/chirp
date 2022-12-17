@@ -1023,6 +1023,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             r.set_memory(self._memory_cache[row])
         r.save(filename)
 
+    def get_selected_memories(self):
+        return [self.row2mem(r) for r in self._grid.GetSelectedRows()]
+
 
 class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):
     pass
