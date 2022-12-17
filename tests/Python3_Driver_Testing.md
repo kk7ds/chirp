@@ -215,7 +215,7 @@
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.17% |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.19% |
 | <a name="Radioddity_GA-510"></a> Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.42% |
-| <a name="Radioddity_R2"></a> Radioddity_R2 |  |  |  | 0.36% |
+| <a name="Radioddity_R2"></a> Radioddity_R2 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.36% |
 | <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.47% |
 | <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.90% |
 | <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.05% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 70% (252/103) (89% of usage stats)
+**Tested:** 71% (253/102) (89% of usage stats)
 
-**Byte clean:** 80% (286/69)
+**Byte clean:** 80% (287/68)
 
 ## Meaning of this testing
 

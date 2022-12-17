@@ -89,10 +89,10 @@ struct {
 
 """
 
-CMD_ACK = "\x06"
-CMD_ALT_ACK = "\x53"
-CMD_STX = "\x02"
-CMD_ENQ = "\x05"
+CMD_ACK = b"\x06"
+CMD_ALT_ACK = b"\x53"
+CMD_STX = b"\x02"
+CMD_ENQ = b"\x05"
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
                 chirp_common.PowerLevel("High", watts=3.00)]
@@ -122,12 +122,12 @@ VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
 def _r2_enter_programming_mode(radio):
     serial = radio.pipe
 
-    magic = "TYOGRAM"
+    magic = b"TYOGRAM"
     exito = False
     serial.write(CMD_STX)
     for i in range(0, 5):
         for j in range(0, len(magic)):
-            serial.write(magic[j])
+            serial.write(magic[j:j + 1])
         ack = serial.read(1)
         if ack == CMD_ACK:
             exito = True
@@ -174,7 +174,7 @@ def _r2_enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     # we will only read if no password is set
-    if ack != "\xFF\xFF\xFF\xFF\xFF\xFF":
+    if ack != b"\xFF\xFF\xFF\xFF\xFF\xFF":
         _r2_exit_programming_mode(radio)
         raise errors.RadioError("Radio is password protected")
     try:
@@ -201,13 +201,14 @@ def _r2_exit_programming_mode(radio):
 def _r2_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         for j in range(0, len(cmd)):
-            serial.write(cmd[j])
+            time.sleep(0.005)
+            serial.write(cmd[j:j + 1])
 
         response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
@@ -216,6 +217,7 @@ def _r2_read_block(radio, block_addr, block_size):
 
         block_data = response[4:]
 
+        time.sleep(0.005)
         serial.write(CMD_ACK)
         ack = serial.read(1)
     except:
@@ -232,7 +234,7 @@ def _r2_read_block(radio, block_addr, block_size):
 def _r2_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing block %04x..." % (block_addr))
@@ -240,9 +242,9 @@ def _r2_write_block(radio, block_addr, block_size):
 
     try:
         for j in range(0, len(cmd)):
-            serial.write(cmd[j])
+            serial.write(cmd[j:j + 1])
         for j in range(0, len(data)):
-            serial.write(data[j])
+            serial.write(data[j:j + 1])
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
     except:
@@ -255,7 +257,7 @@ def do_download(radio):
     LOG.debug("download")
     _r2_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -273,11 +275,9 @@ def do_download(radio):
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    data += radio.MODEL.ljust(8)
-
     _r2_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -303,6 +303,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
     VENDOR = "Radioddity"
     MODEL = "R2"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     # definitions on how to read StartAddr EndAddr BlockZize
     _ranges = [
