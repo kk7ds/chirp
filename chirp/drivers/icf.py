@@ -898,6 +898,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
             return self._mmap
 
     def sync_out(self):
+        # We always start at 9600 baud. The UI may have handed us the same
+        # rate we ended with last time (for radios which have variable but
+        # unchanging speeds) but we always have to start in low-speed mode.
+        self.pipe.baudrate = 9600
         clone_to_radio(self)
 
     def get_bank_model(self):
