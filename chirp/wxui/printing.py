@@ -48,20 +48,13 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                 with tag('tt'):
                     doc.text(col_def.render_value(mem))
 
-    def _memory_table(self, doc, only_memories):
+    def _memory_table(self, doc, memories):
         tag = doc.tag
-        lo, hi = self._features.memory_bounds
         row = 0
 
         # This is arbitrary, unsure if it will work on all platforms
         # or not
         ROWS_PER_PAGE = 35
-
-        memories = []
-        for i in range(lo, hi + 1):
-            mem = self._radio.get_memory(i)
-            if not mem.empty:
-                memories.append(mem)
 
         for i in range(0, len(memories), ROWS_PER_PAGE):
             with tag('div', ('style', 'page-break-before:always')):
@@ -81,8 +74,6 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                         mem = memories[row]
                     except IndexError:
                         continue
-                    if (only_memories and mem.number not in only_memories):
-                        continue
                     with tag('tr'):
                         try:
                             self._memory(doc, mem)
@@ -90,13 +81,11 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                             pass
 
     @common.error_proof()
-    def print(self, only_memories=None):
+    def print(self, memories):
         report.report_model(self._radio, 'print')
-        if only_memories and len(only_memories) == 1:
-            # Only print selection if there is more than one row selected
-            only_memories = None
+        memories = [m for m in memories if not m.empty]
         doc, tag, text = yattag.Doc().tagtext()
         with tag('html'):
             with tag('body'):
-                self._memory_table(doc, only_memories)
+                self._memory_table(doc, memories)
         return self.PreviewText(doc.getvalue())
