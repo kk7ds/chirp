@@ -29,13 +29,13 @@
 # * Full range of frequencies for tx and rx, supported band read from radio
 #   during download, not verified on upload.  Radio will refuse to TX if out of
 #   band.
+# * Busy channel lock out (for each memory)
 #
 # Unsupported features
 # * VFO1, VFO2, and TRF memories
 # * custom CTCSS tones
 # * Any non-memory radio settings
 # * Reverse, talkaround, scramble
-# * busy channel lock out
 # * probably other things too - like things encoded by the unknown bits in the
 #   memory struct
 
@@ -921,6 +921,16 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 (dtcs_pol_bit_to_str[_mem.dtcs_encode_invert == 1],
                  dtcs_pol_bit_to_str[_mem.dtcs_decode_invert == 1])
 
+            # Extra
+            mem.extra = RadioSettingGroup("Extra", "extra")
+
+            # Busy channel lockout
+            bcl_options = ['Off', 'Repeater', 'Busy']
+            bcl_option = bcl_options[_mem.busy_channel_lockout]
+            rs = RadioSetting("busy_channel_lockout", "Busy Channel Lockout",
+                              RadioSettingValueList(bcl_options, bcl_option))
+            mem.extra.append(rs)
+
         return mem
 
     # Store details about a high-level memory to the memory map
@@ -958,9 +968,6 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             else:
                 # new VOX models with 6-character name length
                 _mem.name = mem.name.ljust(self.NAME_LENGTH)[:self.NAME_LENGTH]
-
-            # TODO support busy channel lockout - disabled for now
-            _mem.busy_channel_lockout = BUSY_CHANNEL_LOCKOUT_OFF
 
             # Set duplex bitfields
             if mem.duplex == '+':
@@ -1090,6 +1097,10 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             _mem.unknown7 = 0x00
             _mem.unknown8 = 0x00
             _mem.unknown9 = 0x00
+
+            # Extra settings (eg. Busy channel lockout)
+            for setting in mem.extra:
+                setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
         """Translate the MEM_FORMAT structs into setstuf in the UI"""
