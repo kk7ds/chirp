@@ -15,6 +15,7 @@
 
 import collections
 import logging
+import textwrap
 import threading
 
 import serial
@@ -118,6 +119,9 @@ class ChirpRadioPromptDialog(wx.Dialog):
 
         prompts = self.radio.get_prompts()
         self.message = getattr(prompts, self.prompt)
+
+        if '\n' not in self.message:
+            self.message = '\n'.join(textwrap.wrap(self.message))
 
         bs = self.CreateButtonSizer(buttons)
         vbox = wx.BoxSizer(wx.VERTICAL)
