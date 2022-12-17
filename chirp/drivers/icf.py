@@ -340,6 +340,12 @@ def start_hispeed_clone(radio, cmd):
 def _clone_from_radio(radio):
     md = get_model_data(radio)
 
+    try:
+        radio_rev = decode_model(md)
+    except Exception as e:
+        LOG.error('Failed to decode model data')
+        radio_rev = None
+
     if md[0:4] != radio.get_model():
         LOG.info("This model: %s" % util.hexprint(md[0:4]))
         LOG.info("Supp model: %s" % util.hexprint(radio.get_model()))
@@ -359,6 +365,7 @@ def _clone_from_radio(radio):
     addr = 0
     _mmap = memmap.MemoryMapBytes(bytes(b'\x00') * radio.get_memsize())
     last_size = 0
+    got_end = False
     while True:
         frames = stream.get_frames()
         if not frames:
@@ -381,6 +388,7 @@ def _clone_from_radio(radio):
                 # For variable-length radios, make sure we don't
                 # return a longer map than we got from the radio.
                 _mmap.truncate(addr)
+                got_end = True
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -388,6 +396,13 @@ def _clone_from_radio(radio):
             status.max = radio.get_memsize()
             status.cur = addr
             radio.status_fn(status)
+
+    if not got_end:
+        LOG.error('clone_from_radio ending at address %06X before '
+                  'CLONE_END; stream buffer is:\n%s',
+                  addr, util.hexprint(stream.data))
+        raise errors.RadioError('Data stream stopped before end-of-clone '
+                                'received')
 
     return _mmap
 
