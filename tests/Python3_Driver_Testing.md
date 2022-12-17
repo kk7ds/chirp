@@ -81,7 +81,7 @@
 | <a name="Icom_IC-2200H"></a> Icom_IC-2200H | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.05% |
 | <a name="Icom_IC-2300H"></a> Icom_IC-2300H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 24-Oct-2022 | Yes | 0.08% |
 | <a name="Icom_IC-2720H"></a> Icom_IC-2720H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
-| <a name="Icom_IC-2730A"></a> Icom_IC-2730A |  |  | Yes | 0.21% |
+| <a name="Icom_IC-2730A"></a> Icom_IC-2730A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 17-Dec-2022 | Yes | 0.21% |
 | <a name="Icom_IC-2820H"></a> Icom_IC-2820H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.04% |
 | <a name="Icom_IC-7000"></a> Icom_IC-7000 |  |  | Yes | 0.03% |
 | <a name="Icom_IC-7100"></a> Icom_IC-7100 |  |  | Yes | 0.06% |
@@ -101,9 +101,9 @@
 | <a name="Icom_IC-W32A"></a> Icom_IC-W32A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-W32E"></a> Icom_IC-W32E | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_ID-31A"></a> Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes | 0.01% |
-| <a name="Icom_ID-4100"></a> Icom_ID-4100 | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes | 0.00% |
+| <a name="Icom_ID-4100"></a> Icom_ID-4100 | [Implied by Icom_ID-5100](#user-content-Icom_ID-5100) | 1-Dec-2022 | Yes | 0.00% |
 | <a name="Icom_ID-51"></a> Icom_ID-51 | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 1-Dec-2022 | Yes | 0.02% |
-| <a name="Icom_ID-5100"></a> Icom_ID-5100 | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes | 0.00% |
+| <a name="Icom_ID-5100"></a> Icom_ID-5100 | [@kk7ds](https://github.com/kk7ds) | 17-Dec-2022 | Yes | 0.00% |
 | <a name="Icom_ID-51_Plus"></a> Icom_ID-51_Plus | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 1-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_ID-51_Plus2"></a> Icom_ID-51_Plus2 |  |  | Yes | 0.00% |
 | <a name="Icom_ID-800H_v2"></a> Icom_ID-800H_v2 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.01% |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 70% (251/104) (88% of usage stats)
+**Tested:** 70% (252/103) (89% of usage stats)
 
 **Byte clean:** 80% (286/69)
 
