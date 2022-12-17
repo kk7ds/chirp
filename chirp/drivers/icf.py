@@ -366,12 +366,15 @@ def _clone_from_radio(radio):
     _mmap = memmap.MemoryMapBytes(bytes(b'\x00') * radio.get_memsize())
     last_size = 0
     got_end = False
-    while True:
+    last_frame = time.time()
+    timeout = 10
+    while not got_end:
         frames = stream.get_frames()
-        if not frames:
+        if not frames and (time.time() - last_frame) > timeout:
             break
 
         for frame in frames:
+            last_frame = time.time()
             if frame.cmd == CMD_CLONE_DAT:
                 src, dst = process_data_frame(radio, frame, _mmap)
                 if last_size != (dst - src):
