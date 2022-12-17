@@ -105,7 +105,7 @@
 | <a name="Icom_ID-51"></a> Icom_ID-51 | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 1-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_ID-5100"></a> Icom_ID-5100 | [@kk7ds](https://github.com/kk7ds) | 17-Dec-2022 | Yes | 0.00% |
 | <a name="Icom_ID-51_Plus"></a> Icom_ID-51_Plus | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 1-Dec-2022 | Yes | 0.02% |
-| <a name="Icom_ID-51_Plus2"></a> Icom_ID-51_Plus2 |  |  | Yes | 0.00% |
+| <a name="Icom_ID-51_Plus2"></a> Icom_ID-51_Plus2 | [Implied by Icom_ID-31A](#user-content-Icom_ID-31A) | 17-Dec-2022 | Yes | 0.00% |
 | <a name="Icom_ID-800H_v2"></a> Icom_ID-800H_v2 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.01% |
 | <a name="Icom_ID-80H"></a> Icom_ID-80H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 22-Oct-2022 | Yes | 0.01% |
 | <a name="Icom_ID-880H"></a> Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.02% |
@@ -360,7 +360,7 @@
 
 **Drivers:** 355
 
-**Tested:** 71% (253/102) (89% of usage stats)
+**Tested:** 71% (254/101) (89% of usage stats)
 
 **Byte clean:** 80% (287/68)
 
