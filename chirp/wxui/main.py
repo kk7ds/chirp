@@ -45,6 +45,7 @@ from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
 from chirp.wxui import memedit
+from chirp.wxui import printing
 from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
@@ -651,9 +652,10 @@ class ChirpMain(wx.Frame):
         return menu_bar
 
     def _menu_print(self, event):
-        from chirp.wxui import printing
-        p = printing.MemoryPrinter(self, self.current_editorset.radio,
-                                   self.current_editorset.current_editor)
+        p = printing.MemoryPrinter(
+            self,
+            self.current_editorset.radio,
+            self.current_editorset.current_editor)
         p.print(self.current_editorset.current_editor.get_selected_memories())
 
     def make_toolbar(self):
