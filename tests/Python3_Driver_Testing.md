@@ -2,7 +2,7 @@
 | Driver | Tester | Tested | Byte Clean | "Market Share" |
 | ------ | ------ | ------ | ---------- | -------------- |
 | <a name="ARRL_Travel_Plus"></a> ARRL_Travel_Plus |  |  |  | 0.00% |
-| <a name="Abbree_AR-518"></a> Abbree_AR-518 |  |  |  | 0.24% |
+| <a name="Abbree_AR-518"></a> Abbree_AR-518 | [@KC9HI](https://github.com/KC9HI) | 16-Dec-2022 | Yes | 0.24% |
 | <a name="Abbree_AR-63"></a> Abbree_AR-63 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG | [@HB9UF](https://github.com/HB9UF) | 09-Dec-2022 | Yes | 0.44% |
 | <a name="Alinco_DJ175"></a> Alinco_DJ175 | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.03% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 70% (250/105) (88% of usage stats)
+**Tested:** 70% (251/104) (88% of usage stats)
 
-**Byte clean:** 80% (285/70)
+**Byte clean:** 80% (286/69)
 
 ## Meaning of this testing
 

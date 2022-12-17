@@ -7,6 +7,7 @@
 # clone routines are shared in common with other things that are tested, use
 # *MODULE_NAME to mark it as "probably works because of common code in
 # $module"
+Abbree_AR-518,@KC9HI,16-Dec-2022
 Abbree_AR-63,@KC9HI,30-Nov-2022
 Alinco_DJ175,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ596,+Alinco_DR235T,12-Dec-2022

@@ -136,7 +136,7 @@ struct {
 
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 RB15_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
@@ -161,7 +161,7 @@ TXALLOW_VALUES = [0xFF, 0x00]
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 256
 
 
@@ -197,7 +197,7 @@ def _enter_programming_mode(radio):
 def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("93" + "\x05\xEE\x5F")
+        serial.write(b"93" + b"\x05\xEE\x5F")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -205,13 +205,13 @@ def _exit_programming_mode(radio):
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">BH", ord('R'), block_addr + 0x0340)
+    cmd = struct.pack(">BH", ord(b'R'), block_addr + 0x0340)
 
-    ccs = _checksum(cmd)
+    ccs = bytes([_checksum(cmd)])
 
-    expectedresponse = "R" + cmd[1:]
+    expectedresponse = b"R" + cmd[1:]
 
-    cmd = cmd + chr(ccs)
+    cmd = cmd + ccs
 
     LOG.debug("Reading block %04x..." % (block_addr + 0x0340))
 
@@ -227,7 +227,7 @@ def _read_block(radio, block_addr, block_size):
 
         chunk = response[3:]
 
-        if ord(chunk[-1]) != cs:
+        if chunk[-1] != cs:
             raise Exception("Block failed checksum!")
 
         block_data = chunk[:-1]
@@ -243,10 +243,10 @@ def _write_block(radio, block_addr, block_size):
 
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
-    cmd = struct.pack(">BH", ord('W'), block_addr + 0x0340)
+    cmd = struct.pack(">BH", ord(b'W'), block_addr + 0x0340)
 
-    cs = _checksum(cmd + data)
-    data += chr(cs)
+    cs = bytes([_checksum(cmd + data)])
+    data += cs
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -264,7 +264,7 @@ def do_download(radio):
     LOG.debug("download")
     _enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -284,7 +284,7 @@ def do_download(radio):
 
     _exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -325,9 +325,10 @@ class IradioUV5118(chirp_common.CloneModeRadio):
     VENDOR = "Iradio"
     MODEL = "UV-5118"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     BLOCK_SIZE = 0x10
-    magic = "93" + "\x05\x10\x81"
+    magic = b"93" + b"\x05\x10\x81"
 
     VALID_BANDS = [(20000000, 64000000),  # RX only
                    (108000000, 136000000),  # RX only (Air Band)
