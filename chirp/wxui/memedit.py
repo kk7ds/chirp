@@ -1032,9 +1032,11 @@ class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):
 
 
 class DVMemoryAsSettings(settings.RadioSettingGroup):
-    def __init__(self, dvmemory):
+    def __init__(self, radio, dvmemory):
         self._dvmemory = dvmemory
         super(DVMemoryAsSettings, self).__init__('dvmemory', 'DV Memory')
+
+        features = radio.get_features()
 
         fields = {'dv_urcall': 'URCALL',
                   'dv_rpt1call': 'RPT1Call',
@@ -1046,6 +1048,17 @@ class DVMemoryAsSettings(settings.RadioSettingGroup):
 
             if isinstance(value, int):
                 rsv = settings.RadioSettingValueInteger(0, 99, value)
+            elif features.requires_call_lists and 'call' in field:
+                if 'urcall' in field:
+                    calls = radio.get_urcall_list()
+                elif 'rpt' in field:
+                    calls = radio.get_repeater_call_list()
+                else:
+                    LOG.error('Unhandled call type %s' % field)
+                    calls = []
+                rsv = settings.RadioSettingValueList(
+                    calls,
+                    getattr(dvmemory, field))
             else:
                 rsv = settings.RadioSettingValueString(0, 8, str(value))
 
@@ -1099,8 +1112,10 @@ class ChirpMemPropDialog(wx.Dialog):
         if isinstance(memory, chirp_common.DVMemory):
             page_index += 1
             self._dv_page = page_index
-            self._dv = common.ChirpSettingGrid(DVMemoryAsSettings(memory),
-                                               self._tabs)
+            self._dv = common.ChirpSettingGrid(
+                DVMemoryAsSettings(memedit._radio,
+                                   memory),
+                self._tabs)
             self._tabs.InsertPage(page_index, self._dv, _('DV Memory'))
             self._dv.propgrid.Bind(wx.propgrid.EVT_PG_CHANGED,
                                    self._mem_prop_changed)
@@ -1138,8 +1153,12 @@ class ChirpMemPropDialog(wx.Dialog):
         for mem in self._memories:
             if coldef:
                 setattr(mem, name, coldef._digest_value(mem, value))
-            else:
+            elif value.isdigit():
+                # Assume this is an integer (dv_code) and set it as
+                # such
                 setattr(mem, name, prop.GetValue())
+            else:
+                setattr(mem, name, value)
             LOG.debug('Changed mem %i %s=%r' % (mem.number, name,
                                                 value))
             if prop.GetName() == 'freq':
