@@ -974,12 +974,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.SelectRow(self.mem2row(number))
 
     def cb_find(self, text):
-        # FIXME: This should be more dynamic
-        cols = [
-            0,   # Freq
-            1,   # Name
-            14,  # Comment
-        ]
+        search_cols = ('freq', 'name', 'comment')
+        cols = [self._col_defs.index(self._col_def_by_name(x))
+                for x in search_cols]
         num_rows = self._grid.GetNumberRows()
         try:
             current_row = self._grid.GetSelectedRows()[0] + 1
