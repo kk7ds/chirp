@@ -113,7 +113,7 @@ struct {
 } fingerprint;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 NUMERIC_CHARSET = list("0123456789")
 DTMF_CHARSET = NUMERIC_CHARSET + list("ABCD*#")
@@ -168,7 +168,7 @@ SETTING_LISTS = {
     }
 
 # Retevis RT26 fingerprints
-RT26_UHF_fp = "PDK80" + "\xF3\x00\x00"   # RT26 UHF model
+RT26_UHF_fp = b"PDK80" + b"\xF3\x00\x00"   # RT26 UHF model
 
 MODELS = [RT26_UHF_fp, ]
 
@@ -190,11 +190,11 @@ def _get_radio_model(radio):
 def _rt26_enter_programming_mode(radio):
     serial = radio.pipe
 
-    magic = ["PROGRAMa", "PROGRAMb"]
+    magic = [b"PROGRAMa", b"PROGRAMb"]
     for i in range(0, 2):
 
         try:
-            LOG.debug("sending " + magic[i])
+            LOG.debug("sending " + magic[i].decode())
             serial.write(magic[i])
             ack = serial.read(1)
         except:
@@ -211,13 +211,13 @@ def _rt26_enter_programming_mode(radio):
 
     try:
         LOG.debug("sending " + util.hexprint("\x02"))
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(16)
     except:
         _rt26_exit_programming_mode(radio)
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("PDK80"):
+    if not ident.startswith(b"PDK80"):
         LOG.debug("Incorrect response, got this:\n\n" + util.hexprint(ident))
         _rt26_exit_programming_mode(radio)
         LOG.debug(util.hexprint(ident))
@@ -225,13 +225,13 @@ def _rt26_enter_programming_mode(radio):
 
     try:
         LOG.debug("sending " + util.hexprint("MDK8ECUMHS1X7BN/"))
-        serial.write("MXT8KCUMHS1X7BN/")
+        serial.write(b"MXT8KCUMHS1X7BN/")
         ack = serial.read(1)
     except:
         _rt26_exit_programming_mode(radio)
         raise errors.RadioError("Error communicating with radio")
 
-    if ack != "\xB2":
+    if ack != b"\xB2":
         LOG.debug("Incorrect response, got this:\n\n" + util.hexprint(ack))
         _rt26_exit_programming_mode(radio)
         raise errors.RadioError("Radio refused to enter programming mode")
@@ -256,7 +256,7 @@ def _rt26_enter_programming_mode(radio):
 def _rt26_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -264,8 +264,8 @@ def _rt26_exit_programming_mode(radio):
 def _rt26_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -294,7 +294,7 @@ def _rt26_read_block(radio, block_addr, block_size):
 def _rt26_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -314,7 +314,7 @@ def do_download(radio):
     LOG.debug("download")
     _rt26_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -334,7 +334,7 @@ def do_download(radio):
 
     _rt26_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -368,6 +368,7 @@ class RT26Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT26"
     BAUD_RATE = 4800
+    NEEDS_COMPAT_SERIAL = False
 
     _ranges = [
                (0x0000, 0x0190, 0x10),
