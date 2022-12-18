@@ -806,7 +806,7 @@ class Icom7100Radio(IcomCIVRadio):
 @directory.register
 class Icom746Radio(IcomCIVRadio):
     """Icom IC-746"""
-    MODEL = "746"
+    MODEL = "IC-746"
     BAUD_RATE = 9600
     _model = "\x56"
     _template = 102
