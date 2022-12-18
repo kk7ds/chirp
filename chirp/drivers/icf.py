@@ -28,7 +28,7 @@ from chirp import bitwise
 from chirp import chirp_common, errors, util, memmap
 from chirp import directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueBoolean, RadioSettings
+    RadioSettingValueBoolean, RadioSettingValueString, RadioSettings
 from chirp import util
 
 LOG = logging.getLogger(__name__)
@@ -305,8 +305,7 @@ def process_data_frame(radio, frame, _mmap):
         LOG.error("Bad checksum in address %04X frame: %02x "
                   "calculated, %02x sent!" % (saddr, vx, sumc))
         raise errors.InvalidDataError(
-            "Checksum error in download! "
-            "Try disabling High Speed Clone option in Settings.")
+            "Checksum error in download!")
     try:
         _mmap[saddr] = data
     except IndexError:
@@ -942,11 +941,37 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         no bank if None"""
         raise Exception("Not implemented")
 
+    def _make_call_list_setting_group(self, listname):
+        current = getattr(self, 'get_%s_list' % listname)()
+        nice_name = listname.split('_', 1)[0].upper()
+        group = RadioSettingGroup('%s_list' % listname,
+                                  '%s List' % nice_name)
+        for i, cs in enumerate(current):
+            group.append(RadioSetting('%03i' % i, '%i' % i,
+                                      RadioSettingValueString(0, 8, cs)))
+        return group
+
     def get_settings(self):
-        return make_speed_switch_setting(self)
+        if isinstance(self, chirp_common.IcomDstarSupport):
+            dstar = RadioSettingGroup('dstar', 'D-STAR')
+            dstar.append(self._make_call_list_setting_group('urcall'))
+            dstar.append(self._make_call_list_setting_group('repeater_call'))
+            dstar.append(self._make_call_list_setting_group('mycall'))
+            return RadioSettings(dstar)
+        return []
+
+    def _apply_call_list_setting(self, dstar, listname):
+        listgroup = dstar['%s_list' % listname]
+        calls = [str(listgroup[i].value)
+                 for i in sorted(listgroup.keys())]
+        getattr(self, 'set_%s_list' % listname)(calls)
 
     def set_settings(self, settings):
-        return honor_speed_switch_setting(self, settings)
+        for group in settings:
+            if group.get_name() == 'dstar':
+                self._apply_call_list_setting(group, 'mycall')
+                self._apply_call_list_setting(group, 'urcall')
+                self._apply_call_list_setting(group, 'repeater_call')
 
     def load_mmap(self, filename):
         if filename.lower().endswith('.icf'):
@@ -1022,26 +1047,6 @@ class IcomLiveRadio(chirp_common.LiveRadio):
                 return IcomBankModel(self)
         else:
             return None
-
-
-def make_speed_switch_setting(radio):
-    if not radio.__class__._can_hispeed:
-        return {}
-    drvopts = RadioSettingGroup("drvopts", "Driver Options")
-    top = RadioSettings(drvopts)
-    rs = RadioSetting("drv_clone_speed", "Use Hi-Speed Clone",
-                      RadioSettingValueBoolean(radio._can_hispeed))
-    drvopts.append(rs)
-    return top
-
-
-def honor_speed_switch_setting(radio, settings):
-    for element in settings:
-        if element.get_name() == "drvopts":
-            return honor_speed_switch_setting(radio, element)
-        if element.get_name() == "drv_clone_speed":
-            radio.__class__._can_hispeed = element.value.get_value()
-            return
 
 
 def warp_byte_size(inbytes, obw=8, ibw=8):
