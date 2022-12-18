@@ -311,6 +311,11 @@ class ChirpCloneDialog(wx.Dialog):
             self._vendor.Enable()
             self._model.Enable()
         self._port.Enable()
+        s = chirp_common.Status()
+        s.cur = 0
+        s.max = 1
+        s.msg = ''
+        self._status(s)
         self.FindWindowById(wx.ID_OK).Enable()
 
     def get_selected_rclass(self):
