@@ -35,6 +35,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
         self.SetSizer(sizer)
 
         self._group_control = wx.Treebook(self, style=wx.LB_LEFT)
+        self._group_control.GetTreeCtrl().SetMinSize((250, -1))
         sizer.Add(self._group_control, 1, wx.EXPAND)
 
         self._initialized = False
