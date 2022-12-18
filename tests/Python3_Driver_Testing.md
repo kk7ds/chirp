@@ -266,7 +266,7 @@
 | <a name="Retevis_RT76"></a> Retevis_RT76 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RT76P"></a> Retevis_RT76P | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.04% |
 | <a name="Retevis_RT85"></a> Retevis_RT85 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes | 0.22% |
-| <a name="Retevis_RT87"></a> Retevis_RT87 |  |  |  | 0.03% |
+| <a name="Retevis_RT87"></a> Retevis_RT87 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.03% |
 | <a name="Retevis_RT9000D_136-174"></a> Retevis_RT9000D_136-174 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="Retevis_RT9000D_220-260"></a> Retevis_RT9000D_220-260 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="Retevis_RT9000D_400-490"></a> Retevis_RT9000D_400-490 | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 72% (257/98) (89% of usage stats)
+**Tested:** 72% (258/97) (89% of usage stats)
 
-**Byte clean:** 81% (290/65)
+**Byte clean:** 81% (291/64)
 
 ## Meaning of this testing
 
