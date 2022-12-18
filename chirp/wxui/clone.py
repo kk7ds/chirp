@@ -179,6 +179,7 @@ class ChirpCloneDialog(wx.Dialog):
                      proportion=1, border=20,
                      flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
+        portbox = wx.BoxSizer(wx.HORIZONTAL)
         ports = platform.get_platform().list_serial_ports()
         last_port = CONF.get('last_port', 'state')
         if last_port and last_port not in ports:
@@ -188,7 +189,11 @@ class ChirpCloneDialog(wx.Dialog):
         self._port = wx.ComboBox(self, choices=ports, style=wx.CB_DROPDOWN)
         self._port.SetValue(last_port)
         self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
-        _add_grid(_('Port'), self._port)
+        portbox.Add(self._port, 0, wx.EXPAND | wx.RIGHT, border=10)
+        helpbtn = wx.Button(self, label=_('Help'))
+        portbox.Add(helpbtn, 0, wx.LEFT, border=5)
+        helpbtn.Bind(wx.EVT_BUTTON, self._port_assist)
+        _add_grid(_('Port'), portbox)
 
         self._vendor = wx.Choice(self, choices=['Icom', 'Yaesu'])
         _add_grid(_('Vendor'), self._vendor)
@@ -241,6 +246,42 @@ class ChirpCloneDialog(wx.Dialog):
 
         self.SetMinSize((400, 200))
         self.Fit()
+
+    def _port_assist(self, event):
+        r = wx.MessageBox(
+            _('Unplug your cable (if needed) and then click OK'),
+            _('USB Port Finder'),
+            style=wx.OK | wx.CANCEL | wx.OK_DEFAULT)
+        if r == wx.CANCEL:
+            return
+        before = platform.get_platform().list_serial_ports()
+        r = wx.MessageBox(
+            _('Plug in your cable and then click OK'),
+            _('USB Port Finder'),
+            style=wx.OK | wx.CANCEL | wx.OK_DEFAULT)
+        if r == wx.CANCEL:
+            return
+        after = platform.get_platform().list_serial_ports()
+        changed = set(after) - set(before)
+        found = None
+        if not changed:
+            wx.MessageBox(
+                _('Unable to determine port for your cable. '
+                  'Check your drivers and connections.'),
+                _('USB Port Finder'))
+            return
+        elif len(changed) == 1:
+            found = list(changed)[0]
+            wx.MessageBox(
+                _('Your cable appears to be on port %s') % found,
+                _('USB Port Finder'))
+        else:
+            wx.MessageBox(
+                _('More than one port found: %s') % ', '.join(changed),
+                _('USB Port Finder'))
+        self._port.Set(sorted(after))
+        if found:
+            self._port.SetValue(found)
 
     def _add_aliases(self, rclass):
         for alias in rclass.ALIASES:
