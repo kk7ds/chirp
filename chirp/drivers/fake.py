@@ -97,7 +97,22 @@ class FakeLiveRadioWithErrors(FakeLiveRadio):
             return super().set_memory(mem)
 
 
+class FakeCloneFail(chirp_common.CloneModeRadio):
+    VENDOR = 'CHIRP'
+    MODEL = 'Fake Clone Radio'
+    VARIANT = 'Errors'
+
+    def sync_in(self):
+        s = chirp_common.Status()
+        s.max = 100
+        s.cur = 10
+        s.msg = 'Gonna fail...'
+        self.status_fn(s)
+        raise errors.RadioError('This always fails')
+
+
 def register_fakes():
     directory.register(FakeLiveRadio)
     directory.register(FakeLiveSlowRadio)
     directory.register(FakeLiveRadioWithErrors)
+    directory.register(FakeCloneFail)
