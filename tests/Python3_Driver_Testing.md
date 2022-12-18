@@ -16,8 +16,8 @@
 | <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII |  |  |  | 0.04% |
 | <a name="AnyTone_778UV"></a> AnyTone_778UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.17% |
 | <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.23% |
-| <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R |  |  |  | 0.02% |
-| <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R |  |  |  | 0.02% |
+| <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
+| <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
 | <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.03% |
 | <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 72% (258/97) (89% of usage stats)
+**Tested:** 73% (260/95) (89% of usage stats)
 
-**Byte clean:** 81% (291/64)
+**Byte clean:** 82% (293/62)
 
 ## Meaning of this testing
 

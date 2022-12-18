@@ -252,17 +252,17 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
-valid_model = ['TERMN8R', 'OBLTR8R']
+valid_model = [b'TERMN8R', b'OBLTR8R']
 
 
 def _ident(radio):
     radio.pipe.timeout = 1
-    _echo_write(radio, "PROGRAM")
+    _echo_write(radio, b"PROGRAM")
     response = radio.pipe.read(3)
-    if response != "QX\x06":
+    if response != b"QX\x06":
         LOG.debug("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Radio did not respond. Check connection.")
-    _echo_write(radio, "\x02")
+    _echo_write(radio, b"\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
     if radio._file_ident not in response:
@@ -271,10 +271,10 @@ def _ident(radio):
 
 
 def _finish(radio):
-    endframe = "\x45\x4E\x44"
+    endframe = b"\x45\x4E\x44"
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
-    if result != "\x06":
+    if result != b"\x06":
         LOG.debug("Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
@@ -282,7 +282,7 @@ def _finish(radio):
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 256
 
 
@@ -290,23 +290,23 @@ def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
     if data:
         frame += data
-        frame += chr(_checksum(frame[1:]))
-        frame += "\x06"
+        frame += bytes([_checksum(frame[1:])])
+        frame += b"\x06"
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
     if data:
         result = radio.pipe.read(1)
-        if result != "\x06":
+        if result != b"\x06":
             LOG.debug("Ack was: %s" % repr(result))
             raise errors.RadioError(
                 "Radio did not accept block at %04x" % addr)
         return
     result = _read(radio, length + 6)
     LOG.debug("Got:\n%s" % util.hexprint(result))
-    header = result[0:4]
+    header = result[:4]
     data = result[4:-2]
-    ack = result[-1]
-    if ack != "\x06":
+    ack = result[-1:]
+    if ack != b"\x06":
         LOG.debug("Ack was: %s" % repr(ack))
         raise errors.RadioError("Radio NAK'd block at %04x" % addr)
     _cmd, _addr, _length = struct.unpack(">cHb", header)
@@ -316,9 +316,9 @@ def _send(radio, cmd, addr, length, data=None):
         LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
     cs = _checksum(result[1:-2])
-    if cs != ord(result[-2]):
+    if cs != result[-2]:
         LOG.debug("Calculated: %02x" % cs)
-        LOG.debug("Actual:     %02x" % ord(result[-2]))
+        LOG.debug("Actual:     %02x" % result[-2])
         raise errors.RadioError("Block at 0x%04x failed checksum" % addr)
     return data
 
@@ -328,10 +328,10 @@ def _download(radio):
 
     memobj = None
 
-    data = ""
+    data = b""
     for start, end in radio._ranges:
         for addr in range(start, end, 0x10):
-            block = _send(radio, 'R', addr, 0x10)
+            block = _send(radio, b'R', addr, 0x10)
             data += block
 
             status = chirp_common.Status()
@@ -342,7 +342,7 @@ def _download(radio):
 
     _finish(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
@@ -353,7 +353,7 @@ def _upload(radio):
             if addr < 0x0100:
                 continue
             block = radio._mmap[addr:addr + 0x10]
-            _send(radio, 'W', addr, len(block), block)
+            _send(radio, b'W', addr, len(block), block)
 
             status = chirp_common.Status()
             status.cur = addr
@@ -410,6 +410,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "TERMN-8R"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     _file_ident = b"TERMN8R"
 
     # May try to mirror the OEM behavior later
