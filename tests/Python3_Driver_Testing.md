@@ -226,7 +226,7 @@
 | <a name="Retevis_RB15"></a> Retevis_RB15 |  |  |  | 0.01% |
 | <a name="Retevis_RB17"></a> Retevis_RB17 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RB17A"></a> Retevis_RB17A | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
-| <a name="Retevis_RB17P"></a> Retevis_RB17P |  |  |  | 0.02% |
+| <a name="Retevis_RB17P"></a> Retevis_RB17P | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 | Yes | 0.02% |
 | <a name="Retevis_RB17V"></a> Retevis_RB17V | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.01% |
 | <a name="Retevis_RB18"></a> Retevis_RB18 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
 | <a name="Retevis_RB19"></a> Retevis_RB19 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.00% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 73% (261/94) (89% of usage stats)
+**Tested:** 73% (262/93) (89% of usage stats)
 
-**Byte clean:** 82% (293/62)
+**Byte clean:** 82% (294/61)
 
 ## Meaning of this testing
 
