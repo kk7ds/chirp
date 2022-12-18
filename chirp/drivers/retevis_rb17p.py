@@ -85,7 +85,7 @@ struct {
 
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 ALARMTYPE_LIST = ["Local & Remote", "Local"]
 BACKLIGHT_LIST = ["5 seconds", "10 seconds", "30 seconds", "Always"]
@@ -124,7 +124,7 @@ def _enter_programming_mode(radio):
     serial = radio.pipe
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         time.sleep(0.01)
         serial.write(radio._magic)
         ack = serial.read(1)
@@ -137,7 +137,7 @@ def _enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("M" + "\x02")
+        serial.write(b"M" + b"\x02")
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -159,8 +159,8 @@ def _enter_programming_mode(radio):
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -179,7 +179,7 @@ def _read_block(radio, block_addr, block_size):
 def _write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -198,7 +198,7 @@ def do_download(radio):
     LOG.debug("download")
     _enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -216,7 +216,7 @@ def do_download(radio):
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -240,14 +240,15 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RB17P Base"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x40
 
     VALID_BANDS = [(400000000, 470000000)]
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PGA588"
-    _fingerprint = "\xFF" * 8
+    _magic = b"PGA588"
+    _fingerprint = b"\xFF" * 8
     _upper = 128
     _gmrs = True
     _ranges = [(0x0000, 0x1800, 0x40),
