@@ -273,7 +273,8 @@ class ChirpCloneDialog(wx.Dialog):
         elif len(changed) == 1:
             found = list(changed)[0]
             wx.MessageBox(
-                _('Your cable appears to be on port %s') % found,
+                '%s\n%s' % (_('Your cable appears to be on port:'),
+                            found),
                 _('USB Port Finder'))
         else:
             wx.MessageBox(
