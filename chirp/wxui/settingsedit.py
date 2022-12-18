@@ -67,8 +67,9 @@ class ChirpSettingsEdit(common.ChirpEditor):
     def _add_group(self, group, parent=None):
         propgrid = common.ChirpSettingGrid(group, self._group_control)
         self.Bind(common.EVT_EDITOR_CHANGED, self._changed, propgrid)
-        LOG.debug('Adding page for %s' % group.get_shortname())
-        if parent:
+        LOG.debug('Adding page for %s (parent=%s)' % (group.get_shortname(),
+                                                      parent))
+        if parent is not None:
             self._group_control.InsertSubPage(parent, propgrid,
                                               group.get_shortname())
         else:
