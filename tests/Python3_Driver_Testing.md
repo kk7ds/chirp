@@ -75,7 +75,6 @@
 | <a name="Feidaxin_FD-460UH"></a> Feidaxin_FD-460UH |  |  |  | 0.01% |
 | <a name="Generic_CSV"></a> Generic_CSV | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 |  |  |
 | <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.02% |
-| <a name="Icom_746"></a> Icom_746 |  |  | Yes | 0.02% |
 | <a name="Icom_IC-208H"></a> Icom_IC-208H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.05% |
 | <a name="Icom_IC-2100H"></a> Icom_IC-2100H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Icom_IC-2200H"></a> Icom_IC-2200H | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.05% |
@@ -87,6 +86,7 @@
 | <a name="Icom_IC-7100"></a> Icom_IC-7100 |  |  | Yes | 0.06% |
 | <a name="Icom_IC-7200"></a> Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |  |
 | <a name="Icom_IC-7300"></a> Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.03% |
+| <a name="Icom_IC-746"></a> Icom_IC-746 |  |  | Yes |  |
 | <a name="Icom_IC-7610"></a> Icom_IC-7610 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.00% |
 | <a name="Icom_IC-910"></a> Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes | 0.00% |
 | <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD | [@kk7ds](https://github.com/kk7ds) | 23-Nov-2022 | Yes | 0.03% |
