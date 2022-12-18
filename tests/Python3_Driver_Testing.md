@@ -251,7 +251,7 @@
 | <a name="Retevis_RT22FRS"></a> Retevis_RT22FRS | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="Retevis_RT22S"></a> Retevis_RT22S | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
 | <a name="Retevis_RT23"></a> Retevis_RT23 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.04% |
-| <a name="Retevis_RT26"></a> Retevis_RT26 |  |  |  | 0.03% |
+| <a name="Retevis_RT26"></a> Retevis_RT26 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.03% |
 | <a name="Retevis_RT29_UHF"></a> Retevis_RT29_UHF | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Retevis_RT29_VHF"></a> Retevis_RT29_VHF | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RT40B"></a> Retevis_RT40B | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 72% (256/99) (89% of usage stats)
+**Tested:** 72% (257/98) (89% of usage stats)
 
-**Byte clean:** 81% (289/66)
+**Byte clean:** 81% (290/65)
 
 ## Meaning of this testing
 
