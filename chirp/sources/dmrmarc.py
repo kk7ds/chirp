@@ -18,6 +18,7 @@ import logging
 import requests
 import tempfile
 from chirp import chirp_common, errors
+from chirp.sources import base
 from chirp.settings import RadioSetting, RadioSettingGroup, \
      RadioSettingValueList
 
@@ -30,47 +31,37 @@ def list_filter(haystack, attr, needles):
     return [x for x in haystack if x[attr] in needles]
 
 
-class DMRMARCRadio(chirp_common.NetworkSourceRadio):
+class DMRMARCRadio(base.NetworkResultRadio):
     """DMR-MARC data source"""
     VENDOR = "DMR-MARC"
     MODEL = "Repeater database"
 
-    def __init__(self, *args, **kwargs):
-        chirp_common.NetworkSourceRadio.__init__(self, *args, **kwargs)
-        self._repeaters = None
+    def get_label(self):
+        return 'DMR-MARC'
 
-    def set_params(self, city, state, country):
-        """Set the parameters to be used for a query"""
-        self._city = city
-        self._state = state
-        self._country = country
-
-    def do_fetch(self):
-        r = requests.get('https://radioid.net/api/dmr/repeater/',
-                         params={'city': self._city,
-                                 'state': self._state,
-                                 'country': self._country})
+    def do_fetch(self, status, params):
+        status.send_status('Querying', 10)
+        try:
+            r = requests.get('https://radioid.net/api/dmr/repeater/',
+                             headers=base.HEADERS,
+                             params={'city': params['city'],
+                                     'state': params['state'],
+                                     'country': params['country']})
+            r.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            LOG.error('Failed to query DMR-MARC: %s' % e)
+            status.send_fail('Unable to query DMR-MARC')
+            return
+        status.send_status('Parsing', 20)
         self._repeaters = r.json()['results']
-
-    def get_features(self):
-        if not self._repeaters:
-            self.do_fetch()
-
-        rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (0, len(self._repeaters)-1)
-        rf.has_bank = False
-        rf.has_comment = True
-        rf.has_ctone = False
-        rf.valid_tmodes = [""]
-        return rf
+        self._memories = [self.make_memory(i)
+                          for i in range(0, len(self._repeaters))]
+        status.send_end()
 
     def get_raw_memory(self, number):
         return repr(self._repeaters[number])
 
-    def get_memory(self, number):
-        if not self._repeaters:
-            self.do_fetch()
-
+    def make_memory(self, number):
         repeater = self._repeaters[number]
 
         mem = chirp_common.Memory()

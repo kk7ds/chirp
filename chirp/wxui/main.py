@@ -1232,8 +1232,9 @@ class ChirpMain(wx.Frame):
                 self, title=_('Query %s') % 'DMR-MARC')
         r = d.ShowModal()
         if r == wx.ID_OK:
-            LOG.debug('Result file: %s' % d.result_file)
-            self.open_file(d.result_file)
+            editorset = ChirpEditorSet(d.result_radio,
+                                       None, self._editors)
+            self.add_editorset(editorset)
 
 
 def display_update_notice(version):
