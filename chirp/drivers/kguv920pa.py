@@ -24,6 +24,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettingValueMap, RadioSettingValueFloat, RadioSettings, \
     InvalidValueError
+import struct
 
 LOG = logging.getLogger(__name__)
 
@@ -333,30 +334,28 @@ _MEM_FORMAT = """
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 16
 
 
 def _str_decode(in_str):
     out_str = ''
     for c in in_str:
-        if isinstance(c, str):
-            c = ord(c)
         if c < len(CHARSET):
             out_str += CHARSET[c]
     return out_str.rstrip()
 
 
 def _str_encode(in_str):
-    out_str = ''
+    out_str = []
     for c in in_str:
         try:
-            out_str += chr(CHARSET.index(c))
+            out_str.append(CHARSET.index(c))
         except ValueError:
             pass
     while len(out_str) < 8:
-        out_str += chr(CHARSET.index(' '))
-    return out_str
+        out_str.append(CHARSET.index(' '))
+    return bytes(out_str)
 
 
 def _freq_decode(in_freq, bytes=4):
@@ -528,21 +527,18 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=5),
                     chirp_common.PowerLevel("M", watts=20),
                     chirp_common.PowerLevel("H", watts=50)]
-    _mmap = ""
+    NEEDS_COMPAT_SERIAL = False
 
     def _write_record(self, cmd, payload=None):
-        # build the packet
-        _packet = '\x7e' + chr(cmd) + '\xff'
         _length = 0
         if payload:
             _length = len(payload)
-        # update the length field
-        _packet += chr(_length)
+        _packet = struct.pack('BBBB', 0x7E, cmd, 0xFF, _length)
         if payload:
             # add the chars to the packet
             _packet += payload
         # calculate and add the checksum to the packet
-        _packet += chr(_checksum(_packet[1:]))
+        _packet += bytes([_checksum(_packet[1:])])
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
@@ -551,17 +547,18 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         _header = self.pipe.read(4)
         if len(_header) != 4:
             raise errors.RadioError('Radio did not respond')
-        _length = ord(_header[3])
+        _length = _header[3]
         _packet = self.pipe.read(_length)
         _cs = _checksum(_header[1:])
         _cs += _checksum(_packet)
         _cs %= 16
         try:
-            _rcs = ord(self.pipe.read(1))
-        except TypeError:
+            _rcs = self.pipe.read(1)[0]
+        except (TypeError, IndexError):
             raise errors.RadioError('Radio did not respond')
-        LOG.debug("_cs =%x", _cs)
-        LOG.debug("_rcs=%x", _rcs)
+        if _rcs != _cs:
+            LOG.error("_cs =%x", _cs)
+            LOG.error("_rcs=%x", _rcs)
         return (_rcs != _cs, _packet)
 
     @classmethod
@@ -582,7 +579,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             raise Exception("Checksum error")
         if len(_resp) == 0:
             raise Exception("Radio not responding")
-        reported_model = _str_decode(''.join(_resp[0:10]))
+        reported_model = _str_decode(_resp[0:10])
         if reported_model != self._model:
             raise Exception("Unable to identify radio (Got %s, Expected)" %
                             reported_model, self._model)
@@ -621,9 +618,9 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
 
     def _do_download(self, start, end, blocksize):
         # allocate & fill memory
-        image = ""
+        image = b""
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256) + chr(blocksize)
+            req = struct.pack('>HB', i, blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
@@ -638,7 +635,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                 status.msg = "Cloning from radio"
                 self.status_fn(status)
         self._finish()
-        return memmap.MemoryMap(''.join(image))
+        return memmap.MemoryMapBytes(image)
 
     def _upload(self):
         """Talk to a wouxun KG-UV920P-A and do a upload"""
@@ -654,14 +651,17 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256)
+            req = struct.pack('>H', i)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
             LOG.debug(util.hexprint(req + chunk))
             cserr, ack = self._read_record()
             LOG.debug(util.hexprint(ack))
-            j = ord(ack[0]) * 256 + ord(ack[1])
+            j = struct.unpack('>H', ack[0:2])[0]
             if cserr or j != ptr:
+                print(cserr)
+                print(j)
+                print(ptr)
                 raise Exception("Radio did not ack block %i" % ptr)
             ptr += blocksize
             if self.status_fn:
@@ -824,7 +824,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             _mem.named = True
             name_encoded = _str_encode(mem.name)
             for i in range(0, 8):
-                _nam.name[i] = ord(name_encoded[i])
+                _nam.name[i] = name_encoded[i]
         else:
             _mem.named = False
 
@@ -1312,12 +1312,12 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
                     if name == 'ponmsg.left':
                         value = _str_encode(element[0].get_value())
                         for i in range(0, 8):
-                            self._memobj.ponmsg.left[i] = ord(value[i])
+                            self._memobj.ponmsg.left[i] = value[i]
                         continue
                     elif name == 'ponmsg.right':
                         value = _str_encode(element[0].get_value())
                         for i in range(0, 8):
-                            self._memobj.ponmsg.right[i] = ord(value[i])
+                            self._memobj.ponmsg.right[i] = value[i]
                         continue
 
                 #
