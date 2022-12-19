@@ -309,7 +309,7 @@
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  | 0.24% |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus |  |  |  | 0.08% |
 | <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  | 0.05% |
-| <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A |  |  |  | 0.04% |
+| <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes | 0.04% |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  | 0.39% |
 | <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.35% |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M | [@f3sty](https://github.com/f3sty) | 05-Dec-2022 | Yes | 0.02% |
@@ -362,9 +362,9 @@
 
 **Drivers:** 357
 
-**Tested:** 74% (266/91) (89% of usage stats)
+**Tested:** 74% (267/90) (89% of usage stats)
 
-**Byte clean:** 83% (298/59)
+**Byte clean:** 83% (299/58)
 
 ## Meaning of this testing
 
