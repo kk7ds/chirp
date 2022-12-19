@@ -186,8 +186,7 @@ def _import_duplex(dst_radio, srcrf, mem):
         for lo, hi, limit in ranges:
             if lo < mem.freq <= hi:
                 if abs(mem.offset) > limit:
-                    raise DestNotCompatible("Unable to create import memory: "
-                                            "offset is abnormally large.")
+                    raise DestNotCompatible("offset is abnormally large.")
 
 
 def import_mem(dst_radio, src_features, src_mem, overrides={}):
@@ -225,8 +224,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
     msgs = dst_radio.validate_memory(dst_mem)
     errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
     if errs:
-        raise DestNotCompatible("Unable to create import memory: %s" %
-                                ", ".join(errs))
+        raise DestNotCompatible(", ".join(errs))
 
     return dst_mem
 
