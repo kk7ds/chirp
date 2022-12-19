@@ -223,7 +223,7 @@
 | <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.06% |
 | <a name="Retevis_RA685"></a> Retevis_RA685 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes | 0.25% |
 | <a name="Retevis_RA85"></a> Retevis_RA85 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes | 0.05% |
-| <a name="Retevis_RB15"></a> Retevis_RB15 |  |  |  | 0.01% |
+| <a name="Retevis_RB15"></a> Retevis_RB15 | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 | Yes | 0.01% |
 | <a name="Retevis_RB17"></a> Retevis_RB17 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RB17A"></a> Retevis_RB17A | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
 | <a name="Retevis_RB17P"></a> Retevis_RB17P | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 | Yes | 0.02% |
@@ -236,7 +236,7 @@
 | <a name="Retevis_RB27"></a> Retevis_RB27 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.09% |
 | <a name="Retevis_RB27B"></a> Retevis_RB27B | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RB27V"></a> Retevis_RB27V | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
-| <a name="Retevis_RB615"></a> Retevis_RB615 |  |  |  | 0.01% |
+| <a name="Retevis_RB615"></a> Retevis_RB615 | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 | Yes | 0.01% |
 | <a name="Retevis_RB617"></a> Retevis_RB617 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RB618"></a> Retevis_RB618 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.16% |
 | <a name="Retevis_RB619"></a> Retevis_RB619 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.01% |
@@ -360,9 +360,9 @@
 
 **Drivers:** 355
 
-**Tested:** 73% (262/93) (89% of usage stats)
+**Tested:** 74% (264/91) (89% of usage stats)
 
-**Byte clean:** 82% (294/61)
+**Byte clean:** 83% (296/59)
 
 ## Meaning of this testing
 
