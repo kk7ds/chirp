@@ -104,6 +104,9 @@ def check_for_updates(session, callback):
 
 @with_session
 def report_model(session, rclass, op):
+    if CONF.get_bool('no_report', 'global', False):
+        return
+
     session.post('%s/usage' % BASE,
                  json={'vendor': rclass.VENDOR,
                        'model': rclass.MODEL,
