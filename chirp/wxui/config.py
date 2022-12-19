@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import base64
+import binascii
+
 from chirp import platform
 try:
     from ConfigParser import ConfigParser
@@ -73,8 +76,29 @@ class ChirpConfigProxy:
         return self._config.get(key, section or self._section,
                                 raw=raw)
 
+    def get_password(self, key, section):
+        encoded = self.get(key, section)
+        if encoded:
+            try:
+                return base64.b64decode(encoded.encode())
+            except binascii.Error:
+                # Likely not stored encoded, return as-is
+                return encoded
+        else:
+            return encoded
+
     def set(self, key, value, section=None):
         return self._config.set(key, value, section or self._section)
+
+    def set_password(self, key, value, section):
+        """Store a password slightly obfuscated.
+
+        THIS IS NOT SECURE. It just avoids storing the password
+        in complete cleartext. It is trivial to read them in this
+        format.
+        """
+        value = base64.b64encode(value.encode()).decode()
+        self.set(key, value, section)
 
     def get_int(self, key, section=None):
         try:
