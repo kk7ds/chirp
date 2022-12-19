@@ -1222,10 +1222,10 @@ class ChirpMain(wx.Frame):
         d = query_sources.RepeaterBookQueryDialog(
             self, title=_('Query %s') % 'Repeaterbook')
         r = d.ShowModal()
-        from chirp.drivers import repeaterbook
         if r == wx.ID_OK:
-            LOG.debug('Result file: %s' % d.result_file)
-            self.open_file(d.result_file, rclass=repeaterbook.RBRadio)
+            editorset = ChirpEditorSet(d.result_radio,
+                                       None, self._editors)
+            self.add_editorset(editorset)
 
     def _menu_query_dm(self, event):
         d = query_sources.DMRMARCQueryDialog(

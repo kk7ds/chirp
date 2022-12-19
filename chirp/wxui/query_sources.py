@@ -29,6 +29,7 @@ from chirp import radioreference
 from chirp.drivers import generic_csv
 from chirp.sources import base
 from chirp.sources import dmrmarc
+from chirp.sources import repeaterbook
 from chirp.wxui import config
 from chirp.wxui import fips
 
@@ -135,39 +136,6 @@ class QuerySourceDialog(wx.Dialog):
             self.statusmsg.SetLabel(event.status)
         if event.percent == 100:
             self.FindWindowById(wx.ID_OK).Enable()
-
-
-class RepeaterBookQueryThread(QueryThread):
-    def do_query(self):
-        self.send_status(_('Querying'), 10)
-
-        params = self.query_dialog.get_rb_params()
-        r = requests.get('http://chirp.danplanet.com/%s' % params.pop('_url'),
-                         params=params,
-                         headers=HEADERS,
-                         stream=True)
-        if r.status_code != 200:
-            self.send_fail(_('Got error code %i from server') % r.status_code)
-            return
-
-        self.send_status(_('Downloading'), 20)
-
-        size = 0
-        chunks = 0
-        LOG.debug('Writing to %s' % self.query_dialog.result_file)
-        with open(self.query_dialog.result_file, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                size += len(chunk)
-                chunks += 1
-                self.send_status(_('Read %iKiB') % (size // 1024),
-                                 20 + max(chunks * 10, 80))
-                f.write(chunk)
-
-        if size <= 105:
-            self.send_fail(_('No results!'))
-            return
-
-        self.send_end()
 
 
 class RRCALOGINQueryThread(QueryThread):
@@ -371,9 +339,10 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         CONF.set('band', str(self.RB_BANDS[event.GetString()]), 'repeaterbook')
 
     def do_query(self):
-        RepeaterBookQueryThread(self).start()
+        self.result_radio = repeaterbook.RepeaterBook()
+        super().do_query()
 
-    def get_rb_params(self):
+    def get_params(self):
         page = self.tabs.GetSelection()
         if page == 0:
             # Political
