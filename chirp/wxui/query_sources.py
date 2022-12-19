@@ -15,16 +15,11 @@
 
 import logging
 import queue
-import requests
-import sys
 import tempfile
 import threading
 
 import wx
 
-from chirp import CHIRP_VERSION
-from chirp import chirp_common
-from chirp import errors
 from chirp import radioreference
 from chirp.drivers import generic_csv
 from chirp.sources import base
@@ -563,7 +558,7 @@ class RRUSQueryDialog(QuerySourceDialog):  # NOT IMPLEMENTED YET
         CONF.set('city', self._city.GetValue(), 'dmrmarc')
         CONF.set('state', self._state.GetValue(), 'dmrmarc')
         CONF.set('country', self._country.GetValue(), 'dmrmarc')
-        DMRMARCQueryThread(self).start()
+        #DMRMARCQueryThread(self).start()
 
     def get_dm_params(self):
         return {'city': CONF.get('city', 'dmrmarc'),
