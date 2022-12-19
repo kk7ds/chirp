@@ -669,6 +669,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mem.offset = offset
         return True
 
+    def _resolve_offset(self, mem):
+        self._set_memory_defaults(mem, 'duplex')
+        if mem.duplex == '':
+            duplex = self._col_def_by_name('duplex').get_by_prompt(
+                self, mem, _('Choose duplex'))
+            if duplex is None:
+                return False
+            mem.duplex = duplex
+        return True
+
     @common.error_proof()
     def _memory_edited(self, event):
         """
@@ -755,6 +765,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # TX frequency of 600kHz is likely to fail on most radios.
         if col_def.name == 'duplex' and val != '':
             if not self._resolve_duplex(mem):
+                event.Veto()
+                return
+
+        if col_def.name == 'offset' and mem.duplex in ('', 'off'):
+            if not self._resolve_offset(mem):
                 event.Veto()
                 return
 
