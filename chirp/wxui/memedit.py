@@ -28,6 +28,7 @@ from chirp import chirp_common
 from chirp import bandplan
 from chirp.drivers import generic_csv
 from chirp import errors
+from chirp import import_logic
 from chirp import settings
 from chirp.wxui import config
 from chirp.wxui import common
@@ -878,6 +879,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         with developer.MemoryDialog((mem_a, mem_b), self) as d:
             d.ShowModal()
 
+    @common.error_proof()
     def cb_copy(self, cut=False):
         rows = self._grid.GetSelectedRows()
         offset = self._features.memory_bounds[0]
@@ -888,8 +890,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             # paste across models
             mem.extra = []
             mems.append(mem)
+        payload = {'mems': mems,
+                   'features': self._radio.get_features()}
         data = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
-        data.SetData(pickle.dumps(mems))
+        data.SetData(pickle.dumps(payload))
         for mem in mems:
             if cut:
                 self._radio.erase_memory(mem.number)
@@ -901,7 +905,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         return data
 
-    def _cb_paste_memories(self, mems):
+    def _cb_paste_memories(self, payload):
+        mems = payload['mems']
+        srcrf = payload['features']
         try:
             row = self._grid.GetSelectedRows()[0]
         except IndexError:
@@ -934,36 +940,43 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if resp == wx.ID_NO:
                 return
 
-        errors = []
+        errormsgs = []
         modified = False
         for mem in mems:
             mem.number = self.row2mem(row)
             row += 1
             try:
+                mem = import_logic.import_mem(self._radio, srcrf, mem)
                 if mem.empty:
                     self._radio.erase_memory(mem.number)
                 else:
                     self._radio.set_memory(mem)
                 self.refresh_memory(mem.number, mem)
                 modified = True
+            except (import_logic.DestNotCompatible,
+                    errors.RadioError) as e:
+                errormsgs.append((mem, e))
             except Exception as e:
-                errors.append((mem, e))
+                LOG.exception('Failed to paste: %s' % e)
+                errormsgs.append((mem, e))
 
         if modified:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
-        if errors:
+        if errormsgs:
             d = wx.MessageDialog(
                     self,
                     _('Some memories are incompatible with this radio'))
-            msg = '\n'.join('#%i: %s' % (mem.number, e) for mem, e in errors)
+            msg = '\n'.join('#%i: %s' % (mem.number, e)
+                            for mem, e in errormsgs)
             d.SetExtendedMessage(msg)
             d.ShowModal()
 
+    @common.error_proof()
     def cb_paste(self, data):
         if data.GetFormat() == common.CHIRP_DATA_MEMORY:
-            mems = pickle.loads(data.GetData().tobytes())
-            self._cb_paste_memories(mems)
+            payload = pickle.loads(data.GetData().tobytes())
+            self._cb_paste_memories(payload)
         elif data.GetFormat() == wx.DF_UNICODETEXT:
             LOG.debug('FIXME: handle pasted text: %r' % data.GetText())
         else:
