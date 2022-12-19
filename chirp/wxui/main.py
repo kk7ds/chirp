@@ -1218,23 +1218,19 @@ class ChirpMain(wx.Frame):
             LOG.debug('Result file: %s' % d.result_file)
             self.open_file(d.result_file)
 
-    def _menu_query_rb(self, event):
-        d = query_sources.RepeaterBookQueryDialog(
-            self, title=_('Query %s') % 'Repeaterbook')
+    def _do_network_query(self, query_cls):
+        d = query_cls(self, title=_('Query %s') % query_cls.NAME)
         r = d.ShowModal()
         if r == wx.ID_OK:
             editorset = ChirpEditorSet(d.result_radio,
                                        None, self._editors)
             self.add_editorset(editorset)
 
+    def _menu_query_rb(self, event):
+        self._do_network_query(query_sources.RepeaterBookQueryDialog)
+
     def _menu_query_dm(self, event):
-        d = query_sources.DMRMARCQueryDialog(
-                self, title=_('Query %s') % 'DMR-MARC')
-        r = d.ShowModal()
-        if r == wx.ID_OK:
-            editorset = ChirpEditorSet(d.result_radio,
-                                       None, self._editors)
-            self.add_editorset(editorset)
+        self._do_network_query(query_sources.DMRMARCQueryDialog)
 
 
 def display_update_notice(version):
