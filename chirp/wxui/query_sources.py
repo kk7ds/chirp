@@ -23,35 +23,34 @@ import threading
 import wx
 
 from chirp import CHIRP_VERSION
+from chirp import chirp_common
 from chirp import dmrmarc
+from chirp import errors
 from chirp import radioreference
 from chirp.drivers import generic_csv
+from chirp.sources import base
 from chirp.wxui import config
 from chirp.wxui import fips
 
 CONF = config.get()
 LOG = logging.getLogger(__name__)
 QueryThreadEvent, EVT_QUERY_THREAD = wx.lib.newevent.NewCommandEvent()
-HEADERS = {
-    'User-Agent': 'chirp/%s Python %i.%i.%i %s' % (
-        CHIRP_VERSION,
-        sys.version_info.major, sys.version_info.minor, sys.version_info.micro,
-        sys.platform),
-}
 
 
-class QueryThread(threading.Thread):
+class QueryThread(threading.Thread, base.QueryStatus):
     END_SENTINEL = object()
 
     def __init__(self, *a, **k):
         self.query_dialog = a[0]
-        super(QueryThread, self).__init__(*a[1:], **k)
+        self.radio = a[1]
+        super(QueryThread, self).__init__(*a[2:], **k)
         self.status_queue = queue.Queue()
 
     def run(self):
         try:
-            self.do_query()
+            self.radio.do_fetch(self, self.query_dialog.get_params())
         except Exception as e:
+            LOG.exception('Failed to execute query: %s' % e)
             self.send_fail('Failed: %s' % str(e))
 
     def send_status(self, status, percent):
@@ -96,6 +95,7 @@ class QuerySourceDialog(wx.Dialog):
         self.result_file = tempfile.NamedTemporaryFile(
             prefix='%s-' % self.NAME,
             suffix='.csv').name
+        self.result_radio = None
 
     def _button(self, event):
         id = event.GetEventObject().GetId()
@@ -111,6 +111,10 @@ class QuerySourceDialog(wx.Dialog):
         pass
 
     def do_query(self):
+        LOG.info('Starting QueryThread for %s' % self.result_radio)
+        QueryThread(self, self.result_radio).start()
+
+    def get_params(self):
         pass
 
     def status(self, status, percent):
