@@ -1,9 +1,10 @@
 import tempfile
 import unittest
+from unittest import mock
 import requests
 
 from chirp import chirp_common
-from chirp.drivers import repeaterbook
+from chirp.sources import repeaterbook
 
 
 class TestRepeaterBook(unittest.TestCase):
@@ -19,16 +20,15 @@ class TestRepeaterBook(unittest.TestCase):
         return fn, radio
 
     def test_political(self):
-        query = "http://www.repeaterbook.com/repeaters/downloads/chirp.php" + \
-            "?func=default&state_id=%s&band=%s&freq=%%&band6=%%&loc=%%" + \
-            "&county_id=%s&status_id=%%&features=%%&coverage=%%&use=%%"
-        query = query % ('41', '%%', '005')
-        self._fetch_and_load(query)
+        r = repeaterbook.RepeaterBook()
+        r.do_fetch(mock.MagicMock(), {
+            '_url': 'query/rb/1.0/chirp',
+            'func': 'default', 'state_id': '41', 'band': '%%',
+        })
 
     def test_proximity(self):
-        loc = '97124'
-        band = '%%'
-        dist = '20'
-        query = "https://www.repeaterbook.com/repeaters/downloads/CHIRP/" \
-                "app_direct.php?loc=%s&band=%s&dist=%s" % (loc, band, dist)
-        self._fetch_and_load(query)
+        r = repeaterbook.RepeaterBook()
+        r.do_fetch(mock.MagicMock(), {
+            '_url': 'query/rb/1.0/app_direct',
+            'loc': '97124', 'band': '%%', 'dist': '20',
+        })
