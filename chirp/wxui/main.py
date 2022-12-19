@@ -39,6 +39,7 @@ from chirp import directory
 from chirp import errors
 from chirp import logger
 from chirp import platform as chirp_platform
+from chirp.sources import base
 from chirp.wxui import config
 from chirp.wxui import bankedit
 from chirp.wxui import common
@@ -70,6 +71,8 @@ class ChirpEditorSet(wx.Panel):
 
     @property
     def tab_name(self):
+        if isinstance(self._radio, base.NetworkResultRadio):
+            return self._radio.get_label()
         return '%s.%s' % (self.default_filename,
                           self._radio.FILE_EXTENSION)
 
@@ -173,6 +176,8 @@ class ChirpEditorSet(wx.Panel):
 
     @property
     def modified(self):
+        if isinstance(self._radio, base.NetworkResultRadio):
+            return False
         return self._modified
 
     @property
@@ -759,12 +764,14 @@ class ChirpMain(wx.Frame):
         CSVRadio = directory.get_radio('Generic_CSV')
         if eset is not None:
             is_live = isinstance(eset.radio, chirp_common.LiveRadio)
+            is_network = isinstance(eset.radio,
+                                    base.NetworkResultRadio)
             can_close = True
-            can_save = eset.modified and not is_live
-            can_saveas = not is_live
+            can_save = eset.modified and not is_live and not is_network
+            can_saveas = not is_live and not is_network
             can_upload = (not isinstance(eset.radio, CSVRadio) and
                           not isinstance(eset.radio, common.LiveAdapter) and
-                          not is_live)
+                          not is_live and not is_network)
             can_goto = isinstance(eset.current_editor, memedit.ChirpMemEdit)
 
         items = [
