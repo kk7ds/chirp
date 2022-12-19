@@ -6588,6 +6588,21 @@ FIPS_COUNTIES = {
 }
 
 
+def fips_to_state(fips_code):
+    if isinstance(fips_code, str) and fips_code.isdigit():
+        fips_code = int(fips_code)
+    for state, code in FIPS_STATES.items():
+        if code == fips_code:
+            return state
+    raise KeyError('No state found for fips %r' % fips_code)
+
+
+def state_name_to_abbrev(state):
+    fipscode = FIPS_STATES[state]
+    firstcounty = sorted(FIPS_COUNTIES[fipscode].keys())[1]
+    return firstcounty.rsplit(',')[-1].strip()
+
+
 if __name__ == "__main__":
     from sys import argv
     from pprint import PrettyPrinter
