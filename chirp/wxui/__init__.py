@@ -41,7 +41,7 @@ def chirpmain():
     from chirp.wxui import main
     from chirp.wxui import report
 
-    actions = ['upload', 'download', 'query_rr',
+    actions = ['upload', 'download', 'query_rr', 'query_mg',
                'query_rb', 'query_dm', 'new']
 
     parser = argparse.ArgumentParser()
