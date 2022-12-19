@@ -24,11 +24,11 @@ import wx
 
 from chirp import CHIRP_VERSION
 from chirp import chirp_common
-from chirp import dmrmarc
 from chirp import errors
 from chirp import radioreference
 from chirp.drivers import generic_csv
 from chirp.sources import base
+from chirp.sources import dmrmarc
 from chirp.wxui import config
 from chirp.wxui import fips
 
@@ -166,29 +166,6 @@ class RepeaterBookQueryThread(QueryThread):
         if size <= 105:
             self.send_fail(_('No results!'))
             return
-
-        self.send_end()
-
-
-class DMRMARCQueryThread(QueryThread):
-    def do_query(self):
-        self.send_status(_('Querying'), 10)
-
-        r = dmrmarc.DMRMARCRadio(None)
-        r.set_params(**self.query_dialog.get_dm_params())
-        r.do_fetch()
-        f = r.get_features()
-        if f.memory_bounds[1] == 0:
-            self.send_fail(_('No results!'))
-            return
-        self.send_status(_('Parsing'), 20)
-
-        csv = generic_csv.CSVRadio(None)
-        for i in range(0, f.memory_bounds[1] + 1):
-            m = r.get_memory(i)
-            csv.set_memory(m)
-
-        csv.save(self.query_dialog.result_file)
 
         self.send_end()
 
@@ -460,9 +437,10 @@ class DMRMARCQueryDialog(QuerySourceDialog):
         CONF.set('city', self._city.GetValue(), 'dmrmarc')
         CONF.set('state', self._state.GetValue(), 'dmrmarc')
         CONF.set('country', self._country.GetValue(), 'dmrmarc')
-        DMRMARCQueryThread(self).start()
+        self.result_radio = dmrmarc.DMRMARCRadio()
+        super().do_query()
 
-    def get_dm_params(self):
+    def get_params(self):
         return {'city': CONF.get('city', 'dmrmarc'),
                 'state': CONF.get('state', 'dmrmarc'),
                 'country': CONF.get('country', 'dmrmarc')}
