@@ -76,7 +76,7 @@ struct {
 } settings;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 RB15_DTCS = sorted(chirp_common.DTCS_CODES + [645])
 
@@ -124,7 +124,7 @@ PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 256
 
 
@@ -193,7 +193,7 @@ def _rb15_enter_programming_mode(radio):
 def _rb15_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("21" + "\x05\xEE" + "V")
+        serial.write(b"21" + b"\x05\xEE" + b"V")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -201,13 +201,13 @@ def _rb15_exit_programming_mode(radio):
 def _rb15_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">BH", ord('R'), block_addr)
+    cmd = struct.pack(">BH", ord(b'R'), block_addr)
 
-    ccs = _checksum(cmd)
+    ccs = bytes([_checksum(cmd)])
 
-    expectedresponse = "R" + cmd[1:]
+    expectedresponse = b"R" + cmd[1:]
 
-    cmd = cmd + chr(ccs)
+    cmd = cmd + ccs
 
     LOG.debug("Reading block %04x..." % (block_addr))
 
@@ -215,14 +215,14 @@ def _rb15_read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(3 + block_size + 1)
 
-        cs = _checksum(response[:-1])
+        cs = bytes([_checksum(response[:-1])])
 
         if response[:3] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
 
         chunk = response[3:]
 
-        if ord(chunk[-1]) != cs:
+        if chunk[-1:] != cs:
             raise Exception("Block failed checksum!")
 
         block_data = chunk[:-1]
@@ -235,11 +235,11 @@ def _rb15_read_block(radio, block_addr, block_size):
 def _rb15_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">BH", ord('W'), block_addr)
+    cmd = struct.pack(">BH", ord(b'W'), block_addr)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
-    cs = _checksum(cmd + data)
-    data += chr(cs)
+    cs = bytes([_checksum(cmd + data)])
+    data += cs
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -257,7 +257,7 @@ def do_download(radio):
     LOG.debug("download")
     _rb15_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -277,7 +277,7 @@ def do_download(radio):
 
     _rb15_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -317,9 +317,10 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
     """RETEVIS RB15 BASE"""
     VENDOR = "Retevis"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     BLOCK_SIZE = 0x10
-    magic = "21" + "\x05\x10" + "x"
+    magic = b"21" + b"\x05\x10" + b"x"
 
     VALID_BANDS = [(400000000, 520000000)]
 
