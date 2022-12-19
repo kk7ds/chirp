@@ -78,7 +78,12 @@ def _detect_icom_radio(ser):
 
 def detect_icom_radio(port):
     """Detect which Icom model is connected to @port"""
-    ser = serial.Serial(port=port, timeout=0.5)
+    if '://' in port:
+        ser = serial.serial_for_url(port, do_not_open=True)
+        ser.timeout = 0.5
+        ser.open()
+    else:
+        ser = serial.Serial(port=port, timeout=0.5)
 
     try:
         result = _detect_icom_radio(ser)
@@ -96,7 +101,13 @@ def detect_icom_radio(port):
 
 def detect_kenwoodlive_radio(port):
     """Detect which Kenwood model is connected to @port"""
-    ser = serial.Serial(port=port, baudrate=9600, timeout=0.5)
+    if '://' in port:
+        ser = serial.serial_for_url(port, do_not_open=True)
+        ser.timeout = 0.5
+        ser.open()
+    else:
+        ser = serial.Serial(port=port, baudrate=9600, timeout=0.5)
+
     r_id = kenwood_live.get_id(ser)
     ser.close()
 

@@ -25,9 +25,8 @@ import logging
 from chirp import logger
 # from chirp.drivers import *
 from chirp import chirp_common, errors, directory, util
-from chirp.ui import compat
 
-directory.safe_import_drivers()
+directory.import_drivers()
 
 LOG = logging.getLogger("chirpc")
 RADIOS = directory.DRV_TO_RADIO
@@ -224,10 +223,12 @@ if __name__ == "__main__":
             sys.exit(1)
     else:
         LOG.info("opening %s at %i" % (options.serial, rclass.BAUD_RATE))
-        s = compat.CompatSerial.get(rclass.NEEDS_COMPAT_SERIAL,
-                                    port=options.serial,
-                                    baudrate=rclass.BAUD_RATE,
-                                    timeout=0.5)
+        if '://' in options.serial:
+            s = serial.serial_for_url(options.serial, do_not_open=True)
+            s.timeout = 0.5
+            s.open()
+        else:
+            s = serial.Serial(port=options.serial, timeout=0.5)
 
     radio = rclass(s)
 
