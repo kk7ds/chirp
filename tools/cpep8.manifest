@@ -142,7 +142,7 @@
 ./chirp/memmap.py
 ./chirp/platform.py
 ./chirp/pyPEG.py
-./chirp/radioreference.py
+./chirp/sources/radioreference.py
 ./chirp/settings.py
 ./chirp/ui/__init__.py
 ./chirp/ui/bandplans.py

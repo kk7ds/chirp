@@ -1202,13 +1202,7 @@ class ChirpMain(wx.Frame):
                 CONF.set_bool(shortname, shortname == selected, 'bandplan')
 
     def _menu_query_rrca(self, event):
-        d = query_sources.RRCAQueryDialog(self,
-                                          title='Query RadioReference.com '
-                                                '(Canada)')
-        r = d.ShowModal()
-        if r == wx.ID_OK:
-            LOG.debug('Result file: %s' % d.result_file)
-            self.open_file(d.result_file)
+        self._do_network_query(query_sources.RRCAQueryDialog)
 
     def _menu_query_rrus(self, event):
         d = query_sources.RRUSQueryDialog(self,

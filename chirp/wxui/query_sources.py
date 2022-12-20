@@ -22,10 +22,9 @@ import urllib
 import wx
 import wx.adv
 
-from chirp import radioreference
-from chirp.drivers import generic_csv
 from chirp.sources import base
 from chirp.sources import dmrmarc
+from chirp.sources import radioreference
 from chirp.sources import repeaterbook
 from chirp.wxui import config
 from chirp.wxui import fips
@@ -66,6 +65,8 @@ class QuerySourceDialog(wx.Dialog):
 
     def __init__(self, *a, **k):
         super(QuerySourceDialog, self).__init__(*a, **k)
+        self.result_radio = None
+
         vbox = self.build()
         self.Center()
 
@@ -91,7 +92,7 @@ class QuerySourceDialog(wx.Dialog):
                              style=wx.ALIGN_CENTER_HORIZONTAL)
         info.SetLabelMarkup(self.get_info())
         vbox.Insert(0, info, proportion=0, border=10,
-                 flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP)
+                    flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP)
 
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
         vbox.Add(bs, border=10, flag=wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL)
@@ -106,7 +107,6 @@ class QuerySourceDialog(wx.Dialog):
         self.result_file = tempfile.NamedTemporaryFile(
             prefix='%s-' % self.NAME,
             suffix='.csv').name
-        self.result_radio = None
 
     def _button(self, event):
         id = event.GetEventObject().GetId()
@@ -145,77 +145,13 @@ class QuerySourceDialog(wx.Dialog):
         self.status(reason, 100)
 
     def _got_status(self, event):
-        self.gauge.SetValue(event.percent)
+        self.gauge.SetValue(int(event.percent))
         if event.status is None:
             self.EndModal(wx.ID_OK)
         else:
             self.statusmsg.SetLabel(event.status)
         if event.percent == 100:
             self.FindWindowById(wx.ID_OK).Enable()
-
-
-class RRCALOGINQueryThread(QueryThread):
-    global rrloggedin
-    rrloggedin = False
-
-    def do_query(self):
-        global rrloggedin
-        if rrloggedin:
-            rrloggedin = False
-            self.finalRRquery()
-        else:
-            self.do_loginRR()
-
-    def do_loginRR(self):
-        global clist, provinces, default_county, rrloggedin
-        self.send_status('Logging In', 10)
-# Do the SOAP queries
-        provincecounty = radioreference.RadioReferenceRadio(None)
-        provincecounty.set_params(**self.query_dialog.get_rrlogin_params())
-        cancounties = provincecounty.do_getcanadacounties()
-        clist = cancounties[0]
-        provinces = cancounties[1]
-# this should probably be a language translatable thing, not hardcoded?
-        self.send_status('Successfully Logged in', 100)  # we hope...
-        rrloggedin = True
-        RRCAQueryDialog.populatepc(self)
-        return True
-
-    def finalRRquery(self):
-        global rrcounties, rrloggedin
-        # Write our new favorite place to the conf file.
-        # et the 2 other parameters we need to pass
-        province_id = provinces[provchoice.GetStringSelection()]
-        # Iterate over the pairs. There must be a better way...
-        # They are all unique within each province.
-        for key, value in rrcounties.items():
-            if value == countychoice.GetStringSelection():
-                county_id = key
-        # Send it
-        CONF.set("province", str(province_id), "radioreference")
-        CONF.set("county", str(county_id), "radioreference")
-        # We've got to have more data
-        username = CONF.get("Username", "radioreference")
-        passwd = CONF.get("Password", "radioreference")
-        self.send_status('Querying', 10)
-        # send in the old radioreference methods for heavy lifting
-        r = radioreference.RadioReferenceRadio(None)
-        r.set_params(county_id, username, passwd, 'CA')
-        r.do_fetch()
-        f = r.get_features()  # wrote Dan an email about this
-        if f.memory_bounds[1] == 0:
-            self.send_fail('No results!')
-            return
-        self.send_status('Parsing', 50)
-
-        csv = generic_csv.CSVRadio(None)
-        for i in range(0, f.memory_bounds[1] + 1):
-            m = r.get_memory(i)
-            csv.set_memory(m)
-
-        csv.save(self.query_dialog.result_file)
-
-        self.send_end()
 
 
 class RepeaterBookQueryDialog(QuerySourceDialog):
@@ -463,110 +399,119 @@ class RRCAQueryDialog(QuerySourceDialog):
         grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
     def build(self):
-        global rrloggedin
-        rrloggedin = False
+        self.result_radio = radioreference.RadioReferenceRadio()
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
         panel = wx.Panel(self)
         vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
         grid = wx.FlexGridSizer(3, 5, 0)
         grid.AddGrowableCol(1)
-# build the login elements
-        global provchoice, countychoice, rrusername, rrpassword, loginbutton
-        rrusername = wx.TextCtrl(panel,
-                                 value=CONF.get('Username',
-                                                'radioreference') or '')
-        self._add_grid(grid, 'Username', rrusername)
+
+        # build the login elements
+        self._rrusername = wx.TextCtrl(
+            panel, value=CONF.get('username', 'radioreference') or '')
+        self._add_grid(grid, 'Username', self._rrusername)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
-        rrpassword = wx.TextCtrl(panel, style=wx.TE_PASSWORD,
-                                 value=CONF.get('Password',
-                                                'radioreference') or '')
-        self._add_grid(grid, 'Password', rrpassword)
-# build a new login button
+
+        self._rrpassword = wx.TextCtrl(
+            panel, style=wx.TE_PASSWORD,
+            value=CONF.get_password('password',
+                                    'radioreference') or '')
+        self._add_grid(grid, 'Password', self._rrpassword)
+
+        # build a new login button
         loginbutton = wx.Button(panel, id=wx.ID_OK, label='Log In')
         grid.Add(loginbutton)
-        self.Bind(wx.EVT_BUTTON, self._button)
-# build a prov/county selector grid & add selectors
-        provchoice = wx.Choice(panel, choices=["Log in First"])
-        provchoice.SetSelection(0)
-        self.Bind(wx.EVT_CHOICE, self.populateprov, provchoice)
-        self._add_grid(grid, 'Province', provchoice)
+        loginbutton.Bind(wx.EVT_BUTTON, self._populateca)
+
+        # build a prov/county selector grid & add selectors
+        provs = radioreference.CA_PROVINCES or ['Log in First']
+        self._provchoice = wx.Choice(panel, choices=provs)
+        self.Bind(wx.EVT_CHOICE, self.selected_province, self._provchoice)
+        self._add_grid(grid, 'Province', self._provchoice)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
-        countychoice = wx.Choice(panel, choices=["Select Province First"])
-        wx.Choice.SetSelection(countychoice, 0)
-        self._add_grid(grid, 'County', countychoice)
+
+        counties = radioreference.CA_COUNTIES or ['Log in First']
+        self._countychoice = wx.Choice(panel, choices=counties)
+        self._add_grid(grid, 'County', self._countychoice)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+
         panel.SetSizer(grid)
         vbox.Fit(self)
 
         return vbox
 
-    def populateprov(self, event):
-        self.selected_province(provchoice.GetStringSelection())
+    def _populateca(self, event):
+        def cb(result):
+            if isinstance(result, Exception):
+                self.status('Failed: %s' % result, 0)
+            else:
+                self.status('Logged in', 0)
+                wx.CallAfter(self.populateprov)
+        self.status('Attempting login...', 0)
+        radioreference.RadioReferenceCAData(
+            cb,
+            self._rrusername.GetValue(),
+            self._rrpassword.GetValue()).start()
 
-    def populatepc(self):
-        # init and grab conf defaults and populate the selector
-        RRCAQueryDialog.getconfdefaults(self)
-        # Clear the temporary choice dropdown, disable the form bits we don't
-        # need any more & insert provinces as exist in RR database because
-        # they change sometimes.
-        wx.CallAfter(provchoice.Clear)
-        engprovs = []
-        for key in provinces:
-            engprovs.append(key)
-        # It's a sort of time machine
-        wx.CallAfter(provchoice.Append, engprovs)
-        wx.CallAfter(rrusername.Enable, False)
-        wx.CallAfter(rrpassword.Enable, False)
-        wx.CallAfter(loginbutton.Enable, False)
-        if self.default_prov:
-            wx.CallAfter(provchoice.SetStringSelection, self.default_prov)
-            # update the choice to match conf
-            RRCAQueryDialog.selected_province(self, self.default_prov)
-        if self.default_county:
-            wx.CallAfter(countychoice.SetStringSelection, self.default_county)
+    def populateprov(self):
+        self._provchoice.SetItems([str(x) for x in
+                                   radioreference.CA_PROVINCES.keys()])
+        self.getconfdefaults()
+        self._provchoice.SetStringSelection(self.default_prov)
+        self._selected_province(self.default_prov)
 
     def getconfdefaults(self):
         code = CONF.get("province", "radioreference")
-        for k, v in provinces.items():
+        for k, v in radioreference.CA_PROVINCES.items():
             if code == str(v):
                 self.default_prov = k
                 break
             else:
                 self.default_prov = "BC"
         code = CONF.get("county", "radioreference")
-        for row in clist:
+        for row in radioreference.CA_COUNTIES:
             if code == str(row[2]):
                 self.default_county = row[3]
                 break
             else:
                 self.default_county = 0
 
-    def selected_province(self, chosenprov):
+    def selected_province(self, event):
+        self._selected_province(event.GetEventObject().GetStringSelection())
+
+    def _selected_province(self, chosenprov):
         # if user alters the province dropdown, load the new counties into
         # the county dropdown choice
-        global rrcounties
-        rrcounties = {}
-        self.chosenprov = provchoice.GetSelection()
-        countychoice.Clear()
-        for x in clist:
+        self._countychoice.Clear()
+        for x in radioreference.CA_COUNTIES:
             if x[1] == chosenprov:
-                countychoice.Append(x[3])
-                rrcounties[x[2]] = x[3]
+                self._countychoice.Append(x[3])
 
     def do_query(self):
-        CONF.set('username', rrusername.GetValue(), 'radioreference')
-        CONF.set('password', rrpassword.GetValue(), 'radioreference')
-        RRCALOGINQueryThread(self).start()
+        CONF.set('username', self._rrusername.GetValue(), 'radioreference')
+        CONF.set_password('password', self._rrpassword.GetValue(),
+                          'radioreference')
+        self.result_radio.set_auth(
+            CONF.get('username', 'radioreference'),
+            CONF.get_password('password', 'radioreference'))
 
-    def get_rrlogin_params(self):
-        return {'zipcounty': '',
-                'username': CONF.get('Username', 'radioreference'),
-                'password': CONF.get('Password', 'radioreference'),
-                'country': ''}
+        super().do_query()
+
+    def get_params(self):
+        # FIXME: put this in a handler
+        chosen_county = self._countychoice.GetStringSelection()
+        county_id = ''
+        for _, prov, cid, county in radioreference.CA_COUNTIES:
+            if county == chosen_county:
+                county_id = cid
+        LOG.debug('County id %s for %s' % (county_id, chosen_county))
+
+        return {'zipcounty': '%s' % county_id,
+                'country': 'CA'}
 
 
 class RRUSQueryDialog(QuerySourceDialog):  # NOT IMPLEMENTED YET
@@ -602,7 +547,6 @@ class RRUSQueryDialog(QuerySourceDialog):  # NOT IMPLEMENTED YET
         CONF.set('city', self._city.GetValue(), 'dmrmarc')
         CONF.set('state', self._state.GetValue(), 'dmrmarc')
         CONF.set('country', self._country.GetValue(), 'dmrmarc')
-        #DMRMARCQueryThread(self).start()
 
     def get_dm_params(self):
         return {'city': CONF.get('city', 'dmrmarc'),
