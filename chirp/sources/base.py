@@ -26,6 +26,9 @@ class QueryStatus:
 
 
 class NetworkResultRadio(chirp_common.NetworkSourceRadio):
+    VENDOR = 'Query'
+    MODEL = 'Result'
+
     def __init__(self):
         self._memories = []
 
