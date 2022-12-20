@@ -72,8 +72,7 @@ class RadioReferenceCAData(threading.Thread):
 
 class RadioReferenceRadio(base.NetworkResultRadio):
     """RadioReference.com data source"""
-    VENDOR = "Radio Reference LLC"
-    MODEL = "RadioReference.com"
+    VENDOR = "RadioReference"
 
     URL = "http://api.radioreference.com/soap2/?wsdl"
     APPKEY = "46785108"

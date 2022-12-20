@@ -11,6 +11,11 @@ LOG = logging.getLogger(__name__)
 
 
 class RepeaterBook(base.NetworkResultRadio):
+    VENDOR = 'RepeaterBook'
+
+    def get_label(self):
+        return 'RepeaterBook'
+
     def do_fetch(self, status, params):
         status.send_status('Querying', 10)
 

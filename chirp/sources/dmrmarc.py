@@ -34,7 +34,6 @@ def list_filter(haystack, attr, needles):
 class DMRMARCRadio(base.NetworkResultRadio):
     """DMR-MARC data source"""
     VENDOR = "DMR-MARC"
-    MODEL = "Repeater database"
 
     def get_label(self):
         return 'DMR-MARC'
