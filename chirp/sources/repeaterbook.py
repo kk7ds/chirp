@@ -54,7 +54,8 @@ class RepeaterBook(base.NetworkResultRadio):
         radio.load(result_file)
         f = radio.get_features()
         self._memories = [radio.get_memory(i)
-                          for i in range(0, f.memory_bounds[1])]
+                          for i in range(0, f.memory_bounds[1])
+                          if not radio.get_memory(i).empty]
         try:
             os.remove(result_file)
         except OSError:
