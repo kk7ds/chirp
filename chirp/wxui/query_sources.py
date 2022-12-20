@@ -26,6 +26,7 @@ from chirp.sources import base
 from chirp.sources import dmrmarc
 from chirp.sources import radioreference
 from chirp.sources import repeaterbook
+from chirp.wxui import common
 from chirp.wxui import config
 from chirp.wxui import fips
 
@@ -381,8 +382,8 @@ class DMRMARCQueryDialog(QuerySourceDialog):
                 'country': CONF.get('country', 'dmrmarc')}
 
 
-class RRCAQueryDialog(QuerySourceDialog):
-    NAME = 'RadioReferenceCanada'
+class RRQueryDialog(QuerySourceDialog):
+    NAME = 'RadioReference'
 
     def get_info(self):
         return (
@@ -400,12 +401,15 @@ class RRCAQueryDialog(QuerySourceDialog):
 
     def build(self):
         self.result_radio = radioreference.RadioReferenceRadio()
+        self.tabs = wx.Notebook(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
+
         panel = wx.Panel(self)
-        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
         grid = wx.FlexGridSizer(3, 5, 0)
         grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+        vbox.Add(panel, proportion=0, flag=wx.EXPAND)
 
         # build the login elements
         self._rrusername = wx.TextCtrl(
@@ -420,29 +424,53 @@ class RRCAQueryDialog(QuerySourceDialog):
                                     'radioreference') or '')
         self._add_grid(grid, 'Password', self._rrpassword)
 
+        vbox.Add(self.tabs, proportion=1, border=10,
+                 flag=wx.EXPAND | wx.BOTTOM | wx.TOP)
+        self.tabs.InsertPage(0, self.build_us(self.tabs), _('United States'))
+        self.tabs.InsertPage(1, self.build_ca(self.tabs), _('Canada'))
+
+        return vbox
+
+    def build_ca(self, parent):
+        panel = wx.Panel(parent)
+        grid = wx.FlexGridSizer(3, 5, 0)
+        grid.AddGrowableCol(1)
+
         # build a new login button
-        loginbutton = wx.Button(panel, id=wx.ID_OK, label='Log In')
-        grid.Add(loginbutton)
-        loginbutton.Bind(wx.EVT_BUTTON, self._populateca)
+        self._loginbutton = wx.Button(panel, id=wx.ID_OK, label='Log In')
+        grid.Add(self._loginbutton)
+        self._loginbutton.Bind(wx.EVT_BUTTON, self._populateca)
 
         # build a prov/county selector grid & add selectors
-        provs = radioreference.CA_PROVINCES or ['Log in First']
-        self._provchoice = wx.Choice(panel, choices=provs)
+        self._provchoice = wx.Choice(panel, choices=['Log in First'])
         self.Bind(wx.EVT_CHOICE, self.selected_province, self._provchoice)
         self._add_grid(grid, 'Province', self._provchoice)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
 
-        counties = radioreference.CA_COUNTIES or ['Log in First']
-        self._countychoice = wx.Choice(panel, choices=counties)
+        self._countychoice = wx.Choice(panel, choices=['Log in First'])
         self._add_grid(grid, 'County', self._countychoice)
+        self.Bind(wx.EVT_CHOICE, self.selected_county, self._countychoice)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
 
-        panel.SetSizer(grid)
-        vbox.Fit(self)
+        if radioreference.CA_PROVINCES:
+            self.populateprov()
 
-        return vbox
+        panel.SetSizer(grid)
+        return panel
+
+    def build_us(self, parent):
+        panel = wx.Panel(parent)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+        self._uszip = wx.TextCtrl(
+            panel,
+            value=CONF.get('zipcode', 'radioreference') or '')
+        self._add_grid(grid, 'ZIP Code', self._uszip)
+
+        return panel
 
     def _populateca(self, event):
         def cb(result):
@@ -463,6 +491,9 @@ class RRCAQueryDialog(QuerySourceDialog):
         self.getconfdefaults()
         self._provchoice.SetStringSelection(self.default_prov)
         self._selected_province(self.default_prov)
+        self._countychoice.SetStringSelection(self.default_county)
+        self._selected_county(self.default_county)
+        self._loginbutton.Enable(False)
 
     def getconfdefaults(self):
         code = CONF.get("province", "radioreference")
@@ -479,6 +510,8 @@ class RRCAQueryDialog(QuerySourceDialog):
                 break
             else:
                 self.default_county = 0
+        LOG.debug('Default province=%r county=%r' % (self.default_prov,
+                                                     self.default_county))
 
     def selected_province(self, event):
         self._selected_province(event.GetEventObject().GetStringSelection())
@@ -486,69 +519,55 @@ class RRCAQueryDialog(QuerySourceDialog):
     def _selected_province(self, chosenprov):
         # if user alters the province dropdown, load the new counties into
         # the county dropdown choice
+        for name, id in radioreference.CA_PROVINCES.items():
+            if name == chosenprov:
+                CONF.set_int('province', id, 'radioreference')
+                LOG.debug('Province id %s for %s' % (id, name))
+                break
         self._countychoice.Clear()
         for x in radioreference.CA_COUNTIES:
             if x[1] == chosenprov:
                 self._countychoice.Append(x[3])
+        self._selected_county(self._countychoice.GetItems()[0])
 
+    def selected_county(self, event):
+        self._selected_county(self._countychoice.GetStringSelection())
+
+    def _selected_county(self, chosencounty):
+        self._ca_county_id = 0
+        for _, prov, cid, county in radioreference.CA_COUNTIES:
+            if county == chosencounty:
+                self._ca_county_id = cid
+                break
+        CONF.set_int('county', self._ca_county_id, 'radioreference')
+        LOG.debug('County id %s for %s' % (self._ca_county_id, chosencounty))
+
+    @common.error_proof()
     def do_query(self):
         CONF.set('username', self._rrusername.GetValue(), 'radioreference')
         CONF.set_password('password', self._rrpassword.GetValue(),
                           'radioreference')
+
+        CONF.set('zipcode', self._uszip.GetValue(), 'radioreference')
+
         self.result_radio.set_auth(
             CONF.get('username', 'radioreference'),
             CONF.get_password('password', 'radioreference'))
 
+        if self.tabs.GetSelection() == 1:
+            # CA
+            if not radioreference.CA_PROVINCES:
+                raise Exception(_('RadioReference Canada requires a login '
+                                  'before you can query'))
+
         super().do_query()
 
     def get_params(self):
-        # FIXME: put this in a handler
-        chosen_county = self._countychoice.GetStringSelection()
-        county_id = ''
-        for _, prov, cid, county in radioreference.CA_COUNTIES:
-            if county == chosen_county:
-                county_id = cid
-        LOG.debug('County id %s for %s' % (county_id, chosen_county))
-
-        return {'zipcounty': '%s' % county_id,
-                'country': 'CA'}
-
-
-class RRUSQueryDialog(QuerySourceDialog):  # NOT IMPLEMENTED YET
-    NAME = 'RadioReferenceUSA'
-
-    def _add_grid(self, grid, label, widget):
-        grid.Add(wx.StaticText(widget.GetParent(), label=label),
-                 border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
-        grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
-
-    def build(self):
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(vbox)
-        panel = wx.Panel(self)
-        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
-        grid = wx.FlexGridSizer(2, 5, 0)
-        grid.AddGrowableCol(1)
-        panel.SetSizer(grid)
-
-        self._city = wx.TextCtrl(panel,
-                                 value=CONF.get('city', 'dmrmarc') or '')
-        self._add_grid(grid, 'City', self._city)
-        self._state = wx.TextCtrl(panel,
-                                  value=CONF.get('state', 'dmrmarc') or '')
-        self._add_grid(grid, 'State', self._state)
-        self._country = wx.TextCtrl(panel,
-                                    value=CONF.get('country', 'dmrmarc') or '')
-        self._add_grid(grid, 'Country', self._country)
-
-        return vbox
-
-    def do_query(self):
-        CONF.set('city', self._city.GetValue(), 'dmrmarc')
-        CONF.set('state', self._state.GetValue(), 'dmrmarc')
-        CONF.set('country', self._country.GetValue(), 'dmrmarc')
-
-    def get_dm_params(self):
-        return {'city': CONF.get('city', 'dmrmarc'),
-                'state': CONF.get('state', 'dmrmarc'),
-                'country': CONF.get('country', 'dmrmarc')}
+        if self.tabs.GetSelection() == 0:
+            # US
+            return {'zipcounty': self._uszip.GetValue(),
+                    'country': 'US'}
+        else:
+            # CA
+            return {'zipcounty': '%s' % self._ca_county_id,
+                    'country': 'CA'}
