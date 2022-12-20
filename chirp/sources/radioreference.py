@@ -38,10 +38,12 @@ MODES = {
     "USB":    "USB",
     "LSB":    "LSB",
     "P25":    "P25",
+    "DMR":    "DMR",
 }
 
 CA_COUNTIES = []
 CA_PROVINCES = {}
+logging.getLogger('suds').setLevel(logging.WARNING)
 
 
 class RadioReferenceCAData(threading.Thread):
@@ -144,9 +146,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
         status_max += len(county.agencyList)
 
         for cat in county.cats:
-            LOG.debug("Fetching category:", cat.cName)
             for subcat in cat.subcats:
-                LOG.debug("\t", subcat.scName)
                 result = self._client.service.getSubcatFreqs(subcat.scid,
                                                              self._auth)
                 self._freqs += result
@@ -160,12 +160,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
             for cat in agency.cats:
                 status_max += len(cat.subcats)
             for cat in agency.cats:
-                LOG.debug("Fetching category:", cat.cName)
                 for subcat in cat.subcats:
-                    try:
-                        LOG.debug("\t", subcat.scName)
-                    except AttributeError:
-                        pass
                     result = self._client.service.getSubcatFreqs(subcat.scid,
                                                                  self._auth)
                     self._freqs += result
@@ -223,6 +218,8 @@ class RadioReferenceRadio(base.NetworkResultRadio):
         try:
             mem.mode = self._get_mode(freq.mode)
         except KeyError:
+            LOG.debug('Mode %s (%s) is unsupported' % (
+                freq.mode, self._modes[int(str(freq.mode))]))
             # skip memory if mode is unsupported
             mem.empty = True
             return mem
