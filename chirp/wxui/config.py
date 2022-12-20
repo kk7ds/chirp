@@ -80,7 +80,7 @@ class ChirpConfigProxy:
         encoded = self.get(key, section)
         if encoded:
             try:
-                return base64.b64decode(encoded.encode())
+                return base64.b64decode(encoded.encode()).decode()
             except binascii.Error:
                 # Likely not stored encoded, return as-is
                 return encoded

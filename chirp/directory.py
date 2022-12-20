@@ -23,7 +23,8 @@ import sys
 
 import six
 
-from chirp import chirp_common, util, radioreference, errors
+from chirp import chirp_common, util, errors
+from chirp.sources import radioreference
 
 LOG = logging.getLogger(__name__)
 
