@@ -17,8 +17,10 @@ import logging
 import queue
 import tempfile
 import threading
+import urllib
 
 import wx
+import wx.adv
 
 from chirp import radioreference
 from chirp.drivers import generic_csv
@@ -79,14 +81,27 @@ class QuerySourceDialog(wx.Dialog):
         vbox.Add(self.gauge, proportion=0, border=10,
                  flag=wx.EXPAND | wx.LEFT | wx.RIGHT)
 
+        link_label = urllib.parse.urlparse(self.get_link()).netloc
+        link = wx.adv.HyperlinkCtrl(vbox.GetContainingWindow(),
+                                    label=link_label, url=self.get_link(),
+                                    style=wx.adv.HL_ALIGN_CENTRE)
+        vbox.Insert(0, link, proportion=0, border=10,
+                    flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM)
+        info = wx.StaticText(vbox.GetContainingWindow(),
+                             style=wx.ALIGN_CENTER_HORIZONTAL)
+        info.SetLabelMarkup(self.get_info())
+        vbox.Insert(0, info, proportion=0, border=10,
+                 flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP)
+
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
-        vbox.Add(bs, border=10, flag=wx.ALL | wx.ALIGN_CENTER_HORIZONTAL)
+        vbox.Add(bs, border=10, flag=wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL)
         self.Bind(wx.EVT_BUTTON, self._button)
 
         self.Bind(EVT_QUERY_THREAD, self._got_status)
 
         self.SetMinSize((400, 200))
         self.Fit()
+        wx.CallAfter(self.Center)
 
         self.result_file = tempfile.NamedTemporaryFile(
             prefix='%s-' % self.NAME,
@@ -112,6 +127,12 @@ class QuerySourceDialog(wx.Dialog):
 
     def get_params(self):
         pass
+
+    def get_info(self):
+        return ''
+
+    def get_link(self):
+        return ''
 
     def status(self, status, percent):
         wx.PostEvent(self, QueryThreadEvent(self.GetId(),
@@ -209,6 +230,14 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         _('33 centimeters (900MHz)'):  9,
         _('23 centimeters (1.2GHz)'):  12,
     }
+
+    def get_info(self):
+        return (
+            "RepeaterBook is Amateur Radio's most comprehensive,\n"
+            "worldwide, FREE repeater directory.")
+
+    def get_link(self):
+        return 'https://repeaterbook.com'
 
     def build(self):
         self.tabs = wx.Notebook(self)
@@ -397,6 +426,12 @@ class DMRMARCQueryDialog(QuerySourceDialog):
 
         return vbox
 
+    def get_info(self):
+        return 'The DMR-MARC Worldwide Network'
+
+    def get_link(self):
+        return 'https://www.dmr-marc.net'
+
     def do_query(self):
         CONF.set('city', self._city.GetValue(), 'dmrmarc')
         CONF.set('state', self._state.GetValue(), 'dmrmarc')
@@ -412,6 +447,15 @@ class DMRMARCQueryDialog(QuerySourceDialog):
 
 class RRCAQueryDialog(QuerySourceDialog):
     NAME = 'RadioReferenceCanada'
+
+    def get_info(self):
+        return (
+            "RadioReference.com is the world's largest\n"
+            "radio communications data provider\n"
+            "<small>Premium account required</small>")
+
+    def get_link(self):
+        return 'https://www.radioreference.com/apps/content/?cid=3'
 
     def _add_grid(self, grid, label, widget):
         grid.Add(wx.StaticText(widget.GetParent(), label=label),
