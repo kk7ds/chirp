@@ -86,7 +86,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
 
         self._auth = {"appKey": self.APPKEY, "username": "", "password": ""}
         self._client = Client(self.URL)
-        self._freqs = None
+        self._freqs = []
         self._modes = None
         self._zipcounty = None
         self._country = None
@@ -178,9 +178,6 @@ class RadioReferenceRadio(base.NetworkResultRadio):
         status.send_end()
 
     def get_features(self):
-        if not self._freqs:
-            self.do_fetch()
-
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, len(self._freqs)-1)
         rf.has_bank = False
