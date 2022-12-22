@@ -127,6 +127,34 @@ char pad1;
 bbcd rtone[2];             // 12-14 tx tone freq
 char pad2;
 bbcd ctone[2];             // 15-17 tone rx squelch setting
+// This is duplicated from 4-17 above, even duplicated by number in the
+// manual!
+lbcd freq_tx[5];              // 4-8 receive freq
+u8   mode_tx;                 // 9 operating mode
+u8   filter_tx;               // 10 filter 1-3 (undocumented)
+u8   dataMode_tx:4,           // 11 data mode setting (on or off)
+     tmode_tx:4;              // 11 tone type
+char pad1_tx;
+bbcd rtone_tx[2];             // 12-14 tx tone freq
+char pad2_tx;
+bbcd ctone_tx[2];             // 15-17 tone rx squelch setting
+// End TX duplicate block
+char name[10];             // 18-27 Callsign
+"""
+
+MEM_IC7610_FORMAT = """
+bbcd number[2];            // 1,2
+u8   spl:4,                // 3 split and select memory settings
+     select:4;
+lbcd freq[5];              // 4-8 receive freq
+u8   mode;                 // 9 operating mode
+u8   filter;               // 10 filter 1-3 (undocumented)
+u8   dataMode:4,           // 11 data mode setting (on or off)
+     tmode:4;              // 11 tone type
+char pad1;
+bbcd rtone[2];             // 12-14 tx tone freq
+char pad2;
+bbcd ctone[2];             // 15-17 tone rx squelch setting
 char name[10];             // 18-27 Callsign
 """
 
@@ -207,6 +235,7 @@ class MemFrame(Frame):
     _cmd = 0x1A
     _sub = 0x00
     _loc = 0
+    FORMAT = MEM_FORMAT
 
     def set_location(self, loc):
         """Set the memory location number"""
@@ -225,7 +254,7 @@ class MemFrame(Frame):
         """Return a bitwise parsed object"""
         # Make sure we're assignable
         self._data = MemoryMapBytes(bytes(self._data))
-        return bitwise.parse(MEM_FORMAT, self._data)
+        return bitwise.parse(self.FORMAT, self._data)
 
     def initialize(self):
         """Initialize to sane values"""
@@ -273,9 +302,9 @@ class DupToneMemFrame(MemFrame):
 class IC7300MemFrame(MemFrame):
     FORMAT = MEM_IC7300_FORMAT
 
-    def get_obj(self):
-        self._data = MemoryMapBytes(bytes(self._data))
-        return bitwise.parse(self.FORMAT, self._data)
+
+class IC7610MemFrame(MemFrame):
+    FORMAT = MEM_IC7610_FORMAT
 
 
 class SpecialChannel(object):
@@ -994,6 +1023,10 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
 class Icom7610Radio(Icom7300Radio):
     MODEL = "IC-7610"
     _model = '\x98'
+
+    def _initialize(self):
+        super()._initialize()
+        self._classes['mem'] = IC7610MemFrame
 
 
 def probe_model(ser):
