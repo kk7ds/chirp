@@ -1486,6 +1486,23 @@ def from_kHz(val):
     return val // 100
 
 
+def split_to_offset(mem, rxfreq, txfreq):
+    """Set the freq, offset, and duplex fields of a memory based on
+    a separate rx/tx frequency.
+    """
+    if abs(txfreq - rxfreq) > to_MHz(70):
+        mem.freq = rxfreq
+        mem.offset = txfreq
+        mem.duplex = 'split'
+    else:
+        offset = txfreq - rxfreq
+        if offset < 0:
+            mem.duplex = '-'
+        elif offset > 0:
+            mem.duplex = '+'
+        mem.offset = abs(offset)
+
+
 def split_tone_decode(mem, txtone, rxtone):
     """
     Set tone mode and values on @mem based on txtone and rxtone specs like:
