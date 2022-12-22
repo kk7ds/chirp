@@ -472,11 +472,23 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._dc.SetFont(self._fixed_font)
 
     def _setup_columns(self):
+        def filter_unknowns(items):
+            return [x for x in items if '?' not in x]
+
+        # Some drivers report invalid enumerations in their lists
+        # by using strings with question mark characters. Don't let the
+        # users select these.
+        valid_tmodes = filter_unknowns(self._features.valid_tmodes)
+        valid_modes = filter_unknowns(self._features.valid_modes)
+        valid_skips = filter_unknowns(self._features.valid_skips)
+        valid_duplexes = filter_unknowns(self._features.valid_duplexes)
+        valid_power_levels = self._features.valid_power_levels
+        valid_tuning_steps = self._features.valid_tuning_steps
         defs = [
             ChirpFrequencyColumn('freq', self._radio),
             ChirpMemoryColumn('name', self._radio),
             ChirpChoiceColumn('tmode', self._radio,
-                              self._features.valid_tmodes),
+                              valid_tmodes),
             ChirpToneColumn('rtone', self._radio),
             ChirpToneColumn('ctone', self._radio),
             ChirpDTCSColumn('dtcs', self._radio),
@@ -484,16 +496,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpDTCSPolColumn('dtcs_polarity', self._radio),
             ChirpCrossModeColumn('cross_mode', self._radio),
             ChirpDuplexColumn('duplex', self._radio,
-                              self._features.valid_duplexes),
+                              valid_duplexes),
             ChirpFrequencyColumn('offset', self._radio),
             ChirpChoiceColumn('mode', self._radio,
-                              self._features.valid_modes),
+                              valid_modes),
             ChirpChoiceColumn('tuning_step', self._radio,
-                              self._features.valid_tuning_steps),
+                              valid_tuning_steps),
             ChirpChoiceColumn('skip', self._radio,
-                              self._features.valid_skips),
+                              valid_skips),
             ChirpChoiceColumn('power', self._radio,
-                              self._features.valid_power_levels),
+                              valid_power_levels),
             ChirpMemoryColumn('comment', self._radio),
         ]
         return defs
