@@ -120,6 +120,13 @@ FRS16_FREQS = [462562500, 462587500, 462612500, 462637500,
                462712500, 462550000, 462575000, 462600000,
                462650000, 462675000, 462700000, 462725000]
 
+PMR_FREQS1 = [446006250, 446018750, 446031250, 446043750, 446056250,
+              446068750, 446081250, 446093750]
+PMR_FREQS2 = [446106250, 446118750, 446131250, 446143750, 446156250,
+              446168750, 446181250, 446193750]
+
+PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
+
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 
@@ -303,6 +310,7 @@ def do_upload(radio):
     _r2_exit_programming_mode(radio)
 
 
+@directory.register
 class RadioddityR2(chirp_common.CloneModeRadio):
     """Radioddity R2"""
     VENDOR = "Radioddity"
@@ -323,7 +331,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
     # maximum 16 channels
     _upper = 16
 
-    _frs16 = False
+    _frs16 = _pmr = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -532,6 +540,16 @@ class RadioddityR2(chirp_common.CloneModeRadio):
                 mem.duplex == ''
                 mem.offset = 0
 
+        if self._pmr:
+            if _mem.rx_freq.get_raw() == "\xFF\xFF\xFF\xFF":
+                PMR_FREQ = PMR_FREQS[mem.number - 1]
+                mem.freq = PMR_FREQ
+            if mem.freq in PMR_FREQS:
+                mem.mode = "NFM"
+                mem.duplex == ''
+                mem.offset = 0
+                mem.power = POWER_LEVELS[0]
+
         _mem.rx_freq = mem.freq / 10
 
         if mem.duplex == "off":
@@ -650,14 +668,13 @@ class RadioddityR2(chirp_common.CloneModeRadio):
         return False
 
 
-class RT24Alias(chirp_common.Alias):
+@directory.register
+class RetevisRT24(RadioddityR2):
+    """Retevis RT24"""
     VENDOR = "Retevis"
     MODEL = "RT24"
 
-
-@directory.register
-class RadioddityR2Generic(RadioddityR2):
-    ALIASES = [RT24Alias]
+    _pmr = True
 
 
 @directory.register
