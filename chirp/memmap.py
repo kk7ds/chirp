@@ -103,7 +103,7 @@ class MemoryMapBytes(object):
         return self.get_packed()
 
     def __repr__(self):
-        return self.printable(printit=False)
+        return self.printable()
 
     def truncate(self, size):
         """Truncate the memory map to @size"""
