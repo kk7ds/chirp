@@ -215,7 +215,7 @@
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.17% |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.19% |
 | <a name="Radioddity_GA-510"></a> Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.42% |
-| <a name="Radioddity_R2"></a> Radioddity_R2 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.36% |
+| <a name="Radioddity_R2"></a> Radioddity_R2 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.04% |
 | <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.47% |
 | <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.90% |
 | <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.05% |
@@ -252,6 +252,7 @@
 | <a name="Retevis_RT22FRS"></a> Retevis_RT22FRS | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="Retevis_RT22S"></a> Retevis_RT22S | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
 | <a name="Retevis_RT23"></a> Retevis_RT23 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.04% |
+| <a name="Retevis_RT24"></a> Retevis_RT24 | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes | 0.31% |
 | <a name="Retevis_RT26"></a> Retevis_RT26 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.03% |
 | <a name="Retevis_RT29_UHF"></a> Retevis_RT29_UHF | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Retevis_RT29_VHF"></a> Retevis_RT29_VHF | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
@@ -359,11 +360,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 356
+**Drivers:** 357
 
-**Tested:** 74% (265/91) (89% of usage stats)
+**Tested:** 74% (266/91) (89% of usage stats)
 
-**Byte clean:** 83% (297/59)
+**Byte clean:** 83% (298/59)
 
 ## Meaning of this testing
 
