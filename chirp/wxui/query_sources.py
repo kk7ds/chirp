@@ -36,6 +36,87 @@ LOG = logging.getLogger(__name__)
 QueryThreadEvent, EVT_QUERY_THREAD = wx.lib.newevent.NewCommandEvent()
 
 
+class NumberValidator(wx.Validator):
+    THING = 'Number'
+    MIN = 0
+    MAX = 1
+    OPTIONAL = True
+
+    def Validate(self, window):
+        textctrl = self.GetWindow()
+        strvalue = textctrl.GetValue()
+        if not strvalue and self.OPTIONAL:
+            return True
+        try:
+            v = float(strvalue)
+            assert v >= self.MIN and v <= self.MAX
+            textctrl.SetBackgroundColour(
+                wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+            return True
+        except ValueError:
+            msg = _('Invalid %(value)s (use decimal degrees)')
+        except AssertionError:
+            msg = _('%(value)s must be between %(min)i and %(max)i')
+        textctrl.SetFocus()
+        textctrl.SetBackgroundColour('pink')
+        catalog = {'value': self.THING,
+                   'min': self.MIN,
+                   'max': self.MAX}
+        wx.MessageBox(msg % catalog, 'Invalid Entry')
+        return False
+
+    def Clone(self):
+        return self.__class__()
+
+    def TransferToWindow(self):
+        return True
+
+    def SetWindow(self, win):
+        super().SetWindow(win)
+        # Clear the validation failure background color as soon as the value
+        # changes to avoid asking them to click OK on a dialog with a warning
+        # sign.
+        win.Bind(wx.EVT_TEXT, self._colorchange)
+
+    def _colorchange(self, event):
+        self.GetWindow().SetBackgroundColour(
+            wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+
+
+class LatValidator(NumberValidator):
+    THING = 'Latitude'
+    MIN = -90
+    MAX = 90
+
+
+class LonValidator(NumberValidator):
+    THING = 'Longitude'
+    MIN = -180
+    MAX = 180
+
+
+class DistValidator(NumberValidator):
+    THING = 'Distance'
+    MIN = 0
+    MAX = 7000
+
+
+class ZipValidator(wx.Validator):
+    def Validate(self, window):
+        textctrl = self.GetWindow()
+        strvalue = textctrl.GetValue()
+        if len(strvalue) == 5 and strvalue.isdigit():
+            return True
+        wx.MessageBox(_('Invalid ZIP code'), 'Invalid Entry')
+        return False
+
+    def Clone(self):
+        return self.__class__()
+
+    def TransferToWindow(self):
+        return True
+
+
 class QueryThread(threading.Thread, base.QueryStatus):
     END_SENTINEL = object()
 
@@ -106,14 +187,25 @@ class QuerySourceDialog(wx.Dialog):
         self.Fit()
         wx.CallAfter(self.Center)
 
+        vbox.GetContainingWindow().InitDialog()
+
         self.result_file = tempfile.NamedTemporaryFile(
             prefix='%s-' % self.NAME,
             suffix='.csv').name
+
+    def _call_validations(self, parent):
+        for child in parent.GetChildren():
+            if not child.Validate():
+                return False
+            self._call_validations(child)
+        return True
 
     def _button(self, event):
         id = event.GetEventObject().GetId()
 
         if id == wx.ID_OK:
+            if not self._call_validations(self):
+                return
             self.FindWindowById(wx.ID_OK).Disable()
             self.do_query()
             return
@@ -190,12 +282,14 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._add_grid(grid, _('State/Province'), self._state)
 
         self._lat = wx.TextCtrl(panel,
-                                value=CONF.get('lat', 'repeaterbook') or '')
+                                value=CONF.get('lat', 'repeaterbook') or '',
+                                validator=LatValidator())
         self._lat.SetHint(_('Optional'))
         self._lat.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
         self._lon = wx.TextCtrl(panel,
-                                value=CONF.get('lon', 'repeaterbook') or '')
+                                value=CONF.get('lon', 'repeaterbook') or '',
+                                validator=LonValidator())
         self._lon.SetHint(_('Optional'))
         self._lon.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
@@ -203,7 +297,8 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._add_grid(grid, _('Longitude'), self._lon)
 
         self._dist = wx.TextCtrl(panel,
-                                 value=CONF.get('dist', 'repeaterbook') or '')
+                                 value=CONF.get('dist', 'repeaterbook') or '',
+                                 validator=DistValidator())
         self._dist.SetHint(_('Optional'))
         self._dist.SetToolTip(_('Limit results to this distance (km) from '
                                 'coordinates'))
@@ -285,12 +380,14 @@ class MyGMRSQueryDialog(QuerySourceDialog):
         self._add_grid(grid, _('State'), self._state)
 
         self._lat = wx.TextCtrl(panel,
-                                value=CONF.get('lat', 'repeaterbook') or '')
+                                value=CONF.get('lat', 'repeaterbook') or '',
+                                validator=LatValidator())
         self._lat.SetHint(_('Optional'))
         self._lat.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
         self._lon = wx.TextCtrl(panel,
-                                value=CONF.get('lon', 'repeaterbook') or '')
+                                value=CONF.get('lon', 'repeaterbook') or '',
+                                validator=LonValidator())
         self._lon.SetHint(_('Optional'))
         self._lon.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
@@ -454,7 +551,8 @@ class RRQueryDialog(QuerySourceDialog):
         panel.SetSizer(grid)
         self._uszip = wx.TextCtrl(
             panel,
-            value=CONF.get('zipcode', 'radioreference') or '')
+            value=CONF.get('zipcode', 'radioreference') or '',
+            validator=ZipValidator())
         self._add_grid(grid, 'ZIP Code', self._uszip)
 
         return panel
