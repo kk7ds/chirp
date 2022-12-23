@@ -1,4 +1,3 @@
-# encoding=utf-8
 # Copyright 2012 Dan Smith <dsmith@danplanet.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -557,6 +556,8 @@ HAM_FREQS = [162.55000, 162.40000, 162.47500, 162.42500, 162.45000,
 HAM_NAME = ["NOAA 1", "NOAA 2", "NOAA 3", "NOAA 4", "NOAA 5", "NOAA 6",
             "NOAA 7", "NOAA 8", "NOAA 9", "NOAA 10", "NOAA 11"]
 
+ALL_MODEL = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
+
 def _do_status(radio, block):
     status = chirp_common.Status()
     status.msg = "Cloning"
@@ -571,23 +572,8 @@ CMD_ACK = "\x06"
 def _upper_band_from_data(data):
     return data[0x03:0x04]
 
-
 def _upper_band_from_image(radio):
     return _upper_band_from_data(radio.get_mmap())
-
-
-def _firmware_version_from_data(data, version_start, version_stop):
-    version_tag = data[version_start:version_stop]
-    return version_tag
-
-
-# def _firmware_version_from_image(radio):
-#     version = _firmware_version_from_data(radio.get_mmap(),
-#                                           radio._fw_ver_file_start,
-#                                           radio._fw_ver_file_stop)
-#     LOG.debug("_firmware_version_from_image: " + util.hexprint(version))
-#     return version
-
 
 def _do_ident(radio, magic, secondack=True):
     serial = radio.pipe
@@ -605,35 +591,18 @@ def _do_ident(radio, magic, secondack=True):
 
     serial.write("\x02")
 
-    # Until recently, the "ident" returned by the radios supported by this
-    # driver have always been 8 bytes long. The image sturcture is the 8 byte
-    # "ident" followed by the downloaded memory data. So all of the settings
-    # structures are offset by 8 bytes. The ident returned from a UV-6 radio
-    # can be 8 bytes (original model) or now 12 bytes.
-    #
-    # To accomodate this, the "ident" is now read one byte at a time until the
-    # last byte ("\xdd") is encountered. The bytes containing the value "\x01"
-    # are discarded to shrink the "ident" length down to 8 bytes to keep the
-    # image data aligned with the existing settings structures.
-    
-
-    # Ok, get the response
     response = ""
     for i in range(1, 9):
         byte = serial.read(1)
         response += byte
-        # stop reading once the last byte ("\xdd") is encountered
-        # if byte == "\xff":
-        #     break
 
-    # check if response is OK
     if len(response) in [8, 12]:
         # DEBUG
         LOG.info("Valid response, got this:")
         LOG.debug(util.hexprint(response))
-        # print(util.hexprint(response)[31:37])
         
-        # 判断对讲机模式
+        # Determine the walkie-talkie mode
+        # TDH8 have three mode:ham, gmrs and normal
         global MODE_RADIO 
         MODE_RADIO = util.hexprint(response)[31:37]
         
@@ -684,77 +653,15 @@ def _read_block(radio, start, size):
 
 
 def _get_radio_firmware_version(radio):
-    if radio.MODEL == "TD-H8":
+    if radio.MODEL in ALL_MODEL:
         block = _read_block(radio, 0x1B40, 0x20)
         version = block[0:6]
-    # else:
-    #     block1 = _read_block(radio, 0x1EC0, 0x40, True)
-    #     block2 = _read_block(radio, 0x1F00, 0x40, False)
-    #     block = block1 + block2
-    #     version = block[48:62]
     return version
 
 
 IDENT_BLACKLIST = {
     "\x50\x56\x4F\x4A\x48\x1C\x14": "Radio identifies as TDH8",
 }
-
-# def mode_data(radio):
-#     for magic in radio._idents:
-#         try:
-#             data = _do_mode(radio, magic)
-#             return data
-#         except errors.RadioError, e:
-#             LOG.error("tdh8._mode_radio: %s")
-#             time.sleep(2)
-            
-            
-# def _do_mode(radio, magic, secondack=True):
-#     serial = radio.pipe
-#     serial.timeout = 1
-    
-#     #LOG.info("Sending Magic: %s" % util.hexprint(magic))
-#     # for byte in magic:
-#     serial.write(magic)
-#     ack = serial.read(1)
-
-#     if ack != "\x06":
-#         if ack:
-#             LOG.debug(repr(ack))
-#         raise errors.RadioError("Radio did not respond")
-
-#     serial.write("\x02")
-
-#     response = ""
-#     for i in range(1, 9):
-#         byte = serial.read(1)
-#         response += byte
-
-#     if len(response) in [8, 12]:
-#         # DEBUG
-#         LOG.info("Valid response, got this:")
-#         LOG.debug(util.hexprint(response))
-#         # print(util.hexprint(response)[31:37])
-#         response_mode(util.hexprint(response)[31:37])
-#         if len(response) == 12:
-#             ident = response[0] + response[3] + response[5] + response[7:]
-#         else:
-#             ident = response
-#     else:
-#         # bad response
-#         msg = "Unexpected response, got this:"
-#         msg += util.hexprint(response)
-#         LOG.debug(msg)
-#         raise errors.RadioError("Unexpected response from radio.") 
-            
-            
-            
-            
-            
-            
-            
-            
-            
 
 
 def _ident_radio(radio):
@@ -833,12 +740,6 @@ def _write_block(radio, addr, data):
     serial.write(used_data)
     
     ack = radio.pipe.read(1)
-    # f = open("C:/Users/33095/Desktop/test_ack.txt","a")
-    # f.write(str(binascii.b2a_hex(ack)) + "\n")
-    # f.close
-    # print("数据打印完成！已保存到桌面！")
-    # print("response = {}".format(str(binascii.b2a_hex(ack))))
-    # ack = ack.strip('\n')
     if ack != "\x06":
         raise errors.RadioError("Radio refused to accept block 0x%04x" % addr)
 
@@ -856,11 +757,6 @@ def _do_upload(radio):
         for addr in range(start_addr, end_addr, 0x20):
             _write_block(radio, addr, 0x20)
             _do_status(radio, addr)
-    # LOG.debug("Upload block 1~188 done.")
-    # for start_addr, end_addr in radio._other_main:
-    #     for addr in range(start_addr, end_addr, 0x20):
-    #         _write_block(radio, addr, 0x20)
-    #         _do_status(radio, addr)
     _exit_write_block(radio)
     LOG.debug("Upload all done.")
     
@@ -879,33 +775,34 @@ UV5R_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
 
 
-def model_match(cls, data):
-    """Match the opened/downloaded image to the correct version"""
+# def model_match(cls, data):
+#     """Match the opened/downloaded image to the correct version"""
 
-    if len(data) == 0x1950:
-        rid = data[0x1948:0x1950]
-        return rid.startswith(cls.MODEL)
-    elif len(data) == 0x1948:
-        rid = data[cls._fw_ver_file_start:cls._fw_ver_file_stop]
-        if any(type in rid for type in cls._basetype):
-            return True
-    else:
-        return False
+#     if len(data) == 0x1950:
+#         rid = data[0x1948:0x1950]
+#         return rid.startswith(cls.MODEL)
+#     elif len(data) == 0x1948:
+#         rid = data[cls._fw_ver_file_start:cls._fw_ver_file_stop]
+#         if any(type in rid for type in cls._basetype):
+#             return True
+#     else:
+#         return False
 
 @directory.register
 class TDH8(chirp_common.CloneModeRadio):
     """TID TD-H8"""
     VENDOR = "TID"
     MODEL = "TD-H8"
+    ident_Mode = "P31183"
     BAUD_RATE = 38400
     _memsize = 0x1eef
     _ranges_main = [(0x0000, 0x1eef)]
     # _other_main = [(0x1868, 0x1eff)]
     _basetype = BASETYPE_UV5R
     _idents = [TD_H8]
-    _vhf_range = (136000000, 174000000)
+    _vhf_range = (136000000, 175000000)
     _220_range = (220000000, 260000000)
-    _uhf_range = (400000000, 520000000)
+    _uhf_range = (400000000, 521000000)
     _aux_block = True
     _tri_power = True
     _gmrs = True
@@ -915,13 +812,6 @@ class TDH8(chirp_common.CloneModeRadio):
     # offset of fw version in image file
     _fw_ver_file_start = 0x1838
     _fw_ver_file_stop = 0x1846
-
-    
-    
-    # _ranges_aux = [
-    #                (0x1EC0, 0x2000),
-    #               ]
-    
     
     _valid_chars = UV5R_CHARSET
 
@@ -993,18 +883,18 @@ class TDH8(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, 199)
         return rf
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        match_size = False
-        match_model = False
-        if len(filedata) in [0x1808, 0x1948, 0x1950]:
-            match_size = True
-        match_model = model_match(cls, filedata)
+    # @classmethod
+    # def match_model(cls, filedata, filename):
+    #     match_size = False
+    #     match_model = False
+    #     if len(filedata) in [0x1808, 0x1948, 0x1950]:
+    #         match_size = True
+    #     match_model = model_match(cls, filedata)
 
-        if match_size and match_model:
-            return True
-        else:
-            return False
+    #     if match_size and match_model:
+    #         return True
+    #     else:
+    #         return False
         
         
     def process_mmap(self):
@@ -1042,8 +932,9 @@ class TDH8(chirp_common.CloneModeRadio):
     #         return 1
     #     else:
     #         return 
-
+    
     def sync_in(self):
+        self.ident_Mode
         try:
             self._mmap = _do_download(self)
         except errors.RadioError:
@@ -1051,13 +942,29 @@ class TDH8(chirp_common.CloneModeRadio):
         except Exception, e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
+        
         # HAM OR GMRS
-        print(MODE_RADIO)
-        if MODE_RADIO == 'P31183': #all
+        LOG.info("Radio mode is " + MODE_RADIO)
+        LOG.info("Chirp choose mode is " + self.ident_Mode)
+        # The Ham and Gmrs modes are subclasses of this model tdh8. 
+        # When the Ham or Gmrs mode is selected, 
+        # a double verification operation will be performed to 
+        # obtain the current mode code of the walkie-talkie and 
+        # the mode code currently selected by the chirp for comparison. 
+        # If the two are consistent, enter This mode, 
+        # otherwise an inconsistent error will be prompted.
+        
+        if MODE_RADIO == 'P31183' and self.ident_Mode == 'P31183': # normal mode
             self._memobj.settings.ham = 0
             self._memobj.settings.gmrs = 0
+        elif MODE_RADIO == 'P31184' and self.ident_Mode == 'P31184': # gmrs mode
+            self._memobj.settings.ham = 0
+            self._memobj.settings.gmrs = 1
+        elif MODE_RADIO == 'P31185' and self.ident_Mode == 'P31185': # ham mode
+            self._memobj.settings.ham = 1
+            self._memobj.settings.gmrs = 0
         else:
-            msg = ("Please check your walkie-talkie mode, the current mode is not Normal mode.")
+            msg = ("Please check whether the walkie-talkie mode is consistent with the selected model mode.")
             raise InvalidValueError(msg)
     def sync_out(self):
         try:
@@ -1076,9 +983,9 @@ class TDH8(chirp_common.CloneModeRadio):
             raw_tx += _mem.txfreq[i].get_raw()
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
-    # 编码处理
+    # Encoding processing
     def _decode_tone(self, val):
-        #模拟哑音
+        # simulate mute
         if int(str(val[:2]), 16) <= 37 and val!='0000':
             return 'Tone', int(str(val)) / 10.0, None
         elif val[:1] == '8':
@@ -1092,7 +999,7 @@ class TDH8(chirp_common.CloneModeRadio):
         else:
             return '', None, None
 
-    # 解码处理
+    # Decoding processing
     def _encode_tone(self, memval, mode, value, pol):
         if mode == '':
             memval.set_value([255, 255])
@@ -1105,16 +1012,6 @@ class TDH8(chirp_common.CloneModeRadio):
             #memval=[int(stx[1:], 16), int(stx[:1], 16)]
             memval.set_value([int(stx_f, 16), int(stx_b, 16)])
         elif mode == 'DTCS':
-            # DQT = '2' if pol == 'N' else 'A'
-            # # 8进制转2  zfill 9位不够 补0
-            # b_8 = '100' + bin(int(str(value), 8))[2:].zfill(9)
-            # # 2转16
-            # # 获取后面2位
-            # a_1 = hex(int(b_8, 2))[2:][1:]
-            # # 获取前面2位
-            # a_2 = DQT + hex(int(b_8, 2))[2:][:1]
-            # stx_f = str(val)[1:]
-            # stx_b = str(val)[:1]
             val = str(value)
             if pol == 'R':
                 memval.set_value([int(str(val[1:]), 16), int('C' + str(val[0]), 16)])
@@ -1147,13 +1044,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def get_memory(self, number):
         _mem = self._get_mem(number)
         _nam = self._get_nam(number)
-        
-        # _scan_val = self._get_scan(0)
-        # print(_scan_val)
-        
-        # for i in _scan.scan:
-        #     LOG.debug(i)
-        # print(self._memobj.scanadd.scan)
                 
         mem = chirp_common.Memory()
         
@@ -1162,28 +1052,11 @@ class TDH8(chirp_common.CloneModeRadio):
         if _mem.get_raw()[0] == "\xff":
             mem.empty = True
             return mem
-
-        # 扫描添加     
-        # scan_val_list = []
-        # for x in range(25):
-        #     a = self._get_scan(x)
-        #     # print("%i to %i scan values" % (fst, sec))
-        #     for i in range(0, 8):
-        #         scan_val = (a._generators["scan" + str(i + 1)])
-        #         # print(str(scan_val)[3])
-        #         used_scan_val = str(scan_val)[3]
-        #         scan_val_list.append(used_scan_val)
-        # try:
-        #     mem.scanadd = SCAN_VALUES[int(scan_val_list[number - 1])]
-        # except IndexError:
-        #     LOG.error("Radio reported invalid Busy Lock %s (in %s)" %
-        #               (int(scan_val_list[number - 1]), SCAN_VALUES))
-        #     mem.scanadd = SCAN_VALUES[0]
-            
-        # 频率
+        
+        # Receiving frequency
         mem.freq = int(_mem.rxfreq) * 10
 
-        # 偏移量
+        # Offset
         if self._gmrs:
             mem.duplex = ""
             mem.offset = 0
@@ -1201,16 +1074,18 @@ class TDH8(chirp_common.CloneModeRadio):
                 mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
                 mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
-        # 信道名
+        # Channel name
         for char in _nam.name:
             if str(char) == "\xFF":
                 char = " "  # The UV-5R software may have 0xFF mid-name
             mem.name += str(char)
         mem.name = mem.name.rstrip()
+        if (MODE_RADIO == "P31185" or MODE_RADIO == "P31184") and (mem.number >= 189 and mem.number <=199):
+            mem.name = HAM_NAME[mem.number - 200]
 
         # dtcs_pol = ["N", "N"]
 
-        # 编解码
+        # encode and decode
         lin = '%02X'  % _mem.txtone[1] + '%02X' % _mem.txtone[0]
         lin2 = '%02X' % _mem.rxtone[1] + '%02X' % _mem.rxtone[0]
         rxtone = self._decode_tone(lin2)
@@ -1227,7 +1102,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
         mem.mode = _mem.wide and "NFM" or "FM" 
 
-        # 隐藏功能
+        # other function
         # pttid
         mem.extra = RadioSettingGroup("Extra", "extra")
         
@@ -1236,13 +1111,13 @@ class TDH8(chirp_common.CloneModeRadio):
                                                 PTTID_VALUES[_mem.pttid]))
         mem.extra.append(rs)
 
-        # 繁忙锁定
+        # Busylock  
         rs = RadioSetting("bcl", "Busy Lock",
                           RadioSettingValueList(BCLOCK_VALUES,
                                                 BCLOCK_VALUES[_mem.bcl]))
         mem.extra.append(rs)
 
-        # 扫描添加
+        # Scan add
         scan_val_list = []
         for x in range(25):
             a = self._get_scan(x)
@@ -1263,21 +1138,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                               FREQHOP_VALUES[_mem.skip]))
         mem.extra.append(rs)
 
-
-        # rs = RadioSetting("bcl", "BCL",
-        #                   RadioSettingValueBoolean(_mem.bcl))
-        # mem.extra.append(rs)
-
-        # rs = RadioSetting("pttid", "PTT ID",
-        #                   RadioSettingValueList(PTTID_LIST,
-        #                                         PTTID_LIST[_mem.pttid]))
-        # mem.extra.append(rs)
-
-        # rs = RadioSetting("scode", "PTT ID Code",
-        #                   RadioSettingValueList(PTTIDCODE_LIST,
-        #                                         PTTIDCODE_LIST[_mem.scode]))
-        # mem.extra.append(rs)
-
         return mem
 
     def _set_mem(self, number):
@@ -1287,7 +1147,7 @@ class TDH8(chirp_common.CloneModeRadio):
         return self._memobj.names[number]
     
     def _get_scan_list(self, scan_data):
-        # scan_val_list 获取全部扫描添加数据1-200位
+        # scan_val_list - Get all scans Add data 1-200 digits
         scan_val_list = []
         for x in range(25):
             a = self._get_scan(x)
@@ -1300,7 +1160,7 @@ class TDH8(chirp_common.CloneModeRadio):
                 # print(used_scan_val)
                 scan_val_list.append(used_scan_val)
         # print(scan_val_list)
-        # used_scan_list 25个结构体 将扫描添加数据拆分为25组 每组8位
+        # used_scan_list - 25 structures, split the scan added data into 25 groups of 8 bits each
         used_scan_list = []
         count_num = 1
         for i in range(0, len(scan_val_list), 8):
@@ -1308,8 +1168,8 @@ class TDH8(chirp_common.CloneModeRadio):
             # print (scan_val_list[i:i + 8])
             used_scan_list.append(scan_val_list[i:i + 8])
             count_num += 1
-        # 判断是否为可以整除的标准数
-        # 定位到所修改的的信道中的扫描添加是那一组 修改
+        # Determine whether it is a standard number that can be divisible
+        # Which group is the scan addition located in the modified channel
         if scan_data % 8 != 0:
             x_list = scan_data / 8 
             y_list = scan_data % 8
@@ -1343,20 +1203,6 @@ class TDH8(chirp_common.CloneModeRadio):
             _nam.set_raw("\xff" * 16)
             return
 
-        was_empty = False
-        # same method as used in get_memory to find
-        # out whether a raw memory is empty
-        if _mem.get_raw()[0] == "\xff":
-            was_empty = True
-            LOG.debug("UV5R: this mem was empty")
-        else:
-            # memorize old extra-values before erasing the whole memory
-            # used to solve issue 4121
-            LOG.debug("mem was not empty, memorize extra-settings")
-            prev_bcl = _mem.bcl.get_value()
-            # prev_scode = _mem.scode.get_value()
-            prev_pttid = _mem.pttid.get_value()
-
         _mem.set_raw("\x00" * 16)
         
         
@@ -1366,11 +1212,9 @@ class TDH8(chirp_common.CloneModeRadio):
                 mem.freq = ham_freqs
                 mem.duplex = "" 
                 mem.power = TX_POWER[1]
-                mem.freqhop = "Off"
-                mem.name = HAM_NAME[mem.number - 189]
+                # mem.freqhop = "Off"
+                # mem.name = HAM_NAME[mem.number - 189]
                 mem.tmode = ""
-                # msg = ("The frequency in channels 189-199 cannot be modified in Ham mode")
-                # raise msg
             elif (mem.number >= 1 and mem.number <= 188) and ((mem.freq >= 144000000 and mem.freq <= 148000000) or (mem.freq >= 420000000 and mem.freq <= 450000000)):
                 _mem.rxfreq = mem.freq / 10
             else:
@@ -1378,41 +1222,12 @@ class TDH8(chirp_common.CloneModeRadio):
                 msg = ("The frequency in channels 1-188 must be between 144.00000-148.00000 or 420.00000-450.00000")
                 raise InvalidValueError(msg)   
             
-        # if self._gmrs and MODE_RADIO == "P31184":
-        
-        # if self._gmrs :
-        #     if mem.number >= 189 and mem.number <= 199:
-        #         GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
-        #         mem.freq = GMRS_FREQ
-        #         if mem.number <= 22:
-        #             mem.duplex = ''
-        #             mem.offset = 0
-        #             if mem.number >= 8 and mem.number <= 14:
-        #                 mem.mode = "NFM"
-        #                 mem.power = UV5R_POWER_LEVELS[1]
-        #         if mem.number > 22:
-        #             mem.duplex = '+'
-        #             mem.offset = 5000000
-        #     elif float(mem.freq) / 1000000 in GMRS_FREQS:
-        #         if float(mem.freq) / 1000000 in GMRS_FREQS2:
-        #             mem.offset = 0
-        #             mem.mode = "NFM"
-        #             mem.power = UV5R_POWER_LEVELS[1]
-        #         if float(mem.freq) / 1000000 in GMRS_FREQS3:
-        #             if mem.duplex == '+':
-        #                 mem.offset = 5000000
-        #             else:
-        #                 mem.offset = 0
-        #     else:
-        #         mem.duplex = 'off'
-        #         mem.offset = 0
-
         if self._gmrs and MODE_RADIO == "P31184":
             if (mem.number >= 189 and mem.number <= 199):
                 ham_freqs = int(HAM_FREQS[mem.number - 189] * 1000000) 
                 mem.freq = ham_freqs
                 _mem.rxfreq = mem.freq / 10
-                
+                mem.power = TX_POWER[1]
             elif (mem.number >=1 and mem.number <= 30):
                 if mem.number >= 8 and mem.number <= 14:
                     gmrs_freqs = int(GMRS_FREQS_B[mem.number - 1] * 1000000) 
@@ -1514,51 +1329,10 @@ class TDH8(chirp_common.CloneModeRadio):
             except IndexError:
                 _nam.name[i] = "\xFF"
 
-        # rxmode = txmode = ""
-        # if mem.tmode == "Tone":
-        #     _mem.txtone = int(mem.rtone * 10)
-        #     _mem.rxtone = 0
-        # elif mem.tmode == "TSQL":
-        #     _mem.txtone = int(mem.ctone * 10)
-        #     _mem.rxtone = int(mem.ctone * 10)
-        # elif mem.tmode == "DTCS":
-        #     rxmode = txmode = "DTCS"
-        #     _mem.txtone = UV5R_DTCS.index(mem.dtcs) + 1
-        #     _mem.rxtone = UV5R_DTCS.index(mem.dtcs) + 1
-        # elif mem.tmode == "Cross":
-        #     txmode, rxmode = mem.cross_mode.split("->", 1)
-        #     if txmode == "Tone":
-        #         _mem.txtone = int(mem.rtone * 10)
-        #     elif txmode == "DTCS":
-        #         _mem.txtone = UV5R_DTCS.index(mem.dtcs) + 1
-        #     else:
-        #         _mem.txtone = 0
-        #     if rxmode == "Tone":
-        #         _mem.rxtone = int(mem.ctone * 10)
-        #     elif rxmode == "DTCS":
-        #         _mem.rxtone = UV5R_DTCS.index(mem.rx_dtcs) + 1
-        #     else:
-        #         _mem.rxtone = 0
-        # else:
-        #     _mem.rxtone = 0
-        #     _mem.txtone = 0
-        
-        # txtone, rxtone = chirp_common.split_tone_encode(mem)
-        # self._encode_tone(_mem.txtone, *txtone)
-        # self._encode_tone(_mem.rxtone, *rxtone)
-
-        # if txmode == "DTCS" and mem.dtcs_polarity[0] == "R":
-        #     _mem.txtone += 0x69
-        # if rxmode == "DTCS" and mem.dtcs_polarity[1] == "R":
-        #     _mem.rxtone += 0x69
-
         txtone, rxtone = chirp_common.split_tone_encode(mem)
         self._encode_tone(_mem.txtone, *txtone)
         self._encode_tone(_mem.rxtone, *rxtone)
         
-        
-        # _mem.scan = mem.skip != "S"
-        # _mem.wide = mem.mode == "FM"
         if mem.mode == "FM":
             _mem.wide = 0
         else:
@@ -1572,89 +1346,12 @@ class TDH8(chirp_common.CloneModeRadio):
             _mem.lowpower = 10
         else:
             _mem.lowpower = 0
-        
-        # if str(mem.ptid) == "Off":
-        #     _mem.pttid = 0
-        # elif str(mem.ptid) == "BOT":
-        #     _mem.pttid = 1
-        # elif str(mem.ptid) == "EOT":
-        #     _mem.pttid = 10
-        # elif str(mem.ptid) == "BOTH":
-        #     _mem.pttid = 11
-        # else:
-        #     _mem.pttid = 0
-        
-        # if mem.bcloc:
-        #     index_bcloc =  [i for i in BUSYLOCK_LIST]
-        #     _mem.bcl = index_bcloc.index(mem.bcloc)
-        # else:
-        #     _mem.bcl = 0  
-        
-        # print(self._memobj.scanadd[0].scan1)
-        # self._memobj.scanadd[0].scan1 = 0
-        # print(self._memobj.scanadd[0].scan1)
-        
-        # if mem.scanadd:
-        #     index_scanadd =  [i for i in SCAN_VALUES]
-        #     # scanadd_data 所修改的值
-        #     scanadd_data = index_scanadd.index(mem.scanadd)
-        #     scanlist = self._get_scan_list(mem.number)
-        #     _scan = self._get_scan(scanlist[0])
-            
-        #     if scanlist[1] == 1:
-        #         _scan.scan1 = scanadd_data
-        #     elif scanlist[1] == 2:
-        #         _scan.scan2 = scanadd_data
-        #     elif scanlist[1] == 3:
-        #         _scan.scan3 = scanadd_data
-        #     elif scanlist[1] == 4:
-        #         _scan.scan4 = scanadd_data
-        #     elif scanlist[1] == 5:
-        #         _scan.scan5 = scanadd_data
-        #     elif scanlist[1] == 6:
-        #         _scan.scan6 = scanadd_data
-        #     elif scanlist[1] == 7:
-        #         _scan.scan7 = scanadd_data
-        #     elif scanlist[1] == 8:
-        #         _scan.scan8 = scanadd_data    
-        # else:
-        #     scanlist = self._get_scan_list(mem.number)
-        #     _scan = self._get_scan(scanlist[0])
-        #     if scanlist[1] == 1:
-        #         _scan.scan1 = 0
-        #     elif scanlist[1] == 2:
-        #         _scan.scan2 = 0
-        #     elif scanlist[1] == 3:
-        #         _scan.scan3 = 0
-        #     elif scanlist[1] == 4:
-        #         _scan.scan4 = 0
-        #     elif scanlist[1] == 5:
-        #         _scan.scan5 = 0
-        #     elif scanlist[1] == 6:
-        #         _scan.scan6 = 0
-        #     elif scanlist[1] == 7:
-        #         _scan.scan7 = 0
-        #     elif scanlist[1] == 8:
-        #         _scan.scan8 = 0
-        
-        
-        # if mem.freqhop:
-        #     index_freqhop =  [i for i in FREQHOP_VALUES]
-        #     _mem.skip = index_freqhop.index(mem.freqhop)
-        # else:
-        #     _mem.skip = 0   
-        
-        if not was_empty:
-            # restoring old extra-settings (issue 4121
-            _mem.bcl.set_value(prev_bcl)
-            # _mem.scode.set_value(prev_scode)
-            _mem.pttid.set_value(prev_pttid)
 
         for setting in mem.extra:
             if setting.get_name() == 'scanadd':
                 
                 index_scanadd =  [i for i in SCAN_VALUES]
-                # scanadd_data 所修改的值
+                # scanadd_data - modified value
                 scanadd_data = index_scanadd.index(str(setting.value))
                 scanlist = self._get_scan_list(mem.number)
                 _scan = self._get_scan(scanlist[0])
@@ -1675,67 +1372,25 @@ class TDH8(chirp_common.CloneModeRadio):
                     _scan.scan7 = scanadd_data
                 elif scanlist[1] == 8:
                     _scan.scan8 = scanadd_data    
-            # else:
-            #     scanlist = self._get_scan_list(mem.number)
-            #     _scan = self._get_scan(scanlist[0])
-            #     if scanlist[1] == 1:
-            #         _scan.scan1 = 0
-            #     elif scanlist[1] == 2:
-            #         _scan.scan2 = 0
-            #     elif scanlist[1] == 3:
-            #         _scan.scan3 = 0
-            #     elif scanlist[1] == 4:
-            #         _scan.scan4 = 0
-            #     elif scanlist[1] == 5:
-            #         _scan.scan5 = 0
-            #     elif scanlist[1] == 6:
-            #         _scan.scan6 = 0
-            #     elif scanlist[1] == 7:
-            #         _scan.scan7 = 0
-            #     elif scanlist[1] == 8:
-            #         _scan.scan8 = 0
             else:
-                setattr(_mem, setting.get_name(), setting.value)
-            
-    # def _is_orig(self):
-    #     version_tag = _firmware_version_from_image(self)
-    #     LOG.debug("@_is_orig, version_tag: %s", util.hexprint(version_tag))
-    #     try:
-    #         if 'BFB' in version_tag:
-    #             idx = version_tag.index("BFB") + 3
-    #             version = int(version_tag[idx:idx + 3])
-    #             return version < 291
-    #         return False
-    #     except:
-    #         pass
-    #     raise errors.RadioError("Unable to parse version string %s" %
-    #                             version_tag)
+                if MODE_RADIO == "P31185" and mem.number >= 189 and mem.number <= 199:
+                    if setting.get_name() == 'pttid':
+                        setting.value = 'Off'
+                        setattr(_mem, setting.get_name(), setting.value)
+                    elif setting.get_name() == 'bcl':
+                        setting.value = 'Off'
+                        setattr(_mem, setting.get_name(), setting.value)
+                    elif setting.get_name() == 'skip':
+                        setting.value = 'Off'
+                        setattr(_mem, setting.get_name(), setting.value)
+                else:
+                    setattr(_mem, setting.get_name(), setting.value)
 
-    # def _my_version(self):
-    #     version_tag = _firmware_version_from_image(self)
-    #     if 'BFB' in version_tag:
-    #         idx = version_tag.index("BFB") + 3
-    #         return int(version_tag[idx:idx + 3])
-
-    #     raise Exception("Unrecognized firmware version string")
-    
     def _my_upper_band(self):
         band_tag = _upper_band_from_image(self)
         return band_tag
 
     def _get_settings(self): 
-              
-        # scan_val_list = []
-        # for x in range(25):
-        #     a = self._get_scan(x)
-        #     # print("%i to %i scan values" % (fst, sec))
-        #     for i in range(0, 8):
-        #         scan_val = (a._generators["scan" + str(i + 1)])
-        #         # print(str(scan_val)[3])
-        #         used_scan_val = str(scan_val)[3]
-        #         scan_val_list.append(used_scan_val)
-        # print(scan_val_list)
-        
         _settings = self._memobj.settings
         _press = self._memobj.press
         _aoffset = self._memobj.aoffset
@@ -1772,7 +1427,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                                 AUTOLOCK_LIST[_settings.keyautolock]))
         basic.append(rs)
         
-        # 发射限时缺失
+        # launch timeout
         # rs = RadioSetting("timeout", "Time out(sec)",
         #                   RadioSettingValueList(TIME_OUT_LIST,
         #                                         TIME_OUT_LIST[1]))
@@ -1849,12 +1504,6 @@ class TDH8(chirp_common.CloneModeRadio):
                             RadioSettingValueBoolean(_settings.rxled))
         basic.append(rs)
         
-        # # 仅频道模式存疑
-        # rs = RadioSetting("chmode", "Only CH Mode",
-        #                     RadioSettingValueBoolean(0))
-        # basic.append(rs)
-        
-        # print(_press.stopkey1)
         rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
                           RadioSettingValueList(SHORT_KEY_LIST,
                                                 SHORT_KEY_LIST[0]))
@@ -1893,37 +1542,9 @@ class TDH8(chirp_common.CloneModeRadio):
         rs = RadioSetting("voxdelay", "VOX Delay",
                           RadioSettingValueList(VOX_DELAY,
                                                 VOX_DELAY[_settings.voxdelay]))
-        basic.append(rs)
+        basic.append(rs)      
         
-        # def fm_validate(value):
-        #         value = chirp_common.parse_freq(value)
-        #         if 17400000 <= value and value < 40000000:
-        #             msg = ("Can't be between 174.00000-400.00000")
-        #             raise InvalidValueError(msg)
-        #         return chirp_common.format_freq(value)
-        
-        # def freq_validate(value):
-        #         value = chirp_common.parse_freq(value)
-        #         if 13600000 <= value and value < 17300000 and value >= 40000000 and value <= 52000000:
-        #             msg = ("Can't be between 136.00000-174.00000 and 400.00000 - 520.00000")
-        #             raise InvalidValueError(msg)
-        #         return chirp_common.format_freq(value)
-        
-        # def apply_freq(setting, obj):
-        #         value = chirp_common.parse_freq(str(setting.value)) / 10
-        #         obj.band = value >= 40000000
-        #         for i in range(7, -1, -1):
-        #             obj.freq[i] = value % 10
-        #             value /= 10
-                    
-        # val1a = RadioSettingValueString(0, 10, freqa)
-        # val1a.set_validate_callback(freq_validate)
-        # rs = RadioSetting("rxfreq", "A Channel - Frequency", val1a)
-        # # rs.set_apply_callback(apply_freq, _vfoa)
-        # abblock.append(rs)
-        
-        
-        # A信道
+        # A channel
         a_freq = int(_vfoa.rxfreqa)
         freqa = "%i.%05i" % (a_freq / 100000, a_freq % 100000)     
         if freqa == "0.00000":
@@ -1936,9 +1557,9 @@ class TDH8(chirp_common.CloneModeRadio):
         abblock.append(rs)
         
         
-        # 偏移量
-        # 假如偏移量为12.345
-        # 则拿到的数据为[0x45, 0x23, 0x01, 0x00]
+        # Offset
+        # If the offset is 12.345
+        # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
         a_set_val = _aoffset.ofseta
         a_set_list = len(_aoffset.ofseta) - 1
         real_val = ''
@@ -1960,9 +1581,9 @@ class TDH8(chirp_common.CloneModeRadio):
                               A_OFFSET, A_OFFSET[_vfoa.offset]))
         abblock.append(rs)
         
-        # 对亚音频数据处理
-        # 接收到的亚音频数据，例如74.4则得到的是一对象[0x44, 0x07]
-        # 按照下面的逻辑进行处理对象得到74.4
+        # Processing of sub-audio data
+        # Received sub-audio data, for example, 74.4 will get an object [0x44, 0x07]
+        # Process the object according to the following logic to get 74.4
         if str(_vfoa.rxtone[1])[2] == 'C':
             # list_aqtdqt = map(str, A_QTDQT_DTCS)
             # I_tone_list = map(lambda x: "D" + str.zfill(list_aqtdqt[x], 3) + "I", range(len(list_aqtdqt)))
@@ -2010,7 +1631,7 @@ class TDH8(chirp_common.CloneModeRadio):
                               A_WORKMODE, A_WORKMODE[_settings.aworkmode]))
         abblock.append(rs)
         
-        # B信道
+        # B channel
         b_freq = int(str(int(_vfob.rxfreqb)).ljust(8, '0'))
         freqb = "%i.%05i" % (b_freq / 100000, b_freq % 100000)
         if freqb == "0.00000":
@@ -2022,10 +1643,10 @@ class TDH8(chirp_common.CloneModeRadio):
         # rs.set_apply_callback(apply_freq, _vfob)
         abblock.append(rs)
 
-        # 偏移量offset frequency
-        # 假如偏移量为12.345
-        # 则拿到的数据为[0x45, 0x23, 0x01, 0x00]
-        # 需要使用下面的匿名函数进行处理数据
+        # offset offset frequency
+        # If the offset is 12.345
+        # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
+        # Need to use the following anonymous function to process data
         b_set_val = _boffset.ofsetb
         b_set_list = len(_boffset.ofsetb) - 1
         real_val = ''
@@ -2050,9 +1671,9 @@ class TDH8(chirp_common.CloneModeRadio):
                               B_OFFSET, B_OFFSET[_vfob.offsetb]))
         abblock.append(rs)
         
-        # 对亚音频数据处理
-        # 接收到的亚音频数据，例如74.4则得到的是一对象[0x44, 0x07]
-        # 按照下面的逻辑进行处理对象得到74.4
+        # Processing of sub-audio data
+        # Received sub-audio data, for example, 74.4 will get an object [0x44, 0x07]
+        # Process the object according to the following logic to get 74.4
         if str(_vfob.rxtoneb[1])[2] == 'C':
             # list_aqtdqt = map(str, A_QTDQT_DTCS)
             # I_tone_list = map(lambda x: "D" + str.zfill(list_aqtdqt[x], 3) + "I", range(len(list_aqtdqt)))
@@ -2399,7 +2020,7 @@ class TDH8(chirp_common.CloneModeRadio):
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     
-                    # 信道A
+                    # Channel A
                     elif setting == "rxfreqa" and element.value.get_mutable():
                         val = int(str(element.value).replace('.', '').ljust(8, '0'))
                         if (val >= 13600000 and val <= 17400000) or (val >= 40000000 and val <= 52000000):
@@ -2467,7 +2088,7 @@ class TDH8(chirp_common.CloneModeRadio):
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, list_val)
                     
-                    # B信道
+                    # B channel
                     elif setting == "rxfreqb" and element.value.get_mutable():
                         val = 0
                         val = int(str(element.value).replace('.', '').ljust(8, '0'))
@@ -2558,14 +2179,6 @@ class TDH8(chirp_common.CloneModeRadio):
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         self._memobj.fmmode[num - 1].fmblock = list_val
                         
-                        
-                       
-                        # _fm = self._get_fm(i).fmblock
-                        # _fm_len = len(_fm) - 1
-                        # _fm_temp = ''
-                        # for x in range(_fm_len, -1, -1):
-                        #     _fm_temp += str(_fm[x])[2:]
-                        # '00000   '
                         if val != '00000   ':
                             fmblock_xy = self.get_block_xy(num)
                             _fmblockfirm = self._get_fmblock_data(fmblock_xy[0])
@@ -2817,279 +2430,14 @@ class TDH8(chirp_common.CloneModeRadio):
                 raise
 
 
-# class UV5XAlias(chirp_common.Alias):
-#     VENDOR = "Baofeng"
-#     MODEL = "UV-5X"
-
-
-# class RT5RAlias(chirp_common.Alias):
-#     VENDOR = "Retevis"
-#     MODEL = "RT5R"
-
-
-# class RT5RVAlias(chirp_common.Alias):
-#     VENDOR = "Retevis"
-#     MODEL = "RT5RV"
-
-
-# class RT5Alias(chirp_common.Alias):
-#     VENDOR = "Retevis"
-#     MODEL = "RT5"
-
-
-# class RT5_TPAlias(chirp_common.Alias):
-#     VENDOR = "Retevis"
-#     MODEL = "RT5(tri-power)"
-
-
-# class RH5RAlias(chirp_common.Alias):
-#     VENDOR = "Rugged"
-#     MODEL = "RH5R"
-
-
-# class ROUV5REXAlias(chirp_common.Alias):
-#     VENDOR = "Radioddity"
-#     MODEL = "UV-5R EX"
-
-
-# class A5RAlias(chirp_common.Alias):
-#     VENDOR = "Ansoko"
-#     MODEL = "A-5R"
-
-
-# @directory.register
-# class BaofengUV5RGeneric(BaofengUV5R):
-#     ALIASES = [UV5XAlias, RT5RAlias, RT5RVAlias, RT5Alias, RH5RAlias,
-#                ROUV5REXAlias, A5RAlias]
-
-
-# @directory.register
-# class BaofengF11Radio(BaofengUV5R):
-#     VENDOR = "Baofeng"
-#     MODEL = "F-11"
-#     _basetype = BASETYPE_F11
-#     _idents = [UV5R_MODEL_F11]
-
-#     def _is_orig(self):
-#         # Override this for F11 to always return False
-#         return False
-
-
-# @directory.register
-# class BaofengUV82Radio(BaofengUV5R):
-#     MODEL = "UV-82"
-#     _basetype = BASETYPE_UV82
-#     _idents = [UV5R_MODEL_UV82]
-#     _vhf_range = (130000000, 176000000)
-#     _uhf_range = (400000000, 521000000)
-#     _valid_chars = chirp_common.CHARSET_ASCII
-
-#     def _is_orig(self):
-#         # Override this for UV82 to always return False
-#         return False
-
-
-# @directory.register
-# class Radioddity82X3Radio(BaofengUV82Radio):
-#     VENDOR = "Radioddity"
-#     MODEL = "UV-82X3"
-#     _basetype = BASETYPE_UV82X3
-
-#     def get_features(self):
-#         rf = BaofengUV5R.get_features(self)
-#         rf.valid_bands = [self._vhf_range,
-#                           (200000000, 260000000),
-#                           self._uhf_range]
-#         return rf
-
-
-# @directory.register
-# class BaofengUV6Radio(BaofengUV5R):
-
-#     """Baofeng UV-6/UV-7"""
-#     VENDOR = "Baofeng"
-#     MODEL = "UV-6"
-#     _basetype = BASETYPE_UV6
-#     _idents = [UV5R_MODEL_UV6,
-#                UV5R_MODEL_UV6_ORIG
-#                ]
-#     _aux_block = False
-
-#     def get_features(self):
-#         rf = BaofengUV5R.get_features(self)
-#         rf.memory_bounds = (1, 128)
-#         return rf
-
-#     def _get_mem(self, number):
-#         return self._memobj.memory[number - 1]
-
-#     def _get_nam(self, number):
-#         return self._memobj.names[number - 1]
-
-#     def _set_mem(self, number):
-#         return self._memobj.memory[number - 1]
-
-#     def _set_nam(self, number):
-#         return self._memobj.names[number - 1]
-
-#     def _is_orig(self):
-#         # Override this for UV6 to always return False
-#         return False
-
-
-# @directory.register
-# class IntekKT980Radio(BaofengUV5R):
-#     VENDOR = "Intek"
-#     MODEL = "KT-980HP"
-#     _basetype = BASETYPE_KT980HP
-#     _idents = [UV5R_MODEL_291]
-#     _vhf_range = (130000000, 180000000)
-#     _uhf_range = (400000000, 521000000)
-#     _tri_power = True
-
-#     def get_features(self):
-#         rf = BaofengUV5R.get_features(self)
-#         rf.valid_power_levels = UV5R_POWER_LEVELS3
-#         return rf
-
-#     def _is_orig(self):
-#         # Override this for KT980HP to always return False
-#         return False
-
-
-# class ROGA5SAlias(chirp_common.Alias):
-#     VENDOR = "Radioddity"
-#     MODEL = "GA-5S"
-
-
-# class UV5XPAlias(chirp_common.Alias):
-#     VENDOR = "Baofeng"
-#     MODEL = "UV-5XP"
-
-
-# class TSTIF8Alias(chirp_common.Alias):
-#     VENDOR = "TechSide"
-#     MODEL = "TI-F8+"
-
-
-# class TenwayUV5RPro(chirp_common.Alias):
-#     VENDOR = 'Tenway'
-#     MODEL = 'UV-5R Pro'
-
-
-# class TSTST9Alias(chirp_common.Alias):
-#     VENDOR = "TechSide"
-#     MODEL = "TS-T9+"
-
-
-# class TDUV5RRadio(chirp_common.Alias):
-#     VENDOR = "TIDRADIO"
-#     MODEL = "TD-UV5R TriPower"
-
-
-# @directory.register
-# class BaofengBFF8HPRadio(BaofengUV5R):
-#     VENDOR = "Baofeng"
-#     MODEL = "BF-F8HP"
-#     ALIASES = [RT5_TPAlias, ROGA5SAlias, UV5XPAlias, TSTIF8Alias,
-#                TenwayUV5RPro, TSTST9Alias, TDUV5RRadio]
-#     _basetype = BASETYPE_F8HP
-#     _idents = [UV5R_MODEL_291,
-#                UV5R_MODEL_A58
-#                ]
-#     _vhf_range = (130000000, 180000000)
-#     _uhf_range = (400000000, 521000000)
-#     _tri_power = True
-
-#     def get_features(self):
-#         rf = BaofengUV5R.get_features(self)
-#         rf.valid_power_levels = UV5R_POWER_LEVELS3
-#         return rf
-
-#     def _is_orig(self):
-#         # Override this for BFF8HP to always return False
-#         return False
-
-
-# class TenwayUV82Pro(chirp_common.Alias):
-#     VENDOR = 'Tenway'
-#     MODEL = 'UV-82 Pro'
-
-
-# @directory.register
-# class BaofengUV82HPRadio(BaofengUV5R):
-#     VENDOR = "Baofeng"
-#     MODEL = "UV-82HP"
-#     ALIASES = [TenwayUV82Pro]
-#     _basetype = BASETYPE_UV82HP
-#     _idents = [UV5R_MODEL_UV82]
-#     _vhf_range = (136000000, 175000000)
-#     _uhf_range = (400000000, 521000000)
-#     _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
-#         "!@#$%^&*()+-=[]:\";'<>?,./"
-#     _tri_power = True
-
-#     def get_features(self):
-#         rf = BaofengUV5R.get_features(self)
-#         rf.valid_power_levels = UV5R_POWER_LEVELS3
-#         return rf
-
-#     def _is_orig(self):
-#         # Override this for UV82HP to always return False
-#         return False
-
-
-# @directory.register
-# class RadioddityUV5RX3Radio(BaofengUV5R):
-#     VENDOR = "Radioddity"
-#     MODEL = "UV-5RX3"
-
-#     def get_features(self):
-#         rf = BaofengUV5R.get_features(self)
-#         rf.valid_bands = [self._vhf_range,
-#                           (200000000, 260000000),
-#                           self._uhf_range]
-#         return rf
-
-#     @classmethod
-#     def match_model(cls, filename, filedata):
-#         return False
-
-
-# @directory.register
-# class RadioddityGT5RRadio(BaofengUV5R):
-#     VENDOR = 'Baofeng'
-#     MODEL = 'GT-5R'
-
-#     vhftx = [144000000, 148000000]
-#     uhftx = [420000000, 450000000]
-
-#     def set_memory(self, mem):
-#         # If memory is outside the TX limits, the radio will refuse
-#         # transmit. Radioddity asked for us to enforce this behavior
-#         # in chirp for consistency.
-#         if not (mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) and \
-#            not (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1]):
-#             LOG.info('Memory frequency outside TX limits of radio; '
-#                      'forcing duplex=off')
-#             mem.duplex = 'off'
-#             mem.offset = 0
-#         BaofengUV5R.set_memory(self, mem)
-
-#     @classmethod
-#     def match_model(cls, filename, filedata):
-#         return False
-
-
-# @directory.register
-# class RadioddityUV5GRadio(BaofengUV5R):
-#     VENDOR = 'Radioddity'
-#     MODEL = 'UV-5G'
-
-#     _basetype = BASETYPE_UV5R
-#     _idents = [UV5R_MODEL_UV5G]
-#     _gmrs = True
-
-#     @classmethod
-#     def match_model(cls, filename, filedata):
-#         return False
+@directory.register
+class TDH8_HAM(TDH8):
+    VENDOR = "TID"
+    MODEL = "TD-H8-HAM"
+    ident_Mode = "P31185"
+
+@directory.register
+class TDH8_HAM(TDH8):
+    VENDOR = "TID"
+    MODEL = "TD-H8-GMRS"
+    ident_Mode = "P31184"
