@@ -20,40 +20,23 @@ COUNTRIES = (
     'Canada',
     'Mexico',
 )
-STATES = list(fips.FIPS_STATES.keys())
-STATES.extend([
-    "Aguascalientes",
-    "Baja California Sur",
-    "Baja California",
-    "Campeche",
-    "Chiapas",
-    "Chihuahua",
-    "Coahuila",
-    "Colima",
-    "Durango",
-    "Guanajuato",
-    "Guerrero",
-    "Hidalgo",
-    "Jalisco",
-    "Mexico City",
-    "Mexico",
-    "Michoacán",
-    "Morelos",
-    "Nayarit",
-    "Nuevo Leon",
-    "Puebla",
-    "Queretaro",
-    "Quintana Roo",
-    "San Luis Potosi",
-    "Sinaloa",
-    "Sonora",
-    "Tabasco",
-    "Tamaulipas",
-    "Tlaxcala",
-    "Veracruz",
-    "Yucatan",
-    "Zacatecas",
-])
+MEXICO_STATES = [
+    "Aguascalientes", "Baja California Sur", "Baja California",
+    "Campeche", "Chiapas", "Chihuahua", "Coahuila", "Colima",
+    "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco",
+    "Mexico City", "Mexico", "Michoacán", "Morelos", "Nayarit",
+    "Nuevo Leon", "Puebla", "Queretaro", "Quintana Roo", "San Luis Potosi",
+    "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz",
+    "Yucatan", "Zacatecas",
+]
+STATES = {
+    'United States': [s for s, i in fips.FIPS_STATES.items()
+                      if isinstance(i, int)],
+    'Canada': [s for s, i in fips.FIPS_STATES.items()
+               if isinstance(i, str)],
+    'Mexico': MEXICO_STATES,
+}
+
 
 def parse_tone(val):
     if val.startswith('D'):
