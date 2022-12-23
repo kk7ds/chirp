@@ -1,4 +1,5 @@
 # Latest update: April, 2021 Add hasattr test at line 564
+import serial
 import struct
 import logging
 from chirp.drivers import icf
@@ -391,6 +392,37 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         LOG.debug("Echo:\n%s" % util.hexprint(bytes(resp)))
         return resp == echo_test
 
+    def _detect_baudrate(self):
+        if self._baud_detected:
+            return
+
+        # Don't ever try to run this twice, even if we fail
+        self._baud_detected = True
+
+        bauds = [9600, 19200, 38400, 57600, 115200, 4800]
+        bauds.remove(self.BAUD_RATE)
+        bauds.insert(0, self.BAUD_RATE)
+        self.pipe.timeout = 0.25
+        for baud in bauds:
+            LOG.debug('Trying %i baud' % baud)
+            self.pipe.baudrate = baud
+            self._willecho = self._detect_echo()
+            LOG.debug("Interface echo: %s" % self._willecho)
+            try:
+                f = self._get_template_memory()
+                print('Chew: %i' % len(self.pipe.read(128)))
+                LOG.info('Detected %i baud' % baud)
+                break
+            except errors.RadioError:
+                pass
+        else:
+            LOG.warning('Unable to detect baudrate, using default of %i' % (
+                self.BAUD_RATE))
+            self.pipe.baudrate = self.BAUD_RATE
+
+        # Restore the historical default of 1s timeout for this driver
+        self.pipe.timeout = 1
+
     def __init__(self, *args, **kwargs):
         icf.IcomLiveRadio.__init__(self, *args, **kwargs)
 
@@ -404,6 +436,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             self.pipe.timeout = 1
         else:
             self._willecho = False
+
+        self._baud_detected = False
 
         # f = Frame()
         # f.set_command(0x19, 0x00)
@@ -447,6 +481,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         return f
 
     def get_raw_memory(self, number):
+        self._detect_baudrate()
         LOG.debug("Getting %s (raw)" % number)
         f = self._classes["mem"]()
         if self._is_special(number):
@@ -486,6 +521,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         pass
 
     def get_memory(self, number):
+        self._detect_baudrate()
         LOG.debug("Getting %s" % number)
         f = self._classes["mem"]()
         mem = chirp_common.Memory()
@@ -629,6 +665,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         return mem
 
     def set_memory(self, mem):
+        self._detect_baudrate()
         LOG.debug("Setting %s(%s)" % (mem.number, mem.extd_number))
         f = self._get_template_memory()
         if self._is_special(mem.number):
@@ -924,6 +961,7 @@ class Icom910Radio(IcomCIVRadio):
     def _detect_23cm_unit(self):
         if not self.pipe:
             return True
+        self._detect_baudrate()
         f = IC910MemFrame()
         f.set_location(1, 3)  # First memory in 23cm bank
         self._send_frame(f)
@@ -970,6 +1008,7 @@ class Icom910Radio(IcomCIVRadio):
 class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
     """Icom IC-7300"""
     MODEL = "IC-7300"
+    BAUD_RATE = 115200
     _model = "\x94"
     _template = 100              # Use P1 as blank template
 
