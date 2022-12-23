@@ -110,6 +110,19 @@ class SettingsThread(threading.Thread):
         wx.CallAfter(self._dialog.Update, 100, newmsg=_('Complete'))
 
 
+def open_serial(port, rclass):
+    if '://' in port:
+        pipe = serial.serial_for_url(port, do_not_open=True)
+        pipe.timeout = 0.25
+        pipe.open()
+        pipe.baudrate = rclass.BAUD_RATE
+        pipe.rtscts = rclass.HARDWARE_FLOW
+    else:
+        pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
+                             rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
+    return pipe
+
+
 class ChirpRadioPromptDialog(wx.Dialog):
     def __init__(self, *a, **k):
         self.radio = k.pop('radio')
@@ -186,6 +199,11 @@ class ChirpCloneDialog(wx.Dialog):
             ports.insert(0, last_port)
         elif not last_port:
             last_port = ports[0]
+        favorite_ports = CONF.get('favorite_ports', 'state')
+        if favorite_ports:
+            for port in favorite_ports.split(','):
+                if port not in ports:
+                    ports.insert(0, port)
         self._port = wx.ComboBox(self, choices=ports, style=wx.CB_DROPDOWN)
         self._port.SetValue(last_port)
         self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
@@ -387,6 +405,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             self.EndModal(event.GetEventObject().GetId())
             return
 
+        self._persist_choices()
         self.disable_model_select()
         self.disable_running()
 
@@ -412,14 +431,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
                 return
 
         try:
-            if '://' in port:
-                pipe = serial.serial_for_url(port, do_not_open=True)
-                pipe.timeout = 0.25
-                pipe.open()
-            else:
-                pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
-                                     rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
-            self._radio = rclass(pipe)
+            self._radio = rclass(open_serial(port, rclass))
         except Exception as e:
             self.fail(str(e))
             return
@@ -460,6 +472,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
             self.EndModal(event.GetEventObject().GetId())
             return
 
+        self._persist_choices()
         self.disable_running()
 
         prompts = self._radio.get_prompts()
@@ -487,15 +500,10 @@ class ChirpUploadDialog(ChirpCloneDialog):
             baud = self._radio.pipe.baudrate
 
         try:
-            if '://' in port:
-                pipe = serial.serial_for_url(port, do_not_open=True)
-                pipe.timeout = 0.25
-                pipe.open()
-            else:
-                pipe = serial.Serial(port=port, baudrate=baud,
-                                     rtscts=self._radio.HARDWARE_FLOW,
-                                     timeout=0.25)
-            self._radio.set_pipe(pipe)
+            self._radio.set_pipe(open_serial(port, self._radio))
+            # Short-circuit straight to the previous baudrate for variable-
+            # rate radios to sync back up faster
+            self._radio.pipe.baudrate = baud
         except Exception as e:
             self.fail(str(e))
             return
