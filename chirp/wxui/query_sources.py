@@ -273,12 +273,11 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         prev = CONF.get('country', 'repeaterbook')
         if prev and prev in repeaterbook.COUNTRIES:
             self._country.SetStringSelection(prev)
+        self._country.Bind(wx.EVT_CHOICE, self._state_selected)
         self._add_grid(grid, _('Country'), self._country)
 
-        self._state = wx.Choice(panel, choices=sorted(repeaterbook.STATES))
-        prev = CONF.get('state', 'repeaterbook')
-        if prev and prev in repeaterbook.STATES:
-            self._state.SetStringSelection(prev)
+        self._state = wx.Choice(panel, choices=[])
+        self._state_selected(None)
         self._add_grid(grid, _('State/Province'), self._state)
 
         self._lat = wx.TextCtrl(panel,
@@ -306,6 +305,14 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
 
         self.Layout()
         return vbox
+
+    def _state_selected(self, event):
+        country = self._country.GetStringSelection()
+        states = repeaterbook.STATES[country]
+        self._state.SetItems(states)
+        prev = CONF.get('state', 'repeaterbook')
+        if prev and prev in states:
+            self._state.SetStringSelection(prev)
 
     def _add_grid(self, grid, label, widget):
         grid.Add(wx.StaticText(widget.GetParent(), label=label),
