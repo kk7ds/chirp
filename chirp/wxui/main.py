@@ -1204,6 +1204,7 @@ class ChirpMain(wx.Frame):
         d = query_cls(self, title=_('Query %s') % query_cls.NAME)
         r = d.ShowModal()
         if r == wx.ID_OK:
+            report.report_model(d.result_radio, 'query')
             editorset = ChirpEditorSet(d.result_radio,
                                        None, self._editors)
             self.add_editorset(editorset)
