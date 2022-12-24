@@ -306,7 +306,7 @@
 | <a name="Wouxun_KG-818"></a> Wouxun_KG-818 | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.04% |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G |  |  |  | 0.05% |
 | <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.19% |
-| <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D |  |  |  | 0.24% |
+| <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.24% |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus |  |  |  | 0.08% |
 | <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  | 0.05% |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes | 0.04% |
@@ -362,9 +362,9 @@
 
 **Drivers:** 357
 
-**Tested:** 75% (269/88) (90% of usage stats)
+**Tested:** 75% (270/87) (91% of usage stats)
 
-**Byte clean:** 84% (301/56)
+**Byte clean:** 84% (302/55)
 
 ## Meaning of this testing
 
