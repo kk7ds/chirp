@@ -332,12 +332,14 @@ def getblock(pipe, addr, image):
     cmd = struct.pack(">cHb", b"R", addr, 16)
     response = sendcmd(pipe, cmd, 21)
     if (response[0] != b"W"[0]) or (response[1:4] != cmd[1:4]):
-        msg = "Bad response. Sent:" + util.hexprint(cmd) + ", "
-        msg += b"Received:" + util.hexprint(response)
+        msg = "Bad response. Sent:\n%s" % util.hexprint(cmd)
+        msg += "\nReceived:\n%s" % util.hexprint(response)
         LOG.debug(msg)
         return False
     if checkSum8(response[1:20]) != bytearray(response)[20]:
-        LOG.debug(b"Bad checksum: " + util.hexprint(response))
+        LOG.debug("Bad checksum:\n%s" % util.hexprint(response))
+        LOG.debug('%r != %r' % (checkSum8(response[1:20]),
+                                bytearray(response)[20]))
         return False
     image[addr:addr+16] = response[4:20]
     return True
