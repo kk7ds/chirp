@@ -18,6 +18,7 @@ import struct
 from chirp import chirp_common, errors
 from chirp.memmap import MemoryMap
 from chirp.chirp_common import to_MHz
+from chirp.util import StringStruct as struct
 
 POS_FREQ_START = 0
 POS_FREQ_END = 2
@@ -82,7 +83,7 @@ def set_freq(mmap, freq, base):
     else:
         mult = 5000
 
-    value = (freq - to_MHz(base)) / mult
+    value = (freq - to_MHz(base)) // mult
 
     mmap[POS_MULT_FLAG] = tflag
     mmap[POS_FREQ_START] = struct.pack("<H", value)
@@ -155,7 +156,7 @@ def get_dup_offset(mmap):
 
 
 def set_dup_offset(mmap, offset):
-    val = struct.pack("<H", offset / 5000)
+    val = struct.pack("<H", offset // 5000)
     mmap[POS_OFFSET] = val
 
 
@@ -367,7 +368,7 @@ def get_bank(mmap, number):
 
 
 def set_bank(mmap, number, bank):
-    if bank > 9:
+    if bank is not None and bank > 9:
         raise errors.InvalidDataError("Invalid bank number %i" % bank)
 
     if bank is None:

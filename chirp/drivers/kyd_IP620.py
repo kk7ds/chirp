@@ -174,14 +174,14 @@ class IP620Radio(chirp_common.CloneModeRadio,
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize and \
-            filedata[0xF7E:0xF80] == "\x01\xE2"
+            filedata[0xF7E:0xF80] == b"\x01\xE2"
 
     def _ip620_exit_programming_mode(self):
         try:
             self.pipe.write("\x06")
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Radio refused to exit programming mode: %s" % e)
 
     def _ip620_enter_programming_mode(self):
@@ -192,7 +192,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
             _ack = self.pipe.read(1)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Error communicating with radio: %s" % e)
         if not _ack:
             raise errors.RadioError("No response from radio")
@@ -203,17 +203,17 @@ class IP620Radio(chirp_common.CloneModeRadio,
             _ident = self.pipe.read(8)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Error communicating with radio: %s" % e)
         if not _ident.startswith("\x06\x4B\x47\x36\x37\x01\x56\xF8"):
-            print util.hexprint(_ident)
+            print(util.hexprint(_ident))
             raise errors.RadioError("Radio returned unknown identification string")
         try:
             self.pipe.write(CMD_ACK)
             _ack = self.pipe.read(1)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Error communicating with radio: %s" % e)
         if _ack != CMD_ACK:
             raise errors.RadioError("Radio refused to enter programming mode")
@@ -316,7 +316,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
             self._mmap = self._do_download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -470,7 +470,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         _mem.rx_freq = mem.freq / 10
@@ -597,7 +597,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
                 setattr(self._memobj.settings_misc,
                         element.get_name(),
                         element.value)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -624,6 +624,6 @@ class IP620Radio(chirp_common.CloneModeRadio,
                     setattr(_settings_misc, setting, newval)
                 else:
                     setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise

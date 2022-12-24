@@ -85,7 +85,7 @@ struct {
 } fingerprint;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 RT1_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=5.00),
                     chirp_common.PowerLevel("High", watts=9.00)]
@@ -124,8 +124,8 @@ SETTING_LISTS = {
     }
 
 # Retevis RT1 fingerprints
-RT1_VHF_fp = "PXT8K" + "\xF0\x00\x00"   # RT1 VHF model
-RT1_UHF_fp = "PXT8K" + "\xF3\x00\x00"   # RT1 UHF model
+RT1_VHF_fp = b"PXT8K" + b"\xF0\x00\x00"   # RT1 VHF model
+RT1_UHF_fp = b"PXT8K" + b"\xF3\x00\x00"   # RT1 UHF model
 
 MODELS = [RT1_VHF_fp, RT1_UHF_fp]
 
@@ -147,11 +147,11 @@ def _get_radio_model(radio):
 def _rt1_enter_programming_mode(radio):
     serial = radio.pipe
 
-    magic = ["PROGRAMa", "PROGRAMb"]
+    magic = [b"PROGRAMa", b"PROGRAMb"]
     for i in range(0, 2):
 
         try:
-            LOG.debug("sending " + magic[i])
+            LOG.debug("sending " + magic[i].decode())
             serial.write(magic[i])
             ack = serial.read(1)
         except:
@@ -168,13 +168,13 @@ def _rt1_enter_programming_mode(radio):
 
     try:
         LOG.debug("sending " + util.hexprint("\x02"))
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(16)
     except:
         _rt1_exit_programming_mode(radio)
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("PXT8K"):
+    if not ident.startswith(b"PXT8K"):
         LOG.debug("Incorrect response, got this:\n\n" + util.hexprint(ident))
         _rt1_exit_programming_mode(radio)
         LOG.debug(util.hexprint(ident))
@@ -182,13 +182,13 @@ def _rt1_enter_programming_mode(radio):
 
     try:
         LOG.debug("sending " + util.hexprint("MXT8KCUMHS1X7BN/"))
-        serial.write("MXT8KCUMHS1X7BN/")
+        serial.write(b"MXT8KCUMHS1X7BN/")
         ack = serial.read(1)
     except:
         _rt1_exit_programming_mode(radio)
         raise errors.RadioError("Error communicating with radio")
 
-    if ack != "\xB2":
+    if ack != b"\xB2":
         LOG.debug("Incorrect response, got this:\n\n" + util.hexprint(ack))
         _rt1_exit_programming_mode(radio)
         raise errors.RadioError("Radio refused to enter programming mode")
@@ -213,7 +213,7 @@ def _rt1_enter_programming_mode(radio):
 def _rt1_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -221,8 +221,8 @@ def _rt1_exit_programming_mode(radio):
 def _rt1_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -251,7 +251,7 @@ def _rt1_read_block(radio, block_addr, block_size):
 def _rt1_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -271,7 +271,7 @@ def do_download(radio):
     LOG.debug("download")
     _rt1_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -291,7 +291,7 @@ def do_download(radio):
 
     _rt1_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -337,7 +337,7 @@ def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x0170:0x0176]
 
-    return rid.startswith("PXT8K")
+    return rid.startswith(b"PXT8K")
 
 
 @directory.register
@@ -346,6 +346,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT1"
     BAUD_RATE = 2400
+    NEEDS_COMPAT_SERIAL = False
 
     _ranges = [
                (0x0000, 0x0190, 0x10),
@@ -493,7 +494,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         _mem.rxfreq = mem.freq / 10
@@ -737,7 +738,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

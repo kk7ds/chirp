@@ -134,7 +134,7 @@ struct {
 } settings;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOICE_LIST2 = ["English", "Chinese"]
@@ -228,7 +228,7 @@ PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 def _t18_enter_programming_mode(radio):
     serial = radio.pipe
 
-    _magic = "\x02" + radio._magic
+    _magic = b"\x02" + radio._magic
 
     try:
         serial.write(_magic)
@@ -244,7 +244,7 @@ def _t18_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         if radio._echo:
             serial.read(1)  # Chew the echo
         ident = serial.read(8)
@@ -264,7 +264,7 @@ def _t18_enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if radio.MODEL == "RT647":
-        if ack != "\xF0":
+        if ack != b"\xF0":
             raise errors.RadioError("Radio refused to enter programming mode")
     else:
         if ack != CMD_ACK:
@@ -284,8 +284,8 @@ def _t18_exit_programming_mode(radio):
 def _t18_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -316,7 +316,7 @@ def _t18_read_block(radio, block_addr, block_size):
 def _t18_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -337,7 +337,7 @@ def do_download(radio):
     LOG.debug("download")
     _t18_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -357,7 +357,7 @@ def do_download(radio):
 
     _t18_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -383,7 +383,7 @@ def model_match(cls, data):
 
     if len(data) == cls._memsize:
         rid = data[0x03D0:0x03D8]
-        return "P558" in rid
+        return b"P558" in rid
     else:
         return False
 
@@ -394,14 +394,15 @@ class T18Radio(chirp_common.CloneModeRadio):
     VENDOR = "Radtel"
     MODEL = "T18"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x08
-    CMD_EXIT = "b"
+    CMD_EXIT = b"b"
     ACK_BLOCK = True
 
     VALID_BANDS = [(400000000, 470000000)]
 
-    _magic = "1ROGRAM"
-    _fingerprint = "SMP558" + "\x00\x00"
+    _magic = b"1ROGRAM"
+    _fingerprint = b"SMP558" + b"\x00\x00"
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -548,7 +549,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
 
             return
 
@@ -960,8 +961,8 @@ class RT22SRadio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
-    _magic = "9COGRAM"
-    _fingerprint = "SMP558" + "\x02"
+    _magic = b"9COGRAM"
+    _fingerprint = b"SMP558" + b"\x02"
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -975,13 +976,13 @@ class RB18Radio(T18Radio):
     VENDOR = "Retevis"
     MODEL = "RB18"
     BLOCK_SIZE = 0x10
-    CMD_EXIT = "E"
+    CMD_EXIT = b"E"
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
-    _magic = "PROGRAL"
-    _fingerprint = "P3107" + "\xF7"
+    _magic = b"PROGRAL"
+    _fingerprint = b"P3107" + b"\xF7"
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1023,13 +1024,13 @@ class RT68Radio(T18Radio):
     VENDOR = "Retevis"
     MODEL = "RT68"
     ACK_BLOCK = False
-    CMD_EXIT = ""
+    CMD_EXIT = b""
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
-    _magic = "83OGRAM"
-    _fingerprint = "\x06\x00\x00\x00\x00\x00\x00\x00"
+    _magic = b"83OGRAM"
+    _fingerprint = b"\x06\x00\x00\x00\x00\x00\x00\x00"
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1059,8 +1060,8 @@ class RB17Radio(RT68Radio):
     VENDOR = "Retevis"
     MODEL = "RB17"
 
-    _magic = "A5OGRAM"
-    _fingerprint = "\x53\x00\x00\x00\x00\x00\x00\x00"
+    _magic = b"A5OGRAM"
+    _fingerprint = b"\x53\x00\x00\x00\x00\x00\x00\x00"
 
     _frs16 = True
     _pmr = False
@@ -1103,8 +1104,8 @@ class RB85Radio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Low", watts=5.00)]
 
-    _magic = "H19GRAM"
-    _fingerprint = "SMP558" + "\x02"
+    _magic = b"H19GRAM"
+    _fingerprint = b"SMP558" + b"\x02"
 
 
 @directory.register
@@ -1117,8 +1118,8 @@ class RB75Radio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "KVOGRAM"
-    _fingerprint = "SMP558" + "\x00"
+    _magic = b"KVOGRAM"
+    _fingerprint = b"SMP558" + b"\x00"
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
@@ -1135,8 +1136,8 @@ class FRSB1Radio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PROGRAM"
-    _fingerprint = "P3107" + "\xF7\x00"
+    _magic = b"PROGRAM"
+    _fingerprint = b"P3107" + b"\xF7\x00"
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1153,8 +1154,8 @@ class RB19Radio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "9COGRAM"
-    _fingerprint = "SMP558" + "\x02"
+    _magic = b"9COGRAM"
+    _fingerprint = b"SMP558" + b"\x02"
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1171,8 +1172,8 @@ class RB19PRadio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "70OGRAM"
-    _fingerprint = "SMP558" + "\x02"
+    _magic = b"70OGRAM"
+    _fingerprint = b"SMP558" + b"\x02"
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
@@ -1189,8 +1190,8 @@ class RB619Radio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.500),
                     chirp_common.PowerLevel("Low", watts=0.499)]
 
-    _magic = "9COGRAM"
-    _fingerprint = "SMP558" + "\x02"
+    _magic = b"9COGRAM"
+    _fingerprint = b"SMP558" + b"\x02"
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1207,8 +1208,8 @@ class RT47Radio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.000),
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
-    _magic = "47OGRAM"
-    _fingerprint = "\x06\x00\x00\x00\x00\x00\x00\x00"
+    _magic = b"47OGRAM"
+    _fingerprint = b"\x06\x00\x00\x00\x00\x00\x00\x00"
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1251,8 +1252,8 @@ class BFV8ARadio(T18Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.000),
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
-    _magic = "PROGRAM"
-    _fingerprint = "P3107" + "\xF7\x00\x00"
+    _magic = b"PROGRAM"
+    _fingerprint = b"P3107" + b"\xF7\x00\x00"
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )

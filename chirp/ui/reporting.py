@@ -132,7 +132,7 @@ class ReportThread(threading.Thread):
     def _run(self):
         try:
             return self.__func(*self.__args)
-        except Exception, e:
+        except Exception as e:
             LOG.debug("Failed to report: %s" % e)
             return False
 

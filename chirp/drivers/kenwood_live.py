@@ -77,12 +77,12 @@ def _command(ser, cmd, *args):
         cmd += LAST_DELIMITER[1] + LAST_DELIMITER[1].join(args)
     cmd += LAST_DELIMITER[0]
 
-    LOG.debug("PC->RADIO: %r" % cmd.strip())
-    ser.write(cmd)
+    LOG.debug("PC->RADIO: %s" % cmd.strip())
+    ser.write(cmd.encode())
 
     result = ""
     while not result.endswith(LAST_DELIMITER[0]):
-        result += ser.read(COMMAND_RESP_BUFSIZE)
+        result += ser.read(COMMAND_RESP_BUFSIZE).decode()
         if (time.time() - start) > 0.5:
             LOG.error("Timeout waiting for data")
             break
@@ -120,9 +120,14 @@ def get_id(ser):
             LOG.info("Trying ID at baud %i with delimiter \"%s\"" %
                      (i, repr(delimiter)))
             ser.baudrate = i
-            ser.write(LAST_DELIMITER[0])
+            ser.write(LAST_DELIMITER[0].encode())
             ser.read(25)
-            resp = command(ser, "ID")
+            try:
+                resp = command(ser, "ID")
+            except UnicodeDecodeError:
+                # If we got binary here, we are using the wrong rate
+                # or not talking to a kenwood live radio.
+                continue
 
             # most kenwood radios
             if " " in resp:
@@ -140,7 +145,7 @@ def get_id(ser):
                     return resp.split(" ")[1]
 
             # Kenwood radios that return ID numbers
-            if resp in RADIO_IDS.keys():
+            if resp in list(RADIO_IDS.keys()):
                 return RADIO_IDS[resp]
 
     raise errors.RadioError("No response from radio")
@@ -168,6 +173,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = ""
+    NEEDS_COMPAT_SERIAL = False
 
     _vfo = 0
     _upper = 200
@@ -429,7 +435,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_modes = MODES.values()
+        rf.valid_modes = list(MODES.values())
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_characters = \
             chirp_common.CHARSET_ALPHANUMERIC + "/.-+*)('&%$#! ~}|{"
@@ -890,7 +896,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_tuning_steps = list(THF6A_STEPS)
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
-        rf.valid_duplexes = THF6A_DUPLEX.values()
+        rf.valid_duplexes = list(THF6A_DUPLEX.values())
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 8
         rf.memory_bounds = (0, self._upper)

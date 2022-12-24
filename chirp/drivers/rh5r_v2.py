@@ -129,7 +129,7 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
     VENDOR = "TYT"
     MODEL = "TH-UVF8F"
     BAUD_RATE = 9600
-    _FILEID = 'OEMOEM \XFF'
+    _FILEID = b'OEMOEM \XFF'
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -164,11 +164,10 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return (filedata.endswith("PGM2015") and
+        return (filedata.endswith(b"PGM2015") and
                 filedata[0x840:0x848] == cls._FILEID)
 
     def process_mmap(self):
-        print MEM_FORMAT
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def get_raw_memory(self, number):
@@ -288,4 +287,4 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
 class RH5RV2(TYTTHUVF8_V2):
     VENDOR = "Rugged"
     MODEL = "RH5R-V2"
-    _FILEID = 'RUGGED \xFF'
+    _FILEID = b'RUGGED \xFF'

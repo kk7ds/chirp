@@ -19,6 +19,7 @@ import logging
 
 from chirp import chirp_common, settings
 from chirp.ui import miscwidgets, common
+from chirp.ui import compat
 
 LOG = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class ValueEditor:
 
         try:
             newval = self._get_value()
-        except ValueError, e:
+        except ValueError as e:
             self._errfn(self._name, str(e))
             return str(e)
 
@@ -70,17 +71,17 @@ class ValueEditor:
                 extra_name = self._name.split("_", 1)[1]
                 LOG.debug('Setting extra %s=%r' % (extra_name, newval))
                 self._memory.extra[extra_name].value = newval
-            except settings.InternalError, e:
+            except settings.InternalError as e:
                 self._errfn(self._name, str(e))
                 return str(e)
         else:
             try:
                 setattr(self._memory, self._name, newval)
-            except chirp_common.ImmutableValueError, e:
+            except chirp_common.ImmutableValueError as e:
                 if getattr(self._memory, self._name) != self._get_value():
                     self._errfn(self._name, str(e))
                     return str(e)
-            except ValueError, e:
+            except ValueError as e:
                 self._errfn(self._name, str(e))
                 return str(e)
 
@@ -97,7 +98,11 @@ class ValueEditor:
 
 class StringEditor(ValueEditor):
     def _init(self, data):
-        self._widget = gtk.Entry(int(data))
+        try:
+            self._widget = gtk.Entry(int(data))
+        except TypeError:
+            self._widget = gtk.Entry()
+            self._widget.set_max_length(int(data))
         self._widget.set_text(str(self._mem_value()))
         self._widget.connect("changed", self.changed)
 
@@ -126,13 +131,15 @@ class IntegerEditor(ValueEditor):
 
 class ChoiceEditor(ValueEditor):
     def _init(self, data):
-        self._widget = miscwidgets.make_choice([str(x) for x in data],
+        self._choice = miscwidgets.make_choice([str(x) for x in data],
                                                False,
                                                str(self._mem_value()))
+        self._widget = self._choice.widget
+
         self._widget.connect("changed", self.changed)
 
     def _get_value(self):
-        return self._widget.get_active_text()
+        return self._choice.value
 
     def changed(self, _widget):
         self.update()
@@ -323,7 +330,7 @@ class MemoryDetailEditor(gtk.Dialog):
         self.set_alternative_button_order([gtk.RESPONSE_OK,
                                            gtk.RESPONSE_CANCEL])
         self.set_size_request(-1, 500)
-        self._tips = gtk.Tooltips()
+        self._tips = compat.CompatTooltips()
 
         self._features = features
 

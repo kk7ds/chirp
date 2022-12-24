@@ -500,10 +500,7 @@ class VX8BankModel(chirp_common.BankModel):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\x00" * (mem.size() / 8))
-    mem.pr_frequency = 0x1d  # default PR frequency of 1600 Hz
-    mem.unknown8b = 1        # This bit must be 1, but its meaning is unknown
-    mem.rx_mode_auto = 1     # rx auto mode bit defaults to 1
+    mem.set_raw("\x00" * (mem.size() // 8))
 
 
 @directory.register
@@ -513,7 +510,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "VX-8R"
 
-    _model = "AH029"
+    _model = b"AH029"
     _memsize = 65227
     _block_lengths = [10, 65217]
     _block_size = 32
@@ -1439,7 +1436,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -1475,7 +1472,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 class VX8DRadio(VX8Radio):
     """Yaesu VX-8DR"""
     MODEL = "VX-8DR"
-    _model = "AH29D"
+    _model = b"AH29D"
     _mem_params = (0xC128,  # APRS message macros
                    7,       # Number of message macros
                    0xC198,  # APRS2
@@ -1675,6 +1672,6 @@ class VX8DRadio(VX8Radio):
 class VX8GERadio(VX8DRadio):
     """Yaesu VX-8GE"""
     MODEL = "VX-8GE"
-    _model = "AH041"
+    _model = b"AH041"
     _has_vibrate = True
     _has_af_dual = False

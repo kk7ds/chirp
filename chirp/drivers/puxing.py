@@ -16,7 +16,6 @@
 """Puxing radios management module"""
 
 import time
-import os
 import logging
 
 from chirp import util, chirp_common, bitwise, errors, directory
@@ -44,13 +43,15 @@ def _puxing_prep(radio):
 
 def puxing_prep(radio):
     """Do the Puxing PX-777 identification dance"""
+    ex = None
     for _i in range(0, 10):
         try:
             return _puxing_prep(radio)
-        except Exception, e:
+        except Exception as e:
             time.sleep(1)
+            ex = e
 
-    raise e
+    raise ex
 
 
 def puxing_download(radio):
@@ -60,7 +61,7 @@ def puxing_download(radio):
         return do_download(radio, 0x0000, 0x0C60, 0x0008)
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 
@@ -71,8 +72,9 @@ def puxing_upload(radio):
         return do_upload(radio, 0x0000, 0x0C40, 0x0008)
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
+
 
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                 chirp_common.PowerLevel("Low", watts=1.00)]
@@ -205,9 +207,9 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
     def match_model(cls, filedata, filename):
         # There are PX-777 that says to be model 328 ...
         return (len(filedata) == 3168 and
-                (ord(filedata[0x080B]) == PUXING_MODELS[777] or
-                (ord(filedata[0x080B]) == PUXING_MODELS[328] and
-                 ord(filedata[0x080A]) == 0xEE)))
+                (util.byte_to_int(filedata[0x080B]) == PUXING_MODELS[777] or
+                (util.byte_to_int(filedata[0x080B]) == PUXING_MODELS[328] and
+                 util.byte_to_int(filedata[0x080A]) == 0xEE)))
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -372,7 +374,7 @@ def puxing_2r_download(radio):
         return do_download(radio, 0x0000, 0x0FE0, 0x0010)
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 
@@ -383,8 +385,9 @@ def puxing_2r_upload(radio):
         return do_upload(radio, 0x0000, 0x0FE0, 0x0010)
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
+
 
 PUXING_2R_MEM_FORMAT = """
 #seekto 0x0010;
@@ -437,7 +440,8 @@ class Puxing2RRadio(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         return (len(filedata) == cls._memsize) and \
-            filedata[-16:] != "IcomCloneFormat3"
+            filedata[-16:] not in ("IcomCloneFormat3",
+                                   b'IcomCloneFormat3')
 
     def sync_in(self):
         self._mmap = puxing_2r_download(self)

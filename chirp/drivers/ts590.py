@@ -958,7 +958,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
         mhz1 = 1000000.
         nsg = not self.SG
         if nsg:     # Make reverse EX_X dictionary
-            x_ex = dict(zip(self.EX_X.values(), self.EX_X.keys()))
+            x_ex = {v: k for k, v in self.EX_X.items()}
 
         # Callback functions
         def _my_readonly(setting, obj, atrb):
@@ -1644,7 +1644,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

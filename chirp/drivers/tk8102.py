@@ -13,9 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
+from builtins import bytes
 import os
 import logging
+import struct
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
@@ -59,8 +60,8 @@ PTTID = ["", "BOT", "EOT", "Both"]
 SIGNAL = ["", "DTMF"]
 
 
-def make_frame(cmd, addr, length, data=""):
-    return struct.pack(">BHB", ord(cmd), addr, length) + data
+def make_frame(cmd, addr, length, data=b""):
+    return struct.pack(">BHB", ord(cmd), addr, length) + bytes(data)
 
 
 def send(radio, frame):
@@ -78,23 +79,28 @@ def recv(radio, readdata=True):
             raise errors.RadioError("Radio sent %i bytes (expected %i)" % (
                     len(data), length))
     else:
-        data = ""
-    radio.pipe.write("\x06")
+        data = bytes(b"")
+    radio.pipe.write(b"\x06")
     return addr, data
 
 
 def do_ident(radio):
-    send(radio, "PROGRAM")
+    send(radio, b"PROGRAM")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != bytes(b"\x06"):
         raise errors.RadioError("Radio refused program mode")
-    radio.pipe.write("\x02")
+    radio.pipe.write(b"\x02")
     ident = radio.pipe.read(8)
-    if ident[1:5] != radio.MODEL.split("-")[1]:
+    try:
+        modelstr = ident[1:5].decode()
+    except UnicodeDecodeError:
+        LOG.debug('Model string was %r' % ident)
+        modelstr = '?'
+    if modelstr != radio.MODEL.split("-")[1]:
         raise errors.RadioError("Incorrect model: TK-%s, expected %s" % (
-                ident[1:5], radio.MODEL))
+                modelstr, radio.MODEL))
     LOG.info("Model: %s" % util.hexprint(ident))
-    radio.pipe.write("\x06")
+    radio.pipe.write(b"\x06")
     ack = radio.pipe.read(1)
 
 
@@ -103,16 +109,16 @@ def do_download(radio):
     radio.pipe.timeout = 1
     do_ident(radio)
 
-    data = ""
+    data = bytes(b"")
     for addr in range(0, 0x0400, 8):
-        send(radio, make_frame("R", addr, 8))
+        send(radio, make_frame(bytes(b"R"), addr, 8))
         _addr, _data = recv(radio)
         if _addr != addr:
             raise errors.RadioError("Radio sent unexpected address")
         data += _data
-        radio.pipe.write("\x06")
+        radio.pipe.write(b"\x06")
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != bytes(b"\x06"):
             raise errors.RadioError("Radio refused block at %04x" % addr)
 
         status = chirp_common.Status()
@@ -121,11 +127,11 @@ def do_download(radio):
         status.msg = "Cloning to radio"
         radio.status_fn(status)
 
-    radio.pipe.write("\x45")
+    radio.pipe.write(b"\x45")
 
-    data = ("\x45\x58\x33\x34\x30\x32\xff\xff" + ("\xff" * 8) +
+    data = (b"\x45\x58\x33\x34\x30\x32\xff\xff" + (b"\xff" * 8) +
             data)
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -133,13 +139,14 @@ def do_upload(radio):
     radio.pipe.timeout = 1
     do_ident(radio)
 
+    mmap = radio._mmap.get_byte_compatible()
     for addr in range(0, 0x0400, 8):
         eaddr = addr + 16
-        send(radio, make_frame("W", addr, 8, radio._mmap[eaddr:eaddr + 8]))
+        send(radio, make_frame(b"W", addr, 8, mmap[eaddr:eaddr + 8]))
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != bytes(b"\x06"):
             raise errors.RadioError("Radio refused block at %04x" % addr)
-        radio.pipe.write("\x06")
+        radio.pipe.write(b"\x06")
 
         status = chirp_common.Status()
         status.cur = addr
@@ -147,7 +154,7 @@ def do_upload(radio):
         status.msg = "Cloning to radio"
         radio.status_fn(status)
 
-    radio.pipe.write("\x45")
+    radio.pipe.write(b"\x45")
 
 
 class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
@@ -155,6 +162,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
     VENDOR = "Kenwood"
     MODEL = "TK-x102"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 0x410
 
@@ -186,9 +194,9 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         try:
             self._mmap = do_download(self)
         except errors.RadioError:
-            self.pipe.write("\x45")
+            self.pipe.write(b"\x45")
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to download from radio: %s" % e)
         self.process_mmap()
 
@@ -199,9 +207,9 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         try:
             do_upload(self)
         except errors.RadioError:
-            self.pipe.write("\x45")
+            self.pipe.write(b"\x45")
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to upload to radio: %s" % e)
 
     def get_raw_memory(self, number):
@@ -417,7 +425,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
     def match_model(cls, filedata, filename):
         model = filedata[0x03D1:0x03D5]
         LOG.debug(model)
-        return model == cls.MODEL.split("-")[1]
+        return model == cls.MODEL.encode().split(b"-")[1]
 
 
 @directory.register

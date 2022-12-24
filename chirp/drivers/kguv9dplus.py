@@ -445,7 +445,7 @@ def freq2short(val, min, max):
                                 (chirp_common.format_freq(_freq),
                                  chirp_common.format_freq(min),
                                  chirp_common.format_freq(max)))
-    return _freq/100000 & 0xFFFF
+    return _freq // 100000 & 0xFFFF
 
 
 def short2freq(freq):
@@ -755,7 +755,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     MODEL = "KG-UV9D Plus"
     _model = "KG-UV9D"
     _rev = "00"  # default rev for the radio I know about...
-    _file_ident = "kg-uv9d"
+    _file_ident = b"kg-uv9d"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("M", watts=2),
@@ -877,7 +877,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             self._write_record(CMD_HANGUP)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError(
                 "Failed to communicate with radio: %s" % e)
@@ -894,7 +894,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             self._write_record(CMD_HANGUP)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError(
                 "Failed to communicate with radio: %s" % e)
         return
@@ -1187,7 +1187,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.chan_name[number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             _nam.name = str2name("", 8, '\0', '\0')
             _mem.state = MEM_INVALID
             return
@@ -1887,7 +1887,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug("set_settings: Exception with %s" %
                               element.get_name())
                     raise

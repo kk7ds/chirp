@@ -30,7 +30,7 @@ from collections import defaultdict
 
 LOG = logging.getLogger(__name__)
 
-ACK = chr(0x06)
+ACK = b'\x06'
 
 MEM_FORMAT = """
 #seekto 0x002A;
@@ -164,7 +164,7 @@ DTMFCHARSET = list("0123456789ABCD*#")
 
 def _send(ser, data):
     for i in data:
-        ser.write(i)
+        ser.write(bytes([i]))
         time.sleep(0.002)
     echo = ser.read(len(data))
     if echo != data:
@@ -172,9 +172,9 @@ def _send(ser, data):
 
 
 def _download(radio):
-    data = ""
+    data = bytes(b"")
 
-    chunk = ""
+    chunk = bytes(b"")
     for i in range(0, 30):
         chunk += radio.pipe.read(radio._block_lengths[0])
         if chunk:
@@ -203,17 +203,18 @@ def _download(radio):
     data += radio.pipe.read(1)
     _send(radio.pipe, ACK)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
     cur = 0
+    mmap = radio.get_mmap().get_byte_compatible()
     for block in radio._block_lengths:
         for _i in range(0, block, radio._block_size):
             length = min(radio._block_size, block)
             # LOG.debug("i=%i length=%i range: %i-%i" %
             #           (i, length, cur, cur+length))
-            _send(radio.pipe, radio.get_mmap()[cur:cur+length])
+            _send(radio.pipe, mmap[cur:cur+length])
             if radio.pipe.read(1) != ACK:
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
             cur += length
@@ -257,6 +258,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODES = list(MODES)
+    NEEDS_COMPAT_SERIAL = False
     _block_size = 64
 
     POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
@@ -321,7 +323,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Download finished in %i seconds" % (time.time() - start))
         self.check_checksums()
@@ -337,7 +339,7 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Upload finished in %i seconds" % (time.time() - start))
 
@@ -480,7 +482,7 @@ class FT7800BankModel(chirp_common.BankModel):
         index = memory.number - 1
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
-        _bitmap.bitmap[index / 32] |= (1 << ishft)
+        _bitmap.bitmap[index // 32] |= (1 << ishft)
         self.__m2b_cache[memory.number].append(bank.index)
         self.__b2m_cache[bank.index].append(memory.number)
 
@@ -490,11 +492,11 @@ class FT7800BankModel(chirp_common.BankModel):
         index = memory.number - 1
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
-        if not (_bitmap.bitmap[index / 32] & (1 << ishft)):
+        if not (_bitmap.bitmap[index // 32] & (1 << ishft)):
             raise Exception("Memory {num} is " +
                             "not in bank {bank}".format(num=memory.number,
                                                         bank=bank))
-        _bitmap.bitmap[index / 32] &= ~(1 << ishft)
+        _bitmap.bitmap[index // 32] &= ~(1 << ishft)
         self.__b2m_cache[bank.index].remove(memory.number)
         self.__m2b_cache[memory.number].remove(bank.index)
 
@@ -503,7 +505,7 @@ class FT7800BankModel(chirp_common.BankModel):
         upper = self._radio.get_features().memory_bounds[1]
         c = self._radio._memobj.bank_channels[bank.index]
         for i in range(0, upper):
-            _bitmap = c.bitmap[i / 32]
+            _bitmap = c.bitmap[i // 32]
             ishft = 31 - (i % 32)
             if _bitmap & (1 << ishft):
                 memories.append(i + 1)
@@ -527,7 +529,7 @@ class FT7800Radio(FTx800Radio):
     """Yaesu FT-7800"""
     MODEL = "FT-7800/7900"
 
-    _model = "AH016"
+    _model = b"AH016"
     _memsize = 31561
     _block_lengths = [8, 31552, 1]
     TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
@@ -766,7 +768,7 @@ class FT7800Radio(FTx800Radio):
                 oldval = getattr(_settings, setting)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -821,7 +823,7 @@ class FT8800Radio(FTx800Radio):
     """Base class for Yaesu FT-8800"""
     MODEL = "FT-8800"
 
-    _model = "AH018"
+    _model = b"AH018"
     _memsize = 22217
 
     _block_lengths = [8, 22208, 1]
@@ -897,8 +899,8 @@ class FT8800Radio(FTx800Radio):
             set_freq(mem.offset, _mem, "split")
             return
 
-        val = int(mem.offset / 10000) / 5
-        for i in reversed(range(2, 6)):
+        val = int(mem.offset / 10000) // 5
+        for i in reversed(list(range(2, 6))):
             _mem.name[i] = (_mem.name[i] & 0x3F) | ((val & 0x03) << 6)
             val >>= 2
 
@@ -971,7 +973,7 @@ class FT8900Radio(FT8800Radio):
     """Yaesu FT-8900"""
     MODEL = "FT-8900"
 
-    _model = "AH008"
+    _model = b"AH008"
     _memsize = 14793
     _block_lengths = [8, 14784, 1]
 
@@ -1008,7 +1010,7 @@ class FT8900Radio(FT8800Radio):
         _mem.skip = SKIPS.index(mem.skip)
 
     def get_memory(self, number):
-        mem = FT8800Radio.get_memory(self, number)
+        mem = super().get_memory(number)
 
         _mem = self._memobj.memory[number - 1]
 

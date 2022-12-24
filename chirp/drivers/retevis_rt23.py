@@ -136,7 +136,7 @@ struct {
 } settings2;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 BLOCK_SIZE = 0x10
 
 RT23_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
@@ -185,12 +185,12 @@ LIST_VOX = ["OFF"] + ["%s" % x for x in range(1, 6)]
 def _rt23_enter_programming_mode(radio):
     serial = radio.pipe
 
-    magic = "PROIUAM"
+    magic = b"PROIUAM"
     exito = False
     for i in range(0, 5):
         for j in range(0, len(magic)):
             time.sleep(0.005)
-            serial.write(magic[j])
+            serial.write(magic[j:j + 1])
         ack = serial.read(1)
 
         try:
@@ -208,12 +208,12 @@ def _rt23_enter_programming_mode(radio):
         raise errors.RadioError(msg)
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("P31183"):
+    if not ident.startswith(b"P31183"):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -230,7 +230,7 @@ def _rt23_enter_programming_mode(radio):
 def _rt23_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -238,8 +238,8 @@ def _rt23_exit_programming_mode(radio):
 def _rt23_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, BLOCK_SIZE)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -252,8 +252,8 @@ def _rt23_read_block(radio, block_addr, block_size):
 
         cs = 0
         for byte in chunk[:-1]:
-            cs += ord(byte)
-        if ord(chunk[-1]) != (cs & 0xFF):
+            cs += byte
+        if chunk[-1] != (cs & 0xFF):
             raise Exception("Block failed checksum!")
 
         block_data = chunk[:-1]
@@ -266,12 +266,12 @@ def _rt23_read_block(radio, block_addr, block_size):
 def _rt23_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
+    cmd = struct.pack(">cHb", b'W', block_addr, BLOCK_SIZE)
     data = radio.get_mmap()[block_addr:block_addr + BLOCK_SIZE]
     cs = 0
     for byte in data:
-        cs += ord(byte)
-    data += chr(cs & 0xFF)
+        cs += byte
+    data += bytes([cs & 0xFF])
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -289,7 +289,7 @@ def do_download(radio):
     LOG.debug("download")
     _rt23_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -302,8 +302,8 @@ def do_download(radio):
         radio.status_fn(status)
 
         block = _rt23_read_block(radio, addr, BLOCK_SIZE)
-        if addr == 0 and block.startswith("\xFF" * 6):
-            block = "P31183" + "\xFF" * 10
+        if addr == 0 and block.startswith(b"\xFF" * 6):
+            block = b"P31183" + b"\xFF" * 10
         data += block
 
         LOG.debug("Address: %04x" % addr)
@@ -311,7 +311,7 @@ def do_download(radio):
 
     _rt23_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -335,7 +335,7 @@ def model_match(cls, data):
 
     if len(data) == 0x1000:
         rid = data[0x0000:0x0006]
-        return rid == "P31183"
+        return rid == b"P31183"
     else:
         return False
 
@@ -361,6 +361,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT23"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     _ranges = [
                (0x0000, 0x0EC0),
@@ -765,25 +766,25 @@ class RT23Radio(chirp_common.CloneModeRadio):
         advanced.append(pf2)
 
         # other
-        _limit = str(int(_mem.limits.vhf.lower) / 10)
+        _limit = str(int(_mem.limits.vhf.lower) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.vhf.lower", "VHF low", val)
         other.append(rs)
 
-        _limit = str(int(_mem.limits.vhf.upper) / 10)
+        _limit = str(int(_mem.limits.vhf.upper) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.vhf.upper", "VHF high", val)
         other.append(rs)
 
-        _limit = str(int(_mem.limits.uhf.lower) / 10)
+        _limit = str(int(_mem.limits.uhf.lower) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.uhf.lower", "UHF low", val)
         other.append(rs)
 
-        _limit = str(int(_mem.limits.uhf.upper) / 10)
+        _limit = str(int(_mem.limits.uhf.upper) // 10)
         val = RadioSettingValueString(0, 3, _limit)
         val.set_mutable(False)
         rs = RadioSetting("limits.uhf.upper", "UHF high", val)
@@ -849,7 +850,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

@@ -119,7 +119,7 @@ def do_ident(radio):
     radio.pipe.timeout = 3
     radio.pipe.stopbits = serial.STOPBITS_TWO
     radio.pipe.write("\x02PnOGdAM")
-    for x in xrange(10):
+    for x in range(10):
         ack = radio.pipe.read(1)
         if ack == '\x06':
             break
@@ -264,7 +264,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
             self._mmap = do_download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -273,7 +273,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
             do_upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
@@ -463,10 +463,10 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
 
         # Vox level
-        mem_vals = range(10)
+        mem_vals = list(range(10))
         user_options = [str(x) for x in mem_vals]
         user_options[0] = "Off"
-        options_map = zip(user_options, mem_vals)
+        options_map = list(zip(user_options, mem_vals))
 
         rs = RadioSetting("vox", "VOX Level",
                           RadioSettingValueMap(options_map, _settings.vox))
@@ -502,11 +502,11 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
 
         # Priority channel
-        mem_vals = range(200)
+        mem_vals = list(range(200))
         user_options = [str(x) for x in mem_vals]
         mem_vals.insert(0, 0xFF)
         user_options.insert(0, "Not Set")
-        options_map = zip(user_options, mem_vals)
+        options_map = list(zip(user_options, mem_vals))
         if _settings.priority_channel >= 200:
             _priority_ch = 0xFF
         else:
@@ -520,11 +520,11 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
 
         # Step
-        mem_vals = range(0, len(TGUV2P_STEPS))
+        mem_vals = list(range(0, len(TGUV2P_STEPS)))
         mem_vals.append(0xFF)
         user_options = [(str(x) + " kHz") for x in TGUV2P_STEPS]
         user_options.append("Unknown")
-        options_map = zip(user_options, mem_vals)
+        options_map = list(zip(user_options, mem_vals))
 
         rs = RadioSetting("step", "Current (VFO?) step size",
                           RadioSettingValueMap(options_map, _settings.step))
@@ -533,7 +533,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         # End (Tail) tone elimination
         mem_vals = [0, 1]
         user_options = ["Tone Elimination On", "Tone Elimination Off"]
-        options_map = zip(user_options, mem_vals)
+        options_map = list(zip(user_options, mem_vals))
 
         rs = RadioSetting("not_end_tone_elim", "Tx End Tone Elimination",
                           RadioSettingValueMap(options_map,
@@ -548,7 +548,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
             _vfo_mode = _settings.vfo_mode
         mem_vals = [0xFF, 0]
         user_options = ["VFO Mode Enabled", "VFO Mode Disabled"]
-        options_map = zip(user_options, mem_vals)
+        options_map = list(zip(user_options, mem_vals))
 
         rs = RadioSetting("vfo_mode", "VFO (CH only) mode",
                           RadioSettingValueMap(options_map, _vfo_mode))
@@ -764,11 +764,11 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return (filedata.startswith("TG-UV2+ Radio Program Data") and
+        return (filedata.startswith(b"TG-UV2+ Radio Program Data") and
                 len(filedata) == (cls._memsize + 0x30))

@@ -364,7 +364,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         """Do a download of the radio eeprom"""
         try:
             data = _do_download(self)
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio:\n %s" % e)
 
         # match model
@@ -392,7 +392,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         try:
             _do_upload(self)
-        except Exception, e:
+        except Exception as e:
             msg = "Failed to communicate with radio:\n%s" % e
             raise errors.RadioError(msg)
 
@@ -726,7 +726,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                 name = element.get_name()
                 value = element.value
 
-                print("== Setting %s: %s" % (name, value))
+                print(("== Setting %s: %s" % (name, value)))
 
                 obj = getattr(_settings, name)
                 if name in ["off_hook", "talk_back", "monitor"]:
@@ -735,7 +735,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -747,7 +747,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # testing the file data size
         if len(filedata) == cls._memsize:
             match_size = True
-            print("Comp: %i file / %i memzise" % (len(filedata), cls._memsize) )
+            print(("Comp: %i file / %i memzise" % (len(filedata), cls._memsize) ))
 
         # testing the firmware fingerprint, this experimental
         match_model = _model_match(cls, filedata)

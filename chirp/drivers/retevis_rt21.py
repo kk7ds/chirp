@@ -397,7 +397,7 @@ struct {
 u8 skipflags[3];       // SCAN_ADD
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 ALARM_LIST = ["Local Alarm", "Remote Alarm"]
 BCL_LIST = ["Off", "Carrier", "QT/DQT"]
@@ -487,7 +487,7 @@ def _enter_programming_mode(radio):
         if radio._echo:
             chew = serial.read(len(_magic))  # Chew the echo
         ack = serial.read(1)
-        if ack == "\x00":
+        if ack == b"\x00":
             ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -498,7 +498,7 @@ def _enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         if radio._echo:
             serial.read(1)  # Chew the echo
         ident = serial.read(8)
@@ -533,7 +533,7 @@ def _enter_programming_mode(radio):
 def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
         if radio._echo:
             chew = serial.read(1)  # Chew the echo
     except:
@@ -543,8 +543,8 @@ def _exit_programming_mode(radio):
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -575,7 +575,7 @@ def _read_block(radio, block_addr, block_size):
 def _write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -596,7 +596,7 @@ def do_download(radio):
     LOG.debug("download")
     _enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -616,7 +616,7 @@ def do_download(radio):
 
     _exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -641,7 +641,7 @@ def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0x01B8:0x01BE]
 
-    return rid.startswith("P3207")
+    return rid.startswith(b"P3207")
 
 
 @directory.register
@@ -650,6 +650,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT21"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x10
     BLOCK_SIZE_UP = 0x10
 
@@ -659,8 +660,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
     VALID_BANDS = [(400000000, 480000000)]
 
-    _magic = "PRMZUNE"
-    _fingerprint = ["P3207s\xF8\xFF", ]
+    _magic = b"PRMZUNE"
+    _fingerprint = [b"P3207s\xF8\xFF", ]
     _upper = 16
     _ack_1st_block = True
     _skipflags = True
@@ -987,7 +988,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             elif self.MODEL == "AR-63":
                 _mem.set_raw("\xFF" * 13 + _rsvd)
             else:
-                _mem.set_raw("\xFF" * (_mem.size() / 8))
+                _mem.set_raw("\xFF" * (_mem.size() // 8))
 
             return
 
@@ -1540,8 +1541,8 @@ class RB17ARadio(RT21Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PROA8US"
-    _fingerprint = ["P3217s\xF8\xFF", ]
+    _magic = b"PROA8US"
+    _fingerprint = [b"P3217s\xF8\xFF", ]
     _upper = 30
     _skipflags = True
     _reserved = False
@@ -1569,8 +1570,8 @@ class RB26Radio(RT21Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PHOGR" + "\x01" + "0"
-    _fingerprint = ["P32073" + "\x02\xFF", ]
+    _magic = b"PHOGR" + b"\x01" + b"0"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = True
@@ -1599,8 +1600,8 @@ class RT76Radio(RT21Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PHOGR\x14\xD4"
-    _fingerprint = ["P32073" + "\x02\xFF", ]
+    _magic = b"PHOGR\x14\xD4"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = False
@@ -1632,8 +1633,8 @@ class RT29UHFRadio(RT21Radio):
                     chirp_common.PowerLevel("Mid", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
-    _magic = "PROHRAM"
-    _fingerprint = ["P3207" + "\x13\xF8\xFF", ]  # UHF model
+    _magic = b"PROHRAM"
+    _fingerprint = [b"P3207" + b"\x13\xF8\xFF", ]  # UHF model
     _upper = 16
     _skipflags = True
     _reserved = False
@@ -1663,8 +1664,8 @@ class RT29VHFRadio(RT29UHFRadio):
 
     VALID_BANDS = [(136000000, 174000000)]
 
-    _magic = "PROHRAM"
-    _fingerprint = ["P2207" + "\x01\xF8\xFF", ]  # VHF model
+    _magic = b"PROHRAM"
+    _fingerprint = [b"P2207" + b"\x01\xF8\xFF", ]  # VHF model
 
 
 @directory.register
@@ -1678,8 +1679,8 @@ class RB23Radio(RT21Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PHOGR" + "\x01" + "0"
-    _fingerprint = ["P32073" + "\x02\xFF", ]
+    _magic = b"PHOGR" + b"\x01" + b"0"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = True
@@ -1706,8 +1707,8 @@ class RT19Radio(RT21Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
-    _magic = "PHOGRQ^"
-    _fingerprint = ["P32073" + "\x02\xFF", ]
+    _magic = b"PHOGRQ^"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 22
     _mem_params = (_upper,  # number of channels
                    0x160,   # memory start
@@ -1737,8 +1738,8 @@ class RT619Radio(RT19Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
                     chirp_common.PowerLevel("Low", watts=0.49)]
 
-    _magic = "PHOGRS]"
-    _fingerprint = ["P32073" + "\x02\xFF", ]
+    _magic = b"PHOGRS]"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 16
     _mem_params = (_upper,  # number of channels
                    0x100,   # memory start
@@ -1763,9 +1764,9 @@ class AR63Radio(RT21Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
-    _magic = "PHOGR\xF5\x9A"
-    _fingerprint = ["P32073" + "\x02\xFF",
-                    "P32073" + "\x03\xFF", ]
+    _magic = b"PHOGR\xF5\x9A"
+    _fingerprint = [b"P32073" + b"\x02\xFF",
+                    b"P32073" + b"\x03\xFF", ]
     _upper = 16
     _ack_1st_block = False
     _skipflags = True
@@ -1795,8 +1796,8 @@ class RT40BRadio(RT21Radio):
 
     VALID_BANDS = [(400000000, 480000000)]
 
-    _magic = "PHOGRH" + "\x5C"
-    _fingerprint = ["P32073" + "\x02\xFF", ]
+    _magic = b"PHOGRH" + b"\x5C"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 22
     _mem_params = (_upper,  # number of channels
                    )

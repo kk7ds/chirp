@@ -212,7 +212,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -220,7 +220,7 @@ def _echo_write(radio, data):
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -231,17 +231,17 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
-valid_model = ['QX588UV', 'HR-2040', 'DB-50M\x00', 'DB-750X']
+valid_model = [b'QX588UV', b'HR-2040', b'DB-50M\x00', b'DB-750X']
 
 
 def _ident(radio):
     radio.pipe.timeout = 1
-    _echo_write(radio, "PROGRAM")
+    _echo_write(radio, b"PROGRAM")
     response = radio.pipe.read(3)
-    if response != "QX\x06":
+    if response != b"QX\x06":
         LOG.debug("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model or bad connection")
-    _echo_write(radio, "\x02")
+    _echo_write(radio, b"\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
     if response[1:8] not in valid_model:
@@ -250,10 +250,10 @@ def _ident(radio):
 
 
 def _finish(radio):
-    endframe = "\x45\x4E\x44"
+    endframe = b"\x45\x4E\x44"
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
-    if result != "\x06":
+    if result != b"\x06":
         LOG.debug("Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
@@ -261,7 +261,7 @@ def _finish(radio):
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 256
 
 
@@ -269,13 +269,12 @@ def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
     if data:
         frame += data
-        frame += chr(_checksum(frame[1:]))
-        frame += "\x06"
+        frame += struct.pack('BB', _checksum(frame[1:]), 0x06)
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
     if data:
         result = radio.pipe.read(1)
-        if result != "\x06":
+        if result != b'\x06':
             LOG.debug("Ack was: %s" % repr(result))
             raise errors.RadioError(
                 "Radio did not accept block at %04x" % addr)
@@ -285,7 +284,7 @@ def _send(radio, cmd, addr, length, data=None):
     header = result[0:4]
     data = result[4:-2]
     ack = result[-1]
-    if ack != "\x06":
+    if ack != 0x06:
         LOG.debug("Ack was: %s" % repr(ack))
         raise errors.RadioError("Radio NAK'd block at %04x" % addr)
     _cmd, _addr, _length = struct.unpack(">cHb", header)
@@ -295,9 +294,9 @@ def _send(radio, cmd, addr, length, data=None):
         LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
     cs = _checksum(result[1:-2])
-    if cs != ord(result[-2]):
+    if cs != result[-2]:
         LOG.debug("Calculated: %02x" % cs)
-        LOG.debug("Actual:     %02x" % ord(result[-2]))
+        LOG.debug("Actual:     %02x" % result[-2])
         raise errors.RadioError("Block at 0x%04x failed checksum" % addr)
     return data
 
@@ -307,13 +306,13 @@ def _download(radio):
 
     memobj = None
 
-    data = ""
+    data = b""
     for start, end in radio._ranges:
         for addr in range(start, end, BLOCK_SIZE):
             if memobj is not None and not _should_send_addr(memobj, addr):
-                block = "\xFF" * BLOCK_SIZE
+                block = b"\xFF" * BLOCK_SIZE
             else:
-                block = _send(radio, 'R', addr, BLOCK_SIZE)
+                block = _send(radio, b'R', addr, BLOCK_SIZE)
             data += block
 
             status = chirp_common.Status()
@@ -327,7 +326,7 @@ def _download(radio):
 
     _finish(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
@@ -340,7 +339,7 @@ def _upload(radio):
             if not _should_send_addr(radio._memobj, addr):
                 continue
             block = radio._mmap[addr:addr + BLOCK_SIZE]
-            _send(radio, 'W', addr, len(block), block)
+            _send(radio, b'W', addr, len(block), block)
 
             status = chirp_common.Status()
             status.cur = addr
@@ -381,7 +380,8 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UV"
     BAUD_RATE = 9600
-    _file_ident = ["QX588UV", "588UVN"]
+    _file_ident = [b"QX588UV", b"588UVN"]
+    NEEDS_COMPAT_SERIAL = False
 
     # May try to mirror the OEM behavior later
     _ranges = [
@@ -685,9 +685,10 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                 s_ += (c if c in chirp_common.CHARSET_ASCII else "")
             return s_
 
+        welcome_msg = ''.join(filter(_settings.welcome))
         rs = RadioSetting("welcome", "Welcome Message",
-                          RadioSettingValueString(0, 8,
-                                                  filter(_settings.welcome)))
+                          RadioSettingValueString(0, 8, welcome_msg))
+
         basic.append(rs)
 
         rs = RadioSetting("beep", "Beep Enabled",
@@ -724,7 +725,7 @@ class IntekHR2040Radio(AnyTone5888UVRadio):
     """Intek HR-2040"""
     VENDOR = "Intek"
     MODEL = "HR-2040"
-    _file_ident = ["HR-2040"]
+    _file_ident = [b"HR-2040"]
 
 
 @directory.register
@@ -732,7 +733,7 @@ class PolmarDB50MRadio(AnyTone5888UVRadio):
     """Polmar DB-50M"""
     VENDOR = "Polmar"
     MODEL = "DB-50M"
-    _file_ident = ["DB-50M"]
+    _file_ident = [b"DB-50M"]
 
 
 @directory.register
@@ -740,7 +741,7 @@ class PowerwerxDB750XRadio(AnyTone5888UVRadio):
     """Powerwerx DB-750X"""
     VENDOR = "Powerwerx"
     MODEL = "DB-750X"
-    _file_ident = ["DB-750X"]
+    _file_ident = [b"DB-750X"]
 
     def get_settings(self):
         return {}

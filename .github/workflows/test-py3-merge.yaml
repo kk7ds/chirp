@@ -1,11 +1,11 @@
 name: Test merging against py3
 on:
   pull_request:
-    branches-ignore:
-      - 'py3**'
+    branches:
+      - master
   push:
-    branches-ignore:
-      - 'py3**'
+    branches:
+      - master
 jobs:
   test:
     name: Merge and run all tests

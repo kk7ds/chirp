@@ -14,11 +14,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from pathlib import Path
 import sys
 import glob
 import re
 import logging
 from subprocess import Popen
+
+import six
 
 LOG = logging.getLogger(__name__)
 
@@ -45,7 +48,7 @@ def win32_comports_bruteforce():
             ports.append((portname, "Unknown", "Serial"))
             win32file.CloseHandle(port)
             port = None
-        except Exception, e:
+        except Exception as e:
             pass
 
     return ports
@@ -93,8 +96,10 @@ class Platform:
     def log_dir(self):
         """Return the preferred log file directory"""
         logdir = os.path.join(self.config_dir(), "logs")
-        if not os.path.isdir(logdir):
+        try:
             os.mkdir(logdir)
+        except FileExistsError:
+            pass
 
         return logdir
 
@@ -236,8 +241,8 @@ class Platform:
 
         if we_are_frozen():
             # Win32, find the directory of the executable
-            return os.path.dirname(unicode(sys.executable,
-                                           sys.getfilesystemencoding()))
+            return os.path.dirname(six.text_type(sys.executable,
+                                                 sys.getfilesystemencoding()))
         else:
             # UNIX: Find the parent directory of this module
             return os.path.dirname(os.path.abspath(os.path.join(_find_me(),
@@ -275,13 +280,12 @@ class UnixPlatform(Platform):
     """A platform module suitable for UNIX systems"""
     def __init__(self, basepath):
         if not basepath:
-            basepath = os.path.abspath(os.path.join(self.default_dir(),
-                                                    ".chirp"))
+            basepath = os.path.join(self.default_dir(),
+                                    ".chirp")
 
-        if not os.path.isdir(basepath):
-            os.mkdir(basepath)
+        Path(basepath).mkdir(exist_ok=True)
 
-        Platform.__init__(self, basepath)
+        Platform.__init__(self, str(basepath))
 
         # This is a hack that needs to be properly fixed by importing the
         # latest changes to this module from d-rats.  In the interest of
@@ -294,7 +298,7 @@ class UnixPlatform(Platform):
             os.environ["PANGO_RC_FILE"] = "../Resources/etc/pango/pangorc"
 
     def default_dir(self):
-        return os.path.abspath(os.getenv("HOME"))
+        return str(Path.home())
 
     def filter_filename(self, filename):
         return filename.replace("/", "")
@@ -350,7 +354,10 @@ class Win32Platform(Platform):
             basepath = os.path.abspath(os.path.join(appdata, "CHIRP"))
 
         if not os.path.isdir(basepath):
-            os.mkdir(basepath)
+            try:
+                os.mkdir(basepath)
+            except FileExistsError:
+                pass
 
         Platform.__init__(self, basepath)
 
@@ -374,7 +381,7 @@ class Win32Platform(Platform):
     def list_serial_ports(self):
         try:
             ports = list(comports())
-        except Exception, e:
+        except Exception as e:
             if comports != win32_comports_bruteforce:
                 LOG.error("Failed to detect win32 serial ports: %s" % e)
                 ports = win32_comports_bruteforce()
@@ -391,7 +398,7 @@ class Win32Platform(Platform):
 
         try:
             fname, _, _ = win32gui.GetOpenFileNameW(Filter=typestrs)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Failed to get filename: %s" % e)
             return None
 
@@ -422,7 +429,7 @@ class Win32Platform(Platform):
                                                     CustomFilter=custom,
                                                     DefExt=def_ext,
                                                     Filter=typestrs)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Failed to get filename: %s" % e)
             return None
 
@@ -434,7 +441,7 @@ class Win32Platform(Platform):
         try:
             pidl, _, _ = shell.SHBrowseForFolder()
             fname = shell.SHGetPathFromIDList(pidl)
-        except Exception, e:
+        except Exception as e:
             LOG.error("Failed to get directory: %s" % e)
             return None
 
@@ -476,16 +483,16 @@ def get_platform(basepath=None):
 def _do_test():
     __pform = get_platform()
 
-    print "Config dir: %s" % __pform.config_dir()
-    print "Default dir: %s" % __pform.default_dir()
-    print "Log file (foo): %s" % __pform.log_file("foo")
-    print "Serial ports: %s" % __pform.list_serial_ports()
-    print "OS Version: %s" % __pform.os_version_string()
+    print("Config dir: %s" % __pform.config_dir())
+    print("Default dir: %s" % __pform.default_dir())
+    print("Log file (foo): %s" % __pform.log_file("foo"))
+    print("Serial ports: %s" % __pform.list_serial_ports())
+    print("OS Version: %s" % __pform.os_version_string())
     # __pform.open_text_file("d-rats.py")
 
     # print "Open file: %s" % __pform.gui_open_file()
     # print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
-    print "Open folder: %s" % __pform.gui_select_dir("/tmp")
+    print("Open folder: %s" % __pform.gui_select_dir("/tmp"))
 
 if __name__ == "__main__":
     _do_test()

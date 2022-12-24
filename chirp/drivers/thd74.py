@@ -25,7 +25,7 @@ CALL_CHANS = ['VHF Call (A)',
 EXTD_NUMBERS = list(itertools.chain(
     ['%s%02i' % (i % 2 and 'Upper' or 'Lower', i // 2) for i in range(100)],
     ['Priority'],
-    ['WX%i' % (i + 1) for i in range (10)],
+    ['WX%i' % (i + 1) for i in range(10)],
     [None for i in range(20)],  # 20-channel buffer?
     [CALL_CHANS[i] for i in range(len(CALL_CHANS))]))
 
@@ -105,10 +105,45 @@ TUNE_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
               100.0]
 CROSS_MODES = ['DTCS->', 'Tone->DTCS', 'DTCS->Tone', 'Tone->Tone']
 MODES = ['FM', 'DV', 'AM', 'LSB', 'USB', 'CW', 'NFM',
-         'DV', # Actually DR in the radio
+         'DV',  # Actually DR in the radio
          ]
 DSQL_MODES = ['', 'Code', 'Callsign']
 FINE_STEPS = [20, 100, 500, 1000]
+
+
+class KenwoodGroup(chirp_common.Bank):
+    pass
+
+
+class KenwoodTHD74Bankmodel(chirp_common.BankModel):
+    channelAlwaysHasBank = True
+
+    def get_num_mappings(self):
+        return 30
+
+    def get_mappings(self):
+        groups = []
+        for i in range(self.get_num_mappings()):
+            groups.append(KenwoodGroup(self, i, 'GRP-%i' % i))
+        return groups
+
+    def add_memory_to_mapping(self, memory, bank):
+        self._radio._memobj.flags[memory.number].group = bank.get_index()
+
+    def remove_memory_from_mapping(self, memory, bank):
+        self._radio._memobj.flags[memory.number].group = 0
+
+    def get_mapping_memories(self, bank):
+        features = self._radio.get_features()
+        memories = []
+        for i in range(0, features.memory_bounds[1]):
+            if self._radio._memobj.flags[i].group == bank.get_index():
+                memories.append(self._radio.get_memory(i))
+        return memories
+
+    def get_memory_mappings(self, memory):
+        index = self._radio._memobj.flags[memory.number].group
+        return [self.get_mappings()[index]]
 
 
 @directory.register
@@ -191,7 +226,7 @@ class THD74Radio(chirp_common.CloneModeRadio):
 
         if raw:
             return data
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def upload(self, blocks=None):
         if blocks is None:
@@ -303,7 +338,7 @@ class THD74Radio(chirp_common.CloneModeRadio):
         rf.valid_special_chans = [x for x in EXTD_NUMBERS if x]
         rf.has_cross = True
         rf.has_dtcs_polarity = False
-        rf.has_bank = False
+        rf.has_bank = True
         rf.can_odd_split = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, 999)
@@ -438,6 +473,9 @@ class THD74Radio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return (repr(self._get_raw_memory(number)) +
                 repr(self._memobj.flags[number]))
+
+    def get_bank_model(self):
+        return KenwoodTHD74Bankmodel(self)
 
     @classmethod
     def match_model(cls, filedata, filename):

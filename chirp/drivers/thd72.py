@@ -224,6 +224,8 @@ class THD72Radio(chirp_common.CloneModeRadio):
     VENDOR = "Kenwood"
     MODEL = "TH-D72 (clone mode)"
     HARDWARE_FLOW = sys.platform == "darwin"  # only OS X driver needs hw flow
+    NEEDS_COMPAT_SERIAL = False
+    FORMATS = [directory.register_format('Kenwood MCP4A', '*.mc4')]
 
     mem_upper_limit = 1022
     _memsize = 65536
@@ -252,9 +254,9 @@ class THD72Radio(chirp_common.CloneModeRadio):
         rf.has_bank = False
         rf.has_settings = True
         rf.valid_tuning_steps = []
-        rf.valid_modes = MODES_REV.keys()
-        rf.valid_tmodes = TMODES_REV.keys()
-        rf.valid_duplexes = DUPLEX_REV.keys()
+        rf.valid_modes = list(MODES_REV.keys())
+        rf.valid_tmodes = list(TMODES_REV.keys())
+        rf.valid_duplexes = list(DUPLEX_REV.keys())
         rf.valid_tuning_steps = list(TUNE_STEPS)
         rf.valid_skips = ["", "S"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
@@ -269,7 +271,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         for baud in [9600, 19200, 38400, 57600]:
             self.pipe.baudrate = baud
             try:
-                self.pipe.write("\r\r")
+                self.pipe.write(b"\r\r")
             except:
                 break
             self.pipe.read(32)
@@ -286,7 +288,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         return sorted(THD72_SPECIAL.keys())
 
     def add_dirty_block(self, memobj):
-        block = memobj._offset / 256
+        block = memobj._offset // 256
         if block not in self._dirty_blocks:
             self._dirty_blocks.append(block)
         self._dirty_blocks.sort()
@@ -431,57 +433,57 @@ class THD72Radio(chirp_common.CloneModeRadio):
             self.upload()
 
     def read_block(self, block, count=256):
-        self.pipe.write(struct.pack("<cBHB", "R", 0, block, 0))
+        self.pipe.write(struct.pack("<cBHB", b"R", 0, block, 0))
         r = self.pipe.read(5)
         if len(r) != 5:
             raise Exception("Did not receive block response")
 
         cmd, _zero, _block, zero = struct.unpack("<cBHB", r)
-        if cmd != "W" or _block != block:
+        if cmd != b"W" or _block != block:
             raise Exception("Invalid response: %s %i" % (cmd, _block))
 
-        data = ""
+        data = b""
         while len(data) < count:
             data += self.pipe.read(count - len(data))
 
-        self.pipe.write(chr(0x06))
-        if self.pipe.read(1) != chr(0x06):
+        self.pipe.write(bytes([0x06]))
+        if self.pipe.read(1) != bytes([0x06]):
             raise Exception("Did not receive post-block ACK!")
 
         return data
 
     def write_block(self, block, map):
-        self.pipe.write(struct.pack("<cBHB", "W", 0, block, 0))
+        self.pipe.write(struct.pack("<cBHB", b"W", 0, block, 0))
         base = block * 256
         self.pipe.write(map[base:base + 256])
 
         ack = self.pipe.read(1)
 
-        return ack == chr(0x06)
+        return ack == bytes([0x06])
 
     def download(self, raw=False, blocks=None):
         if blocks is None:
-            blocks = range(self._memsize / 256)
+            blocks = range(self._memsize // 256)
         else:
-            blocks = [b for b in blocks if b < self._memsize / 256]
+            blocks = [b for b in blocks if b < self._memsize // 256]
 
         if self.command("0M PROGRAM") != "0M":
             raise errors.RadioError("No response from self")
 
-        allblocks = range(self._memsize / 256)
+        allblocks = range(self._memsize // 256)
         self.pipe.baudrate = 57600
         try:
             self.pipe.setRTS()
         except AttributeError:
             self.pipe.rts = True
         self.pipe.read(1)
-        data = ""
+        data = b""
         LOG.debug("reading blocks %d..%d" % (blocks[0], blocks[-1]))
         total = len(blocks)
         count = 0
         for i in allblocks:
             if i not in blocks:
-                data += 256 * '\xff'
+                data += 256 * b'\xff'
                 continue
             data += self.read_block(i)
             count += 1
@@ -492,17 +494,17 @@ class THD72Radio(chirp_common.CloneModeRadio):
                 s.cur = count
                 self.status_fn(s)
 
-        self.pipe.write("E")
+        self.pipe.write(b"E")
 
         if raw:
             return data
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def upload(self, blocks=None):
         if blocks is None:
-            blocks = range((self._memsize / 256) - 2)
+            blocks = range((self._memsize // 256) - 2)
         else:
-            blocks = [b for b in blocks if b < self._memsize / 256]
+            blocks = [b for b in blocks if b < self._memsize // 256]
 
         if self.command("0M PROGRAM") != "0M":
             raise errors.RadioError("No response from self")
@@ -528,20 +530,20 @@ class THD72Radio(chirp_common.CloneModeRadio):
                 s.cur = count
                 self.status_fn(s)
 
-        self.pipe.write("E")
+        self.pipe.write(b"E")
         # clear out blocks we uploaded from the dirty blocks list
         self._dirty_blocks = [b for b in self._dirty_blocks if b not in blocks]
 
     def command(self, cmd, timeout=0.5):
         start = time.time()
 
-        data = ""
+        data = b""
         LOG.debug("PC->D72: %s" % cmd)
-        self.pipe.write(cmd + "\r")
-        while not data.endswith("\r") and (time.time() - start) < timeout:
+        self.pipe.write((cmd + "\r").encode())
+        while not data.endswith(b"\r") and (time.time() - start) < timeout:
             data += self.pipe.read(1)
         LOG.debug("D72->PC: %s" % data.strip())
-        return data.strip()
+        return data.decode().strip()
 
     def get_id(self):
         r = self.command("ID")
@@ -597,7 +599,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -781,9 +783,9 @@ if __name__ == "__main__":
         return r
 
     def usage():
-        print "Usage: %s <-i input.img>|<-o output.img> -p port " \
-            "[[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" % \
-            sys.argv[0]
+        print("Usage: %s <-i input.img>|<-o output.img> -p port "
+              "[[-f first-addr] [-l last-addr] | [-b list,of,blocks]]" %
+              sys.argv[0])
         sys.exit(1)
 
     opts, args = getopt.getopt(sys.argv[1:], "i:o:p:f:l:b:")
@@ -836,4 +838,4 @@ if __name__ == "__main__":
     else:
         r._mmap = file(fname, "rb").read(r._memsize)
         r.upload(blocks)
-    print "\nDone"
+    print("\nDone")

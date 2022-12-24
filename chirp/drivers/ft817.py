@@ -16,6 +16,7 @@
 
 """FT817 - FT817ND - FT817ND/US management module"""
 
+from builtins import bytes
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, util, memmap, errors, directory, bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -37,6 +38,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FT-817"""
     BAUD_RATE = 9600
     MODEL = "FT-817"
+    NEEDS_COMPAT_SERIAL = False
     _model = ""
     _US_model = False
 
@@ -215,10 +217,11 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         #seekto 0x1979;
         struct mem_struct sixtymeterchannels[5];
     """
-    _CALLSIGN_CHARSET = [chr(x) for x in range(ord("0"), ord("9") + 1) +
-                         range(ord("A"), ord("Z") + 1) + [ord(" ")]]
-    _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
-                                     range(0, len(_CALLSIGN_CHARSET))))
+    _CALLSIGN_CHARSET = [chr(x) for x in list(range(ord("0"), ord("9") + 1)) +
+                         list(range(ord("A"), ord("Z") + 1)) + [ord(" ")]]
+    _CALLSIGN_CHARSET_REV = dict(
+        list(zip(_CALLSIGN_CHARSET,
+                 list(range(0, len(_CALLSIGN_CHARSET))))))
 
     # WARNING Index are hard wired in memory management code !!!
     SPECIAL_MEMORIES = {
@@ -271,8 +274,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
     SPECIAL_MEMORIES.update(SPECIAL_PMS)
 
-    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
-                                    SPECIAL_MEMORIES.keys()))
+    SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
+                                         list(SPECIAL_MEMORIES.keys()))))
 
     @classmethod
     def get_prompts(cls):
@@ -304,7 +307,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             if data:
                 break
             time.sleep(0.5)
-        if len(data) == block + 2 and data[0] == chr(blocknum):
+        if len(data) == block + 2 and data[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, block)
             if checksum.get_existing(data) != \
                     checksum.get_calculated(data):
@@ -333,7 +336,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         start = time.time()
 
-        data = ""
+        data = bytes(b"")
         blocks = 0
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
@@ -347,7 +350,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 repeat = 1
             for _i in range(0, repeat):
                 data += self._read(block, blocks, blocks == nblocks - 1)
-                self.pipe.write(chr(CMD_ACK))
+                self.pipe.write(bytes([CMD_ACK]))
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
@@ -365,7 +368,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
 
         LOG.info("Clone completed in %i seconds" % (time.time() - start))
 
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
         delay = 0.5
@@ -376,6 +379,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         status = chirp_common.Status()
         status.msg = _("Cloning to radio")
         status.max = len(self._block_lengths) + 39
+        mmap = self.get_mmap().get_byte_compatible()
         for block in self._block_lengths:
             if blocks == 8:
                 # repeated read of 40 block same size (memory area)
@@ -389,16 +393,16 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                           (blocks, pos, pos + block))
                 LOG.debug(util.hexprint(chr(blocks)))
                 LOG.debug(util.hexprint(self.get_mmap()[pos:pos + block]))
-                LOG.debug(util.hexprint(chr(checksum.get_calculated(
-                    self.get_mmap()))))
-                self.pipe.write(chr(blocks))
-                self.pipe.write(self.get_mmap()[pos:pos + block])
-                self.pipe.write(chr(checksum.get_calculated(self.get_mmap())))
+                LOG.debug(util.hexprint(chr(checksum.get_calculated(mmap))))
+                self.pipe.write(bytes([blocks]))
+                self.pipe.write(mmap[pos:pos + block])
+                self.pipe.write(bytes([checksum.get_calculated(
+                    self.get_mmap())]))
                 buf = self.pipe.read(1)
-                if not buf or buf[0] != chr(CMD_ACK):
+                if not buf or buf[0] != CMD_ACK:
                     time.sleep(delay)
                     buf = self.pipe.read(1)
-                if not buf or buf[0] != chr(CMD_ACK):
+                if not buf or buf[0] != CMD_ACK:
                     LOG.debug(util.hexprint(buf))
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
@@ -413,7 +417,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = self._clone_in()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -422,7 +426,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             self._clone_out()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
@@ -516,7 +520,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = self._memobj.qmb
             immutable = ["number", "skip", "extd_number",
                          "name", "dtcs_polarity", "power", "comment"]
-        elif mem.number in self.SPECIAL_PMS.values():
+        elif mem.number in list(self.SPECIAL_PMS.values()):
             bitindex = -self.LAST_PMS_INDEX + mem.number
             used = (self._memobj.pmsvisible >> bitindex) & 0x01
             valid = (self._memobj.pmsfilled >> bitindex) & 0x01
@@ -539,7 +543,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def _set_special(self, mem):
-        if mem.empty and mem.number not in self.SPECIAL_PMS.values():
+        if mem.empty and mem.number not in list(self.SPECIAL_PMS.values()):
             # can't delete special memories!
             raise Exception("Sorry, special memory can't be deleted")
 
@@ -558,7 +562,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = self._memobj.home[5 + mem.number]
         elif mem.number == -1:
             _mem = self._memobj.qmb
-        elif mem.number in self.SPECIAL_PMS.values():
+        elif mem.number in list(self.SPECIAL_PMS.values()):
             # this case has to be last because 817 pms keys overlap with
             # 857 derived class other special memories
             bitindex = -self.LAST_PMS_INDEX + mem.number
@@ -618,17 +622,19 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                 # if you ulpoad an empty image you can brick your radio
                 raise Exception("Sorry, can't delete first memory")
             if wasvalid and not wasused:
-                self._memobj.filled[(mem.number - 1) / 8] &= \
+                self._memobj.filled[(mem.number - 1) // 8] &= \
                     ~(1 << (mem.number - 1) % 8)
-                _mem.set_raw("\xFF" * (_mem.size() / 8))    # clean up
-            self._memobj.visible[(mem.number - 1) / 8] &= \
+                _mem.set_raw("\xFF" * (_mem.size() // 8))    # clean up
+            self._memobj.visible[(mem.number - 1) // 8] &= \
                 ~(1 << (mem.number - 1) % 8)
             return
         if not wasvalid:
-            _mem.set_raw("\x00" * (_mem.size() / 8))    # clean up
+            _mem.set_raw("\x00" * (_mem.size() // 8))    # clean up
 
-        self._memobj.visible[(mem.number - 1) / 8] |= 1 << (mem.number - 1) % 8
-        self._memobj.filled[(mem.number - 1) / 8] |= 1 << (mem.number - 1) % 8
+        self._memobj.visible[(mem.number - 1) // 8] |= (
+            1 << (mem.number - 1) % 8)
+        self._memobj.filled[(mem.number - 1) // 8] |= (
+            1 << (mem.number - 1) % 8)
         self._set_memory(mem, _mem)
 
     def _get_memory(self, mem, _mem):
@@ -1141,8 +1147,8 @@ class FT817NDUSRadio(FT817Radio):
     SPECIAL_MEMORIES = dict(FT817Radio.SPECIAL_MEMORIES)
     SPECIAL_MEMORIES.update(SPECIAL_60M)
 
-    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
-                                    SPECIAL_MEMORIES.keys()))
+    SPECIAL_MEMORIES_REV = dict(list(zip(list(SPECIAL_MEMORIES.values()),
+                                         list(SPECIAL_MEMORIES.keys()))))
 
     def _get_special_60m(self, number):
         mem = chirp_common.Memory()
@@ -1181,10 +1187,11 @@ class FT817NDUSRadio(FT817Radio):
         self._set_memory(mem, _mem)
 
     def get_memory(self, number):
-        if number in self.SPECIAL_60M.keys():
+        if number in list(self.SPECIAL_60M.keys()):
             return self._get_special_60m(number)
-        elif number < 0 and \
-                self.SPECIAL_MEMORIES_REV[number] in self.SPECIAL_60M.keys():
+        elif (number < 0 and
+              self.SPECIAL_MEMORIES_REV[number] in
+              list(self.SPECIAL_60M.keys())):
             # I can't stop delete operation from losing extd_number but
             # I know how to get it back
             return self._get_special_60m(self.SPECIAL_MEMORIES_REV[number])
@@ -1192,7 +1199,7 @@ class FT817NDUSRadio(FT817Radio):
             return FT817Radio.get_memory(self, number)
 
     def set_memory(self, memory):
-        if memory.number in self.SPECIAL_60M.values():
+        if memory.number in list(self.SPECIAL_60M.values()):
             return self._set_special_60m(memory)
         else:
             return FT817Radio.set_memory(self, memory)

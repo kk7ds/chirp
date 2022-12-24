@@ -1,7 +1,9 @@
-include *.xsd
-include share/*.desktop
-include share/chirp.png
-include share/chirp.ico
-include share/*.1
-include stock_configs/*
+include chirp/share/*.desktop
+include chirp/share/*.png
+include chirp/share/*.ico
+include chirp/share/*.1
+include chirp/stock_configs/*
 include COPYING
+include *requirements.txt
+graft tests
+graft tools

@@ -15,12 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import glob
 import os
 import tempfile
 import logging
+import sys
 
-from chirp.drivers import icf, rfinder
-from chirp import chirp_common, util, radioreference, errors
+import six
+
+from chirp import chirp_common, util, errors
 
 LOG = logging.getLogger(__name__)
 
@@ -54,7 +57,7 @@ def register(cls):
     """Register radio @cls with the directory"""
     global DRV_TO_RADIO
     ident = radio_class_id(cls)
-    if ident in DRV_TO_RADIO.keys():
+    if ident in list(DRV_TO_RADIO.keys()):
         if ALLOW_DUPS:
             LOG.warn("Replacing existing driver id `%s'" % ident)
         else:
@@ -68,11 +71,27 @@ def register(cls):
 
 DRV_TO_RADIO = {}
 RADIO_TO_DRV = {}
+AUX_FORMATS = set()
 
 
 def register_format(name, pattern, readonly=False):
-    """This is just here for compatibility with the py3 branch."""
-    pass
+    """Register a named format and file pattern.
+
+    The name and pattern must not exist in the directory already
+    (except together). The name should be something like "CSV" or
+    "Icom ICF" and the pattern should be a glob like "*.icf".
+
+    Returns a unique name to go in Radio.FORMATS so the UI knows what
+    additional formats a driver can read (and write unless readonly is
+    set).
+    """
+    if (name, pattern) not in [(n, p) for n, p, r in AUX_FORMATS]:
+        if name in [x[0] for x in AUX_FORMATS]:
+            raise Exception('Duplicate format name %r' % name)
+        if pattern in [x[1] for x in AUX_FORMATS]:
+            raise Exception('Duplicate format pattern %r' % pattern)
+    AUX_FORMATS.add((name, pattern, readonly))
+    return name
 
 
 def get_radio(driver):
@@ -93,22 +112,6 @@ def get_driver(rclass):
         raise Exception("Unknown radio type `%s'" % rclass)
 
 
-def icf_to_radio(icf_file):
-    """Detect radio class from ICF file."""
-    icfdata, mmap = icf.read_file(icf_file)
-
-    for model in DRV_TO_RADIO.values():
-        try:
-            if model._model == icfdata['model']:
-                return model
-        except Exception:
-            pass  # Skip non-Icoms
-
-    LOG.error("Unsupported model data: %s" % util.hexprint(icfdata['model']))
-    raise Exception("Unsupported model %s" % binascii.hexlify(
-        icfdata['model']))
-
-
 # This is a mapping table of radio models that have changed in the past.
 # ideally we would never do this, but in the case where a radio was added
 # as the wrong model name, or a model has to be split, we need to be able
@@ -121,38 +124,34 @@ MODEL_COMPAT = {
 
 def get_radio_by_image(image_file):
     """Attempt to get the radio class that owns @image_file"""
-    if image_file.startswith("radioreference://"):
-        _, _, zipcode, username, password, country = image_file.split("/", 5)
-        rr = radioreference.RadioReferenceRadio(None)
-        rr.set_params(zipcode, username, password, country)
-        return rr
-
-    if image_file.startswith("rfinder://"):
-        _, _, email, passwd, lat, lon, miles = image_file.split("/")
-        rf = rfinder.RFinderRadio(None)
-        rf.set_params((float(lat), float(lon)), int(miles), email, passwd)
-        return rf
-
-    if os.path.exists(image_file) and icf.is_icf_file(image_file):
-        rclass = icf_to_radio(image_file)
-        return rclass(image_file)
-
     if os.path.exists(image_file):
-        f = file(image_file, "rb")
-        filedata = f.read()
-        f.close()
+        with open(image_file, "rb") as f:
+            filedata = f.read()
     else:
-        filedata = ""
+        filedata = b""
 
     data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
 
-    for rclass in DRV_TO_RADIO.values():
+    # NOTE: See warning below
+    if six.PY3:
+        filestring = ''.join(chr(c) for c in filedata)
+    else:
+        filestring = filedata
+
+    for rclass in list(DRV_TO_RADIO.values()):
         if not issubclass(rclass, chirp_common.FileBackedRadio):
             continue
 
-        # If no metadata, we do the old thing
-        if not metadata and rclass.match_model(filedata, image_file):
-            return rclass(image_file)
+        if not metadata:
+            # If no metadata, we do the old thing
+            error = None
+            try:
+                if rclass.match_model(filedata, image_file):
+                    return rclass(image_file)
+            except Exception as e:
+                LOG.error('Radio class %s failed during detection: %s' % (
+                    rclass.__name__, e))
+                pass
 
         meta_vendor = metadata.get('vendor')
         meta_model = metadata.get('model')
@@ -165,6 +164,7 @@ def get_radio_by_image(image_file):
             if (alias.VENDOR == meta_vendor and alias.MODEL == meta_model):
 
                 class DynamicRadioAlias(rclass):
+                    _orig_rclass = rclass
                     VENDOR = meta_vendor
                     MODEL = meta_model
                     VARIANT = metadata.get('variant')
@@ -178,3 +178,29 @@ def get_radio_by_image(image_file):
         raise e
     else:
         raise errors.ImageDetectFailed("Unknown file format")
+
+
+def import_drivers(limit=None):
+    if sys.platform == 'win32':
+        # Assume we are in a frozen win32 build, so we can not glob
+        # the driver files, but we do not need to anyway
+        import chirp.drivers
+        for module in chirp.drivers.__all__:
+            try:
+                __import__('chirp.drivers.%s' % module)
+            except Exception as e:
+                print('Failed to import %s: %s' % (module, e))
+        return
+
+    # Safe import of everything in chirp/drivers. We need to import them
+    # to get them to register, but should not abort if one import fails
+    chirp_module_base = os.path.dirname(os.path.abspath(__file__))
+    driver_files = glob.glob(os.path.join(chirp_module_base,
+                                          'drivers',
+                                          '*.py'))
+    for driver_file in driver_files:
+        module, ext = os.path.splitext(driver_file)
+        driver_module = os.path.basename(module)
+        if limit and driver_module not in limit:
+            continue
+        __import__('chirp.drivers.%s' % driver_module)

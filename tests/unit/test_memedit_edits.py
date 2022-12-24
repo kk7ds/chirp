@@ -1,4 +1,7 @@
-import mox
+try:
+    import mox
+except ImportError:
+    from mox3 import mox
 from tests.unit import base
 
 __builtins__["_"] = lambda s: s

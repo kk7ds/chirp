@@ -68,7 +68,7 @@ class FTM3200Radio(ft1d.FT1Radio):
     MODEL = "FTM-3200D"
     VARIANT = "R"
 
-    _model = "AH52N"
+    _model = b"AH52N"
     _memsize = 65227
     _block_lengths = [10, 65217]
     _has_vibrate = False
@@ -124,7 +124,7 @@ class FTM3200Radio(ft1d.FT1Radio):
 
     def _decode_label(self, mem):
         # TODO preserve the unknown \x80-x86 chars?
-        return str(mem.label).rstrip("\xFF").decode('ascii', 'replace')
+        return str(mem.label).rstrip("\xFF")
 
     def _encode_label(self, mem):
         label = mem.name.rstrip().encode('ascii', 'ignore')
@@ -193,7 +193,7 @@ class FTM3200Radio(ft1d.FT1Radio):
 
     @classmethod
     def _wipe_memory(cls, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
+        mem.set_raw("\x00" * (mem.size() // 8))
 
     def sync_out(self):
         # Need to give enough time for the radio to ACK after writes

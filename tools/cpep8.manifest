@@ -107,8 +107,10 @@
 ./chirp/drivers/th9000.py
 ./chirp/drivers/th9800.py
 ./chirp/drivers/thd72.py
+./chirp/drivers/thd74.py
 ./chirp/drivers/thuv1f.py
 ./chirp/drivers/tk760.py
+./chirp/drivers/tk760g.py
 ./chirp/drivers/tk8102.py
 ./chirp/drivers/tk8180.py
 ./chirp/drivers/tmd710.py
@@ -140,7 +142,7 @@
 ./chirp/memmap.py
 ./chirp/platform.py
 ./chirp/pyPEG.py
-./chirp/radioreference.py
+./chirp/sources/radioreference.py
 ./chirp/settings.py
 ./chirp/ui/__init__.py
 ./chirp/ui/bandplans.py
@@ -148,10 +150,8 @@
 ./chirp/ui/clone.py
 ./chirp/ui/cloneprog.py
 ./chirp/ui/common.py
-./chirp/ui/config.py
 ./chirp/ui/dstaredit.py
 ./chirp/ui/editorset.py
-./chirp/ui/fips.py
 ./chirp/ui/importdialog.py
 ./chirp/ui/inputdialog.py
 ./chirp/ui/mainapp.py
@@ -165,7 +165,6 @@
 ./chirp/util.py
 ./chirpc
 ./chirpw
-./locale/check_parameters.py
 ./rpttool
 ./setup.py
 ./share/make_supported.py

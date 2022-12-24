@@ -19,21 +19,21 @@
 import struct
 import os
 import logging
-from chirp import util, chirp_common, memmap
+from chirp import util, chirp_common, memmap, bitwise
 
 LOG = logging.getLogger(__name__)
 
 
 def wipe_memory(_mem, byte):
     """Cleanup a memory"""
-    _mem.set_raw(byte * (_mem.size() / 8))
+    _mem.set_raw(byte * (_mem.size() // 8))
 
 
 def do_download(radio, start, end, blocksize):
     """Initiate a download of @radio between @start and @end"""
-    image = ""
+    image = b""
     for i in range(start, end, blocksize):
-        cmd = struct.pack(">cHb", "R", i, blocksize)
+        cmd = struct.pack(">cHb", b"R", i, blocksize)
         LOG.debug(util.hexprint(cmd))
         radio.pipe.write(cmd)
         length = len(cmd) + blocksize
@@ -43,7 +43,7 @@ def do_download(radio, start, end, blocksize):
             raise Exception("Failed to read full block (%i!=%i)" %
                             (len(resp), len(cmd) + blocksize))
 
-        radio.pipe.write("\x06")
+        radio.pipe.write(b"\x06")
         radio.pipe.read(1)
         image += resp[4:]
 
@@ -54,21 +54,21 @@ def do_download(radio, start, end, blocksize):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    return memmap.MemoryMap(image)
+    return memmap.MemoryMapBytes(image)
 
 
 def do_upload(radio, start, end, blocksize):
     """Initiate an upload of @radio between @start and @end"""
     ptr = start
     for i in range(start, end, blocksize):
-        cmd = struct.pack(">cHb", "W", i, blocksize)
+        cmd = struct.pack(">cHb", b"W", i, blocksize)
         chunk = radio.get_mmap()[ptr:ptr+blocksize]
         ptr += blocksize
         radio.pipe.write(cmd + chunk)
         LOG.debug(util.hexprint(cmd + chunk))
 
         ack = radio.pipe.read(1)
-        if not ack == "\x06":
+        if not ack == b"\x06":
             raise Exception("Radio did not ack block %i" % ptr)
         # radio.pipe.write(ack)
 

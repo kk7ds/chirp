@@ -52,7 +52,8 @@ FT90_POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=35),
                          chirp_common.PowerLevel("Low", watts=5)]
 
 FT90_DUPLEX = ["", "-", "+", "split"]
-FT90_CWID_CHARS = list(string.digits) + list(string.uppercase) + list(" ")
+FT90_CWID_CHARS = list(string.digits) + list(string.ascii_uppercase) \
+                  + list(" ")
 FT90_DTMF_CHARS = list("0123456789ABCD*#")
 FT90_SPECIAL = ["vfo_vhf", "home_vhf", "vfo_uhf", "home_uhf",
                 "pms_1L", "pms_1U", "pms_2L", "pms_2U"]
@@ -332,7 +333,7 @@ struct  {
             self._mmap = self._clone_in()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             trace = traceback.format_exc()
             raise errors.RadioError(
                     "Failed to communicate with radio: %s" % trace)
@@ -343,7 +344,7 @@ struct  {
             self._clone_out()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             trace = traceback.format_exc()
             raise errors.RadioError(
                     "Failed to communicate with radio: %s" % trace)
@@ -559,13 +560,13 @@ struct  {
         rs = RadioSetting("cwid", "CWID", cwid)
         basic.append(rs)
 
-        options = ["OFF"] + map(str, range(1, 12+1))
+        options = ["OFF"] + [str(x) for x in (range(1, 12+1))]
         rs = RadioSetting(
                 "apo", "APO time (hrs)",
                 RadioSettingValueList(options, options[_settings.apo]))
         basic.append(rs)
 
-        options = ["Off"] + map(str, range(1, 60+1))
+        options = ["Off"] + [str(x) for x in (range(1, 60+1))]
         rs = RadioSetting(
                 "tot", "Time Out Timer (mins)",
                 RadioSettingValueList(options, options[_settings.tot]))
@@ -600,7 +601,7 @@ struct  {
                 RadioSettingValueList(keyopts, keyopts[_settings.key_acc]))
         keymaps.append(rs)
 
-        options = map(str, range(0, 12+1))
+        options = [str(x) for x in range(0, 12+1)]
         rs = RadioSetting(
                 "lcdcontrast", "LCD Contrast",
                 RadioSettingValueList(options, options[_settings.lcdcontrast]))
@@ -630,15 +631,15 @@ struct  {
                 RadioSettingValueList(options, options[_settings.dtmftxdelay]))
         autodial.append(rs)
 
-        options = map(str, range(1, 8 + 1))
+        options = [str(x) for x in range(1, 8 + 1)]
         rs = RadioSetting(
                 "dtmf_active", "DTMF Active",
                 RadioSettingValueList(options, options[_settings.dtmf_active]))
         autodial.append(rs)
 
         # setup 8 dtmf autodial entries
-        for i in map(str, range(1, 9)):
-            objname = "dtmf" + i
+        for i in range(1, 9):
+            objname = "dtmf" + str(i)
             dtmfsetting = getattr(_settings, objname)
             dtmflen = getattr(_settings, objname + "_len")
             dtmfstr = self._bbcd2dtmf(dtmfsetting, dtmflen)
@@ -670,6 +671,6 @@ struct  {
                     newval = self._dtmf2bbcd(newval)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise

@@ -12,6 +12,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from builtins import bytes
+
 import logging
 
 from chirp.drivers import id31
@@ -126,11 +128,11 @@ class ID51PLUSRadio(id31.ID31Radio):
         if len(filedata) == cls._memsize:
             LOG.debug('File has correct memory size, '
                       'checking 20 bytes at offset 0x1AF40')
-            snip = filedata[0x1AF40:0x1AF60]
-            if snip != ('\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
-                        '\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
-                        '\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
-                        '\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'):
+            snip = bytes(filedata[0x1AF40:0x1AF60])
+            if snip != bytes(b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+                             b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+                             b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+                             b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'):
                 LOG.debug('bytes matched ID-51 Plus Signature')
                 return True
             else:

@@ -67,12 +67,19 @@ class TestUtilityFunctions(base.BaseTest):
     def test_compare_version_to_current_dev(self):
         self.assertTrue(chirp_common.is_version_newer('daily-20180101'))
 
+    def test_from_Hz(self):
+        # FIXME: These are wrong! Adding them here purely to test the
+        # python3 conversion, but they should be fixed.
+        self.assertEqual(140, chirp_common.from_GHz(14000000001))
+        self.assertEqual(140, chirp_common.from_MHz(14000001))
+        self.assertEqual(140, chirp_common.from_kHz(14001))
+
 
 class TestSplitTone(base.BaseTest):
     def _test_split_tone_decode(self, tx, rx, **vals):
         mem = chirp_common.Memory()
         chirp_common.split_tone_decode(mem, tx, rx)
-        for key, value in vals.items():
+        for key, value in list(vals.items()):
             self.assertEqual(getattr(mem, key), value)
 
     def test_split_tone_decode_none(self):
@@ -150,7 +157,7 @@ class TestSplitTone(base.BaseTest):
 
     def _set_mem(self, **vals):
         mem = chirp_common.Memory()
-        for key, value in vals.items():
+        for key, value in list(vals.items()):
             setattr(mem, key, value)
         return chirp_common.split_tone_encode(mem)
 
@@ -227,7 +234,7 @@ class TestStepFunctions(base.BaseTest):
 
     def test_is_fractional_step(self):
         for freq in self._125 + self._625:
-            print freq
+            print(freq)
             self.assertTrue(chirp_common.is_fractional_step(freq))
 
     def test_is_6_25(self):
@@ -252,7 +259,7 @@ class TestStepFunctions(base.BaseTest):
                  6.25: self._625,
                  12.5: self._125,
                  }
-        for step, freqs in steps.items():
+        for step, freqs in list(steps.items()):
             for freq in freqs:
                 self.assertEqual(step, chirp_common.required_step(freq))
 
@@ -282,7 +289,7 @@ class TestImageMetadata(base.BaseTest):
             VARIANT = 'R'
 
         raw_metadata = TestRadio._make_metadata()
-        metadata = json.loads(base64.b64decode(raw_metadata))
+        metadata = json.loads(base64.b64decode(raw_metadata).decode())
         expected = {
             'vendor': 'Dan',
             'model': 'Foomaster 9000',
@@ -299,10 +306,10 @@ class TestImageMetadata(base.BaseTest):
             VARIANT = 'R'
 
         raw_metadata = TestRadio._make_metadata()
-        raw_data = ('foooooooooooooooooooooo' + TestRadio.MAGIC +
+        raw_data = (b'foooooooooooooooooooooo' + TestRadio.MAGIC +
                     TestRadio._make_metadata())
         data, metadata = chirp_common.FileBackedRadio._strip_metadata(raw_data)
-        self.assertEqual('foooooooooooooooooooooo', data)
+        self.assertEqual(b'foooooooooooooooooooooo', data)
         expected = {
             'vendor': 'Dan',
             'model': 'Foomaster 9000',
@@ -313,23 +320,27 @@ class TestImageMetadata(base.BaseTest):
         self.assertEqual(expected, metadata)
 
     def test_load_mmap_no_metadata(self):
-        f = tempfile.NamedTemporaryFile()
-        f.write('thisisrawdata')
-        f.flush()
+        fn = os.path.join(tempfile.gettempdir(), 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
+            f.flush()
 
         with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
-            chirp_common.FileBackedRadio(None).load_mmap(f.name)
-            mock_mmap.assert_called_once_with('thisisrawdata')
+            chirp_common.FileBackedRadio(None).load_mmap(fn)
+            mock_mmap.assert_called_once_with(b'thisisrawdata')
+        os.remove(fn)
 
     def test_load_mmap_bad_metadata(self):
-        f = tempfile.NamedTemporaryFile()
-        f.write('thisisrawdata')
-        f.write(chirp_common.FileBackedRadio.MAGIC + 'bad')
-        f.flush()
+        fn = os.path.join(tempfile.gettempdir(), 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
+            f.write(chirp_common.FileBackedRadio.MAGIC + b'bad')
+            f.flush()
 
         with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
-            chirp_common.FileBackedRadio(None).load_mmap(f.name)
-            mock_mmap.assert_called_once_with('thisisrawdata')
+            chirp_common.FileBackedRadio(None).load_mmap(fn)
+            mock_mmap.assert_called_once_with(b'thisisrawdata')
+        os.remove(fn)
 
     def test_save_mmap_includes_metadata(self):
         # Make sure that a file saved with a .img extension includes
@@ -339,17 +350,17 @@ class TestImageMetadata(base.BaseTest):
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
 
-        with tempfile.NamedTemporaryFile(suffix='.Img') as f:
-            fn = f.name
+        fn = os.path.join(tempfile.gettempdir(), 'test.img')
         r = TestRadio(None)
         r._mmap = mock.Mock()
-        r._mmap.get_packed.return_value = 'thisisrawdata'
+        r._mmap.get_byte_compatible.return_value.get_packed.return_value = (
+            b'thisisrawdata')
         r.save_mmap(fn)
-        with file(fn) as f:
+        with open(fn, 'rb') as f:
             filedata = f.read()
         os.remove(fn)
         data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
-        self.assertEqual('thisisrawdata', data)
+        self.assertEqual(b'thisisrawdata', data)
         expected = {
             'vendor': 'Dan',
             'model': 'Foomaster 9000',
@@ -371,13 +382,14 @@ class TestImageMetadata(base.BaseTest):
             fn = f.name
         r = TestRadio(None)
         r._mmap = mock.Mock()
-        r._mmap.get_packed.return_value = 'thisisrawdata'
+        r._mmap.get_byte_compatible.return_value.get_packed.return_value = (
+            b'thisisrawdata')
         r.save_mmap(fn)
-        with file(fn) as f:
+        with open(fn, 'rb') as f:
             filedata = f.read()
         os.remove(fn)
         data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
-        self.assertEqual('thisisrawdata', data)
+        self.assertEqual(b'thisisrawdata', data)
         self.assertEqual({}, metadata)
 
     def test_load_mmap_saves_metadata_on_radio(self):
@@ -390,7 +402,8 @@ class TestImageMetadata(base.BaseTest):
             fn = f.name
         r = TestRadio(None)
         r._mmap = mock.Mock()
-        r._mmap.get_packed.return_value = 'thisisrawdata'
+        r._mmap.get_byte_compatible.return_value.get_packed.return_value = (
+            b'thisisrawdata')
         r.save_mmap(fn)
 
         newr = TestRadio(None)

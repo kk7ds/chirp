@@ -128,8 +128,8 @@ def _set_freq(_mem, freq, offset):
         mult = 5000
         flag = 0x00000000
 
-    _mem.freq = (freq / mult) | flag
-    _mem.offset = (offset / mult)
+    _mem.freq = (freq // mult) | flag
+    _mem.offset = (offset // mult)
 
 
 class ID31Bank(icf.IcomBank):
@@ -196,7 +196,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_names = True
         rf.valid_tmodes = list(TMODES)
         rf.valid_tuning_steps = sorted(list(TUNING_STEPS))
-        rf.valid_modes = self.MODES.values()
+        rf.valid_modes = list(self.MODES.values())
         rf.valid_skips = ["", "S", "P"]
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 16
@@ -295,7 +295,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(memory.dtcs)
         _mem.dtcs_polarity = DTCS_POLARITY.index(memory.dtcs_polarity)
         _mem.tune_step = TUNING_STEPS.index(memory.tuning_step)
-        _mem.mode = next(i for i, mode in self.MODES.items()
+        _mem.mode = next(i for i, mode in list(self.MODES.items())
                          if mode == memory.mode)
 
         if isinstance(memory, chirp_common.DVMemory):
@@ -347,6 +347,6 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         return calls
 
 if __name__ == "__main__":
-    print repr(_decode_call(_encode_call("KD7REX B")))
-    print repr(_decode_call(_encode_call("       B")))
-    print repr(_decode_call(_encode_call("        ")))
+    print(repr(_decode_call(_encode_call("KD7REX B"))))
+    print(repr(_decode_call(_encode_call("       B"))))
+    print(repr(_decode_call(_encode_call("        "))))

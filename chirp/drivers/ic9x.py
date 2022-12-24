@@ -69,10 +69,11 @@ class IC9xBank(icf.IcomNamedBank):
 class IC9xRadio(icf.IcomLiveRadio):
     """Base class for Icom IC-9x radios"""
     MODEL = "IC-91/92AD"
+    NEEDS_COMPAT_SERIAL = False
 
     _model = "ic9x"    # Fake model info for detect.py
     vfo = 0
-    __last = 0
+    _last = 0
     _upper = 300
 
     _num_banks = 26
@@ -109,10 +110,10 @@ class IC9xRadio(icf.IcomLiveRadio):
         self._lock = LOCK
 
     def _maybe_send_magic(self):
-        if (time.time() - self.__last) > 1:
-            LOG.debug("Sending magic")
+        if (time.time() - self._last) > 1:
+            LOG.debug("Sending magic %i %i" % (time.time(), self._last))
             ic9x_ll.send_magic(self.pipe)
-        self.__last = time.time()
+        self._last = time.time()
 
     def get_memory(self, number):
         if isinstance(number, str):
@@ -181,7 +182,7 @@ class IC9xRadio(icf.IcomLiveRadio):
                 LOG.debug("Done: %s" % mem)
             except errors.InvalidMemoryLocation:
                 pass
-            except errors.InvalidDataError, e:
+            except errors.InvalidDataError as e:
                 LOG.error("Error talking to radio: %s" % e)
                 break
 
@@ -223,7 +224,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         self.__memcache[memory.number] = memory
 
     def _ic9x_get_banks(self):
-        if len(self.__bankcache.keys()) == 26:
+        if len(list(self.__bankcache.keys())) == 26:
             return [self.__bankcache[k] for k in
                     sorted(self.__bankcache.keys())]
 
@@ -246,10 +247,10 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     def _ic9x_set_banks(self, banks):
 
-        if len(banks) != len(self.__bankcache.keys()):
+        if len(banks) != len(list(self.__bankcache.keys())):
             raise errors.InvalidDataError("Invalid bank list length (%i:%i)" %
                                           (len(banks),
-                                           len(self.__bankcache.keys())))
+                                           len(list(self.__bankcache.keys()))))
 
         cached_names = [str(self.__bankcache[x])
                         for x in sorted(self.__bankcache.keys())]
@@ -279,7 +280,7 @@ class IC9xRadio(icf.IcomLiveRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_sub_devices = True
-        rf.valid_special_chans = IC9X_SPECIAL[self.vfo].keys()
+        rf.valid_special_chans = list(IC9X_SPECIAL[self.vfo].keys())
 
         return rf
 
@@ -417,8 +418,8 @@ def _test():
     import serial
     ser = IC9xRadioB(serial.Serial(port="/dev/ttyUSB1",
                                    baudrate=38400, timeout=0.1))
-    print ser.get_urcall_list()
-    print "-- FOO --"
+    print(ser.get_urcall_list())
+    print("-- FOO --")
     ser.set_urcall_list(["K7TAY", "FOOBAR", "BAZ"])
 
 

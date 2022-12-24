@@ -253,7 +253,7 @@ def _identify(radio):
                             .format(magic, echo))
 
         ack = radio.pipe.read(2)
-        if ack != "\x06\x30":
+        if ack != b"\x06\x30":
             raise errors.RadioError("Radio did not ACK first command: %r" %
                                     ack)
     except:
@@ -263,9 +263,9 @@ def _identify(radio):
 
 def _download(radio):
     _identify(radio)
-    data = []
+    data = bytes([])
     for i in range(0, 0x2000, 0x40):
-        msg = struct.pack('>cHb', 'R', i, 0x40)
+        msg = struct.pack('>cHb', b'R', i, 0x40)
         radio.pipe.write(msg)
         echo = radio.pipe.read(len(msg))  # Chew the echoed response
 
@@ -288,9 +288,9 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    radio.pipe.write("E")
+    radio.pipe.write(b"E")
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
@@ -298,12 +298,12 @@ def _upload(radio):
 
     for start_addr, end_addr, block_size in radio._ranges:
         for addr in range(start_addr, end_addr, block_size):
-            msg = struct.pack('>cHb', 'W', addr, block_size)
+            msg = struct.pack('>cHb', b'W', addr, block_size)
             msg += radio._mmap[addr:(addr + block_size)]
             radio.pipe.write(msg)
             radio.pipe.read(block_size + 4)
             ack = radio.pipe.read(1)
-            if ack != '\x06':
+            if ack != b'\x06':
                 raise errors.RadioError('Radio did not ACK block %i (0x%04x)'
                                         % (addr, addr))
 
@@ -314,7 +314,7 @@ def _upload(radio):
                 status.msg = "Cloning to radio"
                 radio.status_fn(status)
 
-    radio.pipe.write("E")
+    radio.pipe.write(b"E")
 
 
 def _split(rf, f1, f2):
@@ -336,7 +336,8 @@ class Rt87BaseRadio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT87 Base"
     BAUD_RATE = 9600
-    _MAGIC = "PGM2017"
+    NEEDS_COMPAT_SERIAL = False
+    _MAGIC = b"PGM2017"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1024,7 +1025,7 @@ class Rt87BaseRadio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

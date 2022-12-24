@@ -258,17 +258,17 @@ def _rawsend(radio, data):
 
 
 def _make_read_frame(addr, length):
-    frame = "\xFE\xFE\xEE\xEF\xEB"
+    frame = b"\xFE\xFE\xEE\xEF\xEB"
     """Pack the info in the header format"""
     frame += struct.pack(">ih", addr, length)
 
-    frame += "\xFD"
+    frame += b"\xFD"
     # Return the data
     return frame
 
 
 def _make_write_frame(addr, length, data=""):
-    frame = "\xFE\xFE\xEE\xEF\xE4"
+    frame = b"\xFE\xFE\xEE\xEF\xE4"
 
     """Pack the info in the header format"""
     output = struct.pack(">ih", addr, length)
@@ -279,7 +279,7 @@ def _make_write_frame(addr, length, data=""):
     frame += output
     frame += _calculate_checksum(output)
 
-    frame += "\xFD"
+    frame += b"\xFD"
     # Return the data
     return frame
 
@@ -287,12 +287,12 @@ def _make_write_frame(addr, length, data=""):
 def _calculate_checksum(data):
     num = 0
     for x in range(0, len(data)):
-        num = (num + ord(data[x])) % 256
+        num = (num + data[x]) % 256
 
     if num == 0:
-        return chr(0)
+        return bytes([0])
 
-    return chr(256 - num)
+    return bytes([256 - num])
 
 
 def _recv(radio, addr, length):
@@ -321,7 +321,7 @@ def _do_ident(radio):
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 36)
 
-    if not ack.startswith(radio._fingerprint) or not ack.endswith("\xFD"):
+    if not ack.startswith(radio._fingerprint) or not ack.endswith(b"\xFD"):
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
@@ -347,7 +347,7 @@ def _download(radio):
     magic = radio._magic2
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 7)
-    if ack != "\xFE\xFE\xEF\xEE\xE6\x00\xFD":
+    if ack != b"\xFE\xFE\xEF\xEE\xE6\x00\xFD":
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
@@ -356,11 +356,11 @@ def _download(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
         frame = _make_read_frame(addr, BLOCK_SIZE)
         # DEBUG
@@ -374,9 +374,9 @@ def _download(radio):
 
         LOG.debug("Response Data= " + util.hexprint(d))
 
-        if not d.startswith("\xFE\xFE\xEF\xEE\xE4"):
+        if not d.startswith(b"\xFE\xFE\xEF\xEE\xE4"):
             LOG.warning("Incorrect start")
-        if not d.endswith("\xFD"):
+        if not d.endswith(b"\xFD"):
             LOG.warning("Incorrect end")
         # could validate the block data
 
@@ -384,7 +384,7 @@ def _download(radio):
         data += d[11:-2]
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
@@ -401,7 +401,7 @@ def _upload(radio):
     magic = radio._magic3
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 7)
-    if ack != "\xFE\xFE\xEF\xEE\xE6\x00\xFD":
+    if ack != b"\xFE\xFE\xEF\xEE\xE6\x00\xFD":
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
@@ -410,7 +410,7 @@ def _upload(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
@@ -430,14 +430,14 @@ def _upload(radio):
         ack = _rawrecv(radio, 7)
         LOG.debug("Response Data= " + util.hexprint(ack))
 
-        if not ack.startswith("\xFE\xFE\xEF\xEE\xE6\x00\xFD"):
+        if not ack.startswith(b"\xFE\xFE\xEF\xEE\xE6\x00\xFD"):
             LOG.warning("Unexpected response")
             _exit_program_mode(radio)
             msg = "Bad ack writing block 0x%04x" % addr
             raise errors.RadioError(msg)
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
@@ -468,6 +468,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     """TYT UV88 Radio"""
     VENDOR = "TYT"
     MODEL = "TH-UV88"
+    NEEDS_COMPAT_SERIAL = False
     MODES = ['WFM', 'FM', 'NFM']
     TONES = chirp_common.TONES
     DTCS_CODES = chirp_common.DTCS_CODES
@@ -480,11 +481,11 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
         "`!\"#$%&'()*+,-./:;<=>?@[]^_"
 
-    _magic0 = "\xFE\xFE\xEE\xEF\xE0" + "UV88" + "\xFD"
-    _magic2 = "\xFE\xFE\xEE\xEF\xE2" + "UV88" + "\xFD"
-    _magic3 = "\xFE\xFE\xEE\xEF\xE3" + "UV88" + "\xFD"
-    _magic5 = "\xFE\xFE\xEE\xEF\xE5" + "UV88" + "\xFD"
-    _fingerprint = "\xFE\xFE\xEF\xEE\xE1" + "UV88"
+    _magic0 = b"\xFE\xFE\xEE\xEF\xE0" + b"UV88" + b"\xFD"
+    _magic2 = b"\xFE\xFE\xEE\xEF\xE2" + b"UV88" + b"\xFD"
+    _magic3 = b"\xFE\xFE\xEE\xEF\xE3" + b"UV88" + b"\xFD"
+    _magic5 = b"\xFE\xFE\xEE\xEF\xE5" + b"UV88" + b"\xFD"
+    _fingerprint = b"\xFE\xFE\xEF\xEE\xE1" + b"UV88"
 
     @classmethod
     def get_prompts(cls):
@@ -547,7 +548,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
@@ -917,7 +918,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # software only
         name = ""
         for i in range(15):  # 0 - 15
-            char = chr(self._memobj.openradioname.name1[i])
+            char = chr(int(self._memobj.openradioname.name1[i]))
             if char == "\x00":
                 char = " "  # Other software may have 0x00 mid-name
             name += char
@@ -930,7 +931,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # software only
         name = ""
         for i in range(15):  # 0 - 15
-            char = chr(self._memobj.openradioname.name2[i])
+            char = chr(int(self._memobj.openradioname.name2[i]))
             if char == "\x00":
                 char = " "  # Other software may have 0x00 mid-name
             name += char
@@ -1095,7 +1096,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1111,8 +1112,8 @@ class QRZ1(THUV88Radio):
     VENDOR = "Explorer"
     MODEL = "QRZ-1"
 
-    _magic0 = "\xFE\xFE\xEE\xEF\xE0" + "UV78" + "\xFD"
-    _magic2 = "\xFE\xFE\xEE\xEF\xE2" + "UV78" + "\xFD"
-    _magic3 = "\xFE\xFE\xEE\xEF\xE3" + "UV78" + "\xFD"
-    _magic5 = "\xFE\xFE\xEE\xEF\xE5" + "UV78" + "\xFD"
-    _fingerprint = "\xFE\xFE\xEF\xEE\xE1" + "UV78"
+    _magic0 = b"\xFE\xFE\xEE\xEF\xE0" + b"UV78" + b"\xFD"
+    _magic2 = b"\xFE\xFE\xEE\xEF\xE2" + b"UV78" + b"\xFD"
+    _magic3 = b"\xFE\xFE\xEE\xEF\xE3" + b"UV78" + b"\xFD"
+    _magic5 = b"\xFE\xFE\xEE\xEF\xE5" + b"UV78" + b"\xFD"
+    _fingerprint = b"\xFE\xFE\xEF\xEE\xE1" + b"UV78"

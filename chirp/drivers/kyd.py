@@ -223,7 +223,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x03C8
     _block_size = 0x08
-    _fileid = "P32073"
+    _fileid = b"P32073"
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -501,7 +501,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
 
                     LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

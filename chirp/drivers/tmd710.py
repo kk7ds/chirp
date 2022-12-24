@@ -41,8 +41,8 @@ except ImportError:
 
 BAUD = 0
 STIMEOUT = 0.2
-TERM = chr(13)         # Cmd write terminator (CR)
-ACK = chr(6)           # Data write acknowledge char
+TERM = b'\x0d'         # Cmd write terminator (CR)
+ACK = b'\x06'           # Data write acknowledge char
 W8S = 0.001      # short wait, secs
 W8L = 0.1       # long wait
 TMD710_DUPLEX = ["", "+", "-", "n/a", "split"]
@@ -82,12 +82,13 @@ def _command(ser, cmd, rsplen, w8t=0.01):
     rsplen is expected response char count, NOT incl prefix and term
     If rsplen = 0 then do not0 read after write """
     ser.write(cmd)
-    LOG.debug(" Out ->: " + util.hexprint(cmd[0: 32].decode("latin-1")))
+    LOG.debug(" Out %4i ->: %s" % (len(cmd), util.hexprint(cmd[0: 32])))
     time.sleep(w8t)
-    result = ""
+    result = b""
     if rsplen > 0:  # read response
         result = ser.read(rsplen)
-        LOG.debug(" In <-: " + util.hexprint(result[0: 32]))
+        LOG.debug(" In %4i <-: %s" % (len(result),
+                                      util.hexprint(result[0: 32])))
     return result
 
 
@@ -96,7 +97,6 @@ def _connect_radio(radio):
     global BAUD
     xid = "D710" + radio.SHORT
     resp = kenwood_live.get_id(radio.pipe)
-    resp = resp.decode("latin-1")
     BAUD = radio.pipe.baudrate      # As detected by kenwood_live
     LOG.debug("Got [%s] at %i Baud." % (resp, BAUD))
     resp = resp[3:]     # Strip "ID " prefix
@@ -114,15 +114,6 @@ def _update_status(self, status, step=1):
     status.cur += step
     self.status_fn(status)
     return
-
-
-def _make_address(upperbyte, lowerbyte, uppercount, lowercount):
-    """ Create 4-char TMD710G hex address + count string
-    upperbyte  lowerbyte  uppercount lowercount """
-    blockn = upperbyte + lowerbyte
-    addr = chr((blockn & 0xFF00) >> 8) + chr(blockn & 0xFF)
-    addr += chr((uppercount & 0xFF)) + chr(lowercount & 0x0ff)
-    return addr
 
 
 def _val_list(setting, opts, obj, atrb, fix=0, ndx=-1):
@@ -144,6 +135,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
     VENDOR = "Kenwood"
     MODEL = "TM-x710"
     SHORT = "X"       # Short model ID code
+    NEEDS_COMPAT_SERIAL = False
 
     _upper = 999         # Number of normal chans
 
@@ -276,7 +268,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             mnx = ""
             for char in _nam.name:
                 if int(char) < 127:
-                    mnx += chr(char)
+                    mnx += chr(int(char))
             mem.name = mnx
         if _mem.rxfreq == 0x0ffffffff or _mem.rxfreq == 0:
             mem.empty = True
@@ -499,13 +491,13 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             str1 = ""
             for sx in chrx:
                 if int(sx) > 31 and int(sx) < 127:
-                    str1 += chr(sx)
+                    str1 += chr(int(sx))
             return str1
 
         def _pswd_vfy(setting, obj, atrb):
             """ Verify password is 1-6 chars, numbers 1-5 """
             str1 = str(setting.value).strip()   # initial
-            str2 = filter(lambda c: c in '12345', str1)    # valid chars
+            str2 = ''.join(filter(lambda c: c in '12345', str1))  # valid chars
             if str1 != str2:
                 # Two lines due to python 73 char limit
                 sx = "Bad characters in Password"
@@ -1565,12 +1557,12 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
             data = ""
 
             radio.pipe.baudrate = BAUD
-            cmc = "0M PROGRAM" + TERM
+            cmc = b"0M PROGRAM" + TERM
             resp0 = _command(radio.pipe, cmc, 3, W8S)
             junk = radio.pipe.read(16)       # flushit
             for bkx in range(0, 0x09c):
                 if bkx != 0x07f:            # Skip block 7f !!??
-                    cmc = "R" + chr(bkx) + chr(0) + chr(0)
+                    cmc = struct.pack('>cHB', b'R', bkx << 8, 0)
                     resp0 = _command(radio.pipe, cmc, 260, W8S)
                     junk = _command(radio.pipe, ACK, 1, W8S)
                     if len(resp0) < 260:
@@ -1587,12 +1579,12 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                     else:
                         data += resp0[4:]       # skip cmd echo
                     _update_status(radio, status)        # UI Update
-            cmc = "R" + chr(0x0fe) + chr(0x0f0) + chr(0x010)
+            cmc = struct.pack('>cHB', b'R', 0xFEF0, 0x10)
             resp0 = _command(radio.pipe, cmc, 0x014, W8S)
             data += resp0[4:]
             junk = _command(radio.pipe, ACK, 1, W8S)
             _update_status(radio, status)
-            cmc = "R" + chr(0x0ff) + chr(0) + chr(0x090)
+            cmc = struct.pack('>cHB', b'R', 0xFF00, 0x90)
             resp0 = _command(radio.pipe, cmc, 0x094, W8S)
             data += resp0[4:]
             junk = _command(radio.pipe, ACK, 1, W8S)
@@ -1984,6 +1976,10 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                         // 2nd block ends @ 0x017cff
         """
 
+        def _make_command(self, cmd, addr, length, data=b''):
+            cmc = struct.pack('>IB', addr, length)
+            return cmd.encode() + cmc[1:] + data
+
         def _read_mem(radio):
             """ Load the memory map """
             global BAUD
@@ -1996,11 +1992,11 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
             status.msg = "Reading %i packets" % val
             radio.status_fn(status)
 
-            data = ""
+            data = b""
 
             radio.pipe.baudrate = BAUD
             resp0 = radio.pipe.read(16)     # flush
-            cmc = "0M PROGRAM" + TERM
+            cmc = b"0M PROGRAM" + TERM
             resp0 = _command(radio.pipe, cmc, 3, W8S)
             if resp0[:1] == "?":        # try once more
                 resp0 = _command(radio.pipe, cmc, 3, W8S)
@@ -2009,12 +2005,12 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
             junk = radio.pipe.read(1)       # trailing byte
             for blkn in range(0, radio._num_blocks):
                 for bkx in range(0, radio._num_packets[blkn]):
-                    cmc = "R" + _make_address(radio._block_addr[blkn], bkx,
-                                              0, 0)
-                    resp0 = _command(radio.pipe, cmc,
+                    addr = (radio._block_addr[blkn] << 8) | (bkx << 8)
+                    resp0 = _command(radio.pipe,
+                                     radio._make_command('R', addr, 0),
                                      radio._packet_size[blkn], W8S)
                     if len(resp0) < radio._packet_size[blkn]:
-                        junk = _command(radio.pipe, "E", 0, W8S)
+                        junk = _command(radio.pipe, b"E", 0, W8S)
                         lb = len(resp0)
                         xb = radio._packet_size[blkn]
                         sx = "Block 0x%x, 0x%x read error: " % (blkn, bkx)
@@ -2025,13 +2021,13 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                     if blkn == 0 and bkx == 0:   # 1st packet of 1st block
                         mht = resp0[5:9]   # Magic Header Thingy after cmd echo
                         data += mht[0:1]
-                        data += chr(255) + chr(255) + chr(255)
+                        data += b'\xff\xff\xff'
                         data += resp0[9:]
                     else:
                         data += resp0[5:]       # skip cmd echo
                     _update_status(radio, status)        # UI Update
             # Exit Prog mode, no TERM
-            resp = _command(radio.pipe, "E", 0, W8S)
+            resp = _command(radio.pipe, b"E", 0, W8S)
             radio.pipe.baudrate = BAUD
             return data
 
@@ -2050,31 +2046,37 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
 
             imgadr = 0
             radio.pipe.baudrate = BAUD
-            resp0 = _command(radio.pipe, "0M PROGRAM" + TERM, 3, W8S)
+            resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
             radio.pipe.baudrate = 57600
             LOG.debug("Switching to 57600 baud upload.")
             junk = radio.pipe.read(1)
             # Read block 0 magic header thingy, save it
-            cmc = "R" + _make_address(radio._block_addr[0], 0, 0, 4)
-            resp0 = _command(radio.pipe, cmc, 16, W8S)
+            addr = radio._block_addr[0] << 8
+            resp0 = _command(radio.pipe,
+                             radio._make_command('R', addr, 4),
+                             16, W8S)
             mht0 = resp0[5:]
             # Now get block 1 mht
-            cmc = "R" + _make_address(radio._block_addr[1], 0, 0, 5)
-            resp0 = _command(radio.pipe, cmc, 16, W8S)
+            addr = radio._block_addr[1] << 8
+            resp0 = _command(radio.pipe,
+                             radio._make_command('R', addr, 5),
+                             16, W8S)
             mht1 = resp0[5:]
             for blkn in range(0, radio._num_blocks):
                 for bkx in range(0, radio._num_packets[blkn]):
-                    cmc = "W" + _make_address(radio._block_addr[blkn], bkx,
-                                              0, 0)
+                    addr = (radio._block_addr[blkn] << 8) | (bkx << 8)
+
                     if bkx == 0:    # First packet of the block includes mht
                         if blkn == 0:
-                            cmc += chr(255) + chr(0x04b) + chr(1) + \
-                                  chr(0x032) + radio.get_mmap()[4:imgadr + 256]
+                            data = (b'\xff\x4b\x01\x32' +
+                                    radio.get_mmap()[4:imgadr + 256])
                         elif blkn == 1:
-                            cmc += mht1 + radio.get_mmap()[imgadr + 5:imgadr +
+                            data = mht1 + radio.get_mmap()[imgadr + 5:imgadr +
                                                            256]
                     else:       # after first packet
-                        cmc += radio.get_mmap()[imgadr:imgadr + 256]
+                        data = radio.get_mmap()[imgadr:imgadr + 256]
+                    cmc = radio._make_command('W', addr, 0, data)
+
                     resp0 = _command(radio.pipe, cmc, 6, W8S)
                     if bkx > 0 and resp0 != ACK:
                         LOG.error("Packet 0x%x Write error, no ACK!" % bkx)
@@ -2084,16 +2086,14 @@ if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
                     imgadr += 256
                     _update_status(radio, status)        # UI Update
             # Re-write magic headers
-            cmc = "W" + _make_address(radio._block_addr[0], 0, 1, 3)
-            cmc += mht0[1:3] + chr(0x032)
+            cmc = radio._make_command('W', (radio._block_addr[0] << 8) | 1, 3,
+                                      mht0[1:3] + b'\x32')
             resp0 = _command(radio.pipe, cmc, 1, W8S)
-            cmc = "W" + _make_address(radio._block_addr[1], 0, 0, 5)
-            cmc += mht1
+            cmc = radio._make_command('W', radio._block_addr[1] << 8, 5, mht1)
             resp0 = _command(radio.pipe, cmc, 1, W8S)
-            cmc = "Z" + _make_address(radio._block_addr[0], 0, 0, 1) \
-                      + mht0[0:1]
+            cmc = radio._make_command('Z', radio._block_addr[0], 1, mht0[0:1])
             resp0 = _command(radio.pipe, cmc, 16, W8S)
             # Write E to Exit PROG mode
-            resp = _command(radio.pipe, "E", 0, W8S)
+            resp = _command(radio.pipe, b"E", 0, W8S)
             radio.pipe.baudrate = BAUD
             return

@@ -1,0 +1,74 @@
+name: Tests
+on:
+  pull_request:
+  push:
+jobs:
+  style:
+    name: Style checks
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: style
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: py3unit
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit_report
+          path: unit_report.html
+
+  driver:
+    name: Driver tests (Python 3.8)
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: py3driver
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: driver_report
+          path: driver_report.html
+
+  driver-py:
+    name: Driver tests (Python 3.10)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: py3driver
+
+  matrix:
+    name: Create support matrix
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: makesupported
+      - name: Archive support matrix
+        uses: actions/upload-artifact@v3
+        with:
+          name: support-matrix
+          path: model_support.html

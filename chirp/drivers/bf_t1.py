@@ -51,7 +51,7 @@ LOG = logging.getLogger(__name__)
 MEM_SIZE = 0x0800  # 2048 bytes
 WRITE_SIZE = 0x0180  # 384 bytes
 BLOCK_SIZE = 0x10
-ACK_CMD = "\x06"
+ACK_CMD = b"\x06"
 MODES = ["NFM", "FM"]
 SKIP_VALUES = ["S", ""]
 TONES = chirp_common.TONES
@@ -84,8 +84,8 @@ debug = False
 # #### ID strings #####################################################
 
 # BF-T1 handheld
-BFT1_magic = "\x05PROGRAM"
-BFT1_ident = " BF9100S"
+BFT1_magic = b"\x05PROGRAM"
+BFT1_ident = b" BF9100S"
 
 
 def _clean_buffer(radio):
@@ -113,7 +113,7 @@ def _rawrecv(radio, amount=0):
     """Raw read from the radio device"""
 
     # var to hold the data to return
-    data = ""
+    data = b""
 
     try:
         if amount == 0:
@@ -180,7 +180,7 @@ def _recv(radio, addr):
 
     # header validation
     c, a, l = struct.unpack(">cHB", block[0:4])
-    if c != "W" or a != addr or l != BLOCK_SIZE:
+    if c != b"W" or a != addr or l != BLOCK_SIZE:
         LOG.debug("Invalid header for block 0x%04x:" % addr)
         LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (c, a, l))
         raise errors.RadioError("Invalid header for block 0x%04x:" % addr)
@@ -225,7 +225,7 @@ def _start_clone_mode(radio, status):
 
     except errors.RadioError:
         raise
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Error sending Magic to radio:\n%s" % e)
 
 
@@ -243,7 +243,7 @@ def _do_ident(radio, status):
         raise errors.RadioError("Radio did not enter clone mode, wrong model?")
 
     # Ok, poke it to get the ident string
-    _send(radio, "\x02")
+    _send(radio, b"\x02")
     ident = _rawrecv(radio, len(radio._id))
 
     # basic check for the ident
@@ -283,7 +283,7 @@ def _download(radio):
     _do_ident(radio, status)
 
     # reset the progress bar in the UI
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     status.cur = 0
     radio.status_fn(status)
@@ -291,10 +291,10 @@ def _download(radio):
     # cleaning the serial buffer
     _clean_buffer(radio)
 
-    data = ""
+    data = b""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
         # sending the read request
-        _send(radio, _make_frame("R", addr))
+        _send(radio, _make_frame(b"R", addr))
 
         # read
         d = _recv(radio, addr)
@@ -303,12 +303,12 @@ def _download(radio):
         data += d
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
     # close comms with the radio
-    _send(radio, "\x62")
+    _send(radio, b"\x62")
     # DEBUG
     LOG.info("Close comms cmd sent, radio must reboot now.")
 
@@ -328,7 +328,7 @@ def _upload(radio):
     data = radio.get_mmap()
 
     # Reset the UI progress
-    status.max = WRITE_SIZE / BLOCK_SIZE
+    status.max = WRITE_SIZE // BLOCK_SIZE
     status.cur = 0
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
@@ -342,7 +342,7 @@ def _upload(radio):
         d = data[addr:addr + BLOCK_SIZE]
 
         # build the frame to send
-        frame = _make_frame("W", addr, d)
+        frame = _make_frame(b"W", addr, d)
 
         # send the frame
         _send(radio, frame)
@@ -358,12 +358,12 @@ def _upload(radio):
             raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
     # close comms with the radio
-    _send(radio, "\x62")
+    _send(radio, b"\x62")
     # DEBUG
     LOG.info("Close comms cmd sent, radio must reboot now.")
 
@@ -460,6 +460,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """Baofeng BT-F1 radio & possibly alike radios"""
     VENDOR = "Baofeng"
     MODEL = "BF-T1"
+    NEEDS_COMPAT_SERIAL = False
     _vhf_range = (130000000, 174000000)
     _uhf_range = (400000000, 520000000)
     _upper = 20
@@ -503,7 +504,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         """Get the radio's features"""
 
         rf = chirp_common.RadioFeatures()
-        rf.valid_special_chans = SPECIALS.keys()
+        rf.valid_special_chans = list(SPECIALS.keys())
         rf.has_settings = True
         rf.has_bank = False
         rf.has_tuning_step = False
@@ -551,7 +552,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     def sync_in(self):
         """Download from radio"""
         data = _download(self)
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
@@ -561,7 +562,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Error: %s" % e)
 
     def _decode_tone(self, val, inv):
@@ -894,7 +895,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 

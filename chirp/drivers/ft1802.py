@@ -86,7 +86,7 @@ class FT1802Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "FT-1802M"
     BAUD_RATE = 19200
 
-    _model = "AH023"
+    _model = b"AH023"
     _block_lengths = [10, 8001]
     _memsize = 8011
 

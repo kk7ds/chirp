@@ -226,7 +226,7 @@ PFKEYSHORT_LIST = ["OFF",
                    ]
 
 MODES = ["NFM", "FM"]
-WTFTONES = map(float, xrange(56, 64))
+WTFTONES = [float(x) for x in range(56, 64)]
 TONES = WTFTONES + chirp_common.TONES
 DTCS_CODES = [17, 50, 645] + chirp_common.DTCS_CODES
 DTCS_CODES.sort()
@@ -244,15 +244,15 @@ def _image_ident_from_image(radio):
 def checksum(frame):
     x = 0
     for b in frame:
-        x ^= ord(b)
-    return chr(x)
+        x ^= b
+    return x & 0xFF
 
 
-def make_frame(cmd, addr, data=""):
+def make_frame(cmd, addr, data=b""):
     payload = struct.pack(">H", addr) + data
-    header = struct.pack(">BB", ord(cmd), len(payload))
+    header = struct.pack(">cB", cmd, len(payload))
     frame = header + payload
-    return frame + checksum(frame)
+    return frame + bytes([checksum(frame)])
 
 
 def send(radio, frame):
@@ -261,7 +261,7 @@ def send(radio, frame):
     #            util.hexprint(frame).replace("\n", "\n          ")))
     try:
         radio.pipe.write(frame)
-    except Exception, e:
+    except Exception as e:
         raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
 
@@ -269,7 +269,7 @@ def recv(radio, readdata=True):
     hdr = radio.pipe.read(4)
     # LOG.debug("%04i P<R: %s" %
     #           (len(hdr), util.hexprint(hdr).replace("\n", "\n          ")))
-    if hdr == "\x09\x00\x09":
+    if hdr == b"\x09\x00\x09":
         raise errors.RadioError("Radio rejected command.")
     cmd, length, addr = struct.unpack(">BBH", hdr)
     length -= 2
@@ -282,30 +282,30 @@ def recv(radio, readdata=True):
                 len(data), length))
         chk = radio.pipe.read(1)
     else:
-        data = ""
+        data = b""
     return addr, data
 
 
 def do_ident(radio):
-    send(radio, "\x02\x06LEIXEN\x17")
+    send(radio, b"\x02\x06LEIXEN\x17")
     ident = radio.pipe.read(9)
     LOG.debug("     P<R: %s" %
               util.hexprint(ident).replace("\n", "\n          "))
-    if ident != "\x06\x06leixen\x13":
+    if ident != b"\x06\x06leixen\x13":
         raise errors.RadioError("Radio refused program mode")
-    radio.pipe.write("\x06\x00\x06")
+    radio.pipe.write(b"\x06\x00\x06")
     ack = radio.pipe.read(3)
-    if ack != "\x06\x00\x06":
+    if ack != b"\x06\x00\x06":
         raise errors.RadioError("Radio did not ack.")
 
 
 def do_download(radio):
     do_ident(radio)
 
-    data = ""
-    data += "\xFF" * (0 - len(data))
+    data = b""
+    data += b"\xFF" * (0 - len(data))
     for addr in range(0, radio._memsize, 0x10):
-        send(radio, make_frame("R", addr, chr(0x10)))
+        send(radio, make_frame(b"R", addr, b'\x10'))
         _addr, _data = recv(radio)
         if _addr != addr:
             raise errors.RadioError("Radio sent unexpected address")
@@ -319,7 +319,7 @@ def do_download(radio):
 
     finish(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -335,13 +335,13 @@ def do_upload(radio):
     for start, end in _ranges:
         LOG.debug('Uploading range 0x%04X - 0x%04X' % (start, end))
         for addr in range(start, end, 0x10):
-            frame = make_frame("W", addr, radio._mmap[addr:addr + 0x10])
+            frame = make_frame(b"W", addr, radio._mmap[addr:addr + 0x10])
             send(radio, frame)
             # LOG.debug("     P<R: %s" %
             #           util.hexprint(frame).replace("\n", "\n          "))
-            radio.pipe.write("\x06\x00\x06")
+            radio.pipe.write(b"\x06\x00\x06")
             ack = radio.pipe.read(3)
-            if ack != "\x06\x00\x06":
+            if ack != b"\x06\x00\x06":
                 raise errors.RadioError("Radio refused block at %04x" % addr)
 
             status = chirp_common.Status()
@@ -354,7 +354,7 @@ def do_upload(radio):
 
 
 def finish(radio):
-    send(radio, "\x64\x01\x6F\x0A")
+    send(radio, b"\x64\x01\x6F\x0A")
     ack = radio.pipe.read(8)
 
 
@@ -372,9 +372,10 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     MODEL = "VV-898"
     ALIASES = [LT898UV, ]
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
-    _file_ident = "Leixen"
-    _model_ident = 'LX-\x89\x85\x63'
+    _file_ident = b"Leixen"
+    _model_ident = b'LX-\x89\x85\x63'
 
     _memsize = 0x2000
     _ranges = [
@@ -428,7 +429,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     def sync_in(self):
         try:
             self._mmap = do_download(self)
-        except Exception, e:
+        except Exception as e:
             finish(self)
             raise errors.RadioError("Failed to download from radio: %s" % e)
         self.process_mmap()
@@ -443,7 +444,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         except errors.RadioError:
             finish(self)
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to upload to radio: %s" % e)
 
     def get_raw_memory(self, number):
@@ -476,7 +477,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         raw_tx = ""
         for i in range(0, 4):
             raw_tx += _mem.tx_freq[i].get_raw()
-        return raw_tx == "\xFF\xFF\xFF\xFF"
+        return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def _get_memobjs(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -589,16 +590,16 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _mem, _name = self._get_memobjs(mem.number)
 
         if mem.empty:
-            _mem.set_raw("\xFF" * 16)
+            _mem.set_raw(b"\xFF" * 16)
             return
-        elif _mem.get_raw() == ("\xFF" * 16):
-            _mem.set_raw("\xFF" * 8 + "\xFF\x00\xFF\x00\xFF\xFE\xF0\xFC")
+        elif _mem.get_raw() == (b"\xFF" * 16):
+            _mem.set_raw(b"\xFF" * 8 + b"\xFF\x00\xFF\x00\xFF\xFE\xF0\xFC")
 
         _mem.rx_freq = mem.freq / 10
 
         if mem.duplex == "off":
             for i in range(0, 4):
-                _mem.tx_freq[i].set_raw("\xFF")
+                _mem.tx_freq[i].set_raw(b"\xFF")
         elif mem.duplex == "split":
             _mem.tx_freq = mem.offset / 10
         elif mem.duplex == "+":
@@ -797,17 +798,17 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               DTMFTIME_LIST, DTMFTIME_LIST[val]))
         adv_grp.append(rs)
-        val = (_settings.dtmfdelay) / 5
+        val = (_settings.dtmfdelay) // 5
         rs = RadioSetting("dtmfdelay", "DTMF 1st Digit Delay",
                           RadioSettingValueList(
                               DTMFDELAY_LIST, DTMFDELAY_LIST[val]))
         adv_grp.append(rs)
-        val = (_settings.dtmfpretime) / 10 - 1
+        val = (_settings.dtmfpretime) // 10 - 1
         rs = RadioSetting("dtmfpretime", "DTMF Pretime",
                           RadioSettingValueList(
                               DTMFPRETIME_LIST, DTMFPRETIME_LIST[val]))
         adv_grp.append(rs)
-        val = (_settings.dtmfdelay2) / 5
+        val = (_settings.dtmfdelay2) // 5
         rs = RadioSetting("dtmfdelay2", "DTMF * and # Digit Delay",
                           RadioSettingValueList(
                               DTMFDELAY2_LIST, DTMFDELAY2_LIST[val]))
@@ -942,7 +943,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -963,8 +964,8 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     MODEL = "JT270M"
     ALIASES = []
 
-    _file_ident = "JET"
-    _model_ident = 'LX-\x89\x85\x53'
+    _file_ident = b"JET"
+    _model_ident = b'LX-\x89\x85\x53'
 
 
 @directory.register
@@ -975,8 +976,8 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
     MODEL = "JT270MH"
     ALIASES = []
 
-    _file_ident = "Leixen"
-    _model_ident = 'LX-\x89\x85\x85'
+    _file_ident = b"Leixen"
+    _model_ident = b'LX-\x89\x85\x85'
     _ranges = [(0x0C00, 0x2000)]
     _mem_formatter = {'unknownormode': 'mode:1',
                       'modeorpower': 'power:2',
@@ -1030,7 +1031,7 @@ class LeixenVV898SRadio(LeixenVV898Radio):
     MODEL = "VV-898S"
     ALIASES = [VV898E, ]
 
-    _model_ident = 'LX-\x89\x85\x75'
+    _model_ident = b'LX-\x89\x85\x75'
     _mem_formatter = {'unknownormode': 'mode:1',
                       'modeorpower': 'power:2',
                       'chanstart': 0x0D00,

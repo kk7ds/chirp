@@ -3,7 +3,7 @@ import struct
 import logging
 from chirp.drivers import icf
 from chirp import chirp_common, util, errors, bitwise, directory
-from chirp.memmap import MemoryMap
+from chirp.memmap import MemoryMapBytes
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueBoolean
 
@@ -127,6 +127,34 @@ char pad1;
 bbcd rtone[2];             // 12-14 tx tone freq
 char pad2;
 bbcd ctone[2];             // 15-17 tone rx squelch setting
+// This is duplicated from 4-17 above, even duplicated by number in the
+// manual!
+lbcd freq_tx[5];              // 4-8 receive freq
+u8   mode_tx;                 // 9 operating mode
+u8   filter_tx;               // 10 filter 1-3 (undocumented)
+u8   dataMode_tx:4,           // 11 data mode setting (on or off)
+     tmode_tx:4;              // 11 tone type
+char pad1_tx;
+bbcd rtone_tx[2];             // 12-14 tx tone freq
+char pad2_tx;
+bbcd ctone_tx[2];             // 15-17 tone rx squelch setting
+// End TX duplicate block
+char name[10];             // 18-27 Callsign
+"""
+
+MEM_IC7610_FORMAT = """
+bbcd number[2];            // 1,2
+u8   spl:4,                // 3 split and select memory settings
+     select:4;
+lbcd freq[5];              // 4-8 receive freq
+u8   mode;                 // 9 operating mode
+u8   filter;               // 10 filter 1-3 (undocumented)
+u8   dataMode:4,           // 11 data mode setting (on or off)
+     tmode:4;              // 11 tone type
+char pad1;
+bbcd rtone[2];             // 12-14 tx tone freq
+char pad2;
+bbcd ctone[2];             // 15-17 tone rx squelch setting
 char name[10];             // 18-27 Callsign
 """
 
@@ -139,7 +167,7 @@ class Frame:
     _sub = 0x00
 
     def __init__(self):
-        self._data = ""
+        self._data = b""
 
     def set_command(self, cmd, sub):
         """Set the command number (and optional subcommand)"""
@@ -156,38 +184,44 @@ class Frame:
 
     def send(self, src, dst, serial, willecho=True):
         """Send the frame over @serial, using @src and @dst addresses"""
-        raw = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
-        raw += str(self._data) + chr(0xFD)
+        hdr = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
+        raw = bytearray(hdr)
+        if isinstance(self._data, MemoryMapBytes):
+            data = self._data.get_packed()
+        else:
+            data = self._data
+        raw.extend(data)
+        raw.append(0xFD)
 
         LOG.debug("%02x -> %02x (%i):\n%s" %
-                  (src, dst, len(raw), util.hexprint(raw)))
+                  (src, dst, len(raw), util.hexprint(bytes(raw))))
 
         serial.write(raw)
         if willecho:
             echo = serial.read(len(raw))
             if echo != raw and echo:
                 LOG.debug("Echo differed (%i/%i)" % (len(raw), len(echo)))
-                LOG.debug(util.hexprint(raw))
-                LOG.debug(util.hexprint(echo))
+                LOG.debug(util.hexprint(bytes(raw)))
+                LOG.debug(util.hexprint(bytes(echo)))
 
     def read(self, serial):
         """Read the frame from @serial"""
-        data = ""
-        while not data.endswith(chr(0xFD)):
+        data = bytearray()
+        while not (data and data[-1] == 0xFD):
             char = serial.read(1)
             if not char:
                 LOG.debug("Read %i bytes total" % len(data))
                 raise errors.RadioError("Timeout")
-            data += char
+            data.extend(char)
 
-        if data == chr(0xFD):
+        if data[0] == 0xFD:
             raise errors.RadioError("Radio reported error")
 
         src, dst = struct.unpack("BB", data[2:4])
-        LOG.debug("%02x <- %02x:\n%s" % (dst, src, util.hexprint(data)))
+        LOG.debug("%02x <- %02x:\n%s" % (dst, src, util.hexprint(bytes(data))))
 
-        self._cmd = ord(data[4])
-        self._sub = ord(data[5])
+        self._cmd = data[4]
+        self._sub = data[5]
         self._data = data[6:-1]
 
         return src, dst
@@ -201,6 +235,7 @@ class MemFrame(Frame):
     _cmd = 0x1A
     _sub = 0x00
     _loc = 0
+    FORMAT = MEM_FORMAT
 
     def set_location(self, loc):
         """Set the memory location number"""
@@ -217,12 +252,14 @@ class MemFrame(Frame):
 
     def get_obj(self):
         """Return a bitwise parsed object"""
-        self._data = MemoryMap(str(self._data))  # Make sure we're assignable
-        return bitwise.parse(MEM_FORMAT, self._data)
+        # Make sure we're assignable
+        self._data = MemoryMapBytes(bytes(self._data))
+        return bitwise.parse(self.FORMAT, self._data)
 
     def initialize(self):
         """Initialize to sane values"""
-        self._data = MemoryMap("".join(["\x00"] * (self.get_obj().size() / 8)))
+        self._data = MemoryMapBytes(
+            bytes(b'\x00' * (self.get_obj().size() / 8)))
 
 
 class BankMemFrame(MemFrame):
@@ -243,7 +280,8 @@ class BankMemFrame(MemFrame):
             int("%04i" % self._loc, 16), 0xFF)
 
     def get_obj(self):
-        self._data = MemoryMap(str(self._data))  # Make sure we're assignable
+        # Make sure we're assignable
+        self._data = MemoryMapBytes(bytes(self._data))
         return bitwise.parse(self.FORMAT, self._data)
 
 
@@ -257,16 +295,16 @@ class IC910MemFrame(BankMemFrame):
 
 class DupToneMemFrame(MemFrame):
     def get_obj(self):
-        self._data = MemoryMap(str(self._data))
+        self._data = MemoryMapBytes(bytes(self._data))
         return bitwise.parse(mem_duptone_format, self._data)
 
 
 class IC7300MemFrame(MemFrame):
     FORMAT = MEM_IC7300_FORMAT
 
-    def get_obj(self):
-        self._data = MemoryMap(str(self._data))
-        return bitwise.parse(self.FORMAT, self._data)
+
+class IC7610MemFrame(MemFrame):
+    FORMAT = MEM_IC7610_FORMAT
 
 
 class SpecialChannel(object):
@@ -297,6 +335,7 @@ class BankSpecialChannel(SpecialChannel):
 class IcomCIVRadio(icf.IcomLiveRadio):
     """Base class for ICOM CIV-based radios"""
     BAUD_RATE = 19200
+    NEEDS_COMPAT_SERIAL = False
     MODEL = "CIV Radio"
     _model = "\x00"
     _template = 0
@@ -346,10 +385,10 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         pass
 
     def _detect_echo(self):
-        echo_test = "\xfe\xfe\xe0\xe0\xfa\xfd"
+        echo_test = b"\xfe\xfe\xe0\xe0\xfa\xfd"
         self.pipe.write(echo_test)
         resp = self.pipe.read(6)
-        LOG.debug("Echo:\n%s" % util.hexprint(resp))
+        LOG.debug("Echo:\n%s" % util.hexprint(bytes(resp)))
         return resp == echo_test
 
     def __init__(self, *args, **kwargs):
@@ -473,7 +512,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         f = self._recv_frame(f)
         if len(f.get_data()) == 0:
             raise errors.RadioError("Radio reported error")
-        if f.get_data() and f.get_data()[-1] == "\xFF":
+        if f.get_data() and f.get_data()[-1] == 0xFF:
             mem.empty = True
             LOG.debug("Found %i empty" % mem.number)
             return mem
@@ -617,7 +656,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 # IC-7000.  No testing was done to see if it breaks memory delete on the
 # IC-746 or IC-7200.
             f = self._recv_frame()
-            LOG.debug("Result:\n%s" % util.hexprint(f.get_data()))
+            LOG.debug("Result:\n%s" % util.hexprint(bytes(f.get_data())))
             return
 
         # f.set_data(MemoryMap(self.get_raw_memory(mem.number)))
@@ -697,13 +736,13 @@ class IcomCIVRadio(icf.IcomLiveRadio):
         self._send_frame(f)
 
         f = self._recv_frame()
-        LOG.debug("Result:\n%s" % util.hexprint(f.get_data()))
+        LOG.debug("Result:\n%s" % util.hexprint(bytes(f.get_data())))
 
 
 @directory.register
 class Icom7200Radio(IcomCIVRadio):
     """Icom IC-7200"""
-    MODEL = "7200"
+    MODEL = "IC-7200"
     _model = "\x76"
     _template = 201
 
@@ -796,7 +835,7 @@ class Icom7100Radio(IcomCIVRadio):
 @directory.register
 class Icom746Radio(IcomCIVRadio):
     """Icom IC-746"""
-    MODEL = "746"
+    MODEL = "IC-746"
     BAUD_RATE = 9600
     _model = "\x56"
     _template = 102
@@ -858,7 +897,7 @@ class Icom910Radio(IcomCIVRadio):
                        for key in self._SPECIAL_CHANNELS.keys()])
 
     def _is_special(self, number):
-        return number >= 1000 or isinstance(number, str)
+        return isinstance(number, str) or number >= 1000
 
     def _get_special_info(self, number):
         info = BankSpecialChannel()
@@ -942,7 +981,7 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
                                      _SPECIAL_CHANNELS.keys()))
 
     def _is_special(self, number):
-        return number > 99 or isinstance(number, str)
+        return isinstance(number, str) or number > 99
 
     def _get_special_info(self, number):
         info = SpecialChannel()
@@ -985,6 +1024,10 @@ class Icom7610Radio(Icom7300Radio):
     MODEL = "IC-7610"
     _model = '\x98'
 
+    def _initialize(self):
+        super()._initialize()
+        self._classes['mem'] = IC7610MemFrame
+
 
 def probe_model(ser):
     """Probe the radio attached to @ser for its model"""
@@ -1005,13 +1048,13 @@ def probe_model(ser):
             continue
 
         if len(f.get_data()) == 1:
-            md = ord(f.get_data()[0])
+            md = f.get_data()[0]
             if (md == model):
                 return rclass
 
         if f.get_data():
             LOG.debug("Got data, but not 1 byte:")
-            LOG.debug(util.hexprint(f.get_data()))
+            LOG.debug(util.hexprint(bytes(f.get_data())))
             raise errors.RadioError("Unknown response")
 
     raise errors.RadioError("Unsupported model")

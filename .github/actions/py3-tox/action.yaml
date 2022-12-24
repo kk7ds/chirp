@@ -1,0 +1,20 @@
+name: Python3 tox runner
+description: Runs tox py3 targets
+inputs:
+  tox_target:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install python3-pip python3-wxgtk4.0
+        sudo python3 -mpip install tox
+    - name: Run tox
+      shell: bash
+      run: |
+        tox -e ${{ inputs.tox_target }}

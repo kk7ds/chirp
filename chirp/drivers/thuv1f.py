@@ -28,16 +28,16 @@ LOG = logging.getLogger(__name__)
 
 def uvf1_identify(radio):
     """Do identify handshake with TYT TH-UVF1"""
-    radio.pipe.write("PROG333")
+    radio.pipe.write(b"PROG333")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise errors.RadioError("Radio did not respond")
-    radio.pipe.write("\x02")
+    radio.pipe.write(b"\x02")
     ident = radio.pipe.read(16)
     LOG.info("Ident:\n%s" % util.hexprint(ident))
-    radio.pipe.write("\x06")
+    radio.pipe.write(b"\x06")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise errors.RadioError("Radio did not ack identification")
     return ident
 
@@ -47,14 +47,14 @@ def uvf1_download(radio):
     data = uvf1_identify(radio)
 
     for i in range(0, 0x1000, 0x10):
-        msg = struct.pack(">BHB", ord("R"), i, 0x10)
+        msg = struct.pack(">cHB", b"R", i, 0x10)
         radio.pipe.write(msg)
         block = radio.pipe.read(0x10 + 4)
         if len(block) != (0x10 + 4):
             raise errors.RadioError("Radio sent a short block")
-        radio.pipe.write("\x06")
+        radio.pipe.write(b"\x06")
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             raise errors.RadioError("Radio NAKed block")
         data += block[4:]
 
@@ -64,9 +64,9 @@ def uvf1_download(radio):
         status.msg = "Cloning from radio"
         radio.status_fn(status)
 
-    radio.pipe.write("\x45")
+    radio.pipe.write(b"\x45")
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def uvf1_upload(radio):
@@ -75,17 +75,17 @@ def uvf1_upload(radio):
 
     radio.pipe.timeout = 1
 
-    if data != radio._mmap[:16]:
+    if data != radio._mmap[0:16]:
         raise errors.RadioError("Unable to talk to this model")
 
     for i in range(0, 0x1000, 0x10):
         addr = i + 0x10
-        msg = struct.pack(">BHB", ord("W"), i, 0x10)
+        msg = struct.pack(">cHB", b"W", i, 0x10)
         msg += radio._mmap[addr:addr+0x10]
 
         radio.pipe.write(msg)
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             LOG.debug(repr(ack))
             raise errors.RadioError("Radio did not ack block %i" % i)
         status = chirp_common.Status()
@@ -95,7 +95,7 @@ def uvf1_upload(radio):
         radio.status_fn(status)
 
     # End of clone?
-    radio.pipe.write("\x45")
+    radio.pipe.write(b"\x45")
 
 
 THUV1F_MEM_FORMAT = """
@@ -184,6 +184,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     """TYT TH-UVF1"""
     VENDOR = "TYT"
     MODEL = "TH-UVF1"
+    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -216,7 +217,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             self._mmap = uvf1_download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -225,18 +226,18 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
             uvf1_upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     @classmethod
     def match_model(cls, filedata, filename):
         # TYT TH-UVF1 original
-        if filedata.startswith("\x13\x60\x17\x40\x40\x00\x48\x00" +
-                               "\x35\x00\x39\x00\x47\x00\x52\x00"):
+        if filedata.startswith(b"\x13\x60\x17\x40\x40\x00\x48\x00" +
+                               b"\x35\x00\x39\x00\x47\x00\x52\x00"):
             return True
         # TYT TH-UVF1 V2
-        elif filedata.startswith("\x14\x40\x14\x80\x43\x00\x45\x00" +
-                                 "\x13\x60\x17\x40\x40\x00\x47\x00"):
+        elif filedata.startswith(b"\x14\x40\x14\x80\x43\x00\x45\x00" +
+                                 b"\x13\x60\x17\x40\x40\x00\x47\x00"):
             return True
         else:
             return False
@@ -353,17 +354,17 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         if mem.empty:
-            _mem.set_raw("\xFF" * 16)
+            _mem.set_raw(b"\xFF" * 16)
             return
 
         if _mem.get_raw() == ("\xFF" * 16):
             LOG.debug("Initializing empty memory")
-            _mem.set_raw("\x00" * 16)
+            _mem.set_raw(b"\x00" * 16)
 
         _mem.rx_freq = mem.freq / 10
         if mem.duplex == "off":
             for i in range(0, 4):
-                _mem.tx_freq[i].set_raw("\xFF")
+                _mem.tx_freq[i].set_raw(b"\xFF")
         elif mem.duplex == "split":
             _mem.tx_freq = mem.offset / 10
         elif mem.duplex == "-":

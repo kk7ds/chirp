@@ -384,7 +384,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -392,14 +392,14 @@ def _echo_write(radio, data):
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 256
 
 
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
 
@@ -413,15 +413,24 @@ def _read(radio, length):
 
 def _ident(radio):
     radio.pipe.timeout = 1
-    _echo_write(radio, "PROGRAM")
-    response = radio.pipe.read(3)
-    if response != "QX\06":
-        LOG.debug("Response was :\n%s" % util.hexprint(response))
-        raise errors.RadioError("Unsupported model")
-    _echo_write(radio, "\x02")
+    exito = False
+    for i in range(0, 5):
+        _echo_write(radio, b"PROGRAM")
+        response = radio.pipe.read(3)
+
+        if response == b"QX\06":
+            exito = True
+
+    # check if we had EXITO
+    if exito is False:
+        msg = "The radio did not accept program mode after five tries.\n"
+        msg += "Check you interface cable and power cycle your radio."
+        raise errors.RadioError(msg)
+
+    _echo_write(radio, b"\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
-    if response[1:8] != "TH-9000":
+    if response[1:8] != b"TH-9000":
         LOG.error("Looking  for:\n%s" % util.hexprint("TH-9000"))
         LOG.error("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model")
@@ -431,23 +440,23 @@ def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
     if data:
         frame += data
-        frame += chr(_checksum(frame[1:]))
-        frame += "\x06"
+        frame += bytes([_checksum(frame[1:])])
+        frame += b"\x06"
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
     if data:
         result = radio.pipe.read(1)
-        if result != "\x06":
+        if result != b"\x06":
             LOG.debug("Ack was: %s" % repr(result))
             raise errors.RadioError(
                 "Radio did not accept block at %04x" % addr)
         return
     result = _read(radio, length + 6)
     LOG.debug("Got:\n%s" % util.hexprint(result))
-    header = result[0:4]
+    header = result[:4]
     data = result[4:-2]
-    ack = result[-1]
-    if ack != "\x06":
+    ack = result[-1:]
+    if ack != b"\x06":
         LOG.debug("Ack was: %s" % repr(ack))
         raise errors.RadioError("Radio NAK'd block at %04x" % addr)
     _cmd, _addr, _length = struct.unpack(">cHb", header)
@@ -457,19 +466,19 @@ def _send(radio, cmd, addr, length, data=None):
         LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
     cs = _checksum(result[1:-2])
-    if cs != ord(result[-2]):
+    if cs != result[-2]:
         LOG.debug("Calculated: %02x" % cs)
-        LOG.debug("Actual:     %02x" % ord(result[-2]))
+        LOG.debug("Actual:     %02x" % result[-2])
         raise errors.RadioError("Block at 0x%04x failed checksum" % addr)
     return data
 
 
 def _finish(radio):
-    endframe = "\x45\x4E\x44"
+    endframe = b"\x45\x4E\x44"
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
     # TYT radios acknowledge the "endframe" command, Luiton radios do not.
-    if result != "" and result != "\x06":
+    if result != b"" and result != b"\x06":
         LOG.error("Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
@@ -479,11 +488,11 @@ def do_download(radio):
     _ident(radio)
 
     _memobj = None
-    data = ""
+    data = b""
 
     for start, end in radio._ranges:
         for addr in range(start, end, 0x10):
-            block = _send(radio, 'R', addr, 0x10)
+            block = _send(radio, b'R', addr, 0x10)
             data += block
             status = chirp_common.Status()
             status.cur = len(data)
@@ -493,7 +502,7 @@ def do_download(radio):
 
     _finish(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -505,7 +514,7 @@ def do_upload(radio):
             if addr < 0x0100:
                 continue
             block = radio._mmap[addr:addr + 0x10]
-            _send(radio, 'W', addr, len(block), block)
+            _send(radio, b'W', addr, len(block), block)
             status = chirp_common.Status()
             status.cur = addr
             status.max = end
@@ -524,6 +533,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
     VENDOR = "TYT"
     MODEL = "TH9000 Base"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     valid_freq = [(900000000, 999000000)]
 
     _memsize = MMAPSIZE
@@ -593,7 +603,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         _mem = self._memobj.memory[number]
 
         # get flag info
-        cbyte = number / 8
+        cbyte = number // 8
         cbit = 7 - (number % 8)
         setflag = self._memobj.csetflag[cbyte].c[cbit]
         skipflag = self._memobj.cskipflag[cbyte].c[cbit]
@@ -660,7 +670,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
 
         _mem = self._memobj.memory[mem.number]
 
-        cbyte = mem.number / 8
+        cbyte = mem.number // 8
         cbit = 7 - (mem.number % 8)
 
         if mem.empty:
@@ -847,7 +857,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
                         LOG.debug("Setting %s = %s" % (setting,
                                   element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -867,14 +877,14 @@ def match_orig_model(cls, filedata, filename):
         flow /= 1000000
         fhigh /= 1000000
 
-        txmin = ord(filedata[0x200]) * 100 + (ord(filedata[0x201]) >> 4) \
-            * 10 + ord(filedata[0x201]) % 16
-        txmax = ord(filedata[0x204]) * 100 + (ord(filedata[0x205]) >> 4) \
-            * 10 + ord(filedata[0x205]) % 16
-        rxmin = ord(filedata[0x208]) * 100 + (ord(filedata[0x209]) >> 4) \
-            * 10 + ord(filedata[0x209]) % 16
-        rxmax = ord(filedata[0x20C]) * 100 + (ord(filedata[0x20D]) >> 4) \
-            * 10 + ord(filedata[0x20D]) % 16
+        txmin = filedata[0x200] * 100 + (filedata[0x201] >> 4) \
+            * 10 + filedata[0x201] % 16
+        txmax = filedata[0x204] * 100 + (filedata[0x205] >> 4) \
+            * 10 + filedata[0x205] % 16
+        rxmin = filedata[0x208] * 100 + (filedata[0x209] >> 4) \
+            * 10 + filedata[0x209] % 16
+        rxmax = filedata[0x20C] * 100 + (filedata[0x20D] >> 4) \
+            * 10 + filedata[0x20D] % 16
 
         if (rxmin >= flow and rxmax <= fhigh and txmin >= flow and
                 txmax <= fhigh):

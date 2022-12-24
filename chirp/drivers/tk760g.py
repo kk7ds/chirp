@@ -27,11 +27,11 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
-##### IMPORTANT DATA ##########################################
+# #### IMPORTANT DATA ##########################################
 # This radios have a span of
 # 0x00000 - 0x08000 => Radio Memory / Settings data
 # 0x08000 - 0x10000 => FIRMWARE... hum...
-###############################################################
+# ##############################################################
 
 MEM_FORMAT = """
 #seekto 0x0000;
@@ -263,14 +263,14 @@ struct {
 
 MEM_SIZE = 0x8000  # 32,768 bytes
 BLOCK_SIZE = 256
-BLOCKS = MEM_SIZE / BLOCK_SIZE
-MEM_BLOCKS = range(0, BLOCKS)
+BLOCKS = MEM_SIZE // BLOCK_SIZE
+MEM_BLOCKS = list(range(0, BLOCKS))
 
 # define and empty block of data, as it will be used a lot in this code
-EMPTY_BLOCK = "\xFF" * 256
+EMPTY_BLOCK = b"\xFF" * 256
 
-RO_BLOCKS = range(0x10, 0x1F) + range(0x59, 0x5f)
-ACK_CMD = "\x06"
+RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x59, 0x5f))
+ACK_CMD = b"\x06"
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
@@ -292,8 +292,8 @@ TVOL = ["%s" % x for x in range(0, 33)]
 TVOL[32] = "Continuous"
 SQL = ["off"] + ["%s" % x for x in range(1, 10)]
 
-## BOT = 0, EOT = 1, Both = 2, NONE = 3
-#PTTID = ["BOT", "EOT", "Both", "none"]
+# BOT = 0, EOT = 1, Both = 2, NONE = 3
+# PTTID = ["BOT", "EOT", "Both", "none"]
 
 # For debugging purposes
 debug = False
@@ -321,7 +321,7 @@ KEYS = {
     0x48: "Scan del/add",
     0x4a: "GROUP down",
     0x4b: "GROUP up",
-    #0x4e: "Tone off (Experimental)",       # undocumented !!!!
+    # 0x4e: "Tone off (Experimental)",       # undocumented !!!!
     0x4f: "None",
     0x50: "VOL down",
     0x51: "VOL up",
@@ -333,7 +333,6 @@ KEYS = {
 
 def _raw_recv(radio, amount):
     """Raw read from the radio device"""
-    data = ""
     try:
         data = radio.pipe.read(amount)
     except:
@@ -360,20 +359,15 @@ def _raw_send(radio, data):
 
 def _close_radio(radio):
     """Get the radio out of program mode"""
-    _raw_send(radio, "\x45")
+    _raw_send(radio, b"E")
 
 
 def _checksum(data):
     """the radio block checksum algorithm"""
     cs = 0
     for byte in data:
-            cs += ord(byte)
+            cs += byte
     return cs % 256
-
-
-def _send(radio, frame):
-    """Generic send data to the radio"""
-    _raw_send(radio, frame)
 
 
 def _make_frame(cmd, addr):
@@ -404,7 +398,7 @@ def _check_write_ack(r, ack, addr):
         return True
 
     # Explicit BAD checksum
-    if ack == "\x15":
+    if ack == b"\x15":
         _close_radio(r)
         raise errors.RadioError(
             "Bad checksum in block %02x write" % addr)
@@ -417,26 +411,27 @@ def _check_write_ack(r, ack, addr):
 
 
 def _recv(radio):
-    """Receive data from the radio, 258 bytes split in (cmd, data, checksum)
-    checking the checksum to be correct, and returning just
-    256 bytes of data or false if short empty block"""
-    rxdata = _raw_recv(radio, BLOCK_SIZE + 2)
+    """Receive a single block from the radio"""
+
+    cmd = _raw_recv(radio, 1)
     # when the RX block has two bytes and the first is \x5A
     # then the block is all \xFF
-    if len(rxdata) == 2 and rxdata[0] == "\x5A":
-        # fast work in linux has to make the handshake, slow windows don't
-        if not sys.platform in ["win32", "cygwin"]:
-            _handshake(radio, "short block")
-        return False
-    elif len(rxdata) != 258:
-        # not the amount of data we want
-        msg = "The radio send %d bytes, we need 258" % len(rxdata)
-        # DEBUG
-        LOG.error(msg)
-        raise errors.RadioError(msg)
+    if not cmd:
+        raise errors.RadioError('No response from radio')
+    elif cmd == b'Z':
+        # Empty "zero" block
+        ff = _raw_recv(radio, 1)
+        _handshake(radio, "after zero block")
+        return b'\xff' * 256
+    elif cmd != b'W':
+        LOG.error('Got non-W command:')
+        rxdata = _raw_recv(radio, BLOCK_SIZE + 1)
+        LOG.error(util.hexprint(rxdata))
+        raise errors.RadioError('Received unexpected response from radio')
     else:
-        rcs = ord(rxdata[-1])
-        data = rxdata[1:-1]
+        rxdata = _raw_recv(radio, BLOCK_SIZE + 1)
+        rcs = rxdata[-1]
+        data = rxdata[:-1]
         ccs = _checksum(data)
 
         if rcs != ccs:
@@ -452,7 +447,7 @@ def _recv(radio):
 def _open_radio(radio, status):
     """Open the radio into program mode and check if it's the correct model"""
     # linux min is 0.13, win min is 0.25; set to bigger to be safe
-    radio.pipe.timeout = 0.4
+    radio.pipe.timeout = 1
     radio.pipe.parity = "E"
 
     # DEBUG
@@ -465,33 +460,17 @@ def _open_radio(radio, status):
     status.max = tries
     status.msg = "Entering program mode..."
 
-    # try a few times to get the radio into program mode
-    exito = False
-    for i in range(0, tries):
-        _raw_send(radio, "PROGRAM")
-        ack = _raw_recv(radio, 1)
-
-        if ack != ACK_CMD:
-            # DEBUG
-            LOG.debug("Try %s failed, traying again..." % i)
-            time.sleep(0.25)
-        else:
-            exito = True
-            break
-
-        status.cur += 1
-        radio.status_fn(status)
-
-
-    if exito is False:
+    _raw_send(radio, b"PROGRAM")
+    ack = _raw_recv(radio, 1)
+    if ack != ACK_CMD:
         _close_radio(radio)
-        LOG.debug("Radio did not accepted PROGRAM command in %s attempts" % tries)
-        raise errors.RadioError("The radio doesn't accept program mode")
+        LOG.debug("Radio did not accepted PROGRAM command")
+        raise errors.RadioError("The radio did not start program mode")
 
     # DEBUG
     LOG.debug("Received ACK to the PROGRAM command, send ID query.")
 
-    _raw_send(radio, "\x02")
+    _raw_send(radio, b"\x02")
     rid = _raw_recv(radio, 8)
 
     if not (radio.TYPE in rid):
@@ -504,7 +483,7 @@ def _open_radio(radio, status):
 
         raise errors.RadioError(
             "Incorrect model ID, got %s, it not contains %s" %
-            (rid.strip("\xff"), radio.TYPE))
+            (rid.strip(b"\xff"), radio.TYPE))
 
     # DEBUG
     LOG.debug("Full ident string is:")
@@ -521,7 +500,7 @@ def do_download(radio):
     """ The download function """
     # UI progress
     status = chirp_common.Status()
-    data = ""
+    data = b""
     count = 0
 
     # open the radio
@@ -529,17 +508,9 @@ def do_download(radio):
 
     # reset UI data
     status.cur = 0
-    status.max = MEM_SIZE / 256
+    status.max = MEM_SIZE // 256
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
-
-    # set the timeout and if windows keep it bigger
-    if sys.platform in ["win32", "cygwin"]:
-        # bigger timeout
-        radio.pipe.timeout = 0.55
-    else:
-        # Linux can keep up, MAC?
-        radio.pipe.timeout = 0.05
 
     # DEBUG
     LOG.debug("Starting the download from radio")
@@ -547,16 +518,12 @@ def do_download(radio):
     for addr in MEM_BLOCKS:
         # send request, but before flush the rx buffer
         radio.pipe.flush()
-        _send(radio, _make_frame("R", addr))
+        _raw_send(radio, _make_frame("R", addr))
+
+        time.sleep(0.1)
 
         # now we get the data
-        d = _recv(radio)
-        # if empty block, it return false
-        # aka we assume a empty 256 xFF block
-        if d is False:
-            d = EMPTY_BLOCK
-
-        data += d
+        data += _recv(radio)
 
         # UI Update
         status.cur = count
@@ -565,14 +532,14 @@ def do_download(radio):
         count += 1
 
     _close_radio(radio)
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
     """ The upload function """
     # UI progress
     status = chirp_common.Status()
-    data = ""
+    data = b""
     count = 0
 
     # open the radio
@@ -580,12 +547,9 @@ def do_upload(radio):
 
     # update UI
     status.cur = 0
-    status.max = MEM_SIZE / 256
+    status.max = MEM_SIZE // 256
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
-
-    # the default for the original soft as measured
-    radio.pipe.timeout = 0.5
 
     # DEBUG
     LOG.debug("Starting the upload to the radio")
@@ -614,12 +578,12 @@ def do_upload(radio):
                 continue
 
         if data == EMPTY_BLOCK:
-            frame = _make_frame("Z", addr) + "\xFF"
+            frame = _make_frame(b"Z", addr) + b"\xFF"
         else:
             cs = _checksum(data)
-            frame = _make_frame("W", addr) + data + chr(cs)
+            frame = _make_frame(b"W", addr) + data + bytes([cs])
 
-        _send(radio, frame)
+        _raw_send(radio, frame)
 
         # get the ACK
         ack = _raw_recv(radio, 1)
@@ -641,7 +605,7 @@ def do_upload(radio):
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
     rid = data[0xA7:0xAE]
-    if (rid in cls.VARIANTS):
+    if rid in cls.VARIANTS:
         # correct model
         return True
     else:
@@ -696,7 +660,8 @@ class memBank(chirp_common.Bank):
     index = 0
 
 
-class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
+class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
+                        chirp_common.ExperimentalRadio):
     """Kenwood Series 60G Radios base class"""
     VENDOR = "Kenwood"
     BAUD_RATE = 9600
@@ -710,35 +675,26 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     _kind = ""
     VARIANT = ""
     MODEL = ""
+    NEEDS_COMPAT_SERIAL = False
 
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('This driver is experimental; not all features have been '
-            'implemented, but it has those features most used by hams.\n'
-             '\n'
-             'This radios are able to work slightly outside the OEM '
-             'frequency limits. After testing, the limit in Chirp has '
-             'been set 4% outside the OEM limit. This allows you to use '
-             'some models on the ham bands.\n'
-             '\n'
-             'Nevertheless, each radio has its own hardware limits and '
-             'your mileage may vary.\n'
-             )
+            'This driver is experimental: Use at your own risk! '
         rp.pre_download = _(dedent("""\
-            Follow this instructions to download your info:
+            Follow these instructions to download your radio:
             1 - Turn off your radio
             2 - Connect your interface cable
-            3 - Turn on your radio (unblock it if password protected)
-            4 - Do the download of your radio data
+            3 - Turn on your radio (unlock it if password protected)
+            4 - Click OK to start
             """))
         rp.pre_upload = _(dedent("""\
-            Follow this instructions to upload your info:
+            Follow these instructions to upload your radio:
             1 - Turn off your radio
             2 - Connect your interface cable
-            3 - Turn on your radio (unblock it if password protected)
-            4 - Do the upload of your radio data
+            3 - Turn on your radio (unlock it if password protected)
+            4 - Click OK to start
             """))
         return rp
 
@@ -779,8 +735,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
     def _fill(self, offset, data):
         """Fill an specified area of the memmap with the passed data"""
-        for addr in range(0, len(data)):
-            self._mmap[offset + addr] = data[addr]
+        self._mmap[offset] = data
 
     def _prep_data(self):
         """Prepare the areas in the memmap to do a consistent write
@@ -811,9 +766,9 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         self._memobj.settings.banks = len(data)
 
         # building the data for the memmap
-        fdata = ""
+        fdata = b""
 
-        for k, v in data.iteritems():
+        for k, v in data.items():
             # possible bad data
             if k == 0:
                 k = 1
@@ -822,11 +777,11 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                     Trying to fix this, review your bank data!" % k)
             c = 1
             for i in v:
-                fdata += chr(k) + chr(c) + chr(k - 1) + chr(i)
+                fdata += bytes([k, c, k - 1, i])
                 c = c + 1
 
         # fill to match a full 256 bytes block
-        fdata += (len(fdata) % 256) * "\xFF"
+        fdata += (len(fdata) % 256) * b"\xFF"
 
         # updating the data in the memmap [x300]
         self._fill(0x300, fdata)
@@ -834,25 +789,25 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # update the info in x1000; it has 2 bytes with
         # x00 = bank , x01 = bank's channel count
         # the rest of the 14 bytes are \xff
-        bdata = ""
+        bdata = b""
         for i in range(1, len(data) + 1):
-            line = chr(i) + chr(len(data[i]))
-            line += "\xff" * 14
+            line = bytes([i, len(data[i])])
+            line += b"\xff" * 14
             bdata += line
 
         # fill to match a full 256 bytes block
-        bdata += (256 - (len(bdata)) % 256) * "\xFF"
+        bdata += (256 - (len(bdata)) % 256) * b"\xFF"
 
         # fill to match the whole area
-        bdata += (16 - len(bdata) / 256) * EMPTY_BLOCK
+        bdata += (16 - len(bdata) // 256) * EMPTY_BLOCK
 
         # updating the data in the memmap [x1000]
         self._fill(0x1000, bdata)
 
         # DTMF id for each channel, 5 bytes lbcd at x7000
         # ############## TODO ###################
-        fldata = "\x00\xf0\xff\xff\xff" * self._chs_progs + \
-            "\xff" * (5 * (self._upper - self._chs_progs))
+        fldata = b"\x00\xf0\xff\xff\xff" * self._chs_progs + \
+            b"\xff" * (5 * (self._upper - self._chs_progs))
 
         # write it
         # updating the data in the memmap [x7000]
@@ -900,7 +855,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         """Do an upload to the radio eeprom"""
 
         # chirp signature on the eprom ;-)
-        sign = "Chirp"
+        sign = b"Chirp"
         self._fill(0xbb, sign)
 
         try:
@@ -908,7 +863,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             do_upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
@@ -925,7 +880,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     def get_raw_memory(self, number):
         """Return a raw representation of the memory object, which
         is very helpful for development"""
-        return repr(self._memobj.memory[number])
+        return repr(self._memobj.memory[number - 1])
 
     def _decode_tone(self, val):
         """Parse the tone data to decode from mem, it returns:
@@ -1019,7 +974,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 mem.offset = 0
 
         # name TAG of the channel
-        mem.name = str(_mem.name).rstrip()
+        mem.name = str(_mem.name).rstrip(' \xff')
 
         # power
         mem.power = POWER_LEVELS[_mem.power]
@@ -1045,7 +1000,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         if b > 127 or b == 0:
             _mem.bank = b = 1
 
-        bank = RadioSetting("bank", "Bank it belongs",
+        bank = RadioSetting("bank", "Bank",
                             RadioSettingValueInteger(1, 128, b))
         mem.extra.append(bank)
 
@@ -1053,7 +1008,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         if int(_mem.bnumb) > 127:
             _mem.bank = mem.number
 
-        bnumb = RadioSetting("bnumb", "Ch number in the bank",
+        bnumb = RadioSetting("bnumb", "Bank index",
                              RadioSettingValueInteger(0, 127, _mem.bnumb))
         mem.extra.append(bnumb)
 
@@ -1182,36 +1137,35 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         # TODO / PLANNED
         # adjust feqs
-        #freqs = RadioSettingGroup("freqs", "Adjust Frequencies")
+        # freqs = RadioSettingGroup("freqs", "Adjust Frequencies")
 
         top = RadioSettings(basic, dealer, fkeys)
 
         # Basic
         tot = RadioSetting("settings.tot", "Time Out Timer (TOT)",
-                           RadioSettingValueList(TOT, TOT[
-                           TOT.index(str(int(sett.tot)))]))
+                           RadioSettingValueList(TOT, '%i' % sett.tot))
         basic.append(tot)
 
         totalert = RadioSetting("settings.tot_alert", "TOT pre alert",
-                                RadioSettingValueList(TOT_PRE,
-                                TOT_PRE[int(sett.tot_alert)]))
+                                RadioSettingValueList(
+                                    TOT_PRE, current_index=sett.tot_alert))
         basic.append(totalert)
 
         totrekey = RadioSetting("settings.tot_rekey", "TOT re-key time",
-                                RadioSettingValueList(TOT_REKEY,
-                                TOT_REKEY[int(sett.tot_rekey)]))
+                                RadioSettingValueList(
+                                    TOT_REKEY, current_index=sett.tot_rekey))
         basic.append(totrekey)
 
         totreset = RadioSetting("settings.tot_reset", "TOT reset time",
-                                RadioSettingValueList(TOT_RESET,
-                                TOT_RESET[int(sett.tot_reset)]))
+                                RadioSettingValueList(
+                                    TOT_RESET, current_index=sett.tot_reset))
         basic.append(totreset)
 
         # this feature is for mobile only
         if self.TYPE[0] == "M":
             minvol = RadioSetting("settings.min_vol", "Minimum volume",
-                                  RadioSettingValueList(VOL,
-                                  VOL[int(sett.min_vol)]))
+                                  RadioSettingValueList(
+                                      VOL, current_index=sett.min_vol))
             basic.append(minvol)
 
             tv = int(sett.tone_vol)
@@ -1223,12 +1177,12 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         sql = RadioSetting("settings.sql_level", "SQL Ref Level",
                            RadioSettingValueList(
-                           SQL, SQL[int(sett.sql_level)]))
+                               SQL, current_index=sett.sql_level))
         basic.append(sql)
 
-        #c2t = RadioSetting("settings.c2t", "Clear to Transpond",
-                           #RadioSettingValueBoolean(not sett.c2t))
-        #basic.append(c2t)
+        # c2t = RadioSetting("settings.c2t", "Clear to Transpond",
+        #                    RadioSettingValueBoolean(not sett.c2t))
+        # basic.append(c2t)
 
         ptone = RadioSetting("settings.poweron_tone", "Power On tone",
                              RadioSettingValueBoolean(sett.poweron_tone))
@@ -1277,7 +1231,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
         l1 = str(mess.line1).strip(" \xff")
         line1 = RadioSetting("message.line1", "Comment 1",
-                           RadioSettingValueString(0, 32, l1))
+                             RadioSettingValueString(0, 32, l1))
         dealer.append(line1)
 
         l2 = str(mess.line2).strip(" \xff")
@@ -1306,97 +1260,86 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         if self.TYPE[0] == "M":
             vu = RadioSetting("keys.kVOL_UP", "VOL UP",
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
-                                  int(keys.kVOL_UP))]))
+                                                    KEYS[int(keys.kVOL_UP)]))
             fkeys.append(vu)
 
             vd = RadioSetting("keys.kVOL_DOWN", "VOL DOWN",
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
-                                  int(keys.kVOL_DOWN))]))
+                                                    KEYS[int(keys.kVOL_DOWN)]))
             fkeys.append(vd)
 
             chu = RadioSetting("keys.kCH_UP", "CH UP",
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
-                                   int(keys.kCH_UP))]))
+                                                     KEYS[int(keys.kCH_UP)]))
             fkeys.append(chu)
 
             chd = RadioSetting("keys.kCH_DOWN", "CH DOWN",
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
-                                   int(keys.kCH_DOWN))]))
+                                                     KEYS[int(keys.kCH_DOWN)]))
             fkeys.append(chd)
 
             foot = RadioSetting("keys.kFOOT", "Foot switch",
-                               RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
-                                   int(keys.kCH_DOWN))]))
+                                RadioSettingValueList(KEYS.values(),
+                                                      KEYS[int(keys.kFOOT)]))
             fkeys.append(foot)
 
         # this is the common buttons for all
 
         # 260G model don't have the front keys
-        if not "P2600" in self.TYPE:
+        if b"P2600" not in self.TYPE:
             scn_name = "SCN"
-            if self.TYPE[0] == "P":
+            if self.TYPE[0] == b"P":
                 scn_name = "Open Circle"
 
             scn = RadioSetting("keys.kSCN", scn_name,
                                RadioSettingValueList(KEYS.values(),
-                               KEYS.values()[KEYS.keys().index(
-                                   int(keys.kSCN))]))
+                                                     KEYS[int(keys.kSCN)]))
             fkeys.append(scn)
 
             a_name = "A"
-            if self.TYPE[0] == "P":
+            if self.TYPE[0] == b"P":
                 a_name = "Closed circle"
 
             a = RadioSetting("keys.kA", a_name,
                              RadioSettingValueList(KEYS.values(),
-                             KEYS.values()[KEYS.keys().index(
-                                 int(keys.kA))]))
+                                                   KEYS[int(keys.kA)]))
             fkeys.append(a)
 
             da_name = "D/A"
-            if self.TYPE[0] == "P":
+            if self.TYPE[0] == b"P":
                 da_name = "< key"
 
             da = RadioSetting("keys.kDA", da_name,
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
-                                  int(keys.kDA))]))
+                                                    KEYS[int(keys.kDA)]))
             fkeys.append(da)
 
             gu_name = "Triangle up"
-            if self.TYPE[0] == "P":
+            if self.TYPE[0] == b"P":
                 gu_name = "Side 1"
 
             gu = RadioSetting("keys.kGROUP_UP", gu_name,
                               RadioSettingValueList(KEYS.values(),
-                              KEYS.values()[KEYS.keys().index(
-                                  int(keys.kGROUP_UP))]))
+                                                    KEYS[int(keys.kGROUP_UP)]))
             fkeys.append(gu)
 
         # Side keys on portables
         gd_name = "Triangle Down"
-        if self.TYPE[0] == "P":
+        if self.TYPE[0] == b"P":
             gd_name = "> key"
 
         gd = RadioSetting("keys.kGROUP_DOWN", gd_name,
                           RadioSettingValueList(KEYS.values(),
-                          KEYS.values()[KEYS.keys().index(
-                              int(keys.kGROUP_DOWN))]))
+                                                KEYS[int(keys.kGROUP_DOWN)]))
         fkeys.append(gd)
 
         mon_name = "MON"
-        if self.TYPE[0] == "P":
+        if self.TYPE[0] == b"P":
             mon_name = "Side 2"
 
         mon = RadioSetting("keys.kMON", mon_name,
                            RadioSettingValueList(KEYS.values(),
-                           KEYS.values()[KEYS.keys().index(
-                               int(keys.kMON))]))
+                                                 KEYS[int(keys.kMON)]))
         fkeys.append(mon)
 
         return top
@@ -1480,7 +1423,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
                 # case keys, with special config
                 if inter == "keys":
-                    value = KEYS.keys()[KEYS.values().index(str(value))]
+                    value = list(KEYS.keys())[list(KEYS.values()).index(
+                            str(value))]
 
             # Apply al configs done
             setattr(obj, setting, value)
@@ -1541,12 +1485,12 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 class TK868G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-868G Radio M/C"""
     MODEL = "TK-868G"
-    TYPE = "M8680"
+    TYPE = b"M8680"
     VARIANTS = {
-        "M8680\x18\xff":    (8, 400, 490, "M"),
-        "M8680;\xff":       (128, 350, 390, "C1"),
-        "M86808\xff":       (128, 400, 430, "C2"),
-        "M86806\xff":       (128, 450, 490, "C3"),
+        b"M8680\x18\xff":    (8, 400, 490, "M"),
+        b"M8680;\xff":       (128, 350, 390, "C1"),
+        b"M86808\xff":       (128, 400, 430, "C2"),
+        b"M86806\xff":       (128, 450, 490, "C3"),
         }
 
 
@@ -1554,12 +1498,12 @@ class TK868G_Radios(Kenwood_Serie_60G):
 class TK862G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-862G Radio K/E/(N)E"""
     MODEL = "TK-862G"
-    TYPE = "M8620"
+    TYPE = b"M8620"
     VARIANTS = {
-        "M8620\x06\xff":    (8, 450, 490, "K"),
-        "M8620\x07\xff":    (8, 485, 512, "K2"),
-        "M8620&\xff":       (8, 440, 470, "E"),
-        "M8620V\xff":       (8, 440, 470, "(N)E"),
+        b"M8620\x06\xff":    (8, 450, 490, "K"),
+        b"M8620\x07\xff":    (8, 485, 512, "K2"),
+        b"M8620&\xff":       (8, 440, 470, "E"),
+        b"M8620V\xff":       (8, 440, 470, "(N)E"),
         }
 
 
@@ -1567,14 +1511,14 @@ class TK862G_Radios(Kenwood_Serie_60G):
 class TK860G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-860G Radio K"""
     MODEL = "TK-860G"
-    TYPE = "M8600"
+    TYPE = b"M8600"
     VARIANTS = {
-        "M8600\x08\xff":    (128, 400, 430, "K"),
-        "M8600\x06\xff":    (128, 450, 490, "K1"),
-        "M8600\x07\xff":    (128, 485, 512, "K2"),
-        "M8600\x18\xff":    (128, 400, 430, "M"),
-        "M8600\x16\xff":    (128, 450, 490, "M1"),
-        "M8600\x17\xff":    (128, 485, 520, "M2"),
+        b"M8600\x08\xff":    (128, 400, 430, "K"),
+        b"M8600\x06\xff":    (128, 450, 490, "K1"),
+        b"M8600\x07\xff":    (128, 485, 512, "K2"),
+        b"M8600\x18\xff":    (128, 400, 430, "M"),
+        b"M8600\x16\xff":    (128, 450, 490, "M1"),
+        b"M8600\x17\xff":    (128, 485, 520, "M2"),
         }
 
 
@@ -1582,13 +1526,13 @@ class TK860G_Radios(Kenwood_Serie_60G):
 class TK768G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-768G Radios [M/C]"""
     MODEL = "TK-768G"
-    TYPE = "M7680"
+    TYPE = b"M7680"
     # Note that 8 CH don't have banks
     VARIANTS = {
-        "M7680\x15\xff": (8, 136, 162, "M2"),
-        "M7680\x14\xff": (8, 148, 174, "M"),
-        "M76805\xff":    (128, 136, 162, "C2"),
-        "M76804\xff":    (128, 148, 174, "C"),
+        b"M7680\x15\xff": (8, 136, 162, "M2"),
+        b"M7680\x14\xff": (8, 148, 174, "M"),
+        b"M76805\xff":    (128, 136, 162, "C2"),
+        b"M76804\xff":    (128, 148, 174, "C"),
         }
 
 
@@ -1596,13 +1540,13 @@ class TK768G_Radios(Kenwood_Serie_60G):
 class TK762G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-762G Radios [K/E/NE]"""
     MODEL = "TK-762G"
-    TYPE = "M7620"
+    TYPE = b"M7620"
     # Note that 8 CH don't have banks
     VARIANTS = {
-        "M7620\x05\xff": (8, 136, 162, "K2"),
-        "M7620\x04\xff": (8, 148, 172, "K"),
-        "M7620$\xff":    (8, 148, 172, "E"),
-        "M7620T\xff":    (8, 148, 172, "NE"),
+        b"M7620\x05\xff": (8, 136, 162, "K2"),
+        b"M7620\x04\xff": (8, 148, 172, "K"),
+        b"M7620$\xff":    (8, 148, 172, "E"),
+        b"M7620T\xff":    (8, 148, 172, "NE"),
         }
 
 
@@ -1610,12 +1554,12 @@ class TK762G_Radios(Kenwood_Serie_60G):
 class TK760G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-760G Radios [K/M/(N)E]"""
     MODEL = "TK-760G"
-    TYPE = "M7600"
+    TYPE = b"M7600"
     VARIANTS = {
-        "M7600\x05\xff": (128, 136, 162, "K2"),
-        "M7600\x04\xff": (128, 148, 174, "K"),
-        "M7600\x14\xff": (128, 148, 174, "M"),
-        "M7600T\xff":    (128, 148, 174, "NE")
+        b"M7600\x05\xff": (128, 136, 162, "K2"),
+        b"M7600\x04\xff": (128, 148, 174, "K"),
+        b"M7600\x14\xff": (128, 148, 174, "M"),
+        b"M7600T\xff":    (128, 148, 174, "NE")
         }
 
 
@@ -1623,9 +1567,9 @@ class TK760G_Radios(Kenwood_Serie_60G):
 class TK388G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-388 Radio [K/E/M/NE]"""
     MODEL = "TK-388G"
-    TYPE = "P3880"
+    TYPE = b"P3880"
     VARIANTS = {
-        "P3880\x1b\xff": (128, 350, 370, "M")
+        b"P3880\x1b\xff": (128, 350, 370, "M")
         }
 
 
@@ -1633,12 +1577,12 @@ class TK388G_Radios(Kenwood_Serie_60G):
 class TK378G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-378 Radio [K/E/M/NE]"""
     MODEL = "TK-378G"
-    TYPE = "P3780"
+    TYPE = b"P3780"
     VARIANTS = {
-        "P3780\x16\xff": (16, 450, 470, "M"),
-        "P3780\x17\xff": (16, 400, 420, "M1"),
-        "P3780\x36\xff": (128, 490, 512, "C"),
-        "P3780\x39\xff": (128, 403, 430, "C1")
+        b"P3780\x16\xff": (16, 450, 470, "M"),
+        b"P3780\x17\xff": (16, 400, 420, "M1"),
+        b"P3780\x36\xff": (128, 490, 512, "C"),
+        b"P3780\x39\xff": (128, 403, 430, "C1")
         }
 
 
@@ -1646,12 +1590,12 @@ class TK378G_Radios(Kenwood_Serie_60G):
 class TK372G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-372 Radio [K/E/M/NE]"""
     MODEL = "TK-372G"
-    TYPE = "P3720"
+    TYPE = b"P3720"
     VARIANTS = {
-        "P3720\x06\xff": (32, 450, 470, "K"),
-        "P3720\x07\xff": (32, 470, 490, "K1"),
-        "P3720\x08\xff": (32, 490, 512, "K2"),
-        "P3720\x09\xff": (32, 403, 430, "K3")
+        b"P3720\x06\xff": (32, 450, 470, "K"),
+        b"P3720\x07\xff": (32, 470, 490, "K1"),
+        b"P3720\x08\xff": (32, 490, 512, "K2"),
+        b"P3720\x09\xff": (32, 403, 430, "K3")
         }
 
 
@@ -1659,18 +1603,18 @@ class TK372G_Radios(Kenwood_Serie_60G):
 class TK370G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-370 Radio [K/E/M/NE]"""
     MODEL = "TK-370G"
-    TYPE = "P3700"
+    TYPE = b"P3700"
     VARIANTS = {
-        "P3700\x06\xff": (128, 450, 470, "K"),
-        "P3700\x07\xff": (128, 470, 490, "K1"),
-        "P3700\x08\xff": (128, 490, 512, "K2"),
-        "P3700\x09\xff": (128, 403, 430, "K3"),
-        "P3700\x16\xff": (128, 450, 470, "M"),
-        "P3700\x17\xff": (128, 470, 490, "M1"),
-        "P3700\x18\xff": (128, 490, 520, "M2"),
-        "P3700\x19\xff": (128, 403, 430, "M3"),
-        "P3700&\xff": (128, 440, 470, "E"),
-        "P3700V\xff": (128, 440, 470, "NE")
+        b"P3700\x06\xff": (128, 450, 470, "K"),
+        b"P3700\x07\xff": (128, 470, 490, "K1"),
+        b"P3700\x08\xff": (128, 490, 512, "K2"),
+        b"P3700\x09\xff": (128, 403, 430, "K3"),
+        b"P3700\x16\xff": (128, 450, 470, "M"),
+        b"P3700\x17\xff": (128, 470, 490, "M1"),
+        b"P3700\x18\xff": (128, 490, 520, "M2"),
+        b"P3700\x19\xff": (128, 403, 430, "M3"),
+        b"P3700&\xff": (128, 440, 470, "E"),
+        b"P3700V\xff": (128, 440, 470, "NE")
         }
 
 
@@ -1678,19 +1622,19 @@ class TK370G_Radios(Kenwood_Serie_60G):
 class TK360G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-360 Radio [K/E/M/NE]"""
     MODEL = "TK-360G"
-    TYPE = "P3600"
+    TYPE = b"P3600"
     VARIANTS = {
-        "P3600\x06\xff": (8, 450, 470, "K"),
-        "P3600\x07\xff": (8, 470, 490, "K1"),
-        "P3600\x08\xff": (8, 490, 512, "K2"),
-        "P3600\x09\xff": (8, 403, 430, "K3"),
-        "P3600&\xff": (8, 440, 470, "E"),
-        "P3600)\xff": (8, 406, 430, "E1"),
-        "P3600\x16\xff": (8, 450, 470, "M"),
-        "P3600\x17\xff": (8, 470, 490, "M1"),
-        "P3600\x19\xff": (8, 403, 430, "M2"),
-        "P3600V\xff": (8, 440, 470, "NE"),
-        "P3600Y\xff": (8, 403, 430, "NE1")
+        b"P3600\x06\xff": (8, 450, 470, "K"),
+        b"P3600\x07\xff": (8, 470, 490, "K1"),
+        b"P3600\x08\xff": (8, 490, 512, "K2"),
+        b"P3600\x09\xff": (8, 403, 430, "K3"),
+        b"P3600&\xff": (8, 440, 470, "E"),
+        b"P3600)\xff": (8, 406, 430, "E1"),
+        b"P3600\x16\xff": (8, 450, 470, "M"),
+        b"P3600\x17\xff": (8, 470, 490, "M1"),
+        b"P3600\x19\xff": (8, 403, 430, "M2"),
+        b"P3600V\xff": (8, 440, 470, "NE"),
+        b"P3600Y\xff": (8, 403, 430, "NE1")
         }
 
 
@@ -1698,13 +1642,13 @@ class TK360G_Radios(Kenwood_Serie_60G):
 class TK278G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-278G Radio C/C1/M/M1"""
     MODEL = "TK-278G"
-    TYPE = "P2780"
+    TYPE = b"P2780"
     # Note that 16 CH don't have banks
     VARIANTS = {
-        "P27805\xff":    (128, 136, 150, "C1"),
-        "P27804\xff":    (128, 150, 174, "C"),
-        "P2780\x15\xff": (16,  136, 150, "M1"),
-        "P2780\x14\xff": (16,  150, 174, "M")
+        b"P27805\xff":    (128, 136, 150, "C1"),
+        b"P27804\xff":    (128, 150, 174, "C"),
+        b"P2780\x15\xff": (16,  136, 150, "M1"),
+        b"P2780\x14\xff": (16,  150, 174, "M")
         }
 
 
@@ -1712,10 +1656,10 @@ class TK278G_Radios(Kenwood_Serie_60G):
 class TK272G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-272G Radio K/K1"""
     MODEL = "TK-272G"
-    TYPE = "P2720"
+    TYPE = b"P2720"
     VARIANTS = {
-        "P2720\x05\xfb": (32, 136, 150, "K1"),
-        "P2720\x04\xfb": (32, 150, 174, "K")
+        b"P2720\x05\xfb": (32, 136, 150, "K1"),
+        b"P2720\x04\xfb": (32, 150, 174, "K")
         }
 
 
@@ -1723,13 +1667,13 @@ class TK272G_Radios(Kenwood_Serie_60G):
 class TK270G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-270G Radio K/K1/M/E/NE/NT"""
     MODEL = "TK-270G"
-    TYPE = "P2700"
+    TYPE = b"P2700"
     VARIANTS = {
-        "P2700T\xff":    (128, 146, 174, "NE/NT"),
-        "P2700$\xff":    (128, 146, 174, "E"),
-        "P2700\x14\xff": (128, 150, 174, "M"),
-        "P2700\x05\xff": (128, 136, 150, "K1"),
-        "P2700\x04\xff": (128, 150, 174, "K")
+        b"P2700T\xff":    (128, 146, 174, "NE/NT"),
+        b"P2700$\xff":    (128, 146, 174, "E"),
+        b"P2700\x14\xff": (128, 150, 174, "M"),
+        b"P2700\x05\xff": (128, 136, 150, "K1"),
+        b"P2700\x04\xff": (128, 150, 174, "K")
         }
 
 
@@ -1738,12 +1682,12 @@ class TK260G_Radios(Kenwood_Serie_60G):
     """Kenwood TK-260G Radio K/K1/M/E/NE/NT"""
     MODEL = "TK-260G"
     _hasbanks = False
-    TYPE = "P2600"
+    TYPE = b"P2600"
     VARIANTS = {
-        "P2600U\xff":    (8, 136, 150, "N1"),
-        "P2600T\xff":    (8, 146, 174, "N"),
-        "P2600$\xff":    (8, 150, 174, "E"),
-        "P2600\x14\xff": (8, 150, 174, "M"),
-        "P2600\x05\xff": (8, 136, 150, "K1"),
-        "P2600\x04\xff": (8, 150, 174, "K")
+        b"P2600U\xff":    (8, 136, 150, "N1"),
+        b"P2600T\xff":    (8, 146, 174, "N"),
+        b"P2600$\xff":    (8, 150, 174, "E"),
+        b"P2600\x14\xff": (8, 150, 174, "M"),
+        b"P2600\x05\xff": (8, 136, 150, "K1"),
+        b"P2600\x04\xff": (8, 150, 174, "K")
         }

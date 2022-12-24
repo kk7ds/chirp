@@ -67,7 +67,7 @@ class FT2D(ft1d.FT1Radio):
     MODEL = "FT2D" # Yaesu doesn't use a hyphen in its documents
     VARIANT = "R"
 
-    _model = "AH60M" # Get this from chirp .img file after saving once
+    _model = b"AH60M" # Get this from chirp .img file after saving once
     _has_vibrate = True
     _mem_params = (0x94a,         # Location of DTMF storage
                    999,            # size of memories array
@@ -117,7 +117,7 @@ class FT2D(ft1d.FT1Radio):
         return mem
 
     def _decode_label(self, mem):
-        return str(mem.label).rstrip("\xFF").decode('ascii', 'replace')
+        return str(mem.label).rstrip("\xFF")
 
     def _encode_label(self, mem):
         label = mem.name.rstrip().encode('ascii', 'ignore')
@@ -155,7 +155,7 @@ class FT2Dv2(FT2D):
     """Yaesu FT-2D v2 firmware"""
     VARIANT = "Rv2"
 
-    _model = "AH60G"
+    _model = b"AH60G"
 
 @directory.register
 class FT3D(FT2D):
@@ -163,4 +163,4 @@ class FT3D(FT2D):
     MODEL = "FT3D"
     VARIANT = "R"
 
-    _model = "AH72M"
+    _model = b"AH72M"

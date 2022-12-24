@@ -5,3 +5,6 @@
 ./share/make_supported.py	E402
 ./tests/run_tests	E402
 ./tests/unit/test_memedit_edits.py	E402
+./chirpw	E402
+./chirp/memmap.py	E731
+./chirp/util.py	E731

@@ -457,10 +457,10 @@ def exit_program_mode(radio):
 def parse_read_response(resp):
     addr = resp[:4]
     data = bytes(resp[4:-2])
-    cs = checksum(ord(d) for d in resp[1:-2])
-    valid = cs == ord(resp[-2])
+    cs = checksum(d for d in resp[1:-2])
+    valid = cs == resp[-2]
     if not valid:
-        LOG.error('checksumfail: %02x, expected %02x' % (cs, ord(resp[-2])))
+        LOG.error('checksumfail: %02x, expected %02x' % (cs, resp[-2]))
         LOG.error('msg data: %s' % util.hexprint(resp))
     return addr, data, valid
 
@@ -481,7 +481,7 @@ def do_download(radio):
         status = chirp_common.Status()
         status.cur = 0
         status.max = (MEMORY_ADDRESS_RANGE[1] -
-                      MEMORY_ADDRESS_RANGE[0])/MEMORY_RW_BLOCK_SIZE
+                      MEMORY_ADDRESS_RANGE[0]) // MEMORY_RW_BLOCK_SIZE
         status.msg = 'Cloning from radio...'
         radio.status_fn(status)
 
@@ -499,7 +499,7 @@ def do_download(radio):
 
             # update UI
             status.cur = (addr - MEMORY_ADDRESS_RANGE[0])\
-                / MEMORY_RW_BLOCK_SIZE
+                // MEMORY_RW_BLOCK_SIZE
             radio.status_fn(status)
 
         exit_program_mode(radio)
@@ -515,7 +515,7 @@ def do_download(radio):
 def make_write_data_cmd(addr, data, datalen):
     cmd = struct.pack('>BHB', 0x57, addr, datalen)
     cmd += data
-    cs = checksum(ord(c) for c in cmd[1:])
+    cs = checksum(c for c in cmd[1:])
     cmd += struct.pack('>BB', cs, 0x06)
     return cmd
 
@@ -548,9 +548,10 @@ def do_upload(radio):
 
         bptr = 0
 
-        memory_addrs = range(MEMORY_ADDRESS_RANGE[0],
-                             MEMORY_ADDRESS_RANGE[1] + MEMORY_RW_BLOCK_SIZE,
-                             MEMORY_RW_BLOCK_SIZE)
+        memory_addrs = list(range(MEMORY_ADDRESS_RANGE[0],
+                                  MEMORY_ADDRESS_RANGE[1] +
+                                  MEMORY_RW_BLOCK_SIZE,
+                                  MEMORY_RW_BLOCK_SIZE))
 
         # status info for the UI
         status = chirp_common.Status()
@@ -951,9 +952,9 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         if mem.empty:
             # Set the whole memory to 0xff
-            _mem.set_raw('\xff' * (_mem.size() / 8))
+            _mem.set_raw('\xff' * (_mem.size() // 8))
         else:
-            _mem.set_raw('\x00' * (_mem.size() / 8))
+            _mem.set_raw('\x00' * (_mem.size() // 8))
 
             _mem.freq = int(mem.freq / 10)
             _mem.offset = int(mem.offset / 10)
@@ -1153,7 +1154,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         # Starting Display
         name = ""
         for i in range(7):  # 0 - 7
-            name += chr(self._memobj.starting_display.line[i])
+            name += chr(int(self._memobj.starting_display.line[i]))
         name = name.upper().rstrip()  # remove trailing spaces
 
         rs = RadioSettingValueString(0, 7, name)
@@ -1230,13 +1231,14 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 str1 = ""
                 for sx in chrx:
                     if int(sx) > 31 and int(sx) < 127:
-                        str1 += chr(sx)
+                        str1 += chr(int(sx))
                 return str1
 
             def _pswd_vfy(setting, obj, atrb):
                 """ Verify password is 1-6 chars, numbers 1-5 """
                 str1 = str(setting.value).strip()  # initial
-                str2 = filter(lambda c: c in '0123456789', str1)  # valid chars
+                # valid chars
+                str2 = ''.join([c for c in str1 if c in '0123456789'])
                 if str1 != str2:
                     # Two lines due to python 73 char limit
                     sx = "Bad characters in Password"
@@ -1722,7 +1724,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
