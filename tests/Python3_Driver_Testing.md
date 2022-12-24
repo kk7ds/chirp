@@ -284,8 +284,8 @@
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 |  |  |  | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
-| <a name="TYT_TH-9800"></a> TYT_TH-9800 |  |  |  | 0.65% |
-| <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  |  | 0.00% |
+| <a name="TYT_TH-9800"></a> TYT_TH-9800 | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.65% |
+| <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  |  | 0.04% |
 | <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  |  | 0.02% |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  | 0.31% |
@@ -362,9 +362,9 @@
 
 **Drivers:** 357
 
-**Tested:** 75% (268/89) (90% of usage stats)
+**Tested:** 75% (269/88) (90% of usage stats)
 
-**Byte clean:** 83% (299/58)
+**Byte clean:** 84% (301/56)
 
 ## Meaning of this testing
 

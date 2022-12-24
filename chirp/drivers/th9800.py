@@ -201,6 +201,7 @@ def isValidDate(month, day, year):
 class TYTTH9800Base(chirp_common.Radio):
     """Base class for TYT TH-9800"""
     VENDOR = "TYT"
+    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -671,9 +672,9 @@ class TYTTH9800File(TYTTH9800Base, chirp_common.FileBackedRadio):
 def _identify(radio):
     """Do identify handshake with TYT"""
     try:
-        radio.pipe.write("\x02PROGRA")
+        radio.pipe.write(b"\x02PROGRA")
         ack = radio.pipe.read(1)
-        if ack != "A":
+        if ack != b"A":
             util.hexprint(ack)
             raise errors.RadioError("Radio did not ACK first command: %x"
                                     % ord(ack))
@@ -681,11 +682,11 @@ def _identify(radio):
         LOG.debug(util.hexprint(ack))
         raise errors.RadioError("Unable to communicate with the radio")
 
-    radio.pipe.write("M\x02")
+    radio.pipe.write(b"M\x02")
     ident = radio.pipe.read(16)
-    radio.pipe.write("A")
+    radio.pipe.write(b"A")
     r = radio.pipe.read(1)
-    if r != "A":
+    if r != b"A":
         raise errors.RadioError("Ack failed")
     return ident
 
@@ -693,18 +694,18 @@ def _identify(radio):
 def _download(radio, memsize=0x10000, blocksize=0x80):
     """Download from TYT TH-9800"""
     data = _identify(radio)
-    LOG.info("ident:", util.hexprint(data))
+    LOG.info("ident:\n%s", util.hexprint(data))
     offset = 0x100
     for addr in range(offset, memsize, blocksize):
-        msg = struct.pack(">cHB", "R", addr, blocksize)
+        msg = struct.pack(">cHB", b"R", addr, blocksize)
         radio.pipe.write(msg)
         block = radio.pipe.read(blocksize + 4)
         if len(block) != (blocksize + 4):
             LOG.debug(util.hexprint(block))
             raise errors.RadioError("Radio sent a short block")
-        radio.pipe.write("A")
+        radio.pipe.write(b"A")
         ack = radio.pipe.read(1)
-        if ack != "A":
+        if ack != b"A":
             LOG.debug(util.hexprint(ack))
             raise errors.RadioError("Radio NAKed block")
         data += block[4:]
@@ -716,9 +717,9 @@ def _download(radio, memsize=0x10000, blocksize=0x80):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    radio.pipe.write("ENDR")
+    radio.pipe.write(b"ENDR")
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio, memsize=0xF400, blocksize=0x80):
@@ -727,7 +728,7 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
 
     radio.pipe.timeout = 1
 
-    if data != radio._mmap[:radio._mmap_offset]:
+    if data != radio._mmap[0:radio._mmap_offset]:
         raise errors.RadioError(
             "Model mismatch: \n%s\n%s" %
             (util.hexprint(data),
@@ -760,12 +761,12 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
     for addr in range(offset, memsize, blocksize):
         mapaddr = addr + radio._mmap_offset - offset
         LOG.debug("addr: 0x%04X, mmapaddr: 0x%04X" % (addr, mapaddr))
-        msg = struct.pack(">cHB", "W", addr, blocksize)
+        msg = struct.pack(">cHB", b"W", addr, blocksize)
         msg += radio._mmap[mapaddr:(mapaddr + blocksize)]
         LOG.debug(util.hexprint(msg))
         radio.pipe.write(msg)
         ack = radio.pipe.read(1)
-        if ack != "A":
+        if ack != b"A":
             LOG.debug(util.hexprint(ack))
             raise errors.RadioError("Radio did not ack block 0x%04X" % addr)
 
@@ -777,11 +778,11 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
             radio.status_fn(status)
 
     # End of clone
-    radio.pipe.write("ENDW")
+    radio.pipe.write(b"ENDW")
 
     # Checksum?
     final_data = radio.pipe.read(3)
-    LOG.debug("final:", util.hexprint(final_data))
+    LOG.debug("final:\n%s" % util.hexprint(final_data))
 
 
 @directory.register
