@@ -1,6 +1,8 @@
 from builtins import bytes
+import os
 import unittest
 
+from chirp.drivers import ft60
 from chirp.drivers import yaesu_clone
 from chirp import memmap
 
@@ -39,3 +41,54 @@ class TestYaesuChecksum(unittest.TestCase):
 
     def test_with_str(self):
         self._test_checksum('...\x2A')
+
+
+class FakeFT60:
+    def __init__(self):
+        self.readbuf = b''
+        self.writebuf = b''
+
+    def start_download(self):
+        self.readbuf += b'\x00' * 8
+        for i in range(448):
+            self.readbuf += b'\x00' * 64
+
+    def write(self, data):
+        assert isinstance(data, bytes)
+        # Prepend echo so it is read first next
+        self.readbuf = data + self.readbuf
+
+        self.writebuf += data
+        if len(data) == 1:
+            # If we're doing an upload, we need to ack this
+            # last short block
+            if self.writebuf.startswith(b'AH017'):
+                self.readbuf += b'\x06'
+        elif len(data) in (8, 64):
+            self.readbuf += b'\x06'
+        else:
+            raise Exception('Unhandled')
+
+    def read(self, n):
+        buf = self.readbuf[:n]
+        self.readbuf = self.readbuf[n:]
+        return buf
+
+
+class TestFT60(unittest.TestCase):
+    def test_download(self):
+        f = FakeFT60()
+        f.start_download()
+        r = ft60.FT60Radio(f)
+        r.sync_in()
+        # Make sure the ACKs are there
+        self.assertEqual(449, len(f.writebuf))
+        self.assertEqual(f.writebuf, b'\x06' * 449)
+
+    def test_upload(self):
+        f = FakeFT60()
+        img = os.path.join(os.path.dirname(__file__),
+                           '..', 'images', 'Yaesu_FT-60.img')
+        r = ft60.FT60Radio(img)
+        r.set_pipe(f)
+        r.sync_out()

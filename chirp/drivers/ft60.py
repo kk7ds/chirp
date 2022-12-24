@@ -27,7 +27,7 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
-ACK = "\x06"
+ACK = b"\x06"
 
 
 def _send(pipe, data):
@@ -38,7 +38,7 @@ def _send(pipe, data):
 
 
 def _download(radio):
-    data = ""
+    data = b""
     for i in range(0, 10):
         chunk = radio.pipe.read(8)
         if len(chunk) == 8:
@@ -70,7 +70,7 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
