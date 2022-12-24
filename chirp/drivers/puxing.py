@@ -25,19 +25,19 @@ LOG = logging.getLogger(__name__)
 
 
 def _puxing_prep(radio):
-    radio.pipe.write("\x02PROGRA")
+    radio.pipe.write(b"\x02PROGRA")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise Exception("Radio did not ACK first command")
 
-    radio.pipe.write("M\x02")
+    radio.pipe.write(b"M\x02")
     ident = radio.pipe.read(8)
     if len(ident) != 8:
         LOG.debug(util.hexprint(ident))
         raise Exception("Radio did not send identification")
 
-    radio.pipe.write("\x06")
-    if radio.pipe.read(1) != "\x06":
+    radio.pipe.write(b"\x06")
+    if radio.pipe.read(1) != b"\x06":
         raise Exception("Radio did not ACK ident")
 
 
@@ -152,6 +152,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
     """Puxing PX-777"""
     VENDOR = "Puxing"
     MODEL = "PX-777"
+    NEEDS_COMPAT_SERIAL = False
 
     def sync_in(self):
         self._mmap = puxing_download(self)
@@ -357,9 +358,9 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
 def puxing_2r_prep(radio):
     """Do the Puxing 2R identification dance"""
     radio.pipe.timeout = 0.2
-    radio.pipe.write("PROGRAM\x02")
+    radio.pipe.write(b"PROGRAM\x02")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise Exception("Radio is not responding")
 
     radio.pipe.write(ack)

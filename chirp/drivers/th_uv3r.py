@@ -25,9 +25,9 @@ LOG = logging.getLogger(__name__)
 
 def tyt_uv3r_prep(radio):
     try:
-        radio.pipe.write("PROGRAMa")
+        radio.pipe.write(b"PROGRAMa")
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             raise errors.RadioError("Radio did not ACK first command")
     except:
         raise errors.RadioError("Unable to communicate with the radio")
@@ -78,6 +78,7 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
     MODEL = "TH-UV3R"
     BAUD_RATE = 2400
     _memsize = 2320
+    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

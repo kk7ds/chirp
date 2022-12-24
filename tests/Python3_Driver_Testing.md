@@ -199,7 +199,7 @@
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.03% |
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.01% |
 | <a name="Puxing_PX-2R"></a> Puxing_PX-2R |  |  |  | 0.05% |
-| <a name="Puxing_PX-777"></a> Puxing_PX-777 |  |  |  | 0.11% |
+| <a name="Puxing_PX-777"></a> Puxing_PX-777 |  |  | Yes | 0.11% |
 | <a name="Puxing_PX-888K"></a> Puxing_PX-888K |  |  |  | 0.07% |
 | <a name="QYT_KT-8R"></a> QYT_KT-8R | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.09% |
 | <a name="QYT_KT-UV980"></a> QYT_KT-UV980 | [Implied by WACCOM_MINI-8900](#user-content-WACCOM_MINI-8900) | 11-Nov-2022 | Yes | 0.04% |
@@ -286,8 +286,8 @@
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.65% |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
-| <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  |  | 0.04% |
-| <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  |  | 0.02% |
+| <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  | Yes | 0.04% |
+| <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  | Yes | 0.02% |
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  | 0.31% |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes | 0.51% |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.06% |
@@ -364,7 +364,7 @@
 
 **Tested:** 77% (276/81) (91% of usage stats)
 
-**Byte clean:** 84% (302/55)
+**Byte clean:** 85% (305/52)
 
 ## Meaning of this testing
 
