@@ -3,6 +3,7 @@ import os
 import unittest
 
 from chirp.drivers import ft60
+from chirp.drivers import ft4
 from chirp.drivers import yaesu_clone
 from chirp import memmap
 
@@ -90,5 +91,51 @@ class TestFT60(unittest.TestCase):
         img = os.path.join(os.path.dirname(__file__),
                            '..', 'images', 'Yaesu_FT-60.img')
         r = ft60.FT60Radio(img)
+        r.set_pipe(f)
+        r.sync_out()
+
+
+class FakeFTX4:
+    def __init__(self):
+        self.readbuf = b''
+        self.writebuf = b''
+
+    def write(self, buf):
+        assert isinstance(buf, bytes)
+        # Echo
+        self.readbuf = buf + self.readbuf
+        if buf.startswith(b'PROGRAM'):
+            self.readbuf += b'QX'
+        elif buf == b'\x02':
+            # Ident
+            self.readbuf += ft4.YaesuFT4XERadio.id_str
+        elif buf.startswith(b'R'):
+            resp = b'W' + buf[1:] + b'\x00' * 16
+            self.readbuf += resp + bytes([ft4.checkSum8(resp[1:])])
+        elif buf.startswith(b'W'):
+            pass
+        elif buf == b'END':
+            pass
+        else:
+            raise Exception('Unhandled %r' % buf)
+        self.readbuf += b'\x06'
+
+    def read(self, n):
+        buf = self.readbuf[:n]
+        self.readbuf = self.readbuf[n:]
+        return buf
+
+
+class TestFTX4(unittest.TestCase):
+    def test_download(self):
+        f = FakeFTX4()
+        r = ft4.YaesuFT4XERadio(f)
+        r.sync_in()
+
+    def test_upload(self):
+        f = FakeFTX4()
+        img = os.path.join(os.path.dirname(__file__),
+                           '..', 'images', 'Yaesu_FT-4XE.img')
+        r = ft4.YaesuFT4XERadio(img)
         r.set_pipe(f)
         r.sync_out()

@@ -315,18 +315,18 @@
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M | [@f3sty](https://github.com/f3sty) | 05-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes | 0.02% |
 | <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes | 0.03% |
-| <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R |  |  | Yes | 0.01% |
+| <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M |  |  | Yes | 0.03% |
 | <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R |  |  | Yes | 0.05% |
 | <a name="Yaesu_FT-2900R_1900RTXMod_Opened_Xmit"></a> Yaesu_FT-2900R_1900RTXMod_Opened_Xmit |  |  | Yes |  |
 | <a name="Yaesu_FT-450D"></a> Yaesu_FT-450D |  |  | Yes | 0.01% |
-| <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR |  |  | Yes | 0.01% |
-| <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE |  |  | Yes | 0.14% |
-| <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR |  |  | Yes | 0.11% |
+| <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
+| <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.14% |
+| <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.11% |
 | <a name="Yaesu_FT-50"></a> Yaesu_FT-50 |  |  | Yes | 0.04% |
 | <a name="Yaesu_FT-60"></a> Yaesu_FT-60 | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.49% |
-| <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E |  |  | Yes | 0.08% |
-| <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R |  |  | Yes | 0.18% |
+| <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.08% |
+| <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.18% |
 | <a name="Yaesu_FT-70D"></a> Yaesu_FT-70D | [@n8sqt](https://github.com/n8sqt) | 05-Dec-2022 | Yes | 0.27% |
 | <a name="Yaesu_FT-7100M"></a> Yaesu_FT-7100M |  |  | Yes | 0.03% |
 | <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.14% |
@@ -362,7 +362,7 @@
 
 **Drivers:** 357
 
-**Tested:** 75% (270/87) (91% of usage stats)
+**Tested:** 77% (276/81) (91% of usage stats)
 
 **Byte clean:** 84% (302/55)
 

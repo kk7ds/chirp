@@ -254,6 +254,12 @@ Wouxun_KG-UVD1P,+Wouxun_KG-UV6,11-Dec-2022
 Wouxun_KG-UV8D,Unit tested; needs confirm,24-Dec-2022
 Wouxun_KG-UV920P-A,@KC9HI,22-Dec-2022
 Yaesu_FT-1500M,@f3sty,05-Dec-2022
+Yaesu_FT-4XE,Unit tested; needs confirm,24-Dec-2022
+Yaesu_FT-4XR,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-4VR,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-65R,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-65E,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-25R,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-60,Unit tested; needs confirm,24-Dec-2022
 Yaesu_FT-70D,@n8sqt,05-Dec-2022
 Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022
