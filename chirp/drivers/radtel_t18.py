@@ -220,10 +220,10 @@ GMRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3 * 2
 
 MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600]
 
-PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
-              446.06875, 446.08125, 446.09375]
-PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
-              446.16875, 446.18125, 446.19375]
+PMR_FREQS1 = [446006250, 446018750, 446031250, 446043750, 446056250,
+              446068750, 446081250, 446093750]
+PMR_FREQS2 = [446106250, 446118750, 446131250, 446143750, 446156250,
+              446168750, 446181250, 446193750]
 PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 
 
@@ -530,7 +530,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         mem.extra.append(rs)
         if self.MODEL != "RB18" and self.MODEL != "RB618" and \
                 self.MODEL != "FRS-B1" and self.MODEL != "BF-V8A" and \
-                self.MODEL != "RB29":
+                self.MODEL != "RB29" and self.MODEL != "RB629":
             if self.MODEL != "RT47V":
                 rs = RadioSetting("scramble", "Scramble",
                                   RadioSettingValueBoolean(not _mem.scramble))
@@ -592,7 +592,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             mem.duplex = ''
             mem.offset = 0
         if self._pmr:
-            PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+            PMR_FREQ = PMR_FREQS[mem.number - 1]
             mem.freq = PMR_FREQ
             mem.duplex = ''
             mem.offset = 0
@@ -684,7 +684,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.batterysaver))
         basic.append(rs)
 
-        if self.MODEL != "RB75" and self.MODEL != "RB29":
+        if self.MODEL != "RB75" and self.MODEL != "RB29" \
+                and self.MODEL != "RB629":
             rs = RadioSetting("beep", "Beep",
                               RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
@@ -900,7 +901,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   1, 5, _settings2.voxgain))
             basic.append(rs)
 
-        if self.MODEL == "RB29":
+        if self.MODEL == "RB29" or self.MODEL == "RB629":
             rs = RadioSetting("codesw", "Code Switch",
                               RadioSettingValueBoolean(_settings.codesw))
             basic.append(rs)
@@ -1296,3 +1297,15 @@ class RB29Radio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _frs16 = True
+
+
+@directory.register
+class RB629Radio(RB29Radio):
+    """Retevis RB29"""
+    VENDOR = "Retevis"
+    MODEL = "RB629"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.500),
+                    chirp_common.PowerLevel("Low", watts=0.499)]
+
+    _pmr = True
