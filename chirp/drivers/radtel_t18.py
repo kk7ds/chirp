@@ -46,7 +46,7 @@ struct {
 } memory[%d];
 #seekto 0x03C0;
 struct {
-    u8 unknown1:1,
+    u8 codesw:1,         // Retevis RB29 code switch
        scanmode:1,
        vox:1,            // Retevis RB19 VOX
        speccode:1,
@@ -148,6 +148,7 @@ VOXDELAY_LIST = ["0.5 seconds", "1.0 seconds", "1.5 seconds",
                  "2.0 seconds", "2.5 seconds", "3.0 seconds"]
 SIDEKEY19_LIST = ["Off", "Scan", "Emergency Alarm"]
 SIDEKEY2_LIST = SIDEKEY19_LIST + ["Display Battery"]
+SIDEKEY29_LIST = ["Off", "Scan", "VOX", "Busy Lock", "Emergency Alarm"]
 
 SIDEKEY85SHORT_LIST = ["Off",
                        "Noise Cansellation On",
@@ -196,6 +197,7 @@ SETTING_LISTS = {
     "sidekey2": SIDEKEY85SHORT_LIST,
     "sidekey2": SIDEKEYV8A_LIST,
     "sidekey1L": SIDEKEY85LONG_LIST,
+    "sidekey2S": SIDEKEY29_LIST,
     "sidekey2S": SIDEKEY85SHORT_LIST,
     "sidekey2L": SIDEKEY85LONG_LIST,
     "speccode": SPECCODE_LIST
@@ -209,10 +211,10 @@ FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
               462.6750, 462.7000, 462.7250]
 FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
-FRS16_FREQS = [462.5625, 462.5875, 462.6125, 462.6375,
-               462.6625, 462.6250, 462.7250, 462.6875,
-               462.7125, 462.5500, 462.5750, 462.6000,
-               462.6500, 462.6750, 462.7000, 462.7250]
+FRS16_FREQS = [462562500, 462587500, 462612500, 462637500,
+               462662500, 462625000, 462725000, 462687500,
+               462712500, 462550000, 462575000, 462600000,
+               462650000, 462675000, 462700000, 462725000]
 
 GMRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3 * 2
 
@@ -527,7 +529,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(not _mem.bcl))
         mem.extra.append(rs)
         if self.MODEL != "RB18" and self.MODEL != "RB618" and \
-                self.MODEL != "FRS-B1" and self.MODEL != "BF-V8A":
+                self.MODEL != "FRS-B1" and self.MODEL != "BF-V8A" and \
+                self.MODEL != "RB29":
             if self.MODEL != "RT47V":
                 rs = RadioSetting("scramble", "Scramble",
                                   RadioSettingValueBoolean(not _mem.scramble))
@@ -576,7 +579,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             if mem.number >= 8 and mem.number <= 14:
                 mem.power = self.POWER_LEVELS[1]
         if self._frs16:
-            FRS_FREQ = int(FRS16_FREQS[mem.number - 1] * 1000000)
+            FRS_FREQ = FRS16_FREQS[mem.number - 1]
             mem.freq = FRS_FREQ
             mem.mode = "NFM"
             mem.duplex = ''
@@ -681,7 +684,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.batterysaver))
         basic.append(rs)
 
-        if self.MODEL != "RB75":
+        if self.MODEL != "RB75" and self.MODEL != "RB29":
             rs = RadioSetting("beep", "Beep",
                               RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
@@ -895,6 +898,23 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("settings2.voxgain", "Vox Gain",
                               RadioSettingValueInteger(
                                   1, 5, _settings2.voxgain))
+            basic.append(rs)
+
+        if self.MODEL == "RB29":
+            rs = RadioSetting("codesw", "Code Switch",
+                              RadioSettingValueBoolean(_settings.codesw))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2S", "Side Key(Short)",
+                              RadioSettingValueList(
+                                  SIDEKEY29_LIST,
+                                  SIDEKEY29_LIST[_settings.sidekey2S]))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2L", "Side Key(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY29_LIST,
+                                  SIDEKEY29_LIST[_settings.sidekey2L]))
             basic.append(rs)
 
         return top
@@ -1258,3 +1278,21 @@ class BFV8ARadio(T18Radio):
     _mem_params = (_upper  # number of channels
                    )
     _echo = False
+
+
+@directory.register
+class RB29Radio(T18Radio):
+    """Retevis RB29"""
+    VENDOR = "Retevis"
+    MODEL = "RB29"
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"S19GRAM"
+    _fingerprint = b"SMP558" + b"\x02"
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs16 = True
