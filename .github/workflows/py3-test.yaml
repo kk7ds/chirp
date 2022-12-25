@@ -23,7 +23,7 @@ jobs:
       - name: Run tox
         uses: ./.github/actions/py3-tox
         with:
-          tox_target: py3unit
+          tox_target: unit
       - name: Archive results
         uses: actions/upload-artifact@v3
         with:
@@ -39,7 +39,7 @@ jobs:
       - name: Run tox
         uses: ./.github/actions/py3-tox
         with:
-          tox_target: py3driver
+          tox_target: driver
       - name: Archive results
         uses: actions/upload-artifact@v3
         with:
@@ -55,7 +55,7 @@ jobs:
       - name: Run tox
         uses: ./.github/actions/py3-tox
         with:
-          tox_target: py3driver
+          tox_target: driver
 
   matrix:
     name: Create support matrix
