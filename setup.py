@@ -20,10 +20,8 @@ setup(name='chirp',
       ],
       extras_require={
           'wx': ['wxPython'],
-          'gtk': ['PyGObject']
       },
       entry_points={
-          'console_scripts': ["chirp=chirp.wxui:chirpmain",
-                              "legacychirp=chirp.ui.__main__:main"],
+          'console_scripts': ["chirp=chirp.wxui:chirpmain"],
       },
       )
