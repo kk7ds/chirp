@@ -25,7 +25,6 @@ import wx.lib.sized_controls
 
 from chirp import chirp_common
 from chirp import directory
-from chirp import platform
 from chirp.wxui import config
 from chirp.wxui import common
 
@@ -188,6 +187,10 @@ def port_label(port):
         return port.description
 
 
+# Make this global so it sticks for a session
+CUSTOM_PORTS = []
+
+
 class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
         super(ChirpCloneDialog, self).__init__(
@@ -204,25 +207,9 @@ class ChirpCloneDialog(wx.Dialog):
                      proportion=1, border=10,
                      flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
-        ports = platform.get_platform().list_serial_ports()
-        system_ports = list_ports.comports()
-        ports = [port_label(p) for p in system_ports]
-        last_port_device = CONF.get('last_port', 'state')
-        last_port = ports[0]
-        if last_port_device:
-            for port in system_ports:
-                if port.device == last_port_device:
-                    last_port = port_label(port)
-        favorite_ports = CONF.get('favorite_ports', 'state')
-        if favorite_ports:
-            for port in favorite_ports.split(','):
-                if port not in ports:
-                    ports.insert(0, port)
-                    if last_port_device == port:
-                        last_port = port
-        self._port = wx.ComboBox(self, choices=ports, style=wx.CB_DROPDOWN)
-        self._port.SetValue(last_port)
-        self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
+        self._port = wx.Choice(self, choices=[])
+        self.set_ports()
+        self.Bind(wx.EVT_CHOICE, self._selected_port, self._port)
         _add_grid(_('Port'), self._port)
 
         self._vendor = wx.Choice(self, choices=['Icom', 'Yaesu'])
@@ -277,11 +264,48 @@ class ChirpCloneDialog(wx.Dialog):
         self.SetMinSize((400, 200))
         self.Fit()
 
+    def set_ports(self, system_ports=None, select=None):
+        if not system_ports:
+            system_ports = list_ports.comports()
+
+        # These are ports that we should never offer to the user because
+        # they get picked up by the list but are not usable or relevant.
+        filter_ports = [
+            # MacOS unpaired bluetooth serial
+            '/dev/cu.Bluetooth-Incoming-Port',
+        ]
+
+        self.ports = [(port.device, port_label(port))
+                      for port in system_ports
+                      if port.device not in filter_ports]
+        self.ports.sort()
+
+        favorite_ports = CONF.get('favorite_ports', 'state') or ''
+        for port in favorite_ports.split(','):
+            if port and port not in [x[0] for x in self.ports]:
+                self.ports.insert(0, (port, port))
+
+        for port in CUSTOM_PORTS:
+            if port not in [x[0] for x in self.ports]:
+                self.ports.insert(0, (port, port))
+
+        if not select:
+            select = CONF.get('last_port', 'state')
+
+        self._port.SetItems([x[1] for x in self.ports] + [_('Custom...')])
+        for device, name in self.ports:
+            if device == select:
+                self._port.SetStringSelection(name)
+                break
+        else:
+            LOG.warning('Unable to select %r' % select)
+
     def get_selected_port(self):
-        selected = self._port.GetValue()
-        for port in list_ports.comports():
-            if port_label(port) == selected:
-                return port.device
+        selected = self._port.GetStringSelection()
+        for device, name in self.ports:
+            if name == selected:
+                return device
+        LOG.warning('Did not find device for selected port %s' % selected)
         return selected
 
     def _port_assist(self, event):
@@ -299,8 +323,7 @@ class ChirpCloneDialog(wx.Dialog):
         if r == wx.CANCEL:
             return
         after = list_ports.comports()
-        changed = (set(port_label(p) for p in after) -
-                   set(port_label(p) for p in before))
+        changed = set(after) - set(before)
         found = None
         if not changed:
             wx.MessageBox(
@@ -312,15 +335,13 @@ class ChirpCloneDialog(wx.Dialog):
             found = list(changed)[0]
             wx.MessageBox(
                 '%s\n%s' % (_('Your cable appears to be on port:'),
-                            found),
+                            port_label(found)),
                 _('USB Port Finder'))
         else:
             wx.MessageBox(
                 _('More than one port found: %s') % ', '.join(changed),
                 _('USB Port Finder'))
-        self._port.Set(sorted(after))
-        if found:
-            self._port.SetValue(found)
+        self.set_ports(after, select=found.device)
 
     def _add_aliases(self, rclass):
         for alias in rclass.ALIASES:
@@ -346,6 +367,13 @@ class ChirpCloneDialog(wx.Dialog):
         CONF.set('last_port', self.get_selected_port(), 'state')
 
     def _selected_port(self, event):
+        if self._port.GetStringSelection() == _('Custom...'):
+            port = wx.GetTextFromUser(_('Enter custom port:'), 'Custom Port',
+                                      parent=self)
+            if port:
+                CUSTOM_PORTS.append(port)
+            self.set_ports(select=port or None)
+            return
         self._persist_choices()
 
     def _select_vendor(self, vendor):
