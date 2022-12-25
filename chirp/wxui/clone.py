@@ -19,6 +19,7 @@ import textwrap
 import threading
 
 import serial
+from serial.tools import list_ports
 import wx
 import wx.lib.sized_controls
 
@@ -176,6 +177,17 @@ class ChirpRadioPromptDialog(wx.Dialog):
         return status
 
 
+def port_label(port):
+    if not port.description:
+        return port.device
+    elif port.description == 'n/a':
+        return port.device
+    elif port.device not in port.description:
+        return '%s (%s)' % (port.description, port.device)
+    else:
+        return port.description
+
+
 class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
         super(ChirpCloneDialog, self).__init__(
@@ -186,32 +198,32 @@ class ChirpCloneDialog(wx.Dialog):
 
         def _add_grid(label, control):
             grid.Add(wx.StaticText(self, label=label),
-                     proportion=1, border=20,
+                     proportion=1, border=10,
                      flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
             grid.Add(control,
-                     proportion=1, border=20,
+                     proportion=1, border=10,
                      flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
-        portbox = wx.BoxSizer(wx.HORIZONTAL)
         ports = platform.get_platform().list_serial_ports()
-        last_port = CONF.get('last_port', 'state')
-        if last_port and last_port not in ports:
-            ports.insert(0, last_port)
-        elif not last_port:
-            last_port = ports[0]
+        system_ports = list_ports.comports()
+        ports = [port_label(p) for p in system_ports]
+        last_port_device = CONF.get('last_port', 'state')
+        last_port = ports[0]
+        if last_port_device:
+            for port in system_ports:
+                if port.device == last_port_device:
+                    last_port = port_label(port)
         favorite_ports = CONF.get('favorite_ports', 'state')
         if favorite_ports:
             for port in favorite_ports.split(','):
                 if port not in ports:
                     ports.insert(0, port)
+                    if last_port_device == port:
+                        last_port = port
         self._port = wx.ComboBox(self, choices=ports, style=wx.CB_DROPDOWN)
         self._port.SetValue(last_port)
         self.Bind(wx.EVT_COMBOBOX, self._selected_port, self._port)
-        portbox.Add(self._port, 0, wx.EXPAND | wx.RIGHT, border=10)
-        helpbtn = wx.Button(self, label=_('Help'))
-        portbox.Add(helpbtn, 0, wx.LEFT, border=5)
-        helpbtn.Bind(wx.EVT_BUTTON, self._port_assist)
-        _add_grid(_('Port'), portbox)
+        _add_grid(_('Port'), self._port)
 
         self._vendor = wx.Choice(self, choices=['Icom', 'Yaesu'])
         _add_grid(_('Vendor'), self._vendor)
@@ -223,7 +235,7 @@ class ChirpCloneDialog(wx.Dialog):
 
         self.gauge = wx.Gauge(self)
 
-        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
+        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL | wx.HELP)
         self.Bind(wx.EVT_BUTTON, self._action)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -265,6 +277,13 @@ class ChirpCloneDialog(wx.Dialog):
         self.SetMinSize((400, 200))
         self.Fit()
 
+    def get_selected_port(self):
+        selected = self._port.GetValue()
+        for port in list_ports.comports():
+            if port_label(port) == selected:
+                return port.device
+        return selected
+
     def _port_assist(self, event):
         r = wx.MessageBox(
             _('Unplug your cable (if needed) and then click OK'),
@@ -272,15 +291,16 @@ class ChirpCloneDialog(wx.Dialog):
             style=wx.OK | wx.CANCEL | wx.OK_DEFAULT)
         if r == wx.CANCEL:
             return
-        before = platform.get_platform().list_serial_ports()
+        before = list_ports.comports()
         r = wx.MessageBox(
             _('Plug in your cable and then click OK'),
             _('USB Port Finder'),
             style=wx.OK | wx.CANCEL | wx.OK_DEFAULT)
         if r == wx.CANCEL:
             return
-        after = platform.get_platform().list_serial_ports()
-        changed = set(after) - set(before)
+        after = list_ports.comports()
+        changed = (set(port_label(p) for p in after) -
+                   set(port_label(p) for p in before))
         found = None
         if not changed:
             wx.MessageBox(
@@ -323,7 +343,7 @@ class ChirpCloneDialog(wx.Dialog):
     def _persist_choices(self):
         CONF.set('last_vendor', self._vendor.GetStringSelection(), 'state')
         CONF.set('last_model', self._model.GetStringSelection(), 'state')
-        CONF.set('last_port', self._port.GetValue(), 'state')
+        CONF.set('last_port', self.get_selected_port(), 'state')
 
     def _selected_port(self, event):
         self._persist_choices()
@@ -399,7 +419,10 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             d.ShowModal()
 
     def _action(self, event):
-        if event.GetEventObject().GetId() != wx.ID_OK:
+        if event.GetEventObject().GetId() == wx.ID_HELP:
+            self._port_assist(event)
+            return
+        elif event.GetEventObject().GetId() == wx.ID_CANCEL:
             if self._clone_thread:
                 self._clone_thread.stop()
             self.EndModal(event.GetEventObject().GetId())
@@ -409,7 +432,8 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         self.disable_model_select()
         self.disable_running()
 
-        port = self._port.GetValue()
+        port = self.get_selected_port()
+        LOG.debug('Using port %r' % port)
         rclass = self.get_selected_rclass()
 
         prompts = rclass.get_prompts()
@@ -466,7 +490,10 @@ class ChirpUploadDialog(ChirpCloneDialog):
             self._radio = common.LiveAdapter(self._radio)
 
     def _action(self, event):
-        if event.GetEventObject().GetId() != wx.ID_OK:
+        if event.GetEventObject().GetId() == wx.ID_HELP:
+            self._port_assist(event)
+            return
+        elif event.GetEventObject().GetId() == wx.ID_CANCEL:
             if self._clone_thread:
                 self._clone_thread.stop()
             self.EndModal(event.GetEventObject().GetId())
@@ -493,7 +520,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
                 self.cancel_action()
                 return
 
-        port = self._port.GetValue()
+        port = self.get_selected_port()
 
         baud = self._radio.BAUD_RATE
         if self._radio.pipe:
