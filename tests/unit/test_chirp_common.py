@@ -143,6 +143,19 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(162.2, mem.rtone)
 
     def test_mem_from_text_random3(self):
+        text = 'Glass - Butte 147.200 + 88.5'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(147200000, mem.freq)
+        # This is a default
+        self.assertEqual(600000, mem.offset)
+        # Just a random + or - on the line isn't enough to trigger offset
+        # pattern
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual('Tone', mem.tmode)
+        self.assertEqual(88.5, mem.rtone)
+
+    def test_mem_from_text_random4(self):
         text = '146.640 | 146.040 | 136.5'
         mem = chirp_common.mem_from_text(text)
         self.assertIsNotNone(mem)
@@ -151,6 +164,101 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual('-', mem.duplex)
         self.assertEqual('Tone', mem.tmode)
         self.assertEqual(136.5, mem.rtone)
+
+    def test_mem_from_text_chirp1(self):
+        text = '[400.625000/136.000000]'
+        mem = chirp_common.mem_from_text(text)
+
+    def test_mem_from_text_chirp2(self):
+        text = '[462.675000/+5.000/136.5/136.5]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(462675000, mem.freq)
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual(5000000, mem.offset)
+
+    def test_mem_from_text_chirp3(self):
+        text = '[1.675000/1.685/136.5/136.5]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(1675000, mem.freq)
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual(10000, mem.offset)
+
+    def test_mem_from_text_chirp4(self):
+        text = '[450.000000/150.000000]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(450000000, mem.freq)
+        self.assertEqual(150000000, mem.offset)
+        self.assertEqual('split', mem.duplex)
+
+    def test_mem_from_text_chirp5(self):
+        text = '[500.000000/-9.900]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(500000000, mem.freq)
+        self.assertEqual(9900000, mem.offset)
+        self.assertEqual('-', mem.duplex)
+        self.assertEqual(text, chirp_common.mem_to_text(mem))
+
+    def test_mem_from_text_chirp6(self):
+        text = '[450.000000/150.000]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(450000000, mem.freq)
+        self.assertEqual(150000000, mem.offset)
+        self.assertEqual('split', mem.duplex)
+
+    def test_mem_from_text_chirp7(self):
+        # Offsets >= 10MHz are not allowed, so this will get
+        # parsed as a tx frequency of 15MHz
+        text = '[450.000000/+15.000]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(450000000, mem.freq)
+        self.assertEqual(15000000, mem.offset)
+        self.assertEqual('split', mem.duplex)
+
+    def test_mem_from_text_chirp8(self):
+        # Offsets >= 10MHz are not allowed, so this will get
+        # parsed as a tx frequency of 15MHz
+        text = '[450.000000/+150.000]'
+        mem = chirp_common.mem_from_text(text)
+        self.assertEqual(450000000, mem.freq)
+        self.assertEqual(150000000, mem.offset)
+        self.assertEqual('split', mem.duplex)
+
+    def test_mem_to_text1(self):
+        mem = chirp_common.Memory()
+        mem.freq = 146900000
+        mem.duplex = '-'
+        mem.offset = 600000
+        mem.tmode = 'TSQL'
+        mem.ctone = 100.0
+        txt = chirp_common.mem_to_text(mem)
+        self.assertEqual('[146.900000/-0.600/100.0/100.0]', txt)
+        chirp_common.mem_from_text(txt)
+        self.assertEqual(600000, mem.offset)
+        self.assertEqual('-', mem.duplex)
+
+    def test_mem_to_text2(self):
+        mem = chirp_common.Memory()
+        mem.freq = 146900000
+        mem.duplex = 'split'
+        mem.offset = 446000000
+        mem.tmode = 'Cross'
+        mem.cross_mode = 'Tone->DTCS'
+        mem.rtone = 100.0
+        mem.rx_dtcs = 25
+        txt = chirp_common.mem_to_text(mem)
+        self.assertEqual('[146.900000/446.000000/100.0/D025]', txt)
+        chirp_common.mem_from_text(txt)
+
+    def test_mem_to_text2(self):
+        mem = chirp_common.Memory()
+        mem.freq = 146520000
+        mem.duplex = ''
+        mem.offset = 600000
+        mem.tmode = 'DTCS'
+        mem.dtcs = 25
+        txt = chirp_common.mem_to_text(mem)
+        self.assertEqual('[146.520000/D025/D025]', txt)
+        chirp_common.mem_from_text(txt)
 
 
 class TestSplitTone(base.BaseTest):

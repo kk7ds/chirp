@@ -919,8 +919,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mems.append(mem)
         payload = {'mems': mems,
                    'features': self._radio.get_features()}
-        data = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
-        data.SetData(pickle.dumps(payload))
+        data = wx.DataObjectComposite()
+        memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
+        data.Add(memdata)
+        memdata.SetData(pickle.dumps(payload))
+        strfmt = chirp_common.mem_to_text(mems[0])
+        textdata = wx.TextDataObject(strfmt)
+        data.Add(textdata)
         for mem in mems:
             if cut:
                 self._radio.erase_memory(mem.number)
@@ -1001,19 +1006,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     @common.error_proof()
     def cb_paste(self, data):
-        if data.GetFormat() == common.CHIRP_DATA_MEMORY:
+        if common.CHIRP_DATA_MEMORY in data.GetAllFormats():
             payload = pickle.loads(data.GetData().tobytes())
             self._cb_paste_memories(payload)
-        elif data.GetFormat() == wx.DF_UNICODETEXT:
+        elif wx.DF_UNICODETEXT in data.GetAllFormats():
             try:
-                mem = chirp_common.mem_from_text(data.GetText())
+                mem = chirp_common.mem_from_text(
+                    data.GetText())
             except Exception as e:
                 LOG.warning('Failed to parse pasted data %r: %s' % (
                     data.GetText(), e))
                 return
             # Since matching the offset is kinda iffy, set our band plan
             # set the offset, if a rule exists.
-            self._set_memory_defaults(mem, 'offset')
+            if mem.duplex in ('-', '+'):
+                self._set_memory_defaults(mem, 'offset')
             self._cb_paste_memories({'mems': [mem],
                                      'features': self._features})
         else:
