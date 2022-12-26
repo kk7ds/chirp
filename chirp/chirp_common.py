@@ -20,6 +20,7 @@ import base64
 import json
 import logging
 import math
+import re
 import sys
 
 from chirp import errors, memmap, CHIRP_VERSION
@@ -1656,3 +1657,41 @@ def urlretrieve(url, fn):
     resp = urllib.request.urlopen(req)
     with open(fn, 'wb') as f:
         f.write(resp.read())
+
+
+def mem_from_text(text):
+    m = Memory()
+    freqs = re.findall(r'\b([0-9]{1,3}\.[0-9]{2,5})\b', text)
+    if not freqs:
+        raise ValueError('Unable to find a frequency')
+    m.freq = parse_freq(freqs[0])
+    if len(freqs) > 1:
+        split_to_offset(m, m.freq, parse_freq(freqs[1]))
+    else:
+        offset = re.search(r'([+-])\s*\b([0-9](\.[0-9]{0,5})?)\b', text)
+        if offset:
+            m.duplex = offset.group(1)
+            m.offset = parse_freq(offset.group(2))
+        # Only look for the first +/- after the frequency, which would be
+        # by far the most common arrangement
+        duplex = re.search(r'\W([+-])\W', text[text.index(freqs[0]):])
+        if offset is None and duplex:
+            m.duplex = duplex.group(1)
+    tones = re.findall(r'\b([0-9]{2,3}\.[0-9]|D[0-9]{3})\b', text)
+    if tones and len(tones) <= 2:
+        txrx = []
+        for val in tones:
+            if '.' in val:
+                mode = 'Tone'
+                tone = float(val)
+            elif 'D' in val:
+                mode = 'DTCS'
+                tone = int(val[1:])
+            else:
+                continue
+            txrx.append((mode, tone, 'N'))
+        if len(txrx) == 1:
+            txrx.append(('', 88.5, 'N'))
+        split_tone_decode(m, txrx[0], txrx[1])
+
+    return m

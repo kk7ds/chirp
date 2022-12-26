@@ -74,6 +74,84 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(140, chirp_common.from_MHz(14000001))
         self.assertEqual(140, chirp_common.from_kHz(14001))
 
+    def test_mem_from_text_rb1(self):
+        text = '145.2500 	-0.6 MHz 	97.4 	OPEN'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(145250000, mem.freq)
+        self.assertEqual(600000, mem.offset)
+        self.assertEqual('-', mem.duplex)
+        self.assertEqual('Tone', mem.tmode)
+        self.assertEqual(97.4, mem.rtone)
+
+    def test_mem_from_text_rb2(self):
+        text = '147.3000 	+0.6 MHz 	156.7 / 156.7 	OPEN'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(147300000, mem.freq)
+        self.assertEqual(600000, mem.offset)
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual('TSQL', mem.tmode)
+        self.assertEqual(156.7, mem.ctone)
+
+    def test_mem_from_text_rb3(self):
+        text = '441.1000 	+5 MHz 	D125 / D125 	OPEN'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(441100000, mem.freq)
+        self.assertEqual(5000000, mem.offset)
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual('DTCS', mem.tmode)
+        self.assertEqual(125, mem.dtcs)
+
+    def test_mem_from_text_rb4(self):
+        text = '441.1000 	+5 MHz 	88.5 / D125 	OPEN'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(441100000, mem.freq)
+        self.assertEqual(5000000, mem.offset)
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual('Cross', mem.tmode)
+        self.assertEqual(88.5, mem.rtone)
+        self.assertEqual(125, mem.rx_dtcs)
+        self.assertEqual('Tone->DTCS', mem.cross_mode)
+
+    def test_mem_from_text_random1(self):
+        text = 'Glass Butte 147.200 + 162.2'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(147200000, mem.freq)
+        # This is a default
+        self.assertEqual(600000, mem.offset)
+        # Just a random + or - on the line isn't enough to trigger offset
+        # pattern
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual('Tone', mem.tmode)
+        self.assertEqual(162.2, mem.rtone)
+
+    def test_mem_from_text_random2(self):
+        text = 'Glass - Butte 147.200 + 162.2'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(147200000, mem.freq)
+        # This is a default
+        self.assertEqual(600000, mem.offset)
+        # Just a random + or - on the line isn't enough to trigger offset
+        # pattern
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual('Tone', mem.tmode)
+        self.assertEqual(162.2, mem.rtone)
+
+    def test_mem_from_text_random3(self):
+        text = '146.640 | 146.040 | 136.5'
+        mem = chirp_common.mem_from_text(text)
+        self.assertIsNotNone(mem)
+        self.assertEqual(146640000, mem.freq)
+        self.assertEqual(600000, mem.offset)
+        self.assertEqual('-', mem.duplex)
+        self.assertEqual('Tone', mem.tmode)
+        self.assertEqual(136.5, mem.rtone)
+
 
 class TestSplitTone(base.BaseTest):
     def _test_split_tone_decode(self, tx, rx, **vals):
