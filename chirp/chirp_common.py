@@ -1661,23 +1661,23 @@ def urlretrieve(url, fn):
 
 def mem_from_text(text):
     m = Memory()
-    freqs = re.findall(r'\b([0-9]{1,3}\.[0-9]{2,5})\b', text)
+    freqs = re.findall(r'\b(\d{1,3}\.\d{2,6})\b', text)
     if not freqs:
         raise ValueError('Unable to find a frequency')
     m.freq = parse_freq(freqs[0])
-    if len(freqs) > 1:
+    offset = re.search(r'([+-])\s*(\d\.\d{1,3}|\d)\b', text)
+    duplex = re.search(r'\W([+-])\W', text[text.index(freqs[0]):])
+    if len(freqs) > 1 and not offset:
         split_to_offset(m, m.freq, parse_freq(freqs[1]))
     else:
-        offset = re.search(r'([+-])\s*\b([0-9](\.[0-9]{0,5})?)\b', text)
         if offset:
             m.duplex = offset.group(1)
             m.offset = parse_freq(offset.group(2))
         # Only look for the first +/- after the frequency, which would be
         # by far the most common arrangement
-        duplex = re.search(r'\W([+-])\W', text[text.index(freqs[0]):])
         if offset is None and duplex:
             m.duplex = duplex.group(1)
-    tones = re.findall(r'\b([0-9]{2,3}\.[0-9]|D[0-9]{3})\b', text)
+    tones = re.findall(r'\b(\d{2,3}\.\d|D\d{3})\b', text)
     if tones and len(tones) <= 2:
         txrx = []
         for val in tones:
@@ -1695,3 +1695,20 @@ def mem_from_text(text):
         split_tone_decode(m, txrx[0], txrx[1])
 
     return m
+
+
+def mem_to_text(mem):
+    pieces = [format_freq(mem.freq)]
+    if mem.duplex == 'split':
+        pieces.append(format_freq(mem.offset))
+    elif mem.duplex in ('-', '+'):
+        pieces.append('%s%i.%3.3s' % (mem.duplex,
+                                      mem.offset / 1000000,
+                                      '%03i' % (mem.offset % 1000000)))
+    txrx = split_tone_encode(mem)
+    for mode, tone, pol in txrx:
+        if mode == 'Tone':
+            pieces.append('%.1f' % tone)
+        elif mode == 'DTCS':
+            pieces.append('D%03i' % tone)
+    return '[%s]' % '/'.join(pieces)

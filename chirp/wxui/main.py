@@ -974,7 +974,7 @@ class ChirpMain(wx.Frame):
             wx.TheClipboard.Close()
         if gotchirpmem:
             self.current_editorset.cb_paste(memdata)
-        if got:
+        elif got:
             self.current_editorset.cb_paste(textdata)
 
     def _menu_selall(self, event):
