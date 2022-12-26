@@ -1005,7 +1005,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             payload = pickle.loads(data.GetData().tobytes())
             self._cb_paste_memories(payload)
         elif data.GetFormat() == wx.DF_UNICODETEXT:
-            LOG.debug('FIXME: handle pasted text: %r' % data.GetText())
+            try:
+                mem = chirp_common.mem_from_text(data.GetText())
+            except Exception as e:
+                LOG.warning('Failed to parse pasted data %r: %s' % (
+                    data.GetText(), e))
+                return
+            # Since matching the offset is kinda iffy, set our band plan
+            # set the offset, if a rule exists.
+            self._set_memory_defaults(mem, 'offset')
+            self._cb_paste_memories({'mems': [mem],
+                                     'features': self._features})
         else:
             LOG.warning('Unknown data format %s' % data.GetFormat().Type)
 
