@@ -973,10 +973,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mem.number = self.row2mem(row)
             row += 1
             try:
-                mem = import_logic.import_mem(self._radio, srcrf, mem)
                 if mem.empty:
                     self._radio.erase_memory(mem.number)
                 else:
+                    mem = import_logic.import_mem(self._radio, srcrf, mem)
                     self._radio.set_memory(mem)
                 self.refresh_memory(mem.number, mem)
                 modified = True
