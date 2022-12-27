@@ -389,6 +389,11 @@ confirmation in the matrix above:
   other drivers that have been tested with real hardware, such that
   confidence is high that it will work. Only drivers with test images in
   the tree (or live drivers) should be marked with this class.
+* A "unit tested" link means that the driver has not been tested with
+  real hardware, nor does it share common cloning routines with another
+  radio. However, synthetic simulation tests have been added to exercise
+  the parts of the cloning routines that are likely to fail under python3.
+  This is the lowest-confidence status and a real confirmation is needed.
 
 If you have a model listed in this matrix with either "implied" or
 "probably works" status, an actual confirmation with real hardware is
