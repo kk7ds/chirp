@@ -152,12 +152,12 @@ debug = False
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 
-GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
-               462.6875, 462.7125]
-GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
-               467.6875, 467.7125]
-GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
-               462.6750, 462.7000, 462.7250]
+GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
+               462687500, 462712500]
+GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
+               467687500, 467712500]
+GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
+               462675000, 462700000, 462725000]
 GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
 
@@ -955,7 +955,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         if self._gmrs:
             if self.MODEL == "GMRS-50X1":
                 if mem.number >= 1 and mem.number <= 30:
-                    GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                    GMRS_FREQ = GMRS_FREQS[mem.number - 1]
                     mem.freq = GMRS_FREQ
                     if mem.number <= 22:
                         mem.duplex = ''
@@ -974,16 +974,16 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     mem.duplex = 'off'
                     mem.offset = 0
             if self.MODEL == "GMRS-20V2":
-                if float(mem.freq) / 1000000 in GMRS_FREQS1:
+                if mem.freq in GMRS_FREQS1:
                     mem.duplex = ''
                     mem.offset = 0
                     mem.power = POWER_LEVELS[2]
-                elif float(mem.freq) / 1000000 in GMRS_FREQS2:
+                elif mem.freq in GMRS_FREQS2:
                     mem.duplex = 'off'
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = POWER_LEVELS[2]
-                elif float(mem.freq) / 1000000 in GMRS_FREQS3:
+                elif mem.freq in GMRS_FREQS3:
                     if mem.power == POWER_LEVELS[1]:
                         mem.power = POWER_LEVELS[0]
                     if mem.duplex == '+':
