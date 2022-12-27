@@ -164,7 +164,6 @@
 ./chirp/ui/shiftdialog.py
 ./chirp/util.py
 ./chirpc
-./chirpw
 ./rpttool
 ./setup.py
 ./share/make_supported.py
