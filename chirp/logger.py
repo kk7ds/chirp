@@ -25,7 +25,7 @@ import os
 import sys
 import logging
 import argparse
-import platform
+from . import platform
 from chirp import CHIRP_VERSION
 
 
@@ -38,7 +38,7 @@ def version_string():
 
 class VersionAction(argparse.Action):
     def __call__(self, parser, namespace, value, option_string=None):
-        print version_string()
+        print(version_string())
         sys.exit(1)
 
 
@@ -90,12 +90,15 @@ class Logger(object):
                 hasattr(sys, "frozen") or not os.isatty(0) or
                 os.getenv("CHIRP_DEBUG_LOG")):
             p = platform.get_platform()
-            log = file(p.config_file("debug.log"), "w", 0)
+            log = open(p.config_file("debug.log"), "w")
             sys.stdout = log
             sys.stderr = log
             console_stream = log
             console_format = self.log_format
             self.early_level = logging.DEBUG
+            self.has_debug_log_file = True
+        else:
+            self.has_debug_log_file = False
 
         self.console = logging.StreamHandler(console_stream)
         self.console_level = self.early_level
@@ -121,7 +124,7 @@ class Logger(object):
         if self.logfile is None:
             self.logname = name
             # always truncate the log file
-            with file(name, "w") as fh:
+            with open(name, "w") as fh:
                 pass
             self.logfile = logging.FileHandler(name)
             format_str = self.log_format

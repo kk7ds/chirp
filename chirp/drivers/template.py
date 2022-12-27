@@ -36,7 +36,7 @@ struct {
 def do_download(radio):
     """This is your download function"""
     # NOTE: Remove this in your real implementation!
-    return memmap.MemoryMap("\x00" * 1000)
+    return memmap.MemoryMapBytes(b"\x00" * 1000)
 
     # Get the serial port connection
     serial = radio.pipe
@@ -44,11 +44,11 @@ def do_download(radio):
     # Our fake radio is just a simple download of 1000 bytes
     # from the serial port. Do that one byte at a time and
     # store them in the memory map
-    data = ""
+    data = b""
     for _i in range(0, 1000):
-        data = serial.read(1)
+        data += serial.read(1)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -73,6 +73,9 @@ class TemplateRadio(chirp_common.CloneModeRadio):
     VENDOR = "Acme"     # Replace this with your vendor
     MODEL = "Template"  # Replace this with your model
     BAUD_RATE = 9600    # Replace this with your baud rate
+
+    # All new drivers should be "Byte Clean" so leave this in place.
+    NEEDS_COMPAT_SERIAL = False
 
     # Return information about this radio's features, including
     # how many memories it has, what bands it supports, etc

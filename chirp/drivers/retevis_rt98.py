@@ -530,7 +530,7 @@ def _echo_write(radio, data):
     try:
         radio.pipe.write(data)
         radio.pipe.read(len(data))
-    except Exception, e:
+    except Exception as e:
         LOG.error("Error writing to radio: %s" % e)
         raise errors.RadioError("Unable to write to radio")
 
@@ -538,14 +538,14 @@ def _echo_write(radio, data):
 def _checksum(data):
     cs = 0
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     return cs % 256
 
 
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
-    except Exception, e:
+    except Exception as e:
         _finish(radio)
         LOG.error("Error reading from radio: %s" % e)
         raise errors.RadioError("Unable to read from radio")
@@ -598,13 +598,13 @@ def check_ver(ver_response, allowed_types):
 
 def _ident(radio):
     radio.pipe.timeout = 1
-    _echo_write(radio, "PROGRAM")
+    _echo_write(radio, b"PROGRAM")
     response = radio.pipe.read(3)
-    if response != "QX\06":
+    if response != b"QX\06":
         _finish(radio)
         LOG.debug("Response was :\n%s" % util.hexprint(response))
         raise errors.RadioError("Radio did not respond. Check connection.")
-    _echo_write(radio, "\x02")
+    _echo_write(radio, b"\x02")
     ver_response = radio.pipe.read(16)
     LOG.debug(util.hexprint(ver_response))
 
@@ -623,13 +623,13 @@ def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
     if data:
         frame += data
-        frame += chr(_checksum(frame[1:]))
-        frame += "\x06"
+        frame += bytes([_checksum(frame[1:])])
+        frame += b"\x06"
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
     if data:
         result = radio.pipe.read(1)
-        if result != "\x06":
+        if result != b"\x06":
             _finish(radio)
             LOG.debug("Ack was: %s" % repr(result))
             raise errors.RadioError("Radio did not accept block at %04x"
@@ -637,10 +637,10 @@ def _send(radio, cmd, addr, length, data=None):
         return
     result = _read(radio, length + 6)
     LOG.debug("Got:\n%s" % util.hexprint(result))
-    header = result[0:4]
+    header = result[:4]
     data = result[4:-2]
-    ack = result[-1]
-    if ack != "\x06":
+    ack = result[-1:]
+    if ack != b"\x06":
         _finish(radio)
         LOG.debug("Ack was: %s" % repr(ack))
         raise errors.RadioError("Radio NAK'd block at %04x" % addr)
@@ -652,19 +652,19 @@ def _send(radio, cmd, addr, length, data=None):
         LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
     cs = _checksum(result[1:-2])
-    if cs != ord(result[-2]):
+    if cs != result[-2]:
         _finish(radio)
         LOG.debug("Calculated: %02x" % cs)
-        LOG.debug("Actual:     %02x" % ord(result[-2]))
+        LOG.debug("Actual:     %02x" % result[-2])
         raise errors.RadioError("Block at 0x%04x failed checksum" % addr)
     return data
 
 
 def _finish(radio):
-    endframe = "\x45\x4E\x44"
+    endframe = b"\x45\x4E\x44"
     _echo_write(radio, endframe)
     result = radio.pipe.read(1)
-    if result != "\x06":
+    if result != b"\x06":
         LOG.error("Got:\n%s" % util.hexprint(result))
         raise errors.RadioError("Radio did not finish cleanly")
 
@@ -674,10 +674,10 @@ def do_download(radio):
     _ident(radio)
 
     _memobj = None
-    data = ""
+    data = b""
 
     for addr in range(0, radio._memsize, 0x10):
-        block = _send(radio, 'R', addr, 0x10)
+        block = _send(radio, b'R', addr, 0x10)
         data += block
         status = chirp_common.Status()
         status.cur = len(data)
@@ -687,7 +687,7 @@ def do_download(radio):
 
     _finish(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -711,9 +711,9 @@ def do_upload(radio):
             image_band_limits = LIST_RT98U_FREQS[int(_embedded.mode)]
         if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             image_band_limits = LIST_RT98V_FREQS[int(_embedded.mode)]
-        if model in ["RT98U", "AT-779U"]:
+        if str(model).rstrip("\00") in ["RT98U", "AT-779U"]:
             radio_band_limits = LIST_RT98U_FREQS[int(bandlimit)]
-        if model in ["RT98V", "AT-779V"]:
+        if str(model).rstrip("\00") in ["RT98V", "AT-779V"]:
             radio_band_limits = LIST_RT98V_FREQS[int(bandlimit)]
 
         LOG.warning('radio and image band limits differ')
@@ -731,7 +731,7 @@ def do_upload(radio):
         for start, end in radio._ranges:
             for addr in range(start, end, 0x10):
                 block = radio._mmap[addr:addr+0x10]
-                _send(radio, 'W', addr, len(block), block)
+                _send(radio, b'W', addr, len(block), block)
                 status = chirp_common.Status()
                 status.cur = addr
                 status.max = end
@@ -754,6 +754,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
     VENDOR = "Retevis"
     MODEL = "RT98 Base"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 0x3E00
     _ranges = [(0x0000, 0x3310),
@@ -796,7 +797,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         rf.memory_bounds = (1, 199)
         rf.valid_name_length = 6
         if _embedded.mode == 0:  # PMR or FreeNet
-            rf.valid_duplexes = ['']
+            rf.valid_duplexes = ['', 'off']
         else:
             rf.valid_duplexes = DUPLEXES + ['split', 'off']
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "- "
@@ -828,31 +829,6 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         rf.valid_tuning_steps = TUNING_STEPS
         return rf
-
-    def validate_memory(self, mem):
-        _embedded = self._memobj.embedded_msg
-        msgs = ""
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        # FreeNet and PMR radio types
-        if _embedded.mode == 0:  # PMR or FreeNet
-            freq = float(mem.freq) / 1000000
-
-            # FreeNet
-            if str(_embedded.radio_type).rstrip("\00") == "RT98V":
-                if freq not in FREENET_FREQS:
-                    _msg_freq = 'Memory location not a valid FreeNet frequency'
-                    # warn user invalid frequency
-                    msgs.append(chirp_common.ValidationError(_msg_freq))
-
-            # PMR
-            if str(_embedded.radio_type).rstrip("\00") == "RT98U":
-                if freq not in PMR_FREQS:
-                    _msg_freq = 'Memory location not a valid PMR frequency'
-                    # warn user invalid frequency
-                    msgs.append(chirp_common.ValidationError(_msg_freq))
-
-        return msgs
 
     # Do a download of the radio from the serial port
     def sync_in(self):
@@ -920,7 +896,9 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         mem.offset = int(_mem.offset) * 10
 
         # Set the duplex flags
-        if _mem.duplex == DUPLEX_POSSPLIT:
+        if _mem.tx_off:  # handle tx off
+            mem.duplex = 'off'
+        elif _mem.duplex == DUPLEX_POSSPLIT:
             mem.duplex = '+'
         elif _mem.duplex == DUPLEX_NEGSPLIT:
             mem.duplex = '-'
@@ -931,10 +909,6 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         else:
             LOG.error('%s: get_mem: unhandled duplex: %02x' %
                       (mem.name, _mem.duplex))
-
-        # handle tx off
-        if _mem.tx_off:
-            mem.duplex = 'off'
 
         # Set the channel width
         if _mem.channel_width == CHANNEL_WIDTH_12d5kHz:
@@ -1042,10 +1016,37 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         if mem.empty:
             self._memobj.csetflag[cbyte].c[cbit] = 0
             self._memobj.cskipflag[cbyte].c[cbit] = 0
-            _mem.set_raw('\xff' * (_mem.size() / 8))
+            _mem.set_raw("\xff" * 32)
             return
 
-        _mem.set_raw('\x00' * (_mem.size() / 8))
+        _mem.set_raw("\x00" * 32)
+
+        # FreeNet and PMR radio types
+        if _embedded.mode == 0:  # PMR or FreeNet
+
+            # FreeNet
+            if str(_embedded.radio_type).rstrip("\00") == "RT98V":
+                mem.duplex = ''
+                mem.offset = 0
+                if mem.number >= 1 and mem.number <= 6:
+                    FREENET_FREQ = int(FREENET_FREQS[mem.number - 1] * 1000000)
+                    mem.freq = FREENET_FREQ
+                else:
+                    _mem.tx_off = 1
+                    mem.duplex = 'off'
+                    mem.offset = 0
+
+            # PMR
+            if str(_embedded.radio_type).rstrip("\00") == "RT98U":
+                if mem.number >= 1 and mem.number <= 6:
+                    PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+                    mem.freq = PMR_FREQ
+                    mem.duplex = ''
+                    mem.offset = 0
+                else:
+                    _mem.tx_off = 1
+                    mem.duplex = 'off'
+                    mem.offset = 0
 
         # set the occupied bitfield
         self._memobj.csetflag[cbyte].c[cbit] = 1
@@ -1059,7 +1060,10 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         _mem.name = mem.name.ljust(6)[:6]  # Store the alpha tag
 
         # Set duplex bitfields
-        if mem.duplex == '+':
+        _mem.tx_off = 0
+        if mem.duplex == 'off':  # handle tx off
+            _mem.tx_off = 1
+        elif mem.duplex == '+':
             _mem.duplex = DUPLEX_POSSPLIT
         elif mem.duplex == '-':
             _mem.duplex = DUPLEX_NEGSPLIT
@@ -1073,11 +1077,6 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         else:
             LOG.error('%s: set_mem: unhandled duplex: %s' %
                       (mem.name, mem.duplex))
-
-        # handle tx off
-        _mem.tx_off = 0
-        if mem.duplex == 'off':
-            _mem.tx_off = 1
 
         # Set the channel width - remember we promote 20kHz channels to FM
         # on import, so don't handle them here
@@ -1116,11 +1115,28 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         _mem.rxinv = rxpol == "R"
 
         # set the power level
-        if mem.power == POWER_LEVELS[0]:
+        if _embedded.mode == 0:  # PMR or FreeNet
+            if str(_embedded.radio_type).rstrip("\00") == "RT98U":
+                LOG.info('using PMR power levels')
+                _levels = PMR_POWER_LEVELS
+            if str(_embedded.radio_type).rstrip("\00") == "RT98V":
+                LOG.info('using FreeNet power levels')
+                _levels = FREENET_POWER_LEVELS
+        else:  # COM or COMII
+            LOG.info('using general power levels')
+            _levels = POWER_LEVELS
+
+        if mem.power is None:
+            _mem.txpower = TXPOWER_HIGH
+        elif mem.power == _levels[0]:
             _mem.txpower = TXPOWER_LOW
-        elif mem.power == POWER_LEVELS[1]:
+        elif _embedded.mode == 0:  # PMR or FreeNet
+            LOG.info('FreeNet or PMR channel is not set to TX Power Low')
+            LOG.info('Setting channel to TX Power Low')
+            _mem.txpower = TXPOWER_LOW
+        elif mem.power == _levels[1]:
             _mem.txpower = TXPOWER_MED
-        elif mem.power == POWER_LEVELS[2]:
+        elif mem.power == _levels[2]:
             _mem.txpower = TXPOWER_HIGH
         else:
             LOG.error('%s: set_mem: unhandled power level: %s' %
@@ -1376,7 +1392,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

@@ -23,7 +23,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
-from wouxun_common import wipe_memory, do_download, do_upload
+from chirp.drivers.wouxun_common import wipe_memory, do_download, do_upload
 from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def encode_freq(freq):
     div = 1000
     for i in range(0, 4):
         enc <<= 4
-        enc |= FREQ_ENCODE_TABLE[(freq/div) % 10]
+        enc |= FREQ_ENCODE_TABLE[int((freq/div) % 10)]
         div /= 10
     return enc
 
@@ -60,9 +60,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     """Wouxun KG-UVD1P,UV2,UV3"""
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
-    _model = "KG669V"
+    _model = b"KG669V"
+    NEEDS_COMPAT_SERIAL = False
 
-    _querymodel = ("HiWOUXUN\x02", "PROGUV6X\x02")
+    _querymodel = (b"HiWOUXUN\x02", b"PROGUV6X\x02")
 
     CHARSET = list("0123456789") + \
         [chr(x + ord("A")) for x in range(0, 26)] + list("?+-")
@@ -242,7 +243,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         """Do the original wouxun identification dance"""
         query = self._get_querymodel()
         for _i in range(0, 10):
-            self.pipe.write(query.next())
+            self.pipe.write(next(query))
             resp = self.pipe.read(9)
             if len(resp) != 9:
                 LOG.debug("Got:\n%s" % util.hexprint(resp))
@@ -260,10 +261,10 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
 
     def _start_transfer(self):
         """Tell the radio to go into transfer mode"""
-        self.pipe.write("\x02\x06")
+        self.pipe.write(b"\x02\x06")
         time.sleep(0.05)
         ack = self.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             raise Exception("Radio refused transfer mode")
 
     def _download(self):
@@ -274,7 +275,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             return do_download(self, 0x0000, 0x2000, 0x0040)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def _upload(self):
@@ -285,7 +286,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             return do_upload(self, 0x0000, 0x2000, 0x0010)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def sync_in(self):
@@ -658,7 +659,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -680,7 +681,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 else:
                     setting = self._memobj.fm_presets_1
                 setting[index] = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -690,7 +691,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 setattr(self._memobj.freq_ranges,
                         element.get_name(),
                         encode_freq(int(element.value)))
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
@@ -890,16 +891,17 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def match_model(cls, filedata, filename):
         # New-style image (CHIRP 0.1.12)
         if len(filedata) == 8192 and \
-                filedata[0x60:0x64] != "2009" and \
-                filedata[0x170:0x173] != "LX-" and \
-                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
-                filedata[0x0d70:0x0d80] == "\xff\xff\xff\xff\xff\xff\xff\xff" \
-                                           "\xff\xff\xff\xff\xff\xff\xff\xff":
+                filedata[0x60:0x64] != b"2009" and \
+                filedata[0x170:0x173] != b"LX-" and \
+                filedata[0x1f77:0x1f7d] == b"\xff\xff\xff\xff\xff\xff" and \
+                filedata[0x0d70:0x0d80] == \
+                b"\xff\xff\xff\xff\xff\xff\xff\xff" \
+                b"\xff\xff\xff\xff\xff\xff\xff\xff":
                 # those areas are (seems to be) unused
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \
-                filedata[0:4] == "\x01\x00\x00\x00":
+                filedata[0:4] == b"\x01\x00\x00\x00":
             return True
         return False
 
@@ -909,7 +911,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     """Wouxun KG-UV6 (D and X variants)"""
     MODEL = "KG-UV6"
 
-    _querymodel = ("HiWXUVD1\x02", "HiKGUVD1\x02")
+    _querymodel = (b"HiWXUVD1\x02", b"HiKGUVD1\x02")
 
     _MEM_FORMAT = """
         #seekto 0x0010;
@@ -1397,7 +1399,7 @@ class KGUV6DRadio(KGUVD1PRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1419,14 +1421,14 @@ class KGUV6DRadio(KGUVD1PRadio):
                 else:
                     setting = self._memobj.fm_presets_1
                 setting[index] = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
     @classmethod
     def match_model(cls, filedata, filename):
         if len(filedata) == 8192 and \
-                filedata[0x1f77:0x1f7d] == "WELCOM":
+                filedata[0x1f77:0x1f7d] == b"WELCOM":
             return True
         return False
 
@@ -1436,7 +1438,7 @@ class KG816Radio(KGUVD1PRadio, chirp_common.ExperimentalRadio):
     """Wouxun KG-816"""
     MODEL = "KG-816"
 
-    _querymodel = "HiWOUXUN\x02"
+    _querymodel = b"HiWOUXUN\x02"
 
     _MEM_FORMAT = """
         #seekto 0x0010;
@@ -1547,12 +1549,13 @@ class KG816Radio(KGUVD1PRadio, chirp_common.ExperimentalRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         if len(filedata) == 8192 and \
-                filedata[0x60:0x64] != "2009" and \
-                filedata[0x170:0x173] != "LX-" and \
-                filedata[0xF7E:0xF80] != "\x01\xE2" and \
-                filedata[0x1f77:0x1f7d] == "\xff\xff\xff\xff\xff\xff" and \
-                filedata[0x0d70:0x0d80] != "\xff\xff\xff\xff\xff\xff\xff\xff" \
-                                           "\xff\xff\xff\xff\xff\xff\xff\xff":
+                filedata[0x60:0x64] != b"2009" and \
+                filedata[0x170:0x173] != b"LX-" and \
+                filedata[0xF7E:0xF80] != b"\x01\xE2" and \
+                filedata[0x1f77:0x1f7d] == b"\xff\xff\xff\xff\xff\xff" and \
+                filedata[0x0d70:0x0d80] != (
+                    b"\xff\xff\xff\xff\xff\xff\xff\xff"
+                    b"\xff\xff\xff\xff\xff\xff\xff\xff"):
             return True
         return False
 

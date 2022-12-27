@@ -13,7 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from chirp import chirp_common
+
+LOG = logging.getLogger(__name__)
 
 
 class Band(object):
@@ -34,7 +38,7 @@ class Band(object):
                 for tone in tones:
                     assert tone in chirp_common.TONES, (
                         "tone %s not one of %s" % (tone, chirp_common.TONES))
-        except AssertionError, e:
+        except AssertionError as e:
             raise ValueError("%s %s: %s" % (name, limits, e))
 
         self.name = name
@@ -83,3 +87,65 @@ class Band(object):
 
         return "%s-%s %s %s %s" % (
             self.limits[0], self.limits[1], self.name, self.duplex, desc)
+
+
+class BandPlans(object):
+    def __init__(self, config):
+        self._config = config
+        self.plans = {}
+
+        # Migrate old "automatic repeater offset" setting to
+        # "North American Amateur Band Plan"
+        ro = self._config.get("autorpt", "memedit")
+        if ro is not None:
+            self._config.set_bool("north_america", ro, "bandplan")
+            self._config.remove_option("autorpt", "memedit")
+        # And default new users to North America.
+        if not self._config.is_defined("north_america", "bandplan"):
+            self._config.set_bool("north_america", True, "bandplan")
+
+        from chirp import bandplan_na, bandplan_au
+        from chirp import bandplan_iaru_r1, bandplan_iaru_r2, bandplan_iaru_r3
+
+        for plan in (bandplan_na, bandplan_au, bandplan_iaru_r1,
+                     bandplan_iaru_r2, bandplan_iaru_r3):
+            name = plan.DESC.get("name", plan.SHORTNAME)
+            self.plans[plan.SHORTNAME] = (name, plan)
+
+            rpt_inputs = []
+            for band in plan.BANDS:
+                # Check for duplicates.
+                duplicates = [x for x in plan.BANDS if x == band]
+                # Add repeater inputs.
+                rpt_input = band.inverse()
+                if rpt_input not in plan.BANDS:
+                    rpt_inputs.append(band.inverse())
+            plan.bands = list(plan.BANDS)
+            plan.bands.extend(rpt_inputs)
+
+    def get_defaults_for_frequency(self, freq):
+        freq = int(freq)
+        result = Band((freq, freq), repr(freq))
+
+        for shortname, details in self.plans.items():
+            if self._config.get_bool(shortname, "bandplan"):
+                matches = [x for x in details[1].bands if x.contains(result)]
+                # Add matches to defaults, favoring more specific matches.
+                matches = sorted(matches, key=lambda x: x.width(),
+                                 reverse=True)
+                for match in matches:
+                    result.mode = match.mode or result.mode
+                    result.step_khz = match.step_khz or result.step_khz
+                    result.offset = match.offset or result.offset
+                    result.duplex = match.duplex or result.duplex
+                    result.tones = match.tones or result.tones
+                    if match.name:
+                        result.name = '/'.join((result.name or '', match.name))
+                # Limit ourselves to one band plan match for simplicity.
+                # Note that if the user selects multiple band plans by editing
+                # the config file it will work as expected (except where plans
+                # conflict).
+                if matches:
+                    break
+
+        return result

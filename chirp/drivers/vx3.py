@@ -345,7 +345,7 @@ class VX3BankModel(chirp_common.BankModel):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\x00" * (mem.size() / 8))
+    mem.set_raw("\x00" * (mem.size() // 8))
     # the following settings are set to match the defaults
     # on the radio, some of these fields are unknown
     mem.name = [0xFF for _i in range(0, 6)]
@@ -363,7 +363,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "VX-3"
 
     # 41 48 30 32 38
-    _model = "AH028"
+    _model = b"AH028"
     _memsize = 32587
     _block_lengths = [10, 32577]
     # right now this reads in 45 seconds and writes in 41 seconds
@@ -792,7 +792,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
 
         _volumes = self._memobj.volumes
 
-        opts = map(str, range(0, 33))
+        opts = list(map(str, list(range(0, 33))))
         sound.append(RadioSetting(
                 "speaker_vol", "Speaker volume",
                 RadioSettingValueList(opts, opts[_volumes.speaker])))
@@ -812,22 +812,22 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                 RadioSettingValueList(
                     opts, opts[_settings.fm_broadcast_mode])))
 
-        opts = map(str, range(16))
+        opts = list(map(str, list(range(16))))
         sound.append(RadioSetting(
                 "sql_fm", "Squelch level (FM)",
                 RadioSettingValueList(opts, opts[_settings.sql_fm])))
 
-        opts = map(str, range(9))
+        opts = list(map(str, list(range(9))))
         sound.append(RadioSetting(
                 "sql_wfm", "Squelch level (WFM)",
                 RadioSettingValueList(opts, opts[_settings.sql_wfm])))
 
-        opts = map(str, range(16))
+        opts = list(map(str, list(range(16))))
         sound.append(RadioSetting(
                 "radio_am_sql", "Squelch level (Broadcast Radio AM)",
                 RadioSettingValueList(opts, opts[_settings.radio_am_sql])))
 
-        opts = map(str, range(9))
+        opts = list(map(str, list(range(9))))
         sound.append(RadioSetting(
                 "radio_fm_sql", "Squelch level (Broadcast Radio FM)",
                 RadioSettingValueList(opts, opts[_settings.radio_fm_sql])))
@@ -849,7 +849,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                 "dtmf_speed", "DTMF speed (ms)",
                 RadioSettingValueList(opts, opts[_settings.dtmf_speed])))
 
-        opts = map(str, range(10))
+        opts = list(map(str, list(range(10))))
         dtmf.append(RadioSetting(
                 "dtmf_chan_active", "DTMF active",
                 RadioSettingValueList(
@@ -973,6 +973,6 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                     newval = self._encode_chars(newval, 6)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise

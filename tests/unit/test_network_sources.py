@@ -1,6 +1,7 @@
 import unittest
+from unittest import mock
 
-from chirp import dmrmarc
+from chirp.sources import dmrmarc
 
 # Hopefully this will provide a sentinel and forcing function for
 # network sources when APIs stop working. Unfortunately, live queries
@@ -9,8 +10,10 @@ from chirp import dmrmarc
 
 class TestDMRMARC(unittest.TestCase):
     def test_marc_works(self):
-        r = dmrmarc.DMRMARCRadio(None)
-        r.set_params('portland', 'oregon', '')
+        r = dmrmarc.DMRMARCRadio()
+        r.do_fetch(mock.MagicMock(), {'city': 'portland',
+                                      'state': 'oregon',
+                                      'country': ''})
         f = r.get_features()
 
         # Assert that we found some repeaters. If they all go away in

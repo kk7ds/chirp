@@ -178,7 +178,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             self._mmap = self._clone_in()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -187,7 +187,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             self._clone_out()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def process_mmap(self):
@@ -240,7 +240,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xff" * (_mem.size() / 8))    # clean up
+            _mem.set_raw("\xff" * (_mem.size() // 8))    # clean up
             _mem.namelen = 0
             return
 
@@ -342,7 +342,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
-        for char in _mem.name[:_mem.namelen]:
+        for char in _mem.name[0:_mem.namelen]:
             mem.name += chr(char)
 
         dtcs_pol = ["N", "N"]

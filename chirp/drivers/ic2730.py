@@ -273,7 +273,7 @@ def _resolve_memory_number(number):
 
 
 def _wipe_memory(mem, char):
-    mem.set_raw(char * (mem.size() / 8))
+    mem.set_raw(char * (mem.size() // 8))
 
 
 @directory.register
@@ -826,7 +826,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
 
         stx = ""
         for i in range(0, 16):
-            stx += chr(_cmnt.com[i])
+            stx += chr(int(_cmnt.com[i]))
         stx = stx.rstrip()
         rx = RadioSettingValueString(0, 16, stx)
         rset = RadioSetting("comment.com", "Comment (16 chars)", rx)
@@ -1196,7 +1196,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
         for kx in range(0, 25):
             stx = ""
             for i in range(0, 6):
-                stx += chr(_pses[kx].name[i])
+                stx += chr(int(_pses[kx].name[i]))
             stx = stx.rstrip()
             rx = RadioSettingValueString(0, 6, stx)
             rset = RadioSetting("pgmscanedge/%d.name" % kx,
@@ -1295,7 +1295,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
         for kx in range(0, 10):
             stx = ""
             for i in range(0, 6):
-                stx += chr(_psln[kx].nam[i])
+                stx += chr(int(_psln[kx].nam[i]))
             stx = stx.rstrip()
             rx = RadioSettingValueString(0, 6, stx)
             rset = RadioSetting("pslnam/%d.nam" % kx,
@@ -1363,6 +1363,6 @@ class IC2730Radio(icf.IcomCloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise

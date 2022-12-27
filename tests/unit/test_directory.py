@@ -3,9 +3,11 @@ import glob
 import itertools
 import json
 import os
+import shutil
 import tempfile
 
 import yaml
+import pytest
 
 from tests.unit import base
 from chirp import chirp_common
@@ -13,9 +15,12 @@ from chirp import directory
 
 
 class TestDirectory(base.BaseTest):
+    def cleanUp(self):
+        shutil.rmtree(self.tempdir)
+
     def setUp(self):
         super(TestDirectory, self).setUp()
-
+        self.tempdir = tempfile.mkdtemp()
         directory.enable_reregistrations()
 
         class FakeAlias(chirp_common.Alias):
@@ -32,7 +37,7 @@ class TestDirectory(base.BaseTest):
 
             @classmethod
             def match_model(cls, file_data, image_file):
-                return file_data == 'thisisrawdata'
+                return file_data == b'thisisrawdata'
 
         self.test_class = FakeRadio
 
@@ -42,35 +47,38 @@ class TestDirectory(base.BaseTest):
         return radio
 
     def test_detect_with_no_metadata(self):
-        with tempfile.NamedTemporaryFile() as f:
-            f.write('thisisrawdata')
+        fn = os.path.join(self.tempdir, 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
             f.flush()
-            self._test_detect_finds_our_class(f.name)
+        self._test_detect_finds_our_class(fn)
 
     def test_detect_with_metadata_base_class(self):
-        with tempfile.NamedTemporaryFile() as f:
-            f.write('thisisrawdata')
-            f.write(self.test_class.MAGIC + '-')
+        fn = os.path.join(self.tempdir, 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
+            f.write(self.test_class.MAGIC + b'-')
             f.write(self.test_class._make_metadata())
             f.flush()
-            self._test_detect_finds_our_class(f.name)
+        self._test_detect_finds_our_class(fn)
 
     def test_detect_with_metadata_alias_class(self):
-        with tempfile.NamedTemporaryFile() as f:
-            f.write('thisisrawdata')
-            f.write(self.test_class.MAGIC + '-')
+        fn = os.path.join(self.tempdir, 'testfile')
+        with open(fn, 'wb') as f:
+            f.write(b'thisisrawdata')
+            f.write(self.test_class.MAGIC + b'-')
             FakeAlias = self.test_class.ALIASES[0]
             fake_metadata = base64.b64encode(json.dumps(
                 {'vendor': FakeAlias.VENDOR,
                  'model': FakeAlias.MODEL,
                  'variant': FakeAlias.VARIANT,
-                }))
+                }).encode())
             f.write(fake_metadata)
             f.flush()
-            radio = self._test_detect_finds_our_class(f.name)
-            self.assertEqual('Taylor', radio.VENDOR)
-            self.assertEqual('Barmaster 2000', radio.MODEL)
-            self.assertEqual('A', radio.VARIANT)
+        radio = self._test_detect_finds_our_class(fn)
+        self.assertEqual('Taylor', radio.VENDOR)
+        self.assertEqual('Barmaster 2000', radio.MODEL)
+        self.assertEqual('A', radio.VARIANT)
 
 
 class TestDetectBruteForce(base.BaseTest):
@@ -110,8 +118,9 @@ class TestAliasMap(base.BaseTest):
                 directory_models[cls.VENDOR].add(fullmodel)
 
         aliases = yaml.load(open(os.path.join(os.path.dirname(__file__),
-                                              '..', '..', 'share',
-                                              'model_alias_map.yaml')).read())
+                                              '..', '..', 'chirp', 'share',
+                                              'model_alias_map.yaml')).read(),
+                            Loader=yaml.FullLoader)
         for vendor, models in sorted(aliases.items()):
             directory_models.setdefault(vendor, set())
             my_aliases = set([x['model'] for x in models])

@@ -136,7 +136,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
 
         LOG.debug('Boblov_x3plus: match_model: size matches')
 
-        if 'P310' in filedata[0x03D0:0x03D8]:
+        if b'P310' in filedata[0x03D0:0x03D8]:
             LOG.debug('Boblov_x3plus: match_model: radio ID matches')
             return True
 
@@ -313,7 +313,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
         rmem = self._memobj.memory[memory.number - 1]
 
         if memory.empty:
-            rmem.set_raw('\xFF' * (rmem.size() / 8))
+            rmem.set_raw('\xFF' * (rmem.size() // 8))
             return
 
         rmem.rxfreq = memory.freq / 10

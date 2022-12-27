@@ -23,6 +23,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettings
+import struct
 
 LOG = logging.getLogger(__name__)
 
@@ -280,32 +281,30 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     """Wouxun KG-UV8D"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV8D"
-    _model = "KG-UV8D"
-    _file_ident = "KGUV8D"
+    _model = b"KG-UV8D"
+    _file_ident = b"KGUV8D"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
-    _mmap = ""
+    NEEDS_COMPAT_SERIAL = False
 
     def _checksum(self, data):
         cs = 0
         for byte in data:
-            cs += ord(byte)
+            cs += byte
         return cs % 256
 
     def _write_record(self, cmd, payload=None):
         # build the packet
-        _packet = '\x7d' + chr(cmd) + '\xff'
         _length = 0
         if payload:
             _length = len(payload)
-        # update the length field
-        _packet += chr(_length)
+        _packet = struct.pack('BBBB', 0x7D, cmd, 0xFF, _length)
         if payload:
             # add the chars to the packet
             _packet += payload
         # calculate and add the checksum to the packet
-        _packet += chr(self._checksum(_packet[1:]))
+        _packet += bytes([self._checksum(_packet[1:])])
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
@@ -314,12 +313,12 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _header = self.pipe.read(4)
         if len(_header) != 4:
             raise errors.RadioError('Radio did not respond')
-        _length = ord(_header[3])
+        _length = struct.unpack('xxxB', _header)[0]
         _packet = self.pipe.read(_length)
         _cs = self._checksum(_header[1:])
         _cs += self._checksum(_packet)
         _cs %= 256
-        _rcs = ord(self.pipe.read(1))
+        _rcs = self.pipe.read(1)[0]
         LOG.debug("_cs =%x", _cs)
         LOG.debug("_rcs=%x", _rcs)
         return (_rcs != _cs, _packet)
@@ -376,7 +375,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             self._mmap = self._download()
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
 
@@ -393,15 +392,15 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             return self._do_download(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
     def _do_download(self, start, end, blocksize):
         # allocate & fill memory
-        image = ""
+        image = b""
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256) + chr(blocksize)
+            req = struct.pack('>HB', i, blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
@@ -417,7 +416,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                 status.msg = "Cloning from radio"
                 self.status_fn(status)
         self._finish()
-        return memmap.MemoryMap(''.join(image))
+        return memmap.MemoryMapBytes(image)
 
     def _upload(self):
         """Talk to a wouxun KG-UV8D and do a upload"""
@@ -426,20 +425,20 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
             self._do_upload(0, 32768, 64)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256)
+            req = struct.pack('>H', i)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
             LOG.debug(util.hexprint(req + chunk))
             cserr, ack = self._read_record()
             LOG.debug(util.hexprint(ack))
-            j = ord(ack[0]) * 256 + ord(ack[1])
+            j = struct.unpack('>H', ack)[0]
             if cserr or j != ptr:
                 raise Exception("Radio did not ack block %i" % ptr)
             ptr += blocksize
@@ -628,9 +627,9 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() / 8))
+            _mem.set_raw("\x00" * (_mem.size() // 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() / 8))
+            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)

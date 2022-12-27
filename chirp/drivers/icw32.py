@@ -191,7 +191,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
     def match_model(cls, filedata, filename):
         if not len(filedata) == cls._memsize:
             return False
-        return filedata[-16:] == "IcomCloneFormat3"
+        return filedata[-16:] == b"IcomCloneFormat3"
 
 
 class ICW32ARadioVHF(ICW32ARadio):
@@ -231,8 +231,8 @@ class ICW32ERadio(ICW32ARadio):
     def match_model(cls, filedata, filename):
         if not len(filedata) == cls._memsize:
             return False
-        return filedata[-16 - 1: -1] == "IcomCloneFormat3" and \
-            filedata[-1] == chr(0x00)
+        return filedata[-16 - 1: -1] == b"IcomCloneFormat3" and \
+            filedata[-1] in [0, '\x00']
 
 
 # this is the very same as ICW32ARadioVHF but have ICW32ERadio as parent class

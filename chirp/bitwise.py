@@ -61,6 +61,9 @@ import struct
 import os
 import logging
 
+import six
+from builtins import bytes
+
 from chirp import bitwise_grammar
 from chirp.memmap import MemoryMap
 
@@ -72,6 +75,57 @@ class ParseError(Exception):
     pass
 
 
+def byte_to_int(b):
+    if six.PY3 or isinstance(b, int):
+        return b
+    else:
+        return ord(b)
+
+
+def int_to_byte(i):
+    if six.PY3:
+        return bytes([i])
+    else:
+        return chr(i)
+
+
+def string_straight_encode(string):
+    """str -> bytes"""
+    # So, there are a lot of py2-thinking chirp drivers that
+    # will do something like this:
+    #
+    #   memobj.name = 'foo\xff'
+    #
+    # because they need the string to be stored in radio memory
+    # with a 0xFF byte terminating the string. If they do that in
+    # py3 we will get the unicode equivalent, which is a non-ASCII
+    # character. Conventional unicode wisdom would tell us we need
+    # to encode() the string to get UTF-8 bytes, but that's not
+    # what we want here (the radio doesn't support UTF-8 and we need
+    # specific binary values in memory). Ideally we would have
+    # written all of chirp with bytes() for these values, but alas.
+    # We can get the intended string here by doing bytes([ord(char)]).
+    return bytes(b''.join(int_to_byte(ord(b)) for b in string))
+
+
+def string_straight_decode(string):
+    """bytes -> str"""
+    # Normally, we would want to decode bytes() to str() for py3.
+    # However...chirp drivers are currently using strings with
+    # hex escapes for setting binary byte values in memories.
+    # Technically, this is char, which is a little more like bytes()
+    # in py3, but until every driver has converted its strings to
+    # bytes(), this is massively simpler. Since set_value() is
+    # doing the inverse, we can do this here. If something sets
+    # a char to '\xFF' it will arrive below as the unicode character,
+    # and be converted to the integer/bytes value. When it is read out
+    # here, we will return that same unicode character and the driver
+    # will detect '\xFF' properly.
+    # FIXMEPY3: Remove this and the hack below when drivers convert to
+    # bytestrings.
+    return ''.join(chr(byte_to_int(b)) for b in string)
+
+
 def format_binary(nbits, value, pad=8):
     s = ""
     for i in range(0, nbits):
@@ -81,8 +135,8 @@ def format_binary(nbits, value, pad=8):
 
 
 def bits_between(start, end):
-    bits = (1 << (end - start)) - 1
-    return bits << start
+    bits = (1 << (int(end) - int(start))) - 1
+    return bits << int(start)
 
 
 def pp(structure, level=0):
@@ -91,12 +145,12 @@ def pp(structure, level=0):
             pp(i, level+2)
         elif isinstance(i, tuple):
             if isinstance(i[1], str):
-                print "%s%s: %s" % (" " * level, i[0], i[1])
+                print("%s%s: %s" % (" " * level, i[0], i[1]))
             else:
-                print "%s%s:" % (" " * level, i[0])
+                print("%s%s:" % (" " * level, i[0]))
                 pp(i, level+2)
         elif isinstance(i, str):
-            print "%s%s" % (" " * level, i)
+            print("%s%s" % (" " * level, i))
 
 
 def array_copy(dst, src):
@@ -140,7 +194,7 @@ class DataElement:
 
     def __init__(self, data, offset, count=1):
         self._data = data
-        self._offset = offset
+        self._offset = int(offset)
         self._count = count
 
     def size(self):
@@ -159,10 +213,16 @@ class DataElement:
     def set_value(self, value):
         raise Exception("Not implemented for %s" % self.__class__)
 
-    def get_raw(self):
-        return self._data[self._offset:self._offset+self._size]
+    def get_raw(self, asbytes=False):
+        raw = self._data[self._offset:self._offset+self._size]
+        if asbytes:
+            return bytes(raw)
+        else:
+            return string_straight_decode(raw)
 
     def set_raw(self, data):
+        if isinstance(data, str):
+            data = string_straight_encode(data)
         self._data[self._offset] = data[:self._size]
 
     def __getattr__(self, name):
@@ -198,21 +258,32 @@ class arrayDataElement(DataElement):
     def get_value(self):
         return list(self.__items)
 
-    def get_raw(self):
-        return "".join([item.get_raw() for item in self.__items])
+    def get_raw(self, asbytes=False):
+        raw = [item.get_raw(asbytes=asbytes) for item in self.__items]
+        if asbytes:
+            return bytes(b''.join(raw))
+        else:
+            return "".join(raw)
 
     def __setitem__(self, index, val):
         self.__items[index].set_value(val)
 
     def __getitem__(self, index):
-        return self.__items[index]
+        if isinstance(index, slice):
+            return self.__items[int(index.start):int(index.stop)]
+        else:
+            return self.__items[int(index)]
 
     def __len__(self):
         return len(self.__items)
 
     def __str__(self):
         if isinstance(self.__items[0], charDataElement):
-            return "".join([x.get_value() for x in self.__items])
+            # NOTE: All the values should be strings coming out of py3.
+            # and on py2 they could be a mix of unicode and str, the latter
+            # for non-ASCII values. On py2 we can just coerce all of these
+            # types to a string for compatbility.
+            return "".join([str(x.get_value()) for x in self.__items])
         else:
             return str(self.__items)
 
@@ -244,8 +315,8 @@ class arrayDataElement(DataElement):
 
     def __set_value_char(self, value):
         if len(value) != len(self.__items):
-            raise ValueError("String expects exactly %i characters" %
-                             len(self.__items))
+            raise ValueError("String expects exactly %i characters, not %i" % (
+                             len(self.__items), len(value)))
         for i in range(0, len(self.__items)):
             self.__items[i].set_value(value[i])
 
@@ -255,7 +326,7 @@ class arrayDataElement(DataElement):
         elif isinstance(self.__items[0], lbcdDataElement):
             self.__set_value_lbcd(int(value))
         elif isinstance(self.__items[0], charDataElement):
-            self.__set_value_char(str(value))
+            self.__set_value_char(value)
         elif len(value) != len(self.__items):
             raise ValueError("Array cardinality mismatch")
         else:
@@ -294,6 +365,9 @@ class intDataElement(DataElement):
     def __int__(self):
         return self.get_value()
 
+    def __nonzero__(self):
+        return int(self) != 0
+
     def __invert__(self):
         return ~self.get_value()
 
@@ -309,8 +383,14 @@ class intDataElement(DataElement):
     def __mul__(self, val):
         return self.get_value() * val
 
+    def __truediv__(self, val):
+        return self.get_value() / val
+
     def __div__(self, val):
         return self.get_value() / val
+
+    def __floordiv__(self, val):
+        return self.get_value() // val
 
     def __add__(self, val):
         return self.get_value() + val
@@ -410,7 +490,7 @@ class intDataElement(DataElement):
     def __ge__(self, val):
         return self.get_value() >= val
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.get_value() != 0
 
 
@@ -445,8 +525,8 @@ class u24DataElement(intDataElement):
     _endianess = ">"
 
     def _get_value(self, data):
-        pre = self._endianess == ">" and "\x00" or ""
-        post = self._endianess == "<" and "\x00" or ""
+        pre = self._endianess == ">" and b"\x00" or b""
+        post = self._endianess == "<" and b"\x00" or b""
         return struct.unpack(self._endianess + "I", pre+data+post)[0]
 
     def set_value(self, value):
@@ -556,10 +636,15 @@ class charDataElement(DataElement):
         return ord(self.get_value())
 
     def _get_value(self, data):
-        return data
+        return string_straight_decode(data)
 
     def set_value(self, value):
-        self._data[self._offset] = str(value)
+        if isinstance(value, int):
+            # This is the case if bytes() are passed in to arrayDataElement
+            # to set a string
+            self._data[self._offset] = value
+        else:
+            self._data[self._offset] = string_straight_encode(value)
 
 
 class bcdDataElement(DataElement):
@@ -580,7 +665,9 @@ class bcdDataElement(DataElement):
         if isinstance(data, int):
             self._data[self._offset] = data & 0xFF
         elif isinstance(data, str):
-            self._data[self._offset] = data[0]
+            self._data[self._offset] = string_straight_encode(data[0])
+        elif isinstance(data, bytes) and len(data) == 1:
+            self._data[self._offset] = int(data[0]) & 0xFF
         else:
             raise TypeError("Unable to set bcdDataElement from type %s" %
                             type(data))
@@ -614,7 +701,7 @@ class bitDataElement(intDataElement):
     def get_value(self):
         data = self._subgen(self._data, self._offset).get_value()
         mask = bits_between(self._shift-self._nbits, self._shift)
-        val = (data & mask) >> (self._shift - self._nbits)
+        val = (data & mask) >> int(self._shift - self._nbits)
         return val
 
     def set_value(self, value):
@@ -623,7 +710,7 @@ class bitDataElement(intDataElement):
         data = self._subgen(self._data, self._offset).get_value()
         data &= ~mask
 
-        value = ((int(value) << (self._shift-self._nbits)) & mask) | data
+        value = ((int(value) << int(self._shift-self._nbits)) & mask) | data
 
         self._subgen(self._data, self._offset).set_value(value)
 
@@ -705,13 +792,19 @@ class structDataElement(DataElement):
                 size += el.size()
         return size
 
-    def get_raw(self):
-        size = self.size() / 8
-        return self._data[self._offset:self._offset+size]
+    def get_raw(self, asbytes=False):
+        size = self.size() // 8
+        raw = self._data[self._offset:self._offset+size]
+        if asbytes:
+            return bytes(raw)
+        else:
+            return string_straight_decode(raw)
 
     def set_raw(self, buffer):
-        if len(buffer) != (self.size() / 8):
+        if len(buffer) != (self.size() // 8):
             raise ValueError("Struct size mismatch during set_raw()")
+        if isinstance(buffer, str):
+            buffer = string_straight_encode(buffer)
         self._data[self._offset] = buffer
 
     def __iter__(self):
@@ -745,6 +838,10 @@ class Processor:
         }
 
     def __init__(self, data, offset):
+        if hasattr(data, 'get_byte_compatible'):
+            # bitwise uses the byte-compatible interface of MemoryMap,
+            # if that is what was passed in
+            data = data.get_byte_compatible()
         self._data = data
         self._offset = offset
         self._obj = None
@@ -908,14 +1005,14 @@ struct {
     data = "\xab\x7F\x81abc\x12\x34"
     tree = parse(defn, data)
 
-    print repr(tree)
+    print(repr(tree))
 
-    print "Foo %i" % tree.mystruct.foo
-    print "Highbit: %i SixZeros: %i: Lowbit: %i" % (tree.mystruct.highbit,
+    print("Foo %i" % tree.mystruct.foo)
+    print("Highbit: %i SixZeros: %i: Lowbit: %i" % (tree.mystruct.highbit,
                                                     tree.mystruct.sixzeros,
-                                                    tree.mystruct.lowbit)
-    print "String: %s" % tree.mystruct.string
-    print "Fourdigits: %i" % tree.mystruct.fourdigits
+                                                    tree.mystruct.lowbit))
+    print("String: %s" % tree.mystruct.string)
+    print("Fourdigits: %i" % tree.mystruct.fourdigits)
 
     import sys
     sys.exit(0)
@@ -947,26 +1044,26 @@ struct {
     # Mess with it a little
     p = Processor(data, 0)
     obj = p.parse(ast)
-    print "Object: %s" % obj
-    print obj["foo"][0]["bcdL"]
-    print obj["tail"]
-    print obj["foo"][0]["bar"]
+    print("Object: %s" % obj)
+    print(obj["foo"][0]["bcdL"])
+    print(obj["tail"])
+    print(obj["foo"][0]["bar"])
     obj["foo"][0]["bar"].set_value(255 << 8)
     obj["foo"][0]["twobit"].set_value(0)
     obj["foo"][0]["onebit"].set_value(1)
-    print "%i" % int(obj["foo"][0]["bar"])
+    print("%i" % int(obj["foo"][0]["bar"]))
 
     for i in obj["foo"][0]["array"]:
-        print int(i)
+        print(int(i))
     obj["foo"][0]["array"][1].set_value(255)
 
     for i in obj["foo"][0]["bcdL"]:
-        print i.get_value()
+        print(i.get_value())
 
     int_to_bcd(obj["foo"][0]["bcdL"], 1234)
-    print bcd_to_int(obj["foo"][0]["bcdL"])
+    print(bcd_to_int(obj["foo"][0]["bcdL"]))
 
     set_string(obj["foo"][0]["str"], "xyz")
-    print get_string(obj["foo"][0]["str"])
+    print(get_string(obj["foo"][0]["str"]))
 
-    print repr(data.get_packed())
+    print(repr(data.get_packed()))

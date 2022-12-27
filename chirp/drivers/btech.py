@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
+from builtins import bytes
+
 import struct
+import time
 import logging
 
 from time import sleep
@@ -41,7 +43,7 @@ LOG = logging.getLogger(__name__)
 MEM_SIZE = 0x4000
 BLOCK_SIZE = 0x40
 TX_BLOCK_SIZE = 0x10
-ACK_CMD = "\x06"
+ACK_CMD = 0x06
 MODES = ["FM", "NFM"]
 SKIP_VALUES = ["S", ""]
 TONES = chirp_common.TONES
@@ -162,160 +164,160 @@ GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 # #### ID strings #####################################################
 
 # BTECH UV2501 pre-production units
-UV2501pp_fp = "M2C294"
+UV2501pp_fp = b"M2C294"
 # BTECH UV2501 pre-production units 2 + and 1st Gen radios
-UV2501pp2_fp = "M29204"
+UV2501pp2_fp = b"M29204"
 # B-TECH UV-2501 second generation (2G) radios
-UV2501G2_fp = "BTG214"
+UV2501G2_fp = b"BTG214"
 # B-TECH UV-2501 third generation (3G) radios
-UV2501G3_fp = "BTG324"
+UV2501G3_fp = b"BTG324"
 
 # B-TECH UV-2501+220 pre-production units
-UV2501_220pp_fp = "M3C281"
+UV2501_220pp_fp = b"M3C281"
 # B-TECH UV-2501+220
-UV2501_220_fp = "M3G201"
+UV2501_220_fp = b"M3G201"
 # new variant, let's call it Generation 2
-UV2501_220G2_fp = "BTG211"
+UV2501_220G2_fp = b"BTG211"
 # B-TECH UV-2501+220 third generation (3G)
-UV2501_220G3_fp = "BTG311"
+UV2501_220G3_fp = b"BTG311"
 
 # B-TECH UV-5001 pre-production units + 1st Gen radios
-UV5001pp_fp = "V19204"
+UV5001pp_fp = b"V19204"
 # B-TECH UV-5001 alpha units
-UV5001alpha_fp = "V28204"
+UV5001alpha_fp = b"V28204"
 # B-TECH UV-5001 second generation (2G) radios
-UV5001G2_fp = "BTG214"
+UV5001G2_fp = b"BTG214"
 # B-TECH UV-5001 second generation (2G2)
-UV5001G22_fp = "V2G204"
+UV5001G22_fp = b"V2G204"
 # B-TECH UV-5001 third generation (3G)
-UV5001G3_fp = "BTG304"
+UV5001G3_fp = b"BTG304"
 
 # B-TECH UV-25X2
-UV25X2_fp = "UC2012"
+UV25X2_fp = b"UC2012"
 
 # B-TECH UV-25X4
-UV25X4_fp = "UC4014"
+UV25X4_fp = b"UC4014"
 
 # B-TECH UV-50X2
-UV50X2_fp = "UC2M12"
+UV50X2_fp = b"UC2M12"
 
 # B-TECH GMRS-50X1
-GMRS50X1_fp = "NC1802"
-GMRS50X1_fp1 = "NC1932"
+GMRS50X1_fp = b"NC1802"
+GMRS50X1_fp1 = b"NC1932"
 
 # B-TECH GMRS-20V2
-GMRS20V2_fp = "WP4204"
-GMRS20V2_fp1 = "VW2112"
-GMRS20V2_fp2 = "VWG728"
+GMRS20V2_fp = b"WP4204"
+GMRS20V2_fp1 = b"VW2112"
+GMRS20V2_fp2 = b"VWG728"
 
 # special var to know when we found a BTECH Gen 3
 BTECH3 = [UV2501G3_fp, UV2501_220G3_fp, UV5001G3_fp]
 
 
 # WACCOM Mini-8900
-MINI8900_fp = "M28854"
+MINI8900_fp = b"M28854"
 
 
 # QYT KT-UV980
-KTUV980_fp = "H28854"
+KTUV980_fp = b"H28854"
 
 # QYT KT8900
-KT8900_fp = "M29154"
+KT8900_fp = b"M29154"
 # New generations KT8900
-KT8900_fp1 = "M2C234"
-KT8900_fp2 = "M2G1F4"
-KT8900_fp3 = "M2G2F4"
-KT8900_fp4 = "M2G304"
-KT8900_fp5 = "M2G314"
-KT8900_fp6 = "M2G424"
-KT8900_fp7 = "M27184"
+KT8900_fp1 = b"M2C234"
+KT8900_fp2 = b"M2G1F4"
+KT8900_fp3 = b"M2G2F4"
+KT8900_fp4 = b"M2G304"
+KT8900_fp5 = b"M2G314"
+KT8900_fp6 = b"M2G424"
+KT8900_fp7 = b"M27184"
 
 # KT8900R
-KT8900R_fp = "M3G1F4"
+KT8900R_fp = b"M3G1F4"
 # Second Generation
-KT8900R_fp1 = "M3G214"
+KT8900R_fp1 = b"M3G214"
 # another model
-KT8900R_fp2 = "M3C234"
+KT8900R_fp2 = b"M3C234"
 # another model G4?
-KT8900R_fp3 = "M39164"
+KT8900R_fp3 = b"M39164"
 # another model
-KT8900R_fp4 = "M3G314"
+KT8900R_fp4 = b"M3G314"
 # AC3MB: another id
-KT8900R_fp5 = "M3B064"
+KT8900R_fp5 = b"M3B064"
 
 # KT7900D (quad band)
-KT7900D_fp = "VC4004"
-KT7900D_fp1 = "VC4284"
-KT7900D_fp2 = "VC4264"
-KT7900D_fp3 = "VC4114"
-KT7900D_fp4 = "VC4104"
-KT7900D_fp5 = "VC4254"
-KT7900D_fp6 = "VC5264"
-KT7900D_fp7 = "VC9204"
-KT7900D_fp8 = "VC9214"
-KT7900D_fp9 = "VC5302"
+KT7900D_fp = b"VC4004"
+KT7900D_fp1 = b"VC4284"
+KT7900D_fp2 = b"VC4264"
+KT7900D_fp3 = b"VC4114"
+KT7900D_fp4 = b"VC4104"
+KT7900D_fp5 = b"VC4254"
+KT7900D_fp6 = b"VC5264"
+KT7900D_fp7 = b"VC9204"
+KT7900D_fp8 = b"VC9214"
+KT7900D_fp9 = b"VC5302"
 
 # QB25 (quad band) - a clone of KT7900D
-QB25_fp = "QB-25"
+QB25_fp = b"QB-25"
 
 # KT8900D (dual band)
-KT8900D_fp = "VC2002"
-KT8900D_fp1 = "VC8632"
-KT8900D_fp2 = "VC3402"
-KT8900D_fp3 = "VC7062"
+KT8900D_fp = b"VC2002"
+KT8900D_fp1 = b"VC8632"
+KT8900D_fp2 = b"VC3402"
+KT8900D_fp3 = b"VC7062"
 
 # LUITON LT-588UV
-LT588UV_fp = "V2G1F4"
+LT588UV_fp = b"V2G1F4"
 # Added by rstrickoff gen 2 id
-LT588UV_fp1 = "V2G214"
+LT588UV_fp1 = b"V2G214"
 
 # QYT KT-8R (quad band ht)
-KT8R_fp = "MCB264"
-KT8R_fp1 = "MCB284"
-KT8R_fp2 = "MC5264"
+KT8R_fp = b"MCB264"
+KT8R_fp1 = b"MCB284"
+KT8R_fp2 = b"MC5264"
 
 # QYT KT5800 (dual band)
-KT5800_fp = "VCB222"
+KT5800_fp = b"VCB222"
 
 # QYT KT980Plus (dual band)
-KT980PLUS_fp = "VC2002"
-KT980PLUS_fp1 = "VC6042"
+KT980PLUS_fp = b"VC2002"
+KT980PLUS_fp1 = b"VC6042"
 
 # Radioddity DB25-G (gmrs)
-DB25G_fp = "VC6182"
-DB25G_fp1 = "VC7062"
+DB25G_fp = b"VC6182"
+DB25G_fp1 = b"VC7062"
 
 # QYT KT-WP12 and KT-9900
-KTWP12_fp = "WP3094"
+KTWP12_fp = b"WP3094"
 
 # Anysecu WP-9900
-WP9900_fp = "WP3094"
+WP9900_fp = b"WP3094"
 
 
 # ### MAGICS
 # for the Waccom Mini-8900
-MSTRING_MINI8900 = "\x55\xA5\xB5\x45\x55\x45\x4d\x02"
+MSTRING_MINI8900 = b"\x55\xA5\xB5\x45\x55\x45\x4d\x02"
 # for the B-TECH UV-2501+220 (including pre production ones)
-MSTRING_220 = "\x55\x20\x15\x12\x12\x01\x4d\x02"
+MSTRING_220 = b"\x55\x20\x15\x12\x12\x01\x4d\x02"
 # for the QYT KT8900 & R
-MSTRING_KT8900 = "\x55\x20\x15\x09\x16\x45\x4D\x02"
-MSTRING_KT8900R = "\x55\x20\x15\x09\x25\x01\x4D\x02"
+MSTRING_KT8900 = b"\x55\x20\x15\x09\x16\x45\x4D\x02"
+MSTRING_KT8900R = b"\x55\x20\x15\x09\x25\x01\x4D\x02"
 # magic string for all other models
-MSTRING = "\x55\x20\x15\x09\x20\x45\x4d\x02"
+MSTRING = b"\x55\x20\x15\x09\x20\x45\x4d\x02"
 # for the QYT KT7900D & KT8900D
-MSTRING_KT8900D = "\x55\x20\x16\x08\x01\xFF\xDC\x02"
+MSTRING_KT8900D = b"\x55\x20\x16\x08\x01\xFF\xDC\x02"
 # for the BTECH UV-25X2 and UV-50X2
-MSTRING_UV25X2 = "\x55\x20\x16\x12\x28\xFF\xDC\x02"
+MSTRING_UV25X2 = b"\x55\x20\x16\x12\x28\xFF\xDC\x02"
 # for the BTECH UV-25X4
-MSTRING_UV25X4 = "\x55\x20\x16\x11\x18\xFF\xDC\x02"
+MSTRING_UV25X4 = b"\x55\x20\x16\x11\x18\xFF\xDC\x02"
 # for the BTECH GMRS-50X1
-MSTRING_GMRS50X1 = "\x55\x20\x18\x10\x18\xFF\xDC\x02"
+MSTRING_GMRS50X1 = b"\x55\x20\x18\x10\x18\xFF\xDC\x02"
 # for the BTECH GMRS-20V2
-MSTRING_GMRS20V2 = "\x55\x20\x21\x03\x27\xFF\xDC\x02"
+MSTRING_GMRS20V2 = b"\x55\x20\x21\x03\x27\xFF\xDC\x02"
 # for the QYT KT-8R
-MSTRING_KT8R = "\x55\x20\x17\x07\x03\xFF\xDC\x02"
+MSTRING_KT8R = b"\x55\x20\x17\x07\x03\xFF\xDC\x02"
 # for the QYT KT-WP12, KT-9900 and Anysecu WP-9900
-MSTRING_KTWP12 = "\x55\x20\x18\x11\x02\xFF\xDC\x02"
+MSTRING_KTWP12 = b"\x55\x20\x18\x11\x02\xFF\xDC\x02"
 
 
 def _clean_buffer(radio):
@@ -325,7 +327,7 @@ def _clean_buffer(radio):
     # touching the serial timeout to optimize the flushing
     # restored at the end to the default value
     radio.pipe.timeout = 0.1
-    dump = "1"
+    dump = b"1"
     datacount = 0
 
     try:
@@ -348,7 +350,7 @@ def _clean_buffer(radio):
 def _rawrecv(radio, amount):
     """Raw read from the radio device, less intensive way"""
 
-    data = ""
+    data = b""
 
     try:
         data = radio.pipe.read(amount)
@@ -377,7 +379,7 @@ def _send(radio, data):
     """Send data to the radio device"""
 
     try:
-        radio.pipe.write(data)
+        radio.pipe.write(bytes(data))
 
         # DEBUG
         if debug is True:
@@ -389,7 +391,7 @@ def _send(radio, data):
 
 def _make_frame(cmd, addr, length, data=""):
     """Pack the info in the headder format"""
-    frame = "\x06" + struct.pack(">BHB", ord(cmd), addr, length)
+    frame = b"\x06" + struct.pack(">BHB", ord(cmd), addr, length)
     # add the data if set
     if len(data) != 0:
         frame += data
@@ -479,7 +481,7 @@ def _do_ident(radio, status, upload=False):
     radio.pipe.timeout = STIMEOUT
 
     # checking for the ack
-    if id2[0] not in "\x06\x05":
+    if id2[:1] not in b"\x06\x05":
         raise errors.RadioError("Bad ack from radio")
 
     # basic check for the additional block
@@ -493,7 +495,7 @@ def _do_ident(radio, status, upload=False):
     # see _upload for this.
     if upload is True:
         # send an ACK
-        _send(radio, ACK_CMD)
+        _send(radio, b"\x06")
 
         # the amount of data depend on the radio, so far we have two radios
         # reading two bytes with an ACK at the end and just ONE with just
@@ -508,7 +510,7 @@ def _do_ident(radio, status, upload=False):
         ack = _rawrecv(radio, 2)
 
         # checking
-        if len(ack) == 0 or ack[-1:] != ACK_CMD:
+        if len(ack) == 0 or ack[-1] != ACK_CMD:
             raise errors.RadioError("Radio didn't ACK the upload")
 
     # DEBUG
@@ -527,12 +529,12 @@ def _download(radio):
     _do_ident(radio, status)
 
     # reset the progress bar in the UI
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     status.cur = 0
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
         # sending the read request
         _send(radio, _make_frame("S", addr, BLOCK_SIZE))
@@ -544,7 +546,7 @@ def _download(radio):
         data += d
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
@@ -565,10 +567,10 @@ def _upload(radio):
     _do_ident(radio, status, True)
 
     # get the data to upload to radio
-    data = radio.get_mmap()
+    data = radio.get_mmap().get_byte_compatible()
 
     # Reset the UI progress
-    status.max = MEM_SIZE / TX_BLOCK_SIZE
+    status.max = MEM_SIZE // TX_BLOCK_SIZE
     status.cur = 0
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
@@ -596,11 +598,11 @@ def _upload(radio):
         if len(ack) != 1:
             raise errors.RadioError("No ACK when writing block 0x%04x" % addr)
 
-        if ack not in "\x06\x05":
+        if ack not in bytes(b"\x06\x05"):
             raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
 
         # UI Update
-        status.cur = addr / TX_BLOCK_SIZE
+        status.cur = addr // TX_BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
@@ -653,6 +655,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     COLOR_LCD3 = False  # Color HT Radios
     COLOR_LCD4 = False  # Waterproof Mobile Radios
     NAME_LENGTH = 6
+    NEEDS_COMPAT_SERIAL = False
     UPLOAD_MEM_SIZE = 0X3100
     _power_levels = [chirp_common.PowerLevel("High", watts=25),
                      chirp_common.PowerLevel("Low", watts=10)]
@@ -764,7 +767,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     def sync_in(self):
         """Download from radio"""
         data = _download(self)
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
@@ -773,7 +776,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Error: %s" % e)
 
     def get_raw_memory(self, number):
@@ -3159,7 +3162,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 if tmp == 65535:
                     tmp = 0
                 if tmp != 0:
-                    expected = int(round(2304000.0/tmp))
+                    expected = int(round(2304000.0/int(tmp)))
                     from_mem = freq["derived_from_" + setting_name]
                     if expected != from_mem:
                         LOG.error("Expected " + str(expected) +
@@ -3215,7 +3218,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

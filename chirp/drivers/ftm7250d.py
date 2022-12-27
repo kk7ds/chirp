@@ -125,7 +125,7 @@ class FTM7250Radio(ft1d.FT1Radio):
 
     def _decode_label(self, mem):
         # TODO preserve the unknown \x80-x86 chars?
-        return str(mem.label).rstrip("\xFF").decode('ascii', 'replace')
+        return str(mem.label).rstrip("\xFF")
 
     def _encode_label(self, mem):
         label = mem.name.rstrip().encode('ascii', 'ignore')
@@ -194,7 +194,7 @@ class FTM7250Radio(ft1d.FT1Radio):
 
     @classmethod
     def _wipe_memory(cls, mem):
-        mem.set_raw("\x00" * (mem.size() / 8))
+        mem.set_raw("\x00" * (mem.size() // 8))
 
     def sync_out(self):
         # Need to give enough time for the radio to ACK after writes

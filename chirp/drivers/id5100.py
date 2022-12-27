@@ -19,6 +19,7 @@ from textwrap import dedent
 from chirp import chirp_common
 from chirp import directory
 from chirp.drivers import icf, id31
+from chirp import errors
 from chirp import bitwise
 
 LOG = logging.getLogger(__name__)
@@ -86,7 +87,7 @@ class ID4100Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     NEEDS_COMPAT_SERIAL = False
 
     _model = b'\x38\x66\x00\x01'
-    _endframe = b'Icom Inc.8F'
+    _endframe = 'Icom Inc.8F'
     _memsize = 0x2A3C0
     _ranges = [(0, _memsize, 64)]
     _raw_frames = True
@@ -268,7 +269,7 @@ class ID5100Radio(ID4100Radio):
     _model = b'\x34\x84\x00\x01'
 
     # This is only for MapRev=1
-    _endframe = b"Icom Inc.EE"
+    _endframe = "Icom Inc.EE"
 
     # MapRev=1 Size is 260928 0x3FB40
     # MapRev=2 Size is 148160 0x242C0
@@ -304,9 +305,9 @@ class ID5100Radio(ID4100Radio):
         # depending on firmware version. These are the endframes that
         # are expected for a given MapRev.
         endframes = {
-            1: b'Icom Inc.EE',
-            2: b'Icom Inc.0C',
-            3: b'Icom Inc.8E',
+            1: 'Icom Inc.EE',
+            2: 'Icom Inc.0C',
+            3: 'Icom Inc.8E',
         }
 
         if self._memsize != was_memsize:

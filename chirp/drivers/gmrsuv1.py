@@ -34,15 +34,15 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # BTECH GMRS-V1 magic string
-MSTRING_GMRSV1 = "\x50\x5F\x20\x15\x12\x15\x4D"
+MSTRING_GMRSV1 = b"\x50\x5F\x20\x15\x12\x15\x4D"
 
 # #### ID strings #####################################################
 
 # BTECH GMRS-V1
-GMRSV1_fp1 = "US32411"  # original
-GMRSV1_fp2 = "US32416"  # original
-GMRSV1_fp3 = "US32418"  # new rules
-GMRSV1_fp4 = "US32412"  # original
+GMRSV1_fp1 = b"US32411"  # original
+GMRSV1_fp2 = b"US32416"  # original
+GMRSV1_fp3 = b"US32418"  # new rules
+GMRSV1_fp4 = b"US32412"  # original
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -97,6 +97,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
     """BTech GMRS-V1"""
     VENDOR = "BTECH"
     MODEL = "GMRS-V1"
+    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [GMRSV1_fp4, GMRSV1_fp3, GMRSV1_fp2, GMRSV1_fp1, ]
     _is_orig = [GMRSV1_fp2, GMRSV1_fp1, GMRSV1_fp4, ]
@@ -422,7 +423,8 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         _msg_txp = 'Memory location only supports Low'
 
         # Original GMRS-V1 models
-        if str(self._memobj.firmware_msg.line1) in self._is_orig:
+        # line1 is a valid string, so safe to encode here
+        if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
             # range of memories with values permanently set by FCC rules
             if mem.number <= 22:
                 if mem.freq != int(GMRS_FREQS_ORIG[mem.number] * 1000000):
@@ -571,7 +573,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
 
         _mem.rxfreq = mem.freq / 10
 
-        if str(self._memobj.firmware_msg.line1) in self._is_orig:
+        if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
             if mem.number > 22:
                 _mem.txfreq = mem.freq / 10
         else:

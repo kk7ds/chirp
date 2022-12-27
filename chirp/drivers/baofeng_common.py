@@ -93,11 +93,11 @@ def _recv(radio, addr, length):
 
 
 def _get_radio_firmware_version(radio):
-    msg = struct.pack(">BHB", ord("S"), radio._fw_ver_start,
+    msg = struct.pack(">BHB", ord(b"S"), radio._fw_ver_start,
                       radio._recv_block_size)
     radio.pipe.write(msg)
     block = _recv(radio, radio._fw_ver_start, radio._recv_block_size)
-    _rawsend(radio, "\x06")
+    _rawsend(radio, b"\x06")
     time.sleep(0.05)
     version = block[0:16]
     return version
@@ -126,18 +126,18 @@ def _do_ident(radio, magic):
     _rawsend(radio, magic)
 
     ack = _rawrecv(radio, 1)
-    if ack != "\x06":
+    if ack != b"\x06":
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond")
 
-    _rawsend(radio, "\x02")
+    _rawsend(radio, b"\x02")
 
     # Ok, get the response
     ident = _rawrecv(radio, radio._magic_response_length)
 
     # check if response is OK
-    if not ident.startswith("\xaa") or not ident.endswith("\xdd"):
+    if not ident.startswith(b"\xaa") or not ident.endswith(b"\xdd"):
         # bad response
         msg = "Unexpected response, got this:"
         msg += util.hexprint(ident)
@@ -148,9 +148,9 @@ def _do_ident(radio, magic):
     LOG.info("Valid response, got this:")
     LOG.debug(util.hexprint(ident))
 
-    _rawsend(radio, "\x06")
+    _rawsend(radio, b"\x06")
     ack = _rawrecv(radio, 1)
-    if ack != "\x06":
+    if ack != b"\x06":
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio refused clone")
@@ -164,8 +164,8 @@ def _ident_radio(radio):
         try:
             data = _do_ident(radio, magic)
             return data
-        except errors.RadioError, e:
-            print e
+        except errors.RadioError as e:
+            print(e)
             error = e
             time.sleep(2)
     if error:
@@ -196,11 +196,11 @@ def _download(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = radio._mem_size / radio._recv_block_size
+    status.max = radio._mem_size // radio._recv_block_size
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in range(0, radio._mem_size, radio._recv_block_size):
         frame = _make_frame("S", addr, radio._recv_block_size)
         # DEBUG
@@ -212,21 +212,21 @@ def _download(radio):
 
         if radio._ack_block:
             ack = _rawrecv(radio, 1)
-            if ack != "\x06":
+            if ack != b"\x06":
                 raise errors.RadioError(
                     "Radio refused to send block 0x%04x" % addr)
 
         # now we read
         d = _recv(radio, addr, radio._recv_block_size)
 
-        _rawsend(radio, "\x06")
+        _rawsend(radio, b"\x06")
         time.sleep(0.05)
 
         # aggregate the data
         data += d
 
         # UI Update
-        status.cur = addr / radio._recv_block_size
+        status.cur = addr // radio._recv_block_size
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
@@ -257,7 +257,7 @@ def _upload(radio):
             LOG.debug(msg)
             raise errors.RadioError("Image not supported by radio")
 
-    if radio_ident != "0xFF" * 16 and image_ident == radio_ident:
+    if radio_ident != b"0xFF" * 16 and image_ident == radio_ident:
         _ranges = radio._ranges
     else:
         _ranges = [(0x0000, 0x0DF0),
@@ -266,7 +266,7 @@ def _upload(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = radio._mem_size / radio._send_block_size
+    status.max = radio._mem_size // radio._send_block_size
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
@@ -283,12 +283,12 @@ def _upload(radio):
 
             # receiving the response
             ack = _rawrecv(radio, 1)
-            if ack != "\x06":
+            if ack != b"\x06":
                 msg = "Bad ack writing block 0x%04x" % addr
                 raise errors.RadioError(msg)
 
             # UI Update
-            status.cur = addr / radio._send_block_size
+            status.cur = addr // radio._send_block_size
             status.msg = "Cloning to radio..."
             radio.status_fn(status)
 
@@ -337,7 +337,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
@@ -346,7 +346,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')
@@ -660,7 +660,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -674,6 +674,6 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                     value = int(val.get_value() * 10)
                 LOG.debug("Setting fm_presets = %s" % (value))
                 self._memobj.fm_presets = value
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise

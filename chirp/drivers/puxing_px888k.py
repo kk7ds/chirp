@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp import chirp_common, directory, memmap, \
-                  bitwise, settings, errors
+                  bitwise, settings, errors, util
 from struct import pack
 import logging
 
@@ -432,8 +432,8 @@ else:
             "u8 _unknown_0CFE[2];")
 
 FILE_MAGIC = [0xc40, 0xc50,
-              '\x50\x58\x38\x38\x38\x44\x00\xff'
-              '\x13\x40\x17\x60\x40\x00\x48\x00']
+              b'\x50\x58\x38\x38\x38\x44\x00\xff'
+              b'\x13\x40\x17\x60\x40\x00\x48\x00']
 HANDSHAKE_OUT = b'XONLINE'
 HANDSHAKE_IN = [b'PX888D\x00\xff']
 
@@ -509,7 +509,7 @@ BUTTON_MODES = ["Send call list data",
                 "Open squelch"]
 BOOT_MESSAGE_TYPES = ["Off", "Battery voltage", "Custom message"]
 TALKBACK = ['Off', 'Chinese', 'English']
-BACKLIGHT_COLORS = zip(["Blue", "Orange", "Purple"], range(1, 4))
+BACKLIGHT_COLORS = list(zip(["Blue", "Orange", "Purple"], range(1, 4)))
 VOX_GAIN = OFF_INT[0:10]
 VOX_DELAYS = ['1s', '2s', '3s', '4s']
 TRANSMIT_ALARMS = ['Off', '30s', '60s', '90s', '120s',
@@ -527,7 +527,8 @@ BACKLIGHT_MODES = ["Off", "Auto", "On"]
 TONE_RESET_TIME = ['Off'] + ['%ds' % x for x in range(1, 256)]
 DTMF_TONE_RESET_TIME = TONE_RESET_TIME[0:16]
 
-DTMF_GROUPS = zip(["Off", "A", "B", "C", "D", "*", "#"], [255]+range(10, 16))
+DTMF_GROUPS = list(zip(["Off", "A", "B", "C", "D", "*", "#"], [255] +
+                       list(range(10, 16))))
 FIVE_TONE_STANDARDS = ['ZVEI1', 'ZVEI2', 'CCIR1', 'CCITT']
 
 # should mimic the defaults in the memedit MemoryEditor somewhat
@@ -540,13 +541,13 @@ SANE_MEMORY_DEFAULT = b"\x14\x61\x00\x00\x14\x61\x00\x00" + \
 # these two option sets are listed differently like this in the stock software,
 # so I'm keeping them separate for now if they are in fact identical
 # in behaviour, that should probably be amended
-DTMF_ALERT_TRANSPOND = zip(['Off', 'Call alert',
-                            'Transpond-alert',
-                            'Transpond-ID code'],
-                           [255]+range(1, 4))
-FIVE_TONE_ALERT_TRANSPOND = zip(['Off', 'Alert tone',
-                                 'Transpond', 'Transpond-ID code'],
-                                [255]+range(1, 4))
+DTMF_ALERT_TRANSPOND = list(zip(['Off', 'Call alert',
+                                 'Transpond-alert',
+                                 'Transpond-ID code'],
+                                [255] + list(range(1, 4))))
+FIVE_TONE_ALERT_TRANSPOND = list(zip(['Off', 'Alert tone',
+                                      'Transpond', 'Transpond-ID code'],
+                                     [255] + list(range(1, 4))))
 
 BFM_BANDS = ['87.5-108MHz', '76.0-91.0MHz', '76.0-108.0MHz', '65.0-76.0MHz']
 BFM_STRIDE = ['100kHz', '50kHz']
@@ -769,7 +770,7 @@ def encode_halfbytes(data, datapad, mapping, fillvalue, fieldlen):
     for i in range(0, len(data), 2):
         v = (mapping.index(data[i]) << 4) | mapping.index(data[i+1])
         o[i >> 1] = v
-    return bytearray(o)
+    return bytearray(util.byte_to_int(b) for b in o)
 
 
 def decode_ffstring(data):
@@ -787,7 +788,7 @@ def encode_ffstring(data, fieldlen):
     extra = fieldlen-len(data)
     if extra > 0:
         data += '\xff'*extra
-    return bytearray(data)
+    return bytearray([util.byte_to_int(x) for x in data])
 
 
 def decode_dtmf(data, length):
@@ -825,7 +826,7 @@ def decode_freq(data):
 
 def encode_freq(data, fieldlen):
     """encode frequency data for the broadcast fm radio memories"""
-    data_out = bytearray('\xff')*fieldlen
+    data_out = bytearray(b'\xff')*fieldlen
     if data != '':
         data_out = encode_halfbytes((('%%0%di' % (fieldlen << 1)) %
                                      int(chirp_common.parse_freq(data)/10)),
@@ -835,7 +836,7 @@ def encode_freq(data, fieldlen):
 
 def sbyn(s, n):
     """setting by name"""
-    return filter(lambda x: x.get_name() == n, s)[0]
+    return list(filter(lambda x: x.get_name() == n, s))[0]
 
 
 # These helper classes provide a direct link between the value
@@ -902,8 +903,9 @@ class MappedListSettingValue(settings.RadioSettingValueMap):
         """
         self._val_mem = val_mem
         self._autowrite = autowrite
+        options = list(options)
         if not isinstance(options[0], tuple):
-            options = zip(options, range(len(options)))
+            options = list(zip(options, range(len(options))))
         settings.RadioSettingValueMap.__init__(
                 self,
                 options, mem_val=int(val_mem))
@@ -1142,7 +1144,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
         rf.valid_name_length = 6
         rf.valid_cross_modes = CROSS_MODES
         rf.memory_bounds = (1, 128)
-        rf.valid_special_chans = SPECIAL_CHANNELS.keys()
+        rf.valid_special_chans = list(SPECIAL_CHANNELS.keys())
         rf.valid_tuning_steps = [5.0, 6.25, 10.0, 12.5, 25.0]
         return rf
 

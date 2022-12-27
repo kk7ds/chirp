@@ -18,7 +18,7 @@ import os
 import logging
 
 from chirp import util, memmap, chirp_common, bitwise, directory, errors
-from yaesu_clone import YaesuCloneModeRadio
+from chirp.drivers.yaesu_clone import YaesuCloneModeRadio
 
 LOG = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ def _upload(radio):
         raise Exception("Radio did not ack ID")
 
     block = 0
-    while block < (radio.get_memsize() / 32):
+    while block < (radio.get_memsize() // 32):
         data = "\x0C\x03\x00\x00" + chr(block)
         data += radio.get_mmap()[block*32:(block+1)*32]
         cs = 0
@@ -201,7 +201,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             self._mmap = _download(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Downloaded in %.2f sec" % (time.time() - start))
         self.process_mmap()
@@ -214,7 +214,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Uploaded in %.2f sec" % (time.time() - start))
 
@@ -253,12 +253,12 @@ class FT2800Radio(YaesuCloneModeRadio):
         _nam = self._memobj.names[mem.number]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         if _mem.get_raw()[0] == "\xFF":
             # Empty -> Non-empty, so initialize
-            _mem.set_raw("\x00" * (_mem.size() / 8))
+            _mem.set_raw("\x00" * (_mem.size() // 8))
 
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 100000

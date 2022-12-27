@@ -75,7 +75,7 @@ struct {
 } embedded_msg;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 RT22_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=2.00),
                      chirp_common.PowerLevel("High", watts=5.00)]
@@ -124,12 +124,12 @@ def _get_radio_model(radio):
 def _rt22_enter_programming_mode(radio):
     serial = radio.pipe
 
-    magic = "PROGRGS"
+    magic = b"PROGRGS"
     exito = False
     for i in range(0, 5):
         for j in range(0, len(magic)):
             time.sleep(0.005)
-            serial.write(magic[j])
+            serial.write(magic[j:j + 1])
         ack = serial.read(1)
 
         try:
@@ -147,7 +147,7 @@ def _rt22_enter_programming_mode(radio):
         raise errors.RadioError(msg)
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(8)
     except:
         _rt22_exit_programming_mode(radio)
@@ -178,13 +178,13 @@ def _rt22_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("\x07")
+        serial.write(b"\x07")
         ack = serial.read(1)
     except:
         _rt22_exit_programming_mode(radio)
         raise errors.RadioError("Error communicating with radio")
 
-    if ack != "\x4E":
+    if ack != b"\x4E":
         _rt22_exit_programming_mode(radio)
         raise errors.RadioError("Radio refused to enter programming mode")
 
@@ -194,7 +194,7 @@ def _rt22_enter_programming_mode(radio):
 def _rt22_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -202,14 +202,14 @@ def _rt22_exit_programming_mode(radio):
 def _rt22_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
         for j in range(0, len(cmd)):
             time.sleep(0.005)
-            serial.write(cmd[j])
+            serial.write(cmd[j:j + 1])
 
         response = serial.read(4 + block_size)
         if response[:4] != expectedresponse:
@@ -236,11 +236,10 @@ def _rt22_write_block(radio, block_addr, block_size, _requires_patch=False,
                       _radio_id=""):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     if _requires_patch:
         mmap = radio.get_mmap()
         data = mmap[block_addr:block_addr + block_size]
-
         # For some radios (RT-622 & RT22FRS) memory at 0x1b8 reads as 0, but
         # radio ID should be written instead
         if block_addr == 0x1b8:
@@ -256,10 +255,10 @@ def _rt22_write_block(radio, block_addr, block_size, _requires_patch=False,
     try:
         for j in range(0, len(cmd)):
             time.sleep(0.005)
-            serial.write(cmd[j])
+            serial.write(cmd[j:j + 1])
         for j in range(0, len(data)):
             time.sleep(0.005)
-            serial.write(data[j])
+            serial.write(data[j:j + 1])
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
     except:
@@ -273,7 +272,7 @@ def do_download(radio):
     radio_ident = _rt22_enter_programming_mode(radio)
     LOG.info("Radio Ident is %s" % repr(radio_ident))
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -291,11 +290,9 @@ def do_download(radio):
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    data += radio.MODEL.ljust(8)
-
     _rt22_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -309,7 +306,7 @@ def do_upload(radio):
     LOG.info("Image Ident is %s" % repr(image_ident))
 
     # Determine if upload requires patching
-    if image_ident == "\x00\x00\x00\x00\x00\x00\xFF\xFF":
+    if image_ident == b"\x00\x00\x00\x00\x00\x00\xFF\xFF":
         patch_block = True
     else:
         patch_block = False
@@ -332,7 +329,7 @@ def model_match(cls, data):
 
     if len(data) == 0x0408:
         rid = data[0x0400:0x0408]
-        return rid.startswith(cls.MODEL)
+        return rid.startswith(cls.MODEL.encode())
     else:
         return False
 
@@ -343,6 +340,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT22"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     _ranges = [
                (0x0000, 0x0180, 0x10),
@@ -352,8 +350,8 @@ class RT22Radio(chirp_common.CloneModeRadio):
               ]
     _memsize = 0x0400
     _block_size = 0x40
-    _fileid = ["P32073", "P3" + "\x00\x00\x00" + "3", "P3207!",
-               "\x00\x00\x00\x00\x00\x00\xF8\xFF"]
+    _fileid = [b"P32073", b"P3" + b"\x00\x00\x00" + b"3", b"P3207!",
+               b"\x00\x00\x00\x00\x00\x00\xF8\xFF"]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -555,7 +553,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         _mem.rxfreq = mem.freq / 10

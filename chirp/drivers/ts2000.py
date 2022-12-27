@@ -50,7 +50,7 @@ class TS2000Radio(KenwoodLiveRadio):
         rf.valid_tuning_steps = list(TS2000_SSB_STEPS + TS2000_FM_STEPS)
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
-        rf.valid_duplexes = TS2000_DUPLEX.values()
+        rf.valid_duplexes = list(TS2000_DUPLEX.values())
 
         # TS-2000 uses ";" as a message separator even though it seems to
         # allow you to to use all printable ASCII characters at the manual
@@ -217,7 +217,7 @@ class TS2000Radio(KenwoodLiveRadio):
             duplex = 0
             offset = 0
         else:
-            print "Bug: unsupported duplex `%s'" % mem.duplex
+            print("Bug: unsupported duplex `%s'" % mem.duplex)
         if mem.mode in ["AM", "FM"]:
             step = TS2000_FM_STEPS.index(mem.tuning_step)
         else:
@@ -259,7 +259,7 @@ class TS2000Radio(KenwoodLiveRadio):
         elif mem.duplex == "split":
             duplex = 0
         else:
-            print "Bug: unsupported duplex `%s'" % mem.duplex
+            print("Bug: unsupported duplex `%s'" % mem.duplex)
         if mem.mode in ["AM", "FM"]:
             step = TS2000_FM_STEPS.index(mem.tuning_step)
         else:

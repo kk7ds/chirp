@@ -151,7 +151,7 @@ def _encode_freq(freq):
 
 
 def _wipe_memory(mem, char):
-    mem.set_raw(char * (mem.size() / 8))
+    mem.set_raw(char * (mem.size() // 8))
 
 
 class ID880Bank(icf.IcomNamedBank):
@@ -374,7 +374,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         # This is a horrid hack, given that people can change the GPS-A
         # destination, but it should suffice in most cases until we get
         # a rich container file format
-        return len(filedata) == cls._memsize and "API880," in filedata
+        return len(filedata) == cls._memsize and b"API880," in filedata
 
 
 # This radio isn't really supported yet and detects as a conflict with
@@ -391,4 +391,4 @@ class ID80Radio(ID880Radio):
         # This is a horrid hack, given that people can change the GPS-A
         # destination, but it should suffice in most cases until we get
         # a rich container file format
-        return len(filedata) == cls._memsize and "API80," in filedata
+        return len(filedata) == cls._memsize and b"API80," in filedata

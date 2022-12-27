@@ -586,7 +586,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             _mem.split = 1
         mnx = ""
         for char in _mem.name:
-            mnx += chr(char)
+            mnx += chr(int(char))
         mem.name = mnx.strip()
         mem.name = mem.name.upper()
         if _mem.rxfreq == 0:
@@ -1136,7 +1136,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
         return

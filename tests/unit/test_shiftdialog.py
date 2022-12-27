@@ -1,5 +1,8 @@
 import unittest
-import mox
+try:
+    import mox
+except ImportError:
+    from mox3 import mox
 
 from tests.unit import base
 try:
@@ -8,6 +11,8 @@ except ImportError:
     shiftdialog = None
 from chirp import chirp_common
 from chirp import errors
+
+shiftdialog = None
 
 
 class FakeRadio(object):

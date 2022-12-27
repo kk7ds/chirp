@@ -119,7 +119,7 @@ def _clone_in(radio):
     radio.pipe.timeout = 1
     attempts = 30
 
-    data = memmap.MemoryMap("\x00" * (radio._memsize + 128))
+    data = memmap.MemoryMapBytes(b"\x00" * (radio._memsize + 128))
     length = 0
     last_addr = 0
     while length < radio._memsize:
@@ -134,18 +134,18 @@ def _clone_in(radio):
 
         if frame:
             addr, = struct.unpack(">H", frame[0:2])
-            checksum = ord(frame[130])
+            checksum = frame[130]
             block = frame[2:130]
 
             cs = 0
             for i in frame[:-1]:
-                cs = (cs + ord(i)) % 256
+                cs = (cs + i) % 256
             if cs != checksum:
                 LOG.debug("Calc: %02x Real: %02x Len: %i" %
                           (cs, checksum, len(block)))
                 raise errors.RadioError("Block failed checksum")
 
-            radio.pipe.write("\x06")
+            radio.pipe.write(b"\x06")
             time.sleep(0.05)
 
             if (last_addr + 128) != addr:
@@ -182,11 +182,11 @@ def _clone_out(radio):
             frame = struct.pack(">H", i) + block
             cs = 0
             for byte in frame:
-                cs += ord(byte)
-            frame += chr(cs % 256)
+                cs += byte
+            frame += bytes([cs % 256])
             radio.pipe.write(frame)
             ack = radio.pipe.read(1)
-            if ack != "\x06":
+            if ack != b"\x06":
                 raise errors.RadioError("Radio refused block %i" % (i / 128))
             time.sleep(0.05)
 
@@ -239,6 +239,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 48000
     VENDOR = "Yaesu"
     MODEL = "FTM-350"
+    NEEDS_COMPAT_SERIAL = False
 
     _model = ""
     _memsize = 65536
@@ -278,7 +279,8 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             self._mmap = _clone_in(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
+            LOG.exception('Failed to read: %s', e)
             raise errors.RadioError("Failed to download from radio (%s)" % e)
         self.process_mmap()
 
@@ -287,7 +289,8 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             _clone_out(self)
         except errors.RadioError:
             raise
-        except Exception, e:
+        except Exception as e:
+            LOG.exception('Failed to write: %s', e)
             raise errors.RadioError("Failed to upload to radio (%s)" % e)
 
     def process_mmap(self):
@@ -399,7 +402,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @classmethod
     def match_model(self, filedata, filename):
-        return filedata.startswith("AH033$")
+        return filedata.startswith(b"AH033$")
 
     def get_settings(self):
         top = RadioSettings()

@@ -345,7 +345,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
 
 # B-TECH UV-50X3 id string
-UV50X3_id = "VGC6600MD"
+UV50X3_id = b"VGC6600MD"
 
 
 def _clean_buffer(radio):
@@ -360,14 +360,14 @@ def _check_for_double_ack(radio):
     radio.pipe.timeout = 0.005
     c = radio.pipe.read(1)
     radio.pipe.timeout = STIMEOUT
-    if c and c != '\x06':
+    if c and c != b'\x06':
         _exit_program_mode(radio)
         raise errors.RadioError('Expected nothing or ACK, got %r' % c)
 
 
 def _rawrecv(radio, amount):
     """Raw read from the radio device"""
-    data = ""
+    data = b""
     try:
         data = radio.pipe.read(amount)
     except:
@@ -408,7 +408,7 @@ def _recv(radio, addr, length=BLOCK_SIZE):
 
     # check for unexpected extra command byte
     c, a, l = struct.unpack(">BHB", hdr)
-    if hdr[0:2] == "WW" and a != addr:
+    if hdr[0:2] == b"WW" and a != addr:
         # extra command byte detected
         # throw away the 1st byte and add the next byte in the buffer
         hdr = hdr[1:] + _rawrecv(radio, 1)
@@ -421,7 +421,7 @@ def _recv(radio, addr, length=BLOCK_SIZE):
     LOG.debug(util.hexprint(hdr + data))
 
     c, a, l = struct.unpack(">BHB", hdr)
-    if a != addr or l != length or c != ord("W"):
+    if a != addr or l != length or c != ord(b"W"):
         _exit_program_mode(radio)
         LOG.error("Invalid answer for block 0x%04x:" % addr)
         LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (c, a, l))
@@ -440,7 +440,7 @@ def _do_ident(radio):
     # flush input buffer
     _clean_buffer(radio)
 
-    magic = "V66LINK"
+    magic = b"V66LINK"
 
     _rawsend(radio, magic)
 
@@ -463,7 +463,7 @@ def _do_ident(radio):
 
 
 def _exit_program_mode(radio):
-    endframe = "\x45"
+    endframe = b"\x45"
     _rawsend(radio, endframe)
 
 
@@ -476,13 +476,13 @@ def _download(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
-        frame = _make_frame("R", addr, BLOCK_SIZE)
+        frame = _make_frame(b"R", addr, BLOCK_SIZE)
         # DEBUG
         LOG.info("Request sent:")
         LOG.debug(util.hexprint(frame))
@@ -497,7 +497,7 @@ def _download(radio):
         data += d
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
@@ -517,7 +517,7 @@ def _upload(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
@@ -526,13 +526,13 @@ def _upload(radio):
         # sending the data
         data = radio.get_mmap()[addr:addr + BLOCK_SIZE]
 
-        frame = _make_frame("W", addr, BLOCK_SIZE, data)
+        frame = _make_frame(b"W", addr, BLOCK_SIZE, data)
 
         _rawsend(radio, frame)
 
         # receiving the response
         ack = _rawrecv(radio, 1)
-        if ack != "\x06":
+        if ack != b"\x06":
             _exit_program_mode(radio)
             msg = "Bad ack writing block 0x%04x" % addr
             raise errors.RadioError(msg)
@@ -540,7 +540,7 @@ def _upload(radio):
         _check_for_double_ack(radio)
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
@@ -561,6 +561,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     chirp_common.ExperimentalRadio):
     """BTECH's UV-50X3"""
     VENDOR = "BTECH"
+    NEEDS_COMPAT_SERIAL = False
     _air_range = (108000000, 136000000)
     _vhf_range = (136000000, 174000000)
     _vhf2_range = (174000000, 250000000)
@@ -657,7 +658,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
@@ -1353,7 +1354,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         dtmf.append(ttautod)
 
         # setup 9 dtmf autodial entries
-        for i in map(str, range(1, 10)):
+        for i in map(str, list(range(1, 10))):
             objname = "code" + i
             strname = "Code " + str(i)
             dtmfsetting = getattr(_mem.dtmfcode, objname)
@@ -1420,7 +1421,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

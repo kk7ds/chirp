@@ -72,11 +72,11 @@ struct {
 } settings2;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 BLOCK_SIZE = 0x08
-UPLOAD_BLOCKS = [range(0x0000, 0x0110, 8),
-                 range(0x02b0, 0x02c0, 8),
-                 range(0x0380, 0x03e0, 8)]
+UPLOAD_BLOCKS = [list(range(0x0000, 0x0110, 8)),
+                 list(range(0x02b0, 0x02c0, 8)),
+                 list(range(0x0380, 0x03e0, 8))]
 
 # TODO: Is it 1 watt?
 H777_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
@@ -99,9 +99,9 @@ def _h777_enter_programming_mode(radio):
     serial.timeout = 0.5
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         time.sleep(0.1)
-        serial.write("PROGRAM")
+        serial.write(b"PROGRAM")
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -112,7 +112,7 @@ def _h777_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         # At least one version of the Baofeng BF-888S has a consistent
         # ~0.33s delay between sending the first five bytes of the
         # version data and the last three bytes. We need to raise the
@@ -121,7 +121,7 @@ def _h777_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith("P3107"):
+    if not ident.startswith(b"P3107"):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -138,7 +138,7 @@ def _h777_enter_programming_mode(radio):
 def _h777_exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -146,8 +146,8 @@ def _h777_exit_programming_mode(radio):
 def _h777_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, BLOCK_SIZE)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, BLOCK_SIZE)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -172,8 +172,8 @@ def _h777_read_block(radio, block_addr, block_size):
 def _h777_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, BLOCK_SIZE)
-    data = radio.get_mmap()[block_addr:block_addr + 8]
+    cmd = struct.pack(">cHb", b'W', block_addr, BLOCK_SIZE)
+    data = radio.get_mmap().get_byte_compatible()[block_addr:block_addr + 8]
 
     LOG.debug("Writing Data:")
     LOG.debug(util.hexprint(cmd + data))
@@ -194,7 +194,7 @@ def do_download(radio):
     LOG.debug("download")
     _h777_enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -214,7 +214,7 @@ def do_download(radio):
 
     _h777_exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -278,6 +278,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-888"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
                TenwayTW325Alias, RetevisH777Alias]
@@ -422,7 +423,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() / 8))
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
         _mem.rxfreq = mem.freq / 10
@@ -577,7 +578,7 @@ class H777Radio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 

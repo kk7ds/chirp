@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import tempfile
 import unittest
 
@@ -22,64 +23,74 @@ from chirp.drivers import ic2820, icf, id31
 
 
 class TestFileICF(unittest.TestCase):
+    def setUp(self):
+        self.tempdir = tempfile.mkdtemp()
+
+    def cleanUp(self):
+        shutil.rmtree(self.tempdir)
+
     def test_read_icf_data_modern(self):
-        with tempfile.NamedTemporaryFile(suffix='.icf') as f:
-            f.write('12345678\r\n#Foo=somefoovalue\r\n#Bar=123\r\n')
+        fn = os.path.join(self.tempdir, 'test.icf')
+        with open(fn, 'w', newline='\r\n') as f:
+            f.write('12345678\n#Foo=somefoovalue\n#Bar=123\n')
             f.write('0000000020015C70000020800000E4002020202020'
-                    '20202020202020202020200040810204\r\n')
+                    '20202020202020202020200040810204\n')
             f.write('000000202008102040810204081020408102040810'
-                    '20015B9903E821700000E4284C614772\r\n')
-            f.write('#CD=fakehash\r\n')
+                    '20015B9903E821700000E4284C614772\n')
+            f.write('#CD=fakehash\n')
             f.flush()
 
-            icfdata, mmap = icf.read_file(f.name)
+        icfdata, mmap = icf.read_file(fn)
 
-            self.assertEqual({'model': b'\x12\x34\x56\x78',
-                              'Foo': 'somefoovalue',
-                              'Bar': 123,
-                              'recordsize': 32,
-                              'CD': 'fakehash'}, icfdata)
+        self.assertEqual({'model': b'\x12\x34\x56\x78',
+                          'Foo': 'somefoovalue',
+                          'Bar': 123,
+                          'recordsize': 32,
+                          'CD': 'fakehash'}, icfdata)
 
-            try:
-                directory.icf_to_radio(f.name)
-            except Exception as e:
-                self.assertIn('12345678', str(e))
-            else:
-                self.fail('Directory failed to reject unknown model')
+        try:
+            directory.get_radio_by_image(fn)
+        except Exception as e:
+            self.assertIn('Unknown file format', str(e))
+        else:
+            self.fail('Directory failed to reject unknown model')
 
     def test_read_icf_data_old(self):
-        with tempfile.NamedTemporaryFile(suffix='.icf') as f:
-            f.write('29700001\r\n#\r\n')
-            f.write('00001008BBB7C0000927C04351435143512020\r\n')
-            f.write('00101020202020202020202020202020202020\r\n')
+        fn = os.path.join(self.tempdir, 'test.icf')
+        with open(fn, 'w', newline='\r\n') as f:
+            f.write('29700001\n#\n')
+            f.write('00001008BBB7C0000927C04351435143512020\n')
+            f.write('00101020202020202020202020202020202020\n')
             f.flush()
 
-            icfdata, mmap = icf.read_file(f.name)
+        icfdata, mmap = icf.read_file(fn)
 
-            self.assertEqual({'model': b'\x29\x70\x00\x01',
-                              'recordsize': 16}, icfdata)
+        self.assertEqual({'model': b'\x29\x70\x00\x01',
+                          'recordsize': 16}, icfdata)
 
     def test_read_write_icf(self):
-        with tempfile.NamedTemporaryFile(suffix='.icf') as f:
+        fn1 = os.path.join(self.tempdir, 'test1.icf')
+        with open(fn1, 'w', newline='\r\n') as f:
             # These are different values than the default, so make
             # sure we persist them to the output ICF file.
-            f.write('33220001\r\n#MapRev=2\r\n#EtcData=000006\r\n')
+            f.write('33220001\n#MapRev=2\n#EtcData=000006\n')
             f.write('0000000020015C70000020800000E4002020202020'
-                    '20202020202020202020200040810204\r\n')
+                    '20202020202020202020200040810204\n')
             f.write('000000202008102040810204081020408102040810'
-                    '20015B9903E821700000E4284C614772\r\n')
-            f.write('#CD=fakehash\r\n')
+                    '20015B9903E821700000E4284C614772\n')
+            f.write('#CD=fakehash\n')
             f.flush()
 
-            r = id31.ID31Radio(f.name)
+        r = id31.ID31Radio(fn1)
 
-        with tempfile.NamedTemporaryFile(suffix='.icf') as f:
-            r.save(f.name)
-            icfdata, mmap = icf.read_file(f.name)
+        fn2 = os.path.join(self.tempdir, 'test2.icf')
+        with open(fn2, 'w', newline='\r\n') as f:
+            r.save(fn2)
+            icfdata, mmap = icf.read_file(fn2)
             self.assertEqual({'MapRev': 2,
                               'EtcData': 6,
                               'Comment': '',
-                              'model': r._model,
+                              'model': r.get_model(),
                               'CD': '9674E1C86BA17D36DB9D3D8A144F1081',
                               'recordsize': 32}, icfdata)
 
@@ -88,40 +99,41 @@ class TestFileICF(unittest.TestCase):
                                 '..', 'images', 'Icom_ID-31A.img')
 
         r = id31.ID31Radio(img_file)
-        with tempfile.NamedTemporaryFile(suffix='.icf') as f:
-            r.save(f.name)
+        fn = os.path.join(self.tempdir, 'test.icf')
+        with open(fn, 'w', newline='\r\n') as f:
+            r.save(fn)
 
-            icfdata, mmap = icf.read_file(f.name)
+            icfdata, mmap = icf.read_file(fn)
             # If we sourced from an image, we use our defaults in
             # generating the ICF metdata
             self.assertEqual({'MapRev': 1,
                               'EtcData': 5,
                               'Comment': '',
-                              'model': r._model,
+                              'model': r.get_model(),
                               'CD': '9F240F598EF20683726ED252278C61D0',
                               'recordsize': 32}, icfdata)
 
-            self.assertEqual(id31.ID31Radio,
-                             directory.icf_to_radio(f.name))
-
+            self.assertIsInstance(directory.get_radio_by_image(fn),
+                                  id31.ID31Radio)
 
     def test_read_img_write_icf_old(self):
         img_file = os.path.join(os.path.dirname(__file__),
                                 '..', 'images', 'Icom_IC-2820H.img')
 
         r = ic2820.IC2820Radio(img_file)
-        with tempfile.NamedTemporaryFile(suffix='.icf') as f:
-            r.save(f.name)
+        fn = os.path.join(self.tempdir, 'test.icf')
+        with open(fn, 'w', newline='\r\n') as f:
+            r.save(fn)
 
-            icfdata, mmap = icf.read_file(f.name)
+            icfdata, mmap = icf.read_file(fn)
             self.assertEqual({'MapRev': 1,
                               'EtcData': 0,
                               'Comment': '',
-                              'model': r._model,
+                              'model': r.get_model(),
                               'recordsize': 16}, icfdata)
 
-            self.assertEqual(ic2820.IC2820Radio,
-                             directory.icf_to_radio(f.name))
+            self.assertIsInstance(directory.get_radio_by_image(fn),
+                                  ic2820.IC2820Radio)
 
 
 class TestCloneICF(unittest.TestCase):

@@ -87,7 +87,7 @@ struct {
 } names[%d];
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 TONES = chirp_common.TONES
 TMODES = ["", "Tone", "DTCS", "DTCS"]
@@ -176,7 +176,7 @@ def _enter_programming_mode(radio):
         raise errors.RadioError(msg)
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(len(radio._fingerprint))
     except:
         _exit_programming_mode(radio)
@@ -202,7 +202,7 @@ def _enter_programming_mode(radio):
 def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write("E")
+        serial.write(b"E")
     except:
         raise errors.RadioError("Radio refused to exit programming mode")
 
@@ -210,8 +210,8 @@ def _exit_programming_mode(radio):
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -238,7 +238,7 @@ def _read_block(radio, block_addr, block_size):
 def _write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -258,7 +258,7 @@ def do_download(radio):
     LOG.debug("download")
     _enter_programming_mode(radio)
 
-    data = ""
+    data = b""
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -278,7 +278,7 @@ def do_download(radio):
 
     _exit_programming_mode(radio)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -304,6 +304,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-T8"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = BLOCK_SIZE_UP = 0x10
     ODD_SPLIT = True
     HAS_NAMES = False
@@ -318,8 +319,8 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
     VALID_BANDS = [(400000000, 470000000)]
 
-    _magic = "\x02" + "PROGRAM"
-    _fingerprint = "\x2E" + "BF-T6" + "\x2E"
+    _magic = b"\x02" + b"PROGRAM"
+    _fingerprint = b"\x2E" + b"BF-T6" + b"\x2E"
     _upper = 99
     _mem_params = (_upper,  # number of channels
                    _upper   # number of names
@@ -898,7 +899,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception, e:
+                except Exception as e:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1007,7 +1008,7 @@ class FRSA1Radio(BFT8Radio):
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
     DUPLEXES = ["", "-", "+", "off"]
 
-    _fingerprint = "BF-T8A" + "\x2E"
+    _fingerprint = b"BF-T8A" + b"\x2E"
     _upper = 22
     _frs = _upper == 22
 

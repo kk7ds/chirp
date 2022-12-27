@@ -17,7 +17,7 @@ import os
 import sys
 from glob import glob
 
-CHIRP_VERSION = "0.3.0dev"
+CHIRP_VERSION = "py3dev"
 
 module_dir = os.path.dirname(sys.modules["chirp"].__file__)
 __all__ = []

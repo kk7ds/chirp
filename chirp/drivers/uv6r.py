@@ -34,13 +34,13 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # Baofeng UV-6R magic string
-MSTRING_UV6R = "\x50\xBB\xFF\x20\x14\x11\x22"
+MSTRING_UV6R = b"\x50\xBB\xFF\x20\x14\x11\x22"
 
 # #### ID strings #####################################################
 
 # Baofeng UV-6R
-UV6R_fp1 = " BF230#1"
-UV6R_fp2 = " BF230#2"
+UV6R_fp1 = b" BF230#1"
+UV6R_fp2 = b" BF230#2"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -83,7 +83,7 @@ def model_match(cls, data):
 
     rid2 = data[0x1FD0:0x1FD5]
 
-    if rid2 == cls.MODEL:
+    if rid2 == cls.MODEL.encode():
         match_rid2 = True
 
     if match_rid1 and match_rid2:
@@ -97,6 +97,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
     """Baofeng UV-6R"""
     VENDOR = "Baofeng"
     MODEL = "UV-6R"
+    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [UV6R_fp2, UV6R_fp1, ]
 

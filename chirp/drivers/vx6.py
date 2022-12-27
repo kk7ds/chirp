@@ -316,7 +316,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "VX-6"
 
-    _model = "AH021"
+    _model = b"AH021"
     _memsize = 32587
     _block_lengths = [10, 32577]
     _block_size = 16
@@ -873,5 +873,5 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
                 elif setting == "password":
                     newval = self._encode_chars(newval, 4)
                 setattr(_settings, setting, newval)
-            except Exception, e:
+            except Exception as e:
                 raise

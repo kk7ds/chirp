@@ -34,20 +34,20 @@ LOG = logging.getLogger(__name__)
 # #### MAGICS #########################################################
 
 # BTECH UV-5X3 magic string
-MSTRING_UV5X3 = "\x50\x0D\x0C\x20\x16\x03\x28"
+MSTRING_UV5X3 = b"\x50\x0D\x0C\x20\x16\x03\x28"
 
 # MTC UV-5R-3 magic string
-MSTRING_UV5R3 = "\x50\x0D\x0C\x20\x17\x09\x19"
+MSTRING_UV5R3 = b"\x50\x0D\x0C\x20\x17\x09\x19"
 
 # #### ID strings #####################################################
 
 # BTECH UV-5X3
-UV5X3_fp1 = "UVVG302"  # BFB300 original
-UV5X3_fp2 = "UVVG301"  # UVV300 original
-UV5X3_fp3 = "UVVG306"  # UVV306 original
+UV5X3_fp1 = b"UVVG302"  # BFB300 original
+UV5X3_fp2 = b"UVVG301"  # UVV300 original
+UV5X3_fp3 = b"UVVG306"  # UVV306 original
 
 # MTC UV-5R-3
-UV5R3_fp1 = "5R31709"
+UV5R3_fp1 = b"5R31709"
 
 DTMF_CHARS = " 1234567890*#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -102,6 +102,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
     """BTech UV-5X3"""
     VENDOR = "BTECH"
     MODEL = "UV-5X3"
+    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [UV5X3_fp3,
                UV5X3_fp2,

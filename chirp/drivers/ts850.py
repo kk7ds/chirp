@@ -37,7 +37,7 @@ TS850_MODES = {
     "CW-R":  "7",
     "FSK-R": "9",
 }
-TS850_MODES_REV = {val: mode for mode, val in TS850_MODES.iteritems()}
+TS850_MODES_REV = {val: mode for mode, val in TS850_MODES.items()}
 
 TS850_TONES = list(chirp_common.OLD_TONES)
 TS850_TONES.remove(69.3)
@@ -81,7 +81,7 @@ class TS850Radio(KenwoodLiveRadio):
         rf.valid_bands = TS850_BANDS
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC
         rf.valid_duplexes = TS850_DUPLEX
-        rf.valid_modes = TS850_MODES.keys()
+        rf.valid_modes = list(TS850_MODES.keys())
         rf.valid_skips = TS850_SKIP
         rf.valid_tmodes = TS850_TMODES
 

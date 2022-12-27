@@ -17,7 +17,7 @@ import struct
 import logging
 
 from chirp import chirp_common, util, errors, bitwise
-from chirp.memmap import MemoryMap
+from chirp.memmap import MemoryMapBytes
 
 LOG = logging.getLogger(__name__)
 
@@ -56,11 +56,11 @@ class IC9xDVMemory(chirp_common.DVMemory):
 def _ic9x_parse_frames(buf):
     frames = []
 
-    while "\xfe\xfe" in buf:
+    while b"\xfe\xfe" in buf:
         try:
-            start = buf.index("\xfe\xfe")
-            end = buf[start:].index("\xfd") + start + 1
-        except Exception, e:
+            start = buf.index(b"\xfe\xfe")
+            end = buf[start:].index(b"\xfd") + start + 1
+        except Exception as e:
             LOG.error("No trailing bit")
             break
 
@@ -71,7 +71,7 @@ def _ic9x_parse_frames(buf):
             frame = IC92Frame()
             frame.from_raw(framedata[2:-1])
             frames.append(frame)
-        except errors.InvalidDataError, e:
+        except errors.InvalidDataError as e:
             LOG.error("Broken frame: %s" % e)
 
         # LOG.debug("Parsed %i frames" % len(frames))
@@ -84,16 +84,16 @@ def ic9x_send(pipe, buf):
     any response frames, which are returned as a list"""
 
     # Add header and trailer
-    realbuf = "\xfe\xfe" + buf + "\xfd"
+    realbuf = b"\xfe\xfe" + buf + b"\xfd"
 
     # LOG.debug("Sending:\n%s" % util.hexprint(realbuf))
 
     pipe.write(realbuf)
     pipe.flush()
 
-    data = ""
-    while True:
-        buf = pipe.read(4096)
+    data = b""
+    while b'\xfd' not in data:
+        buf = pipe.read(1)
         if not buf:
             break
 
@@ -110,27 +110,27 @@ class IC92Frame:
 
     def set_vfo(self, vfo):
         """Set the vfo number"""
-        self._map[0] = chr(vfo)
+        self._map[0] = vfo
 
     def from_raw(self, data):
         """Construct the frame from raw data"""
-        self._map = MemoryMap(data)
+        self._map = MemoryMapBytes(data)
 
     def from_frame(self, frame):
         """Construct the frame by copying another frame"""
-        self._map = MemoryMap(frame.get_raw())
+        self._map = MemoryMapBytes(frame.get_raw())
 
     def __init__(self, subcmd=0, flen=0, cmd=0x1A):
-        self._map = MemoryMap("\x00" * (4 + flen))
-        self._map[0] = "\x01\x80" + chr(cmd) + chr(subcmd)
+        self._map = MemoryMapBytes(b"\x00" * (4 + flen))
+        self._map[0] = b"\x01\x80" + bytes([cmd, subcmd])
 
     def get_payload(self):
         """Return the entire payload (sans header)"""
-        return self._map[4:]
+        return MemoryMapBytes(self._map[4:])
 
     def get_raw(self):
         """Return the raw version of the frame"""
-        return self._map.get_packed()
+        return self._map.get_byte_compatible().get_packed()
 
     def __str__(self):
         string = "Frame VFO=%i (len = %i)\n" % (self.get_vfo(),
@@ -142,7 +142,7 @@ class IC92Frame:
 
     def send(self, pipe, verbose=False):
         """Send the frame to the radio via @pipe"""
-        if verbose:
+        if verbose or True:
             LOG.debug("Sending:\n%s" % util.hexprint(self.get_raw()))
 
         response = ic9x_send(pipe, self.get_raw())
@@ -156,7 +156,7 @@ class IC92Frame:
         self._map[start+4] = value
 
     def __getitem__(self, index):
-        return self._map[index+4]
+        return self.get_payload()[index]
 
     def __getslice__(self, start, end):
         return self._map[start+4:end+4]
@@ -307,14 +307,14 @@ class IC92MemoryFrame(IC92Frame):
         # are invalid, it's easiest to start with a known-good one
         # since we don't set everything.
         self[0] = \
-            "\x01\x00\x03\x00\x00\x01\x46\x01" + \
-            "\x00\x00\x60\x00\x00\x08\x85\x08" + \
-            "\x85\x00\x23\x22\x80\x06\x00\x00" + \
-            "\x00\x00\x20\x20\x20\x20\x20\x20" + \
-            "\x20\x20\x00\x00\x20\x20\x20\x20" + \
-            "\x20\x20\x20\x20\x4b\x44\x37\x52" + \
-            "\x45\x58\x20\x43\x43\x51\x43\x51" + \
-            "\x43\x51\x20\x20"
+            b"\x01\x00\x03\x00\x00\x01\x46\x01" + \
+            b"\x00\x00\x60\x00\x00\x08\x85\x08" + \
+            b"\x85\x00\x23\x22\x80\x06\x00\x00" + \
+            b"\x00\x00\x20\x20\x20\x20\x20\x20" + \
+            b"\x20\x20\x00\x00\x20\x20\x20\x20" + \
+            b"\x20\x20\x20\x20\x4b\x44\x37\x52" + \
+            b"\x45\x58\x20\x43\x43\x51\x43\x51" + \
+            b"\x43\x51\x20\x20"
 
     def set_vfo(self, vfo):
         IC92Frame.set_vfo(self, vfo)
@@ -372,7 +372,7 @@ class IC92MemoryFrame(IC92Frame):
 
     def get_memory(self):
         """Return a Memory object based on the contents of the frame"""
-        _mem = bitwise.parse(MEMORY_FRAME_FORMAT, self).mem
+        _mem = bitwise.parse(MEMORY_FRAME_FORMAT, self.get_payload()).mem
 
         if MODES[_mem.mode] == "DV":
             mem = IC9xDVMemory()
@@ -417,23 +417,23 @@ class IC92MemoryFrame(IC92Frame):
 
 
 def _send_magic_4800(pipe):
-    cmd = "\x01\x80\x19"
-    magic = ("\xFE" * 25) + cmd
+    cmd = b"\x01\x80\x19"
+    magic = (b"\xFE" * 25) + cmd
     for _i in [0, 1]:
         resp = ic9x_send(pipe, magic)
         if resp:
-            return resp[0].get_raw()[0] == "\x80"
+            return resp[0].get_raw()[0] == b"\x80"
     return True
 
 
 def _send_magic_38400(pipe):
-    cmd = "\x01\x80\x19"
+    cmd = b"\x01\x80\x19"
     # rsp = "\x80\x01\x19"
-    magic = ("\xFE" * 400) + cmd
+    magic = (b"\xFE" * 400) + cmd
     for _i in [0, 1]:
         resp = ic9x_send(pipe, magic)
         if resp:
-            return resp[0].get_raw()[0] == "\x80"
+            return resp[0].get_raw()[0] == b"\x80"
     return False
 
 
@@ -487,7 +487,7 @@ def get_memory(pipe, vfo, number):
     if len(rframe.get_payload()) < 1:
         raise errors.InvalidMemoryLocation("No response from radio")
 
-    if rframe.get_payload()[3] == '\xff':
+    if rframe.get_payload()[3] == b'\xff':
         raise errors.InvalidMemoryLocation("Radio says location is empty")
 
     mf = IC92MemoryFrame()
@@ -507,7 +507,7 @@ def set_memory(pipe, vfo, memory):
 
     rframe = frame.send(pipe)
 
-    if rframe.get_raw()[2] != "\xfb":
+    if rframe.get_raw()[2] != b"\xfb":
         raise errors.InvalidDataError("Radio reported error:\n%s" %
                                       util.hexprint(rframe.get_payload()))
 
