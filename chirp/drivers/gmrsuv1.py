@@ -72,12 +72,12 @@ LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
-GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
-               462.6875, 462.7125]
-GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
-               467.6875, 467.7125]
-GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
-               462.6750, 462.7000, 462.7250]
+GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
+               462687500, 462712500]
+GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
+               467687500, 467712500]
+GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
+               462675000, 462700000, 462725000]
 GMRS_FREQS_ORIG = GMRS_FREQS1 + GMRS_FREQS3 * 2
 GMRS_FREQS_2017 = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
@@ -139,7 +139,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         rf.has_tuning_step = False
         rf.can_odd_split = False
         rf.has_name = True
-        rf.has_offset = False
+        rf.has_offset = True
         rf.has_mode = True
         rf.has_dtcs = True
         rf.has_rx_dtcs = True
@@ -149,7 +149,7 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         rf.valid_modes = self.MODES
         rf.valid_characters = self.VALID_CHARS
         rf.valid_name_length = self.LENGTH_NAME
-        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_duplexes = ["", "-", "+", "off"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = [
             "Tone->Tone",
@@ -414,47 +414,6 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         """Process the mem map into the mem object"""
         self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
 
-    def validate_memory(self, mem):
-        msgs = baofeng_common.BaofengCommonHT.validate_memory(self, mem)
-
-        _mem = self._memobj.memory[mem.number]
-        _msg_freq = 'Memory location cannot change frequency'
-        _msg_nfm = 'Memory location only supports NFM'
-        _msg_txp = 'Memory location only supports Low'
-
-        # Original GMRS-V1 models
-        # line1 is a valid string, so safe to encode here
-        if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
-            # range of memories with values permanently set by FCC rules
-            if mem.number <= 22:
-                if mem.freq != int(GMRS_FREQS_ORIG[mem.number] * 1000000):
-                    # warn user can't change frequency
-                    msgs.append(chirp_common.ValidationError(_msg_freq))
-
-                if mem.number <= 6:
-                    if mem.mode == "FM":
-                        # warn user can't change mode
-                        msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-        # GMRS-V1 models supporting 2017 GMRS rules
-        else:
-            # range of memories with values permanently set by FCC rules
-            if mem.number >= 1 and mem.number <= 30:
-                if mem.freq != int(GMRS_FREQS_2017[mem.number - 1] * 1000000):
-                    # warn user can't change frequency
-                    msgs.append(chirp_common.ValidationError(_msg_freq))
-
-                if mem.number >= 8 and mem.number <= 14:
-                    if mem.mode == "FM":
-                        # warn user can't change mode
-                        msgs.append(chirp_common.ValidationError(_msg_nfm))
-
-                    if str(mem.power) == "High":
-                        # warn user can't change power level
-                        msgs.append(chirp_common.ValidationError(_msg_txp))
-
-        return msgs
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -468,14 +427,15 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        # TX freq set
-        offset = (int(_mem.txfreq) * 10) - mem.freq
-        if offset != 0:
-            if offset > 0:
-                mem.offset = offset
-                mem.duplex = "+"
-        else:
+        if _mem.txfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+            mem.duplex = "off"
             mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
+            mem.duplex = ""
+            mem.offset = 0
+        else:
+            mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
+            mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
         for char in _nam.name:
             if str(char) == "\xFF":
@@ -571,14 +531,51 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
 
         _mem.set_raw("\x00" * 16)
 
+        # Original GMRS-V1 models (pre-2017 GMRS rules)
+        # line1 is a valid string, so safe to encode here
+        if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
+            if mem.number <= 22:
+                GMRS_FREQ = GMRS_FREQS_ORIG[mem.number]
+                mem.freq = GMRS_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                if mem.number >= 15:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
+        # GMRS-V1 models supporting 2017 GMRS rules
+        else:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = GMRS_FREQS_2017[mem.number - 1]
+                mem.freq = GMRS_FREQ
+                if mem.number <= 22:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    if mem.number >= 8 and mem.number <= 14:
+                        mem.mode = "NFM"
+                        mem.power = self.POWER_LEVELS[1]
+                if mem.number > 22:
+                    mem.duplex = '+'
+                    mem.offset = 5000000
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
+
         _mem.rxfreq = mem.freq / 10
 
-        if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
-            if mem.number > 22:
-                _mem.txfreq = mem.freq / 10
+        if mem.duplex == "off":
+            for i in range(0, 4):
+                _mem.txfreq[i].set_raw("\xFF")
+        elif mem.duplex == "split":
+            _mem.txfreq = mem.offset / 10
+        elif mem.duplex == "+":
+            _mem.txfreq = (mem.freq + mem.offset) / 10
+        elif mem.duplex == "-":
+            _mem.txfreq = (mem.freq - mem.offset) / 10
         else:
-            if mem.number < 1 or mem.number > 22:
-                _mem.txfreq = mem.freq / 10
+            _mem.txfreq = mem.freq / 10
 
         _namelength = self.get_features().valid_name_length
         for i in range(_namelength):
