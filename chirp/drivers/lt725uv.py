@@ -4,6 +4,7 @@
 #    Rick DeWitt (RJD), <aa0rd@yahoo.com>
 # Modified for Baojie BJ-318: April 2021
 #    Mark Hartong, AJ4YI <mark.hartong@verizon.net>
+# Python 3 tested BJ-218 12/2022, RJD
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,6 +73,8 @@ struct {
   u8  dtmf8_cnt;
   u8  dtmf8[7];
 } dtmf_tab;
+
+
 
 #seekto 0x0280;
 struct {
@@ -1338,7 +1341,8 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Generate the DTMF code 1-8, NOT a callback."""
             tmp = ""
             if knt > 0 and knt != 0xff:
-                for val in ary[:knt]:
+                for j in range(0, knt, 1):
+                    val = ary[j]
                     if val > 0 and val <= 9:
                         tmp += chr(val + 48)
                     elif val == 0x0a:
