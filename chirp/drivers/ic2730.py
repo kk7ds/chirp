@@ -3,6 +3,7 @@
 # 7/2020: Vers 1.2 Fixed reversed E:* / F:# DTMF codes Issue #8159
 # 9/2020: Vers 1.3 Expanded tone mode support and added py3 HAS_FUTURE
 #                  bytes() per issue #8233. (icf.py is NOT updated)
+# 12/2022 Vers 2.0 Python3 fully tested
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -295,6 +296,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
     _can_hispeed = True
     _raw_frames = True
     _highbit_flip = True
+    _MUNCH_CLONE_RESP = True
 
     _icf_data = {
         'MapRev': 1,
