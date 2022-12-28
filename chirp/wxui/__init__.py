@@ -5,9 +5,9 @@ import logging
 import os
 import sys
 
-if sys.version_info < (3, 10):
+try:
     import importlib_resources
-else:
+except ModuleNotFoundError:
     import importlib.resources as importlib_resources
 
 from chirp import directory
