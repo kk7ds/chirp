@@ -642,6 +642,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 mem.rtone = defaults.tones[0]
 
     def _resolve_cross_mode(self, mem):
+        # Resolve TX/RX tones/codes when "Cross Mode" is changed
         txmode, rxmode = mem.cross_mode.split('->')
         todo = [('TX', txmode, 'rtone', 'dtcs'),
                 ('RX', rxmode, 'ctone', 'rx_dtcs')]
@@ -663,6 +664,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 return False
             setattr(mem, prop, val)
         return True
+
+    def _resolve_tmode_cross(self, mem):
+        # Resolve cross_mode when tmode is changed to Cross
+        # Triggers resolve_cross_mode() after a selection is made
+        val = self._col_def_by_name('cross_mode').get_by_prompt(
+            self, mem, _('Choose Cross Mode'))
+        if val is None:
+            return False
+        mem.cross_mode = val
+        return self._resolve_cross_mode(mem)
 
     def _resolve_duplex(self, mem):
         self._set_memory_defaults(mem, 'offset')
@@ -756,6 +767,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if col_def.name == 'cross_mode':
             mem.tmode = 'Cross'
             if not self._resolve_cross_mode(mem):
+                event.Veto()
+                return
+        elif col_def.name == 'tmode' and val == 'Cross':
+            if not self._resolve_tmode_cross(mem):
                 event.Veto()
                 return
 
