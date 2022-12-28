@@ -1243,11 +1243,13 @@ def display_update_notice(version):
 
     CONF.set_int("last_update_check", int(time.time()), "state")
 
+    url = 'https://chirp.danplanet.com/projects/chirp/wiki/ChirpNextBuild'
     msg = _('A new CHIRP version is available. Please visit the '
             'website as soon as possible to download it!')
     d = wx.MessageDialog(None, msg, _('New version available'),
                          style=wx.OK | wx.CANCEL | wx.ICON_INFORMATION)
     visit = d.ShowModal()
     if visit == wx.ID_OK:
-        webbrowser.open('https://chirp.danplanet.com/'
-                        'projects/chirp/wiki/Download')
+        wx.MessageBox(_('Please be sure to quit CHIRP before installing '
+                        'the new version!'))
+        webbrowser.open(url)
