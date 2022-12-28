@@ -646,6 +646,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         txmode, rxmode = mem.cross_mode.split('->')
         todo = [('TX', txmode, 'rtone', 'dtcs'),
                 ('RX', rxmode, 'ctone', 'rx_dtcs')]
+        setvals = []
         for which, mode, tone_prop, dtcs_prop in todo:
             if mode == 'Tone':
                 msg = _('Choose %s Tone') % which
@@ -663,6 +664,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 # User hit cancel, so abort
                 return False
             setattr(mem, prop, val)
+            setvals.append(val)
+
+        if rxmode == txmode and len(setvals) == 2 and setvals[0] == setvals[1]:
+            if rxmode == 'Tone':
+                mode = 'TSQL'
+                name = 'tones'
+            else:
+                mode = 'DTCS'
+                name = 'codes'
+            wx.MessageBox(_('Channels with equivalent TX and RX %s are '
+                            'represented by tone mode of "%s"') % (name, mode),
+                          _('Information'))
+
         return True
 
     def _resolve_tmode_cross(self, mem):
