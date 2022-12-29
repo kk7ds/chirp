@@ -296,7 +296,6 @@ class IC2730Radio(icf.IcomCloneModeRadio):
     _can_hispeed = True
     _raw_frames = True
     _highbit_flip = True
-    _MUNCH_CLONE_RESP = True
 
     _icf_data = {
         'MapRev': 1,
@@ -1357,7 +1356,6 @@ class IC2730Radio(icf.IcomCloneModeRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     elif element.get_name() == "drv_clone_speed":
                         val = element.value.get_value()
