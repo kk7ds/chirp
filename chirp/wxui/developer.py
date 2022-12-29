@@ -16,6 +16,7 @@
 import functools
 import logging
 import os
+import serial
 
 import wx
 import wx.richtext
@@ -414,3 +415,7 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
             self._treebook.ExpandNode(pos)
         else:
             self._treebook.AddPage(page, name)
+
+
+class FakeSerial(serial.SerialBase):
+    pass
