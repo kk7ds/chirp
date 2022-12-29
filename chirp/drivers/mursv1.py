@@ -67,7 +67,7 @@ LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
-MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600] * 3
+MURS_FREQS = [151820000, 151880000, 151940000, 154570000, 154600000] * 3
 FM_MODE = [3, 4, 8, 9, 13, 14]
 
 
@@ -378,7 +378,15 @@ class MURSV1(baofeng_common.BaofengCommonHT):
         mem = chirp_common.Memory()
         mem.number = number
 
+        if _mem.get_raw()[0] == "\xff":
+            mem.empty = True
+            return mem
+
         mem.freq = int(_mem.rxfreq) * 10
+
+        if int(_mem.rxfreq) == int(_mem.txfreq):
+            mem.duplex = ""
+            mem.offset = 0
 
         for char in _nam.name:
             if str(char) == "\xFF":
@@ -469,22 +477,28 @@ class MURSV1(baofeng_common.BaofengCommonHT):
     def _set_nam(self, number):
         return self._memobj.names[number - 1]
 
-    def validate_memory(self, mem):
-        msgs = baofeng_common.BaofengCommonHT.validate_memory(self, mem)
-
-        if mem.freq != int(MURS_FREQS[mem.number - 1] * 1000000):
-            msgs.append(chirp_common.ValidationError(
-                'Memory location cannot change frequency'))
-
-        if mem.mode == "FM" and (mem.number - 1) not in FM_MODE:
-            msgs.append(chirp_common.ValidationError(
-                'Memory location only supports NFM'))
-
-        return msgs
-
     def set_memory(self, mem):
         _mem = self._set_mem(mem.number)
         _nam = self._set_nam(mem.number)
+
+        if mem.empty:
+            _mem.set_raw("\xff" * 16)
+            _nam.set_raw("\xff" * 16)
+            return
+
+        _mem.set_raw("\x00" * 16)
+
+        if mem.freq not in MURS_FREQS:
+            MURS_FREQ = MURS_FREQS[mem.number - 1]
+            mem.freq = MURS_FREQ
+            mem.duplex = ''
+            mem.offset = 0
+        if mem.mode == "FM" and (mem.number - 1) not in FM_MODE:
+            mem.mode = "NFM"
+
+        _mem.rxfreq = mem.freq / 10
+
+        _mem.txfreq = mem.freq / 10
 
         _namelength = self.get_features().valid_name_length
         for i in range(_namelength):
