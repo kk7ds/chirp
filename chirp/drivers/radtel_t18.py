@@ -203,12 +203,12 @@ SETTING_LISTS = {
     "speccode": SPECCODE_LIST
 }
 
-FRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
-              462.6875, 462.7125]
-FRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
-              467.6875, 467.7125]
-FRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
-              462.6750, 462.7000, 462.7250]
+FRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
+              462687500, 462712500]
+FRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
+              467687500, 467712500]
+FRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
+              462675000, 462700000, 462725000]
 FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
 FRS16_FREQS = [462562500, 462587500, 462612500, 462637500,
@@ -218,7 +218,7 @@ FRS16_FREQS = [462562500, 462587500, 462612500, 462637500,
 
 GMRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3 * 2
 
-MURS_FREQS = [151.820, 151.880, 151.940, 154.570, 154.600]
+MURS_FREQS = [151820000, 151880000, 151940000, 154570000, 154000000]
 
 PMR_FREQS1 = [446006250, 446018750, 446031250, 446043750, 446056250,
               446068750, 446081250, 446093750]
@@ -444,7 +444,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         rf.has_name = False
         rf.memory_bounds = (1, self._upper)
         rf.valid_bands = self.VALID_BANDS
-        rf.valid_tuning_steps = chirp_common.TUNING_STEPS
+        rf.valid_tuning_steps = chirp_common.TUNING_STEPS + [6.25, 12.5]
 
         return rf
 
@@ -559,7 +559,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         _mem.set_raw("\x00" * 12 + "\xF9\xFF\xFF\xFF")
 
         if self._gmrs:
-            GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+            GMRS_FREQ = GMRS_FREQS[mem.number - 1]
             mem.freq = GMRS_FREQ
             if mem.number <= 22:
                 mem.duplex = ''
@@ -571,7 +571,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                 mem.duplex = '+'
                 mem.offset = 5000000
         if self._frs:
-            FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 1000000)
+            FRS_FREQ = FRS_FREQS[mem.number - 1]
             mem.freq = FRS_FREQ
             mem.mode = "NFM"
             mem.duplex = ''
@@ -585,7 +585,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             mem.duplex = ''
             mem.offset = 0
         if self._murs:
-            MURS_FREQ = int(MURS_FREQS[mem.number - 1] * 1000000)
+            MURS_FREQ = MURS_FREQS[mem.number - 1]
             mem.freq = MURS_FREQ
             if mem.number <= 3:
                 mem.mode = "NFM"
