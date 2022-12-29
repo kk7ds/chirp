@@ -191,7 +191,7 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
             # the TX frequency to render what they expect.
             value = memory.freq + int('%s%i' % (memory.duplex, value))
 
-        return '%.5f' % (value / 1000000.0)
+        return chirp_common.format_freq(value)
 
     def _digest_value(self, memory, input_value):
         if not input_value.strip():
@@ -203,7 +203,7 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
             # that emulate offset-based memories from tx/rx frequencies will
             # fight with the user.
             memory.duplex = 'split'
-        return int(chirp_common.to_MHz(float(input_value)))
+        return chirp_common.parse_freq(input_value)
 
     def get_by_prompt(self, parent, memory, message):
         if self._name == 'offset':
