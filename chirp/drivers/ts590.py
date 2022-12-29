@@ -3,6 +3,7 @@
 # Version 2.0: No Live Mode library links. Implementing mem as Clone Mode
 #              Having fun with Dictionaries
 # Version 2.1: Adding match_model function to fix File>New issue #7409
+# Version 3.0: Python3 compliant, tested 12/2022
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +23,7 @@ import logging
 import re
 import math
 import threading
+from builtins import bytes
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -46,7 +48,7 @@ struct {            // 20 bytes per chan
        fmnrw:1,
        skip:1,
        nu:5;
-  char name[8];
+  u8   name[8];
 } ch_mem[120];   // 100 normal + 10 P-type + 10 EXT
 
 struct {        // 5 bytes each
@@ -73,7 +75,7 @@ struct {        // Common to S and SG models
        anu:2;
   u32  fa;
   u32  fb;
-  char fv[4];
+  u8   fv[4];
   u8   mf;
   u8   mg;
   u8   pc;
@@ -82,7 +84,7 @@ struct {        // Common to S and SG models
 } settings;
 
 struct {            // Menu A/B settings by TS-590SG names
-  char ex001[8];    // 590S values get put in SG equiv
+  u8   ex001[8];    // 590S values get put in SG equiv
   u8   ex002;       // These params stored as nibbles
   u8   ex003;
   u8   ex005;
@@ -123,7 +125,7 @@ struct {            // Menu A/B settings by TS-590SG names
   u8   ex099;
 } exset[2];
 
-  char mdl_name[9];     // appended model name, first 9 chars
+  u8   mdl_name[9];     // appended model name, first 9 chars
 
 """
 
@@ -168,16 +170,18 @@ def command(ser, cmd, rsplen, w8t=0.01, exts=""):
     #   LOCK.acquire()
     stx = cmd       # preserve cmd for response check
     stx = stx + exts + ";"    # append arguments
-    ser.write(stx)
+    ser.write(bytes(stx, encoding='latin_1'))
     LOG.debug("PC->RADIO [%s]" % stx)
     ts = time.time()        # implement the wait after command
     while (time.time() - ts) < w8t:
         ix = 0      # NOP
     result = ""
     if rsplen > 0:  # read response
-        result = ser.read(rsplen)
+        result = str(ser.read(rsplen))
+        result = result[2:-1]      # strip b'
         LOG.debug("RADIO->PC [%s]" % result)
-        result = result[:-1]        # remove terminator
+        if ";" in result:
+            result = result[:-1]        # remove terminator
     #   LOCK.release()
     return result.strip()
 
@@ -191,19 +195,19 @@ def _connect_radio(radio):
     # Flush the input buffer
     radio.pipe.timeout = 0.005
     radio.pipe.baudrate = 9600
-    junk = radio.pipe.read(256)
+    junk = bytes(radio.pipe.read(256))
     radio.pipe.timeout = STIMEOUT
 
     for bd in bauds:
         radio.pipe.baudrate = bd
         BAUD = bd
-        radio.pipe.write(";")
-        radio.pipe.write(";")
+        radio.pipe.write(bytes(";", encoding='latin_1'))
+        radio.pipe.write(bytes(";", encoding='latin_1'))
         resp = radio.pipe.read(4)
-        radio.pipe.write("ID;")
-        resp = radio.pipe.read(6)
+        radio.pipe.write(bytes("ID;", encoding='latin_1'))
+        resp = bytes(radio.pipe.read(6))
 
-        if resp == radio.ID:           # Good comms
+        if resp == bytes(radio.ID, encoding='latin_1'):           # Good comms
             resp = command(radio.pipe, "AI0", 0, W8L)
             return
         elif resp in RADIO_IDS.keys():
@@ -219,9 +223,8 @@ def read_str(radio, trm=";"):
     stq = ""
     ctq = ""
     while ctq != trm:
-        ctq = radio.pipe.read(1)
+        ctq = chr(ord(radio.pipe.read(1)))
         stq += ctq
-    LOG.debug("   + [%s]" % stq)
     return stq[:-1]     # Return without trm
 
 
@@ -231,7 +234,7 @@ def _read_mem(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = radio._upper + 20  # 10 P chans and 10 EXT
+    status.max = 119
     status.msg = "Reading Channel Memory..."
     radio.status_fn(status)
 
@@ -281,7 +284,7 @@ def _read_mem(radio):
 
 
 def _make_dat(sx, nb):
-    """ Split the string sx into nb binary bytes """
+    """ Split the value sx into nb binary bytes """
     vx = int(sx)
     dx = ""
     if nb > 3:
@@ -336,7 +339,7 @@ def _read_settings(radio):
     setc.extend(radio.EX)  # Menu B
     status = chirp_common.Status()
     status.cur = 0
-    status.max = 32 + 50 + 8 + 11 + 39 + 39
+    status.max = 186
     status.msg = "Reading Settings..."
     radio.status_fn(status)
 
@@ -408,7 +411,7 @@ def _read_settings(radio):
         # Cmd has been sent, process the result
         if cmc == "FV":      # all chars
             skipme = True
-            setts += result0
+            setts += str(result0)
         elif cmc == "AN":    # Antenna selection has 3 values
             skipme = True
             setts += _sets_val(result0, 3, 2)   # store as 2-bits each
@@ -714,7 +717,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
 
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(bytes(data, encoding='latin_1'))
         self.process_mmap()
         return
 
@@ -829,7 +832,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
             _mem.filter = 0
             _mem.skip = 0
             _mem.fmnrw = 0
-            _mem.name = "        "
+            _mem.name = bytes("        ", encoding='latin_1')
             return
 
         if mem.number > self._upper:    # Specials: No Name changes
@@ -839,9 +842,9 @@ class TS590Radio(chirp_common.CloneModeRadio):
             nx = len(mem.name)
             for ix in range(8):
                 if ix < nx:
-                    _mem.name[ix] = mem.name[ix].upper()
+                    _mem.name[ix] = ord(mem.name[ix].upper())
                 else:
-                    _mem.name[ix] = " "    # assignment needs 8 chrs
+                    _mem.name[ix] = ord(" ")    # assignment needs 8 chrs
         _mem.rxfreq = mem.freq
         _mem.txfreq = 0
         if mem.duplex == "+":
@@ -881,7 +884,8 @@ class TS590Radio(chirp_common.CloneModeRadio):
         """ Extract ascii memory parameters; build data string """
         # spec0 is simplex result, spec1 is split
         # pad string so indexes match Kenwood docs
-        spec0 = "x" + spec0  # match CAT document 1-based description
+        # match CAT document 1-based description
+        spec0 = "x" + spec0
         ix = len(spec0)
         # _pxx variables are STRINGS
         _p1 = spec0[3]       # P1    Split Specification
@@ -900,9 +904,9 @@ class TS590Radio(chirp_common.CloneModeRadio):
         _p11 = spec0[28]     # P11   Filter A/B
         _p12 = spec0[29]     # P12   Always 0
         _p13 = spec0[30:38]  # P13   Always 0
-        _p14 = spec0[38:40]  # P14   FM Mode
-        _p15 = spec0[40]     # P15   Chan Lockout (Skip)
-        _p16 = spec0[41:49]  # P16   Max 8-Char Name if assigned
+        _p14 = spec0[38:41]  # P14   FM Mode
+        _p15 = spec0[41]     # P15   Chan Lockout (Skip)
+        _p16 = spec0[42:49]  # P16   Max 8-Char Name if assigned
 
         spec1 = "x" + spec1
         _p4s = int(spec1[7:18])  # P4: Offset freq
@@ -931,10 +935,11 @@ class TS590Radio(chirp_common.CloneModeRadio):
 
     def _make_base_spec(self, mem, freq):
         """ Generate memory channel parameter string """
-        spec = "%011i%1i%1i%1i%02i%02i000%1i0000000000%02i%1i%s" \
+        spec = "%011i%1i%1i%1i%02i%02i000%1i0000000000%02i%1i" \
             % (freq, mem.xmode, mem.data, mem.tmode, mem.rtone,
-                mem.ctone, mem.filter, mem.fmnrw, mem.skip, mem.name)
-
+                mem.ctone, mem.filter, mem.fmnrw, mem.skip)
+        for btx in mem.name:
+            spec += chr(btx)
         return spec.strip()
 
     def get_settings(self):
@@ -1060,7 +1065,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
         rset.set_apply_callback(my_adjraw, _sets, "ag", -1)
         basic.append(rset)
 
-        rx = RadioSettingValueInteger(0, 255, _sets.rg + 1)
+        rx = RadioSettingValueInteger(0, 256, _sets.rg + 1)
         rset = RadioSetting("settings.rg", "RF Gain", rx)
         rset.set_apply_callback(my_adjraw, _sets, "rg", -1)
         basic.append(rset)
