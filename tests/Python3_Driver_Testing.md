@@ -182,9 +182,9 @@
 | <a name="Kenwood_TS-2000"></a> Kenwood_TS-2000 |  |  | Yes | 0.03% |
 | <a name="Kenwood_TS-480_CloneMode"></a> Kenwood_TS-480_CloneMode |  |  |  | 0.00% |
 | <a name="Kenwood_TS-480_LiveMode"></a> Kenwood_TS-480_LiveMode |  |  | Yes | 0.00% |
-| <a name="Kenwood_TS-590SG_CloneMode"></a> Kenwood_TS-590SG_CloneMode |  |  |  | 0.00% |
-| <a name="Kenwood_TS-590S_CloneMode"></a> Kenwood_TS-590S_CloneMode |  |  |  | 0.00% |
-| <a name="Kenwood_TS-590S_SG_LiveMode"></a> Kenwood_TS-590S_SG_LiveMode |  |  | Yes | 0.00% |
+| <a name="Kenwood_TS-590SG_CloneMode"></a> Kenwood_TS-590SG_CloneMode | [@Old-Phart](https://github.com/Old-Phart) | 29-Dec-2022 |  | 0.00% |
+| <a name="Kenwood_TS-590S_CloneMode"></a> Kenwood_TS-590S_CloneMode | [Implied by Kenwood_TS-590SG_CloneMode](#user-content-Kenwood_TS-590SG_CloneMode) | 29-Dec-2022 |  | 0.00% |
+| <a name="Kenwood_TS-590S_SG_LiveMode"></a> Kenwood_TS-590S_SG_LiveMode | [Implied by Kenwood_TS-590SG_CloneMode](#user-content-Kenwood_TS-590SG_CloneMode) | 29-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TS-850"></a> Kenwood_TS-850 |  |  | Yes | 0.00% |
 | <a name="LUITON_LT-316"></a> LUITON_LT-316 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="LUITON_LT-580_UHF"></a> LUITON_LT-580_UHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
@@ -364,7 +364,7 @@
 
 **Drivers:** 359
 
-**Tested:** 78% (282/77) (92% of usage stats)
+**Tested:** 79% (285/74) (92% of usage stats)
 
 **Byte clean:** 85% (307/52)
 
