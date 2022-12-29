@@ -27,6 +27,7 @@ from chirp import chirp_common
 from chirp import directory
 from chirp.wxui import config
 from chirp.wxui import common
+from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
 CONF = config.get()
@@ -111,6 +112,8 @@ class SettingsThread(threading.Thread):
 
 
 def open_serial(port, rclass):
+    if port == 'Fake':
+        return developer.FakeSerial()
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
@@ -198,6 +201,10 @@ class ChirpCloneDialog(wx.Dialog):
         self._clone_thread = None
         grid = wx.FlexGridSizer(2, 5, 5)
         grid.AddGrowableCol(1)
+
+        if CONF.get_bool('developer', 'state'):
+            if 'Fake' not in CUSTOM_PORTS:
+                CUSTOM_PORTS.append('Fake')
 
         def _add_grid(label, control):
             grid.Add(wx.StaticText(self, label=label),
