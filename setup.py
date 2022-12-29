@@ -13,6 +13,7 @@ setup(name='chirp',
       python_requires=">=3.7,<4",
       install_requires=[
           'pyserial',
+          'requests',
           'six',
           'future',
           'importlib-resources;python_version<"3.10"',
