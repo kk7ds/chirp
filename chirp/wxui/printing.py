@@ -44,7 +44,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         for col_def in self._col_defs:
             if not col_def.valid:
                 continue
-            with tag('td'):
+            with tag('td', 'nowrap'):
                 with tag('tt'):
                     doc.text(col_def.render_value(mem))
 
