@@ -460,20 +460,20 @@ SETTING_LISTS = {
     "warn": WARN_LIST,
     }
 
-GMRS_FREQS1 = [462.5625, 462.5875, 462.6125, 462.6375, 462.6625,
-               462.6875, 462.7125]
-GMRS_FREQS2 = [467.5625, 467.5875, 467.6125, 467.6375, 467.6625,
-               467.6875, 467.7125]
-GMRS_FREQS3 = [462.5500, 462.5750, 462.6000, 462.6250, 462.6500,
-               462.6750, 462.7000, 462.7250]
+GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
+               462687500, 462712500]
+GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
+               467687500, 467712500]
+GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
+               462675000, 462700000, 462725000]
 GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
 FRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3
 
-PMR_FREQS1 = [446.00625, 446.01875, 446.03125, 446.04375, 446.05625,
-              446.06875, 446.08125, 446.09375]
-PMR_FREQS2 = [446.10625, 446.11875, 446.13125, 446.14375, 446.15625,
-              446.16875, 446.18125, 446.19375]
+PMR_FREQS1 = [446006250, 446018750, 446031250, 446043750, 446056250,
+              446068750, 446081250, 446093750]
+PMR_FREQS2 = [446106250, 446118750, 446131250, 446143750, 446156250,
+              446168750, 446181250, 446193750]
 PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 
 
@@ -1003,7 +1003,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
         if self._gmrs:
             if mem.number >= 1 and mem.number <= 30:
-                GMRS_FREQ = int(GMRS_FREQS[mem.number - 1] * 1000000)
+                GMRS_FREQ = GMRS_FREQS[mem.number - 1]
                 mem.freq = GMRS_FREQ
                 if mem.number <= 22:
                     mem.duplex = ''
@@ -1016,7 +1016,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     mem.offset = 5000000
         if self._frs:
             if mem.number >= 1 and mem.number <= 22:
-                FRS_FREQ = int(FRS_FREQS[mem.number - 1] * 1000000)
+                FRS_FREQ = FRS_FREQS[mem.number - 1]
                 mem.freq = FRS_FREQ
                 mem.mode = "NFM"
                 mem.duplex = ''
@@ -1024,7 +1024,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 if mem.number >= 8 and mem.number <= 14:
                     mem.power = self.POWER_LEVELS[1]
         if self._pmr:
-            PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+            PMR_FREQ = PMR_FREQS[mem.number - 1]
             mem.freq = PMR_FREQ
             mem.duplex = ''
             mem.offset = 0
