@@ -18,7 +18,10 @@ import wx.html
 import yattag
 
 from chirp.wxui import common
+from chirp.wxui import config
 from chirp.wxui import report
+
+CONF = config.get()
 
 
 class MemoryPrinter(wx.html.HtmlEasyPrinting):
@@ -34,7 +37,21 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         self.GetPrintData().SetColour(False)
         self.GetPageSetupData().SetMarginTopLeft((0, 5))
         self.GetPageSetupData().SetMarginBottomRight((10, 10))
-        self.SetFonts('Sans', 'Courier', (8,) * 7)
+
+        # These are arbitrary defaults that seem to work okay. Let people
+        # override via the config for now
+        try:
+            self._font_size = CONF.get_int('font_size', 'printing')
+        except TypeError:
+            self._font_size = 8
+        try:
+            self._rows_per_page = CONF.get_int('rows_per_page', 'printing')
+        except TypeError:
+            self._rows_per_page = 35
+        self._normal_font = CONF.get('normal_font', 'printing') or 'Sans'
+        self._fixed_font = CONF.get('fixed_font', 'printing') or 'Courier'
+        self.SetStandardFonts(self._font_size, self._normal_font,
+                              self._fixed_font)
 
     def _memory(self, doc, mem):
         tag = doc.tag
@@ -52,11 +69,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         tag = doc.tag
         row = 0
 
-        # This is arbitrary, unsure if it will work on all platforms
-        # or not
-        ROWS_PER_PAGE = 35
-
-        for i in range(0, len(memories), ROWS_PER_PAGE):
+        for i in range(0, len(memories), self._rows_per_page):
             with tag('div', ('style', 'page-break-before:always')):
                 pass
             with tag('table', ('border', '1'), ('width', '100%'),
@@ -69,7 +82,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                             continue
                         with tag('th'):
                             doc.text(col_def.label)
-                for row in range(i, i + ROWS_PER_PAGE):
+                for row in range(i, i + self._rows_per_page):
                     try:
                         mem = memories[row]
                     except IndexError:
