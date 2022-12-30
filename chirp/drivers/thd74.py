@@ -36,6 +36,7 @@ D74_FILE_HEADER = (
     b'\xFF' * (5 * 16) +
     b'K2' + (b'\xFF' * 14) +
     b'\xFF' * (7 * 16))
+GROUP_NAME_OFFSET = 1152
 
 MEM_FORMAT = """
 #seekto 0x2000;
@@ -111,8 +112,21 @@ DSQL_MODES = ['', 'Code', 'Callsign']
 FINE_STEPS = [20, 100, 500, 1000]
 
 
-class KenwoodGroup(chirp_common.Bank):
-    pass
+class KenwoodGroup(chirp_common.NamedBank):
+    def __init__(self, model, index):
+        # Default name until we are initialized, then we will report
+        # the value from memory
+        super().__init__(model, index, 'GRP-%i' % index)
+
+    def get_name(self):
+        name = self._model._radio._memobj.names[
+            GROUP_NAME_OFFSET + self._index].name
+        return str(name).rstrip()
+
+    def set_name(self, name):
+        names = self._model._radio._memobj.names
+        names[GROUP_NAME_OFFSET + self._index].name = str(name)[:16].ljust(16)
+        super().set_name(name.strip())
 
 
 class KenwoodTHD74Bankmodel(chirp_common.BankModel):
@@ -124,7 +138,7 @@ class KenwoodTHD74Bankmodel(chirp_common.BankModel):
     def get_mappings(self):
         groups = []
         for i in range(self.get_num_mappings()):
-            groups.append(KenwoodGroup(self, i, 'GRP-%i' % i))
+            groups.append(KenwoodGroup(self, i))
         return groups
 
     def add_memory_to_mapping(self, memory, bank):
@@ -339,6 +353,7 @@ class THD74Radio(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.has_dtcs_polarity = False
         rf.has_bank = True
+        rf.has_bank_names = True
         rf.can_odd_split = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, 999)
