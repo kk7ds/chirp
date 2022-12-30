@@ -30,16 +30,7 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
-HAS_FUTURE = True
-try:                         # PY3 compliance
-    from builtins import bytes
-    from past.builtins import range     # RJD 12/18/22
-except ImportError:
-    HAS_FUTURE = False
-    LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
-
-CMD_ACK = 6
+CMD_ACK = b'\x06'
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
 for i in EX_MODES:
@@ -51,47 +42,15 @@ T_STEPS.remove(125.0)
 T_STEPS.remove(200.0)
 
 
-def dbg_dump(str1, kn=32, cptn="DBG", ax=False, lgx=1):
-    """ Debugging tool to print up to kn hex values of list stz """
-    # ax: flag to append ascii, lgx: Log code (bits) 1=Warning, 2=Debug
-    sx = ""
-    styp = isinstance(str1, bytes)
-    kx = len(str1)
-    if kx > kn:
-        kx = kn
-    for ix in range(kx):
-        if not styp:
-            sx += "%02x " % ord(str1[ix])
-        else:
-            sx += "%02x " % str1[ix]
-    if ax:      # append as ascii
-        sx += " ["
-        for ix in range(kx):
-            if not styp:
-                valx = ord(str1[ix])
-                chrx = str1[ix]
-            else:
-                valx = str1[ix]
-                chrx = chr(str1[ix])
-            if valx > 31 and valx < 127:
-                sx += "%s" % chrx
-            else:
-                sx += "."
-        sx += "]"
-    if lgx & 1:
-        LOG.warning("%s: %s" % (cptn, sx))
-    if lgx & 2:
-        LOG.debug("%s: %s" % (cptn, sx))
-    return
-
-
-class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
+@directory.register
+class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FT-450 Base class"""
     BAUD_RATE = 38400
     COM_BITS = 8    # number of data bits
     COM_PRTY = 'N'   # parity checking
     COM_STOP = 1   # stop bits
-    MODEL = "FT-X450"
+    MODEL = "FT-450D"
+    NEEDS_COMPAT_SERIAL = False
 
     DUPLEX = ["", "-", "+"]
     MODES = ["LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
@@ -348,8 +307,8 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         struct mem_struct current;
 
     """
-    _CALLSIGN_CHARSET = [chr(x) for x in range(ord("0"), ord("9") + 1) +
-                         range(ord("A"), ord("Z") + 1) + [ord(" ")]]
+    _CALLSIGN_CHARSET = [chr(x) for x in list(range(ord("0"), ord("9") + 1)) +
+                         list(range(ord("A"), ord("Z") + 1))] + [" ", "/"]
     _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
                                      range(0, len(_CALLSIGN_CHARSET))))
 
@@ -453,7 +412,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         for _i in range(0, attempts):
             bdata = bytes(self.pipe.read(block + 2))
             if bdata:
-                dbg_dump(bdata, 16, "RADIO -> PC", True, 2)
+                LOG.debug("RADIO -> PC\n%s", util.hexprint(bdata))
                 break
             time.sleep(0.5)
         if len(bdata) == block + 2 and bdata[0] == blocknum:
@@ -481,7 +440,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
         start = time.time()
 
-        data = bytes(b"")
+        data = b""
         blocks = 0
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
@@ -496,11 +455,11 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 chunk = self._read(block, blocks)    # returns bytes()
                 data += chunk
-                self.pipe.write(bytes(chr(CMD_ACK), encoding='utf8'))
+                self.pipe.write(CMD_ACK)
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-        data += bytes(self.MODEL, encoding='utf8')      # Append ID
+        data += bytes(self.MODEL, encoding='latin_1')      # Append ID
         return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
@@ -525,19 +484,17 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 time.sleep(0.01)
                 xsum = yaesu_clone.YaesuChecksum(pos, pos + block - 1)
                 xs = xsum.get_calculated(self.get_mmap())
-                # dbg1 = bytes(chr(blocks), encoding='utf8')
-                # dbg3 = bytes(chr(xs), encoding='utf8')
                 dbg1 = bytes(chr(blocks), encoding='latin_1')
                 dbg2 = self.get_mmap()[pos:pos + block]
                 dbg3 = bytes(chr(xs), encoding='latin_1')
                 self.pipe.write(dbg1)
                 self.pipe.write(dbg2)
                 self.pipe.write(dbg3)
-                buf = bytes(self.pipe.read(1))
-                if not buf or buf[0] != CMD_ACK:
+                buf = self.pipe.read(1)
+                if not buf or buf[0] != ord(CMD_ACK):
                     time.sleep(delay)
-                    buf = bytes(self.pipe.read(1))
-                if not buf or buf[0] != CMD_ACK:
+                    buf = self.pipe.read(1)
+                if not buf or buf[0] != ord(CMD_ACK):
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
                 blocks += 1
@@ -1637,24 +1594,3 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 except Exception as e:
                     LOG.debug(element.get_name())
                     raise
-
-
-class FT450Alias(chirp_common.Alias):
-    """ ALias for Yaesu FT-450 original radio """
-    VENDOR = "Yaesu"
-    MODEL = "FT-450"
-
-
-class FT450ATAlias(chirp_common.Alias):
-    """ ALias for Yaesu FT-450AT radio with tuner """
-    VENDOR = "Yaesu"
-    MODEL = "FT-450AT"
-
-
-if HAS_FUTURE:    # Only register driver if environment is PY3 compliant
-    @directory.register
-    class FT450DRadio(FTX450Radio):
-        """Yaesu FT-450D"""
-        VENDOR = "Yaesu"
-        MODEL = "FT-450D"
-        ALIASES = [FT450Alias, FT450ATAlias, ]
