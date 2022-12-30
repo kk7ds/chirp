@@ -227,7 +227,7 @@ TIDRADIO:
 - alt: TIDRADIO TD-UV5R TriPower
   model: BF-F8TD
 - alt: Baofeng UV-82HP
-  model: UV-86
+  model: UV-82
 TXQ:
 - alt: Abbree AR-63
   model: G63
