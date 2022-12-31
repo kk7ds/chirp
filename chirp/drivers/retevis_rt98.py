@@ -65,13 +65,13 @@ PMR_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.5), ]
 
 FREENET_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1), ]
 
-PMR_FREQS = [446.00625, 446.01875, 446.03125, 446.04375,
-             446.05625, 446.06875, 446.08125, 446.09375,
-             446.10625, 446.11875, 446.13125, 446.14375,
-             446.15625, 446.16875, 446.18125, 446.19375]
+PMR_FREQS = [446006250, 446018750, 446031250, 446043750,
+             446056250, 446068750, 446081250, 446093750,
+             446106250, 446118750, 446131250, 446143750,
+             446156250, 446168750, 446181250, 446193750]
 
-FREENET_FREQS = [149.02500, 149.03750, 149.05000,
-                 149.08750, 149.10000, 149.11250]
+FREENET_FREQS = [149025000, 149037500, 149050000,
+                 149087500, 149100000, 149112500]
 
 CROSS_MODES = ["Tone->Tone", "DTCS->", "->DTCS", "Tone->DTCS", "DTCS->Tone",
                "->Tone", "DTCS->DTCS"]
@@ -801,10 +801,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         else:
             rf.valid_duplexes = DUPLEXES + ['split', 'off']
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "- "
-        if _embedded.mode == 0:  # PMR or FreeNet
-            rf.valid_modes = ['NFM']
-        else:
-            rf.valid_modes = ['FM', 'NFM']
+        rf.valid_modes = ['FM', 'NFM']
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = CROSS_MODES
         if _embedded.mode == 0:  # PMR or FreeNet
@@ -1024,29 +1021,26 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         # FreeNet and PMR radio types
         if _embedded.mode == 0:  # PMR or FreeNet
 
+            mem.mode = 'NFM'
+            mem.offset = 0
+
             # FreeNet
             if str(_embedded.radio_type).rstrip("\00") == "RT98V":
-                mem.duplex = ''
-                mem.offset = 0
                 if mem.number >= 1 and mem.number <= 6:
-                    FREENET_FREQ = int(FREENET_FREQS[mem.number - 1] * 1000000)
+                    FREENET_FREQ = FREENET_FREQS[mem.number - 1]
                     mem.freq = FREENET_FREQ
                 else:
                     _mem.tx_off = 1
                     mem.duplex = 'off'
-                    mem.offset = 0
 
             # PMR
             if str(_embedded.radio_type).rstrip("\00") == "RT98U":
-                if mem.number >= 1 and mem.number <= 6:
-                    PMR_FREQ = int(PMR_FREQS[mem.number - 1] * 1000000)
+                if mem.number >= 1 and mem.number <= 16:
+                    PMR_FREQ = PMR_FREQS[mem.number - 1]
                     mem.freq = PMR_FREQ
-                    mem.duplex = ''
-                    mem.offset = 0
                 else:
                     _mem.tx_off = 1
                     mem.duplex = 'off'
-                    mem.offset = 0
 
         # set the occupied bitfield
         self._memobj.csetflag[cbyte].c[cbit] = 1
