@@ -4,6 +4,7 @@ The following must be true before PRs can be merged:
 
 * All tests must be passing.
 * Commits should be squashed into logical units.
+* Commits should be rebased (or simply rebase-able in the web UI) on current master. Do not put merge commits in a PR.
 * Commits in a single PR should be related.
 * Major new features or bug fixes should reference a [CHIRP issue](https://chirp.danplanet.com/projects/chirp/issues).
 * New drivers should be accompanied by a test image in `tests/images` (except for thin aliases where the driver is sufficiently tested already).
