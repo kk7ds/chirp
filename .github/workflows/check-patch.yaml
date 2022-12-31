@@ -1,0 +1,14 @@
+name: PR Checks
+on:
+    pull_request:
+jobs:
+    check_commit:
+        name: No new legacy code
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Run check_commit.sh
+              run: |
+                  git fetch origin $GITHUB_BASE_REF || true
+                  ./tools/check_commit.sh origin/$GITHUB_BASE_REF
