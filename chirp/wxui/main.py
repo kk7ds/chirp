@@ -318,7 +318,10 @@ class ChirpMain(wx.Frame):
 
         self._editors = wx.aui.AuiNotebook(
             self,
-            style=wx.aui.AUI_NB_CLOSE_ON_ALL_TABS | wx.aui.AUI_NB_TAB_MOVE)
+            style=(wx.aui.AUI_NB_CLOSE_ON_ALL_TABS |
+                   wx.aui.AUI_NB_TAB_MOVE |
+                   wx.aui.AUI_NB_SCROLL_BUTTONS |
+                   wx.aui.AUI_NB_WINDOWLIST_BUTTON))
 
         self._welcome_page = ChirpWelcomePanel(self._editors)
         self._editors.AddPage(self._welcome_page, _('Welcome'), select=True)
