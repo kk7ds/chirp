@@ -160,6 +160,22 @@ class KenwoodTHD74Bankmodel(chirp_common.BankModel):
         return [self.get_mappings()[index]]
 
 
+def get_used_flag(mem):
+    if mem.empty:
+        return 0xFF
+    if mem.duplex == 'split':
+        freq = mem.offset
+    else:
+        freq = mem.freq
+
+    if freq < chirp_common.to_MHz(150):
+        return 0x00
+    elif freq < chirp_common.to_MHz(400):
+        return 0x01
+    else:
+        return 0x02
+
+
 @directory.register
 class THD74Radio(chirp_common.CloneModeRadio):
     VENDOR = "Kenwood"
@@ -439,8 +455,9 @@ class THD74Radio(chirp_common.CloneModeRadio):
         _flg = self._memobj.flags[mem.number]
         _nam = self._memobj.names[mem.number + name_index_adj]
 
+        _flg.used = get_used_flag(mem)
+
         if mem.empty:
-            _flg.used = 0xFF
             _flg.lockout = 0
             _flg.group = 0
             _nam.name = ('\x00' * 16)
@@ -449,7 +466,6 @@ class THD74Radio(chirp_common.CloneModeRadio):
 
         _mem.set_raw(b'\x00' * 40)
 
-        _flg.used = 0
         _flg.group = 0  # FIXME
 
         _mem.freq = mem.freq
