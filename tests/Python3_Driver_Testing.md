@@ -316,7 +316,7 @@
 | <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.35% |
 | <a name="Yaesu_FT-1500M"></a> Yaesu_FT-1500M | [@f3sty](https://github.com/f3sty) | 05-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT-1802M"></a> Yaesu_FT-1802M |  |  | Yes | 0.02% |
-| <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R |  |  | Yes | 0.03% |
+| <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.03% |
 | <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M |  |  | Yes | 0.03% |
 | <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R |  |  | Yes | 0.05% |
@@ -343,9 +343,9 @@
 | <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.08% |
 | <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 | [Implied by Yaesu_FT-8800](#user-content-Yaesu_FT-8800) | 24-Oct-2022 | Yes | 0.11% |
 | <a name="Yaesu_FT-90"></a> Yaesu_FT-90 |  |  | Yes | 0.02% |
-| <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R |  |  | Yes | 0.02% |
-| <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 |  |  | Yes |  |
-| <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R |  |  | Yes | 0.03% |
+| <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.02% |
+| <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes |  |
+| <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R | [@kk7ds](https://github.com/kk7ds) | 30-Dec-2022 | Yes | 0.03% |
 | <a name="Yaesu_FTM-3200D_R"></a> Yaesu_FTM-3200D_R |  |  | Yes | 0.02% |
 | <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes | 0.04% |
@@ -364,7 +364,7 @@
 
 **Drivers:** 359
 
-**Tested:** 77% (278/81) (91% of usage stats)
+**Tested:** 78% (282/77) (91% of usage stats)
 
 **Byte clean:** 85% (307/52)
 
