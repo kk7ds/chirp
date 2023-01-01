@@ -381,6 +381,7 @@ class MyGMRSQueryDialog(QuerySourceDialog):
         states = [x for x, code in fips.FIPS_STATES.items()
                   if isinstance(code, int) and code in fips.FIPS_COUNTIES]
         self._state = wx.Choice(panel, choices=sorted(states))
+        self._state.SetStringSelection(states[0])
         prev = CONF.get('state', 'repeaterbook', 0)
         if prev:
             try:
