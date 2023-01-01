@@ -693,6 +693,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._set_memory_defaults(mem, 'offset')
         if mem.duplex == 'split':
             msg = _('Enter TX Frequency (MHz)')
+        elif mem.duplex == 'off':
+            # Clearly no need to prompt for this duplex
+            return True
         elif 0 < mem.offset < 70000000:
             # We don't need to ask, offset looks like an offset
             return True
