@@ -25,8 +25,8 @@
 
 """Wouxun KG-UV8D Plus radio management module"""
 
+import struct
 import time
-import os
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -299,72 +299,61 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     """Wouxun KG-UV8D Plus"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV8D Plus"
-    _model = "KG-UV8D"
+    _model = b"KG-UV8D"
     _file_ident = b"kguv8dplus"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
+    NEEDS_COMPAT_SERIAL = False
     _mmap = ""
+    _record_start = 0x7A
 
     def _checksum(self, data):
         cs = 0
         for byte in data:
-            cs += ord(byte)
-        return chr(cs % 256)
+            cs += byte
+        return cs % 256
 
-    def _write_record(self, cmd, payload = None):
-        # build the packet
-        _header = '\x7a' + chr(cmd) + '\xff'
-
-        _length = 0
-        if payload:
-            _length = len(payload)
-
-        # update the length field
-        _header += chr(_length)
-        if payload:
-            # calculate checksum then add it with the payload to the packet and encrypt
-            crc = self._checksum(_header[1:] + payload)
-            payload += crc
-            _header += self.encrypt(payload)
-        else:
-            # calculate and add encrypted checksum to the packet
-            crc = self._checksum(_header[1:])
-            _header += self.strxor(crc, '\x57')
-        LOG.debug("Sent:\n%s" % util.hexprint(_header))
-        self.pipe.write(_header)
+    def _write_record(self, cmd, payload=b''):
+        _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
+                              len(payload))
+        checksum = bytes([self._checksum(_packet[1:] + payload)])
+        _packet += self.encrypt(payload + checksum)
+        LOG.debug("Sent:\n%s" % util.hexprint(_packet))
+        self.pipe.write(_packet)
 
     def _read_record(self):
         # read 4 chars for the header
         _header = self.pipe.read(4)
         if len(_header) != 4:
             raise errors.RadioError('Radio did not respond')
-        _length = ord(_header[3])
+        _length = struct.unpack('xxxB', _header)[0]
         _packet = self.pipe.read(_length)
         _rcs_xor = _packet[-1]
         _packet = self.decrypt(_packet)
-        _cs = ord(self._checksum(_header[1:] + _packet))
-        # read the checksum and decrypt it
-        _rcs = ord(self.strxor(self.pipe.read(1), _rcs_xor))
+        _cs = self._checksum(_header[1:])
+        _cs += self._checksum(_packet)
+        _cs %= 256
+        _rcs = self.strxor(self.pipe.read(1)[0], _rcs_xor)[0]
         LOG.debug("_cs =%x", _cs)
         LOG.debug("_rcs=%x", _rcs)
         return (_rcs != _cs, _packet)
- 
+
     def decrypt(self, data):
-        result = ''
+        result = b''
         for i in range(len(data)-1, 0, -1):
             result += self.strxor(data[i], data[i - 1])
-        result += self.strxor(data[0], '\x57')
+        result += self.strxor(data[0], 0x57)
         return result[::-1]
 
     def encrypt(self, data):
-        result = self.strxor('\x57', data[0])
+        result = self.strxor(0x57, data[0])
         for i in range(1, len(data), 1):
             result += self.strxor(result[i - 1], data[i])
         return result
 
-    def strxor (self, xora, xorb):
-        return chr(ord(xora) ^ ord(xorb))
+    def strxor(self, xora, xorb):
+        return bytes([xora ^ xorb])
 
 # Identify the radio
 #
@@ -441,9 +430,9 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
 
     def _do_download(self, start, end, blocksize):
         # allocate & fill memory
-        image = ""
+        image = b""
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256) + chr(blocksize)
+            req = struct.pack('>HB', i, blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
@@ -458,7 +447,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                 status.msg = "Cloning from radio"
                 self.status_fn(status)
         self._finish()
-        return memmap.MemoryMap(''.join(image))
+        return memmap.MemoryMapBytes(image)
 
     def _upload(self):
         """Talk to a wouxun KG-UV8D Plus and do a upload"""
@@ -474,13 +463,13 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
-            req = chr(i / 256) + chr(i % 256)
+            req = struct.pack('>H', i)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
             LOG.debug(util.hexprint(req + chunk))
             cserr, ack = self._read_record()
             LOG.debug(util.hexprint(ack))
-            j = ord(ack[0]) * 256 + ord(ack[1])
+            j = struct.unpack('>H', ack)[0]
             if cserr or j != ptr:
                 raise Exception("Radio did not ack block %i" % ptr)
             ptr += blocksize

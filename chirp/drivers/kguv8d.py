@@ -287,6 +287,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
     NEEDS_COMPAT_SERIAL = False
+    _record_start = 0x7D
 
     def _checksum(self, data):
         cs = 0
@@ -299,7 +300,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         _length = 0
         if payload:
             _length = len(payload)
-        _packet = struct.pack('BBBB', 0x7D, cmd, 0xFF, _length)
+        _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF, _length)
         if payload:
             # add the chars to the packet
             _packet += payload
