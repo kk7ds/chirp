@@ -5,6 +5,7 @@ import unittest
 from chirp.drivers import kguv8e
 from chirp.drivers import kguv8d
 from chirp.drivers import kguv8dplus
+from chirp.drivers import kg935g
 from chirp import directory
 
 
@@ -75,3 +76,7 @@ class TestKGUV8DPlus(TestKGUV8D):
 
 class TestKGUV8ER(TestKGUV8D):
     RCLASS = kguv8e.KGUV8ERadio
+
+
+class TestKG935(TestKGUV8D):
+    RCLASS = kg935g.KG935GRadio
