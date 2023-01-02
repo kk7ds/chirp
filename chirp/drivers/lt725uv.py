@@ -1,9 +1,14 @@
-# Copyright 2016-2021:
+# Copyright 2016-2023:
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 # Modified for Baojie BJ-218: 2018
 #    Rick DeWitt (RJD), <aa0rd@yahoo.com>
 # Modified for Baojie BJ-318: April 2021
 #    Mark Hartong, AJ4YI <mark.hartong@verizon.net>
+# Modified for Baojie BJ-318: January 2023
+#    Mark Hartong, AJ4YI <mark.hartong@verizon.net>
+#    1. Removed Experimental Warning
+#    2. Added Brown & Yellow as Color Selections
+#    3. Max VFO Volume Setting to 15 ( vice 10)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -111,7 +116,8 @@ struct {
   u8 up_scr_color;   // BJ-318 upper screen character color
   u8 dn_scr_color;   // BJ-318 lower screen character color
                      // purple=00, red=01, emerald=02, blue=03,
-                     // sky_blue=04, black=05, required hex values for color
+                     // sky_blue=04, black=05, brown=06, yellow=07 required
+                     // hex values for color
                      // Note   sky_blue and black look the same on the
                      // BJ-318 screen
   u16 fm_318;        // FM stored Frequency in BJ-318
@@ -142,7 +148,7 @@ struct vfo {
   u8  sql;           // squelch for entire vfo band
                      // integer values 0 (low) to 9 (high)
   u8  bvol;          // sets volume for vfo band
-                     // integer values 0  (low) TO 10 (high)
+                     // integer values 0  (low) TO 15 (high)
 };
 
 #seekto 0x0300;
@@ -168,7 +174,7 @@ struct mem {
   u8  botsignal;
   u8  eotsignal;
   u8  power:1,            // binary value for
-                          // indiviudal channel power
+                          // individual channel power
                           // set to "High" or "Low"
                           // BJ-318 band power overrides any
                           // individual channel power setting
@@ -206,7 +212,8 @@ LIST_BPOWER = ["Low", "Mid", "High"]    # Tri-power models
 # BJ-218 Colors
 LIST_COLOR = ["Off", "Orange", "Blue", "Purple"]
 # BJ-318 Colors
-LIST_COLOR318 = ["Purple", "Red", "Emerald", "Blue", "Sky_Blue", "Black"]
+LIST_COLOR318 = ["Purple", "Red", "Emerald", "Blue", "Sky_Blue", "Black",
+                 "Brown", "Yellow"]
 LIST_LEDSW = ["Auto", "On"]
 LIST_RING = ["Off"] + ["%s" % x for x in range(1, 10)]
 LIST_TDR_DEF = ["A-Upper", "B-Lower"]
@@ -475,18 +482,23 @@ class LT725UV(chirp_common.CloneModeRadio):
         rp = chirp_common.RadioPrompts()
         if cls.MODEL == "BJ-318":
             msg = \
-                ('              BJ-318 EXPERIMENTAL\n'
-                 '            PLEASE REPORT ANY ISSUES \n'
+                ('\n'
+                 'The individual BJ-318 channel power settings set in CHIRP'
+                 ' are ignored by \n'
+                 'the radio. They are allowed to be set in hopes of a future'
+                 ' firmware \n'
+                 'change by the manufacturer. While the CHIRP driver will'
+                 ' allow setting \n'
+                 'the individual VFO power to High (25W), Med (10W) or Low'
+                 ' (5W) they \n'
+                 'are converted to just Low (5W) and High (25W) on upload. The'
+                 ' Med setting \n'
+                 'reverts to Low. \n'
                  '\n'
-                 'The individual channel power settings are ignored by \n'
-                 'the radio. They are allowed to be set in hopes of a \n'
-                 'future firmware change. Changing a stored channel power \n'
-                 'setting must be done manually using the front panel menu \n'
-                 'control (or the microphone control controls while in VFO \n'
-                 'mode) to change the VFO power. The CHIRP driver will \n'
-                 'allow setting the individual VFO power to High (25W), \n'
-                 'Med (10W) or Low (5W) and setting the unused individual \n'
-                 'channel power setting to High (25W) or Low (5W)'
+                 'Changing a channel power setting must be done manually using'
+                 ' the front \n'
+                 'panel menu control (or the microphone controls while in VFO'
+                 ' mode.)'
                  )
 
         else:
@@ -1130,7 +1142,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         if self.MODEL == "BJ-318":
             bvolume_u = RadioSetting("upper.vfoa.bvol",
                                      "Volume", RadioSettingValueInteger(
-                                         0, 10, _vfoa.bvol))
+                                         0, 15, _vfoa.bvol))
             a_band.append(bvolume_u)
 
         # BJ-318 Upper Screen Color
@@ -1238,7 +1250,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         if self.MODEL == "BJ-318":
             bvolume_l = RadioSetting("lower.vfob.bvol",
                                      "Volume", RadioSettingValueInteger(
-                                         0, 10, _vfob.bvol))
+                                         0, 15, _vfob.bvol))
             b_band.append(bvolume_l)
 
         # BJ-318 Lower Screen Color
