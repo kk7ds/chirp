@@ -310,7 +310,7 @@
 | <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.19% |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.24% |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus | Unit tested; needs confirm | 2-Jan-2022 | Yes | 0.08% |
-| <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E |  |  |  | 0.05% |
+| <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E | W5EGL | 2-Jan-2022 | Yes | 0.05% |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes | 0.04% |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus |  |  |  | 0.39% |
 | <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.35% |
@@ -364,9 +364,9 @@
 
 **Drivers:** 359
 
-**Tested:** 79% (284/75) (91% of usage stats)
+**Tested:** 79% (285/74) (91% of usage stats)
 
-**Byte clean:** 85% (308/51)
+**Byte clean:** 86% (309/50)
 
 ## Meaning of this testing
 

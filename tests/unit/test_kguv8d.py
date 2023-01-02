@@ -71,3 +71,7 @@ class TestKGUV8D(unittest.TestCase):
 
 class TestKGUV8DPlus(TestKGUV8D):
     RCLASS = kguv8dplus.KGUV8DPlusRadio
+
+
+class TestKGUV8ER(TestKGUV8D):
+    RCLASS = kguv8e.KGUV8ERadio
