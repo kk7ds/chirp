@@ -178,7 +178,7 @@ class QuerySourceDialog(wx.Dialog):
                     flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP)
 
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
-        vbox.Add(bs, border=10, flag=wx.LEFT | wx.ALIGN_CENTER_HORIZONTAL)
+        vbox.Add(bs, border=10, flag=wx.ALL)
         self.Bind(wx.EVT_BUTTON, self._button)
 
         self.Bind(EVT_QUERY_THREAD, self._got_status)
