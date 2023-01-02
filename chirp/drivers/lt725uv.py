@@ -1338,7 +1338,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             """Generate the DTMF code 1-8, NOT a callback."""
             tmp = ""
             if knt > 0 and knt != 0xff:
-                for val in ary[:knt]:
+                for val in ary[0:knt]:
                     if val > 0 and val <= 9:
                         tmp += chr(val + 48)
                     elif val == 0x0a:

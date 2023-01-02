@@ -56,7 +56,7 @@
 | <a name="Baofeng_UV-9R"></a> Baofeng_UV-9R | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | **2.52%** |
 | <a name="Baofeng_UV-B5"></a> Baofeng_UV-B5 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.35% |
 | <a name="Baojie_BJ-218"></a> Baojie_BJ-218 |  |  | Yes | 0.29% |
-| <a name="Baojie_BJ-318"></a> Baojie_BJ-318 |  |  | Yes | 0.10% |
+| <a name="Baojie_BJ-318"></a> Baojie_BJ-318 | [@KC9HI](https://github.com/KC9HI) | 2-Jan-2023 | Yes | 0.10% |
 | <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  | 0.02% |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes | 0.03% |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  | 0.02% |
@@ -364,7 +364,7 @@
 
 **Drivers:** 359
 
-**Tested:** 78% (282/77) (91% of usage stats)
+**Tested:** 78% (283/76) (91% of usage stats)
 
 **Byte clean:** 85% (307/52)
 
