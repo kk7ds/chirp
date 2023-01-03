@@ -285,13 +285,13 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._lat = wx.TextCtrl(panel,
                                 value=CONF.get('lat', 'repeaterbook') or '',
                                 validator=LatValidator())
-        self._lat.SetHint(_('Optional'))
+        self._lat.SetHint(_('Optional: 45.0000'))
         self._lat.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
         self._lon = wx.TextCtrl(panel,
                                 value=CONF.get('lon', 'repeaterbook') or '',
                                 validator=LonValidator())
-        self._lon.SetHint(_('Optional'))
+        self._lon.SetHint(_('Optional: -122.0000'))
         self._lon.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
         self._add_grid(grid, _('Latitude'), self._lat)
@@ -300,13 +300,13 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._dist = wx.TextCtrl(panel,
                                  value=CONF.get('dist', 'repeaterbook') or '',
                                  validator=DistValidator())
-        self._dist.SetHint(_('Optional'))
+        self._dist.SetHint(_('Optional: 100'))
         self._dist.SetToolTip(_('Limit results to this distance (km) from '
                                 'coordinates'))
         self._add_grid(grid, _('Distance'), self._dist)
 
         self._search = wx.TextCtrl(panel)
-        self._search.SetHint(_('Optional'))
+        self._search.SetHint(_('Optional: County, Hospital, etc'))
         self._search.SetToolTip(_('Filter results with location matching '
                                   'this string'))
         self._add_grid(grid, _('Filter'), self._search)
@@ -401,13 +401,13 @@ class MyGMRSQueryDialog(QuerySourceDialog):
         self._lat = wx.TextCtrl(panel,
                                 value=CONF.get('lat', 'repeaterbook') or '',
                                 validator=LatValidator())
-        self._lat.SetHint(_('Optional'))
+        self._lat.SetHint(_('Optional: 45.0000'))
         self._lat.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
         self._lon = wx.TextCtrl(panel,
                                 value=CONF.get('lon', 'repeaterbook') or '',
                                 validator=LonValidator())
-        self._lon.SetHint(_('Optional'))
+        self._lon.SetHint(_('Optional: -122.0000'))
         self._lon.SetToolTip(_('If set, sort results by distance from '
                                'these coordinates'))
         self._add_grid(grid, _('Latitude'), self._lat)
