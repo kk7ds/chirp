@@ -305,6 +305,12 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                                 'coordinates'))
         self._add_grid(grid, _('Distance'), self._dist)
 
+        self._search = wx.TextCtrl(panel)
+        self._search.SetHint(_('Optional'))
+        self._search.SetToolTip(_('Filter results with location matching '
+                                  'this string'))
+        self._add_grid(grid, _('Filter'), self._search)
+
         self.Layout()
         return vbox
 
@@ -339,6 +345,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'lat': self._lat.GetValue(),
             'lon': self._lon.GetValue(),
             'dist': self._dist.GetValue(),
+            'filter': self._search.GetValue(),
         }
 
 

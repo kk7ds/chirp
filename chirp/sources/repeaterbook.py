@@ -149,6 +149,7 @@ class RepeaterBook(base.NetworkResultRadio):
         lat = float(params.pop('lat') or 0)
         lon = float(params.pop('lon') or 0)
         dist = int(params.pop('dist') or 0)
+        search_filter = params.pop('filter', '')
         data_file = self.get_data(status,
                                   params.pop('country'),
                                   params.pop('state'))
@@ -165,6 +166,11 @@ class RepeaterBook(base.NetworkResultRadio):
                             float(item.get('Lat', 0)),
                             float(item.get('Long', 0)))
 
+        def match(item):
+            content = ' '.join(item[k] for k in (
+                'County', 'State', 'Landmark', 'Nearest City', 'Callsign'))
+            return not search_filter or search_filter.lower() in content.lower()
+
         i = 0
         for item in sorted(json.loads(open(data_file, 'rb').read())['results'],
                            key=sorter):
@@ -176,6 +182,8 @@ class RepeaterBook(base.NetworkResultRadio):
                 distance(lat, lon,
                          float(item.get('Lat') or 0),
                          float(item.get('Long') or 0)) > dist):
+                continue
+            if not match(item):
                 continue
             m = chirp_common.Memory()
             m.number = i
@@ -199,11 +207,15 @@ class RepeaterBook(base.NetworkResultRadio):
                 LOG.warning('Unable to determine mode for repeater %s' % (
                     item['Rptr ID']))
                 continue
-            m.comment = \
-                '%(Callsign)s near %(Nearest City)s %(State)s %(Use)s' % (
-                    item)
+            m.comment = (
+                '%(Callsign)s near %(Nearest City)s, %(County)s County, '
+                '%(State)s %(Use)s') % item
             m.name = item['Landmark'] or item['Callsign']
             i += 1
             self._memories.append(m)
+
+        if not self._memories:
+            status.send_fail(_('No results!'))
+            return
 
         status.send_end()
