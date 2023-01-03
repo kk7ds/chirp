@@ -303,6 +303,9 @@ class ChirpMain(wx.Frame):
 
         self.SetSize(int(CONF.get('window_w', 'state') or 1024),
                      int(CONF.get('window_h', 'state') or 768))
+        if CONF.is_defined('window_x', 'state'):
+            self.SetPosition((CONF.get_int('window_x', 'state'),
+                              CONF.get_int('window_y', 'state')))
 
         self.set_icon()
 
@@ -803,6 +806,9 @@ class ChirpMain(wx.Frame):
         size = self.GetSize()
         CONF.set_int('window_w', size.GetWidth(), 'state')
         CONF.set_int('window_h', size.GetHeight(), 'state')
+        pos = self.GetPosition()
+        CONF.set_int('window_x', pos[0], 'state')
+        CONF.set_int('window_y', pos[1], 'state')
         CONF.set('last_dir', chirp_platform.get_platform().get_last_dir(),
                  'state')
         config._CONFIG.save()
