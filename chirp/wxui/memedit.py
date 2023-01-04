@@ -443,7 +443,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._fixed_font = wx.Font(pointSize=10,
                                    family=wx.FONTFAMILY_TELETYPE,
                                    style=wx.FONTSTYLE_NORMAL,
-                                   weight=wx.FONTWEIGHT_NORMAL)
+                                   weight=wx.FONTWEIGHT_BOLD)
 
         for col, col_def in enumerate(self._col_defs):
             if not col_def.valid:
