@@ -435,28 +435,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         sizer.Add(self._grid, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
-        if platform.system() == 'Linux':
-            minwidth = 100
-        else:
-            minwidth = 75
-
         self._fixed_font = wx.Font(pointSize=10,
                                    family=wx.FONTFAMILY_TELETYPE,
                                    style=wx.FONTSTYLE_NORMAL,
-                                   weight=wx.FONTWEIGHT_BOLD)
-
-        for col, col_def in enumerate(self._col_defs):
-            if not col_def.valid:
-                self._grid.HideCol(col)
-            else:
-                self._grid.SetColLabelValue(col, col_def.label)
-                attr = wx.grid.GridCellAttr()
-                attr.SetEditor(col_def.get_editor())
-                attr.SetFont(self._fixed_font)
-                self._grid.SetColAttr(col, attr)
-                self._grid.SetColMinimalWidth(col, minwidth)
-
-        wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
+                                   weight=wx.FONTWEIGHT_NORMAL)
 
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING,
                         self._memory_edited)
@@ -467,9 +449,30 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
                         self._memory_rclick)
 
-        # For resize calculations
         self._dc = wx.ScreenDC()
-        self._dc.SetFont(self._fixed_font)
+        self.set_cell_attrs()
+
+    def set_cell_attrs(self, font=None):
+        if platform.system() == 'Linux':
+            minwidth = 100
+        else:
+            minwidth = 75
+
+        for col, col_def in enumerate(self._col_defs):
+            if not col_def.valid:
+                self._grid.HideCol(col)
+            else:
+                self._grid.SetColLabelValue(col, col_def.label)
+                attr = wx.grid.GridCellAttr()
+                attr.SetEditor(col_def.get_editor())
+                if font:
+                    attr.SetFont(font)
+                self._grid.SetColAttr(col, attr)
+                self._grid.SetColMinimalWidth(col, minwidth)
+        if font:
+            # For resize calculations
+            self._dc.SetFont(font)
+        wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
     def _setup_columns(self):
         def filter_unknowns(items):
