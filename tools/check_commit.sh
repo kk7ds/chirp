@@ -28,3 +28,7 @@ fi
 if grep -E '(from|import).*past' added_lines; then
     fail Use of past library not allowed
 fi
+
+if grep -E 'MemoryMap\(' added_lines; then
+    fail New uses of MemoryMap should be MemoryMapBytes
+fi
