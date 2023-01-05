@@ -167,6 +167,9 @@ class ChirpEditor(wx.Panel):
         LOG.warning('Editor %s does not support set_scroll_pos()' % (
             self.__class__.__name__))
 
+    def update_font(self):
+        pass
+
 
 class ChirpSyncEditor:
     """Radio interface that makes synchronous calls.
