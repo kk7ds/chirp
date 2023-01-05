@@ -866,9 +866,43 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.do_radio(del_cb, 'erase_memory', number)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
-    def _delete_memories_at(self, rows, event):
+    def _delete_memories_at(self, rows, event, shift_up=None):
         for row in rows:
             self.delete_memory_at(row, event)
+
+        if not shift_up:
+            return
+
+        LOG.debug('Shifting up...%s' % shift_up)
+        next_row = rows[-1] + 1
+        delta = len(rows)
+        mems_to_move = []
+
+        # Find all the memories we are going to shift up, either to the end
+        # of the current block, or to the end of the list
+        for row in range(next_row, self._grid.GetNumberRows()):
+            if (shift_up == 'block' and
+                    self._memory_cache[self.row2mem(row)].empty):
+                # We found the end of the next block
+                break
+            mems_to_move.append(self.row2mem(row))
+
+        # Shift them all up by however many we deleted
+        for number in mems_to_move:
+            LOG.debug('Moving memory %i -> %i', number, number - delta)
+            mem = self._memory_cache[number]
+            mem.number -= delta
+            self.do_radio(None, 'set_memory', mem)
+
+        # Delete the last memory as that is now a hole
+        LOG.debug('Erasing memory %i', mems_to_move[-1])
+        self.do_radio(None, 'erase_memory', mems_to_move[-1])
+
+        # Refresh the entire range from the top of what we deleted to the
+        # hole we created
+        for number in range(self.row2mem(rows[0]), mems_to_move[-1] + 1):
+            self.do_radio(self.refresh_memory_from_job, 'get_memory',
+                          number)
 
     def _memory_rclick(self, event):
         if event.GetRow() == -1:
@@ -885,18 +919,45 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                   props_item)
         menu.Append(props_item)
 
+        insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Row Above'))
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._mem_insert, selected_rows[0]),
+                  insert_item)
+        menu.Append(insert_item)
+
         if len(selected_rows) > 1:
             del_item = wx.MenuItem(
                 menu, wx.NewId(),
                 _('Delete %i Memories') % len(selected_rows))
+            del_block_item = wx.MenuItem(
+                menu, wx.NewId(),
+                _('Delete %i Memories and shift block up') % (
+                    len(selected_rows)))
+            del_shift_item = wx.MenuItem(
+                menu, wx.NewId(),
+                _('Delete %i Memories and shift all up') % len(selected_rows))
             to_delete = selected_rows
         else:
             del_item = wx.MenuItem(menu, wx.NewId(), _('Delete'))
+            del_block_item = wx.MenuItem(menu, wx.NewId(),
+                                         _('Delete and shift block up'))
+            del_shift_item = wx.MenuItem(menu, wx.NewId(),
+                                         _('Delete and shift all up'))
             to_delete = [event.GetRow()]
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._delete_memories_at, to_delete),
                   del_item)
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._delete_memories_at, to_delete,
+                                    shift_up='block'),
+                  del_block_item)
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._delete_memories_at, to_delete,
+                                    shift_up='all'),
+                  del_shift_item)
         menu.Append(del_item)
+        menu.Append(del_block_item)
+        menu.Append(del_shift_item)
 
         if CONF.get_bool('developer', 'state'):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
@@ -929,6 +990,40 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     self._radio.set_memory(memory)
                     self.refresh_memory(memory.number, memory)
                     wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    @common.error_proof()
+    def _mem_insert(self, row, event):
+        # Traverse memories downward until we find a hole
+        for i in range(row, self.mem2row(self._features.memory_bounds[1] + 1)):
+            mem = self._memory_cache[self.row2mem(i)]
+            if mem.empty:
+                LOG.debug("Found empty memory %i at %i" % (mem.number, i))
+                empty_row = i
+                break
+        else:
+            raise Exception(_('No empty rows below!'))
+
+        mems_to_refresh = []
+        # Move memories down in reverse order
+        for target_row in range(empty_row, row, -1):
+            mem = self._memory_cache[self.row2mem(target_row - 1)]
+            LOG.debug('Moving memory %i -> %i', mem.number,
+                      self.row2mem(target_row))
+            mem.number = self.row2mem(target_row)
+            self.do_radio(None, 'set_memory', mem)
+            mems_to_refresh.append(mem.number)
+
+        # Erase the memory that is to become the empty row
+        LOG.debug('Erasing memory %i', self.row2mem(row))
+        self._radio.erase_memory(self.row2mem(row))
+        mems_to_refresh.append(self.row2mem(row))
+
+        # Refresh all the memories we touched
+        for number in mems_to_refresh:
+            self.do_radio(self.refresh_memory_from_job, 'get_memory',
+                          number)
+
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def _mem_showraw(self, row, event):
         mem = self._radio.get_raw_memory(self.row2mem(row))
