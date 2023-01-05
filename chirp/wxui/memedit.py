@@ -439,6 +439,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                    family=wx.FONTFAMILY_TELETYPE,
                                    style=wx.FONTSTYLE_NORMAL,
                                    weight=wx.FONTWEIGHT_NORMAL)
+        self._variable_font = self._grid.GetDefaultCellFont()
+        self.update_font(False)
 
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING,
                         self._memory_edited)
@@ -452,7 +454,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._dc = wx.ScreenDC()
         self.set_cell_attrs()
 
-    def set_cell_attrs(self, font=None):
+    def set_cell_attrs(self):
         if platform.system() == 'Linux':
             minwidth = 100
         else:
@@ -465,13 +467,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.SetColLabelValue(col, col_def.label)
                 attr = wx.grid.GridCellAttr()
                 attr.SetEditor(col_def.get_editor())
-                if font:
-                    attr.SetFont(font)
                 self._grid.SetColAttr(col, attr)
                 self._grid.SetColMinimalWidth(col, minwidth)
-        if font:
-            # For resize calculations
-            self._dc.SetFont(font)
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
     def _setup_columns(self):
@@ -1037,6 +1034,22 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mem_b = self._radio.get_raw_memory(self.row2mem(rows[1]))
         with developer.MemoryDialog((mem_a, mem_b), self) as d:
             d.ShowModal()
+
+    def update_font(self, refresh=True):
+        fixed = CONF.get_bool('font_fixed', 'state', False)
+        large = CONF.get_bool('font_large', 'state', False)
+        if fixed:
+            font = self._fixed_font
+        else:
+            font = self._variable_font
+        if large:
+            font = wx.Font(font)
+            font.SetPointSize(font.PointSize + 2)
+        self._grid.SetDefaultCellFont(font)
+        if refresh:
+            self.refresh()
+            wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
+            wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
 
     @common.error_proof()
     def cb_copy(self, cut=False):

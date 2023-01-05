@@ -244,6 +244,11 @@ class ChirpEditorSet(wx.Panel):
             raise Exception(_('Only memory tabs may be exported'))
         current.export_to_file(filename)
 
+    def update_font(self):
+        for i in range(0, self._editors.PageCount):
+            editor = self._editors.GetPage(i)
+            editor.update_font()
+
 
 class ChirpLiveEditorSet(ChirpEditorSet):
     MEMEDIT_CLS = memedit.ChirpLiveMemEdit
@@ -542,6 +547,24 @@ class ChirpMain(wx.Frame):
         goto_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
         self.Bind(wx.EVT_MENU, self._menu_goto, goto_item)
 
+        view_menu = wx.Menu()
+
+        self._fixed_item = wx.NewId()
+        fixed_item = wx.MenuItem(view_menu, self._fixed_item,
+                                 _('Use fixed-width font'),
+                                 kind=wx.ITEM_CHECK)
+        view_menu.Append(fixed_item)
+        self.Bind(wx.EVT_MENU, self._menu_fixed_font, fixed_item)
+        fixed_item.Check(CONF.get_bool('font_fixed', 'state', False))
+
+        self._large_item = wx.NewId()
+        large_item = wx.MenuItem(view_menu, self._large_item,
+                                 _('Use larger font'),
+                                 kind=wx.ITEM_CHECK)
+        view_menu.Append(large_item)
+        self.Bind(wx.EVT_MENU, self._menu_large_font, large_item)
+        large_item.Check(CONF.get_bool('font_large', 'state', False))
+
         radio_menu = wx.Menu()
 
         if sys.platform == 'darwin':
@@ -672,6 +695,7 @@ class ChirpMain(wx.Frame):
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, '&File')
         menu_bar.Append(edit_menu, '&Edit')
+        menu_bar.Append(view_menu, '&View')
         menu_bar.Append(radio_menu, '&Radio')
         menu_bar.Append(help_menu, '&Help')
 
@@ -811,6 +835,8 @@ class ChirpMain(wx.Frame):
             (wx.ID_PRINT, can_goto),
             (self._print_preview_item, can_goto),
             (self._export_menu_item, can_close),
+            (self._fixed_item, can_goto),
+            (self._large_item, can_goto),
         ]
         for ident, enabled in items:
             menuitem = self.GetMenuBar().FindItemById(ident)
@@ -1025,6 +1051,21 @@ class ChirpMain(wx.Frame):
         if search:
             self._last_search_text = search
             self.current_editorset.cb_find(search)
+
+    def _update_font(self):
+        for i in range(0, self._editors.PageCount):
+            eset = self._editors.GetPage(i)
+            eset.update_font()
+
+    def _menu_fixed_font(self, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        CONF.set_bool('font_fixed', menuitem.IsChecked(), 'state')
+        self._update_font()
+
+    def _menu_large_font(self, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        CONF.set_bool('font_large', menuitem.IsChecked(), 'state')
+        self._update_font()
 
     def _menu_goto(self, event):
         eset = self.current_editorset

@@ -20,7 +20,10 @@ import wx.grid
 
 from chirp import chirp_common
 from chirp.wxui import common
+from chirp.wxui import config
 from chirp.wxui import memedit
+
+CONF = config.get()
 
 
 if platform.system() == 'Linux':
@@ -89,6 +92,8 @@ class ChirpBankEdit(common.ChirpEditor):
                                    family=wx.FONTFAMILY_TELETYPE,
                                    style=wx.FONTSTYLE_NORMAL,
                                    weight=wx.FONTWEIGHT_NORMAL)
+        self._variable_font = self._grid.GetDefaultCellFont()
+        self.update_font(False)
 
         for col, col_def in enumerate(self._col_defs):
             self._grid.SetColLabelValue(col, col_def.label)
@@ -96,7 +101,6 @@ class ChirpBankEdit(common.ChirpEditor):
             if platform.system() != 'Linux':
                 attr.SetEditor(col_def.get_editor())
                 attr.SetRenderer(col_def.get_renderer())
-            attr.SetFont(self._fixed_font)
             attr.SetReadOnly(not (isinstance(col_def, ChirpBankToggleColumn) or
                                   isinstance(col_def, ChirpBankIndexColumn)))
             attr.SetAlignment(wx.ALIGN_CENTER, wx.ALIGN_CENTER)
@@ -108,6 +112,22 @@ class ChirpBankEdit(common.ChirpEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self._label_click)
         self._grid.GetGridColLabelWindow().Bind(wx.EVT_MOTION,
                                                 self._colheader_mouseover)
+
+    def update_font(self, refresh=True):
+        fixed = CONF.get_bool('font_fixed', 'state', False)
+        large = CONF.get_bool('font_large', 'state', False)
+        if fixed:
+            font = self._fixed_font
+        else:
+            font = self._variable_font
+        if large:
+            font = wx.Font(font)
+            font.SetPointSize(font.PointSize + 2)
+        self._grid.SetDefaultCellFont(font)
+        if refresh:
+            self.refresh()
+            wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
+            wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
 
     def selected(self):
         self.refresh_memories()
