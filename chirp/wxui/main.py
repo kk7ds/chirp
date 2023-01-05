@@ -483,6 +483,16 @@ class ChirpMain(wx.Frame):
         print_item = file_menu.Append(wx.ID_PRINT)
         self.Bind(wx.EVT_MENU, self._menu_print, print_item)
 
+        self._print_preview_item = wx.NewId()
+        print_preview_item = wx.MenuItem(file_menu,
+                                         self._print_preview_item,
+                                         _('Print Preview'))
+        self.Bind(wx.EVT_MENU, self._menu_print, print_preview_item)
+        # Linux has integrated preview stuff, and the wx preview dialog
+        # does not work well, so skip this on Linux.
+        if platform.system() != 'Linux':
+            file_menu.Append(print_preview_item)
+
         close_item = file_menu.Append(wx.ID_CLOSE)
         close_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('W')))
         self.Bind(wx.EVT_MENU, self._menu_close, close_item)
@@ -666,7 +676,12 @@ class ChirpMain(wx.Frame):
             self,
             self.current_editorset.radio,
             self.current_editorset.current_editor)
-        p.print(self.current_editorset.current_editor.get_selected_memories())
+
+        mems = self.current_editorset.current_editor.get_selected_memories()
+        if event.GetId() == wx.ID_PRINT:
+            p.print(mems)
+        else:
+            p.print_preview(mems)
 
     def make_toolbar(self):
         tb = self.CreateToolBar()
@@ -788,6 +803,7 @@ class ChirpMain(wx.Frame):
             (self._find_next_item, can_goto),
             (wx.ID_FIND, can_goto),
             (wx.ID_PRINT, can_goto),
+            (self._print_preview_item, can_goto),
             (self._export_menu_item, can_close),
         ]
         for ident, enabled in items:
