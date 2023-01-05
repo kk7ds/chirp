@@ -142,6 +142,9 @@ class ChirpEditor(wx.Panel):
     def cb_paste(self, data):
         pass
 
+    def cb_delete(self):
+        pass
+
     def cb_goto(self, number):
         pass
 

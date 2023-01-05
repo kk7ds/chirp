@@ -1156,6 +1156,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             LOG.warning('Unknown data format %s' % data.GetFormat().Type)
 
+    def cb_delete(self):
+        selected_rows = self._grid.GetSelectedRows()
+        for row in selected_rows:
+            self.delete_memory_at(row, None)
+
     def cb_goto(self, number, column=0):
         self._grid.GoToCell(self.mem2row(number), column)
         self._grid.SelectRow(self.mem2row(number))

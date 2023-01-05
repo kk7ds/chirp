@@ -222,6 +222,9 @@ class ChirpEditorSet(wx.Panel):
     def cb_paste(self, data):
         return self.current_editor.cb_paste(data)
 
+    def cb_delete(self):
+        return self.current_editor.cb_delete()
+
     def cb_goto(self, number):
         return self.current_editor.cb_goto(number)
 
@@ -514,6 +517,9 @@ class ChirpMain(wx.Frame):
 
         selall_item = edit_menu.Append(wx.ID_SELECTALL)
         self.Bind(wx.EVT_MENU, self._menu_selall, selall_item)
+
+        delete_item = edit_menu.Append(wx.ID_DELETE)
+        self.Bind(wx.EVT_MENU, self._menu_delete, delete_item)
 
         edit_menu.Append(wx.MenuItem(edit_menu, wx.ID_SEPARATOR))
 
@@ -1004,6 +1010,9 @@ class ChirpMain(wx.Frame):
 
     def _menu_selall(self, event):
         self.current_editorset.select_all()
+
+    def _menu_delete(self, event):
+        self.current_editorset.cb_delete()
 
     def _menu_find(self, event):
         if event.GetId() == wx.ID_FIND:
