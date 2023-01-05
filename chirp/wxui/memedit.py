@@ -559,6 +559,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
             for col, col_def in enumerate(self._col_defs):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
+                self._grid.SetReadOnly(row, col,
+                                       col_def.name in memory.immutable)
 
     def refresh_memory_from_job(self, job):
         self.refresh_memory(job.args[0], job.result)
