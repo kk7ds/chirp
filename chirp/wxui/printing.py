@@ -26,7 +26,7 @@ CONF = config.get()
 
 class MemoryPrinter(wx.html.HtmlEasyPrinting):
     def __init__(self, parent, radio, memedit):
-        super().__init__()
+        super().__init__(name=_('Printing'), parentWindow=parent)
         self._radio = radio
         self._features = radio.get_features()
         self._col_defs = memedit._col_defs
