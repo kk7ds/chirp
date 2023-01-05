@@ -93,12 +93,21 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                         except IndexError:
                             pass
 
-    @common.error_proof()
-    def print(self, memories):
+    def _print(self, memories):
         report.report_model(self._radio, 'print')
         memories = [m for m in memories if not m.empty]
         doc, tag, text = yattag.Doc().tagtext()
         with tag('html'):
             with tag('body'):
                 self._memory_table(doc, memories)
+        return doc
+
+    @common.error_proof()
+    def print(self, memories):
+        doc = self._print(memories)
+        self.PrintText(doc.getvalue())
+
+    @common.error_proof()
+    def print_preview(self, memories):
+        doc = self._print(memories)
         return self.PreviewText(doc.getvalue())
