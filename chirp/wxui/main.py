@@ -810,7 +810,8 @@ class ChirpMain(wx.Frame):
         can_save = False
         can_saveas = False
         can_upload = False
-        can_goto = False
+        is_memedit = False
+        is_bank = False
         CSVRadio = directory.get_radio('Generic_CSV')
         if eset is not None:
             is_live = isinstance(eset.radio, chirp_common.LiveRadio)
@@ -822,21 +823,27 @@ class ChirpMain(wx.Frame):
             can_upload = (not isinstance(eset.radio, CSVRadio) and
                           not isinstance(eset.radio, common.LiveAdapter) and
                           not is_live and not is_network)
-            can_goto = isinstance(eset.current_editor, memedit.ChirpMemEdit)
+            is_memedit = isinstance(eset.current_editor, memedit.ChirpMemEdit)
+            is_bank = isinstance(eset.current_editor, bankedit.ChirpBankEdit)
 
         items = [
             (wx.ID_CLOSE, can_close),
             (wx.ID_SAVE, can_save),
             (wx.ID_SAVEAS, can_saveas),
             (self._upload_menu_item, can_upload),
-            (self._goto_item, can_goto),
-            (self._find_next_item, can_goto),
-            (wx.ID_FIND, can_goto),
-            (wx.ID_PRINT, can_goto),
-            (self._print_preview_item, can_goto),
+            (self._goto_item, is_memedit),
+            (self._find_next_item, is_memedit),
+            (wx.ID_FIND, is_memedit),
+            (wx.ID_PRINT, is_memedit),
+            (wx.ID_DELETE, is_memedit),
+            (wx.ID_CUT, is_memedit),
+            (wx.ID_COPY, is_memedit),
+            (wx.ID_PASTE, is_memedit),
+            (wx.ID_SELECTALL, is_memedit),
+            (self._print_preview_item, is_memedit),
             (self._export_menu_item, can_close),
-            (self._fixed_item, can_goto),
-            (self._large_item, can_goto),
+            (self._fixed_item, is_memedit or is_bank),
+            (self._large_item, is_memedit or is_bank),
         ]
         for ident, enabled in items:
             menuitem = self.GetMenuBar().FindItemById(ident)
