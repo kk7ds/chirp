@@ -290,7 +290,7 @@
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  | Yes | 0.04% |
 | <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  | Yes | 0.02% |
-| <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 |  |  |  | 0.31% |
+| <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 | [@KC9HI](https://github.com/KC9HI) | 6-Jan-2023 | Yes | 0.31% |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes | 0.51% |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.06% |
 | <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  | 0.05% |
@@ -364,9 +364,9 @@
 
 **Drivers:** 359
 
-**Tested:** 79% (286/73) (91% of usage stats)
+**Tested:** 79% (287/72) (92% of usage stats)
 
-**Byte clean:** 86% (310/49)
+**Byte clean:** 86% (311/48)
 
 ## Meaning of this testing
 

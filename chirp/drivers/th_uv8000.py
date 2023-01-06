@@ -252,7 +252,7 @@ for x in chirp_common.DTCS_CODES:
 for x in chirp_common.DTCS_CODES:
     LIST_CTCSS.append("D{:03d}R".format(x))
 LIST_BW = ["Narrow", "Wide"]
-LIST_SHIFT = ["off", "+", "-"]
+LIST_SHIFT = ["off", "+", "-", ""]
 STEPS = [0.5, 2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 37.5, 50.0, 100.0]
 LIST_STEPS = [str(x) for x in STEPS]
 LIST_VOXDLY = ["0.5", "1.0", "2.0", "3.0"]      # LISTS must be strings
@@ -332,31 +332,31 @@ def _do_ident(radio):
     # Flush input buffer
     _clean_buffer(radio)
 
-    magic = "PROGRAMa"
+    magic = b"PROGRAMa"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)
     # LOG.warning("PROGa Ack:" + util.hexprint(ack))
-    if ack != "\x06":
+    if ack != b"\x06":
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond")
-    magic = "PROGRAMb"
+    magic = b"PROGRAMb"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)
-    if ack != "\x06":
+    if ack != b"\x06":
         _exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond to B")
-    magic = chr(0x02)
+    magic = b"\x02"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)    # s/b: 0x50
     magic = _rawrecv(radio, 7)  # s/b TC88...
-    magic = "MTC88CUMHS3E7BN-"
+    magic = b"MTC88CUMHS3E7BN-"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)    # s/b 0x80
-    magic = chr(0x06)
+    magic = b"\x06"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)
 
@@ -364,7 +364,7 @@ def _do_ident(radio):
 
 
 def _exit_program_mode(radio):
-    endframe = "E"
+    endframe = b"E"
     _rawsend(radio, endframe)
 
 
@@ -377,13 +377,13 @@ def _download(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in range(0, MEM_SIZE, BLOCK_SIZE):
-        frame = _make_frame("R", addr, BLOCK_SIZE)
+        frame = _make_frame(b"R", addr, BLOCK_SIZE)
         # DEBUG
         LOG.info("Request sent:")
         LOG.debug("Frame=" + util.hexprint(frame))
@@ -400,7 +400,7 @@ def _download(radio):
         data += d
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
@@ -417,7 +417,7 @@ def _upload(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
@@ -426,19 +426,19 @@ def _upload(radio):
         # Sending the data
         data = radio.get_mmap()[addr:addr + BLOCK_SIZE]
 
-        frame = _make_frame("W", addr, BLOCK_SIZE, data)
+        frame = _make_frame(b"W", addr, BLOCK_SIZE, data)
         # LOG.warning("Frame:%s:" % util.hexprint(frame))
         _rawsend(radio, frame)
 
         # Receiving the response
         ack = _rawrecv(radio, 1)
-        if ack != "\x06":
+        if ack != b"\x06":
             _exit_program_mode(radio)
             msg = "Bad ack writing block 0x%04x" % addr
             raise errors.RadioError(msg)
 
         # UI Update
-        status.cur = addr / BLOCK_SIZE
+        status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
 
@@ -496,6 +496,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
     """TYT UV8000D Radio"""
     VENDOR = "TYT"
     MODEL = "TH-UV8000"
+    NEEDS_COMPAT_SERIAL = False
     MODES = ["NFM", "FM"]
     TONES = chirp_common.TONES
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
@@ -597,7 +598,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
