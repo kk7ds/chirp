@@ -22,6 +22,7 @@ import urllib
 import wx
 import wx.adv
 
+from chirp import bandplan
 from chirp.sources import base
 from chirp.sources import dmrmarc
 from chirp.sources import mygmrs
@@ -311,6 +312,12 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                                   'this string'))
         self._add_grid(grid, _('Filter'), self._search)
 
+        self._bands = bandplan.BandPlans(CONF).get_repeater_bands()
+        self._limit_bands = []
+        self._bandfilter = wx.CheckBox(panel, label=_('Only certain bands'))
+        self.Bind(wx.EVT_CHECKBOX, self._select_bands, self._bandfilter)
+        self._add_grid(grid, _('Limit Bands'), self._bandfilter)
+
         self.Layout()
         return vbox
 
@@ -329,6 +336,24 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
         grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
+    def _select_bands(self, event):
+        if self._bandfilter.IsChecked():
+            band_names = [x.name for x in self._bands]
+            d = wx.MultiChoiceDialog(self, _('Select Bands'), _('Bands'),
+                                     choices=band_names)
+            prev = CONF.get('bands', 'repeaterbook') or ''
+            d.SetSelections([i for i, band in enumerate(self._bands)
+                             if band.name in prev.split(',')])
+            r = d.ShowModal()
+            if r == wx.ID_CANCEL or not d.GetSelections():
+                self._bandfilter.SetValue(False)
+            else:
+                self._limit_bands = [self._bands[i].limits
+                                     for i in d.GetSelections()]
+                CONF.set('bands', ','.join(self._bands[i].name
+                                           for i in d.GetSelections()),
+                         'repeaterbook')
+
     def do_query(self):
         CONF.set('lat', self._lat.GetValue(), 'repeaterbook')
         CONF.set('lon', self._lon.GetValue(), 'repeaterbook')
@@ -346,6 +371,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'lon': self._lon.GetValue(),
             'dist': self._dist.GetValue(),
             'filter': self._search.GetValue(),
+            'bands': self._limit_bands,
         }
 
 
