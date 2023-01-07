@@ -150,6 +150,7 @@ class RepeaterBook(base.NetworkResultRadio):
         lon = float(params.pop('lon') or 0)
         dist = int(params.pop('dist') or 0)
         search_filter = params.pop('filter', '')
+        bands = params.pop('bands', [])
         data_file = self.get_data(status,
                                   params.pop('country'),
                                   params.pop('state'))
@@ -171,6 +172,14 @@ class RepeaterBook(base.NetworkResultRadio):
                 'County', 'State', 'Landmark', 'Nearest City', 'Callsign'))
             return not search_filter or search_filter.lower() in content.lower()
 
+        def included_band(item):
+            if not bands:
+                return True
+            for lo, hi in bands:
+                if lo < chirp_common.parse_freq(item['Frequency']) < hi:
+                    return True
+            return False
+
         i = 0
         for item in sorted(json.loads(open(data_file, 'rb').read())['results'],
                            key=sorter):
@@ -184,6 +193,8 @@ class RepeaterBook(base.NetworkResultRadio):
                          float(item.get('Long') or 0)) > dist):
                 continue
             if not match(item):
+                continue
+            if not included_band(item):
                 continue
             m = chirp_common.Memory()
             m.number = i
