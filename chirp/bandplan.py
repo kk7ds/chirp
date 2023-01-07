@@ -149,3 +149,35 @@ class BandPlans(object):
                     break
 
         return result
+
+    def get_enabled_plan(self):
+        for shortname, details in self.plans.items():
+            if self._config.get_bool(shortname, "bandplan"):
+                return details[1]
+
+    def get_repeater_bands(self):
+        bands_with_repeaters = []
+        current_plan = self.get_enabled_plan()
+
+        # For now, assume anything above 28MHz could have a repeater.
+        # Alternately, we could scan for bands with repeater sub-bands and only
+        # include those.
+        min_freq = chirp_common.to_MHz(28)
+
+        def add_nodupes(b):
+            for existing in bands_with_repeaters:
+                if b.name == existing.name:
+                    if sum(b.limits) < sum(existing.limits):
+                        # Don't add, this is smaller
+                        return
+                    else:
+                        bands_with_repeaters.remove(existing)
+                        break
+            bands_with_repeaters.append(b)
+
+        for band in current_plan.bands:
+            if (band.limits[0] >= min_freq and
+                    band.name.lower().endswith('meter band')):
+                add_nodupes(band)
+        return sorted(bands_with_repeaters,
+                      key=lambda b: b.limits[0])
