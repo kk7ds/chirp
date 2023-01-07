@@ -229,7 +229,7 @@ class ChirpCloneDialog(wx.Dialog):
 
         self.gauge = wx.Gauge(self)
 
-        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL | wx.HELP)
+        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
         self.Bind(wx.EVT_BUTTON, self._action)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -299,7 +299,8 @@ class ChirpCloneDialog(wx.Dialog):
         if not select:
             select = CONF.get('last_port', 'state')
 
-        self._port.SetItems([x[1] for x in self.ports] + [_('Custom...')])
+        self._port.SetItems([x[1] for x in self.ports] +
+                            [_('Custom...'), _('Help Me...')])
         for device, name in self.ports:
             if device == select:
                 self._port.SetStringSelection(name)
@@ -381,6 +382,9 @@ class ChirpCloneDialog(wx.Dialog):
                 CUSTOM_PORTS.append(port)
             self.set_ports(select=port or None)
             return
+        elif self._port.GetStringSelection() == _('Help Me...'):
+            self._port_assist(event)
+            return
         self._persist_choices()
 
     def _select_vendor(self, vendor):
@@ -454,10 +458,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             d.ShowModal()
 
     def _action(self, event):
-        if event.GetEventObject().GetId() == wx.ID_HELP:
-            self._port_assist(event)
-            return
-        elif event.GetEventObject().GetId() == wx.ID_CANCEL:
+        if event.GetEventObject().GetId() == wx.ID_CANCEL:
             if self._clone_thread:
                 self._clone_thread.stop()
             self.EndModal(event.GetEventObject().GetId())
@@ -525,10 +526,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
             self._radio = common.LiveAdapter(self._radio)
 
     def _action(self, event):
-        if event.GetEventObject().GetId() == wx.ID_HELP:
-            self._port_assist(event)
-            return
-        elif event.GetEventObject().GetId() == wx.ID_CANCEL:
+        if event.GetEventObject().GetId() == wx.ID_CANCEL:
             if self._clone_thread:
                 self._clone_thread.stop()
             self.EndModal(event.GetEventObject().GetId())
