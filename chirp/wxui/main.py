@@ -847,7 +847,10 @@ class ChirpMain(wx.Frame):
         ]
         for ident, enabled in items:
             menuitem = self.GetMenuBar().FindItemById(ident)
-            menuitem.Enable(enabled)
+            if menuitem:
+                # Some items may not be present on all systems (i.e.
+                # print preview on Linux)
+                menuitem.Enable(enabled)
 
     def _window_close(self, event):
         for i in range(self._editors.GetPageCount()):
