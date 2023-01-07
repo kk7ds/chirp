@@ -143,7 +143,7 @@ BANDS_2M = (
 )
 
 BANDS_1_25M = (
-  bandplan.Band((222000000, 225000000), "1.25 Meters"),
+  bandplan.Band((222000000, 225000000), "1.25 Meter Band"),
   bandplan.Band((222000000, 222150000), "Weak-signal modes"),
   bandplan.Band((222000000, 222025000), "EME"),
   bandplan.Band((222050000, 222060000), "Propagation beacons"),
@@ -158,7 +158,7 @@ BANDS_1_25M = (
 )
 
 BANDS_70CM = (
-  bandplan.Band((420000000, 450000000), "70cm Band"),
+  bandplan.Band((420000000, 450000000), "70 Centimeter Band"),
   bandplan.Band((420000000, 426000000), "ATV repeater or simplex"),
   bandplan.Band((426000000, 432000000), "ATV simplex"),
   bandplan.Band((432000000, 432070000), "EME (Earth-Moon-Earth)"),
