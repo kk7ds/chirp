@@ -649,7 +649,12 @@ def _do_upload(radio):
         (0x1FC0, 0x1FE0)
         ]
 
-    if image_version == radio_version:
+    if radio._all_range_flag:
+        image_matched_radio = True
+        ranges_main = radio._ranges_main
+        ranges_aux = radio._ranges_aux
+        LOG.warning('Sending all ranges to radio as instructed')
+    elif image_version == radio_version:
         image_matched_radio = True
         ranges_main = _ranges_main_default
         ranges_aux = _ranges_aux_default + _ranges_aux_extra
@@ -690,6 +695,14 @@ def _do_upload(radio):
                "version of the image (%s) does not match "
                "that of the radio (%s).")
         raise errors.RadioError(msg % (image_version, radio_version))
+
+    if radio._all_range_flag:
+        radio._all_range_flag = False
+        LOG.warning('Sending all ranges to radio has completed')
+        raise errors.RadioError(
+            "This is NOT an error.\n"
+            "The upload has finished successfully.\n"
+            "Please restart CHIRP.")
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]
@@ -824,6 +837,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
+        self._all_range_flag = False
 
     def sync_in(self):
         try:
@@ -1341,6 +1355,19 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 "tdrch", "Tone Burst Frequency (BTech UV-82HP only)",
                 RadioSettingValueList(RTONE_LIST, RTONE_LIST[_settings.tdrch]))
             advanced.append(rs)
+
+        def set_range_flag(setting):
+            val = [85, 115, 101, 65, 116, 79, 119, 110, 82, 105, 115, 107]
+            if [ord(x) for x in str(setting.value).strip()] == val:
+                self._all_range_flag = True
+            else:
+                self._all_range_flag = False
+            LOG.debug('Set range flag to %s' % self._all_range_flag)
+
+        rs = RadioSetting("allrange", "Range Override Parameter",
+                          RadioSettingValueString(0, 12, "Default"))
+        rs.set_apply_callback(set_range_flag)
+        advanced.append(rs)
 
         if len(self._mmap.get_packed()) == 0x1808:
             # Old image, without aux block
