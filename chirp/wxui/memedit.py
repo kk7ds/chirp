@@ -1141,6 +1141,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 modified = True
             except (import_logic.DestNotCompatible,
                     errors.RadioError) as e:
+                LOG.warning('Pasted memory %s incompatible: %s' % (
+                    mem, str(e)))
                 errormsgs.append((mem, e))
             except Exception as e:
                 LOG.exception('Failed to paste: %s' % e)
