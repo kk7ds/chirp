@@ -293,6 +293,7 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
 class ChirpToneColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
         tones = [str(x) for x in chirp_common.TONES]
+        self.rf = radio.get_features()
         super(ChirpToneColumn, self).__init__(name, radio,
                                               tones)
 
@@ -308,12 +309,20 @@ class ChirpToneColumn(ChirpChoiceColumn):
                          '->Tone' in memory.cross_mode)
         cross_tx_tone = (memory.tmode == 'Cross' and
                          'Tone->' in memory.cross_mode)
+
+        # If we are a yaesu-style radio with only one tone field,
+        # we show that for either Tone or TSQL mode.
+        if not self.rf.has_ctone and self._name == 'rtone':
+            tmodes = ('Tone', 'TSQL')
+        else:
+            tmodes = self._name == 'rtone' and ('Tone',) or ('TSQL',)
+
         return not (
             (self._name == 'rtone' and (
-                memory.tmode == 'Tone' or cross_tx_tone))
+                memory.tmode in tmodes or cross_tx_tone))
             or
             (self._name == 'ctone' and (
-                memory.tmode == 'TSQL' or cross_rx_tone)))
+                memory.tmode in tmodes or cross_rx_tone)))
 
     def _digest_value(self, memory, input_value):
         return float(input_value)
