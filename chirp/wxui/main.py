@@ -132,7 +132,7 @@ class ChirpEditorSet(wx.Panel):
             self.add_editor(settings, _('Settings'))
 
         if (CONF.get_bool('developer', 'state') and
-                not isinstance(radio, chirp_common.LiveRadio)):
+                isinstance(radio, chirp_common.CloneModeRadio)):
             browser = developer.ChirpRadioBrowser(parent_radio, self._editors)
             browser.Bind(common.EVT_EDITOR_CHANGED, self._refresh_all)
             self.add_editor(browser, _('Browser'))
