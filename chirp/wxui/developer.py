@@ -400,12 +400,15 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
             return
 
         self.start_wait_dialog(_('Building Radio Browser'))
-
         self._loaded = True
-        self.add_sub_panel('%s %s' % (self._radio.VENDOR,
-                                      self._radio.MODEL),
-                           self._radio._memobj, self)
-        self.stop_wait_dialog()
+        try:
+            self.add_sub_panel('%s %s' % (self._radio.VENDOR,
+                                          self._radio.MODEL),
+                               self._radio._memobj, self)
+        except Exception:
+            common.error_proof.show_error(_('Failed to load radio browser'))
+        finally:
+            self.stop_wait_dialog()
         if self._treebook.GetPageCount():
             self._treebook.ExpandNode(0)
 
