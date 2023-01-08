@@ -105,7 +105,7 @@ class MemoryDialog(wx.Dialog):
 
 class ChirpEditor(wx.Panel):
     def __init__(self, parent, obj):
-        super(ChirpEditor, self).__init__(parent)
+        super(ChirpEditor, self).__init__(parent, )
         self._obj = obj
         self._fixed_font = wx.Font(pointSize=10,
                                    family=wx.FONTFAMILY_TELETYPE,
@@ -374,7 +374,7 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         self._radio = radio
         self._features = radio.get_features()
 
-        self._treebook = wx.Treebook(self)
+        self._treebook = ChirpBrowserTreeBook(self)
 
         try:
             view = self._treebook.GetTreeCtrl()
@@ -391,9 +391,6 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         sizer.Add(self._treebook, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
-    def _page_changed(self, event):
-        wx.PostEvent(self, common.EditorChanged(self.GetId()))
-
     def selected(self):
         if self._loaded:
             self._treebook.CurrentPage.selected()
@@ -402,10 +399,11 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         self.start_wait_dialog(_('Building Radio Browser'))
         self._loaded = True
         try:
-            self.add_sub_panel('%s %s' % (self._radio.VENDOR,
-                                          self._radio.MODEL),
-                               self._radio._memobj, self)
-        except Exception:
+            self._treebook.add_sub_panel('%s %s' % (self._radio.VENDOR,
+                                                    self._radio.MODEL),
+                                         self._radio._memobj, self._treebook)
+        except Exception as e:
+            LOG.exception('Failed to load browser: %s' % e)
             common.error_proof.show_error(_('Failed to load radio browser'))
         finally:
             self.stop_wait_dialog()
@@ -416,16 +414,21 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
         page = self._treebook.GetPage(event.GetSelection())
         page.selected()
 
+
+class ChirpBrowserTreeBook(wx.Treebook):
     def add_sub_panel(self, name, memobj, parent):
         LOG.debug('Adding sub panel for %s' % name)
         page = ChirpBrowserPanel(self, memobj)
         page.Bind(EVT_BROWSER_CHANGED, self._page_changed)
         if parent != self:
-            pos = self._treebook.FindPage(parent)
-            self._treebook.InsertSubPage(pos, page, name)
-            self._treebook.ExpandNode(pos)
+            pos = self.FindPage(parent)
+            self.InsertSubPage(pos, page, name)
+            self.ExpandNode(pos)
         else:
-            self._treebook.AddPage(page, name)
+            self.AddPage(page, name)
+
+    def _page_changed(self, event):
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
 
 class FakeSerial(serial.SerialBase):
