@@ -6,7 +6,8 @@
 # If the driver is tested with an in-tree image (or is a live driver) and the
 # clone routines are shared in common with other things that are tested, use
 # *MODULE_NAME to mark it as "probably works because of common code in
-# $module"
+# $module". If a user reported it as working in a chirp website issue, use
+# the form #BUGNUMBER.
 Abbree_AR-518,@KC9HI,16-Dec-2022
 Abbree_AR-63,@KC9HI,30-Nov-2022
 Alinco_DJ175,+Alinco_DR235T,12-Dec-2022
@@ -93,7 +94,7 @@ Icom_IC-T7H,*icf,12-Dec-2022
 Icom_IC-T8A,*icf,12-Dec-2022
 Icom_IC-Q7A,@KC9HI,20-Nov-2022
 Icom_IC-V86,*icf,12-Dec-2022
-Icom_IC-W32A,*icf,12-Dec-2022
+Icom_IC-W32A,#10238,12-Dec-2022
 Icom_IC-W32E,*icf,12-Dec-2022
 Intek_KT-980HP,+Baofeng_BF-F8HP,18-Nov-2022
 Intek_HR-2040,+AnyTone_5888UV,9-Dec-2022
