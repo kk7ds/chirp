@@ -24,6 +24,8 @@ def tester_link(text):
         return ('[Probably works]('
             'https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/%s.py)' % (
                 text[1:]))
+    elif text.startswith('#') and text[1:].isdigit():
+        return '[Reported working](https://chirp.danplanet.com/issues/%i)' % int(text[1:])
     else:
         return text
 

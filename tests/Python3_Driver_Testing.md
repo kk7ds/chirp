@@ -98,7 +98,7 @@
 | <a name="Icom_IC-T8A"></a> Icom_IC-T8A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-V82_U82"></a> Icom_IC-V82_U82 |  |  |  | 0.03% |
 | <a name="Icom_IC-V86"></a> Icom_IC-V86 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
-| <a name="Icom_IC-W32A"></a> Icom_IC-W32A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Icom_IC-W32A"></a> Icom_IC-W32A | [Reported working](https://chirp.danplanet.com/issues/10238) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-W32E"></a> Icom_IC-W32E | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_ID-31A"></a> Icom_ID-31A | [@kk7ds](https://github.com/kk7ds) | 1-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_ID-4100"></a> Icom_ID-4100 | [@n8sqt](https://github.com/n8sqt) | 18-Dec-2022 | Yes | 0.00% |
