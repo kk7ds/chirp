@@ -173,7 +173,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
         self._blank()
 
-        with open(self._filename, "rU") as f:
+        with open(self._filename) as f:
             header = f.readline().strip()
             f.seek(0, 0)
             return self._load(f)
