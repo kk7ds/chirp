@@ -25,12 +25,10 @@ import wx.adv
 from chirp import bandplan
 from chirp.sources import base
 from chirp.sources import dmrmarc
-from chirp.sources import mygmrs
 from chirp.sources import radioreference
 from chirp.sources import repeaterbook
 from chirp.wxui import common
 from chirp.wxui import config
-from chirp.wxui import fips
 
 CONF = config.get()
 LOG = logging.getLogger(__name__)
@@ -373,94 +371,6 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'filter': self._search.GetValue(),
             'bands': self._limit_bands,
         }
-
-
-class MyGMRSQueryDialog(QuerySourceDialog):
-    NAME = 'MyGMRS'
-
-    def _add_grid(self, grid, label, widget):
-        grid.Add(wx.StaticText(widget.GetParent(), label=label),
-                 border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
-        grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
-
-    def get_info(self):
-        return (
-            'myGMRS is a General Mobile Radio Service\n'
-            'repeater directory\n'
-            '<small>Login is required for all data fields \n'
-            'to be returned by queries</small>')
-
-    def get_link(self):
-        return 'https://mygmrs.com'
-
-    def build(self):
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(vbox)
-        panel = wx.Panel(self)
-        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
-        grid = wx.FlexGridSizer(2, 5, 0)
-        grid.AddGrowableCol(1)
-        panel.SetSizer(grid)
-
-        self._username = wx.TextCtrl(
-                panel,
-                value=CONF.get('username', 'mygmrs') or '')
-        self._add_grid(grid, _('Username'), self._username)
-        self._password = wx.TextCtrl(
-            panel, style=wx.TE_PASSWORD,
-            value=CONF.get_password('password', 'mygmrs') or '')
-        self._add_grid(grid, _('Password'), self._password)
-
-        states = [x for x, code in fips.FIPS_STATES.items()
-                  if isinstance(code, int) and code in fips.FIPS_COUNTIES]
-        self._state = wx.Choice(panel, choices=sorted(states))
-        self._state.SetStringSelection(states[0])
-        prev = CONF.get('state', 'repeaterbook', 0)
-        if prev:
-            try:
-                prev = fips.fips_to_state(prev)
-            except KeyError:
-                if prev in states:
-                    self._state.SetStringSelection(prev)
-        self._add_grid(grid, _('State'), self._state)
-
-        self._lat = wx.TextCtrl(panel,
-                                value=CONF.get('lat', 'repeaterbook') or '',
-                                validator=LatValidator())
-        self._lat.SetHint(_('Optional: 45.0000'))
-        self._lat.SetToolTip(_('If set, sort results by distance from '
-                               'these coordinates'))
-        self._lon = wx.TextCtrl(panel,
-                                value=CONF.get('lon', 'repeaterbook') or '',
-                                validator=LonValidator())
-        self._lon.SetHint(_('Optional: -122.0000'))
-        self._lon.SetToolTip(_('If set, sort results by distance from '
-                               'these coordinates'))
-        self._add_grid(grid, _('Latitude'), self._lat)
-        self._add_grid(grid, _('Longitude'), self._lon)
-
-        return vbox
-
-    def do_query(self):
-        CONF.set('state',
-                 str(fips.FIPS_STATES[self._state.GetStringSelection()]),
-                 'repeaterbook')
-        CONF.set('lat', self._lat.GetValue(), 'repeaterbook')
-        CONF.set('lon', self._lon.GetValue(), 'repeaterbook')
-        CONF.set('username', self._username.GetValue(), 'mygmrs')
-        CONF.set_password('password', self._password.GetValue(), 'mygmrs')
-        self.result_radio = mygmrs.MyGMRS()
-        super().do_query()
-
-    def get_params(self):
-        statecode = fips.state_name_to_abbrev(self._state.GetStringSelection())
-        LOG.debug('Determined state code %s for %s',
-                  statecode, self._state.GetStringSelection())
-        return {'state': statecode,
-                'lat': self._lat.GetValue(),
-                'lon': self._lon.GetValue(),
-                'username': self._username.GetValue(),
-                'password': self._password.GetValue()}
 
 
 class DMRMARCQueryDialog(QuerySourceDialog):

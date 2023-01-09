@@ -602,10 +602,6 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_query_dm, query_dm_item)
         source_menu.Append(query_dm_item)
 
-        query_mg_item = wx.MenuItem(source_menu, wx.NewId(), 'myGMRS')
-        self.Bind(wx.EVT_MENU, self._menu_query_mg, query_mg_item)
-        source_menu.Append(query_mg_item)
-
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
@@ -1302,9 +1298,6 @@ class ChirpMain(wx.Frame):
 
     def _menu_query_dm(self, event):
         self._do_network_query(query_sources.DMRMARCQueryDialog)
-
-    def _menu_query_mg(self, event):
-        self._do_network_query(query_sources.MyGMRSQueryDialog)
 
 
 def display_update_notice(version):
