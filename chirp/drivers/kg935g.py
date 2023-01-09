@@ -430,8 +430,6 @@ _MEM_FORMAT = """
 # MRT 1.2 correct spelling of Wouxon
 
 
-
-
 @directory.register
 class KG935GRadio(chirp_common.CloneModeRadio,
                   chirp_common.ExperimentalRadio):
