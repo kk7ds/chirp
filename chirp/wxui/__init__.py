@@ -90,7 +90,7 @@ def chirpmain():
 
     app = wx.App()
     app.SetAppName('CHIRP')
-    app._locale = wx.Locale(wx.Locale.GetSystemLanguage())
+    app._locale = wx.Locale()
     mainwindow = main.ChirpMain(None, title='CHIRP')
     mainwindow.Show()
 
