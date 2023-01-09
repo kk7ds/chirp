@@ -408,7 +408,7 @@ class ChirpCloneDialog(wx.Dialog):
     def _status(self, status):
         def _safe_status():
             self.gauge.SetRange(status.max)
-            self.gauge.SetValue(status.cur)
+            self.gauge.SetValue(min(status.cur, status.max))
             self.status_msg.SetLabel(status.msg)
 
         wx.CallAfter(_safe_status)
