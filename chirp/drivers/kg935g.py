@@ -430,9 +430,6 @@ _MEM_FORMAT = """
 # MRT 1.2 correct spelling of Wouxon
 
 
-class KGUV8TRadio(chirp_common.Alias):
-    VENDOR = "Wouxun"
-    MODEL = "KG-UV8T"
 
 
 @directory.register
@@ -449,7 +446,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
                     chirp_common.PowerLevel("M", watts=4.5),
                     chirp_common.PowerLevel("H", watts=5.5)]
-    ALIASES = [KGUV8TRadio, ]
     NEEDS_COMPAT_SERIAL = False
     _record_start = 0x7C
 
