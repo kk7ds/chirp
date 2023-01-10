@@ -36,7 +36,8 @@ LOG = logging.getLogger(__name__)
 
 TMODES = ["", "Tone", "TSQL", "DTCS", "RTone", "JRfrq", "PRSQL", "Pager"]
 
-class FT2Bank(chirp_common.NamedBank): # Like FT1D except for name in ASCII
+
+class FT2Bank(chirp_common.NamedBank):  # Like FT1D except for name in ASCII
     def get_name(self):
         _bank = self._model._radio._memobj.bank_info[self.index]
         name = ""
@@ -50,7 +51,8 @@ class FT2Bank(chirp_common.NamedBank): # Like FT1D except for name in ASCII
         _bank = self._model._radio._memobj.bank_info[self.index]
         _bank.name = [ord(x) for x in name.ljust(16, chr(0xFF))[:16]]
 
-class FT2BankModel(ft1d.FT1BankModel): #just need this one to launch FT2Bank
+
+class FT2BankModel(ft1d.FT1BankModel):  # Just need this one to launch FT2Bank
     """A FT1D bank model"""
     def __init__(self, radio, name='Banks'):
         super(FT2BankModel, self).__init__(radio, name)
@@ -62,17 +64,18 @@ class FT2BankModel(ft1d.FT1BankModel): #just need this one to launch FT2Bank
             bank.index = index
             self._bank_mappings.append(bank)
 
+
 @directory.register
 class FT2D(ft1d.FT1Radio):
     """Yaesu FT-2D"""
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
-    MODEL = "FT2D" # Yaesu doesn't use a hyphen in its documents
+    MODEL = "FT2D"  # Yaesu doesn't use a hyphen in its documents
     VARIANT = "R"
 
-    _model = b"AH60M" # Get this from chirp .img file after saving once
+    _model = b"AH60M"  # Get this from chirp .img file after saving once
     _has_vibrate = True
-    _mem_params = (0x94a,         # Location of DTMF storage
+    _mem_params = (0x94a,          # Location of DTMF storage
                    999,            # size of memories array
                    999,            # size of flags array
                    0xFECA,         # APRS beacon metadata address.
@@ -104,7 +107,7 @@ class FT2D(ft1d.FT1Radio):
         5. Finally, press OK button below."""))
         return rp
 
-    def get_features(self): # AFAICT only TMODES & memory bounds are different
+    def get_features(self):  # AFAICT only TMODES & memory bounds are different
         rf = super(FT2D, self).get_features()
         rf.valid_tmodes = list(TMODES)
         rf.memory_bounds = (1, 999)
@@ -116,7 +119,7 @@ class FT2D(ft1d.FT1Radio):
     def get_memory(self, number):
         mem = super(FT2D, self).get_memory(number)
         flag = self._memobj.flag[number - 1]
-        if number >= 901 and number <= 999: # for FT2D; enforces skip
+        if number >= 901 and number <= 999:  # for FT2D; enforces skip
             mem.skip = "S"
             flag.skip = True
         return mem
@@ -130,7 +133,7 @@ class FT2D(ft1d.FT1Radio):
 
     def set_memory(self, mem):
         flag = self._memobj.flag[mem.number - 1]
-        if mem.number >= 901 and mem.number <= 999: # for FT2D; enforces skip
+        if mem.number >= 901 and mem.number <= 999:  # for FT2D; enforces skip
             flag.skip = True
             mem.skip = "S"
         super(FT2D, self).set_memory(mem)
@@ -155,12 +158,14 @@ class FT2D(ft1d.FT1Radio):
             val.append(ord(i))
         self._memobj.opening_message.message.padded_yaesu = val
 
+
 @directory.register
 class FT2Dv2(FT2D):
     """Yaesu FT-2D v2 firmware"""
     VARIANT = "Rv2"
 
     _model = b"AH60G"
+
 
 @directory.register
 class FT3D(FT2D):
