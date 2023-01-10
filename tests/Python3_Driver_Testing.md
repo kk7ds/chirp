@@ -13,7 +13,7 @@
 | <a name="Alinco_DR235T"></a> Alinco_DR235T | [@kk7ds](https://github.com/kk7ds) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Alinco_DR435T"></a> Alinco_DR435T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="AnyTone_5888UV"></a> AnyTone_5888UV | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.14% |
-| <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII |  |  |  | 0.04% |
+| <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII | [@bschuler42](https://github.com/bschuler42) | 9-Jan-2023 | Yes | 0.04% |
 | <a name="AnyTone_778UV"></a> AnyTone_778UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.17% |
 | <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.23% |
 | <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
@@ -364,9 +364,9 @@
 
 **Drivers:** 359
 
-**Tested:** 79% (287/72) (92% of usage stats)
+**Tested:** 80% (288/71) (92% of usage stats)
 
-**Byte clean:** 86% (311/48)
+**Byte clean:** 86% (312/47)
 
 ## Meaning of this testing
 
