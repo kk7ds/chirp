@@ -984,7 +984,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         for ar, size, count in config_map:
             for addr in range(ar, ar + (size*count), size):
                 req = bytearray(struct.pack(">H", addr))
-                req.extend(bytearray(self.get_mmap()[addr:addr + size], "iso-8859-1"))
+                req.extend(bytearray(self.get_mmap()[addr:addr + size],
+                                     "iso-8859-1"))
                 self._write_record(CMD_WCONF, req)
                 LOG.debug("Config write (0x%x):\n%s" %
                           (addr, _hex_print(req)))
@@ -1860,57 +1861,57 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         for rx_band in rx.items():
             name, limits = rx_band
 
-            start_freq = RadioSettingValueString(1, 
-                                                 20, 
+            start_freq = RadioSettingValueString(1,
+                                                 20,
                                                  short2freq(limits.start))
-            start_rs = RadioSetting("rx_start_" + name, 
-                                    name + " Receive Start", 
+            start_rs = RadioSetting("rx_start_" + name,
+                                    name + " Receive Start",
                                     start_freq)
-            start_rs.set_apply_callback(apply_freq_start, 
-                                        hard_limits[name][0], 
-                                        hard_limits[name][1], 
+            start_rs.set_apply_callback(apply_freq_start,
+                                        hard_limits[name][0],
+                                        hard_limits[name][1],
                                         limits)
             fl.append(start_rs)
 
             # Add 10 increments of 100MHz before displaying to compensate for
             # the firmware off-by-1MHz problem.
-            stop_freq = RadioSettingValueString(1, 
-                                                20, 
+            stop_freq = RadioSettingValueString(1,
+                                                20,
                                                 short2freq(limits.stop + 10))
-            stop_rs = RadioSetting("rx_stop_" + name, 
-                                   name + " Receive Stop", 
+            stop_rs = RadioSetting("rx_stop_" + name,
+                                   name + " Receive Stop",
                                    stop_freq)
-            stop_rs.set_apply_callback(apply_freq_stop, 
-                                       hard_limits[name][0], 
-                                       hard_limits[name][1], 
+            stop_rs.set_apply_callback(apply_freq_stop,
+                                       hard_limits[name][0],
+                                       hard_limits[name][1],
                                        limits)
             fl.append(stop_rs)
 
         for tx_band in tx.items():
             name, limits = tx_band
 
-            start_freq = RadioSettingValueString(1, 
-                                                 20, 
+            start_freq = RadioSettingValueString(1,
+                                                 20,
                                                  short2freq(limits.start))
-            start_rs = RadioSetting("tx_start_" + name, 
-                                    name + " Transmit Start", 
+            start_rs = RadioSetting("tx_start_" + name,
+                                    name + " Transmit Start",
                                     start_freq)
-            start_rs.set_apply_callback(apply_freq_start, 
-                                        hard_limits[name][0], 
+            start_rs.set_apply_callback(apply_freq_start,
+                                        hard_limits[name][0],
                                         hard_limits[name][1], limits)
             fl.append(start_rs)
 
             # Add 10 increments of 100MHz before displaying to compensate for
             # the firmware off-by-1MHz problem.
-            stop_freq = RadioSettingValueString(1, 
-                                                20, 
+            stop_freq = RadioSettingValueString(1,
+                                                20,
                                                 short2freq(limits.stop + 10))
-            stop_rs = RadioSetting("tx_stop_" + name, 
-                                   name + " Transmit Stop", 
+            stop_rs = RadioSetting("tx_stop_" + name,
+                                   name + " Transmit Stop",
                                    stop_freq)
-            stop_rs.set_apply_callback(apply_freq_stop, 
-                                       hard_limits[name][0], 
-                                       hard_limits[name][1], 
+            stop_rs.set_apply_callback(apply_freq_stop,
+                                       hard_limits[name][0],
+                                       hard_limits[name][1],
                                        limits)
             fl.append(stop_rs)
 
