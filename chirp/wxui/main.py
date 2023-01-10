@@ -885,12 +885,21 @@ class ChirpMain(wx.Frame):
         self.open_file('Untitled.csv', exists=False)
 
     def _menu_open(self, event):
+        all_extensions = ['*.img']
         formats = [_('Chirp Image Files') + ' (*.img)|*.img',
                    _('All Files') + ' (*.*)|*.*']
         for name, pattern, readonly in directory.AUX_FORMATS:
             formats.insert(1, '%s %s (%s)|%s' % (
                 name, _('Files'), pattern, pattern))
+            all_extensions.append(pattern)
 
+        if CONF.get_bool('open_default_all_formats', 'prefs', True):
+            i_index = 0
+        else:
+            i_index = len(formats)
+        formats.insert(i_index,
+                       (_('All supported formats|') +
+                        ';'.join(all_extensions)))
         wildcard = '|'.join(formats)
         with wx.FileDialog(self, _('Open a file'),
                            chirp_platform.get_platform().get_last_dir(),
