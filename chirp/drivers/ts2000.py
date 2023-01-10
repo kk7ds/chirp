@@ -143,6 +143,15 @@ class TS2000Radio(KenwoodLiveRadio):
         _p16 = spec[42:49]
 
         mem.number = int(_p2 + _p3)     # concat bank num and chan num
+
+        if _p5 == '0':
+            # NOTE(danms): Apparently some TS2000s will return unset
+            # memory records with all zeroes for the fields instead of
+            # NAKing the command with an N response. If that happens here,
+            # return an empty memory.
+            mem.empty = True
+            return mem
+
         mem.freq = int(_p4)
         mem.mode = TS2000_MODES[int(_p5)]
         mem.skip = ["", "S"][int(_p6)]
