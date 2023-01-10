@@ -155,6 +155,7 @@ Kenwood_TK-768,+Kenwood_TK-760,5-Dec-2022
 Kenwood_TK-860,+Kenwood_TK-760,5-Dec-2022
 Kenwood_TK-862,+Kenwood_TK-760,5-Dec-2022
 Kenwood_TK-868,+Kenwood_TK-760,5-Dec-2022
+Kenwood_TS-2000,ZS6CRW,10-Jan-2022
 Leixen_VV-898,+Jetstream_JT270MH,13-Dec-2022
 Leixen_VV-898S,@READ10,19-Dec-2022
 LUITON_LT-316,+Retevis_RT22,9-Dec-2022
