@@ -17,11 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import warnings
+
 import os
 import sys
 import logging
 import argparse
-import pep8
+
+# pep8 has a FutureWarning about nested sets. This isn't our problem, so
+# squelch it here during import.
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    import pep8
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--all", action="store_true",
