@@ -738,6 +738,8 @@ WORKMODE_LIST = ["VFO freq", "Channel No.", "Ch. No.+Freq.",
                  "Ch. No.+Name"]
 BACKLIGHT_LIST = ["Off"] + ["%sS" % t for t in range(1, 31)] + \
                  ["Always On"]
+BACKLIGHT_BRIGHT_MIN = 1
+BACKLIGHT_BRIGHT_MAX = 5
 SAVE_MODES = ["Off", "1", "2", "3", "4"]
 LOCK_MODES = ["key-lk", "key+pg", "key+ptt", "all"]
 APO_TIMES = ["Off"] + ["%dm" % t for t in range(15, 151, 15)]
@@ -751,7 +753,6 @@ ID_DLY_LIST = ["%dms" % t for t in range(100, 3001, 100)]
 VOX_GRDS = ["Off"] + ["%dlevel" % l for l in range(1, 11)]
 VOX_DLYS = ["Off"] + ["%ds" % t for t in range(1, 5)]
 RPT_KPTS = ["Off"] + ["%dms" % t for t in range(100, 5001, 100)]
-LIST_1_5 = ["%s" % x for x in range(1, 6)]
 LIST_0_9 = ["%s" % x for x in range(0, 10)]
 LIST_1_20 = ["%s" % x for x in range(1, 21)]
 LIST_OFF_10 = ["Off"] + ["%s" % x for x in range(1, 11)]
@@ -1328,8 +1329,9 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         cf.append(
             RadioSetting("abr_lvl",
                          "Backlight Brightness(27)",
-                         RadioSettingValueList(LIST_1_5,
-                                               LIST_1_5[s.abr_lvl])))
+                         RadioSettingValueInteger(BACKLIGHT_BRIGHT_MIN,
+                                                  BACKLIGHT_BRIGHT_MAX,
+                                                  s.abr_lvl)))
         cf.append(RadioSetting("lock",
                                "Keypad Lock",
                                RadioSettingValueBoolean(s.lock)))
