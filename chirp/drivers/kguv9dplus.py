@@ -961,7 +961,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         for ar, size, count in config_map:
             for addr in range(ar, ar + (size*count), size):
                 req = bytearray(struct.pack(">H", addr))
-                req.extend(self.get_mmap()[addr:addr + size])
+                req.extend(bytearray(self.get_mmap()[addr:addr + size], "iso-8859-1"))
                 self._write_record(CMD_WCONF, req)
                 LOG.debug("Config write (0x%x):\n%s" %
                           (addr, _hex_print(req)))
