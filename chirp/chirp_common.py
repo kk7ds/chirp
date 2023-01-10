@@ -81,7 +81,7 @@ CROSS_MODES = [
 
 MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
          "DIG", "PKT", "NCW", "NCWR", "CWR", "P25", "Auto", "RTTYR",
-         "FSK", "FSKR", "DMR"]
+         "FSK", "FSKR", "DMR", "DN"]
 
 TONE_MODES = [
     "",
