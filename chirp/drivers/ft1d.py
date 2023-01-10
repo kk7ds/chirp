@@ -20,10 +20,12 @@ import logging
 
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, directory, bitwise
+from chirp import memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
             RadioSettingValueInteger, RadioSettingValueString, \
             RadioSettingValueList, RadioSettingValueBoolean, \
             InvalidValueError
+from chirp import util
 from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
@@ -158,13 +160,14 @@ MEM_FORMAT = """
 struct {
   u8 unknown0:2,
      mode_alt:1,  // mode for FTM-3200D
-     unknown1:5;
+     clock_shift:1,
+     unknown1:4;
   u8 mode:2,
      duplex:2,
      tune_step:4;
   bbcd freq[3];
   u8 power:2,
-     unknown2:2,
+     digmode:2,
      tone_mode:4;
   u8 charsetbits[2];
   char label[16];
@@ -173,7 +176,12 @@ struct {
      tone:6;
   u8 unknown6:1,
      dcs:7;
-  u8 unknown7[3];
+  u8 unknown7[2];
+  u8 unknown8:2,
+     att:1,
+     autostep:1,
+     automode:1,
+     unknown9:3;
 } memory[%d];
 
 #seekto 0x280A;
@@ -557,6 +565,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-1D"
     VARIANT = "R"
+    FORMATS = [directory.register_format('FT1D ADMS-6', '*.ft1d')]
 
     _model = b"AH44M"
     _memsize = 130507
@@ -572,6 +581,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                    60)             # Number of beacons stored.
     _has_vibrate = False
     _has_af_dual = True
+    _adms_ext = '.ft1d'
 
     _SG_RE = re.compile(r"(?P<sign>[-+NESW]?)(?P<d>[\d]+)[\s\.,]*"
                         "(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
@@ -642,6 +652,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _NS_HEMI = ("N", "S")
     _WE_HEMI = ("W", "E")
     _APRS_HIGH_SPEED_MAX = 70
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if filename.endswith(cls._adms_ext):
+            return True
+        else:
+            return super().match_model(filedata, filename)
 
     @classmethod
     def get_prompts(cls):
@@ -1988,3 +2005,26 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         val = cls.backtrack_zero_pad(val, 4)
 
         setattr(obj, "lon_dec_sec", val)
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith(self._adms_ext):
+            with open(filename, 'rb') as f:
+                self._adms_header = f.read(0x16)
+                LOG.debug('ADMS Header:\n%s',
+                          util.hexprint(self._adms_header))
+                self._mmap = memmap.MemoryMapBytes(self._model + f.read())
+                LOG.info('Loaded ADMS file')
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith(self._adms_ext):
+            if not hasattr(self, '_adms_header'):
+                raise Exception('Unable to save .img to %s' % self._adms_ext)
+            with open(filename, 'wb') as f:
+                f.write(self._adms_header)
+                f.write(self._mmap.get_packed()[5:])
+                LOG.info('Wrote file')
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)

@@ -20,8 +20,11 @@ from textwrap import dedent
 
 from chirp.drivers import yaesu_clone, ft1d
 from chirp import chirp_common, directory, bitwise
+from chirp import errors
+from chirp import memmap
 from chirp.settings import RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueString
+from chirp import util
 
 # Differences from Yaesu FT1D
 #  999 memories, but 901-999 are only for skipping VFO frequencies
@@ -77,7 +80,9 @@ class FT2D(ft1d.FT1Radio):
                    0x1064A,        # APRS beacon content address.
                    134,            # Length of beacon data stored.
                    60)             # Number of beacons stored.
+    _adms_ext = '.ft2d'
     _APRS_HIGH_SPEED_MAX = 90
+    FORMATS = [directory.register_format('FT2D ADMS-8', '*.ft2d')]
 
     @classmethod
     def get_prompts(cls):
@@ -164,3 +169,37 @@ class FT3D(FT2D):
     VARIANT = "R"
 
     _model = b"AH72M"
+    FORMATS = [directory.register_format('FT3D ADMS-11', '*.ft3d')]
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith('.ft3d'):
+            with open(filename, 'rb') as f:
+                self._adms_header = f.read(0x18C)
+                if b'ADMS11, Version=1.0.0.0' not in self._adms_header:
+                    raise errors.ImageDetectFailed(
+                        'Unsupported version found in ADMS file')
+                LOG.debug('ADMS Header:\n%s',
+                          util.hexprint(self._adms_header))
+                self._mmap = memmap.MemoryMapBytes(f.read())
+                LOG.info('Loaded ADMS-11 file at offset 0x18C')
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith('.ft3d'):
+            if not hasattr(self, '_adms_header'):
+                raise Exception('Unable to save .img to .ft3d')
+            with open(filename, 'wb') as f:
+                f.write(self._adms_header)
+                f.write(self._mmap.get_packed())
+                LOG.info('Wrote ADMS-11 file')
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if filename.endswith('.ft3d'):
+            return True
+        else:
+            return super().match_model(filedata, filename)
