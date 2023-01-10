@@ -179,7 +179,7 @@
 | <a name="Kenwood_TM-G707"></a> Kenwood_TM-G707 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-V7"></a> Kenwood_TM-V7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TM-V71"></a> Kenwood_TM-V71 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.04% |
-| <a name="Kenwood_TS-2000"></a> Kenwood_TS-2000 |  |  | Yes | 0.03% |
+| <a name="Kenwood_TS-2000"></a> Kenwood_TS-2000 | ZS6CRW | 10-Jan-2022 | Yes | 0.03% |
 | <a name="Kenwood_TS-480_CloneMode"></a> Kenwood_TS-480_CloneMode |  |  |  | 0.00% |
 | <a name="Kenwood_TS-480_LiveMode"></a> Kenwood_TS-480_LiveMode |  |  | Yes | 0.00% |
 | <a name="Kenwood_TS-590SG_CloneMode"></a> Kenwood_TS-590SG_CloneMode |  |  |  | 0.00% |
@@ -364,7 +364,7 @@
 
 **Drivers:** 359
 
-**Tested:** 80% (288/71) (92% of usage stats)
+**Tested:** 80% (289/70) (92% of usage stats)
 
 **Byte clean:** 86% (312/47)
 
