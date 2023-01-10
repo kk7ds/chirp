@@ -656,7 +656,7 @@ def _hex_print(data, addrfmt=None):
 
     block_size = 16
 
-    lines = (len(data) / block_size)
+    lines = (len(data) // block_size)
     if (len(data) % block_size > 0):
         lines += 1
 
@@ -753,8 +753,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     """Wouxun KG-UV9D Plus"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV9D Plus"
-    _model = "KG-UV9D"
-    _rev = "00"  # default rev for the radio I know about...
+    _model = b"KG-UV9D"
+    _rev = b"00"  # default rev for the radio I know about...
     _file_ident = b"kg-uv9d"
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
@@ -859,7 +859,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         raise Exception("All retries to identify failed")
 
     def process_mmap(self):
-        if self._rev == "02" or self._rev == "00":
+        if self._rev == b"02" or self._rev == b"00":
             self._memobj = bitwise.parse(_MEM_FORMAT02, self._mmap)
         else:  # this is where you elif the other variants and non-Plus  radios
             raise errors.RadioError(
