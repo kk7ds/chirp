@@ -316,6 +316,11 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self.Bind(wx.EVT_CHECKBOX, self._select_bands, self._bandfilter)
         self._add_grid(grid, _('Limit Bands'), self._bandfilter)
 
+        self._limit_modes = list(repeaterbook.MODES)
+        self._modefilter = wx.CheckBox(panel, label=_('Only certain modes'))
+        self.Bind(wx.EVT_CHECKBOX, self._select_modes, self._modefilter)
+        self._add_grid(grid, _('Limit Modes'), self._modefilter)
+
         self.Layout()
         return vbox
 
@@ -352,6 +357,21 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                                            for i in d.GetSelections()),
                          'repeaterbook')
 
+    def _select_modes(self, event):
+        if not self._modefilter.IsChecked():
+            self._limit_modes = []
+            return
+
+        d = wx.MultiChoiceDialog(self, _('Select Modes'), _('Modes'),
+                                 choices=repeaterbook.MODES)
+        r = d.ShowModal()
+        if r == wx.ID_CANCEL or not d.GetSelections():
+            self._modefilter.SetValue(False)
+            self._limit_modes = []
+        else:
+            self._limit_modes = [repeaterbook.MODES[i]
+                                 for i in d.GetSelections()]
+
     def do_query(self):
         CONF.set('lat', self._lat.GetValue(), 'repeaterbook')
         CONF.set('lon', self._lon.GetValue(), 'repeaterbook')
@@ -370,6 +390,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'dist': self._dist.GetValue(),
             'filter': self._search.GetValue(),
             'bands': self._limit_bands,
+            'modes': self._limit_modes,
         }
 
 

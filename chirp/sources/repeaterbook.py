@@ -36,6 +36,7 @@ STATES = {
                if isinstance(i, str)],
     'Mexico': MEXICO_STATES,
 }
+MODES = ['FM', 'DV', 'DMR', 'DN']
 
 
 def parse_tone(val):
@@ -151,6 +152,7 @@ class RepeaterBook(base.NetworkResultRadio):
         dist = int(params.pop('dist') or 0)
         search_filter = params.pop('filter', '')
         bands = params.pop('bands', [])
+        modes = params.pop('modes', [])
         data_file = self.get_data(status,
                                   params.pop('country'),
                                   params.pop('state'))
@@ -215,6 +217,8 @@ class RepeaterBook(base.NetworkResultRadio):
             else:
                 LOG.warning('Unable to determine mode for repeater %s' % (
                     item['Rptr ID']))
+                continue
+            if modes and m.mode not in modes:
                 continue
             m.comment = (
                 '%(Callsign)s near %(Nearest City)s, %(County)s County, '
