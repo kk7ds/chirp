@@ -45,7 +45,7 @@
 | <a name="Baofeng_F-11"></a> Baofeng_F-11 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.12% |
 | <a name="Baofeng_GT-3WP"></a> Baofeng_GT-3WP | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.43% |
 | <a name="Baofeng_GT-5R"></a> Baofeng_GT-5R | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.68% |
-| <a name="Baofeng_UV-3R"></a> Baofeng_UV-3R | [@yarda](https://github.com/yarda) | 26-Sep-2022 |  | 0.45% |
+| <a name="Baofeng_UV-3R"></a> Baofeng_UV-3R | [@yarda](https://github.com/yarda) | 26-Sep-2022 | Yes | 0.45% |
 | <a name="Baofeng_UV-5R"></a> Baofeng_UV-5R | [@lekv](https://github.com/lekv) | 23-Oct-2022 | Yes | **28.81%** |
 | <a name="Baofeng_UV-6"></a> Baofeng_UV-6 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.46% |
 | <a name="Baofeng_UV-6R"></a> Baofeng_UV-6R | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.71% |
@@ -366,7 +366,7 @@
 
 **Tested:** 80% (290/69) (92% of usage stats)
 
-**Byte clean:** 87% (313/46)
+**Byte clean:** 87% (314/45)
 
 ## Meaning of this testing
 
