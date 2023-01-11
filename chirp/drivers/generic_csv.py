@@ -46,6 +46,12 @@ def write_memory(writer, mem):
     writer.writerow(mem.to_csv())
 
 
+def parse_cross_mode(value):
+    if value not in chirp_common.CROSS_MODES:
+        raise ValueError('Invalid cross mode %r' % value)
+    return value
+
+
 @directory.register
 class CSVRadio(chirp_common.FileBackedRadio):
     """A driver for Generic CSV files"""
@@ -65,6 +71,8 @@ class CSVRadio(chirp_common.FileBackedRadio):
         "cToneFreq":     (float, "ctone"),
         "DtcsCode":      (int,   "dtcs"),
         "DtcsPolarity":  (str,   "dtcs_polarity"),
+        "RxDtcsCode":    (int,   "rx_dtcs"),
+        "CrossMode":     (parse_cross_mode, "cross_mode"),
         "Mode":          (str,   "mode"),
         "TStep":         (float, "tuning_step"),
         "Skip":          (str,   "skip"),
@@ -99,10 +107,12 @@ class CSVRadio(chirp_common.FileBackedRadio):
         rf.has_infinite_number = True
         rf.has_nostep_tuning = True
         rf.has_comment = True
+        rf.has_rx_dtcs = True
         rf.can_odd_split = True
 
         rf.valid_modes = list(chirp_common.MODES)
         rf.valid_tmodes = list(chirp_common.TONE_MODES)
+        rf.valid_cross_modes = list(chirp_common.CROSS_MODES)
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(1, 10000000000)]
