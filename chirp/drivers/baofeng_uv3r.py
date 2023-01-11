@@ -30,19 +30,19 @@ LOG = logging.getLogger(__name__)
 
 
 def _uv3r_prep(radio):
-    radio.pipe.write("\x05PROGRAM")
+    radio.pipe.write(b"\x05PROGRAM")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise errors.RadioError("Radio did not ACK first command")
 
-    radio.pipe.write("\x02")
+    radio.pipe.write(b"\x02")
     ident = radio.pipe.read(8)
     if len(ident) != 8:
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio did not send identification")
 
-    radio.pipe.write("\x06")
-    if radio.pipe.read(1) != "\x06":
+    radio.pipe.write(b"\x06")
+    if radio.pipe.read(1) != b"\x06":
         raise errors.RadioError("Radio did not ACK ident")
 
 
@@ -198,6 +198,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
     """Baofeng UV-3R"""
     VENDOR = "Baofeng"
     MODEL = "UV-3R"
+    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
