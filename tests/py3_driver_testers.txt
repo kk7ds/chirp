@@ -261,6 +261,7 @@ Wouxun_KG-UVD1P,+Wouxun_KG-UV6,11-Dec-2022
 Wouxun_KG-UV8D,Unit tested; needs confirm,24-Dec-2022
 Wouxun_KG-UV8D_Plus,Unit tested; needs confirm,2-Jan-2022
 Wouxun_KG-UV8E,W5EGL,2-Jan-2022
+Wouxun_KG-UV9D_Plus,@samwich,10-Jan-2023
 Wouxun_KG-UV920P-A,@KC9HI,22-Dec-2022
 Wouxun_KG-935G,@mrtjr1,4-Jan-2022
 Yaesu_FT-1500M,@f3sty,05-Dec-2022
