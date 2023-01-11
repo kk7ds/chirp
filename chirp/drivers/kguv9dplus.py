@@ -779,6 +779,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     _model = b"KG-UV9D"
     _rev = b"00"  # default rev for the radio I know about...
     _file_ident = b"kg-uv9d"
+    NEEDS_COMPAT_SERIAL = False
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("M", watts=2),
@@ -970,8 +971,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                 status.max = 0x8000
                 status.msg = "Cloning from radio"
                 self.status_fn(status)
-        strmem = "".join([chr(x) for x in mem])
-        return memmap.MemoryMap(strmem)
+        return memmap.MemoryMapBytes(bytes(mem))
 
     def _do_upload(self):
         """Walk through the config map and write updated records to
@@ -984,8 +984,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         for ar, size, count in config_map:
             for addr in range(ar, ar + (size*count), size):
                 req = bytearray(struct.pack(">H", addr))
-                req.extend(bytearray(self.get_mmap()[addr:addr + size],
-                                     "iso-8859-1"))
+                req.extend(self.get_mmap()[addr:addr + size])
                 self._write_record(CMD_WCONF, req)
                 LOG.debug("Config write (0x%x):\n%s" %
                           (addr, _hex_print(req)))
