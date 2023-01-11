@@ -686,7 +686,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_dtcs_polarity = False
-        rf.valid_modes = list(MODES)
+        rf.valid_modes = list(MODES) + ['NFM']
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
@@ -772,10 +772,18 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return 3 - POWER_LEVELS.index(mem.power)
 
     def _decode_mode(self, mem):
-        return MODES[mem.mode]
+        mode = MODES[mem.mode]
+        if mode == 'FM' and int(mem.mode_alt):
+            return 'NFM'
+        else:
+            return mode
 
     def _encode_mode(self, mem):
-        return MODES.index(mem.mode)
+        mode = mem.mode
+        if mode == 'NFM':
+            # Narrow is handled by a separate flag
+            mode = 'FM'
+        return MODES.index(mode)
 
     def _get_tmode(self, mem, _mem):
         mem.tmode = TMODES[_mem.tone_mode]
@@ -784,6 +792,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tone_mode = TMODES.index(mem.tmode)
 
     def _set_mode(self, _mem, mem):
+        _mem.mode_alt = mem.mode == 'NFM'
         _mem.mode = self._encode_mode(mem)
 
     def _debank(self, mem):
