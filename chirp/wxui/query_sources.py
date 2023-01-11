@@ -340,22 +340,26 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
     def _select_bands(self, event):
-        if self._bandfilter.IsChecked():
-            band_names = [x.name for x in self._bands]
-            d = wx.MultiChoiceDialog(self, _('Select Bands'), _('Bands'),
-                                     choices=band_names)
-            prev = CONF.get('bands', 'repeaterbook') or ''
-            d.SetSelections([i for i, band in enumerate(self._bands)
-                             if band.name in prev.split(',')])
-            r = d.ShowModal()
-            if r == wx.ID_CANCEL or not d.GetSelections():
-                self._bandfilter.SetValue(False)
-            else:
-                self._limit_bands = [self._bands[i].limits
-                                     for i in d.GetSelections()]
-                CONF.set('bands', ','.join(self._bands[i].name
-                                           for i in d.GetSelections()),
-                         'repeaterbook')
+        if not self._bandfilter.IsChecked():
+            self._limit_bands = []
+            return
+
+        band_names = [x.name for x in self._bands]
+        d = wx.MultiChoiceDialog(self, _('Select Bands'), _('Bands'),
+                                 choices=band_names)
+        prev = CONF.get('bands', 'repeaterbook') or ''
+        d.SetSelections([i for i, band in enumerate(self._bands)
+                         if band.name in prev.split(',')])
+        r = d.ShowModal()
+        if r == wx.ID_CANCEL or not d.GetSelections():
+            self._bandfilter.SetValue(False)
+            self._limit_bands = []
+        else:
+            self._limit_bands = [self._bands[i].limits
+                                 for i in d.GetSelections()]
+            CONF.set('bands', ','.join(self._bands[i].name
+                                       for i in d.GetSelections()),
+                     'repeaterbook')
 
     def _select_modes(self, event):
         if not self._modefilter.IsChecked():
