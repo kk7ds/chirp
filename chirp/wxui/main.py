@@ -167,8 +167,7 @@ class ChirpEditorSet(wx.Panel):
         self._radio.save(filename)
         self._filename = filename
         self._modified = False
-        # FIXME
-        self._editors.GetPage(1).saved()
+        self.current_editor.saved()
 
     @property
     def filename(self):
