@@ -18,10 +18,14 @@ import logging
 
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, directory, bitwise
+from chirp import errors
+from chirp import memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettingValueList, RadioSettingValueBoolean, \
     InvalidValueError
+from chirp import util
+
 from textwrap import dedent
 import string
 LOG = logging.getLogger(__name__)
@@ -470,8 +474,10 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 38400
     VENDOR = "Yaesu"
     MODEL = "FT-70D"
+    FORMATS = [directory.register_format('FT-70D ADMS-10', '*.ft70d')]
 
     _model = b"AH51G"
+    _adms_ext = '.ft70d'
 
     _memsize = 65227  # 65227 read from dump
     _block_lengths = [10, 65217]
@@ -529,6 +535,13 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
 
     _MYCALL_CHR_SET = list(string.ascii_uppercase) + list(string.digits) + ['-','/' ]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if filename.endswith(cls._adms_ext):
+            return True
+        else:
+            return super().match_model(filedata, filename)
 
     @classmethod
     def get_prompts(cls):
@@ -1189,3 +1202,29 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
             raise InvalidValueError("First character of call sign can't be - or /:  {0:s}".format(cs))
         else:
             obj.callsign = cls._add_ff_pad(cs.rstrip(), 10)
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith(self._adms_ext):
+            with open(filename, 'rb') as f:
+                self._adms_header = f.read(0xED)
+                if b'=ADMS10, Version=1.0.1.0' not in self._adms_header:
+                    raise errors.ImageDetectFailed(
+                        'Unsupported version found in ADMS file')
+                LOG.debug('ADMS Header:\n%s',
+                          util.hexprint(self._adms_header))
+                self._mmap = memmap.MemoryMapBytes(self._model + f.read())
+                LOG.info('Loaded ADMS file')
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith(self._adms_ext):
+            if not hasattr(self, '_adms_header'):
+                raise Exception('Unable to save .img to %s' % self._adms_ext)
+            with open(filename, 'wb') as f:
+                f.write(self._adms_header)
+                f.write(self._mmap.get_packed()[5:])
+                LOG.info('Wrote file')
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
