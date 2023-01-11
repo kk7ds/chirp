@@ -333,7 +333,9 @@ class Memory:
     CSV_FORMAT = ["Location", "Name", "Frequency",
                   "Duplex", "Offset", "Tone",
                   "rToneFreq", "cToneFreq", "DtcsCode",
-                  "DtcsPolarity", "Mode", "TStep",
+                  "DtcsPolarity", "RxDtcsCode",
+                  "CrossMode",
+                  "Mode", "TStep",
                   "Skip", "Comment",
                   "URCALL", "RPT1CALL", "RPT2CALL", "DVCODE"]
 
@@ -411,6 +413,8 @@ class Memory:
             "%.1f" % self.ctone,
             "%03i" % self.dtcs,
             "%s" % self.dtcs_polarity,
+            "%03i" % self.rx_dtcs,
+            "%s" % self.cross_mode,
             "%s" % self.mode,
             "%.2f" % self.tuning_step,
             "%s" % self.skip,
