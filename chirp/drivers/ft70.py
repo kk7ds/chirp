@@ -321,11 +321,13 @@ MEM_FORMAT = """
     u8 ams_on_dn_vw_fm:2,               // AMS DN, AMS VW, AMS FM  
     unknown8_3:1,
     unknown8_4:1,
-    unknown8_5:1,
-    unknown8_6:1,
-    unknown8_7:1,
-    unknown8_8:1;                   
-    u8 unknown10;                                                             
+    smeter:4;
+    u8 unknown10:2,
+       att:1,
+       auto_step:1,
+       auto_mode:1,
+       unknown11:2,
+       bell:1;
     } memory[%d];                        // DN, VW, FM, AM 
                                         // AMS DN, AMS VW, AMS FM  
     
@@ -356,7 +358,7 @@ MEM_CHECKSUM_FORMAT = """
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
 
-MODES = ["FM", "AM"]
+MODES = ["FM", "AM", "NFM"]
 
 STEPS = [0, 5, 6.25, 10, 12.5, 15, 20, 25, 50, 100]  # 0 = auto
 RFSQUELCH = ["OFF", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"]
@@ -651,10 +653,18 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         return 3 - POWER_LEVELS.index(mem.power)
 
     def _decode_mode(self, mem):
-        return MODES[mem.mode]
+        mode = MODES[mem.mode]
+        if mode == 'FM' and int(mem.deviation):
+            return 'NFM'
+        else:
+            return mode
 
     def _encode_mode(self, mem):
-        return MODES.index(mem.mode)
+        mode = mem.mode
+        if mode == 'NFM':
+            # Narrow is handled by a separate flag
+            mode = 'FM'
+        return MODES.index(mode)
 
     def _get_tmode(self, mem, _mem):
         mem.tmode = TMODES[_mem.tone_mode]
@@ -663,6 +673,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tone_mode = TMODES.index(mem.tmode)
 
     def _set_mode(self, _mem, mem):
+        _mem.deviation = mem.mode == 'NFM'
         _mem.mode = self._encode_mode(mem)
 
     def _debank(self, mem):
