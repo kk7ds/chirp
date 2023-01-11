@@ -890,7 +890,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # of the current block, or to the end of the list
         for row in range(next_row, self._grid.GetNumberRows()):
             if (shift_up == 'block' and
-                    self._memory_cache[self.row2mem(row)].empty):
+                    self._memory_cache[row].empty):
                 # We found the end of the next block
                 break
             mems_to_move.append(self.row2mem(row))
@@ -898,7 +898,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # Shift them all up by however many we deleted
         for number in mems_to_move:
             LOG.debug('Moving memory %i -> %i', number, number - delta)
-            mem = self._memory_cache[number]
+            mem = self._memory_cache[self.mem2row(number)]
             mem.number -= delta
             self.do_radio(None, 'set_memory', mem)
 
@@ -1003,9 +1003,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def _mem_insert(self, row, event):
         # Traverse memories downward until we find a hole
         for i in range(row, self.mem2row(self._features.memory_bounds[1] + 1)):
-            mem = self._memory_cache[self.row2mem(i)]
+            mem = self._memory_cache[i]
             if mem.empty:
-                LOG.debug("Found empty memory %i at %i" % (mem.number, i))
+                LOG.debug("Found empty memory %i at row %i" % (mem.number, i))
                 empty_row = i
                 break
         else:
@@ -1014,7 +1014,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mems_to_refresh = []
         # Move memories down in reverse order
         for target_row in range(empty_row, row, -1):
-            mem = self._memory_cache[self.row2mem(target_row - 1)]
+            mem = self._memory_cache[target_row - 1]
             LOG.debug('Moving memory %i -> %i', mem.number,
                       self.row2mem(target_row))
             mem.number = self.row2mem(target_row)
