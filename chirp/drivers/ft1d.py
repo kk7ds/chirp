@@ -167,7 +167,7 @@ struct {
      tune_step:4;
   bbcd freq[3];
   u8 power:2,
-     digmode:2,
+     digmode:2,   // 0=Analog, 1=AMS, 2=DN, 3=VW
      tone_mode:4;
   u8 charsetbits[2];
   char label[16];
@@ -686,7 +686,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_dtcs_polarity = False
-        rf.valid_modes = list(MODES) + ['NFM']
+        rf.valid_modes = list(MODES) + ['NFM', 'DN']
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
@@ -750,7 +750,27 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem.name = self._decode_label(_mem)
 
+        self._get_mem_extra(mem, _mem)
+
         return mem
+
+    def _get_mem_extra(self, mem, _mem):
+        mem.extra = RadioSettingGroup('Extra', 'extra')
+
+        ams = _mem.digmode == 1
+        rs = RadioSetting('ysf_ams', 'AMS mode',
+                          RadioSettingValueBoolean(ams))
+        mem.extra.append(rs)
+
+    def _set_mem_extra(self, mem, _mem):
+        if 'ysf_ams' in mem.extra:
+            # We only set AMS if the memory mode is DN. If it is FM,
+            # then that takes precedence as "analog-only".
+            if mem.mode == 'DN':
+                orig = int(_mem.digmode)
+                _mem.digmode = int(mem.extra['ysf_ams'].value) and 1 or 2
+                LOG.debug('Changed digmode from %i to %i' % (
+                    orig, _mem.digmode))
 
     def _decode_label(self, mem):
         charset = ''.join(CHARSET).ljust(256, '.')
@@ -773,6 +793,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _decode_mode(self, mem):
         mode = MODES[mem.mode]
+        if mode == 'FM' and int(mem.digmode):
+            # DN mode is FM with a digital flag. Since digmode can be AMS or
+            # DN, either will be called 'DN' in chirp
+            return 'DN'
         if mode == 'FM' and int(mem.mode_alt):
             return 'NFM'
         else:
@@ -782,6 +806,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         mode = mem.mode
         if mode == 'NFM':
             # Narrow is handled by a separate flag
+            mode = 'FM'
+        elif mode == 'DN':
+            # DN mode is FM with a digital flag
             mode = 'FM'
         return MODES.index(mode)
 
@@ -793,6 +820,21 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _set_mode(self, _mem, mem):
         _mem.mode_alt = mem.mode == 'NFM'
+        if mem.mode == 'DN' and int(_mem.digmode) == 0:
+            # If we are going to DN mode, default to AMS
+            LOG.debug('New mode DN, setting AMS')
+            if 'ysf_ams' not in mem.extra:
+                _mem.digmode = 1
+            else:
+                # If we have the extra setting, use that, since it will be
+                # applied at the end of set_memory() and we want it to apply
+                # the right value.
+                mem.extra['ysf_ams'].value = True
+        elif mem.mode == 'FM' and int(_mem.digmode):
+            # If we are going back to FM, that means analog-only, so AMS
+            # is disabled
+            LOG.debug('New mode FM, disabling AMS')
+            _mem.digmode = 0
         _mem.mode = self._encode_mode(mem)
 
     def _debank(self, mem):
@@ -844,6 +886,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         flag.skip = mem.skip == "S"
         flag.pskip = mem.skip == "P"
+
+        self._set_mem_extra(mem, _mem)
 
     @classmethod
     def _wipe_memory(cls, mem):
