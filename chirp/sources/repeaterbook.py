@@ -209,9 +209,7 @@ class RepeaterBook(base.NetworkResultRadio):
             elif item['D-Star'] == 'Yes':
                 m.mode = 'DV'
             elif item['System Fusion'] == 'Yes':
-                # FIXME: need YSF mode
-                # m.mode = 'YSF'
-                pass
+                m.mode = 'DN'
             elif item['FM Analog'] == 'Yes':
                 m.mode = 'FM'
             else:
