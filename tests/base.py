@@ -15,6 +15,15 @@ class DriverTest(unittest.TestCase):
         super().setUp()
         self.radio = self.RADIO_CLASS(self.TEST_IMAGE)
         self.rf = self.radio.get_features()
+        self.patches = []
+
+    def use_patch(self, patch):
+        self.patches.append(patch)
+        patch.start()
+
+    def tearDown(self):
+        for patch in self.patches:
+            patch.stop()
 
     def get_mem(self):
         """Attempt to build a suitable memory for testing"""

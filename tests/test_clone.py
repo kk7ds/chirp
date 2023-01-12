@@ -1,4 +1,6 @@
 import logging
+import time
+from unittest import mock
 
 from chirp import chirp_common
 from chirp import errors
@@ -58,6 +60,15 @@ class TestCaseClone(base.DriverTest):
 
         if not self.clone and not self.live:
             self.skipTest('Does not support clone')
+
+        real_time = time.time
+        def fake_time():
+            return real_time() * 1000
+
+        self.patches = []
+        self.use_patch(mock.patch('time.sleep'))
+        self.use_patch(mock.patch('time.time',
+                                   side_effect=fake_time))
 
     def _test_with_serial(self, serial):
         # The base case sets us up with a file, so re-init with our serial.
