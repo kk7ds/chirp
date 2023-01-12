@@ -874,6 +874,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.do_radio(del_cb, 'erase_memory', number)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
+    @common.error_proof()
     def _delete_memories_at(self, rows, event, shift_up=None):
         for row in rows:
             self.delete_memory_at(row, event)
@@ -892,6 +893,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if (shift_up == 'block' and
                     self._memory_cache[row].empty):
                 # We found the end of the next block
+                break
+            elif isinstance(self.row2mem(row), str):
+                # We hit the specials, stop here
                 break
             mems_to_move.append(self.row2mem(row))
 
