@@ -403,6 +403,9 @@ class RadioSettingGroup(object):
         self._elements[name] = value
         self._element_order.append(name)
 
+    def __contains__(self, name):
+        return name in self._elements
+
     def items(self):
         """Returns a key=>value set of elements, like a dict"""
         return [(name, self._elements[name]) for name in self._element_order]
