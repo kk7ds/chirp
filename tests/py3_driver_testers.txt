@@ -72,7 +72,7 @@ Icom_IC-2100H,*icf,12-Dec-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
 Icom_IC-2300H,*icf,24-Oct-2022
 Icom_IC-2720H,*icf,12-Dec-2022
-Icom_IC-2730A,*icf,17-Dec-2022
+Icom_IC-2730A,#10261,17-Dec-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
 Icom_IC-7200,@kk7ds,22-Oct-2022
 Icom_IC-7300,@kk7ds,22-Oct-2022
