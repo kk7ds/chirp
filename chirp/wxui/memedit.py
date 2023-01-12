@@ -1391,7 +1391,11 @@ class ChirpMemPropDialog(wx.Dialog):
         for mem in self._memories:
             for setting in mem.extra:
                 if setting.get_name() == name:
-                    setting.value = value
+                    if isinstance(setting.value,
+                                  settings.RadioSettingValueBoolean):
+                        setting.value = value == 'True'
+                    else:
+                        setting.value = value
                     LOG.debug('Changed mem %i extra %s=%r' % (
                         mem.number, setting.get_name(), value))
 
