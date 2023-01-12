@@ -994,10 +994,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             for row in rows]
         with ChirpMemPropDialog(self, memories) as d:
             if d.ShowModal() == wx.ID_OK:
-                for memory in d._memories:
-                    self._radio.set_memory(memory)
-                    self.refresh_memory(memory.number, memory)
-                    wx.PostEvent(self, common.EditorChanged(self.GetId()))
+                memories = d._memories
+            else:
+                return
+
+        # Schedule all the set jobs
+        for memory in memories:
+            self.do_radio(None, 'set_memory', memory)
+
+        # Now schedule UI refreshes
+        for memory in memories:
+            self.do_radio(self.refresh_memory_from_job,
+                          'get_memory', memory.number)
+
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     @common.error_proof()
     def _mem_insert(self, row, event):
