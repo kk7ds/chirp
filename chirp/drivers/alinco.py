@@ -554,7 +554,7 @@ class DJ175Radio(DRx35Radio):
         return data
 
 
-DJG7EG_MEM_FORMAT = """
+DJG7_MEM_FORMAT = """
 #seekto 0x200;
 ul16 bank[50];
 ul16 special_bank[7];
@@ -580,8 +580,7 @@ struct {
 """
 
 
-@directory.register
-class AlincoDJG7EG(AlincoStyleRadio):
+class AlincoDJG7(AlincoStyleRadio):
     """Alinco DJ-G7EG"""
     VENDOR = "Alinco"
     MODEL = "DJ-G7EG"
@@ -595,7 +594,6 @@ class AlincoDJG7EG(AlincoStyleRadio):
     TMODES = ["", "??1", "Tone", "TSQL", "TSQL-R", "DTCS"]
 
     # This is a bit of a hack to avoid overwriting _identify()
-    _model = b"AL~DJ-G7EG"
     _memsize = 0x1a7c0
     _range = [(500000, 1300000000)]
 
@@ -757,7 +755,7 @@ class AlincoDJG7EG(AlincoStyleRadio):
                             "frequency. Touch channel to fix." % number)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(DJG7EG_MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(DJG7_MEM_FORMAT, self._mmap)
         # We check all channels for corruption (see bug #5275) but we don't fix
         # it automatically because it would be unpolite to modify something on
         # a read operation. A log message is emitted though for the user to
@@ -846,3 +844,17 @@ class AlincoDJG7EG(AlincoStyleRadio):
             _mem.unknown2 = 0x0000000a
             _mem.unknown3 = 0x00000000
             _mem.unknown4 = 0x00000000
+
+
+@directory.register
+class AlincoDJG7EG(AlincoDJG7):
+    """Alinco DJ-G7EG"""
+    MODEL = "DJ-G7EG"
+    _model = b"AL~DJ-G7EG"
+
+
+@directory.register
+class AlincoDJG7T(AlincoDJG7):
+    """Alinco DJ-G7T"""
+    MODEL = "DJ-G7T"
+    _model = b"AL~DJ-G7T"
