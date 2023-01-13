@@ -427,14 +427,16 @@ class THD74Radio(chirp_common.CloneModeRadio):
 
         mem.skip = _flg.lockout and 'S' or ''
 
-        mem.dv_urcall = decode_call(_mem.dv_urcall)
-        mem.dv_rpt1call = decode_call(_mem.dv_rpt1call)
-        mem.dv_rpt2call = decode_call(_mem.dv_rpt2call)
-        mem.dv_code = int(_mem.dv_code)
-
         if mem.extd_number:
             mem.immutable.append('empty')
+        else:
+            mem.dv_urcall = decode_call(_mem.dv_urcall)
+            mem.dv_rpt1call = decode_call(_mem.dv_rpt1call)
+            mem.dv_rpt2call = decode_call(_mem.dv_rpt2call)
+            mem.dv_code = int(_mem.dv_code)
+
         if 'WX' in mem.extd_number:
+            mem.tmode = ''
             mem.immutable.extend(['rtone', 'ctone', 'dtcs', 'rx_dtcs',
                                   'tmode', 'cross_mode', 'dtcs_polarity',
                                   'skip', 'power', 'offset', 'mode',
