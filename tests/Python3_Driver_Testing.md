@@ -5,6 +5,7 @@
 | <a name="Abbree_AR-518"></a> Abbree_AR-518 | [@KC9HI](https://github.com/KC9HI) | 16-Dec-2022 | Yes | 0.24% |
 | <a name="Abbree_AR-63"></a> Abbree_AR-63 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG | [@HB9UF](https://github.com/HB9UF) | 09-Dec-2022 | Yes | 0.44% |
+| <a name="Alinco_DJ-G7T"></a> Alinco_DJ-G7T |  |  | Yes |  |
 | <a name="Alinco_DJ175"></a> Alinco_DJ175 | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.03% |
 | <a name="Alinco_DJ596"></a> Alinco_DJ596 | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Alinco_DR03T"></a> Alinco_DR03T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.01% |
@@ -362,11 +363,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 359
+**Drivers:** 360
 
-**Tested:** 80% (290/69) (92% of usage stats)
+**Tested:** 80% (290/70) (92% of usage stats)
 
-**Byte clean:** 87% (314/45)
+**Byte clean:** 87% (315/45)
 
 ## Meaning of this testing
 

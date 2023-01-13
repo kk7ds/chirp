@@ -78,7 +78,7 @@ class FakeAlincoSerial:
         if data.startswith(b'DR'):
             self.ident = data.strip()
             self.readbuf.append(ident_ack)
-        elif data.startswith(b'AL~DJ-G7EG'):
+        elif data.startswith(b'AL~DJ-G7'):
             self.ident = data.strip()
             self.readbuf.append(ident_ack)
         elif data.startswith(b'DJ'):
@@ -115,7 +115,8 @@ class AlincoCloneTest(unittest.TestCase):
         radio.pipe = pipe
         radio.sync_out()
         ref_image = open(image, 'rb').read()
-        self.assertEqual(ref_image[0x200:], pipe.image.get_packed()[0x200:])
+        self.assertEqual(ref_image[0x200:rclass._memsize],
+                         pipe.image.get_packed()[0x200:rclass._memsize])
 
     def _test_alinco(self, rclass):
         ident = directory.radio_class_id(rclass)
