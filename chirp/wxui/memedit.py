@@ -905,6 +905,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 break
             mems_to_move.append(self.row2mem(row))
 
+        if not mems_to_move:
+            LOG.debug('Delete %s has no memories to move' % shift_up)
+            return
+
         # Shift them all up by however many we deleted
         for number in mems_to_move:
             LOG.debug('Moving memory %i -> %i', number, number - delta)
