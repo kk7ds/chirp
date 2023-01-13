@@ -1009,7 +1009,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # Now schedule UI refreshes
         for memory in memories:
             self.do_radio(self.refresh_memory_from_job,
-                          'get_memory', memory.number)
+                          'get_memory', memory.extd_number or memory.number)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
