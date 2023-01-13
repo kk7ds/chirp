@@ -912,9 +912,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mem.number -= delta
             self.do_radio(None, 'set_memory', mem)
 
-        # Delete the last memory as that is now a hole
-        LOG.debug('Erasing memory %i', mems_to_move[-1])
-        self.do_radio(None, 'erase_memory', mems_to_move[-1])
+        # Delete the memories that are now the hole we made
+        for number in range(mem.number + 1, mems_to_move[-1] + 1):
+            LOG.debug('Erasing memory %i', number)
+            self.do_radio(None, 'erase_memory', number)
 
         # Refresh the entire range from the top of what we deleted to the
         # hole we created
