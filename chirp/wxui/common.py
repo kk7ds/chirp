@@ -406,6 +406,18 @@ def _error_proof(*expected_errors):
     return wrap
 
 
+def closes_clipboard(fn):
+    @functools.wraps(fn)
+    def wrapper(*a, **k):
+        try:
+            return fn(*a, **k)
+        finally:
+            if wx.TheClipboard.IsOpened():
+                LOG.warning('Closing clipboard left open by %s' % fn)
+                wx.TheClipboard.Close()
+    return wrapper
+
+
 class error_proof(object):
     def __init__(self, *expected_exceptions):
         self._expected = expected_exceptions
