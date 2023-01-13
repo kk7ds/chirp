@@ -70,7 +70,7 @@ HobbyPCB_RS-UV3,@kk7ds,9-Dec-2022
 Icom_IC-208H,*icf,12-Dec-2022
 Icom_IC-2100H,*icf,12-Dec-2022
 Icom_IC-2200H,@kk7ds,24-Oct-2022
-Icom_IC-2300H,*icf,24-Oct-2022
+Icom_IC-2300H,#10264,13-Jan-2022
 Icom_IC-2720H,*icf,12-Dec-2022
 Icom_IC-2730A,#10261,17-Dec-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
@@ -272,7 +272,7 @@ Yaesu_FT3D_R,@kk7ds,30-Dec-2022
 Yaesu_FT-4XE,Unit tested; needs confirm,24-Dec-2022
 Yaesu_FT-4XR,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-4VR,+Yaesu_FT-4XE,24-Dec-2022
-Yaesu_FT-65R,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-65R,#10266,13-Jan-2022
 Yaesu_FT-65E,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-25R,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-60,N0EYE,9-Jan-2023
