@@ -277,8 +277,12 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._country.Bind(wx.EVT_CHOICE, self._state_selected)
         self._add_grid(grid, _('Country'), self._country)
 
+        self._service = wx.Choice(panel, choices=[_('Amateur'),
+                                                  _('GMRS')])
+        self._service.Bind(wx.EVT_CHOICE, self._service_selected)
+        self._add_grid(grid, _('Service'), self._service)
+
         self._state = wx.Choice(panel, choices=[])
-        self._state_selected(None)
         self._add_grid(grid, _('State/Province'), self._state)
 
         self._lat = wx.TextCtrl(panel,
@@ -321,11 +325,27 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self.Bind(wx.EVT_CHECKBOX, self._select_modes, self._modefilter)
         self._add_grid(grid, _('Limit Modes'), self._modefilter)
 
+        self._state_selected(None)
+        self._service_selected(None)
+
         self.Layout()
         return vbox
 
+    def _service_selected(self, event):
+        is_gmrs = _('GMRS') in self._service.GetStringSelection()
+        self._bandfilter.Enable(not is_gmrs)
+        self._modefilter.Enable(not is_gmrs)
+
     def _state_selected(self, event):
         country = self._country.GetStringSelection()
+        if country == 'United States':
+            self._service.Enable(True)
+            self._service.SetStringSelection(
+                CONF.get('service', 'repeaterbook') or _('Amateur'))
+        else:
+            self._service.Enable(False)
+            self._service.SetSelection(0)
+
         states = repeaterbook.STATES[country]
         self._state.SetItems(states)
         prev = CONF.get('state', 'repeaterbook')
@@ -382,10 +402,12 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         CONF.set('dist', self._dist.GetValue(), 'repeaterbook')
         CONF.set('state', self._state.GetStringSelection(), 'repeaterbook')
         CONF.set('country', self._country.GetStringSelection(), 'repeaterbook')
+        CONF.set('service', self._service.GetStringSelection(), 'repeaterbook')
         self.result_radio = repeaterbook.RepeaterBook()
         super().do_query()
 
     def get_params(self):
+        service = self._service.GetStringSelection()
         return {
             'country': self._country.GetStringSelection(),
             'state': self._state.GetStringSelection(),
@@ -395,6 +417,8 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'filter': self._search.GetValue(),
             'bands': self._limit_bands,
             'modes': self._limit_modes,
+            'service': 'gmrs' if service == _('GMRS') else '',
+            'service_display': self._service.GetStringSelection(),
         }
 
 
