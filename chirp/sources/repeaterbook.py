@@ -80,12 +80,13 @@ class RepeaterBook(base.NetworkResultRadio):
     def get_label(self):
         return 'RepeaterBook'
 
-    def get_data(self, status, country, state):
+    def get_data(self, status, country, state, service):
         # Ideally we would be able to pull the whole database, but right
         # now this is limited to 3500 results, so we need to filter and
         # cache by state to stay under that limit.
-        fn = 'rb-%s-%s.json' % (country.lower().replace(' ', '_'),
-                                state.lower().replace(' ', '_'))
+        fn = 'rb%s-%s-%s.json' % (service,
+                                  country.lower().replace(' ', '_'),
+                                  state.lower().replace(' ', '_'))
         db_dir = chirp_platform.get_platform().config_file('repeaterbook')
         try:
             os.mkdir(db_dir)
@@ -110,7 +111,8 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.debug('RepeaterBook database %s too old: %s' % modified_dt)
         r = requests.get('https://www.repeaterbook.com/api/export.php',
                          params={'country': country,
-                                 'state': state},
+                                 'state': state,
+                                 'stype': service},
                          headers=base.HEADERS,
                          stream=True)
         if r.status_code != 200:
@@ -155,7 +157,8 @@ class RepeaterBook(base.NetworkResultRadio):
         modes = params.pop('modes', [])
         data_file = self.get_data(status,
                                   params.pop('country'),
-                                  params.pop('state'))
+                                  params.pop('state'),
+                                  params.get('service', ''))
         if not data_file:
             return
 
@@ -226,6 +229,8 @@ class RepeaterBook(base.NetworkResultRadio):
             m.name = item['Landmark'] or item['Callsign']
             i += 1
             self._memories.append(m)
+
+        self.MODEL = params.get('service_display') or 'Result'
 
         if not self._memories:
             status.send_fail(_('No results!'))
