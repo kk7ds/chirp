@@ -344,19 +344,19 @@ if __name__ == "__main__":
         mem.mode = _mode or mem.mode
 
         if options.set_mem_tencon:
-            mem.tencEnabled = True
+            mem.tmode = "Tone"
         elif options.set_mem_tencoff:
-            mem.tencEnabled = False
+            mem.tmode = ""
 
         if options.set_mem_tsqlon:
-            mem.tsqlEnabled = True
+            mem.tmode = "TSQL"
         elif options.set_mem_tsqloff:
-            mem.tsqlEnabled = False
+            mem.tmode = ""
 
         if options.set_mem_dtcson:
-            mem.dtcsEnabled = True
+            mem.tmode = "DTCS"
         elif options.set_mem_dtcsoff:
-            mem.dtcsEnabled = False
+            mem.tmode = ""
 
         radio.set_memory(mem)
 
