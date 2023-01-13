@@ -1361,7 +1361,10 @@ class ChirpMemPropDialog(wx.Dialog):
 
         for coldef in self._col_defs:
             if coldef.valid:
-                self._pg.Append(coldef.get_propeditor(memory))
+                editor = coldef.get_propeditor(memory)
+                self._pg.Append(editor)
+                if coldef.name in memory.immutable:
+                    editor.Enable(False)
 
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
 
@@ -1382,26 +1385,32 @@ class ChirpMemPropDialog(wx.Dialog):
                 return coldef
         LOG.error('No column definition for %s' % name)
 
+    def _update_mem(self, mem, prop, coldef):
+        name = prop.GetName().split(common.INDEX_CHAR)[0]
+        value = prop.GetValueAsString()
+        if coldef:
+            setattr(mem, name, coldef._digest_value(mem, value))
+        elif value.isdigit():
+            # Assume this is an integer (dv_code) and set it as
+            # such
+            setattr(mem, name, prop.GetValue())
+        else:
+            setattr(mem, name, value)
+        LOG.debug('Changed mem %i %s=%r' % (mem.number, name,
+                                            value))
+        if prop.GetName() == 'freq':
+            mem.empty = False
+
     def _mem_prop_changed(self, event):
         self.FindWindowById(wx.ID_OK).Enable(True)
 
         prop = event.GetProperty()
         coldef = self._col_def_by_name(prop.GetName())
-        name = prop.GetName().split(common.INDEX_CHAR)[0]
-        value = prop.GetValueAsString()
         for mem in self._memories:
-            if coldef:
-                setattr(mem, name, coldef._digest_value(mem, value))
-            elif value.isdigit():
-                # Assume this is an integer (dv_code) and set it as
-                # such
-                setattr(mem, name, prop.GetValue())
-            else:
-                setattr(mem, name, value)
-            LOG.debug('Changed mem %i %s=%r' % (mem.number, name,
-                                                value))
-            if prop.GetName() == 'freq':
-                mem.empty = False
+            try:
+                self._update_mem(mem, prop, coldef)
+            except chirp_common.ImmutableValueError as e:
+                LOG.warning('Memory %s: %s' % (mem.number, e))
 
     def _mem_extra_changed(self, event):
         self.FindWindowById(wx.ID_OK).Enable(True)
