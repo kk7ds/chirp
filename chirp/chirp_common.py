@@ -315,7 +315,7 @@ class Memory:
     }
 
     def __repr__(self):
-        return "Memory[%i]" % self.number
+        return str(self)
 
     def dupe(self):
         """Return a deep copy of @self"""

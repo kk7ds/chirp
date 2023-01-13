@@ -1030,11 +1030,14 @@ class ChirpMain(wx.Frame):
     def _menu_exit(self, event):
         self.Close(True)
 
+    @common.error_proof(Exception)
     def _menu_copy(self, event, cut=False):
         data = self.current_editorset.cb_copy(cut=cut)
         if wx.TheClipboard.Open():
             wx.TheClipboard.SetData(data)
             wx.TheClipboard.Close()
+        else:
+            raise Exception(_('Unable to open the clipboard'))
 
     def _menu_paste(self, event):
         memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)

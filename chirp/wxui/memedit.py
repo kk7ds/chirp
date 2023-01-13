@@ -1178,6 +1178,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def cb_paste(self, data):
         if common.CHIRP_DATA_MEMORY in data.GetAllFormats():
             payload = pickle.loads(data.GetData().tobytes())
+            LOG.debug('CHIRP-native paste: %r' % payload)
             self._cb_paste_memories(payload)
         elif wx.DF_UNICODETEXT in data.GetAllFormats():
             try:
@@ -1191,10 +1192,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             # set the offset, if a rule exists.
             if mem.duplex in ('-', '+'):
                 self._set_memory_defaults(mem, 'offset')
+            LOG.debug('Generic text paste %r: %s' % (
+                data.GetText(), mem))
             self._cb_paste_memories({'mems': [mem],
                                      'features': self._features})
         else:
-            LOG.warning('Unknown data format %s' % data.GetFormat().Type)
+            LOG.warning('Unknown data format %s paste' % (
+                data.GetFormat().Type))
 
     def cb_delete(self):
         selected_rows = self._grid.GetSelectedRows()
