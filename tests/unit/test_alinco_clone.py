@@ -16,6 +16,7 @@
 import binascii
 import os
 import unittest
+from unittest import mock
 
 from chirp import directory
 from chirp.drivers import alinco
@@ -121,8 +122,9 @@ class AlincoCloneTest(unittest.TestCase):
         image = os.path.join(os.path.dirname(__file__),
                                              '..', 'images',
                                              '%s.img' % ident)
-        self._test_alinco_upload(rclass, image)
-        self._test_alinco_download(rclass, image)
+        with mock.patch('time.sleep'):
+            self._test_alinco_upload(rclass, image)
+            self._test_alinco_download(rclass, image)
 
     def test_djg7(self):
         self._test_alinco(alinco.AlincoDJG7EG)
