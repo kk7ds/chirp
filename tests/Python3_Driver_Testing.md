@@ -308,7 +308,11 @@
 | <a name="Signus_XTR-5"></a> Signus_XTR-5 |  |  | Yes |  |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 |  | 0.02% |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.43% |
+| <a name="TIDRADIO_TD-H8"></a> TIDRADIO_TD-H8 | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
+| <a name="TIDRADIO_TD-H8-GMRS"></a> TIDRADIO_TD-H8-GMRS | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
+| <a name="TIDRADIO_TD-H8-HAM"></a> TIDRADIO_TD-H8-HAM | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
 | <a name="TID_TD-M8"></a> TID_TD-M8 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.04% |
+| <a name="TID_TD-UV68"></a> TID_TD-UV68 | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 |  |  |  | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
@@ -393,11 +397,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 390
+**Drivers:** 394
 
-**Tested:** 83% (325/65) (93% of usage stats)
+**Tested:** 83% (329/65) (93% of usage stats)
 
-**Byte clean:** 89% (348/42)
+**Byte clean:** 89% (352/42)
 
 ## Meaning of this testing
 
