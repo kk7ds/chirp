@@ -875,12 +875,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self.do_radio(self.refresh_memory_from_job, 'get_memory', number)
 
         self.do_radio(del_cb, 'erase_memory', number)
-        wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     @common.error_proof()
     def _delete_memories_at(self, rows, event, shift_up=None):
+        if rows:
+            wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
         for row in rows:
-            self.delete_memory_at(row, event)
+            if not self._memory_cache[row].empty:
+                self.delete_memory_at(row, event)
 
         if not shift_up:
             return
@@ -1040,7 +1043,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         # Erase the memory that is to become the empty row
         LOG.debug('Erasing memory %i', self.row2mem(row))
-        self._radio.erase_memory(self.row2mem(row))
+        self.do_radio(None, 'erase_memory', self.row2mem(row))
         mems_to_refresh.append(self.row2mem(row))
 
         # Refresh all the memories we touched
@@ -1077,7 +1080,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
             wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
 
-    @common.error_proof()
     def cb_copy(self, cut=False):
         rows = self._grid.GetSelectedRows()
         offset = self._features.memory_bounds[0]
@@ -1097,11 +1099,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         strfmt = chirp_common.mem_to_text(mems[0])
         textdata = wx.TextDataObject(strfmt)
         data.Add(textdata)
-        for mem in mems:
-            if cut:
-                self._radio.erase_memory(mem.number)
-                mem = self._radio.get_memory(mem.number)
-                self.refresh_memory(mem.number, mem)
+        if cut:
+            for mem in mems:
+                self.do_radio(None, 'erase_memory', mem.number)
+            for mem in mems:
+                self.do_radio(self.refresh_memory_from_job,
+                              'get_memory', mem.number)
 
         if cut:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
@@ -1150,11 +1153,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             row += 1
             try:
                 if mem.empty:
-                    self._radio.erase_memory(mem.number)
+                    self.do_radio(None, 'erase_memory', mem.number)
                 else:
                     mem = import_logic.import_mem(self._radio, srcrf, mem)
-                    self._radio.set_memory(mem)
-                self.refresh_memory(mem.number, mem)
+                    self.do_radio(None, 'set_memory', mem)
                 modified = True
             except (import_logic.DestNotCompatible,
                     errors.RadioError) as e:
@@ -1164,6 +1166,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             except Exception as e:
                 LOG.exception('Failed to paste: %s' % e)
                 errormsgs.append((mem, e))
+
+        for mem in mems:
+            self.do_radio(self.refresh_memory_from_job,
+                          'get_memory', mem.number)
 
         if modified:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
@@ -1177,7 +1183,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             d.SetExtendedMessage(msg)
             d.ShowModal()
 
-    @common.error_proof()
     def cb_paste(self, data):
         if common.CHIRP_DATA_MEMORY in data.GetAllFormats():
             payload = pickle.loads(data.GetData().tobytes())
