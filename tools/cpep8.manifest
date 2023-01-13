@@ -60,6 +60,7 @@
 ./chirp/drivers/retevis_rt76p.py
 ./chirp/drivers/retevis_rt87.py
 ./chirp/drivers/retevis_rt98.py
+./chirp/drivers/tdh8.py
 ./chirp/drivers/tdxone_tdq8a.py
 ./chirp/drivers/tg_uv2p.py
 ./chirp/drivers/th9000.py
