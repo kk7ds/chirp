@@ -607,7 +607,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if not CONF.get_bool('auto_edits', 'state', True):
             return
         if not only:
-            only = ('offset', 'duplex', 'tuning_step', 'mode', 'rtone')
+            only = ['offset', 'duplex', 'tuning_step', 'mode', 'rtone']
+        for prop in mem.immutable:
+            if prop in only:
+                only.remove(prop)
 
         defaults = self.bandplan.get_defaults_for_frequency(mem.freq)
         features = self._features
