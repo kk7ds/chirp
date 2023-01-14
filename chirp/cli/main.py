@@ -94,7 +94,7 @@ def parse_memory_number(radio, args):
     return memnum
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     logger.add_version_argument(parser)
     parser.add_argument("-s", "--serial", dest="serial",
