@@ -191,6 +191,8 @@ class ChirpSyncEditor:
         if cb:
             cb(job)
 
+    do_lazy_radio = do_radio
+
     def setup_radio_interface(self):
         pass
 
@@ -204,6 +206,9 @@ class ChirpAsyncEditor(ChirpSyncEditor):
     """
     def do_radio(self, cb, fn, *a, **k):
         self._jobs[self._radio_thread.submit(self, fn, *a, **k)] = cb
+
+    def do_lazy_radio(self, cb, fn, *a, **k):
+        self._jobs[self._radio_thread.background(self, fn, *a, **k)] = cb
 
     def radio_thread_event(self, job, block=True):
         if job.fn == 'get_memory':

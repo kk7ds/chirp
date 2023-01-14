@@ -587,12 +587,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         row = 0
         for i in range(lower, upper + 1):
             row += 1
-            self.do_radio(self.refresh_memory_from_job, 'get_memory', i)
+            self.do_lazy_radio(self.refresh_memory_from_job, 'get_memory', i)
 
         for i in self._features.valid_special_chans:
             self._special_rows[i] = row
             row += 1
-            self.do_radio(self.refresh_memory_from_job, 'get_memory', i)
+            self.do_lazy_radio(self.refresh_memory_from_job, 'get_memory', i)
 
     def _set_memory_defaults(self, mem, *only):
         """This is responsible for setting sane default values on memories.
