@@ -273,7 +273,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         if prev and prev in repeaterbook.COUNTRIES:
             self._country.SetStringSelection(prev)
         else:
-            self._country.SetStringSelection(repeaterbook.COUNTRIES[0])
+            self._country.SetStringSelection(repeaterbook.NA_COUNTRIES[0])
         self._country.Bind(wx.EVT_CHOICE, self._state_selected)
         self._add_grid(grid, _('Country'), self._country)
 
@@ -346,8 +346,14 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             self._service.Enable(False)
             self._service.SetSelection(0)
 
-        states = repeaterbook.STATES[country]
+        try:
+            states = repeaterbook.STATES[country]
+        except KeyError:
+            self._state.SetItems([_('All')])
+            self._state.Enable(False)
+            return
         self._state.SetItems(states)
+        self._state.Enable(True)
         prev = CONF.get('state', 'repeaterbook')
         if prev and prev in states:
             self._state.SetStringSelection(prev)

@@ -15,11 +15,11 @@ from chirp.wxui import fips
 
 LOG = logging.getLogger(__name__)
 
-COUNTRIES = (
+NA_COUNTRIES = [
     'United States',
     'Canada',
     'Mexico',
-)
+]
 MEXICO_STATES = [
     "Aguascalientes", "Baja California Sur", "Baja California",
     "Campeche", "Chiapas", "Chihuahua", "Coahuila", "Colima",
@@ -109,11 +109,19 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.debug('RepeaterBook database %s not cached' % fn)
         else:
             LOG.debug('RepeaterBook database %s too old: %s' % modified_dt)
-        r = requests.get('https://www.repeaterbook.com/api/export.php',
-                         params={'country': country,
-                                 'state': state,
-                                 'stype': service},
+
+        params = {'country': country,
+                  'stype': service}
+        if country in NA_COUNTRIES:
+            export = 'export.php'
+        else:
+            export = 'exportROW.php'
+        if country in STATES:
+            params['state'] = state
+
+        r = requests.get('https://www.repeaterbook.com/api/%s' % export,
                          headers=base.HEADERS,
+                         params=params,
                          stream=True)
         if r.status_code != 200:
             if modified:
@@ -169,9 +177,14 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.warning('Unable to determine mode for repeater %s' % (
                 item['Rptr ID']))
             return None
-        m.comment = (
-            '%(Callsign)s near %(Nearest City)s, %(County)s County, '
-            '%(State)s %(Use)s') % item
+        if 'State' in item and 'County' in item:
+            m.comment = (
+                '%(Callsign)s near %(Nearest City)s, %(County)s County, '
+                '%(State)s %(Use)s') % item
+        else:
+            m.comment = (
+                '%(Callsign)s near %(Nearest City)s, %(Region)s '
+                '%(Use)s') % item
         m.name = item['Landmark'] or item['Callsign']
         return m
 
@@ -183,7 +196,7 @@ class RepeaterBook(base.NetworkResultRadio):
         bands = params.pop('bands', [])
         modes = params.pop('modes', [])
         data_file = self.get_data(status,
-                                  params.pop('country'),
+                                  params.get('country'),
                                   params.pop('state'),
                                   params.get('service', ''))
         if not data_file:
@@ -200,8 +213,10 @@ class RepeaterBook(base.NetworkResultRadio):
                             float(item.get('Long', 0)))
 
         def match(item):
-            content = ' '.join(item[k] for k in (
-                'County', 'State', 'Landmark', 'Nearest City', 'Callsign'))
+            search_fields = ('County', 'State', 'Landmark', 'Nearest City',
+                             'Callsign', 'Region')
+            content = ' '.join(item[k] for k in search_fields
+                               if k in item)
             return not search_filter or search_filter.lower() in content.lower()
 
         def included_band(item):
@@ -232,8 +247,8 @@ class RepeaterBook(base.NetworkResultRadio):
             try:
                 m = self.item_to_memory(item, i)
             except Exception as e:
-                LOG.warning('Unable to convert repeater %s',
-                            item['Rptr ID'])
+                LOG.warning('Unable to convert repeater %s: %s',
+                            item['Rptr ID'], e)
                 continue
             if not m:
                 continue
@@ -241,10 +256,117 @@ class RepeaterBook(base.NetworkResultRadio):
                 continue
             self._memories.append(m)
 
-        self.MODEL = params.get('service_display') or 'Result'
+        self.MODEL = '%s %s' % (params.get('country'),
+                                params.get('service_display') or 'Result')
 
         if not self._memories:
             status.send_fail(_('No results!'))
             return
 
         status.send_end()
+
+
+ROW_COUNTRIES = [
+"Albania",
+"Andorra",
+"Argentina",
+"Australia",
+"Austria",
+"Azerbaijan",
+"Bahamas",
+"Barbados",
+"Belarus",
+"Belgium",
+"Belize",
+"Bolivia",
+"Bosnia and Herzegovina",
+"Brazil",
+"Bulgaria",
+"Caribbean Netherlands",
+"Cayman Islands",
+"Chile",
+"China",
+"Colombia",
+"Costa Rica",
+"Croatia",
+"Curacao",
+"Cyprus",
+"Czech Republic",
+"Denmark",
+"Dominican Republic",
+"Ecuador",
+"El Salvador",
+"Estonia",
+"Faroe Islands",
+"Finland",
+"France",
+"Georgia",
+"Germany",
+"Greece",
+"Grenada",
+"Guatemala",
+"Guernsey",
+"Haiti",
+"Honduras",
+"Hungary",
+"Iceland",
+"India",
+"Indonesia",
+"Ireland",
+"Isle of Man",
+"Israel",
+"Italy",
+"Jamaica",
+"Japan",
+"Jersey",
+"Kosovo",
+"Kuwait",
+"Latvia",
+"Liechtenstein",
+"Lithuania",
+"Luxembourg",
+"Macedonia",
+"Malaysia",
+"Malta",
+"Moldova",
+"Morocco",
+"Namibia",
+"Nepal",
+"Netherlands",
+"New Zealand",
+"Nicaragua",
+"Norway",
+"Oman",
+"Panama",
+"Paraguay",
+"Peru",
+"Philippines",
+"Poland",
+"Portugal",
+"Romania",
+"Russian Federation",
+"Saint Kitts and Nevis",
+"Saint Vincent and the Grenadines",
+"San Marino",
+"Serbia",
+"Singapore",
+"Slovakia",
+"Slovenia",
+"South Africa",
+"South Korea",
+"Spain",
+"Sri Lanka",
+"Sweden",
+"Switzerland",
+"Taiwan",
+"Thailand",
+"Trinidad and Tobago",
+"Turkey",
+"Ukraine",
+"United Arab Emirates",
+"United Kingdom",
+"Uruguay",
+"Venezuala",
+]
+
+COUNTRIES = list(sorted(NA_COUNTRIES + ROW_COUNTRIES))
