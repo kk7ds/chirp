@@ -981,6 +981,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                   functools.partial(self._delete_memories_at, to_delete,
                                     shift_up='all'),
                   del_shift_item)
+
+        # Don't allow bulk operations on live radios with pending jobs
+        del_block_item.Enable(not self.busy)
+        del_shift_item.Enable(not self.busy)
+        insert_item.Enable(not self.busy)
+
         menu.Append(del_item)
         menu.Append(del_block_item)
         menu.Append(del_shift_item)
