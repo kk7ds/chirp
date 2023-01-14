@@ -148,6 +148,33 @@ class RepeaterBook(base.NetworkResultRadio):
         status.send_status('Download complete', 50)
         return data_file
 
+    def item_to_memory(self, item, number):
+        m = chirp_common.Memory()
+        m.number = number
+        m.freq = chirp_common.parse_freq(item['Frequency'])
+        txf = chirp_common.parse_freq(item['Input Freq'])
+        chirp_common.split_to_offset(m, m.freq, txf)
+        txm, tx = parse_tone(item['PL'])
+        rxm, rx = parse_tone(item['TSQ'])
+        chirp_common.split_tone_decode(m, (txm, tx, 'N'), (rxm, rx, 'N'))
+        if item['DMR'] == 'Yes':
+            m.mode = 'DMR'
+        elif item['D-Star'] == 'Yes':
+            m.mode = 'DV'
+        elif item['System Fusion'] == 'Yes':
+            m.mode = 'DN'
+        elif item['FM Analog'] == 'Yes':
+            m.mode = 'FM'
+        else:
+            LOG.warning('Unable to determine mode for repeater %s' % (
+                item['Rptr ID']))
+            return None
+        m.comment = (
+            '%(Callsign)s near %(Nearest City)s, %(County)s County, '
+            '%(State)s %(Use)s') % item
+        m.name = item['Landmark'] or item['Callsign']
+        return m
+
     def do_fetch(self, status, params):
         lat = float(params.pop('lat') or 0)
         lon = float(params.pop('lon') or 0)
@@ -201,33 +228,17 @@ class RepeaterBook(base.NetworkResultRadio):
                 continue
             if not included_band(item):
                 continue
-            m = chirp_common.Memory()
-            m.number = i
-            m.freq = chirp_common.parse_freq(item['Frequency'])
-            txf = chirp_common.parse_freq(item['Input Freq'])
-            chirp_common.split_to_offset(m, m.freq, txf)
-            txm, tx = parse_tone(item['PL'])
-            rxm, rx = parse_tone(item['TSQ'])
-            chirp_common.split_tone_decode(m, (txm, tx, 'N'), (rxm, rx, 'N'))
-            if item['DMR'] == 'Yes':
-                m.mode = 'DMR'
-            elif item['D-Star'] == 'Yes':
-                m.mode = 'DV'
-            elif item['System Fusion'] == 'Yes':
-                m.mode = 'DN'
-            elif item['FM Analog'] == 'Yes':
-                m.mode = 'FM'
-            else:
-                LOG.warning('Unable to determine mode for repeater %s' % (
-                    item['Rptr ID']))
+            i += 1
+            try:
+                m = self.item_to_memory(item, i)
+            except Exception as e:
+                LOG.warning('Unable to convert repeater %s',
+                            item['Rptr ID'])
+                continue
+            if not m:
                 continue
             if modes and m.mode not in modes:
                 continue
-            m.comment = (
-                '%(Callsign)s near %(Nearest City)s, %(County)s County, '
-                '%(State)s %(Use)s') % item
-            m.name = item['Landmark'] or item['Callsign']
-            i += 1
             self._memories.append(m)
 
         self.MODEL = params.get('service_display') or 'Result'
