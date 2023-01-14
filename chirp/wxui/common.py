@@ -219,6 +219,8 @@ class ChirpAsyncEditor(ChirpSyncEditor):
             msg = _('Retrieved settings')
         elif job.fn == 'set_settings':
             msg = _('Saved settings')
+        elif job.fn == 'erase_memory':
+            msg = _('Erased memory %s') % job.args[0].number
         else:
             msg = _('Finished radio job %s') % job.fn
 
