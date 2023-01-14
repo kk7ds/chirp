@@ -914,7 +914,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.debug('Moving memory %i -> %i', number, number - delta)
             mem = self._memory_cache[self.mem2row(number)]
             mem.number -= delta
-            self.do_radio(None, 'set_memory', mem)
+            if mem.empty:
+                self.do_radio(None, 'erase_memory', mem.number)
+            else:
+                self.do_radio(None, 'set_memory', mem)
 
         # Delete the memories that are now the hole we made
         for number in range(mem.number + 1, mems_to_move[-1] + 1):
