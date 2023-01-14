@@ -439,6 +439,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
         self._grid.SetFocus()
+        self._default_cell_bg_color = self._grid.GetCellBackgroundColour(0, 0)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self._grid, 1, wx.EXPAND)
@@ -564,6 +565,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
                 self._grid.SetReadOnly(row, col,
                                        col_def.name in memory.immutable)
+                if col_def.name in memory.immutable:
+                    color = (0xF5, 0xF5, 0xF5, 0xFF)
+                else:
+                    color = self._default_cell_bg_color
+                self._grid.SetCellBackgroundColour(row, col, color)
 
     def set_row_finished(self, row):
         self._row_label_renderers[row].clear_error()
