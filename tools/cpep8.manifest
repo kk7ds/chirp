@@ -162,7 +162,6 @@
 ./tests/unit/test_memedit_edits.py
 ./tests/unit/test_platform.py
 ./tests/unit/test_settings.py
-./tests/unit/test_shiftdialog.py
 ./tools/bitdiff.py
 ./tools/cpep8.py
 ./tools/img2thd72.py
