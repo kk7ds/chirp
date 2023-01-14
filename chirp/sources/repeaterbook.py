@@ -108,7 +108,8 @@ class RepeaterBook(base.NetworkResultRadio):
         if modified == 0:
             LOG.debug('RepeaterBook database %s not cached' % fn)
         else:
-            LOG.debug('RepeaterBook database %s too old: %s' % modified_dt)
+            LOG.debug('RepeaterBook database %s too old: %s',
+                      fn, modified_dt)
 
         params = {'country': country,
                   'stype': service}
