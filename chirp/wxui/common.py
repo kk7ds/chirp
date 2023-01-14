@@ -196,6 +196,10 @@ class ChirpSyncEditor:
     def setup_radio_interface(self):
         pass
 
+    @property
+    def busy(self):
+        return False
+
 
 class ChirpAsyncEditor(ChirpSyncEditor):
     """Radio interface that makes async calls in a helper thread.
@@ -220,7 +224,7 @@ class ChirpAsyncEditor(ChirpSyncEditor):
         elif job.fn == 'set_settings':
             msg = _('Saved settings')
         elif job.fn == 'erase_memory':
-            msg = _('Erased memory %s') % job.args[0].number
+            msg = _('Erased memory %s') % job.args[0]
         else:
             msg = _('Finished radio job %s') % job.fn
 
@@ -244,6 +248,10 @@ class ChirpAsyncEditor(ChirpSyncEditor):
 
     def setup_radio_interface(self):
         self._jobs = {}
+
+    @property
+    def busy(self):
+        return self._radio_thread.pending != 0
 
 
 class ChirpSettingGrid(wx.Panel):
