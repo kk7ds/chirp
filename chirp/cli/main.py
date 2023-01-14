@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import glob
 import serial
 import os
 import sys
@@ -23,7 +22,6 @@ import argparse
 import logging
 
 from chirp import logger
-# from chirp.drivers import *
 from chirp import chirp_common, errors, directory, util
 
 directory.import_drivers()
@@ -364,7 +362,7 @@ def main():
         pos = parse_memory_number(radio, args)
         try:
             mem = radio.get_memory(pos)
-        except errors.InvalidMemoryLocation as e:
+        except errors.InvalidMemoryLocation:
             mem = chirp_common.Memory()
             mem.number = pos
 
