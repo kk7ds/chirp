@@ -169,7 +169,8 @@ class QuerySourceDialog(wx.Dialog):
                                     label=link_label, url=self.get_link(),
                                     style=wx.adv.HL_ALIGN_CENTRE)
         vbox.Insert(0, link, proportion=0, border=10,
-                    flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM)
+                    flag=(wx.LEFT | wx.RIGHT | wx.BOTTOM |
+                          wx.ALIGN_CENTER_HORIZONTAL))
         info = wx.StaticText(vbox.GetContainingWindow(),
                              style=wx.ALIGN_CENTER_HORIZONTAL)
         info.SetLabelMarkup(self.get_info())
