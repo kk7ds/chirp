@@ -558,15 +558,28 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._memory_cache[row] = memory
 
         with wx.grid.GridUpdateLocker(self._grid):
-            if memory.extd_number:
-                self._grid.SetRowLabelValue(row, memory.extd_number)
-            else:
-                self._grid.SetRowLabelValue(row, str(memory.number))
+            self.set_row_finished(row)
 
             for col, col_def in enumerate(self._col_defs):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
                 self._grid.SetReadOnly(row, col,
                                        col_def.name in memory.immutable)
+
+    def set_row_finished(self, row):
+        self._row_label_renderers[row].clear_error()
+        memory = self._memory_cache[row]
+        if memory.extd_number:
+            self._grid.SetRowLabelValue(row, memory.extd_number)
+        else:
+            self._grid.SetRowLabelValue(row, str(memory.number))
+
+    def set_row_pending(self, row):
+        self._row_label_renderers[row].set_progress()
+        memory = self._memory_cache[row]
+        if memory.extd_number:
+            self._grid.SetRowLabelValue(row, '*%s' % memory.extd_number)
+        else:
+            self._grid.SetRowLabelValue(row, '*%i' % memory.number)
 
     def refresh_memory_from_job(self, job):
         self.refresh_memory(job.args[0], job.result)
@@ -841,8 +854,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             event.Skip()
             return
 
-        self._grid.SetRowLabelValue(row, '*%i' % mem.number)
-        self._row_label_renderers[row].set_progress()
+        self.set_row_pending(row)
         self.do_radio(set_cb, 'set_memory', mem)
         LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
 
@@ -874,6 +886,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         def del_cb(job):
             self.do_radio(self.refresh_memory_from_job, 'get_memory', number)
 
+        self.set_row_pending(row)
         self.do_radio(del_cb, 'erase_memory', number)
 
     @common.error_proof()
@@ -927,6 +940,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # Refresh the entire range from the top of what we deleted to the
         # hole we created
         for number in range(self.row2mem(rows[0]), mems_to_move[-1] + 1):
+            self.set_row_pending(self.mem2row(number))
             self.do_radio(self.refresh_memory_from_job, 'get_memory',
                           number)
 
@@ -1062,6 +1076,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         # Refresh all the memories we touched
         for number in mems_to_refresh:
+            self.set_row_pending(self.mem2row(number))
             self.do_radio(self.refresh_memory_from_job, 'get_memory',
                           number)
 
@@ -1116,7 +1131,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if cut:
             for mem in mems:
                 self.do_radio(None, 'erase_memory', mem.number)
-            for mem in mems:
+                self.set_row_pending(self.mem2row(mem.number))
                 self.do_radio(self.refresh_memory_from_job,
                               'get_memory', mem.number)
 
@@ -1172,6 +1187,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     mem = import_logic.import_mem(self._radio, srcrf, mem)
                     self.do_radio(None, 'set_memory', mem)
                 modified = True
+                self.set_row_pending(self.mem2row(mem.number))
             except (import_logic.DestNotCompatible,
                     errors.RadioError) as e:
                 LOG.warning('Pasted memory %s incompatible: %s' % (
