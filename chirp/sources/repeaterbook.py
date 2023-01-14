@@ -142,8 +142,8 @@ class RepeaterBook(base.NetworkResultRadio):
         try:
             results = json.loads(data)
         except Exception as e:
-            LOG.exception('Query failed: %s' % e)
-            status.send_fail('Query failed')
+            LOG.exception('Invalid JSON in response: %s' % e)
+            status.send_fail('RepeaterBook returned invalid response')
             return
 
         if results['count']:
@@ -185,6 +185,8 @@ class RepeaterBook(base.NetworkResultRadio):
             m.comment = (
                 '%(Callsign)s near %(Nearest City)s, %(Region)s '
                 '%(Use)s') % item
+        m.comment += ' ' + item.get('Notes', '')
+        m.comment = m.comment.strip()
         m.name = item['Landmark'] or item['Callsign']
         return m
 
@@ -214,7 +216,7 @@ class RepeaterBook(base.NetworkResultRadio):
 
         def match(item):
             search_fields = ('County', 'State', 'Landmark', 'Nearest City',
-                             'Callsign', 'Region')
+                             'Callsign', 'Region', 'Notes')
             content = ' '.join(item[k] for k in search_fields
                                if k in item)
             return not search_filter or search_filter.lower() in content.lower()
