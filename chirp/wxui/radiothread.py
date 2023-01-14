@@ -59,7 +59,8 @@ class RadioJob:
         return self.score < job.score or self.jobnumber < job.jobnumber
 
     def __repr__(self):
-        return '<RadioJob@%i>%s(%s,%s)=%r' % (
+        return '<%s@%i>%s(%s,%s)=%r' % (
+            self.__class__.__name__,
             self.score,
             self.fn,
             ','.join(repr(a) for a in self.args),
@@ -76,6 +77,12 @@ class RadioJob:
         LOG.debug('Radio finished %r' % self)
 
 
+class BackgroundRadioJob(RadioJob):
+    @property
+    def score(self):
+        return 100
+
+
 class RadioThread(threading.Thread):
     SENTINEL = RadioJob(None, 'END', [], {})
 
@@ -88,6 +95,11 @@ class RadioThread(threading.Thread):
 
     def submit(self, editor, fn, *a, **k):
         job = RadioJob(editor, fn, a, k)
+        self._queue.put(job)
+        return job.id
+
+    def background(self, editor, fn, *a, **k):
+        job = BackgroundRadioJob(editor, fn, a, k)
         self._queue.put(job)
         return job.id
 
