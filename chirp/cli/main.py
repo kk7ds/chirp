@@ -92,7 +92,7 @@ def parse_memory_number(radio, args):
     return memnum
 
 
-def main():
+def main(args=None):
     parser = argparse.ArgumentParser()
     logger.add_version_argument(parser)
     parser.add_argument("-s", "--serial", dest="serial",
@@ -187,7 +187,7 @@ def main():
         parser.print_help()
         sys.exit(0)
 
-    options = parser.parse_args()
+    options = parser.parse_args(args)
     args = options.args
 
     logger.handle_options(options)
