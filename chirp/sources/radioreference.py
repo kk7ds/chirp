@@ -176,6 +176,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
         rf.memory_bounds = (0, len(self._freqs)-1)
         rf.has_bank = False
         rf.has_ctone = False
+        rf.has_comment = True
         rf.valid_tmodes = ["", "TSQL", "DTCS"]
         return rf
 
