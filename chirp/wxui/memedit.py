@@ -897,10 +897,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         def del_cb(job):
             self.do_radio(self.refresh_memory_from_job, 'get_memory', number)
 
+        if 'empty' in self._memory_cache[row].immutable:
+            raise errors.InvalidMemoryLocation(
+                _('Memory %i is not deletable') % number)
+
         self.set_row_pending(row)
         self.do_radio(del_cb, 'erase_memory', number)
 
-    @common.error_proof()
+    @common.error_proof(errors.InvalidMemoryLocation)
     def _delete_memories_at(self, rows, event, shift_up=None):
         if rows:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
@@ -1140,6 +1144,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         textdata = wx.TextDataObject(strfmt)
         data.Add(textdata)
         if cut:
+            if any('empty' in mem.immutable for mem in mems):
+                raise errors.InvalidMemoryLocation(
+                    _('Some memories are not deletable'))
             for mem in mems:
                 self.do_radio(None, 'erase_memory', mem.number)
                 self.set_row_pending(self.mem2row(mem.number))
