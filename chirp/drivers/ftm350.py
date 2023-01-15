@@ -29,7 +29,8 @@ mem_format = """
 struct mem {
   u8 used:1,
      skip:2,
-     unknown1:5;
+     unknown1:4,
+     visible:1;
   u8 unknown2:1,
      mode:3,
      unknown8:1,
@@ -368,6 +369,7 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem = self._memory_obj()[mem.number - 1]
             _lab = self._label_obj()[mem.number - 1]
         _mem.used = not mem.empty
+        _mem.visible = not mem.empty
         if mem.empty:
             return
 
