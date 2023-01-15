@@ -309,8 +309,8 @@ def startcomms(radio, way):
     enter_clonemode(radio)
     id_response = sendcmd(radio.pipe, b'\x02', None)
     if id_response != radio.id_str:
-        substr0 = radio.id_str[:radio.id_str.find('\x00')]
-        if id_response[:id_response.find('\x00')] != substr0:
+        substr0 = radio.id_str[:radio.id_str.find(b'\x00')]
+        if id_response[:id_response.find(b'\x00')] != substr0:
             msg = "ID mismatch. Expected" + util.hexprint(radio.id_str)
             msg += ", Received:" + util.hexprint(id_response)
             LOG.warning(msg)
