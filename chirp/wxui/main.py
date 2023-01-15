@@ -1030,7 +1030,7 @@ class ChirpMain(wx.Frame):
     def _menu_exit(self, event):
         self.Close(True)
 
-    @common.error_proof(RuntimeError)
+    @common.error_proof(RuntimeError, errors.InvalidMemoryLocation)
     @common.closes_clipboard
     def _menu_copy(self, event, cut=False):
         data = self.current_editorset.cb_copy(cut=cut)
