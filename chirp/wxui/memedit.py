@@ -479,7 +479,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 attr.SetEditor(col_def.get_editor())
                 self._grid.SetColAttr(col, attr)
                 self._grid.SetColMinimalWidth(col, minwidth)
-                attr.SetFitMode(wx.grid.GridFitMode.Ellipsize())
+                try:
+                    attr.SetFitMode(wx.grid.GridFitMode.Ellipsize())
+                except AttributeError:
+                    # No SetFitMode() support on wxPython 4.0.7
+                    pass
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
     def _setup_columns(self):
