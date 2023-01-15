@@ -37,19 +37,19 @@ def _send(s, data):
         raise Exception("Failed to read echo")
     LOG.debug("got echo\n%s\n" % util.hexprint(echo))
 
-ACK = "\x06"
+ACK = b"\x06"
 INITIAL_CHECKSUM = 0
 
 
 def _download(radio):
 
-    blankChunk = ""
+    blankChunk = b""
     for _i in range(0, 32):
-        blankChunk += "\xff"
+        blankChunk += b"\xff"
 
     LOG.debug("in _download\n")
 
-    data = ""
+    data = b""
     for _i in range(0, 20):
         data = radio.pipe.read(20)
         LOG.debug("Header:\n%s" % util.hexprint(data))
@@ -64,7 +64,7 @@ def _download(radio):
     _send(radio.pipe, ACK)
 
     # initialize data, the big var that holds all memory
-    data = ""
+    data = b""
 
     _blockNum = 0
 
@@ -104,13 +104,13 @@ def _download(radio):
     # compute checksum
     cs = INITIAL_CHECKSUM
     for byte in radio.IDBLOCK:
-        cs += ord(byte)
+        cs += byte
     for byte in data:
-        cs += ord(byte)
+        cs += byte
     LOG.debug("calculated checksum is %x\n" % (cs & 0xff))
-    LOG.debug("Radio sent checksum is %x\n" % ord(chunk[0]))
+    LOG.debug("Radio sent checksum is %x\n" % chunk[0])
 
-    if (cs & 0xff) != ord(chunk[0]):
+    if (cs & 0xff) != chunk[0]:
         raise Exception("Failed checksum on read.")
 
     # for debugging purposes, dump the channels, in hex.
@@ -119,7 +119,7 @@ def _download(radio):
         chunk = data[_startData:_startData + 20]
         LOG.debug("channel %i:\n%s" % (_i, util.hexprint(chunk)))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
@@ -143,9 +143,9 @@ def _upload(radio):
     block = 0
     cs = INITIAL_CHECKSUM
     for byte in radio.IDBLOCK:
-        cs += ord(byte)
+        cs += byte
 
-    while block < (radio.get_memsize() / 32):
+    while block < (radio.get_memsize() // 32):
         data = radio.get_mmap()[block * 32:(block + 1) * 32]
 
         LOG.debug("Writing block %i:\n%s" % (block, util.hexprint(data)))
@@ -154,7 +154,7 @@ def _upload(radio):
         time.sleep(0.03)
 
         for byte in data:
-            cs += ord(byte)
+            cs += byte
 
         if radio.status_fn:
             status = chirp_common.Status()
@@ -164,7 +164,7 @@ def _upload(radio):
             radio.status_fn(status)
         block += 1
 
-    _send(radio.pipe, chr(cs & 0xFF))
+    _send(radio.pipe, bytes([cs & 0xFF]))
 
 MEM_FORMAT = """
 #seekto 0x0080;
@@ -395,7 +395,7 @@ def _encode_name(mem):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\xff" * (mem.size() // 8))
+    mem.set_raw(b"\xff" * (mem.size() // 8))
 
 
 class FT2900Bank(chirp_common.NamedBank):
@@ -498,7 +498,7 @@ class FT2900Radio(YaesuCloneModeRadio):
     """Yaesu FT-2900"""
     VENDOR = "Yaesu"
     MODEL = "FT-2900R/1900R"
-    IDBLOCK = "\x56\x43\x32\x33\x00\x02\x46\x01\x01\x01"
+    IDBLOCK = b"\x56\x43\x32\x33\x00\x02\x46\x01\x01\x01"
     BAUD_RATE = 19200
 
     _memsize = 8000
@@ -1253,7 +1253,7 @@ class FT2900ERadio(FT2900Radio):
     """Yaesu FT-2900E"""
     MODEL = "FT-2900E/1900E"
     VARIANT = "E"
-    IDBLOCK = "\x56\x43\x32\x33\x00\x02\x41\x02\x01\x01"
+    IDBLOCK = b"\x56\x43\x32\x33\x00\x02\x41\x02\x01\x01"
 
 
 # This class is for the TX Modified FT-1900/FT-2900 (MARS/CAP Mod).
@@ -1264,7 +1264,7 @@ class FT2900ModRadio(FT2900Radio):
     """Yaesu FT-2900Mod"""
     MODEL = "FT-2900R/1900R(TXMod)"
     VARIANT = "Opened Xmit"
-    IDBLOCK = "\x56\x43\x32\x33\x00\x02\xc7\x01\x01\x01"
+    IDBLOCK = b"\x56\x43\x32\x33\x00\x02\xc7\x01\x01\x01"
 
     @classmethod
     def match_model(cls, filedata, filename):
