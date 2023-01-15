@@ -45,6 +45,7 @@
 ./chirp/drivers/gmrsuv1.py
 ./chirp/drivers/gmrsv2.py
 ./chirp/drivers/h777.py
+./chirp/drivers/hf90.py
 ./chirp/drivers/ic208.py
 ./chirp/drivers/ic2100.py
 ./chirp/drivers/ic2200.py
