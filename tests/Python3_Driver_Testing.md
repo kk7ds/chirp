@@ -320,8 +320,8 @@
 | <a name="Yaesu_FT-1D_R"></a> Yaesu_FT-1D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.03% |
 | <a name="Yaesu_FT-25R"></a> Yaesu_FT-25R | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M |  |  | Yes | 0.03% |
-| <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R |  |  | Yes | 0.05% |
-| <a name="Yaesu_FT-2900R_1900RTXMod_Opened_Xmit"></a> Yaesu_FT-2900R_1900RTXMod_Opened_Xmit |  |  | Yes |  |
+| <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R | [Reported working](https://chirp.danplanet.com/issues/10274) | 14-Jan-2023 | Yes | 0.05% |
+| <a name="Yaesu_FT-2900R_1900RTXMod_Opened_Xmit"></a> Yaesu_FT-2900R_1900RTXMod_Opened_Xmit | [Implied by Yaesu_FT-2900R_1900R](#user-content-Yaesu_FT-2900R_1900R) | 14-Jan-2023 | Yes |  |
 | <a name="Yaesu_FT-450D"></a> Yaesu_FT-450D |  |  | Yes | 0.01% |
 | <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
 | <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.14% |
@@ -365,7 +365,7 @@
 
 **Drivers:** 360
 
-**Tested:** 80% (290/70) (92% of usage stats)
+**Tested:** 81% (292/68) (92% of usage stats)
 
 **Byte clean:** 87% (315/45)
 
