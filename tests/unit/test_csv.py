@@ -1,0 +1,137 @@
+import os
+import tempfile
+import unittest
+
+from chirp import chirp_common
+from chirp.drivers import generic_csv
+
+CHIRP_CSV_LEGACY = (
+"""Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
+1,FRS 1,462.562500,,5.000000,,88.5,88.5,023,NN,NFM,12.50,,,,,
+2,FRS 2,462.587500,,5.000000,,88.5,88.5,023,NN,NFM,12.50,,,,,
+""")
+CHIRP_CSV_MINIMAL = (
+"""Location,Frequency
+1,146.520
+2,446.000
+""")
+CHIRP_CSV_MODERN = (
+"""Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
+0,Nat Simplex,146.520000,,0.600000,TSQL,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,This is the national calling frequency on 2m,,,,
+1,National Simp,446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5W,This is NOT the UHF calling frequency,,,,
+""")
+
+
+class TestCSV(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        self.testfn = tempfile.mktemp('.csv', 'chirp-test')
+
+    def tearDown(self):
+        super().tearDown()
+        try:
+            os.remove(self.testfn)
+        except FileNotFoundError:
+            pass
+
+    def test_parse_legacy(self):
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write(CHIRP_CSV_LEGACY)
+        csv = generic_csv.CSVRadio(self.testfn)
+        mem = csv.get_memory(1)
+        self.assertEqual(1, mem.number)
+        self.assertEqual('FRS 1', mem.name)
+        self.assertEqual(462562500, mem.freq)
+        self.assertEqual('', mem.duplex)
+        self.assertEqual(5000000, mem.offset)
+        self.assertEqual('', mem.tmode)
+        self.assertEqual(88.5, mem.rtone)
+        self.assertEqual(88.5, mem.ctone)
+        self.assertEqual(23, mem.dtcs)
+        self.assertEqual('NN', mem.dtcs_polarity)
+        self.assertEqual('NFM', mem.mode)
+        self.assertEqual(12.5, mem.tuning_step)
+
+    def test_parse_modern(self):
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write(CHIRP_CSV_MODERN)
+        csv = generic_csv.CSVRadio(self.testfn)
+        mem = csv.get_memory(1)
+        self.assertEqual(1, mem.number)
+        self.assertEqual('National Simp', mem.name)
+        self.assertEqual(446000000, mem.freq)
+        self.assertEqual('-', mem.duplex)
+        self.assertEqual(5000000, mem.offset)
+        self.assertEqual('DTCS', mem.tmode)
+        self.assertEqual(88.5, mem.rtone)
+        self.assertEqual(88.5, mem.ctone)
+        self.assertEqual(23, mem.dtcs)
+        self.assertEqual('NN', mem.dtcs_polarity)
+        self.assertEqual('FM', mem.mode)
+        self.assertEqual(5.0, mem.tuning_step)
+        self.assertEqual(generic_csv.POWER_LEVELS[5], mem.power)
+        self.assertIn('UHF calling', mem.comment)
+
+    def test_parse_minimal(self):
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write(CHIRP_CSV_MINIMAL)
+        csv = generic_csv.CSVRadio(self.testfn)
+        mem = csv.get_memory(1)
+        self.assertEqual(1, mem.number)
+        self.assertEqual(146520000, mem.freq)
+
+    def test_parse_unknown_field(self):
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write('Location,Frequency,Color\n')
+            f.write('1,146.520,Red\n')
+        csv = generic_csv.CSVRadio(self.testfn)
+        mem = csv.get_memory(1)
+        self.assertEqual(1, mem.number)
+        self.assertEqual(146520000, mem.freq)
+
+    def test_default_power(self):
+        m = chirp_common.Memory()
+        m.number = 1
+        m.freq = 146520000
+        r = generic_csv.CSVRadio(None)
+        r.set_memory(m)
+        m2 = r.get_memory(1)
+        self.assertEqual(generic_csv.DEFAULT_POWER_LEVEL, m2.power)
+
+    def _write_and_read(self, mem):
+        radio = generic_csv.CSVRadio(None)
+        radio.set_memory(mem)
+        radio.save(self.testfn)
+        radio = generic_csv.CSVRadio(self.testfn)
+        return radio.get_memory(mem.number)
+
+    def test_escaped_string_chars(self):
+        m = chirp_common.Memory()
+        m.number = 1
+        m.name = 'This is "The one"'
+        m.comment = 'Wow, a \nMulti-line comment!'
+        m2 = self._write_and_read(m)
+        self.assertEqual(m.name, m2.name)
+        self.assertEqual(m.comment, m2.comment)
+
+    def test_unicode_comment_chars(self):
+        m = chirp_common.Memory()
+        m.number = 1
+        m.name = 'This is "The one"'
+        m.comment = b'This is b\xc9\x90d news'.decode()
+        m2 = self._write_and_read(m)
+        self.assertEqual(m.name, m2.name)
+        self.assertEqual(m.comment, m2.comment)
+
+    def test_cross_dtcs(self):
+        m = chirp_common.Memory()
+        m.number = 1
+        m.tmode = 'Cross'
+        m.cross_mode = 'DTCS->DTCS'
+        m.dtcs = 25
+        m.rx_dtcs = 73
+        m2 = self._write_and_read(m)
+        self.assertEqual('Cross', m2.tmode)
+        self.assertEqual('DTCS->DTCS', m2.cross_mode)
+        self.assertEqual(25, m2.dtcs)
+        self.assertEqual(73, m2.rx_dtcs)
