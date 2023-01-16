@@ -6,6 +6,10 @@ jobs:
         name: No new legacy code
         runs-on: ubuntu-22.04
         steps:
+            - name: Install deps
+              run: |
+                  apt-get update
+                  apt-get install -y diffstat
             - name: Checkout
               uses: actions/checkout@v2
             - name: Run check_commit.sh

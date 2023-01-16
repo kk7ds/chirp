@@ -1,13 +1,14 @@
 #!/bin/bash
 
 BASE="$1"
+RETCODE=0
 
 function fail() {
     echo $*
-    exit 1
+    RETCODE=1
 }
 
-git diff ${BASE}..HEAD '*.py' | grep '^+' > added_lines
+git diff ${BASE}.. '*.py' | grep '^+' > added_lines
 
 if grep -E '(from|import).*six' added_lines; then
     fail No new uses of future
@@ -32,3 +33,11 @@ fi
 if grep -E 'MemoryMap\(' added_lines; then
     fail New uses of MemoryMap should be MemoryMapBytes
 fi
+
+for file in $(git diff ${BASE}.. '*.py' | diffstat -l); do
+    if grep -qE '\r' $file; then
+        fail "$file : Files should be LF (Unix) format, not CR (Mac) or CRLF (Windows)"
+    fi
+done
+
+exit $RETCODE
