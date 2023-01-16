@@ -183,7 +183,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
         self._blank()
 
-        with open(self._filename) as f:
+        with open(self._filename, newline='', encoding='utf-8') as f:
             header = f.readline().strip()
             f.seek(0, 0)
             return self._load(f)
@@ -232,7 +232,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
         if filename:
             self._filename = filename
 
-        with open(self._filename, "w") as f:
+        with open(self._filename, "w", newline='', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
             writer.writerow(chirp_common.Memory.CSV_FORMAT)
 
