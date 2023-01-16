@@ -336,7 +336,7 @@ class Memory:
                   "DtcsPolarity", "RxDtcsCode",
                   "CrossMode",
                   "Mode", "TStep",
-                  "Skip", "Comment",
+                  "Skip", "Power", "Comment",
                   "URCALL", "RPT1CALL", "RPT2CALL", "DVCODE"]
 
     def __setattr__(self, name, val):
@@ -418,6 +418,7 @@ class Memory:
             "%s" % self.mode,
             "%.2f" % self.tuning_step,
             "%s" % self.skip,
+            "%s" % self.power,
             "%s" % self.comment,
             "", "", "", ""]
 
