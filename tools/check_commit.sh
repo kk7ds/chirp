@@ -34,8 +34,8 @@ if grep -E 'MemoryMap\(' added_lines; then
     fail New uses of MemoryMap should be MemoryMapBytes
 fi
 
-for file in $(git diff ${BASE}.. '*.py' | diffstat -l); do
-    if grep -qE '\r' $file; then
+for file in $(git diff ${BASE}.. | grep '^+++' | sed 's#^+++ b/##'); do
+    if file $file | grep -q CRLF; then
         fail "$file : Files should be LF (Unix) format, not CR (Mac) or CRLF (Windows)"
     fi
 done
