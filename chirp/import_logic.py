@@ -81,8 +81,12 @@ def _import_power(dst_radio, _srcrf, mem):
         return
     elif mem.power is None:
         # Source radio did not support power levels, so choose the
-        # first (highest) level from the destination radio.
-        mem.power = levels[0]
+        # highest level from the destination radio.
+        try:
+            mem.power = next(reversed(sorted(levels)))
+        except StopIteration:
+            # No power levels on the destination, so leave power=None
+            pass
         return
 
     # If both radios support power levels, we need to decide how to

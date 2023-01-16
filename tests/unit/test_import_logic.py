@@ -164,7 +164,7 @@ class ImportFieldTests(base.BaseTest):
         mem = chirp_common.Memory()
         mem.power = None
         import_logic._import_power(radio, src_rf, mem)
-        self.assertEqual(mem.power, radio.POWER_LEVELS[0])
+        self.assertEqual(mem.power, radio.POWER_LEVELS[1])
 
     def test_import_power_no_dst(self):
         radio = FakeRadio(None)
