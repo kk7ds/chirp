@@ -159,12 +159,12 @@ APRS_SYMBOLS = (
 
 def watts_to_dBm(watts):
     """Converts @watts in watts to dBm"""
-    return int(10 * math.log10(int(watts * 1000)))
+    return round(10 * math.log10(watts) + 30, 1)
 
 
 def dBm_to_watts(dBm):
     """Converts @dBm from dBm to watts"""
-    return int(math.pow(10, (dBm - 30) / 10))
+    return round(math.pow(10, dBm / 10) / 1000)
 
 
 class PowerLevel:
