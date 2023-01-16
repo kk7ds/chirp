@@ -607,6 +607,9 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
             if not valid or _mem.freq == 0xffffffff:
                 return mem
 
+        if mem.number == 1:
+            mem.immutable = ['empty']
+
         return self._get_memory(mem, _mem)
 
     def _set_normal(self, mem):

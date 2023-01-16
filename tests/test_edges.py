@@ -79,23 +79,17 @@ class TestCaseEdges(base.DriverTest):
                 break
 
     def test_delete_memory(self):
-        if self.radio.MODEL == 'JT220M':
-            self.skipTest('Jetstream JT220 has no delete function')
-
         firstband = self.rf.valid_bands[0]
         testfreq = firstband[0]
         for loc in range(*self.rf.memory_bounds):
-            if loc == self.rf.memory_bounds[0]:
-                # Some radios will not allow you to delete the first memory
-                # /me glares at yaesu
-                continue
             m = self.radio.get_memory(loc)
+            if 'empty' in m.immutable:
+                # This memory is not deletable
+                continue
             if not m.empty:
                 m.empty = True
                 self.radio.set_memory(m)
                 m = self.radio.get_memory(loc)
-                print(repr(m.empty))
-                print(m)
                 self.assertTrue(m.empty,
                                 'Radio returned non-empty memory when asked '
                                 'to delete location %i' % loc)
