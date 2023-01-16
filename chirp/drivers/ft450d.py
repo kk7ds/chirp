@@ -689,6 +689,8 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             if not valid or _mem.freq == 0xffffffff:
                 return mem
+        if mem.number == 1:
+            mem.immutable = ['empty']
         if MEM_GRP_LBL:
             mgrp = int((number - 1) / 50)
             mem.comment = "M-%02i-%02i" % (mgrp + 1, number - (mgrp * 50))
