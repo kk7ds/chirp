@@ -1,4 +1,5 @@
 import base64
+import copy
 import json
 import os
 import tempfile
@@ -474,7 +475,12 @@ class TestImageMetadata(base.BaseTest):
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
 
-        raw_metadata = TestRadio._make_metadata()
+        r = TestRadio(None)
+        r._metadata['someextra'] = 'foo'
+        # We should always take the base properties from the class, so this
+        # should not show up in the result.
+        r._metadata['vendor'] = 'oops'
+        raw_metadata = r._make_metadata()
         metadata = json.loads(base64.b64decode(raw_metadata).decode())
         expected = {
             'vendor': 'Dan',
@@ -482,6 +488,7 @@ class TestImageMetadata(base.BaseTest):
             'variant': 'R',
             'rclass': 'TestRadio',
             'chirp_version': CHIRP_VERSION,
+            'someextra': 'foo',
         }
         self.assertEqual(expected, metadata)
 
@@ -491,9 +498,11 @@ class TestImageMetadata(base.BaseTest):
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
 
-        raw_metadata = TestRadio._make_metadata()
+        r = TestRadio(None)
+        r._metadata['someextra'] = 'foo'
+        raw_metadata = r._make_metadata()
         raw_data = (b'foooooooooooooooooooooo' + TestRadio.MAGIC +
-                    TestRadio._make_metadata())
+                    raw_metadata)
         data, metadata = chirp_common.CloneModeRadio._strip_metadata(raw_data)
         self.assertEqual(b'foooooooooooooooooooooo', data)
         expected = {
@@ -501,6 +510,7 @@ class TestImageMetadata(base.BaseTest):
             'model': 'Foomaster 9000',
             'variant': 'R',
             'rclass': 'TestRadio',
+            'someextra': 'foo',
             'chirp_version': CHIRP_VERSION,
         }
         self.assertEqual(expected, metadata)
@@ -602,3 +612,75 @@ class TestImageMetadata(base.BaseTest):
             'chirp_version': CHIRP_VERSION,
         }
         self.assertEqual(expected, newr.metadata)
+
+    def test_sub_devices_linked_metadata(self):
+        class FakeRadio(chirp_common.CloneModeRadio):
+            def get_sub_devices(self):
+                return [FakeRadioSub('a'), FakeRadioSub('b')]
+
+        class FakeRadioSub(FakeRadio):
+            def __init__(self, name):
+                self.VARIANT = name
+
+        r = FakeRadio(None)
+        subs = r.get_sub_devices()
+        r.link_device_metadata(subs)
+        subs[1]._metadata['foo'] = 'bar'
+        self.assertEqual({'a': {}, 'b': {'foo': 'bar'}}, r._metadata)
+
+
+class FakeRadio(chirp_common.CloneModeRadio):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._mems = {}
+
+    def get_memory(self, number):
+        return self._mems[number]
+
+    def set_memory(self, mem):
+        # Simulate not storing the comment in our memory
+        mem = copy.deepcopy(mem)
+        mem.comment = ''
+        self._mems[mem.number] = mem
+
+
+class TestCloneModeExtras(base.BaseTest):
+    def test_extra_comment(self):
+        r = FakeRadio(None)
+        m = chirp_common.Memory()
+        m.number = 0
+        m.freq = 146520000
+        m.comment = 'a comment'
+        r.set_memory(m)
+        # Make sure our fake driver didn't modify our copy
+        self.assertEqual('a comment', m.comment)
+
+        m = r.get_memory(0)
+        self.assertEqual(146520000, m.freq)
+        # Before we call extra, we have no comment
+        self.assertEqual('', m.comment)
+        m = r.get_memory_extra(m)
+        # We haven't called set_extra, so still nothing
+        self.assertEqual('', m.comment)
+
+        # Do a normal set, set_extra
+        m.comment = 'a comment'
+        r.set_memory(m)
+        r.set_memory_extra(m)
+
+        # Do a get, get_extra
+        m = r.get_memory(0)
+        m = r.get_memory_extra(m)
+        self.assertEqual(146520000, m.freq)
+        # Now we should have the comment
+        self.assertEqual('a comment', m.comment)
+
+        # Erase the memory (only extra) and make sure we get no comment
+        r.erase_memory_extra(0)
+
+        # Do a get, get_extra
+        m = r.get_memory(0)
+        m = r.get_memory_extra(m)
+        self.assertEqual(146520000, m.freq)
+        # Now we should have no comment because we erased
+        self.assertEqual('', m.comment)

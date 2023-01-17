@@ -58,7 +58,7 @@ class TestDirectory(base.BaseTest):
         with open(fn, 'wb') as f:
             f.write(b'thisisrawdata')
             f.write(self.test_class.MAGIC + b'-')
-            f.write(self.test_class._make_metadata())
+            f.write(self.test_class(None)._make_metadata())
             f.flush()
         self._test_detect_finds_our_class(fn)
 

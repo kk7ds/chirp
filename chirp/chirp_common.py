@@ -1133,6 +1133,54 @@ class Radio(Alias):
         return fmt in cls.FORMATS
 
 
+class ExternalMemoryProperties:
+    """A mixin class that provides external memory property support.
+
+    This is for use by drivers that have some way of storing additional
+    memory properties externally (i.e. in metadata or a separate region)
+    that cannot be loaded/updated during get_memory()/set_memory().
+    Implementing this is much less ideal than supporting those properties
+    directly, so this should only be used when absolutely necessary.
+    """
+
+    def get_memory_extra(self, memory):
+        """Update @memory with extra fields.
+
+        This is called after get_memory() and is passed the result
+        for augmentation from external storage.
+        """
+        return memory
+
+    def set_memory_extra(self, memory):
+        """Update external storage of properties from @memory.
+
+        This is called after set_memory() with the same memory object
+        to record additional properties in external storage.
+        """
+        pass
+
+    def erase_memory_extra(self, number):
+        """Erase external storage for @memory.
+
+        This is called after erase_memory() to clear external storage
+        for memory @number.
+        """
+        pass
+
+    def link_device_metadata(self, devices):
+        """Link sub-device metadata with parent.
+
+        This is called after get_sub_devices() to make sure that the
+        sub-device instances use a reference into the main radio's
+        metadata. In most cases, this does not need to be overridden.
+        """
+        # Link metadata of the sub-devices into the main by variant name
+        # so that they are both included in a later save of the parent.
+        for sub in devices:
+            self._metadata.setdefault(sub.VARIANT, {})
+            sub._metadata = self._metadata[sub.VARIANT]
+
+
 class FileBackedRadio(Radio):
     """A file-backed radio stores its data in a file"""
     FILE_EXTENSION = 'dat'
@@ -1146,7 +1194,7 @@ class FileBackedRadio(Radio):
         pass
 
 
-class CloneModeRadio(FileBackedRadio):
+class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
     """A clone-mode radio does a full memory dump in and out and we store
     an image of the radio into an image file"""
     FILE_EXTENSION = "img"
@@ -1229,15 +1277,20 @@ class CloneModeRadio(FileBackedRadio):
 
         return raw_data[:idx], metadata
 
-    @classmethod
-    def _make_metadata(cls):
-        return base64.b64encode(json.dumps(
-            {'rclass': cls.__name__,
-             'vendor': cls.VENDOR,
-             'model': cls.MODEL,
-             'variant': cls.VARIANT,
-             'chirp_version': CHIRP_VERSION,
-             }).encode())
+    def _make_metadata(self):
+        # Always generate these directly from our in-memory state
+        base = {
+            'rclass': self.__class__.__name__,
+            'vendor': self.VENDOR,
+            'model': self.MODEL,
+            'variant': self.VARIANT,
+            'chirp_version': CHIRP_VERSION,
+        }
+
+        # Any other properties take a back seat to the above
+        extra = {k: v for k, v in self._metadata.items() if k not in base}
+
+        return base64.b64encode(json.dumps(extra | base).encode())
 
     def load_mmap(self, filename):
         """Load the radio's memory map from @filename"""
@@ -1282,6 +1335,27 @@ class CloneModeRadio(FileBackedRadio):
     @metadata.setter
     def metadata(self, values):
         self._metadata.update(values)
+
+    def get_memory_extra(self, memory):
+        rf = self.get_features()
+        if not rf.has_comment and isinstance(memory.number, int):
+            self._metadata.setdefault('mem_extra', {})
+            memory.comment = self._metadata['mem_extra'].get(
+                '%04i_comment' % memory.number, '')
+        return memory
+
+    def set_memory_extra(self, memory):
+        rf = self.get_features()
+        if not rf.has_comment and isinstance(memory.number, int):
+            self._metadata.setdefault('mem_extra', {})
+            self._metadata['mem_extra']['%04i_comment' % memory.number] = (
+                memory.comment)
+
+    def erase_memory_extra(self, number):
+        rf = self.get_features()
+        if not rf.has_comment and isinstance(number, int):
+            self._metadata.setdefault('mem_extra', {})
+            self._metadata['mem_extra'].pop('%04i_comment' % number, None)
 
 
 class LiveRadio(Radio):
