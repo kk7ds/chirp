@@ -300,6 +300,8 @@ class CSVRadio(chirp_common.FileBackedRadio):
     def set_memory(self, newmem):
         if newmem.power is None:
             newmem.power = DEFAULT_POWER_LEVEL
+        elif newmem.power not in POWER_LEVELS:
+            raise errors.InvalidValueError('Unsupported power level')
         self._grow(newmem.number)
         self.memories[newmem.number] = newmem
 
