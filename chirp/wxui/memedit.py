@@ -415,6 +415,13 @@ class ChirpCrossModeColumn(ChirpChoiceColumn):
         return memory.tmode != 'Cross'
 
 
+class ChirpCommentColumn(ChirpMemoryColumn):
+    @property
+    def valid(self):
+        return (self._features.has_comment or
+                isinstance(self._radio, chirp_common.CloneModeRadio))
+
+
 class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpMemEdit, self).__init__(*a, **k)
@@ -521,7 +528,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                               valid_skips),
             ChirpChoiceColumn('power', self._radio,
                               valid_power_levels),
-            ChirpMemoryColumn('comment', self._radio),
+            ChirpCommentColumn('comment', self._radio),
         ]
         return defs
 
@@ -576,6 +583,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     color = self._default_cell_bg_color
                 self._grid.SetCellBackgroundColour(row, col, color)
 
+    def synchronous_get_memory(self, number):
+        """SYNCHRONOUSLY Get memory with extra properties
+
+        This shoud ideally not be used except in situations (like copy)
+        where we really have to do the operation synchronously.
+        """
+        mem = self._radio.get_memory(number)
+        if isinstance(self._radio, chirp_common.ExternalMemoryProperties):
+            mem = self._radio.get_memory_extra(mem)
+        return mem
+
     def set_row_finished(self, row):
         self._row_label_renderers[row].clear_error()
         memory = self._memory_cache[row]
@@ -598,10 +616,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             executor = self.do_radio
 
+        def extra_cb(job):
+            self._refresh_memory(number, job.result)
+
         def get_cb(job):
-            number = job.args[0]
-            memory = job.result
-            self._refresh_memory(number, memory)
+            # If get_memory() failed, just refresh with the exception
+            if isinstance(job.result, Exception):
+                self._refresh_memory(job.args[0], job.result)
+
+            # Otherwise augment with extra fields and call refresh with that,
+            # if appropriate
+            if isinstance(self._radio,
+                          chirp_common.ExternalMemoryProperties):
+                executor(extra_cb, 'get_memory_extra', job.result)
+            else:
+                extra_cb(job)
 
         executor(get_cb, 'get_memory', number)
 
@@ -611,13 +640,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if refresh:
             self.set_row_pending(row)
 
+        def extra_cb(job):
+            if refresh:
+                self.refresh_memory(mem.number)
+
         def set_cb(job):
             if isinstance(job.result, Exception):
                 self._row_label_renderers[row].set_error()
             else:
                 self._row_label_renderers[row].clear_error()
-                if refresh:
-                    self.refresh_memory(mem.number)
+                if isinstance(self._radio,
+                              chirp_common.ExternalMemoryProperties):
+                    self.do_radio(extra_cb, 'set_memory_extra', mem)
+                else:
+                    extra_cb(job)
 
         self.do_radio(set_cb, 'set_memory', mem)
 
@@ -627,13 +663,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if refresh:
             self.set_row_pending(row)
 
+        def extra_cb(job):
+            if refresh:
+                self.refresh_memory(number)
+
         def erase_cb(job):
             if isinstance(job.result, Exception):
                 self._row_label_renderers[row].set_error()
             else:
                 self._row_label_renderers[row].clear_error()
-                if refresh:
-                    self.refresh_memory(number)
+                if isinstance(self._radio,
+                              chirp_common.ExternalMemoryProperties):
+                    self.do_radio(extra_cb, 'erase_memory_extra', number)
+                else:
+                    extra_cb(job)
 
         self.do_radio(erase_cb, 'erase_memory', number)
 
@@ -1072,7 +1115,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     @common.error_proof()
     def _mem_properties(self, rows, event):
         memories = [
-            self._radio.get_memory(self.row2mem(row))
+            self.synchronous_get_memory(self.row2mem(row))
             for row in rows]
         with ChirpMemPropDialog(self, memories) as d:
             if d.ShowModal() == wx.ID_OK:
@@ -1151,7 +1194,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         offset = self._features.memory_bounds[0]
         mems = []
         for row in rows:
-            mem = self._radio.get_memory(row + offset)
+            mem = self.synchronous_get_memory(row + offset)
             # We can't pickle settings, nor would they apply if we
             # paste across models
             mem.extra = []

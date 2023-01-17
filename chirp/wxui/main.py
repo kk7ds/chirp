@@ -111,6 +111,8 @@ class ChirpEditorSet(wx.Panel):
         if features.has_sub_devices:
             radios = radio.get_sub_devices()
             format = '%(type)s (%(variant)s)'
+            if isinstance(parent_radio, chirp_common.ExternalMemoryProperties):
+                parent_radio.link_device_metadata(radios)
         else:
             radios = [radio]
             format = '%(type)s'
