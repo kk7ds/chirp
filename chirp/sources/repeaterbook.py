@@ -8,7 +8,7 @@ import tempfile
 import requests
 
 from chirp import chirp_common
-from chirp.drivers import generic_csv
+from chirp import errors
 from chirp import platform as chirp_platform
 from chirp.sources import base
 from chirp.wxui import fips
@@ -161,6 +161,10 @@ class RepeaterBook(base.NetworkResultRadio):
         m = chirp_common.Memory()
         m.number = number
         m.freq = chirp_common.parse_freq(item['Frequency'])
+        try:
+            m.tuning_step = chirp_common.required_step(m.freq)
+        except errors.InvalidDataError as e:
+            LOG.debug(e)
         txf = chirp_common.parse_freq(item['Input Freq'])
         chirp_common.split_to_offset(m, m.freq, txf)
         txm, tx = parse_tone(item['PL'])
