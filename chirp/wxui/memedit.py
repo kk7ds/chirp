@@ -1309,8 +1309,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # zero, so delete it before we go to export.
         r.erase_memory(0)
         for row in selected:
-            r.set_memory(self._memory_cache[row])
+            m = self._memory_cache[row]
+            if not m.empty:
+                m = import_logic.import_mem(r, self._features, m)
+            r.set_memory(m)
         r.save(filename)
+        LOG.info('Wrote exported CSV to %s' % filename)
 
     def get_selected_memories(self, or_all=True):
         rows = self._grid.GetSelectedRows()
