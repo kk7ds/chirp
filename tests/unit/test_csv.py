@@ -4,6 +4,7 @@ import unittest
 
 from chirp import chirp_common
 from chirp.drivers import generic_csv
+from chirp import errors
 
 CHIRP_CSV_LEGACY = (
 """Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
@@ -88,6 +89,25 @@ class TestCSV(unittest.TestCase):
         mem = csv.get_memory(1)
         self.assertEqual(1, mem.number)
         self.assertEqual(146520000, mem.freq)
+
+    def test_parse_unknown_power(self):
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write('Location,Frequency,Power\n')
+            f.write('0,146.520,L1\n')
+            f.write('1,146.520,5W\n')
+        csv = generic_csv.CSVRadio(self.testfn)
+        mem = csv.get_memory(1)
+        self.assertEqual(1, mem.number)
+        self.assertEqual(146520000, mem.freq)
+
+    def test_invalid_power(self):
+        csv = generic_csv.CSVRadio(None)
+        m = chirp_common.Memory()
+        m.number = 1
+        m.freq = 146520000
+        m.power = chirp_common.PowerLevel('Low', watts=17)
+        self.assertRaises(errors.InvalidValueError,
+                          csv.set_memory, m)
 
     def test_default_power(self):
         m = chirp_common.Memory()
