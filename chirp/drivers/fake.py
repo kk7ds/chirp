@@ -29,6 +29,8 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         # We don't even implement this interface, but the point of this
         # is to make sure the GUI doesn't choke on live radios.
         rf.has_bank = True
+        rf.valid_name_length = 8
+        rf.valid_characters = chirp_common.CHARSET_ASCII
         return rf
 
     def get_memory(self, number):

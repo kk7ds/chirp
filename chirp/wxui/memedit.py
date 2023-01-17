@@ -543,7 +543,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             return row + self._features.memory_bounds[0]
 
-    def refresh_memory(self, number, memory):
+    def _refresh_memory(self, number, memory):
         row = self.mem2row(number)
 
         if isinstance(memory, Exception):
@@ -592,8 +592,50 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             self._grid.SetRowLabelValue(row, '*%i' % memory.number)
 
-    def refresh_memory_from_job(self, job):
-        self.refresh_memory(job.args[0], job.result)
+    def refresh_memory(self, number, lazy=False):
+        if lazy:
+            executor = self.do_lazy_radio
+        else:
+            executor = self.do_radio
+
+        def get_cb(job):
+            number = job.args[0]
+            memory = job.result
+            self._refresh_memory(number, memory)
+
+        executor(get_cb, 'get_memory', number)
+
+    def set_memory(self, mem, refresh=True):
+        """Update a memory in the radio and refresh our view on success"""
+        row = self.mem2row(mem.number)
+        if refresh:
+            self.set_row_pending(row)
+
+        def set_cb(job):
+            if isinstance(job.result, Exception):
+                self._row_label_renderers[row].set_error()
+            else:
+                self._row_label_renderers[row].clear_error()
+                if refresh:
+                    self.refresh_memory(mem.number)
+
+        self.do_radio(set_cb, 'set_memory', mem)
+
+    def erase_memory(self, number, refresh=True):
+        """Erase a memory in the radio and refresh our view on success"""
+        row = self.mem2row(number)
+        if refresh:
+            self.set_row_pending(row)
+
+        def erase_cb(job):
+            if isinstance(job.result, Exception):
+                self._row_label_renderers[row].set_error()
+            else:
+                self._row_label_renderers[row].clear_error()
+                if refresh:
+                    self.refresh_memory(number)
+
+        self.do_radio(erase_cb, 'erase_memory', number)
 
     def refresh(self):
 
@@ -611,12 +653,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         row = 0
         for i in range(lower, upper + 1):
             row += 1
-            self.do_lazy_radio(self.refresh_memory_from_job, 'get_memory', i)
+            self.refresh_memory(i, lazy=True)
 
         for i in self._features.valid_special_chans:
             self._special_rows[i] = row
             row += 1
-            self.do_lazy_radio(self.refresh_memory_from_job, 'get_memory', i)
+            self.refresh_memory(i, lazy=True)
 
     def _set_memory_defaults(self, mem, *only):
         """This is responsible for setting sane default values on memories.
@@ -782,12 +824,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             event.Veto()
             return
 
-        def set_cb(job):
-            if isinstance(job.result, Exception):
-                self._row_label_renderers[row].set_error()
-            else:
-                self._row_label_renderers[row].clear_error()
-
         # Filter the name according to the radio's rules before we try to
         # validate it
         if col_def.name == 'name':
@@ -866,7 +902,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             return
 
         self.set_row_pending(row)
-        self.do_radio(set_cb, 'set_memory', mem)
+        self.set_memory(mem)
         LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
 
         wx.CallAfter(self._resize_col_after_edit, row, col)
@@ -886,23 +922,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         Also provides the trigger to the editorset that we have changed.
         """
         row = event.GetRow()
-        self.do_radio(self.refresh_memory_from_job, 'get_memory',
-                      self.row2mem(row))
+        self.refresh_memory(self.row2mem(row))
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def delete_memory_at(self, row, event):
         number = self.row2mem(row)
 
-        def del_cb(job):
-            self.do_radio(self.refresh_memory_from_job, 'get_memory', number)
-
         if 'empty' in self._memory_cache[row].immutable:
             raise errors.InvalidMemoryLocation(
                 _('Memory %i is not deletable') % number)
 
-        self.set_row_pending(row)
-        self.do_radio(del_cb, 'erase_memory', number)
+        self.erase_memory(number)
 
     @common.error_proof(errors.InvalidMemoryLocation)
     def _delete_memories_at(self, rows, event, shift_up=None):
@@ -943,21 +974,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mem = self._memory_cache[self.mem2row(number)]
             mem.number -= delta
             if mem.empty:
-                self.do_radio(None, 'erase_memory', mem.number)
+                self.erase_memory(mem.number, refresh=False)
             else:
-                self.do_radio(None, 'set_memory', mem)
+                self.set_memory(mem, refresh=False)
 
         # Delete the memories that are now the hole we made
         for number in range(mem.number + 1, mems_to_move[-1] + 1):
             LOG.debug('Erasing memory %i', number)
-            self.do_radio(None, 'erase_memory', number)
+            self.erase_memory(number, refresh=False)
 
         # Refresh the entire range from the top of what we deleted to the
         # hole we created
         for number in range(self.row2mem(rows[0]), mems_to_move[-1] + 1):
-            self.set_row_pending(self.mem2row(number))
-            self.do_radio(self.refresh_memory_from_job, 'get_memory',
-                          number)
+            self.refresh_memory(number)
 
     def _memory_rclick(self, event):
         if event.GetRow() == -1:
@@ -1053,12 +1082,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         # Schedule all the set jobs
         for memory in memories:
-            self.do_radio(None, 'set_memory', memory)
-
-        # Now schedule UI refreshes
-        for memory in memories:
-            self.do_radio(self.refresh_memory_from_job,
-                          'get_memory', memory.extd_number or memory.number)
+            self.set_memory(memory)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
@@ -1081,19 +1105,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.debug('Moving memory %i -> %i', mem.number,
                       self.row2mem(target_row))
             mem.number = self.row2mem(target_row)
-            self.do_radio(None, 'set_memory', mem)
+            self.set_memory(mem, refresh=False)
             mems_to_refresh.append(mem.number)
 
         # Erase the memory that is to become the empty row
         LOG.debug('Erasing memory %i', self.row2mem(row))
-        self.do_radio(None, 'erase_memory', self.row2mem(row))
+        self.erase_memory(self.row2mem(row), refresh=False)
         mems_to_refresh.append(self.row2mem(row))
 
         # Refresh all the memories we touched
         for number in mems_to_refresh:
-            self.set_row_pending(self.mem2row(number))
-            self.do_radio(self.refresh_memory_from_job, 'get_memory',
-                          number)
+            self.refresh_memory(number)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
@@ -1148,10 +1170,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 raise errors.InvalidMemoryLocation(
                     _('Some memories are not deletable'))
             for mem in mems:
-                self.do_radio(None, 'erase_memory', mem.number)
-                self.set_row_pending(self.mem2row(mem.number))
-                self.do_radio(self.refresh_memory_from_job,
-                              'get_memory', mem.number)
+                self.erase_memory(mem.number)
 
         if cut:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
@@ -1200,12 +1219,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             row += 1
             try:
                 if mem.empty:
-                    self.do_radio(None, 'erase_memory', mem.number)
+                    self.erase_memory(mem.number)
                 else:
                     mem = import_logic.import_mem(self._radio, srcrf, mem)
-                    self.do_radio(None, 'set_memory', mem)
+                    self.set_memory(mem)
                 modified = True
-                self.set_row_pending(self.mem2row(mem.number))
             except (import_logic.DestNotCompatible,
                     errors.RadioError) as e:
                 LOG.warning('Pasted memory %s incompatible: %s' % (
@@ -1214,10 +1232,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             except Exception as e:
                 LOG.exception('Failed to paste: %s' % e)
                 errormsgs.append((mem, e))
-
-        for mem in mems:
-            self.do_radio(self.refresh_memory_from_job,
-                          'get_memory', mem.number)
 
         if modified:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
