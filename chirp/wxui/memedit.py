@@ -421,6 +421,10 @@ class ChirpCommentColumn(ChirpMemoryColumn):
         return (self._features.has_comment or
                 isinstance(self._radio, chirp_common.CloneModeRadio))
 
+    def _digest_value(self, memory, input_value):
+        # Limit to 128 characters for sanity
+        return str(input_value)[:256]
+
 
 class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
