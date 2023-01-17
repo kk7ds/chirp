@@ -518,6 +518,63 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
                                                 self.SCODE_LIST[_mem.scode]))
         mem.extra.append(rs)
 
+        immutable = []
+
+        # Original GMRS-V1 models (pre-2017 GMRS rules)
+        # line1 is a valid string, so safe to encode here
+        if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
+            if mem.freq in GMRS_FREQS_ORIG:
+                if mem.number >= 0 and mem.number <= 22:
+                    GMRS_FREQ = GMRS_FREQS_ORIG[mem.number - 1]
+                    mem.freq = GMRS_FREQ
+                    immutable = ["empty", "freq"]
+                if mem.number >= 0 and mem.number <= 6:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable += ["duplex", "offset"]
+                elif mem.number >= 7 and mem.number <= 14:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable += ["duplex", "offset"]
+                elif mem.number >= 15 and mem.number <= 22:
+                    mem.duplex == '+'
+                    mem.offset = 5000000
+                    immutable += ["duplex", "offset"]
+            else:
+                if mem.number > 22:
+                    immutable = ["duplex", "offset"]
+
+        # GMRS-V1 models supporting 2017 GMRS rules
+        else:
+            if mem.freq in GMRS_FREQS_2017:
+                if mem.number >= 1 and mem.number <= 30:
+                    GMRS_FREQ = GMRS_FREQS_2017[mem.number - 1]
+                    mem.freq = GMRS_FREQ
+                    immutable = ["empty", "freq"]
+                if mem.number >= 1 and mem.number <= 7:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable += ["duplex", "offset"]
+                elif mem.number >= 8 and mem.number <= 14:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[1]
+                    immutable += ["duplex", "offset", "mode", "power"]
+                elif mem.number >= 15 and mem.number <= 22:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable += ["duplex", "offset"]
+                elif mem.number >= 23 and mem.number <= 30:
+                    mem.duplex == '+'
+                    mem.offset = 5000000
+                    immutable += ["duplex", "offset"]
+            else:
+                if mem.number < 1 or mem.number > 30:
+                    immutable = ["duplex", "offset"]
+
+        mem.immutable = immutable
+
         return mem
 
     def set_memory(self, mem):
@@ -534,32 +591,12 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
         # Original GMRS-V1 models (pre-2017 GMRS rules)
         # line1 is a valid string, so safe to encode here
         if str(self._memobj.firmware_msg.line1).encode() in self._is_orig:
-            if mem.number <= 22:
-                GMRS_FREQ = GMRS_FREQS_ORIG[mem.number]
-                mem.freq = GMRS_FREQ
-                mem.duplex = ''
-                mem.offset = 0
-                if mem.number >= 15:
-                    mem.duplex = '+'
-                    mem.offset = 5000000
-            else:
+            if mem.number > 22:
                 mem.duplex = 'off'
                 mem.offset = 0
         # GMRS-V1 models supporting 2017 GMRS rules
         else:
-            if mem.number >= 1 and mem.number <= 30:
-                GMRS_FREQ = GMRS_FREQS_2017[mem.number - 1]
-                mem.freq = GMRS_FREQ
-                if mem.number <= 22:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    if mem.number >= 8 and mem.number <= 14:
-                        mem.mode = "NFM"
-                        mem.power = self.POWER_LEVELS[1]
-                if mem.number > 22:
-                    mem.duplex = '+'
-                    mem.offset = 5000000
-            else:
+            if mem.number < 1 or mem.number > 30:
                 mem.duplex = 'off'
                 mem.offset = 0
 
