@@ -190,6 +190,19 @@ class ImportFieldTests(base.BaseTest):
         import_logic._import_power(radio, src_rf, mem)
         self.assertEqual(mem.power, radio.POWER_LEVELS[0])
 
+    def test_import_power_closest_watts(self):
+        radio = FakeRadio(None)
+        src_rf = chirp_common.RadioFeatures()
+        src_rf.valid_power_levels = [
+            chirp_common.PowerLevel('foo', watts=20),
+            chirp_common.PowerLevel('bar', watts=51),
+            chirp_common.PowerLevel('baz', watts=1),
+            ]
+        mem = chirp_common.Memory()
+        mem.power = src_rf.valid_power_levels[0]
+        import_logic._import_power(radio, src_rf, mem)
+        self.assertEqual(mem.power, radio.POWER_LEVELS[0])
+
     def test_import_tone_diffA_tsql(self):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
