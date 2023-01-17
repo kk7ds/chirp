@@ -469,7 +469,7 @@ class TestStepFunctions(base.BaseTest):
 
 class TestImageMetadata(base.BaseTest):
     def test_make_metadata(self):
-        class TestRadio(chirp_common.FileBackedRadio):
+        class TestRadio(chirp_common.CloneModeRadio):
             VENDOR = 'Dan'
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
@@ -486,7 +486,7 @@ class TestImageMetadata(base.BaseTest):
         self.assertEqual(expected, metadata)
 
     def test_strip_metadata(self):
-        class TestRadio(chirp_common.FileBackedRadio):
+        class TestRadio(chirp_common.CloneModeRadio):
             VENDOR = 'Dan'
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
@@ -494,7 +494,7 @@ class TestImageMetadata(base.BaseTest):
         raw_metadata = TestRadio._make_metadata()
         raw_data = (b'foooooooooooooooooooooo' + TestRadio.MAGIC +
                     TestRadio._make_metadata())
-        data, metadata = chirp_common.FileBackedRadio._strip_metadata(raw_data)
+        data, metadata = chirp_common.CloneModeRadio._strip_metadata(raw_data)
         self.assertEqual(b'foooooooooooooooooooooo', data)
         expected = {
             'vendor': 'Dan',
@@ -512,7 +512,7 @@ class TestImageMetadata(base.BaseTest):
             f.flush()
 
         with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
-            chirp_common.FileBackedRadio(None).load_mmap(fn)
+            chirp_common.CloneModeRadio(None).load_mmap(fn)
             mock_mmap.assert_called_once_with(b'thisisrawdata')
         os.remove(fn)
 
@@ -520,18 +520,18 @@ class TestImageMetadata(base.BaseTest):
         fn = os.path.join(tempfile.gettempdir(), 'testfile')
         with open(fn, 'wb') as f:
             f.write(b'thisisrawdata')
-            f.write(chirp_common.FileBackedRadio.MAGIC + b'bad')
+            f.write(chirp_common.CloneModeRadio.MAGIC + b'bad')
             f.flush()
 
         with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
-            chirp_common.FileBackedRadio(None).load_mmap(fn)
+            chirp_common.CloneModeRadio(None).load_mmap(fn)
             mock_mmap.assert_called_once_with(b'thisisrawdata')
         os.remove(fn)
 
     def test_save_mmap_includes_metadata(self):
         # Make sure that a file saved with a .img extension includes
         # the metadata blob
-        class TestRadio(chirp_common.FileBackedRadio):
+        class TestRadio(chirp_common.CloneModeRadio):
             VENDOR = 'Dan'
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
@@ -545,7 +545,7 @@ class TestImageMetadata(base.BaseTest):
         with open(fn, 'rb') as f:
             filedata = f.read()
         os.remove(fn)
-        data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
+        data, metadata = chirp_common.CloneModeRadio._strip_metadata(filedata)
         self.assertEqual(b'thisisrawdata', data)
         expected = {
             'vendor': 'Dan',
@@ -559,7 +559,7 @@ class TestImageMetadata(base.BaseTest):
     def test_save_mmap_no_metadata_not_img_file(self):
         # Make sure that if we save without a .img extension we do
         # not include the metadata blob
-        class TestRadio(chirp_common.FileBackedRadio):
+        class TestRadio(chirp_common.CloneModeRadio):
             VENDOR = 'Dan'
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
@@ -574,12 +574,12 @@ class TestImageMetadata(base.BaseTest):
         with open(fn, 'rb') as f:
             filedata = f.read()
         os.remove(fn)
-        data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
+        data, metadata = chirp_common.CloneModeRadio._strip_metadata(filedata)
         self.assertEqual(b'thisisrawdata', data)
         self.assertEqual({}, metadata)
 
     def test_load_mmap_saves_metadata_on_radio(self):
-        class TestRadio(chirp_common.FileBackedRadio):
+        class TestRadio(chirp_common.CloneModeRadio):
             VENDOR = 'Dan'
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'
