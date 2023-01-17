@@ -962,7 +962,9 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                     (addr, op, pkt_addr))
             LOG.debug("Config read (0x%x):\n%s" %
                       (addr, _hex_print(resp, '0x%(addr)04x')))
-            for i in range(0, len(payload) - 1):
+            # Orig Code from 9D Plus driver was len(Payload)-1:
+            # This Caused every 64th byte to = 00
+            for i in range(0, len(payload)):
                 mem[addr + i] = payload[i]
             if self.status_fn:
                 status = chirp_common.Status()
