@@ -176,8 +176,7 @@ struct {
 
 struct area_conf {
     u8 w_mode;
-    u8 x861;
-    u8 w_chan;
+    u16 w_chan;
     u8 scan_grp;
     u8 bcl;
     u8 sql;
