@@ -30,9 +30,6 @@ from textwrap import dedent
 LOG = logging.getLogger(__name__)
 
 CMD_ACK = 0x06
-# TBD: Enable some form of generated UI field, for the memory tags
-# That field wiould not be stored in img file, but generated in get_memory
-MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
 for i in EX_MODES:
     chirp_common.MODES.append(i)
@@ -521,8 +518,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs= False
-        if MEM_GRP_LBL:
-            rf.has_comment = True   # Used for Mem-Grp number
         rf.valid_modes = list(set(self.MODES))
         rf.valid_tmodes = list(self.TMODES)
         rf.valid_duplexes = list(self.DUPLEX)
@@ -603,8 +598,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             mx = (-self.LAST_PMS_INDEX) + mem.number
             _mem = self._memobj.pms[mx]
             mx = mx + 1
-            if MEM_GRP_LBL:
-                mem.comment = "M-11-%02i" % mx
             immutable = ["number", "rtone", "ctone", "extd_number",
                          "tmode", "cross_mode",
                          "power", "duplex", "offset"]
@@ -612,8 +605,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             mx = (-self.LAST_60M_INDEX) + mem.number
             _mem = self._memobj.m60[mx]
             mx = mx + 1
-            if MEM_GRP_LBL:
-                mem.comment = "M-12-%02i" % mx
             immutable = ["number", "rtone", "ctone", "extd_number",
                          "tmode", "cross_mode",
                          "frequency", "power", "duplex", "offset"]
@@ -691,9 +682,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 return mem
         if mem.number == 1:
             mem.immutable = ['empty']
-        if MEM_GRP_LBL:
-            mgrp = int((number - 1) / 50)
-            mem.comment = "M-%02i-%02i" % (mgrp + 1, number - (mgrp * 50))
         return self._get_memory(mem, _mem)
 
     def _set_normal(self, mem):
