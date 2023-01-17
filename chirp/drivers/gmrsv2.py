@@ -501,6 +501,31 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
                                                 self.SCODE_LIST[_mem.scode]))
         mem.extra.append(rs)
 
+        immutable = []
+
+        if self.MODEL == "GMRS-V2":
+            if mem.freq in GMRS_FREQS:
+                if mem.freq in GMRS_FREQS1:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+                elif mem.freq in GMRS_FREQS2:
+                    mem.duplex == ''
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[1]
+                    immutable = ["duplex", "offset", "mode", "power"]
+                elif mem.freq in GMRS_FREQS3:
+                    if mem.duplex == '':
+                        mem.offset = 0
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+            else:
+                if mem.freq not in GMRS_FREQS:
+                    immutable = ["duplex", "offset"]
+
+        mem.immutable = immutable
+
         return mem
 
     def set_memory(self, mem):
@@ -512,25 +537,12 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
             _nam.set_raw("\xff" * 16)
             return
 
-        _mem.set_raw("\x00" * 16)
-
-        if mem.freq in GMRS_FREQS1:
-            mem.duplex == ''
-            mem.offset = 0
-        elif mem.freq in GMRS_FREQS2:
-            mem.duplex == ''
-            mem.offset = 0
-            mem.mode = "NFM"
-            mem.power = self.POWER_LEVELS[1]
-        elif mem.freq in GMRS_FREQS3:
-            if mem.duplex == '+':
-                mem.offset = 5000000
-            else:
-                mem.duplex == ''
+        if self.MODEL == "GMRS-V2":
+            if mem.freq not in GMRS_FREQS:
+                mem.duplex = 'off'
                 mem.offset = 0
-        else:
-            mem.duplex = 'off'
-            mem.offset = 0
+
+        _mem.set_raw("\x00" * 16)
 
         _mem.rxfreq = mem.freq / 10
 
