@@ -29,7 +29,7 @@ class TestDirectory(base.BaseTest):
             VARIANT = 'A'
 
         @directory.register
-        class FakeRadio(chirp_common.FileBackedRadio):
+        class FakeRadio(chirp_common.CloneModeRadio):
             VENDOR = 'Dan'
             MODEL = 'Foomaster 9000'
             VARIANT = 'R'

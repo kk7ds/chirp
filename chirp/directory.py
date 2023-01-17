@@ -130,7 +130,7 @@ def get_radio_by_image(image_file):
     else:
         filedata = b""
 
-    data, metadata = chirp_common.FileBackedRadio._strip_metadata(filedata)
+    data, metadata = chirp_common.CloneModeRadio._strip_metadata(filedata)
 
     # NOTE: See warning below
     if six.PY3:

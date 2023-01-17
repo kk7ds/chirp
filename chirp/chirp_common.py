@@ -360,7 +360,7 @@ class Memory:
     def parse_freq(self, freqstr):
         """Set the frequency from a string"""
         self.freq = parse_freq(freqstr)
-        return self.freq
+        return self.freqx
 
     def __str__(self):
         if self.tmode == "Tone":
@@ -1135,13 +1135,64 @@ class Radio(Alias):
 
 class FileBackedRadio(Radio):
     """A file-backed radio stores its data in a file"""
+    FILE_EXTENSION = 'dat'
+
+    def save(self, filename):
+        """Save the radio's memory map to @filename"""
+        pass
+
+    def load(self, filename):
+        """Load the radio's memory map object from @filename"""
+        pass
+
+
+class CloneModeRadio(FileBackedRadio):
+    """A clone-mode radio does a full memory dump in and out and we store
+    an image of the radio into an image file"""
     FILE_EXTENSION = "img"
     MAGIC = b'\x00\xffchirp\xeeimg\x00\x01'
 
-    def __init__(self, *args, **kwargs):
-        Radio.__init__(self, *args, **kwargs)
+    _memsize = 0
+
+    def __init__(self, pipe):
+        self.errors = []
+        self._mmap = None
         self._memobj = None
         self._metadata = {}
+
+        if isinstance(pipe, str):
+            self.pipe = None
+            self.load_mmap(pipe)
+        elif isinstance(pipe, memmap.MemoryMapBytes):
+            self.pipe = None
+            self._mmap = pipe
+            self.process_mmap()
+        else:
+            FileBackedRadio.__init__(self, pipe)
+
+    def get_memsize(self):
+        """Return the radio's memory size"""
+        return self._memsize
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        """Given contents of a stored file (@filedata), return True if
+        this radio driver handles the represented model"""
+
+        # Unless the radio driver does something smarter, claim
+        # support if the data is the same size as our memory.
+        # Ideally, each radio would perform an intelligent analysis to
+        # make this determination to avoid model conflicts with
+        # memories of the same size.
+        return cls._memsize and len(filedata) == cls._memsize
+
+    def sync_in(self):
+        "Initiate a radio-to-PC clone operation"
+        pass
+
+    def sync_out(self):
+        "Initiate a PC-to-radio clone operation"
+        pass
 
     def save(self, filename):
         """Save the radio's memory map to @filename"""
@@ -1229,53 +1280,8 @@ class FileBackedRadio(Radio):
         return dict(self._metadata)
 
     @metadata.setter
-    def metadata(self, value):
+    def metadata(self, values):
         self._metadata.update(values)
-
-
-class CloneModeRadio(FileBackedRadio):
-    """A clone-mode radio does a full memory dump in and out and we store
-    an image of the radio into an image file"""
-
-    _memsize = 0
-
-    def __init__(self, pipe):
-        self.errors = []
-        self._mmap = None
-
-        if isinstance(pipe, str):
-            self.pipe = None
-            self.load_mmap(pipe)
-        elif isinstance(pipe, memmap.MemoryMapBytes):
-            self.pipe = None
-            self._mmap = pipe
-            self.process_mmap()
-        else:
-            FileBackedRadio.__init__(self, pipe)
-
-    def get_memsize(self):
-        """Return the radio's memory size"""
-        return self._memsize
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        """Given contents of a stored file (@filedata), return True if
-        this radio driver handles the represented model"""
-
-        # Unless the radio driver does something smarter, claim
-        # support if the data is the same size as our memory.
-        # Ideally, each radio would perform an intelligent analysis to
-        # make this determination to avoid model conflicts with
-        # memories of the same size.
-        return cls._memsize and len(filedata) == cls._memsize
-
-    def sync_in(self):
-        "Initiate a radio-to-PC clone operation"
-        pass
-
-    def sync_out(self):
-        "Initiate a PC-to-radio clone operation"
-        pass
 
 
 class LiveRadio(Radio):
