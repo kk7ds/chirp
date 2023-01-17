@@ -74,6 +74,12 @@ def _import_name(dst_radio, _srcrf, mem):
     mem.name = dst_radio.filter_name(mem.name)
 
 
+def find_closest_power(needle_watts, levels_haystack):
+    deltas = [abs(needle_watts - chirp_common.dBm_to_watts(int(power)))
+              for power in levels_haystack]
+    return levels_haystack[deltas.index(min(deltas))]
+
+
 def _import_power(dst_radio, _srcrf, mem):
     levels = dst_radio.get_features().valid_power_levels
     if not levels:
@@ -93,10 +99,12 @@ def _import_power(dst_radio, _srcrf, mem):
     # convert the source power level to a valid one for the destination
     # radio.  To do that, find the absolute level of the source value
     # and calculate the different between it and all the levels of the
-    # destination, choosing the one that matches most closely.
+    # destination, choosing the one that matches most closely. Do this in
+    # watts not dBm because we will make the wrong decision otherwise due
+    # to the logarithmic scale.
 
-    deltas = [abs(mem.power - power) for power in levels]
-    mem.power = levels[deltas.index(min(deltas))]
+    mem.power = find_closest_power(chirp_common.dBm_to_watts(int(mem.power)),
+                                   levels)
 
 
 def _import_tone(dst_radio, srcrf, mem):

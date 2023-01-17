@@ -19,6 +19,7 @@ import logging
 import re
 
 from chirp import chirp_common, errors, directory
+from chirp import import_logic
 
 LOG = logging.getLogger(__name__)
 POWER_LEVELS_WATTS = [
@@ -64,13 +65,12 @@ def parse_power(value):
     if not match:
         raise ValueError('Invalid power specification: %r' % value)
     if match.group(2).lower() == 'w':
-        dbm = chirp_common.watts_to_dBm(float(match.group(1)))
+        watts = float(match.group(1))
     else:
         LOG.debug('Unknown power units in %r' % value)
-        dbm = chirp_common.watts_to_dBm(50)
+        watts = chirp_common.dBm_to_watts(int(DEFAULT_POWER_LEVEL))
     # Find the closest matching power level to what was provided and use that
-    diffs = [abs(int(p) - dbm) for p in POWER_LEVELS]
-    return POWER_LEVELS[diffs.index(min(diffs))]
+    return import_logic.find_closest_power(watts, POWER_LEVELS)
 
 
 @directory.register
