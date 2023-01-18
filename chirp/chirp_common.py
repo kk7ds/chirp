@@ -209,6 +209,29 @@ class PowerLevel:
         return "%s (%i dBm)" % (self._label, self._power)
 
 
+class AutoNamedPowerLevel(PowerLevel):
+    """A power level that is simply named by its value in watts"""
+    def __init__(self, watts):
+        fmt = ('%iW' if watts >= 10 else '%.1fW')
+        super().__init__(fmt % watts, watts=watts)
+
+
+def parse_power(powerstr):
+    if powerstr.isdigit():
+        # All digits means watts
+        watts = int(powerstr)
+    else:
+        match = re.match('^\s*([0-9.]+)\s*([Ww]?)\s*$', powerstr)
+        if not match:
+            raise ValueError('Invalid power specification: %r' % powerstr)
+        if match.group(2).lower() in ('', 'w'):
+            watts = float(match.group(1))
+        else:
+            raise ValueError('Unknown power units in %r' % powerstr)
+
+    return AutoNamedPowerLevel(watts)
+
+
 def parse_freq(freqstr):
     """Parse a frequency string and return the value in integral Hz"""
     freqstr = freqstr.strip()
