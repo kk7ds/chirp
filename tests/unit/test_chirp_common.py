@@ -261,6 +261,29 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual('[146.520000/D025/D025]', txt)
         chirp_common.mem_from_text(txt)
 
+    def test_parse_power(self):
+        valid = [
+            ('0.1', 0.1),
+            ('0.1W', 0.1),
+            ('0.25', 0.2),
+            ('0.25W', 0.2),
+            ('11.0', 11),
+            ('11', 11),
+            ('11.0W', 11),
+            ('11w', 11),
+            ('1500', 1500),
+            ('2500', 2500),
+            ('2500W', 2500),
+            ('2500.0W', 2500)]
+        for s, v in valid:
+            power = chirp_common.parse_power(s)
+            self.assertEqual(v, chirp_common.dBm_to_watts(float(power)))
+
+    def test_parse_power_invalid(self):
+        invalid = ['2500d', '2d1', 'aaa', 'a', '']
+        for s in invalid:
+            self.assertRaises(ValueError, chirp_common.parse_power, s)
+
 
 class TestSplitTone(base.BaseTest):
     def _test_split_tone_decode(self, tx, rx, **vals):
