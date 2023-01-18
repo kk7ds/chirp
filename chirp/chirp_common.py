@@ -750,6 +750,7 @@ class RadioFeatures:
         "has_nostep_tuning":    BOOLEAN,
         "has_comment":          BOOLEAN,
         "has_settings":         BOOLEAN,
+        "has_variable_power":   BOOLEAN,
 
         # Attributes
         "valid_modes":          [],
@@ -861,6 +862,9 @@ class RadioFeatures:
                   "with each memory")
         self.init("has_settings", False,
                   "Indicates that the radio supports general settings")
+        self.init("has_variable_power", False,
+                  "Indicates the radio supports any power level between the "
+                  "min and max in valid_powe_levels")
 
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")
@@ -999,11 +1003,18 @@ class RadioFeatures:
                      "of supported range").format(freq=format_freq(freq)))
                 msgs.append(msg)
 
-        if mem.power and \
-                self.valid_power_levels and \
-                mem.power not in self.valid_power_levels:
-            msg = ValidationWarning("Power level %s not supported" % mem.power)
-            msgs.append(msg)
+        if mem.power and self.valid_power_levels:
+            if self.has_variable_power:
+                if (mem.power < min(self.valid_power_levels) or
+                        mem.power > max(self.valid_power_levels)):
+                    msg = ValidationWarning(
+                        "Power level %s is out of radio's range" % mem.power)
+                    msgs.append(msg)
+            else:
+                if mem.power not in self.valid_power_levels:
+                    msg = ValidationWarning(
+                        "Power level %s not supported" % mem.power)
+                    msgs.append(msg)
 
         if self.valid_tuning_steps and not self.has_nostep_tuning:
             try:

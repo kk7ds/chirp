@@ -82,20 +82,36 @@ def find_closest_power(needle_watts, levels_haystack):
 
 def _import_power(dst_radio, _srcrf, mem):
     levels = dst_radio.get_features().valid_power_levels
+    dstrf = dst_radio.get_features()
     if not levels:
         mem.power = None
         return
     elif mem.power is None:
         # Source radio did not support power levels, so choose the
-        # highest level from the destination radio.
-        try:
-            mem.power = next(reversed(sorted(levels)))
-        except StopIteration:
-            # No power levels on the destination, so leave power=None
-            pass
+        # highest level from the destination radio. If the destination radio
+        # has variable power support, choose the middle power level (if there
+        # is one) as that is probably the default. This is kindof a hack to
+        # avoid pushing everything to 1500W in the CSV driver.
+        if dstrf.has_variable_power and len(levels) > 2 and len(levels) % 2:
+            mem.power = levels[len(levels) // 2]
+        else:
+            try:
+                mem.power = next(reversed(sorted(levels)))
+            except StopIteration:
+                # No power levels on the destination, so leave power=None
+                pass
+        return
+    elif dstrf.has_variable_power:
+        # If the destination radio has variable power support, clamp to its
+        # ranges if out of bounds. Otherwise just pass through and let it
+        # interpret the absolute power level.
+        if mem.power < min(levels):
+            mem.power = min(levels)
+        elif mem.power > max(levels):
+            mem.power = max(levels)
         return
 
-    # If both radios support power levels, we need to decide how to
+    # If both radios support discrete power levels, we need to decide how to
     # convert the source power level to a valid one for the destination
     # radio.  To do that, find the absolute level of the source value
     # and calculate the different between it and all the levels of the
