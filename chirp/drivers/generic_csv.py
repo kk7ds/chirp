@@ -22,12 +22,7 @@ from chirp import chirp_common, errors, directory
 from chirp import import_logic
 
 LOG = logging.getLogger(__name__)
-POWER_LEVELS_WATTS = [
-    0.1, 1, 2, 3, 4, 5, 6, 10, 20, 30, 40, 50, 60, 70, 100]
-POWER_LEVELS = [
-    chirp_common.PowerLevel('%iW' % i if i >= 1 else '%.1fW' % i, watts=i)
-    for i in POWER_LEVELS_WATTS]
-DEFAULT_POWER_LEVEL = POWER_LEVELS[-4]
+DEFAULT_POWER_LEVEL = chirp_common.AutoNamedPowerLevel(50)
 
 
 class OmittedHeaderError(Exception):
@@ -60,19 +55,6 @@ def parse_cross_mode(value):
     return value
 
 
-def parse_power(value):
-    match = re.search('^\s*([0-9.]+)\s*([Ww])', value)
-    if not match:
-        raise ValueError('Invalid power specification: %r' % value)
-    if match.group(2).lower() == 'w':
-        watts = float(match.group(1))
-    else:
-        LOG.debug('Unknown power units in %r' % value)
-        watts = chirp_common.dBm_to_watts(int(DEFAULT_POWER_LEVEL))
-    # Find the closest matching power level to what was provided and use that
-    return import_logic.find_closest_power(watts, POWER_LEVELS)
-
-
 @directory.register
 class CSVRadio(chirp_common.FileBackedRadio):
     """A driver for Generic CSV files"""
@@ -97,7 +79,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
         "Mode":          (str,   "mode"),
         "TStep":         (float, "tuning_step"),
         "Skip":          (str,   "skip"),
-        "Power":         (parse_power, "power"),
+        "Power":         (chirp_common.parse_power, "power"),
         "Comment":       (str,   "comment"),
         }
 
@@ -132,6 +114,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
         rf.has_nostep_tuning = True
         rf.has_comment = True
         rf.has_rx_dtcs = True
+        rf.has_variable_power = True
         rf.can_odd_split = True
 
         rf.valid_modes = list(chirp_common.MODES)
@@ -143,7 +126,9 @@ class CSVRadio(chirp_common.FileBackedRadio):
         rf.valid_skips = ["", "S"]
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 999
-        rf.valid_power_levels = list(POWER_LEVELS)
+        rf.valid_power_levels = [chirp_common.AutoNamedPowerLevel(0.1),
+                                 DEFAULT_POWER_LEVEL,
+                                 chirp_common.AutoNamedPowerLevel(1500)]
 
         return rf
 
@@ -300,8 +285,11 @@ class CSVRadio(chirp_common.FileBackedRadio):
     def set_memory(self, newmem):
         if newmem.power is None:
             newmem.power = DEFAULT_POWER_LEVEL
-        elif newmem.power not in POWER_LEVELS:
-            raise errors.InvalidValueError('Unsupported power level')
+        else:
+            # Accept any power level because we are CSV, but convert it to
+            # the class that will str() into our desired format.
+            newmem.power = chirp_common.AutoNamedPowerLevel(
+                chirp_common.dBm_to_watts(float(newmem.power)))
         self._grow(newmem.number)
         self.memories[newmem.number] = newmem
 

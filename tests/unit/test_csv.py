@@ -19,7 +19,7 @@ CHIRP_CSV_MINIMAL = (
 CHIRP_CSV_MODERN = (
 """Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
 0,Nat Simplex,146.520000,,0.600000,TSQL,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,This is the national calling frequency on 2m,,,,
-1,National Simp,446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5W,This is NOT the UHF calling frequency,,,,
+1,National Simp,446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5.0W,This is NOT the UHF calling frequency,,,,
 """)
 
 
@@ -70,7 +70,7 @@ class TestCSV(unittest.TestCase):
         self.assertEqual('NN', mem.dtcs_polarity)
         self.assertEqual('FM', mem.mode)
         self.assertEqual(5.0, mem.tuning_step)
-        self.assertEqual(generic_csv.POWER_LEVELS[5], mem.power)
+        self.assertEqual('5.0W', str(mem.power))
         self.assertIn('UHF calling', mem.comment)
 
     def test_parse_minimal(self):
@@ -100,14 +100,16 @@ class TestCSV(unittest.TestCase):
         self.assertEqual(1, mem.number)
         self.assertEqual(146520000, mem.freq)
 
-    def test_invalid_power(self):
+    def test_foreign_power(self):
         csv = generic_csv.CSVRadio(None)
         m = chirp_common.Memory()
         m.number = 1
         m.freq = 146520000
         m.power = chirp_common.PowerLevel('Low', watts=17)
-        self.assertRaises(errors.InvalidValueError,
-                          csv.set_memory, m)
+        csv.set_memory(m)
+        m = csv.get_memory(1)
+        self.assertEqual('17W', str(m.power))
+        self.assertEqual(int(chirp_common.watts_to_dBm(17)), int(m.power))
 
     def test_default_power(self):
         m = chirp_common.Memory()

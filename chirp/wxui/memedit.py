@@ -231,6 +231,18 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
             self._wants_split.discard(memory.number)
 
 
+class ChirpVariablePowerColumn(ChirpMemoryColumn):
+    def __init__(self, name, radio, power_levels):
+        super().__init__(name, radio)
+
+    @property
+    def level(self):
+        return _('Power')
+
+    def _digest_value(self, memory, value):
+        return chirp_common.parse_power(value)
+
+
 class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
     """A locking GridCellChoiceEditor.
 
@@ -510,6 +522,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         valid_duplexes = filter_unknowns(self._features.valid_duplexes)
         valid_power_levels = self._features.valid_power_levels
         valid_tuning_steps = self._features.valid_tuning_steps
+        if self._features.has_variable_power:
+            power_col_cls = ChirpVariablePowerColumn
+        else:
+            power_col_cls = ChirpChoiceColumn
         defs = [
             ChirpFrequencyColumn('freq', self._radio),
             ChirpMemoryColumn('name', self._radio),
@@ -530,8 +546,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                               valid_tuning_steps),
             ChirpChoiceColumn('skip', self._radio,
                               valid_skips),
-            ChirpChoiceColumn('power', self._radio,
-                              valid_power_levels),
+            power_col_cls('power', self._radio,
+                          valid_power_levels),
             ChirpCommentColumn('comment', self._radio),
         ]
         return defs
