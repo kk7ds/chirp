@@ -1,3 +1,5 @@
+from unittest import mock
+
 from tests.unit import base
 from chirp import import_logic
 from chirp import chirp_common
@@ -166,15 +168,29 @@ class ImportFieldTests(base.BaseTest):
         import_logic._import_power(radio, src_rf, mem)
         self.assertEqual(mem.power, radio.POWER_LEVELS[1])
 
+    def test_import_power_no_src_variable(self):
+        radio = FakeRadio(None)
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.Memory()
+        mem.power = None
+        with mock.patch.object(radio, 'get_features') as mock_gf:
+            mock_gf.return_value = chirp_common.RadioFeatures()
+            mock_gf.return_value.has_variable_power = True
+            mock_gf.return_value.valid_power_levels = [
+                chirp_common.AutoNamedPowerLevel(1),
+                chirp_common.AutoNamedPowerLevel(50),
+                chirp_common.AutoNamedPowerLevel(1500)]
+            import_logic._import_power(radio, src_rf, mem)
+        self.assertEqual('50W', str(mem.power))
+
     def test_import_power_no_dst(self):
         radio = FakeRadio(None)
         src_rf = radio.get_features()  # Steal a copy before we stub out
-        self.mox.StubOutWithMock(radio, 'get_features')
-        radio.get_features().AndReturn(chirp_common.RadioFeatures())
-        self.mox.ReplayAll()
         mem = chirp_common.Memory()
         mem.power = src_rf.valid_power_levels[0]
-        import_logic._import_power(radio, src_rf, mem)
+        with mock.patch.object(radio, 'get_features') as mock_gf:
+            mock_gf.return_value = chirp_common.RadioFeatures()
+            import_logic._import_power(radio, src_rf, mem)
         self.assertEqual(mem.power, None)
 
     def test_import_power_closest(self):
