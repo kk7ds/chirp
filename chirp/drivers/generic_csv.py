@@ -265,7 +265,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
     def get_memory(self, number):
         try:
-            return self.memories[number]
+            return self.memories[number].dupe()
         except:
             raise errors.InvalidMemoryLocation("No such memory %s" % number)
 
@@ -291,7 +291,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
             newmem.power = chirp_common.AutoNamedPowerLevel(
                 chirp_common.dBm_to_watts(float(newmem.power)))
         self._grow(newmem.number)
-        self.memories[newmem.number] = newmem
+        self.memories[newmem.number] = newmem.dupe()
 
     def erase_memory(self, number):
         mem = chirp_common.Memory()

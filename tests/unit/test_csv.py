@@ -157,3 +157,12 @@ class TestCSV(unittest.TestCase):
         self.assertEqual('DTCS->DTCS', m2.cross_mode)
         self.assertEqual(25, m2.dtcs)
         self.assertEqual(73, m2.rx_dtcs)
+
+    def test_csv_memories_are_private(self):
+        m = chirp_common.Memory(name='foo')
+        radio = generic_csv.CSVRadio(None)
+        radio.set_memory(m)
+        # If CSVRadio maintains a reference to m, then this will modify
+        # its internal state and the following assertion will fail.
+        m.name = 'bar'
+        self.assertEqual('foo', radio.get_memory(0).name)
