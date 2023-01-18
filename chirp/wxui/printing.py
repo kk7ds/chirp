@@ -81,7 +81,11 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                         if not col_def.valid:
                             continue
                         with tag('th'):
-                            doc.text(col_def.label)
+                            pieces = col_def.label.split()
+                            for piece in pieces:
+                                doc.text(piece)
+                                if piece != pieces[-1]:
+                                    doc.stag('br')
                 for row in range(i, i + self._rows_per_page):
                     try:
                         mem = memories[row]

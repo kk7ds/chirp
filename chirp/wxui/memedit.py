@@ -73,11 +73,13 @@ class ChirpMemoryColumn(object):
     NAME = None
     DEFAULT = ''
 
-    def __init__(self, name, radio):
+    def __init__(self, name, radio, label=None):
         """
         :param name: The name on the Memory object that this represents
+        :param label: Static label override
         """
         self._name = name
+        self._label = label
         self._radio = radio
         self._features = radio.get_features()
 
@@ -87,7 +89,9 @@ class ChirpMemoryColumn(object):
 
     @property
     def label(self):
-        return self.NAME or self._name.title()
+        return (self.NAME or
+                self._label or
+                self._name.title().replace('_', '\n'))
 
     def hidden_for(self, memory):
         return False
@@ -266,8 +270,8 @@ class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
 
 
 class ChirpChoiceColumn(ChirpMemoryColumn):
-    def __init__(self, name, radio, choices):
-        super(ChirpChoiceColumn, self).__init__(name, radio)
+    def __init__(self, name, radio, choices, **k):
+        super(ChirpChoiceColumn, self).__init__(name, radio, **k)
         self._choices = choices
         self._str_choices = [str(x) for x in choices]
 
@@ -314,7 +318,7 @@ class ChirpToneColumn(ChirpChoiceColumn):
         if self._name == 'rtone':
             return _('Tone')
         else:
-            return _('ToneSql')
+            return _('Tone Squelch').replace(' ', '\n')
 
     def hidden_for(self, memory):
         cross_rx_tone = (memory.tmode == 'Cross' and
@@ -406,7 +410,7 @@ class ChirpDTCSPolColumn(ChirpChoiceColumn):
 
     @property
     def label(self):
-        return _('DTCS Polarity')
+        return _('DTCS\nPolarity')
 
     def hidden_for(self, memory):
         return not (memory.tmode == 'DTCS' or
@@ -530,7 +534,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpFrequencyColumn('freq', self._radio),
             ChirpMemoryColumn('name', self._radio),
             ChirpChoiceColumn('tmode', self._radio,
-                              valid_tmodes),
+                              valid_tmodes,
+                              label=_('Tone Mode').replace(' ', '\n')),
             ChirpToneColumn('rtone', self._radio),
             ChirpToneColumn('ctone', self._radio),
             ChirpDTCSColumn('dtcs', self._radio),
