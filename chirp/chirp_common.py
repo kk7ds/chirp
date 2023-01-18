@@ -159,12 +159,12 @@ APRS_SYMBOLS = (
 
 def watts_to_dBm(watts):
     """Converts @watts in watts to dBm"""
-    return round(10 * math.log10(watts) + 30, 1)
+    return 10 * math.log10(watts) + 30
 
 
 def dBm_to_watts(dBm):
     """Converts @dBm from dBm to watts"""
-    return round(math.pow(10, dBm / 10) / 1000)
+    return round(math.pow(10, dBm / 10) / 1000, 1)
 
 
 class PowerLevel:
@@ -173,31 +173,34 @@ class PowerLevel:
     def __init__(self, label, watts=0, dBm=0):
         if watts:
             dBm = watts_to_dBm(watts)
-        self._power = int(dBm)
+        self._power = float(dBm)
         self._label = label
 
     def __str__(self):
         return str(self._label)
 
     def __int__(self):
+        return int(self._power)
+
+    def __float__(self):
         return self._power
 
     def __sub__(self, val):
-        return int(self) - int(val)
+        return float(self) - float(val)
 
     def __add__(self, val):
-        return int(self) + int(val)
+        return float(self) + float(val)
 
     def __eq__(self, val):
         if val is not None:
-            return int(self) == int(val)
+            return float(self) == float(val)
         return False
 
     def __lt__(self, val):
-        return int(self) < int(val)
+        return float(self) < float(val)
 
     def __gt__(self, val):
-        return int(self) > int(val)
+        return float(self) > float(val)
 
     def __bool__(self):
         return int(self) != 0
