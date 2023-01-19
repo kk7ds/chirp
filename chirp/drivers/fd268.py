@@ -280,13 +280,7 @@ def model_match(cls, data):
     # bytes it's like the model fingerprint, so we have to testing the
     # model type with this experimental method so far.
     fp = data[0:4]
-    if fp == cls._IDENT:
-        return True
-    else:
-        LOG.debug("Unknowd Feidaxing radio, ID:")
-        LOG.debug(util.hexprint(fp))
-
-        return False
+    return fp == cls._IDENT
 
 
 class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):

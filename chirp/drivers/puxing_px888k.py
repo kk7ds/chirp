@@ -1105,10 +1105,6 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
         if len(filedata) == UPPER_READ_BOUND:
             if filedata[FILE_MAGIC[0]:FILE_MAGIC[1]] == FILE_MAGIC[2]:
                 return True
-            else:
-                LOG.debug("The data at 0x0c40 does not match the PX-888K")
-        else:
-            LOG.debug("The file size does not match.")
         return False
 
     def get_features(self):

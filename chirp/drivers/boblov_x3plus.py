@@ -131,17 +131,9 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
           this radio driver handles the represented model"""
 
         if len(filedata) != cls._memsize:
-            LOG.debug('Boblov_x3plus: match_model: size mismatch')
             return False
 
-        LOG.debug('Boblov_x3plus: match_model: size matches')
-
-        if b'P310' in filedata[0x03D0:0x03D8]:
-            LOG.debug('Boblov_x3plus: match_model: radio ID matches')
-            return True
-
-        LOG.debug('Boblov_x3plus: match_model: no radio ID match')
-        return False
+        return b'P310' in filedata[0x03D0:0x03D8]
 
     def get_features(self):
         """Return a RadioFeatures object for this radio"""

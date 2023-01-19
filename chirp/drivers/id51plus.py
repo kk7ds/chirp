@@ -126,17 +126,12 @@ class ID51PLUSRadio(id31.ID31Radio):
         # Since the ID-51 and ID-51 Plus/Anniversary have exactly
         # the same memory size, we need to do a more detailed check.
         if len(filedata) == cls._memsize:
-            LOG.debug('File has correct memory size, '
-                      'checking 20 bytes at offset 0x1AF40')
             snip = bytes(filedata[0x1AF40:0x1AF60])
             if snip != bytes(b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
                              b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
                              b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
                              b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'):
-                LOG.debug('bytes matched ID-51 Plus Signature')
                 return True
-            else:
-                LOG.debug('bytes did not match ID-51 Plus Signature')
         return False
 
     def _get_bank(self, loc):
