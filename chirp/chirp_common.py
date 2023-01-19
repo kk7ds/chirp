@@ -1328,8 +1328,9 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
 
         # Any other properties take a back seat to the above
         extra = {k: v for k, v in self._metadata.items() if k not in base}
+        extra.update(base)
 
-        return base64.b64encode(json.dumps(extra | base).encode())
+        return base64.b64encode(json.dumps(extra).encode())
 
     def load_mmap(self, filename):
         """Load the radio's memory map from @filename"""
