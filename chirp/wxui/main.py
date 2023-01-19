@@ -974,8 +974,9 @@ class ChirpMain(wx.Frame):
             if fn and os.path.exists(fn):
                 LOG.debug('Restoring tab for file %r' % fn)
                 self.open_file(fn)
-            else:
+            elif fn:
                 LOG.debug('Previous file %r no longer exists' % fn)
+        return last_files
 
     def _menu_open_recent(self, event):
         filename = self.OPEN_RECENT_MENU.FindItemById(
