@@ -1190,9 +1190,9 @@ class FT817NDUSRadio(FT817Radio):
         self._set_memory(mem, _mem)
 
     def get_memory(self, number):
-        if number in list(self.SPECIAL_60M.keys()):
+        if number in self.SPECIAL_60M.keys():
             return self._get_special_60m(number)
-        elif (number < 0 and
+        elif (isinstance(number, int) and number < 0 and
               self.SPECIAL_MEMORIES_REV[number] in
               list(self.SPECIAL_60M.keys())):
             # I can't stop delete operation from losing extd_number but
