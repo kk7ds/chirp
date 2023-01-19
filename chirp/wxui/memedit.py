@@ -648,6 +648,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             # If get_memory() failed, just refresh with the exception
             if isinstance(job.result, Exception):
                 self._refresh_memory(job.args[0], job.result)
+                return
 
             # Otherwise augment with extra fields and call refresh with that,
             # if appropriate
