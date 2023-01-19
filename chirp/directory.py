@@ -62,9 +62,10 @@ def register(cls):
             LOG.warn("Replacing existing driver id `%s'" % ident)
         else:
             raise Exception("Duplicate radio driver id `%s'" % ident)
+    elif ALLOW_DUPS:
+        LOG.info("Registered %s = %s" % (ident, cls.__name__))
     DRV_TO_RADIO[ident] = cls
     RADIO_TO_DRV[cls] = ident
-    LOG.info("Registered %s = %s" % (ident, cls.__name__))
 
     return cls
 
