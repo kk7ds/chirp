@@ -100,9 +100,13 @@ def chirpmain():
         mainwindow.load_module(args.module)
 
     if args.restore or CONF.get_bool('restore_tabs', 'prefs'):
-        mainwindow.restore_tabs(None)
+        restored = mainwindow.restore_tabs(None)
 
     for fn in args.files:
+        if os.path.abspath(fn) in restored:
+            LOG.info('File %s on the command line is already being restored',
+                     fn)
+            continue
         mainwindow.open_file(fn, select=False)
 
     if args.page:
