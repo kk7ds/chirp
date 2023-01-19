@@ -763,6 +763,7 @@ class RadioFeatures:
         "valid_characters":     "",
         "valid_name_length":    0,
         "valid_cross_modes":    [],
+        "valid_tones":          [],
         "valid_dtcs_pols":      [],
         "valid_dtcs_codes":     [],
         "valid_special_chans":  [],
@@ -887,6 +888,8 @@ class RadioFeatures:
                   "alphanumeric tag")
         self.init("valid_cross_modes", list(CROSS_MODES),
                   "Supported tone cross modes")
+        self.init("valid_tones", list(TONES + TONES_EXTRA),
+                  "Support Tones")
         self.init("valid_dtcs_pols", ["NN", "RN", "NR", "RR"],
                   "Supported DTCS polarities")
         self.init("valid_dtcs_codes", list(DTCS_CODES),
@@ -947,6 +950,13 @@ class RadioFeatures:
                     msg = ValidationError("Cross tone mode %s not supported" %
                                           mem.cross_mode)
                     msgs.append(msg)
+
+        if self.valid_tones and mem.rtone not in self.valid_tones:
+            msg = ValidationError("Tone %.1f not supported" % mem.rtone)
+            msgs.append(msg)
+        if self.valid_tones and mem.ctone not in self.valid_tones:
+            msg = ValidationError("Tone %.1f not supported" % mem.ctone)
+            msgs.append(msg)
 
         if self.has_dtcs_polarity and \
                 mem.dtcs_polarity not in self.valid_dtcs_pols:

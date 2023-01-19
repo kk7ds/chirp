@@ -179,6 +179,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         rf.valid_modes = TMD710_MODES
         rf.valid_duplexes = TMD710_DUPLEX
         rf.valid_tuning_steps = TMD710_STEPS
+        rf.valid_tones = TMD710_TONES
         rf.valid_dtcs_codes = TMD710_DTSC
         # Supports upper and lower case text
         rf.valid_characters = TMD710_CHARS
