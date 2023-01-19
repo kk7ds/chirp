@@ -254,16 +254,8 @@ def _model_match(cls, data):
     # It's hard to tell when this radio is really this radio.
     # I use the first byte, that appears to be the ID and the IF settings
 
-    LOG.debug("Drivers's ID string:")
-    LOG.debug(cls.finger)
-    LOG.debug("Radio's ID string:")
-    LOG.debug(util.hexprint(data[0:4]))
-
     radiod = [data[0], data[2:4]]
-    if cls.finger == radiod:
-        return True
-    else:
-        return False
+    return cls.finger == radiod
 
 
 def bcd_to_int(data):
@@ -747,15 +739,14 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # testing the file data size
         if len(filedata) == cls._memsize:
             match_size = True
-            print(("Comp: %i file / %i memzise" % (len(filedata), cls._memsize) ))
 
         # testing the firmware fingerprint, this experimental
-        match_model = _model_match(cls, filedata)
+        try:
+            match_model = _model_match(cls, filedata)
+        except Exception as e:
+            match_model = False
 
-        if match_size and match_model:
-            return True
-        else:
-            return False
+        return match_size and match_model
 
 
 @directory.register
