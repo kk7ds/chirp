@@ -60,6 +60,8 @@ def chirpmain():
                         help='Select this page of the default editor at start')
     parser.add_argument('--action', default=None, choices=actions,
                         help='Start UI action immediately')
+    parser.add_argument('--restore', default=None, action='store_true',
+                        help="Restore previous tabs")
     if sys.platform == 'linux':
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
@@ -96,6 +98,9 @@ def chirpmain():
 
     if args.module:
         mainwindow.load_module(args.module)
+
+    if args.restore or CONF.get_bool('restore_tabs', 'prefs'):
+        mainwindow.restore_tabs(None)
 
     for fn in args.files:
         mainwindow.open_file(fn, select=False)
