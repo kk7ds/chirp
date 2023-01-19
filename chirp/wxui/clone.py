@@ -150,7 +150,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
             self, label=_("Do not prompt again for %s") % (
                 '%s %s' % (self.radio.VENDOR, self.radio.MODEL)))
         vbox.Add(self.cb, border=20, flag=wx.ALL)
-        vbox.Add(bs)
+        vbox.Add(bs, flag=wx.ALL, border=10)
         self.Fit()
         self.Centre()
 
