@@ -393,14 +393,31 @@ class ChirpDTCSColumn(ChirpChoiceColumn):
     def _render_value(self, memory, value):
         return '%03i' % value
 
+    def _dtcs_visible(self, memory):
+        if memory.tmode == 'DTCS':
+            return True
+        if memory.tmode == 'Cross':
+            if self._features.has_rx_dtcs:
+                # If we have rx_dtcs then this is only visible for cross modes
+                # where we are transmitting DTCS
+                return 'DTCS->' in memory.cross_mode
+            else:
+                # If we do not have rx_dtcs then this is used for either tx
+                # or rx DTCS in cross.
+                return 'DTCS' in memory.cross_mode
+
+    def _rx_dtcs_visible(self, memory):
+        return (self._features.has_rx_dtcs and
+                memory.tmode == 'Cross' and
+                '>DTCS' in memory.cross_mode)
+
     def hidden_for(self, memory):
-        return (
-            (self._name == 'dtcs' and not (
-                memory.tmode == 'DTCS' or (memory.tmode == 'Cross' and
-                                           'DTCS->' in memory.cross_mode)))
-            or
-            (self._name == 'rx_dtcs' and not (
-                memory.tmode == 'Cross' and '>DTCS' in memory.cross_mode)))
+        if self._name == 'dtcs':
+            return not self._dtcs_visible(memory)
+        elif self._name == 'rx_dtcs':
+            return not self._rx_dtcs_visible(memory)
+        else:
+            raise Exception('Internal error')
 
 
 class ChirpDTCSPolColumn(ChirpChoiceColumn):
