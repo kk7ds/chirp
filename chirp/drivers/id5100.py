@@ -117,7 +117,9 @@ class ID4100Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_modes = [x for x in MODES
                           if '?' not in x]
         rf.valid_tmodes = [x for x in TMODES
-                           if '-' not in x or '?' not in x]
+                           if '-' not in x and '?' not in x] + ['Cross']
+        rf.valid_cross_modes = [x for x in TMODES
+                                if '->' in x]
         rf.memory_bounds = (0, 999)
         rf.valid_bands = [(118000000, 174000000),
                           (375000000, 550000000)]
@@ -245,7 +247,10 @@ class ID4100Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCS_POL.index(mem.dtcs_polarity)
-        _mem.tmode = TMODES.index(mem.tmode)
+        if mem.tmode == 'Cross':
+            _mem.tmode = TMODES.index(mem.cross_mode)
+        else:
+            _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
 
         _mem.unknown1 = 0
