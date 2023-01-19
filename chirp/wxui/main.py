@@ -305,6 +305,10 @@ class ChirpWelcomePanel(wx.Panel):
     def modified(self):
         return False
 
+    @property
+    def filename(self):
+        return None
+
 
 class ChirpMain(wx.Frame):
     def __init__(self, *args, **kwargs):
@@ -451,6 +455,18 @@ class ChirpMain(wx.Frame):
                                 _("Open Stock Config"))
 
         self.OPEN_RECENT_MENU = wx.Menu()
+        last_files = [
+            x for x in (CONF.get('last_open', 'state') or '').split('$')
+            if x]
+        self.restore_tabs_item = wx.NewId()
+        if last_files:
+            submenu_item = self.OPEN_RECENT_MENU.Append(
+                self.restore_tabs_item,
+                _('Restore %i tabs' % len(last_files)))
+            submenu_item.SetAccel(wx.AcceleratorEntry(
+                wx.MOD_CONTROL | wx.ACCEL_SHIFT, ord('T')))
+            self.Bind(wx.EVT_MENU, self.restore_tabs, submenu_item)
+
         i = 0
         fn = CONF.get("recent%i" % i, "state")
         while fn:
@@ -774,6 +790,8 @@ class ChirpMain(wx.Frame):
             if i >= KEEP_RECENT:
                 break
             menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
+            if menu_item.GetId() == self.restore_tabs_item:
+                continue
             fn = menu_item.GetItemLabelText()
             CONF.set("recent%i" % i, fn, "state")
         config._CONFIG.save()
@@ -866,13 +884,21 @@ class ChirpMain(wx.Frame):
         CONF.set_int('window_y', pos[1], 'state')
         CONF.set('last_dir', chirp_platform.get_platform().get_last_dir(),
                  'state')
-        config._CONFIG.save()
 
         # Make sure we call close on each editor, so it can end
         # threads and do other cleanup
+        open_files = []
         for i in range(self._editors.GetPageCount()):
             e = self._editors.GetPage(i)
+            if e.filename not in open_files:
+                open_files.append(e.filename)
             e.close()
+
+        CONF.set('last_open',
+                 '$'.join(os.path.abspath(fn)
+                          for fn in open_files if fn),
+                 'state')
+        config._CONFIG.save()
 
         self.Destroy()
 
@@ -939,6 +965,17 @@ class ChirpMain(wx.Frame):
             return
 
         self.open_file(filename)
+
+    def restore_tabs(self, event):
+        if self.OPEN_RECENT_MENU.FindItem(self.restore_tabs_item)[0]:
+            self.OPEN_RECENT_MENU.Remove(self.restore_tabs_item)
+        last_files = (CONF.get('last_open', 'state') or '').split('$')
+        for fn in last_files:
+            if fn and os.path.exists(fn):
+                LOG.debug('Restoring tab for file %r' % fn)
+                self.open_file(fn)
+            else:
+                LOG.debug('Previous file %r no longer exists' % fn)
 
     def _menu_open_recent(self, event):
         filename = self.OPEN_RECENT_MENU.FindItemById(
