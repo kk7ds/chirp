@@ -957,9 +957,11 @@ class RadioFeatures:
         if self.valid_dtcs_codes and \
                 mem.dtcs not in self.valid_dtcs_codes:
             msg = ValidationError("DTCS Code %03i not supported" % mem.dtcs)
+            msgs.append(msg)
         if self.valid_dtcs_codes and \
                 mem.rx_dtcs not in self.valid_dtcs_codes:
             msg = ValidationError("DTCS Code %03i not supported" % mem.rx_dtcs)
+            msgs.append(msg)
 
         if self.valid_duplexes and mem.duplex not in self.valid_duplexes:
             msg = ValidationError("Duplex %s not supported" % mem.duplex)
