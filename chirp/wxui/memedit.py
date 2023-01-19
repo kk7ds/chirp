@@ -424,6 +424,11 @@ class ChirpCrossModeColumn(ChirpChoiceColumn):
                                                    rf.valid_cross_modes)
 
     @property
+    def valid(self):
+        return ('Cross' in self._features.valid_tmodes and
+                self._features.valid_cross_modes)
+
+    @property
     def label(self):
         return _('Cross mode')
 
