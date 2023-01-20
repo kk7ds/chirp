@@ -1,5 +1,6 @@
 import os
 
+from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import import_logic
 from tests import base
@@ -18,7 +19,17 @@ class TestCaseCopyAll(base.DriverTest):
         src_rf = self.src_radio.get_features()
         bounds = src_rf.memory_bounds
 
-        dst_number = self.rf.memory_bounds[0]
+        for dst_number in range(self.rf.memory_bounds[0],
+                                min(self.rf.memory_bounds[0] + 10,
+                                    self.rf.memory_bounds[1])):
+            cur_mem = self.radio.get_memory(dst_number)
+            if not cur_mem.empty and 'freq' in cur_mem.immutable:
+                # Keep looking
+                continue
+            else:
+                break
+        else:
+            self.skipTest('No channels with mutable freq found to use')
 
         failures = []
 
