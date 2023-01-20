@@ -1306,16 +1306,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         errormsgs = []
         modified = False
         for mem in mems:
+            existing = self._memory_cache[row]
             mem.number = self.row2mem(row)
             row += 1
             try:
                 if mem.empty:
                     self.erase_memory(mem.number)
+                    self._radio.check_set_memory_immutable_policy(existing,
+                                                                  mem)
                 else:
                     mem = import_logic.import_mem(self._radio, srcrf, mem)
                     self.set_memory(mem)
                 modified = True
             except (import_logic.DestNotCompatible,
+                    chirp_common.ImmutableValueError,
                     errors.RadioError) as e:
                 LOG.warning('Pasted memory %s incompatible: %s' % (
                     mem, str(e)))

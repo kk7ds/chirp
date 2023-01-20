@@ -249,6 +249,12 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}):
     for helper in helpers:
         helper(dst_radio, src_features, dst_mem)
 
+    # If we can, grab the current existing destination memory and check the
+    # radio's immutable set_memory() policy
+    if not isinstance(dst_radio, chirp_common.LiveRadio):
+        cur_mem = dst_radio.get_memory(dst_mem.number)
+        dst_radio.check_set_memory_immutable_policy(cur_mem, dst_mem)
+
     msgs = dst_radio.validate_memory(dst_mem)
     errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
     if errs:
