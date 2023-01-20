@@ -101,6 +101,8 @@ def chirpmain():
 
     if args.restore or CONF.get_bool('restore_tabs', 'prefs'):
         restored = mainwindow.restore_tabs(None)
+    else:
+        restored = []
 
     for fn in args.files:
         if os.path.abspath(fn) in restored:
