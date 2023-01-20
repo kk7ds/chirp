@@ -30,7 +30,10 @@ class TestCaseEdges(base.DriverTest):
 
         for low, high in self.rf.valid_bands:
             for freq in (low, high - int(min_step * 1000)):
-                m.freq = freq
+                try:
+                    m.freq = freq
+                except chirp_common.ImmutableValueError:
+                    self.skipTest('Test memory has immutable freq')
                 if self.radio.validate_memory(m):
                     # Radio doesn't like it, so skip
                     continue
@@ -57,7 +60,10 @@ class TestCaseEdges(base.DriverTest):
                     if step not in self.rf.valid_tuning_steps:
                         continue
 
-                    m.freq = testfreq
+                    try:
+                        m.freq = testfreq
+                    except chirp_common.ImmutableValueError:
+                        self.skipTest('Test channel has immutable freq')
                     m.tuning_step = step
                     self.radio.set_memory(m)
                     n = self.radio.get_memory(m.number)

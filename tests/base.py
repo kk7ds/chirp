@@ -27,6 +27,22 @@ class DriverTest(unittest.TestCase):
 
     def get_mem(self):
         """Attempt to build a suitable memory for testing"""
+        # If we have a memory in spot 1, use that
+        try:
+            m = self.radio.get_memory(1)
+            # Don't return extra because it will never match properly
+            del m.extra
+            # Pre-filter the name so it will match what we expect back
+            if 'name' not in m.immutable:
+                m.name = self.radio.filter_name(m.name)
+            # Disable duplex in case it's set because this will cause some
+            # weirdness if we much with other values, like offset.
+            if 'duplex' not in m.immutable:
+                m.duplex = ''
+            return m
+        except Exception:
+            pass
+
         m = chirp_common.Memory()
         m.freq = self.rf.valid_bands[0][0] + 1000000
         if m.freq < 30000000 and "AM" in self.rf.valid_modes:
