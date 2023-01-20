@@ -19,6 +19,9 @@ class FakeRadio(chirp_common.Radio):
     def filter_name(self, name):
         return 'filtered-name'
 
+    def get_memory(self, number):
+        return chirp_common.Memory(number, empty=True)
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.valid_power_levels = self.POWER_LEVELS
@@ -351,6 +354,18 @@ class ImportFieldTests(base.BaseTest):
         self.mox.ReplayAll()
 
         import_logic.import_mem(radio, src_rf, mem)
+
+    @mock.patch.object(FakeRadio, 'get_memory')
+    @mock.patch.object(FakeRadio, 'check_set_memory_immutable_policy')
+    def test_import_mem_checks_immutable(self, mock_check, mock_get):
+        radio = FakeRadio(None)
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.Memory()
+        with mock.patch.object(mem, 'dupe') as mock_dupe:
+            mock_dupe.return_value = mem
+            import_logic.import_mem(radio, src_rf, mem)
+            mock_check.assert_called_once_with(mock_get.return_value, mem)
+            mock_get.assert_called_once_with(mem.number)
 
     def test_import_mem_with_warnings(self):
         self.test_import_mem([chirp_common.ValidationWarning('Test')])
