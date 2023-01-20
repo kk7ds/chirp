@@ -1181,6 +1181,27 @@ class Radio(Alias):
         """
         return fmt in cls.FORMATS
 
+    def check_set_memory_immutable_policy(self, existing, new):
+        """Checks whether or not a new memory will violate policy.
+
+        Some radios have complex requirements for which fields of which
+        memories can be modified at any given point. For the most part, radios
+        require certain physical memory slots to have immutable fields
+        (such as labels on call channels), and this default implementation
+        checks that policy. However, other radios have more fine-grained
+        rules in order to comply with FCC type acceptance, which requires
+        overriding this behavior.
+
+        ** This should almost never be overidden in your driver.
+
+        ** This must not communicate with the radio, if implemented on a live-
+           mode driver.
+        """
+        for field in existing.immutable:
+            if getattr(existing, field) != getattr(new, field):
+                raise ImmutableValueError(
+                    'Field %s is not mutable on this memory' % field)
+
 
 class ExternalMemoryProperties:
     """A mixin class that provides external memory property support.
