@@ -9,6 +9,7 @@ import mock
 from tests.unit import base
 from chirp import CHIRP_VERSION
 from chirp import chirp_common
+from chirp import directory
 from chirp import errors
 
 
@@ -707,3 +708,41 @@ class TestCloneModeExtras(base.BaseTest):
         self.assertEqual(146520000, m.freq)
         # Now we should have no comment because we erased
         self.assertEqual('', m.comment)
+
+
+class TestOverrideRules(base.BaseTest):
+    # You should not need to add your radio to this list. If you think you do,
+    # please ask permission first.
+    IMMUTABLE_WHITELIST = [
+        # Uncomment me when the time comes
+        # 'BTECH_GMRS-V2',
+    ]
+
+    def _test_radio_override_immutable_policy(self, rclass):
+        self.assertEqual(
+            chirp_common.Radio.check_set_memory_immutable_policy,
+            rclass.check_set_memory_immutable_policy,
+            'Radio should not override check_set_memory_immutable_policy')
+
+    def _test_radio_override_calls_super(self, rclass):
+        r = rclass(None)
+        method = r.check_set_memory_immutable_policy
+
+        # Make sure the radio actually overrides it
+        self.assertNotEqual(
+            chirp_common.Radio.check_set_memory_immutable_policy,
+            method,
+            ('Radio in whitelist does not override '
+             'check_set_memory_immutable_policy'))
+
+        # Make sure super() is called in the child class
+        self.assertIn('__class__', method.__code__.co_freevars,
+                      '%s.%s must call super() but does not' % (
+                          rclass.__name__, method.__name__))
+
+    def test_radio_overrides(self):
+        for rclass in directory.DRV_TO_RADIO.values():
+            if directory.radio_class_id(rclass) in self.IMMUTABLE_WHITELIST:
+                self._test_radio_override_calls_super(rclass)
+            else:
+                self._test_radio_override_immutable_policy(rclass)
