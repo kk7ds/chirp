@@ -80,8 +80,9 @@ class ChirpBankEdit(common.ChirpEditor):
         self._grid.CreateGrid(
             self._features.memory_bounds[1] - self._features.memory_bounds[0] +
             1, len(self._col_defs))
-        # GridSelectNone only available in >=4.2.0, which is not in requirements.txt for Linux
-        #self._grid.SetSelectionMode(wx.grid.Grid.GridSelectNone)
+        # GridSelectNone only available in >=4.2.0
+        if hasattr(wx.grid.Grid.GridSelectNone):
+            self._grid.SetSelectionMode(wx.grid.Grid.GridSelectNone)
         self._grid.DisableDragRowSize()
         self._grid.SetFocus()
 
