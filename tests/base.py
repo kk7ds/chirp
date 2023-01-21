@@ -3,8 +3,10 @@ import logging
 import unittest
 
 from chirp import chirp_common
+from chirp import bandplan_na
 
 LOG = logging.getLogger(__name__)
+
 
 
 class DriverTest(unittest.TestCase):
@@ -108,6 +110,13 @@ class DriverTest(unittest.TestCase):
             elif k == "offset" and not a.duplex:
                 continue
             elif k == "cross_mode" and a.tmode != "Cross":
+                continue
+
+            if (a.freq in bandplan_na.ALL_GMRS_FREQS and
+                    k in a.immutable or k in b.immutable):
+                # If the radio returned a field in immutable, it probably
+                # means that it's a mandatory setting (i.e. power or duplex
+                # in GMRS)
                 continue
 
             a_vals[k] = v
