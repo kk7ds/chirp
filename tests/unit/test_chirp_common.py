@@ -715,7 +715,7 @@ class TestOverrideRules(base.BaseTest):
     # please ask permission first.
     IMMUTABLE_WHITELIST = [
         # Uncomment me when the time comes
-        # 'BTECH_GMRS-V2',
+        'BTECH_GMRS-V2',
     ]
 
     def _test_radio_override_immutable_policy(self, rclass):

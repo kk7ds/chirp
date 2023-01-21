@@ -506,27 +506,36 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
         if self.MODEL == "GMRS-V2":
             if mem.freq in GMRS_FREQS:
                 if mem.freq in GMRS_FREQS1:
+                    # Non-repeater GMRS channels (limit duplex)
                     mem.duplex == ''
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
                 elif mem.freq in GMRS_FREQS2:
+                    # Non-repeater FRS channels (limit duplex, power)
                     mem.duplex == ''
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = self.POWER_LEVELS[1]
                     immutable = ["duplex", "offset", "mode", "power"]
                 elif mem.freq in GMRS_FREQS3:
+                    # GMRS repeater channels, always either simplex or +5MHz
                     if mem.duplex == '':
                         mem.offset = 0
                     if mem.duplex == '+':
                         mem.offset = 5000000
             else:
+                # Not a GMRS channel, so restrict duplex since it will be
+                # forced to off.
                 if mem.freq not in GMRS_FREQS:
                     immutable = ["duplex", "offset"]
 
         mem.immutable = immutable
 
         return mem
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number]
@@ -537,21 +546,28 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
             _nam.set_raw("\xff" * 16)
             return
 
+        # The mem may have immutable duplex and offset, so we shouldn't try
+        # to change them here to enforce the radio's rules, so make copies for
+        # our work below.
+        offset = mem.offset
+        duplex = mem.duplex
         if self.MODEL == "GMRS-V2":
             if mem.freq not in GMRS_FREQS:
-                mem.duplex = 'off'
-                mem.offset = 0
+                # This radio does not allow transmitting on non-GMRS channels,
+                # so we force them to duplex=off to reflect that.
+                duplex = 'off'
+                offset = 0
 
         _mem.set_raw("\x00" * 16)
 
         _mem.rxfreq = mem.freq / 10
 
-        if mem.duplex == "off":
+        if duplex == "off":
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw("\xFF")
-        elif mem.duplex == "+":
-            mem.offset = 5000000
-            _mem.txfreq = (mem.freq + mem.offset) / 10
+        elif duplex == "+":
+            offset = 5000000
+            _mem.txfreq = (mem.freq + offset) / 10
         else:
             _mem.txfreq = mem.freq / 10
 
