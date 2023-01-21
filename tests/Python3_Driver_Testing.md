@@ -352,7 +352,7 @@
 | <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes | 0.04% |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes | 0.03% |
-| <a name="Yaesu_VX-2"></a> Yaesu_VX-2 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/yaesu_clone.py) | 12-Dec-2022 | Yes | 0.04% |
+| <a name="Yaesu_VX-2"></a> Yaesu_VX-2 | [@thomasrussellmurphy](https://github.com/thomasrussellmurphy) | 20-Jan-2023 | Yes | 0.04% |
 | <a name="Yaesu_VX-3"></a> Yaesu_VX-3 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.08% |
 | <a name="Yaesu_VX-5"></a> Yaesu_VX-5 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/yaesu_clone.py) | 12-Dec-2022 | Yes | 0.07% |
 | <a name="Yaesu_VX-6"></a> Yaesu_VX-6 | [@dominickpastore](https://github.com/dominickpastore) | 10-Dec-2022 | Yes | 0.16% |
