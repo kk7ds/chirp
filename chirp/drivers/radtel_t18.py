@@ -1342,4 +1342,5 @@ class RB629Radio(RB29Radio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.500),
                     chirp_common.PowerLevel("Low", watts=0.499)]
 
+    _frs16 = False
     _pmr = True
