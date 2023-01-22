@@ -716,6 +716,7 @@ class TestOverrideRules(base.BaseTest):
     IMMUTABLE_WHITELIST = [
         # Uncomment me when the time comes
         'BTECH_GMRS-V2',
+        'Retevis_RB17P',
     ]
 
     def _test_radio_override_immutable_policy(self, rclass):
