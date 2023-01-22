@@ -291,6 +291,22 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
+    def validate_memory(self, mem):
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        _mem = self._memobj.memory[mem.number]
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if self.MODEL == "RB17P":
+            if mem.freq not in GMRS_FREQS:
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+            elif mem.duplex and mem.offset != 5000000:
+                msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
+
     def sync_in(self):
         self._mmap = do_download(self)
         self.process_mmap()
@@ -378,7 +394,42 @@ class RB17P_Base(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_mem.compander))
         mem.extra.append(rs)
 
+        immutable = []
+
+        if self._gmrs:
+            if mem.freq in GMRS_FREQS:
+                if mem.freq in GMRS_FREQS1:
+                    # Non-repeater GMRS channels (limit duplex)
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+                elif mem.freq in GMRS_FREQS2:
+                    # Non-repeater FRS channels (limit duplex, power)
+                    mem.duplex == ''
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    mem.power = self.POWER_LEVELS[1]
+                    immutable = ["duplex", "offset", "mode", "power"]
+                elif mem.freq in GMRS_FREQS3:
+                    # GMRS repeater channels, always either simplex or +5MHz
+                    if mem.duplex == '':
+                        mem.offset = 0
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+            else:
+                # Not a GMRS channel, so restrict duplex since it will be
+                # forced to off.
+                mem.duplex = 'off'
+                mem.offset = 0
+                immutable = ["duplex", "offset"]
+
+        mem.immutable = immutable
+
         return mem
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
 
     def set_memory(self, mem):
         # Get a low-level memory object mapped to the image
@@ -392,25 +443,6 @@ class RB17P_Base(chirp_common.CloneModeRadio):
             return
 
         _mem.set_raw("\x00" * (_mem.size() // 8))
-
-        if self._gmrs:
-            if mem.freq in GMRS_FREQS1:
-                mem.duplex == ''
-                mem.offset = 0
-            elif mem.freq in GMRS_FREQS2:
-                mem.duplex == ''
-                mem.offset = 0
-                mem.mode = "NFM"
-                mem.power = self.POWER_LEVELS[1]
-            elif mem.freq in GMRS_FREQS3:
-                if mem.duplex == '+':
-                    mem.offset = 5000000
-                else:
-                    mem.duplex == ''
-                    mem.offset = 0
-            else:
-                mem.duplex = 'off'
-                mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
