@@ -193,7 +193,9 @@ struct {
 
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "AM", "WFM", "FM"]  # last is auto
-TMODES = ["", "Tone", "TSQL", "DTCS"]
+TMODES = ["", "Tone", "TSQL",
+          "TSQL-R",  # This is "RV TN" as Yaesu calls it
+          "DTCS", "DTCS->", "Tone->DTCS", "DTCS->Tone"]
 DTMFCHARSET = list("0123456789ABCD*#-")
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0,
          9.0, 200.0, 5.0]  # last is auto, 9.0k and 200.0k are unadvertised
@@ -386,7 +388,8 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank_names = True
         rf.has_dtcs_polarity = False
         rf.valid_modes = ["FM", "WFM", "AM", "NFM"]
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "TSQL-R", "Cross"]
+        rf.valid_cross_modes = [x for x in TMODES if '->' in x]
         rf.valid_duplexes = DUPLEX
         rf.valid_tuning_steps = STEPS
         rf.valid_power_levels = POWER_LEVELS
@@ -426,7 +429,12 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
         mem.offset = chirp_common.fix_rounded_step(int(_mem.offset) * 1000)
         mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone & 0x3f]
-        mem.tmode = TMODES[_mem.tmode]
+        tmode = TMODES[_mem.tmode]
+        if '->' in tmode:
+            mem.tmode = 'Cross'
+            mem.cross_mode = tmode
+        else:
+            mem.tmode = tmode
         mem.duplex = DUPLEX[_mem.duplex]
         mem.mode = MODES[_mem.mode]
         if mem.mode == "FM" and _mem.half_deviation:
@@ -478,7 +486,10 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.freq = mem.freq / 1000
         _mem.offset = mem.offset / 1000
         _mem.tone = chirp_common.TONES.index(mem.rtone)
-        _mem.tmode = TMODES.index(mem.tmode)
+        if mem.tmode == 'Cross':
+            _mem.tmode = TMODES.index(mem.cross_mode)
+        else:
+            _mem.tmode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
         if mem.mode == "NFM":
             _mem.mode = MODES.index("FM")
