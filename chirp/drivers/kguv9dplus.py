@@ -1171,12 +1171,11 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         raise Exception("All retries to identify failed")
 
     def process_mmap(self):
-        if self._rev == b"02" or self._rev == b"00":
-            self._memobj = bitwise.parse(_MEM_FORMAT02, self._mmap)
-        else:  # this is where you elif the other variants and non-Plus  radios
-            raise errors.RadioError(
-                "Unrecognized model variation (%s). No memory map for it" %
-                self._rev)
+        if self._rev != b"02" and self._rev != b"00":
+            # new revision found - log it and assume same map and proceed
+            LOG.debug("Unrecognized model variation (%s) Using default Map" %
+                      self._rev)
+        self._memobj = bitwise.parse(_MEM_FORMAT02, self._mmap)
 
     def sync_in(self):
         """ Public sync_in
