@@ -22,6 +22,7 @@ import re
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
+from chirp import bandplan_na
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
@@ -67,8 +68,7 @@ LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
-MURS_FREQS = [151820000, 151880000, 151940000, 154570000, 154600000] * 3
-FM_MODE = [3, 4, 8, 9, 13, 14]
+MURS_FREQS = bandplan_na.ALL_MURS_FREQS * 3
 
 
 def model_match(cls, data):
@@ -469,6 +469,21 @@ class MURSV1(baofeng_common.BaofengCommonHT):
                                                 self.SCODE_LIST[_mem.scode]))
         mem.extra.append(rs)
 
+        immutable = []
+
+        if mem.freq in MURS_FREQS:
+            if mem.number >= 1 and mem.number <= 15:
+                MURS_FREQ = MURS_FREQS[mem.number - 1]
+                mem.freq = MURS_FREQ
+                mem.duplex == ''
+                mem.offset = 0
+                immutable = ["empty", "freq", "duplex", "offset"]
+            if mem.freq in bandplan_na.MURS_NFM:
+                mem.mode = "NFM"
+                immutable += ["mode"]
+
+        mem.immutable = immutable
+
         return mem
 
     def _set_mem(self, number):
@@ -487,14 +502,6 @@ class MURSV1(baofeng_common.BaofengCommonHT):
             return
 
         _mem.set_raw("\x00" * 16)
-
-        if mem.freq not in MURS_FREQS:
-            MURS_FREQ = MURS_FREQS[mem.number - 1]
-            mem.freq = MURS_FREQ
-            mem.duplex = ''
-            mem.offset = 0
-        if mem.mode == "FM" and (mem.number - 1) not in FM_MODE:
-            mem.mode = "NFM"
 
         _mem.rxfreq = mem.freq / 10
 
