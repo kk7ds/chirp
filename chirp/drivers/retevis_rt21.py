@@ -915,6 +915,75 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("compander", "Compander", rs)
             mem.extra.append(rset)
 
+        immutable = []
+
+        if self._frs:
+            if mem.number >= 1 and mem.number <= 22:
+                FRS_FREQ = FRS_FREQS[mem.number - 1]
+                mem.freq = FRS_FREQ
+                mem.duplex == ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                if mem.number >= 8 and mem.number <= 14:
+                    mem.power = self.POWER_LEVELS[1]
+                    immutable = ["empty", "freq", "duplex", "offset", "mode",
+                                 "power"]
+                else:
+                    immutable = ["empty", "freq", "duplex", "offset", "mode"]
+        elif self._pmr:
+            if mem.number >= 1 and mem.number <= 16:
+                PMR_FREQ = PMR_FREQS[mem.number - 1]
+                mem.freq = PMR_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = self.POWER_LEVELS[1]
+                immutable = ["empty", "freq", "duplex", "offset", "mode",
+                             "power"]
+        elif self._gmrs:
+            if mem.number >= 1 and mem.number <= 30:
+                GMRS_FREQ = GMRS_FREQS[mem.number - 1]
+                mem.freq = GMRS_FREQ
+                immutable = ["empty", "freq"]
+            if mem.number >= 1 and mem.number <= 7:
+                mem.duplex == ''
+                mem.offset = 0
+                immutable += ["duplex", "offset"]
+            elif mem.number >= 8 and mem.number <= 14:
+                mem.duplex == ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = self.POWER_LEVELS[1]
+                immutable += ["duplex", "offset", "mode", "power"]
+            elif mem.number >= 15 and mem.number <= 22:
+                mem.duplex == ''
+                mem.offset = 0
+                immutable += ["duplex", "offset"]
+            elif mem.number >= 23 and mem.number <= 30:
+                mem.duplex == '+'
+                mem.offset = 5000000
+                immutable += ["duplex", "offset"]
+            elif mem.freq in FRS_FREQS1:
+                mem.duplex == ''
+                mem.offset = 0
+                immutable += ["duplex", "offset"]
+            elif mem.freq in FRS_FREQS2:
+                mem.duplex == ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = self.POWER_LEVELS[1]
+                immutable += ["duplex", "offset", "mode", "power"]
+            elif mem.freq in FRS_FREQS3:
+                if mem.duplex == '':
+                    mem.offset = 0
+                if mem.duplex == '+':
+                    mem.offset = 5000000
+            else:
+                if mem.freq not in GMRS_FREQS:
+                    immutable = ["duplex", "offset"]
+
+        mem.immutable = immutable
+
         return mem
 
     def _set_tone(self, mem, _mem):
@@ -1000,36 +1069,6 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _mem.set_raw("\x00" * 13 + _rsvd)
         else:
             _mem.set_raw("\x00" * 13 + "\x30\x8F\xF8")
-
-        if self._gmrs:
-            if mem.number >= 1 and mem.number <= 30:
-                GMRS_FREQ = GMRS_FREQS[mem.number - 1]
-                mem.freq = GMRS_FREQ
-                if mem.number <= 22:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    if mem.number >= 8 and mem.number <= 14:
-                        mem.mode = "NFM"
-                        mem.power = self.POWER_LEVELS[1]
-                if mem.number > 22:
-                    mem.duplex = '+'
-                    mem.offset = 5000000
-        if self._frs:
-            if mem.number >= 1 and mem.number <= 22:
-                FRS_FREQ = FRS_FREQS[mem.number - 1]
-                mem.freq = FRS_FREQ
-                mem.mode = "NFM"
-                mem.duplex = ''
-                mem.offset = 0
-                if mem.number >= 8 and mem.number <= 14:
-                    mem.power = self.POWER_LEVELS[1]
-        if self._pmr:
-            PMR_FREQ = PMR_FREQS[mem.number - 1]
-            mem.freq = PMR_FREQ
-            mem.duplex = ''
-            mem.offset = 0
-            mem.mode = "NFM"
-            mem.power = self.POWER_LEVELS[1]
 
         _mem.rxfreq = mem.freq / 10
 
@@ -1745,6 +1784,7 @@ class RT619Radio(RT19Radio):
                    0x100,   # memory start
                    _upper   # number of freqhops
                    )
+    _frs = False
     _pmr = True
 
     _ranges = [
