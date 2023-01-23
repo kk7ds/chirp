@@ -120,6 +120,7 @@ def do_ident(radio):
     send(radio, b"PROGRAM")
     ack = radio.pipe.read(1)
     if ack != bytes(b"\x06"):
+        LOG.debug('Response was %r, expected 0x06' % ack)
         raise errors.RadioError("Radio refused program mode")
     radio.pipe.write(b"\x02")
     ident = radio.pipe.read(8)
@@ -139,7 +140,10 @@ def do_ident(radio):
 def do_download(radio):
     radio.pipe.parity = "E"
     radio.pipe.timeout = 1
-    do_ident(radio)
+    try:
+        do_ident(radio)
+    except errors.RadioError:
+        do_ident(radio)
 
     data = bytes(b"")
     for addr in range(0, 0x0400, 8):
@@ -156,7 +160,7 @@ def do_download(radio):
         status = chirp_common.Status()
         status.cur = addr
         status.max = 0x0400
-        status.msg = "Cloning to radio"
+        status.msg = "Cloning from radio"
         radio.status_fn(status)
 
     radio.pipe.write(b"\x45")
@@ -169,7 +173,10 @@ def do_download(radio):
 def do_upload(radio):
     radio.pipe.parity = "E"
     radio.pipe.timeout = 1
-    do_ident(radio)
+    try:
+        do_ident(radio)
+    except errors.RadioError:
+        do_ident(radio)
 
     mmap = radio._mmap.get_byte_compatible()
     for addr in range(0, 0x0400, 8):
