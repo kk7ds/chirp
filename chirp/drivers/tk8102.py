@@ -23,6 +23,7 @@ from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.settings import RadioSettingValueString, RadioSettings
+from chirp.settings import RadioSettingValueFloat
 
 LOG = logging.getLogger(__name__)
 
@@ -45,6 +46,25 @@ struct {
   u8 unknown3[2];
 } memory[8];
 
+#seekto 0x0250;
+struct {
+  u8 unknown0;
+  u8 unknown1;
+  u8 unknown2;
+  u8 unknown3;
+  // 0x04 Emergency, 0x05 keylock, 0x06 Monitor 0x09 temp delete, 0x0A none
+  u8 speakerkey;
+  u8 circlekey;
+} settings;
+
+#seekto 0x0270;
+struct {
+  u8 scanresume; // 0=selected 1=selected+talkback
+  u8 dropoutdelay; // 0.5s*value, 0.5-5.0
+  u8 txdwell; // same as above
+  u8 offhookscan; // 0=off 1=on
+} settings2;
+
 #seekto 0x0310;
 struct {
   char line1[32];
@@ -53,6 +73,18 @@ struct {
 
 """
 
+# These are 4+index
+KEYS = [
+    'Emergency',
+    'Key Lock',
+    'Monitor',
+    'Scan On/Off',
+    'Talk Around',
+    'Temporary Delete',
+    'None',
+]
+SCAN_RESUME = ['Selected', 'Selected+Talkback']
+SCAN_TIME = ['%.1f' % (v * 0.5) for v in range(11)]
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
 MODES = ["NFM", "FM"]
@@ -376,7 +408,8 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic")
-        top = RadioSettings(basic)
+        scan = RadioSettingGroup("scan", "Scan")
+        top = RadioSettings(basic, scan)
 
         def _f(val):
             string = ""
@@ -398,6 +431,42 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
                                                      autopad=False))
         basic.append(line2)
 
+        skey = RadioSetting(
+            "settings.speakerkey", "Speaker Key",
+            RadioSettingValueList(
+                KEYS, current_index=int(_mem.settings.speakerkey) - 4))
+        basic.append(skey)
+
+        ckey = RadioSetting(
+            "settings.circlekey", "Circle Key",
+            RadioSettingValueList(
+                KEYS, current_index=int(_mem.settings.circlekey) - 4))
+        basic.append(ckey)
+
+        scanresume = RadioSetting(
+            "settings2.scanresume", "Scan Resume",
+            RadioSettingValueList(SCAN_RESUME,
+                                  current_index=_mem.settings2.scanresume))
+        scan.append(scanresume)
+
+        offhookscan = RadioSetting(
+            "settings2.offhookscan", "Off-Hook Scan",
+            RadioSettingValueBoolean(bool(_mem.settings2.offhookscan)))
+        scan.append(offhookscan)
+
+        dropout = RadioSetting(
+            "settings2.dropoutdelay", "Drop-out Delay Time",
+            RadioSettingValueList(
+                SCAN_TIME, current_index=int(_mem.settings2.dropoutdelay)))
+
+        scan.append(dropout)
+
+        txdwell = RadioSetting(
+            "settings2.txdwell", "TX Dwell Time",
+            RadioSettingValueList(
+                SCAN_TIME, current_index=int(_mem.settings2.txdwell)))
+        scan.append(txdwell)
+
         return top
 
     def set_settings(self, settings):
@@ -412,11 +481,13 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
                     obj = getattr(obj, bit)
                 setting = bits[-1]
             else:
-                obj = _settings
+                obj = self._memobj.settings
                 setting = element.get_name()
 
             if "line" in setting:
                 value = str(element.value).ljust(32, "\xFF")
+            elif 'key' in setting:
+                value = int(element.value) + 4
             else:
                 value = element.value
             setattr(obj, setting, value)
