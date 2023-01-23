@@ -739,6 +739,7 @@ class ICx90Radio(icf.IcomCloneModeRadio):
         return ICx90BankModel(self)
 
 class ICx90Radio_ham(ICx90Radio):
+    VARIANT = 'Radio'
 
     def get_features(self):
         rf = ICx90Radio.get_features(self)

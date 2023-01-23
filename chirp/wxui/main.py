@@ -124,7 +124,8 @@ class ChirpEditorSet(wx.Panel):
             edit.refresh()
             self.Bind(common.EVT_EDITOR_CHANGED, self._editor_changed)
 
-            if features.has_bank and self.BANK_CLS:
+            sub_features = radio.get_features()
+            if sub_features.has_bank and self.BANK_CLS:
                 banks = self.BANK_CLS(radio, self._editors)
                 self.add_editor(banks, format % {'type': _('Banks'),
                                                  'variant': radio.VARIANT})
